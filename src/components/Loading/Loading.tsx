@@ -24,7 +24,6 @@ const Loading = (): ReactElement => {
     const classes = useStyles();
     return (
         <>
-            <Box className={classes.box}></Box>
             <Container className={classes.container}>
                 <Fab color="default" disableRipple className={classes.fab}>
                     <CircularProgress size={30} />
