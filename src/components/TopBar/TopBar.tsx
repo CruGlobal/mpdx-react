@@ -46,6 +46,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     toolbar: {
         backgroundColor: theme.palette.primary.main,
         minHeight: '48px',
+        paddingTop: 'env(safe-area-inset-top)',
     },
     logoGrid: {
         order: 1,

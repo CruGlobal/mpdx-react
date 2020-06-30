@@ -18,9 +18,6 @@ const theme = createMuiTheme({
         ].join(','),
     },
     palette: {
-        background: {
-            default: '#05699b',
-        },
         primary: {
             main: '#05699b',
         },
@@ -56,6 +53,16 @@ const theme = createMuiTheme({
                 justifyContent: 'flex-end',
                 [defaultTheme.breakpoints.down('xs')]: {
                     justifyContent: 'center',
+                },
+            },
+        },
+        MuiCssBaseline: {
+            '@global': {
+                html: {
+                    backgroundColor: '#f6f7f9',
+                },
+                body: {
+                    backgroundColor: '#05699b',
                 },
             },
         },

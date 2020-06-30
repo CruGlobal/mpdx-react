@@ -39,7 +39,7 @@ const Welcome = ({ firstName }: Props): ReactElement => {
     }
 
     return (
-        <Box className={classes.box} pb={{ xs: 5, sm: 0 }} pt={{ xs: 5, sm: 3 }}>
+        <Box className={classes.box} pb={{ xs: 5, sm: 0 }} pt={{ xs: 6, sm: 3 }}>
             <Container>
                 <Grid container spacing={4} alignItems="flex-end" justify="center">
                     <Grid item className={classes.image}>
