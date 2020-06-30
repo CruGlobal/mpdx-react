@@ -28,7 +28,7 @@ const Footer = (): ReactElement => {
     const classes = useStyles();
 
     return (
-        <Box py={5} mt={5} className={classes.box}>
+        <Box py={5} className={classes.box}>
             <Container>
                 <Grid container alignItems="center">
                     <Grid item xs={12} md={8} alignItems="center" container spacing={3}>

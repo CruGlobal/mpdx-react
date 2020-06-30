@@ -21,7 +21,6 @@ const App = ({ Component, pageProps }: AppProps): ReactElement => {
         <ApolloProvider client={client}>
             <Head>
                 <title>MPDX | Fundraising software built for God’s people</title>
-                <meta name="viewport" content="minimum-scale=1, initial-scale=1, width=device-width" />
                 <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
                 <meta
                     name="viewport"
@@ -34,6 +33,7 @@ const App = ({ Component, pageProps }: AppProps): ReactElement => {
                 <link rel="apple-touch-icon" sizes="114x114" href="/icons/apple-touch-icon-iphone-retina-120x120.png" />
                 <link rel="apple-touch-icon" sizes="144x144" href="/icons/apple-touch-icon-ipad-retina-152x152.png" />
                 <meta name="theme-color" content="#05699b" />
+                <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
             </Head>
             <ThemeProvider theme={theme}>
                 <CssBaseline />
