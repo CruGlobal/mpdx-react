@@ -2,6 +2,7 @@ import React, { ReactElement, useEffect } from 'react';
 import Head from 'next/head';
 import { gql, useApolloClient } from '@apollo/client';
 import { GetServerSideProps } from 'next';
+import { getSession } from 'next-auth/client';
 import AccountLists from '../src/components/AccountLists';
 import { ssrClient } from '../src/lib/client';
 import { GetAccountListsQuery } from '../types/GetAccountListsQuery';
@@ -46,20 +47,21 @@ const AccountListsPage = ({ data }: Props): ReactElement => {
     );
 };
 
-export const getServerSideProps: GetServerSideProps<Props> = async ({ req, res }): Promise<{ props: Props }> => {
-    const client = await ssrClient(req);
+export const getServerSideProps: GetServerSideProps<Props> = async ({ res, req }): Promise<{ props: Props }> => {
+    const session = await getSession({ req });
 
-    try {
-        const response = await client.query<GetAccountListsQuery>({ query: GET_ACCOUNT_LISTS_QUERY });
-
-        return {
-            props: { data: response.data },
-        };
-    } catch (err) {
+    if (!session?.user?.token) {
         res.writeHead(302, { Location: '/' });
         res.end();
         return null;
     }
+
+    const client = await ssrClient(session?.user?.token);
+    const response = await client.query<GetAccountListsQuery>({ query: GET_ACCOUNT_LISTS_QUERY });
+
+    return {
+        props: { data: response.data },
+    };
 };
 
 export default AccountListsPage;

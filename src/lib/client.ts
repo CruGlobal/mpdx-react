@@ -32,12 +32,13 @@ const config = {
 
 const client = new ApolloClient(config);
 
-export const ssrClient = (req: IncomingMessage): ApolloClient<NormalizedCacheObject> => {
+export const ssrClient = (token?: string): ApolloClient<NormalizedCacheObject> => {
     const httpLink = createHttpLink({
-        uri: `${process.env.SITE_URL}/api/graphql`,
+        uri: process.env.API_URL,
         fetch,
         headers: {
-            Cookie: req.headers.cookie,
+            Authorization: token ? `Bearer ${token}` : null,
+            Accept: 'application/json',
         },
     });
 

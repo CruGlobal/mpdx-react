@@ -20,7 +20,10 @@ const options = {
         },
     ],
     callbacks: {
-        jwt: async (payload, profile: Profile): Promise<any> => {
+        session: (session, token): Promise<{}> => {
+            return Promise.resolve({ ...session, user: { ...session.user, token: token.user.token } });
+        },
+        jwt: async (payload, profile: Profile): Promise<{}> => {
             if (profile) {
                 return Promise.resolve({ ...payload, user: profile });
             } else {

@@ -3,6 +3,7 @@ import Head from 'next/head';
 import { useApolloClient, gql } from '@apollo/client';
 import { GetServerSideProps } from 'next';
 import moment from 'moment';
+import { getSession } from 'next-auth/client';
 import Dashboard from '../../src/components/Dashboard';
 import { GetDashboardQuery } from '../../types/GetDashboardQuery';
 import { ssrClient } from '../../src/lib/client';
@@ -134,27 +135,28 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({
     req,
     res,
 }): Promise<{ props: Props }> => {
-    const client = await ssrClient(req);
+    const session = await getSession({ req });
+    const client = await ssrClient(session?.user?.token);
 
-    try {
-        const response = await client.query<GetDashboardQuery>({
-            query: GET_DASHBOARD_QUERY,
-            variables: {
-                accountListId: params.accountListId,
-                endOfDay: moment().endOf('day').toISOString(),
-                today: moment().endOf('day').toISOString().slice(0, 10),
-                twoWeeksFromNow: moment().endOf('day').add(2, 'weeks').toISOString().slice(0, 10),
-            },
-        });
-
-        return {
-            props: { data: response.data, accountListId: params.accountListId.toString() },
-        };
-    } catch (err) {
+    if (!session?.user?.token) {
         res.writeHead(302, { Location: '/' });
         res.end();
         return null;
     }
+
+    const response = await client.query<GetDashboardQuery>({
+        query: GET_DASHBOARD_QUERY,
+        variables: {
+            accountListId: params.accountListId,
+            endOfDay: moment().endOf('day').toISOString(),
+            today: moment().endOf('day').toISOString().slice(0, 10),
+            twoWeeksFromNow: moment().endOf('day').add(2, 'weeks').toISOString().slice(0, 10),
+        },
+    });
+
+    return {
+        props: { data: response.data, accountListId: params.accountListId.toString() },
+    };
 };
 
 export default AccountListIdPage;
