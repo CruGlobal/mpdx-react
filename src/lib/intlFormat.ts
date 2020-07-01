@@ -13,7 +13,7 @@ export const currencyFormat = (value: number, currency: string, minimumFractionD
         style: 'currency',
         currency,
         minimumFractionDigits,
-    }).format(isNaN(value) ? 0 : parseFloat(value.toFixed(minimumFractionDigits)));
+    }).format(isNaN(value) ? 0 : parseFloat((value || 0).toFixed(minimumFractionDigits)));
 
 export const dayMonthFormat = (day: number, month: number): string =>
     new Intl.DateTimeFormat('en-US', {

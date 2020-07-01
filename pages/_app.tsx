@@ -9,6 +9,7 @@ import { Provider } from 'next-auth/client';
 import theme from '../src/theme';
 import client from '../src/lib/client';
 import Chrome from '../src/components/Chrome';
+import Loading from '../src/components/Loading';
 
 const handleExitComplete = (): void => {
     if (typeof window !== 'undefined') {
@@ -61,6 +62,7 @@ const App = ({ Component, pageProps, router }: AppProps): ReactElement => {
                             <Component {...pageProps} key={router.route} />
                         </AnimatePresence>
                     </Chrome>
+                    <Loading />
                 </ThemeProvider>
             </ApolloProvider>
         </Provider>

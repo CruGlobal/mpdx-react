@@ -1,5 +1,5 @@
 import React, { ReactElement } from 'react';
-import { Card, CardContent, Box, Typography, Grid, CardHeader, makeStyles, Theme } from '@material-ui/core';
+import { CardContent, Box, Typography, Grid, CardHeader, makeStyles, Theme } from '@material-ui/core';
 import {
     ReferenceLine,
     BarChart,
@@ -15,6 +15,8 @@ import {
 import moment from 'moment';
 import { Skeleton } from '@material-ui/lab';
 import { currencyFormat } from '../../../lib/intlFormat';
+import AnimatedCard from '../../AnimatedCard';
+import AnimatedBox from '../../AnimatedBox';
 
 const useStyles = makeStyles((_theme: Theme) => ({
     cardHeader: {
@@ -78,9 +80,11 @@ const DonationHistories = ({
     return (
         <>
             <Box my={{ xs: 1, sm: 2 }}>
-                <Typography variant="h6">Monthly Activity</Typography>
+                <AnimatedBox>
+                    <Typography variant="h6">Monthly Activity</Typography>
+                </AnimatedBox>
             </Box>
-            <Card>
+            <AnimatedCard>
                 <Box display={{ xs: 'none', sm: 'block' }}>
                     <CardHeader
                         className={classes.cardHeader}
@@ -224,7 +228,7 @@ const DonationHistories = ({
                         )}
                     </Box>
                 </CardContent>
-            </Card>
+            </AnimatedCard>
         </>
     );
 };

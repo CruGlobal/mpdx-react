@@ -1,7 +1,6 @@
 import React, { ReactElement, ReactNode } from 'react';
 import { Box, makeStyles, Theme } from '@material-ui/core';
 import TopBar from '../TopBar';
-import Footer from '../Footer';
 
 const useStyles = makeStyles((theme: Theme) => ({
     box: {
@@ -24,9 +23,6 @@ const Chrome = ({ children }: Props): ReactElement => {
             <Box className={classes.box}>
                 <TopBar />
                 {children}
-            </Box>
-            <Box display={{ xs: 'none', sm: 'block' }}>
-                <Footer />
             </Box>
         </>
     );

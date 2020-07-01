@@ -4,7 +4,6 @@ import {
     Typography,
     makeStyles,
     Theme,
-    Card,
     Grid,
     CardHeader,
     CardActions,
@@ -22,6 +21,8 @@ import moment from 'moment';
 import CakeIcon from '@material-ui/icons/Cake';
 import FavoriteIcon from '@material-ui/icons/Favorite';
 import { dayMonthFormat } from '../../../lib/intlFormat';
+import AnimatedCard from '../../AnimatedCard';
+import AnimatedBox from '../../AnimatedBox';
 
 const useStyles = makeStyles((theme: Theme) => ({
     list: {
@@ -118,11 +119,13 @@ const ThisWeek = ({
     return (
         <>
             <Box my={{ xs: 1, sm: 2 }}>
-                <Typography variant="h6">To Do This Week</Typography>
+                <AnimatedBox>
+                    <Typography variant="h6">To Do This Week</Typography>
+                </AnimatedBox>
             </Box>
             <Grid container spacing={2}>
                 <Grid item xs={12} sm={6} md={4}>
-                    <Card className={classes.card}>
+                    <AnimatedCard className={classes.card}>
                         <CardHeader title="Partner Care" />
                         <Tabs
                             value={value}
@@ -245,10 +248,10 @@ const ThisWeek = ({
                                 </List>
                             </>
                         )}
-                    </Card>
+                    </AnimatedCard>
                 </Grid>
                 <Grid item xs={12} sm={6} md={4}>
-                    <Card className={classes.card}>
+                    <AnimatedCard className={classes.card}>
                         <CardHeader title="Tasks Due This Week" />
                         <List className={classes.list}>
                             {dueTasks?.nodes?.map((task) => (
@@ -284,10 +287,10 @@ const ThisWeek = ({
                                 View All ({dueTasks?.totalCount || 0})
                             </Button>
                         </CardActions>
-                    </Card>
+                    </AnimatedCard>
                 </Grid>
                 <Grid item xs={12} md={4}>
-                    <Card className={classes.card}>
+                    <AnimatedCard className={classes.card}>
                         <CardHeader title="Late Commitments" />
                         <List className={classes.list}>
                             {latePledgeContacts?.nodes?.map((contact) => {
@@ -307,7 +310,7 @@ const ThisWeek = ({
                                 View All ({latePledgeContacts?.totalCount || 0})
                             </Button>
                         </CardActions>
-                    </Card>
+                    </AnimatedCard>
                 </Grid>
             </Grid>
         </>

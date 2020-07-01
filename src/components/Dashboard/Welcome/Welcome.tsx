@@ -1,31 +1,12 @@
 import React, { ReactElement } from 'react';
-import { Box, Container, Typography, makeStyles, Theme, Grid } from '@material-ui/core';
+import { Typography } from '@material-ui/core';
 import PageHeading from '../../PageHeading';
-
-const useStyles = makeStyles((theme: Theme) => ({
-    box: {
-        backgroundColor: theme.palette.primary.main,
-        color: '#fff',
-    },
-    image: {
-        maxHeight: '150px',
-        overflow: 'hidden',
-        '& img': {
-            height: '250px',
-        },
-        [theme.breakpoints.down('xs')]: {
-            display: 'none',
-        },
-    },
-}));
 
 interface Props {
     firstName?: string;
 }
 
 const Welcome = ({ firstName }: Props): ReactElement => {
-    const classes = useStyles();
-
     const today = new Date();
     const currentHour = today.getHours();
 

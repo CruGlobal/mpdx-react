@@ -201,7 +201,7 @@ const TopBar = (): ReactElement => {
                                             onClose={handleClose}
                                             classes={{ list: classes.menuList }}
                                         >
-                                            <Link href="/accountLists">
+                                            <Link href="/accountLists" scroll={false}>
                                                 <MenuItem onClick={handleClose}>See All Account Lists</MenuItem>
                                             </Link>
                                             <ListSubheader>Account Lists</ListSubheader>
@@ -210,6 +210,7 @@ const TopBar = (): ReactElement => {
                                                     key={id}
                                                     href="/accountLists/[accountListId]"
                                                     as={`/accountLists/${id}`}
+                                                    scroll={false}
                                                 >
                                                     <MenuItem
                                                         selected={id == data.currentAccountListId}

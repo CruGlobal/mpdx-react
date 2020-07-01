@@ -1,7 +1,9 @@
 import React, { ReactElement } from 'react';
-import { Typography, makeStyles, Theme, Grid, Card, CardContent, Box } from '@material-ui/core';
+import { Typography, makeStyles, Theme, Grid, CardContent, Box } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
 import { currencyFormat, percentageFormat } from '../../../lib/intlFormat';
+import AnimatedCard from '../../AnimatedCard';
+import AnimatedBox from '../../AnimatedBox';
 
 const useStyles = makeStyles((theme: Theme) => ({
     progress: {
@@ -65,9 +67,11 @@ const MonthlyGoal = ({ loading, goal, received, pledged, currencyCode = 'USD' }:
     return (
         <>
             <Box my={{ xs: 1, sm: 2 }}>
-                <Typography variant="h6">Monthly Goal</Typography>
+                <AnimatedBox>
+                    <Typography variant="h6">Monthly Goal</Typography>
+                </AnimatedBox>
             </Box>
-            <Card>
+            <AnimatedCard>
                 <CardContent>
                     <div className={classes.progress}>
                         {loading ? (
@@ -152,7 +156,7 @@ const MonthlyGoal = ({ loading, goal, received, pledged, currencyCode = 'USD' }:
                         </Grid>
                     </Grid>
                 </CardContent>
-            </Card>
+            </AnimatedCard>
         </>
     );
 };

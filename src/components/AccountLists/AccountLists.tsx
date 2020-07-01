@@ -1,21 +1,12 @@
 import React, { ReactElement } from 'react';
-import {
-    makeStyles,
-    Theme,
-    Container,
-    Typography,
-    Grid,
-    Card,
-    CardActionArea,
-    CardContent,
-    Button,
-} from '@material-ui/core';
+import { makeStyles, Theme, Container, Typography, Grid, CardActionArea, CardContent, Button } from '@material-ui/core';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import SubjectIcon from '@material-ui/icons/Subject';
 import Welcome from '../Welcome';
 import { GetAccountListsQuery } from '../../../types/GetAccountListsQuery';
 import PageHeading from '../PageHeading';
+import AnimatedCard from '../AnimatedCard';
 
 interface Props {
     data: GetAccountListsQuery;
@@ -35,7 +26,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
 }));
 
-const accountListsVariants = {
+const variants = {
     animate: {
         transition: {
             staggerChildren: 0.15,
@@ -48,33 +39,6 @@ const accountListsVariants = {
     },
 };
 
-const accountListVariants = {
-    initial: {
-        scale: 0.96,
-        y: 30,
-        z: 1,
-        opacity: 0,
-    },
-    animate: {
-        scale: 1,
-        y: 0,
-        opacity: 1,
-        transition: {
-            duration: 0.5,
-            ease: [0.48, 0.15, 0.25, 0.96],
-        },
-    },
-    exit: {
-        scale: 0.6,
-        y: 100,
-        opacity: 0,
-        transition: {
-            duration: 0.2,
-            ease: [0.48, 0.15, 0.25, 0.96],
-        },
-    },
-};
-
 const AccountLists = ({ data }: Props): ReactElement => {
     const classes = useStyles();
 
@@ -82,22 +46,24 @@ const AccountLists = ({ data }: Props): ReactElement => {
         return (
             <>
                 <PageHeading heading="Your Account Lists" overlap={100} />
-                <motion.div initial="initial" animate="animate" exit="exit" variants={accountListsVariants}>
+                <motion.div initial="initial" animate="animate" exit="exit" variants={variants}>
                     <Container>
                         <Grid container spacing={3}>
                             {data.accountLists.nodes.map((item) => (
                                 <Grid key={item.id} item xs={12} sm={4}>
-                                    <motion.div variants={accountListVariants}>
-                                        <Card elevation={3}>
-                                            <Link href="/accountLists/[accountListId]" as={`/accountLists/${item.id}`}>
-                                                <CardActionArea>
-                                                    <CardContent className={classes.cardContent}>
-                                                        <Typography>{item.name}</Typography>
-                                                    </CardContent>
-                                                </CardActionArea>
-                                            </Link>
-                                        </Card>
-                                    </motion.div>
+                                    <AnimatedCard elevation={3}>
+                                        <Link
+                                            href="/accountLists/[accountListId]"
+                                            as={`/accountLists/${item.id}`}
+                                            scroll={false}
+                                        >
+                                            <CardActionArea>
+                                                <CardContent className={classes.cardContent}>
+                                                    <Typography>{item.name}</Typography>
+                                                </CardContent>
+                                            </CardActionArea>
+                                        </Link>
+                                    </AnimatedCard>
                                 </Grid>
                             ))}
                         </Grid>

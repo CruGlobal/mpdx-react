@@ -1,7 +1,9 @@
 import React, { ReactElement } from 'react';
-import { makeStyles, Theme, Card, CardContent, Typography, CardActions, Button, Box } from '@material-ui/core';
+import { makeStyles, Theme, CardContent, Typography, CardActions, Button, Box } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
 import { currencyFormat } from '../../../lib/intlFormat';
+import AnimatedCard from '../../AnimatedCard';
+import AnimatedBox from '../../AnimatedBox';
 
 const useStyles = makeStyles((theme: Theme) => ({
     card: {
@@ -28,9 +30,11 @@ const Balance = ({ loading, balance, currencyCode = 'USD' }: Props): ReactElemen
     return (
         <>
             <Box my={{ xs: 1, sm: 2 }}>
-                <Typography variant="h6">Account Balance</Typography>
+                <AnimatedBox>
+                    <Typography variant="h6">Account Balance</Typography>
+                </AnimatedBox>
             </Box>
-            <Card className={classes.card}>
+            <AnimatedCard className={classes.card}>
                 <CardContent className={classes.cardContent}>
                     <Typography variant="h5">
                         {loading ? <Skeleton variant="text" /> : currencyFormat(balance, currencyCode)}
@@ -42,7 +46,7 @@ const Balance = ({ loading, balance, currencyCode = 'USD' }: Props): ReactElemen
                         View Donations
                     </Button>
                 </CardActions>
-            </Card>
+            </AnimatedCard>
         </>
     );
 };

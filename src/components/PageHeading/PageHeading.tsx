@@ -1,5 +1,5 @@
 import React, { ReactElement, ReactNode } from 'react';
-import { makeStyles, Theme, Container, Typography } from '@material-ui/core';
+import { makeStyles, Theme, Container, Typography, Box } from '@material-ui/core';
 import { motion } from 'framer-motion';
 
 interface Props {
@@ -31,9 +31,8 @@ const PageHeading = ({ heading, illustration = 20, overlap = 0 }: Props): ReactE
     return (
         <motion.div
             initial={{ y: -350 }}
-            animate={{ y: -50 }}
-            exit={{ y: -350, transition: { delay: 0.5 } }}
-            transition={{ type: 'spring', stiffness: 50 }}
+            animate={{ y: -50, transition: { type: 'spring', stiffness: 50 } }}
+            exit={{ y: -350, transition: { ease: 'easeInOut', delay: 0.5 } }}
             className={classes.div}
             style={{ marginBottom: -overlap - 50 }}
         >
@@ -52,13 +51,15 @@ const PageHeading = ({ heading, illustration = 20, overlap = 0 }: Props): ReactE
                         heading
                     )}
                 </motion.div>
-                <motion.img
-                    initial={{ x: 60, opacity: 0 }}
-                    animate={{ x: 0, opacity: 1, transition: { delay: 1.2 } }}
-                    exit={{ x: -60, opacity: 0 }}
-                    src={`/drawkit/grape/drawkit-grape-pack-illustration-${illustration}.svg`}
-                    height={160}
-                />
+                <Box display={{ xs: 'none', sm: 'block' }}>
+                    <motion.img
+                        initial={{ x: 60, opacity: 0 }}
+                        animate={{ x: 0, opacity: 1, transition: { delay: 1.2 } }}
+                        exit={{ x: -60, opacity: 0 }}
+                        src={`/drawkit/grape/drawkit-grape-pack-illustration-${illustration}.svg`}
+                        height={160}
+                    />
+                </Box>
             </Container>
         </motion.div>
     );
