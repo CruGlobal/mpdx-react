@@ -19,6 +19,9 @@ const useStyles = makeStyles((theme: Theme) => ({
         },
     },
     box: {
+        display: 'flex',
+        alignItems: 'center',
+        minHeight: 'calc(100vh - 48px - env(safe-area-inset-top))',
         backgroundColor: theme.palette.primary.main,
         color: '#fff',
     },
@@ -27,32 +30,46 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
 }));
 
+const variants = {
+    animate: {
+        transition: {
+            staggerChildren: 0.15,
+        },
+    },
+    exit: {
+        transition: {
+            staggerChildren: 0.1,
+        },
+    },
+};
+
 const Welcome = ({ title, subtitle, illustration = 2, children }: Props): ReactElement => {
     const classes = useStyles();
 
     return (
-        <motion.div initial={{ y: -300 }} animate={{ y: -50 }} transition={{ type: 'spring', stiffness: 100 }}>
-            <Box className={classes.box} py={10}>
+        <motion.div initial="initial" animate="animate" exit="exit" variants={variants}>
+            <Box className={classes.box}>
                 <Container>
                     <Grid container spacing={2} alignItems="center">
                         <Grid item sm={8}>
-                            <motion.div
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1, transition: { delay: 0.5, duration: 0.5, ease: 'easeOut' } }}
-                            >
+                            <motion.div variants={{ initial: { x: -25, opacity: 0 }, animate: { x: 0, opacity: 1 } }}>
                                 <Typography variant="h4" component="h1">
                                     {title}
                                 </Typography>
                             </motion.div>
-                            <Box my={3} className={classes.subtitle}>
-                                <Typography>{subtitle}</Typography>
-                            </Box>
-                            <Box className={classes.container}>{children}</Box>
+                            <motion.div variants={{ initial: { x: -25, opacity: 0 }, animate: { x: 0, opacity: 1 } }}>
+                                <Box my={3} className={classes.subtitle}>
+                                    <Typography>{subtitle}</Typography>
+                                </Box>
+                            </motion.div>
+                            <motion.div variants={{ initial: { x: -25, opacity: 0 }, animate: { x: 0, opacity: 1 } }}>
+                                <Box className={classes.container}>{children}</Box>
+                            </motion.div>
                         </Grid>
                         <Grid item sm={4}>
-                            <img
+                            <motion.img
                                 src={`/drawkit/grape/drawkit-grape-pack-illustration-${illustration}.svg`}
-                                alt="illustration"
+                                variants={{ initial: { x: 25, opacity: 0 }, animate: { x: 0, opacity: 1 } }}
                             />
                         </Grid>
                     </Grid>

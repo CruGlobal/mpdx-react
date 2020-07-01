@@ -23,6 +23,7 @@ export const Default = (): ReactElement => {
                 href="https://help.mpdx.org"
                 target="_blank"
                 rel="noopener noreferrer"
+                style={{ color: '#fff' }}
             >
                 Find help
             </Button>
