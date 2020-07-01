@@ -1,5 +1,5 @@
 import React, { ReactElement } from 'react';
-import { signin, getSession } from 'next-auth/client';
+import { signin, setOptions, getSession } from 'next-auth/client';
 import { Button } from '@material-ui/core';
 import SubjectIcon from '@material-ui/icons/Subject';
 import { GetServerSideProps } from 'next';
@@ -32,6 +32,7 @@ partners in a quick and easy way."
 );
 
 export const getServerSideProps: GetServerSideProps = async (context): Promise<{ props: {} }> => {
+    setOptions({ site: process.env.SITE_URL });
     const session = await getSession(context);
 
     if (context.res && session) {

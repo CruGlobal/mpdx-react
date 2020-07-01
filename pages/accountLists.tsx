@@ -2,7 +2,7 @@ import React, { ReactElement, useEffect } from 'react';
 import Head from 'next/head';
 import { gql, useApolloClient } from '@apollo/client';
 import { GetServerSideProps } from 'next';
-import { getSession } from 'next-auth/client';
+import { setOptions, getSession } from 'next-auth/client';
 import AccountLists from '../src/components/AccountLists';
 import { ssrClient } from '../src/lib/client';
 import { GetAccountListsQuery } from '../types/GetAccountListsQuery';
@@ -50,9 +50,8 @@ const AccountListsPage = ({ data }: Props): ReactElement => {
 };
 
 export const getServerSideProps: GetServerSideProps<Props> = async ({ res, req }): Promise<{ props: Props }> => {
+    setOptions({ site: process.env.SITE_URL });
     const session = await getSession({ req });
-
-    console.log(session);
 
     if (!session?.user?.token) {
         res.writeHead(302, { Location: '/' });

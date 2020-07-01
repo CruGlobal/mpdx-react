@@ -3,7 +3,7 @@ import Head from 'next/head';
 import { useApolloClient, gql } from '@apollo/client';
 import { GetServerSideProps } from 'next';
 import moment from 'moment';
-import { getSession } from 'next-auth/client';
+import { getSession, setOptions } from 'next-auth/client';
 import Dashboard from '../../src/components/Dashboard';
 import { GetDashboardQuery } from '../../types/GetDashboardQuery';
 import { ssrClient } from '../../src/lib/client';
@@ -131,8 +131,8 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({
     req,
     res,
 }): Promise<{ props: Props }> => {
+    setOptions({ site: process.env.SITE_URL });
     const session = await getSession({ req });
-    const client = await ssrClient(session?.user?.token);
 
     if (!session?.user?.token) {
         res.writeHead(302, { Location: '/' });
@@ -140,6 +140,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({
         return null;
     }
 
+    const client = await ssrClient(session?.user?.token);
     const response = await client.query<GetDashboardQuery>({
         query: GET_DASHBOARD_QUERY,
         variables: {
