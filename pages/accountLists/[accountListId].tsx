@@ -129,22 +129,32 @@ const AccountListIdPage = ({ data, accountListId }: Props): ReactElement => {
     );
 };
 
-export const getServerSideProps: GetServerSideProps<Props> = async ({ params, req }): Promise<{ props: Props }> => {
+export const getServerSideProps: GetServerSideProps<Props> = async ({
+    params,
+    req,
+    res,
+}): Promise<{ props: Props }> => {
     const client = await ssrClient(req);
 
-    const response = await client.query<GetDashboardQuery>({
-        query: GET_DASHBOARD_QUERY,
-        variables: {
-            accountListId: params.accountListId,
-            endOfDay: moment().endOf('day').toISOString(),
-            today: moment().endOf('day').toISOString().slice(0, 10),
-            twoWeeksFromNow: moment().endOf('day').add(2, 'weeks').toISOString().slice(0, 10),
-        },
-    });
+    try {
+        const response = await client.query<GetDashboardQuery>({
+            query: GET_DASHBOARD_QUERY,
+            variables: {
+                accountListId: params.accountListId,
+                endOfDay: moment().endOf('day').toISOString(),
+                today: moment().endOf('day').toISOString().slice(0, 10),
+                twoWeeksFromNow: moment().endOf('day').add(2, 'weeks').toISOString().slice(0, 10),
+            },
+        });
 
-    return {
-        props: { data: response.data, accountListId: params.accountListId.toString() },
-    };
+        return {
+            props: { data: response.data, accountListId: params.accountListId.toString() },
+        };
+    } catch (err) {
+        res.writeHead(302, { Location: '/' });
+        res.end();
+        return null;
+    }
 };
 
 export default AccountListIdPage;

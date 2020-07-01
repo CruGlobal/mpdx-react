@@ -46,14 +46,20 @@ const AccountListsPage = ({ data }: Props): ReactElement => {
     );
 };
 
-export const getServerSideProps: GetServerSideProps<Props> = async ({ req }): Promise<{ props: Props }> => {
+export const getServerSideProps: GetServerSideProps<Props> = async ({ req, res }): Promise<{ props: Props }> => {
     const client = await ssrClient(req);
 
-    const response = await client.query<GetAccountListsQuery>({ query: GET_ACCOUNT_LISTS_QUERY });
+    try {
+        const response = await client.query<GetAccountListsQuery>({ query: GET_ACCOUNT_LISTS_QUERY });
 
-    return {
-        props: { data: response.data },
-    };
+        return {
+            props: { data: response.data },
+        };
+    } catch (err) {
+        res.writeHead(302, { Location: '/' });
+        res.end();
+        return null;
+    }
 };
 
 export default AccountListsPage;
