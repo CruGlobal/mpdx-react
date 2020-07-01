@@ -4,18 +4,7 @@ const defaultTheme = createMuiTheme();
 
 const theme = createMuiTheme({
     typography: {
-        fontFamily: [
-            '-apple-system',
-            'BlinkMacSystemFont',
-            '"Segoe UI"',
-            'Roboto',
-            'Helvetica',
-            'Arial',
-            'sans-serif',
-            '"Apple Color Emoji"',
-            '"Segoe UI Emoji"',
-            '"Segoe UI Symbol"',
-        ].join(','),
+        fontFamily: "'Source Sans Pro', sans-serif",
     },
     palette: {
         primary: {

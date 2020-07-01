@@ -54,6 +54,10 @@ const App = ({ Component, pageProps, router }: AppProps): ReactElement => {
                     />
                     <meta name="theme-color" content="#05699b" />
                     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+                    <link
+                        href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;700&display=swap"
+                        rel="stylesheet"
+                    />
                 </Head>
                 <ThemeProvider theme={theme}>
                     <CssBaseline />
