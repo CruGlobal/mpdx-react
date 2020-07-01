@@ -145,8 +145,9 @@ const TopBar = (): ReactElement => {
         setAnchorEl(event.currentTarget);
     };
 
-    const handleClose = (): void => {
+    const handleClose = (): boolean => {
         setAnchorEl(null);
+        return true;
     };
 
     return (
@@ -205,7 +206,11 @@ const TopBar = (): ReactElement => {
                                             </Link>
                                             <ListSubheader>Account Lists</ListSubheader>
                                             {data.accountLists.nodes.map(({ id, name }) => (
-                                                <Link key={id} href="/accountLists/[id]" as={`/accountLists/${id}`}>
+                                                <Link
+                                                    key={id}
+                                                    href="/accountLists/[accountListId]"
+                                                    as={`/accountLists/${id}`}
+                                                >
                                                     <MenuItem
                                                         selected={id == data.currentAccountListId}
                                                         onClick={handleClose}

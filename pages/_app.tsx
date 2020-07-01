@@ -10,6 +10,12 @@ import theme from '../src/theme';
 import client from '../src/lib/client';
 import Chrome from '../src/components/Chrome';
 
+const handleExitComplete = (): void => {
+    if (typeof window !== 'undefined') {
+        window.scrollTo({ top: 0 });
+    }
+};
+
 const App = ({ Component, pageProps, router }: AppProps): ReactElement => {
     const { session } = pageProps;
 
@@ -51,7 +57,7 @@ const App = ({ Component, pageProps, router }: AppProps): ReactElement => {
                 <ThemeProvider theme={theme}>
                     <CssBaseline />
                     <Chrome>
-                        <AnimatePresence exitBeforeEnter>
+                        <AnimatePresence exitBeforeEnter onExitComplete={handleExitComplete}>
                             <Component {...pageProps} key={router.route} />
                         </AnimatePresence>
                     </Chrome>

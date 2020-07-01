@@ -1,10 +1,11 @@
-import { ApolloClient, createHttpLink, InMemoryCache, gql } from '@apollo/client';
+import { IncomingMessage } from 'http';
+import { ApolloClient, createHttpLink, InMemoryCache, gql, NormalizedCacheObject } from '@apollo/client';
 import { persistCache } from 'apollo-cache-persist';
 import fetch from 'isomorphic-fetch';
 
 const cache = new InMemoryCache();
 
-const link = createHttpLink({
+const httpLink = createHttpLink({
     uri: `${process.env.VERCEL_URL}/api/graphql`,
     fetch,
 });
@@ -23,6 +24,28 @@ const typeDefs = gql`
     }
 `;
 
-const client = new ApolloClient({ link, cache, typeDefs });
+const config = {
+    link: httpLink,
+    cache,
+    typeDefs,
+};
+
+const client = new ApolloClient(config);
+
+export const ssrClient = (req: IncomingMessage): ApolloClient<NormalizedCacheObject> => {
+    const httpLink = createHttpLink({
+        uri: `${process.env.VERCEL_URL}/api/graphql`,
+        fetch,
+        headers: {
+            Cookie: req.headers.cookie,
+        },
+    });
+
+    return new ApolloClient({
+        ...config,
+        ssrMode: true,
+        link: httpLink,
+    });
+};
 
 export default client;

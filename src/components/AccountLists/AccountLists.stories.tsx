@@ -1,8 +1,8 @@
 import React, { ReactElement } from 'react';
-import AccountLists from '.';
+import AccountLists from './AccountLists';
 
 export default {
-    title: 'Home/AccountLists',
+    title: 'AccountLists',
 };
 
 export const Default = (): ReactElement => {

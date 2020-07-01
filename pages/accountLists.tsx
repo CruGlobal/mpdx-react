@@ -1,34 +1,59 @@
-import React, { ReactElement } from 'react';
+import React, { ReactElement, useEffect } from 'react';
 import Head from 'next/head';
 import { gql, useApolloClient } from '@apollo/client';
-import Link from 'next/link';
-import { Button } from '@material-ui/core';
-import Home from '../src/components/Home';
+import { GetServerSideProps } from 'next';
+import AccountLists from '../src/components/AccountLists';
+import { ssrClient } from '../src/lib/client';
+import { GetAccountListsQuery } from '../types/GetAccountListsQuery';
 
-const AccountListsPage = (): ReactElement => {
+export const GET_ACCOUNT_LISTS_QUERY = gql`
+    query GetAccountListsQuery {
+        accountLists {
+            nodes {
+                id
+                name
+            }
+        }
+    }
+`;
+
+interface Props {
+    data: GetAccountListsQuery;
+}
+
+const AccountListsPage = ({ data }: Props): ReactElement => {
     const client = useApolloClient();
 
-    client.writeQuery({
-        query: gql`
-            query {
-                currentAccountListId
-                breadcrumb
-            }
-        `,
-        data: { currentAccountListId: null, breadcrumb: 'Dashboard' },
-    });
+    useEffect(() => {
+        client.writeQuery({
+            query: gql`
+                query {
+                    currentAccountListId
+                    breadcrumb
+                }
+            `,
+            data: { currentAccountListId: null, breadcrumb: 'Dashboard' },
+        });
+    }, []);
 
     return (
         <>
             <Head>
-                <title>MPDX | Fundraising software built for God’s people</title>
+                <title>MPDX | Account Lists</title>
             </Head>
-            <Home />
-            <Link href="/test">
-                <Button>Go to test</Button>
-            </Link>
+            <AccountLists data={data} />
         </>
     );
+};
+
+export const getServerSideProps: GetServerSideProps<Props> = async ({ req }): Promise<{ props: Props }> => {
+    const client = await ssrClient(req);
+
+    const response = await client.query<GetAccountListsQuery>({ query: GET_ACCOUNT_LISTS_QUERY });
+
+    return {
+        props: { data: response.data },
+    };
 };
 
 export default AccountListsPage;
