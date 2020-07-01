@@ -6,7 +6,6 @@ const variants = {
     initial: {
         scale: 0.96,
         y: 30,
-        z: 1,
         opacity: 0,
     },
     animate: {
