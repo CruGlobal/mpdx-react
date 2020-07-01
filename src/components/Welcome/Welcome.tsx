@@ -44,8 +44,9 @@ const variants = {
 };
 
 const divVariants = {
-    { initial: { x: -25, opacity: 0 }, animate: { x: 0, opacity: 1 } }
-}
+    initial: { x: -25, opacity: 0 },
+    animate: { x: 0, opacity: 1 },
+};
 
 const Welcome = ({ title, subtitle, illustration = 2, children }: Props): ReactElement => {
     const classes = useStyles();
