@@ -8,13 +8,11 @@
 // ====================================================
 
 export interface GetTopbarQuery_accountLists_nodes {
-  __typename: "AccountList";
   id: string;
   name: string | null;
 }
 
 export interface GetTopbarQuery_accountLists {
-  __typename: "AccountListConnection";
   /**
    * A list of nodes.
    */
@@ -22,7 +20,6 @@ export interface GetTopbarQuery_accountLists {
 }
 
 export interface GetTopbarQuery_user {
-  __typename: "User";
   firstName: string | null;
 }
 

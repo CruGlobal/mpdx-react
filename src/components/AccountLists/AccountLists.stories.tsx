@@ -11,11 +11,10 @@ export const Default = (): ReactElement => {
             data={{
                 accountLists: {
                     nodes: [
-                        { id: 'abc', name: 'My Personal Staff Account', __typename: 'AccountList' },
-                        { id: 'def', name: 'My Ministry Account', __typename: 'AccountList' },
-                        { id: 'ghi', name: "My Friend's Staff Account", __typename: 'AccountList' },
+                        { id: 'abc', name: 'My Personal Staff Account' },
+                        { id: 'def', name: 'My Ministry Account' },
+                        { id: 'ghi', name: "My Friend's Staff Account" },
                     ],
-                    __typename: 'AccountListConnection',
                 },
             }}
         />

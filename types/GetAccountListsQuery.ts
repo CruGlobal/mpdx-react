@@ -8,13 +8,11 @@
 // ====================================================
 
 export interface GetAccountListsQuery_accountLists_nodes {
-  __typename: "AccountList";
   id: string;
   name: string | null;
 }
 
 export interface GetAccountListsQuery_accountLists {
-  __typename: "AccountListConnection";
   /**
    * A list of nodes.
    */

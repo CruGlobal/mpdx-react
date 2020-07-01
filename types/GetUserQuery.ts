@@ -8,7 +8,6 @@
 // ====================================================
 
 export interface GetUserQuery_user {
-  __typename: "User";
   id: string;
   firstName: string | null;
   lastName: string | null;
