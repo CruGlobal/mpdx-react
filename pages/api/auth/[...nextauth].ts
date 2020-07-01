@@ -2,7 +2,7 @@ import NextAuth from 'next-auth';
 import { Profile } from './profile';
 
 const options = {
-    site: process.env.VERCEL_URL,
+    site: process.env.SITE_URL,
     providers: [
         {
             id: 'thekey',
@@ -13,7 +13,7 @@ const options = {
             params: { grant_type: 'authorization_code' },
             accessTokenUrl: 'https://thekey.me/cas/api/oauth/token',
             authorizationUrl: 'https://thekey.me/cas/login?response_type=code',
-            profileUrl: `${process.env.VERCEL_URL}/api/auth/profile`,
+            profileUrl: `${process.env.SITE_URL}/api/auth/profile`,
             profile: (profile: Profile): Profile => profile,
             clientId: process.env.CLIENT_ID,
             clientSecret: process.env.CLIENT_SECRET,

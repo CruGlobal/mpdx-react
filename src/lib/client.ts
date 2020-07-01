@@ -6,7 +6,7 @@ import fetch from 'isomorphic-fetch';
 const cache = new InMemoryCache();
 
 const httpLink = createHttpLink({
-    uri: `${process.env.VERCEL_URL}/api/graphql`,
+    uri: `${process.env.SITE_URL}/api/graphql`,
     fetch,
 });
 
@@ -34,7 +34,7 @@ const client = new ApolloClient(config);
 
 export const ssrClient = (req: IncomingMessage): ApolloClient<NormalizedCacheObject> => {
     const httpLink = createHttpLink({
-        uri: `${process.env.VERCEL_URL}/api/graphql`,
+        uri: `${process.env.SITE_URL}/api/graphql`,
         fetch,
         headers: {
             Cookie: req.headers.cookie,

@@ -26,7 +26,7 @@ partners in a quick and easy way."
             <Button
                 size="large"
                 variant="contained"
-                onClick={(): void => signin('thekey', { callbackUrl: `${process.env.VERCEL_URL}/accountLists` })}
+                onClick={(): void => signin('thekey', { callbackUrl: `${process.env.SITE_URL}/accountLists` })}
             >
                 Sign In
             </Button>

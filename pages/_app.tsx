@@ -29,7 +29,7 @@ const App = ({ Component, pageProps, router }: AppProps): ReactElement => {
     });
 
     return (
-        <Provider options={{ site: process.env.VERCEL_URL }} session={session}>
+        <Provider options={{ site: process.env.SITE_URL }} session={session}>
             <ApolloProvider client={client}>
                 <Head>
                     <title>MPDX | Fundraising software built for God’s people</title>
