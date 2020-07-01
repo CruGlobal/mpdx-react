@@ -200,7 +200,7 @@ const TopBar = (): ReactElement => {
                                             onClose={handleClose}
                                             classes={{ list: classes.menuList }}
                                         >
-                                            <Link href="/">
+                                            <Link href="/accountLists">
                                                 <MenuItem onClick={handleClose}>See All Account Lists</MenuItem>
                                             </Link>
                                             <ListSubheader>Account Lists</ListSubheader>

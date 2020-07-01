@@ -5,11 +5,14 @@ import { ThemeProvider } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { ApolloProvider } from '@apollo/client';
 import { AnimatePresence } from 'framer-motion';
+import { Provider } from 'next-auth/client';
 import theme from '../src/theme';
 import client from '../src/lib/client';
 import Chrome from '../src/components/Chrome';
 
-const App = ({ Component, pageProps }: AppProps): ReactElement => {
+const App = ({ Component, pageProps, router }: AppProps): ReactElement => {
+    const { session } = pageProps;
+
     useEffect(() => {
         // Remove the server-side injected CSS.
         const jssStyles = document.querySelector('#jss-server-side');
@@ -19,7 +22,7 @@ const App = ({ Component, pageProps }: AppProps): ReactElement => {
     });
 
     return (
-        <AnimatePresence exitBeforeEnter>
+        <Provider options={{ site: process.env.VERCEL_URL }} session={session}>
             <ApolloProvider client={client}>
                 <Head>
                     <title>MPDX | Fundraising software built for God’s people</title>
@@ -48,11 +51,13 @@ const App = ({ Component, pageProps }: AppProps): ReactElement => {
                 <ThemeProvider theme={theme}>
                     <CssBaseline />
                     <Chrome>
-                        <Component {...pageProps} />
+                        <AnimatePresence exitBeforeEnter>
+                            <Component {...pageProps} key={router.route} />
+                        </AnimatePresence>
                     </Chrome>
                 </ThemeProvider>
             </ApolloProvider>
-        </AnimatePresence>
+        </Provider>
     );
 };
 

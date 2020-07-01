@@ -1,15 +1,11 @@
 import React, { ReactElement } from 'react';
-import { Box, makeStyles, Theme, Container, Fab, CircularProgress } from '@material-ui/core';
+import { Box, makeStyles, Theme, Fab, CircularProgress } from '@material-ui/core';
 
 const useStyles = makeStyles((theme: Theme) => ({
     box: {
-        backgroundColor: theme.palette.primary.main,
-        height: '300px',
-    },
-    container: {
-        textAlign: 'center',
-        marginTop: '-30px',
-        color: '#fff',
+        position: 'fixed',
+        top: '50%',
+        left: '50%',
     },
     fab: {
         backgroundColor: '#fff',
@@ -23,13 +19,11 @@ const useStyles = makeStyles((theme: Theme) => ({
 const Loading = (): ReactElement => {
     const classes = useStyles();
     return (
-        <>
-            <Container className={classes.container}>
-                <Fab color="default" disableRipple className={classes.fab}>
-                    <CircularProgress size={30} />
-                </Fab>
-            </Container>
-        </>
+        <Box className={classes.box}>
+            <Fab color="default" disableRipple className={classes.fab}>
+                <CircularProgress size={30} />
+            </Fab>
+        </Box>
     );
 };
 

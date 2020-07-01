@@ -2,12 +2,10 @@ import React, { ReactElement, useEffect } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { gql, useApolloClient } from '@apollo/client';
-import useUser from '../../src/lib/useUser';
 import Dashboard from '../../src/components/Dashboard';
 import Loading from '../../src/components/Loading';
 
 const AccountListIdPage = (): ReactElement => {
-    useUser({ redirectTo: '/login' });
     const router = useRouter();
     const client = useApolloClient();
 

@@ -5,16 +5,11 @@ module.exports = withPWA({
         dest: 'public',
     },
     env: {
+        JWT_SECRET: process.env.JWT_SECRET || 'aed8e0786376a2abe15f5c8f8e2ee74565d0915897b33296594bb1b549098ba7',
         API_URL: process.env.API_URL || 'https://api.stage.mpdx.org/graphql',
-        AUTH_URL: process.env.AUTH_URL || 'https://thekey.me/cas/',
-        AUTH_LOGIN_PATH:
-            process.env.AUTH_LOGIN_PATH ||
-            'login?client_id=4027334344069527005&scope=fullticket&response_type=token&redirect_uri=http://localhost:3000/auth',
-        AUTH_SIGNUP_PATH:
-            process.env.AUTH_SIGNUP_PATH ||
-            'login?action=signup&client_id=4027334344069527005&scope=fullticket&response_type=token&redirect_uri=http://localhost:3000/auth',
-        AUTH_LOGOUT_PATH: process.env.AUTH_LOGOUT_PATH || 'logout?service=http://localhost:3000/login',
-        OAUTH_URL: process.env.OAUTH_URL || 'https://auth.stage.mpdx.org/auth/user/',
+        VERCEL_URL: process.env.VERCEL_URL || 'http://localhost:3000',
+        CLIENT_ID: process.env.CLIENT_ID || '4027334344069527005',
+        CLIENT_SECRET: process.env.CLIENT_SECRET || 'V3WBTfLMgXBuL6XNTPm13CIK7Cwvtb0VnQpeQH-Oojx6kuzaD7durA',
         BEACON_TOKEN: process.env.BEACON_TOKEN || '01b4f5f0-7fff-492a-b5ec-d536f3657d10',
     },
 });
