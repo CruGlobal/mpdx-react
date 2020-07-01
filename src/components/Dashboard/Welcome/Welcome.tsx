@@ -1,5 +1,6 @@
 import React, { ReactElement } from 'react';
 import { Box, Container, Typography, makeStyles, Theme, Grid } from '@material-ui/core';
+import PageHeading from '../../PageHeading';
 
 const useStyles = makeStyles((theme: Theme) => ({
     box: {
@@ -39,21 +40,18 @@ const Welcome = ({ firstName }: Props): ReactElement => {
     }
 
     return (
-        <Box className={classes.box} pb={{ xs: 5, sm: 0 }} pt={{ xs: 6, sm: 3 }}>
-            <Container>
-                <Grid container spacing={4} alignItems="flex-end" justify="center">
-                    <Grid item className={classes.image}>
-                        <img src="/drawkit/grape/drawkit-grape-pack-illustration-9.svg" alt="illustration" />
-                    </Grid>
-                    <Grid item>
-                        <Typography variant="h4" component="h1">
-                            {greeting}
-                        </Typography>
-                        <Typography>Welcome back to MPDX. Here&apos;s what&apos;s been happening.</Typography>
-                    </Grid>
-                </Grid>
-            </Container>
-        </Box>
+        <PageHeading
+            heading={
+                <>
+                    <Typography variant="h4" component="h1">
+                        {greeting}
+                    </Typography>
+                    <Typography>Welcome back to MPDX. Here&apos;s what&apos;s been happening.</Typography>
+                </>
+            }
+            illustration={9}
+            overlap={20}
+        />
     );
 };
 

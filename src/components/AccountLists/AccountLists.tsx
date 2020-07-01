@@ -15,26 +15,13 @@ import { motion } from 'framer-motion';
 import SubjectIcon from '@material-ui/icons/Subject';
 import Welcome from '../Welcome';
 import { GetAccountListsQuery } from '../../../types/GetAccountListsQuery';
+import PageHeading from '../PageHeading';
 
 interface Props {
     data: GetAccountListsQuery;
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
-    titleDiv: {
-        backgroundColor: theme.palette.primary.main,
-        height: '350px',
-        marginBottom: '-150px',
-    },
-    titleContainer: {
-        display: 'flex',
-        alignItems: 'flex-end',
-        height: '230px',
-    },
-    title: {
-        flex: 1,
-        color: '#FFF',
-    },
     cardContent: {
         height: '200px',
     },
@@ -94,33 +81,7 @@ const AccountLists = ({ data }: Props): ReactElement => {
     if (data.accountLists.nodes.length > 0) {
         return (
             <>
-                <motion.div
-                    initial={{ y: -350 }}
-                    animate={{ y: -50 }}
-                    exit={{ y: -350, transition: { delay: 0.5 } }}
-                    transition={{ type: 'spring', stiffness: 50 }}
-                    className={classes.titleDiv}
-                >
-                    <Container className={classes.titleContainer}>
-                        <motion.div
-                            animate={{ opacity: 1, transition: { delay: 1 } }}
-                            initial={{ opacity: 0 }}
-                            exit={{ opacity: 0 }}
-                            className={classes.title}
-                        >
-                            <Typography variant="h4" component="h1">
-                                Your Account Lists
-                            </Typography>
-                        </motion.div>
-                        <motion.img
-                            initial={{ x: 60, opacity: 0 }}
-                            animate={{ x: 0, opacity: 1, transition: { delay: 1.2 } }}
-                            exit={{ x: -60, opacity: 0 }}
-                            src="/drawkit/grape/drawkit-grape-pack-illustration-20.svg"
-                            height={160}
-                        />
-                    </Container>
-                </motion.div>
+                <PageHeading heading="Your Account Lists" overlap={100} />
                 <motion.div initial="initial" animate="animate" exit="exit" variants={accountListsVariants}>
                     <Container>
                         <Grid container spacing={3}>
