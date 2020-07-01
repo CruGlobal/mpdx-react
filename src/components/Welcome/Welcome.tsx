@@ -43,6 +43,10 @@ const variants = {
     },
 };
 
+const divVariants = {
+    { initial: { x: -25, opacity: 0 }, animate: { x: 0, opacity: 1 } }
+}
+
 const Welcome = ({ title, subtitle, illustration = 2, children }: Props): ReactElement => {
     const classes = useStyles();
 
@@ -52,17 +56,17 @@ const Welcome = ({ title, subtitle, illustration = 2, children }: Props): ReactE
                 <Container>
                     <Grid container spacing={2} alignItems="center">
                         <Grid item sm={8}>
-                            <motion.div variants={{ initial: { x: -25, opacity: 0 }, animate: { x: 0, opacity: 1 } }}>
+                            <motion.div variants={divVariants}>
                                 <Typography variant="h4" component="h1">
                                     {title}
                                 </Typography>
                             </motion.div>
-                            <motion.div variants={{ initial: { x: -25, opacity: 0 }, animate: { x: 0, opacity: 1 } }}>
+                            <motion.div variants={divVariants}>
                                 <Box my={3} className={classes.subtitle}>
                                     <Typography>{subtitle}</Typography>
                                 </Box>
                             </motion.div>
-                            <motion.div variants={{ initial: { x: -25, opacity: 0 }, animate: { x: 0, opacity: 1 } }}>
+                            <motion.div variants={divVariants}>
                                 <Box className={classes.container}>{children}</Box>
                             </motion.div>
                         </Grid>
