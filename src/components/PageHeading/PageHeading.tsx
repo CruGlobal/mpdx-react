@@ -1,9 +1,10 @@
-import React, { ReactElement, ReactNode } from 'react';
+import React, { ReactElement } from 'react';
 import { makeStyles, Theme, Container, Typography, Box } from '@material-ui/core';
 import { motion } from 'framer-motion';
 
 interface Props {
-    heading: string | ReactNode;
+    heading: string;
+    subheading?: string;
     illustration?: number;
     overlap?: number;
 }
@@ -11,7 +12,7 @@ interface Props {
 const useStyles = makeStyles((theme: Theme) => ({
     div: {
         backgroundColor: theme.palette.primary.main,
-        height: '350px',
+        height: '300px',
         display: 'flex',
         alignItems: 'flex-end',
     },
@@ -25,39 +26,45 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
 }));
 
-const PageHeading = ({ heading, illustration = 20, overlap = 0 }: Props): ReactElement => {
+const PageHeading = ({ heading, subheading, illustration = 20, overlap = 0 }: Props): ReactElement => {
     const classes = useStyles();
 
     return (
         <motion.div
-            initial={{ y: -350 }}
+            initial={{ y: -300 }}
             animate={{ y: -50, transition: { type: 'spring', stiffness: 50 } }}
-            exit={{ y: -350, transition: { ease: 'easeInOut', delay: 0.5 } }}
+            exit={{ y: -300, transition: { ease: 'easeInOut', delay: 0.75 } }}
             className={classes.div}
             style={{ marginBottom: -overlap - 50 }}
         >
             <Container className={classes.container} style={{ paddingBottom: overlap }}>
-                <motion.div
-                    animate={{ opacity: 1, transition: { delay: 1 } }}
-                    initial={{ opacity: 0 }}
-                    exit={{ opacity: 0 }}
-                    className={classes.pageHeading}
-                >
-                    {typeof heading == 'string' ? (
+                <Box className={classes.pageHeading}>
+                    <motion.div
+                        animate={{ x: 0, opacity: 1, transition: { delay: 1 } }}
+                        initial={{ x: -20, opacity: 0 }}
+                        exit={{ x: -20, opacity: 0, transition: { delay: 0.2 } }}
+                    >
                         <Typography variant="h4" component="h1">
                             {heading}
                         </Typography>
-                    ) : (
-                        heading
+                    </motion.div>
+                    {subheading && (
+                        <motion.div
+                            animate={{ x: 0, opacity: 1, transition: { delay: 1.2 } }}
+                            initial={{ x: -20, opacity: 0 }}
+                            exit={{ x: -20, opacity: 0 }}
+                        >
+                            <Typography>{subheading}</Typography>
+                        </motion.div>
                     )}
-                </motion.div>
+                </Box>
                 <Box display={{ xs: 'none', sm: 'block' }}>
                     <motion.img
-                        initial={{ x: 60, opacity: 0 }}
+                        initial={{ x: 20, opacity: 0 }}
                         animate={{ x: 0, opacity: 1, transition: { delay: 1.2 } }}
-                        exit={{ x: -60, opacity: 0 }}
+                        exit={{ x: 20, opacity: 0 }}
                         src={`/drawkit/grape/drawkit-grape-pack-illustration-${illustration}.svg`}
-                        height={160}
+                        height={240 - overlap}
                     />
                 </Box>
             </Container>

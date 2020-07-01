@@ -1,5 +1,4 @@
 import React, { ReactElement } from 'react';
-import { Typography } from '@material-ui/core';
 import PageHeading from '../../PageHeading';
 
 interface Props {
@@ -22,14 +21,8 @@ const Welcome = ({ firstName }: Props): ReactElement => {
 
     return (
         <PageHeading
-            heading={
-                <>
-                    <Typography variant="h4" component="h1">
-                        {greeting}
-                    </Typography>
-                    <Typography>Welcome back to MPDX. Here&apos;s what&apos;s been happening.</Typography>
-                </>
-            }
+            heading={greeting}
+            subheading="Welcome back to MPDX. Here's what's been happening."
             illustration={9}
             overlap={20}
         />
