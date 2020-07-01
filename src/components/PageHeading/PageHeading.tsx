@@ -12,9 +12,10 @@ interface Props {
 const useStyles = makeStyles((theme: Theme) => ({
     div: {
         backgroundColor: theme.palette.primary.main,
-        height: '300px',
+        height: '250px',
         display: 'flex',
         alignItems: 'flex-end',
+        marginBottom: theme.spacing(2),
     },
     container: {
         display: 'flex',
@@ -31,11 +32,11 @@ const PageHeading = ({ heading, subheading, illustration = 20, overlap = 0 }: Pr
 
     return (
         <motion.div
-            initial={{ y: -300 }}
-            animate={{ y: -50, transition: { type: 'spring', stiffness: 50 } }}
-            exit={{ y: -300, transition: { ease: 'easeInOut', delay: 0.75 } }}
+            initial={{ y: -250 }}
+            animate={{ y: 0, transition: { ease: 'easeInOut' } }}
+            exit={{ y: -250, transition: { ease: 'easeInOut', delay: 0.75 } }}
             className={classes.div}
-            style={{ marginBottom: -overlap - 50 }}
+            style={{ marginBottom: -overlap }}
         >
             <Container className={classes.container} style={{ paddingBottom: overlap }}>
                 <Box className={classes.pageHeading}>
@@ -64,7 +65,7 @@ const PageHeading = ({ heading, subheading, illustration = 20, overlap = 0 }: Pr
                         animate={{ x: 0, opacity: 1, transition: { delay: 1.2 } }}
                         exit={{ x: 20, opacity: 0 }}
                         src={`/drawkit/grape/drawkit-grape-pack-illustration-${illustration}.svg`}
-                        height={240 - overlap}
+                        height={230 - overlap}
                     />
                 </Box>
             </Container>
