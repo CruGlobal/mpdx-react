@@ -52,6 +52,8 @@ const AccountListsPage = ({ data }: Props): ReactElement => {
 export const getServerSideProps: GetServerSideProps<Props> = async ({ res, req }): Promise<{ props: Props }> => {
     const session = await getSession({ req });
 
+    console.log(session);
+
     if (!session?.user?.token) {
         res.writeHead(302, { Location: '/' });
         res.end();
