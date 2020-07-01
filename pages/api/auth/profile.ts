@@ -24,7 +24,7 @@ const profile = async (req: NextApiRequest, res: NextApiResponse<Profile>): Prom
 
     const response = await client.mutate({
         mutation: gql`
-            mutation UserKeySignIn($ticket: String) {
+            mutation UserKeySignIn($ticket: String!) {
                 userKeySignIn(input: { casTicket: $ticket }) {
                     token
                     user {

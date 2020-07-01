@@ -22,5 +22,5 @@ export interface UserKeySignIn {
 }
 
 export interface UserKeySignInVariables {
-  ticket?: string | null;
+  ticket: string;
 }

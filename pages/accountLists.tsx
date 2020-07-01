@@ -18,6 +18,13 @@ export const GET_ACCOUNT_LISTS_QUERY = gql`
     }
 `;
 
+export const LOCAL_STATE_QUERY = gql`
+    query LocalStateQuery {
+        currentAccountListId
+        breadcrumb
+    }
+`;
+
 interface Props {
     data: GetAccountListsQuery;
 }
@@ -27,12 +34,7 @@ const AccountListsPage = ({ data }: Props): ReactElement => {
 
     useEffect(() => {
         client.writeQuery({
-            query: gql`
-                query {
-                    currentAccountListId
-                    breadcrumb
-                }
-            `,
+            query: LOCAL_STATE_QUERY,
             data: { currentAccountListId: null, breadcrumb: 'Dashboard' },
         });
     }, []);

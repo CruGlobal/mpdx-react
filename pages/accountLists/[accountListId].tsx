@@ -7,6 +7,7 @@ import { getSession } from 'next-auth/client';
 import Dashboard from '../../src/components/Dashboard';
 import { GetDashboardQuery } from '../../types/GetDashboardQuery';
 import { ssrClient } from '../../src/lib/client';
+import { LOCAL_STATE_QUERY } from '../accountLists';
 
 export const GET_DASHBOARD_QUERY = gql`
     query GetDashboardQuery(
@@ -110,12 +111,7 @@ const AccountListIdPage = ({ data, accountListId }: Props): ReactElement => {
 
     useEffect(() => {
         client.writeQuery({
-            query: gql`
-                query {
-                    currentAccountListId
-                    breadcrumb
-                }
-            `,
+            query: LOCAL_STATE_QUERY,
             data: { currentAccountListId: accountListId, breadcrumb: 'Dashboard' },
         });
     }, []);
