@@ -26,7 +26,7 @@ const App = ({ Component, pageProps, router }: AppProps): ReactElement => {
         if (jssStyles) {
             jssStyles.parentElement.removeChild(jssStyles);
         }
-    });
+    }, []);
 
     return (
         <Provider options={{ site: process.env.SITE_URL }} session={session}>
