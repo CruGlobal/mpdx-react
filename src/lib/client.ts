@@ -1,4 +1,3 @@
-import { IncomingMessage } from 'http';
 import { ApolloClient, createHttpLink, InMemoryCache, gql, NormalizedCacheObject } from '@apollo/client';
 import { persistCache } from 'apollo-cache-persist';
 import fetch from 'isomorphic-fetch';
@@ -24,13 +23,11 @@ const typeDefs = gql`
     }
 `;
 
-const config = {
+const client = new ApolloClient({
     link: httpLink,
     cache,
     typeDefs,
-};
-
-const client = new ApolloClient(config);
+});
 
 export const ssrClient = (token?: string): ApolloClient<NormalizedCacheObject> => {
     const httpLink = createHttpLink({
@@ -43,9 +40,10 @@ export const ssrClient = (token?: string): ApolloClient<NormalizedCacheObject> =
     });
 
     return new ApolloClient({
-        ...config,
-        ssrMode: true,
         link: httpLink,
+        ssrMode: true,
+        typeDefs,
+        cache: new InMemoryCache(),
     });
 };
 
