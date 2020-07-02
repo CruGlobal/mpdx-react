@@ -37,7 +37,7 @@ const AccountListsPage = ({ data }: Props): ReactElement => {
             query: LOCAL_STATE_QUERY,
             data: { currentAccountListId: null, breadcrumb: 'Dashboard' },
         });
-    }, []);
+    });
 
     return (
         <>

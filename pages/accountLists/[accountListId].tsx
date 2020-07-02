@@ -114,7 +114,7 @@ const AccountListIdPage = ({ data, accountListId }: Props): ReactElement => {
             query: LOCAL_STATE_QUERY,
             data: { currentAccountListId: accountListId, breadcrumb: 'Dashboard' },
         });
-    }, []);
+    });
 
     return (
         <>

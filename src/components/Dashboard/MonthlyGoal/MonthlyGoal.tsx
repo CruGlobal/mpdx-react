@@ -22,7 +22,7 @@ const useStyles = makeStyles((theme: Theme) => ({
         minWidth: '46px',
         maxWidth: '99.6%',
         borderRadius: '46px',
-        transition: 'width 0.5s ease-in-out',
+        transition: 'width 1s ease-out',
         width: '0%',
     },
     progressBarSkeleton: {
@@ -64,6 +64,7 @@ const MonthlyGoal = ({ loading, goal, received, pledged, currencyCode = 'USD' }:
     const belowGoal = goal - pledged;
     const belowGoalPercentage = belowGoal / goal;
 
+    console.log(percentageFormat(pledgedPercentage));
     return (
         <>
             <Box my={{ xs: 1, sm: 2 }}>
@@ -82,12 +83,10 @@ const MonthlyGoal = ({ loading, goal, received, pledged, currencyCode = 'USD' }:
                                     style={{ width: percentageFormat(pledgedPercentage) }}
                                     className={[classes.progressBar, classes.pledged].join(' ')}
                                 />
-                                {receivedPercentage > 0 && (
-                                    <div
-                                        style={{ width: percentageFormat(receivedPercentage) }}
-                                        className={[classes.progressBar, classes.received].join(' ')}
-                                    />
-                                )}
+                                <div
+                                    style={{ width: percentageFormat(receivedPercentage) }}
+                                    className={[classes.progressBar, classes.received].join(' ')}
+                                />
                             </>
                         )}
                     </div>

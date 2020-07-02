@@ -6,7 +6,7 @@ export const numberFormat = (value: number): string =>
 export const percentageFormat = (value: number): string =>
     new Intl.NumberFormat('en-US', {
         style: 'percent',
-    }).format(value);
+    }).format(isNaN(value) ? 0 : value);
 
 export const currencyFormat = (value: number, currency: string, minimumFractionDigits = 0): string =>
     new Intl.NumberFormat('en-US', {
