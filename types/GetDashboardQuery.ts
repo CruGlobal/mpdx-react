@@ -14,6 +14,7 @@ export interface GetDashboardQuery_user {
 }
 
 export interface GetDashboardQuery_accountList {
+  name: string | null;
   monthlyGoal: number | null;
   receivedPledges: number | null;
   committed: number | null;

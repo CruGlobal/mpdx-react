@@ -20,6 +20,7 @@ export const GET_DASHBOARD_QUERY = gql`
             firstName
         }
         accountList(id: $accountListId) {
+            name
             monthlyGoal
             receivedPledges
             committed
@@ -119,7 +120,7 @@ const AccountListIdPage = ({ data, accountListId }: Props): ReactElement => {
     return (
         <>
             <Head>
-                <title>MPDX | Fundraising software built for God’s people</title>
+                <title>MPDX | {data.accountList.name}</title>
             </Head>
             <Dashboard data={data} />
         </>
