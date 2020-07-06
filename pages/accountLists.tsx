@@ -59,6 +59,12 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({ res, req }
     const client = await ssrClient(session?.user?.token);
     const response = await client.query<GetAccountListsQuery>({ query: GET_ACCOUNT_LISTS_QUERY });
 
+    if (response.data.accountLists.nodes && response.data.accountLists.nodes.length == 1) {
+        res.writeHead(302, { Location: `/accountLists/${response.data.accountLists.nodes[0].id}` });
+        res.end();
+        return null;
+    }
+
     return {
         props: { data: response.data },
     };
