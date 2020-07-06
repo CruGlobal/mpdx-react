@@ -1,0 +1,107 @@
+import React, { ReactElement } from 'react';
+import {
+    Divider,
+    Drawer,
+    Hidden,
+    List,
+    ListItem,
+    ListItemText,
+    makeStyles,
+    Theme,
+    createStyles,
+    Box,
+    ListItemIcon,
+} from '@material-ui/core';
+import HomeIcon from '@material-ui/icons/Home';
+
+export const SIDE_BAR_WIDTH = 256;
+
+const useStyles = makeStyles((theme: Theme) =>
+    createStyles({
+        nav: {
+            [theme.breakpoints.up('sm')]: {
+                width: SIDE_BAR_WIDTH,
+                flexShrink: 0,
+            },
+        },
+        toolbar: {
+            ...theme.mixins.toolbar,
+            display: 'flex',
+            alignItems: 'center',
+        },
+        drawerPaper: {
+            backgroundColor: 'rgb(5, 30, 52)',
+            backgroundImage: 'url(/sideBarBg.png)',
+            backgroundPosition: 'left 0 bottom 0',
+            backgroundRepeat: 'no-repeat',
+            backgroundSize: '256px 556px',
+            width: SIDE_BAR_WIDTH,
+        },
+        divider: {
+            backgroundColor: '#2A4865',
+        },
+        list: {
+            padding: 0,
+        },
+        listItem: {
+            borderBottom: '1px solid #1B3A57',
+        },
+        listItemIcon: {
+            color: '#fff',
+        },
+        listItemText: {
+            color: '#fff',
+        },
+    }),
+);
+
+interface Props {
+    mobileOpen: boolean;
+    handleDrawerToggle: () => void;
+}
+
+const SideBar = ({ mobileOpen, handleDrawerToggle }: Props): ReactElement => {
+    const classes = useStyles();
+
+    const drawer = (
+        <div>
+            <Box px={2} className={classes.toolbar}>
+                <img src="/logo.svg" />
+            </Box>
+            <Divider className={classes.divider} />
+            <List className={classes.list}>
+                <ListItem className={classes.listItem} button>
+                    <ListItemIcon className={classes.listItemIcon}>
+                        <HomeIcon />
+                    </ListItemIcon>
+                    <ListItemText className={classes.listItemText} primary="Overview" />
+                </ListItem>
+            </List>
+        </div>
+    );
+
+    return (
+        <>
+            <nav className={classes.nav}>
+                <Hidden mdUp implementation="css">
+                    <Drawer
+                        variant="temporary"
+                        open={mobileOpen}
+                        onClose={handleDrawerToggle}
+                        classes={{ paper: classes.drawerPaper }}
+                        ModalProps={{ keepMounted: true }}
+                    >
+                        {drawer}
+                    </Drawer>
+                </Hidden>
+                <Hidden smDown implementation="css">
+                    <Drawer classes={{ paper: classes.drawerPaper }} variant="permanent" open>
+                        {drawer}
+                    </Drawer>
+                </Hidden>
+            </nav>
+        </>
+    );
+};
+
+export default SideBar;

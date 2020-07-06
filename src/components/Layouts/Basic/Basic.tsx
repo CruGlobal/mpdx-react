@@ -1,5 +1,5 @@
 import React, { ReactElement, ReactNode } from 'react';
-import TopBar from '../../TopBar';
+import TopBar from './TopBar';
 
 interface Props {
     children: ReactNode;

@@ -3,11 +3,11 @@ import { Box, Container } from '@material-ui/core';
 import { MockedProvider } from '@apollo/client/testing';
 import { InMemoryCache } from '@apollo/client';
 import GET_LOCAL_STATE_QUERY from '../../../../queries/getLocalStateQuery.graphql';
-import { GET_NAV_QUERY } from './Nav';
-import Nav from '.';
+import { GET_TOP_BAR_QUERY } from './TopBar';
+import TopBar from '.';
 
 export default {
-    title: 'Layouts/Primary/Nav',
+    title: 'Layouts/Primary/TopBar',
 };
 
 const Content = (): ReactElement => (
@@ -32,7 +32,7 @@ export const Default = (): ReactElement => {
     const mocks = [
         {
             request: {
-                query: GET_NAV_QUERY,
+                query: GET_TOP_BAR_QUERY,
             },
             result: {
                 data: {
@@ -57,7 +57,7 @@ export const Default = (): ReactElement => {
     return (
         <>
             <MockedProvider mocks={mocks} cache={cache} addTypename={false}>
-                <Nav />
+                <TopBar handleDrawerToggle={(): void => {}} />
             </MockedProvider>
             <Content />
         </>
@@ -68,7 +68,7 @@ export const MultipleAccountLists = (): ReactElement => {
     const mocks = [
         {
             request: {
-                query: GET_NAV_QUERY,
+                query: GET_TOP_BAR_QUERY,
             },
             result: {
                 data: {
@@ -96,7 +96,7 @@ export const MultipleAccountLists = (): ReactElement => {
     return (
         <>
             <MockedProvider mocks={mocks} cache={cache} addTypename={false}>
-                <Nav />
+                <TopBar handleDrawerToggle={(): void => {}} />
             </MockedProvider>
             <Content />
         </>

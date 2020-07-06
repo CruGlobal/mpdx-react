@@ -1,14 +1,14 @@
 import React, { ReactElement } from 'react';
 import { Box, Container } from '@material-ui/core';
-import TopBar from '.';
+import { SIDE_BAR_WIDTH } from './SideBar';
+import SideBar from '.';
 
 export default {
-    title: 'TopBar',
+    title: 'Layouts/Primary/SideBar',
 };
 
 const Content = (): ReactElement => (
-    <>
-        <Box style={{ backgroundColor: '#05699b' }} py={10}></Box>
+    <Box style={{ marginLeft: SIDE_BAR_WIDTH }}>
         <Container>
             <Box my={2}>
                 {[...new Array(50)]
@@ -21,13 +21,13 @@ Praesent commodo cursus magna, vel scelerisque nisl consectetur et.`,
                     .join('\n')}
             </Box>
         </Container>
-    </>
+    </Box>
 );
 
 export const Default = (): ReactElement => {
     return (
         <>
-            <TopBar />
+            <SideBar mobileOpen={false} handleDrawerToggle={(): void => {}} />
             <Content />
         </>
     );

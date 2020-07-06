@@ -41,7 +41,8 @@ module.exports = {
     {
       "files": ["*.stories.tsx"],
       "rules": {
-        "import/no-anonymous-default-export": "off"
+        "import/no-anonymous-default-export": "off",
+        "@typescript-eslint/no-empty-function": "off"
       }
     }
   ]

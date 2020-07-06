@@ -1,3 +1,3 @@
-import PrimaryLayout from './Primary';
+import Primary from './Primary';
 
-export default PrimaryLayout;
+export default Primary;
