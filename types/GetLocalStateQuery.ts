@@ -4,10 +4,10 @@
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: LocalStateQuery
+// GraphQL query operation: GetLocalStateQuery
 // ====================================================
 
-export interface LocalStateQuery {
+export interface GetLocalStateQuery {
   currentAccountListId: string | null;
   breadcrumb: string | null;
 }

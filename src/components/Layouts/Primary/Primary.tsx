@@ -1,6 +1,6 @@
 import React, { ReactElement, ReactNode } from 'react';
 import { Box, makeStyles, Theme } from '@material-ui/core';
-import TopBar from '../TopBar';
+import TopBar from './Nav';
 
 const useStyles = makeStyles((theme: Theme) => ({
     box: {
@@ -16,7 +16,7 @@ interface Props {
     children: ReactNode;
 }
 
-const Chrome = ({ children }: Props): ReactElement => {
+const PrimaryLayout = ({ children }: Props): ReactElement => {
     const classes = useStyles();
     return (
         <>
@@ -28,4 +28,4 @@ const Chrome = ({ children }: Props): ReactElement => {
     );
 };
 
-export default Chrome;
+export default PrimaryLayout;

@@ -4,34 +4,32 @@
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GetTopbarQuery
+// GraphQL query operation: GetNavQuery
 // ====================================================
 
-export interface GetTopbarQuery_accountLists_nodes {
+export interface GetNavQuery_accountLists_nodes {
   id: string;
   name: string | null;
 }
 
-export interface GetTopbarQuery_accountLists {
+export interface GetNavQuery_accountLists {
   /**
    * A list of nodes.
    */
-  nodes: (GetTopbarQuery_accountLists_nodes | null)[] | null;
+  nodes: (GetNavQuery_accountLists_nodes | null)[] | null;
 }
 
-export interface GetTopbarQuery_user {
+export interface GetNavQuery_user {
   firstName: string | null;
 }
 
-export interface GetTopbarQuery {
+export interface GetNavQuery {
   /**
    * returns all account lists associated with the current user
    */
-  accountLists: GetTopbarQuery_accountLists;
+  accountLists: GetNavQuery_accountLists;
   /**
    * Current User
    */
-  user: GetTopbarQuery_user;
-  currentAccountListId: string | null;
-  breadcrumb: string | null;
+  user: GetNavQuery_user;
 }

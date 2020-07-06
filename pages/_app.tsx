@@ -1,13 +1,14 @@
-import React, { ReactElement } from 'react';
+import React, { ReactElement, ReactNode } from 'react';
 import { AppProps } from 'next/app';
 import { ThemeProvider } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { ApolloProvider } from '@apollo/client';
 import { AnimatePresence } from 'framer-motion';
 import { Provider } from 'next-auth/client';
+import { NextPage } from 'next';
 import theme from '../src/theme';
 import client from '../src/lib/client';
-import Chrome from '../src/components/Chrome';
+import PrimaryLayout from '../src/components/Layouts/Primary';
 import Loading from '../src/components/Loading';
 
 const handleExitComplete = (): void => {
@@ -16,8 +17,13 @@ const handleExitComplete = (): void => {
     }
 };
 
+export type PageWithLayout = NextPage & {
+    layout?: ({ children }) => ReactElement;
+};
+
 const App = ({ Component, pageProps, router }: AppProps): ReactElement => {
     const { session } = pageProps;
+    const Layout = (Component as PageWithLayout).layout || PrimaryLayout;
 
     // useEffect(() => {
     //     // Remove the server-side injected CSS.
@@ -32,11 +38,11 @@ const App = ({ Component, pageProps, router }: AppProps): ReactElement => {
             <ApolloProvider client={client}>
                 <ThemeProvider theme={theme}>
                     <CssBaseline />
-                    <Chrome>
-                        <AnimatePresence exitBeforeEnter onExitComplete={handleExitComplete}>
+                    <AnimatePresence exitBeforeEnter onExitComplete={handleExitComplete}>
+                        <Layout>
                             <Component {...pageProps} key={router.route} />
-                        </AnimatePresence>
-                    </Chrome>
+                        </Layout>
+                    </AnimatePresence>
                     <Loading />
                 </ThemeProvider>
             </ApolloProvider>

@@ -6,6 +6,8 @@ import { setOptions, getSession } from 'next-auth/client';
 import AccountLists from '../src/components/AccountLists';
 import { ssrClient } from '../src/lib/client';
 import { GetAccountListsQuery } from '../types/GetAccountListsQuery';
+import BaseLayout from '../src/components/Layouts/Basic';
+import GET_LOCAL_STATE_QUERY from '../src/queries/getLocalStateQuery.graphql';
 
 export const GET_ACCOUNT_LISTS_QUERY = gql`
     query GetAccountListsQuery {
@@ -18,13 +20,6 @@ export const GET_ACCOUNT_LISTS_QUERY = gql`
     }
 `;
 
-export const LOCAL_STATE_QUERY = gql`
-    query LocalStateQuery {
-        currentAccountListId
-        breadcrumb
-    }
-`;
-
 interface Props {
     data: GetAccountListsQuery;
 }
@@ -34,7 +29,7 @@ const AccountListsPage = ({ data }: Props): ReactElement => {
 
     useEffect(() => {
         client.writeQuery({
-            query: LOCAL_STATE_QUERY,
+            query: GET_LOCAL_STATE_QUERY,
             data: { currentAccountListId: null, breadcrumb: 'Dashboard' },
         });
     });
@@ -48,6 +43,8 @@ const AccountListsPage = ({ data }: Props): ReactElement => {
         </>
     );
 };
+
+AccountListsPage.layout = BaseLayout;
 
 export const getServerSideProps: GetServerSideProps<Props> = async ({ res, req }): Promise<{ props: Props }> => {
     setOptions({ site: process.env.SITE_URL });

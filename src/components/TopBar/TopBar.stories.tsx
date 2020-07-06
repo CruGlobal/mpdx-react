@@ -1,7 +1,5 @@
 import React, { ReactElement } from 'react';
 import { Box, Container } from '@material-ui/core';
-import { MockedProvider } from '@apollo/client/testing';
-import { GET_TOPBAR_QUERY } from './TopBar';
 import TopBar from '.';
 
 export default {
@@ -27,76 +25,9 @@ Praesent commodo cursus magna, vel scelerisque nisl consectetur et.`,
 );
 
 export const Default = (): ReactElement => {
-    const mocks = [
-        {
-            request: {
-                query: GET_TOPBAR_QUERY,
-            },
-            result: {
-                data: {},
-            },
-        },
-    ];
     return (
         <>
-            <MockedProvider mocks={mocks} addTypename={false}>
-                <TopBar />
-            </MockedProvider>
-            <Content />
-        </>
-    );
-};
-
-export const SingleAccountList = (): ReactElement => {
-    const mocks = [
-        {
-            request: {
-                query: GET_TOPBAR_QUERY,
-            },
-            result: {
-                data: {
-                    accountLists: { nodes: [{ id: '1', name: 'Staff Account' }] },
-                    currentAccountListId: '1',
-                    breadcrumb: 'Dashboard',
-                },
-            },
-        },
-    ];
-    return (
-        <>
-            <MockedProvider mocks={mocks} addTypename={false}>
-                <TopBar />
-            </MockedProvider>
-            <Content />
-        </>
-    );
-};
-
-export const MultipleAccountLists = (): ReactElement => {
-    const mocks = [
-        {
-            request: {
-                query: GET_TOPBAR_QUERY,
-            },
-            result: {
-                data: {
-                    accountLists: {
-                        nodes: [
-                            { id: '1', name: 'Staff Account' },
-                            { id: '2', name: 'Ministry Account' },
-                        ],
-                    },
-                    currentAccountListId: '1',
-                    breadcrumb: 'Dashboard',
-                },
-            },
-        },
-    ];
-    return (
-        <>
-            <MockedProvider mocks={mocks} addTypename={false}>
-                <TopBar />
-            </MockedProvider>
+            <TopBar />
             <Content />
         </>
     );

@@ -11,6 +11,19 @@ if (process.env.SITE_URL) {
 }
 
 module.exports = withPWA({
+    webpack: (config, { dir }) => {
+        config.module.rules.push({
+            test: /\.(graphql|gql)$/,
+            include: [dir],
+            exclude: /node_modules/,
+            use: [
+                {
+                    loader: 'graphql-tag/loader',
+                },
+            ],
+        });
+        return config;
+    },
     pwa: {
         dest: 'public',
     },

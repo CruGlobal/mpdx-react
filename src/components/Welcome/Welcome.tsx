@@ -3,7 +3,7 @@ import { Box, Container, Typography, makeStyles, Theme, Grid } from '@material-u
 import { motion } from 'framer-motion';
 
 interface Props {
-    title: string;
+    title: string | ReactNode;
     subtitle: string;
     illustration?: number;
     children?: ReactNode;
@@ -21,7 +21,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     box: {
         display: 'flex',
         alignItems: 'center',
-        minHeight: 'calc(100vh - 48px - env(safe-area-inset-top))',
+        minHeight: '100vh',
         backgroundColor: theme.palette.primary.main,
         color: '#fff',
     },
@@ -58,9 +58,13 @@ const Welcome = ({ title, subtitle, illustration = 2, children }: Props): ReactE
                     <Grid container spacing={2} alignItems="center">
                         <Grid item sm={8}>
                             <motion.div variants={divVariants}>
-                                <Typography variant="h4" component="h1">
-                                    {title}
-                                </Typography>
+                                {typeof title === 'string' ? (
+                                    <Typography variant="h4" component="h1">
+                                        {title}
+                                    </Typography>
+                                ) : (
+                                    title
+                                )}
                             </motion.div>
                             <motion.div variants={divVariants}>
                                 <Box my={3} className={classes.subtitle}>

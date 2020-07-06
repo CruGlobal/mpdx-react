@@ -4,10 +4,11 @@ import { Button } from '@material-ui/core';
 import SubjectIcon from '@material-ui/icons/Subject';
 import { GetServerSideProps } from 'next';
 import Welcome from '../src/components/Welcome';
+import BaseLayout from '../src/components/Layouts/Basic';
 
-const Index = (): ReactElement => (
+const IndexPage = (): ReactElement => (
     <Welcome
-        title="Welcome to MPDX"
+        title={<img src="/logo.svg" alt="logo" height={50} />}
         subtitle="MPDX is fundraising software from Cru that helps you grow and maintain your ministry
 partners in a quick and easy way."
     >
@@ -31,6 +32,8 @@ partners in a quick and easy way."
     </Welcome>
 );
 
+IndexPage.layout = BaseLayout;
+
 export const getServerSideProps: GetServerSideProps = async (context): Promise<{ props: {} }> => {
     setOptions({ site: process.env.SITE_URL });
     const session = await getSession(context);
@@ -43,4 +46,4 @@ export const getServerSideProps: GetServerSideProps = async (context): Promise<{
     return { props: {} };
 };
 
-export default Index;
+export default IndexPage;
