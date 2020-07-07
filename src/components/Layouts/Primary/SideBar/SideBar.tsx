@@ -30,6 +30,9 @@ const useStyles = makeStyles((theme: Theme) =>
             alignItems: 'center',
         },
         drawerPaper: {
+            paddingTop: `env(safe-area-inset-top)`,
+            paddingBottom: `env(safe-area-inset-bottom)`,
+            paddingLeft: `env(safe-area-inset-left)`,
             backgroundColor: 'rgb(5, 30, 52)',
             backgroundImage: 'url(/sideBarBg.png)',
             backgroundPosition: 'left 0 bottom 0',
