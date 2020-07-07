@@ -23,12 +23,19 @@ import CakeIcon from '@material-ui/icons/Cake';
 import FavoriteIcon from '@material-ui/icons/Favorite';
 import { gql, useQuery } from '@apollo/client';
 import { Skeleton } from '@material-ui/lab';
+import { motion } from 'framer-motion';
 import { dayMonthFormat } from '../../../lib/intlFormat';
 import AnimatedCard from '../../AnimatedCard';
 import AnimatedBox from '../../AnimatedBox';
 import { GetThisWeekQuery } from '../../../../types/GetThisWeekQuery';
 
 const useStyles = makeStyles((theme: Theme) => ({
+    div: {
+        flex: 1,
+        display: 'flex',
+        flexDirection: 'column',
+        overflow: 'auto',
+    },
     list: {
         flex: 1,
         padding: 0,
@@ -185,7 +192,12 @@ const ThisWeek = ({ accountListId }: Props): ReactElement => {
                             <Tab label="Celebrations" />
                         </Tabs>
                         {value == 0 && (
-                            <>
+                            <motion.div
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                className={classes.div}
+                            >
                                 {loading && (
                                     <>
                                         <List className={classes.list}>
@@ -266,10 +278,15 @@ const ThisWeek = ({ accountListId }: Props): ReactElement => {
                                         )}
                                     </>
                                 )}
-                            </>
+                            </motion.div>
                         )}
                         {value == 1 && (
-                            <>
+                            <motion.div
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                className={classes.div}
+                            >
                                 {loading && (
                                     <List className={classes.list}>
                                         {[0, 1, 2].map((index) => (
@@ -382,7 +399,7 @@ const ThisWeek = ({ accountListId }: Props): ReactElement => {
                                             ))}
                                         </List>
                                     )}
-                            </>
+                            </motion.div>
                         )}
                     </AnimatedCard>
                 </Grid>
@@ -390,7 +407,12 @@ const ThisWeek = ({ accountListId }: Props): ReactElement => {
                     <AnimatedCard className={classes.card}>
                         <CardHeader title="Tasks Due This Week" />
                         {loading && (
-                            <>
+                            <motion.div
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                className={classes.div}
+                            >
                                 <List className={classes.list}>
                                     {[0, 1, 2].map((index) => (
                                         <ListItem key={index}>
@@ -409,10 +431,15 @@ const ThisWeek = ({ accountListId }: Props): ReactElement => {
                                         View All (0)
                                     </Button>
                                 </CardActions>
-                            </>
+                            </motion.div>
                         )}
                         {!loading && dueTasks?.nodes && (
-                            <>
+                            <motion.div
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                className={classes.div}
+                            >
                                 {dueTasks.nodes.length === 0 && (
                                     <CardContent className={classes.cardContent}>
                                         <img
@@ -472,7 +499,7 @@ const ThisWeek = ({ accountListId }: Props): ReactElement => {
                                         </CardActions>
                                     </>
                                 )}
-                            </>
+                            </motion.div>
                         )}
                     </AnimatedCard>
                 </Grid>
@@ -480,7 +507,12 @@ const ThisWeek = ({ accountListId }: Props): ReactElement => {
                     <AnimatedCard className={classes.card}>
                         <CardHeader title="Late Commitments" />
                         {loading && (
-                            <>
+                            <motion.div
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                className={classes.div}
+                            >
                                 <List className={classes.list}>
                                     {[0, 1, 2].map((index) => (
                                         <ListItem key={index}>
@@ -496,10 +528,15 @@ const ThisWeek = ({ accountListId }: Props): ReactElement => {
                                         View All (0)
                                     </Button>
                                 </CardActions>
-                            </>
+                            </motion.div>
                         )}
                         {!loading && latePledgeContacts?.nodes && (
-                            <>
+                            <motion.div
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                className={classes.div}
+                            >
                                 {latePledgeContacts.nodes.length === 0 && (
                                     <CardContent className={classes.cardContent}>
                                         <img
@@ -531,7 +568,7 @@ const ThisWeek = ({ accountListId }: Props): ReactElement => {
                                         </CardActions>
                                     </>
                                 )}
-                            </>
+                            </motion.div>
                         )}
                     </AnimatedCard>
                 </Grid>
