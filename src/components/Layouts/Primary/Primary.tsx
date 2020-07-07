@@ -1,8 +1,9 @@
 import React, { ReactElement, ReactNode, useState } from 'react';
-import { Box, makeStyles, Theme } from '@material-ui/core';
+import { Box, makeStyles, Theme, Hidden } from '@material-ui/core';
 import TopBar from './TopBar';
 import SideBar from './SideBar';
 import { SIDE_BAR_WIDTH } from './SideBar/SideBar';
+import BottomBar from './BottomBar';
 
 const useStyles = makeStyles((theme: Theme) => ({
     container: {
@@ -38,6 +39,9 @@ const Primary = ({ children }: Props): ReactElement => {
                 <TopBar handleDrawerToggle={handleDrawerToggle} />
                 {children}
             </Box>
+            <Hidden smUp>
+                <BottomBar />
+            </Hidden>
         </Box>
     );
 };

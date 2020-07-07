@@ -73,7 +73,7 @@ const SideBar = ({ mobileOpen, handleDrawerToggle }: Props): ReactElement => {
             </Box>
             <Divider className={classes.divider} />
             <List className={classes.list}>
-                <ListItem className={classes.listItem} button>
+                <ListItem className={classes.listItem} button onClick={handleDrawerToggle}>
                     <ListItemIcon className={classes.listItemIcon}>
                         <HomeIcon />
                     </ListItemIcon>
