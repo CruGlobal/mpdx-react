@@ -12,6 +12,7 @@ export const Default = (): ReactElement => {
             firstName: 'Roger',
         },
         accountList: {
+            name: 'My Account List',
             monthlyGoal: 1000,
             receivedPledges: 400,
             committed: 700,
