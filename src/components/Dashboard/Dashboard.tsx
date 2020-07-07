@@ -10,6 +10,7 @@ import ThisWeek from './ThisWeek';
 
 interface Props {
     data: GetDashboardQuery;
+    accountListId: string;
 }
 
 const variants = {
@@ -26,7 +27,7 @@ const variants = {
     },
 };
 
-const Dashboard = ({ data }: Props): ReactElement => {
+const Dashboard = ({ data, accountListId }: Props): ReactElement => {
     return (
         <>
             <Welcome firstName={data.user?.firstName} />
@@ -57,13 +58,7 @@ const Dashboard = ({ data }: Props): ReactElement => {
                                 />
                             </Grid>
                             <Grid xs={12} item>
-                                <ThisWeek
-                                    dueTasks={data.dueTasks}
-                                    prayerRequestTasks={data.prayerRequestTasks}
-                                    latePledgeContacts={data.latePledgeContacts}
-                                    peopleWithBirthdays={data.reportsPeopleWithBirthdays?.periods[0]?.people}
-                                    peopleWithAnniversaries={data.reportsPeopleWithAnniversaries?.periods[0]?.people}
-                                />
+                                <ThisWeek accountListId={accountListId} />
                             </Grid>
                         </Grid>
                     </motion.div>

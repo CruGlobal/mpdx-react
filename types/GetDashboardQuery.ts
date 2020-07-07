@@ -3,8 +3,6 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { ActivityTypeEnum } from "./globalTypes";
-
 // ====================================================
 // GraphQL query operation: GetDashboardQuery
 // ====================================================
@@ -44,122 +42,6 @@ export interface GetDashboardQuery_reportsDonationHistories {
   periods: GetDashboardQuery_reportsDonationHistories_periods[];
 }
 
-export interface GetDashboardQuery_dueTasks_nodes_contacts_nodes {
-  name: string;
-}
-
-export interface GetDashboardQuery_dueTasks_nodes_contacts {
-  /**
-   * A list of nodes.
-   */
-  nodes: (GetDashboardQuery_dueTasks_nodes_contacts_nodes | null)[] | null;
-}
-
-export interface GetDashboardQuery_dueTasks_nodes {
-  id: string;
-  subject: string | null;
-  activityType: ActivityTypeEnum | null;
-  contacts: GetDashboardQuery_dueTasks_nodes_contacts;
-}
-
-export interface GetDashboardQuery_dueTasks {
-  /**
-   * A list of nodes.
-   */
-  nodes: (GetDashboardQuery_dueTasks_nodes | null)[] | null;
-  /**
-   * Total # of objects returned from this Plural Query
-   */
-  totalCount: number;
-}
-
-export interface GetDashboardQuery_prayerRequestTasks_nodes_contacts_nodes {
-  name: string;
-}
-
-export interface GetDashboardQuery_prayerRequestTasks_nodes_contacts {
-  /**
-   * A list of nodes.
-   */
-  nodes: (GetDashboardQuery_prayerRequestTasks_nodes_contacts_nodes | null)[] | null;
-}
-
-export interface GetDashboardQuery_prayerRequestTasks_nodes {
-  id: string;
-  subject: string | null;
-  activityType: ActivityTypeEnum | null;
-  contacts: GetDashboardQuery_prayerRequestTasks_nodes_contacts;
-}
-
-export interface GetDashboardQuery_prayerRequestTasks {
-  /**
-   * A list of nodes.
-   */
-  nodes: (GetDashboardQuery_prayerRequestTasks_nodes | null)[] | null;
-  /**
-   * Total # of objects returned from this Plural Query
-   */
-  totalCount: number;
-}
-
-export interface GetDashboardQuery_latePledgeContacts_nodes {
-  id: string;
-  name: string;
-  lateAt: any | null;
-}
-
-export interface GetDashboardQuery_latePledgeContacts {
-  /**
-   * A list of nodes.
-   */
-  nodes: (GetDashboardQuery_latePledgeContacts_nodes | null)[] | null;
-  /**
-   * Total # of objects returned from this Plural Query
-   */
-  totalCount: number;
-}
-
-export interface GetDashboardQuery_reportsPeopleWithBirthdays_periods_people_parentContact {
-  id: string;
-}
-
-export interface GetDashboardQuery_reportsPeopleWithBirthdays_periods_people {
-  id: string;
-  birthdayDay: number | null;
-  birthdayMonth: number | null;
-  firstName: string | null;
-  lastName: string | null;
-  parentContact: GetDashboardQuery_reportsPeopleWithBirthdays_periods_people_parentContact;
-}
-
-export interface GetDashboardQuery_reportsPeopleWithBirthdays_periods {
-  people: GetDashboardQuery_reportsPeopleWithBirthdays_periods_people[];
-}
-
-export interface GetDashboardQuery_reportsPeopleWithBirthdays {
-  periods: GetDashboardQuery_reportsPeopleWithBirthdays_periods[];
-}
-
-export interface GetDashboardQuery_reportsPeopleWithAnniversaries_periods_people_parentContact {
-  id: string;
-  name: string;
-}
-
-export interface GetDashboardQuery_reportsPeopleWithAnniversaries_periods_people {
-  id: string;
-  anniversaryDay: number | null;
-  anniversaryMonth: number | null;
-  parentContact: GetDashboardQuery_reportsPeopleWithAnniversaries_periods_people_parentContact;
-}
-
-export interface GetDashboardQuery_reportsPeopleWithAnniversaries_periods {
-  people: GetDashboardQuery_reportsPeopleWithAnniversaries_periods_people[];
-}
-
-export interface GetDashboardQuery_reportsPeopleWithAnniversaries {
-  periods: GetDashboardQuery_reportsPeopleWithAnniversaries_periods[];
-}
-
 export interface GetDashboardQuery {
   /**
    * Current User
@@ -173,31 +55,8 @@ export interface GetDashboardQuery {
    * Donations received by AccountList in the related periods
    */
   reportsDonationHistories: GetDashboardQuery_reportsDonationHistories;
-  /**
-   * Tasks Belonging to an AccountList
-   */
-  dueTasks: GetDashboardQuery_dueTasks;
-  /**
-   * Tasks Belonging to an AccountList
-   */
-  prayerRequestTasks: GetDashboardQuery_prayerRequestTasks;
-  /**
-   * Contacts Belonging to an AccountList
-   */
-  latePledgeContacts: GetDashboardQuery_latePledgeContacts;
-  /**
-   * People associated with AccountList with a birthday in the related periods
-   */
-  reportsPeopleWithBirthdays: GetDashboardQuery_reportsPeopleWithBirthdays;
-  /**
-   * People associated with AccountList with an anniversary in the related periods
-   */
-  reportsPeopleWithAnniversaries: GetDashboardQuery_reportsPeopleWithAnniversaries;
 }
 
 export interface GetDashboardQueryVariables {
   accountListId: string;
-  endOfDay: any;
-  today: any;
-  twoWeeksFromNow: any;
 }

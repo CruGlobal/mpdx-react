@@ -10,12 +10,7 @@ import { ssrClient } from '../../src/lib/client';
 import GET_LOCAL_STATE_QUERY from '../../src/queries/getLocalStateQuery.graphql';
 
 export const GET_DASHBOARD_QUERY = gql`
-    query GetDashboardQuery(
-        $accountListId: ID!
-        $endOfDay: ISO8601DateTime!
-        $today: ISO8601Date!
-        $twoWeeksFromNow: ISO8601Date!
-    ) {
+    query GetDashboardQuery($accountListId: ID!) {
         user {
             firstName
         }
@@ -35,67 +30,6 @@ export const GET_DASHBOARD_QUERY = gql`
                 totals {
                     currency
                     convertedAmount
-                }
-            }
-        }
-        dueTasks: tasks(accountListId: $accountListId, first: 3, startAt: { max: $endOfDay }) {
-            nodes {
-                id
-                subject
-                activityType
-                contacts {
-                    nodes {
-                        name
-                    }
-                }
-            }
-            totalCount
-        }
-        prayerRequestTasks: tasks(accountListId: $accountListId, first: 3, activityType: PRAYER_REQUEST) {
-            nodes {
-                id
-                subject
-                activityType
-                contacts {
-                    nodes {
-                        name
-                    }
-                }
-            }
-            totalCount
-        }
-        latePledgeContacts: contacts(accountListId: $accountListId, first: 3, lateAt: { max: $today }) {
-            nodes {
-                id
-                name
-                lateAt
-            }
-            totalCount
-        }
-        reportsPeopleWithBirthdays(accountListId: $accountListId, range: "1m", endDate: $twoWeeksFromNow) {
-            periods {
-                people {
-                    id
-                    birthdayDay
-                    birthdayMonth
-                    firstName
-                    lastName
-                    parentContact {
-                        id
-                    }
-                }
-            }
-        }
-        reportsPeopleWithAnniversaries(accountListId: $accountListId, range: "1m", endDate: $twoWeeksFromNow) {
-            periods {
-                people {
-                    id
-                    anniversaryDay
-                    anniversaryMonth
-                    parentContact {
-                        id
-                        name
-                    }
                 }
             }
         }
@@ -122,7 +56,7 @@ const AccountListIdPage = ({ data, accountListId }: Props): ReactElement => {
             <Head>
                 <title>MPDX | {data.accountList.name}</title>
             </Head>
-            <Dashboard data={data} />
+            <Dashboard data={data} accountListId={accountListId} />
         </>
     );
 };
