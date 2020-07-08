@@ -1,4 +1,5 @@
 import React, { ReactElement } from 'react';
+import { MockedProvider } from '@apollo/client/testing';
 import { GetDashboardQuery } from '../../../types/GetDashboardQuery';
 import Dashboard from '.';
 
@@ -92,24 +93,10 @@ export const Default = (): ReactElement => {
             ],
             averageIgnoreCurrent: 750,
         },
-        dueTasks: {
-            nodes: [],
-            totalCount: 0,
-        },
-        prayerRequestTasks: {
-            nodes: [],
-            totalCount: 0,
-        },
-        latePledgeContacts: {
-            nodes: [],
-            totalCount: 0,
-        },
-        reportsPeopleWithBirthdays: {
-            periods: [],
-        },
-        reportsPeopleWithAnniversaries: {
-            periods: [],
-        },
     };
-    return <Dashboard data={data} />;
+    return (
+        <MockedProvider>
+            <Dashboard accountListId="abc" data={data} />
+        </MockedProvider>
+    );
 };
