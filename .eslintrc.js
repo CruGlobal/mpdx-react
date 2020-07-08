@@ -15,6 +15,7 @@ module.exports = {
     sourceType: "module" // Allows for the use of imports
   },
   rules: {
+    "@typescript-eslint/camelcase": "off",
     "import/no-duplicates": "error",
     "import/extensions": "error",
     "import/order": "error",

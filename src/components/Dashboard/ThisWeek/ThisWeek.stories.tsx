@@ -33,7 +33,6 @@ export const Default = (): ReactElement => {
             id: 'contact',
         },
     };
-
     const personWithAnniversary = {
         id: 'person',
         anniversaryDay: 5,
@@ -44,11 +43,50 @@ export const Default = (): ReactElement => {
         },
     };
     const data: GetThisWeekQuery = {
-        dueTasks: { nodes: [task, task, task], totalCount: 50 },
-        prayerRequestTasks: { nodes: [task, task, task], totalCount: 80 },
-        latePledgeContacts: { nodes: [contact, contact, contact], totalCount: 5 },
-        reportsPeopleWithBirthdays: { periods: [{ people: [personWithBirthday, personWithBirthday] }] },
-        reportsPeopleWithAnniversaries: { periods: [{ people: [personWithAnniversary, personWithAnniversary] }] },
+        dueTasks: {
+            nodes: [
+                { ...task, id: 'task_1' },
+                { ...task, id: 'task_2' },
+                { ...task, id: 'task_3' },
+            ],
+            totalCount: 50,
+        },
+        prayerRequestTasks: {
+            nodes: [
+                { ...task, id: 'task_4' },
+                { ...task, id: 'task_5' },
+                { ...task, id: 'task_6' },
+            ],
+            totalCount: 80,
+        },
+        latePledgeContacts: {
+            nodes: [
+                { ...contact, id: 'contact_1' },
+                { ...contact, id: 'contact_2' },
+                { ...contact, id: 'contact_3' },
+            ],
+            totalCount: 5,
+        },
+        reportsPeopleWithBirthdays: {
+            periods: [
+                {
+                    people: [
+                        { ...personWithBirthday, id: 'person_1' },
+                        { ...personWithBirthday, id: 'person_2' },
+                    ],
+                },
+            ],
+        },
+        reportsPeopleWithAnniversaries: {
+            periods: [
+                {
+                    people: [
+                        { ...personWithAnniversary, id: 'person_3' },
+                        { ...personWithAnniversary, id: 'person_4' },
+                    ],
+                },
+            ],
+        },
     };
     const mocks = [
         {
