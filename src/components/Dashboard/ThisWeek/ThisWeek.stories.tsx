@@ -23,6 +23,10 @@ export const Default = (): ReactElement => {
         name: 'Smith, Sarah',
         lateAt: '2012-10-01',
     };
+    const referral = {
+        id: 'contact',
+        name: 'Smith, Sarah',
+    };
     const personWithBirthday = {
         id: 'person',
         birthdayDay: 1,
@@ -87,6 +91,22 @@ export const Default = (): ReactElement => {
                 },
             ],
         },
+        recentReferrals: {
+            nodes: [
+                { ...referral, id: 'contact_4' },
+                { ...referral, id: 'contact_5' },
+                { ...referral, id: 'contact_6' },
+            ],
+            totalCount: 5,
+        },
+        onHandReferrals: {
+            nodes: [
+                { ...referral, id: 'contact_7' },
+                { ...referral, id: 'contact_8' },
+                { ...referral, id: 'contact_9' },
+            ],
+            totalCount: 5,
+        },
     };
     const mocks = [
         {
@@ -119,6 +139,8 @@ export const Empty = (): ReactElement => {
         latePledgeContacts: { nodes: [], totalCount: 0 },
         reportsPeopleWithBirthdays: { periods: [{ people: [] }] },
         reportsPeopleWithAnniversaries: { periods: [{ people: [] }] },
+        recentReferrals: { nodes: [], totalCount: 0 },
+        onHandReferrals: { nodes: [], totalCount: 0 },
     };
     const mocks = [
         {

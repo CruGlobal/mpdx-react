@@ -7,6 +7,7 @@ import { GetThisWeekQuery } from '../../../../types/GetThisWeekQuery';
 import PartnerCare from './PartnerCare/PartnerCare';
 import TasksDueThisWeek from './TasksDueThisWeek/TasksDueThisWeek';
 import LateCommitments from './LateCommitments';
+import Referrals from './Referrals';
 
 interface Props {
     accountListId: string;
@@ -80,6 +81,20 @@ export const GET_THIS_WEEK_QUERY = gql`
                 }
             }
         }
+        recentReferrals: contacts(accountListId: $accountListId, first: 3) {
+            nodes {
+                id
+                name
+            }
+            totalCount
+        }
+        onHandReferrals: contacts(accountListId: $accountListId, first: 3) {
+            nodes {
+                id
+                name
+            }
+            totalCount
+        }
     }
 `;
 
@@ -99,6 +114,8 @@ const ThisWeek = ({ accountListId }: Props): ReactElement => {
         latePledgeContacts,
         reportsPeopleWithBirthdays,
         reportsPeopleWithAnniversaries,
+        recentReferrals,
+        onHandReferrals,
     } = data || {};
 
     return (
@@ -122,6 +139,9 @@ const ThisWeek = ({ accountListId }: Props): ReactElement => {
                 </Grid>
                 <Grid item xs={12} sm={6} md={4}>
                     <LateCommitments loading={loading} latePledgeContacts={latePledgeContacts} />
+                </Grid>
+                <Grid item xs={12} sm={6} md={4}>
+                    <Referrals loading={loading} recentReferrals={recentReferrals} onHandReferrals={onHandReferrals} />
                 </Grid>
             </Grid>
         </>

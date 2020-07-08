@@ -125,6 +125,38 @@ export interface GetThisWeekQuery_reportsPeopleWithAnniversaries {
   periods: GetThisWeekQuery_reportsPeopleWithAnniversaries_periods[];
 }
 
+export interface GetThisWeekQuery_recentReferrals_nodes {
+  id: string;
+  name: string;
+}
+
+export interface GetThisWeekQuery_recentReferrals {
+  /**
+   * A list of nodes.
+   */
+  nodes: (GetThisWeekQuery_recentReferrals_nodes | null)[] | null;
+  /**
+   * Total # of objects returned from this Plural Query
+   */
+  totalCount: number;
+}
+
+export interface GetThisWeekQuery_onHandReferrals_nodes {
+  id: string;
+  name: string;
+}
+
+export interface GetThisWeekQuery_onHandReferrals {
+  /**
+   * A list of nodes.
+   */
+  nodes: (GetThisWeekQuery_onHandReferrals_nodes | null)[] | null;
+  /**
+   * Total # of objects returned from this Plural Query
+   */
+  totalCount: number;
+}
+
 export interface GetThisWeekQuery {
   /**
    * Tasks Belonging to an AccountList
@@ -146,6 +178,14 @@ export interface GetThisWeekQuery {
    * People associated with AccountList with an anniversary in the related periods
    */
   reportsPeopleWithAnniversaries: GetThisWeekQuery_reportsPeopleWithAnniversaries;
+  /**
+   * Contacts Belonging to an AccountList
+   */
+  recentReferrals: GetThisWeekQuery_recentReferrals;
+  /**
+   * Contacts Belonging to an AccountList
+   */
+  onHandReferrals: GetThisWeekQuery_onHandReferrals;
 }
 
 export interface GetThisWeekQueryVariables {
