@@ -5,9 +5,6 @@ import {
     CardHeader,
     CardActions,
     Button,
-    List,
-    ListItem,
-    ListItemText,
     CardContent,
     Typography,
     Grid,
@@ -100,112 +97,98 @@ const Appeals = ({ loading, appeal }: Props): ReactElement => {
     return (
         <AnimatedCard className={classes.card}>
             <CardHeader title="Appeals" />
-            {loading && (
+            {!loading && !appeal && (
                 <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                     className={classes.div}
                 >
-                    <List className={classes.list}>
-                        {[0, 1, 2].map((index) => (
-                            <ListItem key={index}>
-                                <ListItemText
-                                    primary={<Skeleton variant="text" width={100} />}
-                                    secondary={<Skeleton variant="text" width={200} />}
-                                />
-                            </ListItem>
-                        ))}
-                    </List>
-                    <CardActions>
-                        <Button size="small" color="primary" disabled>
-                            View All (0)
-                        </Button>
-                    </CardActions>
+                    <CardContent className={classes.cardContent}>
+                        <img src="/drawkit/grape/drawkit-grape-pack-illustration-13.svg" className={classes.img} />
+                        No primary appeal to show.
+                    </CardContent>
                 </motion.div>
             )}
-            {!loading && (
+            {(loading || appeal) && (
                 <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                     className={classes.div}
                 >
-                    {!appeal && (
-                        <CardContent className={classes.cardContent}>
-                            <img src="/drawkit/grape/drawkit-grape-pack-illustration-13.svg" className={classes.img} />
-                            No primary appeal to show.
-                        </CardContent>
-                    )}
-                    {appeal && (
-                        <>
-                            <CardContent className={[classes.cardContent, classes.cardContentExpanded].join(' ')}>
-                                <Typography variant="h6" className={classes.titleContainer}>
-                                    <Box className={classes.title}>
-                                        <Box className={classes.titleContent}>{appeal.name}</Box>
-                                        <Box>{currencyFormat(appeal.amount || 0, appeal.amountCurrency)}</Box>
-                                    </Box>
+                    <CardContent className={[classes.cardContent, classes.cardContentExpanded].join(' ')}>
+                        <Typography variant="h6" className={classes.titleContainer}>
+                            <Box className={classes.title}>
+                                <Box className={classes.titleContent}>
+                                    {loading ? <Skeleton variant="text" width="50%" /> : appeal.name}
+                                </Box>
+                                <Box>
+                                    {loading ? (
+                                        <Skeleton variant="text" width={100} />
+                                    ) : (
+                                        currencyFormat(appeal.amount || 0, appeal.amountCurrency)
+                                    )}
+                                </Box>
+                            </Box>
+                        </Typography>
+                        <StyledProgress
+                            loading={loading}
+                            primary={pledgesAmountProcessedPercentage}
+                            secondary={pledgesAmountTotalPercentage}
+                        />
+                        <Grid container spacing={2}>
+                            <Grid xs={6} item>
+                                <Typography component="div" color="textSecondary">
+                                    <div className={[classes.indicator, classes.pledgesAmountProcessed].join(' ')} />
+                                    Gifts Received
                                 </Typography>
-                                <StyledProgress
-                                    primary={pledgesAmountProcessedPercentage}
-                                    secondary={pledgesAmountTotalPercentage}
-                                />
-                                <Grid container spacing={2}>
-                                    <Grid xs={6} item>
-                                        <Typography component="div" color="textSecondary">
-                                            <div
-                                                className={[classes.indicator, classes.pledgesAmountProcessed].join(
-                                                    ' ',
-                                                )}
-                                            />
-                                            Gifts Received
-                                        </Typography>
-                                        <Typography variant="h5">
-                                            {isNaN(pledgesAmountProcessedPercentage)
-                                                ? '- '
-                                                : percentageFormat(pledgesAmountProcessedPercentage)}
-                                        </Typography>
-                                        <Typography component="small">
-                                            {loading ? (
-                                                <Skeleton variant="text" />
-                                            ) : (
-                                                currencyFormat(appeal.pledgesAmountProcessed, appeal.amountCurrency)
-                                            )}
-                                        </Typography>
-                                    </Grid>
-                                    <Grid xs={6} item>
-                                        <Typography component="div" color="textSecondary">
-                                            <div
-                                                className={[classes.indicator, classes.pledgesAmountTotal].join(' ')}
-                                            />
-                                            Commitments
-                                        </Typography>
-                                        <Typography variant="h5">
-                                            {loading ? (
-                                                <Skeleton variant="text" />
-                                            ) : isNaN(pledgesAmountTotalPercentage) ? (
-                                                '- '
-                                            ) : (
-                                                percentageFormat(pledgesAmountTotalPercentage)
-                                            )}
-                                        </Typography>
-                                        <Typography component="small">
-                                            {loading ? (
-                                                <Skeleton variant="text" />
-                                            ) : (
-                                                currencyFormat(appeal.pledgesAmountTotal, appeal.amountCurrency)
-                                            )}
-                                        </Typography>
-                                    </Grid>
-                                </Grid>
-                            </CardContent>
-                            <CardActions>
-                                <Button size="small" color="primary">
-                                    View All
-                                </Button>
-                            </CardActions>
-                        </>
-                    )}
+                                <Typography variant="h5">
+                                    {loading ? (
+                                        <Skeleton variant="text" />
+                                    ) : isNaN(pledgesAmountProcessedPercentage) ? (
+                                        '- '
+                                    ) : (
+                                        percentageFormat(pledgesAmountProcessedPercentage)
+                                    )}
+                                </Typography>
+                                <Typography component="small">
+                                    {loading ? (
+                                        <Skeleton variant="text" />
+                                    ) : (
+                                        currencyFormat(appeal.pledgesAmountProcessed, appeal.amountCurrency)
+                                    )}
+                                </Typography>
+                            </Grid>
+                            <Grid xs={6} item>
+                                <Typography component="div" color="textSecondary">
+                                    <div className={[classes.indicator, classes.pledgesAmountTotal].join(' ')} />
+                                    Commitments
+                                </Typography>
+                                <Typography variant="h5">
+                                    {loading ? (
+                                        <Skeleton variant="text" />
+                                    ) : isNaN(pledgesAmountTotalPercentage) ? (
+                                        '- '
+                                    ) : (
+                                        percentageFormat(pledgesAmountTotalPercentage)
+                                    )}
+                                </Typography>
+                                <Typography component="small">
+                                    {loading ? (
+                                        <Skeleton variant="text" />
+                                    ) : (
+                                        currencyFormat(appeal.pledgesAmountTotal, appeal.amountCurrency)
+                                    )}
+                                </Typography>
+                            </Grid>
+                        </Grid>
+                    </CardContent>
+                    <CardActions>
+                        <Button size="small" color="primary">
+                            View All
+                        </Button>
+                    </CardActions>
                 </motion.div>
             )}
         </AnimatedCard>
