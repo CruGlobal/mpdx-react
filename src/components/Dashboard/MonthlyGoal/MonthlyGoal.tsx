@@ -4,32 +4,9 @@ import { Skeleton } from '@material-ui/lab';
 import { currencyFormat, percentageFormat } from '../../../lib/intlFormat';
 import AnimatedCard from '../../AnimatedCard';
 import AnimatedBox from '../../AnimatedBox';
+import StyledProgress from '../../StyledProgress';
 
-const useStyles = makeStyles((theme: Theme) => ({
-    progress: {
-        width: '100%',
-        height: '54px',
-        border: '2px solid #999999',
-        borderRadius: '50px',
-        padding: '2px',
-        position: 'relative',
-        marginBottom: theme.spacing(2),
-    },
-    progressBar: {
-        position: 'absolute',
-        left: '2px',
-        height: '46px',
-        minWidth: '46px',
-        maxWidth: '99.6%',
-        borderRadius: '46px',
-        transition: 'width 1s ease-out',
-        width: '0%',
-    },
-    progressBarSkeleton: {
-        borderRadius: '46px',
-        height: '46px',
-        transform: 'none',
-    },
+const useStyles = makeStyles((_theme: Theme) => ({
     received: {
         background: 'linear-gradient(180deg, #FFE67C 0%, #FFCF07 100%)',
     },
@@ -64,7 +41,6 @@ const MonthlyGoal = ({ loading, goal, received, pledged, currencyCode = 'USD' }:
     const belowGoal = goal - pledged;
     const belowGoalPercentage = belowGoal / goal;
 
-    console.log(percentageFormat(pledgedPercentage));
     return (
         <>
             <Box my={{ xs: 1, sm: 2 }}>
@@ -81,22 +57,7 @@ const MonthlyGoal = ({ loading, goal, received, pledged, currencyCode = 'USD' }:
             </Box>
             <AnimatedCard>
                 <CardContent>
-                    <div className={classes.progress}>
-                        {loading ? (
-                            <Skeleton className={classes.progressBarSkeleton} animation="wave" />
-                        ) : (
-                            <>
-                                <div
-                                    style={{ width: percentageFormat(pledgedPercentage) }}
-                                    className={[classes.progressBar, classes.pledged].join(' ')}
-                                />
-                                <div
-                                    style={{ width: percentageFormat(receivedPercentage) }}
-                                    className={[classes.progressBar, classes.received].join(' ')}
-                                />
-                            </>
-                        )}
-                    </div>
+                    <StyledProgress loading={loading} primary={receivedPercentage} secondary={pledgedPercentage} />
                     <Grid container spacing={2}>
                         <Hidden xsDown>
                             <Grid sm={6} md={3} item>
@@ -146,23 +107,51 @@ const MonthlyGoal = ({ loading, goal, received, pledged, currencyCode = 'USD' }:
                             </Typography>
                         </Grid>
                         <Hidden xsDown>
-                            <Grid sm={6} md={3} item>
-                                <Typography component="div" color="textSecondary">
-                                    Below Goal
-                                </Typography>
-                                <Typography variant="h5">
-                                    {loading ? (
-                                        <Skeleton variant="text" />
-                                    ) : isNaN(belowGoalPercentage) ? (
-                                        '- '
-                                    ) : (
-                                        percentageFormat(belowGoalPercentage)
-                                    )}
-                                </Typography>
-                                <Typography component="small">
-                                    {loading ? <Skeleton variant="text" /> : currencyFormat(belowGoal, currencyCode)}
-                                </Typography>
-                            </Grid>
+                            {!isNaN(belowGoal) && belowGoal > 0 ? (
+                                <Grid sm={6} md={3} item>
+                                    <Typography component="div" color="textSecondary">
+                                        Below Goal
+                                    </Typography>
+                                    <Typography variant="h5">
+                                        {loading ? (
+                                            <Skeleton variant="text" />
+                                        ) : isNaN(belowGoalPercentage) ? (
+                                            '- '
+                                        ) : (
+                                            percentageFormat(belowGoalPercentage)
+                                        )}
+                                    </Typography>
+                                    <Typography component="small">
+                                        {loading ? (
+                                            <Skeleton variant="text" />
+                                        ) : (
+                                            currencyFormat(belowGoal, currencyCode)
+                                        )}
+                                    </Typography>
+                                </Grid>
+                            ) : (
+                                <Grid sm={6} md={3} item>
+                                    <Typography component="div" color="textSecondary">
+                                        Above Goal
+                                    </Typography>
+                                    <Typography variant="h5">
+                                        {loading ? (
+                                            <Skeleton variant="text" />
+                                        ) : isNaN(belowGoalPercentage) ? (
+                                            '- '
+                                        ) : (
+                                            percentageFormat(-belowGoalPercentage)
+                                        )}
+                                    </Typography>
+                                    <Typography component="small">
+                                        {loading ? (
+                                            <Skeleton variant="text" />
+                                        ) : (
+                                            currencyFormat(-belowGoal, currencyCode)
+                                        )}
+                                    </Typography>
+                                </Grid>
+                            )}
                         </Hidden>
                     </Grid>
                 </CardContent>
