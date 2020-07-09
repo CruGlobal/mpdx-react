@@ -3,7 +3,7 @@ import { makeStyles, Theme, Fab, CircularProgress } from '@material-ui/core';
 import { useRouter } from 'next/router';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles((_theme: Theme) => ({
     box: {
         position: 'fixed',
         top: '50%',
@@ -20,19 +20,23 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
 }));
 
-const Loading = (): ReactElement => {
+interface Props {
+    loading?: boolean;
+}
+
+const Loading = ({ loading = false }: Props): ReactElement => {
     const classes = useStyles();
     const router = useRouter();
 
-    const [loading, setLoading] = useState(false);
+    const [currentlyLoading, setCurrentlyLoading] = useState(loading);
 
     useEffect(() => {
         const handleStart = (): void => {
-            setLoading(true);
+            setCurrentlyLoading(true);
         };
 
         const handleComplete = (): void => {
-            setLoading(false);
+            setCurrentlyLoading(false);
         };
 
         router.events.on('routeChangeStart', handleStart);
@@ -48,7 +52,7 @@ const Loading = (): ReactElement => {
 
     return (
         <AnimatePresence>
-            {loading && (
+            {currentlyLoading && (
                 <motion.div
                     initial={{ scale: 2, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}

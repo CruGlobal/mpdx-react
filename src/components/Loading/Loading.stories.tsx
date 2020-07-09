@@ -1,4 +1,5 @@
 import React, { ReactElement } from 'react';
+import TestRouter from '../../../tests/TestRouter';
 import Loading from '.';
 
 export default {
@@ -6,5 +7,9 @@ export default {
 };
 
 export const Default = (): ReactElement => {
-    return <Loading />;
+    return (
+        <TestRouter>
+            <Loading loading={true} />
+        </TestRouter>
+    );
 };
