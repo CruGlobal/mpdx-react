@@ -8,6 +8,7 @@ import PartnerCare from './PartnerCare/PartnerCare';
 import TasksDueThisWeek from './TasksDueThisWeek/TasksDueThisWeek';
 import LateCommitments from './LateCommitments';
 import Referrals from './Referrals';
+import Appeals from './Appeals';
 
 interface Props {
     accountListId: string;
@@ -20,6 +21,16 @@ export const GET_THIS_WEEK_QUERY = gql`
         $today: ISO8601Date!
         $twoWeeksFromNow: ISO8601Date!
     ) {
+        accountList(id: $accountListId) {
+            primaryAppeal {
+                id
+                name
+                amount
+                pledgesAmountTotal
+                pledgesAmountProcessed
+                amountCurrency
+            }
+        }
         dueTasks: tasks(accountListId: $accountListId, first: 3, startAt: { max: $endOfDay }) {
             nodes {
                 id
@@ -116,6 +127,7 @@ const ThisWeek = ({ accountListId }: Props): ReactElement => {
         reportsPeopleWithAnniversaries,
         recentReferrals,
         onHandReferrals,
+        accountList,
     } = data || {};
 
     return (
@@ -142,6 +154,9 @@ const ThisWeek = ({ accountListId }: Props): ReactElement => {
                 </Grid>
                 <Grid item xs={12} sm={6} md={4}>
                     <Referrals loading={loading} recentReferrals={recentReferrals} onHandReferrals={onHandReferrals} />
+                </Grid>
+                <Grid item xs={12} sm={6} md={4}>
+                    <Appeals loading={loading} appeal={accountList?.primaryAppeal} />
                 </Grid>
             </Grid>
         </>

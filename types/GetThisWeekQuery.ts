@@ -9,6 +9,19 @@ import { ActivityTypeEnum } from "./globalTypes";
 // GraphQL query operation: GetThisWeekQuery
 // ====================================================
 
+export interface GetThisWeekQuery_accountList_primaryAppeal {
+  id: string;
+  name: string | null;
+  amount: number | null;
+  pledgesAmountTotal: number;
+  pledgesAmountProcessed: number;
+  amountCurrency: string;
+}
+
+export interface GetThisWeekQuery_accountList {
+  primaryAppeal: GetThisWeekQuery_accountList_primaryAppeal | null;
+}
+
 export interface GetThisWeekQuery_dueTasks_nodes_contacts_nodes {
   name: string;
 }
@@ -158,6 +171,10 @@ export interface GetThisWeekQuery_onHandReferrals {
 }
 
 export interface GetThisWeekQuery {
+  /**
+   * returns a specific account_list associated with the user when given the ID
+   */
+  accountList: GetThisWeekQuery_accountList;
   /**
    * Tasks Belonging to an AccountList
    */

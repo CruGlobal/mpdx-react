@@ -47,6 +47,16 @@ export const Default = (): ReactElement => {
         },
     };
     const data: GetThisWeekQuery = {
+        accountList: {
+            primaryAppeal: {
+                id: 'appeal_1',
+                name: '2020 End of Year Ask',
+                amount: 1000,
+                pledgesAmountTotal: 750,
+                pledgesAmountProcessed: 500,
+                amountCurrency: 'EUR',
+            },
+        },
         dueTasks: {
             nodes: [
                 { ...task, id: 'task_1' },
@@ -134,6 +144,7 @@ export const Default = (): ReactElement => {
 };
 export const Empty = (): ReactElement => {
     const data: GetThisWeekQuery = {
+        accountList: { primaryAppeal: null },
         dueTasks: { nodes: [], totalCount: 0 },
         prayerRequestTasks: { nodes: [], totalCount: 0 },
         latePledgeContacts: { nodes: [], totalCount: 0 },
