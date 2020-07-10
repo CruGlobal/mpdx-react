@@ -5,6 +5,11 @@ import moment from 'moment';
 import { GetThisWeekQuery } from '../../../../types/GetThisWeekQuery';
 import { ActivityTypeEnum } from '../../../../types/globalTypes';
 import { GET_THIS_WEEK_QUERY } from './ThisWeek';
+import {
+    GetWeeklyActivityQueryDefaultMock,
+    GetWeeklyActivityQueryEmptyMock,
+    GetWeeklyActivityQueryLoadingMock,
+} from './WeeklyActivity/WeeklyActivity.mock';
 import ThisWeek from '.';
 
 export default {
@@ -133,6 +138,7 @@ export const Default = (): ReactElement => {
                 data,
             },
         },
+        GetWeeklyActivityQueryDefaultMock,
     ];
     return (
         <MockedProvider mocks={mocks} addTypename={false}>
@@ -168,6 +174,7 @@ export const Empty = (): ReactElement => {
                 data,
             },
         },
+        GetWeeklyActivityQueryEmptyMock,
     ];
     return (
         <MockedProvider mocks={mocks} addTypename={false}>
@@ -179,7 +186,7 @@ export const Empty = (): ReactElement => {
 };
 export const Loading = (): ReactElement => {
     return (
-        <MockedProvider mocks={[]} addTypename={false}>
+        <MockedProvider mocks={[GetWeeklyActivityQueryLoadingMock]} addTypename={false}>
             <Box m={2}>
                 <ThisWeek accountListId="abc" />
             </Box>

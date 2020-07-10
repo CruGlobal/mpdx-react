@@ -248,7 +248,10 @@ const PartnerCare = ({
                                                             variant="body2"
                                                             color="textSecondary"
                                                         >
-                                                            {dayMonthFormat(person.birthdayDay, person.birthdayMonth)}
+                                                            {dayMonthFormat(
+                                                                person.birthdayDay,
+                                                                person.birthdayMonth - 1,
+                                                            )}
                                                         </Typography>
                                                     </Box>
                                                 </Box>
@@ -279,7 +282,7 @@ const PartnerCare = ({
                                                         >
                                                             {dayMonthFormat(
                                                                 person.anniversaryDay,
-                                                                person.anniversaryMonth,
+                                                                person.anniversaryMonth - 1,
                                                             )}
                                                         </Typography>
                                                     </Box>

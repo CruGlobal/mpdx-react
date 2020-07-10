@@ -45,6 +45,11 @@ const theme = createMuiTheme({
                 },
             },
         },
+        MuiTableCell: {
+            head: {
+                fontWeight: 700,
+            },
+        },
         MuiCssBaseline: {
             '@global': {
                 html: {

@@ -9,6 +9,7 @@ import TasksDueThisWeek from './TasksDueThisWeek/TasksDueThisWeek';
 import LateCommitments from './LateCommitments';
 import Referrals from './Referrals';
 import Appeals from './Appeals';
+import WeeklyActivity from './WeeklyActivity';
 
 interface Props {
     accountListId: string;
@@ -157,6 +158,9 @@ const ThisWeek = ({ accountListId }: Props): ReactElement => {
                 </Grid>
                 <Grid item xs={12} sm={6} md={4}>
                     <Appeals loading={loading} appeal={accountList?.primaryAppeal} />
+                </Grid>
+                <Grid item xs={12} sm={6} md={4}>
+                    <WeeklyActivity accountListId={accountListId} />
                 </Grid>
             </Grid>
         </>

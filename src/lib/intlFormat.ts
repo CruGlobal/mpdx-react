@@ -18,5 +18,5 @@ export const currencyFormat = (value: number, currency: string, minimumFractionD
 export const dayMonthFormat = (day: number, month: number): string =>
     new Intl.DateTimeFormat('en-US', {
         day: 'numeric',
-        month: 'long',
-    }).format(new Date(new Date().getFullYear(), month - 1, day));
+        month: 'short',
+    }).format(new Date(new Date().getFullYear(), month, day));
