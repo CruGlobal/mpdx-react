@@ -21,6 +21,7 @@ export const GET_THIS_WEEK_QUERY = gql`
         $endOfDay: ISO8601DateTime!
         $today: ISO8601Date!
         $twoWeeksFromNow: ISO8601Date!
+        $twoWeeksAgo: ISO8601Date!
     ) {
         accountList(id: $accountListId) {
             primaryAppeal {
@@ -93,14 +94,24 @@ export const GET_THIS_WEEK_QUERY = gql`
                 }
             }
         }
-        recentReferrals: contacts(accountListId: $accountListId, first: 3) {
+        recentReferrals: contacts(
+            accountListId: $accountListId
+            first: 3
+            referrer: ANY
+            createdAt: { min: $twoWeeksAgo }
+        ) {
             nodes {
                 id
                 name
             }
             totalCount
         }
-        onHandReferrals: contacts(accountListId: $accountListId, first: 3) {
+        onHandReferrals: contacts(
+            accountListId: $accountListId
+            first: 3
+            status: [NEVER_CONTACTED, ASK_IN_FUTURE, CULTIVATE_RELATIONSHIP, CONTACT_FOR_APPOINTMENT]
+            referrer: ANY
+        ) {
             nodes {
                 id
                 name
@@ -117,6 +128,7 @@ const ThisWeek = ({ accountListId }: Props): ReactElement => {
             endOfDay: moment().endOf('day').toISOString(),
             today: moment().endOf('day').toISOString().slice(0, 10),
             twoWeeksFromNow: moment().endOf('day').add(2, 'weeks').toISOString().slice(0, 10),
+            twoWeeksAgo: moment().endOf('day').subtract(2, 'weeks').toISOString().slice(0, 10),
         },
     });
 

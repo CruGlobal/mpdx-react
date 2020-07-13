@@ -2,7 +2,7 @@ module.exports = {
     client: {
         service: {
             name: 'MPDX',
-            url: 'https://api.mpdx.org/graphql',
+            url: 'https://api.stage.mpdx.org/graphql',
         },
     },
 };

@@ -149,8 +149,8 @@ const Referrals = ({ loading, recentReferrals, onHandReferrals }: Props): ReactE
                 variant="fullWidth"
                 onChange={handleChange}
             >
-                <Tab label="Recent" />
-                <Tab label="On Hand" />
+                <Tab label={`Recent (${recentReferrals?.totalCount || 0})`} />
+                <Tab label={`On Hand (${onHandReferrals?.totalCount || 0})`} />
             </Tabs>
             {value == 0 && (
                 <motion.div

@@ -81,7 +81,7 @@ export const Default = (): ReactElement => {
 export const Empty = (): ReactElement => {
     const prayerRequestTasks: GetThisWeekQuery_prayerRequestTasks = {
         nodes: [],
-        totalCount: 80,
+        totalCount: 0,
     };
     const reportsPeopleWithBirthdays: GetThisWeekQuery_reportsPeopleWithBirthdays = {
         periods: [

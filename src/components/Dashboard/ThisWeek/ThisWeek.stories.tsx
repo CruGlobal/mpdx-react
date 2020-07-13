@@ -132,6 +132,7 @@ export const Default = (): ReactElement => {
                     endOfDay: moment().endOf('day').toISOString(),
                     today: moment().endOf('day').toISOString().slice(0, 10),
                     twoWeeksFromNow: moment().endOf('day').add(2, 'weeks').toISOString().slice(0, 10),
+                    twoWeeksAgo: moment().endOf('day').subtract(2, 'weeks').toISOString().slice(0, 10),
                 },
             },
             result: {
@@ -168,6 +169,7 @@ export const Empty = (): ReactElement => {
                     endOfDay: moment().endOf('day').toISOString(),
                     today: moment().endOf('day').toISOString().slice(0, 10),
                     twoWeeksFromNow: moment().endOf('day').add(2, 'weeks').toISOString().slice(0, 10),
+                    twoWeeksAgo: moment().endOf('day').subtract(2, 'weeks').toISOString().slice(0, 10),
                 },
             },
             result: {

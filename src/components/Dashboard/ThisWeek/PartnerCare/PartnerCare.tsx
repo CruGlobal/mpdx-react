@@ -97,8 +97,13 @@ const PartnerCare = ({
                 variant="fullWidth"
                 onChange={handleChange}
             >
-                <Tab label="Prayer" />
-                <Tab label="Celebrations" />
+                <Tab label={`Prayer (${prayerRequestTasks?.totalCount || 0})`} />
+                <Tab
+                    label={`Celebrations (${
+                        (reportsPeopleWithBirthdays?.periods[0]?.people?.length || 0) +
+                        (reportsPeopleWithAnniversaries?.periods[0]?.people?.length || 0)
+                    })`}
+                />
             </Tabs>
             {value == 0 && (
                 <motion.div
