@@ -110,9 +110,35 @@ export const Loading = (): ReactElement => {
 };
 
 export const Empty = (): ReactElement => {
+    const emptyReportsDonationHistories = {
+        periods: [
+            {
+                convertedTotal: 0,
+                startDate: '2011-12-1',
+                totals: [],
+            },
+            {
+                convertedTotal: 0,
+                startDate: '2012-1-1',
+                totals: [],
+            },
+            {
+                convertedTotal: 0,
+                startDate: '2012-2-1',
+                totals: [],
+            },
+            {
+                convertedTotal: 0,
+                startDate: '2012-3-1',
+                totals: [],
+            },
+        ],
+        averageIgnoreCurrent: 0,
+    };
+
     return (
         <Box m={2}>
-            <DonationHistories />
+            <DonationHistories reportsDonationHistories={emptyReportsDonationHistories} />
         </Box>
     );
 };
