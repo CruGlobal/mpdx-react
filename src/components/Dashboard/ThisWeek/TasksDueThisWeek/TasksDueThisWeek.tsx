@@ -100,7 +100,10 @@ const TasksDueThisWeek = ({ loading, dueTasks }: Props): ReactElement => {
                 >
                     {dueTasks.nodes.length === 0 && (
                         <CardContent className={classes.cardContent}>
-                            <img src="/drawkit/grape/drawkit-grape-pack-illustration-8.svg" className={classes.img} />
+                            <img
+                                src={require('../../../../images/drawkit/grape/drawkit-grape-pack-illustration-8.svg')}
+                                className={classes.img}
+                            />
                             No tasks to show.
                         </CardContent>
                     )}

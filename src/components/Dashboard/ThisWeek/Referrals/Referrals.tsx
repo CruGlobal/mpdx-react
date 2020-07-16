@@ -96,7 +96,10 @@ const ReferralsTab = ({ loading, referrals }: ReferralsTabProps): ReactElement =
                 <>
                     {referrals.nodes.length === 0 && (
                         <CardContent className={classes.cardContent}>
-                            <img src="/drawkit/grape/drawkit-grape-pack-illustration-4.svg" className={classes.img} />
+                            <img
+                                src={require('../../../../images/drawkit/grape/drawkit-grape-pack-illustration-4.svg')}
+                                className={classes.img}
+                            />
                             No referrals to show.
                         </CardContent>
                     )}

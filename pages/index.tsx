@@ -8,7 +8,7 @@ import BaseLayout from '../src/components/Layouts/Basic';
 
 const IndexPage = (): ReactElement => (
     <Welcome
-        title={<img src="/logo.svg" alt="logo" height={50} />}
+        title={<img src={require('../src/images/logo.svg')} alt="logo" height={50} />}
         subtitle="MPDX is fundraising software from Cru that helps you grow and maintain your ministry
 partners in a quick and easy way."
     >

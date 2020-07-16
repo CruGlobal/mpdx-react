@@ -34,7 +34,7 @@ const useStyles = makeStyles((theme: Theme) =>
             paddingBottom: `env(safe-area-inset-bottom)`,
             paddingLeft: `env(safe-area-inset-left)`,
             backgroundColor: 'rgb(5, 30, 52)',
-            backgroundImage: 'url(/sideBarBg.png)',
+            backgroundImage: `url(${require('./sideBar.png')})`,
             backgroundPosition: 'left 0 bottom 0',
             backgroundRepeat: 'no-repeat',
             backgroundSize: '256px 556px',
@@ -69,7 +69,7 @@ const SideBar = ({ mobileOpen, handleDrawerToggle }: Props): ReactElement => {
     const drawer = (
         <div>
             <Box px={2} className={classes.toolbar}>
-                <img src="/logo.svg" />
+                <img src={require('../../../../images/logo.svg')} />
             </Box>
             <Divider className={classes.divider} />
             <List className={classes.list}>

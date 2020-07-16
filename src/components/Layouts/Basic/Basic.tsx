@@ -9,7 +9,7 @@ const Basic = ({ children }: Props): ReactElement => {
     return (
         <>
             <TopBar>
-                <img src="/logo.svg" />
+                <img src={require('../../../images/logo.svg')} />
             </TopBar>
             {children}
         </>

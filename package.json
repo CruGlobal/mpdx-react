@@ -19,18 +19,21 @@
         "@material-ui/core": "^4.9.8",
         "@material-ui/icons": "^4.9.1",
         "@material-ui/lab": "^4.0.0-alpha.47",
-        "@types/axios": "^0.14.0",
         "apollo-cache-persist": "^0.1.1",
         "axios": "^0.19.2",
         "faker": "^4.1.0",
         "framer-motion": "^1.11.1",
         "graphql": "^15.0.0",
         "graphql-tag": "^2.10.3",
+        "imagemin-svgo": "^8.0.0",
         "isomorphic-fetch": "^2.2.1",
-        "lodash": "^4.17.15",
+        "lodash": "^4.17.19",
         "moment": "^2.27.0",
-        "next": "9.3.2",
+        "next": "^9.4.4",
         "next-auth": "^2.2.0",
+        "next-compose-plugins": "^2.2.0",
+        "next-optimized-images": "^2.6.1",
+        "next-plugin-graphql": "0.0.2",
         "next-pwa": "^3.0.1",
         "react": "16.13.1",
         "react-div-100vh": "^0.3.8",
@@ -46,6 +49,7 @@
         "@storybook/react": "^5.3.17",
         "@testing-library/jest-dom": "^5.3.0",
         "@testing-library/react": "^10.0.2",
+        "@types/axios": "^0.14.0",
         "@types/faker": "^4.1.11",
         "@types/jest": "^25.1.5",
         "@types/node": "^13.9.5",
@@ -77,5 +81,24 @@
             "eslint --fix",
             "git add"
         ]
+    },
+    "bit": {
+        "env": {
+            "compiler": "bit.envs/compilers/react-typescript@3.1.54",
+            "tester": "bit.envs/testers/jest@22.4.3"
+        },
+        "componentsDefaultDirectory": "components/{name}",
+        "packageManager": "npm",
+        "overrides": {
+            "*": {
+                "dependencies": {
+                    "@types/node": "^13.9.5"
+                },
+                "devDependencies": {
+                    "@types/jest": "^25.1.5",
+                    "@testing-library/jest-dom": "^5.3.0"
+                }
+            }
+        }
     }
 }

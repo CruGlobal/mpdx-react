@@ -33,7 +33,7 @@ const Footer = (): ReactElement => {
                 <Grid container alignItems="center">
                     <Grid item xs={12} md={8} alignItems="center" container spacing={3}>
                         <Grid xs={12} sm="auto" className={classes.logo} item>
-                            <img src="/logo.svg" alt="logo" />
+                            <img src={require('../../images/logo.svg')} alt="logo" />
                         </Grid>
                         <Grid xs={12} sm="auto" item>
                             <Link

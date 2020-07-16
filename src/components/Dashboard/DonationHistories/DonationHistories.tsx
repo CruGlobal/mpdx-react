@@ -165,7 +165,10 @@ const DonationHistories = ({
                 <CardContent>
                     {empty ? (
                         <Box className={classes.boxImg}>
-                            <img src="/drawkit/grape/drawkit-grape-pack-illustration-15.svg" className={classes.img} />
+                            <img
+                                src={require('../../../images/drawkit/grape/drawkit-grape-pack-illustration-15.svg')}
+                                className={classes.img}
+                            />
                             No monthly activity to show.
                         </Box>
                     ) : (

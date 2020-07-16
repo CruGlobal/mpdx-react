@@ -105,7 +105,10 @@ const Appeals = ({ loading, appeal }: Props): ReactElement => {
                     className={classes.div}
                 >
                     <CardContent className={classes.cardContent}>
-                        <img src="/drawkit/grape/drawkit-grape-pack-illustration-13.svg" className={classes.img} />
+                        <img
+                            src={require('../../../../images/drawkit/grape/drawkit-grape-pack-illustration-13.svg')}
+                            className={classes.img}
+                        />
                         No primary appeal to show.
                     </CardContent>
                 </motion.div>

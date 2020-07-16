@@ -94,7 +94,10 @@ const LateCommitments = ({ loading, latePledgeContacts }: Props): ReactElement =
                 >
                     {latePledgeContacts.nodes.length === 0 && (
                         <CardContent className={classes.cardContent}>
-                            <img src="/drawkit/grape/drawkit-grape-pack-illustration-14.svg" className={classes.img} />
+                            <img
+                                src={require('../../../../images/drawkit/grape/drawkit-grape-pack-illustration-14.svg')}
+                                className={classes.img}
+                            />
                             No late commitments to show.
                         </CardContent>
                     )}

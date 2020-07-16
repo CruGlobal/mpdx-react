@@ -139,7 +139,7 @@ const PartnerCare = ({
                             {prayerRequestTasks.nodes.length === 0 && (
                                 <CardContent className={classes.cardContent}>
                                     <img
-                                        src="/drawkit/grape/drawkit-grape-pack-illustration-4.svg"
+                                        src={require('../../../../images/drawkit/grape/drawkit-grape-pack-illustration-4.svg')}
                                         className={classes.img}
                                     />
                                     No prayer requests to show.
@@ -221,7 +221,7 @@ const PartnerCare = ({
                         reportsPeopleWithAnniversaries.periods[0].people.length === 0 && (
                             <CardContent className={classes.cardContent}>
                                 <img
-                                    src="/drawkit/grape/drawkit-grape-pack-illustration-7.svg"
+                                    src={require('../../../../images/drawkit/grape/drawkit-grape-pack-illustration-7.svg')}
                                     className={classes.img}
                                 />
                                 No celebrations to show.

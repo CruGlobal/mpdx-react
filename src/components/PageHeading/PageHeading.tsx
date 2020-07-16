@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 interface Props {
     heading: string;
     subheading?: string;
-    illustration?: number;
+    illustration?: string;
     overlap?: number;
 }
 
@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
 }));
 
-const PageHeading = ({ heading, subheading, illustration = 20, overlap = 0 }: Props): ReactElement => {
+const PageHeading = ({ heading, subheading, illustration, overlap = 0 }: Props): ReactElement => {
     const classes = useStyles();
 
     return (
@@ -64,7 +64,9 @@ const PageHeading = ({ heading, subheading, illustration = 20, overlap = 0 }: Pr
                         initial={{ x: 20, opacity: 0 }}
                         animate={{ x: 0, opacity: 1, transition: { delay: 1.2 } }}
                         exit={{ x: 20, opacity: 0 }}
-                        src={`/drawkit/grape/drawkit-grape-pack-illustration-${illustration}.svg`}
+                        src={
+                            illustration || require('../../images/drawkit/grape/drawkit-grape-pack-illustration-20.svg')
+                        }
                         height={230 - overlap}
                     />
                 </Box>

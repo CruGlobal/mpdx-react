@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 interface Props {
     title: string | ReactNode;
     subtitle: string;
-    illustration?: number;
+    imgSrc?: string;
     children?: ReactNode;
 }
 
@@ -22,6 +22,7 @@ const useStyles = makeStyles((theme: Theme) => ({
         display: 'flex',
         alignItems: 'center',
         minHeight: '100vh',
+        minWidth: '100vw',
         backgroundColor: theme.palette.primary.main,
         color: '#fff',
     },
@@ -48,7 +49,7 @@ const divVariants = {
     animate: { x: 0, opacity: 1 },
 };
 
-const Welcome = ({ title, subtitle, illustration = 2, children }: Props): ReactElement => {
+const Welcome = ({ title, subtitle, imgSrc, children }: Props): ReactElement => {
     const classes = useStyles();
 
     return (
@@ -77,7 +78,10 @@ const Welcome = ({ title, subtitle, illustration = 2, children }: Props): ReactE
                         </Grid>
                         <Grid item sm={4}>
                             <motion.img
-                                src={`/drawkit/grape/drawkit-grape-pack-illustration-${illustration}.svg`}
+                                src={
+                                    imgSrc ||
+                                    require(`../../images/drawkit/grape/drawkit-grape-pack-illustration-2.svg`)
+                                }
                                 variants={{ initial: { x: 25, opacity: 0 }, animate: { x: 0, opacity: 1 } }}
                             />
                         </Grid>
