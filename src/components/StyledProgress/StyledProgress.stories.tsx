@@ -1,5 +1,6 @@
 import React, { ReactElement } from 'react';
 import { Box } from '@material-ui/core';
+import { number, boolean } from '@storybook/addon-knobs';
 import StyledProgress from '.';
 
 export default {
@@ -7,9 +8,20 @@ export default {
 };
 
 export const Default = (): ReactElement => {
+    const options = {
+        range: true,
+        min: 0,
+        max: 100,
+        step: 1,
+    };
+
     return (
         <Box m={2}>
-            <StyledProgress primary={0.2} secondary={0.7} />
+            <StyledProgress
+                primary={number('primary', 50, options) / 100}
+                secondary={number('secondary', 75, options) / 100}
+                loading={boolean('loading', false)}
+            />
         </Box>
     );
 };

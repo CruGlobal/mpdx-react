@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 interface Props {
     heading: string;
     subheading?: string;
-    illustration?: string;
+    imgSrc?: string;
     overlap?: number;
 }
 
@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
 }));
 
-const PageHeading = ({ heading, subheading, illustration, overlap = 0 }: Props): ReactElement => {
+const PageHeading = ({ heading, subheading, imgSrc, overlap = 20 }: Props): ReactElement => {
     const classes = useStyles();
 
     return (
@@ -37,15 +37,20 @@ const PageHeading = ({ heading, subheading, illustration, overlap = 0 }: Props):
             exit={{ y: -250, transition: { ease: 'easeInOut', delay: 0.75 } }}
             className={classes.div}
             style={{ marginBottom: -overlap }}
+            data-testid="PageHeading"
         >
-            <Container className={classes.container} style={{ paddingBottom: overlap }}>
+            <Container
+                className={classes.container}
+                style={{ paddingBottom: overlap }}
+                data-testid="PageHeadingContainer"
+            >
                 <Box className={classes.pageHeading}>
                     <motion.div
                         animate={{ x: 0, opacity: 1, transition: { delay: 1 } }}
                         initial={{ x: -20, opacity: 0 }}
                         exit={{ x: -20, opacity: 0, transition: { delay: 0.2 } }}
                     >
-                        <Typography variant="h4" component="h1">
+                        <Typography variant="h4" component="h1" data-testid="PageHeadingHeading">
                             {heading}
                         </Typography>
                     </motion.div>
@@ -55,7 +60,7 @@ const PageHeading = ({ heading, subheading, illustration, overlap = 0 }: Props):
                             initial={{ x: -20, opacity: 0 }}
                             exit={{ x: -20, opacity: 0 }}
                         >
-                            <Typography>{subheading}</Typography>
+                            <Typography data-testid="PageHeadingSubheading">{subheading}</Typography>
                         </motion.div>
                     )}
                 </Box>
@@ -64,9 +69,8 @@ const PageHeading = ({ heading, subheading, illustration, overlap = 0 }: Props):
                         initial={{ x: 20, opacity: 0 }}
                         animate={{ x: 0, opacity: 1, transition: { delay: 1.2 } }}
                         exit={{ x: 20, opacity: 0 }}
-                        src={
-                            illustration || require('../../images/drawkit/grape/drawkit-grape-pack-illustration-20.svg')
-                        }
+                        data-testid="PageHeadingImg"
+                        src={imgSrc || require('../../images/drawkit/grape/drawkit-grape-pack-illustration-20.svg')}
                         height={230 - overlap}
                     />
                 </Box>

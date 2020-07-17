@@ -48,16 +48,18 @@ const StyledProgress = ({ loading, primary = 0, secondary = 0 }: Props): ReactEl
     return (
         <Box className={classes.box}>
             {loading ? (
-                <Skeleton className={classes.skeleton} animation="wave" />
+                <Skeleton data-testid="styledProgressLoading" className={classes.skeleton} animation="wave" />
             ) : (
                 <>
                     <Box
                         style={{ width: percentageFormat(secondary) }}
                         className={[classes.progress, classes.secondary].join(' ')}
+                        data-testid="styledProgressSecondary"
                     />
                     <Box
                         style={{ width: percentageFormat(primary) }}
                         className={[classes.progress, classes.primary].join(' ')}
+                        data-testid="styledProgressPrimary"
                     />
                 </>
             )}

@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 
 interface Props {
     title: string | ReactNode;
-    subtitle: string;
+    subtitle: string | ReactNode;
     imgSrc?: string;
     children?: ReactNode;
 }
@@ -60,7 +60,7 @@ const Welcome = ({ title, subtitle, imgSrc, children }: Props): ReactElement => 
                         <Grid item sm={8}>
                             <motion.div variants={divVariants}>
                                 {typeof title === 'string' ? (
-                                    <Typography variant="h4" component="h1">
+                                    <Typography data-testid="welcomeTitle" variant="h4" component="h1">
                                         {title}
                                     </Typography>
                                 ) : (
@@ -68,9 +68,13 @@ const Welcome = ({ title, subtitle, imgSrc, children }: Props): ReactElement => 
                                 )}
                             </motion.div>
                             <motion.div variants={divVariants}>
-                                <Box my={3} className={classes.subtitle}>
-                                    <Typography>{subtitle}</Typography>
-                                </Box>
+                                {typeof subtitle === 'string' ? (
+                                    <Box my={3} className={classes.subtitle}>
+                                        <Typography data-testid="welcomeSubtitle">{subtitle}</Typography>
+                                    </Box>
+                                ) : (
+                                    subtitle
+                                )}
                             </motion.div>
                             <motion.div variants={divVariants}>
                                 <Box className={classes.container}>{children}</Box>
@@ -78,6 +82,7 @@ const Welcome = ({ title, subtitle, imgSrc, children }: Props): ReactElement => 
                         </Grid>
                         <Grid item sm={4}>
                             <motion.img
+                                data-testid="welcomeImg"
                                 src={
                                     imgSrc ||
                                     require(`../../images/drawkit/grape/drawkit-grape-pack-illustration-2.svg`)

@@ -23,7 +23,7 @@ const Welcome = ({ firstName }: Props): ReactElement => {
         <PageHeading
             heading={greeting}
             subheading="Welcome back to MPDX. Here's what's been happening."
-            illustration={require('../../../images/drawkit/grape/drawkit-grape-pack-illustration-9.svg')}
+            imgSrc={require('../../../images/drawkit/grape/drawkit-grape-pack-illustration-9.svg')}
             overlap={20}
         />
     );

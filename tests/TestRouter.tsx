@@ -9,6 +9,7 @@ interface Props {
 
 const TestRouter = ({ children, router = {} }: Props): ReactElement => {
     const {
+        basePath = '',
         route = '',
         pathname = '',
         query = {},
@@ -30,6 +31,7 @@ const TestRouter = ({ children, router = {} }: Props): ReactElement => {
     return (
         <RouterContext.Provider
             value={{
+                basePath,
                 route,
                 pathname,
                 query,

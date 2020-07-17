@@ -59,7 +59,7 @@ const AccountLists = ({ data }: Props): ReactElement => {
                                     >
                                         <CardActionArea>
                                             <CardContent className={classes.cardContent}>
-                                                <Typography>{item.name}</Typography>
+                                                <Typography data-testid={item.id}>{item.name}</Typography>
                                             </CardContent>
                                         </CardActionArea>
                                     </Link>
