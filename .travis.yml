@@ -12,6 +12,10 @@ before_install:
     - npm update
 install:
     - npm install
-script:
-    - npm run test
-    - npm run lint:ci
+jobs:
+    include:
+        - script:
+              - npm run test
+              - npm run lint:ci
+        - script:
+              - bin/travis_chromatic.sh
