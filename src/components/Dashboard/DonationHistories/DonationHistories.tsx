@@ -94,7 +94,7 @@ const DonationHistories = ({
         });
         return data;
     });
-    const empty = !loading && periods.reduce((accumulator, { total }) => accumulator + total, 0) === 0;
+    const empty = !loading && periods.reduce((result, { total }) => result + total, 0) === 0;
 
     return (
         <>

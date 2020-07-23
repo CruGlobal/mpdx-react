@@ -2,8 +2,8 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import PageHeading from '.';
 
-describe('PageHeading', () => {
-    it('should have correct defaults', () => {
+describe(PageHeading.name, () => {
+    it('has correct defaults', () => {
         const { getByTestId } = render(<PageHeading heading="test heading" subheading="test subheading" />);
         expect(getByTestId('PageHeading')).toHaveStyle('margin-bottom: -20px');
         expect(getByTestId('PageHeadingContainer')).toHaveStyle('padding-bottom: 20px');
@@ -12,7 +12,7 @@ describe('PageHeading', () => {
         expect(getByTestId('PageHeadingImg')).toHaveAttribute('src', 'drawkit-grape-pack-illustration-20.svg');
     });
 
-    it('should have correct overrides', () => {
+    it('has correct overrides', () => {
         const { getByTestId, queryByTestId } = render(
             <PageHeading
                 heading="test heading"

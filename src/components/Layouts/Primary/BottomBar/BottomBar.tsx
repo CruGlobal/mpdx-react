@@ -32,7 +32,7 @@ const BottomBar = (): ReactElement => {
                 showLabels
                 className={[classes.bottomNavigation, classes.bottomNavigationFixed].join(' ')}
             >
-                <BottomNavigationAction label="Overview" icon={<HomeIcon />} />
+                <BottomNavigationAction label="Overview" icon={<HomeIcon />} data-testid="BottomBarOverview" />
             </BottomNavigation>
         </>
     );

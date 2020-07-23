@@ -1,4 +1,4 @@
-import React, { ReactElement, useState, MouseEvent } from 'react';
+import React, { ReactElement, useState, useRef } from 'react';
 import {
     Avatar,
     IconButton,
@@ -13,6 +13,7 @@ import {
     useScrollTrigger,
     Theme,
     Grid,
+    Hidden,
 } from '@material-ui/core';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import { useQuery, gql } from '@apollo/client';
@@ -46,11 +47,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
     sideBarGrid: {
         order: 1,
-    },
-    sideBarButton: {
-        [theme.breakpoints.up('md')]: {
-            display: 'none',
-        },
     },
     accountListsGrid: {
         order: 2,
@@ -135,15 +131,15 @@ const TopBar = ({ handleDrawerToggle }: Props): ReactElement => {
     });
     const { data } = useQuery<GetTopBarQuery>(GET_TOP_BAR_QUERY);
     const { data: state } = useQuery<GetLocalStateQuery>(GET_LOCAL_STATE_QUERY);
-    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+    const [open, setOpen] = useState(false);
+    const anchorEl = useRef(null);
 
-    const handleClick = (event: MouseEvent<HTMLButtonElement>): void => {
-        setAnchorEl(event.currentTarget);
+    const handleOpen = (): void => {
+        setOpen(true);
     };
 
-    const handleClose = (): boolean => {
-        setAnchorEl(null);
-        return true;
+    const handleClose = (): void => {
+        setOpen(false);
     };
 
     const currentAccountList =
@@ -155,50 +151,51 @@ const TopBar = ({ handleDrawerToggle }: Props): ReactElement => {
                 <Toolbar className={classes.toolbar}>
                     <Grid container className={classes.container} alignItems="center">
                         <Grid item className={classes.sideBarGrid}>
-                            <IconButton
-                                color="inherit"
-                                edge="start"
-                                onClick={handleDrawerToggle}
-                                className={classes.sideBarButton}
-                            >
-                                <MenuIcon />
-                            </IconButton>
+                            <Hidden mdUp>
+                                <IconButton color="inherit" edge="start" onClick={handleDrawerToggle}>
+                                    <MenuIcon />
+                                </IconButton>
+                            </Hidden>
                         </Grid>
                         <Grid item className={classes.accountListsGrid}>
                             {data?.accountLists?.nodes && (
                                 <>
                                     {data.accountLists.nodes.length == 1 && (
-                                        <Box display={{ xs: 'none', sm: 'block' }}>{currentAccountList?.name}</Box>
+                                        <Box
+                                            display={{ xs: 'none', sm: 'block' }}
+                                            data-testid="TopBarSingleAccountList"
+                                        >
+                                            {currentAccountList?.name}
+                                        </Box>
                                     )}
                                     {data.accountLists.nodes.length > 1 && (
                                         <>
-                                            <Box display={{ xs: 'none', sm: 'block' }}>
+                                            <Hidden only="xs">
                                                 <Button
-                                                    aria-controls="account-list-selector"
-                                                    aria-haspopup="true"
-                                                    onClick={handleClick}
+                                                    onClick={handleOpen}
                                                     className={[classes.button, classes.link].join(' ')}
                                                     endIcon={<ArrowDropDownIcon />}
                                                     size="small"
+                                                    ref={anchorEl}
+                                                    data-testid="TopBarButton"
                                                 >
                                                     {currentAccountList?.name}
                                                 </Button>
-                                            </Box>
-                                            <Box display={{ xs: 'block', sm: 'none' }}>
+                                            </Hidden>
+                                            <Hidden smUp>
                                                 <IconButton
-                                                    aria-controls="account-list-selector"
-                                                    aria-haspopup="true"
-                                                    onClick={handleClick}
+                                                    onClick={handleOpen}
                                                     className={classes.link}
+                                                    ref={anchorEl}
+                                                    data-testid="TopBarButton"
                                                 >
                                                     <MoreVertIcon />
                                                 </IconButton>
-                                            </Box>
+                                            </Hidden>
                                             <Menu
-                                                id="simple-menu"
-                                                anchorEl={anchorEl}
-                                                keepMounted
-                                                open={Boolean(anchorEl)}
+                                                data-testid="TopBarMenu"
+                                                anchorEl={anchorEl?.current}
+                                                open={open}
                                                 onClose={handleClose}
                                                 classes={{ list: classes.menuList }}
                                             >
@@ -219,6 +216,7 @@ const TopBar = ({ handleDrawerToggle }: Props): ReactElement => {
                                                                 id == state?.currentAccountListId
                                                             }
                                                             onClick={handleClose}
+                                                            data-testid={`TopBarMenuItem${id}`}
                                                         >
                                                             {name}
                                                         </MenuItem>
@@ -232,7 +230,10 @@ const TopBar = ({ handleDrawerToggle }: Props): ReactElement => {
                         </Grid>
                         <Grid item className={classes.breadcrumbGrid}>
                             {state?.breadcrumb && (
-                                <Box className={clsx(classes.breadcrumb, trigger && classes.breadcrumbTrigger)}>
+                                <Box
+                                    className={clsx(classes.breadcrumb, trigger && classes.breadcrumbTrigger)}
+                                    data-testid="TopBarBreadcrumb"
+                                >
                                     {state?.breadcrumb}
                                 </Box>
                             )}

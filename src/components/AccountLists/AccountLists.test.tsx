@@ -1,11 +1,11 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import PageHeading from '.';
+import AccountLists from '.';
 
-describe('PageHeading', () => {
-    it('should have correct defaults', () => {
+describe(AccountLists.name, () => {
+    it('has correct defaults', () => {
         const { getByTestId } = render(
-            <PageHeading
+            <AccountLists
                 data={{
                     accountLists: {
                         nodes: [

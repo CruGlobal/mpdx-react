@@ -40,7 +40,7 @@ module.exports = {
       }
     },
     {
-      "files": ["*.stories.tsx", "tests/**.*"],
+      "files": ["*.stories.tsx", "*.test.tsx", "tests/**.*"],
       "rules": {
         "import/no-anonymous-default-export": "off",
         "@typescript-eslint/no-empty-function": "off"

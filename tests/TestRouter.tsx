@@ -1,5 +1,5 @@
 import React, { ReactElement, ReactNode } from 'react';
-import { NextRouter } from 'next/router';
+import Router, { NextRouter, Router as IRouter } from 'next/router'; // eslint-disable-line import/no-named-as-default
 import { RouterContext } from 'next/dist/next-server/lib/router-context';
 
 interface Props {
@@ -8,47 +8,31 @@ interface Props {
 }
 
 const TestRouter = ({ children, router = {} }: Props): ReactElement => {
-    const {
-        basePath = '',
-        route = '',
-        pathname = '',
-        query = {},
-        asPath = '',
-        push = async (): Promise<boolean> => true,
-        replace = async (): Promise<boolean> => true,
-        reload = (): void => null,
-        back = (): void => null,
-        prefetch = async (): Promise<void> => undefined,
-        beforePopState = (): void => null,
-        isFallback = false,
-        events = {
+    const defaultRouter = {
+        basePath: '',
+        route: '',
+        pathname: '',
+        query: {},
+        asPath: '',
+        push: async (): Promise<boolean> => true,
+        replace: async (): Promise<boolean> => true,
+        reload: (): void => null,
+        back: (): void => null,
+        prefetch: async (): Promise<void> => undefined,
+        beforePopState: (): void => null,
+        isFallback: false,
+        events: {
             on: (): void => null,
             off: (): void => null,
             emit: (): void => null,
         },
-    } = router;
+    };
 
-    return (
-        <RouterContext.Provider
-            value={{
-                basePath,
-                route,
-                pathname,
-                query,
-                asPath,
-                push,
-                replace,
-                reload,
-                back,
-                prefetch,
-                beforePopState,
-                isFallback,
-                events,
-            }}
-        >
-            {children}
-        </RouterContext.Provider>
-    );
+    const configuredRouter = { ...defaultRouter, ...router };
+
+    Router.router = configuredRouter as IRouter;
+
+    return <RouterContext.Provider value={configuredRouter}>{children}</RouterContext.Provider>;
 };
 
 export default TestRouter;

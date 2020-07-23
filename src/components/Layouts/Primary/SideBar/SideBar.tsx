@@ -77,7 +77,7 @@ const SideBar = ({ mobileOpen, handleDrawerToggle }: Props): ReactElement => {
                     <ListItemIcon className={classes.listItemIcon}>
                         <HomeIcon />
                     </ListItemIcon>
-                    <ListItemText className={classes.listItemText} primary="Overview" />
+                    <ListItemText className={classes.listItemText} primary="Overview" data-testid="SideBarOverview" />
                 </ListItem>
             </List>
         </div>
@@ -86,19 +86,25 @@ const SideBar = ({ mobileOpen, handleDrawerToggle }: Props): ReactElement => {
     return (
         <>
             <nav className={classes.nav}>
-                <Hidden mdUp implementation="css">
+                <Hidden mdUp>
                     <Drawer
                         variant="temporary"
                         open={mobileOpen}
                         onClose={handleDrawerToggle}
                         classes={{ paper: classes.drawerPaper }}
                         ModalProps={{ keepMounted: true }}
+                        data-testid="SideBarMobileDrawer"
                     >
                         {drawer}
                     </Drawer>
                 </Hidden>
-                <Hidden smDown implementation="css">
-                    <Drawer classes={{ paper: classes.drawerPaper }} variant="permanent" open>
+                <Hidden smDown>
+                    <Drawer
+                        classes={{ paper: classes.drawerPaper }}
+                        variant="permanent"
+                        open
+                        data-testid="SideBarDesktopDrawer"
+                    >
                         {drawer}
                     </Drawer>
                 </Hidden>

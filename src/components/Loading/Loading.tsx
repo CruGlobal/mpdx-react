@@ -58,6 +58,7 @@ const Loading = ({ loading = false }: Props): ReactElement => {
                     animate={{ scale: 1, opacity: 1 }}
                     exit={{ opacity: 0 }}
                     className={classes.box}
+                    data-testid="Loading"
                 >
                     <Fab color="default" disableRipple className={classes.fab}>
                         <CircularProgress size={30} />

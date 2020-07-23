@@ -1,25 +1,36 @@
 import React from 'react';
 import { render } from '@testing-library/react';
+import MockDate from 'mockdate';
 import Footer from '.';
 
-describe('Footer', () => {
-    it('should contain privacy link', () => {
+describe(Footer.name, () => {
+    it('contains privacy link', () => {
         const { getByTestId } = render(<Footer />);
         expect(getByTestId('privacy')).toHaveAttribute('href', 'https://get.mpdx.org/privacy-policy/');
     });
 
-    it('should contain whats-new link', () => {
+    it('contains whats-new link', () => {
         const { getByTestId } = render(<Footer />);
         expect(getByTestId('whats-new')).toHaveAttribute('href', 'https://get.mpdx.org/release-notes/');
     });
 
-    it('should contain terms-of-use link', () => {
+    it('contains terms-of-use link', () => {
         const { getByTestId } = render(<Footer />);
         expect(getByTestId('terms-of-use')).toHaveAttribute('href', 'https://get.mpdx.org/terms-of-use/');
     });
 
-    it('should have correct text', () => {
-        const { getByText } = render(<Footer />);
-        expect(getByText(`© ${new Date().getFullYear()}, Cru. All Rights Reserved.`)).toBeTruthy();
+    describe('mocked Date', () => {
+        beforeEach(() => {
+            MockDate.set('2000-11-22');
+        });
+
+        afterEach(() => {
+            MockDate.reset();
+        });
+
+        it('has correct text', () => {
+            const { getByText } = render(<Footer />);
+            expect(getByText('© 2000, Cru. All Rights Reserved.')).toBeTruthy();
+        });
     });
 });

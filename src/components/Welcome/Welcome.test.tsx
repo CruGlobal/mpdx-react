@@ -2,8 +2,8 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import Welcome from '.';
 
-describe('Welcome', () => {
-    it('should have correct defaults', () => {
+describe(Welcome.name, () => {
+    it('has correct defaults', () => {
         const { getByTestId } = render(
             <Welcome title="test title" subtitle="test subtitle">
                 <div data-testid="children">children</div>
@@ -15,7 +15,7 @@ describe('Welcome', () => {
         expect(getByTestId('children')).toHaveTextContent('children');
     });
 
-    it('should have correct overrides', () => {
+    it('has correct overrides', () => {
         const { getByTestId } = render(
             <Welcome
                 title={<div data-testid="testTitle">test title</div>}
