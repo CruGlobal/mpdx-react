@@ -94,7 +94,7 @@ const DonationHistories = ({
         });
         return data;
     });
-    const empty = !loading && periods.reduce((result, { total }) => result + total, 0) === 0;
+    const empty = !loading && (periods === undefined || periods.reduce((result, { total }) => result + total, 0) === 0);
 
     return (
         <>
@@ -137,7 +137,7 @@ const DonationHistories = ({
                                                 <Typography variant="body1" component="span">
                                                     Average:{' '}
                                                     {currencyFormat(
-                                                        reportsDonationHistories?.averageIgnoreCurrent,
+                                                        reportsDonationHistories.averageIgnoreCurrent,
                                                         currencyCode,
                                                     )}
                                                 </Typography>
@@ -164,7 +164,7 @@ const DonationHistories = ({
                 )}
                 <CardContent>
                     {empty ? (
-                        <Box className={classes.boxImg}>
+                        <Box className={classes.boxImg} data-testid="DonationHistoriesBoxEmpty">
                             <img
                                 src={require('../../../images/drawkit/grape/drawkit-grape-pack-illustration-15.svg')}
                                 className={classes.img}
@@ -175,7 +175,12 @@ const DonationHistories = ({
                         <>
                             <Box mt={1} display={{ xs: 'none', sm: 'block' }} style={{ height: '250px' }}>
                                 {loading ? (
-                                    <Grid container justify="space-between" alignItems="flex-end">
+                                    <Grid
+                                        container
+                                        justify="space-between"
+                                        alignItems="flex-end"
+                                        data-testid="DonationHistoriesGridLoading"
+                                    >
                                         <Skeleton variant="rect" width={30} height={30} />
                                         <Skeleton variant="rect" width={30} height={50} />
                                         <Skeleton variant="rect" width={30} height={70} />

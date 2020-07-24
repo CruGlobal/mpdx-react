@@ -10,13 +10,14 @@ const Welcome = ({ firstName }: Props): ReactElement => {
     const currentHour = today.getHours();
 
     let greeting = 'Good Evening,';
+
     if (currentHour < 12) {
         greeting = 'Good Morning,';
     } else if (currentHour < 18) {
         greeting = 'Good Afternoon,';
     }
     if (firstName) {
-        greeting = greeting + ` ${firstName}.`;
+        greeting = `${greeting} ${firstName}.`;
     }
 
     return (
@@ -24,7 +25,6 @@ const Welcome = ({ firstName }: Props): ReactElement => {
             heading={greeting}
             subheading="Welcome back to MPDX. Here's what's been happening."
             imgSrc={require('../../../images/drawkit/grape/drawkit-grape-pack-illustration-9.svg')}
-            overlap={20}
         />
     );
 };

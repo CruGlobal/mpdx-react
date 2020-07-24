@@ -49,7 +49,9 @@ const MonthlyGoal = ({ loading, goal, received, pledged, currencyCode = 'USD' }:
                         <Box display="flex">
                             <Box flexGrow={1}>Monthly Goal</Box>
                             <Hidden smUp>
-                                <Box>{!loading && currencyFormat(goal, currencyCode)}</Box>
+                                <Box data-testid="MonthlyGoalTypographyGoalMobile">
+                                    {!loading && currencyFormat(goal, currencyCode)}
+                                </Box>
                             </Hidden>
                         </Box>
                     </Typography>
@@ -65,7 +67,7 @@ const MonthlyGoal = ({ loading, goal, received, pledged, currencyCode = 'USD' }:
                                     <div className={[classes.indicator, classes.goal].join(' ')} />
                                     Goal
                                 </Typography>
-                                <Typography variant="h5">
+                                <Typography variant="h5" data-testid="MonthlyGoalTypographyGoal">
                                     {loading ? <Skeleton variant="text" /> : currencyFormat(goal, currencyCode)}
                                 </Typography>
                             </Grid>
@@ -75,16 +77,16 @@ const MonthlyGoal = ({ loading, goal, received, pledged, currencyCode = 'USD' }:
                                 <div className={[classes.indicator, classes.received].join(' ')} />
                                 Gifts Started
                             </Typography>
-                            <Typography variant="h5">
+                            <Typography variant="h5" data-testid="MonthlyGoalTypographyReceivedPercentage">
                                 {loading ? (
                                     <Skeleton variant="text" />
                                 ) : isNaN(receivedPercentage) ? (
-                                    '- '
+                                    '-'
                                 ) : (
                                     percentageFormat(receivedPercentage)
                                 )}
                             </Typography>
-                            <Typography component="small">
+                            <Typography component="small" data-testid="MonthlyGoalTypographyReceived">
                                 {loading ? <Skeleton variant="text" /> : currencyFormat(received, currencyCode)}
                             </Typography>
                         </Grid>
@@ -93,16 +95,16 @@ const MonthlyGoal = ({ loading, goal, received, pledged, currencyCode = 'USD' }:
                                 <div className={[classes.indicator, classes.pledged].join(' ')} />
                                 Commitments
                             </Typography>
-                            <Typography variant="h5">
+                            <Typography variant="h5" data-testid="MonthlyGoalTypographyPledgedPercentage">
                                 {loading ? (
                                     <Skeleton variant="text" />
                                 ) : isNaN(pledgedPercentage) ? (
-                                    '- '
+                                    '-'
                                 ) : (
                                     percentageFormat(pledgedPercentage)
                                 )}
                             </Typography>
-                            <Typography component="small">
+                            <Typography component="small" data-testid="MonthlyGoalTypographyPledged">
                                 {loading ? <Skeleton variant="text" /> : currencyFormat(pledged, currencyCode)}
                             </Typography>
                         </Grid>
@@ -112,21 +114,11 @@ const MonthlyGoal = ({ loading, goal, received, pledged, currencyCode = 'USD' }:
                                     <Typography component="div" color="textSecondary">
                                         Below Goal
                                     </Typography>
-                                    <Typography variant="h5">
-                                        {loading ? (
-                                            <Skeleton variant="text" />
-                                        ) : isNaN(belowGoalPercentage) ? (
-                                            '- '
-                                        ) : (
-                                            percentageFormat(belowGoalPercentage)
-                                        )}
+                                    <Typography variant="h5" data-testid="MonthlyGoalTypographyBelowGoalPercentage">
+                                        {percentageFormat(belowGoalPercentage)}
                                     </Typography>
-                                    <Typography component="small">
-                                        {loading ? (
-                                            <Skeleton variant="text" />
-                                        ) : (
-                                            currencyFormat(belowGoal, currencyCode)
-                                        )}
+                                    <Typography component="small" data-testid="MonthlyGoalTypographyBelowGoal">
+                                        {currencyFormat(belowGoal, currencyCode)}
                                     </Typography>
                                 </Grid>
                             ) : (
@@ -134,16 +126,16 @@ const MonthlyGoal = ({ loading, goal, received, pledged, currencyCode = 'USD' }:
                                     <Typography component="div" color="textSecondary">
                                         Above Goal
                                     </Typography>
-                                    <Typography variant="h5">
+                                    <Typography variant="h5" data-testid="MonthlyGoalTypographyAboveGoalPercentage">
                                         {loading ? (
                                             <Skeleton variant="text" />
                                         ) : isNaN(belowGoalPercentage) ? (
-                                            '- '
+                                            '-'
                                         ) : (
                                             percentageFormat(-belowGoalPercentage)
                                         )}
                                     </Typography>
-                                    <Typography component="small">
+                                    <Typography component="small" data-testid="MonthlyGoalTypographyAboveGoal">
                                         {loading ? (
                                             <Skeleton variant="text" />
                                         ) : (

@@ -85,7 +85,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 interface Props {
-    loading: boolean;
+    loading?: boolean;
     appeal?: GetThisWeekQuery_accountList_primaryAppeal;
 }
 
@@ -104,7 +104,7 @@ const Appeals = ({ loading, appeal }: Props): ReactElement => {
                     exit={{ opacity: 0 }}
                     className={classes.div}
                 >
-                    <CardContent className={classes.cardContent}>
+                    <CardContent className={classes.cardContent} data-testid="AppealsCardContentEmpty">
                         <img
                             src={require('../../../../images/drawkit/grape/drawkit-grape-pack-illustration-13.svg')}
                             className={classes.img}
@@ -123,14 +123,14 @@ const Appeals = ({ loading, appeal }: Props): ReactElement => {
                     <CardContent className={[classes.cardContent, classes.cardContentExpanded].join(' ')}>
                         <Typography variant="h6" className={classes.titleContainer}>
                             <Box className={classes.title}>
-                                <Box className={classes.titleContent}>
+                                <Box className={classes.titleContent} data-testid="AppealsBoxName">
                                     {loading ? <Skeleton variant="text" width="50%" /> : appeal.name}
                                 </Box>
-                                <Box>
+                                <Box data-testid="AppealsBoxAmount">
                                     {loading ? (
                                         <Skeleton variant="text" width={100} />
                                     ) : (
-                                        currencyFormat(appeal.amount || 0, appeal.amountCurrency)
+                                        currencyFormat(appeal.amount, appeal.amountCurrency)
                                     )}
                                 </Box>
                             </Box>
@@ -146,16 +146,17 @@ const Appeals = ({ loading, appeal }: Props): ReactElement => {
                                     <div className={[classes.indicator, classes.pledgesAmountProcessed].join(' ')} />
                                     Gifts Received
                                 </Typography>
-                                <Typography variant="h5">
+                                <Typography
+                                    variant="h5"
+                                    data-testid="AppealsTypographyPledgesAmountProcessedPercentage"
+                                >
                                     {loading ? (
                                         <Skeleton variant="text" />
-                                    ) : isNaN(pledgesAmountProcessedPercentage) ? (
-                                        '- '
                                     ) : (
                                         percentageFormat(pledgesAmountProcessedPercentage)
                                     )}
                                 </Typography>
-                                <Typography component="small">
+                                <Typography component="small" data-testid="AppealsTypographyPledgesAmountProcessed">
                                     {loading ? (
                                         <Skeleton variant="text" />
                                     ) : (
@@ -168,16 +169,14 @@ const Appeals = ({ loading, appeal }: Props): ReactElement => {
                                     <div className={[classes.indicator, classes.pledgesAmountTotal].join(' ')} />
                                     Commitments
                                 </Typography>
-                                <Typography variant="h5">
+                                <Typography variant="h5" data-testid="AppealsTypographyPledgesAmountTotalPercentage">
                                     {loading ? (
                                         <Skeleton variant="text" />
-                                    ) : isNaN(pledgesAmountTotalPercentage) ? (
-                                        '- '
                                     ) : (
                                         percentageFormat(pledgesAmountTotalPercentage)
                                     )}
                                 </Typography>
-                                <Typography component="small">
+                                <Typography component="small" data-testid="AppealsTypographyPledgesAmountTotal">
                                     {loading ? (
                                         <Skeleton variant="text" />
                                     ) : (

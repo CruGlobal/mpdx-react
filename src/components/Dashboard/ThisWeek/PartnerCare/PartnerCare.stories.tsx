@@ -17,7 +17,7 @@ export const Default = (): ReactElement => {
         id: 'task',
         subject: 'the quick brown fox jumps over the lazy dog',
         activityType: ActivityTypeEnum.PRAYER_REQUEST,
-        contacts: { nodes: [{ name: 'Smith, Roger' }] },
+        contacts: { nodes: [{ name: 'Roger Smith' }, { name: 'Sarah Smith' }] },
     };
     const personWithBirthday = {
         id: 'person',

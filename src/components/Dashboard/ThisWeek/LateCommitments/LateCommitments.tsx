@@ -15,6 +15,7 @@ import { Skeleton } from '@material-ui/lab';
 import { motion } from 'framer-motion';
 import AnimatedCard from '../../../AnimatedCard';
 import { GetThisWeekQuery_latePledgeContacts } from '../../../../../types/GetThisWeekQuery';
+import { numberFormat } from '../../../../lib/intlFormat';
 
 const useStyles = makeStyles((theme: Theme) => ({
     div: {
@@ -51,7 +52,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 interface Props {
-    loading: boolean;
+    loading?: boolean;
     latePledgeContacts?: GetThisWeekQuery_latePledgeContacts;
 }
 
@@ -67,6 +68,7 @@ const LateCommitments = ({ loading, latePledgeContacts }: Props): ReactElement =
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                     className={classes.div}
+                    data-testid="LateCommitmentsDivLoading"
                 >
                     <List className={classes.list}>
                         {[0, 1, 2].map((index) => (
@@ -85,15 +87,15 @@ const LateCommitments = ({ loading, latePledgeContacts }: Props): ReactElement =
                     </CardActions>
                 </motion.div>
             )}
-            {!loading && latePledgeContacts?.nodes && (
+            {!loading && (
                 <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                     className={classes.div}
                 >
-                    {latePledgeContacts.nodes.length === 0 && (
-                        <CardContent className={classes.cardContent}>
+                    {(!latePledgeContacts || latePledgeContacts.nodes.length === 0) && (
+                        <CardContent className={classes.cardContent} data-testid="LateCommitmentsCardContentEmpty">
                             <img
                                 src={require('../../../../images/drawkit/grape/drawkit-grape-pack-illustration-14.svg')}
                                 className={classes.img}
@@ -101,24 +103,28 @@ const LateCommitments = ({ loading, latePledgeContacts }: Props): ReactElement =
                             No late commitments to show.
                         </CardContent>
                     )}
-                    {latePledgeContacts.nodes.length > 0 && (
+                    {latePledgeContacts && latePledgeContacts.nodes.length > 0 && (
                         <>
-                            <List className={classes.list}>
-                                {latePledgeContacts?.nodes?.map((contact) => {
+                            <List className={classes.list} data-testid="LateCommitmentsListContacts">
+                                {latePledgeContacts.nodes.map((contact) => {
                                     const days = moment().diff(moment(contact.lateAt), 'days');
                                     return (
-                                        <ListItem key={contact.id} button>
+                                        <ListItem
+                                            key={contact.id}
+                                            button
+                                            data-testid={`LateCommitmentsListItemContact-${contact.id}`}
+                                        >
                                             <ListItemText
                                                 primary={contact.name}
-                                                secondary={`Their gift is ${days} days late.`}
+                                                secondary={`Their gift is ${numberFormat(days)} days late.`}
                                             />
                                         </ListItem>
                                     );
                                 })}
                             </List>
                             <CardActions>
-                                <Button size="small" color="primary">
-                                    View All ({latePledgeContacts?.totalCount || 0})
+                                <Button size="small" color="primary" data-testid="LateCommitmentsButtonViewAll">
+                                    View All ({numberFormat(latePledgeContacts.totalCount)})
                                 </Button>
                             </CardActions>
                         </>
