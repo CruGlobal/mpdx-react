@@ -40,21 +40,18 @@ const Dashboard = ({ data, accountListId }: Props): ReactElement => {
                                     goal={data.accountList.monthlyGoal}
                                     received={data.accountList.receivedPledges}
                                     pledged={data.accountList.committed}
-                                    currencyCode={data.accountList.currency || undefined}
+                                    currencyCode={data.accountList.currency}
                                 />
                             </Grid>
                             <Grid xs={12} sm={4} item>
-                                <Balance
-                                    balance={data.accountList.balance}
-                                    currencyCode={data.accountList.currency || undefined}
-                                />
+                                <Balance balance={data.accountList.balance} currencyCode={data.accountList.currency} />
                             </Grid>
                             <Grid xs={12} item>
                                 <DonationHistories
                                     goal={data.accountList.monthlyGoal}
                                     pledged={data.accountList.committed}
                                     reportsDonationHistories={data.reportsDonationHistories}
-                                    currencyCode={data.accountList.currency || undefined}
+                                    currencyCode={data.accountList.currency}
                                 />
                             </Grid>
                             <Grid xs={12} item>

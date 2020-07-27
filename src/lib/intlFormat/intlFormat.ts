@@ -1,3 +1,5 @@
+import { isFinite, isNil } from 'lodash/fp';
+
 const getLanguage = (): string => {
     const language = (typeof window !== 'undefined' && window.navigator.language) || 'en-US';
     return language;
@@ -6,12 +8,12 @@ const getLanguage = (): string => {
 export const numberFormat = (value: number, language = getLanguage()): string =>
     new Intl.NumberFormat(language, {
         style: 'decimal',
-    }).format(isNaN(value) ? 0 : value);
+    }).format(isFinite(value) ? value : 0);
 
 export const percentageFormat = (value: number, language = getLanguage()): string =>
     new Intl.NumberFormat(language, {
         style: 'percent',
-    }).format(isNaN(value) ? 0 : value);
+    }).format(isFinite(value) ? value : 0);
 
 export const currencyFormat = (
     value: number,
@@ -21,9 +23,9 @@ export const currencyFormat = (
 ): string =>
     new Intl.NumberFormat(language, {
         style: 'currency',
-        currency,
+        currency: isNil(currency) ? 'USD' : currency,
         minimumFractionDigits,
-    }).format(isNaN(value) ? 0 : parseFloat(value.toFixed(minimumFractionDigits)));
+    }).format(isFinite(value) ? parseFloat(value.toFixed(minimumFractionDigits)) : 0);
 
 export const dayMonthFormat = (day: number, month: number, language = getLanguage()): string =>
     new Intl.DateTimeFormat(language, {

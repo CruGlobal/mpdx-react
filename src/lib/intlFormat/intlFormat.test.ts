@@ -24,6 +24,10 @@ describe('intlFormat', () => {
             expect(numberFormat(NaN)).toEqual('0');
         });
 
+        it('handles null case', () => {
+            expect(numberFormat(null)).toEqual('0');
+        });
+
         it('handles undefined case', () => {
             expect(numberFormat(undefined)).toEqual('0');
         });
@@ -52,6 +56,10 @@ describe('intlFormat', () => {
             expect(percentageFormat(NaN)).toEqual('0%');
         });
 
+        it('handles null case', () => {
+            expect(percentageFormat(null)).toEqual('0%');
+        });
+
         it('handles undefined case', () => {
             expect(percentageFormat(undefined)).toEqual('0%');
         });
@@ -76,16 +84,32 @@ describe('intlFormat', () => {
             expect(currencyFormat(1234.56, 'USD', 2)).toEqual('$1,234.56');
         });
 
-        it('handles NaN case', () => {
-            expect(currencyFormat(NaN, 'NZD')).toEqual('NZ$0');
-        });
-
-        it('handles undefined case', () => {
-            expect(currencyFormat(undefined, 'NZD')).toEqual('NZ$0');
-        });
-
         it('handles language', () => {
             expect(currencyFormat(1000.1, 'EUR', 2, 'fr')).toEqual('1 000,10 €');
+        });
+
+        describe('value', () => {
+            it('handles NaN case', () => {
+                expect(currencyFormat(NaN, 'NZD')).toEqual('NZ$0');
+            });
+
+            it('handles null case', () => {
+                expect(currencyFormat(null, 'NZD')).toEqual('NZ$0');
+            });
+
+            it('handles undefined case', () => {
+                expect(currencyFormat(undefined, 'NZD')).toEqual('NZ$0');
+            });
+        });
+
+        describe('currency', () => {
+            it('handles null case', () => {
+                expect(currencyFormat(1000, null)).toEqual('$1,000');
+            });
+
+            it('handles undefined case', () => {
+                expect(currencyFormat(1000, undefined)).toEqual('$1,000');
+            });
         });
 
         describe('default language', () => {
