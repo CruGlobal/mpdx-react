@@ -117,4 +117,22 @@ describe(Dashboard.name, () => {
         expect(getByTestId('ReferralsTabRecentList')).toBeInTheDocument();
         expect(getByTestId('AppealsBoxName')).toBeInTheDocument();
     });
+    it('handles null currency code', async () => {
+        const { getByTestId, getByText, queryByTestId } = render(
+            <MockedProvider mocks={GetThisWeekDefaultMocks()} addTypename={false}>
+                <Dashboard
+                    accountListId="abc"
+                    data={{ ...data, accountList: { ...data.accountList, currency: null } }}
+                />
+            </MockedProvider>,
+        );
+        await waitFor(() => expect(queryByTestId('PartnerCarePrayerListLoading')).not.toBeInTheDocument());
+        expect(getByTestId('MonthlyGoalTypographyGoal').textContent).toEqual('$1,000');
+        expect(getByTestId('MonthlyGoalTypographyPledged').textContent).toEqual('$700');
+        expect(getByTestId('MonthlyGoalTypographyReceived').textContent).toEqual('$400');
+        expect(getByTestId('BalanceTypography').textContent).toEqual('$1,000');
+        expect(getByText('Goal: $1,000')).toBeInTheDocument();
+        expect(getByText('Average: $750')).toBeInTheDocument();
+        expect(getByText('Committed: $700')).toBeInTheDocument();
+    });
 });
