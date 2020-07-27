@@ -20,3 +20,9 @@ export const Default = (): ReactElement => {
         />
     );
 };
+
+Default.story = {
+    parameters: {
+        chromatic: { diffThreshold: 0.7 },
+    },
+};
