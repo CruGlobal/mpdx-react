@@ -36,12 +36,8 @@ const Balance = ({ loading, balance, currencyCode = 'USD' }: Props): ReactElemen
             </Box>
             <AnimatedCard className={classes.card}>
                 <CardContent className={classes.cardContent}>
-                    <Typography variant="h5">
-                        {loading ? (
-                            <Skeleton variant="text" data-testid="BalanceLoading" />
-                        ) : (
-                            currencyFormat(balance, currencyCode)
-                        )}
+                    <Typography variant="h5" data-testid="BalanceTypography">
+                        {loading ? <Skeleton variant="text" /> : currencyFormat(balance, currencyCode)}
                     </Typography>
                     <Typography>It may take a few days to update.</Typography>
                 </CardContent>

@@ -103,17 +103,7 @@ export const GetWeeklyActivityQueryLoadingMocks = (
 ): MockedResponse[] => {
     return [
         {
-            request: {
-                query: GET_WEEKLY_ACTIVITY_QUERY,
-                variables: {
-                    accountListId: 'abc',
-                    startOfWeek: moment(startOfWeek).startOf('week').toISOString(),
-                    endOfWeek: moment(endOfWeek).endOf('week').toISOString(),
-                },
-            },
-            result: {
-                data,
-            },
+            ...GetWeeklyActivityQueryDefaultMocks(startOfWeek, endOfWeek)[0],
             delay: 100931731455,
         },
     ];

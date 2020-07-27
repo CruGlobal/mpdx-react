@@ -1,7 +1,7 @@
 import React, { ReactElement } from 'react';
 import { MockedProvider } from '@apollo/client/testing';
 import { GetDashboardQuery } from '../../../types/GetDashboardQuery';
-import { GetWeeklyActivityQueryDefaultMocks } from './ThisWeek/WeeklyActivity/WeeklyActivity.mock';
+import { GetThisWeekDefaultMocks } from './ThisWeek/ThisWeek.mock';
 import Dashboard from '.';
 
 export default {
@@ -96,7 +96,7 @@ export const Default = (): ReactElement => {
         },
     };
     return (
-        <MockedProvider mocks={GetWeeklyActivityQueryDefaultMock()}>
+        <MockedProvider mocks={GetThisWeekDefaultMocks()}>
             <Dashboard accountListId="abc" data={data} />
         </MockedProvider>
     );
