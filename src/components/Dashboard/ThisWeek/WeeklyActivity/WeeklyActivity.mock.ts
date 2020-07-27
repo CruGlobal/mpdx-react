@@ -1,28 +1,70 @@
 import moment from 'moment';
+import { MockedResponse } from '@apollo/client/testing';
 import { GetWeeklyActivityQuery } from '../../../../../types/GetWeeklyActivityQuery';
 import { GET_WEEKLY_ACTIVITY_QUERY } from './WeeklyActivity';
 
 const data: GetWeeklyActivityQuery = {
-    completedCalls: { totalCount: 5 },
-    callsThatProducedAppointments: { totalCount: 20 },
-    completedMessages: { totalCount: 14 },
-    messagesThatProducedAppointments: { totalCount: 2 },
-    completedAppointments: { totalCount: 9 },
-    completedCorrespondence: { totalCount: 4 },
+    completedCalls: { totalCount: 1234 },
+    callsThatProducedAppointments: { totalCount: 5678 },
+    completedMessages: { totalCount: 9012 },
+    messagesThatProducedAppointments: { totalCount: 3456 },
+    completedAppointments: { totalCount: 7890 },
+    completedCorrespondence: { totalCount: 1234 },
+};
+const dataPreviousWeek: GetWeeklyActivityQuery = {
+    completedCalls: { totalCount: 5678 },
+    callsThatProducedAppointments: { totalCount: 9012 },
+    completedMessages: { totalCount: 3456 },
+    messagesThatProducedAppointments: { totalCount: 7890 },
+    completedAppointments: { totalCount: 1234 },
+    completedCorrespondence: { totalCount: 5678 },
 };
 
-export const GetWeeklyActivityQueryDefaultMock = {
-    request: {
-        query: GET_WEEKLY_ACTIVITY_QUERY,
-        variables: {
-            accountListId: 'abc',
-            startOfWeek: moment().startOf('week').toISOString(),
-            endOfWeek: moment().endOf('week').toISOString(),
+export const GetWeeklyActivityQueryDefaultMocks = (
+    startOfWeek = new Date(),
+    endOfWeek = new Date(),
+): MockedResponse[] => {
+    return [
+        {
+            request: {
+                query: GET_WEEKLY_ACTIVITY_QUERY,
+                variables: {
+                    accountListId: 'abc',
+                    startOfWeek: moment(startOfWeek).startOf('week').toISOString(),
+                    endOfWeek: moment(endOfWeek).endOf('week').toISOString(),
+                },
+            },
+            result: {
+                data,
+            },
         },
-    },
-    result: {
-        data,
-    },
+        {
+            request: {
+                query: GET_WEEKLY_ACTIVITY_QUERY,
+                variables: {
+                    accountListId: 'abc',
+                    startOfWeek: moment(startOfWeek).startOf('week').subtract(1, 'week').toISOString(),
+                    endOfWeek: moment(endOfWeek).endOf('week').subtract(1, 'week').toISOString(),
+                },
+            },
+            result: {
+                data: dataPreviousWeek,
+            },
+        },
+        {
+            request: {
+                query: GET_WEEKLY_ACTIVITY_QUERY,
+                variables: {
+                    accountListId: 'abc',
+                    startOfWeek: moment(startOfWeek).startOf('week').toISOString(),
+                    endOfWeek: moment(endOfWeek).endOf('week').toISOString(),
+                },
+            },
+            result: {
+                data,
+            },
+        },
+    ];
 };
 
 const emptyData: GetWeeklyActivityQuery = {
@@ -34,31 +76,45 @@ const emptyData: GetWeeklyActivityQuery = {
     completedCorrespondence: { totalCount: 0 },
 };
 
-export const GetWeeklyActivityQueryEmptyMock = {
-    request: {
-        query: GET_WEEKLY_ACTIVITY_QUERY,
-        variables: {
-            accountListId: 'abc',
-            startOfWeek: moment().startOf('week').toISOString(),
-            endOfWeek: moment().endOf('week').toISOString(),
+export const GetWeeklyActivityQueryEmptyMocks = (
+    startOfWeek = new Date(),
+    endOfWeek = new Date(),
+): MockedResponse[] => {
+    return [
+        {
+            request: {
+                query: GET_WEEKLY_ACTIVITY_QUERY,
+                variables: {
+                    accountListId: 'abc',
+                    startOfWeek: moment(startOfWeek).startOf('week').toISOString(),
+                    endOfWeek: moment(endOfWeek).endOf('week').toISOString(),
+                },
+            },
+            result: {
+                data: emptyData,
+            },
         },
-    },
-    result: {
-        data: emptyData,
-    },
+    ];
 };
 
-export const GetWeeklyActivityQueryLoadingMock = {
-    request: {
-        query: GET_WEEKLY_ACTIVITY_QUERY,
-        variables: {
-            accountListId: 'abc',
-            startOfWeek: moment().startOf('week').toISOString(),
-            endOfWeek: moment().endOf('week').toISOString(),
+export const GetWeeklyActivityQueryLoadingMocks = (
+    startOfWeek = new Date(),
+    endOfWeek = new Date(),
+): MockedResponse[] => {
+    return [
+        {
+            request: {
+                query: GET_WEEKLY_ACTIVITY_QUERY,
+                variables: {
+                    accountListId: 'abc',
+                    startOfWeek: moment(startOfWeek).startOf('week').toISOString(),
+                    endOfWeek: moment(endOfWeek).endOf('week').toISOString(),
+                },
+            },
+            result: {
+                data,
+            },
+            delay: 100931731455,
         },
-    },
-    result: {
-        data,
-    },
-    delay: 100931731455,
+    ];
 };

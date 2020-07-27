@@ -6,9 +6,9 @@ import { GetThisWeekQuery } from '../../../../types/GetThisWeekQuery';
 import { ActivityTypeEnum } from '../../../../types/globalTypes';
 import { GET_THIS_WEEK_QUERY } from './ThisWeek';
 import {
-    GetWeeklyActivityQueryDefaultMock,
-    GetWeeklyActivityQueryEmptyMock,
-    GetWeeklyActivityQueryLoadingMock,
+    GetWeeklyActivityQueryDefaultMocks,
+    GetWeeklyActivityQueryEmptyMocks,
+    GetWeeklyActivityQueryLoadingMocks,
 } from './WeeklyActivity/WeeklyActivity.mock';
 import ThisWeek from '.';
 
@@ -139,7 +139,7 @@ export const Default = (): ReactElement => {
                 data,
             },
         },
-        GetWeeklyActivityQueryDefaultMock,
+        ...GetWeeklyActivityQueryDefaultMocks(),
     ];
     return (
         <MockedProvider mocks={mocks} addTypename={false}>
@@ -176,7 +176,7 @@ export const Empty = (): ReactElement => {
                 data,
             },
         },
-        GetWeeklyActivityQueryEmptyMock,
+        ...GetWeeklyActivityQueryEmptyMocks(),
     ];
     return (
         <MockedProvider mocks={mocks} addTypename={false}>
@@ -188,7 +188,7 @@ export const Empty = (): ReactElement => {
 };
 export const Loading = (): ReactElement => {
     return (
-        <MockedProvider mocks={[GetWeeklyActivityQueryLoadingMock]} addTypename={false}>
+        <MockedProvider mocks={GetWeeklyActivityQueryLoadingMocks()} addTypename={false}>
             <Box m={2}>
                 <ThisWeek accountListId="abc" />
             </Box>

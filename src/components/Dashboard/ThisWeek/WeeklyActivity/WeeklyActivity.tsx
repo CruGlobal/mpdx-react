@@ -21,7 +21,7 @@ import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
 import { Skeleton } from '@material-ui/lab';
 import AnimatedCard from '../../../AnimatedCard';
 import { GetWeeklyActivityQuery } from '../../../../../types/GetWeeklyActivityQuery';
-import { dayMonthFormat } from '../../../../lib/intlFormat';
+import { dayMonthFormat, numberFormat } from '../../../../lib/intlFormat';
 
 const useStyles = makeStyles((theme: Theme) => ({
     div: {
@@ -148,10 +148,10 @@ const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
                 title="Weekly Activity"
                 action={
                     <>
-                        <IconButton onClick={subtractWeek}>
+                        <IconButton onClick={subtractWeek} data-testid="WeeklyActivityIconButtonSubtractWeek">
                             <ArrowBackIcon />
                         </IconButton>
-                        <IconButton onClick={addWeek}>
+                        <IconButton onClick={addWeek} data-testid="WeeklyActivityIconButtonAddWeek">
                             <ArrowForwardIcon />
                         </IconButton>
                     </>
@@ -163,7 +163,7 @@ const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
                     <Table size="small">
                         <TableHead>
                             <TableRow>
-                                <TableCell>
+                                <TableCell data-testid="WeeklyActivityTableCellDateRange">
                                     {dayMonthFormat(moment(startOfWeek).date(), moment(startOfWeek).month())} -{' '}
                                     {dayMonthFormat(moment(endOfWeek).date(), moment(endOfWeek).month())}
                                 </TableCell>
@@ -174,41 +174,63 @@ const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
                         <TableBody>
                             <TableRow>
                                 <TableCell>Calls</TableCell>
-                                <TableCell align="right">
-                                    {loading ? <Skeleton variant="text" /> : data.completedCalls.totalCount}
+                                <TableCell align="right" data-testid="WeeklyActivityTableCellCompletedCalls">
+                                    {loading ? (
+                                        <Skeleton variant="text" data-testid="WeeklyActivitySkeletonLoading" />
+                                    ) : (
+                                        numberFormat(data.completedCalls.totalCount)
+                                    )}
                                 </TableCell>
-                                <TableCell align="right">
+                                <TableCell
+                                    align="right"
+                                    data-testid="WeeklyActivityTableCellCallsThatProducedAppointments"
+                                >
                                     {loading ? (
                                         <Skeleton variant="text" />
                                     ) : (
-                                        data.callsThatProducedAppointments.totalCount
+                                        numberFormat(data.callsThatProducedAppointments.totalCount)
                                     )}
                                 </TableCell>
                             </TableRow>
                             <TableRow>
                                 <TableCell>Messages</TableCell>
-                                <TableCell align="right">
-                                    {loading ? <Skeleton variant="text" /> : data.completedMessages.totalCount}
-                                </TableCell>
-                                <TableCell align="right">
+                                <TableCell align="right" data-testid="WeeklyActivityTableCellCompletedMessages">
                                     {loading ? (
                                         <Skeleton variant="text" />
                                     ) : (
-                                        data.messagesThatProducedAppointments.totalCount
+                                        numberFormat(data.completedMessages.totalCount)
+                                    )}
+                                </TableCell>
+                                <TableCell
+                                    align="right"
+                                    data-testid="WeeklyActivityTableCellMessagesThatProducedAppointments"
+                                >
+                                    {loading ? (
+                                        <Skeleton variant="text" />
+                                    ) : (
+                                        numberFormat(data.messagesThatProducedAppointments.totalCount)
                                     )}
                                 </TableCell>
                             </TableRow>
                             <TableRow>
                                 <TableCell>Appointments</TableCell>
-                                <TableCell align="right">
-                                    {loading ? <Skeleton variant="text" /> : data.completedAppointments.totalCount}
+                                <TableCell align="right" data-testid="WeeklyActivityTableCellCompletedAppointments">
+                                    {loading ? (
+                                        <Skeleton variant="text" />
+                                    ) : (
+                                        numberFormat(data.completedAppointments.totalCount)
+                                    )}
                                 </TableCell>
                                 <TableCell></TableCell>
                             </TableRow>
                             <TableRow>
                                 <TableCell>Correspondence</TableCell>
-                                <TableCell align="right">
-                                    {loading ? <Skeleton variant="text" /> : data.completedCorrespondence.totalCount}
+                                <TableCell align="right" data-testid="WeeklyActivityTableCellCompletedCorrespondence">
+                                    {loading ? (
+                                        <Skeleton variant="text" />
+                                    ) : (
+                                        numberFormat(data.completedCorrespondence.totalCount)
+                                    )}
                                 </TableCell>
                                 <TableCell></TableCell>
                             </TableRow>

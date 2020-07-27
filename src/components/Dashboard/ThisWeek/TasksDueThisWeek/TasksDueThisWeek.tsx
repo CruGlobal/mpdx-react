@@ -18,6 +18,7 @@ import { Skeleton } from '@material-ui/lab';
 import { motion } from 'framer-motion';
 import AnimatedCard from '../../../AnimatedCard';
 import { GetThisWeekQuery_dueTasks } from '../../../../../types/GetThisWeekQuery';
+import { numberFormat } from '../../../../lib/intlFormat';
 
 const useStyles = makeStyles((theme: Theme) => ({
     div: {
@@ -54,7 +55,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 interface Props {
-    loading: boolean;
+    loading?: boolean;
     dueTasks?: GetThisWeekQuery_dueTasks;
 }
 
@@ -71,7 +72,7 @@ const TasksDueThisWeek = ({ loading, dueTasks }: Props): ReactElement => {
                     exit={{ opacity: 0 }}
                     className={classes.div}
                 >
-                    <List className={classes.list}>
+                    <List className={classes.list} data-testid="TasksDueThisWeekListLoading">
                         {[0, 1, 2].map((index) => (
                             <ListItem key={index}>
                                 <ListItemText
@@ -91,27 +92,26 @@ const TasksDueThisWeek = ({ loading, dueTasks }: Props): ReactElement => {
                     </CardActions>
                 </motion.div>
             )}
-            {!loading && dueTasks?.nodes && (
+            {!loading && (
                 <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                     className={classes.div}
                 >
-                    {dueTasks.nodes.length === 0 && (
-                        <CardContent className={classes.cardContent}>
+                    {!dueTasks || dueTasks.nodes.length === 0 ? (
+                        <CardContent className={classes.cardContent} data-testid="TasksDueThisWeekCardContentEmpty">
                             <img
                                 src={require('../../../../images/drawkit/grape/drawkit-grape-pack-illustration-8.svg')}
                                 className={classes.img}
                             />
                             No tasks to show.
                         </CardContent>
-                    )}
-                    {dueTasks.nodes.length > 0 && (
+                    ) : (
                         <>
-                            <List className={classes.list}>
+                            <List className={classes.list} data-testid="TasksDueThisWeekList">
                                 {dueTasks.nodes.map((task) => (
-                                    <ListItem key={task.id} button>
+                                    <ListItem key={task.id} button data-testid={`TasksDueThisWeekListItem-${task.id}`}>
                                         <ListItemText
                                             disableTypography={true}
                                             primary={
@@ -147,8 +147,8 @@ const TasksDueThisWeek = ({ loading, dueTasks }: Props): ReactElement => {
                                 ))}
                             </List>
                             <CardActions>
-                                <Button size="small" color="primary">
-                                    View All ({dueTasks?.totalCount || 0})
+                                <Button size="small" color="primary" data-testid="TasksDueThisWeekButtonViewAll">
+                                    View All ({numberFormat(dueTasks.totalCount)})
                                 </Button>
                             </CardActions>
                         </>

@@ -1,7 +1,7 @@
 import React, { ReactElement } from 'react';
 import { Box } from '@material-ui/core';
 import { MockedProvider } from '@apollo/client/testing';
-import { GetWeeklyActivityQueryDefaultMock, GetWeeklyActivityQueryLoadingMock } from './WeeklyActivity.mock';
+import { GetWeeklyActivityQueryDefaultMocks, GetWeeklyActivityQueryLoadingMocks } from './WeeklyActivity.mock';
 import WeeklyActivity from '.';
 
 export default {
@@ -10,7 +10,7 @@ export default {
 
 export const Default = (): ReactElement => {
     return (
-        <MockedProvider mocks={[GetWeeklyActivityQueryDefaultMock]} addTypename={false}>
+        <MockedProvider mocks={GetWeeklyActivityQueryDefaultMocks()} addTypename={false}>
             <Box m={2}>
                 <WeeklyActivity accountListId="abc" />
             </Box>
@@ -20,7 +20,7 @@ export const Default = (): ReactElement => {
 
 export const Loading = (): ReactElement => {
     return (
-        <MockedProvider mocks={[GetWeeklyActivityQueryLoadingMock]} addTypename={false}>
+        <MockedProvider mocks={GetWeeklyActivityQueryLoadingMocks()} addTypename={false}>
             <Box m={2}>
                 <WeeklyActivity accountListId="abc" />
             </Box>
