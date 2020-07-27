@@ -101,3 +101,9 @@ export const Default = (): ReactElement => {
         </MockedProvider>
     );
 };
+
+Default.story = {
+    parameters: {
+        chromatic: { delay: 1000 },
+    },
+};

@@ -27,3 +27,9 @@ export const Default = (): ReactElement => {
         />
     );
 };
+
+Default.story = {
+    parameters: {
+        chromatic: { delay: 1000 },
+    },
+};

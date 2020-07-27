@@ -23,6 +23,6 @@ export const Default = (): ReactElement => {
 
 Default.story = {
     parameters: {
-        chromatic: { diffThreshold: 0.7 },
+        chromatic: { delay: 1000 },
     },
 };
