@@ -19,6 +19,7 @@ import moment from 'moment';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
 import { Skeleton } from '@material-ui/lab';
+import { useTranslation } from 'react-i18next';
 import AnimatedCard from '../../../AnimatedCard';
 import { GetWeeklyActivityQuery } from '../../../../../types/GetWeeklyActivityQuery';
 import { dayMonthFormat, numberFormat } from '../../../../lib/intlFormat';
@@ -112,6 +113,7 @@ interface Props {
 
 const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
     const classes = useStyles();
+    const { t } = useTranslation();
 
     const [startOfWeek, setStartOfWeek] = useState(moment().startOf('week').toISOString());
     const [endOfWeek, setEndOfWeek] = useState(moment().endOf('week').toISOString());
@@ -145,7 +147,7 @@ const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
     return (
         <AnimatedCard className={classes.card}>
             <CardHeader
-                title="Weekly Activity"
+                title={t('Weekly Activity')}
                 action={
                     <>
                         <IconButton onClick={subtractWeek} data-testid="WeeklyActivityIconButtonSubtractWeek">
@@ -167,13 +169,13 @@ const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
                                     {dayMonthFormat(moment(startOfWeek).date(), moment(startOfWeek).month())} -{' '}
                                     {dayMonthFormat(moment(endOfWeek).date(), moment(endOfWeek).month())}
                                 </TableCell>
-                                <TableCell align="right">Completed</TableCell>
-                                <TableCell align="right">Appt Produced</TableCell>
+                                <TableCell align="right">{t('Completed')}</TableCell>
+                                <TableCell align="right">{t('Appt Produced')}</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
                             <TableRow>
-                                <TableCell>Calls</TableCell>
+                                <TableCell>{t('Calls')}</TableCell>
                                 <TableCell align="right" data-testid="WeeklyActivityTableCellCompletedCalls">
                                     {loading ? (
                                         <Skeleton variant="text" data-testid="WeeklyActivitySkeletonLoading" />
@@ -193,7 +195,7 @@ const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
                                 </TableCell>
                             </TableRow>
                             <TableRow>
-                                <TableCell>Messages</TableCell>
+                                <TableCell>{t('Messages')}</TableCell>
                                 <TableCell align="right" data-testid="WeeklyActivityTableCellCompletedMessages">
                                     {loading ? (
                                         <Skeleton variant="text" />
@@ -213,7 +215,7 @@ const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
                                 </TableCell>
                             </TableRow>
                             <TableRow>
-                                <TableCell>Appointments</TableCell>
+                                <TableCell>{t('Appointments')}</TableCell>
                                 <TableCell align="right" data-testid="WeeklyActivityTableCellCompletedAppointments">
                                     {loading ? (
                                         <Skeleton variant="text" />
@@ -224,7 +226,7 @@ const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
                                 <TableCell></TableCell>
                             </TableRow>
                             <TableRow>
-                                <TableCell>Correspondence</TableCell>
+                                <TableCell>{t('Correspondence')}</TableCell>
                                 <TableCell align="right" data-testid="WeeklyActivityTableCellCompletedCorrespondence">
                                     {loading ? (
                                         <Skeleton variant="text" />
@@ -239,7 +241,7 @@ const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
                 </TableContainer>
                 <CardActions>
                     <Button size="small" color="primary">
-                        View Activity Detail
+                        {t('View Activity Detail')}
                     </Button>
                 </CardActions>
             </motion.div>

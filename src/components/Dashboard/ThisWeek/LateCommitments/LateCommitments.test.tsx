@@ -1,6 +1,6 @@
 import React from 'react';
-import { render } from '@testing-library/react';
 import MockDate from 'mockdate';
+import { render } from '../../../../../tests/testingLibraryReactMock';
 import LateCommitments from '.';
 
 describe(LateCommitments.name, () => {

@@ -12,6 +12,7 @@ import {
 } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import AnimatedCard from '../../../AnimatedCard';
 import { GetThisWeekQuery_accountList_primaryAppeal } from '../../../../../types/GetThisWeekQuery';
 import StyledProgress from '../../../StyledProgress';
@@ -91,12 +92,13 @@ interface Props {
 
 const Appeals = ({ loading, appeal }: Props): ReactElement => {
     const classes = useStyles();
+    const { t } = useTranslation();
     const pledgesAmountProcessedPercentage = (appeal?.pledgesAmountProcessed || 0) / (appeal?.amount || 0);
     const pledgesAmountTotalPercentage = (appeal?.pledgesAmountTotal || 0) / (appeal?.amount || 0);
 
     return (
         <AnimatedCard className={classes.card}>
-            <CardHeader title="Appeals" />
+            <CardHeader title={t('Appeals')} />
             {!loading && !appeal && (
                 <motion.div
                     initial={{ opacity: 0 }}
@@ -109,7 +111,7 @@ const Appeals = ({ loading, appeal }: Props): ReactElement => {
                             src={require('../../../../images/drawkit/grape/drawkit-grape-pack-illustration-13.svg')}
                             className={classes.img}
                         />
-                        No primary appeal to show.
+                        {t('No primary appeal to show.')}
                     </CardContent>
                 </motion.div>
             )}
@@ -144,7 +146,7 @@ const Appeals = ({ loading, appeal }: Props): ReactElement => {
                             <Grid xs={6} item>
                                 <Typography component="div" color="textSecondary">
                                     <div className={[classes.indicator, classes.pledgesAmountProcessed].join(' ')} />
-                                    Gifts Received
+                                    {t('Gifts Received')}
                                 </Typography>
                                 <Typography
                                     variant="h5"
@@ -167,7 +169,7 @@ const Appeals = ({ loading, appeal }: Props): ReactElement => {
                             <Grid xs={6} item>
                                 <Typography component="div" color="textSecondary">
                                     <div className={[classes.indicator, classes.pledgesAmountTotal].join(' ')} />
-                                    Commitments
+                                    {t('Commitments')}
                                 </Typography>
                                 <Typography variant="h5" data-testid="AppealsTypographyPledgesAmountTotalPercentage">
                                     {loading ? (
@@ -188,7 +190,7 @@ const Appeals = ({ loading, appeal }: Props): ReactElement => {
                     </CardContent>
                     <CardActions>
                         <Button size="small" color="primary">
-                            View All
+                            {t('View All')}
                         </Button>
                     </CardActions>
                 </motion.div>

@@ -14,6 +14,7 @@ import {
 } from 'recharts';
 import moment from 'moment';
 import { Skeleton } from '@material-ui/lab';
+import { useTranslation } from 'react-i18next';
 import { currencyFormat } from '../../../lib/intlFormat';
 import AnimatedCard from '../../AnimatedCard';
 import AnimatedBox from '../../AnimatedBox';
@@ -82,6 +83,7 @@ const DonationHistories = ({
     currencyCode = 'USD',
 }: Props): ReactElement => {
     const classes = useStyles();
+    const { t } = useTranslation();
     const fills = ['#FFCF07', '#30F2F2', '#1FC0D2', '#007398'];
     const currencies: { dataKey: string; fill: string }[] = [];
     const periods = reportsDonationHistories?.periods?.map((period) => {
@@ -115,8 +117,13 @@ const DonationHistories = ({
                                             <>
                                                 <Grid item>
                                                     <Box className={[classes.lineKey, classes.lineKeyGoal].join(' ')} />
-                                                    <Typography variant="body1" component="span">
-                                                        Goal: {currencyFormat(goal, currencyCode)}
+                                                    <Typography
+                                                        variant="body1"
+                                                        component="span"
+                                                        data-testid="DonationHistoriesTypographyGoal"
+                                                    >
+                                                        <strong>{t('Goal')}</strong>{' '}
+                                                        {currencyFormat(goal, currencyCode)}
                                                     </Typography>
                                                 </Grid>
                                                 <Grid item>|</Grid>
@@ -124,24 +131,25 @@ const DonationHistories = ({
                                         ) : null}
                                         <Grid item>
                                             <Box className={[classes.lineKey, classes.lineKeyAverage].join(' ')} />
-                                            {loading ? (
-                                                <Typography variant="body1" component="span">
-                                                    Average:{' '}
+                                            <Typography
+                                                variant="body1"
+                                                component="span"
+                                                data-testid="DonationHistoriesTypographyAverage"
+                                            >
+                                                <strong>{t('Average')}</strong>{' '}
+                                                {loading ? (
                                                     <Skeleton
                                                         variant="text"
                                                         style={{ display: 'inline-block' }}
                                                         width={90}
                                                     />
-                                                </Typography>
-                                            ) : (
-                                                <Typography variant="body1" component="span">
-                                                    Average:{' '}
-                                                    {currencyFormat(
+                                                ) : (
+                                                    currencyFormat(
                                                         reportsDonationHistories.averageIgnoreCurrent,
                                                         currencyCode,
-                                                    )}
-                                                </Typography>
-                                            )}
+                                                    )
+                                                )}
+                                            </Typography>
                                         </Grid>
                                         {pledged ? (
                                             <>
@@ -150,8 +158,13 @@ const DonationHistories = ({
                                                     <Box
                                                         className={[classes.lineKey, classes.lineKeyPledged].join(' ')}
                                                     />
-                                                    <Typography variant="body1" component="span">
-                                                        Committed: {currencyFormat(pledged, currencyCode)}
+                                                    <Typography
+                                                        variant="body1"
+                                                        component="span"
+                                                        data-testid="DonationHistoriesTypographyPledged"
+                                                    >
+                                                        <strong>{t('Committed')}</strong>{' '}
+                                                        {currencyFormat(pledged, currencyCode)}
                                                     </Typography>
                                                 </Grid>
                                             </>

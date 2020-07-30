@@ -22,7 +22,8 @@ import FavoriteIcon from '@material-ui/icons/Favorite';
 import { Skeleton } from '@material-ui/lab';
 import { motion } from 'framer-motion';
 import { uniqBy } from 'lodash/fp';
-import { dayMonthFormat, numberFormat } from '../../../../lib/intlFormat';
+import { useTranslation } from 'react-i18next';
+import { dayMonthFormat } from '../../../../lib/intlFormat';
 import AnimatedCard from '../../../AnimatedCard';
 import {
     GetThisWeekQuery_prayerRequestTasks,
@@ -82,6 +83,7 @@ const PartnerCare = ({
     reportsPeopleWithAnniversaries,
 }: Props): ReactElement => {
     const classes = useStyles();
+    const { t } = useTranslation();
     const [value, setValue] = useState(0);
 
     const handleChange = (_event: React.ChangeEvent<{}>, newValue: number): void => {
@@ -90,7 +92,7 @@ const PartnerCare = ({
 
     return (
         <AnimatedCard className={classes.card}>
-            <CardHeader title="Partner Care" />
+            <CardHeader title={t('Partner Care')} />
             <Tabs
                 value={value}
                 indicatorColor="primary"
@@ -99,14 +101,15 @@ const PartnerCare = ({
                 onChange={handleChange}
             >
                 <Tab
-                    label={`Prayer (${numberFormat(prayerRequestTasks?.totalCount || 0)})`}
+                    label={t('Prayer ({{ totalCount, number }})', { totalCount: prayerRequestTasks?.totalCount || 0 })}
                     data-testid="PartnerCareTabPrayer"
                 />
                 <Tab
-                    label={`Celebrations (${numberFormat(
-                        (reportsPeopleWithBirthdays?.periods[0]?.people?.length || 0) +
+                    label={t('Celebrations ({{ totalCount, number }})', {
+                        totalCount:
+                            (reportsPeopleWithBirthdays?.periods[0]?.people?.length || 0) +
                             (reportsPeopleWithAnniversaries?.periods[0]?.people?.length || 0),
-                    )})`}
+                    })}
                     data-testid="PartnerCareTabCelebrations"
                 />
             </Tabs>
@@ -134,7 +137,7 @@ const PartnerCare = ({
                             </List>
                             <CardActions>
                                 <Button size="small" color="primary" disabled>
-                                    View All (0)
+                                    {t('View All ({{ totalCount, number }})', { totalCount: 0 })}
                                 </Button>
                             </CardActions>
                         </>
@@ -150,7 +153,7 @@ const PartnerCare = ({
                                         src={require('../../../../images/drawkit/grape/drawkit-grape-pack-illustration-4.svg')}
                                         className={classes.img}
                                     />
-                                    No prayer requests to show.
+                                    {t('No prayer requests to show.')}
                                 </CardContent>
                             )}
                             {prayerRequestTasks && prayerRequestTasks.nodes.length > 0 && (
@@ -195,7 +198,9 @@ const PartnerCare = ({
                                     </List>
                                     <CardActions>
                                         <Button size="small" color="primary">
-                                            View All ({prayerRequestTasks.totalCount})
+                                            {t('View All ({{ totalCount, number }})', {
+                                                totalCount: prayerRequestTasks.totalCount,
+                                            })}
                                         </Button>
                                     </CardActions>
                                 </>
@@ -242,7 +247,7 @@ const PartnerCare = ({
                                         src={require('../../../../images/drawkit/grape/drawkit-grape-pack-illustration-7.svg')}
                                         className={classes.img}
                                     />
-                                    No celebrations to show.
+                                    {t('No celebrations to show.')}
                                 </CardContent>
                             ) : (
                                 <List className={classes.list} data-testid="PartnerCareCelebrationList">

@@ -7,10 +7,12 @@ import { AnimatePresence } from 'framer-motion';
 import { Provider } from 'next-auth/client';
 import { NextPage } from 'next';
 import Head from 'next/head';
+import { I18nextProvider } from 'react-i18next';
 import theme from '../src/theme';
 import client from '../src/lib/client';
 import PrimaryLayout from '../src/components/Layouts/Primary';
 import Loading from '../src/components/Loading';
+import i18n from '../src/lib/i18n';
 
 const handleExitComplete = (): void => {
     if (typeof window !== 'undefined') {
@@ -54,19 +56,21 @@ const App = ({ Component, pageProps, router }: AppProps): ReactElement => {
                     rel="stylesheet"
                 />
             </Head>
-            <Provider options={{ site: process.env.SITE_URL }} session={session}>
-                <ApolloProvider client={client}>
-                    <ThemeProvider theme={theme}>
-                        <CssBaseline />
-                        <AnimatePresence exitBeforeEnter onExitComplete={handleExitComplete}>
-                            <Layout>
-                                <Component {...pageProps} key={router.route} />
-                            </Layout>
-                        </AnimatePresence>
-                        <Loading />
-                    </ThemeProvider>
-                </ApolloProvider>
-            </Provider>
+            <I18nextProvider i18n={i18n}>
+                <Provider options={{ site: process.env.SITE_URL }} session={session}>
+                    <ApolloProvider client={client}>
+                        <ThemeProvider theme={theme}>
+                            <CssBaseline />
+                            <AnimatePresence exitBeforeEnter onExitComplete={handleExitComplete}>
+                                <Layout>
+                                    <Component {...pageProps} key={router.route} />
+                                </Layout>
+                            </AnimatePresence>
+                            <Loading />
+                        </ThemeProvider>
+                    </ApolloProvider>
+                </Provider>
+            </I18nextProvider>
         </>
     );
 };

@@ -1,6 +1,7 @@
 import React, { ReactElement } from 'react';
 import { Typography, makeStyles, Theme, Grid, CardContent, Box, Hidden } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
+import { useTranslation } from 'react-i18next';
 import { currencyFormat, percentageFormat } from '../../../lib/intlFormat';
 import AnimatedCard from '../../AnimatedCard';
 import AnimatedBox from '../../AnimatedBox';
@@ -36,6 +37,7 @@ interface Props {
 
 const MonthlyGoal = ({ loading, goal, received, pledged, currencyCode = 'USD' }: Props): ReactElement => {
     const classes = useStyles();
+    const { t } = useTranslation();
     const receivedPercentage = received / goal;
     const pledgedPercentage = pledged / goal;
     const belowGoal = goal - pledged;
@@ -47,7 +49,7 @@ const MonthlyGoal = ({ loading, goal, received, pledged, currencyCode = 'USD' }:
                 <AnimatedBox>
                     <Typography variant="h6">
                         <Box display="flex">
-                            <Box flexGrow={1}>Monthly Goal</Box>
+                            <Box flexGrow={1}>{t('Monthly Goal')}</Box>
                             <Hidden smUp>
                                 <Box data-testid="MonthlyGoalTypographyGoalMobile">
                                     {!loading && currencyFormat(goal, currencyCode)}
@@ -65,7 +67,7 @@ const MonthlyGoal = ({ loading, goal, received, pledged, currencyCode = 'USD' }:
                             <Grid sm={6} md={3} item>
                                 <Typography component="div" color="textSecondary">
                                     <div className={[classes.indicator, classes.goal].join(' ')} />
-                                    Goal
+                                    {t('Goal')}
                                 </Typography>
                                 <Typography variant="h5" data-testid="MonthlyGoalTypographyGoal">
                                     {loading ? <Skeleton variant="text" /> : currencyFormat(goal, currencyCode)}
@@ -75,7 +77,7 @@ const MonthlyGoal = ({ loading, goal, received, pledged, currencyCode = 'USD' }:
                         <Grid xs={6} md={3} item>
                             <Typography component="div" color="textSecondary">
                                 <div className={[classes.indicator, classes.received].join(' ')} />
-                                Gifts Started
+                                {t('Gifts Started')}
                             </Typography>
                             <Typography variant="h5" data-testid="MonthlyGoalTypographyReceivedPercentage">
                                 {loading ? (
@@ -93,7 +95,7 @@ const MonthlyGoal = ({ loading, goal, received, pledged, currencyCode = 'USD' }:
                         <Grid xs={6} md={3} item>
                             <Typography component="div" color="textSecondary">
                                 <div className={[classes.indicator, classes.pledged].join(' ')} />
-                                Commitments
+                                {t('Commitments')}
                             </Typography>
                             <Typography variant="h5" data-testid="MonthlyGoalTypographyPledgedPercentage">
                                 {loading ? (
@@ -112,7 +114,7 @@ const MonthlyGoal = ({ loading, goal, received, pledged, currencyCode = 'USD' }:
                             {!isNaN(belowGoal) && belowGoal > 0 ? (
                                 <Grid sm={6} md={3} item>
                                     <Typography component="div" color="textSecondary">
-                                        Below Goal
+                                        {t('Below Goal')}
                                     </Typography>
                                     <Typography variant="h5" data-testid="MonthlyGoalTypographyBelowGoalPercentage">
                                         {percentageFormat(belowGoalPercentage)}
@@ -124,7 +126,7 @@ const MonthlyGoal = ({ loading, goal, received, pledged, currencyCode = 'USD' }:
                             ) : (
                                 <Grid sm={6} md={3} item>
                                     <Typography component="div" color="textSecondary">
-                                        Above Goal
+                                        {t('Above Goal')}
                                     </Typography>
                                     <Typography variant="h5" data-testid="MonthlyGoalTypographyAboveGoalPercentage">
                                         {loading ? (

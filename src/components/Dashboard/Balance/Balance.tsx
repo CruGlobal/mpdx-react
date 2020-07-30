@@ -1,6 +1,7 @@
 import React, { ReactElement } from 'react';
 import { makeStyles, Theme, CardContent, Typography, CardActions, Button, Box } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
+import { useTranslation } from 'react-i18next';
 import { currencyFormat } from '../../../lib/intlFormat';
 import AnimatedCard from '../../AnimatedCard';
 import AnimatedBox from '../../AnimatedBox';
@@ -26,12 +27,13 @@ interface Props {
 
 const Balance = ({ loading, balance, currencyCode = 'USD' }: Props): ReactElement => {
     const classes = useStyles();
+    const { t } = useTranslation();
 
     return (
         <>
             <Box my={{ xs: 1, sm: 2 }}>
                 <AnimatedBox>
-                    <Typography variant="h6">Account Balance</Typography>
+                    <Typography variant="h6">{t('Account Balance')}</Typography>
                 </AnimatedBox>
             </Box>
             <AnimatedCard className={classes.card}>
@@ -39,11 +41,11 @@ const Balance = ({ loading, balance, currencyCode = 'USD' }: Props): ReactElemen
                     <Typography variant="h5" data-testid="BalanceTypography">
                         {loading ? <Skeleton variant="text" /> : currencyFormat(balance, currencyCode)}
                     </Typography>
-                    <Typography>It may take a few days to update.</Typography>
+                    <Typography>{t('It may take a few days to update.')}</Typography>
                 </CardContent>
                 <CardActions>
                     <Button size="small" color="primary">
-                        View Donations
+                        {t('View Donations')}
                     </Button>
                 </CardActions>
             </AnimatedCard>

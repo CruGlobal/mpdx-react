@@ -45,6 +45,12 @@ module.exports = {
         "import/no-anonymous-default-export": "off",
         "@typescript-eslint/no-empty-function": "off"
       }
+    },
+    {
+      "files": ["onesky/**.ts"],
+      "rules": {
+        "@typescript-eslint/no-var-requires": "off"
+      }
     }
   ]
 };

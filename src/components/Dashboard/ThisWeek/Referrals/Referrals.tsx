@@ -16,12 +16,12 @@ import {
 } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import AnimatedCard from '../../../AnimatedCard';
 import {
     GetThisWeekQuery_onHandReferrals,
     GetThisWeekQuery_recentReferrals,
 } from '../../../../../types/GetThisWeekQuery';
-import { numberFormat } from '../../../../lib/intlFormat';
 
 const useStyles = makeStyles((theme: Theme) => ({
     div: {
@@ -69,6 +69,7 @@ interface ReferralsTabProps {
 
 const ReferralsTab = ({ loading, referrals, testid }: ReferralsTabProps): ReactElement => {
     const classes = useStyles();
+    const { t } = useTranslation();
 
     return (
         <>
@@ -89,7 +90,7 @@ const ReferralsTab = ({ loading, referrals, testid }: ReferralsTabProps): ReactE
                     </List>
                     <CardActions>
                         <Button size="small" color="primary" disabled>
-                            View All (0)
+                            {t('View All ({{ totalCount, number }})', { totalCount: 0 })}
                         </Button>
                     </CardActions>
                 </>
@@ -105,7 +106,7 @@ const ReferralsTab = ({ loading, referrals, testid }: ReferralsTabProps): ReactE
                                 src={require('../../../../images/drawkit/grape/drawkit-grape-pack-illustration-4.svg')}
                                 className={classes.img}
                             />
-                            No referrals to show.
+                            {t('No referrals to show.')}
                         </CardContent>
                     ) : (
                         <>
@@ -125,7 +126,7 @@ const ReferralsTab = ({ loading, referrals, testid }: ReferralsTabProps): ReactE
                             </List>
                             <CardActions>
                                 <Button size="small" color="primary">
-                                    View All ({numberFormat(referrals.totalCount)})
+                                    {t('View All ({{ totalCount, number }})', { totalCount: referrals.totalCount })}
                                 </Button>
                             </CardActions>
                         </>
@@ -144,6 +145,7 @@ interface Props {
 
 const Referrals = ({ loading, recentReferrals, onHandReferrals }: Props): ReactElement => {
     const classes = useStyles();
+    const { t } = useTranslation();
     const [value, setValue] = useState(0);
 
     const handleChange = (_event: React.ChangeEvent<{}>, newValue: number): void => {
@@ -152,7 +154,7 @@ const Referrals = ({ loading, recentReferrals, onHandReferrals }: Props): ReactE
 
     return (
         <AnimatedCard className={classes.card}>
-            <CardHeader title="Referrals" />
+            <CardHeader title={t('Referrals')} />
             <Tabs
                 value={value}
                 indicatorColor="primary"
@@ -161,11 +163,11 @@ const Referrals = ({ loading, recentReferrals, onHandReferrals }: Props): ReactE
                 onChange={handleChange}
             >
                 <Tab
-                    label={`Recent (${numberFormat(recentReferrals?.totalCount || 0)})`}
+                    label={t('Recent ({{ totalCount, number }})', { totalCount: recentReferrals?.totalCount || 0 })}
                     data-testid="ReferralsTabRecent"
                 />
                 <Tab
-                    label={`On Hand (${numberFormat(onHandReferrals?.totalCount || 0)})`}
+                    label={t('On Hand ({{ totalCount, number }})', { totalCount: onHandReferrals?.totalCount || 0 })}
                     data-testid="ReferralsTabOnHand"
                 />
             </Tabs>

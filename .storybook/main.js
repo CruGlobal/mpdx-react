@@ -18,5 +18,6 @@ module.exports = {
         '@storybook/addon-actions/register',
         '@storybook/addon-viewport/register',
         '@storybook/addon-knobs/register',
+        'storybook-addon-i18next/register',
     ],
 };

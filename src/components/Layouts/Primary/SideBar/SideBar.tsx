@@ -13,6 +13,7 @@ import {
     ListItemIcon,
 } from '@material-ui/core';
 import HomeIcon from '@material-ui/icons/Home';
+import { useTranslation } from 'react-i18next';
 
 export const SIDE_BAR_WIDTH = 256;
 
@@ -65,6 +66,7 @@ interface Props {
 
 const SideBar = ({ mobileOpen, handleDrawerToggle }: Props): ReactElement => {
     const classes = useStyles();
+    const { t } = useTranslation();
 
     const drawer = (
         <div>
@@ -77,7 +79,11 @@ const SideBar = ({ mobileOpen, handleDrawerToggle }: Props): ReactElement => {
                     <ListItemIcon className={classes.listItemIcon}>
                         <HomeIcon />
                     </ListItemIcon>
-                    <ListItemText className={classes.listItemText} primary="Overview" data-testid="SideBarOverview" />
+                    <ListItemText
+                        className={classes.listItemText}
+                        primary={t('Overview')}
+                        data-testid="SideBarOverview"
+                    />
                 </ListItem>
             </List>
         </div>

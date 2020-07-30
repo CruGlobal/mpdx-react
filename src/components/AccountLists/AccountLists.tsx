@@ -2,6 +2,7 @@ import React, { ReactElement } from 'react';
 import { makeStyles, Theme, Container, Typography, Grid, CardActionArea, CardContent, Box } from '@material-ui/core';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { GetAccountListsQuery } from '../../../types/GetAccountListsQuery';
 import PageHeading from '../PageHeading';
 import AnimatedCard from '../AnimatedCard';
@@ -42,10 +43,11 @@ const variants = {
 
 const AccountLists = ({ data }: Props): ReactElement => {
     const classes = useStyles();
+    const { t } = useTranslation();
 
     return (
         <Box className={classes.box}>
-            <PageHeading heading="Your Account Lists" overlap={100} />
+            <PageHeading heading={t('My Accounts')} overlap={100} />
             <motion.div initial="initial" animate="animate" exit="exit" variants={variants}>
                 <Container>
                     <Grid container spacing={3}>

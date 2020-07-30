@@ -34,3 +34,5 @@ yarn-error.log*
 
 /public/sw*
 /public/workbox*
+/public/locales/*
+!/public/locales/en

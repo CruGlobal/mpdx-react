@@ -22,6 +22,7 @@ import MoreVertIcon from '@material-ui/icons/MoreVert';
 import Link from 'next/link';
 import MenuIcon from '@material-ui/icons/Menu';
 import clsx from 'clsx';
+import { useTranslation } from 'react-i18next';
 import { GetTopBarQuery } from '../../../../../types/GetTopBarQuery';
 import GET_LOCAL_STATE_QUERY from '../../../../queries/getLocalStateQuery.graphql';
 import { GetLocalStateQuery } from '../../../../../types/GetLocalStateQuery';
@@ -125,6 +126,7 @@ interface Props {
 
 const TopBar = ({ handleDrawerToggle }: Props): ReactElement => {
     const classes = useStyles();
+    const { t } = useTranslation();
     const trigger = useScrollTrigger({
         disableHysteresis: true,
         threshold: 0,
@@ -245,7 +247,7 @@ const TopBar = ({ handleDrawerToggle }: Props): ReactElement => {
                                 target="_blank"
                                 rel="noopener noreferrer"
                             >
-                                Go to help
+                                {t('Go to help')}
                             </Button>
                         </Grid>
                         <Grid item className={classes.notificationsGrid}>

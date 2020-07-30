@@ -1,5 +1,5 @@
 import React from 'react';
-import { render } from '@testing-library/react';
+import { render } from '../../../../../tests/testingLibraryReactMock';
 import { ActivityTypeEnum } from '../../../../../types/globalTypes';
 import TasksDueThisWeek from '.';
 

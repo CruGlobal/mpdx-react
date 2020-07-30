@@ -13,9 +13,9 @@ import {
 import moment from 'moment';
 import { Skeleton } from '@material-ui/lab';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import AnimatedCard from '../../../AnimatedCard';
 import { GetThisWeekQuery_latePledgeContacts } from '../../../../../types/GetThisWeekQuery';
-import { numberFormat } from '../../../../lib/intlFormat';
 
 const useStyles = makeStyles((theme: Theme) => ({
     div: {
@@ -58,10 +58,11 @@ interface Props {
 
 const LateCommitments = ({ loading, latePledgeContacts }: Props): ReactElement => {
     const classes = useStyles();
+    const { t } = useTranslation();
 
     return (
         <AnimatedCard className={classes.card}>
-            <CardHeader title="Late Commitments" />
+            <CardHeader title={t('Late Commitments')} />
             {loading && (
                 <motion.div
                     initial={{ opacity: 0 }}
@@ -82,7 +83,7 @@ const LateCommitments = ({ loading, latePledgeContacts }: Props): ReactElement =
                     </List>
                     <CardActions>
                         <Button size="small" color="primary" disabled>
-                            View All (0)
+                            {t('View All ({{ totalCount, number }})', { totalCount: 0 })}
                         </Button>
                     </CardActions>
                 </motion.div>
@@ -100,14 +101,14 @@ const LateCommitments = ({ loading, latePledgeContacts }: Props): ReactElement =
                                 src={require('../../../../images/drawkit/grape/drawkit-grape-pack-illustration-14.svg')}
                                 className={classes.img}
                             />
-                            No late commitments to show.
+                            {t('No late commitments to show.')}
                         </CardContent>
                     )}
                     {latePledgeContacts && latePledgeContacts.nodes.length > 0 && (
                         <>
                             <List className={classes.list} data-testid="LateCommitmentsListContacts">
                                 {latePledgeContacts.nodes.map((contact) => {
-                                    const days = moment().diff(moment(contact.lateAt), 'days');
+                                    const count = moment().diff(moment(contact.lateAt), 'days');
                                     return (
                                         <ListItem
                                             key={contact.id}
@@ -116,7 +117,7 @@ const LateCommitments = ({ loading, latePledgeContacts }: Props): ReactElement =
                                         >
                                             <ListItemText
                                                 primary={contact.name}
-                                                secondary={`Their gift is ${numberFormat(days)} days late.`}
+                                                secondary={t('Their gift is {{ count, number }} day late.', { count })}
                                             />
                                         </ListItem>
                                     );
@@ -124,7 +125,9 @@ const LateCommitments = ({ loading, latePledgeContacts }: Props): ReactElement =
                             </List>
                             <CardActions>
                                 <Button size="small" color="primary" data-testid="LateCommitmentsButtonViewAll">
-                                    View All ({numberFormat(latePledgeContacts.totalCount)})
+                                    {t('View All ({{ totalCount, number }})', {
+                                        totalCount: latePledgeContacts?.totalCount,
+                                    })}
                                 </Button>
                             </CardActions>
                         </>

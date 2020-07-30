@@ -60,12 +60,12 @@ describe(DonationHistories.name, () => {
         });
 
         it('shows references', () => {
-            const { getByText } = render(
+            const { getByTestId } = render(
                 <DonationHistories reportsDonationHistories={reportsDonationHistories} goal={100} pledged={2500} />,
             );
-            expect(getByText('Goal: $100')).toBeInTheDocument();
-            expect(getByText('Average: $1,000')).toBeInTheDocument();
-            expect(getByText('Committed: $2,500')).toBeInTheDocument();
+            expect(getByTestId('DonationHistoriesTypographyGoal').textContent).toEqual('Goal $100');
+            expect(getByTestId('DonationHistoriesTypographyAverage').textContent).toEqual('Average $1,000');
+            expect(getByTestId('DonationHistoriesTypographyPledged').textContent).toEqual('Committed $2,500');
         });
     });
 });

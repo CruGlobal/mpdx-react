@@ -1,6 +1,7 @@
 import React, { ReactElement, useState } from 'react';
 import { makeStyles, BottomNavigation, BottomNavigationAction, Theme } from '@material-ui/core';
 import HomeIcon from '@material-ui/icons/Home';
+import { useTranslation } from 'react-i18next';
 
 const useStyles = makeStyles((_theme: Theme) => ({
     bottomNavigation: {
@@ -20,6 +21,7 @@ const useStyles = makeStyles((_theme: Theme) => ({
 const BottomBar = (): ReactElement => {
     const classes = useStyles();
     const [value, setValue] = useState(0);
+    const { t } = useTranslation();
 
     return (
         <>
@@ -32,7 +34,7 @@ const BottomBar = (): ReactElement => {
                 showLabels
                 className={[classes.bottomNavigation, classes.bottomNavigationFixed].join(' ')}
             >
-                <BottomNavigationAction label="Overview" icon={<HomeIcon />} data-testid="BottomBarOverview" />
+                <BottomNavigationAction label={t('Overview')} icon={<HomeIcon />} data-testid="BottomBarOverview" />
             </BottomNavigation>
         </>
     );

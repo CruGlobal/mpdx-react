@@ -1,4 +1,5 @@
 import React, { ReactElement } from 'react';
+import { useTranslation } from 'react-i18next';
 import PageHeading from '../../PageHeading';
 
 interface Props {
@@ -6,24 +7,22 @@ interface Props {
 }
 
 const Welcome = ({ firstName }: Props): ReactElement => {
+    const { t } = useTranslation();
     const today = new Date();
     const currentHour = today.getHours();
 
-    let greeting = 'Good Evening,';
+    let greeting = firstName ? t('Good Evening, {{ firstName }}.', { firstName }) : t('Good Evening,');
 
     if (currentHour < 12) {
-        greeting = 'Good Morning,';
+        greeting = firstName ? t('Good Morning, {{ firstName }}.', { firstName }) : t('Good Morning,');
     } else if (currentHour < 18) {
-        greeting = 'Good Afternoon,';
-    }
-    if (firstName) {
-        greeting = `${greeting} ${firstName}.`;
+        greeting = firstName ? t('Good Afternoon, {{ firstName }}.', { firstName }) : t('Good Afternoon,');
     }
 
     return (
         <PageHeading
             heading={greeting}
-            subheading="Welcome back to MPDX. Here's what's been happening."
+            subheading={t("Welcome back to MPDX. Here's what's been happening.")}
             imgSrc={require('../../../images/drawkit/grape/drawkit-grape-pack-illustration-9.svg')}
         />
     );

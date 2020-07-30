@@ -1,6 +1,7 @@
 import React, { ReactElement } from 'react';
 import { Typography, Link, Container, Box, Grid } from '@material-ui/core';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import { useTranslation } from 'react-i18next';
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -26,6 +27,8 @@ const useStyles = makeStyles((theme: Theme) =>
 
 const Footer = (): ReactElement => {
     const classes = useStyles();
+    const { t } = useTranslation();
+    const year = new Date().getFullYear();
 
     return (
         <Box py={5} className={classes.box}>
@@ -41,7 +44,7 @@ const Footer = (): ReactElement => {
                                 className={classes.link}
                                 data-testid="privacy"
                             >
-                                Privacy Policy
+                                {t('Privacy Policy')}
                             </Link>
                         </Grid>
                         <Grid xs={12} sm="auto" item>
@@ -50,7 +53,7 @@ const Footer = (): ReactElement => {
                                 className={classes.link}
                                 data-testid="whats-new"
                             >
-                                What&apos;s New
+                                {t("What's New")}
                             </Link>
                         </Grid>
                         <Grid xs={12} sm="auto" item>
@@ -59,13 +62,13 @@ const Footer = (): ReactElement => {
                                 className={classes.link}
                                 data-testid="terms-of-use"
                             >
-                                Terms of Use
+                                {t('Terms of Use')}
                             </Link>
                         </Grid>
                     </Grid>
                     <Grid item xs={12} md={4}>
                         <Typography className={classes.copyright} data-testid="copyright" variant="body2">
-                            &copy; {new Date().getFullYear()}, Cru. All Rights Reserved.
+                            {t('© {{ year }}, Cru. All Rights Reserved.', { year })}
                         </Typography>
                     </Grid>
                 </Grid>

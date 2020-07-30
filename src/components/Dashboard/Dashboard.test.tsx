@@ -98,7 +98,7 @@ describe(Dashboard.name, () => {
         matchMediaMock({ width: '1024px' });
     });
     it('default', async () => {
-        const { getByTestId, getByText, queryByTestId } = render(
+        const { getByTestId, queryByTestId } = render(
             <MockedProvider mocks={GetThisWeekDefaultMocks()} addTypename={false}>
                 <Dashboard accountListId="abc" data={data} />
             </MockedProvider>,
@@ -108,9 +108,9 @@ describe(Dashboard.name, () => {
         expect(getByTestId('MonthlyGoalTypographyPledged').textContent).toEqual('NZ$700');
         expect(getByTestId('MonthlyGoalTypographyReceived').textContent).toEqual('NZ$400');
         expect(getByTestId('BalanceTypography').textContent).toEqual('NZ$1,000');
-        expect(getByText('Goal: NZ$1,000')).toBeInTheDocument();
-        expect(getByText('Average: NZ$750')).toBeInTheDocument();
-        expect(getByText('Committed: NZ$700')).toBeInTheDocument();
+        expect(getByTestId('DonationHistoriesTypographyGoal').textContent).toEqual('Goal NZ$1,000');
+        expect(getByTestId('DonationHistoriesTypographyAverage').textContent).toEqual('Average NZ$750');
+        expect(getByTestId('DonationHistoriesTypographyPledged').textContent).toEqual('Committed NZ$700');
         expect(getByTestId('PartnerCarePrayerList')).toBeInTheDocument();
         expect(getByTestId('TasksDueThisWeekList')).toBeInTheDocument();
         expect(getByTestId('LateCommitmentsListContacts')).toBeInTheDocument();
@@ -118,7 +118,7 @@ describe(Dashboard.name, () => {
         expect(getByTestId('AppealsBoxName')).toBeInTheDocument();
     });
     it('handles null fields', async () => {
-        const { getByTestId, getByText, queryByTestId } = render(
+        const { getByTestId, queryByTestId } = render(
             <MockedProvider mocks={GetThisWeekDefaultMocks()} addTypename={false}>
                 <Dashboard
                     accountListId="abc"
@@ -131,7 +131,8 @@ describe(Dashboard.name, () => {
         expect(getByTestId('MonthlyGoalTypographyPledged').textContent).toEqual('$700');
         expect(getByTestId('MonthlyGoalTypographyReceived').textContent).toEqual('$400');
         expect(getByTestId('BalanceTypography').textContent).toEqual('$1,000');
-        expect(getByText('Average: $750')).toBeInTheDocument();
-        expect(getByText('Committed: $700')).toBeInTheDocument();
+        expect(queryByTestId('DonationHistoriesTypographyGoal')).not.toBeInTheDocument();
+        expect(getByTestId('DonationHistoriesTypographyAverage').textContent).toEqual('Average $750');
+        expect(getByTestId('DonationHistoriesTypographyPledged').textContent).toEqual('Committed $700');
     });
 });

@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, fireEvent } from '@testing-library/react';
+import { render, fireEvent } from '../../../../../tests/testingLibraryReactMock';
 import Referrals from '.';
 
 describe(Referrals.name, () => {

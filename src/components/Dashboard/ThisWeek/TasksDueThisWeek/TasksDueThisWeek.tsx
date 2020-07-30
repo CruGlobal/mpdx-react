@@ -16,6 +16,7 @@ import {
 } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import AnimatedCard from '../../../AnimatedCard';
 import { GetThisWeekQuery_dueTasks } from '../../../../../types/GetThisWeekQuery';
 import { numberFormat } from '../../../../lib/intlFormat';
@@ -61,10 +62,11 @@ interface Props {
 
 const TasksDueThisWeek = ({ loading, dueTasks }: Props): ReactElement => {
     const classes = useStyles();
+    const { t } = useTranslation();
 
     return (
         <AnimatedCard className={classes.card}>
-            <CardHeader title="Tasks Due This Week" />
+            <CardHeader title={t('Tasks Due This Week')} />
             {loading && (
                 <motion.div
                     initial={{ opacity: 0 }}
@@ -87,7 +89,7 @@ const TasksDueThisWeek = ({ loading, dueTasks }: Props): ReactElement => {
                     </List>
                     <CardActions>
                         <Button size="small" color="primary" disabled>
-                            View All (0)
+                            {t('View All ({{ totalCount, number }})', { totalCount: 0 })}
                         </Button>
                     </CardActions>
                 </motion.div>
@@ -105,7 +107,7 @@ const TasksDueThisWeek = ({ loading, dueTasks }: Props): ReactElement => {
                                 src={require('../../../../images/drawkit/grape/drawkit-grape-pack-illustration-8.svg')}
                                 className={classes.img}
                             />
-                            No tasks to show.
+                            {t('No tasks to show.')}
                         </CardContent>
                     ) : (
                         <>
@@ -148,7 +150,7 @@ const TasksDueThisWeek = ({ loading, dueTasks }: Props): ReactElement => {
                             </List>
                             <CardActions>
                                 <Button size="small" color="primary" data-testid="TasksDueThisWeekButtonViewAll">
-                                    View All ({numberFormat(dueTasks.totalCount)})
+                                    {t('View All ({{ totalCount, number }})', { totalCount: dueTasks.totalCount })}
                                 </Button>
                             </CardActions>
                         </>

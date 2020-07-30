@@ -1,6 +1,6 @@
 import React from 'react';
-import { render } from '@testing-library/react';
 import MockDate from 'mockdate';
+import { render } from '../../../tests/testingLibraryReactMock';
 import Footer from '.';
 
 describe(Footer.name, () => {
@@ -29,8 +29,8 @@ describe(Footer.name, () => {
         });
 
         it('has correct text', () => {
-            const { getByText } = render(<Footer />);
-            expect(getByText('© 2000, Cru. All Rights Reserved.')).toBeTruthy();
+            const { getByTestId } = render(<Footer />);
+            expect(getByTestId('copyright').textContent).toEqual('© 2000, Cru. All Rights Reserved.');
         });
     });
 });

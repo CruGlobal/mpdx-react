@@ -2,6 +2,7 @@ import React, { ReactElement } from 'react';
 import { Box, Typography, Grid } from '@material-ui/core';
 import moment from 'moment';
 import { gql, useQuery } from '@apollo/client';
+import { useTranslation } from 'react-i18next';
 import AnimatedBox from '../../AnimatedBox';
 import { GetThisWeekQuery } from '../../../../types/GetThisWeekQuery';
 import PartnerCare from './PartnerCare/PartnerCare';
@@ -122,6 +123,7 @@ export const GET_THIS_WEEK_QUERY = gql`
 `;
 
 const ThisWeek = ({ accountListId }: Props): ReactElement => {
+    const { t } = useTranslation();
     const { data, loading } = useQuery<GetThisWeekQuery>(GET_THIS_WEEK_QUERY, {
         variables: {
             accountListId,
@@ -147,7 +149,7 @@ const ThisWeek = ({ accountListId }: Props): ReactElement => {
         <>
             <Box my={{ xs: 1, sm: 2 }}>
                 <AnimatedBox>
-                    <Typography variant="h6">To Do This Week</Typography>
+                    <Typography variant="h6">{t('To Do This Week')}</Typography>
                 </AnimatedBox>
             </Box>
             <Grid container spacing={2}>
