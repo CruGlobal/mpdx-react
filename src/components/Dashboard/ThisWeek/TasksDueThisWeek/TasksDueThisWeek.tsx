@@ -19,7 +19,6 @@ import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import AnimatedCard from '../../../AnimatedCard';
 import { GetThisWeekQuery_dueTasks } from '../../../../../types/GetThisWeekQuery';
-import { numberFormat } from '../../../../lib/intlFormat';
 
 const useStyles = makeStyles((theme: Theme) => ({
     div: {

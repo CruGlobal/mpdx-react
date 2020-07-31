@@ -228,14 +228,9 @@ const DonationHistories = ({
                                             <XAxis tickLine={false} dataKey="startDate" />
                                             <YAxis
                                                 label={
-                                                    <Text
-                                                        x={0}
-                                                        y={0}
-                                                        dx={20}
-                                                        dy={150}
-                                                        offset={0}
-                                                        angle={-90}
-                                                    >{`Amount (${currencyCode})`}</Text>
+                                                    <Text x={0} y={0} dx={20} dy={150} offset={0} angle={-90}>
+                                                        {t('Amount ({{ currencyCode }})', { currencyCode })}
+                                                    </Text>
                                                 }
                                             />
                                             <Tooltip />
