@@ -53,7 +53,7 @@ const Welcome = ({ title, subtitle, imgSrc, children }: Props): ReactElement => 
     const classes = useStyles();
 
     return (
-        <motion.div initial="initial" animate="animate" exit="exit" variants={variants}>
+        <motion.main initial="initial" animate="animate" exit="exit" variants={variants}>
             <Box className={classes.box}>
                 <Container>
                     <Grid container spacing={2} alignItems="center">
@@ -88,12 +88,13 @@ const Welcome = ({ title, subtitle, imgSrc, children }: Props): ReactElement => 
                                     require(`../../images/drawkit/grape/drawkit-grape-pack-illustration-2.svg`)
                                 }
                                 variants={{ initial: { x: 25, opacity: 0 }, animate: { x: 0, opacity: 1 } }}
+                                alt="heading"
                             />
                         </Grid>
                     </Grid>
                 </Container>
             </Box>
-        </motion.div>
+        </motion.main>
     );
 };
 

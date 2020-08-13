@@ -72,6 +72,7 @@ const PageHeading = ({ heading, subheading, imgSrc, overlap = 20 }: Props): Reac
                         data-testid="PageHeadingImg"
                         src={imgSrc || require('../../images/drawkit/grape/drawkit-grape-pack-illustration-20.svg')}
                         height={230 - overlap}
+                        alt="heading"
                     />
                 </Box>
             </Container>
