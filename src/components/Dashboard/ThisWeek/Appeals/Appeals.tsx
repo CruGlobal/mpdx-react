@@ -110,6 +110,7 @@ const Appeals = ({ loading, appeal }: Props): ReactElement => {
                         <img
                             src={require('../../../../images/drawkit/grape/drawkit-grape-pack-illustration-13.svg')}
                             className={classes.img}
+                            alt="empty"
                         />
                         {t('No primary appeal to show.')}
                     </CardContent>

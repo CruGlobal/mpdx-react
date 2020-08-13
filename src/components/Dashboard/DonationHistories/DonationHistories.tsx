@@ -181,8 +181,9 @@ const DonationHistories = ({
                             <img
                                 src={require('../../../images/drawkit/grape/drawkit-grape-pack-illustration-15.svg')}
                                 className={classes.img}
+                                alt="empty"
                             />
-                            No monthly activity to show.
+                            {t('No monthly activity to show.')}
                         </Box>
                     ) : (
                         <>

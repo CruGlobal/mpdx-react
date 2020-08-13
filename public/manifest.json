@@ -5,6 +5,7 @@
     "display": "standalone",
     "Scope": "/",
     "start_url": "/",
+    "short_name": "MPDX",
     "icons": [
         {
             "src": "/icons/icon-72x72.png",
@@ -44,7 +45,8 @@
         {
             "src": "/icons/icon-512x512.png",
             "sizes": "512x512",
-            "type": "image/png"
+            "type": "image/png",
+            "purpose": "any maskable"
         }
     ],
     "splash_pages": null

@@ -105,6 +105,7 @@ const ReferralsTab = ({ loading, referrals, testid }: ReferralsTabProps): ReactE
                             <img
                                 src={require('../../../../images/drawkit/grape/drawkit-grape-pack-illustration-4.svg')}
                                 className={classes.img}
+                                alt="empty"
                             />
                             {t('No referrals to show.')}
                         </CardContent>

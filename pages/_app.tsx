@@ -40,9 +40,10 @@ const App = ({ Component, pageProps, router }: AppProps): ReactElement => {
         <>
             <Head>
                 <meta
-                    name="viewport"
-                    content="viewport-fit=cover,width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no"
+                    name="description"
+                    content="Fundraising software built for ministries, missionaries and churches."
                 />
+                <meta name="viewport" content="viewport-fit=cover,width=device-width,initial-scale=1,minimum-scale=1" />
                 <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
                 <link rel="manifest" href="/manifest.json" />
                 <link href="/favicon.png" rel="icon" type="image/png" sizes="32x32" />

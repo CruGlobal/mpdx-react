@@ -105,6 +105,7 @@ const TasksDueThisWeek = ({ loading, dueTasks }: Props): ReactElement => {
                             <img
                                 src={require('../../../../images/drawkit/grape/drawkit-grape-pack-illustration-8.svg')}
                                 className={classes.img}
+                                alt="empty"
                             />
                             {t('No tasks to show.')}
                         </CardContent>

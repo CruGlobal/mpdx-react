@@ -71,7 +71,7 @@ const SideBar = ({ mobileOpen, handleDrawerToggle }: Props): ReactElement => {
     const drawer = (
         <div>
             <Box px={2} className={classes.toolbar}>
-                <img src={require('../../../../images/logo.svg')} />
+                <img src={require('../../../../images/logo.svg')} alt="logo" />
             </Box>
             <Divider className={classes.divider} />
             <List className={classes.list}>

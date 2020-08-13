@@ -152,6 +152,7 @@ const PartnerCare = ({
                                     <img
                                         src={require('../../../../images/drawkit/grape/drawkit-grape-pack-illustration-4.svg')}
                                         className={classes.img}
+                                        alt="empty"
                                     />
                                     {t('No prayer requests to show.')}
                                 </CardContent>
@@ -246,6 +247,7 @@ const PartnerCare = ({
                                     <img
                                         src={require('../../../../images/drawkit/grape/drawkit-grape-pack-illustration-7.svg')}
                                         className={classes.img}
+                                        alt="empty"
                                     />
                                     {t('No celebrations to show.')}
                                 </CardContent>
