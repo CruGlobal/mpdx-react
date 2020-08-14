@@ -19,7 +19,6 @@ export const GET_ACCOUNT_LISTS_QUERY = gql`
                 receivedPledges
                 totalPledges
                 currency
-                balance
             }
         }
     }

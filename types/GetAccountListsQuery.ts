@@ -14,7 +14,6 @@ export interface GetAccountListsQuery_accountLists_nodes {
   receivedPledges: number;
   totalPledges: number;
   currency: string;
-  balance: number;
 }
 
 export interface GetAccountListsQuery_accountLists {

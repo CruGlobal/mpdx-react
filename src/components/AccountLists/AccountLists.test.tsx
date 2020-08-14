@@ -9,9 +9,30 @@ describe(AccountLists.name, () => {
                 data={{
                     accountLists: {
                         nodes: [
-                            { id: 'abc', name: 'My Personal Staff Account' },
-                            { id: 'def', name: 'My Ministry Account' },
-                            { id: 'ghi', name: "My Friend's Staff Account" },
+                            {
+                                id: 'abc',
+                                name: 'My Personal Staff Account',
+                                monthlyGoal: 100,
+                                receivedPledges: 10,
+                                totalPledges: 20,
+                                currency: 'USD',
+                            },
+                            {
+                                id: 'def',
+                                name: 'My Ministry Account',
+                                monthlyGoal: null,
+                                receivedPledges: 10,
+                                totalPledges: 20,
+                                currency: 'USD',
+                            },
+                            {
+                                id: 'ghi',
+                                name: "My Friend's Staff Account",
+                                monthlyGoal: 100,
+                                receivedPledges: 0,
+                                totalPledges: 0,
+                                currency: 'USD',
+                            },
                         ],
                     },
                 }}
