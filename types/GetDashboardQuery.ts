@@ -14,10 +14,10 @@ export interface GetDashboardQuery_user {
 export interface GetDashboardQuery_accountList {
   name: string | null;
   monthlyGoal: number | null;
-  receivedPledges: number | null;
-  committed: number | null;
-  currency: string | null;
-  balance: number | null;
+  receivedPledges: number;
+  totalPledges: number;
+  currency: string;
+  balance: number;
 }
 
 export interface GetDashboardQuery_reportsDonationHistories_periods_totals {
@@ -48,7 +48,7 @@ export interface GetDashboardQuery {
    */
   user: GetDashboardQuery_user;
   /**
-   * returns a specific account_list associated with the user when given the ID
+   * AccountList with a given ID
    */
   accountList: GetDashboardQuery_accountList;
   /**

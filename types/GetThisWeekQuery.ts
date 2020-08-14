@@ -172,19 +172,19 @@ export interface GetThisWeekQuery_onHandReferrals {
 
 export interface GetThisWeekQuery {
   /**
-   * returns a specific account_list associated with the user when given the ID
+   * AccountList with a given ID
    */
   accountList: GetThisWeekQuery_accountList;
   /**
-   * Tasks Belonging to an AccountList
+   * Tasks belonging to an AccountList
    */
   dueTasks: GetThisWeekQuery_dueTasks;
   /**
-   * Tasks Belonging to an AccountList
+   * Tasks belonging to an AccountList
    */
   prayerRequestTasks: GetThisWeekQuery_prayerRequestTasks;
   /**
-   * Contacts Belonging to an AccountList
+   * Contacts belonging to an AccountList
    */
   latePledgeContacts: GetThisWeekQuery_latePledgeContacts;
   /**
@@ -196,11 +196,11 @@ export interface GetThisWeekQuery {
    */
   reportsPeopleWithAnniversaries: GetThisWeekQuery_reportsPeopleWithAnniversaries;
   /**
-   * Contacts Belonging to an AccountList
+   * Contacts belonging to an AccountList
    */
   recentReferrals: GetThisWeekQuery_recentReferrals;
   /**
-   * Contacts Belonging to an AccountList
+   * Contacts belonging to an AccountList
    */
   onHandReferrals: GetThisWeekQuery_onHandReferrals;
 }
@@ -210,4 +210,5 @@ export interface GetThisWeekQueryVariables {
   endOfDay: any;
   today: any;
   twoWeeksFromNow: any;
+  twoWeeksAgo: any;
 }

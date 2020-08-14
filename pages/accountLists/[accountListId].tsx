@@ -18,7 +18,7 @@ export const GET_DASHBOARD_QUERY = gql`
             name
             monthlyGoal
             receivedPledges
-            committed
+            totalPledges
             currency
             balance
         }

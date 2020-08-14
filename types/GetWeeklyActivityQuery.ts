@@ -51,27 +51,27 @@ export interface GetWeeklyActivityQuery_completedCorrespondence {
 
 export interface GetWeeklyActivityQuery {
   /**
-   * Tasks Belonging to an AccountList
+   * Tasks belonging to an AccountList
    */
   completedCalls: GetWeeklyActivityQuery_completedCalls;
   /**
-   * Tasks Belonging to an AccountList
+   * Tasks belonging to an AccountList
    */
   callsThatProducedAppointments: GetWeeklyActivityQuery_callsThatProducedAppointments;
   /**
-   * Tasks Belonging to an AccountList
+   * Tasks belonging to an AccountList
    */
   completedMessages: GetWeeklyActivityQuery_completedMessages;
   /**
-   * Tasks Belonging to an AccountList
+   * Tasks belonging to an AccountList
    */
   messagesThatProducedAppointments: GetWeeklyActivityQuery_messagesThatProducedAppointments;
   /**
-   * Tasks Belonging to an AccountList
+   * Tasks belonging to an AccountList
    */
   completedAppointments: GetWeeklyActivityQuery_completedAppointments;
   /**
-   * Tasks Belonging to an AccountList
+   * Tasks belonging to an AccountList
    */
   completedCorrespondence: GetWeeklyActivityQuery_completedCorrespondence;
 }

@@ -25,7 +25,7 @@ export interface GetTopBarQuery_user {
 
 export interface GetTopBarQuery {
   /**
-   * returns all account lists associated with the current user
+   * All current user AccountLists
    */
   accountLists: GetTopBarQuery_accountLists;
   /**

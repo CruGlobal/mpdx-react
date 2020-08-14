@@ -17,7 +17,7 @@ export const Default = (): ReactElement => {
             name: 'My Account List',
             monthlyGoal: 1000,
             receivedPledges: 400,
-            committed: 700,
+            totalPledges: 700,
             currency: 'USD',
             balance: 1000,
         },

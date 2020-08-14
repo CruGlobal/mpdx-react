@@ -39,7 +39,7 @@ const Dashboard = ({ data, accountListId }: Props): ReactElement => {
                                 <MonthlyGoal
                                     goal={data.accountList.monthlyGoal}
                                     received={data.accountList.receivedPledges}
-                                    pledged={data.accountList.committed}
+                                    pledged={data.accountList.totalPledges}
                                     currencyCode={data.accountList.currency}
                                 />
                             </Grid>
@@ -49,7 +49,7 @@ const Dashboard = ({ data, accountListId }: Props): ReactElement => {
                             <Grid xs={12} item>
                                 <DonationHistories
                                     goal={data.accountList.monthlyGoal}
-                                    pledged={data.accountList.committed}
+                                    pledged={data.accountList.totalPledges}
                                     reportsDonationHistories={data.reportsDonationHistories}
                                     currencyCode={data.accountList.currency}
                                 />

@@ -10,6 +10,11 @@
 export interface GetAccountListsQuery_accountLists_nodes {
   id: string;
   name: string | null;
+  monthlyGoal: number | null;
+  receivedPledges: number;
+  totalPledges: number;
+  currency: string;
+  balance: number;
 }
 
 export interface GetAccountListsQuery_accountLists {
@@ -21,7 +26,7 @@ export interface GetAccountListsQuery_accountLists {
 
 export interface GetAccountListsQuery {
   /**
-   * returns all account lists associated with the current user
+   * All current user AccountLists
    */
   accountLists: GetAccountListsQuery_accountLists;
 }

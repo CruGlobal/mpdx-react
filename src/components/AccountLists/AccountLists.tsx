@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { GetAccountListsQuery } from '../../../types/GetAccountListsQuery';
 import PageHeading from '../PageHeading';
 import AnimatedCard from '../AnimatedCard';
+import { currencyFormat, percentageFormat } from '../../lib/intlFormat';
 
 interface Props {
     data: GetAccountListsQuery;
@@ -17,6 +18,8 @@ const useStyles = makeStyles((theme: Theme) => ({
         paddingBottom: theme.spacing(5),
     },
     cardContent: {
+        display: 'flex',
+        flexDirection: 'column',
         height: '200px',
     },
     image: {
@@ -52,23 +55,66 @@ const AccountLists = ({ data }: Props): ReactElement => {
             <motion.div initial="initial" animate="animate" exit="exit" variants={variants}>
                 <Container>
                     <Grid container spacing={3}>
-                        {data.accountLists.nodes.map((item) => (
-                            <Grid key={item.id} item xs={12} sm={4}>
-                                <AnimatedCard elevation={3}>
-                                    <Link
-                                        href="/accountLists/[accountListId]"
-                                        as={`/accountLists/${item.id}`}
-                                        scroll={false}
-                                    >
-                                        <CardActionArea>
-                                            <CardContent className={classes.cardContent}>
-                                                <Typography data-testid={item.id}>{item.name}</Typography>
-                                            </CardContent>
-                                        </CardActionArea>
-                                    </Link>
-                                </AnimatedCard>
-                            </Grid>
-                        ))}
+                        {data.accountLists.nodes.map(
+                            ({ id, name, monthlyGoal, receivedPledges, totalPledges, currency }) => {
+                                const receivedPercentage = receivedPledges / monthlyGoal;
+                                const totalPercentage = totalPledges / monthlyGoal;
+
+                                return (
+                                    <Grid key={id} item xs={12} sm={4}>
+                                        <AnimatedCard elevation={3}>
+                                            <Link
+                                                href="/accountLists/[accountListId]"
+                                                as={`/accountLists/${id}`}
+                                                scroll={false}
+                                            >
+                                                <CardActionArea>
+                                                    <CardContent className={classes.cardContent}>
+                                                        <Box flex={1}>
+                                                            <Typography variant="h5" data-testid={id} noWrap>
+                                                                {name}
+                                                            </Typography>
+                                                        </Box>
+                                                        <Grid container>
+                                                            {monthlyGoal && (
+                                                                <Grid xs={4} item>
+                                                                    <Typography component="div" color="textSecondary">
+                                                                        {t('Goal')}
+                                                                    </Typography>
+                                                                    <Typography variant="h6">
+                                                                        {currencyFormat(monthlyGoal, currency)}
+                                                                    </Typography>
+                                                                </Grid>
+                                                            )}
+                                                            <Grid xs={monthlyGoal ? 4 : 6} item>
+                                                                <Typography component="div" color="textSecondary">
+                                                                    {t('Gifts Started')}
+                                                                </Typography>
+                                                                <Typography variant="h6">
+                                                                    {isNaN(receivedPercentage)
+                                                                        ? '-'
+                                                                        : percentageFormat(receivedPercentage)}
+                                                                </Typography>
+                                                            </Grid>
+                                                            <Grid xs={monthlyGoal ? 4 : 6} item>
+                                                                <Typography component="div" color="textSecondary">
+                                                                    {t('Committed')}
+                                                                </Typography>
+                                                                <Typography variant="h6">
+                                                                    {isNaN(totalPercentage)
+                                                                        ? '-'
+                                                                        : percentageFormat(totalPercentage)}
+                                                                </Typography>
+                                                            </Grid>
+                                                        </Grid>
+                                                    </CardContent>
+                                                </CardActionArea>
+                                            </Link>
+                                        </AnimatedCard>
+                                    </Grid>
+                                );
+                            },
+                        )}
                     </Grid>
                 </Container>
             </motion.div>

@@ -15,6 +15,11 @@ export const GET_ACCOUNT_LISTS_QUERY = gql`
             nodes {
                 id
                 name
+                monthlyGoal
+                receivedPledges
+                totalPledges
+                currency
+                balance
             }
         }
     }

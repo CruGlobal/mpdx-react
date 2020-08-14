@@ -14,7 +14,7 @@ const data: GetDashboardQuery = {
         name: 'My Account List',
         monthlyGoal: 1000,
         receivedPledges: 400,
-        committed: 700,
+        totalPledges: 700,
         currency: 'NZD',
         balance: 1000,
     },
