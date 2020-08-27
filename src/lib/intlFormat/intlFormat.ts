@@ -33,6 +33,13 @@ export const dayMonthFormat = (day: number, month: number, language = getLanguag
         month: 'short',
     }).format(new Date(new Date().getFullYear(), month, day));
 
+export const dateFormat = (date: Date, language = getLanguage()): string =>
+    new Intl.DateTimeFormat(language, {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric',
+    }).format(date);
+
 const intlFormat = { numberFormat, percentageFormat, currencyFormat, dayMonthFormat };
 
 export default intlFormat;

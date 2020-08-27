@@ -1,3 +1,4 @@
+import { dateFormat } from './intlFormat';
 import { numberFormat, percentageFormat, currencyFormat, dayMonthFormat } from '.';
 /**
  * @jest-environment jsdom
@@ -140,6 +141,27 @@ describe('intlFormat', () => {
 
             it('handles language', () => {
                 expect(dayMonthFormat(5, 12)).toEqual('5 janv.');
+            });
+        });
+    });
+
+    describe(dateFormat.name, () => {
+        it('formats day and month as date', () => {
+            console.log(window.navigator.language);
+            expect(dateFormat(new Date(2019, 12, 5))).toEqual('Jan 5, 2020');
+        });
+
+        it('handles language', () => {
+            expect(dateFormat(new Date(2019, 12, 5), 'fr')).toEqual('5 janv. 2020');
+        });
+
+        describe('default language', () => {
+            beforeEach(() => {
+                languageMock.mockReturnValue('fr');
+            });
+
+            it('handles language', () => {
+                expect(dateFormat(new Date(2019, 12, 5))).toEqual('5 janv. 2020');
             });
         });
     });

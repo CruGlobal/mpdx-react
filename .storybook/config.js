@@ -6,6 +6,8 @@ import { withKnobs } from '@storybook/addon-knobs';
 import { withI18next } from 'storybook-addon-i18next';
 import MockDate from 'mockdate';
 import isChromatic from 'chromatic/isChromatic';
+import { MuiPickersUtilsProvider } from '@material-ui/pickers';
+import DateFnsUtils from '@date-io/date-fns';
 import theme from '../src/theme';
 import i18n from '../src/lib/i18n';
 
@@ -26,7 +28,9 @@ addDecorator(
 addDecorator((storyFn) => (
     <ThemeProvider theme={theme}>
         <CssBaseline />
+        <MuiPickersUtilsProvider utils={DateFnsUtils}>
         {storyFn()}
+        </MuiPickersUtilsProvider>
     </ThemeProvider>
 ));
 addDecorator(withKnobs);

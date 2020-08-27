@@ -53,10 +53,10 @@ describe(TasksDueThisWeek.name, () => {
         expect(queryByTestId('TasksDueThisWeekListLoading')).not.toBeInTheDocument();
         expect(getByTestId('TasksDueThisWeekButtonViewAll').textContent).toEqual('View All (1,234)');
         expect(getByTestId('TasksDueThisWeekListItem-task_1').textContent).toEqual(
-            'Smith, RogerPRAYER_REQUEST — the quick brown fox jumps over the lazy dog',
+            'Smith, RogerPrayer Request — the quick brown fox jumps over the lazy dog',
         );
         expect(getByTestId('TasksDueThisWeekListItem-task_2').textContent).toEqual(
-            'Smith, SarahAPPOINTMENT — the quick brown fox jumps over the lazy dog',
+            'Smith, SarahAppointment — the quick brown fox jumps over the lazy dog',
         );
     });
 });

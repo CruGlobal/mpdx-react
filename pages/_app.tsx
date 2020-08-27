@@ -8,6 +8,8 @@ import { Provider } from 'next-auth/client';
 import { NextPage } from 'next';
 import Head from 'next/head';
 import { I18nextProvider } from 'react-i18next';
+import { MuiPickersUtilsProvider } from '@material-ui/pickers';
+import DateFnsUtils from '@date-io/date-fns';
 import theme from '../src/theme';
 import client from '../src/lib/client';
 import PrimaryLayout from '../src/components/Layouts/Primary';
@@ -62,12 +64,14 @@ const App = ({ Component, pageProps, router }: AppProps): ReactElement => {
                     <ApolloProvider client={client}>
                         <ThemeProvider theme={theme}>
                             <CssBaseline />
-                            <AnimatePresence exitBeforeEnter onExitComplete={handleExitComplete}>
-                                <Layout>
-                                    <Component {...pageProps} key={router.route} />
-                                </Layout>
-                            </AnimatePresence>
-                            <Loading />
+                            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                <AnimatePresence exitBeforeEnter onExitComplete={handleExitComplete}>
+                                    <Layout>
+                                        <Component {...pageProps} key={router.route} />
+                                    </Layout>
+                                </AnimatePresence>
+                                <Loading />
+                            </MuiPickersUtilsProvider>
                         </ThemeProvider>
                     </ApolloProvider>
                 </Provider>
