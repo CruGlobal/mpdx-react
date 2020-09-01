@@ -1,10 +1,10 @@
 import React, { ReactElement } from 'react';
 import { MockedProvider } from '@apollo/client/testing';
 import {
-    GetCommentsForTaskDrawerCommentListMocks,
-    GetCommentsForTaskDrawerCommentListEmptyMocks,
+    getCommentsForTaskDrawerCommentListMock,
+    getCommentsForTaskDrawerCommentListEmptyMock,
 } from './CommentList.mock';
-import TaskDrawerContactList from '.';
+import TaskDrawerCommentList from '.';
 
 export default {
     title: 'Task/Drawer/CommentList',
@@ -12,8 +12,8 @@ export default {
 
 export const Default = (): ReactElement => {
     return (
-        <MockedProvider mocks={GetCommentsForTaskDrawerCommentListMocks()} addTypename={false}>
-            <TaskDrawerContactList accountListId="abc" taskId="task-1" />
+        <MockedProvider mocks={[getCommentsForTaskDrawerCommentListMock()]} addTypename={false}>
+            <TaskDrawerCommentList accountListId="abc" taskId="task-1" />
         </MockedProvider>
     );
 };
@@ -21,15 +21,15 @@ export const Default = (): ReactElement => {
 export const Loading = (): ReactElement => {
     return (
         <MockedProvider mocks={[]} addTypename={false}>
-            <TaskDrawerContactList accountListId="abc" taskId="task-1" />
+            <TaskDrawerCommentList accountListId="abc" taskId="task-1" />
         </MockedProvider>
     );
 };
 
 export const Empty = (): ReactElement => {
     return (
-        <MockedProvider mocks={GetCommentsForTaskDrawerCommentListEmptyMocks()} addTypename={false}>
-            <TaskDrawerContactList accountListId="abc" taskId="task-1" />
+        <MockedProvider mocks={[getCommentsForTaskDrawerCommentListEmptyMock()]} addTypename={false}>
+            <TaskDrawerCommentList accountListId="abc" taskId="task-1" />
         </MockedProvider>
     );
 };

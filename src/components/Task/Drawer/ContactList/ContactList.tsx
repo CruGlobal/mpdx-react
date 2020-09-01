@@ -1,8 +1,7 @@
 import React, { ReactElement } from 'react';
-import { makeStyles, Theme, Box, Card, Grid, CardContent, CardHeader } from '@material-ui/core';
+import { makeStyles, Theme, Box, Card, Grid, CardContent } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { gql, useQuery } from '@apollo/client';
-import { Skeleton } from '@material-ui/lab';
 import { GetContactsForTaskDrawerContactListQuery } from '../../../../../types/GetContactsForTaskDrawerContactListQuery';
 import TaskDrawerContactListItem from './Item';
 
@@ -96,19 +95,19 @@ const TaskDrawerContactList = ({ accountListId, contactIds }: Props): ReactEleme
 
     return (
         <Box m={2}>
-            {loading && (
-                <Card>
-                    <CardHeader
-                        avatar={<Skeleton variant="circle" width={40} height={40} />}
-                        title={<Skeleton width={100} />}
-                        subheader={<Skeleton width={80} />}
-                    />
-                </Card>
-            )}
-            {!loading && (
+            {loading ? (
+                <Grid container spacing={2} direction="column" data-testid="TaskDrawerContactListLoading">
+                    <Grid item>
+                        <TaskDrawerContactListItem />
+                    </Grid>
+                    <Grid item>
+                        <TaskDrawerContactListItem />
+                    </Grid>
+                </Grid>
+            ) : (
                 <>
                     {data.contacts.nodes.length === 0 && (
-                        <Card>
+                        <Card data-testid="TaskDrawerContactListEmpty">
                             <CardContent className={classes.cardContent}>
                                 <img
                                     src={require('../../../../images/drawkit/grape/drawkit-grape-pack-illustration-4.svg')}
@@ -122,7 +121,7 @@ const TaskDrawerContactList = ({ accountListId, contactIds }: Props): ReactEleme
                     {data.contacts.nodes.length > 0 && (
                         <Grid container spacing={2} direction="column">
                             {data.contacts.nodes.map((contact) => (
-                                <Grid item key={contact.id}>
+                                <Grid item key={contact.id} data-testid={`TaskDrawerContactListItem-${contact.id}`}>
                                     <TaskDrawerContactListItem contact={contact} />
                                 </Grid>
                             ))}

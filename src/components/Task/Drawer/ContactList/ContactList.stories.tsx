@@ -1,8 +1,8 @@
 import React, { ReactElement } from 'react';
 import { MockedProvider } from '@apollo/client/testing';
 import {
-    GetContactsForTaskDrawerContactListEmptyMocks,
-    GetContactsForTaskDrawerContactListMocks,
+    getContactsForTaskDrawerContactListEmptyMock,
+    getContactsForTaskDrawerContactListMock,
 } from './ContactList.mock';
 import TaskDrawerContactList from '.';
 
@@ -12,8 +12,8 @@ export default {
 
 export const Default = (): ReactElement => {
     return (
-        <MockedProvider mocks={GetContactsForTaskDrawerContactListMocks()} addTypename={false}>
-            <TaskDrawerContactList accountListId="abc" contactIds={['def', 'ghi']} />
+        <MockedProvider mocks={[getContactsForTaskDrawerContactListMock()]} addTypename={false}>
+            <TaskDrawerContactList accountListId="abc" contactIds={['contact-1', 'contact-2']} />
         </MockedProvider>
     );
 };
@@ -21,15 +21,15 @@ export const Default = (): ReactElement => {
 export const Loading = (): ReactElement => {
     return (
         <MockedProvider mocks={[]} addTypename={false}>
-            <TaskDrawerContactList accountListId="abc" contactIds={['def', 'ghi']} />
+            <TaskDrawerContactList accountListId="abc" contactIds={['contact-1', 'contact-2']} />
         </MockedProvider>
     );
 };
 
 export const Empty = (): ReactElement => {
     return (
-        <MockedProvider mocks={GetContactsForTaskDrawerContactListEmptyMocks()} addTypename={false}>
-            <TaskDrawerContactList accountListId="abc" contactIds={['def', 'ghi']} />
+        <MockedProvider mocks={[getContactsForTaskDrawerContactListEmptyMock()]} addTypename={false}>
+            <TaskDrawerContactList accountListId="abc" contactIds={['contact-1', 'contact-2']} />
         </MockedProvider>
     );
 };

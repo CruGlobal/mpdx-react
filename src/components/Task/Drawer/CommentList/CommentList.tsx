@@ -50,7 +50,7 @@ interface Props {
     taskId: string;
 }
 
-const TaskDrawerContactList = ({ accountListId, taskId }: Props): ReactElement => {
+const TaskDrawerCommentList = ({ accountListId, taskId }: Props): ReactElement => {
     const classes = useStyles();
     const { t } = useTranslation();
 
@@ -66,18 +66,17 @@ const TaskDrawerContactList = ({ accountListId, taskId }: Props): ReactElement =
 
     return (
         <Box m={2}>
-            {loading && (
-                <>
+            {loading ? (
+                <Box data-testid="TaskDrawerCommentListLoading">
                     <TaskDrawerCommentListItem />
                     <TaskDrawerCommentListItem reverse />
                     <TaskDrawerCommentListItem />
                     <TaskDrawerCommentListItem reverse />
-                </>
-            )}
-            {!loading && (
+                </Box>
+            ) : (
                 <>
                     {data.task.comments.nodes.length === 0 && (
-                        <Card>
+                        <Card data-testid="TaskDrawerCommentListEmpty">
                             <CardContent className={classes.cardContent}>
                                 <img
                                     src={require('../../../../images/drawkit/grape/drawkit-grape-pack-illustration-4.svg')}
@@ -90,7 +89,9 @@ const TaskDrawerContactList = ({ accountListId, taskId }: Props): ReactElement =
                     )}
                     {data.task.comments.nodes.length > 0 &&
                         sortBy('createdAt', data.task.comments.nodes).map((comment) => (
-                            <TaskDrawerCommentListItem comment={comment} reverse={comment.me} key={comment.id} />
+                            <Box data-testid={`TaskDrawerCommentListItem-${comment.id}`} key={comment.id}>
+                                <TaskDrawerCommentListItem comment={comment} reverse={comment.me} />
+                            </Box>
                         ))}
                 </>
             )}
@@ -98,4 +99,4 @@ const TaskDrawerContactList = ({ accountListId, taskId }: Props): ReactElement =
     );
 };
 
-export default TaskDrawerContactList;
+export default TaskDrawerCommentList;

@@ -14,7 +14,6 @@ interface Props {
 
 const useStyles = makeStyles((theme: Theme) => ({
     box: {
-        background: '#fff',
         paddingBottom: theme.spacing(5),
     },
     cardContent: {

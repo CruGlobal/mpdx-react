@@ -1,14 +1,14 @@
 import { MockedResponse } from '@apollo/client/testing';
 import { GetContactsForTaskDrawerContactListQuery } from '../../../../../types/GetContactsForTaskDrawerContactListQuery';
-import { StatusEnum, PledgeFrequencyEnum } from '../../../../../types/globalTypes';
+import { StatusEnum, PledgeFrequencyEnum, SendNewsletterEnum } from '../../../../../types/globalTypes';
 import { GET_CONTACTS_FOR_TASK_DRAWER_CONTACT_LIST_QUERY } from './ContactList';
 
-export const GetContactsForTaskDrawerContactListMocks = (): MockedResponse[] => {
+export const getContactsForTaskDrawerContactListMock = (): MockedResponse => {
     const data: GetContactsForTaskDrawerContactListQuery = {
         contacts: {
             nodes: [
                 {
-                    id: 'def',
+                    id: 'contact-1',
                     name: 'Quinn, Anthony',
                     primaryAddress: {
                         id: 'primaryAddress-a',
@@ -36,7 +36,7 @@ export const GetContactsForTaskDrawerContactListMocks = (): MockedResponse[] => 
                         },
                     },
                     status: StatusEnum.PARTNER_FINANCIAL,
-                    sendNewsletter: 'BOTH',
+                    sendNewsletter: SendNewsletterEnum.BOTH,
                     lastDonation: {
                         id: 'lastDonation-a',
                         amount: {
@@ -51,7 +51,7 @@ export const GetContactsForTaskDrawerContactListMocks = (): MockedResponse[] => 
                     tagList: ['test', 'post'],
                 },
                 {
-                    id: 'ghi',
+                    id: 'contact-2',
                     name: 'Phillips, Guy',
                     primaryAddress: null,
                     primaryPerson: null,
@@ -66,39 +66,42 @@ export const GetContactsForTaskDrawerContactListMocks = (): MockedResponse[] => 
             ],
         },
     };
-    return [
-        {
-            request: {
-                query: GET_CONTACTS_FOR_TASK_DRAWER_CONTACT_LIST_QUERY,
-                variables: {
-                    accountListId: 'abc',
-                    contactIds: ['def', 'ghi'],
-                },
-            },
-            result: {
-                data,
+    return {
+        request: {
+            query: GET_CONTACTS_FOR_TASK_DRAWER_CONTACT_LIST_QUERY,
+            variables: {
+                accountListId: 'abc',
+                contactIds: ['contact-1', 'contact-2'],
             },
         },
-    ];
+        result: {
+            data,
+        },
+    };
 };
 
-export const GetContactsForTaskDrawerContactListEmptyMocks = (): MockedResponse[] => {
-    return [
-        {
-            request: {
-                query: GET_CONTACTS_FOR_TASK_DRAWER_CONTACT_LIST_QUERY,
-                variables: {
-                    accountListId: 'abc',
-                    contactIds: ['def', 'ghi'],
-                },
+export const getContactsForTaskDrawerContactListEmptyMock = (): MockedResponse => {
+    return {
+        request: {
+            query: GET_CONTACTS_FOR_TASK_DRAWER_CONTACT_LIST_QUERY,
+            variables: {
+                accountListId: 'abc',
+                contactIds: ['contact-1', 'contact-2'],
             },
-            result: {
-                data: {
-                    contacts: {
-                        nodes: [],
-                    },
+        },
+        result: {
+            data: {
+                contacts: {
+                    nodes: [],
                 },
             },
         },
-    ];
+    };
+};
+
+export const getContactsForTaskDrawerContactListLoadingMock = (): MockedResponse => {
+    return {
+        ...getContactsForTaskDrawerContactListMock(),
+        delay: 100931731455,
+    };
 };

@@ -23,6 +23,7 @@ import CallIcon from '@material-ui/icons/Call';
 import TextsmsIcon from '@material-ui/icons/Textsms';
 import EmailIcon from '@material-ui/icons/Email';
 import LocationOnIcon from '@material-ui/icons/LocationOn';
+import { Skeleton } from '@material-ui/lab';
 import { GetContactsForTaskDrawerContactListQuery_contacts_nodes as Contact } from '../../../../../../types/GetContactsForTaskDrawerContactListQuery';
 import InfoBlock from '../../../../InfoBlock';
 import { currencyFormat } from '../../../../../lib/intlFormat';
@@ -38,15 +39,15 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 interface Props {
-    contact: Contact;
+    contact?: Contact;
 }
 
 const TaskDrawerContactListItem = ({ contact }: Props): ReactElement => {
     const classes = useStyles();
     const { t } = useTranslation();
 
-    return (
-        <Card>
+    return contact ? (
+        <Card data-testid="TaskDrawerContactListItemCard">
             <CardHeader
                 avatar={<Avatar>{contact.name[0]}</Avatar>}
                 title={contact.name}
@@ -61,23 +62,24 @@ const TaskDrawerContactListItem = ({ contact }: Props): ReactElement => {
                 <CardContent className={classes.cardContent}>
                     <Grid container spacing={3}>
                         {contact.sendNewsletter && (
-                            <Grid item>
+                            <Grid item data-testid="TaskDrawerContactListItemSendNewsletter">
                                 <InfoBlock title={t('Newsletter')}>
                                     {t(contact.sendNewsletter) /* manually added to translation file */}
                                 </InfoBlock>
                             </Grid>
                         )}
-                        {(contact.pledgeAmount || contact.pledgeCurrency || contact.pledgeFrequency) && (
-                            <Grid item>
+                        {contact.pledgeAmount && contact.pledgeCurrency && (
+                            <Grid item data-testid="TaskDrawerContactListItemPledge">
                                 <InfoBlock title={t('Commitment')}>
                                     {currencyFormat(contact.pledgeAmount, contact.pledgeCurrency)}{' '}
-                                    {t(contact.pledgeFrequency) /* manually added to translation file */}
+                                    {contact.pledgeFrequency &&
+                                        t(contact.pledgeFrequency) /* manually added to translation file */}
                                 </InfoBlock>
                             </Grid>
                         )}
                         {contact.lastDonation && (
-                            <Grid item>
-                                <InfoBlock title={t('Last Donation')}>
+                            <Grid item data-testid="TaskDrawerContactListItemLastDonation">
+                                <InfoBlock title={t('Last Gift')}>
                                     {currencyFormat(
                                         contact.lastDonation.amount.amount,
                                         contact.lastDonation.amount.currency,
@@ -89,7 +91,7 @@ const TaskDrawerContactListItem = ({ contact }: Props): ReactElement => {
                             </Grid>
                         )}
                         {contact.tagList.length > 0 && (
-                            <Grid item>
+                            <Grid item data-testid="TaskDrawerContactListItemTags">
                                 <InfoBlock title={t('Tags')} disableChildrenTypography>
                                     {contact.tagList.map((tag) => (
                                         <Chip
@@ -114,7 +116,7 @@ const TaskDrawerContactListItem = ({ contact }: Props): ReactElement => {
                     <List>
                         <>
                             {contact.primaryAddress && (
-                                <ListItem button>
+                                <ListItem button data-testid="TaskDrawerContactListItemAddress">
                                     <ListItemAvatar>
                                         <Avatar>
                                             <LocationOnIcon />
@@ -137,6 +139,7 @@ const TaskDrawerContactListItem = ({ contact }: Props): ReactElement => {
                                     component="a"
                                     href={`mailto:${contact.primaryPerson.primaryEmailAddress.email}`}
                                     target="_blank"
+                                    data-testid="TaskDrawerContactListItemEmailAddress"
                                 >
                                     <ListItemAvatar>
                                         <Avatar>
@@ -167,6 +170,7 @@ const TaskDrawerContactListItem = ({ contact }: Props): ReactElement => {
                                     component="a"
                                     href={`tel:${contact.primaryPerson.primaryPhoneNumber.number}`}
                                     target="_blank"
+                                    data-testid="TaskDrawerContactListItemPhoneNumber"
                                 >
                                     <ListItemAvatar>
                                         <Avatar>
@@ -206,6 +210,14 @@ const TaskDrawerContactListItem = ({ contact }: Props): ReactElement => {
                     </List>
                 </>
             )}
+        </Card>
+    ) : (
+        <Card>
+            <CardHeader
+                avatar={<Skeleton variant="circle" width={40} height={40} />}
+                title={<Skeleton width={100} />}
+                subheader={<Skeleton width={80} />}
+            />
         </Card>
     );
 };

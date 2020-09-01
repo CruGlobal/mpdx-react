@@ -42,7 +42,7 @@ export const Loading = (): ReactElement => {
 export const User = (): ReactElement => {
     return (
         <Box m={2}>
-            <TaskDrawerCommentListItem comment={{ ...comment, me: true }} />
+            <TaskDrawerCommentListItem comment={comment} reverse={true} />
         </Box>
     );
 };

@@ -59,7 +59,7 @@ export const Default = (): ReactElement => {
     );
 };
 
-export const Empty = (): ReactElement => {
+export const Minimal = (): ReactElement => {
     const contact: Contact = {
         id: 'ghi',
         name: 'Phillips, Guy',
@@ -76,6 +76,14 @@ export const Empty = (): ReactElement => {
     return (
         <Box m={2}>
             <TaskDrawerContactListItem contact={contact} />
+        </Box>
+    );
+};
+
+export const Loading = (): ReactElement => {
+    return (
+        <Box m={2}>
+            <TaskDrawerContactListItem />
         </Box>
     );
 };

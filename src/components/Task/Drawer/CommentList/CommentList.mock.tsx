@@ -2,7 +2,7 @@ import { MockedResponse } from '@apollo/client/testing';
 import { GetCommentsForTaskDrawerCommentListQuery } from '../../../../../types/GetCommentsForTaskDrawerCommentListQuery';
 import { GET_COMMENTS_FOR_TASK_DRAWER_CONTACT_LIST_QUERY } from './CommentList';
 
-export const GetCommentsForTaskDrawerCommentListMocks = (): MockedResponse[] => {
+export const getCommentsForTaskDrawerCommentListMock = (): MockedResponse => {
     const data: GetCommentsForTaskDrawerCommentListQuery = {
         task: {
             comments: {
@@ -45,23 +45,21 @@ export const GetCommentsForTaskDrawerCommentListMocks = (): MockedResponse[] => 
         },
     };
 
-    return [
-        {
-            request: {
-                query: GET_COMMENTS_FOR_TASK_DRAWER_CONTACT_LIST_QUERY,
-                variables: {
-                    accountListId: 'abc',
-                    taskId: 'task-1',
-                },
-            },
-            result: {
-                data,
+    return {
+        request: {
+            query: GET_COMMENTS_FOR_TASK_DRAWER_CONTACT_LIST_QUERY,
+            variables: {
+                accountListId: 'abc',
+                taskId: 'task-1',
             },
         },
-    ];
+        result: {
+            data,
+        },
+    };
 };
 
-export const GetCommentsForTaskDrawerCommentListEmptyMocks = (): MockedResponse[] => {
+export const getCommentsForTaskDrawerCommentListEmptyMock = (): MockedResponse => {
     const data: GetCommentsForTaskDrawerCommentListQuery = {
         task: {
             comments: {
@@ -70,18 +68,23 @@ export const GetCommentsForTaskDrawerCommentListEmptyMocks = (): MockedResponse[
         },
     };
 
-    return [
-        {
-            request: {
-                query: GET_COMMENTS_FOR_TASK_DRAWER_CONTACT_LIST_QUERY,
-                variables: {
-                    accountListId: 'abc',
-                    taskId: 'task-1',
-                },
-            },
-            result: {
-                data,
+    return {
+        request: {
+            query: GET_COMMENTS_FOR_TASK_DRAWER_CONTACT_LIST_QUERY,
+            variables: {
+                accountListId: 'abc',
+                taskId: 'task-1',
             },
         },
-    ];
+        result: {
+            data,
+        },
+    };
+};
+
+export const getCommentsForTaskDrawerCommentListLoadingMock = (): MockedResponse => {
+    return {
+        ...getCommentsForTaskDrawerCommentListMock(),
+        delay: 100931731455,
+    };
 };

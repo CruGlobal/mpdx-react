@@ -30,13 +30,9 @@ const useStyles = makeStyles((theme: Theme) => ({
         gridColumn: 3,
         display: 'flex',
     },
-    avatar: {},
     content: {},
     reverse: {
         gridTemplateColumns: '1fr 5px',
-        '& $avatar': {
-            display: 'none',
-        },
         '& $triangle': {
             gridColumn: 2,
             gridRow: 1,
@@ -71,13 +67,14 @@ const TaskDrawerCommentListItem = ({ comment, reverse }: Props): ReactElement =>
 
     return (
         <Box className={compact([classes.container, reverse && classes.reverse]).join(' ')}>
-            {comment ? (
-                <Tooltip title={`${comment.person.firstName} ${comment.person.lastName}`} placement="right">
-                    <Avatar className={classes.avatar}>{comment.person.firstName[0]}</Avatar>
-                </Tooltip>
-            ) : (
-                <Skeleton className={classes.avatar} variant="circle" width={40} height={40} />
-            )}
+            {!reverse &&
+                (comment ? (
+                    <Tooltip title={`${comment.person.firstName} ${comment.person.lastName}`} placement="right">
+                        <Avatar data-testid="TaskDrawerCommentListItemAvatar">{comment.person.firstName[0]}</Avatar>
+                    </Tooltip>
+                ) : (
+                    <Skeleton variant="circle" width={40} height={40} />
+                ))}
             <Box className={classes.triangle}></Box>
             <Box className={classes.content}>
                 <Box className={classes.box}>
