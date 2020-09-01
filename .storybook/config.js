@@ -8,6 +8,7 @@ import MockDate from 'mockdate';
 import isChromatic from 'chromatic/isChromatic';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
+import { SnackbarProvider } from 'notistack';
 import theme from '../src/theme';
 import i18n from '../src/lib/i18n';
 
@@ -29,7 +30,7 @@ addDecorator((storyFn) => (
     <ThemeProvider theme={theme}>
         <CssBaseline />
         <MuiPickersUtilsProvider utils={DateFnsUtils}>
-        {storyFn()}
+            <SnackbarProvider maxSnack={3}>{storyFn()}</SnackbarProvider>
         </MuiPickersUtilsProvider>
     </ThemeProvider>
 ));

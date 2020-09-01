@@ -20,6 +20,11 @@ const theme = createMuiTheme({
                 borderRadius: '10px',
             },
         },
+        MuiChip: {
+            root: {
+                borderRadius: '5px',
+            },
+        },
         MuiCardHeader: {
             root: {
                 borderBottom: '1px solid #EBECEC',

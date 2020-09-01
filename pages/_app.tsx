@@ -10,6 +10,7 @@ import Head from 'next/head';
 import { I18nextProvider } from 'react-i18next';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
+import { SnackbarProvider } from 'notistack';
 import theme from '../src/theme';
 import client from '../src/lib/client';
 import PrimaryLayout from '../src/components/Layouts/Primary';
@@ -65,12 +66,14 @@ const App = ({ Component, pageProps, router }: AppProps): ReactElement => {
                         <ThemeProvider theme={theme}>
                             <CssBaseline />
                             <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                                <AnimatePresence exitBeforeEnter onExitComplete={handleExitComplete}>
-                                    <Layout>
-                                        <Component {...pageProps} key={router.route} />
-                                    </Layout>
-                                </AnimatePresence>
-                                <Loading />
+                                <SnackbarProvider maxSnack={3}>
+                                    <AnimatePresence exitBeforeEnter onExitComplete={handleExitComplete}>
+                                        <Layout>
+                                            <Component {...pageProps} key={router.route} />
+                                        </Layout>
+                                    </AnimatePresence>
+                                    <Loading />
+                                </SnackbarProvider>
                             </MuiPickersUtilsProvider>
                         </ThemeProvider>
                     </ApolloProvider>
