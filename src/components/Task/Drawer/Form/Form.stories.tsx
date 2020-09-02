@@ -11,7 +11,15 @@ export default {
 export const Default = (): ReactElement => {
     return (
         <MockedProvider mocks={[getDataForTaskDrawerMock(), createTaskMutationMock()]} addTypename={false}>
-            <TaskDrawerForm accountListId="abc" onClose={(): void => {}} />
+            <TaskDrawerForm accountListId="abc" onClose={(): void => {}} onChange={(): void => {}} />
+        </MockedProvider>
+    );
+};
+
+export const Loading = (): ReactElement => {
+    return (
+        <MockedProvider mocks={[]} addTypename={false}>
+            <TaskDrawerForm accountListId="abc" onClose={(): void => {}} onChange={(): void => {}} />
         </MockedProvider>
     );
 };
@@ -29,16 +37,17 @@ export const Persisted = (): ReactElement => {
                     tagList: ['tag-1', 'tag-2'],
                     contacts: {
                         nodes: [
-                            { id: 'def', name: 'Anderson, Robert' },
-                            { id: 'ghi', name: 'Smith, John' },
+                            { id: 'contact-1', name: 'Anderson, Robert' },
+                            { id: 'contact-2', name: 'Smith, John' },
                         ],
                     },
-                    user: { id: 'def', firstName: 'Anderson', lastName: 'Robert' },
+                    user: { id: 'user-1', firstName: 'Anderson', lastName: 'Robert' },
                     notificationTimeBefore: 20,
                     notificationType: NotificationTypeEnum.BOTH,
                     notificationTimeUnit: NotificationTimeUnitEnum.HOURS,
                 }}
                 onClose={(): void => {}}
+                onChange={(): void => {}}
             />
         </MockedProvider>
     );

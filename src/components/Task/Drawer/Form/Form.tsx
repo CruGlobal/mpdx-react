@@ -25,6 +25,7 @@ import * as yup from 'yup';
 import { gql, useQuery, useMutation } from '@apollo/client';
 import { omit } from 'lodash/fp';
 import { useSnackbar } from 'notistack';
+import { startOfHour, addHours } from 'date-fns';
 import {
     ActivityTypeEnum,
     NotificationTypeEnum,
@@ -92,17 +93,20 @@ export const CREATE_TASK_MUTATION = gql`
                 subject
                 startAt
                 tagList
-                notificationTimeBefore
-                notificationType
-                notificationTimeUnit
-                user {
-                    id
-                }
                 contacts {
                     nodes {
                         id
+                        name
                     }
                 }
+                user {
+                    id
+                    firstName
+                    lastName
+                }
+                notificationTimeBefore
+                notificationType
+                notificationTimeUnit
             }
         }
     }
@@ -117,17 +121,20 @@ export const UPDATE_TASK_MUTATION = gql`
                 subject
                 startAt
                 tagList
-                notificationTimeBefore
-                notificationType
-                notificationTimeUnit
-                user {
-                    id
-                }
                 contacts {
                     nodes {
                         id
+                        name
                     }
                 }
+                user {
+                    id
+                    firstName
+                    lastName
+                }
+                notificationTimeBefore
+                notificationType
+                notificationTimeUnit
             }
         }
     }
@@ -150,14 +157,15 @@ interface Props {
     accountListId: string;
     task?: Task;
     onClose: () => void;
+    onChange: (task: Task) => void;
 }
 
-const TaskDrawerForm = ({ accountListId, task, onClose }: Props): ReactElement => {
+const TaskDrawerForm = ({ accountListId, task, onClose, onChange }: Props): ReactElement => {
     const initialTask: Task = task || {
         id: null,
         activityType: null,
         subject: '',
-        startAt: new Date(),
+        startAt: startOfHour(addHours(new Date(), 1)),
         tagList: [],
         contacts: {
             nodes: [],
@@ -196,14 +204,15 @@ const TaskDrawerForm = ({ accountListId, task, onClose }: Props): ReactElement =
     const onSubmit = async (values: Task): Promise<void> => {
         const attributes: TaskInput = omit(['contacts', 'user'], {
             ...values,
-            userId: values.user?.id,
+            userId: values.user?.id || null,
             contactIds: values.contacts.nodes.map(({ id }) => id),
         });
-
         if (persisted) {
-            await updateTask({ variables: { accountListId, attributes } });
+            const mutation = await updateTask({ variables: { accountListId, attributes } });
+            onChange(mutation.data.updateTask.task);
         } else {
-            await createTask({ variables: { accountListId, attributes } });
+            const mutation = await createTask({ variables: { accountListId, attributes: omit('id', attributes) } });
+            onChange(mutation.data.createTask.task);
             setPersisted(true);
         }
         enqueueSnackbar(t('Task saved successfully'), { variant: 'success' });
@@ -240,6 +249,7 @@ const TaskDrawerForm = ({ accountListId, task, onClose }: Props): ReactElement =
                                         value={activityType}
                                         onChange={handleChange('activityType')}
                                     >
+                                        <MenuItem value={null}>{t('None')}</MenuItem>
                                         {Object.keys(ActivityTypeEnum).map((val) => (
                                             <MenuItem key={val} value={val}>
                                                 {t(val) /* manually added to translation file */}
@@ -255,6 +265,7 @@ const TaskDrawerForm = ({ accountListId, task, onClose }: Props): ReactElement =
                                     onChange={handleChange('subject')}
                                     fullWidth
                                     multiline
+                                    inputProps={{ 'aria-label': 'Description' }}
                                 />
                             </Grid>
                             <Grid item>
@@ -320,7 +331,7 @@ const TaskDrawerForm = ({ accountListId, task, onClose }: Props): ReactElement =
                                                 ...params.InputProps,
                                                 endAdornment: (
                                                     <>
-                                                        {loading && <CircularProgress color="inherit" size={20} />}
+                                                        {loading && <CircularProgress color="primary" size={20} />}
                                                         {params.InputProps.endAdornment}
                                                     </>
                                                 ),
@@ -348,7 +359,7 @@ const TaskDrawerForm = ({ accountListId, task, onClose }: Props): ReactElement =
                                                 ...params.InputProps,
                                                 endAdornment: (
                                                     <>
-                                                        {loading && <CircularProgress color="inherit" size={20} />}
+                                                        {loading && <CircularProgress color="primary" size={20} />}
                                                         {params.InputProps.endAdornment}
                                                     </>
                                                 ),
@@ -384,6 +395,7 @@ const TaskDrawerForm = ({ accountListId, task, onClose }: Props): ReactElement =
                                                         fullWidth
                                                         value={notificationTimeBefore}
                                                         onChange={handleChange('notificationTimeBefore')}
+                                                        inputProps={{ 'aria-label': 'Period', type: 'number' }}
                                                     />
                                                 </Grid>
                                                 <Grid xs={5} item>
@@ -394,6 +406,7 @@ const TaskDrawerForm = ({ accountListId, task, onClose }: Props): ReactElement =
                                                             value={notificationTimeUnit}
                                                             onChange={handleChange('notificationTimeUnit')}
                                                         >
+                                                            <MenuItem value={null}>{t('None')}</MenuItem>
                                                             {Object.keys(NotificationTimeUnitEnum).map((val) => (
                                                                 <MenuItem key={val} value={val}>
                                                                     {t(val) /* manually added to translation file */}
@@ -410,6 +423,7 @@ const TaskDrawerForm = ({ accountListId, task, onClose }: Props): ReactElement =
                                                             value={notificationType}
                                                             onChange={handleChange('notificationType')}
                                                         >
+                                                            <MenuItem value={null}>{t('None')}</MenuItem>
                                                             {Object.keys(NotificationTypeEnum).map((val) => (
                                                                 <MenuItem key={val} value={val}>
                                                                     {t(val) /* manually added to translation file */}
@@ -441,7 +455,12 @@ const TaskDrawerForm = ({ accountListId, task, onClose }: Props): ReactElement =
                                     disabled={!isValid || isSubmitting}
                                     type="submit"
                                 >
-                                    {(saving || creating) && <CircularProgress color="primary" size={20} />}
+                                    {(saving || creating) && (
+                                        <>
+                                            <CircularProgress color="primary" size={20} />
+                                            &nbsp;
+                                        </>
+                                    )}
                                     {t('Save')}
                                 </Button>
                             </Grid>

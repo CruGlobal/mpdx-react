@@ -9,12 +9,9 @@ import { TaskInput, ActivityTypeEnum, NotificationTypeEnum, NotificationTimeUnit
 // GraphQL mutation operation: CreateTaskMutation
 // ====================================================
 
-export interface CreateTaskMutation_createTask_task_user {
-  id: string;
-}
-
 export interface CreateTaskMutation_createTask_task_contacts_nodes {
   id: string;
+  name: string;
 }
 
 export interface CreateTaskMutation_createTask_task_contacts {
@@ -24,17 +21,23 @@ export interface CreateTaskMutation_createTask_task_contacts {
   nodes: (CreateTaskMutation_createTask_task_contacts_nodes | null)[] | null;
 }
 
+export interface CreateTaskMutation_createTask_task_user {
+  id: string;
+  firstName: string | null;
+  lastName: string | null;
+}
+
 export interface CreateTaskMutation_createTask_task {
   id: string;
   activityType: ActivityTypeEnum | null;
   subject: string | null;
   startAt: any | null;
   tagList: string[];
+  contacts: CreateTaskMutation_createTask_task_contacts;
+  user: CreateTaskMutation_createTask_task_user | null;
   notificationTimeBefore: number | null;
   notificationType: NotificationTypeEnum | null;
   notificationTimeUnit: NotificationTimeUnitEnum | null;
-  user: CreateTaskMutation_createTask_task_user | null;
-  contacts: CreateTaskMutation_createTask_task_contacts;
 }
 
 export interface CreateTaskMutation_createTask {

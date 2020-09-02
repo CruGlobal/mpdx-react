@@ -2,10 +2,10 @@ import React, { ReactElement } from 'react';
 import { MockedProvider } from '@apollo/client/testing';
 import { GetTaskForTaskDrawerQuery } from '../../../../types/GetTaskForTaskDrawerQuery';
 import { ActivityTypeEnum, NotificationTypeEnum, NotificationTimeUnitEnum } from '../../../../types/globalTypes';
-import { getDataForTaskDrawerMock } from './Form/Form.mock';
+import { getDataForTaskDrawerMock, updateTaskMutationMock, createTaskMutationMock } from './Form/Form.mock';
 import { GET_TASK_FOR_TASK_DRAWER_QUERY } from './Drawer';
-import { GetContactsForTaskDrawerContactListMocks } from './ContactList/ContactList.mock';
-import { GetCommentsForTaskDrawerCommentListMocks } from './CommentList/CommentList.mock';
+import { getContactsForTaskDrawerContactListMock } from './ContactList/ContactList.mock';
+import { getCommentsForTaskDrawerCommentListMock } from './CommentList/CommentList.mock';
 import TaskDrawer from '.';
 
 export default {
@@ -13,7 +13,7 @@ export default {
 };
 
 export const Default = (): ReactElement => (
-    <MockedProvider mocks={[getDataForTaskDrawerMock()]} addTypename={false}>
+    <MockedProvider mocks={[getDataForTaskDrawerMock(), createTaskMutationMock()]} addTypename={false}>
         <TaskDrawer accountListId="abc" />
     </MockedProvider>
 );
@@ -28,11 +28,11 @@ export const Persisted = (): ReactElement => {
             tagList: ['tag-1', 'tag-2'],
             contacts: {
                 nodes: [
-                    { id: 'def', name: 'Anderson, Robert' },
-                    { id: 'ghi', name: 'Smith, John' },
+                    { id: 'contact-1', name: 'Anderson, Robert' },
+                    { id: 'contact-2', name: 'Smith, John' },
                 ],
             },
-            user: { id: 'def', firstName: 'Anderson', lastName: 'Robert' },
+            user: { id: 'user-1', firstName: 'Anderson', lastName: 'Robert' },
             notificationTimeBefore: 20,
             notificationType: NotificationTypeEnum.BOTH,
             notificationTimeUnit: NotificationTimeUnitEnum.HOURS,
@@ -53,8 +53,9 @@ export const Persisted = (): ReactElement => {
             },
         },
         getDataForTaskDrawerMock(),
-        ...GetContactsForTaskDrawerContactListMocks(),
-        ...GetCommentsForTaskDrawerCommentListMocks(),
+        getContactsForTaskDrawerContactListMock(),
+        getCommentsForTaskDrawerCommentListMock(),
+        updateTaskMutationMock(),
     ];
 
     return (

@@ -1,5 +1,6 @@
 import { MockedResponse } from '@apollo/client/testing';
 import { omit } from 'lodash/fp';
+import { addHours, startOfHour } from 'date-fns';
 import { GetDataForTaskDrawerQuery } from '../../../../../types/GetDataForTaskDrawerQuery';
 import { CreateTaskMutation } from '../../../../../types/CreateTaskMutation';
 import {
@@ -19,14 +20,14 @@ export const getDataForTaskDrawerMock = (): MockedResponse => {
         },
         contacts: {
             nodes: [
-                { id: 'def', name: 'Anderson, Robert' },
-                { id: 'ghi', name: 'Smith, John' },
+                { id: 'contact-1', name: 'Anderson, Robert' },
+                { id: 'contact-2', name: 'Smith, John' },
             ],
         },
         accountListUsers: {
             nodes: [
-                { id: 'def', user: { id: 'def', firstName: 'Anderson', lastName: 'Robert' } },
-                { id: 'ghi', user: { id: 'ghi', firstName: 'Smith', lastName: 'John' } },
+                { id: 'def', user: { id: 'user-1', firstName: 'Robert', lastName: 'Anderson' } },
+                { id: 'ghi', user: { id: 'user-2', firstName: 'John', lastName: 'Smith' } },
             ],
         },
     };
@@ -48,7 +49,7 @@ export const createTaskMutationMock = (): MockedResponse => {
         id: null,
         activityType: null,
         subject: '',
-        startAt: new Date(),
+        startAt: startOfHour(addHours(new Date(), 1)),
         tagList: [],
         contacts: {
             nodes: [],
@@ -60,24 +61,24 @@ export const createTaskMutationMock = (): MockedResponse => {
     };
     const data: CreateTaskMutation = {
         createTask: {
-            task,
+            task: { ...task, id: 'task-1' },
         },
     };
     const attributes: TaskInput = omit(['contacts', 'user'], {
         ...task,
         userId: null,
         contactIds: [],
-        startAt: task.startAt.toISOString(),
     });
     return {
         request: {
             query: CREATE_TASK_MUTATION,
             variables: {
                 accountListId: 'abc',
-                attributes,
+                attributes: omit('id', attributes),
             },
         },
         result: { data },
+        delay: 500,
     };
 };
 
@@ -90,11 +91,11 @@ export const updateTaskMutationMock = (): MockedResponse => {
         tagList: ['tag-1', 'tag-2'],
         contacts: {
             nodes: [
-                { id: 'def', name: 'Anderson, Robert' },
-                { id: 'ghi', name: 'Smith, John' },
+                { id: 'contact-1', name: 'Anderson, Robert' },
+                { id: 'contact-2', name: 'Smith, John' },
             ],
         },
-        user: { id: 'def', firstName: 'Anderson', lastName: 'Robert' },
+        user: { id: 'user-1', firstName: 'Robert', lastName: 'Anderson' },
         notificationTimeBefore: 20,
         notificationType: NotificationTypeEnum.BOTH,
         notificationTimeUnit: NotificationTimeUnitEnum.HOURS,
@@ -106,7 +107,7 @@ export const updateTaskMutationMock = (): MockedResponse => {
     };
     const attributes: TaskInput = omit(['contacts', 'user'], {
         ...task,
-        userId: task.user?.id,
+        userId: task.user.id,
         contactIds: task.contacts.nodes.map(({ id }) => id),
     });
     return {
@@ -118,5 +119,6 @@ export const updateTaskMutationMock = (): MockedResponse => {
             },
         },
         result: { data },
+        delay: 500,
     };
 };

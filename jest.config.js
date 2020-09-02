@@ -15,4 +15,6 @@ module.exports = {
             tsConfig: '<rootDir>/tsconfig.jest.json',
         },
     },
+    testEnvironment: 'jest-environment-jsdom-sixteen',
+    testTimeout: 10000,
 };
