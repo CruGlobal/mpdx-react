@@ -8,9 +8,9 @@ import { startOfHour, addHours } from 'date-fns';
 import userEvent from '@testing-library/user-event';
 import { ActivityTypeEnum, NotificationTypeEnum, NotificationTimeUnitEnum } from '../../../../../types/globalTypes';
 import { getDataForTaskDrawerMock, createTaskMutationMock, updateTaskMutationMock } from './Form.mock';
-import Form from '.';
+import TaskDrawerForm from '.';
 
-describe(Form.name, () => {
+describe(TaskDrawerForm.name, () => {
     it('default', async () => {
         const onClose = jest.fn();
         const onChange = jest.fn();
@@ -21,7 +21,7 @@ describe(Form.name, () => {
                         mocks={[getDataForTaskDrawerMock(), { ...createTaskMutationMock(), delay: 0 }]}
                         addTypename={false}
                     >
-                        <Form accountListId="abc" onClose={onClose} onChange={onChange} />
+                        <TaskDrawerForm accountListId="abc" onClose={onClose} onChange={onChange} />
                     </MockedProvider>
                 </SnackbarProvider>
             </MuiPickersUtilsProvider>,
@@ -59,7 +59,7 @@ describe(Form.name, () => {
                         mocks={[getDataForTaskDrawerMock(), { ...updateTaskMutationMock(), delay: 0 }]}
                         addTypename={false}
                     >
-                        <Form
+                        <TaskDrawerForm
                             accountListId="abc"
                             onClose={jest.fn()}
                             onChange={onChange}

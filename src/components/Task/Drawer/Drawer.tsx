@@ -81,12 +81,13 @@ const TaskDrawer = ({ accountListId, taskId }: Props): ReactElement => {
     const [getTask, { data, loading }] = useLazyQuery<GetTaskForTaskDrawerQuery>(GET_TASK_FOR_TASK_DRAWER_QUERY);
     const [task, setTask] = useState<Task>(null);
 
-    useEffect(() => {
-        setOpen(true);
+    const onLoad = async (): Promise<void> => {
         if (taskId) {
-            getTask({ variables: { accountListId, taskId } });
+            await getTask({ variables: { accountListId, taskId } });
+        } else {
+            setOpen(true);
         }
-    }, []);
+    };
 
     const handleTabChange = (_, tab: string): void => {
         setTab(tab);
@@ -100,20 +101,27 @@ const TaskDrawer = ({ accountListId, taskId }: Props): ReactElement => {
         setTask(task);
     };
 
+    useEffect(() => {
+        onLoad();
+    }, []);
+
     if (data?.task && task !== data?.task) {
         setTask(data.task);
+        setOpen(true);
     }
 
     return (
         <Box>
-            <Drawer open={open} onClose={(): void => setOpen(false)} anchor="right" classes={{ paper: classes.paper }}>
+            <Drawer open={open} onClose={onClose} anchor="right" classes={{ paper: classes.paper }}>
                 <Container className={classes.container}>
                     <Grid container alignItems="center">
                         <Grid className={classes.title} item>
-                            <Typography variant="h6">{taskId ? t('Task') : t('Add Task')}</Typography>
+                            <Typography variant="h6" data-testid="TaskDrawerTitle">
+                                {task ? (task.activityType ? t(task.activityType) : t('Task')) : t('Add Task')}
+                            </Typography>
                         </Grid>
                         <Grid item>
-                            <IconButton size="small" onClick={onClose}>
+                            <IconButton size="small" onClick={onClose} aria-label="Close">
                                 <CloseIcon />
                             </IconButton>
                         </Grid>
@@ -123,8 +131,8 @@ const TaskDrawer = ({ accountListId, taskId }: Props): ReactElement => {
                     <AppBar position="static">
                         <TabList onChange={handleTabChange} variant="fullWidth">
                             <Tab label={t('Details')} value="1" />
-                            <Tab label={t('Contacts')} value="2" disabled={!task && true} />
-                            <Tab label={t('Comments')} value="3" disabled={!task && true} />
+                            <Tab label={t('Contacts')} value="2" disabled={!task} />
+                            <Tab label={t('Comments')} value="3" disabled={!task} />
                         </TabList>
                     </AppBar>
                     <AnimatePresence initial={false}>
@@ -152,12 +160,10 @@ const TaskDrawer = ({ accountListId, taskId }: Props): ReactElement => {
                                         animate={{ x: 0, opacity: 1 }}
                                         exit={{ x: -300, opacity: 0 }}
                                     >
-                                        {task && (
-                                            <TaskDrawerContactList
-                                                accountListId={accountListId}
-                                                contactIds={task.contacts.nodes.map(({ id }) => id)}
-                                            />
-                                        )}
+                                        <TaskDrawerContactList
+                                            accountListId={accountListId}
+                                            contactIds={task.contacts.nodes.map(({ id }) => id)}
+                                        />
                                     </motion.div>
                                 </TabPanel>
                                 <TabPanel key="3" value="3" className={classes.tabPanel}>
