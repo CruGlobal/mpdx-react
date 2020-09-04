@@ -5,8 +5,7 @@ import { SnackbarProvider } from 'notistack';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
 import userEvent from '@testing-library/user-event';
-import { InMemoryCache } from '@apollo/client';
-import GET_LOCAL_STATE_QUERY from '../../../queries/getLocalStateQuery.graphql';
+import cacheMock from '../../../../tests/cacheMock';
 import { getDataForTaskDrawerMock, createTaskMutationMock, updateTaskMutationMock } from './Form/Form.mock';
 import {
     getCommentsForTaskDrawerCommentListEmptyMock,
@@ -24,18 +23,14 @@ describe(TaskDrawer.name, () => {
             { ...createTaskMutationMock(), delay: 0 },
             getCommentsForTaskDrawerCommentListEmptyMock(),
         ];
-        const cache = new InMemoryCache({ addTypename: false });
-        cache.writeQuery({
-            query: GET_LOCAL_STATE_QUERY,
-            data: {
-                currentAccountListId: 'abc',
-                breadcrumb: null,
-            },
-        });
         const { getByText, getByRole } = render(
             <MuiPickersUtilsProvider utils={DateFnsUtils}>
                 <SnackbarProvider>
-                    <MockedProvider mocks={mocks} cache={cache} addTypename={false}>
+                    <MockedProvider
+                        mocks={mocks}
+                        cache={cacheMock({ currentAccountListId: 'abc' })}
+                        addTypename={false}
+                    >
                         <TaskDrawer onClose={onClose} />
                     </MockedProvider>
                 </SnackbarProvider>
@@ -57,18 +52,14 @@ describe(TaskDrawer.name, () => {
             { ...updateTaskMutationMock(), delay: 0 },
             getTaskForTaskDrawerMock(),
         ];
-        const cache = new InMemoryCache({ addTypename: false });
-        cache.writeQuery({
-            query: GET_LOCAL_STATE_QUERY,
-            data: {
-                currentAccountListId: 'abc',
-                breadcrumb: null,
-            },
-        });
         const { getByText, getByRole, findByTestId, findByText } = render(
             <MuiPickersUtilsProvider utils={DateFnsUtils}>
                 <SnackbarProvider>
-                    <MockedProvider mocks={mocks} cache={cache} addTypename={false}>
+                    <MockedProvider
+                        mocks={mocks}
+                        cache={cacheMock({ currentAccountListId: 'abc' })}
+                        addTypename={false}
+                    >
                         <TaskDrawer taskId="task-1" />
                     </MockedProvider>
                 </SnackbarProvider>

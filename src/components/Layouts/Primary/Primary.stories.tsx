@@ -1,8 +1,8 @@
 import React, { ReactElement } from 'react';
 import { MockedProvider } from '@apollo/client/testing';
 import { Container, Box } from '@material-ui/core';
-import { InMemoryCache } from '@apollo/client';
-import GET_LOCAL_STATE_QUERY from '../../../queries/getLocalStateQuery.graphql';
+import cacheMock from '../../../../tests/cacheMock';
+import { DrawerProvider } from '../../Drawer';
 import { GET_TOP_BAR_QUERY } from './TopBar/TopBar';
 import Primary from '.';
 
@@ -25,31 +25,24 @@ export const Default = (): ReactElement => {
         },
     ];
 
-    const cache = new InMemoryCache({ addTypename: false });
-    cache.writeQuery({
-        query: GET_LOCAL_STATE_QUERY,
-        data: {
-            currentAccountListId: '1',
-            breadcrumb: null,
-        },
-    });
-
     return (
-        <MockedProvider mocks={mocks} cache={cache} addTypename={false}>
-            <Primary>
-                <Container>
-                    <Box my={2}>
-                        {[...new Array(50)]
-                            .map(
-                                () => `Cras mattis consectetur purus sit amet fermentum.
+        <MockedProvider mocks={mocks} cache={cacheMock()} addTypename={false}>
+            <DrawerProvider>
+                <Primary>
+                    <Container>
+                        <Box my={2}>
+                            {[...new Array(50)]
+                                .map(
+                                    () => `Cras mattis consectetur purus sit amet fermentum.
 Cras justo odio, dapibus ac facilisis in, egestas eget quam.
 Morbi leo risus, porta ac consectetur ac, vestibulum at eros.
 Praesent commodo cursus magna, vel scelerisque nisl consectetur et.`,
-                            )
-                            .join('\n')}
-                    </Box>
-                </Container>
-            </Primary>
+                                )
+                                .join('\n')}
+                        </Box>
+                    </Container>
+                </Primary>
+            </DrawerProvider>
         </MockedProvider>
     );
 };

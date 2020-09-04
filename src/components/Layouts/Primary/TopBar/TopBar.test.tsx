@@ -1,15 +1,14 @@
 import React from 'react';
 import { render, waitFor, fireEvent } from '@testing-library/react';
-import { InMemoryCache } from '@apollo/client';
 import { MockedProvider } from '@apollo/client/testing';
-import GET_LOCAL_STATE_QUERY from '../../../../queries/getLocalStateQuery.graphql';
 import TestRouter from '../../../../../tests/TestRouter';
 import matchMediaMock from '../../../../../tests/matchMediaMock';
+import cacheMock from '../../../../../tests/cacheMock';
 import { GET_TOP_BAR_QUERY } from './TopBar';
 import TopBar from '.';
 
 describe(TopBar.name, () => {
-    let mocks, cache;
+    let mocks;
     beforeEach(() => {
         mocks = [
             {
@@ -29,19 +28,11 @@ describe(TopBar.name, () => {
                 },
             },
         ];
-        cache = new InMemoryCache({ addTypename: false });
-        cache.writeQuery({
-            query: GET_LOCAL_STATE_QUERY,
-            data: {
-                currentAccountListId: undefined,
-                breadcrumb: undefined,
-            },
-        });
     });
 
     it('has correct defaults', () => {
         const { queryByTestId } = render(
-            <MockedProvider mocks={mocks} cache={cache} addTypename={false}>
+            <MockedProvider mocks={mocks} cache={cacheMock({ currentAccountListId: undefined })} addTypename={false}>
                 <TopBar handleDrawerToggle={jest.fn()} />
             </MockedProvider>,
         );
@@ -50,21 +41,13 @@ describe(TopBar.name, () => {
 
     describe('client state set', () => {
         beforeEach(() => {
-            cache = new InMemoryCache({ addTypename: false });
-            cache.writeQuery({
-                query: GET_LOCAL_STATE_QUERY,
-                data: {
-                    currentAccountListId: '1',
-                    breadcrumb: 'Dashboard',
-                },
-            });
             matchMediaMock({ width: '1024px' });
         });
 
         it('adjusts menu configuration', async () => {
             const { getByTestId, queryByTestId } = render(
                 <TestRouter>
-                    <MockedProvider mocks={mocks} cache={cache} addTypename={false}>
+                    <MockedProvider mocks={mocks} cache={cacheMock({ breadcrumb: 'Dashboard' })} addTypename={false}>
                         <TopBar handleDrawerToggle={jest.fn()} />
                     </MockedProvider>
                 </TestRouter>,
@@ -98,19 +81,11 @@ describe(TopBar.name, () => {
                     },
                 },
             ];
-            cache = new InMemoryCache({ addTypename: false });
-            cache.writeQuery({
-                query: GET_LOCAL_STATE_QUERY,
-                data: {
-                    currentAccountListId: '1',
-                    breadcrumb: 'Dashboard',
-                },
-            });
         });
 
         it('shows single accountList name', async () => {
             const { getByTestId } = render(
-                <MockedProvider mocks={mocks} cache={cache} addTypename={false}>
+                <MockedProvider mocks={mocks} cache={cacheMock({ breadcrumb: 'Dashboard' })} addTypename={false}>
                     <TopBar handleDrawerToggle={jest.fn()} />
                 </MockedProvider>,
             );

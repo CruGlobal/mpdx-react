@@ -1,10 +1,9 @@
 import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react';
 import { MockedProvider } from '@apollo/client/testing';
-import { InMemoryCache } from '@apollo/client';
 import matchMediaMock from '../../../../tests/matchMediaMock';
-import GET_LOCAL_STATE_QUERY from '../../../queries/getLocalStateQuery.graphql';
 import { DrawerProviderContext } from '../../Drawer/Provider';
+import cacheMock from '../../../../tests/cacheMock';
 import { GET_TOP_BAR_QUERY } from './TopBar/TopBar';
 import Primary from '.';
 
@@ -15,7 +14,7 @@ jest.mock('../../Drawer', () => ({
 }));
 
 describe(Primary.name, () => {
-    let mocks, cache;
+    let mocks;
     beforeEach(() => {
         mocks = [
             {
@@ -35,20 +34,12 @@ describe(Primary.name, () => {
                 },
             },
         ];
-        cache = new InMemoryCache({ addTypename: false });
-        cache.writeQuery({
-            query: GET_LOCAL_STATE_QUERY,
-            data: {
-                currentAccountListId: '1',
-                breadcrumb: 'Dashboard',
-            },
-        });
         matchMediaMock({ width: '1024px' });
     });
 
     it('has correct defaults', () => {
         const { getByTestId, queryByTestId } = render(
-            <MockedProvider mocks={mocks} cache={cache} addTypename={false}>
+            <MockedProvider mocks={mocks} cache={cacheMock({ breadcrumb: 'Dashboard' })} addTypename={false}>
                 <Primary>
                     <div data-testid="PrimaryTestChildren"></div>
                 </Primary>
@@ -67,7 +58,7 @@ describe(Primary.name, () => {
 
         it('allows menu to be shown and hidden', async () => {
             const { getByTestId, queryByTestId } = render(
-                <MockedProvider mocks={mocks} cache={cache} addTypename={false}>
+                <MockedProvider mocks={mocks} cache={cacheMock({ breadcrumb: 'Dashboard' })} addTypename={false}>
                     <Primary>
                         <div data-testid="PrimaryTestChildren"></div>
                     </Primary>

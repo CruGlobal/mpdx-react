@@ -1,11 +1,14 @@
 import React, { ReactElement } from 'react';
 import { Box } from '@material-ui/core';
+import { MockedProvider } from '@apollo/client/testing';
 import {
     GetThisWeekQuery_prayerRequestTasks,
     GetThisWeekQuery_reportsPeopleWithBirthdays,
     GetThisWeekQuery_reportsPeopleWithAnniversaries,
 } from '../../../../../types/GetThisWeekQuery';
 import { ActivityTypeEnum } from '../../../../../types/globalTypes';
+import cacheMock from '../../../../../tests/cacheMock';
+import { DrawerProvider } from '../../../Drawer';
 import PartnerCare from '.';
 
 export default {
@@ -68,12 +71,16 @@ export const Default = (): ReactElement => {
     };
     return (
         <Box m={2}>
-            <PartnerCare
-                loading={false}
-                prayerRequestTasks={prayerRequestTasks}
-                reportsPeopleWithBirthdays={reportsPeopleWithBirthdays}
-                reportsPeopleWithAnniversaries={reportsPeopleWithAnniversaries}
-            />
+            <MockedProvider mocks={[]} cache={cacheMock()} addTypename={false}>
+                <DrawerProvider>
+                    <PartnerCare
+                        loading={false}
+                        prayerRequestTasks={prayerRequestTasks}
+                        reportsPeopleWithBirthdays={reportsPeopleWithBirthdays}
+                        reportsPeopleWithAnniversaries={reportsPeopleWithAnniversaries}
+                    />
+                </DrawerProvider>
+            </MockedProvider>
         </Box>
     );
 };
@@ -99,12 +106,16 @@ export const Empty = (): ReactElement => {
     };
     return (
         <Box m={2}>
-            <PartnerCare
-                loading={false}
-                prayerRequestTasks={prayerRequestTasks}
-                reportsPeopleWithBirthdays={reportsPeopleWithBirthdays}
-                reportsPeopleWithAnniversaries={reportsPeopleWithAnniversaries}
-            />
+            <MockedProvider mocks={[]} cache={cacheMock()} addTypename={false}>
+                <DrawerProvider>
+                    <PartnerCare
+                        loading={false}
+                        prayerRequestTasks={prayerRequestTasks}
+                        reportsPeopleWithBirthdays={reportsPeopleWithBirthdays}
+                        reportsPeopleWithAnniversaries={reportsPeopleWithAnniversaries}
+                    />
+                </DrawerProvider>
+            </MockedProvider>
         </Box>
     );
 };
@@ -112,7 +123,11 @@ export const Empty = (): ReactElement => {
 export const Loading = (): ReactElement => {
     return (
         <Box m={2}>
-            <PartnerCare loading={true} />
+            <MockedProvider mocks={[]} cache={cacheMock()} addTypename={false}>
+                <DrawerProvider>
+                    <PartnerCare loading={true} />
+                </DrawerProvider>
+            </MockedProvider>
         </Box>
     );
 };
