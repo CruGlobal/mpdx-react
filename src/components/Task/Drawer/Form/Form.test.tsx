@@ -14,7 +14,7 @@ describe(TaskDrawerForm.name, () => {
     it('default', async () => {
         const onClose = jest.fn();
         const onChange = jest.fn();
-        const { getByText, getByRole } = render(
+        const { getByText, getByRole, findByText } = render(
             <MuiPickersUtilsProvider utils={DateFnsUtils}>
                 <SnackbarProvider>
                     <MockedProvider
@@ -28,29 +28,35 @@ describe(TaskDrawerForm.name, () => {
         );
         userEvent.click(getByText('Cancel'));
         expect(onClose).toHaveBeenCalled();
+        onClose.mockClear();
+        userEvent.click(getByText('Save'));
+        expect(await findByText('Field is required')).toBeInTheDocument();
+        userEvent.type(getByRole('textbox', { name: 'Subject' }), 'abc');
         userEvent.click(getByRole('checkbox', { name: 'Notification' }));
         userEvent.type(getByRole('spinbutton', { name: 'Period' }), '20');
         userEvent.click(getByRole('checkbox', { name: 'Notification' }));
+        await waitFor(() => expect(getByText('Save')).not.toBeDisabled());
         userEvent.click(getByText('Save'));
-        await waitFor(() =>
-            expect(onChange).toHaveBeenCalledWith({
-                activityType: null,
-                contacts: {
-                    nodes: [],
-                },
-                id: 'task-1',
-                notificationTimeBefore: null,
-                notificationTimeUnit: null,
-                notificationType: null,
-                startAt: startOfHour(addHours(new Date(), 1)),
-                subject: '',
-                tagList: [],
-                user: null,
-            }),
-        );
+        await waitFor(() => expect(onChange).toHaveBeenCalled());
+        expect(onChange).toHaveBeenCalledWith({
+            activityType: null,
+            contacts: {
+                nodes: [],
+            },
+            id: 'task-1',
+            notificationTimeBefore: null,
+            notificationTimeUnit: null,
+            notificationType: null,
+            startAt: startOfHour(addHours(new Date(), 1)),
+            subject: 'abc',
+            tagList: [],
+            user: null,
+        });
+        expect(onClose).toHaveBeenCalled();
     });
 
     it('persisted', async () => {
+        const onClose = jest.fn();
         const onChange = jest.fn();
         const { getByText, getByRole } = render(
             <MuiPickersUtilsProvider utils={DateFnsUtils}>
@@ -61,7 +67,7 @@ describe(TaskDrawerForm.name, () => {
                     >
                         <TaskDrawerForm
                             accountListId="abc"
-                            onClose={jest.fn()}
+                            onClose={onClose}
                             onChange={onChange}
                             task={{
                                 activityType: null,
@@ -85,7 +91,7 @@ describe(TaskDrawerForm.name, () => {
         userEvent.click(getByRole('button', { name: 'Type' }));
         userEvent.click(within(getByRole('listbox', { name: 'Type' })).getByText('NEWSLETTER_EMAIL'));
 
-        userEvent.type(getByRole('textbox', { name: 'Description' }), 'On the Journey with the Johnson Family');
+        userEvent.type(getByRole('textbox', { name: 'Subject' }), 'On the Journey with the Johnson Family');
 
         const tagsElement = getByRole('textbox', { name: 'Tags' });
         userEvent.click(tagsElement);
@@ -129,5 +135,6 @@ describe(TaskDrawerForm.name, () => {
             notificationType: NotificationTypeEnum.BOTH,
             notificationTimeUnit: NotificationTimeUnitEnum.HOURS,
         });
+        expect(onClose).toHaveBeenCalled();
     });
 });

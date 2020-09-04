@@ -158,7 +158,8 @@ const TaskDrawerContactListItem = ({ contact }: Props): ReactElement => {
                                                         contact.primaryPerson.suffix,
                                                     ]).join(' ')}
                                                 </Typography>
-                                                {` — ${contact.primaryPerson.primaryEmailAddress.location}`}
+                                                {contact.primaryPerson.primaryEmailAddress.location &&
+                                                    ` — ${contact.primaryPerson.primaryEmailAddress.location}`}
                                             </>
                                         }
                                     />
@@ -189,7 +190,8 @@ const TaskDrawerContactListItem = ({ contact }: Props): ReactElement => {
                                                         contact.primaryPerson.suffix,
                                                     ]).join(' ')}
                                                 </Typography>
-                                                {` — ${contact.primaryPerson.primaryPhoneNumber.location}`}
+                                                {contact.primaryPerson.primaryPhoneNumber.location &&
+                                                    ` — ${contact.primaryPerson.primaryPhoneNumber.location}`}
                                             </>
                                         }
                                     />

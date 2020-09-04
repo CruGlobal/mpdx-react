@@ -48,7 +48,7 @@ export const createTaskMutationMock = (): MockedResponse => {
     const task: Task = {
         id: null,
         activityType: null,
-        subject: '',
+        subject: 'abc',
         startAt: startOfHour(addHours(new Date(), 1)),
         tagList: [],
         contacts: {

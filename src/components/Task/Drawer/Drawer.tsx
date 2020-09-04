@@ -14,12 +14,14 @@ import {
 import CloseIcon from '@material-ui/icons/Close';
 import { useTranslation } from 'react-i18next';
 import { TabContext, TabList, TabPanel } from '@material-ui/lab';
-import { gql, useLazyQuery } from '@apollo/client';
+import { gql, useLazyQuery, useQuery } from '@apollo/client';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
     GetTaskForTaskDrawerQuery,
     GetTaskForTaskDrawerQuery_task as Task,
 } from '../../../../types/GetTaskForTaskDrawerQuery';
+import { GetLocalStateQuery } from '../../../../types/GetLocalStateQuery';
+import GET_LOCAL_STATE_QUERY from '../../../queries/getLocalStateQuery.graphql';
 import TaskDrawerForm from './Form';
 import TaskDrawerContactList from './ContactList';
 import TaskDrawerCommentList from './CommentList';
@@ -68,12 +70,13 @@ export const GET_TASK_FOR_TASK_DRAWER_QUERY = gql`
     }
 `;
 
-interface Props {
-    accountListId: string;
+export interface TaskDrawerProps {
     taskId?: string;
+    onClose?: () => void;
 }
 
-const TaskDrawer = ({ accountListId, taskId }: Props): ReactElement => {
+const TaskDrawer = ({ taskId, onClose }: TaskDrawerProps): ReactElement => {
+    const { data: state } = useQuery<GetLocalStateQuery>(GET_LOCAL_STATE_QUERY);
     const classes = useStyles();
     const [open, setOpen] = useState(false);
     const { t } = useTranslation();
@@ -83,7 +86,7 @@ const TaskDrawer = ({ accountListId, taskId }: Props): ReactElement => {
 
     const onLoad = async (): Promise<void> => {
         if (taskId) {
-            await getTask({ variables: { accountListId, taskId } });
+            await getTask({ variables: { accountListId: state.currentAccountListId, taskId } });
         } else {
             setOpen(true);
         }
@@ -93,8 +96,9 @@ const TaskDrawer = ({ accountListId, taskId }: Props): ReactElement => {
         setTab(tab);
     };
 
-    const onClose = (): void => {
+    const onDrawerClose = (): void => {
         setOpen(false);
+        onClose && onClose();
     };
 
     const onChange = (task: Task): void => {
@@ -110,9 +114,13 @@ const TaskDrawer = ({ accountListId, taskId }: Props): ReactElement => {
         setOpen(true);
     }
 
+    useEffect(() => {
+        onLoad();
+    }, [taskId]);
+
     return (
         <Box>
-            <Drawer open={open} onClose={onClose} anchor="right" classes={{ paper: classes.paper }}>
+            <Drawer open={open} onClose={onDrawerClose} anchor="right" classes={{ paper: classes.paper }}>
                 <Container className={classes.container}>
                     <Grid container alignItems="center">
                         <Grid className={classes.title} item>
@@ -121,7 +129,7 @@ const TaskDrawer = ({ accountListId, taskId }: Props): ReactElement => {
                             </Typography>
                         </Grid>
                         <Grid item>
-                            <IconButton size="small" onClick={onClose} aria-label="Close">
+                            <IconButton size="small" onClick={onDrawerClose} aria-label="Close">
                                 <CloseIcon />
                             </IconButton>
                         </Grid>
@@ -144,9 +152,9 @@ const TaskDrawer = ({ accountListId, taskId }: Props): ReactElement => {
                             >
                                 {!loading && (
                                     <TaskDrawerForm
-                                        accountListId={accountListId}
+                                        accountListId={state.currentAccountListId}
                                         task={task}
-                                        onClose={onClose}
+                                        onClose={onDrawerClose}
                                         onChange={onChange}
                                     />
                                 )}
@@ -161,7 +169,7 @@ const TaskDrawer = ({ accountListId, taskId }: Props): ReactElement => {
                                         exit={{ x: -300, opacity: 0 }}
                                     >
                                         <TaskDrawerContactList
-                                            accountListId={accountListId}
+                                            accountListId={state.currentAccountListId}
                                             contactIds={task.contacts.nodes.map(({ id }) => id)}
                                         />
                                     </motion.div>
@@ -172,7 +180,10 @@ const TaskDrawer = ({ accountListId, taskId }: Props): ReactElement => {
                                         animate={{ x: 0, opacity: 1 }}
                                         exit={{ x: -300, opacity: 0 }}
                                     >
-                                        <TaskDrawerCommentList accountListId={accountListId} taskId={task.id} />
+                                        <TaskDrawerCommentList
+                                            accountListId={state.currentAccountListId}
+                                            taskId={task.id}
+                                        />
                                     </motion.div>
                                 </TabPanel>
                             </>

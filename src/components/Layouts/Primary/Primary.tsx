@@ -1,5 +1,6 @@
 import React, { ReactElement, ReactNode, useState } from 'react';
 import { Box, makeStyles, Theme, Hidden } from '@material-ui/core';
+import AddFab from './AddFab';
 import TopBar from './TopBar';
 import SideBar from './SideBar';
 import { SIDE_BAR_WIDTH } from './SideBar/SideBar';
@@ -42,6 +43,7 @@ const Primary = ({ children }: Props): ReactElement => {
             <Hidden smUp>
                 <BottomBar />
             </Hidden>
+            <AddFab />
         </Box>
     );
 };

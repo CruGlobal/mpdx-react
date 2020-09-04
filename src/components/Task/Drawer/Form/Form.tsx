@@ -23,7 +23,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Formik } from 'formik';
 import * as yup from 'yup';
 import { gql, useQuery, useMutation } from '@apollo/client';
-import { omit } from 'lodash/fp';
+import { omit, sortBy } from 'lodash/fp';
 import { useSnackbar } from 'notistack';
 import { startOfHour, addHours } from 'date-fns';
 import {
@@ -143,7 +143,7 @@ export const UPDATE_TASK_MUTATION = gql`
 const taskSchema: yup.ObjectSchema<Task> = yup.object({
     id: yup.string().nullable(),
     activityType: yup.mixed<ActivityTypeEnum>(),
-    subject: yup.string(),
+    subject: yup.string().required(),
     startAt: yup.date(),
     tagList: yup.array().of(yup.string()),
     contacts: yup.object({ nodes: yup.array().of(yup.object({ id: yup.string(), name: yup.string() })) }),
@@ -202,20 +202,25 @@ const TaskDrawerForm = ({ accountListId, task, onClose, onChange }: Props): Reac
     const [createTask, { loading: creating }] = useMutation<CreateTaskMutation>(CREATE_TASK_MUTATION);
     const [updateTask, { loading: saving }] = useMutation<UpdateTaskMutation>(UPDATE_TASK_MUTATION);
     const onSubmit = async (values: Task): Promise<void> => {
-        const attributes: TaskInput = omit(['contacts', 'user'], {
+        const attributes: TaskInput = omit(['contacts', 'user', '__typename'], {
             ...values,
             userId: values.user?.id || null,
             contactIds: values.contacts.nodes.map(({ id }) => id),
         });
-        if (persisted) {
-            const mutation = await updateTask({ variables: { accountListId, attributes } });
-            onChange(mutation.data.updateTask.task);
-        } else {
-            const mutation = await createTask({ variables: { accountListId, attributes: omit('id', attributes) } });
-            onChange(mutation.data.createTask.task);
-            setPersisted(true);
+        try {
+            if (persisted) {
+                const mutation = await updateTask({ variables: { accountListId, attributes } });
+                onChange(mutation.data.updateTask.task);
+            } else {
+                const mutation = await createTask({ variables: { accountListId, attributes: omit('id', attributes) } });
+                onChange(mutation.data.createTask.task);
+                setPersisted(true);
+            }
+            enqueueSnackbar(t('Task saved successfully'), { variant: 'success' });
+            onClose();
+        } catch (error) {
+            enqueueSnackbar(error.message, { variant: 'error' });
         }
-        enqueueSnackbar(t('Task saved successfully'), { variant: 'success' });
     };
 
     return (
@@ -237,10 +242,25 @@ const TaskDrawerForm = ({ accountListId, task, onClose, onChange }: Props): Reac
                 handleSubmit,
                 isSubmitting,
                 isValid,
+                errors,
+                touched,
             }): ReactElement => (
-                <form onSubmit={handleSubmit}>
+                <form onSubmit={handleSubmit} noValidate>
                     <Box m={2}>
                         <Grid container direction="column" spacing={2}>
+                            <Grid item>
+                                <TextField
+                                    label={t('Subject')}
+                                    value={subject}
+                                    onChange={handleChange('subject')}
+                                    fullWidth
+                                    multiline
+                                    inputProps={{ 'aria-label': 'Subject' }}
+                                    error={errors.subject && touched.subject}
+                                    helperText={errors.subject && touched.subject && t('Field is required')}
+                                    required
+                                />
+                            </Grid>
                             <Grid item>
                                 <FormControl className={classes.formControl}>
                                     <InputLabel id="activityType">{t('Type')}</InputLabel>
@@ -257,16 +277,6 @@ const TaskDrawerForm = ({ accountListId, task, onClose, onChange }: Props): Reac
                                         ))}
                                     </Select>
                                 </FormControl>
-                            </Grid>
-                            <Grid item>
-                                <TextField
-                                    label={t('Description')}
-                                    value={subject}
-                                    onChange={handleChange('subject')}
-                                    fullWidth
-                                    multiline
-                                    inputProps={{ 'aria-label': 'Description' }}
-                                />
                             </Grid>
                             <Grid item>
                                 <FormControl className={classes.formControl}>
@@ -346,7 +356,7 @@ const TaskDrawerForm = ({ accountListId, task, onClose, onChange }: Props): Reac
                             <Grid item>
                                 <Autocomplete
                                     multiple
-                                    options={data?.contacts?.nodes || []}
+                                    options={(data?.contacts?.nodes && sortBy('name', data.contacts.nodes)) || []}
                                     getOptionLabel={({ name }: GetDataForTaskDrawerQuery_contacts_nodes): string =>
                                         name
                                     }

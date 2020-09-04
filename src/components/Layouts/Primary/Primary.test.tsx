@@ -4,8 +4,15 @@ import { MockedProvider } from '@apollo/client/testing';
 import { InMemoryCache } from '@apollo/client';
 import matchMediaMock from '../../../../tests/matchMediaMock';
 import GET_LOCAL_STATE_QUERY from '../../../queries/getLocalStateQuery.graphql';
+import { DrawerProviderContext } from '../../Drawer/Provider';
 import { GET_TOP_BAR_QUERY } from './TopBar/TopBar';
 import Primary from '.';
+
+jest.mock('../../Drawer', () => ({
+    useDrawer: (): Partial<DrawerProviderContext> => ({
+        openTaskDrawer: jest.fn(),
+    }),
+}));
 
 describe(Primary.name, () => {
     let mocks, cache;

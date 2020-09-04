@@ -3,8 +3,15 @@ import { render, waitFor } from '@testing-library/react';
 import { MockedProvider } from '@apollo/client/testing';
 import { GetDashboardQuery } from '../../../types/GetDashboardQuery';
 import matchMediaMock from '../../../tests/matchMediaMock';
+import { DrawerProviderContext } from '../Drawer/Provider';
 import { GetThisWeekDefaultMocks } from './ThisWeek/ThisWeek.mock';
 import Dashboard from '.';
+
+jest.mock('../Drawer', () => ({
+    useDrawer: (): Partial<DrawerProviderContext> => ({
+        openTaskDrawer: jest.fn(),
+    }),
+}));
 
 const data: GetDashboardQuery = {
     user: {

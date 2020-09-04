@@ -18,7 +18,11 @@ import { Skeleton } from '@material-ui/lab';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import AnimatedCard from '../../../AnimatedCard';
-import { GetThisWeekQuery_dueTasks } from '../../../../../types/GetThisWeekQuery';
+import {
+    GetThisWeekQuery_dueTasks,
+    GetThisWeekQuery_dueTasks_nodes as Task,
+} from '../../../../../types/GetThisWeekQuery';
+import { useDrawer } from '../../../Drawer';
 
 const useStyles = makeStyles((theme: Theme) => ({
     div: {
@@ -62,6 +66,11 @@ interface Props {
 const TasksDueThisWeek = ({ loading, dueTasks }: Props): ReactElement => {
     const classes = useStyles();
     const { t } = useTranslation();
+    const { openTaskDrawer } = useDrawer();
+
+    const handleClick = ({ id: taskId }: Task): void => {
+        openTaskDrawer({ taskId });
+    };
 
     return (
         <AnimatedCard className={classes.card}>
@@ -113,7 +122,12 @@ const TasksDueThisWeek = ({ loading, dueTasks }: Props): ReactElement => {
                         <>
                             <List className={classes.list} data-testid="TasksDueThisWeekList">
                                 {dueTasks.nodes.map((task) => (
-                                    <ListItem key={task.id} button data-testid={`TasksDueThisWeekListItem-${task.id}`}>
+                                    <ListItem
+                                        key={task.id}
+                                        button
+                                        data-testid={`TasksDueThisWeekListItem-${task.id}`}
+                                        onClick={(): void => handleClick(task)}
+                                    >
                                         <ListItemText
                                             disableTypography={true}
                                             primary={

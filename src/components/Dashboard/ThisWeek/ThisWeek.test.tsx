@@ -1,8 +1,15 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import { MockedProvider } from '@apollo/client/testing';
+import { DrawerProviderContext } from '../../Drawer/Provider';
 import { GetThisWeekEmptyMocks, GetThisWeekLoadingMocks, GetThisWeekDefaultMocks } from './ThisWeek.mock';
 import ThisWeek from '.';
+
+jest.mock('../../Drawer', () => ({
+    useDrawer: (): Partial<DrawerProviderContext> => ({
+        openTaskDrawer: jest.fn(),
+    }),
+}));
 
 describe(ThisWeek.name, () => {
     it('default', async () => {
