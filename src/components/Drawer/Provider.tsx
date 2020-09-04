@@ -1,5 +1,6 @@
 import React, { ReactNode, ReactElement, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
+import { omit } from 'lodash/fp';
 import TaskDrawer, { TaskDrawerProps } from '../Task/Drawer/Drawer';
 import { DrawerContext } from '.';
 
@@ -30,7 +31,7 @@ const DrawerProvider = ({ children }: Props): ReactElement => {
         <DrawerContext.Provider value={value}>
             {children}
             {taskDrawers.map((props) => (
-                <TaskDrawer key={props.id} {...props} />
+                <TaskDrawer key={props.id} {...omit('id', props)} />
             ))}
         </DrawerContext.Provider>
     );

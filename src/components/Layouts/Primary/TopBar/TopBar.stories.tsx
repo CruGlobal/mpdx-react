@@ -1,8 +1,6 @@
 import React, { ReactElement } from 'react';
 import { Box, Container } from '@material-ui/core';
 import { MockedProvider } from '@apollo/client/testing';
-import { InMemoryCache } from '@apollo/client';
-import GET_LOCAL_STATE_QUERY from '../../../../queries/getLocalStateQuery.graphql';
 import cacheMock from '../../../../../tests/cacheMock';
 import { GET_TOP_BAR_QUERY } from './TopBar';
 import TopBar from '.';

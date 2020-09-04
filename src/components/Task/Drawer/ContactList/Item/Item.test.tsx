@@ -1,6 +1,5 @@
 import React from 'react';
-import { render, getByText } from '@testing-library/react';
-import MockDate from 'mockdate';
+import { render } from '@testing-library/react';
 import { GetContactsForTaskDrawerContactListQuery_contacts_nodes as Contact } from '../../../../../../types/GetContactsForTaskDrawerContactListQuery';
 import { StatusEnum, SendNewsletterEnum, PledgeFrequencyEnum } from '../../../../../../types/globalTypes';
 import Item from '.';
