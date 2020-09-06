@@ -5,7 +5,7 @@ import { SnackbarProvider } from 'notistack';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
 import userEvent from '@testing-library/user-event';
-import cacheMock from '../../../../tests/cacheMock';
+import { AppProvider } from '../../App';
 import { getDataForTaskDrawerMock, createTaskMutationMock, updateTaskMutationMock } from './Form/Form.mock';
 import {
     getCommentsForTaskDrawerCommentListEmptyMock,
@@ -26,12 +26,10 @@ describe(TaskDrawer.name, () => {
         const { getByText, getByRole } = render(
             <MuiPickersUtilsProvider utils={DateFnsUtils}>
                 <SnackbarProvider>
-                    <MockedProvider
-                        mocks={mocks}
-                        cache={cacheMock({ currentAccountListId: 'abc' })}
-                        addTypename={false}
-                    >
-                        <TaskDrawer onClose={onClose} />
+                    <MockedProvider mocks={mocks} addTypename={false}>
+                        <AppProvider initialState={{ accountListId: 'abc' }}>
+                            <TaskDrawer onClose={onClose} />
+                        </AppProvider>
                     </MockedProvider>
                 </SnackbarProvider>
             </MuiPickersUtilsProvider>,
@@ -55,12 +53,10 @@ describe(TaskDrawer.name, () => {
         const { getByText, getByRole, findByTestId, findByText } = render(
             <MuiPickersUtilsProvider utils={DateFnsUtils}>
                 <SnackbarProvider>
-                    <MockedProvider
-                        mocks={mocks}
-                        cache={cacheMock({ currentAccountListId: 'abc' })}
-                        addTypename={false}
-                    >
-                        <TaskDrawer taskId="task-1" />
+                    <MockedProvider mocks={mocks} addTypename={false}>
+                        <AppProvider initialState={{ accountListId: 'abc' }}>
+                            <TaskDrawer taskId="task-1" />
+                        </AppProvider>
                     </MockedProvider>
                 </SnackbarProvider>
             </MuiPickersUtilsProvider>,

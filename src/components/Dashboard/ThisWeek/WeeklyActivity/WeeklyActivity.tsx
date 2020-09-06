@@ -107,10 +107,6 @@ export const GET_WEEKLY_ACTIVITY_QUERY = gql`
     }
 `;
 
-interface Props {
-    accountListId: string;
-}
-
 const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
     const classes = useStyles();
     const { t } = useTranslation();

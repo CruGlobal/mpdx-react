@@ -1,7 +1,6 @@
 import React, { ReactElement } from 'react';
 import { MockedProvider } from '@apollo/client/testing';
 import { getDataForTaskDrawerMock, createTaskMutationMock } from '../../../Task/Drawer/Form/Form.mock';
-import cacheMock from '../../../../../tests/cacheMock';
 import { AppProvider } from '../../../App';
 import AddFab from '.';
 
@@ -14,10 +13,9 @@ export const Default = (): ReactElement => {
         <>
             <MockedProvider
                 mocks={[getDataForTaskDrawerMock(), getDataForTaskDrawerMock(), createTaskMutationMock()]}
-                cache={cacheMock({ currentAccountListId: 'abc' })}
                 addTypename={false}
             >
-                <AppProvider>
+                <AppProvider initialState={{ accountListId: 'abc' }}>
                     <AddFab />
                 </AppProvider>
             </MockedProvider>

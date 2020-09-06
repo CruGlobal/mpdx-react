@@ -1,16 +1,26 @@
-import { AppState } from './Provider';
+export interface AppState {
+    accountListId: string;
+    breadcrumb: string;
+}
 
-export type Action = UpdateCurrentAccountListIdAction;
+export type Action = UpdateAccountListIdAction | UpdateBreadcrumbAction;
 
-type UpdateCurrentAccountListIdAction = {
-    type: 'updateCurrentAccountListId';
-    currentAccountListId: string;
+type UpdateAccountListIdAction = {
+    type: 'updateAccountListId';
+    accountListId: string;
+};
+
+type UpdateBreadcrumbAction = {
+    type: 'updateBreadcrumb';
+    breadcrumb: string;
 };
 
 const rootReducer = (state: AppState, action: Action): AppState => {
     switch (action.type) {
-        case 'updateCurrentAccountListId':
-            return { ...state, currentAccountListId: action.currentAccountListId };
+        case 'updateAccountListId':
+            return { ...state, accountListId: action.accountListId };
+        case 'updateBreadcrumb':
+            return { ...state, breadcrumb: action.breadcrumb };
     }
 };
 

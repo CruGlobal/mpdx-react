@@ -2,16 +2,9 @@ import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react';
 import { MockedProvider } from '@apollo/client/testing';
 import matchMediaMock from '../../../../tests/matchMediaMock';
-import cacheMock from '../../../../tests/cacheMock';
-import { AppProviderContext } from '../../App/Provider';
+import AppProvider from '../../App/Provider';
 import { GET_TOP_BAR_QUERY } from './TopBar/TopBar';
 import Primary from '.';
-
-jest.mock('../../App', () => ({
-    useApp: (): Partial<AppProviderContext> => ({
-        openTaskDrawer: jest.fn(),
-    }),
-}));
 
 describe(Primary.name, () => {
     let mocks;
@@ -39,10 +32,12 @@ describe(Primary.name, () => {
 
     it('has correct defaults', () => {
         const { getByTestId, queryByTestId } = render(
-            <MockedProvider mocks={mocks} cache={cacheMock({ breadcrumb: 'Dashboard' })} addTypename={false}>
-                <Primary>
-                    <div data-testid="PrimaryTestChildren"></div>
-                </Primary>
+            <MockedProvider mocks={mocks} addTypename={false}>
+                <AppProvider initialState={{ accountListId: '1', breadcrumb: 'Dashboard' }}>
+                    <Primary>
+                        <div data-testid="PrimaryTestChildren"></div>
+                    </Primary>
+                </AppProvider>
             </MockedProvider>,
         );
         expect(getByTestId('PrimaryTestChildren')).toBeInTheDocument();
@@ -58,10 +53,12 @@ describe(Primary.name, () => {
 
         it('allows menu to be shown and hidden', async () => {
             const { getByTestId, queryByTestId } = render(
-                <MockedProvider mocks={mocks} cache={cacheMock({ breadcrumb: 'Dashboard' })} addTypename={false}>
-                    <Primary>
-                        <div data-testid="PrimaryTestChildren"></div>
-                    </Primary>
+                <MockedProvider mocks={mocks} addTypename={false}>
+                    <AppProvider initialState={{ accountListId: '1', breadcrumb: 'Dashboard' }}>
+                        <Primary>
+                            <div data-testid="PrimaryTestChildren"></div>
+                        </Primary>
+                    </AppProvider>
                 </MockedProvider>,
             );
             expect(queryByTestId('SideBarDesktopDrawer')).not.toBeInTheDocument();

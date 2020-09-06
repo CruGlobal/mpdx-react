@@ -1,7 +1,6 @@
 import React, { ReactElement } from 'react';
 import { Box } from '@material-ui/core';
 import { MockedProvider } from '@apollo/client/testing';
-import cacheMock from '../../../../tests/cacheMock';
 import { AppProvider } from '../../App';
 import { GetWeeklyActivityQueryLoadingMocks } from './WeeklyActivity/WeeklyActivity.mock';
 import { GetThisWeekEmptyMocks, GetThisWeekDefaultMocks } from './ThisWeek.mock';
@@ -13,8 +12,8 @@ export default {
 
 export const Default = (): ReactElement => {
     return (
-        <MockedProvider mocks={GetThisWeekDefaultMocks()} cache={cacheMock()} addTypename={false}>
-            <AppProvider>
+        <MockedProvider mocks={GetThisWeekDefaultMocks()} addTypename={false}>
+            <AppProvider initialState={{ accountListId: 'abc' }}>
                 <Box m={2}>
                     <ThisWeek accountListId="abc" />
                 </Box>
@@ -24,8 +23,8 @@ export const Default = (): ReactElement => {
 };
 export const Empty = (): ReactElement => {
     return (
-        <MockedProvider mocks={GetThisWeekEmptyMocks()} cache={cacheMock()} addTypename={false}>
-            <AppProvider>
+        <MockedProvider mocks={GetThisWeekEmptyMocks()} addTypename={false}>
+            <AppProvider initialState={{ accountListId: 'abc' }}>
                 <Box m={2}>
                     <ThisWeek accountListId="abc" />
                 </Box>
@@ -35,8 +34,8 @@ export const Empty = (): ReactElement => {
 };
 export const Loading = (): ReactElement => {
     return (
-        <MockedProvider mocks={GetWeeklyActivityQueryLoadingMocks()} cache={cacheMock()} addTypename={false}>
-            <AppProvider>
+        <MockedProvider mocks={GetWeeklyActivityQueryLoadingMocks()} addTypename={false}>
+            <AppProvider initialState={{ accountListId: 'abc' }}>
                 <Box m={2}>
                     <ThisWeek accountListId="abc" />
                 </Box>

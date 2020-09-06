@@ -1,6 +1,6 @@
 import React, { ReactElement } from 'react';
 import { MockedProvider } from '@apollo/client/testing';
-import cacheMock from '../../../../tests/cacheMock';
+import { AppProvider } from '../../App';
 import { getDataForTaskDrawerMock, updateTaskMutationMock, createTaskMutationMock } from './Form/Form.mock';
 import { getContactsForTaskDrawerContactListMock } from './ContactList/ContactList.mock';
 import { getCommentsForTaskDrawerCommentListMock } from './CommentList/CommentList.mock';
@@ -12,12 +12,10 @@ export default {
 };
 
 export const Default = (): ReactElement => (
-    <MockedProvider
-        mocks={[getDataForTaskDrawerMock(), createTaskMutationMock()]}
-        cache={cacheMock({ currentAccountListId: 'abc' })}
-        addTypename={false}
-    >
-        <TaskDrawer />
+    <MockedProvider mocks={[getDataForTaskDrawerMock(), createTaskMutationMock()]} addTypename={false}>
+        <AppProvider initialState={{ accountListId: 'abc' }}>
+            <TaskDrawer />
+        </AppProvider>
     </MockedProvider>
 );
 
@@ -31,8 +29,10 @@ export const Persisted = (): ReactElement => {
     ];
 
     return (
-        <MockedProvider mocks={mocks} cache={cacheMock({ currentAccountListId: 'abc' })} addTypename={false}>
-            <TaskDrawer taskId="task-1" />
+        <MockedProvider mocks={mocks} addTypename={false}>
+            <AppProvider initialState={{ accountListId: 'abc' }}>
+                <TaskDrawer taskId="task-1" />
+            </AppProvider>
         </MockedProvider>
     );
 };

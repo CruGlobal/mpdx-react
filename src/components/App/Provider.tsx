@@ -2,12 +2,8 @@ import React, { ReactNode, ReactElement, useState, useReducer, Dispatch } from '
 import { v4 as uuidv4 } from 'uuid';
 import { omit } from 'lodash/fp';
 import TaskDrawer, { TaskDrawerProps } from '../Task/Drawer/Drawer';
-import rootReducer, { Action } from './rootReducer';
+import rootReducer, { Action, AppState } from './rootReducer';
 import { AppContext } from '.';
-
-export interface AppState {
-    currentAccountListId: string;
-}
 
 export interface AppProviderContext {
     openTaskDrawer: (props: TaskDrawerProps) => void;
@@ -17,7 +13,7 @@ export interface AppProviderContext {
 
 interface Props {
     children: ReactNode;
-    initialState?: AppState;
+    initialState?: Partial<AppState>;
 }
 
 interface TaskDrawerPropsWithId extends TaskDrawerProps {
@@ -26,7 +22,11 @@ interface TaskDrawerPropsWithId extends TaskDrawerProps {
 
 const AppProvider = ({ initialState, children }: Props): ReactElement => {
     const [taskDrawers, setTaskDrawers] = useState<TaskDrawerPropsWithId[]>([]);
-    const [state, dispatch] = useReducer(rootReducer, initialState || { currentAccountListId: null });
+    const [state, dispatch] = useReducer(rootReducer, {
+        accountListId: null,
+        breadcrumb: null,
+        ...initialState,
+    });
 
     const openTaskDrawer = (props: TaskDrawerProps): void => {
         setTaskDrawers([...taskDrawers, { id: uuidv4(), ...props }]);

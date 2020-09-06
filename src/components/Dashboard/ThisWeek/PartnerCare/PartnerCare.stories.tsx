@@ -7,7 +7,6 @@ import {
     GetThisWeekQuery_reportsPeopleWithAnniversaries,
 } from '../../../../../types/GetThisWeekQuery';
 import { ActivityTypeEnum } from '../../../../../types/globalTypes';
-import cacheMock from '../../../../../tests/cacheMock';
 import { AppProvider } from '../../../App';
 import PartnerCare from '.';
 
@@ -71,7 +70,7 @@ export const Default = (): ReactElement => {
     };
     return (
         <Box m={2}>
-            <MockedProvider mocks={[]} cache={cacheMock()} addTypename={false}>
+            <MockedProvider mocks={[]} addTypename={false}>
                 <AppProvider>
                     <PartnerCare
                         loading={false}
@@ -106,7 +105,7 @@ export const Empty = (): ReactElement => {
     };
     return (
         <Box m={2}>
-            <MockedProvider mocks={[]} cache={cacheMock()} addTypename={false}>
+            <MockedProvider mocks={[]} addTypename={false}>
                 <AppProvider>
                     <PartnerCare
                         loading={false}
@@ -123,7 +122,7 @@ export const Empty = (): ReactElement => {
 export const Loading = (): ReactElement => {
     return (
         <Box m={2}>
-            <MockedProvider mocks={[]} cache={cacheMock()} addTypename={false}>
+            <MockedProvider mocks={[]} addTypename={false}>
                 <AppProvider>
                     <PartnerCare loading={true} />
                 </AppProvider>

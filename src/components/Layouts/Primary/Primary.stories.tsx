@@ -1,7 +1,6 @@
 import React, { ReactElement } from 'react';
 import { MockedProvider } from '@apollo/client/testing';
 import { Container, Box } from '@material-ui/core';
-import cacheMock from '../../../../tests/cacheMock';
 import { AppProvider } from '../../App';
 import { GET_TOP_BAR_QUERY } from './TopBar/TopBar';
 import Primary from '.';
@@ -26,7 +25,7 @@ export const Default = (): ReactElement => {
     ];
 
     return (
-        <MockedProvider mocks={mocks} cache={cacheMock()} addTypename={false}>
+        <MockedProvider mocks={mocks} addTypename={false}>
             <AppProvider>
                 <Primary>
                     <Container>

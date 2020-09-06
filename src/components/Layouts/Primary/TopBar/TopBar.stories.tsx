@@ -1,7 +1,7 @@
 import React, { ReactElement } from 'react';
 import { Box, Container } from '@material-ui/core';
 import { MockedProvider } from '@apollo/client/testing';
-import cacheMock from '../../../../../tests/cacheMock';
+import { AppProvider } from '../../../App';
 import { GET_TOP_BAR_QUERY } from './TopBar';
 import TopBar from '.';
 
@@ -46,8 +46,10 @@ export const Default = (): ReactElement => {
 
     return (
         <>
-            <MockedProvider mocks={mocks} cache={cacheMock({ breadcrumb: 'Dashboard' })} addTypename={false}>
-                <TopBar handleDrawerToggle={(): void => {}} />
+            <MockedProvider mocks={mocks} addTypename={false}>
+                <AppProvider initialState={{ breadcrumb: 'Dashboard' }}>
+                    <TopBar handleDrawerToggle={(): void => {}} />
+                </AppProvider>
             </MockedProvider>
             <Content />
         </>
@@ -76,8 +78,10 @@ export const MultipleAccountLists = (): ReactElement => {
 
     return (
         <>
-            <MockedProvider mocks={mocks} cache={cacheMock({ breadcrumb: 'Dashboard' })} addTypename={false}>
-                <TopBar handleDrawerToggle={(): void => {}} />
+            <MockedProvider mocks={mocks} addTypename={false}>
+                <AppProvider initialState={{ breadcrumb: 'Dashboard' }}>
+                    <TopBar handleDrawerToggle={(): void => {}} />
+                </AppProvider>
             </MockedProvider>
             <Content />
         </>

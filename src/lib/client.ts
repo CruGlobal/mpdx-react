@@ -1,4 +1,4 @@
-import { ApolloClient, createHttpLink, InMemoryCache, gql, NormalizedCacheObject } from '@apollo/client';
+import { ApolloClient, createHttpLink, InMemoryCache, NormalizedCacheObject } from '@apollo/client';
 import { persistCache } from 'apollo-cache-persist';
 import fetch from 'isomorphic-fetch';
 
@@ -16,17 +16,9 @@ if (process.browser && process.env.NODE_ENV === 'production') {
     });
 }
 
-const typeDefs = gql`
-    extend type Query {
-        currentAccountListId: ID
-        breadcrumb: String
-    }
-`;
-
 const client = new ApolloClient({
     link: httpLink,
     cache,
-    typeDefs,
 });
 
 export const ssrClient = (token?: string): ApolloClient<NormalizedCacheObject> => {
@@ -42,7 +34,6 @@ export const ssrClient = (token?: string): ApolloClient<NormalizedCacheObject> =
     return new ApolloClient({
         link: httpLink,
         ssrMode: true,
-        typeDefs,
         cache: new InMemoryCache(),
     });
 };

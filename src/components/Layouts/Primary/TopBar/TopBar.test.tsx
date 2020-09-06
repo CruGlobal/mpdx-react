@@ -3,7 +3,7 @@ import { render, waitFor, fireEvent } from '@testing-library/react';
 import { MockedProvider } from '@apollo/client/testing';
 import TestRouter from '../../../../../tests/TestRouter';
 import matchMediaMock from '../../../../../tests/matchMediaMock';
-import cacheMock from '../../../../../tests/cacheMock';
+import { AppProvider } from '../../../App';
 import { GET_TOP_BAR_QUERY } from './TopBar';
 import TopBar from '.';
 
@@ -32,8 +32,10 @@ describe(TopBar.name, () => {
 
     it('has correct defaults', () => {
         const { queryByTestId } = render(
-            <MockedProvider mocks={mocks} cache={cacheMock({ currentAccountListId: undefined })} addTypename={false}>
-                <TopBar handleDrawerToggle={jest.fn()} />
+            <MockedProvider mocks={mocks} addTypename={false}>
+                <AppProvider>
+                    <TopBar handleDrawerToggle={jest.fn()} />
+                </AppProvider>
             </MockedProvider>,
         );
         expect(queryByTestId('TopBarBreadcrumb')).not.toBeInTheDocument();
@@ -47,8 +49,10 @@ describe(TopBar.name, () => {
         it('adjusts menu configuration', async () => {
             const { getByTestId, queryByTestId } = render(
                 <TestRouter>
-                    <MockedProvider mocks={mocks} cache={cacheMock({ breadcrumb: 'Dashboard' })} addTypename={false}>
-                        <TopBar handleDrawerToggle={jest.fn()} />
+                    <MockedProvider mocks={mocks} addTypename={false}>
+                        <AppProvider initialState={{ accountListId: '1', breadcrumb: 'Dashboard' }}>
+                            <TopBar handleDrawerToggle={jest.fn()} />
+                        </AppProvider>
                     </MockedProvider>
                 </TestRouter>,
             );
@@ -85,8 +89,10 @@ describe(TopBar.name, () => {
 
         it('shows single accountList name', async () => {
             const { getByTestId } = render(
-                <MockedProvider mocks={mocks} cache={cacheMock({ breadcrumb: 'Dashboard' })} addTypename={false}>
-                    <TopBar handleDrawerToggle={jest.fn()} />
+                <MockedProvider mocks={mocks} addTypename={false}>
+                    <AppProvider initialState={{ accountListId: '1', breadcrumb: 'Dashboard' }}>
+                        <TopBar handleDrawerToggle={jest.fn()} />
+                    </AppProvider>
                 </MockedProvider>,
             );
             await waitFor(() => expect(getByTestId('TopBarSingleAccountList').textContent).toEqual('Staff Account'));

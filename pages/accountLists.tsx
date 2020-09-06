@@ -1,13 +1,14 @@
 import React, { ReactElement, useEffect } from 'react';
 import Head from 'next/head';
-import { gql, useApolloClient } from '@apollo/client';
+import { gql } from '@apollo/client';
 import { GetServerSideProps } from 'next';
 import { setOptions, getSession } from 'next-auth/client';
+import { useTranslation } from 'react-i18next';
 import AccountLists from '../src/components/AccountLists';
 import { ssrClient } from '../src/lib/client';
 import { GetAccountListsQuery } from '../types/GetAccountListsQuery';
 import BaseLayout from '../src/components/Layouts/Basic';
-import GET_LOCAL_STATE_QUERY from '../src/queries/getLocalStateQuery.graphql';
+import { useApp } from '../src/components/App';
 
 export const GET_ACCOUNT_LISTS_QUERY = gql`
     query GetAccountListsQuery {
@@ -29,13 +30,11 @@ interface Props {
 }
 
 const AccountListsPage = ({ data }: Props): ReactElement => {
-    const client = useApolloClient();
+    const { dispatch } = useApp();
+    const { t } = useTranslation();
 
     useEffect(() => {
-        client.writeQuery({
-            query: GET_LOCAL_STATE_QUERY,
-            data: { currentAccountListId: null, breadcrumb: 'Dashboard' },
-        });
+        dispatch({ type: 'updateBreadcrumb', breadcrumb: t('Dashboard') });
     });
 
     return (

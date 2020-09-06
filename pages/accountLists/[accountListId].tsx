@@ -1,13 +1,14 @@
 import React, { ReactElement, useEffect } from 'react';
 import Head from 'next/head';
-import { useApolloClient, gql } from '@apollo/client';
+import { gql } from '@apollo/client';
 import { GetServerSideProps } from 'next';
 import moment from 'moment';
 import { getSession, setOptions } from 'next-auth/client';
+import { useTranslation } from 'react-i18next';
 import Dashboard from '../../src/components/Dashboard';
 import { GetDashboardQuery } from '../../types/GetDashboardQuery';
 import { ssrClient } from '../../src/lib/client';
-import GET_LOCAL_STATE_QUERY from '../../src/queries/getLocalStateQuery.graphql';
+import { useApp } from '../../src/components/App';
 
 export const GET_DASHBOARD_QUERY = gql`
     query GetDashboardQuery($accountListId: ID!) {
@@ -42,13 +43,12 @@ interface Props {
 }
 
 const AccountListIdPage = ({ data, accountListId }: Props): ReactElement => {
-    const client = useApolloClient();
+    const { dispatch } = useApp();
+    const { t } = useTranslation();
 
     useEffect(() => {
-        client.writeQuery({
-            query: GET_LOCAL_STATE_QUERY,
-            data: { currentAccountListId: accountListId, breadcrumb: 'Dashboard' },
-        });
+        dispatch({ type: 'updateBreadcrumb', breadcrumb: t('Dashboard') });
+        dispatch({ type: 'updateAccountListId', accountListId });
     });
 
     return (
