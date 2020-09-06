@@ -8,7 +8,7 @@ import {
 } from '../../../../../types/GetThisWeekQuery';
 import { ActivityTypeEnum } from '../../../../../types/globalTypes';
 import cacheMock from '../../../../../tests/cacheMock';
-import { DrawerProvider } from '../../../Drawer';
+import { AppProvider } from '../../../App';
 import PartnerCare from '.';
 
 export default {
@@ -72,14 +72,14 @@ export const Default = (): ReactElement => {
     return (
         <Box m={2}>
             <MockedProvider mocks={[]} cache={cacheMock()} addTypename={false}>
-                <DrawerProvider>
+                <AppProvider>
                     <PartnerCare
                         loading={false}
                         prayerRequestTasks={prayerRequestTasks}
                         reportsPeopleWithBirthdays={reportsPeopleWithBirthdays}
                         reportsPeopleWithAnniversaries={reportsPeopleWithAnniversaries}
                     />
-                </DrawerProvider>
+                </AppProvider>
             </MockedProvider>
         </Box>
     );
@@ -107,14 +107,14 @@ export const Empty = (): ReactElement => {
     return (
         <Box m={2}>
             <MockedProvider mocks={[]} cache={cacheMock()} addTypename={false}>
-                <DrawerProvider>
+                <AppProvider>
                     <PartnerCare
                         loading={false}
                         prayerRequestTasks={prayerRequestTasks}
                         reportsPeopleWithBirthdays={reportsPeopleWithBirthdays}
                         reportsPeopleWithAnniversaries={reportsPeopleWithAnniversaries}
                     />
-                </DrawerProvider>
+                </AppProvider>
             </MockedProvider>
         </Box>
     );
@@ -124,9 +124,9 @@ export const Loading = (): ReactElement => {
     return (
         <Box m={2}>
             <MockedProvider mocks={[]} cache={cacheMock()} addTypename={false}>
-                <DrawerProvider>
+                <AppProvider>
                     <PartnerCare loading={true} />
-                </DrawerProvider>
+                </AppProvider>
             </MockedProvider>
         </Box>
     );

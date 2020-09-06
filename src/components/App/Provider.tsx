@@ -1,40 +1,51 @@
-import React, { ReactNode, ReactElement, useState } from 'react';
+import React, { ReactNode, ReactElement, useState, useReducer, Dispatch } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { omit } from 'lodash/fp';
 import TaskDrawer, { TaskDrawerProps } from '../Task/Drawer/Drawer';
-import { DrawerContext } from '.';
+import rootReducer, { Action } from './rootReducer';
+import { AppContext } from '.';
 
-export interface DrawerProviderContext {
+export interface AppState {
+    currentAccountListId: string;
+}
+
+export interface AppProviderContext {
     openTaskDrawer: (props: TaskDrawerProps) => void;
+    state: AppState;
+    dispatch: Dispatch<Action>;
 }
 
 interface Props {
     children: ReactNode;
+    initialState?: AppState;
 }
 
 interface TaskDrawerPropsWithId extends TaskDrawerProps {
     id: string;
 }
 
-const DrawerProvider = ({ children }: Props): ReactElement => {
+const AppProvider = ({ initialState, children }: Props): ReactElement => {
     const [taskDrawers, setTaskDrawers] = useState<TaskDrawerPropsWithId[]>([]);
+    const [state, dispatch] = useReducer(rootReducer, initialState || { currentAccountListId: null });
 
     const openTaskDrawer = (props: TaskDrawerProps): void => {
         setTaskDrawers([...taskDrawers, { id: uuidv4(), ...props }]);
     };
 
-    const value: DrawerProviderContext = {
+    const value: AppProviderContext = {
         openTaskDrawer,
+        state,
+        dispatch,
     };
 
     return (
-        <DrawerContext.Provider value={value}>
+        <AppContext.Provider value={value}>
             {children}
             {taskDrawers.map((props) => (
                 <TaskDrawer key={props.id} {...omit('id', props)} />
             ))}
-        </DrawerContext.Provider>
+        </AppContext.Provider>
     );
 };
 
-export default DrawerProvider;
+export default AppProvider;

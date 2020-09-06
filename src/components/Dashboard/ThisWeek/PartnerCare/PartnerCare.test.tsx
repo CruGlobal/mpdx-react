@@ -2,13 +2,13 @@ import React from 'react';
 import userEvent from '@testing-library/user-event';
 import { render, fireEvent } from '../../../../../tests/testingLibraryReactMock';
 import { ActivityTypeEnum } from '../../../../../types/globalTypes';
-import { DrawerProviderContext } from '../../../Drawer/Provider';
+import { AppProviderContext } from '../../../App/Provider';
 import PartnerCare from '.';
 
 const openTaskDrawer = jest.fn();
 
-jest.mock('../../../Drawer', () => ({
-    useDrawer: (): Partial<DrawerProviderContext> => ({
+jest.mock('../../../App', () => ({
+    useApp: (): Partial<AppProviderContext> => ({
         openTaskDrawer,
     }),
 }));

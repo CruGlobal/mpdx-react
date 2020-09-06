@@ -31,7 +31,7 @@ import {
     GetThisWeekQuery_reportsPeopleWithAnniversaries,
     GetThisWeekQuery_prayerRequestTasks_nodes as Task,
 } from '../../../../../types/GetThisWeekQuery';
-import { useDrawer } from '../../../Drawer';
+import { useApp } from '../../../App';
 
 const useStyles = makeStyles((theme: Theme) => ({
     div: {
@@ -87,7 +87,7 @@ const PartnerCare = ({
     const classes = useStyles();
     const { t } = useTranslation();
     const [value, setValue] = useState(0);
-    const { openTaskDrawer } = useDrawer();
+    const { openTaskDrawer } = useApp();
 
     const handleClick = ({ id: taskId }: Task): void => {
         openTaskDrawer({ taskId });

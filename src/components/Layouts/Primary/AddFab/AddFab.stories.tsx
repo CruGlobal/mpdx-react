@@ -2,7 +2,7 @@ import React, { ReactElement } from 'react';
 import { MockedProvider } from '@apollo/client/testing';
 import { getDataForTaskDrawerMock, createTaskMutationMock } from '../../../Task/Drawer/Form/Form.mock';
 import cacheMock from '../../../../../tests/cacheMock';
-import { DrawerProvider } from '../../../Drawer';
+import { AppProvider } from '../../../App';
 import AddFab from '.';
 
 export default {
@@ -17,9 +17,9 @@ export const Default = (): ReactElement => {
                 cache={cacheMock({ currentAccountListId: 'abc' })}
                 addTypename={false}
             >
-                <DrawerProvider>
+                <AppProvider>
                     <AddFab />
-                </DrawerProvider>
+                </AppProvider>
             </MockedProvider>
         </>
     );

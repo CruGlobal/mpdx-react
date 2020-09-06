@@ -2,7 +2,7 @@ import React, { ReactElement } from 'react';
 import { MockedProvider } from '@apollo/client/testing';
 import { Container, Box } from '@material-ui/core';
 import cacheMock from '../../../../tests/cacheMock';
-import { DrawerProvider } from '../../Drawer';
+import { AppProvider } from '../../App';
 import { GET_TOP_BAR_QUERY } from './TopBar/TopBar';
 import Primary from '.';
 
@@ -27,7 +27,7 @@ export const Default = (): ReactElement => {
 
     return (
         <MockedProvider mocks={mocks} cache={cacheMock()} addTypename={false}>
-            <DrawerProvider>
+            <AppProvider>
                 <Primary>
                     <Container>
                         <Box my={2}>
@@ -42,7 +42,7 @@ Praesent commodo cursus magna, vel scelerisque nisl consectetur et.`,
                         </Box>
                     </Container>
                 </Primary>
-            </DrawerProvider>
+            </AppProvider>
         </MockedProvider>
     );
 };

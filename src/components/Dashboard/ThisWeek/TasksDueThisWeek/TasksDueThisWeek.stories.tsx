@@ -3,8 +3,8 @@ import { Box } from '@material-ui/core';
 import { MockedProvider } from '@apollo/client/testing';
 import { GetThisWeekQuery_dueTasks } from '../../../../../types/GetThisWeekQuery';
 import { ActivityTypeEnum } from '../../../../../types/globalTypes';
-import { DrawerProvider } from '../../../Drawer';
 import cacheMock from '../../../../../tests/cacheMock';
+import { AppProvider } from '../../../App';
 import TasksDueThisWeek from '.';
 
 export default {
@@ -30,9 +30,9 @@ export const Default = (): ReactElement => {
     return (
         <Box m={2}>
             <MockedProvider mocks={[]} cache={cacheMock()} addTypename={false}>
-                <DrawerProvider>
+                <AppProvider>
                     <TasksDueThisWeek loading={false} dueTasks={dueTasks} />
-                </DrawerProvider>
+                </AppProvider>
             </MockedProvider>
         </Box>
     );
@@ -46,9 +46,9 @@ export const Empty = (): ReactElement => {
     return (
         <Box m={2}>
             <MockedProvider mocks={[]} cache={cacheMock()} addTypename={false}>
-                <DrawerProvider>
+                <AppProvider>
                     <TasksDueThisWeek loading={false} dueTasks={dueTasks} />
-                </DrawerProvider>
+                </AppProvider>
             </MockedProvider>
         </Box>
     );
@@ -58,9 +58,9 @@ export const Loading = (): ReactElement => {
     return (
         <Box m={2}>
             <MockedProvider mocks={[]} cache={cacheMock()} addTypename={false}>
-                <DrawerProvider>
+                <AppProvider>
                     <TasksDueThisWeek loading={true} />
-                </DrawerProvider>
+                </AppProvider>
             </MockedProvider>
         </Box>
     );

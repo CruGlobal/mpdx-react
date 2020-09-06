@@ -6,13 +6,13 @@ import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
 import userEvent from '@testing-library/user-event';
 import { getDataForTaskDrawerMock, createTaskMutationMock } from '../../../Task/Drawer/Form/Form.mock';
-import { DrawerProviderContext } from '../../../Drawer/Provider';
+import { AppProviderContext } from '../../../App/Provider';
 import AddFab from '.';
 
 const openTaskDrawer = jest.fn();
 
-jest.mock('../../../Drawer', () => ({
-    useDrawer: (): Partial<DrawerProviderContext> => ({
+jest.mock('../../../App', () => ({
+    useApp: (): Partial<AppProviderContext> => ({
         openTaskDrawer,
     }),
 }));

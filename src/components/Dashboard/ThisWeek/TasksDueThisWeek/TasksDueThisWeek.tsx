@@ -22,7 +22,7 @@ import {
     GetThisWeekQuery_dueTasks,
     GetThisWeekQuery_dueTasks_nodes as Task,
 } from '../../../../../types/GetThisWeekQuery';
-import { useDrawer } from '../../../Drawer';
+import { useApp } from '../../../App';
 
 const useStyles = makeStyles((theme: Theme) => ({
     div: {
@@ -66,7 +66,7 @@ interface Props {
 const TasksDueThisWeek = ({ loading, dueTasks }: Props): ReactElement => {
     const classes = useStyles();
     const { t } = useTranslation();
-    const { openTaskDrawer } = useDrawer();
+    const { openTaskDrawer } = useApp();
 
     const handleClick = ({ id: taskId }: Task): void => {
         openTaskDrawer({ taskId });

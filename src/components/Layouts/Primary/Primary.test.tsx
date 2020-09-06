@@ -2,13 +2,13 @@ import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react';
 import { MockedProvider } from '@apollo/client/testing';
 import matchMediaMock from '../../../../tests/matchMediaMock';
-import { DrawerProviderContext } from '../../Drawer/Provider';
 import cacheMock from '../../../../tests/cacheMock';
+import { AppProviderContext } from '../../App/Provider';
 import { GET_TOP_BAR_QUERY } from './TopBar/TopBar';
 import Primary from '.';
 
-jest.mock('../../Drawer', () => ({
-    useDrawer: (): Partial<DrawerProviderContext> => ({
+jest.mock('../../App', () => ({
+    useApp: (): Partial<AppProviderContext> => ({
         openTaskDrawer: jest.fn(),
     }),
 }));

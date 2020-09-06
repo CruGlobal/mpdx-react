@@ -16,7 +16,7 @@ import client from '../src/lib/client';
 import PrimaryLayout from '../src/components/Layouts/Primary';
 import Loading from '../src/components/Loading';
 import i18n from '../src/lib/i18n';
-import { DrawerProvider } from '../src/components/Drawer';
+import { AppProvider } from '../src/components/App';
 
 const handleExitComplete = (): void => {
     if (typeof window !== 'undefined') {
@@ -69,11 +69,11 @@ const App = ({ Component, pageProps, router }: AppProps): ReactElement => {
                             <MuiPickersUtilsProvider utils={DateFnsUtils}>
                                 <SnackbarProvider maxSnack={3}>
                                     <AnimatePresence exitBeforeEnter onExitComplete={handleExitComplete}>
-                                        <DrawerProvider>
+                                        <AppProvider>
                                             <Layout>
                                                 <Component {...pageProps} key={router.route} />
                                             </Layout>
-                                        </DrawerProvider>
+                                        </AppProvider>
                                     </AnimatePresence>
                                     <Loading />
                                 </SnackbarProvider>
