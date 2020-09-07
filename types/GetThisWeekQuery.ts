@@ -19,6 +19,7 @@ export interface GetThisWeekQuery_accountList_primaryAppeal {
 }
 
 export interface GetThisWeekQuery_accountList {
+  id: string;
   primaryAppeal: GetThisWeekQuery_accountList_primaryAppeal | null;
 }
 

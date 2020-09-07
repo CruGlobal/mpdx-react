@@ -97,7 +97,7 @@ export enum StatusEnum {
 
 export interface TaskInput {
   id?: string | null;
-  subject?: string | null;
+  subject: string;
   activityType?: ActivityTypeEnum | null;
   result?: ResultEnum | null;
   nextAction?: NextActionEnum | null;

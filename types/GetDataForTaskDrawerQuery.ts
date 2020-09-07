@@ -8,6 +8,7 @@
 // ====================================================
 
 export interface GetDataForTaskDrawerQuery_accountList {
+  id: string;
   taskTagList: string[];
 }
 
