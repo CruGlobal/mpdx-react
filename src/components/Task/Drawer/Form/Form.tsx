@@ -63,6 +63,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 export const GET_DATA_FOR_TASK_DRAWER_QUERY = gql`
     query GetDataForTaskDrawerQuery($accountListId: ID!) {
         accountList(id: $accountListId) {
+            id
             taskTagList
         }
         accountListUsers(accountListId: $accountListId) {

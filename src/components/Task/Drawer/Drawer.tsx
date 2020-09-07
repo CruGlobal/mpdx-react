@@ -21,6 +21,7 @@ import {
     GetTaskForTaskDrawerQuery_task as Task,
 } from '../../../../types/GetTaskForTaskDrawerQuery';
 import { useApp } from '../../App';
+import Loading from '../../Loading';
 import TaskDrawerForm from './Form';
 import TaskDrawerContactList from './ContactList';
 import TaskDrawerCommentList from './CommentList';
@@ -119,6 +120,7 @@ const TaskDrawer = ({ taskId, onClose }: TaskDrawerProps): ReactElement => {
 
     return (
         <Box>
+            {loading && <Loading loading={true} />}
             <Drawer open={open} onClose={onDrawerClose} anchor="right" classes={{ paper: classes.paper }}>
                 <Container className={classes.container}>
                     <Grid container alignItems="center">

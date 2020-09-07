@@ -49,7 +49,7 @@ const AccountListIdPage = ({ data, accountListId }: Props): ReactElement => {
     useEffect(() => {
         dispatch({ type: 'updateBreadcrumb', breadcrumb: t('Dashboard') });
         dispatch({ type: 'updateAccountListId', accountListId });
-    });
+    }, []);
 
     return (
         <>

@@ -35,7 +35,7 @@ const AccountListsPage = ({ data }: Props): ReactElement => {
 
     useEffect(() => {
         dispatch({ type: 'updateBreadcrumb', breadcrumb: t('Dashboard') });
-    });
+    }, []);
 
     return (
         <>

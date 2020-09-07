@@ -25,6 +25,7 @@ export const GET_THIS_WEEK_QUERY = gql`
         $twoWeeksAgo: ISO8601Date!
     ) {
         accountList(id: $accountListId) {
+            id
             primaryAppeal {
                 id
                 name
