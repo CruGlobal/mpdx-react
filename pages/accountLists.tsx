@@ -40,7 +40,7 @@ const AccountListsPage = ({ data }: Props): ReactElement => {
     return (
         <>
             <Head>
-                <title>MPDX | Account Lists</title>
+                <title>MPDX | {t('Account Lists')}</title>
             </Head>
             <AccountLists data={data} />
         </>

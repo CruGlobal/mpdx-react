@@ -30,8 +30,9 @@ export interface UpdateTaskMutation_updateTask_task_user {
 export interface UpdateTaskMutation_updateTask_task {
   id: string;
   activityType: ActivityTypeEnum | null;
-  subject: string | null;
+  subject: string;
   startAt: any | null;
+  completedAt: any | null;
   tagList: string[];
   contacts: UpdateTaskMutation_updateTask_task_contacts;
   user: UpdateTaskMutation_updateTask_task_user | null;

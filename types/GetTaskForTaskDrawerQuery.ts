@@ -30,8 +30,9 @@ export interface GetTaskForTaskDrawerQuery_task_user {
 export interface GetTaskForTaskDrawerQuery_task {
   id: string;
   activityType: ActivityTypeEnum | null;
-  subject: string | null;
+  subject: string;
   startAt: any | null;
+  completedAt: any | null;
   tagList: string[];
   contacts: GetTaskForTaskDrawerQuery_task_contacts;
   user: GetTaskForTaskDrawerQuery_task_user | null;

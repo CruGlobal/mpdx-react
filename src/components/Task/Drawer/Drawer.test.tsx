@@ -6,11 +6,9 @@ import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
 import userEvent from '@testing-library/user-event';
 import { AppProvider } from '../../App';
+import TestRouter from '../../../../tests/TestRouter';
 import { getDataForTaskDrawerMock, createTaskMutationMock, updateTaskMutationMock } from './Form/Form.mock';
-import {
-    getCommentsForTaskDrawerCommentListEmptyMock,
-    getCommentsForTaskDrawerCommentListMock,
-} from './CommentList/CommentList.mock';
+import { getCommentsForTaskDrawerCommentListMock } from './CommentList/CommentList.mock';
 import { getContactsForTaskDrawerContactListMock } from './ContactList/ContactList.mock';
 import { getTaskForTaskDrawerMock } from './Drawer.mock';
 import TaskDrawer from '.';
@@ -18,11 +16,7 @@ import TaskDrawer from '.';
 describe(TaskDrawer.name, () => {
     it('default', async () => {
         const onClose = jest.fn();
-        const mocks = [
-            getDataForTaskDrawerMock(),
-            { ...createTaskMutationMock(), delay: 0 },
-            getCommentsForTaskDrawerCommentListEmptyMock(),
-        ];
+        const mocks = [getDataForTaskDrawerMock(), createTaskMutationMock()];
         const { getByText, getByRole } = render(
             <MuiPickersUtilsProvider utils={DateFnsUtils}>
                 <SnackbarProvider>
@@ -47,19 +41,21 @@ describe(TaskDrawer.name, () => {
             getDataForTaskDrawerMock(),
             getContactsForTaskDrawerContactListMock(),
             getCommentsForTaskDrawerCommentListMock(),
-            { ...updateTaskMutationMock(), delay: 0 },
+            updateTaskMutationMock(),
             getTaskForTaskDrawerMock(),
         ];
         const { getByText, getByRole, findByTestId, findByText } = render(
-            <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                <SnackbarProvider>
-                    <MockedProvider mocks={mocks} addTypename={false}>
-                        <AppProvider initialState={{ accountListId: 'abc' }}>
-                            <TaskDrawer taskId="task-1" />
-                        </AppProvider>
-                    </MockedProvider>
-                </SnackbarProvider>
-            </MuiPickersUtilsProvider>,
+            <TestRouter>
+                <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                    <SnackbarProvider>
+                        <MockedProvider mocks={mocks} addTypename={false}>
+                            <AppProvider initialState={{ accountListId: 'abc' }}>
+                                <TaskDrawer taskId="task-1" />
+                            </AppProvider>
+                        </MockedProvider>
+                    </SnackbarProvider>
+                </MuiPickersUtilsProvider>
+            </TestRouter>,
         );
         expect(await findByTestId('TaskDrawerTitle')).toHaveTextContent('NEWSLETTER_EMAIL');
         userEvent.click(getByText('Save'));

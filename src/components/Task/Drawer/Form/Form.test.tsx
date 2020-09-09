@@ -17,10 +17,7 @@ describe(TaskDrawerForm.name, () => {
         const { getByText, getByRole, findByText } = render(
             <MuiPickersUtilsProvider utils={DateFnsUtils}>
                 <SnackbarProvider>
-                    <MockedProvider
-                        mocks={[getDataForTaskDrawerMock(), { ...createTaskMutationMock(), delay: 0 }]}
-                        addTypename={false}
-                    >
+                    <MockedProvider mocks={[getDataForTaskDrawerMock(), createTaskMutationMock()]} addTypename={false}>
                         <TaskDrawerForm accountListId="abc" onClose={onClose} onChange={onChange} />
                     </MockedProvider>
                 </SnackbarProvider>
@@ -48,6 +45,7 @@ describe(TaskDrawerForm.name, () => {
             notificationTimeUnit: null,
             notificationType: null,
             startAt: startOfHour(addHours(new Date(), 1)),
+            completedAt: null,
             subject: 'abc',
             tagList: [],
             user: null,
@@ -61,10 +59,7 @@ describe(TaskDrawerForm.name, () => {
         const { getByText, getByRole } = render(
             <MuiPickersUtilsProvider utils={DateFnsUtils}>
                 <SnackbarProvider>
-                    <MockedProvider
-                        mocks={[getDataForTaskDrawerMock(), { ...updateTaskMutationMock(), delay: 0 }]}
-                        addTypename={false}
-                    >
+                    <MockedProvider mocks={[getDataForTaskDrawerMock(), updateTaskMutationMock()]} addTypename={false}>
                         <TaskDrawerForm
                             accountListId="abc"
                             onClose={onClose}
@@ -79,6 +74,7 @@ describe(TaskDrawerForm.name, () => {
                                 notificationTimeUnit: null,
                                 notificationType: null,
                                 startAt: new Date(2012, 12, 5, 1, 2),
+                                completedAt: null,
                                 subject: '',
                                 tagList: [],
                                 user: null,
@@ -123,6 +119,7 @@ describe(TaskDrawerForm.name, () => {
             activityType: ActivityTypeEnum.NEWSLETTER_EMAIL,
             subject: 'On the Journey with the Johnson Family',
             startAt: new Date(2012, 12, 5, 1, 2),
+            completedAt: null,
             tagList: ['tag-1', 'tag-2'],
             contacts: {
                 nodes: [

@@ -7,6 +7,7 @@ import { AppContext } from '.';
 
 export interface AppProviderContext {
     openTaskDrawer: (props: TaskDrawerProps) => void;
+    openTaskCompletedDrawer: (taskId: string) => void;
     state: AppState;
     dispatch: Dispatch<Action>;
 }
@@ -32,8 +33,13 @@ const AppProvider = ({ initialState, children }: Props): ReactElement => {
         setTaskDrawers([...taskDrawers, { id: uuidv4(), ...props }]);
     };
 
+    const openTaskCompletedDrawer = (taskId: string): void => {
+        console.log(taskId);
+    };
+
     const value: AppProviderContext = {
         openTaskDrawer,
+        openTaskCompletedDrawer,
         state,
         dispatch,
     };

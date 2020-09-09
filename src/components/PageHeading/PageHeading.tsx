@@ -7,6 +7,8 @@ interface Props {
     subheading?: string;
     imgSrc?: string;
     overlap?: number;
+    height?: number;
+    image?: boolean;
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -27,7 +29,14 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
 }));
 
-const PageHeading = ({ heading, subheading, imgSrc, overlap = 20 }: Props): ReactElement => {
+const PageHeading = ({
+    heading,
+    subheading,
+    imgSrc,
+    overlap = 20,
+    height = 250,
+    image = true,
+}: Props): ReactElement => {
     const classes = useStyles();
 
     return (
@@ -36,7 +45,7 @@ const PageHeading = ({ heading, subheading, imgSrc, overlap = 20 }: Props): Reac
             animate={{ y: 0, transition: { ease: 'easeInOut' } }}
             exit={{ y: -250, transition: { ease: 'easeInOut', delay: 0.75 } }}
             className={classes.div}
-            style={{ marginBottom: -overlap }}
+            style={{ marginBottom: -overlap, height }}
             data-testid="PageHeading"
         >
             <Container
@@ -64,17 +73,19 @@ const PageHeading = ({ heading, subheading, imgSrc, overlap = 20 }: Props): Reac
                         </motion.div>
                     )}
                 </Box>
-                <Box display={{ xs: 'none', sm: 'block' }}>
-                    <motion.img
-                        initial={{ x: 20, opacity: 0 }}
-                        animate={{ x: 0, opacity: 1, transition: { delay: 1.2 } }}
-                        exit={{ x: 20, opacity: 0 }}
-                        data-testid="PageHeadingImg"
-                        src={imgSrc || require('../../images/drawkit/grape/drawkit-grape-pack-illustration-20.svg')}
-                        height={230 - overlap}
-                        alt="heading"
-                    />
-                </Box>
+                {image && (
+                    <Box display={{ xs: 'none', sm: 'block' }}>
+                        <motion.img
+                            initial={{ x: 20, opacity: 0 }}
+                            animate={{ x: 0, opacity: 1, transition: { delay: 1.2 } }}
+                            exit={{ x: 20, opacity: 0 }}
+                            data-testid="PageHeadingImg"
+                            src={imgSrc || require('../../images/drawkit/grape/drawkit-grape-pack-illustration-20.svg')}
+                            height={230 - overlap}
+                            alt="heading"
+                        />
+                    </Box>
+                )}
             </Container>
         </motion.div>
     );

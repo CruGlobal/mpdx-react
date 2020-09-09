@@ -36,7 +36,7 @@ export interface GetThisWeekQuery_dueTasks_nodes_contacts {
 
 export interface GetThisWeekQuery_dueTasks_nodes {
   id: string;
-  subject: string | null;
+  subject: string;
   activityType: ActivityTypeEnum | null;
   contacts: GetThisWeekQuery_dueTasks_nodes_contacts;
 }
@@ -65,7 +65,7 @@ export interface GetThisWeekQuery_prayerRequestTasks_nodes_contacts {
 
 export interface GetThisWeekQuery_prayerRequestTasks_nodes {
   id: string;
-  subject: string | null;
+  subject: string;
   activityType: ActivityTypeEnum | null;
   contacts: GetThisWeekQuery_prayerRequestTasks_nodes_contacts;
 }

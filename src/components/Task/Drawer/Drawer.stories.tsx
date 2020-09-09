@@ -1,6 +1,7 @@
 import React, { ReactElement } from 'react';
 import { MockedProvider } from '@apollo/client/testing';
 import { AppProvider } from '../../App';
+import TestRouter from '../../../../tests/TestRouter';
 import { getDataForTaskDrawerMock, updateTaskMutationMock, createTaskMutationMock } from './Form/Form.mock';
 import { getContactsForTaskDrawerContactListMock } from './ContactList/ContactList.mock';
 import { getCommentsForTaskDrawerCommentListMock } from './CommentList/CommentList.mock';
@@ -12,7 +13,10 @@ export default {
 };
 
 export const Default = (): ReactElement => (
-    <MockedProvider mocks={[getDataForTaskDrawerMock(), createTaskMutationMock()]} addTypename={false}>
+    <MockedProvider
+        mocks={[getDataForTaskDrawerMock(), { ...createTaskMutationMock(), delay: 500 }]}
+        addTypename={false}
+    >
         <AppProvider initialState={{ accountListId: 'abc' }}>
             <TaskDrawer />
         </AppProvider>
@@ -24,15 +28,17 @@ export const Persisted = (): ReactElement => {
         getDataForTaskDrawerMock(),
         getContactsForTaskDrawerContactListMock(),
         getCommentsForTaskDrawerCommentListMock(),
-        updateTaskMutationMock(),
+        { ...updateTaskMutationMock(), delay: 500 },
         getTaskForTaskDrawerMock(),
     ];
 
     return (
-        <MockedProvider mocks={mocks} addTypename={false}>
-            <AppProvider initialState={{ accountListId: 'abc' }}>
-                <TaskDrawer taskId="task-1" />
-            </AppProvider>
-        </MockedProvider>
+        <TestRouter>
+            <MockedProvider mocks={mocks} addTypename={false}>
+                <AppProvider initialState={{ accountListId: 'abc' }}>
+                    <TaskDrawer taskId="task-1" />
+                </AppProvider>
+            </MockedProvider>
+        </TestRouter>
     );
 };

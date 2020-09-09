@@ -46,6 +46,7 @@ export const GetThisWeekDefaultMocks = (): MockedResponse[] => {
     };
     const data: GetThisWeekQuery = {
         accountList: {
+            id: 'abc',
             primaryAppeal: {
                 id: 'appeal_1',
                 name: '2020 End of Year Ask',
@@ -137,7 +138,10 @@ export const GetThisWeekDefaultMocks = (): MockedResponse[] => {
 };
 export const GetThisWeekEmptyMocks = (): MockedResponse[] => {
     const data: GetThisWeekQuery = {
-        accountList: { primaryAppeal: null },
+        accountList: {
+            id: 'abc',
+            primaryAppeal: null,
+        },
         dueTasks: { nodes: [], totalCount: 0 },
         prayerRequestTasks: { nodes: [], totalCount: 0 },
         latePledgeContacts: { nodes: [], totalCount: 0 },

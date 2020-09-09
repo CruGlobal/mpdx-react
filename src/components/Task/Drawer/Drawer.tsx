@@ -22,6 +22,7 @@ import {
 } from '../../../../types/GetTaskForTaskDrawerQuery';
 import { useApp } from '../../App';
 import Loading from '../../Loading';
+import TaskStatus from '../Status';
 import TaskDrawerForm from './Form';
 import TaskDrawerContactList from './ContactList';
 import TaskDrawerCommentList from './CommentList';
@@ -31,6 +32,8 @@ const useStyles = makeStyles((theme: Theme) => ({
         padding: theme.spacing(2, 2),
     },
     title: {
+        display: 'flex',
+        alignItems: 'center',
         flexGrow: 1,
     },
     tabPanel: {
@@ -51,6 +54,7 @@ export const GET_TASK_FOR_TASK_DRAWER_QUERY = gql`
             activityType
             subject
             startAt
+            completedAt
             tagList
             contacts {
                 nodes {
@@ -125,6 +129,18 @@ const TaskDrawer = ({ taskId, onClose }: TaskDrawerProps): ReactElement => {
                 <Container className={classes.container}>
                     <Grid container alignItems="center">
                         <Grid className={classes.title} item>
+                            <Box mr={1}>
+                                {task ? (
+                                    <TaskStatus
+                                        taskId={task.id}
+                                        startAt={task.startAt}
+                                        completedAt={task.completedAt}
+                                        disableTooltip
+                                    />
+                                ) : (
+                                    <TaskStatus color="primary" disableTooltip />
+                                )}
+                            </Box>
                             <Typography variant="h6" data-testid="TaskDrawerTitle">
                                 {task ? (task.activityType ? t(task.activityType) : t('Task')) : t('Add Task')}
                             </Typography>

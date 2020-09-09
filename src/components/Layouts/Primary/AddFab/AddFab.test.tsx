@@ -23,7 +23,7 @@ describe(AddFab.name, () => {
     });
 
     it('default', async () => {
-        const mocks = [getDataForTaskDrawerMock(), { ...createTaskMutationMock(), delay: 0 }];
+        const mocks = [getDataForTaskDrawerMock(), createTaskMutationMock()];
         const { getByRole } = render(
             <MockedProvider mocks={mocks} addTypename={false}>
                 <MuiPickersUtilsProvider utils={DateFnsUtils}>

@@ -93,6 +93,7 @@ export const CREATE_TASK_MUTATION = gql`
                 activityType
                 subject
                 startAt
+                completedAt
                 tagList
                 contacts {
                     nodes {
@@ -121,6 +122,7 @@ export const UPDATE_TASK_MUTATION = gql`
                 activityType
                 subject
                 startAt
+                completedAt
                 tagList
                 contacts {
                     nodes {
@@ -146,6 +148,7 @@ const taskSchema: yup.ObjectSchema<Task> = yup.object({
     activityType: yup.mixed<ActivityTypeEnum>(),
     subject: yup.string().required(),
     startAt: yup.date(),
+    completedAt: yup.date().nullable(),
     tagList: yup.array().of(yup.string()),
     contacts: yup.object({ nodes: yup.array().of(yup.object({ id: yup.string(), name: yup.string() })) }),
     user: yup.object({ id: yup.string(), firstName: yup.string(), lastName: yup.string() }).nullable(),
@@ -167,6 +170,7 @@ const TaskDrawerForm = ({ accountListId, task, onClose, onChange }: Props): Reac
         activityType: null,
         subject: '',
         startAt: startOfHour(addHours(new Date(), 1)),
+        completedAt: null,
         tagList: [],
         contacts: {
             nodes: [],
@@ -203,7 +207,7 @@ const TaskDrawerForm = ({ accountListId, task, onClose, onChange }: Props): Reac
     const [createTask, { loading: creating }] = useMutation<CreateTaskMutation>(CREATE_TASK_MUTATION);
     const [updateTask, { loading: saving }] = useMutation<UpdateTaskMutation>(UPDATE_TASK_MUTATION);
     const onSubmit = async (values: Task): Promise<void> => {
-        const attributes: TaskInput = omit(['contacts', 'user', '__typename'], {
+        const attributes = omit(['contacts', 'user', '__typename'], {
             ...values,
             userId: values.user?.id || null,
             contactIds: values.contacts.nodes.map(({ id }) => id),

@@ -126,7 +126,6 @@ describe('intlFormat', () => {
 
     describe(dayMonthFormat.name, () => {
         it('formats day and month as date', () => {
-            console.log(window.navigator.language);
             expect(dayMonthFormat(5, 12)).toEqual('Jan 5');
         });
 
@@ -147,7 +146,6 @@ describe('intlFormat', () => {
 
     describe(dateFormat.name, () => {
         it('formats day and month as date', () => {
-            console.log(window.navigator.language);
             expect(dateFormat(new Date(2019, 12, 5))).toEqual('Jan 5, 2020');
         });
 

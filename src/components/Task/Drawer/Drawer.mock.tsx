@@ -10,6 +10,7 @@ export const getTaskForTaskDrawerMock = (): MockedResponse => {
             activityType: ActivityTypeEnum.NEWSLETTER_EMAIL,
             subject: 'On the Journey with the Johnson Family',
             startAt: new Date(2012, 12, 5, 1, 2),
+            completedAt: null,
             tagList: ['tag-1', 'tag-2'],
             contacts: {
                 nodes: [

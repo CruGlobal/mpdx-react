@@ -12,7 +12,11 @@ export const Default = (): ReactElement => {
     return (
         <>
             <MockedProvider
-                mocks={[getDataForTaskDrawerMock(), getDataForTaskDrawerMock(), createTaskMutationMock()]}
+                mocks={[
+                    getDataForTaskDrawerMock(),
+                    getDataForTaskDrawerMock(),
+                    { ...createTaskMutationMock(), delay: 500 },
+                ]}
                 addTypename={false}
             >
                 <AppProvider initialState={{ accountListId: 'abc' }}>

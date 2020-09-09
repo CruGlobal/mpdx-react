@@ -18,11 +18,18 @@ describe(PageHeading.name, () => {
                 heading="test heading"
                 imgSrc={require(`../../images/drawkit/grape/drawkit-grape-pack-illustration-1.svg`)}
                 overlap={100}
+                height={400}
             />,
         );
         expect(getByTestId('PageHeading')).toHaveStyle('margin-bottom: -100px');
+        expect(getByTestId('PageHeading')).toHaveStyle('height: 400px');
         expect(getByTestId('PageHeadingContainer')).toHaveStyle('padding-bottom: 100px');
         expect(queryByTestId('PageHeadingSubheading')).toBeNull();
         expect(getByTestId('PageHeadingImg')).toHaveAttribute('src', 'drawkit-grape-pack-illustration-1.svg');
+    });
+
+    it('has correct overrides for image', () => {
+        const { queryByTestId } = render(<PageHeading heading="test heading" image={false} />);
+        expect(queryByTestId('PageHeadingImg')).not.toBeInTheDocument();
     });
 });

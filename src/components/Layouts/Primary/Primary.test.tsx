@@ -3,6 +3,7 @@ import { render, fireEvent, waitFor } from '@testing-library/react';
 import { MockedProvider } from '@apollo/client/testing';
 import matchMediaMock from '../../../../tests/matchMediaMock';
 import AppProvider from '../../App/Provider';
+import TestRouter from '../../../../tests/TestRouter';
 import { GET_TOP_BAR_QUERY } from './TopBar/TopBar';
 import Primary from '.';
 
@@ -53,13 +54,15 @@ describe(Primary.name, () => {
 
         it('allows menu to be shown and hidden', async () => {
             const { getByTestId, queryByTestId } = render(
-                <MockedProvider mocks={mocks} addTypename={false}>
-                    <AppProvider initialState={{ accountListId: '1', breadcrumb: 'Dashboard' }}>
-                        <Primary>
-                            <div data-testid="PrimaryTestChildren"></div>
-                        </Primary>
-                    </AppProvider>
-                </MockedProvider>,
+                <TestRouter>
+                    <MockedProvider mocks={mocks} addTypename={false}>
+                        <AppProvider initialState={{ accountListId: '1', breadcrumb: 'Dashboard' }}>
+                            <Primary>
+                                <div data-testid="PrimaryTestChildren"></div>
+                            </Primary>
+                        </AppProvider>
+                    </MockedProvider>
+                </TestRouter>,
             );
             expect(queryByTestId('SideBarDesktopDrawer')).not.toBeInTheDocument();
             const sideBarOverview = getByTestId('SideBarOverview');

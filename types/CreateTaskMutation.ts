@@ -30,8 +30,9 @@ export interface CreateTaskMutation_createTask_task_user {
 export interface CreateTaskMutation_createTask_task {
   id: string;
   activityType: ActivityTypeEnum | null;
-  subject: string | null;
+  subject: string;
   startAt: any | null;
+  completedAt: any | null;
   tagList: string[];
   contacts: CreateTaskMutation_createTask_task_contacts;
   user: CreateTaskMutation_createTask_task_user | null;

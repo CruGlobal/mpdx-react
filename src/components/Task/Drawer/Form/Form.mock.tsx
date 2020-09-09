@@ -16,6 +16,7 @@ import { GET_DATA_FOR_TASK_DRAWER_QUERY, CREATE_TASK_MUTATION, UPDATE_TASK_MUTAT
 export const getDataForTaskDrawerMock = (): MockedResponse => {
     const data: GetDataForTaskDrawerQuery = {
         accountList: {
+            id: 'abc',
             taskTagList: ['tag-1', 'tag-2', 'tag-3'],
         },
         contacts: {
@@ -50,6 +51,7 @@ export const createTaskMutationMock = (): MockedResponse => {
         activityType: null,
         subject: 'abc',
         startAt: startOfHour(addHours(new Date(), 1)),
+        completedAt: null,
         tagList: [],
         contacts: {
             nodes: [],
@@ -78,7 +80,6 @@ export const createTaskMutationMock = (): MockedResponse => {
             },
         },
         result: { data },
-        delay: 500,
     };
 };
 
@@ -88,6 +89,7 @@ export const updateTaskMutationMock = (): MockedResponse => {
         activityType: ActivityTypeEnum.NEWSLETTER_EMAIL,
         subject: 'On the Journey with the Johnson Family',
         startAt: new Date(2012, 12, 5, 1, 2),
+        completedAt: null,
         tagList: ['tag-1', 'tag-2'],
         contacts: {
             nodes: [
@@ -119,6 +121,5 @@ export const updateTaskMutationMock = (): MockedResponse => {
             },
         },
         result: { data },
-        delay: 500,
     };
 };

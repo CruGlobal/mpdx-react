@@ -1,6 +1,7 @@
 import React, { ReactElement } from 'react';
 import { MockedProvider } from '@apollo/client/testing';
 import { ActivityTypeEnum, NotificationTimeUnitEnum, NotificationTypeEnum } from '../../../../../types/globalTypes';
+import TestRouter from '../../../../../tests/TestRouter';
 import { getDataForTaskDrawerMock, createTaskMutationMock, updateTaskMutationMock } from './Form.mock';
 import TaskDrawerForm from '.';
 
@@ -10,7 +11,10 @@ export default {
 
 export const Default = (): ReactElement => {
     return (
-        <MockedProvider mocks={[getDataForTaskDrawerMock(), createTaskMutationMock()]} addTypename={false}>
+        <MockedProvider
+            mocks={[getDataForTaskDrawerMock(), { ...createTaskMutationMock(), delay: 500 }]}
+            addTypename={false}
+        >
             <TaskDrawerForm accountListId="abc" onClose={(): void => {}} onChange={(): void => {}} />
         </MockedProvider>
     );
@@ -18,15 +22,20 @@ export const Default = (): ReactElement => {
 
 export const Loading = (): ReactElement => {
     return (
-        <MockedProvider mocks={[]} addTypename={false}>
-            <TaskDrawerForm accountListId="abc" onClose={(): void => {}} onChange={(): void => {}} />
-        </MockedProvider>
+        <TestRouter>
+            <MockedProvider mocks={[]} addTypename={false}>
+                <TaskDrawerForm accountListId="abc" onClose={(): void => {}} onChange={(): void => {}} />
+            </MockedProvider>
+        </TestRouter>
     );
 };
 
 export const Persisted = (): ReactElement => {
     return (
-        <MockedProvider mocks={[getDataForTaskDrawerMock(), updateTaskMutationMock()]} addTypename={false}>
+        <MockedProvider
+            mocks={[getDataForTaskDrawerMock(), { ...updateTaskMutationMock(), delay: 500 }]}
+            addTypename={false}
+        >
             <TaskDrawerForm
                 accountListId="abc"
                 task={{
@@ -34,6 +43,7 @@ export const Persisted = (): ReactElement => {
                     activityType: ActivityTypeEnum.NEWSLETTER_EMAIL,
                     subject: 'On the Journey with the Johnson Family',
                     startAt: new Date(2012, 12, 5, 1, 2),
+                    completedAt: null,
                     tagList: ['tag-1', 'tag-2'],
                     contacts: {
                         nodes: [
