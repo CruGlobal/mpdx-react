@@ -32,6 +32,7 @@ import {
     GetThisWeekQuery_prayerRequestTasks_nodes as Task,
 } from '../../../../../types/GetThisWeekQuery';
 import { useApp } from '../../../App';
+import TaskStatus from '../../../Task/Status';
 
 const useStyles = makeStyles((theme: Theme) => ({
     div: {
@@ -200,7 +201,12 @@ const PartnerCare = ({
                                                     }
                                                 />
                                                 <ListItemSecondaryAction>
-                                                    <Checkbox edge="end" />
+                                                    <TaskStatus
+                                                        taskId={task.id}
+                                                        startAt={task.startAt}
+                                                        completedAt={task.completedAt}
+                                                        tooltipPlacement="left"
+                                                    />
                                                 </ListItemSecondaryAction>
                                             </ListItem>
                                         ))}

@@ -1,7 +1,8 @@
-import React, { ReactElement } from 'react';
+import React, { ReactElement, useEffect } from 'react';
 import { makeStyles, Theme, Box, Card, Grid, CardContent } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
-import { gql, useQuery } from '@apollo/client';
+import { gql, useLazyQuery } from '@apollo/client';
+import { sortBy } from 'lodash/fp';
 import { GetContactsForTaskDrawerContactListQuery } from '../../../../../types/GetContactsForTaskDrawerContactListQuery';
 import TaskDrawerContactListItem from './Item';
 
@@ -83,15 +84,21 @@ const TaskDrawerContactList = ({ accountListId, contactIds }: Props): ReactEleme
     const classes = useStyles();
     const { t } = useTranslation();
 
-    const { data, loading } = useQuery<GetContactsForTaskDrawerContactListQuery>(
+    const [getContacts, { data, loading }] = useLazyQuery<GetContactsForTaskDrawerContactListQuery>(
         GET_CONTACTS_FOR_TASK_DRAWER_CONTACT_LIST_QUERY,
-        {
-            variables: {
-                accountListId,
-                contactIds,
-            },
-        },
     );
+
+    useEffect(() => {
+        console.log(contactIds);
+        if (contactIds.length > 0) {
+            getContacts({
+                variables: {
+                    accountListId,
+                    contactIds,
+                },
+            });
+        }
+    }, [contactIds]);
 
     return (
         <Box m={2}>
@@ -106,7 +113,7 @@ const TaskDrawerContactList = ({ accountListId, contactIds }: Props): ReactEleme
                 </Grid>
             ) : (
                 <>
-                    {data.contacts.nodes.length === 0 && (
+                    {(contactIds.length === 0 || data?.contacts?.nodes?.length === 0) && (
                         <Card data-testid="TaskDrawerContactListEmpty">
                             <CardContent className={classes.cardContent}>
                                 <img
@@ -118,9 +125,9 @@ const TaskDrawerContactList = ({ accountListId, contactIds }: Props): ReactEleme
                             </CardContent>
                         </Card>
                     )}
-                    {data.contacts.nodes.length > 0 && (
+                    {data?.contacts?.nodes && data.contacts.nodes.length > 0 && (
                         <Grid container spacing={2} direction="column">
-                            {data.contacts.nodes.map((contact) => (
+                            {sortBy('name', data.contacts.nodes).map((contact) => (
                                 <Grid item key={contact.id} data-testid={`TaskDrawerContactListItem-${contact.id}`}>
                                     <TaskDrawerContactListItem contact={contact} />
                                 </Grid>

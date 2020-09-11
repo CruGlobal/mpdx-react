@@ -153,6 +153,10 @@ describe('intlFormat', () => {
             expect(dateFormat(new Date(2019, 12, 5), 'fr')).toEqual('5 janv. 2020');
         });
 
+        it('handles null case', () => {
+            expect(dateFormat(null)).toEqual('');
+        });
+
         describe('default language', () => {
             beforeEach(() => {
                 languageMock.mockReturnValue('fr');

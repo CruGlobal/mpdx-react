@@ -38,6 +38,8 @@ export interface GetThisWeekQuery_dueTasks_nodes {
   id: string;
   subject: string;
   activityType: ActivityTypeEnum | null;
+  startAt: any | null;
+  completedAt: any | null;
   contacts: GetThisWeekQuery_dueTasks_nodes_contacts;
 }
 
@@ -67,6 +69,8 @@ export interface GetThisWeekQuery_prayerRequestTasks_nodes {
   id: string;
   subject: string;
   activityType: ActivityTypeEnum | null;
+  startAt: any | null;
+  completedAt: any | null;
   contacts: GetThisWeekQuery_prayerRequestTasks_nodes_contacts;
 }
 

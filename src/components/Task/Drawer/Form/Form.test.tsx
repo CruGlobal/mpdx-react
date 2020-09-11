@@ -56,7 +56,7 @@ describe(TaskDrawerForm.name, () => {
     it('persisted', async () => {
         const onClose = jest.fn();
         const onChange = jest.fn();
-        const { getByText, getByRole } = render(
+        const { getByText, getByRole, getAllByRole } = render(
             <MuiPickersUtilsProvider utils={DateFnsUtils}>
                 <SnackbarProvider>
                     <MockedProvider mocks={[getDataForTaskDrawerMock(), updateTaskMutationMock()]} addTypename={false}>
@@ -74,7 +74,7 @@ describe(TaskDrawerForm.name, () => {
                                 notificationTimeUnit: null,
                                 notificationType: null,
                                 startAt: new Date(2012, 12, 5, 1, 2),
-                                completedAt: null,
+                                completedAt: new Date(2015, 12, 5, 1, 2),
                                 subject: '',
                                 tagList: [],
                                 user: null,
@@ -84,6 +84,9 @@ describe(TaskDrawerForm.name, () => {
                 </SnackbarProvider>
             </MuiPickersUtilsProvider>,
         );
+        expect(
+            getAllByRole('textbox').find((item: HTMLInputElement) => item.value === 'Jan 5, 2016'),
+        ).toBeInTheDocument();
         userEvent.click(getByRole('button', { name: 'Type' }));
         userEvent.click(within(getByRole('listbox', { name: 'Type' })).getByText('NEWSLETTER_EMAIL'));
 
@@ -119,7 +122,7 @@ describe(TaskDrawerForm.name, () => {
             activityType: ActivityTypeEnum.NEWSLETTER_EMAIL,
             subject: 'On the Journey with the Johnson Family',
             startAt: new Date(2012, 12, 5, 1, 2),
-            completedAt: null,
+            completedAt: new Date(2015, 12, 5, 1, 2),
             tagList: ['tag-1', 'tag-2'],
             contacts: {
                 nodes: [

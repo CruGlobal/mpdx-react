@@ -26,12 +26,7 @@ import { gql, useQuery, useMutation } from '@apollo/client';
 import { omit, sortBy } from 'lodash/fp';
 import { useSnackbar } from 'notistack';
 import { startOfHour, addHours } from 'date-fns';
-import {
-    ActivityTypeEnum,
-    NotificationTypeEnum,
-    NotificationTimeUnitEnum,
-    TaskInput,
-} from '../../../../../types/globalTypes';
+import { ActivityTypeEnum, NotificationTypeEnum, NotificationTimeUnitEnum } from '../../../../../types/globalTypes';
 import { dateFormat } from '../../../../lib/intlFormat/intlFormat';
 import {
     GetDataForTaskDrawerQuery,
@@ -147,7 +142,7 @@ const taskSchema: yup.ObjectSchema<Task> = yup.object({
     id: yup.string().nullable(),
     activityType: yup.mixed<ActivityTypeEnum>(),
     subject: yup.string().required(),
-    startAt: yup.date(),
+    startAt: yup.date().nullable(),
     completedAt: yup.date().nullable(),
     tagList: yup.array().of(yup.string()),
     contacts: yup.object({ nodes: yup.array().of(yup.object({ id: yup.string(), name: yup.string() })) }),
@@ -235,6 +230,7 @@ const TaskDrawerForm = ({ accountListId, task, onClose, onChange }: Props): Reac
                     activityType,
                     subject,
                     startAt,
+                    completedAt,
                     tagList,
                     user,
                     contacts,
@@ -288,26 +284,63 @@ const TaskDrawerForm = ({ accountListId, task, onClose, onChange }: Props): Reac
                                     <Grid container spacing={2}>
                                         <Grid xs={6} item>
                                             <DatePicker
+                                                clearable
                                                 fullWidth
                                                 labelFunc={dateFormat}
                                                 autoOk
                                                 label={t('Due Date')}
                                                 value={startAt}
                                                 onChange={(date): void => setFieldValue('startAt', date)}
+                                                okLabel={t('OK')}
+                                                todayLabel={t('Today')}
+                                                cancelLabel={t('Cancel')}
+                                                clearLabel={t('Clear')}
                                             />
                                         </Grid>
                                         <Grid xs={6} item>
                                             <TimePicker
+                                                clearable
                                                 fullWidth
                                                 autoOk
                                                 label={t('Due Time')}
                                                 value={startAt}
                                                 onChange={(date): void => setFieldValue('startAt', date)}
+                                                okLabel={t('OK')}
+                                                todayLabel={t('Today')}
+                                                cancelLabel={t('Cancel')}
+                                                clearLabel={t('Clear')}
                                             />
                                         </Grid>
                                     </Grid>
                                 </FormControl>
                             </Grid>
+                            {initialTask.completedAt && (
+                                <Grid item>
+                                    <FormControl className={classes.formControl}>
+                                        <Grid container spacing={2}>
+                                            <Grid xs={6} item>
+                                                <DatePicker
+                                                    fullWidth
+                                                    labelFunc={dateFormat}
+                                                    autoOk
+                                                    label={t('Completed Date')}
+                                                    value={completedAt}
+                                                    onChange={(date): void => setFieldValue('completedAt', date)}
+                                                />
+                                            </Grid>
+                                            <Grid xs={6} item>
+                                                <TimePicker
+                                                    fullWidth
+                                                    autoOk
+                                                    label={t('Completed Time')}
+                                                    value={completedAt}
+                                                    onChange={(date): void => setFieldValue('completedAt', date)}
+                                                />
+                                            </Grid>
+                                        </Grid>
+                                    </FormControl>
+                                </Grid>
+                            )}
                             <Grid item>
                                 <Autocomplete
                                     multiple

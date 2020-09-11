@@ -1,5 +1,5 @@
 import React, { ReactElement } from 'react';
-import { Tooltip, Theme, makeStyles, Fab } from '@material-ui/core';
+import { Tooltip, Theme, makeStyles, Fab, Button, Avatar } from '@material-ui/core';
 import { isPast, formatDistanceToNow } from 'date-fns';
 import AssignmentLateIcon from '@material-ui/icons/AssignmentLate';
 import AssignmentIcon from '@material-ui/icons/Assignment';
@@ -71,9 +71,29 @@ interface Props {
     completedAt?: string;
     color?: 'primary';
     disableTooltip?: boolean;
+    tooltipPlacement?:
+        | 'bottom-end'
+        | 'bottom-start'
+        | 'bottom'
+        | 'left-end'
+        | 'left-start'
+        | 'left'
+        | 'right-end'
+        | 'right-start'
+        | 'right'
+        | 'top-end'
+        | 'top-start'
+        | 'top';
 }
 
-const TaskStatus = ({ taskId, startAt, completedAt, color, disableTooltip = false }: Props): ReactElement => {
+const TaskStatus = ({
+    taskId,
+    startAt,
+    completedAt,
+    color,
+    disableTooltip = false,
+    tooltipPlacement = 'right',
+}: Props): ReactElement => {
     const classes = useStyles();
     const { t } = useTranslation();
     const { openTaskCompletedDrawer } = useApp();
@@ -86,15 +106,15 @@ const TaskStatus = ({ taskId, startAt, completedAt, color, disableTooltip = fals
         return (
             <Tooltip
                 title={`Completed ${formatDistanceToNow(new Date(completedAt), { addSuffix: true })}`}
-                placement="right"
+                placement={tooltipPlacement}
                 arrow
                 disableFocusListener={disableTooltip}
                 disableHoverListener={disableTooltip}
                 disableTouchListener={disableTooltip}
             >
-                <Fab className={[classes.buttonSmall, classes.buttonGreen].join(' ')}>
+                <Avatar className={[classes.buttonSmall, classes.buttonGreen].join(' ')} role="button">
                     <AssignmentTurnedInIcon fontSize="inherit" className={classes.icon} />
-                </Fab>
+                </Avatar>
             </Tooltip>
         );
     } else if (startAt) {
@@ -104,7 +124,7 @@ const TaskStatus = ({ taskId, startAt, completedAt, color, disableTooltip = fals
                     title={`Overdue ${formatDistanceToNow(new Date(startAt), {
                         addSuffix: true,
                     })}`}
-                    placement="right"
+                    placement={tooltipPlacement}
                     arrow
                     disableFocusListener={disableTooltip}
                     disableHoverListener={disableTooltip}
@@ -125,7 +145,7 @@ const TaskStatus = ({ taskId, startAt, completedAt, color, disableTooltip = fals
                     title={`Due in ${formatDistanceToNow(new Date(startAt), {
                         addSuffix: true,
                     })}`}
-                    placement="right"
+                    placement={tooltipPlacement}
                     arrow
                     disableFocusListener={disableTooltip}
                     disableHoverListener={disableTooltip}
@@ -145,7 +165,7 @@ const TaskStatus = ({ taskId, startAt, completedAt, color, disableTooltip = fals
         return (
             <Tooltip
                 title={t('No Due Date')}
-                placement="right"
+                placement={tooltipPlacement}
                 arrow
                 disableFocusListener={disableTooltip}
                 disableHoverListener={disableTooltip}

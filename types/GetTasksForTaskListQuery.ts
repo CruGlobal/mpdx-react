@@ -10,6 +10,7 @@ import { ActivityTypeEnum } from "./globalTypes";
 // ====================================================
 
 export interface GetTasksForTaskListQuery_tasks_nodes_contacts_nodes {
+  id: string;
   name: string;
 }
 
@@ -21,18 +22,19 @@ export interface GetTasksForTaskListQuery_tasks_nodes_contacts {
 }
 
 export interface GetTasksForTaskListQuery_tasks_nodes_user {
+  id: string;
   firstName: string | null;
   lastName: string | null;
 }
 
 export interface GetTasksForTaskListQuery_tasks_nodes {
   id: string;
-  subject: string;
   activityType: ActivityTypeEnum | null;
+  subject: string;
   startAt: any | null;
   completedAt: any | null;
-  contacts: GetTasksForTaskListQuery_tasks_nodes_contacts;
   tagList: string[];
+  contacts: GetTasksForTaskListQuery_tasks_nodes_contacts;
   user: GetTasksForTaskListQuery_tasks_nodes_user | null;
 }
 

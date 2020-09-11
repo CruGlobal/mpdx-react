@@ -1,7 +1,8 @@
 import React, { ReactNode, ReactElement, useState, useReducer, Dispatch } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import { omit } from 'lodash/fp';
+import { omit, filter, find } from 'lodash/fp';
 import TaskDrawer, { TaskDrawerProps } from '../Task/Drawer/Drawer';
+import theme from '../../theme';
 import rootReducer, { Action, AppState } from './rootReducer';
 import { AppContext } from '.';
 
@@ -30,7 +31,23 @@ const AppProvider = ({ initialState, children }: Props): ReactElement => {
     });
 
     const openTaskDrawer = (props: TaskDrawerProps): void => {
-        setTaskDrawers([...taskDrawers, { id: uuidv4(), ...props }]);
+        const id = uuidv4();
+        if (!props.taskId || !find({ taskId: props.taskId }, taskDrawers)) {
+            setTaskDrawers([
+                ...taskDrawers,
+                {
+                    id,
+                    ...props,
+                    onClose: (): void => {
+                        props.onClose && props.onClose();
+                        setTimeout(
+                            () => setTaskDrawers(filter({ id }, taskDrawers)),
+                            theme.transitions.duration.leavingScreen,
+                        );
+                    },
+                },
+            ]);
+        }
     };
 
     const openTaskCompletedDrawer = (taskId: string): void => {

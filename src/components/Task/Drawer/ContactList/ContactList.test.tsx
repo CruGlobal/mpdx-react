@@ -10,24 +10,25 @@ import TaskDrawerContactList from '.';
 
 describe(TaskDrawerContactList.name, () => {
     it('default', async () => {
-        const { queryByTestId, getAllByTestId } = render(
+        const { queryByTestId, getAllByTestId, findByTestId } = render(
             <MockedProvider mocks={[getContactsForTaskDrawerContactListMock()]} addTypename={false}>
                 <TaskDrawerContactList accountListId="abc" contactIds={['contact-1', 'contact-2']} />
             </MockedProvider>,
         );
+        await findByTestId('TaskDrawerContactListLoading');
         await waitFor(() => expect(queryByTestId('TaskDrawerContactListLoading')).not.toBeInTheDocument());
         expect(
             getAllByTestId(/TaskDrawerContactListItem-contact-./).map((element) => element.getAttribute('data-testid')),
-        ).toEqual(['TaskDrawerContactListItem-contact-1', 'TaskDrawerContactListItem-contact-2']);
+        ).toEqual(['TaskDrawerContactListItem-contact-2', 'TaskDrawerContactListItem-contact-1']);
     });
 
-    it('loading', () => {
-        const { getByTestId } = render(
+    it('loading', async () => {
+        const { findByTestId } = render(
             <MockedProvider mocks={[getContactsForTaskDrawerContactListLoadingMock()]} addTypename={false}>
                 <TaskDrawerContactList accountListId="abc" contactIds={['contact-1', 'contact-2']} />
             </MockedProvider>,
         );
-        expect(getByTestId('TaskDrawerContactListLoading')).toBeInTheDocument();
+        expect(await findByTestId('TaskDrawerContactListLoading')).toBeInTheDocument();
     });
 
     it('empty', async () => {

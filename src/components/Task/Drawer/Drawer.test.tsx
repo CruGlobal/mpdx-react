@@ -28,7 +28,7 @@ describe(TaskDrawer.name, () => {
                 </SnackbarProvider>
             </MuiPickersUtilsProvider>,
         );
-        expect(getByRole('tab', { name: 'Contacts' })).toBeDisabled();
+        expect(getByRole('tab', { name: 'Contacts ({{ contactCount }})' })).toBeDisabled();
         expect(getByRole('tab', { name: 'Comments' })).toBeDisabled();
         expect(getByText('Add Task')).toBeInTheDocument();
         userEvent.type(getByRole('textbox', { name: 'Subject' }), 'abc');
@@ -59,7 +59,7 @@ describe(TaskDrawer.name, () => {
         );
         expect(await findByTestId('TaskDrawerTitle')).toHaveTextContent('NEWSLETTER_EMAIL');
         userEvent.click(getByText('Save'));
-        userEvent.click(getByRole('tab', { name: 'Contacts' }));
+        userEvent.click(getByRole('tab', { name: 'Contacts ({{ contactCount }})' }));
         expect(await findByText('Quinn, Anthony')).toBeInTheDocument();
     });
 });

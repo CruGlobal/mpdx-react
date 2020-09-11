@@ -103,5 +103,10 @@
     "EVERY_6_MONTHS": "Every 6 Months",
     "MONTHLY": "Monthly",
     "QUARTERLY": "Quarterly",
-    "WEEKLY": "Weekly"
+    "WEEKLY": "Weekly",
+    "ATTEMPTED": "Attempted",
+    "ATTEMPTED_LEFT_MESSAGE": "Attempted - Left Message",
+    "COMPLETED": "Completed",
+    "DONE": "Done",
+    "RECEIVED": "Received"
 }

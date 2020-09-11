@@ -40,6 +40,8 @@ export const GET_THIS_WEEK_QUERY = gql`
                 id
                 subject
                 activityType
+                startAt
+                completedAt
                 contacts {
                     nodes {
                         name
@@ -53,6 +55,8 @@ export const GET_THIS_WEEK_QUERY = gql`
                 id
                 subject
                 activityType
+                startAt
+                completedAt
                 contacts {
                     nodes {
                         name

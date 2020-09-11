@@ -28,6 +28,15 @@ import TaskDrawerContactList from './ContactList';
 import TaskDrawerCommentList from './CommentList';
 
 const useStyles = makeStyles((theme: Theme) => ({
+    fixed: {
+        position: 'fixed',
+        top: 0,
+        background: theme.palette.background.paper,
+        zIndex: 1,
+    },
+    content: {
+        marginTop: 120,
+    },
     container: {
         padding: theme.spacing(2, 2),
     },
@@ -126,83 +135,96 @@ const TaskDrawer = ({ taskId, onClose }: TaskDrawerProps): ReactElement => {
         <Box>
             {loading && <Loading loading={true} />}
             <Drawer open={open} onClose={onDrawerClose} anchor="right" classes={{ paper: classes.paper }}>
-                <Container className={classes.container}>
-                    <Grid container alignItems="center">
-                        <Grid className={classes.title} item>
-                            <Box mr={1}>
-                                {task ? (
-                                    <TaskStatus
-                                        taskId={task.id}
-                                        startAt={task.startAt}
-                                        completedAt={task.completedAt}
-                                        disableTooltip
-                                    />
-                                ) : (
-                                    <TaskStatus color="primary" disableTooltip />
-                                )}
-                            </Box>
-                            <Typography variant="h6" data-testid="TaskDrawerTitle">
-                                {task ? (task.activityType ? t(task.activityType) : t('Task')) : t('Add Task')}
-                            </Typography>
-                        </Grid>
-                        <Grid item>
-                            <IconButton size="small" onClick={onDrawerClose} aria-label="Close">
-                                <CloseIcon />
-                            </IconButton>
-                        </Grid>
-                    </Grid>
-                </Container>
                 <TabContext value={tab}>
-                    <AppBar position="static">
-                        <TabList onChange={handleTabChange} variant="fullWidth">
-                            <Tab label={t('Details')} value="1" />
-                            <Tab label={t('Contacts')} value="2" disabled={!task} />
-                            <Tab label={t('Comments')} value="3" disabled={!task} />
-                        </TabList>
-                    </AppBar>
-                    <AnimatePresence initial={false}>
-                        <TabPanel key="1" value="1" className={classes.tabPanel}>
-                            <motion.div
-                                initial={{ x: 300, opacity: 0 }}
-                                animate={{ x: 0, opacity: 1 }}
-                                exit={{ x: -300, opacity: 0 }}
-                            >
-                                {!loading && (
-                                    <TaskDrawerForm
-                                        accountListId={state.accountListId}
-                                        task={task}
-                                        onClose={onDrawerClose}
-                                        onChange={onChange}
-                                    />
-                                )}
-                            </motion.div>
-                        </TabPanel>
-                        {task && (
-                            <>
-                                <TabPanel key="2" value="2" className={classes.tabPanel}>
-                                    <motion.div
-                                        initial={{ x: 300, opacity: 0 }}
-                                        animate={{ x: 0, opacity: 1 }}
-                                        exit={{ x: -300, opacity: 0 }}
-                                    >
-                                        <TaskDrawerContactList
+                    <Box className={[classes.fixed, classes.paper].join(' ')}>
+                        <Container className={classes.container}>
+                            <Grid container alignItems="center">
+                                <Grid className={classes.title} item>
+                                    <Box mr={1}>
+                                        {task ? (
+                                            <TaskStatus
+                                                taskId={task.id}
+                                                startAt={task.startAt}
+                                                completedAt={task.completedAt}
+                                                disableTooltip
+                                            />
+                                        ) : (
+                                            <TaskStatus color="primary" disableTooltip />
+                                        )}
+                                    </Box>
+                                    <Typography variant="h6" data-testid="TaskDrawerTitle">
+                                        {task ? (task.activityType ? t(task.activityType) : t('Task')) : t('Add Task')}
+                                    </Typography>
+                                </Grid>
+                                <Grid item>
+                                    <IconButton size="small" onClick={onDrawerClose} aria-label="Close">
+                                        <CloseIcon />
+                                    </IconButton>
+                                </Grid>
+                            </Grid>
+                        </Container>
+                        <AppBar position="static">
+                            <TabList onChange={handleTabChange} variant="fullWidth">
+                                <Tab label={t('Details')} value="1" />
+                                <Tab
+                                    label={t('Contacts ({{ contactCount }})', {
+                                        contactCount: task?.contacts?.nodes?.length || 0,
+                                    })}
+                                    value="2"
+                                    disabled={!task}
+                                />
+                                <Tab label={t('Comments')} value="3" disabled={!task} />
+                            </TabList>
+                        </AppBar>
+                    </Box>
+                    <Box className={classes.content}>
+                        <AnimatePresence initial={false}>
+                            <TabPanel key="1" value="1" className={classes.tabPanel}>
+                                <motion.div
+                                    initial={{ x: 300, opacity: 0 }}
+                                    animate={{ x: 0, opacity: 1 }}
+                                    exit={{ x: -300, opacity: 0 }}
+                                >
+                                    {!loading && (
+                                        <TaskDrawerForm
                                             accountListId={state.accountListId}
-                                            contactIds={task.contacts.nodes.map(({ id }) => id)}
+                                            task={task}
+                                            onClose={onDrawerClose}
+                                            onChange={onChange}
                                         />
-                                    </motion.div>
-                                </TabPanel>
-                                <TabPanel key="3" value="3" className={classes.tabPanel}>
-                                    <motion.div
-                                        initial={{ x: 300, opacity: 0 }}
-                                        animate={{ x: 0, opacity: 1 }}
-                                        exit={{ x: -300, opacity: 0 }}
-                                    >
-                                        <TaskDrawerCommentList accountListId={state.accountListId} taskId={task.id} />
-                                    </motion.div>
-                                </TabPanel>
-                            </>
-                        )}
-                    </AnimatePresence>
+                                    )}
+                                </motion.div>
+                            </TabPanel>
+                            {task && (
+                                <>
+                                    <TabPanel key="2" value="2" className={classes.tabPanel}>
+                                        <motion.div
+                                            initial={{ x: 300, opacity: 0 }}
+                                            animate={{ x: 0, opacity: 1 }}
+                                            exit={{ x: -300, opacity: 0 }}
+                                        >
+                                            <TaskDrawerContactList
+                                                accountListId={state.accountListId}
+                                                contactIds={task.contacts.nodes.map(({ id }) => id)}
+                                            />
+                                        </motion.div>
+                                    </TabPanel>
+                                    <TabPanel key="3" value="3" className={classes.tabPanel}>
+                                        <motion.div
+                                            initial={{ x: 300, opacity: 0 }}
+                                            animate={{ x: 0, opacity: 1 }}
+                                            exit={{ x: -300, opacity: 0 }}
+                                        >
+                                            <TaskDrawerCommentList
+                                                accountListId={state.accountListId}
+                                                taskId={task.id}
+                                            />
+                                        </motion.div>
+                                    </TabPanel>
+                                </>
+                            )}
+                        </AnimatePresence>
+                    </Box>
                 </TabContext>
             </Drawer>
         </Box>
