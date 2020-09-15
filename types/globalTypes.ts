@@ -26,18 +26,6 @@ export enum ActivityTypeEnum {
   TO_DO = "TO_DO",
 }
 
-export enum NextActionEnum {
-  APPOINTMENT = "APPOINTMENT",
-  CALL = "CALL",
-  EMAIL = "EMAIL",
-  FACEBOOK_MESSAGE = "FACEBOOK_MESSAGE",
-  NONE = "NONE",
-  PRAYER_REQUEST = "PRAYER_REQUEST",
-  TALK_TO_IN_PERSON = "TALK_TO_IN_PERSON",
-  TEXT_MESSAGE = "TEXT_MESSAGE",
-  THANK = "THANK",
-}
-
 export enum NotificationTimeUnitEnum {
   DAYS = "DAYS",
   HOURS = "HOURS",
@@ -95,12 +83,28 @@ export enum StatusEnum {
   UNRESPONSIVE = "UNRESPONSIVE",
 }
 
-export interface TaskInput {
+export interface TaskCreateInput {
   id?: string | null;
   subject: string;
   activityType?: ActivityTypeEnum | null;
   result?: ResultEnum | null;
-  nextAction?: NextActionEnum | null;
+  nextAction?: ActivityTypeEnum | null;
+  completedAt?: any | null;
+  startAt?: any | null;
+  contactIds?: string[] | null;
+  notificationType?: NotificationTypeEnum | null;
+  notificationTimeBefore?: number | null;
+  notificationTimeUnit?: NotificationTimeUnitEnum | null;
+  userId?: string | null;
+  tagList?: string[] | null;
+}
+
+export interface TaskUpdateInput {
+  id?: string | null;
+  subject?: string | null;
+  activityType?: ActivityTypeEnum | null;
+  result?: ResultEnum | null;
+  nextAction?: ActivityTypeEnum | null;
   completedAt?: any | null;
   startAt?: any | null;
   contactIds?: string[] | null;

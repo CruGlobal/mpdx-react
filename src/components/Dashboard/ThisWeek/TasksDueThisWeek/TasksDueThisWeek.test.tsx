@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { render } from '../../../../../tests/testingLibraryReactMock';
 import { ActivityTypeEnum } from '../../../../../types/globalTypes';
 import { AppProviderContext } from '../../../App/Provider';
+import { GetThisWeekQuery_dueTasks } from '../../../../../types/GetThisWeekQuery';
 import TasksDueThisWeek from '.';
 
 const openTaskDrawer = jest.fn();
@@ -33,7 +34,7 @@ describe(TasksDueThisWeek.name, () => {
     });
 
     it('empty', () => {
-        const dueTasks = {
+        const dueTasks: GetThisWeekQuery_dueTasks = {
             nodes: [],
             totalCount: 0,
         };
@@ -44,19 +45,23 @@ describe(TasksDueThisWeek.name, () => {
     });
 
     it('props', () => {
-        const dueTasks = {
+        const dueTasks: GetThisWeekQuery_dueTasks = {
             nodes: [
                 {
                     id: 'task_1',
                     subject: 'the quick brown fox jumps over the lazy dog',
                     activityType: ActivityTypeEnum.PRAYER_REQUEST,
                     contacts: { nodes: [{ name: 'Smith, Roger' }] },
+                    startAt: null,
+                    completedAt: null,
                 },
                 {
                     id: 'task_2',
                     subject: 'the quick brown fox jumps over the lazy dog',
                     activityType: ActivityTypeEnum.APPOINTMENT,
                     contacts: { nodes: [{ name: 'Smith, Sarah' }] },
+                    startAt: null,
+                    completedAt: null,
                 },
             ],
             totalCount: 1234,

@@ -7,7 +7,6 @@ import {
     GetThisWeekQuery_reportsPeopleWithAnniversaries,
 } from '../../../../../types/GetThisWeekQuery';
 import { ActivityTypeEnum } from '../../../../../types/globalTypes';
-import { AppProvider } from '../../../App';
 import PartnerCare from '.';
 
 export default {
@@ -20,6 +19,8 @@ export const Default = (): ReactElement => {
         subject: 'the quick brown fox jumps over the lazy dog',
         activityType: ActivityTypeEnum.PRAYER_REQUEST,
         contacts: { nodes: [{ name: 'Roger Smith' }, { name: 'Sarah Smith' }] },
+        startAt: null,
+        completedAt: null,
     };
     const personWithBirthday = {
         id: 'person',
@@ -71,14 +72,12 @@ export const Default = (): ReactElement => {
     return (
         <Box m={2}>
             <MockedProvider mocks={[]} addTypename={false}>
-                <AppProvider>
-                    <PartnerCare
-                        loading={false}
-                        prayerRequestTasks={prayerRequestTasks}
-                        reportsPeopleWithBirthdays={reportsPeopleWithBirthdays}
-                        reportsPeopleWithAnniversaries={reportsPeopleWithAnniversaries}
-                    />
-                </AppProvider>
+                <PartnerCare
+                    loading={false}
+                    prayerRequestTasks={prayerRequestTasks}
+                    reportsPeopleWithBirthdays={reportsPeopleWithBirthdays}
+                    reportsPeopleWithAnniversaries={reportsPeopleWithAnniversaries}
+                />
             </MockedProvider>
         </Box>
     );
@@ -106,14 +105,12 @@ export const Empty = (): ReactElement => {
     return (
         <Box m={2}>
             <MockedProvider mocks={[]} addTypename={false}>
-                <AppProvider>
-                    <PartnerCare
-                        loading={false}
-                        prayerRequestTasks={prayerRequestTasks}
-                        reportsPeopleWithBirthdays={reportsPeopleWithBirthdays}
-                        reportsPeopleWithAnniversaries={reportsPeopleWithAnniversaries}
-                    />
-                </AppProvider>
+                <PartnerCare
+                    loading={false}
+                    prayerRequestTasks={prayerRequestTasks}
+                    reportsPeopleWithBirthdays={reportsPeopleWithBirthdays}
+                    reportsPeopleWithAnniversaries={reportsPeopleWithAnniversaries}
+                />
             </MockedProvider>
         </Box>
     );
@@ -123,9 +120,7 @@ export const Loading = (): ReactElement => {
     return (
         <Box m={2}>
             <MockedProvider mocks={[]} addTypename={false}>
-                <AppProvider>
-                    <PartnerCare loading={true} />
-                </AppProvider>
+                <PartnerCare loading={true} />
             </MockedProvider>
         </Box>
     );

@@ -7,7 +7,8 @@ import {
     ActivityTypeEnum,
     NotificationTypeEnum,
     NotificationTimeUnitEnum,
-    TaskInput,
+    TaskCreateInput,
+    TaskUpdateInput,
 } from '../../../../../types/globalTypes';
 import { UpdateTaskMutation } from '../../../../../types/UpdateTaskMutation';
 import { GetTaskForTaskDrawerQuery_task as Task } from '../../../../../types/GetTaskForTaskDrawerQuery';
@@ -66,7 +67,7 @@ export const createTaskMutationMock = (): MockedResponse => {
             task: { ...task, id: 'task-1' },
         },
     };
-    const attributes: TaskInput = omit(['contacts', 'user'], {
+    const attributes: TaskCreateInput = omit(['contacts', 'user'], {
         ...task,
         userId: null,
         contactIds: [],
@@ -107,7 +108,7 @@ export const updateTaskMutationMock = (): MockedResponse => {
             task,
         },
     };
-    const attributes: TaskInput = omit(['contacts', 'user'], {
+    const attributes: TaskUpdateInput = omit(['contacts', 'user'], {
         ...task,
         userId: task.user.id,
         contactIds: task.contacts.nodes.map(({ id }) => id),

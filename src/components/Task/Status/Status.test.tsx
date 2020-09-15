@@ -5,17 +5,17 @@ import MockDate from 'mockdate';
 import { AppProviderContext } from '../../App/Provider';
 import TaskStatus from '.';
 
-const openTaskCompletedDrawer = jest.fn();
+const openTaskDrawer = jest.fn();
 
 jest.mock('../../App', () => ({
     useApp: (): Partial<AppProviderContext> => ({
-        openTaskCompletedDrawer,
+        openTaskDrawer,
     }),
 }));
 
 describe(TaskStatus.name, () => {
     beforeEach(() => {
-        openTaskCompletedDrawer.mockClear();
+        openTaskDrawer.mockClear();
         MockDate.set(new Date(2020, 1, 1));
     });
 
@@ -50,6 +50,6 @@ describe(TaskStatus.name, () => {
     it('taskId', async () => {
         const { getByRole } = render(<TaskStatus taskId="task-1" />);
         userEvent.click(getByRole('button'));
-        expect(openTaskCompletedDrawer).toHaveBeenCalledWith('task-1');
+        expect(openTaskDrawer).toHaveBeenCalledWith({ taskId: 'task-1', showCompleteForm: true });
     });
 });

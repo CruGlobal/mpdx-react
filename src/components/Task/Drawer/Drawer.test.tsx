@@ -1,42 +1,32 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
-import { MockedProvider } from '@apollo/client/testing';
-import { SnackbarProvider } from 'notistack';
-import { MuiPickersUtilsProvider } from '@material-ui/pickers';
-import DateFnsUtils from '@date-io/date-fns';
 import userEvent from '@testing-library/user-event';
-import { AppProvider } from '../../App';
-import TestRouter from '../../../../tests/TestRouter';
+import TestWrapper from '../../../../tests/TestWrapper';
 import { getDataForTaskDrawerMock, createTaskMutationMock, updateTaskMutationMock } from './Form/Form.mock';
 import { getCommentsForTaskDrawerCommentListMock } from './CommentList/CommentList.mock';
 import { getContactsForTaskDrawerContactListMock } from './ContactList/ContactList.mock';
 import { getTaskForTaskDrawerMock } from './Drawer.mock';
+import { completeTaskMutationMock, getCompleteTaskForTaskDrawerMock } from './CompleteForm/CompleteForm.mock';
 import TaskDrawer from '.';
 
 describe(TaskDrawer.name, () => {
     it('default', async () => {
         const onClose = jest.fn();
         const mocks = [getDataForTaskDrawerMock(), createTaskMutationMock()];
-        const { getByText, getByRole } = render(
-            <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                <SnackbarProvider>
-                    <MockedProvider mocks={mocks} addTypename={false}>
-                        <AppProvider initialState={{ accountListId: 'abc' }}>
-                            <TaskDrawer onClose={onClose} />
-                        </AppProvider>
-                    </MockedProvider>
-                </SnackbarProvider>
-            </MuiPickersUtilsProvider>,
+        const { getByText, getByRole, getByTestId } = render(
+            <TestWrapper mocks={mocks}>
+                <TaskDrawer onClose={onClose} defaultValues={{ subject: 'abc' }} />
+            </TestWrapper>,
         );
         expect(getByRole('tab', { name: 'Contacts ({{ contactCount }})' })).toBeDisabled();
         expect(getByRole('tab', { name: 'Comments' })).toBeDisabled();
-        expect(getByText('Add Task')).toBeInTheDocument();
-        userEvent.type(getByRole('textbox', { name: 'Subject' }), 'abc');
+        expect(getByTestId('TaskDrawerTitle')).toHaveTextContent('Add Task');
         userEvent.click(getByText('Save'));
         await waitFor(() => expect(onClose).toHaveBeenCalled());
     });
 
     it('persisted', async () => {
+        const onClose = jest.fn();
         const mocks = [
             getDataForTaskDrawerMock(),
             getContactsForTaskDrawerContactListMock(),
@@ -44,22 +34,30 @@ describe(TaskDrawer.name, () => {
             updateTaskMutationMock(),
             getTaskForTaskDrawerMock(),
         ];
-        const { getByText, getByRole, findByTestId, findByText } = render(
-            <TestRouter>
-                <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                    <SnackbarProvider>
-                        <MockedProvider mocks={mocks} addTypename={false}>
-                            <AppProvider initialState={{ accountListId: 'abc' }}>
-                                <TaskDrawer taskId="task-1" />
-                            </AppProvider>
-                        </MockedProvider>
-                    </SnackbarProvider>
-                </MuiPickersUtilsProvider>
-            </TestRouter>,
+        const { getByText, findByTestId } = render(
+            <TestWrapper mocks={mocks}>
+                <TaskDrawer onClose={onClose} taskId="task-1" />
+            </TestWrapper>,
         );
         expect(await findByTestId('TaskDrawerTitle')).toHaveTextContent('NEWSLETTER_EMAIL');
         userEvent.click(getByText('Save'));
-        userEvent.click(getByRole('tab', { name: 'Contacts ({{ contactCount }})' }));
-        expect(await findByText('Quinn, Anthony')).toBeInTheDocument();
+        await waitFor(() => expect(onClose).toHaveBeenCalled());
+    });
+
+    it('showCompleteForm', async () => {
+        const onClose = jest.fn();
+        const mocks = [
+            getDataForTaskDrawerMock(),
+            getContactsForTaskDrawerContactListMock(),
+            getCommentsForTaskDrawerCommentListMock(),
+            completeTaskMutationMock(),
+            getCompleteTaskForTaskDrawerMock(),
+        ];
+        const { getByText, findByTestId } = render(
+            <TestWrapper mocks={mocks}>
+                <TaskDrawer onClose={onClose} taskId="task-1" showCompleteForm />
+            </TestWrapper>,
+        );
+        expect(await findByTestId('TaskDrawerTitle')).toHaveTextContent('Complete {{activityType}}');
     });
 });

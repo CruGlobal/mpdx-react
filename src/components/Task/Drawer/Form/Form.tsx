@@ -81,7 +81,7 @@ export const GET_DATA_FOR_TASK_DRAWER_QUERY = gql`
 `;
 
 export const CREATE_TASK_MUTATION = gql`
-    mutation CreateTaskMutation($accountListId: ID!, $attributes: TaskInput!) {
+    mutation CreateTaskMutation($accountListId: ID!, $attributes: TaskCreateInput!) {
         createTask(input: { accountListId: $accountListId, attributes: $attributes }) {
             task {
                 id
@@ -110,7 +110,7 @@ export const CREATE_TASK_MUTATION = gql`
 `;
 
 export const UPDATE_TASK_MUTATION = gql`
-    mutation UpdateTaskMutation($accountListId: ID!, $attributes: TaskInput!) {
+    mutation UpdateTaskMutation($accountListId: ID!, $attributes: TaskUpdateInput!) {
         updateTask(input: { accountListId: $accountListId, attributes: $attributes }) {
             task {
                 id
@@ -156,10 +156,10 @@ interface Props {
     accountListId: string;
     task?: Task;
     onClose: () => void;
-    onChange: (task: Task) => void;
+    defaultValues?: Partial<Task>;
 }
 
-const TaskDrawerForm = ({ accountListId, task, onClose, onChange }: Props): ReactElement => {
+const TaskDrawerForm = ({ accountListId, task, onClose, defaultValues }: Props): ReactElement => {
     const initialTask: Task = task || {
         id: null,
         activityType: null,
@@ -174,6 +174,7 @@ const TaskDrawerForm = ({ accountListId, task, onClose, onChange }: Props): Reac
         notificationTimeBefore: null,
         notificationType: null,
         notificationTimeUnit: null,
+        ...defaultValues,
     };
     const classes = useStyles();
     const { t } = useTranslation();
@@ -183,7 +184,6 @@ const TaskDrawerForm = ({ accountListId, task, onClose, onChange }: Props): Reac
             initialTask.notificationType !== null ||
             initialTask.notificationTimeUnit !== null,
     );
-    const [persisted, setPersisted] = useState(task && true);
     const handleNotificationChange = (
         event: React.ChangeEvent<HTMLInputElement>,
         setFieldValue: (name: string, value: null) => void,
@@ -208,13 +208,10 @@ const TaskDrawerForm = ({ accountListId, task, onClose, onChange }: Props): Reac
             contactIds: values.contacts.nodes.map(({ id }) => id),
         });
         try {
-            if (persisted) {
-                const mutation = await updateTask({ variables: { accountListId, attributes } });
-                onChange(mutation.data.updateTask.task);
+            if (task) {
+                await updateTask({ variables: { accountListId, attributes } });
             } else {
-                const mutation = await createTask({ variables: { accountListId, attributes: omit('id', attributes) } });
-                onChange(mutation.data.createTask.task);
-                setPersisted(true);
+                await createTask({ variables: { accountListId, attributes: omit('id', attributes) } });
             }
             enqueueSnackbar(t('Task saved successfully'), { variant: 'success' });
             onClose();
@@ -320,21 +317,31 @@ const TaskDrawerForm = ({ accountListId, task, onClose, onChange }: Props): Reac
                                         <Grid container spacing={2}>
                                             <Grid xs={6} item>
                                                 <DatePicker
+                                                    clearable
                                                     fullWidth
                                                     labelFunc={dateFormat}
                                                     autoOk
                                                     label={t('Completed Date')}
                                                     value={completedAt}
                                                     onChange={(date): void => setFieldValue('completedAt', date)}
+                                                    okLabel={t('OK')}
+                                                    todayLabel={t('Today')}
+                                                    cancelLabel={t('Cancel')}
+                                                    clearLabel={t('Clear')}
                                                 />
                                             </Grid>
                                             <Grid xs={6} item>
                                                 <TimePicker
+                                                    clearable
                                                     fullWidth
                                                     autoOk
                                                     label={t('Completed Time')}
                                                     value={completedAt}
                                                     onChange={(date): void => setFieldValue('completedAt', date)}
+                                                    okLabel={t('OK')}
+                                                    todayLabel={t('Today')}
+                                                    cancelLabel={t('Cancel')}
+                                                    clearLabel={t('Clear')}
                                                 />
                                             </Grid>
                                         </Grid>

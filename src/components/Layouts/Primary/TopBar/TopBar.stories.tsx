@@ -1,12 +1,22 @@
-import React, { ReactElement } from 'react';
+import React, { ReactElement, useEffect } from 'react';
 import { Box, Container } from '@material-ui/core';
 import { MockedProvider } from '@apollo/client/testing';
-import { AppProvider } from '../../../App';
+import { useApp } from '../../../App';
 import { GET_TOP_BAR_QUERY } from './TopBar';
 import TopBar from '.';
 
 export default {
     title: 'Layouts/Primary/TopBar',
+    decorators: [
+        (StoryFn): ReactElement => {
+            const { dispatch } = useApp();
+            useEffect(() => {
+                dispatch({ type: 'updateBreadcrumb', breadcrumb: 'Dashboard' });
+                dispatch({ type: 'updateAccountListId', accountListId: '1' });
+            }, []);
+            return <StoryFn />;
+        },
+    ],
 };
 
 const Content = (): ReactElement => (
@@ -47,9 +57,7 @@ export const Default = (): ReactElement => {
     return (
         <>
             <MockedProvider mocks={mocks} addTypename={false}>
-                <AppProvider initialState={{ breadcrumb: 'Dashboard' }}>
-                    <TopBar handleDrawerToggle={(): void => {}} />
-                </AppProvider>
+                <TopBar handleDrawerToggle={(): void => {}} />
             </MockedProvider>
             <Content />
         </>
@@ -79,9 +87,7 @@ export const MultipleAccountLists = (): ReactElement => {
     return (
         <>
             <MockedProvider mocks={mocks} addTypename={false}>
-                <AppProvider initialState={{ breadcrumb: 'Dashboard' }}>
-                    <TopBar handleDrawerToggle={(): void => {}} />
-                </AppProvider>
+                <TopBar handleDrawerToggle={(): void => {}} />
             </MockedProvider>
             <Content />
         </>

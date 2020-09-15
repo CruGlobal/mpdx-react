@@ -1,6 +1,6 @@
 import React, { ReactNode, ReactElement, useState, useReducer, Dispatch } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import { omit, filter, find } from 'lodash/fp';
+import { omit, remove, find } from 'lodash/fp';
 import TaskDrawer, { TaskDrawerProps } from '../Task/Drawer/Drawer';
 import theme from '../../theme';
 import rootReducer, { Action, AppState } from './rootReducer';
@@ -8,7 +8,6 @@ import { AppContext } from '.';
 
 export interface AppProviderContext {
     openTaskDrawer: (props: TaskDrawerProps) => void;
-    openTaskCompletedDrawer: (taskId: string) => void;
     state: AppState;
     dispatch: Dispatch<Action>;
 }
@@ -32,7 +31,7 @@ const AppProvider = ({ initialState, children }: Props): ReactElement => {
 
     const openTaskDrawer = (props: TaskDrawerProps): void => {
         const id = uuidv4();
-        if (!props.taskId || !find({ taskId: props.taskId }, taskDrawers)) {
+        if (!props.taskId || !find({ taskId: props.taskId, showCompleteForm: props.showCompleteForm }, taskDrawers)) {
             setTaskDrawers([
                 ...taskDrawers,
                 {
@@ -41,7 +40,7 @@ const AppProvider = ({ initialState, children }: Props): ReactElement => {
                     onClose: (): void => {
                         props.onClose && props.onClose();
                         setTimeout(
-                            () => setTaskDrawers(filter({ id }, taskDrawers)),
+                            () => setTaskDrawers((taskDrawers) => remove({ id }, taskDrawers)),
                             theme.transitions.duration.leavingScreen,
                         );
                     },
@@ -50,13 +49,8 @@ const AppProvider = ({ initialState, children }: Props): ReactElement => {
         }
     };
 
-    const openTaskCompletedDrawer = (taskId: string): void => {
-        console.log(taskId);
-    };
-
     const value: AppProviderContext = {
         openTaskDrawer,
-        openTaskCompletedDrawer,
         state,
         dispatch,
     };

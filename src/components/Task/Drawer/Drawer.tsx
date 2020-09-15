@@ -26,6 +26,7 @@ import TaskStatus from '../Status';
 import TaskDrawerForm from './Form';
 import TaskDrawerContactList from './ContactList';
 import TaskDrawerCommentList from './CommentList';
+import TaskDrawerCompleteForm from './CompleteForm';
 
 const useStyles = makeStyles((theme: Theme) => ({
     fixed: {
@@ -86,9 +87,11 @@ export const GET_TASK_FOR_TASK_DRAWER_QUERY = gql`
 export interface TaskDrawerProps {
     taskId?: string;
     onClose?: () => void;
+    showCompleteForm?: boolean;
+    defaultValues?: Partial<Task>;
 }
 
-const TaskDrawer = ({ taskId, onClose }: TaskDrawerProps): ReactElement => {
+const TaskDrawer = ({ taskId, onClose, showCompleteForm, defaultValues }: TaskDrawerProps): ReactElement => {
     const { state } = useApp();
     const classes = useStyles();
     const [open, setOpen] = useState(false);
@@ -114,10 +117,6 @@ const TaskDrawer = ({ taskId, onClose }: TaskDrawerProps): ReactElement => {
         onClose && onClose();
     };
 
-    const onChange = (task: Task): void => {
-        setTask(task);
-    };
-
     useEffect(() => {
         onLoad();
     }, []);
@@ -130,6 +129,26 @@ const TaskDrawer = ({ taskId, onClose }: TaskDrawerProps): ReactElement => {
     useEffect(() => {
         onLoad();
     }, [taskId]);
+
+    const title = ((): string => {
+        if (task) {
+            if (task.activityType) {
+                if (showCompleteForm) {
+                    return t('Complete {{activityType}}', { activityType: t(task.activityType) });
+                } else {
+                    return t(task.activityType);
+                }
+            } else {
+                if (showCompleteForm) {
+                    return t('Complete {{activityType}}', { activityType: t('Task') });
+                } else {
+                    return t('Task');
+                }
+            }
+        } else {
+            return t('Add Task');
+        }
+    })();
 
     return (
         <Box>
@@ -153,7 +172,7 @@ const TaskDrawer = ({ taskId, onClose }: TaskDrawerProps): ReactElement => {
                                         )}
                                     </Box>
                                     <Typography variant="h6" data-testid="TaskDrawerTitle">
-                                        {task ? (task.activityType ? t(task.activityType) : t('Task')) : t('Add Task')}
+                                        {title}
                                     </Typography>
                                 </Grid>
                                 <Grid item>
@@ -186,12 +205,22 @@ const TaskDrawer = ({ taskId, onClose }: TaskDrawerProps): ReactElement => {
                                     exit={{ x: -300, opacity: 0 }}
                                 >
                                     {!loading && (
-                                        <TaskDrawerForm
-                                            accountListId={state.accountListId}
-                                            task={task}
-                                            onClose={onDrawerClose}
-                                            onChange={onChange}
-                                        />
+                                        <>
+                                            {showCompleteForm ? (
+                                                <TaskDrawerCompleteForm
+                                                    accountListId={state.accountListId}
+                                                    task={task}
+                                                    onClose={onDrawerClose}
+                                                />
+                                            ) : (
+                                                <TaskDrawerForm
+                                                    accountListId={state.accountListId}
+                                                    task={task}
+                                                    onClose={onDrawerClose}
+                                                    defaultValues={defaultValues}
+                                                />
+                                            )}
+                                        </>
                                     )}
                                 </motion.div>
                             </TabPanel>

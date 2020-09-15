@@ -1,27 +1,34 @@
-import React, { ReactElement } from 'react';
+import React, { ReactElement, useEffect } from 'react';
 import { MockedProvider } from '@apollo/client/testing';
-import { AppProvider } from '../../App';
-import TestRouter from '../../../../tests/TestRouter';
+import { useApp } from '../../App';
 import { getDataForTaskDrawerMock, updateTaskMutationMock, createTaskMutationMock } from './Form/Form.mock';
 import { getContactsForTaskDrawerContactListMock } from './ContactList/ContactList.mock';
 import { getCommentsForTaskDrawerCommentListMock } from './CommentList/CommentList.mock';
 import { getTaskForTaskDrawerMock } from './Drawer.mock';
+import { completeTaskMutationMock } from './CompleteForm/CompleteForm.mock';
 import TaskDrawer from '.';
 
 export default {
     title: 'Task/Drawer',
+    decorators: [
+        (StoryFn): ReactElement => {
+            const { dispatch } = useApp();
+            useEffect(() => {
+                dispatch({ type: 'updateAccountListId', accountListId: 'abc' });
+            }, []);
+            return <StoryFn />;
+        },
+    ],
 };
 
-export const Default = (): ReactElement => (
-    <MockedProvider
-        mocks={[getDataForTaskDrawerMock(), { ...createTaskMutationMock(), delay: 500 }]}
-        addTypename={false}
-    >
-        <AppProvider initialState={{ accountListId: 'abc' }}>
+export const Default = (): ReactElement => {
+    const mocks = [getDataForTaskDrawerMock(), { ...createTaskMutationMock(), delay: 500 }];
+    return (
+        <MockedProvider mocks={mocks} addTypename={false}>
             <TaskDrawer />
-        </AppProvider>
-    </MockedProvider>
-);
+        </MockedProvider>
+    );
+};
 
 export const Persisted = (): ReactElement => {
     const mocks = [
@@ -33,12 +40,24 @@ export const Persisted = (): ReactElement => {
     ];
 
     return (
-        <TestRouter>
-            <MockedProvider mocks={mocks} addTypename={false}>
-                <AppProvider initialState={{ accountListId: 'abc' }}>
-                    <TaskDrawer taskId="task-1" />
-                </AppProvider>
-            </MockedProvider>
-        </TestRouter>
+        <MockedProvider mocks={mocks} addTypename={false}>
+            <TaskDrawer taskId="task-1" />
+        </MockedProvider>
+    );
+};
+
+export const showCompleteForm = (): ReactElement => {
+    const mocks = [
+        getDataForTaskDrawerMock(),
+        getContactsForTaskDrawerContactListMock(),
+        getCommentsForTaskDrawerCommentListMock(),
+        { ...completeTaskMutationMock(), delay: 500 },
+        getTaskForTaskDrawerMock(),
+    ];
+
+    return (
+        <MockedProvider mocks={mocks} addTypename={false}>
+            <TaskDrawer taskId="task-1" showCompleteForm />
+        </MockedProvider>
     );
 };

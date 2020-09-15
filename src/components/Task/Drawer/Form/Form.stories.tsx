@@ -1,7 +1,6 @@
 import React, { ReactElement } from 'react';
 import { MockedProvider } from '@apollo/client/testing';
 import { ActivityTypeEnum, NotificationTimeUnitEnum, NotificationTypeEnum } from '../../../../../types/globalTypes';
-import TestRouter from '../../../../../tests/TestRouter';
 import { getDataForTaskDrawerMock, createTaskMutationMock, updateTaskMutationMock } from './Form.mock';
 import TaskDrawerForm from '.';
 
@@ -15,18 +14,16 @@ export const Default = (): ReactElement => {
             mocks={[getDataForTaskDrawerMock(), { ...createTaskMutationMock(), delay: 500 }]}
             addTypename={false}
         >
-            <TaskDrawerForm accountListId="abc" onClose={(): void => {}} onChange={(): void => {}} />
+            <TaskDrawerForm accountListId="abc" onClose={(): void => {}} />
         </MockedProvider>
     );
 };
 
 export const Loading = (): ReactElement => {
     return (
-        <TestRouter>
-            <MockedProvider mocks={[]} addTypename={false}>
-                <TaskDrawerForm accountListId="abc" onClose={(): void => {}} onChange={(): void => {}} />
-            </MockedProvider>
-        </TestRouter>
+        <MockedProvider mocks={[]} addTypename={false}>
+            <TaskDrawerForm accountListId="abc" onClose={(): void => {}} />
+        </MockedProvider>
     );
 };
 
@@ -35,7 +32,7 @@ const task = {
     activityType: ActivityTypeEnum.NEWSLETTER_EMAIL,
     subject: 'On the Journey with the Johnson Family',
     startAt: new Date(2012, 12, 5, 1, 2),
-    completedAt: null,
+    completedAt: new Date(2015, 12, 5, 1, 2),
     tagList: ['tag-1', 'tag-2'],
     contacts: {
         nodes: [
@@ -55,12 +52,7 @@ export const Persisted = (): ReactElement => {
             mocks={[getDataForTaskDrawerMock(), { ...updateTaskMutationMock(), delay: 500 }]}
             addTypename={false}
         >
-            <TaskDrawerForm
-                accountListId="abc"
-                task={{ ...task, completedAt: new Date(2015, 12, 5, 1, 2) }}
-                onClose={(): void => {}}
-                onChange={(): void => {}}
-            />
+            <TaskDrawerForm accountListId="abc" task={task} onClose={(): void => {}} />
         </MockedProvider>
     );
 };

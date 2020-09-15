@@ -1,5 +1,5 @@
 import React, { ReactElement } from 'react';
-import { Tooltip, Theme, makeStyles, Fab, Button, Avatar } from '@material-ui/core';
+import { Tooltip, Theme, makeStyles, Fab, Avatar } from '@material-ui/core';
 import { isPast, formatDistanceToNow } from 'date-fns';
 import AssignmentLateIcon from '@material-ui/icons/AssignmentLate';
 import AssignmentIcon from '@material-ui/icons/Assignment';
@@ -96,9 +96,9 @@ const TaskStatus = ({
 }: Props): ReactElement => {
     const classes = useStyles();
     const { t } = useTranslation();
-    const { openTaskCompletedDrawer } = useApp();
+    const { openTaskDrawer } = useApp();
     const handleClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>): void => {
-        taskId && openTaskCompletedDrawer(taskId);
+        taskId && openTaskDrawer({ taskId, showCompleteForm: true });
         event.stopPropagation();
     };
 

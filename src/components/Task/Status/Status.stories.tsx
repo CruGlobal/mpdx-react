@@ -1,16 +1,13 @@
 import React, { ReactElement } from 'react';
 import { Box } from '@material-ui/core';
-import { AppProvider } from '../../App';
 import TaskStatus from '.';
 
 export default {
     title: 'Task/Status',
     decorators: [
-        (Story): ReactElement => (
+        (StoryFn): ReactElement => (
             <Box m={2}>
-                <AppProvider>
-                    <Story />
-                </AppProvider>
+                <StoryFn />
             </Box>
         ),
     ],

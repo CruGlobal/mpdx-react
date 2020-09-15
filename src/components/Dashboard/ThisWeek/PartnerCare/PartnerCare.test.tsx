@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { render, fireEvent } from '../../../../../tests/testingLibraryReactMock';
 import { ActivityTypeEnum } from '../../../../../types/globalTypes';
 import { AppProviderContext } from '../../../App/Provider';
+import { GetThisWeekQuery_prayerRequestTasks } from '../../../../../types/GetThisWeekQuery';
 import PartnerCare from '.';
 
 const openTaskDrawer = jest.fn();
@@ -69,19 +70,23 @@ describe(PartnerCare.name, () => {
     });
 
     it('props', () => {
-        const prayerRequestTasks = {
+        const prayerRequestTasks: GetThisWeekQuery_prayerRequestTasks = {
             nodes: [
                 {
                     id: 'task_1',
                     subject: 'the quick brown fox jumps over the lazy dog',
                     activityType: ActivityTypeEnum.PRAYER_REQUEST,
                     contacts: { nodes: [{ name: 'Roger Smith' }, { name: 'Sarah Smith' }] },
+                    startAt: null,
+                    completedAt: null,
                 },
                 {
                     id: 'task_2',
                     subject: 'on the boat to see uncle johnny',
                     activityType: ActivityTypeEnum.PRAYER_REQUEST,
                     contacts: { nodes: [{ name: 'Roger Parker' }, { name: 'Sarah Parker' }] },
+                    startAt: null,
+                    completedAt: null,
                 },
             ],
             totalCount: 2560,

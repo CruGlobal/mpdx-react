@@ -1,9 +1,8 @@
 import React, { ReactElement } from 'react';
 import { Box } from '@material-ui/core';
 import { MockedProvider } from '@apollo/client/testing';
-import { GetThisWeekQuery_dueTasks } from '../../../../../types/GetThisWeekQuery';
+import { GetThisWeekQuery_dueTasks, GetThisWeekQuery_dueTasks_nodes } from '../../../../../types/GetThisWeekQuery';
 import { ActivityTypeEnum } from '../../../../../types/globalTypes';
-import { AppProvider } from '../../../App';
 import TasksDueThisWeek from '.';
 
 export default {
@@ -11,11 +10,13 @@ export default {
 };
 
 export const Default = (): ReactElement => {
-    const task = {
+    const task: GetThisWeekQuery_dueTasks_nodes = {
         id: 'task',
         subject: 'the quick brown fox jumps over the lazy dog',
         activityType: ActivityTypeEnum.PRAYER_REQUEST,
         contacts: { nodes: [{ name: 'Smith, Roger' }] },
+        startAt: null,
+        completedAt: null,
     };
 
     const dueTasks: GetThisWeekQuery_dueTasks = {
@@ -29,9 +30,7 @@ export const Default = (): ReactElement => {
     return (
         <Box m={2}>
             <MockedProvider mocks={[]} addTypename={false}>
-                <AppProvider>
-                    <TasksDueThisWeek loading={false} dueTasks={dueTasks} />
-                </AppProvider>
+                <TasksDueThisWeek loading={false} dueTasks={dueTasks} />
             </MockedProvider>
         </Box>
     );
@@ -45,9 +44,7 @@ export const Empty = (): ReactElement => {
     return (
         <Box m={2}>
             <MockedProvider mocks={[]} addTypename={false}>
-                <AppProvider>
-                    <TasksDueThisWeek loading={false} dueTasks={dueTasks} />
-                </AppProvider>
+                <TasksDueThisWeek loading={false} dueTasks={dueTasks} />
             </MockedProvider>
         </Box>
     );
@@ -57,9 +54,7 @@ export const Loading = (): ReactElement => {
     return (
         <Box m={2}>
             <MockedProvider mocks={[]} addTypename={false}>
-                <AppProvider>
-                    <TasksDueThisWeek loading={true} />
-                </AppProvider>
+                <TasksDueThisWeek loading={true} />
             </MockedProvider>
         </Box>
     );

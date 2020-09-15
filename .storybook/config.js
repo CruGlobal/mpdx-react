@@ -9,6 +9,8 @@ import isChromatic from 'chromatic/isChromatic';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
 import { SnackbarProvider } from 'notistack';
+import { AppProvider } from '../src/components/App';
+import TestRouter from '../tests/TestRouter';
 import theme from '../src/theme';
 import i18n from '../src/lib/i18n';
 
@@ -25,16 +27,22 @@ addDecorator(
         },
     }),
 );
-
-addDecorator((storyFn) => (
+addDecorator(withKnobs);
+addDecorator((StoryFn) => (
     <ThemeProvider theme={theme}>
         <CssBaseline />
         <MuiPickersUtilsProvider utils={DateFnsUtils}>
-            <SnackbarProvider maxSnack={3}>{storyFn()}</SnackbarProvider>
+            <SnackbarProvider maxSnack={3}>
+                <TestRouter>
+                    <AppProvider>
+                        <StoryFn />
+                    </AppProvider>
+                </TestRouter>
+            </SnackbarProvider>
         </MuiPickersUtilsProvider>
     </ThemeProvider>
 ));
-addDecorator(withKnobs);
+
 addParameters({ chromatic: { diffThreshold: true } });
 
 // automatically import all files ending in *.stories.tsx
