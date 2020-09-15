@@ -1,6 +1,6 @@
-import React, { ReactElement, useEffect } from 'react';
+import React, { ReactElement } from 'react';
 import { MockedProvider } from '@apollo/client/testing';
-import { useApp } from '../../App';
+import withDispatch from '../../../decorators/withDispatch';
 import { getDataForTaskDrawerMock, updateTaskMutationMock, createTaskMutationMock } from './Form/Form.mock';
 import { getContactsForTaskDrawerContactListMock } from './ContactList/ContactList.mock';
 import { getCommentsForTaskDrawerCommentListMock } from './CommentList/CommentList.mock';
@@ -10,15 +10,7 @@ import TaskDrawer from '.';
 
 export default {
     title: 'Task/Drawer',
-    decorators: [
-        (StoryFn): ReactElement => {
-            const { dispatch } = useApp();
-            useEffect(() => {
-                dispatch({ type: 'updateAccountListId', accountListId: 'abc' });
-            }, []);
-            return <StoryFn />;
-        },
-    ],
+    decorators: [withDispatch({ type: 'updateAccountListId', accountListId: 'abc' })],
 };
 
 export const Default = (): ReactElement => {

@@ -1,21 +1,17 @@
-import React, { ReactElement, useEffect } from 'react';
+import React, { ReactElement } from 'react';
 import { Box, Container } from '@material-ui/core';
 import { MockedProvider } from '@apollo/client/testing';
-import { useApp } from '../../../App';
+import withDispatch from '../../../../decorators/withDispatch';
 import { GET_TOP_BAR_QUERY } from './TopBar';
 import TopBar from '.';
 
 export default {
     title: 'Layouts/Primary/TopBar',
     decorators: [
-        (StoryFn): ReactElement => {
-            const { dispatch } = useApp();
-            useEffect(() => {
-                dispatch({ type: 'updateBreadcrumb', breadcrumb: 'Dashboard' });
-                dispatch({ type: 'updateAccountListId', accountListId: '1' });
-            }, []);
-            return <StoryFn />;
-        },
+        withDispatch(
+            { type: 'updateAccountListId', accountListId: '1' },
+            { type: 'updateBreadcrumb', breadcrumb: 'Dashboard' },
+        ),
     ],
 };
 

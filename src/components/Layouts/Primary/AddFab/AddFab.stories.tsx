@@ -1,30 +1,18 @@
-import React, { ReactElement, useEffect } from 'react';
+import React, { ReactElement } from 'react';
 import { MockedProvider } from '@apollo/client/testing';
 import { getDataForTaskDrawerMock, createTaskMutationMock } from '../../../Task/Drawer/Form/Form.mock';
-import { useApp } from '../../../App';
+import withDispatch from '../../../../decorators/withDispatch';
 import AddFab from '.';
 
 export default {
     title: 'Layouts/Primary/AddFab',
-    decorators: [
-        (StoryFn): ReactElement => {
-            const { dispatch } = useApp();
-            useEffect(() => {
-                dispatch({ type: 'updateAccountListId', accountListId: 'abc' });
-            }, []);
-            return <StoryFn />;
-        },
-    ],
+    decorators: [withDispatch({ type: 'updateAccountListId', accountListId: 'abc' })],
 };
 
 export const Default = (): ReactElement => {
     return (
         <MockedProvider
-            mocks={[
-                getDataForTaskDrawerMock(),
-                getDataForTaskDrawerMock(),
-                { ...createTaskMutationMock(), delay: 500 },
-            ]}
+            mocks={[getDataForTaskDrawerMock(), { ...createTaskMutationMock(), delay: 500 }]}
             addTypename={false}
         >
             <AddFab />

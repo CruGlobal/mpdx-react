@@ -1,7 +1,7 @@
-import React, { ReactElement, useEffect } from 'react';
+import React, { ReactElement } from 'react';
 import { Box } from '@material-ui/core';
 import { MockedProvider } from '@apollo/client/testing';
-import { useApp } from '../../App';
+import withDispatch from '../../../decorators/withDispatch';
 import { GetWeeklyActivityQueryLoadingMocks } from './WeeklyActivity/WeeklyActivity.mock';
 import { GetThisWeekEmptyMocks, GetThisWeekDefaultMocks } from './ThisWeek.mock';
 import ThisWeek from '.';
@@ -9,17 +9,12 @@ import ThisWeek from '.';
 export default {
     title: 'Dashboard/ThisWeek',
     decorators: [
-        (StoryFn): ReactElement => {
-            const { dispatch } = useApp();
-            useEffect(() => {
-                dispatch({ type: 'updateAccountListId', accountListId: 'abc' });
-            }, []);
-            return (
-                <Box m={2}>
-                    <StoryFn />
-                </Box>
-            );
-        },
+        withDispatch({ type: 'updateAccountListId', accountListId: 'abc' }),
+        (StoryFn): ReactElement => (
+            <Box m={2}>
+                <StoryFn />
+            </Box>
+        ),
     ],
 };
 

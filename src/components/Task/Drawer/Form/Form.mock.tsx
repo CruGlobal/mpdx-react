@@ -20,16 +20,16 @@ export const getDataForTaskDrawerMock = (): MockedResponse => {
             id: 'abc',
             taskTagList: ['tag-1', 'tag-2', 'tag-3'],
         },
-        contacts: {
-            nodes: [
-                { id: 'contact-1', name: 'Anderson, Robert' },
-                { id: 'contact-2', name: 'Smith, John' },
-            ],
-        },
         accountListUsers: {
             nodes: [
                 { id: 'def', user: { id: 'user-1', firstName: 'Robert', lastName: 'Anderson' } },
                 { id: 'ghi', user: { id: 'user-2', firstName: 'John', lastName: 'Smith' } },
+            ],
+        },
+        contacts: {
+            nodes: [
+                { id: 'contact-1', name: 'Anderson, Robert' },
+                { id: 'contact-2', name: 'Smith, John' },
             ],
         },
     };
