@@ -18,6 +18,7 @@ describe(PartnerCare.name, () => {
     beforeEach(() => {
         openTaskDrawer.mockClear();
     });
+
     it('default', () => {
         const { getByTestId, queryByTestId } = render(<PartnerCare />);
         expect(getByTestId('PartnerCarePrayerCardContentEmpty')).toBeInTheDocument();

@@ -11,15 +11,25 @@ interface Props {
     mocks: MockedResponse[];
     children: ReactNode;
     initialState?: Partial<AppState>;
+    disableAppProvider?: boolean;
 }
 
-const TestWrapper = ({ mocks, children, initialState = { accountListId: 'abc' } }: Props): ReactElement => {
+const TestWrapper = ({
+    mocks,
+    children,
+    initialState = { accountListId: 'abc' },
+    disableAppProvider = false,
+}: Props): ReactElement => {
     return (
         <TestRouter>
             <MuiPickersUtilsProvider utils={DateFnsUtils}>
                 <SnackbarProvider>
                     <MockedProvider mocks={mocks} addTypename={false}>
-                        <AppProvider initialState={initialState}>{children}</AppProvider>
+                        {disableAppProvider ? (
+                            <>{children}</>
+                        ) : (
+                            <AppProvider initialState={initialState}>{children}</AppProvider>
+                        )}
                     </MockedProvider>
                 </SnackbarProvider>
             </MuiPickersUtilsProvider>

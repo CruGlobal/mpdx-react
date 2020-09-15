@@ -34,14 +34,12 @@ describe(TaskDrawer.name, () => {
             updateTaskMutationMock(),
             getTaskForTaskDrawerMock(),
         ];
-        const { getByText, findByTestId } = render(
+        const { findByTestId } = render(
             <TestWrapper mocks={mocks}>
                 <TaskDrawer onClose={onClose} taskId="task-1" />
             </TestWrapper>,
         );
         expect(await findByTestId('TaskDrawerTitle')).toHaveTextContent('NEWSLETTER_EMAIL');
-        userEvent.click(getByText('Save'));
-        await waitFor(() => expect(onClose).toHaveBeenCalled());
     });
 
     it('showCompleteForm', async () => {
@@ -53,7 +51,7 @@ describe(TaskDrawer.name, () => {
             completeTaskMutationMock(),
             getCompleteTaskForTaskDrawerMock(),
         ];
-        const { getByText, findByTestId } = render(
+        const { findByTestId } = render(
             <TestWrapper mocks={mocks}>
                 <TaskDrawer onClose={onClose} taskId="task-1" showCompleteForm />
             </TestWrapper>,

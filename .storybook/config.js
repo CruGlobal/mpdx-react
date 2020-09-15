@@ -10,6 +10,7 @@ import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
 import { SnackbarProvider } from 'notistack';
 import { AppProvider } from '../src/components/App';
+import { MockedProvider } from '@apollo/client/testing';
 import TestRouter from '../tests/TestRouter';
 import theme from '../src/theme';
 import i18n from '../src/lib/i18n';
@@ -29,18 +30,20 @@ addDecorator(
 );
 addDecorator(withKnobs);
 addDecorator((StoryFn) => (
-    <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <MuiPickersUtilsProvider utils={DateFnsUtils}>
-            <SnackbarProvider maxSnack={3}>
-                <TestRouter>
-                    <AppProvider>
-                        <StoryFn />
-                    </AppProvider>
-                </TestRouter>
-            </SnackbarProvider>
-        </MuiPickersUtilsProvider>
-    </ThemeProvider>
+    <MockedProvider mocks={[]} addTypename={false}>
+        <ThemeProvider theme={theme}>
+            <CssBaseline />
+            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                <SnackbarProvider maxSnack={3}>
+                    <TestRouter>
+                        <AppProvider>
+                            <StoryFn />
+                        </AppProvider>
+                    </TestRouter>
+                </SnackbarProvider>
+            </MuiPickersUtilsProvider>
+        </ThemeProvider>
+    </MockedProvider>
 ));
 
 addParameters({ chromatic: { diffThreshold: true } });
