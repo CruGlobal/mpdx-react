@@ -11,7 +11,6 @@ import {
     ListItem,
     ListItemText,
     ListItemSecondaryAction,
-    Checkbox,
     CardContent,
 } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';

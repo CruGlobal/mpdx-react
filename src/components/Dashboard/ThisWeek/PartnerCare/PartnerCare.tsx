@@ -23,6 +23,7 @@ import { Skeleton } from '@material-ui/lab';
 import { motion } from 'framer-motion';
 import { uniqBy } from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
+import Link from 'next/link';
 import { dayMonthFormat } from '../../../../lib/intlFormat';
 import AnimatedCard from '../../../AnimatedCard';
 import {
@@ -73,6 +74,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 interface Props {
+    accountListId: string;
     loading?: boolean;
     prayerRequestTasks?: GetThisWeekQuery_prayerRequestTasks;
     reportsPeopleWithBirthdays?: GetThisWeekQuery_reportsPeopleWithBirthdays;
@@ -80,6 +82,7 @@ interface Props {
 }
 
 const PartnerCare = ({
+    accountListId,
     loading,
     prayerRequestTasks,
     reportsPeopleWithBirthdays,
@@ -212,11 +215,17 @@ const PartnerCare = ({
                                         ))}
                                     </List>
                                     <CardActions>
-                                        <Button size="small" color="primary">
-                                            {t('View All ({{ totalCount, number }})', {
-                                                totalCount: prayerRequestTasks.totalCount,
-                                            })}
-                                        </Button>
+                                        <Link
+                                            href="/accountLists/[accountListId]/tasks/[tab]"
+                                            as={`/accountLists/${accountListId}/tasks/list?activityType=PRAYER_REQUEST&completed=false`}
+                                            passHref
+                                        >
+                                            <Button size="small" color="primary">
+                                                {t('View All ({{ totalCount, number }})', {
+                                                    totalCount: prayerRequestTasks.totalCount,
+                                                })}
+                                            </Button>
+                                        </Link>
                                     </CardActions>
                                 </>
                             )}

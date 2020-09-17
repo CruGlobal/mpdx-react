@@ -104,6 +104,7 @@ describe(Dashboard.name, () => {
     beforeEach(() => {
         matchMediaMock({ width: '1024px' });
     });
+
     it('default', async () => {
         const { getByTestId, queryByTestId } = render(
             <MockedProvider mocks={GetThisWeekDefaultMocks()} addTypename={false}>
@@ -124,6 +125,7 @@ describe(Dashboard.name, () => {
         expect(getByTestId('ReferralsTabRecentList')).toBeInTheDocument();
         expect(getByTestId('AppealsBoxName')).toBeInTheDocument();
     });
+
     it('handles null fields', async () => {
         const { getByTestId, queryByTestId } = render(
             <MockedProvider mocks={GetThisWeekDefaultMocks()} addTypename={false}>

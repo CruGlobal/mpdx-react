@@ -1,16 +1,10 @@
 import React, { ReactElement } from 'react';
-import { Box } from '@material-ui/core';
+import withMargin from '../../../decorators/withMargin';
 import TaskStatus from '.';
 
 export default {
     title: 'Task/Status',
-    decorators: [
-        (StoryFn): ReactElement => (
-            <Box m={2}>
-                <StoryFn />
-            </Box>
-        ),
-    ],
+    decorators: [withMargin],
 };
 
 export const Default = (): ReactElement => <TaskStatus />;

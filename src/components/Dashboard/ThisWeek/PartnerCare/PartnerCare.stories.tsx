@@ -73,6 +73,7 @@ export const Default = (): ReactElement => {
         <Box m={2}>
             <MockedProvider mocks={[]} addTypename={false}>
                 <PartnerCare
+                    accountListId="abc"
                     loading={false}
                     prayerRequestTasks={prayerRequestTasks}
                     reportsPeopleWithBirthdays={reportsPeopleWithBirthdays}
@@ -106,6 +107,7 @@ export const Empty = (): ReactElement => {
         <Box m={2}>
             <MockedProvider mocks={[]} addTypename={false}>
                 <PartnerCare
+                    accountListId="abc"
                     loading={false}
                     prayerRequestTasks={prayerRequestTasks}
                     reportsPeopleWithBirthdays={reportsPeopleWithBirthdays}
@@ -120,7 +122,7 @@ export const Loading = (): ReactElement => {
     return (
         <Box m={2}>
             <MockedProvider mocks={[]} addTypename={false}>
-                <PartnerCare loading={true} />
+                <PartnerCare accountListId="abc" loading={true} />
             </MockedProvider>
         </Box>
     );

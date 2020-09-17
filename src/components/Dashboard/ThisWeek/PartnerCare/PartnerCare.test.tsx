@@ -20,7 +20,7 @@ describe(PartnerCare.name, () => {
     });
 
     it('default', () => {
-        const { getByTestId, queryByTestId } = render(<PartnerCare />);
+        const { getByTestId, queryByTestId } = render(<PartnerCare accountListId="abc" />);
         expect(getByTestId('PartnerCarePrayerCardContentEmpty')).toBeInTheDocument();
         expect(queryByTestId('PartnerCareCelebrationCardContentEmpty')).not.toBeInTheDocument();
         expect(getByTestId('PartnerCareTabPrayer').textContent).toEqual('Prayer (0)');
@@ -32,7 +32,7 @@ describe(PartnerCare.name, () => {
     });
 
     it('loading', () => {
-        const { getByTestId, queryByTestId } = render(<PartnerCare loading />);
+        const { getByTestId, queryByTestId } = render(<PartnerCare accountListId="abc" loading />);
         expect(getByTestId('PartnerCarePrayerListLoading')).toBeInTheDocument();
         expect(queryByTestId('PartnerCareCelebrationListLoading')).not.toBeInTheDocument();
         fireEvent.click(getByTestId('PartnerCareTabCelebrations'));
@@ -55,6 +55,7 @@ describe(PartnerCare.name, () => {
         };
         const { getByTestId, queryByTestId } = render(
             <PartnerCare
+                accountListId="abc"
                 prayerRequestTasks={prayerRequestTasks}
                 reportsPeopleWithBirthdays={reportsPeopleWithBirthdays}
                 reportsPeopleWithAnniversaries={reportsPeopleWithAnniversaries}
@@ -131,6 +132,7 @@ describe(PartnerCare.name, () => {
         };
         const { getByTestId, queryByTestId } = render(
             <PartnerCare
+                accountListId="abc"
                 prayerRequestTasks={prayerRequestTasks}
                 reportsPeopleWithBirthdays={reportsPeopleWithBirthdays}
                 reportsPeopleWithAnniversaries={reportsPeopleWithAnniversaries}

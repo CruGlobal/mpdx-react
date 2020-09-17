@@ -1,21 +1,14 @@
 import React, { ReactElement } from 'react';
-import { Box } from '@material-ui/core';
 import { MockedProvider } from '@apollo/client/testing';
 import withDispatch from '../../../decorators/withDispatch';
+import withMargin from '../../../decorators/withMargin';
 import { GetWeeklyActivityQueryLoadingMocks } from './WeeklyActivity/WeeklyActivity.mock';
 import { GetThisWeekEmptyMocks, GetThisWeekDefaultMocks } from './ThisWeek.mock';
 import ThisWeek from '.';
 
 export default {
     title: 'Dashboard/ThisWeek',
-    decorators: [
-        withDispatch({ type: 'updateAccountListId', accountListId: 'abc' }),
-        (StoryFn): ReactElement => (
-            <Box m={2}>
-                <StoryFn />
-            </Box>
-        ),
-    ],
+    decorators: [withDispatch({ type: 'updateAccountListId', accountListId: 'abc' }), withMargin],
 };
 
 export const Default = (): ReactElement => {
