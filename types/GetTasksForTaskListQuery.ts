@@ -76,4 +76,10 @@ export interface GetTasksForTaskListQueryVariables {
   first?: number | null;
   before?: string | null;
   after?: string | null;
+  activityType?: ActivityTypeEnum[] | null;
+  contactIds?: string[] | null;
+  userIds?: string[] | null;
+  tags?: string[] | null;
+  completed?: boolean | null;
+  wildcardSearch?: string | null;
 }

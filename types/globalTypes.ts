@@ -83,6 +83,11 @@ export enum StatusEnum {
   UNRESPONSIVE = "UNRESPONSIVE",
 }
 
+export interface TaskCommentCreateInput {
+  id?: string | null;
+  body: string;
+}
+
 export interface TaskCreateInput {
   id?: string | null;
   subject: string;

@@ -29,6 +29,7 @@ export interface GetCommentsForTaskDrawerCommentListQuery_task_comments {
 }
 
 export interface GetCommentsForTaskDrawerCommentListQuery_task {
+  id: string;
   comments: GetCommentsForTaskDrawerCommentListQuery_task_comments;
 }
 
