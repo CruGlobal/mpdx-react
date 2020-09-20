@@ -1,9 +1,16 @@
 export interface AppState {
     accountListId: string;
     breadcrumb: string;
+    user?: User;
 }
 
-export type Action = UpdateAccountListIdAction | UpdateBreadcrumbAction;
+interface User {
+    id: string;
+    firstName: string;
+    lastName: string;
+}
+
+export type Action = UpdateAccountListIdAction | UpdateBreadcrumbAction | UpdateUserAction;
 
 type UpdateAccountListIdAction = {
     type: 'updateAccountListId';
@@ -15,12 +22,19 @@ type UpdateBreadcrumbAction = {
     breadcrumb: string;
 };
 
+type UpdateUserAction = {
+    type: 'updateUser';
+    user: User;
+};
+
 const rootReducer = (state: AppState, action: Action): AppState => {
     switch (action.type) {
         case 'updateAccountListId':
             return { ...state, accountListId: action.accountListId };
         case 'updateBreadcrumb':
             return { ...state, breadcrumb: action.breadcrumb };
+        case 'updateUser':
+            return { ...state, user: action.user };
     }
 };
 

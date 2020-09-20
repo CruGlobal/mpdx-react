@@ -3,39 +3,52 @@ import { render, waitFor, fireEvent } from '@testing-library/react';
 import { MockedProvider } from '@apollo/client/testing';
 import TestRouter from '../../../../../tests/TestRouter';
 import matchMediaMock from '../../../../../tests/matchMediaMock';
-import { AppProvider } from '../../../App';
+import { GetTopBarQuery } from '../../../../../types/GetTopBarQuery';
+import { AppState } from '../../../App/rootReducer';
+import { AppProviderContext } from '../../../App/Provider';
 import { GET_TOP_BAR_QUERY } from './TopBar';
 import TopBar from '.';
+
+let state: AppState;
+const dispatch = jest.fn();
+
+jest.mock('../../../App', () => ({
+    useApp: (): Partial<AppProviderContext> => ({
+        state,
+        dispatch,
+    }),
+}));
 
 describe(TopBar.name, () => {
     let mocks;
     beforeEach(() => {
+        const data: GetTopBarQuery = {
+            accountLists: {
+                nodes: [
+                    { id: '1', name: 'Staff Account' },
+                    { id: '2', name: 'Ministry Account' },
+                ],
+            },
+            user: { id: 'user-1', firstName: 'John', lastName: 'Smith' },
+        };
+
         mocks = [
             {
                 request: {
                     query: GET_TOP_BAR_QUERY,
                 },
                 result: {
-                    data: {
-                        accountLists: {
-                            nodes: [
-                                { id: '1', name: 'Staff Account' },
-                                { id: '2', name: 'Ministry Account' },
-                            ],
-                        },
-                        user: { firstName: 'John' },
-                    },
+                    data,
                 },
             },
         ];
+        state = { accountListId: null, breadcrumb: null };
     });
 
     it('has correct defaults', () => {
         const { queryByTestId } = render(
             <MockedProvider mocks={mocks} addTypename={false}>
-                <AppProvider>
-                    <TopBar handleDrawerToggle={jest.fn()} />
-                </AppProvider>
+                <TopBar handleDrawerToggle={jest.fn()} />
             </MockedProvider>,
         );
         expect(queryByTestId('TopBarBreadcrumb')).not.toBeInTheDocument();
@@ -44,15 +57,14 @@ describe(TopBar.name, () => {
     describe('client state set', () => {
         beforeEach(() => {
             matchMediaMock({ width: '1024px' });
+            state = { accountListId: '1', breadcrumb: 'Dashboard' };
         });
 
         it('adjusts menu configuration', async () => {
             const { getByTestId, queryByTestId } = render(
                 <TestRouter>
                     <MockedProvider mocks={mocks} addTypename={false}>
-                        <AppProvider initialState={{ accountListId: '1', breadcrumb: 'Dashboard' }}>
-                            <TopBar handleDrawerToggle={jest.fn()} />
-                        </AppProvider>
+                        <TopBar handleDrawerToggle={jest.fn()} />
                     </MockedProvider>
                 </TestRouter>,
             );
@@ -65,34 +77,38 @@ describe(TopBar.name, () => {
             expect(TopBarMenuItem1).toHaveClass('Mui-selected');
             fireEvent.click(TopBarMenuItem1);
             await waitFor(() => expect(queryByTestId('TopBarMenu')).not.toBeInTheDocument());
+            expect(dispatch).toHaveBeenCalledWith({
+                type: 'updateUser',
+                user: { id: 'user-1', firstName: 'John', lastName: 'Smith' },
+            });
         });
     });
 
     describe('single accountList', () => {
         beforeEach(() => {
+            const data: GetTopBarQuery = {
+                accountLists: {
+                    nodes: [{ id: '1', name: 'Staff Account' }],
+                },
+                user: { id: 'user-1', firstName: 'John', lastName: 'Smith' },
+            };
             mocks = [
                 {
                     request: {
                         query: GET_TOP_BAR_QUERY,
                     },
                     result: {
-                        data: {
-                            accountLists: {
-                                nodes: [{ id: '1', name: 'Staff Account' }],
-                            },
-                            user: { firstName: 'John' },
-                        },
+                        data,
                     },
                 },
             ];
+            state = { accountListId: '1', breadcrumb: 'Dashboard' };
         });
 
         it('shows single accountList name', async () => {
             const { getByTestId } = render(
                 <MockedProvider mocks={mocks} addTypename={false}>
-                    <AppProvider initialState={{ accountListId: '1', breadcrumb: 'Dashboard' }}>
-                        <TopBar handleDrawerToggle={jest.fn()} />
-                    </AppProvider>
+                    <TopBar handleDrawerToggle={jest.fn()} />
                 </MockedProvider>,
             );
             await waitFor(() => expect(getByTestId('TopBarSingleAccountList').textContent).toEqual('Staff Account'));

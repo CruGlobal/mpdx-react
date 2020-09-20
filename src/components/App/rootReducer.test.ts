@@ -19,4 +19,12 @@ describe(rootReducer.name, () => {
             expect(rootReducer(state, action).breadcrumb).toEqual('abc');
         });
     });
+
+    describe('updateUser', () => {
+        it('updates user state', () => {
+            const user = { id: 'user-1', firstName: 'John', lastName: 'Smith' };
+            const action: Action = { type: 'updateUser', user };
+            expect(rootReducer(state, action).user).toEqual(user);
+        });
+    });
 });

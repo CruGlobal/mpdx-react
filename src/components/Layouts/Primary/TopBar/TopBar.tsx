@@ -1,4 +1,4 @@
-import React, { ReactElement, useState, useRef } from 'react';
+import React, { ReactElement, useState, useRef, useEffect } from 'react';
 import {
     Avatar,
     IconButton,
@@ -114,7 +114,9 @@ export const GET_TOP_BAR_QUERY = gql`
             }
         }
         user {
+            id
             firstName
+            lastName
         }
     }
 `;
@@ -125,13 +127,13 @@ interface Props {
 
 const TopBar = ({ handleDrawerToggle }: Props): ReactElement => {
     const classes = useStyles();
+    const { dispatch, state } = useApp();
     const { t } = useTranslation();
     const trigger = useScrollTrigger({
         disableHysteresis: true,
         threshold: 0,
     });
     const { data } = useQuery<GetTopBarQuery>(GET_TOP_BAR_QUERY);
-    const { state } = useApp();
     const [open, setOpen] = useState(false);
     const anchorEl = useRef(null);
 
@@ -144,6 +146,10 @@ const TopBar = ({ handleDrawerToggle }: Props): ReactElement => {
     };
 
     const currentAccountList = data?.accountLists?.nodes?.find((node) => node.id == state.accountListId);
+
+    useEffect(() => {
+        data?.user && dispatch({ type: 'updateUser', user: data.user });
+    }, [data?.user]);
 
     return (
         <>
@@ -251,7 +257,7 @@ const TopBar = ({ handleDrawerToggle }: Props): ReactElement => {
                             </IconButton>
                         </Grid>
                         <Grid item className={classes.avatarGrid}>
-                            <Avatar className={classes.avatar}>{data?.user?.firstName[0]}</Avatar>
+                            <Avatar className={classes.avatar}>{state.user?.firstName[0]}</Avatar>
                         </Grid>
                     </Grid>
                 </Toolbar>
