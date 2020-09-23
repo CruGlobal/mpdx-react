@@ -10,7 +10,7 @@
         "lint:ci": "tsc --noEmit && eslint '*/**/*.{js,ts,tsx}'",
         "storybook": "start-storybook -p 6006 -c .storybook -s ./public",
         "build-storybook": "build-storybook -c .storybook -s ./public",
-        "test": "cross-env NODE_ICU_DATA=node_modules/full-icu jest",
+        "test": "cross-env NODE_ICU_DATA=node_modules/full-icu jest --silent",
         "test:watch": "cross-env NODE_ICU_DATA=node_modules/full-icu jest --watch",
         "test:coverage": "cross-env NODE_ICU_DATA=node_modules/full-icu jest --coverage",
         "chromatic": "chromatic",
