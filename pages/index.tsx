@@ -20,7 +20,7 @@ partners in a quick and easy way."
             <Button
                 size="large"
                 variant="contained"
-                onClick={(): void => signin('thekey', { callbackUrl: `${process.env.SITE_URL}/accountLists` })}
+                onClick={(): void => signin('thekey', { callbackUrl: `${process.env.SITE_URL}` })}
             >
                 Sign In
             </Button>
@@ -47,6 +47,7 @@ export const getServerSideProps: GetServerSideProps = async (context): Promise<{
     if (context.res && session) {
         context.res.writeHead(302, { Location: '/accountLists' });
         context.res.end();
+        return null;
     }
 
     return { props: {} };

@@ -21,13 +21,13 @@ const options = {
     ],
     callbacks: {
         session: (session, token): Promise<{}> => {
-            return Promise.resolve({ ...session, user: { ...session.user, token: token.user.token } });
+            return Promise.resolve({ ...session, user: { ...session.user, token: token.token } });
         },
-        jwt: async (payload, profile: Profile): Promise<{}> => {
-            if (profile) {
-                return Promise.resolve({ ...payload, user: profile });
+        jwt: async (token, user, _account, profile): Promise<{}> => {
+            if (user) {
+                return Promise.resolve({ ...token, token: profile.token });
             } else {
-                return Promise.resolve(payload);
+                return Promise.resolve(token);
             }
         },
     },
