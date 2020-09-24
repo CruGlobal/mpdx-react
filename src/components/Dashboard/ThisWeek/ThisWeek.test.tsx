@@ -11,7 +11,7 @@ jest.mock('../../App', () => ({
     }),
 }));
 
-describe(ThisWeek.name, () => {
+describe('ThisWeek', () => {
     it('default', async () => {
         const { getByTestId, queryByTestId } = render(
             <MockedProvider mocks={GetThisWeekDefaultMocks()} addTypename={false}>

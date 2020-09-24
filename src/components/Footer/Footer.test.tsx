@@ -3,7 +3,7 @@ import MockDate from 'mockdate';
 import { render } from '../../../tests/testingLibraryReactMock';
 import Footer from '.';
 
-describe(Footer.name, () => {
+describe('Footer', () => {
     it('contains privacy link', () => {
         const { getByTestId } = render(<Footer />);
         expect(getByTestId('privacy')).toHaveAttribute('href', 'https://get.mpdx.org/privacy-policy/');

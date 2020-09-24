@@ -20,10 +20,10 @@ const options = {
         },
     ],
     callbacks: {
-        session: (session, token): Promise<{}> => {
+        session: (session, token): Promise<unknown> => {
             return Promise.resolve({ ...session, user: { ...session.user, token: token.token } });
         },
-        jwt: async (token, user, _account, profile): Promise<{}> => {
+        jwt: async (token, user, _account, profile): Promise<unknown> => {
             if (user) {
                 return Promise.resolve({ ...token, token: profile.token });
             } else {

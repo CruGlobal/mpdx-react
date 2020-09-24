@@ -14,7 +14,7 @@ jest.mock('../../../App', () => ({
     }),
 }));
 
-describe(PartnerCare.name, () => {
+describe('PartnerCare', () => {
     beforeEach(() => {
         openTaskDrawer.mockClear();
     });

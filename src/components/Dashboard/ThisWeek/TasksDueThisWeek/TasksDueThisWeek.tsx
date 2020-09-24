@@ -143,9 +143,11 @@ const TasksDueThisWeek = ({ loading, dueTasks }: Props): ReactElement => {
                                                             variant="body2"
                                                             color="textPrimary"
                                                         >
-                                                            {t(
-                                                                task.activityType,
-                                                            ) /* manually added to translation file */}
+                                                            {
+                                                                t(
+                                                                    task.activityType,
+                                                                ) /* manually added to translation file */
+                                                            }
                                                         </Typography>{' '}
                                                         <Typography
                                                             component="span"

@@ -2,7 +2,7 @@ import React from 'react';
 import { render, fireEvent } from '../../../../../tests/testingLibraryReactMock';
 import Referrals from '.';
 
-describe(Referrals.name, () => {
+describe('Referrals', () => {
     it('default', () => {
         const { getByTestId, queryByTestId } = render(<Referrals />);
         expect(getByTestId('ReferralsDivRecent')).toBeInTheDocument();

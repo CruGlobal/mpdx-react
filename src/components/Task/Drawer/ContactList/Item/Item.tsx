@@ -73,8 +73,10 @@ const TaskDrawerContactListItem = ({ contact }: Props): ReactElement => {
                                 <Grid item data-testid="TaskDrawerContactListItemPledge">
                                     <InfoBlock title={t('Commitment')}>
                                         {currencyFormat(contact.pledgeAmount, contact.pledgeCurrency)}{' '}
-                                        {contact.pledgeFrequency &&
-                                            t(contact.pledgeFrequency) /* manually added to translation file */}
+                                        {
+                                            contact.pledgeFrequency &&
+                                                t(contact.pledgeFrequency) /* manually added to translation file */
+                                        }
                                     </InfoBlock>
                                 </Grid>
                             )}

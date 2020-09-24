@@ -16,7 +16,7 @@ describe('intlFormat', () => {
         languageMock.mockClear();
     });
 
-    describe(numberFormat.name, () => {
+    describe('numberFormat', () => {
         it('formats number', () => {
             expect(numberFormat(1000.1)).toEqual('1,000.1');
         });
@@ -48,7 +48,7 @@ describe('intlFormat', () => {
         });
     });
 
-    describe(percentageFormat.name, () => {
+    describe('percentageFormat', () => {
         it('formats number as percentage', () => {
             expect(percentageFormat(0.95)).toEqual('95%');
         });
@@ -80,7 +80,7 @@ describe('intlFormat', () => {
         });
     });
 
-    describe(currencyFormat.name, () => {
+    describe('currencyFormat', () => {
         it('formats number as currency', () => {
             expect(currencyFormat(1234.56, 'USD', 2)).toEqual('$1,234.56');
         });
@@ -124,7 +124,7 @@ describe('intlFormat', () => {
         });
     });
 
-    describe(dayMonthFormat.name, () => {
+    describe('dayMonthFormat', () => {
         it('formats day and month as date', () => {
             expect(dayMonthFormat(5, 12)).toEqual('Jan 5');
         });
@@ -144,7 +144,7 @@ describe('intlFormat', () => {
         });
     });
 
-    describe(dateFormat.name, () => {
+    describe('dateFormat', () => {
         it('formats day and month as date', () => {
             expect(dateFormat(new Date(2019, 12, 5))).toEqual('Jan 5, 2020');
         });

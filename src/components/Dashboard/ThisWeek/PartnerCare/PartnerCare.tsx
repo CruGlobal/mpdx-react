@@ -97,7 +97,7 @@ const PartnerCare = ({
         openTaskDrawer({ taskId });
     };
 
-    const handleChange = (_event: React.ChangeEvent<{}>, newValue: number): void => {
+    const handleChange = (_event: React.ChangeEvent, newValue: number): void => {
         setValue(newValue);
     };
 

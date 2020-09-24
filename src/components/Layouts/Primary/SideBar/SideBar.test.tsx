@@ -5,7 +5,7 @@ import { AppProvider } from '../../../App';
 import TestRouter from '../../../../../tests/TestRouter';
 import Sidebar from '.';
 
-describe(Sidebar.name, () => {
+describe('Sidebar', () => {
     beforeEach(() => {
         matchMediaMock({ width: '1024px' });
     });

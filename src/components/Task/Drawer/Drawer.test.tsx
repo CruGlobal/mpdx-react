@@ -9,7 +9,7 @@ import { getTaskForTaskDrawerMock } from './Drawer.mock';
 import { completeTaskMutationMock, getCompleteTaskForTaskDrawerMock } from './CompleteForm/CompleteForm.mock';
 import TaskDrawer from '.';
 
-describe(TaskDrawer.name, () => {
+describe('TaskDrawer', () => {
     it('default', async () => {
         const onClose = jest.fn();
         const mocks = [getDataForTaskDrawerMock(), createTaskMutationMock()];

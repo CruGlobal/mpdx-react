@@ -2,7 +2,7 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import Balance from '.';
 
-describe(Balance.name, () => {
+describe('Balance', () => {
     it('default', () => {
         const { getByTestId } = render(<Balance balance={1000.99} />);
         expect(getByTestId('BalanceTypography').textContent).toEqual('$1,001');

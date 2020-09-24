@@ -17,7 +17,7 @@ jest.mock('../../../App', () => ({
     }),
 }));
 
-describe(AddFab.name, () => {
+describe('AddFab', () => {
     beforeEach(() => {
         openTaskDrawer.mockClear();
     });

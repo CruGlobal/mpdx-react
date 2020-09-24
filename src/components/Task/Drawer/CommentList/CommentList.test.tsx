@@ -14,7 +14,7 @@ jest.mock('uuid', () => ({
     v4: (): string => 'comment-0',
 }));
 
-describe(TaskDrawerCommentList.name, () => {
+describe('TaskDrawerCommentList', () => {
     it('default', async () => {
         const { queryByTestId, getAllByTestId, getByRole } = render(
             <TestWrapper

@@ -8,7 +8,7 @@ import userEvent from '@testing-library/user-event';
 import { getDataForTaskDrawerMock, createTaskMutationMock, updateTaskMutationMock } from './Form.mock';
 import TaskDrawerForm from '.';
 
-describe(TaskDrawerForm.name, () => {
+describe('TaskDrawerForm', () => {
     it('default', async () => {
         const onClose = jest.fn();
         const { getByText, getByRole, findByText } = render(

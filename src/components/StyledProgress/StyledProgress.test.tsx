@@ -2,7 +2,7 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import StyledProgress from '.';
 
-describe(StyledProgress.name, () => {
+describe('StyledProgress', () => {
     it('has correct defaults', () => {
         const { getByTestId, queryByTestId } = render(<StyledProgress />);
         expect(queryByTestId('styledProgressLoading')).toBeNull();

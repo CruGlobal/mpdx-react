@@ -7,7 +7,7 @@ import TestRouter from '../../../../tests/TestRouter';
 import { GET_TOP_BAR_QUERY } from './TopBar/TopBar';
 import Primary from '.';
 
-describe(Primary.name, () => {
+describe('Primary', () => {
     let mocks;
     beforeEach(() => {
         mocks = [

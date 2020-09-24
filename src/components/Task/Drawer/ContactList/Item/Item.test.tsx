@@ -4,7 +4,7 @@ import { GetContactsForTaskDrawerContactListQuery_contacts_nodes as Contact } fr
 import { StatusEnum, SendNewsletterEnum, PledgeFrequencyEnum } from '../../../../../../types/globalTypes';
 import Item from '.';
 
-describe(Item.name, () => {
+describe('Item', () => {
     const contact: Contact = {
         id: 'def',
         name: 'Quinn, Anthony',

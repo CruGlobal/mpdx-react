@@ -2,7 +2,7 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import Welcome from '.';
 
-describe(Welcome.name, () => {
+describe('Welcome', () => {
     it('has correct defaults', () => {
         const { getByTestId } = render(
             <Welcome title="test title" subtitle="test subtitle">
