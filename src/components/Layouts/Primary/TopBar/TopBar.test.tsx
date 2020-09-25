@@ -19,7 +19,7 @@ jest.mock('../../../App', () => ({
     }),
 }));
 
-describe(TopBar.name, () => {
+describe('TopBar', () => {
     let mocks;
     beforeEach(() => {
         const data: GetTopBarQuery = {

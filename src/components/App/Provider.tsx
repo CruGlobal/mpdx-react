@@ -29,16 +29,19 @@ const AppProvider = ({ initialState, children }: Props): ReactElement => {
         ...initialState,
     });
 
-    const openTaskDrawer = (props: TaskDrawerProps): void => {
+    const openTaskDrawer = (taskDrawerProps: TaskDrawerProps): void => {
         const id = uuidv4();
-        if (!props.taskId || !find({ taskId: props.taskId, showCompleteForm: props.showCompleteForm }, taskDrawers)) {
+        if (
+            !taskDrawerProps.taskId ||
+            !find({ taskId: taskDrawerProps.taskId, showCompleteForm: taskDrawerProps.showCompleteForm }, taskDrawers)
+        ) {
             setTaskDrawers([
                 ...taskDrawers,
                 {
                     id,
-                    ...props,
+                    ...taskDrawerProps,
                     onClose: (): void => {
-                        props.onClose && props.onClose();
+                        taskDrawerProps.onClose && taskDrawerProps.onClose();
                         setTimeout(
                             () => setTaskDrawers((taskDrawers) => remove({ id }, taskDrawers)),
                             theme.transitions.duration.leavingScreen,
@@ -58,7 +61,7 @@ const AppProvider = ({ initialState, children }: Props): ReactElement => {
     return (
         <AppContext.Provider value={value}>
             {children}
-            {taskDrawers.map((props) => (
+            {taskDrawers.map((props: TaskDrawerPropsWithId) => (
                 <TaskDrawer key={props.id} {...omit('id', props)} />
             ))}
         </AppContext.Provider>

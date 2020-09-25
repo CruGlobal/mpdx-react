@@ -8,7 +8,7 @@ import {
 } from './ContactList.mock';
 import TaskDrawerContactList from '.';
 
-describe(TaskDrawerContactList.name, () => {
+describe('TaskDrawerContactList', () => {
     it('default', async () => {
         const { queryByTestId, getAllByTestId, findByTestId } = render(
             <MockedProvider mocks={[getContactsForTaskDrawerContactListMock()]} addTypename={false}>

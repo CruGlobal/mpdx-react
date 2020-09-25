@@ -2,7 +2,7 @@ import React, { ReactElement } from 'react';
 import { signin, setOptions, getSession } from 'next-auth/client';
 import { Button } from '@material-ui/core';
 import SubjectIcon from '@material-ui/icons/Subject';
-import { GetServerSideProps } from 'next';
+import { GetServerSideProps, GetServerSidePropsResult } from 'next';
 import Head from 'next/head';
 import Welcome from '../src/components/Welcome';
 import BaseLayout from '../src/components/Layouts/Basic';
@@ -20,7 +20,7 @@ partners in a quick and easy way."
             <Button
                 size="large"
                 variant="contained"
-                onClick={(): void => signin('thekey', { callbackUrl: `${process.env.SITE_URL}/accountLists` })}
+                onClick={(): void => signin('thekey', { callbackUrl: `${process.env.SITE_URL}` })}
             >
                 Sign In
             </Button>
@@ -40,13 +40,16 @@ partners in a quick and easy way."
 
 IndexPage.layout = BaseLayout;
 
-export const getServerSideProps: GetServerSideProps = async (context): Promise<{ props: {} }> => {
+export const getServerSideProps: GetServerSideProps = async (
+    context,
+): Promise<GetServerSidePropsResult<Record<string, unknown>>> => {
     setOptions({ site: process.env.SITE_URL });
     const session = await getSession(context);
 
     if (context.res && session) {
         context.res.writeHead(302, { Location: '/accountLists' });
         context.res.end();
+        return null;
     }
 
     return { props: {} };

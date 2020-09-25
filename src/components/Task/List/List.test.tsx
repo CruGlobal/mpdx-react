@@ -19,7 +19,7 @@ jest.mock('../../App', () => ({
 
 jest.mock('lodash/fp/debounce', () => jest.fn().mockImplementation((_time, fn) => fn));
 
-describe(TaskList.name, () => {
+describe('TaskList', () => {
     beforeEach(() => {
         MockDate.set(new Date('2020-09-01'));
     });

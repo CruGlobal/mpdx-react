@@ -13,7 +13,7 @@ jest.mock('../../App', () => ({
     }),
 }));
 
-describe(TaskStatus.name, () => {
+describe('TaskStatus', () => {
     beforeEach(() => {
         openTaskDrawer.mockClear();
         MockDate.set(new Date(2020, 1, 1));

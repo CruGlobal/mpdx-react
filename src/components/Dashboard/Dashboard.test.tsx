@@ -100,7 +100,7 @@ const data: GetDashboardQuery = {
     },
 };
 
-describe(Dashboard.name, () => {
+describe('Dashboard', () => {
     beforeEach(() => {
         matchMediaMock({ width: '1024px' });
     });

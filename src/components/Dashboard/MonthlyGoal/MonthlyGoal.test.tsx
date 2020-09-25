@@ -3,7 +3,7 @@ import { render } from '@testing-library/react';
 import matchMediaMock from '../../../../tests/matchMediaMock';
 import MonthlyGoal from '.';
 
-describe(MonthlyGoal.name, () => {
+describe('MonthlyGoal', () => {
     beforeEach(() => {
         matchMediaMock({ width: '1024px' });
     });

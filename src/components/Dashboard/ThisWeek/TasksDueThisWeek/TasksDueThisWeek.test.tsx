@@ -14,7 +14,7 @@ jest.mock('../../../App', () => ({
     }),
 }));
 
-describe(TasksDueThisWeek.name, () => {
+describe('TasksDueThisWeek', () => {
     beforeEach(() => {
         openTaskDrawer.mockClear();
     });

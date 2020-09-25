@@ -5,7 +5,7 @@ import MockDate from 'mockdate';
 import { GetWeeklyActivityQueryDefaultMocks, GetWeeklyActivityQueryLoadingMocks } from './WeeklyActivity.mock';
 import WeeklyActivity from '.';
 
-describe(WeeklyActivity.name, () => {
+describe('WeeklyActivity', () => {
     it('loading', () => {
         const { getByTestId } = render(
             <MockedProvider mocks={GetWeeklyActivityQueryLoadingMocks()} addTypename={false}>

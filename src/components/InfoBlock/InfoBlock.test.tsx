@@ -2,7 +2,7 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import InfoBlock from '.';
 
-describe(InfoBlock.name, () => {
+describe('InfoBlock', () => {
     it('has correct defaults', () => {
         const { getByTestId, getByText } = render(
             <InfoBlock title="Hello World">

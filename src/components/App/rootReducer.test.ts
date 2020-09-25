@@ -1,6 +1,6 @@
 import rootReducer, { Action, AppState } from './rootReducer';
 
-describe(rootReducer.name, () => {
+describe('rootReducer', () => {
     const state: AppState = {
         accountListId: null,
         breadcrumb: null,

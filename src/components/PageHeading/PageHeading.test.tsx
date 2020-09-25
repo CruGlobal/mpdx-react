@@ -2,7 +2,7 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import PageHeading from '.';
 
-describe(PageHeading.name, () => {
+describe('PageHeading', () => {
     it('has correct defaults', () => {
         const { getByTestId } = render(<PageHeading heading="test heading" subheading="test subheading" />);
         expect(getByTestId('PageHeading')).toHaveStyle('margin-bottom: -20px');

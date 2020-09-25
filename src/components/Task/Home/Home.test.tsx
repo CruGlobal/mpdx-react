@@ -5,7 +5,7 @@ import { render } from '../../../../tests/testingLibraryReactMock';
 import { getTasksForTaskListMock, getFilteredTasksForTaskListMock } from '../List/List.mock';
 import TaskHome from '.';
 
-describe(TaskHome.name, () => {
+describe('TaskHome', () => {
     it('has correct defaults', async () => {
         const mocks = [getTasksForTaskListMock(), getDataForTaskDrawerMock()];
         const { findByText } = render(

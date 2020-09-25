@@ -3,7 +3,7 @@ import { render } from '@testing-library/react';
 import TestRouter from '../../../../../tests/TestRouter';
 import TopBar from '.';
 
-describe(TopBar.name, () => {
+describe('TopBar', () => {
     it('has correct defaults', () => {
         const { getByTestId } = render(
             <TestRouter>

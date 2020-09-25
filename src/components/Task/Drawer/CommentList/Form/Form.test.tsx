@@ -12,7 +12,7 @@ jest.mock('uuid', () => ({
     v4: (): string => 'comment-0',
 }));
 
-describe(TaskDrawerCommentListForm.name, () => {
+describe('TaskDrawerCommentListForm', () => {
     it('has correct defaults', async () => {
         const cache = new InMemoryCache({ addTypename: false });
         const query = {

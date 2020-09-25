@@ -3,7 +3,7 @@ import { render, waitFor } from '@testing-library/react';
 import TestRouter from '../../../tests/TestRouter';
 import Loading from '.';
 
-describe(Loading.name, () => {
+describe('Loading', () => {
     let router, events: { [key: string]: () => void };
     beforeEach(() => {
         events = {};

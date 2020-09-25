@@ -4,7 +4,7 @@ import MockDate from 'mockdate';
 import { GetCommentsForTaskDrawerCommentListQuery_task_comments_nodes as Comment } from '../../../../../../types/GetCommentsForTaskDrawerCommentListQuery';
 import Item from '.';
 
-describe(Item.name, () => {
+describe('Item', () => {
     const comment: Comment = {
         id: 'def',
         body: 'The quick brown fox jumped over the lazy dog.',

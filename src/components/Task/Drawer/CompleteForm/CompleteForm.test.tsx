@@ -22,7 +22,7 @@ jest.mock('../../../App', () => ({
     }),
 }));
 
-describe(TaskDrawerCompleteForm.name, () => {
+describe('TaskDrawerCompleteForm', () => {
     const task = {
         id: 'task-1',
         activityType: ActivityTypeEnum.NEWSLETTER_EMAIL,

@@ -2,7 +2,7 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import AnimatedBox from '.';
 
-describe(AnimatedBox.name, () => {
+describe('AnimatedBox', () => {
     it('has correct defaults', () => {
         const { getByTestId } = render(
             <AnimatedBox data-testid="TestAnimatedBox">

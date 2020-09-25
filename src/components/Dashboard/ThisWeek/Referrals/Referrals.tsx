@@ -149,7 +149,7 @@ const Referrals = ({ loading, recentReferrals, onHandReferrals }: Props): ReactE
     const { t } = useTranslation();
     const [value, setValue] = useState(0);
 
-    const handleChange = (_event: React.ChangeEvent<{}>, newValue: number): void => {
+    const handleChange = (_event: React.ChangeEvent, newValue: number): void => {
         setValue(newValue);
     };
 
