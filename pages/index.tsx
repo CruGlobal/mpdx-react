@@ -49,7 +49,7 @@ export const getServerSideProps: GetServerSideProps = async (
     if (context.res && session) {
         context.res.writeHead(302, { Location: '/accountLists' });
         context.res.end();
-        return null;
+        return { props: {} };
     }
 
     return { props: {} };
