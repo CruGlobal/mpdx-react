@@ -1,7 +1,7 @@
 import React, { ReactElement, useEffect } from 'react';
 import Head from 'next/head';
 import { gql } from '@apollo/client';
-import { GetServerSideProps } from 'next';
+import { GetServerSideProps, GetServerSidePropsResult } from 'next';
 import { setOptions, getSession } from 'next-auth/client';
 import { useTranslation } from 'react-i18next';
 import AccountLists from '../src/components/AccountLists';
@@ -49,14 +49,17 @@ const AccountListsPage = ({ data }: Props): ReactElement => {
 
 AccountListsPage.layout = BaseLayout;
 
-export const getServerSideProps: GetServerSideProps<Props> = async ({ res, req }): Promise<{ props: Props }> => {
+export const getServerSideProps: GetServerSideProps = async ({
+    res,
+    req,
+}): Promise<GetServerSidePropsResult<Props | unknown>> => {
     setOptions({ site: process.env.SITE_URL });
     const session = await getSession({ req });
 
     if (!session?.user?.token) {
         res.writeHead(302, { Location: '/' });
         res.end();
-        return null;
+        return { props: {} };
     }
 
     const client = await ssrClient(session?.user?.token);
@@ -65,7 +68,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({ res, req }
     if (response.data.accountLists.nodes && response.data.accountLists.nodes.length == 1) {
         res.writeHead(302, { Location: `/accountLists/${response.data.accountLists.nodes[0].id}` });
         res.end();
-        return null;
+        return { props: {} };
     }
 
     return {

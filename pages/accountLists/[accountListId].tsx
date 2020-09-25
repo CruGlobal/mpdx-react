@@ -1,7 +1,7 @@
 import React, { ReactElement, useEffect } from 'react';
 import Head from 'next/head';
 import { gql } from '@apollo/client';
-import { GetServerSideProps } from 'next';
+import { GetServerSideProps, GetServerSidePropsResult } from 'next';
 import moment from 'moment';
 import { getSession, setOptions } from 'next-auth/client';
 import { useTranslation } from 'react-i18next';
@@ -61,18 +61,18 @@ const AccountListIdPage = ({ data, accountListId }: Props): ReactElement => {
     );
 };
 
-export const getServerSideProps: GetServerSideProps<Props> = async ({
+export const getServerSideProps: GetServerSideProps = async ({
     params,
     req,
     res,
-}): Promise<{ props: Props }> => {
+}): Promise<GetServerSidePropsResult<Props | unknown>> => {
     setOptions({ site: process.env.SITE_URL });
     const session = await getSession({ req });
 
     if (!session?.user?.token) {
         res.writeHead(302, { Location: '/' });
         res.end();
-        return null;
+        return { props: {} };
     }
 
     const client = await ssrClient(session?.user?.token);
