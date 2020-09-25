@@ -40,16 +40,14 @@ partners in a quick and easy way."
 
 IndexPage.layout = BaseLayout;
 
-export const getServerSideProps: GetServerSideProps = async (
-    context,
-): Promise<GetServerSidePropsResult<Record<string, unknown>>> => {
+export const getServerSideProps: GetServerSideProps = async (context): Promise<GetServerSidePropsResult<unknown>> => {
     setOptions({ site: process.env.SITE_URL });
     const session = await getSession(context);
 
     if (context.res && session) {
         context.res.writeHead(302, { Location: '/accountLists' });
         context.res.end();
-        return null;
+        return { props: {} };
     }
 
     return { props: {} };

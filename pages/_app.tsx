@@ -4,7 +4,7 @@ import { ThemeProvider } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { ApolloProvider } from '@apollo/client';
 import { AnimatePresence } from 'framer-motion';
-import { Provider } from 'next-auth/client';
+import { Provider as NextAuthProvider } from 'next-auth/client';
 import { NextPage } from 'next';
 import Head from 'next/head';
 import { I18nextProvider } from 'react-i18next';
@@ -62,7 +62,7 @@ const App = ({ Component, pageProps, router }: AppProps): ReactElement => {
                 />
             </Head>
             <I18nextProvider i18n={i18n}>
-                <Provider options={{ site: process.env.SITE_URL }} session={session}>
+                <NextAuthProvider options={{ site: process.env.SITE_URL }} session={session}>
                     <ApolloProvider client={client}>
                         <ThemeProvider theme={theme}>
                             <CssBaseline />
@@ -80,7 +80,7 @@ const App = ({ Component, pageProps, router }: AppProps): ReactElement => {
                             </MuiPickersUtilsProvider>
                         </ThemeProvider>
                     </ApolloProvider>
-                </Provider>
+                </NextAuthProvider>
             </I18nextProvider>
         </>
     );
