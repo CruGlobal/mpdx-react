@@ -9,3 +9,5 @@ window.document.createRange = (): Range =>
             ownerDocument: document,
         } as unknown) as Node,
     } as unknown) as Range);
+
+window.HTMLElement.prototype.scrollIntoView = jest.fn();

@@ -2,7 +2,7 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import DonationHistories from '.';
 
-describe(DonationHistories.name, () => {
+describe('DonationHistories', () => {
     let reportsDonationHistories;
 
     it('default', () => {

@@ -1,9 +1,24 @@
 import React from 'react';
+import userEvent from '@testing-library/user-event';
 import { render } from '../../../../../tests/testingLibraryReactMock';
 import { ActivityTypeEnum } from '../../../../../types/globalTypes';
+import { AppProviderContext } from '../../../App/Provider';
+import { GetThisWeekQuery_dueTasks } from '../../../../../types/GetThisWeekQuery';
 import TasksDueThisWeek from '.';
 
-describe(TasksDueThisWeek.name, () => {
+const openTaskDrawer = jest.fn();
+
+jest.mock('../../../App', () => ({
+    useApp: (): Partial<AppProviderContext> => ({
+        openTaskDrawer,
+    }),
+}));
+
+describe('TasksDueThisWeek', () => {
+    beforeEach(() => {
+        openTaskDrawer.mockClear();
+    });
+
     it('default', () => {
         const { getByTestId, queryByTestId } = render(<TasksDueThisWeek />);
         expect(getByTestId('TasksDueThisWeekCardContentEmpty')).toBeInTheDocument();
@@ -19,7 +34,7 @@ describe(TasksDueThisWeek.name, () => {
     });
 
     it('empty', () => {
-        const dueTasks = {
+        const dueTasks: GetThisWeekQuery_dueTasks = {
             nodes: [],
             totalCount: 0,
         };
@@ -30,19 +45,23 @@ describe(TasksDueThisWeek.name, () => {
     });
 
     it('props', () => {
-        const dueTasks = {
+        const dueTasks: GetThisWeekQuery_dueTasks = {
             nodes: [
                 {
                     id: 'task_1',
                     subject: 'the quick brown fox jumps over the lazy dog',
                     activityType: ActivityTypeEnum.PRAYER_REQUEST,
                     contacts: { nodes: [{ name: 'Smith, Roger' }] },
+                    startAt: null,
+                    completedAt: null,
                 },
                 {
                     id: 'task_2',
                     subject: 'the quick brown fox jumps over the lazy dog',
                     activityType: ActivityTypeEnum.APPOINTMENT,
                     contacts: { nodes: [{ name: 'Smith, Sarah' }] },
+                    startAt: null,
+                    completedAt: null,
                 },
             ],
             totalCount: 1234,
@@ -52,11 +71,14 @@ describe(TasksDueThisWeek.name, () => {
         expect(queryByTestId('TasksDueThisWeekCardContentEmpty')).not.toBeInTheDocument();
         expect(queryByTestId('TasksDueThisWeekListLoading')).not.toBeInTheDocument();
         expect(getByTestId('TasksDueThisWeekButtonViewAll').textContent).toEqual('View All (1,234)');
-        expect(getByTestId('TasksDueThisWeekListItem-task_1').textContent).toEqual(
-            'Smith, RogerPRAYER_REQUEST — the quick brown fox jumps over the lazy dog',
+        const task1Element = getByTestId('TasksDueThisWeekListItem-task_1');
+        expect(task1Element.textContent).toEqual(
+            'Smith, RogerPrayer Request — the quick brown fox jumps over the lazy dog',
         );
+        userEvent.click(task1Element);
+        expect(openTaskDrawer).toHaveBeenCalledWith({ taskId: 'task_1' });
         expect(getByTestId('TasksDueThisWeekListItem-task_2').textContent).toEqual(
-            'Smith, SarahAPPOINTMENT — the quick brown fox jumps over the lazy dog',
+            'Smith, SarahAppointment — the quick brown fox jumps over the lazy dog',
         );
     });
 });

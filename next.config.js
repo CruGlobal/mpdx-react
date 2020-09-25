@@ -3,6 +3,7 @@ const withPWA = require('next-pwa');
 const withOptimizedImages = require('next-optimized-images');
 const withGraphql = require('next-plugin-graphql');
 
+const prod = process.env.NODE_ENV === 'production';
 let SiteUrl;
 
 if (process.env.SITE_URL) {
@@ -19,6 +20,7 @@ module.exports = withPlugins([
         {
             pwa: {
                 dest: 'public',
+                disable: !prod,
             },
         },
     ],

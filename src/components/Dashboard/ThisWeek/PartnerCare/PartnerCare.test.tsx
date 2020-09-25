@@ -1,11 +1,26 @@
 import React from 'react';
+import userEvent from '@testing-library/user-event';
 import { render, fireEvent } from '../../../../../tests/testingLibraryReactMock';
 import { ActivityTypeEnum } from '../../../../../types/globalTypes';
+import { AppProviderContext } from '../../../App/Provider';
+import { GetThisWeekQuery_prayerRequestTasks } from '../../../../../types/GetThisWeekQuery';
 import PartnerCare from '.';
 
-describe(PartnerCare.name, () => {
+const openTaskDrawer = jest.fn();
+
+jest.mock('../../../App', () => ({
+    useApp: (): Partial<AppProviderContext> => ({
+        openTaskDrawer,
+    }),
+}));
+
+describe('PartnerCare', () => {
+    beforeEach(() => {
+        openTaskDrawer.mockClear();
+    });
+
     it('default', () => {
-        const { getByTestId, queryByTestId } = render(<PartnerCare />);
+        const { getByTestId, queryByTestId } = render(<PartnerCare accountListId="abc" />);
         expect(getByTestId('PartnerCarePrayerCardContentEmpty')).toBeInTheDocument();
         expect(queryByTestId('PartnerCareCelebrationCardContentEmpty')).not.toBeInTheDocument();
         expect(getByTestId('PartnerCareTabPrayer').textContent).toEqual('Prayer (0)');
@@ -17,7 +32,7 @@ describe(PartnerCare.name, () => {
     });
 
     it('loading', () => {
-        const { getByTestId, queryByTestId } = render(<PartnerCare loading />);
+        const { getByTestId, queryByTestId } = render(<PartnerCare accountListId="abc" loading />);
         expect(getByTestId('PartnerCarePrayerListLoading')).toBeInTheDocument();
         expect(queryByTestId('PartnerCareCelebrationListLoading')).not.toBeInTheDocument();
         fireEvent.click(getByTestId('PartnerCareTabCelebrations'));
@@ -40,6 +55,7 @@ describe(PartnerCare.name, () => {
         };
         const { getByTestId, queryByTestId } = render(
             <PartnerCare
+                accountListId="abc"
                 prayerRequestTasks={prayerRequestTasks}
                 reportsPeopleWithBirthdays={reportsPeopleWithBirthdays}
                 reportsPeopleWithAnniversaries={reportsPeopleWithAnniversaries}
@@ -56,19 +72,23 @@ describe(PartnerCare.name, () => {
     });
 
     it('props', () => {
-        const prayerRequestTasks = {
+        const prayerRequestTasks: GetThisWeekQuery_prayerRequestTasks = {
             nodes: [
                 {
                     id: 'task_1',
                     subject: 'the quick brown fox jumps over the lazy dog',
                     activityType: ActivityTypeEnum.PRAYER_REQUEST,
                     contacts: { nodes: [{ name: 'Roger Smith' }, { name: 'Sarah Smith' }] },
+                    startAt: null,
+                    completedAt: null,
                 },
                 {
                     id: 'task_2',
                     subject: 'on the boat to see uncle johnny',
                     activityType: ActivityTypeEnum.PRAYER_REQUEST,
                     contacts: { nodes: [{ name: 'Roger Parker' }, { name: 'Sarah Parker' }] },
+                    startAt: null,
+                    completedAt: null,
                 },
             ],
             totalCount: 2560,
@@ -112,6 +132,7 @@ describe(PartnerCare.name, () => {
         };
         const { getByTestId, queryByTestId } = render(
             <PartnerCare
+                accountListId="abc"
                 prayerRequestTasks={prayerRequestTasks}
                 reportsPeopleWithBirthdays={reportsPeopleWithBirthdays}
                 reportsPeopleWithAnniversaries={reportsPeopleWithAnniversaries}
@@ -120,9 +141,10 @@ describe(PartnerCare.name, () => {
         expect(queryByTestId('PartnerCarePrayerCardContentEmpty')).not.toBeInTheDocument();
         expect(getByTestId('PartnerCarePrayerList')).toBeInTheDocument();
         expect(getByTestId('PartnerCareTabPrayer').textContent).toEqual('Prayer (2,560)');
-        expect(getByTestId('PartnerCarePrayerListItem-task_1').textContent).toEqual(
-            'Roger Smith, Sarah Smiththe quick brown fox jumps over the lazy dog',
-        );
+        const task1Element = getByTestId('PartnerCarePrayerListItem-task_1');
+        expect(task1Element.textContent).toEqual('Roger Smith, Sarah Smiththe quick brown fox jumps over the lazy dog');
+        userEvent.click(task1Element);
+        expect(openTaskDrawer).toHaveBeenCalledWith({ taskId: 'task_1' });
         expect(getByTestId('PartnerCarePrayerListItem-task_2').textContent).toEqual(
             'Roger Parker, Sarah Parkeron the boat to see uncle johnny',
         );

@@ -3,7 +3,7 @@ import MockDate from 'mockdate';
 import { render } from '../../../../../tests/testingLibraryReactMock';
 import LateCommitments from '.';
 
-describe(LateCommitments.name, () => {
+describe('LateCommitments', () => {
     it('default', () => {
         const { getByTestId, queryByTestId } = render(<LateCommitments />);
         expect(getByTestId('LateCommitmentsCardContentEmpty')).toBeInTheDocument();

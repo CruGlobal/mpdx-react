@@ -1,5 +1,6 @@
 import React, { ReactElement, ReactNode, useState } from 'react';
 import { Box, makeStyles, Theme, Hidden } from '@material-ui/core';
+import AddFab from './AddFab';
 import TopBar from './TopBar';
 import SideBar from './SideBar';
 import { SIDE_BAR_WIDTH } from './SideBar/SideBar';
@@ -18,6 +19,9 @@ const useStyles = makeStyles((theme: Theme) => ({
         [theme.breakpoints.down('sm')]: {
             marginLeft: 0,
         },
+    },
+    addFabSpacer: {
+        height: '100px',
     },
 }));
 
@@ -42,6 +46,8 @@ const Primary = ({ children }: Props): ReactElement => {
             <Hidden smUp>
                 <BottomBar />
             </Hidden>
+            <AddFab />
+            <Box className={classes.addFabSpacer}></Box>
         </Box>
     );
 };

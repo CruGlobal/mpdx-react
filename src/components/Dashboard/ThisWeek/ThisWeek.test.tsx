@@ -1,10 +1,17 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import { MockedProvider } from '@apollo/client/testing';
+import { AppProviderContext } from '../../App/Provider';
 import { GetThisWeekEmptyMocks, GetThisWeekLoadingMocks, GetThisWeekDefaultMocks } from './ThisWeek.mock';
 import ThisWeek from '.';
 
-describe(ThisWeek.name, () => {
+jest.mock('../../App', () => ({
+    useApp: (): Partial<AppProviderContext> => ({
+        openTaskDrawer: jest.fn(),
+    }),
+}));
+
+describe('ThisWeek', () => {
     it('default', async () => {
         const { getByTestId, queryByTestId } = render(
             <MockedProvider mocks={GetThisWeekDefaultMocks()} addTypename={false}>

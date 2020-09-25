@@ -1,4 +1,4 @@
-import React, { ReactElement, useState, useRef } from 'react';
+import React, { ReactElement, useState, useRef, useEffect } from 'react';
 import {
     Avatar,
     IconButton,
@@ -24,9 +24,8 @@ import MenuIcon from '@material-ui/icons/Menu';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { GetTopBarQuery } from '../../../../../types/GetTopBarQuery';
-import GET_LOCAL_STATE_QUERY from '../../../../queries/getLocalStateQuery.graphql';
-import { GetLocalStateQuery } from '../../../../../types/GetLocalStateQuery';
 import { SIDE_BAR_WIDTH } from '../SideBar/SideBar';
+import { useApp } from '../../../App';
 
 const useStyles = makeStyles((theme: Theme) => ({
     appBar: {
@@ -115,7 +114,9 @@ export const GET_TOP_BAR_QUERY = gql`
             }
         }
         user {
+            id
             firstName
+            lastName
         }
     }
 `;
@@ -126,13 +127,13 @@ interface Props {
 
 const TopBar = ({ handleDrawerToggle }: Props): ReactElement => {
     const classes = useStyles();
+    const { dispatch, state } = useApp();
     const { t } = useTranslation();
     const trigger = useScrollTrigger({
         disableHysteresis: true,
         threshold: 0,
     });
     const { data } = useQuery<GetTopBarQuery>(GET_TOP_BAR_QUERY);
-    const { data: state } = useQuery<GetLocalStateQuery>(GET_LOCAL_STATE_QUERY);
     const [open, setOpen] = useState(false);
     const anchorEl = useRef(null);
 
@@ -144,8 +145,11 @@ const TopBar = ({ handleDrawerToggle }: Props): ReactElement => {
         setOpen(false);
     };
 
-    const currentAccountList =
-        state?.currentAccountListId && data?.accountLists?.nodes?.find((node) => node.id == state.currentAccountListId);
+    const currentAccountList = data?.accountLists?.nodes?.find((node) => node.id == state.accountListId);
+
+    useEffect(() => {
+        data?.user && dispatch({ type: 'updateUser', user: data.user });
+    }, [data?.user]);
 
     return (
         <>
@@ -213,10 +217,7 @@ const TopBar = ({ handleDrawerToggle }: Props): ReactElement => {
                                                         scroll={false}
                                                     >
                                                         <MenuItem
-                                                            selected={
-                                                                state?.currentAccountListId &&
-                                                                id == state?.currentAccountListId
-                                                            }
+                                                            selected={id == state.accountListId}
                                                             onClick={handleClose}
                                                             data-testid={`TopBarMenuItem${id}`}
                                                         >
@@ -231,12 +232,12 @@ const TopBar = ({ handleDrawerToggle }: Props): ReactElement => {
                             )}
                         </Grid>
                         <Grid item className={classes.breadcrumbGrid}>
-                            {state?.breadcrumb && (
+                            {state.breadcrumb && (
                                 <Box
                                     className={clsx(classes.breadcrumb, trigger && classes.breadcrumbTrigger)}
                                     data-testid="TopBarBreadcrumb"
                                 >
-                                    {state?.breadcrumb}
+                                    {state.breadcrumb}
                                 </Box>
                             )}
                         </Grid>
@@ -256,7 +257,7 @@ const TopBar = ({ handleDrawerToggle }: Props): ReactElement => {
                             </IconButton>
                         </Grid>
                         <Grid item className={classes.avatarGrid}>
-                            <Avatar className={classes.avatar}>{data?.user?.firstName[0]}</Avatar>
+                            <Avatar className={classes.avatar}>{state.user?.firstName[0]}</Avatar>
                         </Grid>
                     </Grid>
                 </Toolbar>

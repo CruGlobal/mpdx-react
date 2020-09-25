@@ -1,4 +1,0 @@
-query GetLocalStateQuery {
-    currentAccountListId @client
-    breadcrumb @client
-}

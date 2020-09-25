@@ -11,14 +11,18 @@ import {
     ListItem,
     ListItemText,
     ListItemSecondaryAction,
-    Checkbox,
     CardContent,
 } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import AnimatedCard from '../../../AnimatedCard';
-import { GetThisWeekQuery_dueTasks } from '../../../../../types/GetThisWeekQuery';
+import {
+    GetThisWeekQuery_dueTasks,
+    GetThisWeekQuery_dueTasks_nodes as Task,
+} from '../../../../../types/GetThisWeekQuery';
+import { useApp } from '../../../App';
+import TaskStatus from '../../../Task/Status';
 
 const useStyles = makeStyles((theme: Theme) => ({
     div: {
@@ -62,6 +66,11 @@ interface Props {
 const TasksDueThisWeek = ({ loading, dueTasks }: Props): ReactElement => {
     const classes = useStyles();
     const { t } = useTranslation();
+    const { openTaskDrawer } = useApp();
+
+    const handleClick = ({ id: taskId }: Task): void => {
+        openTaskDrawer({ taskId });
+    };
 
     return (
         <AnimatedCard className={classes.card}>
@@ -113,7 +122,12 @@ const TasksDueThisWeek = ({ loading, dueTasks }: Props): ReactElement => {
                         <>
                             <List className={classes.list} data-testid="TasksDueThisWeekList">
                                 {dueTasks.nodes.map((task) => (
-                                    <ListItem key={task.id} button data-testid={`TasksDueThisWeekListItem-${task.id}`}>
+                                    <ListItem
+                                        key={task.id}
+                                        button
+                                        data-testid={`TasksDueThisWeekListItem-${task.id}`}
+                                        onClick={(): void => handleClick(task)}
+                                    >
                                         <ListItemText
                                             disableTypography={true}
                                             primary={
@@ -129,21 +143,30 @@ const TasksDueThisWeek = ({ loading, dueTasks }: Props): ReactElement => {
                                                             variant="body2"
                                                             color="textPrimary"
                                                         >
-                                                            {task.activityType}
+                                                            {
+                                                                t(
+                                                                    task.activityType,
+                                                                ) /* manually added to translation file */
+                                                            }
                                                         </Typography>{' '}
                                                         <Typography
                                                             component="span"
                                                             variant="body2"
                                                             color="textSecondary"
                                                         >
-                                                            — {task.subject}
+                                                            {task.activityType && '—'} {task.subject}
                                                         </Typography>
                                                     </Box>
                                                 </Box>
                                             }
                                         />
                                         <ListItemSecondaryAction>
-                                            <Checkbox edge="end" />
+                                            <TaskStatus
+                                                taskId={task.id}
+                                                startAt={task.startAt}
+                                                completedAt={task.completedAt}
+                                                tooltipPlacement="left"
+                                            />
                                         </ListItemSecondaryAction>
                                     </ListItem>
                                 ))}

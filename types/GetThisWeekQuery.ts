@@ -19,6 +19,7 @@ export interface GetThisWeekQuery_accountList_primaryAppeal {
 }
 
 export interface GetThisWeekQuery_accountList {
+  id: string;
   primaryAppeal: GetThisWeekQuery_accountList_primaryAppeal | null;
 }
 
@@ -35,8 +36,10 @@ export interface GetThisWeekQuery_dueTasks_nodes_contacts {
 
 export interface GetThisWeekQuery_dueTasks_nodes {
   id: string;
-  subject: string | null;
+  subject: string;
   activityType: ActivityTypeEnum | null;
+  startAt: any | null;
+  completedAt: any | null;
   contacts: GetThisWeekQuery_dueTasks_nodes_contacts;
 }
 
@@ -64,8 +67,10 @@ export interface GetThisWeekQuery_prayerRequestTasks_nodes_contacts {
 
 export interface GetThisWeekQuery_prayerRequestTasks_nodes {
   id: string;
-  subject: string | null;
+  subject: string;
   activityType: ActivityTypeEnum | null;
+  startAt: any | null;
+  completedAt: any | null;
   contacts: GetThisWeekQuery_prayerRequestTasks_nodes_contacts;
 }
 

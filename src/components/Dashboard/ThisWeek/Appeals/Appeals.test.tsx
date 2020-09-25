@@ -2,7 +2,7 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import Appeals from '.';
 
-describe(Appeals.name, () => {
+describe('Appeals', () => {
     it('default', () => {
         const { getByTestId } = render(<Appeals />);
         expect(getByTestId('AppealsCardContentEmpty')).toBeInTheDocument();

@@ -25,6 +25,7 @@ export const GET_THIS_WEEK_QUERY = gql`
         $twoWeeksAgo: ISO8601Date!
     ) {
         accountList(id: $accountListId) {
+            id
             primaryAppeal {
                 id
                 name
@@ -34,11 +35,13 @@ export const GET_THIS_WEEK_QUERY = gql`
                 amountCurrency
             }
         }
-        dueTasks: tasks(accountListId: $accountListId, first: 3, startAt: { max: $endOfDay }) {
+        dueTasks: tasks(accountListId: $accountListId, first: 3, startAt: { max: $endOfDay }, completed: false) {
             nodes {
                 id
                 subject
                 activityType
+                startAt
+                completedAt
                 contacts {
                     nodes {
                         name
@@ -47,11 +50,18 @@ export const GET_THIS_WEEK_QUERY = gql`
             }
             totalCount
         }
-        prayerRequestTasks: tasks(accountListId: $accountListId, first: 3, activityType: PRAYER_REQUEST) {
+        prayerRequestTasks: tasks(
+            accountListId: $accountListId
+            first: 3
+            activityType: PRAYER_REQUEST
+            completed: false
+        ) {
             nodes {
                 id
                 subject
                 activityType
+                startAt
+                completedAt
                 contacts {
                     nodes {
                         name
@@ -159,6 +169,7 @@ const ThisWeek = ({ accountListId }: Props): ReactElement => {
                         prayerRequestTasks={prayerRequestTasks}
                         reportsPeopleWithBirthdays={reportsPeopleWithBirthdays}
                         reportsPeopleWithAnniversaries={reportsPeopleWithAnniversaries}
+                        accountListId={accountListId}
                     />
                 </Grid>
                 <Grid item xs={12} sm={6} md={4}>

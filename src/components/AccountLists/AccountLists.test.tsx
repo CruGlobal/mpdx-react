@@ -2,7 +2,7 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import AccountLists from '.';
 
-describe(AccountLists.name, () => {
+describe('AccountLists', () => {
     it('has correct defaults', () => {
         const { getByTestId } = render(
             <AccountLists

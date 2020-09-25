@@ -20,7 +20,9 @@ export interface GetTopBarQuery_accountLists {
 }
 
 export interface GetTopBarQuery_user {
+  id: string;
   firstName: string | null;
+  lastName: string | null;
 }
 
 export interface GetTopBarQuery {

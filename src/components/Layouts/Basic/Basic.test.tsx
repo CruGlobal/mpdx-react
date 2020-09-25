@@ -2,7 +2,7 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import Basic from '.';
 
-describe(Basic.name, () => {
+describe('Basic', () => {
     it('has correct defaults', () => {
         const { getByTestId } = render(
             <Basic>

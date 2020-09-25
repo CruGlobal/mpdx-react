@@ -14,6 +14,9 @@ import {
 } from '@material-ui/core';
 import HomeIcon from '@material-ui/icons/Home';
 import { useTranslation } from 'react-i18next';
+import Link from 'next/link';
+import AssignmentIcon from '@material-ui/icons/Assignment';
+import { useApp } from '../../../App';
 
 export const SIDE_BAR_WIDTH = 256;
 
@@ -67,6 +70,9 @@ interface Props {
 const SideBar = ({ mobileOpen, handleDrawerToggle }: Props): ReactElement => {
     const classes = useStyles();
     const { t } = useTranslation();
+    const {
+        state: { accountListId },
+    } = useApp();
 
     const drawer = (
         <div>
@@ -75,16 +81,36 @@ const SideBar = ({ mobileOpen, handleDrawerToggle }: Props): ReactElement => {
             </Box>
             <Divider className={classes.divider} />
             <List className={classes.list}>
-                <ListItem className={classes.listItem} button onClick={handleDrawerToggle}>
-                    <ListItemIcon className={classes.listItemIcon}>
-                        <HomeIcon />
-                    </ListItemIcon>
-                    <ListItemText
-                        className={classes.listItemText}
-                        primary={t('Overview')}
+                <Link href="/accountLists/[accountListId]" as={`/accountLists/${accountListId}`} passHref>
+                    <ListItem
+                        className={classes.listItem}
+                        button
+                        onClick={handleDrawerToggle}
                         data-testid="SideBarOverview"
-                    />
-                </ListItem>
+                    >
+                        <ListItemIcon className={classes.listItemIcon}>
+                            <HomeIcon />
+                        </ListItemIcon>
+                        <ListItemText className={classes.listItemText} primary={t('Overview')} />
+                    </ListItem>
+                </Link>
+                <Link
+                    href="/accountLists/[accountListId]/tasks/[tab]"
+                    as={`/accountLists/${accountListId}/tasks/list`}
+                    passHref
+                >
+                    <ListItem
+                        className={classes.listItem}
+                        button
+                        onClick={handleDrawerToggle}
+                        data-testid="SideBarTasks"
+                    >
+                        <ListItemIcon className={classes.listItemIcon}>
+                            <AssignmentIcon />
+                        </ListItemIcon>
+                        <ListItemText className={classes.listItemText} primary={t('Tasks')} />
+                    </ListItem>
+                </Link>
             </List>
         </div>
     );

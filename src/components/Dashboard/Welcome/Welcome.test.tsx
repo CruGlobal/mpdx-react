@@ -3,7 +3,7 @@ import MockDate from 'mockdate';
 import { render } from '../../../../tests/testingLibraryReactMock';
 import Welcome from '.';
 
-describe(Welcome.name, () => {
+describe('Welcome', () => {
     afterEach(() => {
         MockDate.reset();
     });

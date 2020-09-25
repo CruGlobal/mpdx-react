@@ -1,3 +1,4 @@
+import { dateFormat } from './intlFormat';
 import { numberFormat, percentageFormat, currencyFormat, dayMonthFormat } from '.';
 /**
  * @jest-environment jsdom
@@ -15,7 +16,7 @@ describe('intlFormat', () => {
         languageMock.mockClear();
     });
 
-    describe(numberFormat.name, () => {
+    describe('numberFormat', () => {
         it('formats number', () => {
             expect(numberFormat(1000.1)).toEqual('1,000.1');
         });
@@ -47,7 +48,7 @@ describe('intlFormat', () => {
         });
     });
 
-    describe(percentageFormat.name, () => {
+    describe('percentageFormat', () => {
         it('formats number as percentage', () => {
             expect(percentageFormat(0.95)).toEqual('95%');
         });
@@ -79,7 +80,7 @@ describe('intlFormat', () => {
         });
     });
 
-    describe(currencyFormat.name, () => {
+    describe('currencyFormat', () => {
         it('formats number as currency', () => {
             expect(currencyFormat(1234.56, 'USD', 2)).toEqual('$1,234.56');
         });
@@ -123,9 +124,8 @@ describe('intlFormat', () => {
         });
     });
 
-    describe(dayMonthFormat.name, () => {
+    describe('dayMonthFormat', () => {
         it('formats day and month as date', () => {
-            console.log(window.navigator.language);
             expect(dayMonthFormat(5, 12)).toEqual('Jan 5');
         });
 
@@ -140,6 +140,30 @@ describe('intlFormat', () => {
 
             it('handles language', () => {
                 expect(dayMonthFormat(5, 12)).toEqual('5 janv.');
+            });
+        });
+    });
+
+    describe('dateFormat', () => {
+        it('formats day and month as date', () => {
+            expect(dateFormat(new Date(2019, 12, 5))).toEqual('Jan 5, 2020');
+        });
+
+        it('handles language', () => {
+            expect(dateFormat(new Date(2019, 12, 5), 'fr')).toEqual('5 janv. 2020');
+        });
+
+        it('handles null case', () => {
+            expect(dateFormat(null)).toEqual('');
+        });
+
+        describe('default language', () => {
+            beforeEach(() => {
+                languageMock.mockReturnValue('fr');
+            });
+
+            it('handles language', () => {
+                expect(dateFormat(new Date(2019, 12, 5))).toEqual('5 janv. 2020');
             });
         });
     });

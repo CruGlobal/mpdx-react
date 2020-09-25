@@ -1,13 +1,18 @@
 import React, { ReactElement } from 'react';
 import { Box, Container } from '@material-ui/core';
 import { MockedProvider } from '@apollo/client/testing';
-import { InMemoryCache } from '@apollo/client';
-import GET_LOCAL_STATE_QUERY from '../../../../queries/getLocalStateQuery.graphql';
+import withDispatch from '../../../../decorators/withDispatch';
 import { GET_TOP_BAR_QUERY } from './TopBar';
 import TopBar from '.';
 
 export default {
     title: 'Layouts/Primary/TopBar',
+    decorators: [
+        withDispatch(
+            { type: 'updateAccountListId', accountListId: '1' },
+            { type: 'updateBreadcrumb', breadcrumb: 'Dashboard' },
+        ),
+    ],
 };
 
 const Content = (): ReactElement => (
@@ -45,18 +50,9 @@ export const Default = (): ReactElement => {
         },
     ];
 
-    const cache = new InMemoryCache({ addTypename: false });
-    cache.writeQuery({
-        query: GET_LOCAL_STATE_QUERY,
-        data: {
-            currentAccountListId: '1',
-            breadcrumb: 'Dashboard',
-        },
-    });
-
     return (
         <>
-            <MockedProvider mocks={mocks} cache={cache} addTypename={false}>
+            <MockedProvider mocks={mocks} addTypename={false}>
                 <TopBar handleDrawerToggle={(): void => {}} />
             </MockedProvider>
             <Content />
@@ -84,18 +80,9 @@ export const MultipleAccountLists = (): ReactElement => {
         },
     ];
 
-    const cache = new InMemoryCache({ addTypename: false });
-    cache.writeQuery({
-        query: GET_LOCAL_STATE_QUERY,
-        data: {
-            currentAccountListId: '1',
-            breadcrumb: 'Dashboard',
-        },
-    });
-
     return (
         <>
-            <MockedProvider mocks={mocks} cache={cache} addTypename={false}>
+            <MockedProvider mocks={mocks} addTypename={false}>
                 <TopBar handleDrawerToggle={(): void => {}} />
             </MockedProvider>
             <Content />

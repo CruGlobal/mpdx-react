@@ -1,47 +1,53 @@
 import React from 'react';
 import { render, waitFor, fireEvent } from '@testing-library/react';
-import { InMemoryCache } from '@apollo/client';
 import { MockedProvider } from '@apollo/client/testing';
-import GET_LOCAL_STATE_QUERY from '../../../../queries/getLocalStateQuery.graphql';
 import TestRouter from '../../../../../tests/TestRouter';
 import matchMediaMock from '../../../../../tests/matchMediaMock';
+import { GetTopBarQuery } from '../../../../../types/GetTopBarQuery';
+import { AppState } from '../../../App/rootReducer';
+import { AppProviderContext } from '../../../App/Provider';
 import { GET_TOP_BAR_QUERY } from './TopBar';
 import TopBar from '.';
 
-describe(TopBar.name, () => {
-    let mocks, cache;
+let state: AppState;
+const dispatch = jest.fn();
+
+jest.mock('../../../App', () => ({
+    useApp: (): Partial<AppProviderContext> => ({
+        state,
+        dispatch,
+    }),
+}));
+
+describe('TopBar', () => {
+    let mocks;
     beforeEach(() => {
+        const data: GetTopBarQuery = {
+            accountLists: {
+                nodes: [
+                    { id: '1', name: 'Staff Account' },
+                    { id: '2', name: 'Ministry Account' },
+                ],
+            },
+            user: { id: 'user-1', firstName: 'John', lastName: 'Smith' },
+        };
+
         mocks = [
             {
                 request: {
                     query: GET_TOP_BAR_QUERY,
                 },
                 result: {
-                    data: {
-                        accountLists: {
-                            nodes: [
-                                { id: '1', name: 'Staff Account' },
-                                { id: '2', name: 'Ministry Account' },
-                            ],
-                        },
-                        user: { firstName: 'John' },
-                    },
+                    data,
                 },
             },
         ];
-        cache = new InMemoryCache({ addTypename: false });
-        cache.writeQuery({
-            query: GET_LOCAL_STATE_QUERY,
-            data: {
-                currentAccountListId: undefined,
-                breadcrumb: undefined,
-            },
-        });
+        state = { accountListId: null, breadcrumb: null };
     });
 
     it('has correct defaults', () => {
         const { queryByTestId } = render(
-            <MockedProvider mocks={mocks} cache={cache} addTypename={false}>
+            <MockedProvider mocks={mocks} addTypename={false}>
                 <TopBar handleDrawerToggle={jest.fn()} />
             </MockedProvider>,
         );
@@ -50,21 +56,14 @@ describe(TopBar.name, () => {
 
     describe('client state set', () => {
         beforeEach(() => {
-            cache = new InMemoryCache({ addTypename: false });
-            cache.writeQuery({
-                query: GET_LOCAL_STATE_QUERY,
-                data: {
-                    currentAccountListId: '1',
-                    breadcrumb: 'Dashboard',
-                },
-            });
             matchMediaMock({ width: '1024px' });
+            state = { accountListId: '1', breadcrumb: 'Dashboard' };
         });
 
         it('adjusts menu configuration', async () => {
             const { getByTestId, queryByTestId } = render(
                 <TestRouter>
-                    <MockedProvider mocks={mocks} cache={cache} addTypename={false}>
+                    <MockedProvider mocks={mocks} addTypename={false}>
                         <TopBar handleDrawerToggle={jest.fn()} />
                     </MockedProvider>
                 </TestRouter>,
@@ -78,39 +77,37 @@ describe(TopBar.name, () => {
             expect(TopBarMenuItem1).toHaveClass('Mui-selected');
             fireEvent.click(TopBarMenuItem1);
             await waitFor(() => expect(queryByTestId('TopBarMenu')).not.toBeInTheDocument());
+            expect(dispatch).toHaveBeenCalledWith({
+                type: 'updateUser',
+                user: { id: 'user-1', firstName: 'John', lastName: 'Smith' },
+            });
         });
     });
 
     describe('single accountList', () => {
         beforeEach(() => {
+            const data: GetTopBarQuery = {
+                accountLists: {
+                    nodes: [{ id: '1', name: 'Staff Account' }],
+                },
+                user: { id: 'user-1', firstName: 'John', lastName: 'Smith' },
+            };
             mocks = [
                 {
                     request: {
                         query: GET_TOP_BAR_QUERY,
                     },
                     result: {
-                        data: {
-                            accountLists: {
-                                nodes: [{ id: '1', name: 'Staff Account' }],
-                            },
-                            user: { firstName: 'John' },
-                        },
+                        data,
                     },
                 },
             ];
-            cache = new InMemoryCache({ addTypename: false });
-            cache.writeQuery({
-                query: GET_LOCAL_STATE_QUERY,
-                data: {
-                    currentAccountListId: '1',
-                    breadcrumb: 'Dashboard',
-                },
-            });
+            state = { accountListId: '1', breadcrumb: 'Dashboard' };
         });
 
         it('shows single accountList name', async () => {
             const { getByTestId } = render(
-                <MockedProvider mocks={mocks} cache={cache} addTypename={false}>
+                <MockedProvider mocks={mocks} addTypename={false}>
                     <TopBar handleDrawerToggle={jest.fn()} />
                 </MockedProvider>,
             );

@@ -1,14 +1,14 @@
 import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react';
 import { MockedProvider } from '@apollo/client/testing';
-import { InMemoryCache } from '@apollo/client';
 import matchMediaMock from '../../../../tests/matchMediaMock';
-import GET_LOCAL_STATE_QUERY from '../../../queries/getLocalStateQuery.graphql';
+import AppProvider from '../../App/Provider';
+import TestRouter from '../../../../tests/TestRouter';
 import { GET_TOP_BAR_QUERY } from './TopBar/TopBar';
 import Primary from '.';
 
-describe(Primary.name, () => {
-    let mocks, cache;
+describe('Primary', () => {
+    let mocks;
     beforeEach(() => {
         mocks = [
             {
@@ -28,23 +28,17 @@ describe(Primary.name, () => {
                 },
             },
         ];
-        cache = new InMemoryCache({ addTypename: false });
-        cache.writeQuery({
-            query: GET_LOCAL_STATE_QUERY,
-            data: {
-                currentAccountListId: '1',
-                breadcrumb: 'Dashboard',
-            },
-        });
         matchMediaMock({ width: '1024px' });
     });
 
     it('has correct defaults', () => {
         const { getByTestId, queryByTestId } = render(
-            <MockedProvider mocks={mocks} cache={cache} addTypename={false}>
-                <Primary>
-                    <div data-testid="PrimaryTestChildren"></div>
-                </Primary>
+            <MockedProvider mocks={mocks} addTypename={false}>
+                <AppProvider initialState={{ accountListId: '1', breadcrumb: 'Dashboard' }}>
+                    <Primary>
+                        <div data-testid="PrimaryTestChildren"></div>
+                    </Primary>
+                </AppProvider>
             </MockedProvider>,
         );
         expect(getByTestId('PrimaryTestChildren')).toBeInTheDocument();
@@ -60,11 +54,15 @@ describe(Primary.name, () => {
 
         it('allows menu to be shown and hidden', async () => {
             const { getByTestId, queryByTestId } = render(
-                <MockedProvider mocks={mocks} cache={cache} addTypename={false}>
-                    <Primary>
-                        <div data-testid="PrimaryTestChildren"></div>
-                    </Primary>
-                </MockedProvider>,
+                <TestRouter>
+                    <MockedProvider mocks={mocks} addTypename={false}>
+                        <AppProvider initialState={{ accountListId: '1', breadcrumb: 'Dashboard' }}>
+                            <Primary>
+                                <div data-testid="PrimaryTestChildren"></div>
+                            </Primary>
+                        </AppProvider>
+                    </MockedProvider>
+                </TestRouter>,
             );
             expect(queryByTestId('SideBarDesktopDrawer')).not.toBeInTheDocument();
             const sideBarOverview = getByTestId('SideBarOverview');

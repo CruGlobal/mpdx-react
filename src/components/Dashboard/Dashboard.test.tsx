@@ -3,8 +3,15 @@ import { render, waitFor } from '@testing-library/react';
 import { MockedProvider } from '@apollo/client/testing';
 import { GetDashboardQuery } from '../../../types/GetDashboardQuery';
 import matchMediaMock from '../../../tests/matchMediaMock';
+import { AppProviderContext } from '../App/Provider';
 import { GetThisWeekDefaultMocks } from './ThisWeek/ThisWeek.mock';
 import Dashboard from '.';
+
+jest.mock('../App', () => ({
+    useApp: (): Partial<AppProviderContext> => ({
+        openTaskDrawer: jest.fn(),
+    }),
+}));
 
 const data: GetDashboardQuery = {
     user: {
@@ -93,10 +100,11 @@ const data: GetDashboardQuery = {
     },
 };
 
-describe(Dashboard.name, () => {
+describe('Dashboard', () => {
     beforeEach(() => {
         matchMediaMock({ width: '1024px' });
     });
+
     it('default', async () => {
         const { getByTestId, queryByTestId } = render(
             <MockedProvider mocks={GetThisWeekDefaultMocks()} addTypename={false}>
@@ -117,6 +125,7 @@ describe(Dashboard.name, () => {
         expect(getByTestId('ReferralsTabRecentList')).toBeInTheDocument();
         expect(getByTestId('AppealsBoxName')).toBeInTheDocument();
     });
+
     it('handles null fields', async () => {
         const { getByTestId, queryByTestId } = render(
             <MockedProvider mocks={GetThisWeekDefaultMocks()} addTypename={false}>

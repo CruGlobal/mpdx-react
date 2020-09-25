@@ -6,6 +6,12 @@ import { withKnobs } from '@storybook/addon-knobs';
 import { withI18next } from 'storybook-addon-i18next';
 import MockDate from 'mockdate';
 import isChromatic from 'chromatic/isChromatic';
+import { MuiPickersUtilsProvider } from '@material-ui/pickers';
+import DateFnsUtils from '@date-io/date-fns';
+import { SnackbarProvider } from 'notistack';
+import { AppProvider } from '../src/components/App';
+import { MockedProvider } from '@apollo/client/testing';
+import TestRouter from '../tests/TestRouter';
 import theme from '../src/theme';
 import i18n from '../src/lib/i18n';
 
@@ -22,14 +28,24 @@ addDecorator(
         },
     }),
 );
-
-addDecorator((storyFn) => (
-    <ThemeProvider theme={theme}>
-        <CssBaseline />
-        {storyFn()}
-    </ThemeProvider>
-));
 addDecorator(withKnobs);
+addDecorator((StoryFn) => (
+    <MockedProvider mocks={[]} addTypename={false}>
+        <ThemeProvider theme={theme}>
+            <CssBaseline />
+            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                <SnackbarProvider maxSnack={3}>
+                    <TestRouter>
+                        <AppProvider>
+                            <StoryFn />
+                        </AppProvider>
+                    </TestRouter>
+                </SnackbarProvider>
+            </MuiPickersUtilsProvider>
+        </ThemeProvider>
+    </MockedProvider>
+));
+
 addParameters({ chromatic: { diffThreshold: true } });
 
 // automatically import all files ending in *.stories.tsx
