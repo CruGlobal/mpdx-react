@@ -26,6 +26,17 @@ export enum ActivityTypeEnum {
   TO_DO = "TO_DO",
 }
 
+export enum ContactSourceEnum {
+  GIVE_SITE = "GIVE_SITE",
+  MPDX = "MPDX",
+}
+
+export enum LikelyToGiveEnum {
+  LEAST_LIKELY = "LEAST_LIKELY",
+  LIKELY = "LIKELY",
+  MOST_LIKELY = "MOST_LIKELY",
+}
+
 export enum NotificationTimeUnitEnum {
   DAYS = "DAYS",
   HOURS = "HOURS",
@@ -48,6 +59,16 @@ export enum PledgeFrequencyEnum {
   MONTHLY = "MONTHLY",
   QUARTERLY = "QUARTERLY",
   WEEKLY = "WEEKLY",
+}
+
+export enum PreferredContactMethodEnum {
+  EMAIL = "EMAIL",
+  FACEBOOK = "FACEBOOK",
+  INSTAGRAM = "INSTAGRAM",
+  PHONE_CALL = "PHONE_CALL",
+  SMS = "SMS",
+  WE_CHAT = "WE_CHAT",
+  WHATS_APP = "WHATS_APP",
 }
 
 export enum ResultEnum {
@@ -81,6 +102,56 @@ export enum StatusEnum {
   PARTNER_SPECIAL = "PARTNER_SPECIAL",
   RESEARCH_ABANDONED = "RESEARCH_ABANDONED",
   UNRESPONSIVE = "UNRESPONSIVE",
+}
+
+export interface ContactCreateInput {
+  id?: string | null;
+  name: string;
+  status?: StatusEnum | null;
+  sendNewsletter?: SendNewsletterEnum | null;
+  pledgeReceived?: boolean | null;
+  pledgeAmount?: number | null;
+  pledgeCurrency?: string | null;
+  pledgeFrequency?: PledgeFrequencyEnum | null;
+  pledgeStartDate?: any | null;
+  userId?: string | null;
+  tagList?: string[] | null;
+  likelyToGive?: LikelyToGiveEnum | null;
+  nextAsk?: any | null;
+  envelopeGreeting?: string | null;
+  greeting?: string | null;
+  noAppeals?: boolean | null;
+  preferredContactMethod?: PreferredContactMethodEnum | null;
+  locale?: string | null;
+  timezone?: string | null;
+  churchName?: string | null;
+  website?: string | null;
+  notes?: string | null;
+}
+
+export interface ContactUpdateInput {
+  id: string;
+  name?: string | null;
+  status?: StatusEnum | null;
+  sendNewsletter?: SendNewsletterEnum | null;
+  pledgeReceived?: boolean | null;
+  pledgeAmount?: number | null;
+  pledgeCurrency?: string | null;
+  pledgeFrequency?: PledgeFrequencyEnum | null;
+  pledgeStartDate?: any | null;
+  userId?: string | null;
+  tagList?: string[] | null;
+  likelyToGive?: LikelyToGiveEnum | null;
+  nextAsk?: any | null;
+  envelopeGreeting?: string | null;
+  greeting?: string | null;
+  noAppeals?: boolean | null;
+  preferredContactMethod?: PreferredContactMethodEnum | null;
+  locale?: string | null;
+  timezone?: string | null;
+  churchName?: string | null;
+  website?: string | null;
+  notes?: string | null;
 }
 
 export interface TaskCommentCreateInput {

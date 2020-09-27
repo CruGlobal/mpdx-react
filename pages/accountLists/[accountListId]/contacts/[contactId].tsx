@@ -22,7 +22,7 @@ const ContactIdPage = ({ accountListId, contactId }: Props): ReactElement => {
     return (
         <>
             <Head>
-                <title>MPDX | Contacts</title>
+                <title>MPDX | {t('Contacts')}</title>
             </Head>
             <ContactShow contactId={contactId} />
         </>
