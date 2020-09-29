@@ -17,6 +17,7 @@ const ContactIdPage = ({ accountListId, contactId }: Props): ReactElement => {
 
     useEffect(() => {
         dispatch({ type: 'updateAccountListId', accountListId });
+        dispatch({ type: 'updateBreadcrumb', breadcrumb: 'Contact' });
     }, []);
 
     return (

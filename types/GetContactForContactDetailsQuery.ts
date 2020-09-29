@@ -52,6 +52,10 @@ export interface GetContactForContactDetailsQuery_contact_primaryPerson_primaryP
 
 export interface GetContactForContactDetailsQuery_contact_primaryPerson {
   id: string;
+  title: string | null;
+  firstName: string | null;
+  lastName: string | null;
+  suffix: string | null;
   primaryEmailAddress: GetContactForContactDetailsQuery_contact_primaryPerson_primaryEmailAddress | null;
   primaryPhoneNumber: GetContactForContactDetailsQuery_contact_primaryPerson_primaryPhoneNumber | null;
 }

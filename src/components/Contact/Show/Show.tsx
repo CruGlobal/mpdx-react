@@ -2,6 +2,7 @@ import { Box, Grid, Paper, Tab } from '@material-ui/core';
 import { TabContext, TabList, TabPanel } from '@material-ui/lab';
 import React, { ReactElement, useState } from 'react';
 import ContactDetails from '../Details';
+import ContactNotes from '../Notes';
 
 interface Props {
     contactId?: string;
@@ -31,7 +32,7 @@ const ContactShow = ({ contactId }: Props): ReactElement => {
                                 <Tab label="Addresses" value="5" />
                                 <Tab label="People" value="6" />
                             </TabList>
-                            <TabPanel value="1">Item One</TabPanel>
+                            <TabPanel value="1">{contactId && <ContactNotes contactId={contactId} />}</TabPanel>
                             <TabPanel value="2">Item Two</TabPanel>
                             <TabPanel value="3">Item Three</TabPanel>
                             <TabPanel value="4">Item Four</TabPanel>

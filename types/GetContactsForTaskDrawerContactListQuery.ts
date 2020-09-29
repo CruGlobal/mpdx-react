@@ -63,6 +63,7 @@ export interface GetContactsForTaskDrawerContactListQuery_contacts_nodes {
   pledgeCurrency: string | null;
   pledgeFrequency: PledgeFrequencyEnum | null;
   tagList: string[];
+  totalDonations: number | null;
 }
 
 export interface GetContactsForTaskDrawerContactListQuery_contacts {
