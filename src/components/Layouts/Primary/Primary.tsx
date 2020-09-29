@@ -1,9 +1,10 @@
 import React, { ReactElement, ReactNode, useState } from 'react';
 import { Box, makeStyles, Theme, Hidden } from '@material-ui/core';
+import clsx from 'clsx';
 import AddFab from './AddFab';
 import TopBar from './TopBar';
 import SideBar from './SideBar';
-import { SIDE_BAR_WIDTH } from './SideBar/SideBar';
+import { SIDE_BAR_MINIMIZED_WIDTH, SIDE_BAR_WIDTH } from './SideBar/SideBar';
 import BottomBar from './BottomBar';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -15,7 +16,16 @@ const useStyles = makeStyles((theme: Theme) => ({
         },
     },
     box: {
+        transition: theme.transitions.create('margin-left', {
+            duration: theme.transitions.duration.enteringScreen,
+        }),
         marginLeft: SIDE_BAR_WIDTH,
+        [theme.breakpoints.down('sm')]: {
+            marginLeft: 0,
+        },
+    },
+    boxClosed: {
+        marginLeft: SIDE_BAR_MINIMIZED_WIDTH,
         [theme.breakpoints.down('sm')]: {
             marginLeft: 0,
         },
@@ -31,16 +41,17 @@ interface Props {
 
 const Primary = ({ children }: Props): ReactElement => {
     const classes = useStyles();
-    const [mobileOpen, setMobileOpen] = useState(false);
-    const handleDrawerToggle = (): void => {
-        setMobileOpen(!mobileOpen);
+    const [open, setOpen] = useState(false);
+
+    const handleOpenChange = (state = !open): void => {
+        setOpen(state);
     };
 
     return (
         <Box className={classes.container}>
-            <SideBar mobileOpen={mobileOpen} handleDrawerToggle={handleDrawerToggle} />
-            <Box className={classes.box}>
-                <TopBar handleDrawerToggle={handleDrawerToggle} />
+            <SideBar open={open} handleOpenChange={handleOpenChange} />
+            <Box className={clsx(classes.box, { [classes.boxClosed]: !open })}>
+                <TopBar open={open} handleOpenChange={handleOpenChange} />
                 {children}
             </Box>
             <Hidden smUp>

@@ -26,6 +26,7 @@
         "@material-ui/pickers": "^3.2.10",
         "apollo-cache-persist": "^0.1.1",
         "axios": "^0.20.0",
+        "clsx": "^1.1.1",
         "date-fns": "^2.16.1",
         "formik": "^2.1.5",
         "framer-motion": "^2.7.1",

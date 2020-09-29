@@ -11,14 +11,20 @@ import {
     createStyles,
     Box,
     ListItemIcon,
+    IconButton,
 } from '@material-ui/core';
 import HomeIcon from '@material-ui/icons/Home';
 import { useTranslation } from 'react-i18next';
 import Link from 'next/link';
 import AssignmentIcon from '@material-ui/icons/Assignment';
+import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
+import MenuIcon from '@material-ui/icons/Menu';
+import clsx from 'clsx';
+import { SpeedDialIcon } from '@material-ui/lab';
 import { useApp } from '../../../App';
 
 export const SIDE_BAR_WIDTH = 256;
+export const SIDE_BAR_MINIMIZED_WIDTH = 57;
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -32,7 +38,9 @@ const useStyles = makeStyles((theme: Theme) =>
             ...theme.mixins.toolbar,
             display: 'flex',
             alignItems: 'center',
+            paddingLeft: theme.spacing(0.5),
         },
+        logo: {},
         drawerPaper: {
             paddingTop: `env(safe-area-inset-top)`,
             paddingBottom: `env(safe-area-inset-bottom)`,
@@ -59,15 +67,38 @@ const useStyles = makeStyles((theme: Theme) =>
         listItemText: {
             color: '#fff',
         },
+        iconButton: {
+            color: '#fff',
+            marginRight: theme.spacing(2),
+        },
+        drawer: {
+            width: SIDE_BAR_WIDTH,
+            flexShrink: 0,
+            whiteSpace: 'nowrap',
+        },
+        drawerOpen: {
+            width: SIDE_BAR_WIDTH,
+            transition: theme.transitions.create('width', {
+                duration: theme.transitions.duration.enteringScreen,
+            }),
+        },
+        drawerClose: {
+            transition: theme.transitions.create('width', {
+                duration: theme.transitions.duration.leavingScreen,
+                delay: 20,
+            }),
+            overflowX: 'hidden',
+            width: SIDE_BAR_MINIMIZED_WIDTH,
+        },
     }),
 );
 
 interface Props {
-    mobileOpen: boolean;
-    handleDrawerToggle: () => void;
+    open: boolean;
+    handleOpenChange: (state?: boolean) => void;
 }
 
-const SideBar = ({ mobileOpen, handleDrawerToggle }: Props): ReactElement => {
+const SideBar = ({ open, handleOpenChange }: Props): ReactElement => {
     const classes = useStyles();
     const { t } = useTranslation();
     const {
@@ -75,9 +106,14 @@ const SideBar = ({ mobileOpen, handleDrawerToggle }: Props): ReactElement => {
     } = useApp();
 
     const drawer = (
-        <div>
+        <Box>
             <Box px={2} className={classes.toolbar}>
-                <img src={require('../../../../images/logo.svg')} alt="logo" />
+                <IconButton className={classes.iconButton} onClick={(): void => handleOpenChange()}>
+                    <SpeedDialIcon icon={<MenuIcon />} openIcon={<ChevronLeftIcon />} open={open} />
+                </IconButton>
+                <Box className={classes.logo}>
+                    <img src={require('../../../../images/logo.svg')} alt="logo" />
+                </Box>
             </Box>
             <Divider className={classes.divider} />
             <List className={classes.list}>
@@ -85,7 +121,7 @@ const SideBar = ({ mobileOpen, handleDrawerToggle }: Props): ReactElement => {
                     <ListItem
                         className={classes.listItem}
                         button
-                        onClick={handleDrawerToggle}
+                        onClick={(): void => handleOpenChange(false)}
                         data-testid="SideBarOverview"
                     >
                         <ListItemIcon className={classes.listItemIcon}>
@@ -102,7 +138,7 @@ const SideBar = ({ mobileOpen, handleDrawerToggle }: Props): ReactElement => {
                     <ListItem
                         className={classes.listItem}
                         button
-                        onClick={handleDrawerToggle}
+                        onClick={(): void => handleOpenChange(false)}
                         data-testid="SideBarTasks"
                     >
                         <ListItemIcon className={classes.listItemIcon}>
@@ -112,7 +148,7 @@ const SideBar = ({ mobileOpen, handleDrawerToggle }: Props): ReactElement => {
                     </ListItem>
                 </Link>
             </List>
-        </div>
+        </Box>
     );
 
     return (
@@ -121,8 +157,8 @@ const SideBar = ({ mobileOpen, handleDrawerToggle }: Props): ReactElement => {
                 <Hidden mdUp>
                     <Drawer
                         variant="temporary"
-                        open={mobileOpen}
-                        onClose={handleDrawerToggle}
+                        open={open}
+                        onClose={(): void => handleOpenChange(false)}
                         classes={{ paper: classes.drawerPaper }}
                         ModalProps={{ keepMounted: true }}
                         data-testid="SideBarMobileDrawer"
@@ -132,10 +168,19 @@ const SideBar = ({ mobileOpen, handleDrawerToggle }: Props): ReactElement => {
                 </Hidden>
                 <Hidden smDown>
                     <Drawer
-                        classes={{ paper: classes.drawerPaper }}
                         variant="permanent"
-                        open
+                        open={open}
                         data-testid="SideBarDesktopDrawer"
+                        className={clsx(classes.drawer, {
+                            [classes.drawerOpen]: open,
+                            [classes.drawerClose]: !open,
+                        })}
+                        classes={{
+                            paper: clsx(classes.drawerPaper, {
+                                [classes.drawerOpen]: open,
+                                [classes.drawerClose]: !open,
+                            }),
+                        }}
                     >
                         {drawer}
                     </Drawer>

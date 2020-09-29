@@ -13,7 +13,7 @@ describe('Sidebar', () => {
     it('has correct defaults', () => {
         const { getByTestId, queryByTestId } = render(
             <AppProvider initialState={{ accountListId: 'account-1' }}>
-                <Sidebar mobileOpen={false} handleDrawerToggle={jest.fn()} />
+                <Sidebar open={false} handleOpenChange={jest.fn()} />
             </AppProvider>,
         );
         expect(queryByTestId('SideBarMobileDrawer')).not.toBeInTheDocument();
@@ -36,7 +36,7 @@ describe('Sidebar', () => {
             const { getByTestId, queryByTestId, getByText, rerender } = render(
                 <TestRouter>
                     <AppProvider initialState={{ accountListId: 'account-1' }}>
-                        <Sidebar mobileOpen={false} handleDrawerToggle={handleDrawerToggle} />,
+                        <Sidebar open={false} handleOpenChange={handleDrawerToggle} />,
                     </AppProvider>
                 </TestRouter>,
             );
@@ -49,7 +49,7 @@ describe('Sidebar', () => {
             rerender(
                 <TestRouter>
                     <AppProvider initialState={{ accountListId: 'account-1' }}>
-                        <Sidebar mobileOpen={true} handleDrawerToggle={handleDrawerToggle} />
+                        <Sidebar open={true} handleOpenChange={handleDrawerToggle} />
                     </AppProvider>
                 </TestRouter>,
             );
