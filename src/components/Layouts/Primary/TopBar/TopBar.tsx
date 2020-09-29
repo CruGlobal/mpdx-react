@@ -24,7 +24,7 @@ import MenuIcon from '@material-ui/icons/Menu';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { GetTopBarQuery } from '../../../../../types/GetTopBarQuery';
-import { SIDE_BAR_WIDTH } from '../SideBar/SideBar';
+import { SIDE_BAR_MINIMIZED_WIDTH, SIDE_BAR_WIDTH } from '../SideBar/SideBar';
 import { useApp } from '../../../App';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -34,7 +34,7 @@ const useStyles = makeStyles((theme: Theme) => ({
         paddingRight: `env(safe-area-inset-right)`,
         backgroundColor: theme.palette.primary.main,
         width: 'auto',
-        left: SIDE_BAR_WIDTH,
+        left: SIDE_BAR_MINIMIZED_WIDTH,
         [theme.breakpoints.down('sm')]: {
             left: 0,
         },
@@ -103,6 +103,19 @@ const useStyles = makeStyles((theme: Theme) => ({
     menuList: {
         paddingTop: 0,
     },
+    logo: {
+        width: 70,
+        transition: theme.transitions.create('margin-right', {
+            duration: theme.transitions.duration.enteringScreen,
+        }),
+        marginRight: theme.spacing(2),
+        '& img': {
+            marginLeft: -13,
+        },
+    },
+    logoOpen: {
+        marginRight: SIDE_BAR_WIDTH - 70 - SIDE_BAR_MINIMIZED_WIDTH,
+    },
 }));
 
 export const GET_TOP_BAR_QUERY = gql`
@@ -122,10 +135,11 @@ export const GET_TOP_BAR_QUERY = gql`
 `;
 
 interface Props {
-    handleDrawerToggle: () => void;
+    open: boolean;
+    handleOpenChange: (state?: boolean) => void;
 }
 
-const TopBar = ({ handleDrawerToggle }: Props): ReactElement => {
+const TopBar = ({ open, handleOpenChange }: Props): ReactElement => {
     const classes = useStyles();
     const { dispatch, state } = useApp();
     const { t } = useTranslation();
@@ -134,15 +148,15 @@ const TopBar = ({ handleDrawerToggle }: Props): ReactElement => {
         threshold: 0,
     });
     const { data } = useQuery<GetTopBarQuery>(GET_TOP_BAR_QUERY);
-    const [open, setOpen] = useState(false);
+    const [accountListMenuOpen, setAccountListMenuOpen] = useState(false);
     const anchorEl = useRef(null);
 
-    const handleOpen = (): void => {
-        setOpen(true);
+    const handleAccountListMenuOpen = (): void => {
+        setAccountListMenuOpen(true);
     };
 
-    const handleClose = (): void => {
-        setOpen(false);
+    const handleAccountListMenuClose = (): void => {
+        setAccountListMenuOpen(false);
     };
 
     const currentAccountList = data?.accountLists?.nodes?.find((node) => node.id == state.accountListId);
@@ -158,9 +172,20 @@ const TopBar = ({ handleDrawerToggle }: Props): ReactElement => {
                     <Grid container className={classes.container} alignItems="center">
                         <Grid item className={classes.sideBarGrid}>
                             <Hidden mdUp>
-                                <IconButton color="inherit" edge="start" onClick={handleDrawerToggle}>
+                                <IconButton
+                                    color="inherit"
+                                    edge="start"
+                                    onClick={() => handleOpenChange(true)}
+                                    aria-label="Show Menu"
+                                >
                                     <MenuIcon />
                                 </IconButton>
+                            </Hidden>
+
+                            <Hidden smDown>
+                                <Box className={clsx(classes.logo, { [classes.logoOpen]: open })}>
+                                    <img src={require('../../../../images/logo.svg')} alt="logo" />
+                                </Box>
                             </Hidden>
                         </Grid>
                         <Grid item className={classes.accountListsGrid}>
@@ -178,7 +203,7 @@ const TopBar = ({ handleDrawerToggle }: Props): ReactElement => {
                                         <>
                                             <Hidden only="xs">
                                                 <Button
-                                                    onClick={handleOpen}
+                                                    onClick={handleAccountListMenuOpen}
                                                     className={[classes.button, classes.link].join(' ')}
                                                     endIcon={<ArrowDropDownIcon />}
                                                     size="small"
@@ -190,7 +215,7 @@ const TopBar = ({ handleDrawerToggle }: Props): ReactElement => {
                                             </Hidden>
                                             <Hidden smUp>
                                                 <IconButton
-                                                    onClick={handleOpen}
+                                                    onClick={handleAccountListMenuOpen}
                                                     className={classes.link}
                                                     ref={anchorEl}
                                                     data-testid="TopBarButton"
@@ -201,12 +226,14 @@ const TopBar = ({ handleDrawerToggle }: Props): ReactElement => {
                                             <Menu
                                                 data-testid="TopBarMenu"
                                                 anchorEl={anchorEl?.current}
-                                                open={open}
-                                                onClose={handleClose}
+                                                open={accountListMenuOpen}
+                                                onClose={handleAccountListMenuClose}
                                                 classes={{ list: classes.menuList }}
                                             >
                                                 <Link href="/accountLists" scroll={false}>
-                                                    <MenuItem onClick={handleClose}>See All Account Lists</MenuItem>
+                                                    <MenuItem onClick={handleAccountListMenuClose}>
+                                                        See All Account Lists
+                                                    </MenuItem>
                                                 </Link>
                                                 <ListSubheader>Account Lists</ListSubheader>
                                                 {data.accountLists.nodes.map(({ id, name }) => (
@@ -218,7 +245,7 @@ const TopBar = ({ handleDrawerToggle }: Props): ReactElement => {
                                                     >
                                                         <MenuItem
                                                             selected={id == state.accountListId}
-                                                            onClick={handleClose}
+                                                            onClick={handleAccountListMenuClose}
                                                             data-testid={`TopBarMenuItem${id}`}
                                                         >
                                                             {name}

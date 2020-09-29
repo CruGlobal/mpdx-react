@@ -53,7 +53,7 @@ describe('Primary', () => {
         });
 
         it('allows menu to be shown and hidden', async () => {
-            const { getByTestId, queryByTestId } = render(
+            const { getByTestId, queryByTestId, getByRole } = render(
                 <TestRouter>
                     <MockedProvider mocks={mocks} addTypename={false}>
                         <AppProvider initialState={{ accountListId: '1', breadcrumb: 'Dashboard' }}>
@@ -69,7 +69,7 @@ describe('Primary', () => {
             expect(sideBarOverview).not.toBeVisible();
             const sideBarMobileDrawer = getByTestId('SideBarMobileDrawer');
             expect(sideBarMobileDrawer).toBeInTheDocument();
-            fireEvent.click(sideBarMobileDrawer.children[0]);
+            fireEvent.click(getByRole('button', { name: 'Show Menu' }));
             expect(sideBarOverview).toBeVisible();
             fireEvent.click(sideBarOverview);
             await waitFor(() => expect(sideBarOverview).not.toBeVisible());
