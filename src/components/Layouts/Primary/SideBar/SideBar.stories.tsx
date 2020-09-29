@@ -27,7 +27,7 @@ Praesent commodo cursus magna, vel scelerisque nisl consectetur et.`,
 export const Default = (): ReactElement => {
     return (
         <>
-            <SideBar mobileOpen={false} handleDrawerToggle={(): void => {}} />
+            <SideBar open={false} handleOpenChange={(): void => {}} />
             <Content />
         </>
     );

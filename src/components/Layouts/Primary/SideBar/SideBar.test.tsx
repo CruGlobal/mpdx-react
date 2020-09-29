@@ -32,11 +32,11 @@ describe('Sidebar', () => {
         });
 
         it('allows menu to be shown and hidden', () => {
-            const handleDrawerToggle = jest.fn();
+            const handleOpenChange = jest.fn();
             const { getByTestId, queryByTestId, getByText, rerender } = render(
                 <TestRouter>
                     <AppProvider initialState={{ accountListId: 'account-1' }}>
-                        <Sidebar open={false} handleOpenChange={handleDrawerToggle} />,
+                        <Sidebar open={false} handleOpenChange={handleOpenChange} />,
                     </AppProvider>
                 </TestRouter>,
             );
@@ -45,11 +45,11 @@ describe('Sidebar', () => {
             const sideBarMobileDrawer = getByTestId('SideBarMobileDrawer');
             expect(sideBarMobileDrawer).toBeInTheDocument();
             fireEvent.click(sideBarMobileDrawer.children[0]);
-            expect(handleDrawerToggle).toHaveBeenCalled();
+            expect(handleOpenChange).toHaveBeenCalled();
             rerender(
                 <TestRouter>
                     <AppProvider initialState={{ accountListId: 'account-1' }}>
-                        <Sidebar open={true} handleOpenChange={handleDrawerToggle} />
+                        <Sidebar open={true} handleOpenChange={handleOpenChange} />
                     </AppProvider>
                 </TestRouter>,
             );

@@ -53,7 +53,7 @@ export const Default = (): ReactElement => {
     return (
         <>
             <MockedProvider mocks={mocks} addTypename={false}>
-                <TopBar handleDrawerToggle={(): void => {}} />
+                <TopBar open={false} handleOpenChange={(): void => {}} />
             </MockedProvider>
             <Content />
         </>
@@ -83,7 +83,7 @@ export const MultipleAccountLists = (): ReactElement => {
     return (
         <>
             <MockedProvider mocks={mocks} addTypename={false}>
-                <TopBar handleDrawerToggle={(): void => {}} />
+                <TopBar open={false} handleOpenChange={(): void => {}} />
             </MockedProvider>
             <Content />
         </>

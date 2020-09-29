@@ -48,7 +48,7 @@ describe('TopBar', () => {
     it('has correct defaults', () => {
         const { queryByTestId } = render(
             <MockedProvider mocks={mocks} addTypename={false}>
-                <TopBar handleDrawerToggle={jest.fn()} />
+                <TopBar open={false} handleOpenChange={jest.fn()} />
             </MockedProvider>,
         );
         expect(queryByTestId('TopBarBreadcrumb')).not.toBeInTheDocument();
@@ -64,7 +64,7 @@ describe('TopBar', () => {
             const { getByTestId, queryByTestId } = render(
                 <TestRouter>
                     <MockedProvider mocks={mocks} addTypename={false}>
-                        <TopBar handleDrawerToggle={jest.fn()} />
+                        <TopBar open={false} handleOpenChange={jest.fn()} />
                     </MockedProvider>
                 </TestRouter>,
             );
@@ -108,7 +108,7 @@ describe('TopBar', () => {
         it('shows single accountList name', async () => {
             const { getByTestId } = render(
                 <MockedProvider mocks={mocks} addTypename={false}>
-                    <TopBar handleDrawerToggle={jest.fn()} />
+                    <TopBar open={false} handleOpenChange={jest.fn()} />
                 </MockedProvider>,
             );
             await waitFor(() => expect(getByTestId('TopBarSingleAccountList').textContent).toEqual('Staff Account'));
