@@ -14,6 +14,7 @@ import moment from 'moment';
 import { Skeleton } from '@material-ui/lab';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
+import Link from 'next/link';
 import AnimatedCard from '../../../AnimatedCard';
 import { GetThisWeekQuery_latePledgeContacts } from '../../../../../types/GetThisWeekQuery';
 
@@ -52,11 +53,12 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 interface Props {
+    accountListId: string;
     loading?: boolean;
     latePledgeContacts?: GetThisWeekQuery_latePledgeContacts;
 }
 
-const LateCommitments = ({ loading, latePledgeContacts }: Props): ReactElement => {
+const LateCommitments = ({ accountListId, loading, latePledgeContacts }: Props): ReactElement => {
     const classes = useStyles();
     const { t } = useTranslation();
 
@@ -111,16 +113,24 @@ const LateCommitments = ({ loading, latePledgeContacts }: Props): ReactElement =
                                 {latePledgeContacts.nodes.map((contact) => {
                                     const count = moment().diff(moment(contact.lateAt), 'days');
                                     return (
-                                        <ListItem
+                                        <Link
                                             key={contact.id}
-                                            button
-                                            data-testid={`LateCommitmentsListItemContact-${contact.id}`}
+                                            href="/accountLists/[accountListId]/contacts/[contactId]"
+                                            as={`/accountLists/${accountListId}/contacts/${contact.id}`}
+                                            passHref
                                         >
-                                            <ListItemText
-                                                primary={contact.name}
-                                                secondary={t('Their gift is {{ count, number }} day late.', { count })}
-                                            />
-                                        </ListItem>
+                                            <ListItem
+                                                button
+                                                data-testid={`LateCommitmentsListItemContact-${contact.id}`}
+                                            >
+                                                <ListItemText
+                                                    primary={contact.name}
+                                                    secondary={t('Their gift is {{ count, number }} day late.', {
+                                                        count,
+                                                    })}
+                                                />
+                                            </ListItem>
+                                        </Link>
                                     );
                                 })}
                             </List>

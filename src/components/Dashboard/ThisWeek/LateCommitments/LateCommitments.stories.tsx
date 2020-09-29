@@ -24,7 +24,7 @@ export const Default = (): ReactElement => {
     };
     return (
         <Box m={2}>
-            <LateCommitments latePledgeContacts={latePledgeContacts} />
+            <LateCommitments accountListId="abc" latePledgeContacts={latePledgeContacts} />
         </Box>
     );
 };
@@ -36,7 +36,7 @@ export const Empty = (): ReactElement => {
     };
     return (
         <Box m={2}>
-            <LateCommitments latePledgeContacts={latePledgeContacts} />
+            <LateCommitments accountListId="abc" latePledgeContacts={latePledgeContacts} />
         </Box>
     );
 };
@@ -44,7 +44,7 @@ export const Empty = (): ReactElement => {
 export const Loading = (): ReactElement => {
     return (
         <Box m={2}>
-            <LateCommitments loading />
+            <LateCommitments accountListId="abc" loading />
         </Box>
     );
 };

@@ -1,11 +1,11 @@
 import React, { ReactElement } from 'react';
 import { Box } from '@material-ui/core';
-import { GetContactsForTaskDrawerContactListQuery_contacts_nodes as Contact } from '../../../../../../types/GetContactsForTaskDrawerContactListQuery';
-import { StatusEnum, SendNewsletterEnum, PledgeFrequencyEnum } from '../../../../../../types/globalTypes';
-import TaskDrawerContactListItem from '.';
+import { GetContactsForTaskDrawerContactListQuery_contacts_nodes as Contact } from '../../../../types/GetContactsForTaskDrawerContactListQuery';
+import { StatusEnum, SendNewsletterEnum, PledgeFrequencyEnum } from '../../../../types/globalTypes';
+import ContactItem from '.';
 
 export default {
-    title: 'Task/Drawer/ContactList/Item',
+    title: 'Contact/Item',
 };
 
 export const Default = (): ReactElement => {
@@ -51,10 +51,11 @@ export const Default = (): ReactElement => {
         pledgeCurrency: 'NZD',
         pledgeFrequency: PledgeFrequencyEnum.MONTHLY,
         tagList: ['test', 'post', 'long', 'list'],
+        totalDonations: 1000,
     };
     return (
         <Box m={2}>
-            <TaskDrawerContactListItem contact={contact} />
+            <ContactItem contact={contact} />
         </Box>
     );
 };
@@ -72,10 +73,11 @@ export const Minimal = (): ReactElement => {
         pledgeCurrency: null,
         pledgeFrequency: null,
         tagList: [],
+        totalDonations: 0,
     };
     return (
         <Box m={2}>
-            <TaskDrawerContactListItem contact={contact} />
+            <ContactItem contact={contact} />
         </Box>
     );
 };
@@ -83,7 +85,7 @@ export const Minimal = (): ReactElement => {
 export const Loading = (): ReactElement => {
     return (
         <Box m={2}>
-            <TaskDrawerContactListItem />
+            <ContactItem />
         </Box>
     );
 };

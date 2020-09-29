@@ -1,7 +1,7 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import { GetContactsForTaskDrawerContactListQuery_contacts_nodes as Contact } from '../../../../../../types/GetContactsForTaskDrawerContactListQuery';
-import { StatusEnum, SendNewsletterEnum, PledgeFrequencyEnum } from '../../../../../../types/globalTypes';
+import { GetContactsForTaskDrawerContactListQuery_contacts_nodes as Contact } from '../../../../types/GetContactsForTaskDrawerContactListQuery';
+import { StatusEnum, SendNewsletterEnum, PledgeFrequencyEnum } from '../../../../types/globalTypes';
 import Item from '.';
 
 describe('Item', () => {
@@ -47,6 +47,7 @@ describe('Item', () => {
         pledgeCurrency: 'NZD',
         pledgeFrequency: PledgeFrequencyEnum.MONTHLY,
         tagList: ['test', 'post', 'long', 'list'],
+        totalDonations: 1000,
     };
 
     const minimalContact: Contact = {
@@ -61,44 +62,45 @@ describe('Item', () => {
         pledgeCurrency: null,
         pledgeFrequency: null,
         tagList: [],
+        totalDonations: 0,
     };
 
     it('has correct defaults', () => {
         const { getByTestId } = render(<Item contact={contact} />);
-        expect(getByTestId('TaskDrawerContactListItemCard')).toBeInTheDocument();
+        expect(getByTestId('ContactItemCard')).toBeInTheDocument();
     });
 
     it('displays minimal contact', () => {
         const { getByTestId, getByText, queryByTestId, rerender } = render(<Item contact={minimalContact} />);
-        expect(getByTestId('TaskDrawerContactListItemCard')).toBeInTheDocument();
-        expect(queryByTestId('TaskDrawerContactListItemAddress')).not.toBeInTheDocument();
-        expect(queryByTestId('TaskDrawerContactListItemEmailAddress')).not.toBeInTheDocument();
-        expect(queryByTestId('TaskDrawerContactListItemPhoneNumber')).not.toBeInTheDocument();
-        expect(queryByTestId('TaskDrawerContactListItemSendNewsletter')).not.toBeInTheDocument();
-        expect(queryByTestId('TaskDrawerContactListItemPledge')).not.toBeInTheDocument();
-        expect(queryByTestId('TaskDrawerContactListItemLastDonation')).not.toBeInTheDocument();
-        expect(queryByTestId('TaskDrawerContactListItemTags')).not.toBeInTheDocument();
+        expect(getByTestId('ContactItemCard')).toBeInTheDocument();
+        expect(queryByTestId('ContactItemAddress')).not.toBeInTheDocument();
+        expect(queryByTestId('ContactItemEmailAddress')).not.toBeInTheDocument();
+        expect(queryByTestId('ContactItemPhoneNumber')).not.toBeInTheDocument();
+        expect(queryByTestId('ContactItemSendNewsletter')).not.toBeInTheDocument();
+        expect(queryByTestId('ContactItemPledge')).not.toBeInTheDocument();
+        expect(queryByTestId('ContactItemLastDonation')).not.toBeInTheDocument();
+        expect(queryByTestId('ContactItemTags')).not.toBeInTheDocument();
         expect(getByText('Phillips, Guy')).toBeInTheDocument();
         rerender(<Item contact={{ ...minimalContact, primaryAddress: contact.primaryAddress }} />);
-        expect(getByTestId('TaskDrawerContactListItemAddress')).toBeInTheDocument();
+        expect(getByTestId('ContactItemAddress')).toBeInTheDocument();
         rerender(
             <Item
                 contact={{ ...minimalContact, primaryPerson: { ...contact.primaryPerson, primaryPhoneNumber: null } }}
             />,
         );
-        expect(getByTestId('TaskDrawerContactListItemEmailAddress')).toBeInTheDocument();
+        expect(getByTestId('ContactItemEmailAddress')).toBeInTheDocument();
         rerender(
             <Item
                 contact={{ ...minimalContact, primaryPerson: { ...contact.primaryPerson, primaryEmailAddress: null } }}
             />,
         );
-        expect(getByTestId('TaskDrawerContactListItemPhoneNumber')).toBeInTheDocument();
+        expect(getByTestId('ContactItemPhoneNumber')).toBeInTheDocument();
         rerender(<Item contact={{ ...minimalContact, sendNewsletter: contact.sendNewsletter }} />);
-        expect(getByTestId('TaskDrawerContactListItemSendNewsletter')).toBeInTheDocument();
+        expect(getByTestId('ContactItemSendNewsletter')).toBeInTheDocument();
         rerender(<Item contact={{ ...minimalContact, lastDonation: contact.lastDonation }} />);
-        expect(getByTestId('TaskDrawerContactListItemLastDonation')).toBeInTheDocument();
+        expect(getByTestId('ContactItemLastDonation')).toBeInTheDocument();
         rerender(<Item contact={{ ...minimalContact, tagList: contact.tagList }} />);
-        expect(getByTestId('TaskDrawerContactListItemTags')).toBeInTheDocument();
+        expect(getByTestId('ContactItemTags')).toBeInTheDocument();
         rerender(
             <Item
                 contact={{
@@ -129,10 +131,19 @@ describe('Item', () => {
             />,
         );
         expect(getByText('PARTNER_FINANCIAL')).toBeInTheDocument();
+        rerender(
+            <Item
+                contact={{
+                    ...minimalContact,
+                    totalDonations: 500,
+                }}
+            />,
+        );
+        expect(getByText('Lifetime Gifts')).toBeInTheDocument();
     });
 
     it('has loading state', () => {
         const { queryByTestId } = render(<Item />);
-        expect(queryByTestId('TaskDrawerContactListItemCard')).not.toBeInTheDocument();
+        expect(queryByTestId('ContactItemCard')).not.toBeInTheDocument();
     });
 });

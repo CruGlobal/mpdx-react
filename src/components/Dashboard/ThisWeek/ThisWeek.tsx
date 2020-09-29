@@ -176,7 +176,11 @@ const ThisWeek = ({ accountListId }: Props): ReactElement => {
                     <TasksDueThisWeek loading={loading} dueTasks={dueTasks} />
                 </Grid>
                 <Grid item xs={12} sm={6} md={4}>
-                    <LateCommitments loading={loading} latePledgeContacts={latePledgeContacts} />
+                    <LateCommitments
+                        loading={loading}
+                        latePledgeContacts={latePledgeContacts}
+                        accountListId={accountListId}
+                    />
                 </Grid>
                 <Grid item xs={12} sm={6} md={4}>
                     <Referrals loading={loading} recentReferrals={recentReferrals} onHandReferrals={onHandReferrals} />

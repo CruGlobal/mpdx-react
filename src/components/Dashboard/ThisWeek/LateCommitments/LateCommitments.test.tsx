@@ -5,14 +5,14 @@ import LateCommitments from '.';
 
 describe('LateCommitments', () => {
     it('default', () => {
-        const { getByTestId, queryByTestId } = render(<LateCommitments />);
+        const { getByTestId, queryByTestId } = render(<LateCommitments accountListId="abc" />);
         expect(getByTestId('LateCommitmentsCardContentEmpty')).toBeInTheDocument();
         expect(queryByTestId('LateCommitmentsDivLoading')).not.toBeInTheDocument();
         expect(queryByTestId('LateCommitmentsListContacts')).not.toBeInTheDocument();
     });
 
     it('loading', () => {
-        const { getByTestId, queryByTestId } = render(<LateCommitments loading />);
+        const { getByTestId, queryByTestId } = render(<LateCommitments accountListId="abc" loading />);
         expect(queryByTestId('LateCommitmentsCardContentEmpty')).not.toBeInTheDocument();
         expect(getByTestId('LateCommitmentsDivLoading')).toBeInTheDocument();
         expect(queryByTestId('LateCommitmentsListContacts')).not.toBeInTheDocument();
@@ -23,7 +23,9 @@ describe('LateCommitments', () => {
             nodes: [],
             totalCount: 0,
         };
-        const { getByTestId, queryByTestId } = render(<LateCommitments latePledgeContacts={latePledgeContacts} />);
+        const { getByTestId, queryByTestId } = render(
+            <LateCommitments accountListId="abc" latePledgeContacts={latePledgeContacts} />,
+        );
         expect(getByTestId('LateCommitmentsCardContentEmpty')).toBeInTheDocument();
         expect(queryByTestId('LateCommitmentsDivLoading')).not.toBeInTheDocument();
         expect(queryByTestId('LateCommitmentsListContacts')).not.toBeInTheDocument();
@@ -52,16 +54,18 @@ describe('LateCommitments', () => {
                 ],
                 totalCount: 1595,
             };
-            const { getByTestId, queryByTestId } = render(<LateCommitments latePledgeContacts={latePledgeContacts} />);
+            const { getByTestId, queryByTestId } = render(
+                <LateCommitments accountListId="abc" latePledgeContacts={latePledgeContacts} />,
+            );
             expect(queryByTestId('LateCommitmentsCardContentEmpty')).not.toBeInTheDocument();
             expect(queryByTestId('LateCommitmentsDivLoading')).not.toBeInTheDocument();
             expect(getByTestId('LateCommitmentsButtonViewAll').textContent).toEqual('View All (1,595)');
-            expect(getByTestId('LateCommitmentsListItemContact-contact1').textContent).toEqual(
-                'Smith, SarahTheir gift is 2,679 days late.',
-            );
-            expect(getByTestId('LateCommitmentsListItemContact-contact2').textContent).toEqual(
-                'Smith, JohnTheir gift is 1,523 days late.',
-            );
+            const contact1Element = getByTestId('LateCommitmentsListItemContact-contact1');
+            expect(contact1Element).toHaveAttribute('href', '/accountLists/abc/contacts/contact1');
+            expect(contact1Element.textContent).toEqual('Smith, SarahTheir gift is 2,679 days late.');
+            const contact2Element = getByTestId('LateCommitmentsListItemContact-contact2');
+            expect(contact2Element).toHaveAttribute('href', '/accountLists/abc/contacts/contact2');
+            expect(contact2Element.textContent).toEqual('Smith, JohnTheir gift is 1,523 days late.');
         });
     });
 });

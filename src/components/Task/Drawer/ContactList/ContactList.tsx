@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { gql, useLazyQuery } from '@apollo/client';
 import { sortBy } from 'lodash/fp';
 import { GetContactsForTaskDrawerContactListQuery } from '../../../../../types/GetContactsForTaskDrawerContactListQuery';
-import TaskDrawerContactListItem from './Item';
+import ContactItem from '../../../Contact/Item';
 
 const useStyles = makeStyles((theme: Theme) => ({
     cardContent: {
@@ -70,6 +70,7 @@ export const GET_CONTACTS_FOR_TASK_DRAWER_CONTACT_LIST_QUERY = gql`
                 pledgeCurrency
                 pledgeFrequency
                 tagList
+                totalDonations
             }
         }
     }
@@ -89,7 +90,6 @@ const TaskDrawerContactList = ({ accountListId, contactIds }: Props): ReactEleme
     );
 
     useEffect(() => {
-        console.log(contactIds);
         if (contactIds.length > 0) {
             getContacts({
                 variables: {
@@ -105,10 +105,10 @@ const TaskDrawerContactList = ({ accountListId, contactIds }: Props): ReactEleme
             {loading ? (
                 <Grid container spacing={2} direction="column" data-testid="TaskDrawerContactListLoading">
                     <Grid item>
-                        <TaskDrawerContactListItem />
+                        <ContactItem />
                     </Grid>
                     <Grid item>
-                        <TaskDrawerContactListItem />
+                        <ContactItem />
                     </Grid>
                 </Grid>
             ) : (
@@ -129,7 +129,7 @@ const TaskDrawerContactList = ({ accountListId, contactIds }: Props): ReactEleme
                         <Grid container spacing={2} direction="column">
                             {sortBy('name', data.contacts.nodes).map((contact) => (
                                 <Grid item key={contact.id} data-testid={`TaskDrawerContactListItem-${contact.id}`}>
-                                    <TaskDrawerContactListItem contact={contact} />
+                                    <ContactItem contact={contact} />
                                 </Grid>
                             ))}
                         </Grid>

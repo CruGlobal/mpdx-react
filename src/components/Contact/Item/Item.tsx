@@ -24,10 +24,10 @@ import TextsmsIcon from '@material-ui/icons/Textsms';
 import EmailIcon from '@material-ui/icons/Email';
 import LocationOnIcon from '@material-ui/icons/LocationOn';
 import { Skeleton } from '@material-ui/lab';
-import { GetContactsForTaskDrawerContactListQuery_contacts_nodes as Contact } from '../../../../../../types/GetContactsForTaskDrawerContactListQuery';
-import InfoBlock from '../../../../InfoBlock';
-import { currencyFormat } from '../../../../../lib/intlFormat';
-import { dateFormat } from '../../../../../lib/intlFormat/intlFormat';
+import InfoBlock from '../../InfoBlock';
+import { currencyFormat } from '../../../lib/intlFormat';
+import { dateFormat, numberFormat } from '../../../lib/intlFormat/intlFormat';
+import { PledgeFrequencyEnum, SendNewsletterEnum, StatusEnum } from '../../../../types/globalTypes';
 
 const useStyles = makeStyles((theme: Theme) => ({
     cardContent: {
@@ -40,15 +40,58 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 interface Props {
-    contact?: Contact;
+    contact?: {
+        id: string;
+        name: string;
+        primaryAddress: {
+            id: string;
+            street: string | null;
+            city: string | null;
+            state: string | null;
+            postalCode: string | null;
+            location: string | null;
+        } | null;
+        primaryPerson: {
+            id: string;
+            title: string | null;
+            firstName: string | null;
+            lastName: string | null;
+            suffix: string | null;
+            primaryEmailAddress: {
+                id: string;
+                email: string;
+                location: string | null;
+            } | null;
+            primaryPhoneNumber: {
+                id: string;
+                number: string;
+                location: string | null;
+            } | null;
+        } | null;
+        status: StatusEnum | null;
+        sendNewsletter: SendNewsletterEnum | null;
+        lastDonation: {
+            id: string;
+            amount: {
+                amount: number;
+                currency: string;
+                conversionDate: string;
+            };
+        } | null;
+        totalDonations: number | null;
+        pledgeAmount: number | null;
+        pledgeCurrency: string | null;
+        pledgeFrequency: PledgeFrequencyEnum | null;
+        tagList: string[];
+    };
 }
 
-const TaskDrawerContactListItem = ({ contact }: Props): ReactElement => {
+const ContactItem = ({ contact }: Props): ReactElement => {
     const classes = useStyles();
     const { t } = useTranslation();
 
     return contact ? (
-        <Card data-testid="TaskDrawerContactListItemCard">
+        <Card data-testid="ContactItemCard">
             <CardHeader
                 avatar={<Avatar>{contact.name[0]}</Avatar>}
                 title={contact.name}
@@ -58,19 +101,20 @@ const TaskDrawerContactListItem = ({ contact }: Props): ReactElement => {
                 (contact.pledgeAmount && contact.pledgeCurrency) ||
                 contact.pledgeFrequency ||
                 contact.lastDonation ||
-                contact.tagList.length > 0) && (
+                contact.tagList.length > 0 ||
+                contact.totalDonations > 0) && (
                 <>
                     <CardContent className={classes.cardContent}>
                         <Grid container spacing={3}>
                             {contact.sendNewsletter && (
-                                <Grid item data-testid="TaskDrawerContactListItemSendNewsletter">
+                                <Grid item data-testid="ContactItemSendNewsletter">
                                     <InfoBlock title={t('Newsletter')}>
                                         {t(contact.sendNewsletter) /* manually added to translation file */}
                                     </InfoBlock>
                                 </Grid>
                             )}
                             {contact.pledgeAmount && contact.pledgeCurrency && (
-                                <Grid item data-testid="TaskDrawerContactListItemPledge">
+                                <Grid item data-testid="ContactItemPledge">
                                     <InfoBlock title={t('Commitment')}>
                                         {currencyFormat(contact.pledgeAmount, contact.pledgeCurrency)}{' '}
                                         {
@@ -81,7 +125,7 @@ const TaskDrawerContactListItem = ({ contact }: Props): ReactElement => {
                                 </Grid>
                             )}
                             {contact.lastDonation && (
-                                <Grid item data-testid="TaskDrawerContactListItemLastDonation">
+                                <Grid item data-testid="ContactItemLastDonation">
                                     <InfoBlock title={t('Last Gift')}>
                                         {currencyFormat(
                                             contact.lastDonation.amount.amount,
@@ -93,8 +137,17 @@ const TaskDrawerContactListItem = ({ contact }: Props): ReactElement => {
                                     </InfoBlock>
                                 </Grid>
                             )}
+                            {contact.totalDonations && (
+                                <Grid item data-testid="ContactItemLastDonation">
+                                    <InfoBlock title={t('Lifetime Gifts')}>
+                                        {contact.pledgeCurrency
+                                            ? currencyFormat(contact.totalDonations, contact.pledgeCurrency)
+                                            : numberFormat(contact.totalDonations)}
+                                    </InfoBlock>
+                                </Grid>
+                            )}
                             {contact.tagList.length > 0 && (
-                                <Grid item data-testid="TaskDrawerContactListItemTags">
+                                <Grid item data-testid="ContactItemTags">
                                     <InfoBlock title={t('Tags')} disableChildrenTypography>
                                         {contact.tagList.map((tag) => (
                                             <Chip
@@ -121,7 +174,7 @@ const TaskDrawerContactListItem = ({ contact }: Props): ReactElement => {
                 <List>
                     <>
                         {contact.primaryAddress && (
-                            <ListItem button data-testid="TaskDrawerContactListItemAddress">
+                            <ListItem button data-testid="ContactItemAddress">
                                 <ListItemAvatar>
                                     <Avatar>
                                         <LocationOnIcon />
@@ -144,7 +197,7 @@ const TaskDrawerContactListItem = ({ contact }: Props): ReactElement => {
                                 component="a"
                                 href={`mailto:${contact.primaryPerson.primaryEmailAddress.email}`}
                                 target="_blank"
-                                data-testid="TaskDrawerContactListItemEmailAddress"
+                                data-testid="ContactItemEmailAddress"
                             >
                                 <ListItemAvatar>
                                     <Avatar>
@@ -176,7 +229,7 @@ const TaskDrawerContactListItem = ({ contact }: Props): ReactElement => {
                                 component="a"
                                 href={`tel:${contact.primaryPerson.primaryPhoneNumber.number}`}
                                 target="_blank"
-                                data-testid="TaskDrawerContactListItemPhoneNumber"
+                                data-testid="ContactItemPhoneNumber"
                             >
                                 <ListItemAvatar>
                                     <Avatar>
@@ -228,4 +281,4 @@ const TaskDrawerContactListItem = ({ contact }: Props): ReactElement => {
     );
 };
 
-export default TaskDrawerContactListItem;
+export default ContactItem;

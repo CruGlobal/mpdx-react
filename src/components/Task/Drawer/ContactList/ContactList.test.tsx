@@ -17,6 +17,7 @@ describe('TaskDrawerContactList', () => {
         );
         await findByTestId('TaskDrawerContactListLoading');
         await waitFor(() => expect(queryByTestId('TaskDrawerContactListLoading')).not.toBeInTheDocument());
+        console.log(getAllByTestId(/TaskDrawerContactListItem-contact-./));
         expect(
             getAllByTestId(/TaskDrawerContactListItem-contact-./).map((element) => element.getAttribute('data-testid')),
         ).toEqual(['TaskDrawerContactListItem-contact-2', 'TaskDrawerContactListItem-contact-1']);

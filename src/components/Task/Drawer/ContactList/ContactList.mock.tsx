@@ -49,6 +49,7 @@ export const getContactsForTaskDrawerContactListMock = (): MockedResponse => {
                     pledgeCurrency: 'NZD',
                     pledgeFrequency: PledgeFrequencyEnum.MONTHLY,
                     tagList: ['test', 'post'],
+                    totalDonations: 123,
                 },
                 {
                     id: 'contact-2',
@@ -62,6 +63,7 @@ export const getContactsForTaskDrawerContactListMock = (): MockedResponse => {
                     pledgeCurrency: null,
                     pledgeFrequency: null,
                     tagList: [],
+                    totalDonations: 0,
                 },
             ],
         },
