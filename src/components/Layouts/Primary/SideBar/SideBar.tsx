@@ -19,6 +19,7 @@ import Link from 'next/link';
 import AssignmentIcon from '@material-ui/icons/Assignment';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import MenuIcon from '@material-ui/icons/Menu';
+import CardGiftcardIcon from '@material-ui/icons/CardGiftcard';
 import clsx from 'clsx';
 import { SpeedDialIcon } from '@material-ui/lab';
 import { useApp } from '../../../App';
@@ -145,6 +146,23 @@ const SideBar = ({ open, handleOpenChange }: Props): ReactElement => {
                             <AssignmentIcon />
                         </ListItemIcon>
                         <ListItemText className={classes.listItemText} primary={t('Tasks')} />
+                    </ListItem>
+                </Link>
+                <Link
+                    href="/accountLists/[accountListId]/reports/donations"
+                    as={`/accountLists/${accountListId}/reports/donations`}
+                    passHref
+                >
+                    <ListItem
+                        className={classes.listItem}
+                        button
+                        onClick={(): void => handleOpenChange(false)}
+                        data-testid="SideBarDonations"
+                    >
+                        <ListItemIcon className={classes.listItemIcon}>
+                            <CardGiftcardIcon />
+                        </ListItemIcon>
+                        <ListItemText className={classes.listItemText} primary={t('Donations')} />
                     </ListItem>
                 </Link>
             </List>
