@@ -32,7 +32,7 @@ describe('Primary', () => {
     });
 
     it('has correct defaults', () => {
-        const { getByTestId, queryByTestId } = render(
+        const { getByTestId, queryByTestId, getByRole } = render(
             <MockedProvider mocks={mocks} addTypename={false}>
                 <AppProvider initialState={{ accountListId: '1', breadcrumb: 'Dashboard' }}>
                     <Primary>
@@ -44,7 +44,7 @@ describe('Primary', () => {
         expect(getByTestId('PrimaryTestChildren')).toBeInTheDocument();
         expect(queryByTestId('SideBarMobileDrawer')).not.toBeInTheDocument();
         expect(getByTestId('SideBarDesktopDrawer')).toBeInTheDocument();
-        expect(getByTestId('SideBarOverview')).toBeVisible();
+        expect(getByRole('link', { name: 'Dashboard' })).toBeVisible();
     });
 
     describe('mobile', () => {
@@ -53,7 +53,7 @@ describe('Primary', () => {
         });
 
         it('allows menu to be shown and hidden', async () => {
-            const { getByTestId, queryByTestId, getByRole } = render(
+            const { getByTestId, queryByTestId, getByRole, queryByRole } = render(
                 <TestRouter>
                     <MockedProvider mocks={mocks} addTypename={false}>
                         <AppProvider initialState={{ accountListId: '1', breadcrumb: 'Dashboard' }}>
@@ -65,14 +65,12 @@ describe('Primary', () => {
                 </TestRouter>,
             );
             expect(queryByTestId('SideBarDesktopDrawer')).not.toBeInTheDocument();
-            const sideBarOverview = getByTestId('SideBarOverview');
-            expect(sideBarOverview).not.toBeVisible();
+            expect(queryByRole('link', { name: 'Dashboard' })).not.toBeInTheDocument();
             const sideBarMobileDrawer = getByTestId('SideBarMobileDrawer');
             expect(sideBarMobileDrawer).toBeInTheDocument();
             fireEvent.click(getByRole('button', { name: 'Show Menu' }));
-            expect(sideBarOverview).toBeVisible();
-            fireEvent.click(sideBarOverview);
-            await waitFor(() => expect(sideBarOverview).not.toBeVisible());
+            fireEvent.click(getByRole('link', { name: 'Dashboard' }));
+            await waitFor(() => expect(queryByRole('link', { name: 'Dashboard' })).not.toBeInTheDocument());
         });
     });
 });

@@ -11,19 +11,22 @@ describe('Sidebar', () => {
     });
 
     it('has correct defaults', () => {
-        const { getByTestId, queryByTestId } = render(
+        const { getByTestId, queryByTestId, getByRole } = render(
             <AppProvider initialState={{ accountListId: 'account-1' }}>
                 <Sidebar open={false} handleOpenChange={jest.fn()} />
             </AppProvider>,
         );
         expect(queryByTestId('SideBarMobileDrawer')).not.toBeInTheDocument();
         expect(getByTestId('SideBarDesktopDrawer')).toBeInTheDocument();
-        const sideBarOverview = getByTestId('SideBarOverview');
-        expect(sideBarOverview).toBeVisible();
-        expect(sideBarOverview).toHaveAttribute('href', '/accountLists/account-1');
-        const sideBarTasks = getByTestId('SideBarTasks');
-        expect(sideBarTasks).toBeVisible();
-        expect(sideBarTasks).toHaveAttribute('href', '/accountLists/account-1/tasks');
+        const dashboardElement = getByRole('link', { name: 'Dashboard' });
+        expect(dashboardElement).toBeVisible();
+        expect(dashboardElement).toHaveAttribute('href', '/accountLists/account-1');
+        const tasksElement = getByRole('link', { name: 'Tasks' });
+        expect(tasksElement).toBeVisible();
+        expect(tasksElement).toHaveAttribute('href', '/accountLists/account-1/tasks');
+        const giftsElement = getByRole('link', { name: 'Gifts' });
+        expect(giftsElement).toBeVisible();
+        expect(giftsElement).toHaveAttribute('href', 'https://stage.mpdx.org/reports/donations');
     });
 
     describe('mobile', () => {
@@ -41,7 +44,7 @@ describe('Sidebar', () => {
                 </TestRouter>,
             );
             expect(queryByTestId('SideBarDesktopDrawer')).not.toBeInTheDocument();
-            expect(getByText('Overview')).not.toBeVisible();
+            expect(getByText('Dashboard')).not.toBeVisible();
             const sideBarMobileDrawer = getByTestId('SideBarMobileDrawer');
             expect(sideBarMobileDrawer).toBeInTheDocument();
             fireEvent.click(sideBarMobileDrawer.children[0]);
@@ -53,7 +56,7 @@ describe('Sidebar', () => {
                     </AppProvider>
                 </TestRouter>,
             );
-            expect(getByText('Overview')).toBeVisible();
+            expect(getByText('Dashboard')).toBeVisible();
         });
     });
 });

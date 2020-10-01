@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react';
+import React, { cloneElement, ReactElement } from 'react';
 import {
     Divider,
     Drawer,
@@ -12,6 +12,8 @@ import {
     Box,
     ListItemIcon,
     IconButton,
+    Tooltip,
+    ListSubheader,
 } from '@material-ui/core';
 import HomeIcon from '@material-ui/icons/Home';
 import { useTranslation } from 'react-i18next';
@@ -21,13 +23,38 @@ import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import MenuIcon from '@material-ui/icons/Menu';
 import clsx from 'clsx';
 import { SpeedDialIcon } from '@material-ui/lab';
+import SupervisorAccountIcon from '@material-ui/icons/SupervisorAccount';
+import CardGiftcardIcon from '@material-ui/icons/CardGiftcard';
+import EventNoteIcon from '@material-ui/icons/EventNote';
+import AccountTreeIcon from '@material-ui/icons/AccountTree';
+import AssessmentIcon from '@material-ui/icons/Assessment';
+import ContactsIcon from '@material-ui/icons/Contacts';
+import AccountBalanceIcon from '@material-ui/icons/AccountBalance';
+import MonetizationOnIcon from '@material-ui/icons/MonetizationOn';
+import EmailIcon from '@material-ui/icons/Email';
+import MailOutlineIcon from '@material-ui/icons/MailOutline';
+import PhoneIcon from '@material-ui/icons/Phone';
+import DescriptionIcon from '@material-ui/icons/Description';
+import ScheduleIcon from '@material-ui/icons/Schedule';
+import BookmarksIcon from '@material-ui/icons/Bookmarks';
+import TableChartIcon from '@material-ui/icons/TableChart';
+import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
+import PeopleOutlineIcon from '@material-ui/icons/PeopleOutline';
+import PeopleIcon from '@material-ui/icons/People';
+import AccountBoxIcon from '@material-ui/icons/AccountBox';
 import { useApp } from '../../../App';
+import HandoffLink from '../../../HandoffLink';
 
 export const SIDE_BAR_WIDTH = 256;
 export const SIDE_BAR_MINIMIZED_WIDTH = 57;
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
+        container: {
+            height: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+        },
         nav: {
             [theme.breakpoints.up('sm')]: {
                 width: SIDE_BAR_WIDTH,
@@ -53,19 +80,38 @@ const useStyles = makeStyles((theme: Theme) =>
             width: SIDE_BAR_WIDTH,
         },
         divider: {
-            backgroundColor: '#2A4865',
+            backgroundColor: 'rgba(255,255,255,.4)',
         },
         list: {
+            flexGrow: 1,
             padding: 0,
+            overflowY: 'auto',
+            overflowX: 'hidden',
         },
         listItem: {
-            borderBottom: '1px solid #1B3A57',
+            backgroundColor: 'rgba(255,255,255,.05)',
+            '&:hover': {
+                backgroundColor: 'rgba(255,255,255,.1)',
+            },
         },
         listItemIcon: {
             color: '#fff',
+            fontSize: theme.typography.h5.fontSize,
         },
         listItemText: {
             color: '#fff',
+        },
+        listSubheader: {
+            backgroundColor: 'rgba(255,255,255,.05)',
+            borderTop: '1px solid rgba(255,255,255,.4)',
+            fontSize: theme.typography.body1.fontSize,
+            fontWeight: 'bold',
+            color: '#fff',
+            overflow: 'hidden',
+            height: 50,
+            transition: theme.transitions.create('height', {
+                duration: theme.transitions.duration.leavingScreen,
+            }),
         },
         iconButton: {
             color: '#fff',
@@ -89,9 +135,30 @@ const useStyles = makeStyles((theme: Theme) =>
             }),
             overflowX: 'hidden',
             width: SIDE_BAR_MINIMIZED_WIDTH,
+            '& $listSubheader': {
+                height: 0,
+            },
         },
     }),
 );
+
+type ItemProps = LocalLinkProps | HandoffLinkProps;
+
+interface BaseProps {
+    label: string;
+    icon: ReactElement;
+}
+
+interface LocalLinkProps extends BaseProps {
+    type: 'local';
+    href: string;
+    as?: string;
+}
+
+interface HandoffLinkProps extends BaseProps {
+    type: 'handoff';
+    path: string;
+}
 
 interface Props {
     open: boolean;
@@ -105,8 +172,32 @@ const SideBar = ({ open, handleOpenChange }: Props): ReactElement => {
         state: { accountListId },
     } = useApp();
 
+    const Item = (props: ItemProps) => {
+        const children = (
+            <ListItem button onClick={(): void => handleOpenChange(false)} component="a" className={classes.listItem}>
+                <ListItemIcon className={classes.listItemIcon}>
+                    {cloneElement(props.icon, { fontSize: 'inherit' })}
+                </ListItemIcon>
+                <ListItemText className={classes.listItemText} primary={props.label} />
+            </ListItem>
+        );
+
+        return (
+            <Tooltip title={props.label} placement="right" disableHoverListener={open}>
+                <Box>
+                    {props.type == 'local' && (
+                        <Link href={props.href} as={props.as} passHref>
+                            {children}
+                        </Link>
+                    )}
+                    {props.type == 'handoff' && <HandoffLink path={props.path}>{children}</HandoffLink>}
+                </Box>
+            </Tooltip>
+        );
+    };
+
     const drawer = (
-        <Box>
+        <Box className={classes.container}>
             <Box px={2} className={classes.toolbar}>
                 <IconButton className={classes.iconButton} onClick={(): void => handleOpenChange()}>
                     <SpeedDialIcon icon={<MenuIcon />} openIcon={<ChevronLeftIcon />} open={open} />
@@ -116,73 +207,144 @@ const SideBar = ({ open, handleOpenChange }: Props): ReactElement => {
                 </Box>
             </Box>
             <Divider className={classes.divider} />
-            <List className={classes.list}>
-                <Link href="/accountLists/[accountListId]" as={`/accountLists/${accountListId}`} passHref>
-                    <ListItem
-                        className={classes.listItem}
-                        button
-                        onClick={(): void => handleOpenChange(false)}
-                        data-testid="SideBarOverview"
-                    >
-                        <ListItemIcon className={classes.listItemIcon}>
-                            <HomeIcon />
-                        </ListItemIcon>
-                        <ListItemText className={classes.listItemText} primary={t('Overview')} />
-                    </ListItem>
-                </Link>
-                <Link href="/accountLists/[accountListId]/tasks" as={`/accountLists/${accountListId}/tasks`} passHref>
-                    <ListItem
-                        className={classes.listItem}
-                        button
-                        onClick={(): void => handleOpenChange(false)}
-                        data-testid="SideBarTasks"
-                    >
-                        <ListItemIcon className={classes.listItemIcon}>
-                            <AssignmentIcon />
-                        </ListItemIcon>
-                        <ListItemText className={classes.listItemText} primary={t('Tasks')} />
-                    </ListItem>
-                </Link>
+            <List className={classes.list} component="div">
+                <Item
+                    type="local"
+                    label={t('Dashboard')}
+                    href="/accountLists/[accountListId]"
+                    as={`/accountLists/${accountListId}`}
+                    icon={<HomeIcon />}
+                />
+                <Item type="handoff" label={t('Contacts')} path="/contacts" icon={<AccountBoxIcon />} />
+                <Item
+                    type="local"
+                    label={t('Tasks')}
+                    href="/accountLists/[accountListId]/tasks"
+                    as={`/accountLists/${accountListId}/tasks`}
+                    icon={<AssignmentIcon />}
+                />
+                <ListSubheader className={classes.listSubheader} disableSticky>
+                    {t('Reports')}
+                </ListSubheader>
+                <Item type="handoff" label={t('Gifts')} path="/reports/donations" icon={<CardGiftcardIcon />} />
+                <Item type="handoff" label={t('14 Month Report')} path="/reports/salary" icon={<EventNoteIcon />} />
+                <Item
+                    type="handoff"
+                    label={t('Designation Accounts')}
+                    path="/reports/designation_accounts"
+                    icon={<AccountTreeIcon />}
+                />
+                <Item
+                    type="handoff"
+                    label={t('Responsibility Centers')}
+                    path="/reports/financial_accounts"
+                    icon={<AccountBalanceIcon />}
+                />
+                <Item
+                    type="handoff"
+                    label={t('Expected Monthly Total')}
+                    path="/reports/monthly"
+                    icon={<ScheduleIcon />}
+                />
+                <Item
+                    type="handoff"
+                    label={t('Partner Giving Analysis')}
+                    path="/reports/analysis"
+                    icon={<AssessmentIcon />}
+                />
+                <Item type="handoff" label={t('Coaching')} path="/reports/coaching" icon={<SupervisorAccountIcon />} />
+                <ListSubheader className={classes.listSubheader} disableSticky>
+                    {t('Tools')}
+                </ListSubheader>
+                <Item type="handoff" label={t('Appeals')} path="/tools/appeals" icon={<BookmarksIcon />} />
+                <Item
+                    type="handoff"
+                    label={t('Import from Google')}
+                    path="/tools/import/google"
+                    icon={<ContactsIcon />}
+                />
+                <Item type="handoff" label={t('Import from CSV')} path="/tools/import/csv" icon={<TableChartIcon />} />
+                <Item
+                    type="handoff"
+                    label={t('Import from TntConnect')}
+                    path="/tools/import/tnt"
+                    icon={<CloudDownloadIcon />}
+                />
+                <Item
+                    type="handoff"
+                    label={t('Fix Commitment Info')}
+                    path="/tools/fix/commitment-info"
+                    icon={<MonetizationOnIcon />}
+                />
+                <Item
+                    type="handoff"
+                    label={t('Fix Email Addresses')}
+                    path="/tools/fix/email-addresses"
+                    icon={<EmailIcon />}
+                />
+                <Item
+                    type="handoff"
+                    label={t('Fix Mailing Addresses')}
+                    path="/tools/fix/addresses"
+                    icon={<MailOutlineIcon />}
+                />
+                <Item
+                    type="handoff"
+                    label={t('Fix Phone Numbers')}
+                    path="/tools/fix/phone-numbers"
+                    icon={<PhoneIcon />}
+                />
+                <Item
+                    type="handoff"
+                    label={t('Fix Send Newsletter')}
+                    path="/tools/fix/send-newsletter"
+                    icon={<DescriptionIcon />}
+                />
+                <Item type="handoff" label={t('Merge Contacts')} path="/tools/merge/contacts" icon={<PeopleIcon />} />
+                <Item
+                    type="handoff"
+                    label={t('Merge People')}
+                    path="/tools/merge/people"
+                    icon={<PeopleOutlineIcon />}
+                />
             </List>
         </Box>
     );
 
     return (
-        <>
-            <nav className={classes.nav}>
-                <Hidden mdUp>
-                    <Drawer
-                        variant="temporary"
-                        open={open}
-                        onClose={(): void => handleOpenChange(false)}
-                        classes={{ paper: classes.drawerPaper }}
-                        ModalProps={{ keepMounted: true }}
-                        data-testid="SideBarMobileDrawer"
-                    >
-                        {drawer}
-                    </Drawer>
-                </Hidden>
-                <Hidden smDown>
-                    <Drawer
-                        variant="permanent"
-                        open={open}
-                        data-testid="SideBarDesktopDrawer"
-                        className={clsx(classes.drawer, {
+        <nav className={classes.nav}>
+            <Hidden mdUp>
+                <Drawer
+                    variant="temporary"
+                    open={open}
+                    onClose={(): void => handleOpenChange(false)}
+                    classes={{ paper: classes.drawerPaper }}
+                    ModalProps={{ keepMounted: true }}
+                    data-testid="SideBarMobileDrawer"
+                >
+                    {drawer}
+                </Drawer>
+            </Hidden>
+            <Hidden smDown>
+                <Drawer
+                    variant="permanent"
+                    open={open}
+                    data-testid="SideBarDesktopDrawer"
+                    className={clsx(classes.drawer, {
+                        [classes.drawerOpen]: open,
+                        [classes.drawerClose]: !open,
+                    })}
+                    classes={{
+                        paper: clsx(classes.drawerPaper, {
                             [classes.drawerOpen]: open,
                             [classes.drawerClose]: !open,
-                        })}
-                        classes={{
-                            paper: clsx(classes.drawerPaper, {
-                                [classes.drawerOpen]: open,
-                                [classes.drawerClose]: !open,
-                            }),
-                        }}
-                    >
-                        {drawer}
-                    </Drawer>
-                </Hidden>
-            </nav>
-        </>
+                        }),
+                    }}
+                >
+                    {drawer}
+                </Drawer>
+            </Hidden>
+        </nav>
     );
 };
 
