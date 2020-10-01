@@ -17,6 +17,7 @@ import AnimatedCard from '../../../AnimatedCard';
 import { GetThisWeekQuery_accountList_primaryAppeal } from '../../../../../types/GetThisWeekQuery';
 import StyledProgress from '../../../StyledProgress';
 import { currencyFormat, percentageFormat } from '../../../../lib/intlFormat';
+import HandoffLink from '../../../HandoffLink';
 
 const useStyles = makeStyles((theme: Theme) => ({
     div: {
@@ -190,9 +191,11 @@ const Appeals = ({ loading, appeal }: Props): ReactElement => {
                         </Grid>
                     </CardContent>
                     <CardActions>
-                        <Button size="small" color="primary">
-                            {t('View All')}
-                        </Button>
+                        <HandoffLink path="/tools/appeals">
+                            <Button size="small" color="primary">
+                                {t('View All')}
+                            </Button>
+                        </HandoffLink>
                     </CardActions>
                 </motion.div>
             )}

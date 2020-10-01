@@ -23,6 +23,7 @@ import { useTranslation } from 'react-i18next';
 import AnimatedCard from '../../../AnimatedCard';
 import { GetWeeklyActivityQuery } from '../../../../../types/GetWeeklyActivityQuery';
 import { dayMonthFormat, numberFormat } from '../../../../lib/intlFormat';
+import HandoffLink from '../../../HandoffLink';
 
 const useStyles = makeStyles((theme: Theme) => ({
     div: {
@@ -240,9 +241,11 @@ const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
                     </Table>
                 </TableContainer>
                 <CardActions>
-                    <Button size="small" color="primary">
-                        {t('View Activity Detail')}
-                    </Button>
+                    <HandoffLink path="/reports/coaching">
+                        <Button size="small" color="primary">
+                            {t('View Activity Detail')}
+                        </Button>
+                    </HandoffLink>
                 </CardActions>
             </motion.div>
         </AnimatedCard>

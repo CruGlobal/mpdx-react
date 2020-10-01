@@ -4,8 +4,12 @@ import Balance from '.';
 
 describe('Balance', () => {
     it('default', () => {
-        const { getByTestId } = render(<Balance balance={1000.99} />);
+        const { getByTestId, getByRole } = render(<Balance balance={1000.99} />);
         expect(getByTestId('BalanceTypography').textContent).toEqual('$1,001');
+        expect(getByRole('link', { name: 'View Gifts' })).toHaveAttribute(
+            'href',
+            'https://stage.mpdx.org/reports/donations',
+        );
     });
 
     it('custom props', () => {

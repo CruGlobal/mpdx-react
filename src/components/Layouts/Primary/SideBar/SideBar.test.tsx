@@ -23,7 +23,7 @@ describe('Sidebar', () => {
         expect(sideBarOverview).toHaveAttribute('href', '/accountLists/account-1');
         const sideBarTasks = getByTestId('SideBarTasks');
         expect(sideBarTasks).toBeVisible();
-        expect(sideBarTasks).toHaveAttribute('href', '/accountLists/account-1/tasks/list');
+        expect(sideBarTasks).toHaveAttribute('href', '/accountLists/account-1/tasks');
     });
 
     describe('mobile', () => {

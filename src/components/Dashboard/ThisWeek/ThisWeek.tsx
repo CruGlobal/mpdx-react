@@ -1,8 +1,8 @@
 import React, { ReactElement } from 'react';
 import { Box, Typography, Grid } from '@material-ui/core';
-import moment from 'moment';
 import { gql, useQuery } from '@apollo/client';
 import { useTranslation } from 'react-i18next';
+import { add, endOfDay, formatISO, sub } from 'date-fns';
 import AnimatedBox from '../../AnimatedBox';
 import { GetThisWeekQuery } from '../../../../types/GetThisWeekQuery';
 import PartnerCare from './PartnerCare/PartnerCare';
@@ -137,10 +137,10 @@ const ThisWeek = ({ accountListId }: Props): ReactElement => {
     const { data, loading } = useQuery<GetThisWeekQuery>(GET_THIS_WEEK_QUERY, {
         variables: {
             accountListId,
-            endOfDay: moment().endOf('day').toISOString(),
-            today: moment().endOf('day').toISOString().slice(0, 10),
-            twoWeeksFromNow: moment().endOf('day').add(2, 'weeks').toISOString().slice(0, 10),
-            twoWeeksAgo: moment().endOf('day').subtract(2, 'weeks').toISOString().slice(0, 10),
+            endOfDay: formatISO(endOfDay(new Date())),
+            today: formatISO(endOfDay(new Date()), { representation: 'date' }),
+            twoWeeksFromNow: formatISO(add(endOfDay(new Date()), { weeks: 2 }), { representation: 'date' }),
+            twoWeeksAgo: formatISO(sub(endOfDay(new Date()), { weeks: 2 }), { representation: 'date' }),
         },
     });
 

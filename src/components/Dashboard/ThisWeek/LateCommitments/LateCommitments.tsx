@@ -16,6 +16,7 @@ import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import AnimatedCard from '../../../AnimatedCard';
 import { GetThisWeekQuery_latePledgeContacts } from '../../../../../types/GetThisWeekQuery';
+import HandoffLink from '../../../HandoffLink';
 
 const useStyles = makeStyles((theme: Theme) => ({
     div: {
@@ -111,16 +112,20 @@ const LateCommitments = ({ loading, latePledgeContacts }: Props): ReactElement =
                                 {latePledgeContacts.nodes.map((contact) => {
                                     const count = moment().diff(moment(contact.lateAt), 'days');
                                     return (
-                                        <ListItem
-                                            key={contact.id}
-                                            button
-                                            data-testid={`LateCommitmentsListItemContact-${contact.id}`}
-                                        >
-                                            <ListItemText
-                                                primary={contact.name}
-                                                secondary={t('Their gift is {{ count, number }} day late.', { count })}
-                                            />
-                                        </ListItem>
+                                        <HandoffLink key={contact.id} path={`/contacts/${contact.id}`}>
+                                            <ListItem
+                                                component="a"
+                                                button
+                                                data-testid={`LateCommitmentsListItemContact-${contact.id}`}
+                                            >
+                                                <ListItemText
+                                                    primary={contact.name}
+                                                    secondary={t('Their gift is {{ count, number }} day late.', {
+                                                        count,
+                                                    })}
+                                                />
+                                            </ListItem>
+                                        </HandoffLink>
                                     );
                                 })}
                             </List>

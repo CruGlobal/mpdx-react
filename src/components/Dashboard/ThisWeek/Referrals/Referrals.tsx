@@ -17,11 +17,13 @@ import {
 import { Skeleton } from '@material-ui/lab';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
+import { endOfDay, formatISO, sub } from 'date-fns';
 import AnimatedCard from '../../../AnimatedCard';
 import {
     GetThisWeekQuery_onHandReferrals,
     GetThisWeekQuery_recentReferrals,
 } from '../../../../../types/GetThisWeekQuery';
+import HandoffLink from '../../../HandoffLink';
 
 const useStyles = makeStyles((theme: Theme) => ({
     div: {
@@ -64,10 +66,10 @@ const useStyles = makeStyles((theme: Theme) => ({
 interface ReferralsTabProps {
     loading: boolean;
     referrals: GetThisWeekQuery_onHandReferrals | GetThisWeekQuery_recentReferrals;
-    testid: string;
+    tab: 'Recent' | 'OnHand';
 }
 
-const ReferralsTab = ({ loading, referrals, testid }: ReferralsTabProps): ReactElement => {
+const ReferralsTab = ({ loading, referrals, tab }: ReferralsTabProps): ReactElement => {
     const classes = useStyles();
     const { t } = useTranslation();
 
@@ -75,7 +77,7 @@ const ReferralsTab = ({ loading, referrals, testid }: ReferralsTabProps): ReactE
         <>
             {loading && (
                 <>
-                    <List className={classes.list} data-testid={`ReferralsTab${testid}ListLoading`}>
+                    <List className={classes.list} data-testid={`ReferralsTab${tab}ListLoading`}>
                         {[0, 1].map((index) => (
                             <ListItem key={index}>
                                 <ListItemText
@@ -98,10 +100,7 @@ const ReferralsTab = ({ loading, referrals, testid }: ReferralsTabProps): ReactE
             {!loading && (
                 <>
                     {!referrals || referrals.nodes.length === 0 ? (
-                        <CardContent
-                            className={classes.cardContent}
-                            data-testid={`ReferralsTab${testid}CardContentEmpty`}
-                        >
+                        <CardContent className={classes.cardContent} data-testid={`ReferralsTab${tab}CardContentEmpty`}>
                             <img
                                 src={require('../../../../images/drawkit/grape/drawkit-grape-pack-illustration-4.svg')}
                                 className={classes.img}
@@ -111,24 +110,50 @@ const ReferralsTab = ({ loading, referrals, testid }: ReferralsTabProps): ReactE
                         </CardContent>
                     ) : (
                         <>
-                            <List className={classes.list} data-testid={`ReferralsTab${testid}List`}>
+                            <List className={classes.list} data-testid={`ReferralsTab${tab}List`}>
                                 {referrals.nodes.map((contact) => (
-                                    <ListItem
-                                        key={contact.id}
-                                        button
-                                        data-testid={`ReferralsTab${testid}ListItem-${contact.id}`}
-                                    >
-                                        <ListItemText
-                                            disableTypography={true}
-                                            primary={<Typography variant="body1">{contact.name}</Typography>}
-                                        />
-                                    </ListItem>
+                                    <HandoffLink key={contact.id} path={`/contacts/${contact.id}`}>
+                                        <ListItem
+                                            component="a"
+                                            button
+                                            data-testid={`ReferralsTab${tab}ListItem-${contact.id}`}
+                                        >
+                                            <ListItemText
+                                                disableTypography={true}
+                                                primary={<Typography variant="body1">{contact.name}</Typography>}
+                                            />
+                                        </ListItem>
+                                    </HandoffLink>
                                 ))}
                             </List>
                             <CardActions>
-                                <Button size="small" color="primary">
-                                    {t('View All ({{ totalCount, number }})', { totalCount: referrals.totalCount })}
-                                </Button>
+                                <HandoffLink
+                                    path={`/contacts?filters=${encodeURIComponent(
+                                        JSON.stringify(
+                                            tab === 'Recent'
+                                                ? {
+                                                      created_at: `${formatISO(
+                                                          sub(endOfDay(new Date()), { weeks: 2 }),
+                                                          {
+                                                              representation: 'date',
+                                                          },
+                                                      )}..${formatISO(new Date(), {
+                                                          representation: 'date',
+                                                      })}`,
+                                                      referrer: 'any',
+                                                  }
+                                                : {
+                                                      referrer: 'any',
+                                                      status:
+                                                          'Never Contacted,Ask in Future,Cultivate Relationship,Contact for Appointment',
+                                                  },
+                                        ),
+                                    )}`}
+                                >
+                                    <Button size="small" color="primary">
+                                        {t('View All ({{ totalCount, number }})', { totalCount: referrals.totalCount })}
+                                    </Button>
+                                </HandoffLink>
                             </CardActions>
                         </>
                     )}
@@ -180,7 +205,7 @@ const Referrals = ({ loading, recentReferrals, onHandReferrals }: Props): ReactE
                     className={classes.div}
                     data-testid="ReferralsDivRecent"
                 >
-                    <ReferralsTab loading={loading} referrals={recentReferrals} testid="Recent" />
+                    <ReferralsTab loading={loading} referrals={recentReferrals} tab="Recent" />
                 </motion.div>
             )}
             {value == 1 && (
@@ -191,7 +216,7 @@ const Referrals = ({ loading, recentReferrals, onHandReferrals }: Props): ReactE
                     className={classes.div}
                     data-testid="ReferralsDivOnHand"
                 >
-                    <ReferralsTab loading={loading} referrals={onHandReferrals} testid="OnHand" />
+                    <ReferralsTab loading={loading} referrals={onHandReferrals} tab="OnHand" />
                 </motion.div>
             )}
         </AnimatedCard>

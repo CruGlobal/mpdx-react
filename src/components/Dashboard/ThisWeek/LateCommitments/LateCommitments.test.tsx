@@ -56,12 +56,12 @@ describe('LateCommitments', () => {
             expect(queryByTestId('LateCommitmentsCardContentEmpty')).not.toBeInTheDocument();
             expect(queryByTestId('LateCommitmentsDivLoading')).not.toBeInTheDocument();
             expect(getByTestId('LateCommitmentsButtonViewAll').textContent).toEqual('View All (1,595)');
-            expect(getByTestId('LateCommitmentsListItemContact-contact1').textContent).toEqual(
-                'Smith, SarahTheir gift is 2,679 days late.',
-            );
-            expect(getByTestId('LateCommitmentsListItemContact-contact2').textContent).toEqual(
-                'Smith, JohnTheir gift is 1,523 days late.',
-            );
+            const contact1Element = getByTestId('LateCommitmentsListItemContact-contact1');
+            expect(contact1Element).toHaveAttribute('href', 'https://stage.mpdx.org/contacts/contact1');
+            expect(contact1Element.textContent).toEqual('Smith, SarahTheir gift is 2,679 days late.');
+            const contact2Element = getByTestId('LateCommitmentsListItemContact-contact2');
+            expect(contact2Element).toHaveAttribute('href', 'https://stage.mpdx.org/contacts/contact2');
+            expect(contact2Element.textContent).toEqual('Smith, JohnTheir gift is 1,523 days late.');
         });
     });
 });

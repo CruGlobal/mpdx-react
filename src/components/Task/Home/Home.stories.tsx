@@ -12,7 +12,7 @@ export default {
 
 export const Default = (): ReactElement => (
     <MockedProvider mocks={[getTasksForTaskListMock(), getDataForTaskDrawerMock()]} addTypename={false}>
-        <TaskHome tab="list" />
+        <TaskHome />
     </MockedProvider>
 );
 
@@ -24,7 +24,7 @@ export const WithInitialFilter = (): ReactElement => {
             mocks={[getFilteredTasksForTaskListMock(filter), getDataForTaskDrawerMock()]}
             addTypename={false}
         >
-            <TaskHome tab="list" initialFilter={filter} />
+            <TaskHome initialFilter={filter} />
         </MockedProvider>
     );
 };

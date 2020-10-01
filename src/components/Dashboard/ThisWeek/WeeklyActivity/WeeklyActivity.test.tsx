@@ -42,7 +42,7 @@ describe('WeeklyActivity', () => {
         });
 
         it('default', async () => {
-            const { getByTestId, queryByTestId } = render(
+            const { getByTestId, queryByTestId, getByRole } = render(
                 <MockedProvider mocks={GetWeeklyActivityQueryDefaultMocks()} addTypename={false}>
                     <WeeklyActivity accountListId="abc" />
                 </MockedProvider>,
@@ -63,6 +63,10 @@ describe('WeeklyActivity', () => {
             await waitFor(() => expect(queryByTestId('WeeklyActivitySkeletonLoading')).not.toBeInTheDocument());
             expect(getByTestId('WeeklyActivityTableCellDateRange').textContent).toEqual('Jan 26 - Feb 1');
             expect(getByTestId('WeeklyActivityTableCellCompletedCalls').textContent).toEqual('1,234');
+            expect(getByRole('link', { name: 'View Activity Detail' })).toHaveAttribute(
+                'href',
+                'https://stage.mpdx.org/reports/coaching',
+            );
         });
     });
 });

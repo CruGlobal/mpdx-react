@@ -9,7 +9,7 @@ describe('Appeals', () => {
     });
 
     it('loading', () => {
-        const { getByTestId } = render(<Appeals loading />);
+        const { getByTestId, getByRole } = render(<Appeals loading />);
         expect(getByTestId('AppealsBoxName').children[0].className).toContain('MuiSkeleton-root');
         expect(getByTestId('AppealsBoxAmount').children[0].className).toContain('MuiSkeleton-root');
         expect(getByTestId('AppealsTypographyPledgesAmountProcessedPercentage').children[0].className).toContain(
@@ -22,6 +22,7 @@ describe('Appeals', () => {
             'MuiSkeleton-root',
         );
         expect(getByTestId('AppealsTypographyPledgesAmountTotal').children[0].className).toContain('MuiSkeleton-root');
+        expect(getByRole('link', { name: 'View All' })).toHaveAttribute('href', 'https://stage.mpdx.org/tools/appeals');
     });
 
     it('props', () => {
@@ -34,6 +35,7 @@ describe('Appeals', () => {
             amountCurrency: 'EUR',
         };
         const { getByTestId } = render(<Appeals appeal={appeal} />);
+
         expect(getByTestId('AppealsBoxName').textContent).toEqual('My Appeal');
         expect(getByTestId('AppealsBoxAmount').textContent).toEqual('€5,000');
         expect(getByTestId('AppealsTypographyPledgesAmountProcessedPercentage').textContent).toEqual('20%');

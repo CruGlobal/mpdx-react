@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { currencyFormat } from '../../../lib/intlFormat';
 import AnimatedCard from '../../AnimatedCard';
 import AnimatedBox from '../../AnimatedBox';
+import HandoffLink from '../../HandoffLink';
 
 const useStyles = makeStyles((theme: Theme) => ({
     card: {
@@ -44,9 +45,11 @@ const Balance = ({ loading, balance, currencyCode = 'USD' }: Props): ReactElemen
                     <Typography>{t('It may take a few days to update.')}</Typography>
                 </CardContent>
                 <CardActions>
-                    <Button size="small" color="primary">
-                        {t('View Donations')}
-                    </Button>
+                    <HandoffLink path="/reports/donations">
+                        <Button size="small" color="primary">
+                            {t('View Gifts')}
+                        </Button>
+                    </HandoffLink>
                 </CardActions>
             </AnimatedCard>
         </>

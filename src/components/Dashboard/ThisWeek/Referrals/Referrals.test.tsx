@@ -1,8 +1,17 @@
 import React from 'react';
+import MockDate from 'mockdate';
 import { render, fireEvent } from '../../../../../tests/testingLibraryReactMock';
 import Referrals from '.';
 
 describe('Referrals', () => {
+    beforeEach(() => {
+        MockDate.set(new Date('2000-01-01'));
+    });
+
+    afterEach(() => {
+        MockDate.reset();
+    });
+
     it('default', () => {
         const { getByTestId, queryByTestId } = render(<Referrals />);
         expect(getByTestId('ReferralsDivRecent')).toBeInTheDocument();
@@ -69,20 +78,36 @@ describe('Referrals', () => {
             ],
             totalCount: 5678,
         };
-        const { getByTestId, queryByTestId } = render(
+        const { getByTestId, queryByTestId, getByRole } = render(
             <Referrals recentReferrals={recentReferrals} onHandReferrals={onHandReferrals} />,
         );
         expect(queryByTestId('ReferralsTabRecentCardContentEmpty')).not.toBeInTheDocument();
         expect(getByTestId('ReferralsTabRecentList')).toBeInTheDocument();
         expect(getByTestId('ReferralsTabRecent').textContent).toEqual('Recent (1,234)');
-        expect(getByTestId('ReferralsTabRecentListItem-contact_1').textContent).toEqual('Smith, Bob');
-        expect(getByTestId('ReferralsTabRecentListItem-contact_2').textContent).toEqual('Smith, Sarah');
+        const referralElement1 = getByTestId('ReferralsTabRecentListItem-contact_1');
+        expect(referralElement1.textContent).toEqual('Smith, Bob');
+        expect(referralElement1).toHaveAttribute('href', 'https://stage.mpdx.org/contacts/contact_1');
+        const referralElement2 = getByTestId('ReferralsTabRecentListItem-contact_2');
+        expect(referralElement2.textContent).toEqual('Smith, Sarah');
+        expect(referralElement2).toHaveAttribute('href', 'https://stage.mpdx.org/contacts/contact_2');
+        expect(getByRole('link', { name: 'View All (1,234)' })).toHaveAttribute(
+            'href',
+            'https://stage.mpdx.org/contacts?filters=%7B%22created_at%22%3A%221999-12-18..2000-01-01%22%2C%22referrer%22%3A%22any%22%7D',
+        );
         const OnHandTab = getByTestId('ReferralsTabOnHand');
         expect(OnHandTab.textContent).toEqual('On Hand (5,678)');
         fireEvent.click(OnHandTab);
         expect(queryByTestId('ReferralsTabOnHandCardContentEmpty')).not.toBeInTheDocument();
         expect(getByTestId('ReferralsTabOnHandList')).toBeInTheDocument();
-        expect(getByTestId('ReferralsTabOnHandListItem-contact_3').textContent).toEqual('Smith, Mike');
-        expect(getByTestId('ReferralsTabOnHandListItem-contact_4').textContent).toEqual('Smith, Shelley');
+        const referralElement3 = getByTestId('ReferralsTabOnHandListItem-contact_3');
+        expect(referralElement3.textContent).toEqual('Smith, Mike');
+        expect(referralElement3).toHaveAttribute('href', 'https://stage.mpdx.org/contacts/contact_3');
+        const referralElement4 = getByTestId('ReferralsTabOnHandListItem-contact_4');
+        expect(referralElement4.textContent).toEqual('Smith, Shelley');
+        expect(referralElement4).toHaveAttribute('href', 'https://stage.mpdx.org/contacts/contact_4');
+        expect(getByRole('link', { name: 'View All (5,678)' })).toHaveAttribute(
+            'href',
+            'https://stage.mpdx.org/contacts?filters=%7B%22referrer%22%3A%22any%22%2C%22status%22%3A%22Never%20Contacted%2CAsk%20in%20Future%2CCultivate%20Relationship%2CContact%20for%20Appointment%22%7D',
+        );
     });
 });

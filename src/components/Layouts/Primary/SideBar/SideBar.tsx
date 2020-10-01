@@ -130,11 +130,7 @@ const SideBar = ({ open, handleOpenChange }: Props): ReactElement => {
                         <ListItemText className={classes.listItemText} primary={t('Overview')} />
                     </ListItem>
                 </Link>
-                <Link
-                    href="/accountLists/[accountListId]/tasks/[tab]"
-                    as={`/accountLists/${accountListId}/tasks/list`}
-                    passHref
-                >
+                <Link href="/accountLists/[accountListId]/tasks" as={`/accountLists/${accountListId}/tasks`} passHref>
                     <ListItem
                         className={classes.listItem}
                         button

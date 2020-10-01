@@ -8,14 +8,14 @@ import { AppState } from '../src/components/App/rootReducer';
 import TestRouter from './TestRouter';
 
 interface Props {
-    mocks: MockedResponse[];
+    mocks?: MockedResponse[];
     children: ReactNode;
     initialState?: Partial<AppState>;
     disableAppProvider?: boolean;
 }
 
 const TestWrapper = ({
-    mocks,
+    mocks = [],
     children,
     initialState = { accountListId: 'abc' },
     disableAppProvider = false,

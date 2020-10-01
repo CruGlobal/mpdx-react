@@ -14,10 +14,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
 }));
 
-export type SelectedTab = 'list';
-
 interface Props {
-    tab?: SelectedTab;
     initialFilter?: TaskFilter;
 }
 
