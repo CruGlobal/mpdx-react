@@ -3,7 +3,6 @@ import NextAuth from 'next-auth';
 import { Profile } from './profile';
 
 const options = {
-    site: process.env.SITE_URL,
     providers: [
         {
             id: 'thekey',
@@ -18,6 +17,7 @@ const options = {
             profile: (profile: Profile): Profile => profile,
             clientId: process.env.CLIENT_ID,
             clientSecret: process.env.CLIENT_SECRET,
+            state: false,
         },
     ],
     callbacks: {
