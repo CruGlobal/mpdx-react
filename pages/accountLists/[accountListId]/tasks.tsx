@@ -1,7 +1,7 @@
 import React, { ReactElement, useEffect } from 'react';
 import Head from 'next/head';
 import { GetServerSideProps } from 'next';
-import { getSession, setOptions } from 'next-auth/client';
+import { getSession } from 'next-auth/client';
 import { useTranslation } from 'react-i18next';
 import { castArray, pick } from 'lodash/fp';
 import { parse } from 'query-string';
@@ -68,7 +68,6 @@ const TasksPage = (): ReactElement => {
 };
 
 export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
-    setOptions({ site: process.env.SITE_URL });
     const session = await getSession({ req });
 
     if (!session?.user?.token) {

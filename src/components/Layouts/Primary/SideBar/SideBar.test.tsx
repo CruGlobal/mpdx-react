@@ -3,6 +3,7 @@ import { render, fireEvent } from '@testing-library/react';
 import matchMediaMock from '../../../../../tests/matchMediaMock';
 import { AppProvider } from '../../../App';
 import TestRouter from '../../../../../tests/TestRouter';
+import TestWrapper from '../../../../../tests/TestWrapper';
 import Sidebar from '.';
 
 describe('Sidebar', () => {
@@ -12,9 +13,9 @@ describe('Sidebar', () => {
 
     it('has correct defaults', () => {
         const { getByTestId, queryByTestId, getByRole } = render(
-            <AppProvider initialState={{ accountListId: 'account-1' }}>
+            <TestWrapper initialState={{ accountListId: 'account-1' }}>
                 <Sidebar open={false} handleOpenChange={jest.fn()} />
-            </AppProvider>,
+            </TestWrapper>,
         );
         expect(queryByTestId('SideBarMobileDrawer')).not.toBeInTheDocument();
         expect(getByTestId('SideBarDesktopDrawer')).toBeInTheDocument();
@@ -37,11 +38,9 @@ describe('Sidebar', () => {
         it('allows menu to be shown and hidden', () => {
             const handleOpenChange = jest.fn();
             const { getByTestId, queryByTestId, getByText, rerender } = render(
-                <TestRouter>
-                    <AppProvider initialState={{ accountListId: 'account-1' }}>
-                        <Sidebar open={false} handleOpenChange={handleOpenChange} />,
-                    </AppProvider>
-                </TestRouter>,
+                <TestWrapper initialState={{ accountListId: 'account-1' }}>
+                    <Sidebar open={false} handleOpenChange={handleOpenChange} />,
+                </TestWrapper>,
             );
             expect(queryByTestId('SideBarDesktopDrawer')).not.toBeInTheDocument();
             expect(getByText('Dashboard')).not.toBeVisible();
@@ -50,11 +49,9 @@ describe('Sidebar', () => {
             fireEvent.click(sideBarMobileDrawer.children[0]);
             expect(handleOpenChange).toHaveBeenCalled();
             rerender(
-                <TestRouter>
-                    <AppProvider initialState={{ accountListId: 'account-1' }}>
-                        <Sidebar open={true} handleOpenChange={handleOpenChange} />
-                    </AppProvider>
-                </TestRouter>,
+                <TestWrapper initialState={{ accountListId: 'account-1' }}>
+                    <Sidebar open={true} handleOpenChange={handleOpenChange} />
+                </TestWrapper>,
             );
             expect(getByText('Dashboard')).toBeVisible();
         });

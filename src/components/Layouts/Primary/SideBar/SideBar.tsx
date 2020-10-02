@@ -42,6 +42,7 @@ import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import PeopleOutlineIcon from '@material-ui/icons/PeopleOutline';
 import PeopleIcon from '@material-ui/icons/People';
 import AccountBoxIcon from '@material-ui/icons/AccountBox';
+import { useRouter } from 'next/router';
 import { useApp } from '../../../App';
 import HandoffLink from '../../../HandoffLink';
 
@@ -93,9 +94,12 @@ const useStyles = makeStyles((theme: Theme) =>
             '&:hover': {
                 backgroundColor: 'rgba(255,255,255,.1)',
             },
+            '&.Mui-selected $listItemIcon, &.Mui-selected $listItemText': {
+                color: '#64b5f6',
+            },
         },
         listItemIcon: {
-            color: '#fff',
+            color: 'rgba(255, 255, 255, .7)',
             fontSize: theme.typography.h5.fontSize,
         },
         listItemText: {
@@ -173,8 +177,18 @@ const SideBar = ({ open, handleOpenChange }: Props): ReactElement => {
     } = useApp();
 
     const Item = (props: ItemProps) => {
+        const { asPath } = useRouter();
+
+        const selected = props.type == 'local' && (asPath === props.href || asPath === props.as);
+
         const children = (
-            <ListItem button onClick={(): void => handleOpenChange(false)} component="a" className={classes.listItem}>
+            <ListItem
+                button
+                onClick={(): void => handleOpenChange(false)}
+                component="a"
+                className={classes.listItem}
+                selected={selected}
+            >
                 <ListItemIcon className={classes.listItemIcon}>
                     {cloneElement(props.icon, { fontSize: 'inherit' })}
                 </ListItemIcon>

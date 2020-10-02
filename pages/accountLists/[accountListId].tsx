@@ -3,7 +3,7 @@ import Head from 'next/head';
 import { gql } from '@apollo/client';
 import { GetServerSideProps, GetServerSidePropsResult } from 'next';
 import moment from 'moment';
-import { getSession, setOptions } from 'next-auth/client';
+import { getSession } from 'next-auth/client';
 import { useTranslation } from 'react-i18next';
 import Dashboard from '../../src/components/Dashboard';
 import { GetDashboardQuery } from '../../types/GetDashboardQuery';
@@ -66,7 +66,6 @@ export const getServerSideProps: GetServerSideProps = async ({
     req,
     res,
 }): Promise<GetServerSidePropsResult<Props | unknown>> => {
-    setOptions({ site: process.env.SITE_URL });
     const session = await getSession({ req });
 
     if (!session?.user?.token) {

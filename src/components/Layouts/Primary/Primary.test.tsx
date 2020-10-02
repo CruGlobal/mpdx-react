@@ -4,6 +4,7 @@ import { MockedProvider } from '@apollo/client/testing';
 import matchMediaMock from '../../../../tests/matchMediaMock';
 import AppProvider from '../../App/Provider';
 import TestRouter from '../../../../tests/TestRouter';
+import TestWrapper from '../../../../tests/TestWrapper';
 import { GET_TOP_BAR_QUERY } from './TopBar/TopBar';
 import Primary from '.';
 
@@ -33,13 +34,11 @@ describe('Primary', () => {
 
     it('has correct defaults', () => {
         const { getByTestId, queryByTestId, getByRole } = render(
-            <MockedProvider mocks={mocks} addTypename={false}>
-                <AppProvider initialState={{ accountListId: '1', breadcrumb: 'Dashboard' }}>
-                    <Primary>
-                        <div data-testid="PrimaryTestChildren"></div>
-                    </Primary>
-                </AppProvider>
-            </MockedProvider>,
+            <TestWrapper mocks={mocks} initialState={{ accountListId: '1', breadcrumb: 'Dashboard' }}>
+                <Primary>
+                    <div data-testid="PrimaryTestChildren"></div>
+                </Primary>
+            </TestWrapper>,
         );
         expect(getByTestId('PrimaryTestChildren')).toBeInTheDocument();
         expect(queryByTestId('SideBarMobileDrawer')).not.toBeInTheDocument();
@@ -54,15 +53,11 @@ describe('Primary', () => {
 
         it('allows menu to be shown and hidden', async () => {
             const { getByTestId, queryByTestId, getByRole, queryByRole } = render(
-                <TestRouter>
-                    <MockedProvider mocks={mocks} addTypename={false}>
-                        <AppProvider initialState={{ accountListId: '1', breadcrumb: 'Dashboard' }}>
-                            <Primary>
-                                <div data-testid="PrimaryTestChildren"></div>
-                            </Primary>
-                        </AppProvider>
-                    </MockedProvider>
-                </TestRouter>,
+                <TestWrapper mocks={mocks} initialState={{ accountListId: '1', breadcrumb: 'Dashboard' }}>
+                    <Primary>
+                        <div data-testid="PrimaryTestChildren"></div>
+                    </Primary>
+                </TestWrapper>,
             );
             expect(queryByTestId('SideBarDesktopDrawer')).not.toBeInTheDocument();
             expect(queryByRole('link', { name: 'Dashboard' })).not.toBeInTheDocument();
