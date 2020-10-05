@@ -1,4 +1,4 @@
-import React, { ReactElement, useState, useRef, useEffect } from 'react';
+import React, { ReactElement, useState, useEffect } from 'react';
 import {
     Avatar,
     IconButton,
@@ -14,18 +14,25 @@ import {
     Theme,
     Grid,
     Hidden,
+    ListItemText,
+    Divider,
+    ListItemAvatar,
+    Link,
 } from '@material-ui/core';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import { useQuery, gql } from '@apollo/client';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
-import Link from 'next/link';
 import MenuIcon from '@material-ui/icons/Menu';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
+import { signout } from 'next-auth/client';
+import { compact } from 'lodash/fp';
+import NextLink from 'next/link';
 import { GetTopBarQuery } from '../../../../../types/GetTopBarQuery';
 import { SIDE_BAR_MINIMIZED_WIDTH, SIDE_BAR_WIDTH } from '../SideBar/SideBar';
 import { useApp } from '../../../App';
+import HandoffLink from '../../../HandoffLink';
 
 const useStyles = makeStyles((theme: Theme) => ({
     appBar: {
@@ -103,6 +110,20 @@ const useStyles = makeStyles((theme: Theme) => ({
     menuList: {
         paddingTop: 0,
     },
+    menuItemAccount: {
+        paddingTop: 0,
+        outline: 0,
+    },
+    menuItemFooter: {
+        fontSize: theme.typography.body2.fontSize,
+        justifyContent: 'center',
+        paddingTop: theme.spacing(2),
+        outline: 0,
+    },
+    menuButton: {
+        width: '100%',
+        marginTop: theme.spacing(1),
+    },
     logo: {
         width: 70,
         transition: theme.transitions.create('margin-right', {
@@ -130,6 +151,10 @@ export const GET_TOP_BAR_QUERY = gql`
             id
             firstName
             lastName
+            keyAccounts {
+                id
+                email
+            }
         }
     }
 `;
@@ -148,15 +173,25 @@ const TopBar = ({ open, handleOpenChange }: Props): ReactElement => {
         threshold: 0,
     });
     const { data } = useQuery<GetTopBarQuery>(GET_TOP_BAR_QUERY);
-    const [accountListMenuOpen, setAccountListMenuOpen] = useState(false);
-    const anchorEl = useRef(null);
+    const [accountListMenuAnchorEl, setAccountListMenuAnchorEl] = useState(null);
+    const accountListMenuOpen = Boolean(accountListMenuAnchorEl);
+    const [profileMenuAnchorEl, setProfileMenuAnchorEl] = useState(null);
+    const profileMenuOpen = Boolean(profileMenuAnchorEl);
 
-    const handleAccountListMenuOpen = (): void => {
-        setAccountListMenuOpen(true);
+    const handleAccountListMenuOpen = (event) => {
+        setAccountListMenuAnchorEl(event.currentTarget);
     };
 
     const handleAccountListMenuClose = (): void => {
-        setAccountListMenuOpen(false);
+        setAccountListMenuAnchorEl(null);
+    };
+
+    const handleProfileMenuOpen = (event) => {
+        setProfileMenuAnchorEl(event.currentTarget);
+    };
+
+    const handleProfileMenuClose = () => {
+        setProfileMenuAnchorEl(null);
     };
 
     const currentAccountList = data?.accountLists?.nodes?.find((node) => node.id == state.accountListId);
@@ -207,7 +242,6 @@ const TopBar = ({ open, handleOpenChange }: Props): ReactElement => {
                                                     className={[classes.button, classes.link].join(' ')}
                                                     endIcon={<ArrowDropDownIcon />}
                                                     size="small"
-                                                    ref={anchorEl}
                                                     data-testid="TopBarButton"
                                                 >
                                                     {currentAccountList?.name}
@@ -217,7 +251,6 @@ const TopBar = ({ open, handleOpenChange }: Props): ReactElement => {
                                                 <IconButton
                                                     onClick={handleAccountListMenuOpen}
                                                     className={classes.link}
-                                                    ref={anchorEl}
                                                     data-testid="TopBarButton"
                                                 >
                                                     <MoreVertIcon />
@@ -225,19 +258,19 @@ const TopBar = ({ open, handleOpenChange }: Props): ReactElement => {
                                             </Hidden>
                                             <Menu
                                                 data-testid="TopBarMenu"
-                                                anchorEl={anchorEl?.current}
+                                                anchorEl={accountListMenuAnchorEl}
                                                 open={accountListMenuOpen}
                                                 onClose={handleAccountListMenuClose}
                                                 classes={{ list: classes.menuList }}
                                             >
-                                                <Link href="/accountLists" scroll={false}>
+                                                <NextLink href="/accountLists" scroll={false}>
                                                     <MenuItem onClick={handleAccountListMenuClose}>
                                                         See All Account Lists
                                                     </MenuItem>
-                                                </Link>
+                                                </NextLink>
                                                 <ListSubheader>Account Lists</ListSubheader>
                                                 {data.accountLists.nodes.map(({ id, name }) => (
-                                                    <Link
+                                                    <NextLink
                                                         key={id}
                                                         href="/accountLists/[accountListId]"
                                                         as={`/accountLists/${id}`}
@@ -250,7 +283,7 @@ const TopBar = ({ open, handleOpenChange }: Props): ReactElement => {
                                                         >
                                                             {name}
                                                         </MenuItem>
-                                                    </Link>
+                                                    </NextLink>
                                                 ))}
                                             </Menu>
                                         </>
@@ -284,7 +317,9 @@ const TopBar = ({ open, handleOpenChange }: Props): ReactElement => {
                             </IconButton>
                         </Grid>
                         <Grid item className={classes.avatarGrid}>
-                            <Avatar className={classes.avatar}>{state.user?.firstName[0]}</Avatar>
+                            <IconButton onClick={handleProfileMenuOpen}>
+                                <Avatar className={classes.avatar}>{state.user?.firstName[0]}</Avatar>
+                            </IconButton>
                         </Grid>
                     </Grid>
                 </Toolbar>
@@ -294,6 +329,64 @@ const TopBar = ({ open, handleOpenChange }: Props): ReactElement => {
                     <Grid className={classes.container} />
                 </Toolbar>
             </AppBar>
+            <Menu
+                data-testid="profileMenu"
+                anchorEl={profileMenuAnchorEl}
+                open={profileMenuOpen}
+                onClose={handleProfileMenuClose}
+            >
+                {data && (
+                    <MenuItem button={false} className={classes.menuItemAccount}>
+                        <ListItemAvatar>
+                            <Avatar>{data.user.firstName[0]}</Avatar>
+                        </ListItemAvatar>
+                        <ListItemText
+                            primary={compact([data.user.firstName, data.user.lastName]).join(' ')}
+                            secondary={data.user.keyAccounts[0]?.email}
+                        />
+                    </MenuItem>
+                )}
+                <Divider />
+                <HandoffLink path="/preferences/personal">
+                    <MenuItem onClick={handleProfileMenuClose} component="a">
+                        <ListItemText primary={t('Preferences')} />
+                    </MenuItem>
+                </HandoffLink>
+                <HandoffLink path="/preferences/notifications">
+                    <MenuItem onClick={handleProfileMenuClose} component="a">
+                        <ListItemText primary={t('Notifications')} />
+                    </MenuItem>
+                </HandoffLink>
+                <HandoffLink path="/preferences/integrations">
+                    <MenuItem onClick={handleProfileMenuClose} component="a">
+                        <ListItemText primary={t('Connect Services')} />
+                    </MenuItem>
+                </HandoffLink>
+                <HandoffLink path="/preferences/accounts">
+                    <MenuItem onClick={handleProfileMenuClose} component="a">
+                        <ListItemText primary={t('Manage Accounts')} />
+                    </MenuItem>
+                </HandoffLink>
+                <HandoffLink path="/preferences/coaches">
+                    <MenuItem onClick={handleProfileMenuClose} component="a">
+                        <ListItemText primary={t('Manage Coaches')} />
+                    </MenuItem>
+                </HandoffLink>
+                <MenuItem button={false}>
+                    <Button className={classes.menuButton} variant="outlined" color="default" onClick={signout}>
+                        {t('Sign Out')}
+                    </Button>
+                </MenuItem>
+                <MenuItem button={false} className={classes.menuItemFooter}>
+                    <Link href="https://get.mpdx.org/privacy-policy/" target="_blank" onClick={handleProfileMenuClose}>
+                        {t('Privacy Policy')}
+                    </Link>
+                    &nbsp; • &nbsp;
+                    <Link href="https://get.mpdx.org/terms-of-use/" target="_blank" onClick={handleProfileMenuClose}>
+                        {t('Terms of Use')}
+                    </Link>
+                </MenuItem>
+            </Menu>
         </>
     );
 };

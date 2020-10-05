@@ -29,7 +29,12 @@ describe('TopBar', () => {
                     { id: '2', name: 'Ministry Account' },
                 ],
             },
-            user: { id: 'user-1', firstName: 'John', lastName: 'Smith' },
+            user: {
+                id: 'user-1',
+                firstName: 'John',
+                lastName: 'Smith',
+                keyAccounts: [{ id: '1', email: 'john.smith@gmail.com' }],
+            },
         };
 
         mocks = [
@@ -79,7 +84,12 @@ describe('TopBar', () => {
             await waitFor(() => expect(queryByTestId('TopBarMenu')).not.toBeInTheDocument());
             expect(dispatch).toHaveBeenCalledWith({
                 type: 'updateUser',
-                user: { id: 'user-1', firstName: 'John', lastName: 'Smith' },
+                user: {
+                    id: 'user-1',
+                    firstName: 'John',
+                    lastName: 'Smith',
+                    keyAccounts: [{ id: '1', email: 'john.smith@gmail.com' }],
+                },
             });
         });
     });
@@ -90,7 +100,12 @@ describe('TopBar', () => {
                 accountLists: {
                     nodes: [{ id: '1', name: 'Staff Account' }],
                 },
-                user: { id: 'user-1', firstName: 'John', lastName: 'Smith' },
+                user: {
+                    id: 'user-1',
+                    firstName: 'John',
+                    lastName: 'Smith',
+                    keyAccounts: [{ id: '1', email: 'john.smith@gmail.com' }],
+                },
             };
             mocks = [
                 {
