@@ -62,7 +62,7 @@ const App = ({ Component, pageProps, router }: AppProps): ReactElement => {
                 />
             </Head>
             <I18nextProvider i18n={i18n}>
-                <NextAuthProvider options={{ site: process.env.SITE_URL }} session={session}>
+                <NextAuthProvider session={session}>
                     <ApolloProvider client={client}>
                         <ThemeProvider theme={theme}>
                             <CssBaseline />

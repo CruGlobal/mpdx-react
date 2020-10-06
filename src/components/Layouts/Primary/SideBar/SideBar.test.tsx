@@ -1,8 +1,6 @@
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react';
 import matchMediaMock from '../../../../../tests/matchMediaMock';
-import { AppProvider } from '../../../App';
-import TestRouter from '../../../../../tests/TestRouter';
 import TestWrapper from '../../../../../tests/TestWrapper';
 import Sidebar from '.';
 

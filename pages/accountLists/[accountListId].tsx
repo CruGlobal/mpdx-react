@@ -68,13 +68,13 @@ export const getServerSideProps: GetServerSideProps = async ({
 }): Promise<GetServerSidePropsResult<Props | unknown>> => {
     const session = await getSession({ req });
 
-    if (!session?.user?.token) {
+    if (!session?.user['token']) {
         res.writeHead(302, { Location: '/' });
         res.end();
         return { props: {} };
     }
 
-    const client = await ssrClient(session?.user?.token);
+    const client = await ssrClient(session?.user['token']);
     const response = await client.query<GetDashboardQuery>({
         query: GET_DASHBOARD_QUERY,
         variables: {

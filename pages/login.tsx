@@ -20,7 +20,7 @@ partners in a quick and easy way."
             <Button
                 size="large"
                 variant="contained"
-                onClick={(): void => signin('thekey', { callbackUrl: `${process.env.SITE_URL}` })}
+                onClick={() => signin('thekey', { callbackUrl: process.env.SITE_URL })}
             >
                 Sign In
             </Button>

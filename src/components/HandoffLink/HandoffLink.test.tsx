@@ -64,4 +64,26 @@ describe('HandoffLink', () => {
             ),
         ).toThrowError();
     });
+
+    describe('SITE_URL set', () => {
+        const OLD_ENV = process.env;
+
+        beforeEach(() => {
+            jest.resetModules();
+            process.env = { ...OLD_ENV, SITE_URL: 'https://next.mpdx.org' };
+        });
+
+        afterAll(() => {
+            process.env = OLD_ENV;
+        });
+
+        it('changes base URL', () => {
+            const { getByRole } = render(
+                <HandoffLink path="/contacts">
+                    <a>Link</a>
+                </HandoffLink>,
+            );
+            expect(getByRole('link', { name: 'Link' })).toHaveAttribute('href', 'https://mpdx.org/contacts');
+        });
+    });
 });

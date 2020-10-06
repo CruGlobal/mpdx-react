@@ -1,9 +1,6 @@
 import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react';
-import { MockedProvider } from '@apollo/client/testing';
 import matchMediaMock from '../../../../tests/matchMediaMock';
-import AppProvider from '../../App/Provider';
-import TestRouter from '../../../../tests/TestRouter';
 import TestWrapper from '../../../../tests/TestWrapper';
 import { GET_TOP_BAR_QUERY } from './TopBar/TopBar';
 import Primary from '.';

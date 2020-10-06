@@ -70,7 +70,7 @@ const TasksPage = (): ReactElement => {
 export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
     const session = await getSession({ req });
 
-    if (!session?.user?.token) {
+    if (!session?.user['token']) {
         res.writeHead(302, { Location: '/' });
         res.end();
         return { props: {} };

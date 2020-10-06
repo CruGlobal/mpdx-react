@@ -373,7 +373,7 @@ const TopBar = ({ open, handleOpenChange }: Props): ReactElement => {
                     </MenuItem>
                 </HandoffLink>
                 <MenuItem button={false}>
-                    <Button className={classes.menuButton} variant="outlined" color="default" onClick={signout}>
+                    <Button className={classes.menuButton} variant="outlined" color="default" onClick={() => signout()}>
                         {t('Sign Out')}
                     </Button>
                 </MenuItem>
