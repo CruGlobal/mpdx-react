@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import TestWrapper from '../../../../tests/TestWrapper';
+import TestWrapper from '../../../../__tests__/util/TestWrapper';
 import { getDataForTaskDrawerMock, createTaskMutationMock, updateTaskMutationMock } from './Form/Form.mock';
 import { getCommentsForTaskDrawerCommentListMock } from './CommentList/CommentList.mock';
 import { getContactsForTaskDrawerContactListMock } from './ContactList/ContactList.mock';

@@ -3,8 +3,8 @@ import { SnackbarProvider } from 'notistack';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
 import React, { ReactElement, ReactNode } from 'react';
-import { AppProvider } from '../src/components/App';
-import { AppState } from '../src/components/App/rootReducer';
+import { AppProvider } from '../../src/components/App';
+import { AppState } from '../../src/components/App/rootReducer';
 import TestRouter from './TestRouter';
 
 interface Props {

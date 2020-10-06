@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react';
-import matchMediaMock from '../../../../../tests/matchMediaMock';
-import TestWrapper from '../../../../../tests/TestWrapper';
+import matchMediaMock from '../../../../../__tests__/util/matchMediaMock';
+import TestWrapper from '../../../../../__tests__/util/TestWrapper';
 import Sidebar from '.';
 
 describe('Sidebar', () => {

@@ -1,8 +1,8 @@
 import React from 'react';
 import { render, waitFor, fireEvent } from '@testing-library/react';
 import { MockedProvider } from '@apollo/client/testing';
-import TestRouter from '../../../../../tests/TestRouter';
-import matchMediaMock from '../../../../../tests/matchMediaMock';
+import TestRouter from '../../../../../__tests__/util/TestRouter';
+import matchMediaMock from '../../../../../__tests__/util/matchMediaMock';
 import { GetTopBarQuery } from '../../../../../types/GetTopBarQuery';
 import { AppState } from '../../../App/rootReducer';
 import { AppProviderContext } from '../../../App/Provider';

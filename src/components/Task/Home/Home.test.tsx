@@ -1,7 +1,7 @@
 import React from 'react';
-import TestWrapper from '../../../../tests/TestWrapper';
+import TestWrapper from '../../../../__tests__/util/TestWrapper';
 import { getDataForTaskDrawerMock } from '../Drawer/Form/Form.mock';
-import { render } from '../../../../tests/testingLibraryReactMock';
+import { render } from '../../../../__tests__/util/testingLibraryReactMock';
 import { getTasksForTaskListMock, getFilteredTasksForTaskListMock } from '../List/List.mock';
 import TaskHome from '.';
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import TestRouter from '../../../../../tests/TestRouter';
+import TestRouter from '../../../../../__tests__/util/TestRouter';
 import TopBar from '.';
 
 describe('TopBar', () => {

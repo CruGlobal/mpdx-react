@@ -1,10 +1,10 @@
 import React from 'react';
 import MockDate from 'mockdate';
 import userEvent from '@testing-library/user-event';
-import TestWrapper from '../../../../tests/TestWrapper';
+import TestWrapper from '../../../../__tests__/util/TestWrapper';
 import { getDataForTaskDrawerMock } from '../Drawer/Form/Form.mock';
 import { AppProviderContext } from '../../App/Provider';
-import { render } from '../../../../tests/testingLibraryReactMock';
+import { render } from '../../../../__tests__/util/testingLibraryReactMock';
 import { getTasksForTaskListMock, getFilteredTasksForTaskListMock, getEmptyTasksForTaskListMock } from './List.mock';
 import TaskList from '.';
 

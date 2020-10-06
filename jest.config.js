@@ -1,11 +1,11 @@
 module.exports = {
-    roots: ['<rootDir>/src'],
+    roots: ['<rootDir>/src', '<rootDir>/__tests__/pages'],
     preset: 'ts-jest',
-    setupFilesAfterEnv: ['<rootDir>/tests/setup.ts'],
+    setupFilesAfterEnv: ['<rootDir>/__tests__/util/setup.ts'],
     transform: {
         '^.+\\.tsx?$': 'ts-jest',
         '\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$':
-            '<rootDir>/tests/fileMock.js',
+            '<rootDir>/__tests__/util/fileMock.js',
         '\\.(gql|graphql)$': 'jest-transform-graphql',
     },
     moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],

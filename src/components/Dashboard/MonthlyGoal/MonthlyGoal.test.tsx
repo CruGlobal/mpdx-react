@@ -1,6 +1,6 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import matchMediaMock from '../../../../tests/matchMediaMock';
+import matchMediaMock from '../../../../__tests__/util/matchMediaMock';
 import MonthlyGoal from '.';
 
 describe('MonthlyGoal', () => {

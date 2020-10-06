@@ -1,6 +1,6 @@
 import React from 'react';
 import MockDate from 'mockdate';
-import { render, fireEvent } from '../../../../../tests/testingLibraryReactMock';
+import { render, fireEvent } from '../../../../../__tests__/util/testingLibraryReactMock';
 import Referrals from '.';
 
 describe('Referrals', () => {

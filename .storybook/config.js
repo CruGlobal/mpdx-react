@@ -11,7 +11,7 @@ import DateFnsUtils from '@date-io/date-fns';
 import { SnackbarProvider } from 'notistack';
 import { AppProvider } from '../src/components/App';
 import { MockedProvider } from '@apollo/client/testing';
-import TestRouter from '../tests/TestRouter';
+import TestRouter from '../__tests__/util/TestRouter';
 import theme from '../src/theme';
 import i18n from '../src/lib/i18n';
 

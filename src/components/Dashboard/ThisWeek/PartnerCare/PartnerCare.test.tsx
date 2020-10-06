@@ -1,6 +1,6 @@
 import React from 'react';
 import userEvent from '@testing-library/user-event';
-import { render, fireEvent } from '../../../../../tests/testingLibraryReactMock';
+import { render, fireEvent } from '../../../../../__tests__/util/testingLibraryReactMock';
 import { ActivityTypeEnum } from '../../../../../types/globalTypes';
 import { AppProviderContext } from '../../../App/Provider';
 import { GetThisWeekQuery_prayerRequestTasks } from '../../../../../types/GetThisWeekQuery';

@@ -2,7 +2,7 @@ import React from 'react';
 import { render, within, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { getDataForTaskDrawerMock } from '../Form/Form.mock';
-import TestWrapper from '../../../../../tests/TestWrapper';
+import TestWrapper from '../../../../../__tests__/util/TestWrapper';
 import { dateFormat } from '../../../../lib/intlFormat/intlFormat';
 import {
     ActivityTypeEnum,

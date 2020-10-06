@@ -1,8 +1,8 @@
 import React, { ReactNode, ReactElement } from 'react';
 import { render, RenderResult, RenderOptions } from '@testing-library/react';
 import { I18nextProvider } from 'react-i18next';
-import i18n from '../src/lib/i18n';
-import translation from '../public/locales/en/translation.json';
+import i18n from '../../src/lib/i18n';
+import translation from '../../public/locales/en/translation.json';
 
 interface Props {
     children: ReactNode;

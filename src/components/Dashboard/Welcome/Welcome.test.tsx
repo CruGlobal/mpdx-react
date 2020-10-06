@@ -1,6 +1,6 @@
 import React from 'react';
 import MockDate from 'mockdate';
-import { render } from '../../../../tests/testingLibraryReactMock';
+import { render } from '../../../../__tests__/util/testingLibraryReactMock';
 import Welcome from '.';
 
 describe('Welcome', () => {
