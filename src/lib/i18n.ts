@@ -2,7 +2,7 @@ import i18next from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import Backend from 'i18next-http-backend';
 import LanguageDetector from 'i18next-browser-languagedetector';
-import { numberFormat } from './intlFormat';
+import { currencyFormat, numberFormat } from './intlFormat';
 
 i18next
     .use(Backend)
@@ -19,6 +19,8 @@ i18next
                 switch (format) {
                     case 'number':
                         return numberFormat(value, lng);
+                    case 'currency':
+                        return currencyFormat(value.amount, value.currency, 0, lng);
                     default:
                         return value;
                 }

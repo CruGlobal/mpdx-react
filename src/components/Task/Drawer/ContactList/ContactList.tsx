@@ -89,7 +89,6 @@ const TaskDrawerContactList = ({ accountListId, contactIds }: Props): ReactEleme
     );
 
     useEffect(() => {
-        console.log(contactIds);
         if (contactIds.length > 0) {
             getContacts({
                 variables: {

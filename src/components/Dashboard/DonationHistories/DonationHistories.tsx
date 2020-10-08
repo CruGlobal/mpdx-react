@@ -187,7 +187,7 @@ const DonationHistories = ({
                         </Box>
                     ) : (
                         <>
-                            <Box mt={1} display={{ xs: 'none', sm: 'block' }} style={{ height: '250px' }}>
+                            <Box display={{ xs: 'none', sm: 'block' }} style={{ height: '250px' }}>
                                 {loading ? (
                                     <Grid
                                         container

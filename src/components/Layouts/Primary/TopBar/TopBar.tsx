@@ -19,7 +19,6 @@ import {
     ListItemAvatar,
     Link,
 } from '@material-ui/core';
-import NotificationsIcon from '@material-ui/icons/Notifications';
 import { useQuery, gql } from '@apollo/client';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
@@ -33,6 +32,7 @@ import { GetTopBarQuery } from '../../../../../types/GetTopBarQuery';
 import { SIDE_BAR_MINIMIZED_WIDTH, SIDE_BAR_WIDTH } from '../SideBar/SideBar';
 import { useApp } from '../../../App';
 import HandoffLink from '../../../HandoffLink';
+import NotificationMenu from './NotificationMenu';
 
 const useStyles = makeStyles((theme: Theme) => ({
     appBar: {
@@ -312,9 +312,7 @@ const TopBar = ({ open, handleOpenChange }: Props): ReactElement => {
                             </Button>
                         </Grid>
                         <Grid item className={classes.notificationsGrid}>
-                            <IconButton className={classes.link}>
-                                <NotificationsIcon />
-                            </IconButton>
+                            <NotificationMenu />
                         </Grid>
                         <Grid item className={classes.avatarGrid}>
                             <IconButton onClick={handleProfileMenuOpen}>
