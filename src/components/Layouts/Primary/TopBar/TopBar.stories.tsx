@@ -4,6 +4,7 @@ import { MockedProvider } from '@apollo/client/testing';
 import withDispatch from '../../../../decorators/withDispatch';
 import { GetTopBarQuery } from '../../../../../types/GetTopBarQuery';
 import { GET_TOP_BAR_QUERY } from './TopBar';
+import { getNotificationsMocks } from './NotificationMenu/NotificationMenu.mock';
 import TopBar from '.';
 
 export default {
@@ -55,6 +56,7 @@ export const Default = (): ReactElement => {
                 data,
             },
         },
+        ...getNotificationsMocks(),
     ];
 
     return (
@@ -91,6 +93,7 @@ export const MultipleAccountLists = (): ReactElement => {
                 data,
             },
         },
+        ...getNotificationsMocks(),
     ];
 
     return (

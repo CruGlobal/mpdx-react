@@ -1,8 +1,17 @@
 import { ApolloClient, createHttpLink, InMemoryCache, NormalizedCacheObject } from '@apollo/client';
+import { relayStylePagination } from '@apollo/client/utilities';
 import { persistCache } from 'apollo-cache-persist';
 import fetch from 'isomorphic-fetch';
 
-const cache = new InMemoryCache();
+export const cache = new InMemoryCache({
+    typePolicies: {
+        Query: {
+            fields: {
+                userNotifications: relayStylePagination(['accountListId']),
+            },
+        },
+    },
+});
 
 const httpLink = createHttpLink({
     uri: `${process.env.SITE_URL}/api/graphql`,

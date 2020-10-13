@@ -3,6 +3,7 @@ import { render, fireEvent, waitFor } from '@testing-library/react';
 import matchMediaMock from '../../../../__tests__/util/matchMediaMock';
 import TestWrapper from '../../../../__tests__/util/TestWrapper';
 import { GET_TOP_BAR_QUERY } from './TopBar/TopBar';
+import { getNotificationsMocks } from './TopBar/NotificationMenu/NotificationMenu.mock';
 import Primary from '.';
 
 describe('Primary', () => {
@@ -25,6 +26,7 @@ describe('Primary', () => {
                     },
                 },
             },
+            ...getNotificationsMocks(),
         ];
         matchMediaMock({ width: '1024px' });
     });
