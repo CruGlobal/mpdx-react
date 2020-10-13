@@ -1,4 +1,4 @@
-import { dateFormat } from './intlFormat';
+import { dateFormat, monthYearFormat } from './intlFormat';
 import { numberFormat, percentageFormat, currencyFormat, dayMonthFormat } from '.';
 /**
  * @jest-environment jsdom
@@ -140,6 +140,26 @@ describe('intlFormat', () => {
 
             it('handles language', () => {
                 expect(dayMonthFormat(5, 12)).toEqual('5 janv.');
+            });
+        });
+    });
+
+    describe('monthYearFormat', () => {
+        it('formats day and month as date', () => {
+            expect(monthYearFormat(5, 2020)).toEqual('Jun 2020');
+        });
+
+        it('handles language', () => {
+            expect(monthYearFormat(5, 2020, 'fr')).toEqual('juin 2020');
+        });
+
+        describe('default language', () => {
+            beforeEach(() => {
+                languageMock.mockReturnValue('fr');
+            });
+
+            it('handles language', () => {
+                expect(monthYearFormat(5, 2020)).toEqual('juin 2020');
             });
         });
     });

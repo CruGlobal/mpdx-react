@@ -7,6 +7,7 @@ import { GetTopBarQuery } from '../../../../../types/GetTopBarQuery';
 import { AppState } from '../../../App/rootReducer';
 import { AppProviderContext } from '../../../App/Provider';
 import { GET_TOP_BAR_QUERY } from './TopBar';
+import { getNotificationsMocks } from './NotificationMenu/NotificationMenu.mock';
 import TopBar from '.';
 
 let state: AppState;
@@ -46,6 +47,7 @@ describe('TopBar', () => {
                     data,
                 },
             },
+            ...getNotificationsMocks(),
         ];
         state = { accountListId: null, breadcrumb: null };
     });
@@ -116,6 +118,7 @@ describe('TopBar', () => {
                         data,
                     },
                 },
+                ...getNotificationsMocks(),
             ];
             state = { accountListId: '1', breadcrumb: 'Dashboard' };
         });

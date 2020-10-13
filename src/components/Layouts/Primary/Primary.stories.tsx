@@ -1,26 +1,42 @@
 import React, { ReactElement } from 'react';
 import { MockedProvider } from '@apollo/client/testing';
 import { Container, Box } from '@material-ui/core';
+import withDispatch from '../../../decorators/withDispatch';
+import { GetTopBarQuery } from '../../../../types/GetTopBarQuery';
 import { GET_TOP_BAR_QUERY } from './TopBar/TopBar';
+import { getNotificationsMocks } from './TopBar/NotificationMenu/NotificationMenu.mock';
 import Primary from '.';
 
 export default {
     title: 'Layouts/Primary',
+    decorators: [
+        withDispatch(
+            { type: 'updateAccountListId', accountListId: '1' },
+            { type: 'updateBreadcrumb', breadcrumb: 'Dashboard' },
+        ),
+    ],
 };
 
 export const Default = (): ReactElement => {
+    const data: GetTopBarQuery = {
+        accountLists: { nodes: [{ id: '1', name: 'Staff Account' }] },
+        user: {
+            id: 'user-1',
+            firstName: 'John',
+            lastName: 'Smith',
+            keyAccounts: [{ id: '1', email: 'john.smith@gmail.com' }],
+        },
+    };
     const mocks = [
         {
             request: {
                 query: GET_TOP_BAR_QUERY,
             },
             result: {
-                data: {
-                    accountLists: { nodes: [{ id: '1', name: 'Staff Account' }] },
-                    user: { firstName: 'John' },
-                },
+                data,
             },
         },
+        ...getNotificationsMocks(),
     ];
 
     return (

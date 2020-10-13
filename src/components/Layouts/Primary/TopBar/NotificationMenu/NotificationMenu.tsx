@@ -1,13 +1,14 @@
 import { Badge, Box, Button, IconButton, ListItem, ListSubheader, makeStyles, Menu, Theme } from '@material-ui/core';
 import React, { ReactElement, useEffect, useState } from 'react';
 import NotificationsIcon from '@material-ui/icons/Notifications';
-import { useQuery, gql, useMutation } from '@apollo/client';
+import { gql, useMutation, useLazyQuery } from '@apollo/client';
 import { useTranslation } from 'react-i18next';
 import { cloneDeep } from 'lodash/fp';
 import { useApp } from '../../../../App';
 import { GetNotificationsQuery } from '../../../../../../types/GetNotificationsQuery';
 import { AcknowledgeAllUserNotificationsMutation } from '../../../../../../types/AcknowledgeAllUserNotificationsMutation';
 import NotificationMenuItem from './Item';
+import GET_NOTIFICATIONS_QUERY from './getNotificationsQuery.graphql';
 
 const useStyles = makeStyles((theme: Theme) => ({
     link: {
@@ -24,11 +25,17 @@ const useStyles = makeStyles((theme: Theme) => ({
             width: '100%',
         },
     },
+    menuList: {
+        padding: 0,
+    },
     menuButton: {
         width: '100%',
+        marginBottom: theme.spacing(1),
     },
     listSubheader: {
         outline: 0,
+        backgroundColor: theme.palette.background.paper,
+        zIndex: 2,
     },
     listItemEmpty: {
         flexDirection: 'column',
@@ -39,42 +46,6 @@ const useStyles = makeStyles((theme: Theme) => ({
         marginBottom: theme.spacing(2),
     },
 }));
-
-export const GET_NOTIFICATIONS_QUERY = gql`
-    query GetNotificationsQuery($accountListId: ID!, $after: String) {
-        userNotifications(accountListId: $accountListId, after: $after) {
-            nodes {
-                id
-                read
-                notification {
-                    occurredAt
-                    contact {
-                        id
-                        name
-                    }
-                    donation {
-                        id
-                        amount {
-                            amount
-                            currency
-                            conversionDate
-                        }
-                    }
-                    notificationType {
-                        id
-                        type
-                        descriptionTemplate
-                    }
-                }
-            }
-            pageInfo {
-                endCursor
-                hasNextPage
-            }
-            unreadCount
-        }
-    }
-`;
 
 export const ACKNOWLEDGE_ALL_USER_NOTIFICATIONS_MUTATION = gql`
     mutation AcknowledgeAllUserNotificationsMutation($accountListId: ID!) {
@@ -90,19 +61,17 @@ const NotificationMenu = (): ReactElement => {
     const { state } = useApp();
     const [anchorEl, setAnchorEl] = useState(null);
 
-    const { data, loading, fetchMore, refetch } = useQuery<GetNotificationsQuery>(GET_NOTIFICATIONS_QUERY, {
-        notifyOnNetworkStatusChange: true,
-        variables: {
-            accountListId: state.accountListId,
-            after: null,
-        },
-    });
+    const [getNotifications, { data, loading, fetchMore }] = useLazyQuery<GetNotificationsQuery>(
+        GET_NOTIFICATIONS_QUERY,
+        { notifyOnNetworkStatusChange: true },
+    );
 
     const [acknoweldgeAllUserNotifications] = useMutation<AcknowledgeAllUserNotificationsMutation>(
         ACKNOWLEDGE_ALL_USER_NOTIFICATIONS_MUTATION,
     );
 
     const handleAcknowledgeAllClick = () => {
+        const optimisticResponse = true;
         acknoweldgeAllUserNotifications({
             variables: { accountListId: state.accountListId },
             optimisticResponse: {
@@ -111,6 +80,9 @@ const NotificationMenu = (): ReactElement => {
                 },
             },
             update: (cache) => {
+                console.log(cache);
+                if (!optimisticResponse) return;
+
                 const query = {
                     query: GET_NOTIFICATIONS_QUERY,
                     variables: {
@@ -120,13 +92,16 @@ const NotificationMenu = (): ReactElement => {
                 };
                 const data = cloneDeep(cache.readQuery<GetNotificationsQuery>(query));
                 data.userNotifications.unreadCount = 0;
-                data.userNotifications.nodes = data.userNotifications.nodes.map((notification) => ({
-                    ...notification,
-                    read: true,
+                data.userNotifications.edges = data.userNotifications.edges.map(({ node }) => ({
+                    node: {
+                        ...node,
+                        read: true,
+                    },
                 }));
                 cache.writeQuery({ ...query, data });
             },
         });
+        handleClose();
     };
 
     const handleClick = (event) => {
@@ -140,21 +115,17 @@ const NotificationMenu = (): ReactElement => {
     const handleFetchMore = () => {
         fetchMore({
             variables: { after: data.userNotifications.pageInfo.endCursor },
-            updateQuery: (prev, { fetchMoreResult }) => {
-                if (!fetchMoreResult) return prev;
-                return {
-                    userNotifications: {
-                        ...fetchMoreResult.userNotifications,
-                        nodes: [...prev.userNotifications.nodes, ...fetchMoreResult.userNotifications.nodes],
-                    },
-                };
-            },
         });
     };
 
     useEffect(() => {
         if (state?.accountListId) {
-            refetch({ after: null });
+            getNotifications({
+                variables: {
+                    accountListId: state.accountListId,
+                    after: null,
+                },
+            });
         }
     }, [state?.accountListId]);
 
@@ -176,7 +147,7 @@ const NotificationMenu = (): ReactElement => {
                 keepMounted
                 open={Boolean(anchorEl)}
                 onClose={handleClose}
-                classes={{ paper: classes.menuPaper }}
+                classes={{ paper: classes.menuPaper, list: classes.menuList }}
             >
                 <ListSubheader className={classes.listSubheader}>
                     <Box display="flex" flexDirection="row" justifyContent="center">
@@ -185,8 +156,8 @@ const NotificationMenu = (): ReactElement => {
                             <Button
                                 size="small"
                                 disabled={
-                                    data?.userNotifications?.nodes === undefined ||
-                                    data.userNotifications.nodes.filter(({ read }) => !read).length === 0
+                                    data?.userNotifications?.edges === undefined ||
+                                    data.userNotifications.edges.filter(({ node: { read } }) => !read).length === 0
                                 }
                                 onClick={handleAcknowledgeAllClick}
                             >
@@ -195,11 +166,13 @@ const NotificationMenu = (): ReactElement => {
                         </Box>
                     </Box>
                 </ListSubheader>
-                {data?.userNotifications?.nodes?.map((item, index) => (
+                {data?.userNotifications?.edges?.map(({ node: item }, index) => (
                     <NotificationMenuItem
                         key={item.id}
                         item={item}
-                        last={index + 1 === data.userNotifications.nodes.length && !loading}
+                        previousItem={data.userNotifications.edges[index - 1]?.node}
+                        last={index + 1 === data.userNotifications.edges.length && !loading}
+                        onClick={handleClose}
                     />
                 ))}
                 {!loading && data?.userNotifications?.pageInfo?.hasNextPage && (
@@ -214,7 +187,7 @@ const NotificationMenu = (): ReactElement => {
                         </Button>
                     </ListItem>
                 )}
-                {!loading && data?.userNotifications?.nodes?.length === 0 && (
+                {!loading && data?.userNotifications?.edges?.length === 0 && (
                     <ListItem className={classes.listItemEmpty}>
                         <img
                             src={require('../../../../../images/drawkit/grape/drawkit-grape-pack-illustration-13.svg')}
@@ -225,10 +198,10 @@ const NotificationMenu = (): ReactElement => {
                     </ListItem>
                 )}
                 {loading && (
-                    <>
+                    <Box data-testid="NotificationMenuLoading">
                         <NotificationMenuItem />
                         <NotificationMenuItem last={true} />
-                    </>
+                    </Box>
                 )}
             </Menu>
         </>

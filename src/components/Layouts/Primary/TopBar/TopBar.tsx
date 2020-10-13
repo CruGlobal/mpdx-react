@@ -182,7 +182,10 @@ const TopBar = ({ open, handleOpenChange }: Props): ReactElement => {
         setAccountListMenuAnchorEl(event.currentTarget);
     };
 
-    const handleAccountListMenuClose = (): void => {
+    const handleAccountListMenuClose = (accountListId?: string): void => {
+        if (accountListId) {
+            dispatch({ type: 'updateAccountListId', accountListId });
+        }
         setAccountListMenuAnchorEl(null);
     };
 
@@ -197,7 +200,7 @@ const TopBar = ({ open, handleOpenChange }: Props): ReactElement => {
     const currentAccountList = data?.accountLists?.nodes?.find((node) => node.id == state.accountListId);
 
     useEffect(() => {
-        data?.user && dispatch({ type: 'updateUser', user: data.user });
+        data?.user && state.user?.id !== data.user.id && dispatch({ type: 'updateUser', user: data.user });
     }, [data?.user]);
 
     return (
@@ -260,12 +263,12 @@ const TopBar = ({ open, handleOpenChange }: Props): ReactElement => {
                                                 data-testid="TopBarMenu"
                                                 anchorEl={accountListMenuAnchorEl}
                                                 open={accountListMenuOpen}
-                                                onClose={handleAccountListMenuClose}
+                                                onClose={() => handleAccountListMenuClose()}
                                                 classes={{ list: classes.menuList }}
                                             >
                                                 <NextLink href="/accountLists" scroll={false}>
-                                                    <MenuItem onClick={handleAccountListMenuClose}>
-                                                        See All Account Lists
+                                                    <MenuItem onClick={() => handleAccountListMenuClose()}>
+                                                        {t('See All Account Lists')}
                                                     </MenuItem>
                                                 </NextLink>
                                                 <ListSubheader>Account Lists</ListSubheader>
@@ -278,7 +281,7 @@ const TopBar = ({ open, handleOpenChange }: Props): ReactElement => {
                                                     >
                                                         <MenuItem
                                                             selected={id == state.accountListId}
-                                                            onClick={handleAccountListMenuClose}
+                                                            onClick={() => handleAccountListMenuClose(id)}
                                                             data-testid={`TopBarMenuItem${id}`}
                                                         >
                                                             {name}

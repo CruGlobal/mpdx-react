@@ -9,39 +9,46 @@ import { NotificationTypeTypeEnum } from "./globalTypes";
 // GraphQL query operation: GetNotificationsQuery
 // ====================================================
 
-export interface GetNotificationsQuery_userNotifications_nodes_notification_contact {
+export interface GetNotificationsQuery_userNotifications_edges_node_notification_contact {
   id: string;
   name: string;
 }
 
-export interface GetNotificationsQuery_userNotifications_nodes_notification_donation_amount {
+export interface GetNotificationsQuery_userNotifications_edges_node_notification_donation_amount {
   amount: number;
   currency: string;
   conversionDate: any;
 }
 
-export interface GetNotificationsQuery_userNotifications_nodes_notification_donation {
+export interface GetNotificationsQuery_userNotifications_edges_node_notification_donation {
   id: string;
-  amount: GetNotificationsQuery_userNotifications_nodes_notification_donation_amount;
+  amount: GetNotificationsQuery_userNotifications_edges_node_notification_donation_amount;
 }
 
-export interface GetNotificationsQuery_userNotifications_nodes_notification_notificationType {
+export interface GetNotificationsQuery_userNotifications_edges_node_notification_notificationType {
   id: string;
   type: NotificationTypeTypeEnum;
   descriptionTemplate: string;
 }
 
-export interface GetNotificationsQuery_userNotifications_nodes_notification {
+export interface GetNotificationsQuery_userNotifications_edges_node_notification {
   occurredAt: any;
-  contact: GetNotificationsQuery_userNotifications_nodes_notification_contact;
-  donation: GetNotificationsQuery_userNotifications_nodes_notification_donation | null;
-  notificationType: GetNotificationsQuery_userNotifications_nodes_notification_notificationType;
+  contact: GetNotificationsQuery_userNotifications_edges_node_notification_contact;
+  donation: GetNotificationsQuery_userNotifications_edges_node_notification_donation | null;
+  notificationType: GetNotificationsQuery_userNotifications_edges_node_notification_notificationType;
 }
 
-export interface GetNotificationsQuery_userNotifications_nodes {
+export interface GetNotificationsQuery_userNotifications_edges_node {
   id: string;
   read: boolean;
-  notification: GetNotificationsQuery_userNotifications_nodes_notification;
+  notification: GetNotificationsQuery_userNotifications_edges_node_notification;
+}
+
+export interface GetNotificationsQuery_userNotifications_edges {
+  /**
+   * The item at the end of the edge.
+   */
+  node: GetNotificationsQuery_userNotifications_edges_node | null;
 }
 
 export interface GetNotificationsQuery_userNotifications_pageInfo {
@@ -57,9 +64,9 @@ export interface GetNotificationsQuery_userNotifications_pageInfo {
 
 export interface GetNotificationsQuery_userNotifications {
   /**
-   * A list of nodes.
+   * A list of edges.
    */
-  nodes: (GetNotificationsQuery_userNotifications_nodes | null)[] | null;
+  edges: (GetNotificationsQuery_userNotifications_edges | null)[] | null;
   /**
    * Information to aid in pagination.
    */

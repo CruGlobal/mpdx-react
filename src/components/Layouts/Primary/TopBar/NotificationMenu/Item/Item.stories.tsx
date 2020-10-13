@@ -1,6 +1,8 @@
 import React, { ReactElement } from 'react';
+import { MockedProvider } from '@apollo/client/testing';
 import { NotificationTypeTypeEnum } from '../../../../../../../types/globalTypes';
-import { GetNotificationsQuery_userNotifications_nodes as Notification } from '../../../../../../../types/GetNotificationsQuery';
+import { GetNotificationsQuery_userNotifications_edges_node as Notification } from '../../../../../../../types/GetNotificationsQuery';
+import acknowledgeUserNotificationMutationMock from './Item.mock';
 import NotificationMenuItem from '.';
 
 export default {
@@ -8,9 +10,10 @@ export default {
 };
 
 export const Default = (): ReactElement => {
+    const id = 'd1b7a8c1-9b2e-4234-b2d6-e52c151bbc7b';
     const itemWithoutDonation = (type: NotificationTypeTypeEnum): Notification => {
         return {
-            id: 'd1b7a8c1-9b2e-4234-b2d6-e52c151bbc7b',
+            id,
             read: false,
             notification: {
                 occurredAt: '2020-05-25T20:00:00-04:00',
@@ -29,7 +32,7 @@ export const Default = (): ReactElement => {
     };
     const itemWithDonation = (type: NotificationTypeTypeEnum): Notification => {
         return {
-            id: 'd1b7a8c1-9b2e-4234-b2d6-e52c151bbc7b',
+            id,
             read: false,
             notification: {
                 occurredAt: '2020-05-25T20:00:00-04:00',
@@ -54,26 +57,34 @@ export const Default = (): ReactElement => {
         };
     };
     return (
-        <>
-            <NotificationMenuItem item={itemWithoutDonation(NotificationTypeTypeEnum.CALL_PARTNER_ONCE_PER_YEAR)} />
-            <NotificationMenuItem item={itemWithoutDonation(NotificationTypeTypeEnum.LARGER_GIFT)} />
-            <NotificationMenuItem item={itemWithDonation(NotificationTypeTypeEnum.LARGER_GIFT)} />
-            <NotificationMenuItem item={itemWithoutDonation(NotificationTypeTypeEnum.LONG_TIME_FRAME_GIFT)} />
-            <NotificationMenuItem item={itemWithDonation(NotificationTypeTypeEnum.LONG_TIME_FRAME_GIFT)} />
-            <NotificationMenuItem item={itemWithoutDonation(NotificationTypeTypeEnum.MISSING_ADDRESS_IN_NEWSLETTER)} />
-            <NotificationMenuItem item={itemWithoutDonation(NotificationTypeTypeEnum.MISSING_EMAIL_IN_NEWSLETTER)} />
-            <NotificationMenuItem item={itemWithoutDonation(NotificationTypeTypeEnum.RECONTINUING_GIFT)} />
-            <NotificationMenuItem item={itemWithoutDonation(NotificationTypeTypeEnum.REMIND_PARTNER_IN_ADVANCE)} />
-            <NotificationMenuItem item={itemWithoutDonation(NotificationTypeTypeEnum.SMALLER_GIFT)} />
-            <NotificationMenuItem item={itemWithDonation(NotificationTypeTypeEnum.SMALLER_GIFT)} />
-            <NotificationMenuItem item={itemWithoutDonation(NotificationTypeTypeEnum.SMALLER_GIFT)} />
-            <NotificationMenuItem item={itemWithDonation(NotificationTypeTypeEnum.SPECIAL_GIFT)} />
-            <NotificationMenuItem item={itemWithoutDonation(NotificationTypeTypeEnum.STARTED_GIVING)} />
-            <NotificationMenuItem item={itemWithoutDonation(NotificationTypeTypeEnum.STOPPED_GIVING)} />
-            <NotificationMenuItem item={itemWithoutDonation(NotificationTypeTypeEnum.THANK_PARTNER_ONCE_PER_YEAR)} />
-            <NotificationMenuItem item={itemWithoutDonation(NotificationTypeTypeEnum.UPCOMING_ANNIVERSARY)} />
-            <NotificationMenuItem item={itemWithoutDonation(NotificationTypeTypeEnum.UPCOMING_BIRTHDAY)} last />
-        </>
+        <MockedProvider mocks={[acknowledgeUserNotificationMutationMock(id)]} addTypename={false}>
+            <>
+                <NotificationMenuItem item={itemWithoutDonation(NotificationTypeTypeEnum.CALL_PARTNER_ONCE_PER_YEAR)} />
+                <NotificationMenuItem item={itemWithoutDonation(NotificationTypeTypeEnum.LARGER_GIFT)} />
+                <NotificationMenuItem item={itemWithDonation(NotificationTypeTypeEnum.LARGER_GIFT)} />
+                <NotificationMenuItem item={itemWithoutDonation(NotificationTypeTypeEnum.LONG_TIME_FRAME_GIFT)} />
+                <NotificationMenuItem item={itemWithDonation(NotificationTypeTypeEnum.LONG_TIME_FRAME_GIFT)} />
+                <NotificationMenuItem
+                    item={itemWithoutDonation(NotificationTypeTypeEnum.MISSING_ADDRESS_IN_NEWSLETTER)}
+                />
+                <NotificationMenuItem
+                    item={itemWithoutDonation(NotificationTypeTypeEnum.MISSING_EMAIL_IN_NEWSLETTER)}
+                />
+                <NotificationMenuItem item={itemWithoutDonation(NotificationTypeTypeEnum.RECONTINUING_GIFT)} />
+                <NotificationMenuItem item={itemWithoutDonation(NotificationTypeTypeEnum.REMIND_PARTNER_IN_ADVANCE)} />
+                <NotificationMenuItem item={itemWithoutDonation(NotificationTypeTypeEnum.SMALLER_GIFT)} />
+                <NotificationMenuItem item={itemWithDonation(NotificationTypeTypeEnum.SMALLER_GIFT)} />
+                <NotificationMenuItem item={itemWithoutDonation(NotificationTypeTypeEnum.SMALLER_GIFT)} />
+                <NotificationMenuItem item={itemWithDonation(NotificationTypeTypeEnum.SPECIAL_GIFT)} />
+                <NotificationMenuItem item={itemWithoutDonation(NotificationTypeTypeEnum.STARTED_GIVING)} />
+                <NotificationMenuItem item={itemWithoutDonation(NotificationTypeTypeEnum.STOPPED_GIVING)} />
+                <NotificationMenuItem
+                    item={itemWithoutDonation(NotificationTypeTypeEnum.THANK_PARTNER_ONCE_PER_YEAR)}
+                />
+                <NotificationMenuItem item={itemWithoutDonation(NotificationTypeTypeEnum.UPCOMING_ANNIVERSARY)} />
+                <NotificationMenuItem item={itemWithoutDonation(NotificationTypeTypeEnum.UPCOMING_BIRTHDAY)} last />
+            </>
+        </MockedProvider>
     );
 };
 

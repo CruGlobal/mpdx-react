@@ -1,13 +1,30 @@
 import { useMutation, gql } from '@apollo/client';
-import { Avatar, Badge, Divider, ListItem, ListItemAvatar, ListItemText, Typography } from '@material-ui/core';
+import {
+    Avatar,
+    Badge,
+    Box,
+    Divider,
+    ListItem,
+    ListItemAvatar,
+    ListItemText,
+    ListSubheader,
+    Typography,
+} from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
 import React, { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
+import { cloneDeep, isFunction } from 'lodash/fp';
+import { isSameMonth } from 'date-fns';
 import { AcknowledgeUserNotificationMutation } from '../../../../../../../types/AcknowledgeUserNotificationMutation';
-import { GetNotificationsQuery_userNotifications_nodes as Notification } from '../../../../../../../types/GetNotificationsQuery';
+import {
+    GetNotificationsQuery,
+    GetNotificationsQuery_userNotifications_edges_node as Notification,
+} from '../../../../../../../types/GetNotificationsQuery';
 import { NotificationTypeTypeEnum } from '../../../../../../../types/globalTypes';
-import { dateFormat } from '../../../../../../lib/intlFormat/intlFormat';
+import { dateFormat, monthYearFormat } from '../../../../../../lib/intlFormat/intlFormat';
+import { useApp } from '../../../../../App';
 import HandoffLink from '../../../../../HandoffLink';
+import GET_NOTIFICATIONS_QUERY from '../getNotificationsQuery.graphql';
 
 export const ACKNOWLEDGE_USER_NOTIFICATION_MUTATION = gql`
     mutation AcknowledgeUserNotificationMutation($notificationId: ID!) {
@@ -23,14 +40,17 @@ export const ACKNOWLEDGE_USER_NOTIFICATION_MUTATION = gql`
 interface Props {
     item?: Notification;
     last?: boolean;
+    previousItem?: Notification;
+    onClick?: () => void;
 }
 
-const NotificationMenuItem = ({ item, last }: Props): ReactElement => {
+const NotificationMenuItem = ({ item, previousItem, last, onClick }: Props): ReactElement => {
     const { t } = useTranslation();
+    const { state } = useApp();
 
     if (!item) {
         return (
-            <>
+            <Box>
                 <ListItem alignItems="flex-start">
                     <ListItemAvatar>
                         <Skeleton variant="circle" width={40} height={40} />
@@ -38,7 +58,7 @@ const NotificationMenuItem = ({ item, last }: Props): ReactElement => {
                     <ListItemText primary={<Skeleton />} secondary={<Skeleton width={100} />} />
                 </ListItem>
                 {!last && <Divider variant="inset" />}
-            </>
+            </Box>
         );
     }
 
@@ -46,9 +66,10 @@ const NotificationMenuItem = ({ item, last }: Props): ReactElement => {
     const [acknoweldgeUserNotification] = useMutation<AcknowledgeUserNotificationMutation>(
         ACKNOWLEDGE_USER_NOTIFICATION_MUTATION,
     );
-    const handleClick = () => {
+    const handleClick = async () => {
+        let optimisticResponse = true;
         if (!item.read) {
-            acknoweldgeUserNotification({
+            await acknoweldgeUserNotification({
                 variables: { notificationId: item.id },
                 optimisticResponse: {
                     acknowledgeUserNotification: {
@@ -58,8 +79,24 @@ const NotificationMenuItem = ({ item, last }: Props): ReactElement => {
                         },
                     },
                 },
+                update: (cache) => {
+                    if (!optimisticResponse) return;
+
+                    const query = {
+                        query: GET_NOTIFICATIONS_QUERY,
+                        variables: {
+                            accountListId: state.accountListId,
+                            after: null,
+                        },
+                    };
+                    const data = cloneDeep(cache.readQuery<GetNotificationsQuery>(query));
+                    data.userNotifications.unreadCount--;
+                    cache.writeQuery({ ...query, data });
+                    optimisticResponse = false;
+                },
             });
         }
+        if (isFunction(onClick)) onClick();
     };
 
     let message;
@@ -144,20 +181,35 @@ const NotificationMenuItem = ({ item, last }: Props): ReactElement => {
         case NotificationTypeTypeEnum.UPCOMING_BIRTHDAY:
             message = t('Upcoming birthday');
             break;
-        case NotificationTypeTypeEnum.UPCOMING_BIRTHDAY:
-            message = t('Upcoming birthday');
-            break;
         default:
             message = item.notification.notificationType.descriptionTemplate;
             break;
     }
 
     return (
-        <>
+        <Box>
+            {previousItem?.notification?.occurredAt &&
+                !isSameMonth(
+                    new Date(previousItem.notification.occurredAt),
+                    new Date(item.notification.occurredAt),
+                ) && (
+                    <ListSubheader disableSticky role="heading">
+                        {monthYearFormat(
+                            new Date(item.notification.occurredAt).getMonth(),
+                            new Date(item.notification.occurredAt).getFullYear(),
+                        )}
+                    </ListSubheader>
+                )}
             <HandoffLink path={`/contacts/${item.notification.contact.id}`}>
                 <ListItem alignItems="flex-start" button onClick={handleClick}>
                     <ListItemAvatar>
-                        <Badge color="secondary" variant="dot" overlap="circle" invisible={item.read}>
+                        <Badge
+                            color="secondary"
+                            variant="dot"
+                            overlap="circle"
+                            invisible={item.read}
+                            data-testid="NotificationMenuItemBadge"
+                        >
                             <Avatar>{item.notification.contact.name[0]}</Avatar>
                         </Badge>
                     </ListItemAvatar>
@@ -175,7 +227,7 @@ const NotificationMenuItem = ({ item, last }: Props): ReactElement => {
                 </ListItem>
             </HandoffLink>
             {!last && <Divider variant="inset" />}
-        </>
+        </Box>
     );
 };
 

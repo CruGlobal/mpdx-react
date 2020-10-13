@@ -15,12 +15,12 @@ i18next
         fallbackLng: false,
         interpolation: {
             escapeValue: false,
-            format: (value, format, lng): string => {
+            format: (value, format): string => {
                 switch (format) {
                     case 'number':
-                        return numberFormat(value, lng);
+                        return numberFormat(value);
                     case 'currency':
-                        return currencyFormat(value.amount, value.currency, 0, lng);
+                        return currencyFormat(value.amount, value.currency);
                     default:
                         return value;
                 }
