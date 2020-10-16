@@ -14,6 +14,7 @@ import moment from 'moment';
 import { Skeleton } from '@material-ui/lab';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
+import { endOfDay, formatISO } from 'date-fns';
 import AnimatedCard from '../../../AnimatedCard';
 import { GetThisWeekQuery_latePledgeContacts } from '../../../../../types/GetThisWeekQuery';
 import HandoffLink from '../../../HandoffLink';
@@ -130,11 +131,22 @@ const LateCommitments = ({ loading, latePledgeContacts }: Props): ReactElement =
                                 })}
                             </List>
                             <CardActions>
-                                <Button size="small" color="primary" data-testid="LateCommitmentsButtonViewAll">
-                                    {t('View All ({{ totalCount, number }})', {
-                                        totalCount: latePledgeContacts?.totalCount,
-                                    })}
-                                </Button>
+                                <HandoffLink
+                                    path={`/contacts?filters=${encodeURIComponent(
+                                        JSON.stringify({
+                                            late_at: `1970-01-01..${formatISO(endOfDay(new Date()), {
+                                                representation: 'date',
+                                            })}`,
+                                            status: 'Partner - Financial',
+                                        }),
+                                    )}`}
+                                >
+                                    <Button size="small" color="primary" data-testid="LateCommitmentsButtonViewAll">
+                                        {t('View All ({{ totalCount, number }})', {
+                                            totalCount: latePledgeContacts?.totalCount,
+                                        })}
+                                    </Button>
+                                </HandoffLink>
                             </CardActions>
                         </>
                     )}

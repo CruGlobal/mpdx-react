@@ -55,7 +55,12 @@ describe('LateCommitments', () => {
             const { getByTestId, queryByTestId } = render(<LateCommitments latePledgeContacts={latePledgeContacts} />);
             expect(queryByTestId('LateCommitmentsCardContentEmpty')).not.toBeInTheDocument();
             expect(queryByTestId('LateCommitmentsDivLoading')).not.toBeInTheDocument();
-            expect(getByTestId('LateCommitmentsButtonViewAll').textContent).toEqual('View All (1,595)');
+            const buttonElement = getByTestId('LateCommitmentsButtonViewAll');
+            expect(buttonElement.textContent).toEqual('View All (1,595)');
+            expect(buttonElement).toHaveAttribute(
+                'href',
+                'https://stage.mpdx.org/contacts?filters=%7B%22late_at%22%3A%221970-01-01..2020-02-01%22%2C%22status%22%3A%22Partner%20-%20Financial%22%7D',
+            );
             const contact1Element = getByTestId('LateCommitmentsListItemContact-contact1');
             expect(contact1Element).toHaveAttribute('href', 'https://stage.mpdx.org/contacts/contact1');
             expect(contact1Element.textContent).toEqual('Smith, SarahTheir gift is 2,679 days late.');

@@ -70,7 +70,12 @@ export const GET_THIS_WEEK_QUERY = gql`
             }
             totalCount
         }
-        latePledgeContacts: contacts(accountListId: $accountListId, first: 3, lateAt: { max: $today }) {
+        latePledgeContacts: contacts(
+            accountListId: $accountListId
+            first: 3
+            lateAt: { max: $today }
+            status: PARTNER_FINANCIAL
+        ) {
             nodes {
                 id
                 name
