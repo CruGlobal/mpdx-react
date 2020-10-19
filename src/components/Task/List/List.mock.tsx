@@ -44,6 +44,7 @@ export const getTasksForTaskListMock = (): MockedResponse => {
                 contactIds: [],
                 activityType: [],
                 completed: null,
+                startAt: null,
             },
         },
         result: {
@@ -77,6 +78,7 @@ export const getEmptyTasksForTaskListMock = (): MockedResponse => {
                 contactIds: [],
                 activityType: [],
                 completed: null,
+                startAt: null,
             },
         },
         result: {
@@ -145,6 +147,7 @@ export const getFilteredTasksForTaskListMock = (filter: Attributes): MockedRespo
                 contactIds: [],
                 activityType: [],
                 completed: null,
+                startAt: null,
                 ...filter,
             },
         },

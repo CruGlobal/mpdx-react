@@ -131,6 +131,7 @@ describe('TaskList', () => {
             userIds: ['user-1'],
             contactIds: ['contact-1'],
             wildcardSearch: 'journey',
+            startAt: { min: '2020-10-10', max: '2020-12-10' },
         };
         const { getByRole, getByText, findByText } = render(
             <TestWrapper
@@ -144,6 +145,8 @@ describe('TaskList', () => {
         expect(getByText('Complete')).toBeInTheDocument();
         expect(getByText('Tag: tag-1')).toBeInTheDocument();
         expect(getByText('Tag: tag-2')).toBeInTheDocument();
+        expect(getByText('Minimum Due Date: Oct 10, 2020')).toBeInTheDocument();
+        expect(getByText('Maximum Due Date: Dec 10, 2020')).toBeInTheDocument();
         expect(getByRole('textbox')).toHaveValue('journey');
         expect(await findByText('Anderson, Robert')).toBeInTheDocument();
         expect(getByText('Robert Anderson')).toBeInTheDocument();

@@ -2,10 +2,22 @@ import React, { ReactElement, useState, useCallback } from 'react';
 import { gql, useQuery } from '@apollo/client';
 import MUIDataTable, { MUIDataTableOptions, MUIDataTableColumn } from 'mui-datatables';
 import { useTranslation } from 'react-i18next';
-import { Chip, CircularProgress, Avatar, Tooltip, makeStyles, Theme, Grid, Card } from '@material-ui/core';
+import {
+    Chip,
+    CircularProgress,
+    Avatar,
+    Tooltip,
+    makeStyles,
+    Theme,
+    Grid,
+    Card,
+    FormLabel,
+    Box,
+} from '@material-ui/core';
 import { find, reduce } from 'lodash/fp';
 import debounce from 'lodash/fp/debounce';
 import { Skeleton } from '@material-ui/lab';
+import { DatePicker } from '@material-ui/pickers';
 import { useApp } from '../../App';
 import { GetTasksForTaskListQuery } from '../../../../types/GetTasksForTaskListQuery';
 import { dateFormat, dayMonthFormat } from '../../../lib/intlFormat/intlFormat';
@@ -26,6 +38,7 @@ export const GET_TASKS_FOR_TASK_LIST_QUERY = gql`
         $tags: [String!]
         $completed: Boolean
         $wildcardSearch: String
+        $startAt: DateTimeRangeInput
     ) {
         tasks(
             accountListId: $accountListId
@@ -38,6 +51,7 @@ export const GET_TASKS_FOR_TASK_LIST_QUERY = gql`
             tags: $tags
             completed: $completed
             wildcardSearch: $wildcardSearch
+            startAt: $startAt
         ) {
             nodes {
                 id
@@ -98,6 +112,7 @@ export interface TaskFilter {
     activityType?: string[];
     completed?: boolean;
     wildcardSearch?: string;
+    startAt?: { min?: string; max?: string };
     before?: string;
     after?: string;
 }
@@ -113,12 +128,13 @@ const TaskList = ({ initialFilter }: Props): ReactElement => {
         contactIds: [],
         activityType: [],
         completed: null,
+        startAt: null,
         before: null,
         after: null,
         ...initialFilter,
     });
     const classes = useStyles();
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const [rowsPerPage, setRowsPerPage] = useState(100);
     const [currentPage, setCurrentPage] = useState(0);
 
@@ -235,7 +251,7 @@ const TaskList = ({ initialFilter }: Props): ReactElement => {
                     fullWidth: true,
                 },
                 filterType: 'multiselect',
-                customFilterListOptions: { render: (tag): string => t('Tag: {{tag}}', { tag }) },
+                customFilterListOptions: { render: (tag): string => t('Tag {{tag}}', { tag }) },
                 customBodyRender: (tagList): ReactElement => {
                     if (loading) {
                         return (
@@ -302,13 +318,82 @@ const TaskList = ({ initialFilter }: Props): ReactElement => {
             name: 'startAt',
             label: t('Due Date'),
             options: {
-                filter: false,
+                filter: true,
+                filterType: 'custom',
+                filterList:
+                    initialFilter?.startAt &&
+                    (([
+                        initialFilter.startAt.min && new Date(initialFilter.startAt.min),
+                        initialFilter.startAt.max && new Date(initialFilter.startAt.max),
+                    ] as unknown) as string[]),
+                customFilterListOptions: {
+                    render: (v) => {
+                        const returnable: string[] = [];
+                        if (v[0]) {
+                            returnable.push(t('Minimum Due Date {{ minimumDate }}', { minimumDate: dateFormat(v[0]) }));
+                        }
+                        if (v[1]) {
+                            returnable.push(t('Maximum Due Date {{ maximumDate }}', { maximumDate: dateFormat(v[1]) }));
+                        }
+                        return returnable;
+                    },
+                },
+                filterOptions: {
+                    display: (filterList, onChange, index, column) => {
+                        const StartAtFilter = (
+                            <Box>
+                                <FormLabel>{t('Due Date')}</FormLabel>
+                                <Grid container spacing={2}>
+                                    <Grid xs={6} item>
+                                        <DatePicker
+                                            clearable
+                                            fullWidth
+                                            labelFunc={dateFormat}
+                                            autoOk
+                                            label={t('Minimum')}
+                                            value={filterList[index][0] || null}
+                                            onChange={(date) => {
+                                                ((filterList as unknown) as Date[])[index][0] = date;
+                                                onChange(filterList[index], index, column);
+                                            }}
+                                            okLabel={t('OK')}
+                                            todayLabel={t('Today')}
+                                            cancelLabel={t('Cancel')}
+                                            clearLabel={t('Clear')}
+                                        />
+                                    </Grid>
+                                    <Grid xs={6} item>
+                                        <DatePicker
+                                            clearable
+                                            fullWidth
+                                            labelFunc={dateFormat}
+                                            autoOk
+                                            label={t('Maximum')}
+                                            value={filterList[index][1] || null}
+                                            onChange={(date) => {
+                                                ((filterList as unknown) as Date[])[index][1] = date;
+                                                onChange(filterList[index], index, column);
+                                            }}
+                                            okLabel={t('OK')}
+                                            todayLabel={t('Today')}
+                                            cancelLabel={t('Cancel')}
+                                            clearLabel={t('Clear')}
+                                        />
+                                    </Grid>
+                                </Grid>
+                            </Box>
+                        );
+
+                        return StartAtFilter;
+                    },
+                    fullWidth: true,
+                },
                 sort: true,
                 customBodyRender: (startAt): string | ReactElement => {
                     if (startAt) {
                         const date = new Date(startAt);
                         if (new Date().getFullYear() == date.getFullYear()) {
-                            return dayMonthFormat(date.getDay(), date.getMonth());
+                            return dayMonthFormat(date.getDate(), date.getMonth());
                         } else {
                             return dateFormat(date);
                         }
@@ -372,6 +457,18 @@ const TaskList = ({ initialFilter }: Props): ReactElement => {
                                 break;
                             case 'contacts':
                                 result.contactIds = value;
+                                break;
+                            case 'startAt':
+                                if (value[0] && value[1]) {
+                                    result.startAt = {
+                                        min: value[0].toISOString(),
+                                        max: value[1].toISOString(),
+                                    };
+                                } else if (value[0]) {
+                                    result.startAt = { min: value[0].toISOString() };
+                                } else if (value[1]) {
+                                    result.startAt = { max: value[1].toISOString() };
+                                }
                                 break;
                             default:
                                 result[name] = value;

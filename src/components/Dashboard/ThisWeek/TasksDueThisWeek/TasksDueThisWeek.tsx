@@ -16,6 +16,8 @@ import {
 import { Skeleton } from '@material-ui/lab';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
+import Link from 'next/link';
+import { formatISO } from 'date-fns';
 import AnimatedCard from '../../../AnimatedCard';
 import {
     GetThisWeekQuery_dueTasks,
@@ -59,11 +61,12 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 interface Props {
+    accountListId: string;
     loading?: boolean;
     dueTasks?: GetThisWeekQuery_dueTasks;
 }
 
-const TasksDueThisWeek = ({ loading, dueTasks }: Props): ReactElement => {
+const TasksDueThisWeek = ({ loading, dueTasks, accountListId }: Props): ReactElement => {
     const classes = useStyles();
     const { t } = useTranslation();
     const { openTaskDrawer } = useApp();
@@ -172,9 +175,18 @@ const TasksDueThisWeek = ({ loading, dueTasks }: Props): ReactElement => {
                                 ))}
                             </List>
                             <CardActions>
-                                <Button size="small" color="primary" data-testid="TasksDueThisWeekButtonViewAll">
-                                    {t('View All ({{ totalCount, number }})', { totalCount: dueTasks.totalCount })}
-                                </Button>
+                                <Link
+                                    href="/accountLists/[accountListId]/tasks"
+                                    as={`/accountLists/${accountListId}/tasks?completed=false&startAt[max]=${formatISO(
+                                        new Date(),
+                                        { representation: 'date' },
+                                    )}`}
+                                    passHref
+                                >
+                                    <Button size="small" color="primary" data-testid="TasksDueThisWeekButtonViewAll">
+                                        {t('View All ({{ totalCount, number }})', { totalCount: dueTasks.totalCount })}
+                                    </Button>
+                                </Link>
                             </CardActions>
                         </>
                     )}

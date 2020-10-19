@@ -30,7 +30,7 @@ export const Default = (): ReactElement => {
     return (
         <Box m={2}>
             <MockedProvider mocks={[]} addTypename={false}>
-                <TasksDueThisWeek loading={false} dueTasks={dueTasks} />
+                <TasksDueThisWeek loading={false} dueTasks={dueTasks} accountListId="abc" />
             </MockedProvider>
         </Box>
     );
@@ -44,7 +44,7 @@ export const Empty = (): ReactElement => {
     return (
         <Box m={2}>
             <MockedProvider mocks={[]} addTypename={false}>
-                <TasksDueThisWeek loading={false} dueTasks={dueTasks} />
+                <TasksDueThisWeek loading={false} dueTasks={dueTasks} accountListId="abc" />
             </MockedProvider>
         </Box>
     );
@@ -54,7 +54,7 @@ export const Loading = (): ReactElement => {
     return (
         <Box m={2}>
             <MockedProvider mocks={[]} addTypename={false}>
-                <TasksDueThisWeek loading={true} />
+                <TasksDueThisWeek loading={true} accountListId="abc" />
             </MockedProvider>
         </Box>
     );

@@ -11,7 +11,7 @@ import TaskHome from '../../../src/components/Task/Home';
 import { TaskFilter } from '../../../src/components/Task/List/List';
 import reduceObject from '../../../src/lib/reduceObject';
 
-const initialFilterFromPath = (path: string): TaskFilter => {
+export const initialFilterFromPath = (path: string): TaskFilter => {
     let initialFilter = {};
     const queryString = path.split('?')[1];
 
@@ -27,8 +27,16 @@ const initialFilterFromPath = (path: string): TaskFilter => {
                     case 'wildcardSearch':
                         result.wildcardSearch = value.toString();
                         break;
+                    case 'startAt[max]':
+                        if (!result.startAt) result.startAt = {};
+                        result.startAt.max = value.toString();
+                        break;
+                    case 'startAt[min]':
+                        if (!result.startAt) result.startAt = {};
+                        result.startAt.min = value.toString();
+                        break;
                     default:
-                        result[key] = castArray(value);
+                        result[key.replace('[]', '')] = castArray(value);
                 }
                 return result;
             },
@@ -37,7 +45,7 @@ const initialFilterFromPath = (path: string): TaskFilter => {
         );
 
         initialFilter = pick(
-            ['userIds', 'tags', 'contactIds', 'activityType', 'completed', 'wildcardSearch'],
+            ['userIds', 'tags', 'contactIds', 'activityType', 'completed', 'wildcardSearch', 'startAt'],
             initialFilter,
         );
 
