@@ -134,7 +134,7 @@ const TaskList = ({ initialFilter }: Props): ReactElement => {
         ...initialFilter,
     });
     const classes = useStyles();
-    const { t, i18n } = useTranslation();
+    const { t } = useTranslation();
     const [rowsPerPage, setRowsPerPage] = useState(100);
     const [currentPage, setCurrentPage] = useState(0);
 
