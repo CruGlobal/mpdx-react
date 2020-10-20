@@ -105,6 +105,14 @@ export enum StatusEnum {
   UNRESPONSIVE = "UNRESPONSIVE",
 }
 
+/**
+ * Range of dates
+ */
+export interface DateTimeRangeInput {
+  min?: any | null;
+  max?: any | null;
+}
+
 export interface TaskCommentCreateInput {
   id?: string | null;
   body: string;

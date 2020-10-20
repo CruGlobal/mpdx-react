@@ -2,9 +2,8 @@ import React, { ReactElement } from 'react';
 import { Box, Container } from '@material-ui/core';
 import { MockedProvider } from '@apollo/client/testing';
 import withDispatch from '../../../../decorators/withDispatch';
-import { GetTopBarQuery } from '../../../../../types/GetTopBarQuery';
-import { GET_TOP_BAR_QUERY } from './TopBar';
 import { getNotificationsMocks } from './NotificationMenu/NotificationMenu.mock';
+import { getTopBarMock, getTopBarMultipleMock } from './TopBar.mock';
 import TopBar from '.';
 
 export default {
@@ -36,28 +35,7 @@ Praesent commodo cursus magna, vel scelerisque nisl consectetur et.`,
 );
 
 export const Default = (): ReactElement => {
-    const data: GetTopBarQuery = {
-        accountLists: {
-            nodes: [{ id: '1', name: 'Staff Account' }],
-        },
-        user: {
-            id: 'user-1',
-            firstName: 'John',
-            lastName: 'Smith',
-            keyAccounts: [{ id: '1', email: 'john.smith@gmail.com' }],
-        },
-    };
-    const mocks = [
-        {
-            request: {
-                query: GET_TOP_BAR_QUERY,
-            },
-            result: {
-                data,
-            },
-        },
-        ...getNotificationsMocks(),
-    ];
+    const mocks = [getTopBarMock(), ...getNotificationsMocks()];
 
     return (
         <>
@@ -70,31 +48,7 @@ export const Default = (): ReactElement => {
 };
 
 export const MultipleAccountLists = (): ReactElement => {
-    const data: GetTopBarQuery = {
-        accountLists: {
-            nodes: [
-                { id: '1', name: 'Staff Account' },
-                { id: '2', name: 'Ministry Account' },
-            ],
-        },
-        user: {
-            id: 'user-1',
-            firstName: 'John',
-            lastName: 'Smith',
-            keyAccounts: [{ id: '1', email: 'john.smith@gmail.com' }],
-        },
-    };
-    const mocks = [
-        {
-            request: {
-                query: GET_TOP_BAR_QUERY,
-            },
-            result: {
-                data,
-            },
-        },
-        ...getNotificationsMocks(),
-    ];
+    const mocks = [getTopBarMultipleMock(), ...getNotificationsMocks()];
 
     return (
         <>

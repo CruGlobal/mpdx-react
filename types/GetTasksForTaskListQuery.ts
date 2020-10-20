@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { ActivityTypeEnum } from "./globalTypes";
+import { ActivityTypeEnum, DateTimeRangeInput } from "./globalTypes";
 
 // ====================================================
 // GraphQL query operation: GetTasksForTaskListQuery
@@ -82,4 +82,5 @@ export interface GetTasksForTaskListQueryVariables {
   tags?: string[] | null;
   completed?: boolean | null;
   wildcardSearch?: string | null;
+  startAt?: DateTimeRangeInput | null;
 }

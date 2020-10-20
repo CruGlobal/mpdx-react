@@ -2,9 +2,9 @@ import React, { ReactElement } from 'react';
 import { MockedProvider } from '@apollo/client/testing';
 import { Container, Box } from '@material-ui/core';
 import withDispatch from '../../../decorators/withDispatch';
-import { GetTopBarQuery } from '../../../../types/GetTopBarQuery';
-import { GET_TOP_BAR_QUERY } from './TopBar/TopBar';
 import { getNotificationsMocks } from './TopBar/NotificationMenu/NotificationMenu.mock';
+import { getSideBarMock } from './SideBar/SideBar.mock';
+import { getTopBarMock } from './TopBar/TopBar.mock';
 import Primary from '.';
 
 export default {
@@ -18,26 +18,7 @@ export default {
 };
 
 export const Default = (): ReactElement => {
-    const data: GetTopBarQuery = {
-        accountLists: { nodes: [{ id: '1', name: 'Staff Account' }] },
-        user: {
-            id: 'user-1',
-            firstName: 'John',
-            lastName: 'Smith',
-            keyAccounts: [{ id: '1', email: 'john.smith@gmail.com' }],
-        },
-    };
-    const mocks = [
-        {
-            request: {
-                query: GET_TOP_BAR_QUERY,
-            },
-            result: {
-                data,
-            },
-        },
-        ...getNotificationsMocks(),
-    ];
+    const mocks = [...getNotificationsMocks(), getTopBarMock(), getSideBarMock()];
 
     return (
         <MockedProvider mocks={mocks} addTypename={false}>

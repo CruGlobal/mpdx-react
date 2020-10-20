@@ -2,32 +2,15 @@ import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react';
 import matchMediaMock from '../../../../__tests__/util/matchMediaMock';
 import TestWrapper from '../../../../__tests__/util/TestWrapper';
-import { GET_TOP_BAR_QUERY } from './TopBar/TopBar';
 import { getNotificationsMocks } from './TopBar/NotificationMenu/NotificationMenu.mock';
+import { getSideBarMock } from './SideBar/SideBar.mock';
+import { getTopBarMock } from './TopBar/TopBar.mock';
 import Primary from '.';
 
 describe('Primary', () => {
     let mocks;
     beforeEach(() => {
-        mocks = [
-            {
-                request: {
-                    query: GET_TOP_BAR_QUERY,
-                },
-                result: {
-                    data: {
-                        accountLists: {
-                            nodes: [
-                                { id: '1', name: 'Staff Account' },
-                                { id: '2', name: 'Ministry Account' },
-                            ],
-                        },
-                        user: { firstName: 'John' },
-                    },
-                },
-            },
-            ...getNotificationsMocks(),
-        ];
+        mocks = [...getNotificationsMocks(), getTopBarMock(), getSideBarMock()];
         matchMediaMock({ width: '1024px' });
     });
 

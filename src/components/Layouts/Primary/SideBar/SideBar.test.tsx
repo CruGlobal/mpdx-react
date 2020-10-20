@@ -2,6 +2,7 @@ import React from 'react';
 import { render, fireEvent } from '@testing-library/react';
 import matchMediaMock from '../../../../../__tests__/util/matchMediaMock';
 import TestWrapper from '../../../../../__tests__/util/TestWrapper';
+import { getSideBarMock } from './SideBar.mock';
 import Sidebar from '.';
 
 describe('Sidebar', () => {
@@ -11,7 +12,7 @@ describe('Sidebar', () => {
 
     it('has correct defaults', () => {
         const { getByTestId, queryByTestId, getByRole } = render(
-            <TestWrapper initialState={{ accountListId: 'account-1' }}>
+            <TestWrapper mocks={[getSideBarMock()]} initialState={{ accountListId: '1' }}>
                 <Sidebar open={false} handleOpenChange={jest.fn()} />
             </TestWrapper>,
         );
@@ -19,10 +20,10 @@ describe('Sidebar', () => {
         expect(getByTestId('SideBarDesktopDrawer')).toBeInTheDocument();
         const dashboardElement = getByRole('link', { name: 'Dashboard' });
         expect(dashboardElement).toBeVisible();
-        expect(dashboardElement).toHaveAttribute('href', '/accountLists/account-1');
+        expect(dashboardElement).toHaveAttribute('href', '/accountLists/1');
         const tasksElement = getByRole('link', { name: 'Tasks' });
         expect(tasksElement).toBeVisible();
-        expect(tasksElement).toHaveAttribute('href', '/accountLists/account-1/tasks');
+        expect(tasksElement).toHaveAttribute('href', '/accountLists/1/tasks');
         const giftsElement = getByRole('link', { name: 'Gifts' });
         expect(giftsElement).toBeVisible();
         expect(giftsElement).toHaveAttribute('href', 'https://stage.mpdx.org/reports/donations');
@@ -36,7 +37,7 @@ describe('Sidebar', () => {
         it('allows menu to be shown and hidden', () => {
             const handleOpenChange = jest.fn();
             const { getByTestId, queryByTestId, getByText, rerender } = render(
-                <TestWrapper initialState={{ accountListId: 'account-1' }}>
+                <TestWrapper mocks={[getSideBarMock()]} initialState={{ accountListId: '1' }}>
                     <Sidebar open={false} handleOpenChange={handleOpenChange} />,
                 </TestWrapper>,
             );
@@ -47,7 +48,7 @@ describe('Sidebar', () => {
             fireEvent.click(sideBarMobileDrawer.children[0]);
             expect(handleOpenChange).toHaveBeenCalled();
             rerender(
-                <TestWrapper initialState={{ accountListId: 'account-1' }}>
+                <TestWrapper mocks={[getSideBarMock()]} initialState={{ accountListId: '1' }}>
                     <Sidebar open={true} handleOpenChange={handleOpenChange} />
                 </TestWrapper>,
             );

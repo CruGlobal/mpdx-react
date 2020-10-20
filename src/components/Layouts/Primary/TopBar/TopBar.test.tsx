@@ -3,11 +3,10 @@ import { render, waitFor, fireEvent } from '@testing-library/react';
 import { MockedProvider } from '@apollo/client/testing';
 import TestRouter from '../../../../../__tests__/util/TestRouter';
 import matchMediaMock from '../../../../../__tests__/util/matchMediaMock';
-import { GetTopBarQuery } from '../../../../../types/GetTopBarQuery';
 import { AppState } from '../../../App/rootReducer';
 import { AppProviderContext } from '../../../App/Provider';
-import { GET_TOP_BAR_QUERY } from './TopBar';
 import { getNotificationsMocks } from './NotificationMenu/NotificationMenu.mock';
+import { getTopBarMock, getTopBarMultipleMock } from './TopBar.mock';
 import TopBar from '.';
 
 let state: AppState;
@@ -23,32 +22,7 @@ jest.mock('../../../App', () => ({
 describe('TopBar', () => {
     let mocks;
     beforeEach(() => {
-        const data: GetTopBarQuery = {
-            accountLists: {
-                nodes: [
-                    { id: '1', name: 'Staff Account' },
-                    { id: '2', name: 'Ministry Account' },
-                ],
-            },
-            user: {
-                id: 'user-1',
-                firstName: 'John',
-                lastName: 'Smith',
-                keyAccounts: [{ id: '1', email: 'john.smith@gmail.com' }],
-            },
-        };
-
-        mocks = [
-            {
-                request: {
-                    query: GET_TOP_BAR_QUERY,
-                },
-                result: {
-                    data,
-                },
-            },
-            ...getNotificationsMocks(),
-        ];
+        mocks = [getTopBarMultipleMock(), ...getNotificationsMocks()];
         state = { accountListId: null, breadcrumb: null };
     });
 
@@ -98,28 +72,7 @@ describe('TopBar', () => {
 
     describe('single accountList', () => {
         beforeEach(() => {
-            const data: GetTopBarQuery = {
-                accountLists: {
-                    nodes: [{ id: '1', name: 'Staff Account' }],
-                },
-                user: {
-                    id: 'user-1',
-                    firstName: 'John',
-                    lastName: 'Smith',
-                    keyAccounts: [{ id: '1', email: 'john.smith@gmail.com' }],
-                },
-            };
-            mocks = [
-                {
-                    request: {
-                        query: GET_TOP_BAR_QUERY,
-                    },
-                    result: {
-                        data,
-                    },
-                },
-                ...getNotificationsMocks(),
-            ];
+            mocks = [getTopBarMock(), ...getNotificationsMocks()];
             state = { accountListId: '1', breadcrumb: 'Dashboard' };
         });
 

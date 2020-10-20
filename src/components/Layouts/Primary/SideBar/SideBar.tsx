@@ -14,6 +14,7 @@ import {
     IconButton,
     Tooltip,
     ListSubheader,
+    Badge,
 } from '@material-ui/core';
 import HomeIcon from '@material-ui/icons/Home';
 import { useTranslation } from 'react-i18next';
@@ -43,8 +44,10 @@ import PeopleOutlineIcon from '@material-ui/icons/PeopleOutline';
 import PeopleIcon from '@material-ui/icons/People';
 import AccountBoxIcon from '@material-ui/icons/AccountBox';
 import { useRouter } from 'next/router';
+import { gql, useQuery } from '@apollo/client';
 import { useApp } from '../../../App';
 import HandoffLink from '../../../HandoffLink';
+import { GetSideBarQuery } from '../../../../../types/GetSideBarQuery';
 
 export const SIDE_BAR_WIDTH = 256;
 export const SIDE_BAR_MINIMIZED_WIDTH = 57;
@@ -169,12 +172,43 @@ interface Props {
     handleOpenChange: (state?: boolean) => void;
 }
 
+export const GET_SIDEBAR_BAR_QUERY = gql`
+    query GetSideBarQuery($accountListId: ID!) {
+        contactsFixCommitmentInfo: contacts(accountListId: $accountListId, statusValid: false) {
+            totalCount
+        }
+        contactsFixMailingAddress: contacts(accountListId: $accountListId, addressValid: false) {
+            totalCount
+        }
+        contactsFixSendNewsletter: contacts(
+            accountListId: $accountListId
+            status: [PARTNER_FINANCIAL, PARTNER_SPECIAL, PARTNER_PRAY]
+            newsletter: NO_VALUE
+        ) {
+            totalCount
+        }
+        peopleFixEmailAddress: people(accountListId: $accountListId, emailAddressValid: false) {
+            totalCount
+        }
+        peopleFixPhoneNumber: people(accountListId: $accountListId, phoneNumberValid: false) {
+            totalCount
+        }
+        contactDuplicates(accountListId: $accountListId, ignore: false) {
+            totalCount
+        }
+        personDuplicates(accountListId: $accountListId, ignore: false) {
+            totalCount
+        }
+    }
+`;
+
 const SideBar = ({ open, handleOpenChange }: Props): ReactElement => {
     const classes = useStyles();
     const { t } = useTranslation();
     const {
         state: { accountListId },
     } = useApp();
+    const { data } = useQuery<GetSideBarQuery>(GET_SIDEBAR_BAR_QUERY, { variables: { accountListId } });
 
     const Item = (props: ItemProps) => {
         const { asPath } = useRouter();
@@ -284,42 +318,112 @@ const SideBar = ({ open, handleOpenChange }: Props): ReactElement => {
                     path="/tools/import/tnt"
                     icon={<CloudDownloadIcon />}
                 />
+
                 <Item
                     type="handoff"
                     label={t('Fix Commitment Info')}
                     path="/tools/fix/commitment-info"
-                    icon={<MonetizationOnIcon />}
+                    icon={
+                        <Badge
+                            badgeContent={data?.contactsFixCommitmentInfo?.totalCount || 0}
+                            variant={open ? 'standard' : 'dot'}
+                            max={9}
+                            color="secondary"
+                        >
+                            <MonetizationOnIcon />
+                        </Badge>
+                    }
                 />
+
                 <Item
                     type="handoff"
                     label={t('Fix Email Addresses')}
                     path="/tools/fix/email-addresses"
-                    icon={<EmailIcon />}
+                    icon={
+                        <Badge
+                            badgeContent={data?.peopleFixEmailAddress?.totalCount || 0}
+                            variant={open ? 'standard' : 'dot'}
+                            max={9}
+                            color="secondary"
+                        >
+                            <EmailIcon />
+                        </Badge>
+                    }
                 />
                 <Item
                     type="handoff"
                     label={t('Fix Mailing Addresses')}
                     path="/tools/fix/addresses"
-                    icon={<MailOutlineIcon />}
+                    icon={
+                        <Badge
+                            badgeContent={data?.contactsFixMailingAddress?.totalCount || 0}
+                            variant={open ? 'standard' : 'dot'}
+                            max={9}
+                            color="secondary"
+                        >
+                            <MailOutlineIcon />
+                        </Badge>
+                    }
                 />
                 <Item
                     type="handoff"
                     label={t('Fix Phone Numbers')}
                     path="/tools/fix/phone-numbers"
-                    icon={<PhoneIcon />}
+                    icon={
+                        <Badge
+                            badgeContent={data?.peopleFixPhoneNumber?.totalCount || 0}
+                            variant={open ? 'standard' : 'dot'}
+                            max={9}
+                            color="secondary"
+                        >
+                            <PhoneIcon />
+                        </Badge>
+                    }
                 />
                 <Item
                     type="handoff"
                     label={t('Fix Send Newsletter')}
                     path="/tools/fix/send-newsletter"
-                    icon={<DescriptionIcon />}
+                    icon={
+                        <Badge
+                            badgeContent={data?.contactsFixSendNewsletter?.totalCount || 0}
+                            variant={open ? 'standard' : 'dot'}
+                            max={9}
+                            color="secondary"
+                        >
+                            <DescriptionIcon />
+                        </Badge>
+                    }
                 />
-                <Item type="handoff" label={t('Merge Contacts')} path="/tools/merge/contacts" icon={<PeopleIcon />} />
+                <Item
+                    type="handoff"
+                    label={t('Merge Contacts')}
+                    path="/tools/merge/contacts"
+                    icon={
+                        <Badge
+                            badgeContent={data?.contactDuplicates?.totalCount || 0}
+                            variant={open ? 'standard' : 'dot'}
+                            max={9}
+                            color="secondary"
+                        >
+                            <PeopleIcon />
+                        </Badge>
+                    }
+                />
                 <Item
                     type="handoff"
                     label={t('Merge People')}
                     path="/tools/merge/people"
-                    icon={<PeopleOutlineIcon />}
+                    icon={
+                        <Badge
+                            badgeContent={data?.personDuplicates?.totalCount || 0}
+                            variant={open ? 'standard' : 'dot'}
+                            max={9}
+                            color="secondary"
+                        >
+                            <PeopleOutlineIcon />
+                        </Badge>
+                    }
                 />
             </List>
         </Box>
