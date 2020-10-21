@@ -1,6 +1,7 @@
 import React from 'react';
 import { render, waitFor, fireEvent } from '@testing-library/react';
 import { MockedProvider } from '@apollo/client/testing';
+import userEvent from '@testing-library/user-event';
 import TestRouter from '../../../../../__tests__/util/TestRouter';
 import matchMediaMock from '../../../../../__tests__/util/matchMediaMock';
 import { AppState } from '../../../App/rootReducer';
@@ -27,12 +28,17 @@ describe('TopBar', () => {
     });
 
     it('has correct defaults', () => {
-        const { queryByTestId } = render(
+        const { queryByTestId, queryByText, getByTestId } = render(
             <MockedProvider mocks={mocks} addTypename={false}>
                 <TopBar open={false} handleOpenChange={jest.fn()} />
             </MockedProvider>,
         );
         expect(queryByTestId('TopBarBreadcrumb')).not.toBeInTheDocument();
+        userEvent.click(getByTestId('profileMenuButton'));
+        expect(queryByText('Manage Organizations')).not.toBeInTheDocument();
+        expect(queryByText('Admin Console')).not.toBeInTheDocument();
+        expect(queryByText('Backend Admin')).not.toBeInTheDocument();
+        expect(queryByText('Sidekiq')).not.toBeInTheDocument();
     });
 
     describe('client state set', () => {
@@ -64,7 +70,12 @@ describe('TopBar', () => {
                     id: 'user-1',
                     firstName: 'John',
                     lastName: 'Smith',
+                    admin: false,
+                    developer: false,
                     keyAccounts: [{ id: '1', email: 'john.smith@gmail.com' }],
+                    administrativeOrganizations: {
+                        nodes: [],
+                    },
                 },
             });
         });
@@ -77,12 +88,29 @@ describe('TopBar', () => {
         });
 
         it('shows single accountList name', async () => {
-            const { getByTestId } = render(
+            const { getByTestId, getByText } = render(
                 <MockedProvider mocks={mocks} addTypename={false}>
                     <TopBar open={false} handleOpenChange={jest.fn()} />
                 </MockedProvider>,
             );
             await waitFor(() => expect(getByTestId('TopBarSingleAccountList').textContent).toEqual('Staff Account'));
+            userEvent.click(getByTestId('profileMenuButton'));
+            expect(getByText('Manage Organizations').parentElement.parentElement).toHaveAttribute(
+                'href',
+                'https://stage.mpdx.org/preferences/organizations',
+            );
+            expect(getByText('Admin Console').parentElement.parentElement).toHaveAttribute(
+                'href',
+                'https://stage.mpdx.org/preferences/admin',
+            );
+            expect(getByText('Backend Admin').parentElement.parentElement).toHaveAttribute(
+                'href',
+                'https://auth.stage.mpdx.org/auth/user/admin',
+            );
+            expect(getByText('Sidekiq').parentElement.parentElement).toHaveAttribute(
+                'href',
+                'https://auth.stage.mpdx.org/auth/user/sidekiq',
+            );
         });
     });
 });

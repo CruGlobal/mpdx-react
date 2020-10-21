@@ -11,7 +11,12 @@ export const getTopBarMock = (): MockedResponse => {
             id: 'user-1',
             firstName: 'John',
             lastName: 'Smith',
+            admin: true,
+            developer: true,
             keyAccounts: [{ id: '1', email: 'john.smith@gmail.com' }],
+            administrativeOrganizations: {
+                nodes: [{ id: '1' }],
+            },
         },
     };
     return {
@@ -36,7 +41,12 @@ export const getTopBarMultipleMock = (): MockedResponse => {
             id: 'user-1',
             firstName: 'John',
             lastName: 'Smith',
+            admin: false,
+            developer: false,
             keyAccounts: [{ id: '1', email: 'john.smith@gmail.com' }],
+            administrativeOrganizations: {
+                nodes: [],
+            },
         },
     };
     return {

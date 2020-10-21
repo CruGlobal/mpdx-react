@@ -40,6 +40,18 @@ describe('HandoffLink', () => {
         );
     });
 
+    it('default auth', async () => {
+        const { getByRole } = render(
+            <HandoffLink path="/contacts" auth>
+                <a>Link</a>
+            </HandoffLink>,
+        );
+        const linkElement = getByRole('link', { name: 'Link' });
+        expect(linkElement).toHaveAttribute('href', 'https://auth.stage.mpdx.org/contacts');
+        userEvent.click(linkElement);
+        expect(open).toHaveBeenCalledWith('http://localhost/api/handoff?auth=true&path=%2Fcontacts', '_blank');
+    });
+
     it('onClick defaultPrevented', async () => {
         const handleClick = jest.fn((e) => e.preventDefault());
         const { getByRole } = render(
@@ -84,6 +96,15 @@ describe('HandoffLink', () => {
                 </HandoffLink>,
             );
             expect(getByRole('link', { name: 'Link' })).toHaveAttribute('href', 'https://mpdx.org/contacts');
+        });
+
+        it('default auth', async () => {
+            const { getByRole } = render(
+                <HandoffLink path="/contacts" auth>
+                    <a>Link</a>
+                </HandoffLink>,
+            );
+            expect(getByRole('link', { name: 'Link' })).toHaveAttribute('href', 'https://auth.mpdx.org/contacts');
         });
     });
 });

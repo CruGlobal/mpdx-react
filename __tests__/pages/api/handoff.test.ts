@@ -38,6 +38,20 @@ describe('/api/handoff', () => {
             );
         });
 
+        it('returns redirect for auth', async () => {
+            const { req, res } = createMocks({
+                method: 'GET',
+                query: {
+                    path: 'auth/user/admin',
+                    auth: 'true',
+                },
+            });
+            await handoff(req, res);
+
+            expect(res._getStatusCode()).toBe(302);
+            expect(res._getRedirectUrl()).toBe('https://auth.stage.mpdx.org/auth/user/admin?access_token=accessToken');
+        });
+
         describe('SITE_URL set', () => {
             const OLD_ENV = process.env;
 
@@ -65,6 +79,20 @@ describe('/api/handoff', () => {
                 expect(res._getRedirectUrl()).toBe(
                     'https://mpdx.org/handoff?accessToken=accessToken&accountListId=accountListId&userId=userId&path=path',
                 );
+            });
+
+            it('returns redirect for auth', async () => {
+                const { req, res } = createMocks({
+                    method: 'GET',
+                    query: {
+                        path: 'auth/user/admin',
+                        auth: 'true',
+                    },
+                });
+                await handoff(req, res);
+
+                expect(res._getStatusCode()).toBe(302);
+                expect(res._getRedirectUrl()).toBe('https://auth.mpdx.org/auth/user/admin?access_token=accessToken');
             });
         });
     });

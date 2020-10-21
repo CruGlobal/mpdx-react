@@ -3,7 +3,7 @@ import jwt from 'next-auth/jwt';
 
 const handoff = async (req: NextApiRequest, res: NextApiResponse): Promise<void> => {
     const jwtToken = await jwt.getToken({ req, secret: process.env.JWT_SECRET });
-    if (jwtToken && req.query.accountListId && req.query.userId && req.query.path) {
+    if (jwtToken && req.query.accountListId && req.query.userId && req.query.path && req.query.auth !== 'true') {
         const url = new URL(
             `https://${process.env.SITE_URL === 'https://next.mpdx.org' ? '' : 'stage.'}mpdx.org/handoff`,
         );
@@ -12,6 +12,15 @@ const handoff = async (req: NextApiRequest, res: NextApiResponse): Promise<void>
         url.searchParams.append('accountListId', req.query.accountListId.toString());
         url.searchParams.append('userId', req.query.userId.toString());
         url.searchParams.append('path', req.query.path.toString());
+        res.redirect(url.href);
+    } else if (jwtToken && req.query.path && req.query.auth === 'true') {
+        const url = new URL(
+            `https://auth.${
+                process.env.SITE_URL === 'https://next.mpdx.org' ? '' : 'stage.'
+            }mpdx.org/${req.query.path.toString().replace(/^\/+/, '')}`,
+        );
+
+        url.searchParams.append('access_token', jwtToken['token']);
         res.redirect(url.href);
     } else {
         res.status(422);

@@ -151,9 +151,16 @@ export const GET_TOP_BAR_QUERY = gql`
             id
             firstName
             lastName
+            admin
+            developer
             keyAccounts {
                 id
                 email
+            }
+            administrativeOrganizations {
+                nodes {
+                    id
+                }
             }
         }
     }
@@ -318,7 +325,7 @@ const TopBar = ({ open, handleOpenChange }: Props): ReactElement => {
                             <NotificationMenu />
                         </Grid>
                         <Grid item className={classes.avatarGrid}>
-                            <IconButton onClick={handleProfileMenuOpen}>
+                            <IconButton onClick={handleProfileMenuOpen} data-testid="profileMenuButton">
                                 <Avatar className={classes.avatar}>{state.user?.firstName[0]}</Avatar>
                             </IconButton>
                         </Grid>
@@ -373,6 +380,34 @@ const TopBar = ({ open, handleOpenChange }: Props): ReactElement => {
                         <ListItemText primary={t('Manage Coaches')} />
                     </MenuItem>
                 </HandoffLink>
+                {(data?.user?.admin || data?.user?.administrativeOrganizations?.nodes?.length) && (
+                    <HandoffLink path="/preferences/organizations">
+                        <MenuItem onClick={handleProfileMenuClose} component="a">
+                            <ListItemText primary={t('Manage Organizations')} />
+                        </MenuItem>
+                    </HandoffLink>
+                )}
+                {(data?.user?.admin || data?.user?.developer) && (
+                    <HandoffLink path="/preferences/admin">
+                        <MenuItem onClick={handleProfileMenuClose} component="a">
+                            <ListItemText primary={t('Admin Console')} />
+                        </MenuItem>
+                    </HandoffLink>
+                )}
+                {data?.user?.developer && (
+                    <HandoffLink path="/auth/user/admin" auth>
+                        <MenuItem onClick={handleProfileMenuClose} component="a">
+                            <ListItemText primary={t('Backend Admin')} />
+                        </MenuItem>
+                    </HandoffLink>
+                )}
+                {data?.user?.developer && (
+                    <HandoffLink path="/auth/user/sidekiq" auth>
+                        <MenuItem onClick={handleProfileMenuClose} component="a">
+                            <ListItemText primary={t('Sidekiq')} />
+                        </MenuItem>
+                    </HandoffLink>
+                )}
                 <MenuItem button={false}>
                     <Button className={classes.menuButton} variant="outlined" color="default" onClick={() => signout()}>
                         {t('Sign Out')}

@@ -24,14 +24,28 @@ export interface GetTopBarQuery_user_keyAccounts {
   email: string;
 }
 
+export interface GetTopBarQuery_user_administrativeOrganizations_nodes {
+  id: string;
+}
+
+export interface GetTopBarQuery_user_administrativeOrganizations {
+  /**
+   * A list of nodes.
+   */
+  nodes: (GetTopBarQuery_user_administrativeOrganizations_nodes | null)[] | null;
+}
+
 export interface GetTopBarQuery_user {
   id: string;
   firstName: string | null;
   lastName: string | null;
+  admin: boolean;
+  developer: boolean;
   /**
    * Key Accounts used to authenticate this user
    */
   keyAccounts: GetTopBarQuery_user_keyAccounts[];
+  administrativeOrganizations: GetTopBarQuery_user_administrativeOrganizations;
 }
 
 export interface GetTopBarQuery {
