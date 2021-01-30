@@ -138,14 +138,19 @@ export const UPDATE_TASK_MUTATION = gql`
     }
 `;
 
-const taskSchema: yup.ObjectSchema<Task> = yup.object({
+const taskSchema: yup.SchemaOf<Task> = yup.object({
     id: yup.string().nullable(),
     activityType: yup.mixed<ActivityTypeEnum>(),
     subject: yup.string().required(),
     startAt: yup.date().nullable(),
     completedAt: yup.date().nullable(),
-    tagList: yup.array().of(yup.string()),
-    contacts: yup.object({ nodes: yup.array().of(yup.object({ id: yup.string(), name: yup.string() })) }),
+    tagList: yup.array().of(yup.string()).default([]),
+    contacts: yup.object({
+        nodes: yup
+            .array()
+            .of(yup.object({ id: yup.string(), name: yup.string() }))
+            .nullable(),
+    }),
     user: yup.object({ id: yup.string(), firstName: yup.string(), lastName: yup.string() }).nullable(),
     notificationTimeBefore: yup.number().nullable(),
     notificationType: yup.mixed<NotificationTypeEnum>(),

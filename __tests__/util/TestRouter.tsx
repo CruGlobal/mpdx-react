@@ -8,7 +8,7 @@ interface Props {
 }
 
 const TestRouter = ({ children, router = {} }: Props): ReactElement => {
-    const defaultRouter = {
+    const defaultRouter: NextRouter = {
         basePath: '',
         route: '',
         pathname: '',
@@ -21,6 +21,7 @@ const TestRouter = ({ children, router = {} }: Props): ReactElement => {
         prefetch: async (): Promise<void> => undefined,
         beforePopState: (): void => null,
         isFallback: false,
+        isReady: false,
         events: {
             on: (): void => null,
             off: (): void => null,

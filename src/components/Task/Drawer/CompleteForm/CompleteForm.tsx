@@ -62,11 +62,13 @@ export const COMPLETE_TASK_MUTATION = gql`
     }
 `;
 
-const taskSchema: yup.ObjectSchema<Partial<TaskUpdateInput>> = yup.object({
+const taskSchema: yup.SchemaOf<
+    Required<Pick<TaskUpdateInput, 'id' | 'result' | 'nextAction' | 'tagList' | 'completedAt'>>
+> = yup.object({
     id: yup.string(),
     result: yup.mixed<ResultEnum>().required(),
     nextAction: yup.mixed<ActivityTypeEnum>(),
-    tagList: yup.array().of(yup.string()),
+    tagList: yup.array().of(yup.string()).default([]),
     completedAt: yup.date(),
 });
 
