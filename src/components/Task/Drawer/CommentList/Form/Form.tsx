@@ -49,7 +49,7 @@ export const CREATE_TASK_COMMENT_MUTATION = gql`
     }
 `;
 
-const commentSchema: yup.ObjectSchema<TaskCommentCreateInput> = yup.object({
+const commentSchema: yup.SchemaOf<Omit<TaskCommentCreateInput, 'id'>> = yup.object({
     body: yup.string().trim().required(),
 });
 

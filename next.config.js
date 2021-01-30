@@ -14,6 +14,10 @@ if (process.env.SITE_URL) {
     SiteUrl = 'http://localhost:3000';
 }
 
+const withBundleAnalyzer = require('@next/bundle-analyzer')({
+    enabled: process.env.ANALYZE === 'true',
+});
+
 module.exports = withPlugins([
     [
         withPWA,
@@ -26,6 +30,7 @@ module.exports = withPlugins([
     ],
     withOptimizedImages,
     withGraphql,
+    withBundleAnalyzer,
     {
         env: {
             JWT_SECRET: process.env.JWT_SECRET || 'aed8e0786376a2abe15f5c8f8e2ee74565d0915897b33296594bb1b549098ba7',

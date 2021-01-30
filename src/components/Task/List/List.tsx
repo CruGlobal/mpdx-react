@@ -461,13 +461,13 @@ const TaskList = ({ initialFilter }: Props): ReactElement => {
                             case 'startAt':
                                 if (value[0] && value[1]) {
                                     result.startAt = {
-                                        min: value[0].toISOString(),
-                                        max: value[1].toISOString(),
+                                        min: new Date(value[0]).toISOString(),
+                                        max: new Date(value[1]).toISOString(),
                                     };
                                 } else if (value[0]) {
-                                    result.startAt = { min: value[0].toISOString() };
+                                    result.startAt = { min: new Date(value[0]).toISOString() };
                                 } else if (value[1]) {
-                                    result.startAt = { max: value[1].toISOString() };
+                                    result.startAt = { max: new Date(value[1]).toISOString() };
                                 }
                                 break;
                             default:
