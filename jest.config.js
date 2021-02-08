@@ -9,7 +9,7 @@ module.exports = {
         '\\.(gql|graphql)$': 'jest-transform-graphql',
     },
     moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
-    testPathIgnorePatterns: ['<rootDir>/.next/', '<rootDir>/node_modules/'],
+    testPathIgnorePatterns: ['<rootDir>/.next/', '<rootDir>/.yarn/'],
     globals: {
         'ts-jest': {
             tsConfig: '<rootDir>/tsconfig.jest.json',
