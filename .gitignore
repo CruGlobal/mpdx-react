@@ -11,6 +11,9 @@
 # testing
 /coverage
 
+# Storybook cache
+/node_modules/.cache
+
 # next.js
 /.next/
 /out/
