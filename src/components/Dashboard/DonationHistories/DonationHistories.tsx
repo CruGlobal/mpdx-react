@@ -230,7 +230,7 @@ const DonationHistories = ({
                                             <YAxis
                                                 label={
                                                     <Text x={0} y={0} dx={20} dy={150} offset={0} angle={-90}>
-                                                        {t('Amount ({{ currencyCode }})', { currencyCode })}
+                                                        {t('Amount ({{ currencyCode }})', { currencyCode }) as string}
                                                     </Text>
                                                 }
                                             />
