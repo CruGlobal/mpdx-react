@@ -4774,6 +4774,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/testing-library__jest-dom@npm:^5.9.5":
+  version: 5.9.5
+  resolution: "@types/testing-library__jest-dom@npm:5.9.5"
+  dependencies:
+    "@types/jest": "*"
+  checksum: 32aa324a83e67fd81eb7f0ba3e4c86406db86c1e5361b6e8091d224a1fefbfcb4e493039db3ce3faf8afa133a4f68cc7c42bcdbcae1dd91b13d741a040791038
+  languageName: node
+  linkType: hard
+
 "@types/uglify-js@npm:*":
   version: 3.9.3
   resolution: "@types/uglify-js@npm:3.9.3"
@@ -15208,6 +15217,7 @@ fsevents@~2.3.1:
     "@types/node": ^14.14.25
     "@types/query-string": ^6.3.0
     "@types/react": ^17.0.1
+    "@types/testing-library__jest-dom": ^5.9.5
     "@types/uuid": ^8.3.0
     "@types/yup": ^0.29.11
     "@typescript-eslint/eslint-plugin": ^4.15.0
