@@ -42,3 +42,4 @@ yarn-error.log*
 /public/workbox*
 /public/locales/*
 !/public/locales/en
+node_modules
