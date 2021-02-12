@@ -18,6 +18,7 @@ import { endOfDay, formatISO } from 'date-fns';
 import AnimatedCard from '../../../AnimatedCard';
 import { GetThisWeekQuery_latePledgeContacts } from '../../../../../types/GetThisWeekQuery';
 import HandoffLink from '../../../HandoffLink';
+import illustration14 from '../../../../images/drawkit/grape/drawkit-grape-pack-illustration-14.svg';
 
 const useStyles = makeStyles((theme: Theme) => ({
     div: {
@@ -99,11 +100,7 @@ const LateCommitments = ({ loading, latePledgeContacts }: Props): ReactElement =
                 >
                     {(!latePledgeContacts || latePledgeContacts.nodes.length === 0) && (
                         <CardContent className={classes.cardContent} data-testid="LateCommitmentsCardContentEmpty">
-                            <img
-                                src={require('../../../../images/drawkit/grape/drawkit-grape-pack-illustration-14.svg')}
-                                className={classes.img}
-                                alt="empty"
-                            />
+                            <img src={illustration14} className={classes.img} alt="empty" />
                             {t('No late commitments to show.')}
                         </CardContent>
                     )}

@@ -1,6 +1,7 @@
 import React, { ReactElement } from 'react';
 import { makeStyles, Theme, Container, Typography, Box } from '@material-ui/core';
 import { motion } from 'framer-motion';
+import illustration20 from '../../images/drawkit/grape/drawkit-grape-pack-illustration-20.svg';
 
 interface Props {
     heading: string;
@@ -80,7 +81,7 @@ const PageHeading = ({
                             animate={{ x: 0, opacity: 1, transition: { delay: 1.2 } }}
                             exit={{ x: 20, opacity: 0 }}
                             data-testid="PageHeadingImg"
-                            src={imgSrc || require('../../images/drawkit/grape/drawkit-grape-pack-illustration-20.svg')}
+                            src={imgSrc || illustration20}
                             height={230 - overlap}
                             alt="heading"
                         />

@@ -6,3 +6,5 @@ declare module '*.graphql' {
     const value: DocumentNode;
     export = value;
 }
+
+declare module '*.svg';

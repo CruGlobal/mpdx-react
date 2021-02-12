@@ -32,6 +32,7 @@ import { GetTopBarQuery } from '../../../../../types/GetTopBarQuery';
 import { SIDE_BAR_MINIMIZED_WIDTH, SIDE_BAR_WIDTH } from '../SideBar/SideBar';
 import { useApp } from '../../../App';
 import HandoffLink from '../../../HandoffLink';
+import logo from '../../../../images/logo.svg';
 import NotificationMenu from './NotificationMenu';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -229,7 +230,7 @@ const TopBar = ({ open, handleOpenChange }: Props): ReactElement => {
 
                             <Hidden smDown>
                                 <Box className={clsx(classes.logo, { [classes.logoOpen]: open })}>
-                                    <img src={require('../../../../images/logo.svg')} alt="logo" />
+                                    <img src={logo} alt="logo" />
                                 </Box>
                             </Hidden>
                         </Grid>

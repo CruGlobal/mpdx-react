@@ -7,6 +7,7 @@ import { cloneDeep } from 'lodash/fp';
 import { useApp } from '../../../../App';
 import { GetNotificationsQuery } from '../../../../../../types/GetNotificationsQuery';
 import { AcknowledgeAllUserNotificationsMutation } from '../../../../../../types/AcknowledgeAllUserNotificationsMutation';
+import illustration13 from '../../../../../images/drawkit/grape/drawkit-grape-pack-illustration-13.svg';
 import NotificationMenuItem from './Item';
 import GET_NOTIFICATIONS_QUERY from './getNotificationsQuery.graphql';
 
@@ -189,11 +190,7 @@ const NotificationMenu = (): ReactElement => {
                 )}
                 {!loading && data?.userNotifications?.edges?.length === 0 && (
                     <ListItem className={classes.listItemEmpty}>
-                        <img
-                            src={require('../../../../../images/drawkit/grape/drawkit-grape-pack-illustration-13.svg')}
-                            className={classes.img}
-                            alt="empty"
-                        />
+                        <img src={illustration13} className={classes.img} alt="empty" />
                         {t('No notifications to show.')}
                     </ListItem>
                 )}

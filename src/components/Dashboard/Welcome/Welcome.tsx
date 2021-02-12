@@ -1,6 +1,7 @@
 import React, { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import PageHeading from '../../PageHeading';
+import illustration9 from '../../../images/drawkit/grape/drawkit-grape-pack-illustration-9.svg';
 
 interface Props {
     firstName?: string;
@@ -23,7 +24,7 @@ const Welcome = ({ firstName }: Props): ReactElement => {
         <PageHeading
             heading={greeting}
             subheading={t("Welcome back to MPDX. Here's what's been happening.")}
-            imgSrc={require('../../../images/drawkit/grape/drawkit-grape-pack-illustration-9.svg')}
+            imgSrc={illustration9}
         />
     );
 };

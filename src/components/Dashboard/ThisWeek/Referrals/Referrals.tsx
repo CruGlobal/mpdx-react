@@ -24,6 +24,7 @@ import {
     GetThisWeekQuery_recentReferrals,
 } from '../../../../../types/GetThisWeekQuery';
 import HandoffLink from '../../../HandoffLink';
+import illustration4 from '../../../../images/drawkit/grape/drawkit-grape-pack-illustration-4.svg';
 
 const useStyles = makeStyles((theme: Theme) => ({
     div: {
@@ -101,11 +102,7 @@ const ReferralsTab = ({ loading, referrals, tab }: ReferralsTabProps): ReactElem
                 <>
                     {!referrals || referrals.nodes.length === 0 ? (
                         <CardContent className={classes.cardContent} data-testid={`ReferralsTab${tab}CardContentEmpty`}>
-                            <img
-                                src={require('../../../../images/drawkit/grape/drawkit-grape-pack-illustration-4.svg')}
-                                className={classes.img}
-                                alt="empty"
-                            />
+                            <img src={illustration4} className={classes.img} alt="empty" />
                             {t('No referrals to show.')}
                         </CardContent>
                     ) : (

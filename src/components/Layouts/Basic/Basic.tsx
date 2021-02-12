@@ -1,4 +1,5 @@
 import React, { ReactElement, ReactNode } from 'react';
+import logo from '../../../images/logo.svg';
 import TopBar from './TopBar';
 
 interface Props {
@@ -9,7 +10,7 @@ const Basic = ({ children }: Props): ReactElement => {
     return (
         <>
             <TopBar>
-                <img src={require('../../../images/logo.svg')} alt="logo" />
+                <img src={logo} alt="logo" />
             </TopBar>
             {children}
         </>

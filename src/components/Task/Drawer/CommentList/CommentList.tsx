@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { gql, useQuery } from '@apollo/client';
 import { reduce } from 'lodash/fp';
 import { GetCommentsForTaskDrawerCommentListQuery } from '../../../../../types/GetCommentsForTaskDrawerCommentListQuery';
+import illustration4 from '../../../../images/drawkit/grape/drawkit-grape-pack-illustration-4.svg';
 import TaskDrawerCommentListItem from './Item';
 import TaskDrawerCommentListForm from './Form';
 
@@ -87,11 +88,7 @@ const TaskDrawerCommentList = ({ accountListId, taskId }: Props): ReactElement =
                         {data.task.comments.nodes.length === 0 && (
                             <Card data-testid="TaskDrawerCommentListEmpty">
                                 <CardContent className={classes.cardContent}>
-                                    <img
-                                        src={require('../../../../images/drawkit/grape/drawkit-grape-pack-illustration-4.svg')}
-                                        className={classes.img}
-                                        alt="empty"
-                                    />
+                                    <img src={illustration4} className={classes.img} alt="empty" />
                                     {t('No Comments to show.')}
                                 </CardContent>
                             </Card>
