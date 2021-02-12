@@ -18,6 +18,7 @@ import { useTranslation } from 'react-i18next';
 import { currencyFormat } from '../../../lib/intlFormat';
 import AnimatedCard from '../../AnimatedCard';
 import AnimatedBox from '../../AnimatedBox';
+import illustration15 from '../../../images/drawkit/grape/drawkit-grape-pack-illustration-15.svg';
 
 const useStyles = makeStyles((theme: Theme) => ({
     cardHeader: {
@@ -178,11 +179,7 @@ const DonationHistories = ({
                 <CardContent>
                     {empty ? (
                         <Box className={classes.boxImg} data-testid="DonationHistoriesBoxEmpty">
-                            <img
-                                src={require('../../../images/drawkit/grape/drawkit-grape-pack-illustration-15.svg')}
-                                className={classes.img}
-                                alt="empty"
-                            />
+                            <img src={illustration15} className={classes.img} alt="empty" />
                             {t('No monthly activity to show.')}
                         </Box>
                     ) : (

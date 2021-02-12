@@ -25,6 +25,7 @@ import TaskStatus from '../Status';
 import { ActivityTypeEnum } from '../../../../types/globalTypes';
 import { GET_DATA_FOR_TASK_DRAWER_QUERY } from '../Drawer/Form/Form';
 import { GetDataForTaskDrawerQuery } from '../../../../types/GetDataForTaskDrawerQuery';
+import illustration15 from '../../../images/drawkit/grape/drawkit-grape-pack-illustration-15.svg';
 
 export const GET_TASKS_FOR_TASK_LIST_QUERY = gql`
     query GetTasksForTaskListQuery(
@@ -492,11 +493,7 @@ const TaskList = ({ initialFilter }: Props): ReactElement => {
             body: {
                 noMatch: (
                     <Card className={classes.card}>
-                        <img
-                            src={require('../../../images/drawkit/grape/drawkit-grape-pack-illustration-15.svg')}
-                            className={classes.img}
-                            alt="empty"
-                        />
+                        <img src={illustration15} className={classes.img} alt="empty" />
                         {t('No tasks to show.')}
                     </Card>
                 ),

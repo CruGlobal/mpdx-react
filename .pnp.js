@@ -102,6 +102,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["i18next-browser-languagedetector", "npm:6.0.1"],
             ["i18next-http-backend", "npm:1.1.0"],
             ["i18next-parser", "npm:3.6.0"],
+            ["imagemin", "npm:7.0.1"],
             ["imagemin-svgo", "npm:8.0.0"],
             ["img-loader", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:3.0.2"],
             ["isomorphic-fetch", "npm:3.0.0"],
@@ -14779,6 +14780,19 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["picomatch", "npm:2.2.2"]
           ],
           "linkType": "HARD",
+        }],
+        ["npm:3.2.5", {
+          "packageLocation": "./.yarn/cache/fast-glob-npm-3.2.5-0225b8bd94-1a33c4a68d.zip/node_modules/fast-glob/",
+          "packageDependencies": [
+            ["fast-glob", "npm:3.2.5"],
+            ["@nodelib/fs.stat", "npm:2.0.3"],
+            ["@nodelib/fs.walk", "npm:1.2.4"],
+            ["glob-parent", "npm:5.1.1"],
+            ["merge2", "npm:1.4.1"],
+            ["micromatch", "npm:4.0.2"],
+            ["picomatch", "npm:2.2.2"]
+          ],
+          "linkType": "HARD",
         }]
       ]],
       ["fast-json-parse", [
@@ -14956,6 +14970,13 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/file-type-npm-10.11.0-5cb3c01bcd-31395a6189.zip/node_modules/file-type/",
           "packageDependencies": [
             ["file-type", "npm:10.11.0"]
+          ],
+          "linkType": "HARD",
+        }],
+        ["npm:12.4.2", {
+          "packageLocation": "./.yarn/cache/file-type-npm-12.4.2-29293a3683-3f822c6254.zip/node_modules/file-type/",
+          "packageDependencies": [
+            ["file-type", "npm:12.4.2"]
           ],
           "linkType": "HARD",
         }]
@@ -15891,6 +15912,21 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]
       ]],
       ["globby", [
+        ["npm:10.0.2", {
+          "packageLocation": "./.yarn/cache/globby-npm-10.0.2-9b274c88d3-53924c2b46.zip/node_modules/globby/",
+          "packageDependencies": [
+            ["globby", "npm:10.0.2"],
+            ["@types/glob", "npm:7.1.3"],
+            ["array-union", "npm:2.1.0"],
+            ["dir-glob", "npm:3.0.1"],
+            ["fast-glob", "npm:3.2.5"],
+            ["glob", "npm:7.1.6"],
+            ["ignore", "npm:5.1.8"],
+            ["merge2", "npm:1.4.1"],
+            ["slash", "npm:3.0.0"]
+          ],
+          "linkType": "HARD",
+        }],
         ["npm:11.0.1", {
           "packageLocation": "./.yarn/cache/globby-npm-11.0.1-b32c0f1cff-e7239e9e46.zip/node_modules/globby/",
           "packageDependencies": [
@@ -15974,6 +16010,13 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/graceful-fs-npm-4.2.4-734467635f-d095ee4dc6.zip/node_modules/graceful-fs/",
           "packageDependencies": [
             ["graceful-fs", "npm:4.2.4"]
+          ],
+          "linkType": "HARD",
+        }],
+        ["npm:4.2.6", {
+          "packageLocation": "./.yarn/cache/graceful-fs-npm-4.2.6-535b2234f1-84d39c7756.zip/node_modules/graceful-fs/",
+          "packageDependencies": [
+            ["graceful-fs", "npm:4.2.6"]
           ],
           "linkType": "HARD",
         }]
@@ -16717,6 +16760,20 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["replace-ext", "npm:1.0.1"]
           ],
           "linkType": "HARD",
+        }],
+        ["npm:7.0.1", {
+          "packageLocation": "./.yarn/cache/imagemin-npm-7.0.1-85a0a4593b-059db7bb59.zip/node_modules/imagemin/",
+          "packageDependencies": [
+            ["imagemin", "npm:7.0.1"],
+            ["file-type", "npm:12.4.2"],
+            ["globby", "npm:10.0.2"],
+            ["graceful-fs", "npm:4.2.6"],
+            ["junk", "npm:3.1.0"],
+            ["make-dir", "npm:3.1.0"],
+            ["p-pipe", "npm:3.1.0"],
+            ["replace-ext", "npm:1.0.1"]
+          ],
+          "linkType": "HARD",
         }]
       ]],
       ["imagemin-svgo", [
@@ -16757,7 +16814,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [
             ["img-loader", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:3.0.2"],
             ["@types/imagemin", null],
-            ["imagemin", null],
+            ["imagemin", "npm:7.0.1"],
             ["loader-utils", "npm:1.4.0"]
           ],
           "packagePeers": [
@@ -20223,6 +20280,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["i18next-browser-languagedetector", "npm:6.0.1"],
             ["i18next-http-backend", "npm:1.1.0"],
             ["i18next-parser", "npm:3.6.0"],
+            ["imagemin", "npm:7.0.1"],
             ["imagemin-svgo", "npm:8.0.0"],
             ["img-loader", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:3.0.2"],
             ["isomorphic-fetch", "npm:3.0.0"],
@@ -21509,6 +21567,13 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/p-pipe-npm-1.2.0-7837517b4a-64c9ce534e.zip/node_modules/p-pipe/",
           "packageDependencies": [
             ["p-pipe", "npm:1.2.0"]
+          ],
+          "linkType": "HARD",
+        }],
+        ["npm:3.1.0", {
+          "packageLocation": "./.yarn/cache/p-pipe-npm-3.1.0-147ab7fff2-314cb0d651.zip/node_modules/p-pipe/",
+          "packageDependencies": [
+            ["p-pipe", "npm:3.1.0"]
           ],
           "linkType": "HARD",
         }]

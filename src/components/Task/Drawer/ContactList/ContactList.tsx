@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { gql, useLazyQuery } from '@apollo/client';
 import { sortBy } from 'lodash/fp';
 import { GetContactsForTaskDrawerContactListQuery } from '../../../../../types/GetContactsForTaskDrawerContactListQuery';
+import illustration4 from '../../../../images/drawkit/grape/drawkit-grape-pack-illustration-4.svg';
 import TaskDrawerContactListItem from './Item';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -115,11 +116,7 @@ const TaskDrawerContactList = ({ accountListId, contactIds }: Props): ReactEleme
                     {(contactIds.length === 0 || data?.contacts?.nodes?.length === 0) && (
                         <Card data-testid="TaskDrawerContactListEmpty">
                             <CardContent className={classes.cardContent}>
-                                <img
-                                    src={require('../../../../images/drawkit/grape/drawkit-grape-pack-illustration-4.svg')}
-                                    className={classes.img}
-                                    alt="empty"
-                                />
+                                <img src={illustration4} className={classes.img} alt="empty" />
                                 {t('No Contacts to show.')}
                             </CardContent>
                         </Card>

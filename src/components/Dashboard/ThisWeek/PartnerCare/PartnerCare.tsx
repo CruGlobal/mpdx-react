@@ -34,6 +34,8 @@ import {
 } from '../../../../../types/GetThisWeekQuery';
 import { useApp } from '../../../App';
 import TaskStatus from '../../../Task/Status';
+import illustration4 from '../../../../images/drawkit/grape/drawkit-grape-pack-illustration-4.svg';
+import illustration7 from '../../../../images/drawkit/grape/drawkit-grape-pack-illustration-7.svg';
 
 const useStyles = makeStyles((theme: Theme) => ({
     div: {
@@ -160,11 +162,7 @@ const PartnerCare = ({
                                     className={classes.cardContent}
                                     data-testid="PartnerCarePrayerCardContentEmpty"
                                 >
-                                    <img
-                                        src={require('../../../../images/drawkit/grape/drawkit-grape-pack-illustration-4.svg')}
-                                        className={classes.img}
-                                        alt="empty"
-                                    />
+                                    <img src={illustration4} className={classes.img} alt="empty" />
                                     {t('No prayer requests to show.')}
                                 </CardContent>
                             )}
@@ -267,11 +265,7 @@ const PartnerCare = ({
                                     className={classes.cardContent}
                                     data-testid="PartnerCareCelebrationCardContentEmpty"
                                 >
-                                    <img
-                                        src={require('../../../../images/drawkit/grape/drawkit-grape-pack-illustration-7.svg')}
-                                        className={classes.img}
-                                        alt="empty"
-                                    />
+                                    <img src={illustration7} className={classes.img} alt="empty" />
                                     {t('No celebrations to show.')}
                                 </CardContent>
                             ) : (

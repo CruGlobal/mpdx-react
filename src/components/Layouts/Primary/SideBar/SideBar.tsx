@@ -48,6 +48,7 @@ import { gql, useQuery } from '@apollo/client';
 import { useApp } from '../../../App';
 import HandoffLink from '../../../HandoffLink';
 import { GetSideBarQuery } from '../../../../../types/GetSideBarQuery';
+import logo from '../../../../images/logo.svg';
 
 export const SIDE_BAR_WIDTH = 256;
 export const SIDE_BAR_MINIMIZED_WIDTH = 57;
@@ -251,7 +252,7 @@ const SideBar = ({ open, handleOpenChange }: Props): ReactElement => {
                     <SpeedDialIcon icon={<MenuIcon />} openIcon={<ChevronLeftIcon />} open={open} />
                 </IconButton>
                 <Box className={classes.logo}>
-                    <img src={require('../../../../images/logo.svg')} alt="logo" />
+                    <img src={logo} alt="logo" />
                 </Box>
             </Box>
             <Divider className={classes.divider} />

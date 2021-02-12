@@ -4,6 +4,7 @@ import { Container, makeStyles, Theme } from '@material-ui/core';
 import PageHeading from '../../PageHeading';
 import TaskList from '../List';
 import { TaskFilter } from '../List/List';
+import illustration8 from '../../../images/drawkit/grape/drawkit-grape-pack-illustration-8.svg';
 
 const useStyles = makeStyles((theme: Theme) => ({
     container: {
@@ -23,10 +24,7 @@ const TaskHome = ({ initialFilter }: Props): ReactElement => {
     const classes = useStyles();
     return (
         <>
-            <PageHeading
-                heading={t('Tasks')}
-                imgSrc={require('../../../images/drawkit/grape/drawkit-grape-pack-illustration-8.svg')}
-            />
+            <PageHeading heading={t('Tasks')} imgSrc={illustration8} />
             <Container className={classes.container}>
                 <TaskList initialFilter={initialFilter} />
             </Container>

@@ -1,6 +1,7 @@
 import React, { ReactElement, ReactNode } from 'react';
 import { Box, Container, Typography, makeStyles, Theme, Grid } from '@material-ui/core';
 import { motion } from 'framer-motion';
+import illustration2 from '../../images/drawkit/grape/drawkit-grape-pack-illustration-2.svg';
 
 interface Props {
     title: string | ReactNode;
@@ -83,10 +84,7 @@ const Welcome = ({ title, subtitle, imgSrc, children }: Props): ReactElement => 
                         <Grid item sm={4}>
                             <motion.img
                                 data-testid="welcomeImg"
-                                src={
-                                    imgSrc ||
-                                    require(`../../images/drawkit/grape/drawkit-grape-pack-illustration-2.svg`)
-                                }
+                                src={imgSrc || illustration2}
                                 variants={{ initial: { x: 25, opacity: 0 }, animate: { x: 0, opacity: 1 } }}
                                 alt="heading"
                             />

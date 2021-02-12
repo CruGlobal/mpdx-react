@@ -18,6 +18,7 @@ import { GetThisWeekQuery_accountList_primaryAppeal } from '../../../../../types
 import StyledProgress from '../../../StyledProgress';
 import { currencyFormat, percentageFormat } from '../../../../lib/intlFormat';
 import HandoffLink from '../../../HandoffLink';
+import illustration13 from '../../../../images/drawkit/grape/drawkit-grape-pack-illustration-13.svg';
 
 const useStyles = makeStyles((theme: Theme) => ({
     div: {
@@ -108,11 +109,7 @@ const Appeals = ({ loading, appeal }: Props): ReactElement => {
                     className={classes.div}
                 >
                     <CardContent className={classes.cardContent} data-testid="AppealsCardContentEmpty">
-                        <img
-                            src={require('../../../../images/drawkit/grape/drawkit-grape-pack-illustration-13.svg')}
-                            className={classes.img}
-                            alt="empty"
-                        />
+                        <img src={illustration13} className={classes.img} alt="empty" />
                         {t('No primary appeal to show.')}
                     </CardContent>
                 </motion.div>

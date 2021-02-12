@@ -25,6 +25,7 @@ import {
 } from '../../../../../types/GetThisWeekQuery';
 import { useApp } from '../../../App';
 import TaskStatus from '../../../Task/Status';
+import illustration8 from '../../../../images/drawkit/grape/drawkit-grape-pack-illustration-8.svg';
 
 const useStyles = makeStyles((theme: Theme) => ({
     div: {
@@ -114,11 +115,7 @@ const TasksDueThisWeek = ({ loading, dueTasks, accountListId }: Props): ReactEle
                 >
                     {!dueTasks || dueTasks.nodes.length === 0 ? (
                         <CardContent className={classes.cardContent} data-testid="TasksDueThisWeekCardContentEmpty">
-                            <img
-                                src={require('../../../../images/drawkit/grape/drawkit-grape-pack-illustration-8.svg')}
-                                className={classes.img}
-                                alt="empty"
-                            />
+                            <img src={illustration8} className={classes.img} alt="empty" />
                             {t('No tasks to show.')}
                         </CardContent>
                     ) : (
