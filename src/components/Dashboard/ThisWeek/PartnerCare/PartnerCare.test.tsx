@@ -2,23 +2,23 @@ import React from 'react';
 import userEvent from '@testing-library/user-event';
 import { render, fireEvent } from '../../../../../__tests__/util/testingLibraryReactMock';
 import { ActivityTypeEnum } from '../../../../../types/globalTypes';
-import { AppProviderContext } from '../../../App/Provider';
 import { GetThisWeekQuery_prayerRequestTasks } from '../../../../../types/GetThisWeekQuery';
+import { useApp } from '../../../App';
 import PartnerCare from '.';
+
+jest.mock('../../../App', () => ({
+    useApp: jest.fn(),
+}));
 
 const openTaskDrawer = jest.fn();
 
-jest.mock('../../../App', () => ({
-    useApp: (): Partial<AppProviderContext> => ({
+beforeEach(() => {
+    (useApp as jest.Mock).mockReturnValue({
         openTaskDrawer,
-    }),
-}));
+    });
+});
 
 describe('PartnerCare', () => {
-    beforeEach(() => {
-        openTaskDrawer.mockClear();
-    });
-
     it('default', () => {
         const { getByTestId, queryByTestId } = render(<PartnerCare accountListId="abc" />);
         expect(getByTestId('PartnerCarePrayerCardContentEmpty')).toBeInTheDocument();

@@ -6,22 +6,22 @@ import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
 import userEvent from '@testing-library/user-event';
 import { getDataForTaskDrawerMock, createTaskMutationMock } from '../../../Task/Drawer/Form/Form.mock';
-import { AppProviderContext } from '../../../App/Provider';
+import { useApp } from '../../../App';
 import AddFab from '.';
+
+jest.mock('../../../App', () => ({
+    useApp: jest.fn(),
+}));
 
 const openTaskDrawer = jest.fn();
 
-jest.mock('../../../App', () => ({
-    useApp: (): Partial<AppProviderContext> => ({
+beforeEach(() => {
+    (useApp as jest.Mock).mockReturnValue({
         openTaskDrawer,
-    }),
-}));
+    });
+});
 
 describe('AddFab', () => {
-    beforeEach(() => {
-        openTaskDrawer.mockClear();
-    });
-
     it('default', async () => {
         const mocks = [getDataForTaskDrawerMock(), createTaskMutationMock()];
         const { getByRole } = render(

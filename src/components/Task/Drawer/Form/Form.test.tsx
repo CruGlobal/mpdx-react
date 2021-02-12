@@ -32,7 +32,7 @@ describe('TaskDrawerForm', () => {
         await waitFor(() => expect(getByText('Save')).not.toBeDisabled());
         userEvent.click(getByText('Save'));
         await waitFor(() => expect(onClose).toHaveBeenCalled());
-    });
+    }, 10000);
 
     it('persisted', async () => {
         const onClose = jest.fn();
@@ -96,5 +96,5 @@ describe('TaskDrawerForm', () => {
 
         userEvent.click(getByText('Save'));
         await waitFor(() => expect(onClose).toHaveBeenCalled());
-    });
+    }, 20000);
 });

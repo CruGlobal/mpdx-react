@@ -1,5 +1,6 @@
 module.exports = {
     roots: ['<rootDir>/src', '<rootDir>/__tests__/pages'],
+    globalSetup: '<rootDir>/__tests__/util/globalSetup.ts',
     setupFilesAfterEnv: ['<rootDir>/__tests__/util/setup.ts'],
     transform: {
         '\\.[jt]sx?$': 'babel-jest',
@@ -8,4 +9,5 @@ module.exports = {
         '\\.(gql|graphql)$': 'jest-transform-graphql',
     },
     moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
+    clearMocks: true,
 };

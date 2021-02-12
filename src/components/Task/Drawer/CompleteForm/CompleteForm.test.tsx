@@ -11,16 +11,21 @@ import {
     ResultEnum,
 } from '../../../../../types/globalTypes';
 import { AppProviderContext } from '../../../App/Provider';
+import { useApp } from '../../../App';
 import { completeTaskMutationMock, completeSimpleTaskMutationMock } from './CompleteForm.mock';
 import TaskDrawerCompleteForm from '.';
 
+jest.mock('../../../App', () => ({
+    useApp: jest.fn(),
+}));
+
 const openTaskDrawer = jest.fn();
 
-jest.mock('../../../App', () => ({
-    useApp: (): Partial<AppProviderContext> => ({
+beforeEach(() => {
+    (useApp as jest.Mock).mockReturnValue({
         openTaskDrawer,
-    }),
-}));
+    });
+});
 
 describe('TaskDrawerCompleteForm', () => {
     const task = {
@@ -41,10 +46,6 @@ describe('TaskDrawerCompleteForm', () => {
         notificationType: NotificationTypeEnum.BOTH,
         notificationTimeUnit: NotificationTimeUnitEnum.HOURS,
     };
-
-    beforeEach(() => {
-        openTaskDrawer.mockClear();
-    });
 
     it('default', async () => {
         const { getAllByRole } = render(

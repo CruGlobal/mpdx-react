@@ -3,19 +3,23 @@ import MockDate from 'mockdate';
 import userEvent from '@testing-library/user-event';
 import TestWrapper from '../../../../__tests__/util/TestWrapper';
 import { getDataForTaskDrawerMock } from '../Drawer/Form/Form.mock';
-import { AppProviderContext } from '../../App/Provider';
 import { render } from '../../../../__tests__/util/testingLibraryReactMock';
+import { useApp } from '../../App';
 import { getTasksForTaskListMock, getFilteredTasksForTaskListMock, getEmptyTasksForTaskListMock } from './List.mock';
 import TaskList from '.';
 
 const openTaskDrawer = jest.fn();
 
 jest.mock('../../App', () => ({
-    useApp: (): Partial<AppProviderContext> => ({
+    useApp: jest.fn(),
+}));
+
+beforeEach(() => {
+    (useApp as jest.Mock).mockReturnValue({
         openTaskDrawer,
         state: { accountListId: 'abc', breadcrumb: 'Tasks' },
-    }),
-}));
+    });
+});
 
 jest.mock('lodash/fp/debounce', () => jest.fn().mockImplementation((_time, fn) => fn));
 

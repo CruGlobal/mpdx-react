@@ -12,7 +12,7 @@ i18next
         lng: 'en',
         nsSeparator: false,
         keySeparator: false,
-        fallbackLng: false,
+        fallbackLng: 'en',
         interpolation: {
             escapeValue: false,
             format: (value, format): string => {
