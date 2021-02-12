@@ -2,27 +2,27 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import MockDate from 'mockdate';
-import { AppProviderContext } from '../../App/Provider';
+import { useApp } from '../../App';
 import TaskStatus from '.';
+
+jest.mock('../../App', () => ({
+    useApp: jest.fn(),
+}));
 
 const openTaskDrawer = jest.fn();
 
-jest.mock('../../App', () => ({
-    useApp: (): Partial<AppProviderContext> => ({
+beforeEach(() => {
+    (useApp as jest.Mock).mockReturnValue({
         openTaskDrawer,
-    }),
-}));
+    });
+    MockDate.set(new Date(2020, 1, 1));
+});
+
+afterEach(() => {
+    MockDate.reset();
+});
 
 describe('TaskStatus', () => {
-    beforeEach(() => {
-        openTaskDrawer.mockClear();
-        MockDate.set(new Date(2020, 1, 1));
-    });
-
-    afterEach(() => {
-        MockDate.reset();
-    });
-
     it('default', async () => {
         const { getByRole, findByText } = render(<TaskStatus />);
         userEvent.hover(getByRole('button'));

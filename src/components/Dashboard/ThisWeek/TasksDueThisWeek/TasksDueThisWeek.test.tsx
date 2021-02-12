@@ -3,23 +3,23 @@ import userEvent from '@testing-library/user-event';
 import MockDate from 'mockdate';
 import { render } from '../../../../../__tests__/util/testingLibraryReactMock';
 import { ActivityTypeEnum } from '../../../../../types/globalTypes';
-import { AppProviderContext } from '../../../App/Provider';
 import { GetThisWeekQuery_dueTasks } from '../../../../../types/GetThisWeekQuery';
+import { useApp } from '../../../App';
 import TasksDueThisWeek from '.';
+
+jest.mock('../../../App', () => ({
+    useApp: jest.fn(),
+}));
 
 const openTaskDrawer = jest.fn();
 
-jest.mock('../../../App', () => ({
-    useApp: (): Partial<AppProviderContext> => ({
+beforeEach(() => {
+    (useApp as jest.Mock).mockReturnValue({
         openTaskDrawer,
-    }),
-}));
+    });
+});
 
 describe('TasksDueThisWeek', () => {
-    beforeEach(() => {
-        openTaskDrawer.mockClear();
-    });
-
     it('default', () => {
         const { getByTestId, queryByTestId } = render(<TasksDueThisWeek accountListId="abc" />);
         expect(getByTestId('TasksDueThisWeekCardContentEmpty')).toBeInTheDocument();

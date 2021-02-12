@@ -5,7 +5,7 @@ import userEvent from '@testing-library/user-event';
 import TestRouter from '../../../../../__tests__/util/TestRouter';
 import matchMediaMock from '../../../../../__tests__/util/matchMediaMock';
 import { AppState } from '../../../App/rootReducer';
-import { AppProviderContext } from '../../../App/Provider';
+import { useApp } from '../../../App';
 import { getNotificationsMocks } from './NotificationMenu/NotificationMenu.mock';
 import { getTopBarMock, getTopBarMultipleMock } from './TopBar.mock';
 import TopBar from '.';
@@ -14,10 +14,7 @@ let state: AppState;
 const dispatch = jest.fn();
 
 jest.mock('../../../App', () => ({
-    useApp: (): Partial<AppProviderContext> => ({
-        state,
-        dispatch,
-    }),
+    useApp: jest.fn(),
 }));
 
 describe('TopBar', () => {
@@ -25,6 +22,10 @@ describe('TopBar', () => {
     beforeEach(() => {
         mocks = [getTopBarMultipleMock(), ...getNotificationsMocks()];
         state = { accountListId: null, breadcrumb: null };
+        (useApp as jest.Mock).mockReturnValue({
+            state,
+            dispatch,
+        });
     });
 
     it('has correct defaults', () => {
@@ -45,6 +46,10 @@ describe('TopBar', () => {
         beforeEach(() => {
             matchMediaMock({ width: '1024px' });
             state = { accountListId: '1', breadcrumb: 'Dashboard' };
+            (useApp as jest.Mock).mockReturnValue({
+                state,
+                dispatch,
+            });
         });
 
         it('adjusts menu configuration', async () => {
@@ -85,6 +90,10 @@ describe('TopBar', () => {
         beforeEach(() => {
             mocks = [getTopBarMock(), ...getNotificationsMocks()];
             state = { accountListId: '1', breadcrumb: 'Dashboard' };
+            (useApp as jest.Mock).mockReturnValue({
+                state,
+                dispatch,
+            });
         });
 
         it('shows single accountList name', async () => {

@@ -1,8 +1,5 @@
 import { dateFormat, monthYearFormat } from './intlFormat';
 import { numberFormat, percentageFormat, currencyFormat, dayMonthFormat } from '.';
-/**
- * @jest-environment jsdom
- */
 
 describe('intlFormat', () => {
     let languageMock: jest.SpyInstance;
@@ -10,10 +7,6 @@ describe('intlFormat', () => {
     beforeEach(() => {
         languageMock = jest.spyOn(window.navigator, 'language', 'get');
         languageMock.mockReturnValue(undefined);
-    });
-
-    afterEach(() => {
-        languageMock.mockClear();
     });
 
     describe('numberFormat', () => {
