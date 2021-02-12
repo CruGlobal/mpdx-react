@@ -10,7 +10,6 @@ import {
     NotificationTimeUnitEnum,
     ResultEnum,
 } from '../../../../../types/globalTypes';
-import { AppProviderContext } from '../../../App/Provider';
 import { useApp } from '../../../App';
 import { completeTaskMutationMock, completeSimpleTaskMutationMock } from './CompleteForm.mock';
 import TaskDrawerCompleteForm from '.';
