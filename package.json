@@ -60,7 +60,7 @@
     "devDependencies": {
         "@babel/core": "^7.12.16",
         "@brainly/onesky-utils": "^1.4.1",
-        "@next/bundle-analyzer": "^10.0.6",
+        "@next/bundle-analyzer": "^10.0.7",
         "@react-dnd/invariant": "^2.0.0",
         "@storybook/addon-actions": "^6.1.17",
         "@storybook/addon-knobs": "^6.1.17",
