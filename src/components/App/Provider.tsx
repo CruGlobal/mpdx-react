@@ -1,6 +1,6 @@
 import React, { ReactNode, ReactElement, useState, useReducer, Dispatch } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import { omit, remove, find } from 'lodash/fp';
+import { omit, remove } from 'lodash/fp';
 import TaskDrawer, { TaskDrawerProps } from '../Task/Drawer/Drawer';
 import theme from '../../theme';
 import rootReducer, { Action, AppState } from './rootReducer';
@@ -33,7 +33,10 @@ const AppProvider = ({ initialState, children }: Props): ReactElement => {
         const id = uuidv4();
         if (
             !taskDrawerProps.taskId ||
-            !find({ taskId: taskDrawerProps.taskId, showCompleteForm: taskDrawerProps.showCompleteForm }, taskDrawers)
+            !taskDrawers.find(
+                ({ taskId, showCompleteForm }) =>
+                    taskId === taskDrawerProps.taskId && showCompleteForm === taskDrawerProps.showCompleteForm,
+            )
         ) {
             setTaskDrawers([
                 ...taskDrawers,

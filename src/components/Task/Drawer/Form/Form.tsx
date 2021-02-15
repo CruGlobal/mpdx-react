@@ -23,7 +23,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Formik } from 'formik';
 import * as yup from 'yup';
 import { gql, useQuery, useMutation } from '@apollo/client';
-import { omit, sortBy } from 'lodash/fp';
+import { omit } from 'lodash/fp';
 import { useSnackbar } from 'notistack';
 import { startOfHour, addHours } from 'date-fns';
 import { ActivityTypeEnum, NotificationTypeEnum, NotificationTimeUnitEnum } from '../../../../../types/globalTypes';
@@ -406,7 +406,15 @@ const TaskDrawerForm = ({ accountListId, task, onClose, defaultValues }: Props):
                             <Grid item>
                                 <Autocomplete
                                     multiple
-                                    options={(data?.contacts?.nodes && sortBy('name', data.contacts.nodes)) || []}
+                                    options={
+                                        (data?.contacts?.nodes &&
+                                            data.contacts.nodes
+                                                .concat()
+                                                .sort((a, b) =>
+                                                    a['name'] > b['name'] ? 1 : b['name'] > a['name'] ? -1 : 0,
+                                                )) ||
+                                        []
+                                    }
                                     getOptionLabel={({ name }: GetDataForTaskDrawerQuery_contacts_nodes): string =>
                                         name
                                     }

@@ -2,7 +2,6 @@ import React, { ReactElement, useEffect } from 'react';
 import { makeStyles, Theme, Box, Card, Grid, CardContent } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { gql, useLazyQuery } from '@apollo/client';
-import { sortBy } from 'lodash/fp';
 import { GetContactsForTaskDrawerContactListQuery } from '../../../../../types/GetContactsForTaskDrawerContactListQuery';
 import illustration4 from '../../../../images/drawkit/grape/drawkit-grape-pack-illustration-4.svg';
 import TaskDrawerContactListItem from './Item';
@@ -123,11 +122,14 @@ const TaskDrawerContactList = ({ accountListId, contactIds }: Props): ReactEleme
                     )}
                     {data?.contacts?.nodes && data.contacts.nodes.length > 0 && (
                         <Grid container spacing={2} direction="column">
-                            {sortBy('name', data.contacts.nodes).map((contact) => (
-                                <Grid item key={contact.id} data-testid={`TaskDrawerContactListItem-${contact.id}`}>
-                                    <TaskDrawerContactListItem contact={contact} />
-                                </Grid>
-                            ))}
+                            {data.contacts.nodes
+                                .concat()
+                                .sort((a, b) => (a['name'] > b['name'] ? 1 : b['name'] > a['name'] ? -1 : 0))
+                                .map((contact) => (
+                                    <Grid item key={contact.id} data-testid={`TaskDrawerContactListItem-${contact.id}`}>
+                                        <TaskDrawerContactListItem contact={contact} />
+                                    </Grid>
+                                ))}
                         </Grid>
                     )}
                 </>
