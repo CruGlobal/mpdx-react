@@ -18,7 +18,6 @@ import {
     Divider,
 } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
-import { compact } from 'lodash/fp';
 import CallIcon from '@material-ui/icons/Call';
 import TextsmsIcon from '@material-ui/icons/Textsms';
 import EmailIcon from '@material-ui/icons/Email';
@@ -128,12 +127,14 @@ const TaskDrawerContactListItem = ({ contact }: Props): ReactElement => {
                                     </Avatar>
                                 </ListItemAvatar>
                                 <ListItemText
-                                    primary={compact([
+                                    primary={[
                                         contact.primaryAddress.street,
                                         contact.primaryAddress.city,
                                         contact.primaryAddress.state,
                                         contact.primaryAddress.postalCode,
-                                    ]).join(t('List Separator'))}
+                                    ]
+                                        .filter(Boolean)
+                                        .join(t('List Separator'))}
                                     secondary={contact.primaryAddress.location}
                                 />
                             </ListItem>
@@ -156,12 +157,14 @@ const TaskDrawerContactListItem = ({ contact }: Props): ReactElement => {
                                     secondary={
                                         <>
                                             <Typography component="span" variant="body2" color="textPrimary">
-                                                {compact([
+                                                {[
                                                     contact.primaryPerson.title,
                                                     contact.primaryPerson.firstName,
                                                     contact.primaryPerson.lastName,
                                                     contact.primaryPerson.suffix,
-                                                ]).join(' ')}
+                                                ]
+                                                    .filter(Boolean)
+                                                    .join(' ')}
                                             </Typography>
                                             {contact.primaryPerson.primaryEmailAddress.location &&
                                                 ` — ${contact.primaryPerson.primaryEmailAddress.location}`}
@@ -188,12 +191,14 @@ const TaskDrawerContactListItem = ({ contact }: Props): ReactElement => {
                                     secondary={
                                         <>
                                             <Typography component="span" variant="body2" color="textPrimary">
-                                                {compact([
+                                                {[
                                                     contact.primaryPerson.title,
                                                     contact.primaryPerson.firstName,
                                                     contact.primaryPerson.lastName,
                                                     contact.primaryPerson.suffix,
-                                                ]).join(' ')}
+                                                ]
+                                                    .filter(Boolean)
+                                                    .join(' ')}
                                             </Typography>
                                             {contact.primaryPerson.primaryPhoneNumber.location &&
                                                 ` — ${contact.primaryPerson.primaryPhoneNumber.location}`}

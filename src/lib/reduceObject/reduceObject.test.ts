@@ -1,4 +1,3 @@
-import { isFunction } from 'lodash/fp';
 import reduceObject from './reduceObject';
 
 const obj = {
@@ -7,7 +6,7 @@ const obj = {
 
 describe('common.fp.reduceObject', () => {
     it('should curry', () => {
-        expect(isFunction(reduceObject())).toEqual(true);
+        expect(typeof reduceObject() === 'function').toEqual(true);
     });
 
     it('should create an object', () => {

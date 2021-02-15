@@ -13,7 +13,7 @@ import {
 import { Skeleton } from '@material-ui/lab';
 import React, { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
-import { cloneDeep, isFunction } from 'lodash/fp';
+import { cloneDeep } from 'lodash/fp';
 import { isSameMonth } from 'date-fns';
 import { AcknowledgeUserNotificationMutation } from '../../../../../../../types/AcknowledgeUserNotificationMutation';
 import {
@@ -96,7 +96,7 @@ const NotificationMenuItem = ({ item, previousItem, last, onClick }: Props): Rea
                 },
             });
         }
-        if (isFunction(onClick)) onClick();
+        if (typeof onClick === 'function') onClick();
     };
 
     let message;

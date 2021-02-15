@@ -1,7 +1,6 @@
 import React, { ReactElement } from 'react';
 import { makeStyles, Theme, Avatar, Typography, Box, Tooltip, Slide } from '@material-ui/core';
 import { formatDistanceToNow, isSameHour } from 'date-fns';
-import { compact } from 'lodash/fp';
 import { Skeleton } from '@material-ui/lab';
 import { GetCommentsForTaskDrawerCommentListQuery_task_comments_nodes as Comment } from '../../../../../../types/GetCommentsForTaskDrawerCommentListQuery';
 
@@ -91,11 +90,9 @@ const TaskDrawerCommentListItem = ({ comment, reverse, nextComment }: Props): Re
     return (
         <Slide direction={reverse ? 'left' : 'right'} in={true}>
             <Box
-                className={compact([
-                    classes.container,
-                    reverse && classes.reverse,
-                    nextCommentMatches && classes.compact,
-                ]).join(' ')}
+                className={[classes.container, reverse && classes.reverse, nextCommentMatches && classes.compact]
+                    .filter(Boolean)
+                    .join(' ')}
             >
                 {!reverse && (
                     <Box>
