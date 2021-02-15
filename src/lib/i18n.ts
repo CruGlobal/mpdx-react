@@ -5,31 +5,31 @@ import LanguageDetector from 'i18next-browser-languagedetector';
 import { currencyFormat, numberFormat } from './intlFormat';
 
 i18next
-    .use(Backend)
-    .use(initReactI18next)
-    .use(LanguageDetector)
-    .init({
-        lng: 'en',
-        nsSeparator: false,
-        keySeparator: false,
-        fallbackLng: 'en',
-        interpolation: {
-            escapeValue: false,
-            format: (value, format): string => {
-                switch (format) {
-                    case 'number':
-                        return numberFormat(value);
-                    case 'currency':
-                        return currencyFormat(value.amount, value.currency);
-                    default:
-                        return value;
-                }
-            },
-        },
-        react: {
-            wait: true,
-            useSuspense: false,
-        },
-    });
+  .use(Backend)
+  .use(initReactI18next)
+  .use(LanguageDetector)
+  .init({
+    lng: 'en',
+    nsSeparator: false,
+    keySeparator: false,
+    fallbackLng: 'en',
+    interpolation: {
+      escapeValue: false,
+      format: (value, format): string => {
+        switch (format) {
+          case 'number':
+            return numberFormat(value);
+          case 'currency':
+            return currencyFormat(value.amount, value.currency);
+          default:
+            return value;
+        }
+      },
+    },
+    react: {
+      wait: true,
+      useSuspense: false,
+    },
+  });
 
 export default i18next;

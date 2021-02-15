@@ -4,47 +4,47 @@ import { GetThisWeekQuery_latePledgeContacts } from '../../../../../types/GetThi
 import LateCommitments from '.';
 
 export default {
-    title: 'Dashboard/ThisWeek/LateCommitments',
+  title: 'Dashboard/ThisWeek/LateCommitments',
 };
 
 export const Default = (): ReactElement => {
-    const contact = {
-        id: 'contact',
-        name: 'Smith, Sarah',
-        lateAt: '2012-10-01',
-    };
+  const contact = {
+    id: 'contact',
+    name: 'Smith, Sarah',
+    lateAt: '2012-10-01',
+  };
 
-    const latePledgeContacts: GetThisWeekQuery_latePledgeContacts = {
-        nodes: [
-            { ...contact, id: 'contact_1' },
-            { ...contact, id: 'contact_2' },
-            { ...contact, id: 'contact_3' },
-        ],
-        totalCount: 5,
-    };
-    return (
-        <Box m={2}>
-            <LateCommitments latePledgeContacts={latePledgeContacts} />
-        </Box>
-    );
+  const latePledgeContacts: GetThisWeekQuery_latePledgeContacts = {
+    nodes: [
+      { ...contact, id: 'contact_1' },
+      { ...contact, id: 'contact_2' },
+      { ...contact, id: 'contact_3' },
+    ],
+    totalCount: 5,
+  };
+  return (
+    <Box m={2}>
+      <LateCommitments latePledgeContacts={latePledgeContacts} />
+    </Box>
+  );
 };
 
 export const Empty = (): ReactElement => {
-    const latePledgeContacts: GetThisWeekQuery_latePledgeContacts = {
-        nodes: [],
-        totalCount: 0,
-    };
-    return (
-        <Box m={2}>
-            <LateCommitments latePledgeContacts={latePledgeContacts} />
-        </Box>
-    );
+  const latePledgeContacts: GetThisWeekQuery_latePledgeContacts = {
+    nodes: [],
+    totalCount: 0,
+  };
+  return (
+    <Box m={2}>
+      <LateCommitments latePledgeContacts={latePledgeContacts} />
+    </Box>
+  );
 };
 
 export const Loading = (): ReactElement => {
-    return (
-        <Box m={2}>
-            <LateCommitments loading />
-        </Box>
-    );
+  return (
+    <Box m={2}>
+      <LateCommitments loading />
+    </Box>
+  );
 };

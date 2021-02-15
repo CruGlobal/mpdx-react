@@ -25,7 +25,9 @@ export interface GetCommentsForTaskDrawerCommentListQuery_task_comments {
   /**
    * A list of nodes.
    */
-  nodes: (GetCommentsForTaskDrawerCommentListQuery_task_comments_nodes | null)[] | null;
+  nodes:
+    | (GetCommentsForTaskDrawerCommentListQuery_task_comments_nodes | null)[]
+    | null;
 }
 
 export interface GetCommentsForTaskDrawerCommentListQuery_task {

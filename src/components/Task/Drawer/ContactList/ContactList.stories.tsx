@@ -1,35 +1,50 @@
 import React, { ReactElement } from 'react';
 import { MockedProvider } from '@apollo/client/testing';
 import {
-    getContactsForTaskDrawerContactListEmptyMock,
-    getContactsForTaskDrawerContactListMock,
+  getContactsForTaskDrawerContactListEmptyMock,
+  getContactsForTaskDrawerContactListMock,
 } from './ContactList.mock';
 import TaskDrawerContactList from '.';
 
 export default {
-    title: 'Task/Drawer/ContactList',
+  title: 'Task/Drawer/ContactList',
 };
 
 export const Default = (): ReactElement => {
-    return (
-        <MockedProvider mocks={[getContactsForTaskDrawerContactListMock()]} addTypename={false}>
-            <TaskDrawerContactList accountListId="abc" contactIds={['contact-1', 'contact-2']} />
-        </MockedProvider>
-    );
+  return (
+    <MockedProvider
+      mocks={[getContactsForTaskDrawerContactListMock()]}
+      addTypename={false}
+    >
+      <TaskDrawerContactList
+        accountListId="abc"
+        contactIds={['contact-1', 'contact-2']}
+      />
+    </MockedProvider>
+  );
 };
 
 export const Loading = (): ReactElement => {
-    return (
-        <MockedProvider mocks={[]} addTypename={false}>
-            <TaskDrawerContactList accountListId="abc" contactIds={['contact-1', 'contact-2']} />
-        </MockedProvider>
-    );
+  return (
+    <MockedProvider mocks={[]} addTypename={false}>
+      <TaskDrawerContactList
+        accountListId="abc"
+        contactIds={['contact-1', 'contact-2']}
+      />
+    </MockedProvider>
+  );
 };
 
 export const Empty = (): ReactElement => {
-    return (
-        <MockedProvider mocks={[getContactsForTaskDrawerContactListEmptyMock()]} addTypename={false}>
-            <TaskDrawerContactList accountListId="abc" contactIds={['contact-1', 'contact-2']} />
-        </MockedProvider>
-    );
+  return (
+    <MockedProvider
+      mocks={[getContactsForTaskDrawerContactListEmptyMock()]}
+      addTypename={false}
+    >
+      <TaskDrawerContactList
+        accountListId="abc"
+        contactIds={['contact-1', 'contact-2']}
+      />
+    </MockedProvider>
+  );
 };

@@ -8,34 +8,34 @@ import { getTopBarMock } from './TopBar/TopBar.mock';
 import Primary from '.';
 
 export default {
-    title: 'Layouts/Primary',
-    decorators: [
-        withDispatch(
-            { type: 'updateAccountListId', accountListId: '1' },
-            { type: 'updateBreadcrumb', breadcrumb: 'Dashboard' },
-        ),
-    ],
+  title: 'Layouts/Primary',
+  decorators: [
+    withDispatch(
+      { type: 'updateAccountListId', accountListId: '1' },
+      { type: 'updateBreadcrumb', breadcrumb: 'Dashboard' },
+    ),
+  ],
 };
 
 export const Default = (): ReactElement => {
-    const mocks = [...getNotificationsMocks(), getTopBarMock(), getSideBarMock()];
+  const mocks = [...getNotificationsMocks(), getTopBarMock(), getSideBarMock()];
 
-    return (
-        <MockedProvider mocks={mocks} addTypename={false}>
-            <Primary>
-                <Container>
-                    <Box my={2}>
-                        {[...new Array(50)]
-                            .map(
-                                () => `Cras mattis consectetur purus sit amet fermentum.
+  return (
+    <MockedProvider mocks={mocks} addTypename={false}>
+      <Primary>
+        <Container>
+          <Box my={2}>
+            {[...new Array(50)]
+              .map(
+                () => `Cras mattis consectetur purus sit amet fermentum.
 Cras justo odio, dapibus ac facilisis in, egestas eget quam.
 Morbi leo risus, porta ac consectetur ac, vestibulum at eros.
 Praesent commodo cursus magna, vel scelerisque nisl consectetur et.`,
-                            )
-                            .join('\n')}
-                    </Box>
-                </Container>
-            </Primary>
-        </MockedProvider>
-    );
+              )
+              .join('\n')}
+          </Box>
+        </Container>
+      </Primary>
+    </MockedProvider>
+  );
 };
