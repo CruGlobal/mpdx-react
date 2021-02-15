@@ -3,7 +3,11 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { StatusEnum, SendNewsletterEnum, PledgeFrequencyEnum } from "./globalTypes";
+import {
+  StatusEnum,
+  SendNewsletterEnum,
+  PledgeFrequencyEnum,
+} from './globalTypes';
 
 // ====================================================
 // GraphQL query operation: GetContactsForTaskDrawerContactListQuery
@@ -69,7 +73,9 @@ export interface GetContactsForTaskDrawerContactListQuery_contacts {
   /**
    * A list of nodes.
    */
-  nodes: (GetContactsForTaskDrawerContactListQuery_contacts_nodes | null)[] | null;
+  nodes:
+    | (GetContactsForTaskDrawerContactListQuery_contacts_nodes | null)[]
+    | null;
 }
 
 export interface GetContactsForTaskDrawerContactListQuery {

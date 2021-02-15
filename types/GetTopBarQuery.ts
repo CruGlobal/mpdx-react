@@ -32,7 +32,9 @@ export interface GetTopBarQuery_user_administrativeOrganizations {
   /**
    * A list of nodes.
    */
-  nodes: (GetTopBarQuery_user_administrativeOrganizations_nodes | null)[] | null;
+  nodes:
+    | (GetTopBarQuery_user_administrativeOrganizations_nodes | null)[]
+    | null;
 }
 
 export interface GetTopBarQuery_user {

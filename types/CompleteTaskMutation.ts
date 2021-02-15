@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { TaskUpdateInput, ResultEnum, ActivityTypeEnum } from "./globalTypes";
+import { TaskUpdateInput, ResultEnum, ActivityTypeEnum } from './globalTypes';
 
 // ====================================================
 // GraphQL mutation operation: CompleteTaskMutation

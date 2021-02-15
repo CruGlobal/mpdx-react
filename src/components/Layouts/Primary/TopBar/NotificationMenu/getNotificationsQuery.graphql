@@ -1,35 +1,35 @@
 query GetNotificationsQuery($accountListId: ID!, $after: String) {
-    userNotifications(accountListId: $accountListId, after: $after, first: 20) {
-        edges {
-            node {
-                id
-                read
-                notification {
-                    occurredAt
-                    contact {
-                        id
-                        name
-                    }
-                    donation {
-                        id
-                        amount {
-                            amount
-                            currency
-                            conversionDate
-                        }
-                    }
-                    notificationType {
-                        id
-                        type
-                        descriptionTemplate
-                    }
-                }
+  userNotifications(accountListId: $accountListId, after: $after, first: 20) {
+    edges {
+      node {
+        id
+        read
+        notification {
+          occurredAt
+          contact {
+            id
+            name
+          }
+          donation {
+            id
+            amount {
+              amount
+              currency
+              conversionDate
             }
+          }
+          notificationType {
+            id
+            type
+            descriptionTemplate
+          }
         }
-        pageInfo {
-            endCursor
-            hasNextPage
-        }
-        unreadCount
+      }
     }
+    pageInfo {
+      endCursor
+      hasNextPage
+    }
+    unreadCount
+  }
 }

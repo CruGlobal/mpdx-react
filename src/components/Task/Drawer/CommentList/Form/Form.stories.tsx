@@ -6,18 +6,25 @@ import { createTaskCommentMutationMock } from './Form.mock';
 import TaskDrawerCommentListForm from '.';
 
 export default {
-    title: 'Task/Drawer/CommentList/Form',
+  title: 'Task/Drawer/CommentList/Form',
 };
 
 export const Default = (): ReactElement => {
-    return (
-        <MockedProvider
-            mocks={[createTaskCommentMutationMock(), getCommentsForTaskDrawerCommentListMock()]}
-            addTypename={false}
-        >
-            <AppProvider initialState={{ user: { id: 'user-1', firstName: 'John', lastName: 'Smith' } }}>
-                <TaskDrawerCommentListForm accountListId="abc" taskId="task-1" />
-            </AppProvider>
-        </MockedProvider>
-    );
+  return (
+    <MockedProvider
+      mocks={[
+        createTaskCommentMutationMock(),
+        getCommentsForTaskDrawerCommentListMock(),
+      ]}
+      addTypename={false}
+    >
+      <AppProvider
+        initialState={{
+          user: { id: 'user-1', firstName: 'John', lastName: 'Smith' },
+        }}
+      >
+        <TaskDrawerCommentListForm accountListId="abc" taskId="task-1" />
+      </AppProvider>
+    </MockedProvider>
+  );
 };

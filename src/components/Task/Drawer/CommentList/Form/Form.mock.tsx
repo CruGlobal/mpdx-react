@@ -3,38 +3,38 @@ import { CreateTaskCommentMutation } from '../../../../../../types/CreateTaskCom
 import { CREATE_TASK_COMMENT_MUTATION } from './Form';
 
 export const createTaskCommentMutationMock = (): MockedResponse => {
-    const data: CreateTaskCommentMutation = {
-        createTaskComment: {
-            comment: {
-                id: 'comment-0',
-                body: 'comment',
-                createdAt: new Date().toISOString(),
-                me: true,
-                person: {
-                    id: 'user-1',
-                    firstName: 'John',
-                    lastName: 'Smith',
-                },
-            },
+  const data: CreateTaskCommentMutation = {
+    createTaskComment: {
+      comment: {
+        id: 'comment-0',
+        body: 'comment',
+        createdAt: new Date().toISOString(),
+        me: true,
+        person: {
+          id: 'user-1',
+          firstName: 'John',
+          lastName: 'Smith',
         },
-    };
+      },
+    },
+  };
 
-    return {
-        request: {
-            query: CREATE_TASK_COMMENT_MUTATION,
-            variables: {
-                accountListId: 'abc',
-                taskId: 'task-1',
-                attributes: {
-                    id: 'comment-0',
-                    body: 'comment',
-                },
-            },
+  return {
+    request: {
+      query: CREATE_TASK_COMMENT_MUTATION,
+      variables: {
+        accountListId: 'abc',
+        taskId: 'task-1',
+        attributes: {
+          id: 'comment-0',
+          body: 'comment',
         },
-        result: {
-            data,
-        },
-    };
+      },
+    },
+    result: {
+      data,
+    },
+  };
 };
 
 export default createTaskCommentMutationMock;

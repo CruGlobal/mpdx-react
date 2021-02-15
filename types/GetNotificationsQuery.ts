@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { NotificationTypeTypeEnum } from "./globalTypes";
+import { NotificationTypeTypeEnum } from './globalTypes';
 
 // ====================================================
 // GraphQL query operation: GetNotificationsQuery

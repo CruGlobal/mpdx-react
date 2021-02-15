@@ -3,7 +3,12 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { TaskCreateInput, ActivityTypeEnum, NotificationTypeEnum, NotificationTimeUnitEnum } from "./globalTypes";
+import {
+  TaskCreateInput,
+  ActivityTypeEnum,
+  NotificationTypeEnum,
+  NotificationTimeUnitEnum,
+} from './globalTypes';
 
 // ====================================================
 // GraphQL mutation operation: CreateTaskMutation
