@@ -15,6 +15,9 @@ jobs:
     - stage: Lint
       script:
         - yarn lint:ci
+    - stage: Prettier Check
+      script:
+        - yarn prettier:check
     - stage: Chromatic
       script:
         - bin/travis_chromatic.sh
