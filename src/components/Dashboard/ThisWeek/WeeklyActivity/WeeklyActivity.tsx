@@ -15,14 +15,14 @@ import {
 } from '@material-ui/core';
 import { motion } from 'framer-motion';
 import { gql, useQuery } from '@apollo/client';
-import moment from 'moment';
+import { DateTime } from 'luxon';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
 import { Skeleton } from '@material-ui/lab';
 import { useTranslation } from 'react-i18next';
 import AnimatedCard from '../../../AnimatedCard';
 import { GetWeeklyActivityQuery } from '../../../../../types/GetWeeklyActivityQuery';
-import { dayMonthFormat, numberFormat } from '../../../../lib/intlFormat';
+import { numberFormat } from '../../../../lib/intlFormat';
 import HandoffLink from '../../../HandoffLink';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -114,28 +114,31 @@ interface Props {
 
 const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
     const classes = useStyles();
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
 
-    const [startOfWeek, setStartOfWeek] = useState(moment().startOf('week').toISOString());
-    const [endOfWeek, setEndOfWeek] = useState(moment().endOf('week').toISOString());
+    const [startOfWeek, setStartOfWeek] = useState(DateTime.local().startOf('week'));
+    const [endOfWeek, setEndOfWeek] = useState(DateTime.local().endOf('week'));
 
     const { data, loading, refetch } = useQuery<GetWeeklyActivityQuery>(GET_WEEKLY_ACTIVITY_QUERY, {
         variables: {
             accountListId,
-            startOfWeek,
-            endOfWeek,
+            startOfWeek: startOfWeek.toISO(),
+            endOfWeek: endOfWeek.toISO(),
         },
     });
 
     const addWeek = (): void => {
-        setStartOfWeek((startOfWeek) => moment(startOfWeek).add(1, 'week').toISOString());
-        setEndOfWeek((endOfWeek) => moment(endOfWeek).add(1, 'week').toISOString());
+        setStartOfWeek((startOfWeek) => startOfWeek.plus({ week: 1 }));
+        setEndOfWeek((endOfWeek) => endOfWeek.plus({ week: 1 }));
     };
 
     const subtractWeek = (): void => {
-        setStartOfWeek((startOfWeek) => moment(startOfWeek).subtract(1, 'week').toISOString());
-        setEndOfWeek((endOfWeek) => moment(endOfWeek).subtract(1, 'week').toISOString());
+        setStartOfWeek((startOfWeek) => startOfWeek.minus({ week: 1 }));
+        setEndOfWeek((endOfWeek) => endOfWeek.minus({ week: 1 }));
     };
+
+    const intlDateFormat = (date: DateTime): string =>
+        date.setLocale(i18n.language).toLocaleString({ day: 'numeric', month: 'short' });
 
     useEffect(() => {
         refetch({
@@ -167,8 +170,7 @@ const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
                         <TableHead>
                             <TableRow>
                                 <TableCell data-testid="WeeklyActivityTableCellDateRange">
-                                    {dayMonthFormat(moment(startOfWeek).date(), moment(startOfWeek).month())} -{' '}
-                                    {dayMonthFormat(moment(endOfWeek).date(), moment(endOfWeek).month())}
+                                    {`${intlDateFormat(startOfWeek)} - ${intlDateFormat(endOfWeek)}`}
                                 </TableCell>
                                 <TableCell align="right">{t('Completed')}</TableCell>
                                 <TableCell align="right">{t('Appt Produced')}</TableCell>

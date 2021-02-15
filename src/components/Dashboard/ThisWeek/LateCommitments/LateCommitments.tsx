@@ -10,7 +10,7 @@ import {
     ListItemText,
     CardContent,
 } from '@material-ui/core';
-import moment from 'moment';
+import { DateTime } from 'luxon';
 import { Skeleton } from '@material-ui/lab';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
@@ -108,7 +108,7 @@ const LateCommitments = ({ loading, latePledgeContacts }: Props): ReactElement =
                         <>
                             <List className={classes.list} data-testid="LateCommitmentsListContacts">
                                 {latePledgeContacts.nodes.map((contact) => {
-                                    const count = moment().diff(moment(contact.lateAt), 'days');
+                                    const count = DateTime.local().diff(DateTime.fromISO(contact.lateAt), 'days');
                                     return (
                                         <HandoffLink key={contact.id} path={`/contacts/${contact.id}`}>
                                             <ListItem

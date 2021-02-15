@@ -12,7 +12,7 @@ import {
     ResponsiveContainer,
     Text,
 } from 'recharts';
-import moment from 'moment';
+import { DateTime } from 'luxon';
 import { Skeleton } from '@material-ui/lab';
 import { useTranslation } from 'react-i18next';
 import { currencyFormat } from '../../../lib/intlFormat';
@@ -88,7 +88,7 @@ const DonationHistories = ({
     const fills = ['#FFCF07', '#30F2F2', '#1FC0D2', '#007398'];
     const currencies: { dataKey: string; fill: string }[] = [];
     const periods = reportsDonationHistories?.periods?.map((period) => {
-        const data = { startDate: moment(period.startDate).format('MMM YY'), total: period.convertedTotal };
+        const data = { startDate: DateTime.fromISO(period.startDate).toFormat('LLL yy'), total: period.convertedTotal };
         period.totals.forEach((total) => {
             if (!currencies.find((currency) => total.currency == currency.dataKey)) {
                 currencies.push({ dataKey: total.currency, fill: fills.pop() });
