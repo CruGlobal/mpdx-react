@@ -23,7 +23,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Formik } from 'formik';
 import * as yup from 'yup';
 import { gql, useQuery, useMutation } from '@apollo/client';
-import { omit } from 'lodash/fp';
 import { useSnackbar } from 'notistack';
 import { startOfHour, addHours } from 'date-fns';
 import { ActivityTypeEnum, NotificationTypeEnum, NotificationTimeUnitEnum } from '../../../../../types/globalTypes';
@@ -35,6 +34,7 @@ import {
 import { GetTaskForTaskDrawerQuery_task as Task } from '../../../../../types/GetTaskForTaskDrawerQuery';
 import { CreateTaskMutation } from '../../../../../types/CreateTaskMutation';
 import { UpdateTaskMutation } from '../../../../../types/UpdateTaskMutation';
+import omit from '../../../../lib/omit';
 
 const useStyles = makeStyles((theme: Theme) => ({
     formControl: {
@@ -216,7 +216,7 @@ const TaskDrawerForm = ({ accountListId, task, onClose, defaultValues }: Props):
             if (task) {
                 await updateTask({ variables: { accountListId, attributes } });
             } else {
-                await createTask({ variables: { accountListId, attributes: omit('id', attributes) } });
+                await createTask({ variables: { accountListId, attributes: omit(['id'], attributes) } });
             }
             enqueueSnackbar(t('Task saved successfully'), { variant: 'success' });
             onClose();

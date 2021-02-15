@@ -3,7 +3,7 @@ import Head from 'next/head';
 import { GetServerSideProps } from 'next';
 import { getSession } from 'next-auth/client';
 import { useTranslation } from 'react-i18next';
-import { castArray, pick } from 'lodash/fp';
+import { castArray } from 'lodash/fp';
 import { parse } from 'query-string';
 import { useRouter } from 'next/router';
 import { useApp } from '../../../src/components/App';
@@ -12,7 +12,7 @@ import { TaskFilter } from '../../../src/components/Task/List/List';
 import reduceObject from '../../../src/lib/reduceObject';
 
 export const initialFilterFromPath = (path: string): TaskFilter => {
-    let initialFilter = {};
+    let initialFilter: TaskFilter = {};
     const queryString = path.split('?')[1];
 
     if (queryString) {
@@ -44,12 +44,9 @@ export const initialFilterFromPath = (path: string): TaskFilter => {
             filter,
         );
 
-        initialFilter = pick(
-            ['userIds', 'tags', 'contactIds', 'activityType', 'completed', 'wildcardSearch', 'startAt'],
-            initialFilter,
-        );
-
-        return initialFilter;
+        const { userIds, tags, contactIds, activityType, completed, wildcardSearch, startAt } = initialFilter;
+        const finalInitalFilter = { userIds, tags, contactIds, activityType, completed, wildcardSearch, startAt };
+        return finalInitalFilter;
     }
 };
 

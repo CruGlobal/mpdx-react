@@ -1,5 +1,4 @@
 import { MockedResponse } from '@apollo/client/testing';
-import { omit } from 'lodash/fp';
 import { addHours, startOfHour } from 'date-fns';
 import { GetDataForTaskDrawerQuery } from '../../../../../types/GetDataForTaskDrawerQuery';
 import { CreateTaskMutation } from '../../../../../types/CreateTaskMutation';
@@ -12,6 +11,7 @@ import {
 } from '../../../../../types/globalTypes';
 import { UpdateTaskMutation } from '../../../../../types/UpdateTaskMutation';
 import { GetTaskForTaskDrawerQuery_task as Task } from '../../../../../types/GetTaskForTaskDrawerQuery';
+import omit from '../../../../lib/omit';
 import { GET_DATA_FOR_TASK_DRAWER_QUERY, CREATE_TASK_MUTATION, UPDATE_TASK_MUTATION } from './Form';
 
 export const getDataForTaskDrawerMock = (): MockedResponse => {
@@ -77,7 +77,7 @@ export const createTaskMutationMock = (): MockedResponse => {
             query: CREATE_TASK_MUTATION,
             variables: {
                 accountListId: 'abc',
-                attributes: omit('id', attributes),
+                attributes: omit(['id'], attributes),
             },
         },
         result: { data },
