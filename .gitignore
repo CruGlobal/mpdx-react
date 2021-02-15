@@ -43,3 +43,4 @@ yarn-error.log*
 /public/locales/*
 !/public/locales/en
 node_modules
+package-lock.json
