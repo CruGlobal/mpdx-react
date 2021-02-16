@@ -3,7 +3,6 @@ import Head from 'next/head';
 import { GetServerSideProps } from 'next';
 import { getSession } from 'next-auth/client';
 import { useTranslation } from 'react-i18next';
-import { castArray } from 'lodash/fp';
 import { parse } from 'query-string';
 import { useRouter } from 'next/router';
 import { useApp } from '../../../src/components/App';
@@ -36,7 +35,7 @@ export const initialFilterFromPath = (path: string): TaskFilter => {
                         result.startAt.min = value.toString();
                         break;
                     default:
-                        result[key.replace('[]', '')] = castArray(value);
+                        result[key.replace('[]', '')] = Array.isArray(value) ? value : [value];
                 }
                 return result;
             },

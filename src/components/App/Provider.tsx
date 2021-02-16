@@ -1,6 +1,5 @@
 import React, { ReactNode, ReactElement, useState, useReducer, Dispatch } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import { remove } from 'lodash/fp';
 import TaskDrawer, { TaskDrawerProps } from '../Task/Drawer/Drawer';
 import theme from '../../theme';
 import rootReducer, { Action, AppState } from './rootReducer';
@@ -46,7 +45,13 @@ const AppProvider = ({ initialState, children }: Props): ReactElement => {
                     onClose: (): void => {
                         taskDrawerProps.onClose && taskDrawerProps.onClose();
                         setTimeout(
-                            () => setTaskDrawers((taskDrawers) => remove({ id }, taskDrawers)),
+                            () =>
+                                setTaskDrawers(
+                                    taskDrawers.filter((task) => {
+                                        const { id: _id, ...taskWithoutId } = task;
+                                        return taskWithoutId;
+                                    }),
+                                ),
                             theme.transitions.duration.leavingScreen,
                         );
                     },
