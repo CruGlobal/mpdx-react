@@ -34,7 +34,6 @@ import {
 import { GetTaskForTaskDrawerQuery_task as Task } from '../../../../../types/GetTaskForTaskDrawerQuery';
 import { CreateTaskMutation } from '../../../../../types/CreateTaskMutation';
 import { UpdateTaskMutation } from '../../../../../types/UpdateTaskMutation';
-import omit from '../../../../lib/omit';
 
 const useStyles = makeStyles((theme: Theme) => ({
     formControl: {
@@ -207,16 +206,19 @@ const TaskDrawerForm = ({ accountListId, task, onClose, defaultValues }: Props):
     const [createTask, { loading: creating }] = useMutation<CreateTaskMutation>(CREATE_TASK_MUTATION);
     const [updateTask, { loading: saving }] = useMutation<UpdateTaskMutation>(UPDATE_TASK_MUTATION);
     const onSubmit = async (values: Task): Promise<void> => {
-        const attributes = omit(['contacts', 'user', '__typename'], {
+        const attributes = {
             ...values,
             userId: values.user?.id || null,
             contactIds: values.contacts.nodes.map(({ id }) => id),
-        });
+        };
+
         try {
             if (task) {
-                await updateTask({ variables: { accountListId, attributes } });
+                const { contacts: _contacts, user: _user, ...updateTaskAttributes } = attributes;
+                await updateTask({ variables: { accountListId, attributes: updateTaskAttributes } });
             } else {
-                await createTask({ variables: { accountListId, attributes: omit(['id'], attributes) } });
+                const { id: _id, contacts: _contacts, user: _user, ...createTaskAttributes } = attributes;
+                await createTask({ variables: { accountListId, attributes: createTaskAttributes } });
             }
             enqueueSnackbar(t('Task saved successfully'), { variant: 'success' });
             onClose();

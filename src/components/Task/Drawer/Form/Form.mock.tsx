@@ -11,7 +11,6 @@ import {
 } from '../../../../../types/globalTypes';
 import { UpdateTaskMutation } from '../../../../../types/UpdateTaskMutation';
 import { GetTaskForTaskDrawerQuery_task as Task } from '../../../../../types/GetTaskForTaskDrawerQuery';
-import omit from '../../../../lib/omit';
 import { GET_DATA_FOR_TASK_DRAWER_QUERY, CREATE_TASK_MUTATION, UPDATE_TASK_MUTATION } from './Form';
 
 export const getDataForTaskDrawerMock = (): MockedResponse => {
@@ -67,17 +66,19 @@ export const createTaskMutationMock = (): MockedResponse => {
             task: { ...task, id: 'task-1' },
         },
     };
-    const attributes: TaskCreateInput = omit(['contacts', 'user'], {
-        ...task,
+    const { contacts: _contacts, user: _user, id: _id, ...createTask } = task;
+    const attributes: TaskCreateInput = {
+        ...createTask,
         userId: null,
         contactIds: [],
-    });
+    };
+
     return {
         request: {
             query: CREATE_TASK_MUTATION,
             variables: {
                 accountListId: 'abc',
-                attributes: omit(['id'], attributes),
+                attributes,
             },
         },
         result: { data },
@@ -108,11 +109,12 @@ export const updateTaskMutationMock = (): MockedResponse => {
             task,
         },
     };
-    const attributes: TaskUpdateInput = omit(['contacts', 'user'], {
-        ...task,
+    const { contacts: _contacts, user: _user, ...updateTask } = task;
+    const attributes: TaskUpdateInput = {
+        ...updateTask,
         userId: task.user.id,
         contactIds: task.contacts.nodes.map(({ id }) => id),
-    });
+    };
     return {
         request: {
             query: UPDATE_TASK_MUTATION,

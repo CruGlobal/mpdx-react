@@ -24,7 +24,7 @@ module.exports = {
         'import/no-named-default': 'error',
         'import/no-anonymous-default-export': 'error',
         'import/dynamic-import-chunkname': 'error',
-        '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+        '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
     },
     settings: {
         react: {
