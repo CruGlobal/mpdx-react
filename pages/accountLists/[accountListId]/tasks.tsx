@@ -44,8 +44,8 @@ export const initialFilterFromPath = (path: string): TaskFilter => {
         );
 
         const { userIds, tags, contactIds, activityType, completed, wildcardSearch, startAt } = initialFilter;
-        const finalInitalFilter = { userIds, tags, contactIds, activityType, completed, wildcardSearch, startAt };
-        return finalInitalFilter;
+
+        return { userIds, tags, contactIds, activityType, completed, wildcardSearch, startAt };
     }
 };
 
