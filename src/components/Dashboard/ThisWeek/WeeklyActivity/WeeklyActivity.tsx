@@ -138,7 +138,7 @@ const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
     };
 
     const intlDateFormat = (date: DateTime): string =>
-        date.setLocale(i18n.language).toLocaleString({ day: 'numeric', month: 'short', year: 'numeric' });
+        date.setLocale(i18n.language).toLocaleString({ day: 'numeric', month: 'short' });
 
     useEffect(() => {
         refetch({
