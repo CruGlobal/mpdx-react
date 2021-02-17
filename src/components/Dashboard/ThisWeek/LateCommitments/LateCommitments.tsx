@@ -108,7 +108,9 @@ const LateCommitments = ({ loading, latePledgeContacts }: Props): ReactElement =
                         <>
                             <List className={classes.list} data-testid="LateCommitmentsListContacts">
                                 {latePledgeContacts.nodes.map((contact) => {
-                                    const count = DateTime.local().diff(DateTime.fromISO(contact.lateAt), 'days');
+                                    const todayDate = DateTime.local().toISODate();
+                                    const date = DateTime.fromISO(contact.lateAt).toISODate();
+                                    const count = DateTime.local().diff(DateTime.fromISO(contact.lateAt), 'days').days;
                                     return (
                                         <HandoffLink key={contact.id} path={`/contacts/${contact.id}`}>
                                             <ListItem
@@ -131,9 +133,7 @@ const LateCommitments = ({ loading, latePledgeContacts }: Props): ReactElement =
                                 <HandoffLink
                                     path={`/contacts?filters=${encodeURIComponent(
                                         JSON.stringify({
-                                            late_at: `1970-01-01..${formatISO(endOfDay(new Date()), {
-                                                representation: 'date',
-                                            })}`,
+                                            late_at: `1970-01-01..${DateTime.local().endOf('day').toISODate()}`,
                                             status: 'Partner - Financial',
                                         }),
                                     )}`}

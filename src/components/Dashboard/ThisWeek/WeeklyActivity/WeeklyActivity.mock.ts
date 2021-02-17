@@ -87,7 +87,7 @@ export const GetWeeklyActivityQueryEmptyMocks = (): MockedResponse[] => {
                 variables: {
                     accountListId: 'abc',
                     startOfWeek: startOfWeek.toISO(),
-                    endOfWeek: endOfWeek.endOf('week').toISO(),
+                    endOfWeek: endOfWeek.toISO(),
                 },
             },
             result: {

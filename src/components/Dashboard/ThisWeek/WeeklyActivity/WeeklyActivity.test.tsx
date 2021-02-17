@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, waitFor, fireEvent } from '@testing-library/react';
 import { MockedProvider } from '@apollo/client/testing';
-import MockDate from 'mockdate';
+import { Settings } from 'luxon';
 import { GetWeeklyActivityQueryDefaultMocks, GetWeeklyActivityQueryLoadingMocks } from './WeeklyActivity.mock';
 import WeeklyActivity from '.';
 
@@ -34,11 +34,11 @@ describe('WeeklyActivity', () => {
 
     describe('MockDate', () => {
         beforeEach(() => {
-            MockDate.set(new Date(2020, 1, 1));
+            Settings.now = () => new Date(2020, 1, 1).valueOf();
         });
 
         afterEach(() => {
-            MockDate.reset();
+            Settings.resetCaches();
         });
 
         it('default', async () => {

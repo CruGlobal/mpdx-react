@@ -1,5 +1,5 @@
 import React from 'react';
-import MockDate from 'mockdate';
+import { Settings } from 'luxon';
 import { render } from '../../../../../__tests__/util/testingLibraryReactMock';
 import LateCommitments from '.';
 
@@ -31,10 +31,10 @@ describe('LateCommitments', () => {
 
     describe('MockDate', () => {
         beforeEach(() => {
-            MockDate.set(new Date(2020, 1, 1));
+            Settings.now = () => new Date(2020, 1, 1).valueOf();
         });
         afterEach(() => {
-            MockDate.reset();
+            Settings.resetCaches();
         });
         it('props', () => {
             const latePledgeContacts = {
