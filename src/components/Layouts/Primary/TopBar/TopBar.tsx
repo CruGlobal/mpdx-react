@@ -399,7 +399,7 @@ const TopBar = ({ open, handleOpenChange }: Props): ReactElement => {
           </MenuItem>
         </HandoffLink>
         {(data?.user?.admin ||
-          data?.user?.administrativeOrganizations?.nodes?.length) && (
+          !!data?.user?.administrativeOrganizations?.nodes?.length) && (
           <HandoffLink path="/preferences/organizations">
             <MenuItem onClick={handleProfileMenuClose} component="a">
               <ListItemText primary={t('Manage Organizations')} />
