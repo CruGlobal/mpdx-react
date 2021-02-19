@@ -16,37 +16,40 @@ import theme from '../src/theme';
 import i18n from '../src/lib/i18n';
 
 if (isChromatic()) {
-    MockDate.set(new Date(2020, 1, 1));
+  MockDate.set(new Date(2020, 1, 1));
 }
 
 addDecorator(
-    withI18next({
-        i18n,
-        languages: {
-            en: 'English',
-            de: 'German',
-        },
-    }),
+  withI18next({
+    i18n,
+    languages: {
+      en: 'English',
+      de: 'German',
+    },
+  }),
 );
 addDecorator(withKnobs);
 addDecorator((StoryFn) => (
-    <MockedProvider mocks={[]} addTypename={false}>
-        <ThemeProvider theme={theme}>
-            <CssBaseline />
-            <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                <SnackbarProvider maxSnack={3}>
-                    <TestRouter>
-                        <AppProvider>
-                            <StoryFn />
-                        </AppProvider>
-                    </TestRouter>
-                </SnackbarProvider>
-            </MuiPickersUtilsProvider>
-        </ThemeProvider>
-    </MockedProvider>
+  <MockedProvider mocks={[]} addTypename={false}>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <MuiPickersUtilsProvider utils={DateFnsUtils}>
+        <SnackbarProvider maxSnack={3}>
+          <TestRouter>
+            <AppProvider>
+              <StoryFn />
+            </AppProvider>
+          </TestRouter>
+        </SnackbarProvider>
+      </MuiPickersUtilsProvider>
+    </ThemeProvider>
+  </MockedProvider>
 ));
 
 addParameters({ chromatic: { diffThreshold: true } });
 
 // automatically import all files ending in *.stories.tsx
-configure(require.context('../src/components', true, /\.stories\.tsx?$/), module);
+configure(
+  require.context('../src/components', true, /\.stories\.tsx?$/),
+  module,
+);

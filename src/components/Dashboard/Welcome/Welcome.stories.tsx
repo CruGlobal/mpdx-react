@@ -2,13 +2,13 @@ import React, { ReactElement } from 'react';
 import Welcome from '.';
 
 export default {
-    title: 'Dashboard/Welcome',
+  title: 'Dashboard/Welcome',
 };
 
 export const Default = (): ReactElement => {
-    return <Welcome firstName="Bob" />;
+  return <Welcome firstName="Bob" />;
 };
 
 export const Empty = (): ReactElement => {
-    return <Welcome />;
+  return <Welcome />;
 };

@@ -5,17 +5,19 @@ import i18n from '../../src/lib/i18n';
 import translation from '../../public/locales/en/translation.json';
 
 interface Props {
-    children: ReactNode;
+  children: ReactNode;
 }
 
 i18n.addResourceBundle('en', 'translation', translation);
 
 const Wrapper = ({ children }: Props): ReactElement => {
-    return <I18nextProvider i18n={i18n}>{children}</I18nextProvider>;
+  return <I18nextProvider i18n={i18n}>{children}</I18nextProvider>;
 };
 
-const customRender = (ui: ReactElement, options?: Omit<RenderOptions, 'queries'>): RenderResult =>
-    render(ui, { wrapper: Wrapper, ...options });
+const customRender = (
+  ui: ReactElement,
+  options?: Omit<RenderOptions, 'queries'>,
+): RenderResult => render(ui, { wrapper: Wrapper, ...options });
 
 export * from '@testing-library/react';
 
