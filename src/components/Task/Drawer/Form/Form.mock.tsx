@@ -1,6 +1,6 @@
 import { MockedResponse } from '@apollo/client/testing';
 import { omit } from 'lodash/fp';
-import { addHours, startOfHour } from 'date-fns';
+import { DateTime } from 'luxon';
 import { GetDataForTaskDrawerQuery } from '../../../../../types/GetDataForTaskDrawerQuery';
 import { CreateTaskMutation } from '../../../../../types/CreateTaskMutation';
 import {
@@ -61,7 +61,7 @@ export const createTaskMutationMock = (): MockedResponse => {
     id: null,
     activityType: null,
     subject: 'abc',
-    startAt: startOfHour(addHours(new Date(), 1)),
+    startAt: DateTime.local().plus({ hours: 1 }).startOf('hour'),
     completedAt: null,
     tagList: [],
     contacts: {

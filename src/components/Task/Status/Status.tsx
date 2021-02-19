@@ -1,6 +1,6 @@
 import React, { ReactElement } from 'react';
 import { Tooltip, Theme, makeStyles, Fab, Avatar } from '@material-ui/core';
-import { isPast, formatDistanceToNow } from 'date-fns';
+import { DateTime } from 'luxon';
 import AssignmentLateIcon from '@material-ui/icons/AssignmentLate';
 import AssignmentIcon from '@material-ui/icons/Assignment';
 import AssignmentTurnedInIcon from '@material-ui/icons/AssignmentTurnedIn';

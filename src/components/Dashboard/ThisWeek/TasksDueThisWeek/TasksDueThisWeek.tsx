@@ -17,7 +17,7 @@ import { Skeleton } from '@material-ui/lab';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import Link from 'next/link';
-import { formatISO } from 'date-fns';
+import { DateTime } from 'luxon';
 import AnimatedCard from '../../../AnimatedCard';
 import {
   GetThisWeekQuery_dueTasks,
@@ -190,10 +190,7 @@ const TasksDueThisWeek = ({
               <CardActions>
                 <Link
                   href="/accountLists/[accountListId]/tasks"
-                  as={`/accountLists/${accountListId}/tasks?completed=false&startAt[max]=${formatISO(
-                    new Date(),
-                    { representation: 'date' },
-                  )}`}
+                  as={`/accountLists/${accountListId}/tasks?completed=false&startAt[max]=${DateTime.local().toISODate()}`}
                   passHref
                 >
                   <Button

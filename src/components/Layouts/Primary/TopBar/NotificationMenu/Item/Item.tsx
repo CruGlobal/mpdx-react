@@ -14,7 +14,7 @@ import { Skeleton } from '@material-ui/lab';
 import React, { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { cloneDeep, isFunction } from 'lodash/fp';
-import { isSameMonth } from 'date-fns';
+import { DateTime } from 'luxon';
 import { AcknowledgeUserNotificationMutation } from '../../../../../../../types/AcknowledgeUserNotificationMutation';
 import {
   GetNotificationsQuery,
@@ -216,9 +216,9 @@ const NotificationMenuItem = ({
   return (
     <Box>
       {previousItem?.notification?.occurredAt &&
-        !isSameMonth(
-          new Date(previousItem.notification.occurredAt),
-          new Date(item.notification.occurredAt),
+        !DateTime.fromISO(previousItem.notification.occurredAt).hasSame(
+          DateTime.fromISO(item.notification.occurredAt),
+          'month',
         ) && (
           <ListSubheader disableSticky role="heading">
             {monthYearFormat(

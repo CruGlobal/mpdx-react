@@ -8,7 +8,7 @@ import {
   Tooltip,
   Slide,
 } from '@material-ui/core';
-import { formatDistanceToNow, isSameHour } from 'date-fns';
+import { DateTime } from 'luxon';
 import { compact } from 'lodash/fp';
 import { Skeleton } from '@material-ui/lab';
 import { GetCommentsForTaskDrawerCommentListQuery_task_comments_nodes as Comment } from '../../../../../../types/GetCommentsForTaskDrawerCommentListQuery';

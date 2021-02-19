@@ -2,7 +2,7 @@ import React, { ReactElement } from 'react';
 import { Box, Typography, Grid } from '@material-ui/core';
 import { gql, useQuery } from '@apollo/client';
 import { useTranslation } from 'react-i18next';
-import { add, endOfDay, formatISO, sub } from 'date-fns';
+import { DateTime } from 'luxon';
 import AnimatedBox from '../../AnimatedBox';
 import { GetThisWeekQuery } from '../../../../types/GetThisWeekQuery';
 import PartnerCare from './PartnerCare/PartnerCare';
@@ -156,18 +156,17 @@ export const GET_THIS_WEEK_QUERY = gql`
 `;
 
 const ThisWeek = ({ accountListId }: Props): ReactElement => {
+  const endOfDay = DateTime.local().endOf('day');
+
   const { t } = useTranslation();
+
   const { data, loading } = useQuery<GetThisWeekQuery>(GET_THIS_WEEK_QUERY, {
     variables: {
       accountListId,
-      endOfDay: formatISO(endOfDay(new Date())),
-      today: formatISO(endOfDay(new Date()), { representation: 'date' }),
-      twoWeeksFromNow: formatISO(add(endOfDay(new Date()), { weeks: 2 }), {
-        representation: 'date',
-      }),
-      twoWeeksAgo: formatISO(sub(endOfDay(new Date()), { weeks: 2 }), {
-        representation: 'date',
-      }),
+      endOfDay: endOfDay.toISO(),
+      today: endOfDay.toISODate(),
+      twoWeeksFromNow: endOfDay.plus({ weeks: 2 }).toISO(),
+      twoWeeksAgo: endOfDay.minus({ weeks: 2 }).toISO(),
     },
   });
 

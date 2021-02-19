@@ -1,5 +1,5 @@
 import { MockedResponse } from '@apollo/client/testing';
-import { endOfDay, formatISO, add, sub } from 'date-fns';
+import { DateTime } from 'luxon';
 import { GetThisWeekQuery } from '../../../../types/GetThisWeekQuery';
 import { ActivityTypeEnum } from '../../../../types/globalTypes';
 import { GET_THIS_WEEK_QUERY } from './ThisWeek';
@@ -10,6 +10,8 @@ import {
 } from './WeeklyActivity/WeeklyActivity.mock';
 
 export const GetThisWeekDefaultMocks = (): MockedResponse[] => {
+  const endOfDay = DateTime.local().endOf('day');
+
   const task = {
     id: 'task',
     subject: 'the quick brown fox jumps over the lazy dog',
@@ -125,14 +127,10 @@ export const GetThisWeekDefaultMocks = (): MockedResponse[] => {
         query: GET_THIS_WEEK_QUERY,
         variables: {
           accountListId: 'abc',
-          endOfDay: formatISO(endOfDay(new Date())),
-          today: formatISO(endOfDay(new Date()), { representation: 'date' }),
-          twoWeeksFromNow: formatISO(add(endOfDay(new Date()), { weeks: 2 }), {
-            representation: 'date',
-          }),
-          twoWeeksAgo: formatISO(sub(endOfDay(new Date()), { weeks: 2 }), {
-            representation: 'date',
-          }),
+          endOfDay: endOfDay.toISO(),
+          today: endOfDay.toISODate(),
+          twoWeeksFromNow: endOfDay.plus({ weeks: 2 }).toISODate(),
+          twoWeeksAgo: endOfDay.minus({ weeks: 2 }).toISODate(),
         },
       },
       result: {
@@ -143,6 +141,8 @@ export const GetThisWeekDefaultMocks = (): MockedResponse[] => {
   ];
 };
 export const GetThisWeekEmptyMocks = (): MockedResponse[] => {
+  const endOfDay = DateTime.local().endOf('day');
+
   const data: GetThisWeekQuery = {
     accountList: {
       id: 'abc',
@@ -162,14 +162,10 @@ export const GetThisWeekEmptyMocks = (): MockedResponse[] => {
         query: GET_THIS_WEEK_QUERY,
         variables: {
           accountListId: 'abc',
-          endOfDay: formatISO(endOfDay(new Date())),
-          today: formatISO(endOfDay(new Date()), { representation: 'date' }),
-          twoWeeksFromNow: formatISO(add(endOfDay(new Date()), { weeks: 2 }), {
-            representation: 'date',
-          }),
-          twoWeeksAgo: formatISO(sub(endOfDay(new Date()), { weeks: 2 }), {
-            representation: 'date',
-          }),
+          endOfDay: endOfDay.toISO(),
+          today: endOfDay.toISODate(),
+          twoWeeksFromNow: endOfDay.plus({ weeks: 2 }).toISODate(),
+          twoWeeksAgo: endOfDay.minus({ weeks: 2 }).toISODate(),
         },
       },
       result: {

@@ -1,5 +1,5 @@
 import React from 'react';
-import { sub } from 'date-fns';
+import { DateTime } from 'luxon';
 import MockDate from 'mockdate';
 import userEvent from '@testing-library/user-event';
 import { InMemoryCache } from '@apollo/client';
@@ -429,7 +429,7 @@ describe('NotificationMenuItem', () => {
             )}
             previousItem={itemWithoutDonation(
               NotificationTypeTypeEnum.CALL_PARTNER_ONCE_PER_YEAR,
-              sub(new Date(), { months: 2 }).toISOString(),
+              DateTime.local().minus({ months: 2 }).toISO(),
             )}
           />
         </TestWrapper>,
