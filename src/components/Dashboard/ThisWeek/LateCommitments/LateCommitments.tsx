@@ -14,7 +14,6 @@ import { DateTime } from 'luxon';
 import { Skeleton } from '@material-ui/lab';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
-import { endOfDay, formatISO } from 'date-fns';
 import AnimatedCard from '../../../AnimatedCard';
 import { GetThisWeekQuery_latePledgeContacts } from '../../../../../types/GetThisWeekQuery';
 import HandoffLink from '../../../HandoffLink';
@@ -117,8 +116,6 @@ const LateCommitments = ({
                 data-testid="LateCommitmentsListContacts"
               >
                 {latePledgeContacts.nodes.map((contact) => {
-                  const todayDate = DateTime.local().toISODate();
-                  const date = DateTime.fromISO(contact.lateAt).toISODate();
                   const count = DateTime.local().diff(
                     DateTime.fromISO(contact.lateAt),
                     'days',
