@@ -479,9 +479,9 @@ const TaskDrawerForm = ({
                   multiple
                   options={
                     (data?.contacts?.nodes &&
-                      data.contacts.nodes
-                        .concat()
-                        .sort((a, b) => a.name.localeCompare(b.name))) ||
+                      [...data.contacts.nodes].sort((a, b) =>
+                        a.name.localeCompare(b.name),
+                      )) ||
                     []
                   }
                   getOptionLabel={({

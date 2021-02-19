@@ -143,8 +143,7 @@ const TaskDrawerContactList = ({
           )}
           {data?.contacts?.nodes && data.contacts.nodes.length > 0 && (
             <Grid container spacing={2} direction="column">
-              {data.contacts.nodes
-                .concat()
+              {[...data.contacts.nodes]
                 .sort((a, b) => a.name.localeCompare(b.name))
                 .map((contact) => (
                   <Grid
