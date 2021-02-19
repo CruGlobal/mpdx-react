@@ -15,7 +15,7 @@ import {
 } from '@material-ui/core';
 import { motion } from 'framer-motion';
 import { gql, useQuery } from '@apollo/client';
-import { DateTime } from 'luxon';
+import { DateTime, Interval } from 'luxon';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
 import { Skeleton } from '@material-ui/lab';
@@ -120,31 +120,33 @@ const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
   const classes = useStyles();
   const { t, i18n } = useTranslation();
 
-  const [startOfWeek, setStartOfWeek] = useState(
-    DateTime.local().startOf('week'),
+  const [interval, setInterval] = useState(
+    Interval.fromDateTimes(
+      DateTime.local().set({ weekday: 0 }),
+      DateTime.local().set({ weekday: 6 }),
+    ),
   );
-  const [endOfWeek, setEndOfWeek] = useState(DateTime.local().endOf('week'));
 
   const { data, loading, refetch } = useQuery<GetWeeklyActivityQuery>(
     GET_WEEKLY_ACTIVITY_QUERY,
     {
       variables: {
         accountListId,
-        startOfWeek: startOfWeek.toISO(),
-        endOfWeek: endOfWeek.toISO(),
+        startOfWeek: interval.start.toISO(),
+        endOfWeek: interval.end.toISO(),
       },
     },
   );
 
-  const addWeek = (): void => {
-    setStartOfWeek((startOfWeek) => startOfWeek.plus({ week: 1 }));
-    setEndOfWeek((endOfWeek) => endOfWeek.plus({ week: 1 }));
-  };
+  const addWeek = (): void =>
+    setInterval((interval) =>
+      interval.mapEndpoints((endpoint) => endpoint.plus({ week: 1 })),
+    );
 
-  const subtractWeek = (): void => {
-    setStartOfWeek((startOfWeek) => startOfWeek.minus({ week: 1 }));
-    setEndOfWeek((endOfWeek) => endOfWeek.minus({ week: 1 }));
-  };
+  const subtractWeek = (): void =>
+    setInterval((interval) =>
+      interval.mapEndpoints((endpoint) => endpoint.minus({ week: 1 })),
+    );
 
   const intlDateFormat = (date: DateTime): string =>
     date
@@ -154,10 +156,10 @@ const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
   useEffect(() => {
     refetch({
       accountListId,
-      startOfWeek,
-      endOfWeek,
+      startOfWeek: interval.start.toISO(),
+      endOfWeek: interval.end.toISO(),
     });
-  }, [startOfWeek, endOfWeek]);
+  }, [interval]);
 
   return (
     <AnimatedCard className={classes.card}>
@@ -192,8 +194,8 @@ const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
             <TableHead>
               <TableRow>
                 <TableCell data-testid="WeeklyActivityTableCellDateRange">
-                  {`${intlDateFormat(startOfWeek)} - ${intlDateFormat(
-                    endOfWeek,
+                  {`${intlDateFormat(interval.start)} - ${intlDateFormat(
+                    interval.end,
                   )}`}
                 </TableCell>
                 <TableCell align="right">{t('Completed')}</TableCell>

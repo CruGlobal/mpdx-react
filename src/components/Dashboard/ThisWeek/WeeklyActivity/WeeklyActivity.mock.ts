@@ -1,4 +1,4 @@
-import { DateTime } from 'luxon';
+import { DateTime, Interval } from 'luxon';
 import { MockedResponse } from '@apollo/client/testing';
 import { GetWeeklyActivityQuery } from '../../../../../types/GetWeeklyActivityQuery';
 import { GET_WEEKLY_ACTIVITY_QUERY } from './WeeklyActivity';
@@ -20,52 +20,52 @@ const dataPreviousWeek: GetWeeklyActivityQuery = {
   completedCorrespondence: { totalCount: 5678 },
 };
 
-export const GetWeeklyActivityQueryDefaultMocks = (): MockedResponse[] => {
-  const startOfWeek = DateTime.local().startOf('week');
-  const endOfWeek = DateTime.local().endOf('week');
+const weekInterval = Interval.fromDateTimes(
+  DateTime.local().set({ weekday: 0 }),
+  DateTime.local().set({ weekday: 6 }),
+);
 
-  return [
-    {
-      request: {
-        query: GET_WEEKLY_ACTIVITY_QUERY,
-        variables: {
-          accountListId: 'abc',
-          startOfWeek: startOfWeek.toISO(),
-          endOfWeek: endOfWeek.toISO(),
-        },
-      },
-      result: {
-        data,
+export const GetWeeklyActivityQueryDefaultMocks = (): MockedResponse[] => [
+  {
+    request: {
+      query: GET_WEEKLY_ACTIVITY_QUERY,
+      variables: {
+        accountListId: 'abc',
+        startOfWeek: weekInterval.start.toISO(),
+        endOfWeek: weekInterval.end.toISO(),
       },
     },
-    {
-      request: {
-        query: GET_WEEKLY_ACTIVITY_QUERY,
-        variables: {
-          accountListId: 'abc',
-          startOfWeek: startOfWeek.minus({ weeks: 1 }).toISO(),
-          endOfWeek: endOfWeek.minus({ weeks: 1 }).toISO(),
-        },
-      },
-      result: {
-        data: dataPreviousWeek,
+    result: {
+      data,
+    },
+  },
+  {
+    request: {
+      query: GET_WEEKLY_ACTIVITY_QUERY,
+      variables: {
+        accountListId: 'abc',
+        startOfWeek: weekInterval.start.minus({ weeks: 1 }).toISO(),
+        endOfWeek: weekInterval.end.minus({ weeks: 1 }).toISO(),
       },
     },
-    {
-      request: {
-        query: GET_WEEKLY_ACTIVITY_QUERY,
-        variables: {
-          accountListId: 'abc',
-          startOfWeek: startOfWeek.toISO(),
-          endOfWeek: endOfWeek.toISO(),
-        },
-      },
-      result: {
-        data,
+    result: {
+      data: dataPreviousWeek,
+    },
+  },
+  {
+    request: {
+      query: GET_WEEKLY_ACTIVITY_QUERY,
+      variables: {
+        accountListId: 'abc',
+        startOfWeek: weekInterval.start.toISO(),
+        endOfWeek: weekInterval.end.toISO(),
       },
     },
-  ];
-};
+    result: {
+      data,
+    },
+  },
+];
 
 const emptyData: GetWeeklyActivityQuery = {
   completedCalls: { totalCount: 0 },
@@ -76,26 +76,21 @@ const emptyData: GetWeeklyActivityQuery = {
   completedCorrespondence: { totalCount: 0 },
 };
 
-export const GetWeeklyActivityQueryEmptyMocks = (): MockedResponse[] => {
-  const startOfWeek = DateTime.local().startOf('week');
-  const endOfWeek = DateTime.local().endOf('week');
-
-  return [
-    {
-      request: {
-        query: GET_WEEKLY_ACTIVITY_QUERY,
-        variables: {
-          accountListId: 'abc',
-          startOfWeek: startOfWeek.toISO(),
-          endOfWeek: endOfWeek.toISO(),
-        },
-      },
-      result: {
-        data: emptyData,
+export const GetWeeklyActivityQueryEmptyMocks = (): MockedResponse[] => [
+  {
+    request: {
+      query: GET_WEEKLY_ACTIVITY_QUERY,
+      variables: {
+        accountListId: 'abc',
+        startOfWeek: weekInterval.start.toISO(),
+        endOfWeek: weekInterval.end.toISO(),
       },
     },
-  ];
-};
+    result: {
+      data: emptyData,
+    },
+  },
+];
 
 export const GetWeeklyActivityQueryLoadingMocks = (): MockedResponse[] => {
   return [
