@@ -3,7 +3,7 @@ import { render, waitFor, within } from '@testing-library/react';
 import { MockedProvider } from '@apollo/client/testing';
 import { SnackbarProvider } from 'notistack';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
-import DateFnsUtils from '@date-io/date-fns';
+import LuxonUtils from '@date-io/luxon';
 import userEvent from '@testing-library/user-event';
 import {
   getDataForTaskDrawerMock,
@@ -16,7 +16,7 @@ describe('TaskDrawerForm', () => {
   it('default', async () => {
     const onClose = jest.fn();
     const { getByText, getByRole, findByText } = render(
-      <MuiPickersUtilsProvider utils={DateFnsUtils}>
+      <MuiPickersUtilsProvider utils={LuxonUtils}>
         <SnackbarProvider>
           <MockedProvider
             mocks={[getDataForTaskDrawerMock(), createTaskMutationMock()]}
@@ -44,7 +44,7 @@ describe('TaskDrawerForm', () => {
   it('persisted', async () => {
     const onClose = jest.fn();
     const { getByText, getByRole, getAllByRole } = render(
-      <MuiPickersUtilsProvider utils={DateFnsUtils}>
+      <MuiPickersUtilsProvider utils={LuxonUtils}>
         <SnackbarProvider>
           <MockedProvider
             mocks={[getDataForTaskDrawerMock(), updateTaskMutationMock()]}

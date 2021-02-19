@@ -3,7 +3,7 @@ import { render } from '@testing-library/react';
 import { MockedProvider } from '@apollo/client/testing';
 import { SnackbarProvider } from 'notistack';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
-import DateFnsUtils from '@date-io/date-fns';
+import LuxonUtils from '@date-io/luxon';
 import userEvent from '@testing-library/user-event';
 import {
   getDataForTaskDrawerMock,
@@ -29,7 +29,7 @@ describe('AddFab', () => {
     const mocks = [getDataForTaskDrawerMock(), createTaskMutationMock()];
     const { getByRole } = render(
       <MockedProvider mocks={mocks} addTypename={false}>
-        <MuiPickersUtilsProvider utils={DateFnsUtils}>
+        <MuiPickersUtilsProvider utils={LuxonUtils}>
           <SnackbarProvider>
             <AddFab />
           </SnackbarProvider>

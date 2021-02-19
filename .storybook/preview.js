@@ -7,7 +7,7 @@ import { withI18next } from 'storybook-addon-i18next';
 import MockDate from 'mockdate';
 import isChromatic from 'chromatic/isChromatic';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
-import DateFnsUtils from '@date-io/date-fns';
+import LuxonUtils from '@date-io/luxon';
 import { SnackbarProvider } from 'notistack';
 import { AppProvider } from '../src/components/App';
 import { MockedProvider } from '@apollo/client/testing';
@@ -33,7 +33,7 @@ addDecorator((StoryFn) => (
   <MockedProvider mocks={[]} addTypename={false}>
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <MuiPickersUtilsProvider utils={DateFnsUtils}>
+      <MuiPickersUtilsProvider utils={LuxonUtils} >
         <SnackbarProvider maxSnack={3}>
           <TestRouter>
             <AppProvider>
