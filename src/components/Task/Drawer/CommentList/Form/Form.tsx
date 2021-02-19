@@ -13,7 +13,7 @@ import * as yup from 'yup';
 import SendIcon from '@material-ui/icons/Send';
 import { useMutation, gql } from '@apollo/client';
 import { motion } from 'framer-motion';
-import { reject } from 'lodash/fp';
+import reject from 'lodash/fp/reject';
 import { v4 as uuidv4 } from 'uuid';
 import { CreateTaskCommentMutation } from '../../../../../../types/CreateTaskCommentMutation';
 import { TaskCommentCreateInput } from '../../../../../../types/globalTypes';

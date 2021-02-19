@@ -21,7 +21,7 @@ import CakeIcon from '@material-ui/icons/Cake';
 import FavoriteIcon from '@material-ui/icons/Favorite';
 import { Skeleton } from '@material-ui/lab';
 import { motion } from 'framer-motion';
-import { uniqBy } from 'lodash/fp';
+import uniqBy from 'lodash/fp/uniqBy';
 import { useTranslation } from 'react-i18next';
 import Link from 'next/link';
 import { dayMonthFormat } from '../../../../lib/intlFormat';

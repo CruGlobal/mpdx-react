@@ -17,7 +17,7 @@ import {
   FormLabel,
   Box,
 } from '@material-ui/core';
-import { reduce } from 'lodash/fp';
+import reduce from 'lodash/fp/reduce';
 import debounce from 'lodash/fp/debounce';
 import { Skeleton } from '@material-ui/lab';
 import { DatePicker } from '@material-ui/pickers';
