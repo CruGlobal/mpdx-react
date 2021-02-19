@@ -53,11 +53,8 @@ const AppProvider = ({ initialState, children }: Props): ReactElement => {
             taskDrawerProps.onClose && taskDrawerProps.onClose();
             setTimeout(
               () =>
-                setTaskDrawers(
-                  taskDrawers.filter((task) => {
-                    const { id: _id, ...taskWithoutId } = task;
-                    return taskWithoutId;
-                  }),
+                setTaskDrawers((taskDrawers) =>
+                  taskDrawers.filter(({ id: taskId }) => taskId !== id),
                 ),
               theme.transitions.duration.leavingScreen,
             );

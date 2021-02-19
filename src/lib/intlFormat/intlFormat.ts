@@ -25,7 +25,7 @@ export const currencyFormat = (
 ): string =>
   new Intl.NumberFormat(language, {
     style: 'currency',
-    currency: currency ? currency : 'USD',
+    currency: currency ?? 'USD',
     minimumFractionDigits,
   }).format(
     Number.isFinite(value)

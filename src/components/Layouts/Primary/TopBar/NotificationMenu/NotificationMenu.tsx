@@ -13,7 +13,6 @@ import React, { ReactElement, useEffect, useState } from 'react';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import { gql, useMutation, useLazyQuery } from '@apollo/client';
 import { useTranslation } from 'react-i18next';
-import { cloneDeep } from 'lodash/fp';
 import { useApp } from '../../../../App';
 import { GetNotificationsQuery } from '../../../../../../types/GetNotificationsQuery';
 import { AcknowledgeAllUserNotificationsMutation } from '../../../../../../types/AcknowledgeAllUserNotificationsMutation';
@@ -105,7 +104,12 @@ const NotificationMenu = (): ReactElement => {
             after: null,
           },
         };
-        const data = cloneDeep(cache.readQuery<GetNotificationsQuery>(query));
+        const dataFromCache = cache.readQuery<GetNotificationsQuery>(query);
+        const data = {
+          userNotifications: {
+            ...dataFromCache.userNotifications,
+          },
+        };
         data.userNotifications.unreadCount = 0;
         data.userNotifications.edges = data.userNotifications.edges.map(
           ({ node }) => ({

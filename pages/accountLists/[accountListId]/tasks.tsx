@@ -8,7 +8,6 @@ import { useRouter } from 'next/router';
 import { useApp } from '../../../src/components/App';
 import TaskHome from '../../../src/components/Task/Home';
 import { TaskFilter } from '../../../src/components/Task/List/List';
-import reduceObject from '../../../src/lib/reduceObject';
 
 export const initialFilterFromPath = (path: string): TaskFilter => {
   let initialFilter: TaskFilter = {};
@@ -17,8 +16,8 @@ export const initialFilterFromPath = (path: string): TaskFilter => {
   if (queryString) {
     const filter = parse(queryString);
 
-    initialFilter = reduceObject(
-      (result: TaskFilter, value: string | string[], key: string) => {
+    initialFilter = Object.entries(filter).reduce(
+      (result: TaskFilter, [key, value]) => {
         switch (key) {
           case 'completed':
             result.completed = value === 'true';
@@ -42,7 +41,6 @@ export const initialFilterFromPath = (path: string): TaskFilter => {
         return result;
       },
       {},
-      filter,
     );
 
     const {

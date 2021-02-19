@@ -13,7 +13,7 @@ import * as yup from 'yup';
 import SendIcon from '@material-ui/icons/Send';
 import { useMutation, gql } from '@apollo/client';
 import { motion } from 'framer-motion';
-import { cloneDeep, reject } from 'lodash/fp';
+import { reject } from 'lodash/fp';
 import { v4 as uuidv4 } from 'uuid';
 import { CreateTaskCommentMutation } from '../../../../../../types/CreateTaskCommentMutation';
 import { TaskCommentCreateInput } from '../../../../../../types/globalTypes';
@@ -125,16 +125,24 @@ const Form = ({ accountListId, taskId }: Props): ReactElement => {
             taskId,
           },
         };
-        const data = cloneDeep(
-          cache.readQuery<GetCommentsForTaskDrawerCommentListQuery>(query),
+        const dataFromCache = cache.readQuery<GetCommentsForTaskDrawerCommentListQuery>(
+          query,
         );
-        data.task.comments.nodes = [
-          ...reject(
-            ({ id: commentId }) => id === commentId,
-            data.task.comments.nodes,
-          ),
-          comment,
-        ];
+        const data = {
+          task: {
+            ...dataFromCache.task,
+            comments: {
+              ...dataFromCache.task.comments,
+              nodes: [
+                ...reject(
+                  ({ id: commentId }) => id === commentId,
+                  dataFromCache.task.comments.nodes,
+                ),
+                { ...comment },
+              ],
+            },
+          },
+        };
         cache.writeQuery({ ...query, data });
       },
     });

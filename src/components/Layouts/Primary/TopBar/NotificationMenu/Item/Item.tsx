@@ -13,7 +13,6 @@ import {
 import { Skeleton } from '@material-ui/lab';
 import React, { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
-import { cloneDeep } from 'lodash/fp';
 import { isSameMonth } from 'date-fns';
 import { AcknowledgeUserNotificationMutation } from '../../../../../../../types/AcknowledgeUserNotificationMutation';
 import {
@@ -102,7 +101,12 @@ const NotificationMenuItem = ({
               after: null,
             },
           };
-          const data = cloneDeep(cache.readQuery<GetNotificationsQuery>(query));
+          const dataFromCache = cache.readQuery<GetNotificationsQuery>(query);
+          const data = {
+            userNotifications: {
+              ...dataFromCache.userNotifications,
+            },
+          };
           data.userNotifications.unreadCount--;
           cache.writeQuery({ ...query, data });
           optimisticResponse = false;
