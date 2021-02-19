@@ -11,68 +11,75 @@ import BaseLayout from '../src/components/Layouts/Basic';
 import { useApp } from '../src/components/App';
 
 export const GET_ACCOUNT_LISTS_QUERY = gql`
-    query GetAccountListsQuery {
-        accountLists {
-            nodes {
-                id
-                name
-                monthlyGoal
-                receivedPledges
-                totalPledges
-                currency
-            }
-        }
+  query GetAccountListsQuery {
+    accountLists {
+      nodes {
+        id
+        name
+        monthlyGoal
+        receivedPledges
+        totalPledges
+        currency
+      }
     }
+  }
 `;
 
 interface Props {
-    data: GetAccountListsQuery;
+  data: GetAccountListsQuery;
 }
 
 const AccountListsPage = ({ data }: Props): ReactElement => {
-    const { dispatch } = useApp();
-    const { t } = useTranslation();
+  const { dispatch } = useApp();
+  const { t } = useTranslation();
 
-    useEffect(() => {
-        dispatch({ type: 'updateBreadcrumb', breadcrumb: t('Dashboard') });
-    }, []);
+  useEffect(() => {
+    dispatch({ type: 'updateBreadcrumb', breadcrumb: t('Dashboard') });
+  }, []);
 
-    return (
-        <>
-            <Head>
-                <title>MPDX | {t('Account Lists')}</title>
-            </Head>
-            <AccountLists data={data} />
-        </>
-    );
+  return (
+    <>
+      <Head>
+        <title>MPDX | {t('Account Lists')}</title>
+      </Head>
+      <AccountLists data={data} />
+    </>
+  );
 };
 
 AccountListsPage.layout = BaseLayout;
 
 export const getServerSideProps: GetServerSideProps = async ({
-    res,
-    req,
+  res,
+  req,
 }): Promise<GetServerSidePropsResult<Props | unknown>> => {
-    const session = await getSession({ req });
+  const session = await getSession({ req });
 
-    if (!session?.user['token']) {
-        res.writeHead(302, { Location: '/' });
-        res.end();
-        return { props: {} };
-    }
+  if (!session?.user['token']) {
+    res.writeHead(302, { Location: '/' });
+    res.end();
+    return { props: {} };
+  }
 
-    const client = await ssrClient(session?.user['token']);
-    const response = await client.query<GetAccountListsQuery>({ query: GET_ACCOUNT_LISTS_QUERY });
+  const client = await ssrClient(session?.user['token']);
+  const response = await client.query<GetAccountListsQuery>({
+    query: GET_ACCOUNT_LISTS_QUERY,
+  });
 
-    if (response.data.accountLists.nodes && response.data.accountLists.nodes.length == 1) {
-        res.writeHead(302, { Location: `/accountLists/${response.data.accountLists.nodes[0].id}` });
-        res.end();
-        return { props: {} };
-    }
+  if (
+    response.data.accountLists.nodes &&
+    response.data.accountLists.nodes.length == 1
+  ) {
+    res.writeHead(302, {
+      Location: `/accountLists/${response.data.accountLists.nodes[0].id}`,
+    });
+    res.end();
+    return { props: {} };
+  }
 
-    return {
-        props: { data: response.data },
-    };
+  return {
+    props: { data: response.data },
+  };
 };
 
 export default AccountListsPage;

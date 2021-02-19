@@ -3,7 +3,11 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { ActivityTypeEnum, NotificationTypeEnum, NotificationTimeUnitEnum } from "./globalTypes";
+import {
+  ActivityTypeEnum,
+  NotificationTypeEnum,
+  NotificationTimeUnitEnum,
+} from './globalTypes';
 
 // ====================================================
 // GraphQL query operation: GetTaskForTaskDrawerQuery

@@ -7,29 +7,29 @@ import { TaskFilter } from '../List/List';
 import illustration8 from '../../../images/drawkit/grape/drawkit-grape-pack-illustration-8.svg';
 
 const useStyles = makeStyles((theme: Theme) => ({
-    container: {
-        paddingTop: 40,
-    },
-    tabpanel: {
-        padding: theme.spacing(3, 0, 0),
-    },
+  container: {
+    paddingTop: 40,
+  },
+  tabpanel: {
+    padding: theme.spacing(3, 0, 0),
+  },
 }));
 
 interface Props {
-    initialFilter?: TaskFilter;
+  initialFilter?: TaskFilter;
 }
 
 const TaskHome = ({ initialFilter }: Props): ReactElement => {
-    const { t } = useTranslation();
-    const classes = useStyles();
-    return (
-        <>
-            <PageHeading heading={t('Tasks')} imgSrc={illustration8} />
-            <Container className={classes.container}>
-                <TaskList initialFilter={initialFilter} />
-            </Container>
-        </>
-    );
+  const { t } = useTranslation();
+  const classes = useStyles();
+  return (
+    <>
+      <PageHeading heading={t('Tasks')} imgSrc={illustration8} />
+      <Container className={classes.container}>
+        <TaskList initialFilter={initialFilter} />
+      </Container>
+    </>
+  );
 };
 
 export default TaskHome;

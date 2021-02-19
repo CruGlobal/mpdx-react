@@ -15,12 +15,7 @@
 /node_modules/.cache
 
 # next.js
-/.next/
-/out/
-/dist/
-
-# production
-/build
+/.next
 
 # misc
 .DS_Store

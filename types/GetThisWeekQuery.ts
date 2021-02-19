@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { ActivityTypeEnum } from "./globalTypes";
+import { ActivityTypeEnum } from './globalTypes';
 
 // ====================================================
 // GraphQL query operation: GetThisWeekQuery
@@ -62,7 +62,9 @@ export interface GetThisWeekQuery_prayerRequestTasks_nodes_contacts {
   /**
    * A list of nodes.
    */
-  nodes: (GetThisWeekQuery_prayerRequestTasks_nodes_contacts_nodes | null)[] | null;
+  nodes:
+    | (GetThisWeekQuery_prayerRequestTasks_nodes_contacts_nodes | null)[]
+    | null;
 }
 
 export interface GetThisWeekQuery_prayerRequestTasks_nodes {

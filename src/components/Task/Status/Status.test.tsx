@@ -6,50 +6,61 @@ import { useApp } from '../../App';
 import TaskStatus from '.';
 
 jest.mock('../../App', () => ({
-    useApp: jest.fn(),
+  useApp: jest.fn(),
 }));
 
 const openTaskDrawer = jest.fn();
 
 beforeEach(() => {
-    (useApp as jest.Mock).mockReturnValue({
-        openTaskDrawer,
-    });
-    MockDate.set(new Date(2020, 1, 1));
+  (useApp as jest.Mock).mockReturnValue({
+    openTaskDrawer,
+  });
+  MockDate.set(new Date(2020, 1, 1));
 });
 
 afterEach(() => {
-    MockDate.reset();
+  MockDate.reset();
 });
 
 describe('TaskStatus', () => {
-    it('default', async () => {
-        const { getByRole, findByText } = render(<TaskStatus />);
-        userEvent.hover(getByRole('button'));
-        expect(await findByText('No Due Date')).toBeInTheDocument();
-    });
+  it('default', async () => {
+    const { getByRole, findByText } = render(<TaskStatus />);
+    userEvent.hover(getByRole('button'));
+    expect(await findByText('No Due Date')).toBeInTheDocument();
+  });
 
-    it('completedAt', async () => {
-        const { getByRole, findByText } = render(<TaskStatus completedAt="2009-12-31T11:00:00.000Z" />);
-        userEvent.hover(getByRole('button'));
-        expect(await findByText('Completed about 10 years ago')).toBeInTheDocument();
-    });
+  it('completedAt', async () => {
+    const { getByRole, findByText } = render(
+      <TaskStatus completedAt="2009-12-31T11:00:00.000Z" />,
+    );
+    userEvent.hover(getByRole('button'));
+    expect(
+      await findByText('Completed about 10 years ago'),
+    ).toBeInTheDocument();
+  });
 
-    it('startAt in past', async () => {
-        const { getByRole, findByText } = render(<TaskStatus startAt="2009-12-31T11:00:00.000Z" />);
-        userEvent.hover(getByRole('button'));
-        expect(await findByText('Overdue about 10 years ago')).toBeInTheDocument();
-    });
+  it('startAt in past', async () => {
+    const { getByRole, findByText } = render(
+      <TaskStatus startAt="2009-12-31T11:00:00.000Z" />,
+    );
+    userEvent.hover(getByRole('button'));
+    expect(await findByText('Overdue about 10 years ago')).toBeInTheDocument();
+  });
 
-    it('startAt in future', async () => {
-        const { getByRole, findByText } = render(<TaskStatus startAt="2050-12-31T11:00:00.000Z" />);
-        userEvent.hover(getByRole('button'));
-        expect(await findByText('Due in in almost 31 years')).toBeInTheDocument();
-    });
+  it('startAt in future', async () => {
+    const { getByRole, findByText } = render(
+      <TaskStatus startAt="2050-12-31T11:00:00.000Z" />,
+    );
+    userEvent.hover(getByRole('button'));
+    expect(await findByText('Due in in almost 31 years')).toBeInTheDocument();
+  });
 
-    it('taskId', async () => {
-        const { getByRole } = render(<TaskStatus taskId="task-1" />);
-        userEvent.click(getByRole('button'));
-        expect(openTaskDrawer).toHaveBeenCalledWith({ taskId: 'task-1', showCompleteForm: true });
+  it('taskId', async () => {
+    const { getByRole } = render(<TaskStatus taskId="task-1" />);
+    userEvent.click(getByRole('button'));
+    expect(openTaskDrawer).toHaveBeenCalledWith({
+      taskId: 'task-1',
+      showCompleteForm: true,
     });
+  });
 });

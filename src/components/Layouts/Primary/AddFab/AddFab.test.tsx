@@ -5,36 +5,39 @@ import { SnackbarProvider } from 'notistack';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
 import userEvent from '@testing-library/user-event';
-import { getDataForTaskDrawerMock, createTaskMutationMock } from '../../../Task/Drawer/Form/Form.mock';
+import {
+  getDataForTaskDrawerMock,
+  createTaskMutationMock,
+} from '../../../Task/Drawer/Form/Form.mock';
 import { useApp } from '../../../App';
 import AddFab from '.';
 
 jest.mock('../../../App', () => ({
-    useApp: jest.fn(),
+  useApp: jest.fn(),
 }));
 
 const openTaskDrawer = jest.fn();
 
 beforeEach(() => {
-    (useApp as jest.Mock).mockReturnValue({
-        openTaskDrawer,
-    });
+  (useApp as jest.Mock).mockReturnValue({
+    openTaskDrawer,
+  });
 });
 
 describe('AddFab', () => {
-    it('default', async () => {
-        const mocks = [getDataForTaskDrawerMock(), createTaskMutationMock()];
-        const { getByRole } = render(
-            <MockedProvider mocks={mocks} addTypename={false}>
-                <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                    <SnackbarProvider>
-                        <AddFab />
-                    </SnackbarProvider>
-                </MuiPickersUtilsProvider>
-            </MockedProvider>,
-        );
-        userEvent.click(getByRole('button', { name: 'Add' }));
-        userEvent.click(getByRole('menuitem'));
-        expect(openTaskDrawer).toHaveBeenCalledWith({});
-    });
+  it('default', async () => {
+    const mocks = [getDataForTaskDrawerMock(), createTaskMutationMock()];
+    const { getByRole } = render(
+      <MockedProvider mocks={mocks} addTypename={false}>
+        <MuiPickersUtilsProvider utils={DateFnsUtils}>
+          <SnackbarProvider>
+            <AddFab />
+          </SnackbarProvider>
+        </MuiPickersUtilsProvider>
+      </MockedProvider>,
+    );
+    userEvent.click(getByRole('button', { name: 'Add' }));
+    userEvent.click(getByRole('menuitem'));
+    expect(openTaskDrawer).toHaveBeenCalledWith({});
+  });
 });

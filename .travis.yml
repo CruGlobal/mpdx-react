@@ -1,20 +1,23 @@
 sudo: false
 language: node_js
 node_js:
-    - '15'
+  - '15'
 branches:
-    only:
-        - main
+  only:
+    - main
 install:
-    - yarn install --immutable --immutable-cache --check-cache
+  - yarn install --immutable --immutable-cache --check-cache
 jobs:
-    include:
-        - stage: Test
-          script:
-              - yarn test
-        - stage: Lint
-          script:
-              - yarn lint:ci
-        - stage: Chromatic
-          script:
-              - bin/travis_chromatic.sh
+  include:
+    - stage: Test
+      script:
+        - yarn test
+    - stage: Lint
+      script:
+        - yarn lint:ci
+    - stage: Prettier Check
+      script:
+        - yarn prettier:check
+    - stage: Chromatic
+      script:
+        - bin/travis_chromatic.sh
