@@ -1,4 +1,3 @@
-import { isFinite, isNil } from 'lodash/fp';
 import { DateTime } from 'luxon';
 
 const getLanguage = (): string => {
@@ -10,7 +9,7 @@ const getLanguage = (): string => {
 export const numberFormat = (value: number, language = getLanguage()): string =>
   new Intl.NumberFormat(language, {
     style: 'decimal',
-  }).format(isFinite(value) ? value : 0);
+  }).format(Number.isFinite(value) ? value : 0);
 
 export const percentageFormat = (
   value: number,
@@ -18,7 +17,7 @@ export const percentageFormat = (
 ): string =>
   new Intl.NumberFormat(language, {
     style: 'percent',
-  }).format(isFinite(value) ? value : 0);
+  }).format(Number.isFinite(value) ? value : 0);
 
 export const currencyFormat = (
   value: number,
@@ -28,10 +27,12 @@ export const currencyFormat = (
 ): string =>
   new Intl.NumberFormat(language, {
     style: 'currency',
-    currency: isNil(currency) ? 'USD' : currency,
+    currency: currency ?? 'USD',
     minimumFractionDigits,
   }).format(
-    isFinite(value) ? parseFloat(value.toFixed(minimumFractionDigits)) : 0,
+    Number.isFinite(value)
+      ? parseFloat(value.toFixed(minimumFractionDigits))
+      : 0,
   );
 
 export const dayMonthFormat = (

@@ -23,7 +23,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Formik } from 'formik';
 import * as yup from 'yup';
 import { gql, useQuery, useMutation } from '@apollo/client';
-import { omit, sortBy } from 'lodash/fp';
 import { useSnackbar } from 'notistack';
 import { DateTime } from 'luxon';
 import {
@@ -239,17 +238,31 @@ const TaskDrawerForm = ({
     UPDATE_TASK_MUTATION,
   );
   const onSubmit = async (values: Task): Promise<void> => {
-    const attributes = omit(['contacts', 'user', '__typename'], {
+    const attributes = {
       ...values,
       userId: values.user?.id || null,
       contactIds: values.contacts.nodes.map(({ id }) => id),
-    });
+    };
+
     try {
       if (task) {
-        await updateTask({ variables: { accountListId, attributes } });
+        const {
+          contacts: _contacts,
+          user: _user,
+          ...updateTaskAttributes
+        } = attributes;
+        await updateTask({
+          variables: { accountListId, attributes: updateTaskAttributes },
+        });
       } else {
+        const {
+          id: _id,
+          contacts: _contacts,
+          user: _user,
+          ...createTaskAttributes
+        } = attributes;
         await createTask({
-          variables: { accountListId, attributes: omit('id', attributes) },
+          variables: { accountListId, attributes: createTaskAttributes },
         });
       }
       enqueueSnackbar(t('Task saved successfully'), { variant: 'success' });
@@ -466,7 +479,9 @@ const TaskDrawerForm = ({
                   multiple
                   options={
                     (data?.contacts?.nodes &&
-                      sortBy('name', data.contacts.nodes)) ||
+                      [...data.contacts.nodes].sort((a, b) =>
+                        a.name.localeCompare(b.name),
+                      )) ||
                     []
                   }
                   getOptionLabel={({

@@ -9,7 +9,6 @@ import {
   Slide,
 } from '@material-ui/core';
 import { DateTime } from 'luxon';
-import { compact } from 'lodash/fp';
 import { Skeleton } from '@material-ui/lab';
 import { GetCommentsForTaskDrawerCommentListQuery_task_comments_nodes as Comment } from '../../../../../../types/GetCommentsForTaskDrawerCommentListQuery';
 
@@ -106,11 +105,13 @@ const TaskDrawerCommentListItem = ({
   return (
     <Slide direction={reverse ? 'left' : 'right'} in={true}>
       <Box
-        className={compact([
+        className={[
           classes.container,
           reverse && classes.reverse,
           nextCommentMatches && classes.compact,
-        ]).join(' ')}
+        ]
+          .filter(Boolean)
+          .join(' ')}
       >
         {!reverse && (
           <Box>

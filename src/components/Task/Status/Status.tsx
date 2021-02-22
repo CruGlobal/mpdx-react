@@ -6,7 +6,6 @@ import AssignmentIcon from '@material-ui/icons/Assignment';
 import AssignmentTurnedInIcon from '@material-ui/icons/AssignmentTurnedIn';
 import { green, orange } from '@material-ui/core/colors';
 import { useTranslation } from 'react-i18next';
-import { compact } from 'lodash/fp';
 import DoneIcon from '@material-ui/icons/Done';
 import { useApp } from '../../App';
 
@@ -181,11 +180,13 @@ const TaskStatus = ({
         disableTouchListener={disableTooltip}
       >
         <Fab
-          className={compact([
+          className={[
             classes.buttonSmall,
             color && classes.buttonPrimary,
             classes.buttonWithHover,
-          ]).join(' ')}
+          ]
+            .filter(Boolean)
+            .join(' ')}
           onClick={handleClick}
         >
           <AssignmentIcon fontSize="inherit" className={classes.icon} />

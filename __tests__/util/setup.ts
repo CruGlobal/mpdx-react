@@ -13,10 +13,10 @@ window.document.createRange = (): Range =>
 
 window.HTMLElement.prototype.scrollIntoView = jest.fn();
 
-global.beforeEach(() => {
+beforeEach(() => {
   Settings.now = () => new Date(2020, 1, 1).valueOf();
 });
 
-global.afterEach(() => {
+afterEach(() => {
   Settings.resetCaches();
 });
