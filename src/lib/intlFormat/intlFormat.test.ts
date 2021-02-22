@@ -126,11 +126,11 @@ describe('intlFormat', () => {
 
   describe('dayMonthFormat', () => {
     it('formats day and month as date', () => {
-      expect(dayMonthFormat(5, 12)).toEqual('Jan 5');
+      expect(dayMonthFormat(5, 1)).toEqual('Jan 5');
     });
 
     it('handles language', () => {
-      expect(dayMonthFormat(5, 12, 'fr')).toEqual('5 janv.');
+      expect(dayMonthFormat(5, 1, 'fr')).toEqual('5 janv.');
     });
 
     describe('default language', () => {
@@ -139,18 +139,18 @@ describe('intlFormat', () => {
       });
 
       it('handles language', () => {
-        expect(dayMonthFormat(5, 12)).toEqual('5 janv.');
+        expect(dayMonthFormat(5, 1)).toEqual('5 janv.');
       });
     });
   });
 
   describe('monthYearFormat', () => {
     it('formats day and month as date', () => {
-      expect(monthYearFormat(5, 2020)).toEqual('Jun 2020');
+      expect(monthYearFormat(6, 2020)).toEqual('Jun 2020');
     });
 
     it('handles language', () => {
-      expect(monthYearFormat(5, 2020, 'fr')).toEqual('juin 2020');
+      expect(monthYearFormat(6, 2020, 'fr')).toEqual('juin 2020');
     });
 
     describe('default language', () => {
@@ -159,7 +159,7 @@ describe('intlFormat', () => {
       });
 
       it('handles language', () => {
-        expect(monthYearFormat(5, 2020)).toEqual('juin 2020');
+        expect(monthYearFormat(6, 2020)).toEqual('juin 2020');
       });
     });
   });

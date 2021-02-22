@@ -43,7 +43,7 @@ export const dayMonthFormat = (
   new Intl.DateTimeFormat(language, {
     day: 'numeric',
     month: 'short',
-  }).format(new Date(new Date().getFullYear(), month, day));
+  }).format(DateTime.local().set({ month, day }).toJSDate());
 
 export const monthYearFormat = (
   month: number,
@@ -53,7 +53,7 @@ export const monthYearFormat = (
   new Intl.DateTimeFormat(language, {
     month: 'short',
     year: 'numeric',
-  }).format(new Date(year, month, 1));
+  }).format(DateTime.local(year, month, 1).toJSDate());
 
 export const dateFormat = (
   date: DateTime,
