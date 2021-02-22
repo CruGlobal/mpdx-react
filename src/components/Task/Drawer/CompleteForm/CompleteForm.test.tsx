@@ -1,6 +1,7 @@
 import React from 'react';
 import { render, within, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { DateTime } from 'luxon';
 import { getDataForTaskDrawerMock } from '../Form/Form.mock';
 import TestWrapper from '../../../../../__tests__/util/TestWrapper';
 import { dateFormat } from '../../../../lib/intlFormat/intlFormat';
@@ -62,7 +63,7 @@ describe('TaskDrawerCompleteForm', () => {
         />
       </TestWrapper>,
     );
-    const dateString = dateFormat(new Date());
+    const dateString = dateFormat(DateTime.local());
     expect(
       getAllByRole('textbox').find(
         (item: HTMLInputElement) => item.value === dateString,

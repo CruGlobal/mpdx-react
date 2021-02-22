@@ -1,3 +1,5 @@
+import { DateTime } from 'luxon';
+
 import { dateFormat, monthYearFormat } from './intlFormat';
 import {
   numberFormat,
@@ -164,11 +166,13 @@ describe('intlFormat', () => {
 
   describe('dateFormat', () => {
     it('formats day and month as date', () => {
-      expect(dateFormat(new Date(2019, 12, 5))).toEqual('Jan 5, 2020');
+      expect(dateFormat(DateTime.local(2020, 1, 5))).toEqual('Jan 5, 2020');
     });
 
     it('handles language', () => {
-      expect(dateFormat(new Date(2019, 12, 5), 'fr')).toEqual('5 janv. 2020');
+      expect(dateFormat(DateTime.local(2020, 1, 5), 'fr')).toEqual(
+        '5 janv. 2020',
+      );
     });
 
     it('handles null case', () => {
@@ -181,7 +185,7 @@ describe('intlFormat', () => {
       });
 
       it('handles language', () => {
-        expect(dateFormat(new Date(2019, 12, 5))).toEqual('5 janv. 2020');
+        expect(dateFormat(DateTime.local(2020, 1, 5))).toEqual('5 janv. 2020');
       });
     });
   });

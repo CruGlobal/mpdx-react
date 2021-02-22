@@ -17,6 +17,7 @@ import {
   FormLabel,
   Box,
 } from '@material-ui/core';
+import { DateTime } from 'luxon';
 import { find, reduce } from 'lodash/fp';
 import debounce from 'lodash/fp/debounce';
 import { Skeleton } from '@material-ui/lab';
@@ -440,9 +441,9 @@ const TaskList = ({ initialFilter }: Props): ReactElement => {
         sort: true,
         customBodyRender: (startAt): string | ReactElement => {
           if (startAt) {
-            const date = new Date(startAt);
-            if (new Date().getFullYear() == date.getFullYear()) {
-              return dayMonthFormat(date.getDate(), date.getMonth());
+            const date = DateTime.fromISO(startAt);
+            if (date.hasSame(DateTime.local(), 'year')) {
+              return dayMonthFormat(date.day, date.month);
             } else {
               return dateFormat(date);
             }

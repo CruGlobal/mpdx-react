@@ -1,5 +1,4 @@
 import React from 'react';
-import { Settings } from 'luxon';
 import { render } from '../../../../../__tests__/util/testingLibraryReactMock';
 import LateCommitments from '.';
 

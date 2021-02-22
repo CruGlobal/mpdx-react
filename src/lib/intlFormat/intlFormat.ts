@@ -1,4 +1,5 @@
 import { isFinite, isNil } from 'lodash/fp';
+import { DateTime } from 'luxon';
 
 const getLanguage = (): string => {
   const language =
@@ -53,7 +54,10 @@ export const monthYearFormat = (
     year: 'numeric',
   }).format(new Date(year, month, 1));
 
-export const dateFormat = (date: Date, language = getLanguage()): string => {
+export const dateFormat = (
+  date: DateTime,
+  language = getLanguage(),
+): string => {
   if (date === null) {
     return '';
   }
@@ -61,7 +65,7 @@ export const dateFormat = (date: Date, language = getLanguage()): string => {
     day: 'numeric',
     month: 'short',
     year: 'numeric',
-  }).format(date);
+  }).format(date.toJSDate());
 };
 
 const intlFormat = {

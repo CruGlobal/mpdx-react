@@ -98,7 +98,10 @@ const TaskDrawerCommentListItem = ({
     comment?.person &&
     nextComment?.person &&
     nextComment.person.id === comment.person.id &&
-    isSameHour(new Date(nextComment.createdAt), new Date(comment.createdAt));
+    DateTime.fromISO(nextComment.createdAt).hasSame(
+      DateTime.fromISO(comment.createdAt),
+      'hour',
+    );
 
   return (
     <Slide direction={reverse ? 'left' : 'right'} in={true}>
@@ -146,9 +149,7 @@ const TaskDrawerCommentListItem = ({
           component="div"
         >
           {comment ? (
-            formatDistanceToNow(new Date(comment.createdAt), {
-              addSuffix: true,
-            })
+            DateTime.fromISO(comment.createdAt).toRelative()
           ) : (
             <Skeleton width={60} />
           )}

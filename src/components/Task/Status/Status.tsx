@@ -107,9 +107,7 @@ const TaskStatus = ({
   if (completedAt) {
     return (
       <Tooltip
-        title={`Completed ${formatDistanceToNow(new Date(completedAt), {
-          addSuffix: true,
-        })}`}
+        title={`Completed ${DateTime.fromISO(completedAt).toRelative()})}`}
         placement={tooltipPlacement}
         arrow
         disableFocusListener={disableTooltip}
@@ -125,12 +123,10 @@ const TaskStatus = ({
       </Tooltip>
     );
   } else if (startAt) {
-    if (isPast(new Date(startAt))) {
+    if (DateTime.fromISO(startAt) < DateTime.local()) {
       return (
         <Tooltip
-          title={`Overdue ${formatDistanceToNow(new Date(startAt), {
-            addSuffix: true,
-          })}`}
+          title={`Overdue ${DateTime.fromISO(startAt).toRelative()})}`}
           placement={tooltipPlacement}
           arrow
           disableFocusListener={disableTooltip}
@@ -153,9 +149,7 @@ const TaskStatus = ({
     } else {
       return (
         <Tooltip
-          title={`Due in ${formatDistanceToNow(new Date(startAt), {
-            addSuffix: true,
-          })}`}
+          title={`Due in ${DateTime.fromISO(startAt).toRelative()}`}
           placement={tooltipPlacement}
           arrow
           disableFocusListener={disableTooltip}
