@@ -26,7 +26,6 @@ import MenuIcon from '@material-ui/icons/Menu';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { signout } from 'next-auth/client';
-import { compact } from 'lodash/fp';
 import NextLink from 'next/link';
 import { GetTopBarQuery } from '../../../../../types/GetTopBarQuery';
 import { SIDE_BAR_MINIMIZED_WIDTH, SIDE_BAR_WIDTH } from '../SideBar/SideBar';
@@ -366,9 +365,9 @@ const TopBar = ({ open, handleOpenChange }: Props): ReactElement => {
               <Avatar>{data.user.firstName[0]}</Avatar>
             </ListItemAvatar>
             <ListItemText
-              primary={compact([data.user.firstName, data.user.lastName]).join(
-                ' ',
-              )}
+              primary={[data.user.firstName, data.user.lastName]
+                .filter(Boolean)
+                .join(' ')}
               secondary={data.user.keyAccounts[0]?.email}
             />
           </MenuItem>
@@ -400,7 +399,7 @@ const TopBar = ({ open, handleOpenChange }: Props): ReactElement => {
           </MenuItem>
         </HandoffLink>
         {(data?.user?.admin ||
-          !!data?.user?.administrativeOrganizations?.nodes?.length) && (
+          data?.user?.administrativeOrganizations?.nodes?.length) && (
           <HandoffLink path="/preferences/organizations">
             <MenuItem onClick={handleProfileMenuClose} component="a">
               <ListItemText primary={t('Manage Organizations')} />

@@ -3,23 +3,21 @@ import Head from 'next/head';
 import { GetServerSideProps } from 'next';
 import { getSession } from 'next-auth/client';
 import { useTranslation } from 'react-i18next';
-import { castArray, pick } from 'lodash/fp';
 import { parse } from 'query-string';
 import { useRouter } from 'next/router';
 import { useApp } from '../../../src/components/App';
 import TaskHome from '../../../src/components/Task/Home';
 import { TaskFilter } from '../../../src/components/Task/List/List';
-import reduceObject from '../../../src/lib/reduceObject';
 
 export const initialFilterFromPath = (path: string): TaskFilter => {
-  let initialFilter = {};
+  let initialFilter: TaskFilter = {};
   const queryString = path.split('?')[1];
 
   if (queryString) {
     const filter = parse(queryString);
 
-    initialFilter = reduceObject(
-      (result: TaskFilter, value: string | string[], key: string) => {
+    initialFilter = Object.entries(filter).reduce(
+      (result: TaskFilter, [key, value]) => {
         switch (key) {
           case 'completed':
             result.completed = value === 'true';
@@ -36,28 +34,34 @@ export const initialFilterFromPath = (path: string): TaskFilter => {
             result.startAt.min = value.toString();
             break;
           default:
-            result[key.replace('[]', '')] = castArray(value);
+            result[key.replace('[]', '')] = Array.isArray(value)
+              ? value
+              : [value];
         }
         return result;
       },
       {},
-      filter,
     );
 
-    initialFilter = pick(
-      [
-        'userIds',
-        'tags',
-        'contactIds',
-        'activityType',
-        'completed',
-        'wildcardSearch',
-        'startAt',
-      ],
-      initialFilter,
-    );
+    const {
+      userIds,
+      tags,
+      contactIds,
+      activityType,
+      completed,
+      wildcardSearch,
+      startAt,
+    } = initialFilter;
 
-    return initialFilter;
+    return {
+      userIds,
+      tags,
+      contactIds,
+      activityType,
+      completed,
+      wildcardSearch,
+      startAt,
+    };
   }
 };
 

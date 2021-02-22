@@ -2,7 +2,6 @@ import React, { ReactElement, useRef, useEffect } from 'react';
 import { makeStyles, Theme, Box, Card, CardContent } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { gql, useQuery } from '@apollo/client';
-import { reduce } from 'lodash/fp';
 import { GetCommentsForTaskDrawerCommentListQuery } from '../../../../../types/GetCommentsForTaskDrawerCommentListQuery';
 import illustration4 from '../../../../images/drawkit/grape/drawkit-grape-pack-illustration-4.svg';
 import TaskDrawerCommentListItem from './Item';
@@ -104,27 +103,21 @@ const TaskDrawerCommentList = ({
               </Card>
             )}
             {data.task.comments.nodes.length > 0 &&
-              reduce(
-                (result, comment) => {
-                  return [
-                    ...result,
-                    <Box
-                      data-testid={`TaskDrawerCommentListItem-${comment.id}`}
-                      key={comment.id}
-                    >
-                      <TaskDrawerCommentListItem
-                        comment={comment}
-                        reverse={comment.me}
-                        nextComment={
-                          data.task.comments.nodes[result.length + 1]
-                        }
-                      />
-                    </Box>,
-                  ];
-                },
-                [],
-                data.task.comments.nodes,
-              )}
+              data.task.comments.nodes.reduce((result, comment) => {
+                return [
+                  ...result,
+                  <Box
+                    data-testid={`TaskDrawerCommentListItem-${comment.id}`}
+                    key={comment.id}
+                  >
+                    <TaskDrawerCommentListItem
+                      comment={comment}
+                      reverse={comment.me}
+                      nextComment={data.task.comments.nodes[result.length + 1]}
+                    />
+                  </Box>,
+                ];
+              }, [])}
           </>
         )}
       </Box>

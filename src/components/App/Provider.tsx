@@ -6,7 +6,6 @@ import React, {
   Dispatch,
 } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import { omit, remove, find } from 'lodash/fp';
 import TaskDrawer, { TaskDrawerProps } from '../Task/Drawer/Drawer';
 import theme from '../../theme';
 import rootReducer, { Action, AppState } from './rootReducer';
@@ -39,12 +38,10 @@ const AppProvider = ({ initialState, children }: Props): ReactElement => {
     const id = uuidv4();
     if (
       !taskDrawerProps.taskId ||
-      !find(
-        {
-          taskId: taskDrawerProps.taskId,
-          showCompleteForm: taskDrawerProps.showCompleteForm,
-        },
-        taskDrawers,
+      !taskDrawers.find(
+        ({ taskId, showCompleteForm }) =>
+          taskId === taskDrawerProps.taskId &&
+          showCompleteForm === taskDrawerProps.showCompleteForm,
       )
     ) {
       setTaskDrawers([
@@ -56,7 +53,9 @@ const AppProvider = ({ initialState, children }: Props): ReactElement => {
             taskDrawerProps.onClose && taskDrawerProps.onClose();
             setTimeout(
               () =>
-                setTaskDrawers((taskDrawers) => remove({ id }, taskDrawers)),
+                setTaskDrawers((taskDrawers) =>
+                  taskDrawers.filter(({ id: taskId }) => taskId !== id),
+                ),
               theme.transitions.duration.leavingScreen,
             );
           },
@@ -74,9 +73,11 @@ const AppProvider = ({ initialState, children }: Props): ReactElement => {
   return (
     <AppContext.Provider value={value}>
       {children}
-      {taskDrawers.map((props: TaskDrawerPropsWithId) => (
-        <TaskDrawer key={props.id} {...omit('id', props)} />
-      ))}
+      {taskDrawers.map((props: TaskDrawerPropsWithId) => {
+        const { id, ...taskDrawerProps } = props;
+
+        return <TaskDrawer key={id} {...taskDrawerProps} />;
+      })}
     </AppContext.Provider>
   );
 };

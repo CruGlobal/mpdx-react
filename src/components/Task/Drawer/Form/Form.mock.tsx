@@ -1,5 +1,4 @@
 import { MockedResponse } from '@apollo/client/testing';
-import { omit } from 'lodash/fp';
 import { addHours, startOfHour } from 'date-fns';
 import { GetDataForTaskDrawerQuery } from '../../../../../types/GetDataForTaskDrawerQuery';
 import { CreateTaskMutation } from '../../../../../types/CreateTaskMutation';
@@ -77,17 +76,19 @@ export const createTaskMutationMock = (): MockedResponse => {
       task: { ...task, id: 'task-1' },
     },
   };
-  const attributes: TaskCreateInput = omit(['contacts', 'user'], {
-    ...task,
+  const { contacts: _contacts, user: _user, id: _id, ...createTask } = task;
+  const attributes: TaskCreateInput = {
+    ...createTask,
     userId: null,
     contactIds: [],
-  });
+  };
+
   return {
     request: {
       query: CREATE_TASK_MUTATION,
       variables: {
         accountListId: 'abc',
-        attributes: omit('id', attributes),
+        attributes,
       },
     },
     result: { data },
@@ -118,11 +119,12 @@ export const updateTaskMutationMock = (): MockedResponse => {
       task,
     },
   };
-  const attributes: TaskUpdateInput = omit(['contacts', 'user'], {
-    ...task,
+  const { contacts: _contacts, user: _user, ...updateTask } = task;
+  const attributes: TaskUpdateInput = {
+    ...updateTask,
     userId: task.user.id,
     contactIds: task.contacts.nodes.map(({ id }) => id),
-  });
+  };
   return {
     request: {
       query: UPDATE_TASK_MUTATION,

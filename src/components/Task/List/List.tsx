@@ -17,7 +17,7 @@ import {
   FormLabel,
   Box,
 } from '@material-ui/core';
-import { find, reduce } from 'lodash/fp';
+import reduce from 'lodash/fp/reduce';
 import debounce from 'lodash/fp/debounce';
 import { Skeleton } from '@material-ui/lab';
 import { DatePicker } from '@material-ui/pickers';
@@ -240,7 +240,9 @@ const TaskList = ({ initialFilter }: Props): ReactElement => {
         customFilterListOptions: {
           render: (id): string => {
             if (filterData?.contacts?.nodes) {
-              return find({ id }, filterData.contacts.nodes)?.name;
+              return filterData.contacts.nodes.find(
+                ({ id: contactId }) => contactId === id,
+              )?.name;
             }
             return t('Loading');
           },
@@ -249,7 +251,9 @@ const TaskList = ({ initialFilter }: Props): ReactElement => {
           names: filterData?.contacts?.nodes?.map(({ id }) => id) || [],
           renderValue: (id): string => {
             if (filterData?.contacts?.nodes) {
-              return find({ id }, filterData.contacts.nodes)?.name;
+              return filterData.contacts.nodes.find(
+                ({ id: contactId }) => contactId === id,
+              )?.name;
             }
           },
           fullWidth: true,
@@ -315,9 +319,9 @@ const TaskList = ({ initialFilter }: Props): ReactElement => {
         customFilterListOptions: {
           render: (id): string => {
             if (filterData?.accountListUsers?.nodes) {
-              const accountListUser = find(
-                { user: { id } },
-                filterData.accountListUsers.nodes,
+              const accountListUser = filterData.accountListUsers.nodes.find(
+                ({ user: { id: accountListUserId } }) =>
+                  accountListUserId === id,
               );
               return `${accountListUser.user.firstName} ${accountListUser.user.lastName}`;
             }
@@ -331,9 +335,9 @@ const TaskList = ({ initialFilter }: Props): ReactElement => {
             ) || [],
           renderValue: (id): string => {
             if (filterData?.accountListUsers?.nodes) {
-              const accountListUser = find(
-                { user: { id } },
-                filterData.accountListUsers.nodes,
+              const accountListUser = filterData.accountListUsers.nodes.find(
+                ({ user: { id: accountListUserId } }) =>
+                  accountListUserId === id,
               );
               return `${accountListUser.user.firstName} ${accountListUser.user.lastName}`;
             }
