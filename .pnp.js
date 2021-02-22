@@ -63,6 +63,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/faker", "npm:5.1.6"],
             ["@types/jest", "npm:26.0.20"],
             ["@types/lodash", "npm:4.14.168"],
+            ["@types/luxon", "npm:1.25.1"],
             ["@types/mui-datatables", "npm:3.7.0"],
             ["@types/next-auth", "npm:3.1.24"],
             ["@types/node", "npm:14.14.26"],
@@ -111,8 +112,8 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["jest-transform-graphql", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:2.1.0"],
             ["lint-staged", "npm:10.5.4"],
             ["lodash", "npm:4.17.20"],
+            ["luxon", "npm:1.25.0"],
             ["mockdate", "npm:3.0.2"],
-            ["moment", "npm:2.29.1"],
             ["mui-datatables", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:3.7.6"],
             ["next", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:10.0.6"],
             ["next-auth", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:3.4.1"],
@@ -7989,6 +7990,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/@types-lodash-npm-4.14.168-2d65abe211-9a4e25f89f.zip/node_modules/@types/lodash/",
           "packageDependencies": [
             ["@types/lodash", "npm:4.14.168"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
+      ["@types/luxon", [
+        ["npm:1.25.1", {
+          "packageLocation": "./.yarn/cache/@types-luxon-npm-1.25.1-6ff94d71b7-5767c3d4b1.zip/node_modules/@types/luxon/",
+          "packageDependencies": [
+            ["@types/luxon", "npm:1.25.1"]
           ],
           "linkType": "HARD",
         }]
@@ -19531,6 +19541,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD",
         }]
       ]],
+      ["luxon", [
+        ["npm:1.25.0", {
+          "packageLocation": "./.yarn/cache/luxon-npm-1.25.0-9f380ab196-3f0d64355b.zip/node_modules/luxon/",
+          "packageDependencies": [
+            ["luxon", "npm:1.25.0"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
       ["lz-string", [
         ["npm:1.4.4", {
           "packageLocation": "./.yarn/cache/lz-string-npm-1.4.4-59a2091d3f-60a13f8a72.zip/node_modules/lz-string/",
@@ -20149,13 +20168,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["moment", "npm:2.28.0"]
           ],
           "linkType": "HARD",
-        }],
-        ["npm:2.29.1", {
-          "packageLocation": "./.yarn/cache/moment-npm-2.29.1-787d9fdafd-86729013fe.zip/node_modules/moment/",
-          "packageDependencies": [
-            ["moment", "npm:2.29.1"]
-          ],
-          "linkType": "HARD",
         }]
       ]],
       ["move-concurrently", [
@@ -20204,6 +20216,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/faker", "npm:5.1.6"],
             ["@types/jest", "npm:26.0.20"],
             ["@types/lodash", "npm:4.14.168"],
+            ["@types/luxon", "npm:1.25.1"],
             ["@types/mui-datatables", "npm:3.7.0"],
             ["@types/next-auth", "npm:3.1.24"],
             ["@types/node", "npm:14.14.26"],
@@ -20252,8 +20265,8 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["jest-transform-graphql", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:2.1.0"],
             ["lint-staged", "npm:10.5.4"],
             ["lodash", "npm:4.17.20"],
+            ["luxon", "npm:1.25.0"],
             ["mockdate", "npm:3.0.2"],
-            ["moment", "npm:2.29.1"],
             ["mui-datatables", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:3.7.6"],
             ["next", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:10.0.6"],
             ["next-auth", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:3.4.1"],

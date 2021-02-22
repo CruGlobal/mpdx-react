@@ -1,4 +1,5 @@
 import '@testing-library/jest-dom';
+import { Settings } from 'luxon';
 
 window.document.createRange = (): Range =>
   (({
@@ -11,3 +12,11 @@ window.document.createRange = (): Range =>
   } as unknown) as Range);
 
 window.HTMLElement.prototype.scrollIntoView = jest.fn();
+
+beforeEach(() => {
+  Settings.now = () => new Date(2020, 1, 1).valueOf();
+});
+
+afterEach(() => {
+  Settings.resetCaches();
+});

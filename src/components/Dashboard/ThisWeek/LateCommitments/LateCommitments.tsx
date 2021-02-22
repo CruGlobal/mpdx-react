@@ -10,11 +10,10 @@ import {
   ListItemText,
   CardContent,
 } from '@material-ui/core';
-import moment from 'moment';
+import { DateTime } from 'luxon';
 import { Skeleton } from '@material-ui/lab';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
-import { endOfDay, formatISO } from 'date-fns';
 import AnimatedCard from '../../../AnimatedCard';
 import { GetThisWeekQuery_latePledgeContacts } from '../../../../../types/GetThisWeekQuery';
 import HandoffLink from '../../../HandoffLink';
@@ -117,7 +116,10 @@ const LateCommitments = ({
                 data-testid="LateCommitmentsListContacts"
               >
                 {latePledgeContacts.nodes.map((contact) => {
-                  const count = moment().diff(moment(contact.lateAt), 'days');
+                  const count = DateTime.local().diff(
+                    DateTime.fromISO(contact.lateAt),
+                    'days',
+                  ).days;
                   return (
                     <HandoffLink
                       key={contact.id}
@@ -146,9 +148,9 @@ const LateCommitments = ({
                 <HandoffLink
                   path={`/contacts?filters=${encodeURIComponent(
                     JSON.stringify({
-                      late_at: `1970-01-01..${formatISO(endOfDay(new Date()), {
-                        representation: 'date',
-                      })}`,
+                      late_at: `1970-01-01..${DateTime.local()
+                        .endOf('day')
+                        .toISODate()}`,
                       status: 'Partner - Financial',
                     }),
                   )}`}

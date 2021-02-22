@@ -2,7 +2,7 @@ import React, { ReactElement, useEffect } from 'react';
 import Head from 'next/head';
 import { gql } from '@apollo/client';
 import { GetServerSideProps, GetServerSidePropsResult } from 'next';
-import moment from 'moment';
+import { DateTime } from 'luxon';
 import { getSession } from 'next-auth/client';
 import { useTranslation } from 'react-i18next';
 import Dashboard from '../../src/components/Dashboard';
@@ -79,13 +79,12 @@ export const getServerSideProps: GetServerSideProps = async ({
     query: GET_DASHBOARD_QUERY,
     variables: {
       accountListId: params.accountListId,
-      endOfDay: moment().endOf('day').toISOString(),
-      today: moment().endOf('day').toISOString().slice(0, 10),
-      twoWeeksFromNow: moment()
+      endOfDay: DateTime.local().endOf('day').toISO(),
+      today: DateTime.local().endOf('day').toISODate(),
+      twoWeeksFromNow: DateTime.local()
         .endOf('day')
-        .add(2, 'weeks')
-        .toISOString()
-        .slice(0, 10),
+        .plus({ weeks: 2 })
+        .toISODate(),
     },
   });
 
