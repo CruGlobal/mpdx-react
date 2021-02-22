@@ -504,8 +504,8 @@ const TaskList = ({ initialFilter }: Props): ReactElement => {
       let counter = 0;
       const updatedFilter = reduce(
         (result, value) => {
+          const name = columns[counter].name;
           if (value.length !== 0) {
-            const name = columns[counter].name;
             switch (name) {
               case 'completedAt':
                 result.completed = value[0] === 'true';
@@ -533,6 +533,29 @@ const TaskList = ({ initialFilter }: Props): ReactElement => {
                 break;
               default:
                 result[name] = value;
+            }
+          } else {
+            switch (name) {
+              case 'completedAt':
+                result.completed = null;
+                break;
+              case 'user':
+                result.userIds = null;
+                break;
+              case 'tagList':
+                result.tags = null;
+                break;
+              case 'contacts':
+                result.contactIds = null;
+                break;
+              case 'startAt':
+                result.startAt = {
+                  min: null,
+                  max: null,
+                };
+                break;
+              default:
+                result[name] = null;
             }
           }
           counter++;
