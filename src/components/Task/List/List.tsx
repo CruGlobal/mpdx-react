@@ -504,22 +504,23 @@ const TaskList = ({ initialFilter }: Props): ReactElement => {
       let counter = 0;
       const updatedFilter = reduce(
         (result, value) => {
-          if (value.length !== 0) {
-            const name = columns[counter].name;
-            switch (name) {
-              case 'completedAt':
-                result.completed = value[0] === 'true';
-                break;
-              case 'user':
-                result.userIds = value;
-                break;
-              case 'tagList':
-                result.tags = value;
-                break;
-              case 'contacts':
-                result.contactIds = value;
-                break;
-              case 'startAt':
+          const filterIsActive = value.length !== 0;
+          const name = columns[counter].name;
+          switch (name) {
+            case 'completedAt':
+              result.completed = filterIsActive ? value[0] === 'true' : null;
+              break;
+            case 'user':
+              result.userIds = filterIsActive ? value : null;
+              break;
+            case 'tagList':
+              result.tags = filterIsActive ? value : null;
+              break;
+            case 'contacts':
+              result.contactIds = filterIsActive ? value : null;
+              break;
+            case 'startAt':
+              if (filterIsActive) {
                 if (value[0] && value[1]) {
                   result.startAt = {
                     min: new Date(value[0]).toISOString(),
@@ -530,10 +531,15 @@ const TaskList = ({ initialFilter }: Props): ReactElement => {
                 } else if (value[1]) {
                   result.startAt = { max: new Date(value[1]).toISOString() };
                 }
-                break;
-              default:
-                result[name] = value;
-            }
+              } else {
+                result.startAt = {
+                  min: null,
+                  max: null,
+                };
+              }
+              break;
+            default:
+              result[name] = filterIsActive ? value : null;
           }
           counter++;
           return result;
