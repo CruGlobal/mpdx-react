@@ -165,8 +165,8 @@ const ThisWeek = ({ accountListId }: Props): ReactElement => {
       accountListId,
       endOfDay: endOfDay.toISO(),
       today: endOfDay.toISODate(),
-      twoWeeksFromNow: endOfDay.plus({ weeks: 2 }).toISO(),
-      twoWeeksAgo: endOfDay.minus({ weeks: 2 }).toISO(),
+      twoWeeksFromNow: endOfDay.plus({ weeks: 2 }).toISODate(),
+      twoWeeksAgo: endOfDay.minus({ weeks: 2 }).toISODate(),
     },
   });
 
