@@ -60,7 +60,7 @@ export const createTaskMutationMock = (): MockedResponse => {
     id: null,
     activityType: null,
     subject: 'abc',
-    startAt: DateTime.local().plus({ hours: 1 }).startOf('hour'),
+    startAt: DateTime.local().plus({ hours: 1 }).startOf('hour').toISO(),
     completedAt: null,
     tagList: [],
     contacts: {
@@ -100,8 +100,8 @@ export const updateTaskMutationMock = (): MockedResponse => {
     id: 'task-1',
     activityType: ActivityTypeEnum.NEWSLETTER_EMAIL,
     subject: 'On the Journey with the Johnson Family',
-    startAt: new Date(2012, 12, 5, 1, 2),
-    completedAt: new Date(2015, 12, 5, 1, 2),
+    startAt: DateTime.local(2012, 12, 5, 1, 2).toISO(),
+    completedAt: DateTime.local(2015, 12, 5, 1, 2).toISO(),
     tagList: ['tag-1', 'tag-2'],
     contacts: {
       nodes: [

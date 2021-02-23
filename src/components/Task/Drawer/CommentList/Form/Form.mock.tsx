@@ -1,4 +1,5 @@
 import { MockedResponse } from '@apollo/client/testing';
+import { DateTime } from 'luxon';
 import { CreateTaskCommentMutation } from '../../../../../../types/CreateTaskCommentMutation';
 import { CREATE_TASK_COMMENT_MUTATION } from './Form';
 
@@ -8,7 +9,7 @@ export const createTaskCommentMutationMock = (): MockedResponse => {
       comment: {
         id: 'comment-0',
         body: 'comment',
-        createdAt: new Date().toISOString(),
+        createdAt: DateTime.local().toISO(),
         me: true,
         person: {
           id: 'user-1',

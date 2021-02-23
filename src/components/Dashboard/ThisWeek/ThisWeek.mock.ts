@@ -17,7 +17,7 @@ export const GetThisWeekDefaultMocks = (): MockedResponse[] => {
     subject: 'the quick brown fox jumps over the lazy dog',
     activityType: ActivityTypeEnum.PRAYER_REQUEST,
     contacts: { nodes: [{ name: 'Smith, Roger' }] },
-    startAt: new Date(2012, 12, 5, 1, 2),
+    startAt: DateTime.local(2012, 1, 5, 1, 2).toISODate(),
     completedAt: null,
   };
   const contact = {

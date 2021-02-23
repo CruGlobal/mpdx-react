@@ -1,4 +1,5 @@
 import { MockedResponse } from '@apollo/client/testing';
+import { DateTime } from 'luxon';
 import {
   CompleteTaskMutation,
   CompleteTaskMutation_updateTask_task as Task,
@@ -20,8 +21,8 @@ export const getCompleteTaskForTaskDrawerMock = (): MockedResponse => {
       id: 'task-1',
       activityType: ActivityTypeEnum.NEWSLETTER_EMAIL,
       subject: 'On the Journey with the Johnson Family',
-      startAt: new Date(2012, 12, 5, 1, 2),
-      completedAt: new Date(2015, 12, 5, 1, 2),
+      startAt: DateTime.local(2012, 1, 5, 1, 2).toISO(),
+      completedAt: DateTime.local(2015, 1, 5, 1, 2).toISO(),
       tagList: ['tag-1', 'tag-2'],
       contacts: {
         nodes: [
@@ -51,14 +52,14 @@ export const getCompleteTaskForTaskDrawerMock = (): MockedResponse => {
 export const completeSimpleTaskMutationMock = (): MockedResponse => {
   const task: Task = {
     id: 'task-1',
-    completedAt: new Date(2015, 12, 5, 1, 2),
+    completedAt: DateTime.local(2015, 1, 5, 1, 2).toISO(),
     tagList: ['tag-1', 'tag-2'],
     result: ResultEnum.NONE,
     nextAction: null,
   };
   const attributes: TaskUpdateInput = {
     id: 'task-1',
-    completedAt: new Date(2015, 12, 5, 1, 2),
+    completedAt: DateTime.local(2015, 1, 5, 1, 2).toISO(),
     tagList: ['tag-1', 'tag-2'],
     result: ResultEnum.NONE,
   };
@@ -82,14 +83,14 @@ export const completeSimpleTaskMutationMock = (): MockedResponse => {
 export const completeTaskMutationMock = (): MockedResponse => {
   const task: Task = {
     id: 'task-1',
-    completedAt: new Date(2015, 12, 5, 1, 2),
+    completedAt: DateTime.local(2015, 1, 5, 1, 2).toISO(),
     tagList: ['tag-1', 'tag-2'],
     result: ResultEnum.COMPLETED,
     nextAction: ActivityTypeEnum.APPOINTMENT,
   };
   const attributes: TaskUpdateInput = {
     id: 'task-1',
-    completedAt: new Date(2015, 12, 5, 1, 2),
+    completedAt: DateTime.local(2015, 1, 5, 1, 2).toISO(),
     tagList: ['tag-1', 'tag-2'],
     result: ResultEnum.COMPLETED,
     nextAction: ActivityTypeEnum.APPOINTMENT,

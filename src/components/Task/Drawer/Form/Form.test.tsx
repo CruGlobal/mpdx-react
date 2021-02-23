@@ -2,6 +2,7 @@ import React from 'react';
 import { render, waitFor, within } from '@testing-library/react';
 import { MockedProvider } from '@apollo/client/testing';
 import { SnackbarProvider } from 'notistack';
+import { DateTime } from 'luxon';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import LuxonUtils from '@date-io/luxon';
 import userEvent from '@testing-library/user-event';
@@ -62,8 +63,8 @@ describe('TaskDrawerForm', () => {
                 notificationTimeBefore: null,
                 notificationTimeUnit: null,
                 notificationType: null,
-                startAt: new Date(2012, 12, 5, 1, 2),
-                completedAt: new Date(2015, 12, 5, 1, 2),
+                startAt: DateTime.local(2012, 1, 5, 1, 2).toISO(),
+                completedAt: DateTime.local(2015, 1, 5, 1, 2).toISO(),
                 subject: '',
                 tagList: [],
                 user: null,

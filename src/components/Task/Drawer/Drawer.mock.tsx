@@ -1,4 +1,5 @@
 import { MockedResponse } from '@apollo/client/testing';
+import { DateTime } from 'luxon';
 import {
   ActivityTypeEnum,
   NotificationTypeEnum,
@@ -13,7 +14,7 @@ export const getTaskForTaskDrawerMock = (): MockedResponse => {
       id: 'task-1',
       activityType: ActivityTypeEnum.NEWSLETTER_EMAIL,
       subject: 'On the Journey with the Johnson Family',
-      startAt: new Date(2012, 12, 5, 1, 2),
+      startAt: DateTime.local(2012, 1, 5, 1, 2).toISO(),
       completedAt: null,
       tagList: ['tag-1', 'tag-2'],
       contacts: {

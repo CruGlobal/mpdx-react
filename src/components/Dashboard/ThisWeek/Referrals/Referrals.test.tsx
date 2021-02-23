@@ -1,5 +1,4 @@
 import React from 'react';
-import MockDate from 'mockdate';
 import {
   render,
   fireEvent,
@@ -7,14 +6,6 @@ import {
 import Referrals from '.';
 
 describe('Referrals', () => {
-  beforeEach(() => {
-    MockDate.set(new Date('2000-01-01'));
-  });
-
-  afterEach(() => {
-    MockDate.reset();
-  });
-
   it('default', () => {
     const { getByTestId, queryByTestId } = render(<Referrals />);
     expect(getByTestId('ReferralsDivRecent')).toBeInTheDocument();
@@ -124,7 +115,7 @@ describe('Referrals', () => {
     );
     expect(getByRole('link', { name: 'View All (1,234)' })).toHaveAttribute(
       'href',
-      'https://stage.mpdx.org/contacts?filters=%7B%22created_at%22%3A%221999-12-18..2000-01-01%22%2C%22referrer%22%3A%22any%22%7D',
+      'https://stage.mpdx.org/contacts?filters=%7B%22created_at%22%3A%222020-01-18..2020-02-01%22%2C%22referrer%22%3A%22any%22%7D',
     );
     const OnHandTab = getByTestId('ReferralsTabOnHand');
     expect(OnHandTab.textContent).toEqual('On Hand (5,678)');

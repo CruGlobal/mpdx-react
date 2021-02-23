@@ -146,9 +146,10 @@ const TaskStatus = ({
         </Tooltip>
       );
     } else {
+      console.log(DateTime.fromISO(startAt).toRelative());
       return (
         <Tooltip
-          title={`Due in ${DateTime.fromISO(startAt).toRelative()}`}
+          title={`Due ${DateTime.fromISO(startAt).toRelative()}`}
           placement={tooltipPlacement}
           arrow
           disableFocusListener={disableTooltip}

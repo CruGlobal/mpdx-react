@@ -327,7 +327,7 @@ const PartnerCare = ({
                                 >
                                   {dayMonthFormat(
                                     person.birthdayDay,
-                                    person.birthdayMonth - 1,
+                                    person.birthdayMonth,
                                   )}
                                 </Typography>
                               </Box>
@@ -373,7 +373,7 @@ const PartnerCare = ({
                               >
                                 {dayMonthFormat(
                                   person.anniversaryDay,
-                                  person.anniversaryMonth - 1,
+                                  person.anniversaryMonth,
                                 )}
                               </Typography>
                             </Box>

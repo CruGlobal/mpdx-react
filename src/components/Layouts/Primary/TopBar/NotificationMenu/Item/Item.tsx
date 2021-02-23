@@ -226,8 +226,8 @@ const NotificationMenuItem = ({
         ) && (
           <ListSubheader disableSticky role="heading">
             {monthYearFormat(
-              new Date(item.notification.occurredAt).getMonth(),
-              new Date(item.notification.occurredAt).getFullYear(),
+              DateTime.fromISO(item.notification.occurredAt).month,
+              DateTime.fromISO(item.notification.occurredAt).year,
             )}
           </ListSubheader>
         )}

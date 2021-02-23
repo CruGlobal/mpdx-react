@@ -1,6 +1,5 @@
 import React from 'react';
 import userEvent from '@testing-library/user-event';
-import MockDate from 'mockdate';
 import { render } from '../../../../../__tests__/util/testingLibraryReactMock';
 import { ActivityTypeEnum } from '../../../../../types/globalTypes';
 import { GetThisWeekQuery_dueTasks } from '../../../../../types/GetThisWeekQuery';
@@ -58,14 +57,6 @@ describe('TasksDueThisWeek', () => {
   });
 
   describe('MockDate', () => {
-    beforeEach(() => {
-      MockDate.set(new Date(2020, 1, 1));
-    });
-
-    afterEach(() => {
-      MockDate.reset();
-    });
-
     it('props', () => {
       const dueTasks: GetThisWeekQuery_dueTasks = {
         nodes: [

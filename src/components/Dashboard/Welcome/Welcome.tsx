@@ -1,5 +1,6 @@
 import React, { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
+import { DateTime } from 'luxon';
 import PageHeading from '../../PageHeading';
 import illustration9 from '../../../images/drawkit/grape/drawkit-grape-pack-illustration-9.svg';
 
@@ -9,8 +10,8 @@ interface Props {
 
 const Welcome = ({ firstName }: Props): ReactElement => {
   const { t } = useTranslation();
-  const today = new Date();
-  const currentHour = today.getHours();
+  const today = DateTime.local();
+  const currentHour = today.hour;
 
   let greeting = firstName
     ? t('Good Evening, {{ firstName }}.', { firstName })

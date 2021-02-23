@@ -1,16 +1,16 @@
 import React from 'react';
-import MockDate from 'mockdate';
+import { Settings } from 'luxon';
 import { render } from '../../../../__tests__/util/testingLibraryReactMock';
 import Welcome from '.';
 
 describe('Welcome', () => {
   afterEach(() => {
-    MockDate.reset();
+    Settings.resetCaches();
   });
 
   describe('morning', () => {
     beforeEach(() => {
-      MockDate.set(new Date(2000, 1, 1, 0));
+      Settings.now = () => new Date(2000, 1, 1, 0).valueOf();
     });
 
     it('default', () => {
@@ -29,7 +29,7 @@ describe('Welcome', () => {
   });
   describe('afternoon', () => {
     beforeEach(() => {
-      MockDate.set(new Date(2000, 1, 1, 12));
+      Settings.now = () => new Date(2000, 1, 1, 12).valueOf();
     });
 
     it('default', () => {
@@ -49,7 +49,7 @@ describe('Welcome', () => {
 
   describe('evening', () => {
     beforeEach(() => {
-      MockDate.set(new Date(2000, 1, 1, 18));
+      Settings.now = () => new Date(2000, 1, 1, 18).valueOf();
     });
 
     it('default', () => {

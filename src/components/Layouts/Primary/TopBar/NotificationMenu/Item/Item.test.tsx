@@ -1,6 +1,5 @@
 import React from 'react';
 import { DateTime } from 'luxon';
-import MockDate from 'mockdate';
 import userEvent from '@testing-library/user-event';
 import { InMemoryCache } from '@apollo/client';
 import TestWrapper from '../../../../../../../__tests__/util/TestWrapper';
@@ -411,21 +410,13 @@ describe('NotificationMenuItem', () => {
   });
 
   describe('MockDate', () => {
-    beforeEach(() => {
-      MockDate.set(new Date(2020, 1, 1));
-    });
-
-    afterEach(() => {
-      MockDate.reset();
-    });
-
     it('previousItem', () => {
       const { getByRole } = render(
         <TestWrapper>
           <NotificationMenuItem
             item={itemWithoutDonation(
               NotificationTypeTypeEnum.CALL_PARTNER_ONCE_PER_YEAR,
-              new Date().toISOString(),
+              DateTime.local().toISO(),
             )}
             previousItem={itemWithoutDonation(
               NotificationTypeTypeEnum.CALL_PARTNER_ONCE_PER_YEAR,

@@ -1,5 +1,6 @@
 import React, { ReactElement } from 'react';
 import { MockedProvider } from '@apollo/client/testing';
+import { DateTime } from 'luxon';
 import { getDataForTaskDrawerMock } from '../Form/Form.mock';
 import {
   ActivityTypeEnum,
@@ -20,7 +21,7 @@ const task = {
   id: 'task-1',
   activityType: ActivityTypeEnum.NEWSLETTER_EMAIL,
   subject: 'On the Journey with the Johnson Family',
-  startAt: new Date(2012, 12, 5, 1, 2),
+  startAt: DateTime.local(2012, 1, 5, 1, 2).toISO(),
   completedAt: null,
   tagList: ['tag-1', 'tag-2'],
   contacts: {
@@ -48,7 +49,7 @@ export const Default = (): ReactElement => {
         task={{
           ...task,
           activityType: null,
-          completedAt: new Date(2015, 12, 5, 1, 2),
+          completedAt: DateTime.local(2015, 1, 5, 1, 2).toISO(),
         }}
         accountListId="abc"
         onClose={(): void => {}}
@@ -70,7 +71,7 @@ export const WithResults = (): ReactElement => {
         task={{
           ...task,
           activityType: ActivityTypeEnum.CALL,
-          completedAt: new Date(2015, 12, 5, 1, 2),
+          completedAt: DateTime.local(2015, 1, 5, 1, 2).toISO(),
         }}
         accountListId="abc"
         onClose={(): void => {}}

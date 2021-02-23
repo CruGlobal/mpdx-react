@@ -1,5 +1,5 @@
 import React from 'react';
-import MockDate from 'mockdate';
+import { Settings } from 'luxon';
 import { render } from '../../../__tests__/util/testingLibraryReactMock';
 import Footer from '.';
 
@@ -30,11 +30,11 @@ describe('Footer', () => {
 
   describe('mocked Date', () => {
     beforeEach(() => {
-      MockDate.set('2000-11-22');
+      Settings.now = () => new Date(2000, 1, 1).valueOf();
     });
 
     afterEach(() => {
-      MockDate.reset();
+      Settings.resetCaches();
     });
 
     it('has correct text', () => {
