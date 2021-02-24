@@ -193,7 +193,7 @@ const TaskDrawerForm = ({
     id: null,
     activityType: null,
     subject: '',
-    startAt: DateTime.local().plus({ hours: 1 }).startOf('hour'),
+    startAt: DateTime.local().plus({ hours: 1 }).startOf('hour').toISO(),
     completedAt: null,
     tagList: [],
     contacts: {

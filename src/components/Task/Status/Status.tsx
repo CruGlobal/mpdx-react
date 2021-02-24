@@ -106,7 +106,7 @@ const TaskStatus = ({
   if (completedAt) {
     return (
       <Tooltip
-        title={`Completed ${DateTime.fromISO(completedAt).toRelative()})}`}
+        title={`Completed ${DateTime.fromISO(completedAt).toRelative()}`}
         placement={tooltipPlacement}
         arrow
         disableFocusListener={disableTooltip}
@@ -125,7 +125,7 @@ const TaskStatus = ({
     if (DateTime.fromISO(startAt) < DateTime.local()) {
       return (
         <Tooltip
-          title={`Overdue ${DateTime.fromISO(startAt).toRelative()})}`}
+          title={`Overdue ${DateTime.fromISO(startAt).toRelative()}`}
           placement={tooltipPlacement}
           arrow
           disableFocusListener={disableTooltip}

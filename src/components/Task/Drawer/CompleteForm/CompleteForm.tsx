@@ -100,7 +100,7 @@ const TaskDrawerCompleteForm = ({
 }: Props): ReactElement => {
   const initialTask: TaskUpdateInput = {
     id: task.id,
-    completedAt: task.completedAt || DateTime.local(),
+    completedAt: task.completedAt || DateTime.local().toISO(),
     result: ResultEnum.NONE,
     tagList: task.tagList,
   };
