@@ -42,7 +42,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@babel/core", "npm:7.12.16"],
             ["@babel/runtime", "npm:7.12.13"],
             ["@brainly/onesky-utils", "npm:1.4.1"],
-            ["@date-io/core", "npm:2.10.7"],
             ["@date-io/luxon", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:1.3.13"],
             ["@material-ui/core", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:4.11.3"],
             ["@material-ui/icons", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:4.11.2"],
@@ -4945,13 +4944,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@date-io/core", "npm:1.3.13"]
           ],
           "linkType": "HARD",
-        }],
-        ["npm:2.10.7", {
-          "packageLocation": "./.yarn/cache/@date-io-core-npm-2.10.7-d1464530b9-2e616bc3b0.zip/node_modules/@date-io/core/",
-          "packageDependencies": [
-            ["@date-io/core", "npm:2.10.7"]
-          ],
-          "linkType": "HARD",
         }]
       ]],
       ["@date-io/luxon", [
@@ -5876,7 +5868,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [
             ["@material-ui/pickers", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:3.2.10"],
             ["@babel/runtime", "npm:7.12.5"],
-            ["@date-io/core", "npm:2.10.7"],
+            ["@date-io/core", "npm:1.3.13"],
             ["@material-ui/core", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:4.11.3"],
             ["@types/date-io__core", null],
             ["@types/material-ui__core", null],
@@ -5892,7 +5884,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["rifm", "virtual:bd0eb3065dd0dc720a93f83d147da9150e518a4adf796c9418ba7c93a006d1a15d99a7458d53119acc7ee089835163a0471a79ad940c40720a5a5c1fb01b357c#npm:0.7.0"]
           ],
           "packagePeers": [
-            "@date-io/core",
             "@material-ui/core",
             "@types/date-io__core",
             "@types/material-ui__core",
@@ -20194,7 +20185,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@babel/core", "npm:7.12.16"],
             ["@babel/runtime", "npm:7.12.13"],
             ["@brainly/onesky-utils", "npm:1.4.1"],
-            ["@date-io/core", "npm:2.10.7"],
             ["@date-io/luxon", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:1.3.13"],
             ["@material-ui/core", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:4.11.3"],
             ["@material-ui/icons", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:4.11.2"],
