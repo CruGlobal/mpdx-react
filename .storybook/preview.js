@@ -33,7 +33,7 @@ addDecorator((StoryFn) => (
   <MockedProvider mocks={[]} addTypename={false}>
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <MuiPickersUtilsProvider utils={LuxonUtils} >
+      <MuiPickersUtilsProvider utils={LuxonUtils}>
         <SnackbarProvider maxSnack={3}>
           <TestRouter>
             <AppProvider>
