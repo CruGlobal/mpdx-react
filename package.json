@@ -5,6 +5,7 @@
   "scripts": {
     "start": "next dev",
     "build": "next build",
+    "build:analyze": "ANALYZE=true yarn build",
     "serve": "next start",
     "lint": "tsc && eslint '*/**/*.{js,ts,tsx}' --quiet --fix",
     "lint:ci": "tsc && eslint '*/**/*.{js,ts,tsx}'",
