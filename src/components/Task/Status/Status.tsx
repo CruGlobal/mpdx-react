@@ -146,7 +146,6 @@ const TaskStatus = ({
         </Tooltip>
       );
     } else {
-      console.log(DateTime.fromISO(startAt).toRelative());
       return (
         <Tooltip
           title={`Due ${DateTime.fromISO(startAt).toRelative()}`}

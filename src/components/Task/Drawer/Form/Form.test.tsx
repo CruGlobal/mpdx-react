@@ -126,5 +126,5 @@ describe('TaskDrawerForm', () => {
 
     userEvent.click(getByText('Save'));
     await waitFor(() => expect(onClose).toHaveBeenCalled());
-  }, 20000);
+  }, 25000);
 });

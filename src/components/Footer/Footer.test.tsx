@@ -1,5 +1,4 @@
 import React from 'react';
-import { Settings } from 'luxon';
 import { render } from '../../../__tests__/util/testingLibraryReactMock';
 import Footer from '.';
 
@@ -29,18 +28,10 @@ describe('Footer', () => {
   });
 
   describe('mocked Date', () => {
-    beforeEach(() => {
-      Settings.now = () => new Date(2000, 1, 1).valueOf();
-    });
-
-    afterEach(() => {
-      Settings.resetCaches();
-    });
-
     it('has correct text', () => {
       const { getByTestId } = render(<Footer />);
       expect(getByTestId('copyright').textContent).toEqual(
-        '© 2000, Cru. All Rights Reserved.',
+        '© 2020, Cru. All Rights Reserved.',
       );
     });
   });
