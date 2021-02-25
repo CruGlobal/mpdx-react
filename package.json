@@ -22,6 +22,7 @@
     "@apollo/client": "^3.3.9",
     "@apollo/link-context": "^2.0.0-beta.3",
     "@babel/runtime": "^7.12.13",
+    "@date-io/core": "^2.10.7",
     "@date-io/luxon": "1.x",
     "@material-ui/core": "^4.11.3",
     "@material-ui/icons": "^4.11.2",
