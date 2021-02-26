@@ -1,28 +1,16 @@
 import React from 'react';
 import Head from 'next/head';
 import { useTranslation } from 'react-i18next';
-import { useQuery } from '@apollo/client';
-import { gql } from 'graphql-tag';
 import { useRouter } from 'next/router';
-
-const CONTACTS_QUERY = gql`
-  query Contacts($accountListId: ID!) {
-    contacts(accountListId: $accountListId) {
-      nodes {
-        id
-        name
-      }
-    }
-  }
-`;
+import { useContactsQuery } from './Contacts.generated';
 
 const ContactsPage: React.FC = () => {
   const { t } = useTranslation();
   const {
     query: { accountListId },
   } = useRouter();
-  const { data, loading, error } = useQuery(CONTACTS_QUERY, {
-    variables: { accountListId },
+  const { data, loading, error } = useContactsQuery({
+    variables: { accountListId: accountListId as string },
   });
 
   return (

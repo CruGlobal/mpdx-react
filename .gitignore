@@ -37,3 +37,7 @@ yarn-error.log*
 /public/workbox*
 /public/locales/*
 !/public/locales/en
+
+# GraphQL Codegen
+/graphql
+*.generated.ts

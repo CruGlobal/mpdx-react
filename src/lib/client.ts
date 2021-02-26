@@ -7,8 +7,10 @@ import {
 import { relayStylePagination } from '@apollo/client/utilities';
 import { persistCache } from 'apollo-cache-persist';
 import fetch from 'isomorphic-fetch';
+import generatedIntrospection from '../../graphql/possibleTypes.generated';
 
 export const cache = new InMemoryCache({
+  possibleTypes: generatedIntrospection.possibleTypes,
   typePolicies: {
     Query: {
       fields: {
@@ -50,7 +52,9 @@ export const ssrClient = (
   return new ApolloClient({
     link: httpLink,
     ssrMode: true,
-    cache: new InMemoryCache(),
+    cache: new InMemoryCache({
+      possibleTypes: generatedIntrospection.possibleTypes,
+    }),
   });
 };
 
