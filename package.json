@@ -17,7 +17,8 @@
     "chromatic": "chromatic",
     "extract": "i18next --config i18next-parser.config.js",
     "prettier:check": "prettier . --list-different",
-    "prettier:write": "prettier . --write"
+    "prettier:write": "prettier . --write",
+    "gql": "graphql-codegen --config codegen.yml"
   },
   "dependencies": {
     "@apollo/client": "^3.3.9",

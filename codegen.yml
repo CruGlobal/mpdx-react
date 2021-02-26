@@ -1,0 +1,28 @@
+overwrite: true
+schema: ${API_URL:https://api.stage.mpdx.org/graphql}
+documents: '**/*.graphql'
+hooks:
+  afterOneFileWrite:
+    - prettier --write
+    - eslint --fix
+generates:
+  ./graphql/types.generated.ts:
+    plugins:
+      - add:
+          content: '/* eslint-disable */'
+      - typescript
+  ./:
+    preset: near-operation-file
+    presetConfig:
+      baseTypesPath: graphql/types.generated.ts
+    plugins:
+      - add:
+          content: '/* eslint-disable */'
+      - typescript-operations
+      - typescript-react-apollo
+  ./graphql/graphql.schema.json:
+    plugins:
+      - introspection
+  ./graphql/possibleTypes.generated.ts:
+    plugins:
+      - fragment-matcher
