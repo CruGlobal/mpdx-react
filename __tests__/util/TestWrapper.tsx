@@ -1,7 +1,7 @@
 import { MockedResponse, MockedProvider } from '@apollo/client/testing';
 import { SnackbarProvider } from 'notistack';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
-import DateFnsUtils from '@date-io/date-fns';
+import LuxonUtils from '@date-io/luxon';
 import React, { ReactElement, ReactNode } from 'react';
 import { InMemoryCache } from '@apollo/client';
 import { AppProvider } from '../../src/components/App';
@@ -25,7 +25,7 @@ const TestWrapper = ({
 }: Props): ReactElement => {
   return (
     <TestRouter>
-      <MuiPickersUtilsProvider utils={DateFnsUtils}>
+      <MuiPickersUtilsProvider utils={LuxonUtils}>
         <SnackbarProvider>
           <MockedProvider mocks={mocks} cache={cache} addTypename={false}>
             {disableAppProvider ? (

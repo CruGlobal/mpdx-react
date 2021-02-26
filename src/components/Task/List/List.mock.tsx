@@ -1,3 +1,4 @@
+import { DateTime } from 'luxon';
 import { MockedResponse } from '@apollo/client/testing';
 import { ActivityTypeEnum } from '../../../../types/globalTypes';
 import { GetTasksForTaskListQuery } from '../../../../types/GetTasksForTaskListQuery';
@@ -11,7 +12,7 @@ export const getTasksForTaskListMock = (): MockedResponse => {
           id: 'task-1',
           activityType: ActivityTypeEnum.APPOINTMENT,
           subject: 'On the Journey with the Johnson Family',
-          startAt: new Date(2012, 12, 5, 1, 2),
+          startAt: DateTime.local(2012, 1, 5, 1, 2),
           completedAt: null,
           tagList: ['tag-1', 'tag-2'],
           contacts: {
@@ -101,7 +102,7 @@ export const getFilteredTasksForTaskListMock = (
           id: 'task-1',
           activityType: ActivityTypeEnum.APPOINTMENT,
           subject: 'On the Journey with the Johnson Family',
-          startAt: new Date(2012, 12, 5, 1, 2),
+          startAt: DateTime.local(2012, 1, 5, 1, 2),
           completedAt: null,
           tagList: ['tag-1', 'tag-2'],
           contacts: {
@@ -116,7 +117,7 @@ export const getFilteredTasksForTaskListMock = (
           id: 'task-1',
           activityType: ActivityTypeEnum.APPOINTMENT,
           subject: 'On the Journey with the Johnson Family 2020',
-          startAt: new Date('2020-09-01'),
+          startAt: DateTime.fromISO('2020-09-01'),
           completedAt: null,
           tagList: ['tag-1', 'tag-2'],
           contacts: {

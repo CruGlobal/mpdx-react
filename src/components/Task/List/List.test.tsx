@@ -1,5 +1,4 @@
 import React from 'react';
-import MockDate from 'mockdate';
 import userEvent from '@testing-library/user-event';
 import TestWrapper from '../../../../__tests__/util/TestWrapper';
 import { getDataForTaskDrawerMock } from '../Drawer/Form/Form.mock';
@@ -30,14 +29,6 @@ jest.mock('lodash/fp/debounce', () =>
 );
 
 describe('TaskList', () => {
-  beforeEach(() => {
-    MockDate.set(new Date('2020-09-01'));
-  });
-
-  afterEach(() => {
-    MockDate.reset();
-  });
-
   it('has correct defaults', async () => {
     const mocks = [
       getTasksForTaskListMock(),

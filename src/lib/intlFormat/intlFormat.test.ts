@@ -1,3 +1,5 @@
+import { DateTime } from 'luxon';
+
 import { dateFormat, monthYearFormat } from './intlFormat';
 import {
   numberFormat,
@@ -124,11 +126,11 @@ describe('intlFormat', () => {
 
   describe('dayMonthFormat', () => {
     it('formats day and month as date', () => {
-      expect(dayMonthFormat(5, 12)).toEqual('Jan 5');
+      expect(dayMonthFormat(5, 1)).toEqual('Jan 5');
     });
 
     it('handles language', () => {
-      expect(dayMonthFormat(5, 12, 'fr')).toEqual('5 janv.');
+      expect(dayMonthFormat(5, 1, 'fr')).toEqual('5 janv.');
     });
 
     describe('default language', () => {
@@ -137,18 +139,18 @@ describe('intlFormat', () => {
       });
 
       it('handles language', () => {
-        expect(dayMonthFormat(5, 12)).toEqual('5 janv.');
+        expect(dayMonthFormat(5, 1)).toEqual('5 janv.');
       });
     });
   });
 
   describe('monthYearFormat', () => {
     it('formats day and month as date', () => {
-      expect(monthYearFormat(5, 2020)).toEqual('Jun 2020');
+      expect(monthYearFormat(6, 2020)).toEqual('Jun 2020');
     });
 
     it('handles language', () => {
-      expect(monthYearFormat(5, 2020, 'fr')).toEqual('juin 2020');
+      expect(monthYearFormat(6, 2020, 'fr')).toEqual('juin 2020');
     });
 
     describe('default language', () => {
@@ -157,18 +159,20 @@ describe('intlFormat', () => {
       });
 
       it('handles language', () => {
-        expect(monthYearFormat(5, 2020)).toEqual('juin 2020');
+        expect(monthYearFormat(6, 2020)).toEqual('juin 2020');
       });
     });
   });
 
   describe('dateFormat', () => {
     it('formats day and month as date', () => {
-      expect(dateFormat(new Date(2019, 12, 5))).toEqual('Jan 5, 2020');
+      expect(dateFormat(DateTime.local(2020, 1, 5))).toEqual('Jan 5, 2020');
     });
 
     it('handles language', () => {
-      expect(dateFormat(new Date(2019, 12, 5), 'fr')).toEqual('5 janv. 2020');
+      expect(dateFormat(DateTime.local(2020, 1, 5), 'fr')).toEqual(
+        '5 janv. 2020',
+      );
     });
 
     it('handles null case', () => {
@@ -181,7 +185,7 @@ describe('intlFormat', () => {
       });
 
       it('handles language', () => {
-        expect(dateFormat(new Date(2019, 12, 5))).toEqual('5 janv. 2020');
+        expect(dateFormat(DateTime.local(2020, 1, 5))).toEqual('5 janv. 2020');
       });
     });
   });

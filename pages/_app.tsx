@@ -9,7 +9,7 @@ import { NextPage } from 'next';
 import Head from 'next/head';
 import { I18nextProvider } from 'react-i18next';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
-import DateFnsUtils from '@date-io/date-fns';
+import LuxonUtils from '@date-io/luxon';
 import { SnackbarProvider } from 'notistack';
 import theme from '../src/theme';
 import client from '../src/lib/client';
@@ -84,7 +84,7 @@ const App = ({ Component, pageProps, router }: AppProps): ReactElement => {
           <ApolloProvider client={client}>
             <ThemeProvider theme={theme}>
               <CssBaseline />
-              <MuiPickersUtilsProvider utils={DateFnsUtils}>
+              <MuiPickersUtilsProvider utils={LuxonUtils}>
                 <SnackbarProvider maxSnack={3}>
                   <AnimatePresence
                     exitBeforeEnter

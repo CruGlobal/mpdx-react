@@ -24,7 +24,7 @@ import { Formik } from 'formik';
 import * as yup from 'yup';
 import { gql, useQuery, useMutation } from '@apollo/client';
 import { useSnackbar } from 'notistack';
-import { startOfHour, addHours } from 'date-fns';
+import { DateTime } from 'luxon';
 import {
   ActivityTypeEnum,
   NotificationTypeEnum,
@@ -193,7 +193,7 @@ const TaskDrawerForm = ({
     id: null,
     activityType: null,
     subject: '',
-    startAt: startOfHour(addHours(new Date(), 1)),
+    startAt: DateTime.local().plus({ hours: 1 }).startOf('hour').toISO(),
     completedAt: null,
     tagList: [],
     contacts: {

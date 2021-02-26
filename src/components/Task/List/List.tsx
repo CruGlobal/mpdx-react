@@ -17,6 +17,7 @@ import {
   FormLabel,
   Box,
 } from '@material-ui/core';
+import { DateTime } from 'luxon';
 import reduce from 'lodash/fp/reduce';
 import debounce from 'lodash/fp/debounce';
 import { Skeleton } from '@material-ui/lab';
@@ -368,8 +369,10 @@ const TaskList = ({ initialFilter }: Props): ReactElement => {
         filterList:
           initialFilter?.startAt &&
           (([
-            initialFilter.startAt.min && new Date(initialFilter.startAt.min),
-            initialFilter.startAt.max && new Date(initialFilter.startAt.max),
+            initialFilter.startAt.min &&
+              DateTime.fromISO(initialFilter.startAt.min),
+            initialFilter.startAt.max &&
+              DateTime.fromISO(initialFilter.startAt.max),
           ] as unknown) as string[]),
         customFilterListOptions: {
           render: (v) => {
@@ -444,9 +447,9 @@ const TaskList = ({ initialFilter }: Props): ReactElement => {
         sort: true,
         customBodyRender: (startAt): string | ReactElement => {
           if (startAt) {
-            const date = new Date(startAt);
-            if (new Date().getFullYear() == date.getFullYear()) {
-              return dayMonthFormat(date.getDate(), date.getMonth());
+            const date = DateTime.fromISO(startAt);
+            if (date.hasSame(DateTime.local(), 'year')) {
+              return dayMonthFormat(date.day, date.month);
             } else {
               return dateFormat(date);
             }
@@ -523,13 +526,13 @@ const TaskList = ({ initialFilter }: Props): ReactElement => {
               if (filterIsActive) {
                 if (value[0] && value[1]) {
                   result.startAt = {
-                    min: new Date(value[0]).toISOString(),
-                    max: new Date(value[1]).toISOString(),
+                    min: DateTime.fromISO(value[0]).toISO(),
+                    max: DateTime.fromISO(value[1]).toISO(),
                   };
                 } else if (value[0]) {
-                  result.startAt = { min: new Date(value[0]).toISOString() };
+                  result.startAt = { min: DateTime.fromISO(value[0]).toISO() };
                 } else if (value[1]) {
-                  result.startAt = { max: new Date(value[1]).toISOString() };
+                  result.startAt = { max: DateTime.fromISO(value[1]).toISO() };
                 }
               } else {
                 result.startAt = {

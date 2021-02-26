@@ -17,7 +17,7 @@ import {
 import { Skeleton } from '@material-ui/lab';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
-import { endOfDay, formatISO, sub } from 'date-fns';
+import { DateTime } from 'luxon';
 import AnimatedCard from '../../../AnimatedCard';
 import {
   GetThisWeekQuery_onHandReferrals,
@@ -151,14 +151,10 @@ const ReferralsTab = ({
                     JSON.stringify(
                       tab === 'Recent'
                         ? {
-                            created_at: `${formatISO(
-                              sub(endOfDay(new Date()), { weeks: 2 }),
-                              {
-                                representation: 'date',
-                              },
-                            )}..${formatISO(new Date(), {
-                              representation: 'date',
-                            })}`,
+                            created_at: `${DateTime.local()
+                              .endOf('day')
+                              .minus({ weeks: 2 })
+                              .toISODate()}..${DateTime.local().toISODate()}`,
                             referrer: 'any',
                           }
                         : {

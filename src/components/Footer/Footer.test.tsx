@@ -1,5 +1,4 @@
 import React from 'react';
-import MockDate from 'mockdate';
 import { render } from '../../../__tests__/util/testingLibraryReactMock';
 import Footer from '.';
 
@@ -29,18 +28,10 @@ describe('Footer', () => {
   });
 
   describe('mocked Date', () => {
-    beforeEach(() => {
-      MockDate.set('2000-11-22');
-    });
-
-    afterEach(() => {
-      MockDate.reset();
-    });
-
     it('has correct text', () => {
       const { getByTestId } = render(<Footer />);
       expect(getByTestId('copyright').textContent).toEqual(
-        '© 2000, Cru. All Rights Reserved.',
+        '© 2020, Cru. All Rights Reserved.',
       );
     });
   });

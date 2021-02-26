@@ -13,7 +13,7 @@ import {
 import { Skeleton } from '@material-ui/lab';
 import React, { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
-import { isSameMonth } from 'date-fns';
+import { DateTime } from 'luxon';
 import { AcknowledgeUserNotificationMutation } from '../../../../../../../types/AcknowledgeUserNotificationMutation';
 import {
   GetNotificationsQuery,
@@ -220,14 +220,14 @@ const NotificationMenuItem = ({
   return (
     <Box>
       {previousItem?.notification?.occurredAt &&
-        !isSameMonth(
-          new Date(previousItem.notification.occurredAt),
-          new Date(item.notification.occurredAt),
+        !DateTime.fromISO(previousItem.notification.occurredAt).hasSame(
+          DateTime.fromISO(item.notification.occurredAt),
+          'month',
         ) && (
           <ListSubheader disableSticky role="heading">
             {monthYearFormat(
-              new Date(item.notification.occurredAt).getMonth(),
-              new Date(item.notification.occurredAt).getFullYear(),
+              DateTime.fromISO(item.notification.occurredAt).month,
+              DateTime.fromISO(item.notification.occurredAt).year,
             )}
           </ListSubheader>
         )}
@@ -253,7 +253,7 @@ const NotificationMenuItem = ({
                   variant="body2"
                   color="textPrimary"
                 >
-                  {dateFormat(new Date(item.notification.occurredAt))}
+                  {dateFormat(DateTime.fromISO(item.notification.occurredAt))}
                 </Typography>{' '}
                 — {message}
               </>

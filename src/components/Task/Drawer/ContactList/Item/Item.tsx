@@ -18,6 +18,7 @@ import {
   Divider,
 } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
+import { DateTime } from 'luxon';
 import CallIcon from '@material-ui/icons/Call';
 import TextsmsIcon from '@material-ui/icons/Textsms';
 import EmailIcon from '@material-ui/icons/Email';
@@ -100,7 +101,9 @@ const TaskDrawerContactListItem = ({ contact }: Props): ReactElement => {
                     )}{' '}
                     <Typography component="span" color="textSecondary">
                       {` — ${dateFormat(
-                        new Date(contact.lastDonation.amount.conversionDate),
+                        DateTime.fromISO(
+                          contact.lastDonation.amount.conversionDate,
+                        ),
                       )}`}
                     </Typography>
                   </InfoBlock>

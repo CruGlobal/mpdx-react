@@ -10,6 +10,7 @@ import {
 } from '@material-ui/core';
 import { Formik, FormikHelpers } from 'formik';
 import * as yup from 'yup';
+import { DateTime } from 'luxon';
 import SendIcon from '@material-ui/icons/Send';
 import { useMutation, gql } from '@apollo/client';
 import { motion } from 'framer-motion';
@@ -100,7 +101,7 @@ const Form = ({ accountListId, taskId }: Props): ReactElement => {
           comment: {
             id,
             body,
-            createdAt: new Date().toISOString(),
+            createdAt: DateTime.local().toISO(),
             me: true,
             person: {
               id: user.id,

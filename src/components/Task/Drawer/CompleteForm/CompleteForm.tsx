@@ -19,6 +19,7 @@ import { Autocomplete } from '@material-ui/lab';
 import { DatePicker, TimePicker } from '@material-ui/pickers';
 import { Formik } from 'formik';
 import * as yup from 'yup';
+import { DateTime } from 'luxon';
 import { gql, useQuery, useMutation } from '@apollo/client';
 import { useSnackbar } from 'notistack';
 import { dateFormat } from '../../../../lib/intlFormat/intlFormat';
@@ -99,7 +100,7 @@ const TaskDrawerCompleteForm = ({
 }: Props): ReactElement => {
   const initialTask: TaskUpdateInput = {
     id: task.id,
-    completedAt: task.completedAt || new Date(),
+    completedAt: task.completedAt || DateTime.local().toISO(),
     result: ResultEnum.NONE,
     tagList: task.tagList,
   };

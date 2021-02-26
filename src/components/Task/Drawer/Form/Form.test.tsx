@@ -2,8 +2,9 @@ import React from 'react';
 import { render, waitFor, within } from '@testing-library/react';
 import { MockedProvider } from '@apollo/client/testing';
 import { SnackbarProvider } from 'notistack';
+import { DateTime } from 'luxon';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
-import DateFnsUtils from '@date-io/date-fns';
+import LuxonUtils from '@date-io/luxon';
 import userEvent from '@testing-library/user-event';
 import {
   getDataForTaskDrawerMock,
@@ -16,7 +17,7 @@ describe('TaskDrawerForm', () => {
   it('default', async () => {
     const onClose = jest.fn();
     const { getByText, getByRole, findByText } = render(
-      <MuiPickersUtilsProvider utils={DateFnsUtils}>
+      <MuiPickersUtilsProvider utils={LuxonUtils}>
         <SnackbarProvider>
           <MockedProvider
             mocks={[getDataForTaskDrawerMock(), createTaskMutationMock()]}
@@ -44,7 +45,7 @@ describe('TaskDrawerForm', () => {
   it('persisted', async () => {
     const onClose = jest.fn();
     const { getByText, getByRole, getAllByRole } = render(
-      <MuiPickersUtilsProvider utils={DateFnsUtils}>
+      <MuiPickersUtilsProvider utils={LuxonUtils}>
         <SnackbarProvider>
           <MockedProvider
             mocks={[getDataForTaskDrawerMock(), updateTaskMutationMock()]}
@@ -62,8 +63,8 @@ describe('TaskDrawerForm', () => {
                 notificationTimeBefore: null,
                 notificationTimeUnit: null,
                 notificationType: null,
-                startAt: new Date(2012, 12, 5, 1, 2),
-                completedAt: new Date(2015, 12, 5, 1, 2),
+                startAt: DateTime.local(2013, 1, 5, 1, 2).toISO(),
+                completedAt: DateTime.local(2016, 1, 5, 1, 2).toISO(),
                 subject: '',
                 tagList: [],
                 user: null,
@@ -125,5 +126,5 @@ describe('TaskDrawerForm', () => {
 
     userEvent.click(getByText('Save'));
     await waitFor(() => expect(onClose).toHaveBeenCalled());
-  }, 20000);
+  }, 25000);
 });

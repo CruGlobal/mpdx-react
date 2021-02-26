@@ -1,7 +1,6 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import MockDate from 'mockdate';
 import { useApp } from '../../App';
 import TaskStatus from '.';
 
@@ -15,11 +14,6 @@ beforeEach(() => {
   (useApp as jest.Mock).mockReturnValue({
     openTaskDrawer,
   });
-  MockDate.set(new Date(2020, 1, 1));
-});
-
-afterEach(() => {
-  MockDate.reset();
 });
 
 describe('TaskStatus', () => {
@@ -34,9 +28,7 @@ describe('TaskStatus', () => {
       <TaskStatus completedAt="2009-12-31T11:00:00.000Z" />,
     );
     userEvent.hover(getByRole('button'));
-    expect(
-      await findByText('Completed about 10 years ago'),
-    ).toBeInTheDocument();
+    expect(await findByText('Completed 10 years ago')).toBeInTheDocument();
   });
 
   it('startAt in past', async () => {
@@ -44,7 +36,7 @@ describe('TaskStatus', () => {
       <TaskStatus startAt="2009-12-31T11:00:00.000Z" />,
     );
     userEvent.hover(getByRole('button'));
-    expect(await findByText('Overdue about 10 years ago')).toBeInTheDocument();
+    expect(await findByText('Overdue 10 years ago')).toBeInTheDocument();
   });
 
   it('startAt in future', async () => {
@@ -52,7 +44,7 @@ describe('TaskStatus', () => {
       <TaskStatus startAt="2050-12-31T11:00:00.000Z" />,
     );
     userEvent.hover(getByRole('button'));
-    expect(await findByText('Due in in almost 31 years')).toBeInTheDocument();
+    expect(await findByText('Due in 30 years')).toBeInTheDocument();
   });
 
   it('taskId', async () => {

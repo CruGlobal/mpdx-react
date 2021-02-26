@@ -1,6 +1,7 @@
 import React from 'react';
 import { render, within, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { DateTime } from 'luxon';
 import { getDataForTaskDrawerMock } from '../Form/Form.mock';
 import TestWrapper from '../../../../../__tests__/util/TestWrapper';
 import { dateFormat } from '../../../../lib/intlFormat/intlFormat';
@@ -34,7 +35,7 @@ describe('TaskDrawerCompleteForm', () => {
     id: 'task-1',
     activityType: ActivityTypeEnum.NEWSLETTER_EMAIL,
     subject: 'On the Journey with the Johnson Family',
-    startAt: new Date(2012, 12, 5, 1, 2),
+    startAt: DateTime.local(2012, 1, 5, 1, 2).toISO(),
     completedAt: null,
     tagList: ['tag-1', 'tag-2'],
     contacts: {
@@ -62,7 +63,7 @@ describe('TaskDrawerCompleteForm', () => {
         />
       </TestWrapper>,
     );
-    const dateString = dateFormat(new Date());
+    const dateString = dateFormat(DateTime.local());
     expect(
       getAllByRole('textbox').find(
         (item: HTMLInputElement) => item.value === dateString,
@@ -83,7 +84,7 @@ describe('TaskDrawerCompleteForm', () => {
           task={{
             ...task,
             activityType: null,
-            completedAt: new Date(2015, 12, 5, 1, 2),
+            completedAt: DateTime.local(2015, 1, 5, 1, 2).toISO(),
           }}
         />
       </TestWrapper>,
@@ -106,7 +107,7 @@ describe('TaskDrawerCompleteForm', () => {
           task={{
             ...task,
             activityType: ActivityTypeEnum.CALL,
-            completedAt: new Date(2015, 12, 5, 1, 2),
+            completedAt: DateTime.local(2015, 1, 5, 1, 2).toISO(),
             tagList: [],
           }}
         />

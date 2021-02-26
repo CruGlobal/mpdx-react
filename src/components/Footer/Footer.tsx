@@ -1,4 +1,5 @@
 import React, { ReactElement } from 'react';
+import { DateTime } from 'luxon';
 import { Typography, Link, Container, Box, Grid } from '@material-ui/core';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
@@ -29,7 +30,7 @@ const useStyles = makeStyles((theme: Theme) =>
 const Footer = (): ReactElement => {
   const classes = useStyles();
   const { t } = useTranslation();
-  const year = new Date().getFullYear();
+  const year = DateTime.local().year;
 
   return (
     <Box py={5} className={classes.box}>

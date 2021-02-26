@@ -1,3 +1,5 @@
+import { DateTime } from 'luxon';
+
 const getLanguage = (): string => {
   const language =
     (typeof window !== 'undefined' && window.navigator.language) || 'en-US';
@@ -41,7 +43,7 @@ export const dayMonthFormat = (
   new Intl.DateTimeFormat(language, {
     day: 'numeric',
     month: 'short',
-  }).format(new Date(new Date().getFullYear(), month, day));
+  }).format(DateTime.local().set({ month, day }).toJSDate());
 
 export const monthYearFormat = (
   month: number,
@@ -51,9 +53,12 @@ export const monthYearFormat = (
   new Intl.DateTimeFormat(language, {
     month: 'short',
     year: 'numeric',
-  }).format(new Date(year, month, 1));
+  }).format(DateTime.local(year, month, 1).toJSDate());
 
-export const dateFormat = (date: Date, language = getLanguage()): string => {
+export const dateFormat = (
+  date: DateTime,
+  language = getLanguage(),
+): string => {
   if (date === null) {
     return '';
   }
@@ -61,7 +66,7 @@ export const dateFormat = (date: Date, language = getLanguage()): string => {
     day: 'numeric',
     month: 'short',
     year: 'numeric',
-  }).format(date);
+  }).format(date.toJSDate());
 };
 
 const intlFormat = {

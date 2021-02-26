@@ -1,6 +1,5 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import MockDate from 'mockdate';
 import { GetCommentsForTaskDrawerCommentListQuery_task_comments_nodes as Comment } from '../../../../../../types/GetCommentsForTaskDrawerCommentListQuery';
 import Item from '.';
 
@@ -8,7 +7,7 @@ describe('Item', () => {
   const comment: Comment = {
     id: 'def',
     body: 'The quick brown fox jumped over the lazy dog.',
-    createdAt: '2019-10-12',
+    createdAt: '2020-01-31',
     me: false,
     person: {
       id: 'person-a',
@@ -16,14 +15,6 @@ describe('Item', () => {
       lastName: 'Jones',
     },
   };
-
-  beforeEach(() => {
-    MockDate.set(new Date('2019-10-13'));
-  });
-
-  afterEach(() => {
-    MockDate.reset();
-  });
 
   it('has correct defaults', () => {
     const { getByTestId, getByText } = render(<Item comment={comment} />);
