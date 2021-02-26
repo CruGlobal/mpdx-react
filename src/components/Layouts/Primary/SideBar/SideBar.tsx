@@ -293,9 +293,10 @@ const SideBar = ({ open, handleOpenChange }: Props): ReactElement => {
           icon={<HomeIcon />}
         />
         <Item
-          type="handoff"
+          type="local"
           label={t('Contacts')}
-          path="/contacts"
+          href="/accountLists/[accountListId]/contacts"
+          as={`/accountLists/${accountListId}/contacts`}
           icon={<AccountBoxIcon />}
         />
         <Item
