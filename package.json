@@ -18,7 +18,8 @@
     "extract": "i18next --config i18next-parser.config.js",
     "prettier:check": "prettier . --list-different",
     "prettier:write": "prettier . --write",
-    "gql": "graphql-codegen --config codegen.yml"
+    "gql": "graphql-codegen --config codegen.yml",
+    "gql:w": "yarn gql --watch"
   },
   "dependencies": {
     "@apollo/client": "^3.3.9",
