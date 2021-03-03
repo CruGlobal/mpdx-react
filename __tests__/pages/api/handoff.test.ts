@@ -1,6 +1,6 @@
 import { createMocks } from 'node-mocks-http';
 import jwt from 'next-auth/jwt';
-import handoff from '../../../pages/api/handoff';
+import handoff from '../../../pages/api/handoff.page';
 
 jest.mock('next-auth/jwt', () => ({}));
 

@@ -1,4 +1,4 @@
-import { initialFilterFromPath } from '../../../../pages/accountLists/[accountListId]/tasks';
+import { initialFilterFromPath } from '../../../../pages/accountLists/[accountListId]/tasks.page';
 
 describe('tasks', () => {
   describe('initialFilterFromPath', () => {
