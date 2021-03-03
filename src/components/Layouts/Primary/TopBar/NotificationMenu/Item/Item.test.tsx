@@ -3,16 +3,15 @@ import { DateTime } from 'luxon';
 import userEvent from '@testing-library/user-event';
 import { InMemoryCache } from '@apollo/client';
 import TestWrapper from '../../../../../../../__tests__/util/TestWrapper';
-import { NotificationTypeTypeEnum } from '../../../../../../../types/globalTypes';
-import {
-  GetNotificationsQuery,
-  GetNotificationsQuery_userNotifications_edges_node as Notification,
-} from '../../../../../../../types/GetNotificationsQuery';
 import {
   render,
   waitFor,
 } from '../../../../../../../__tests__/util/testingLibraryReactMock';
-import GET_NOTIFICATIONS_QUERY from '../getNotificationsQuery.graphql';
+import { NotificationTypeTypeEnum } from '../../../../../../../graphql/types.generated';
+import {
+  GetNotificationsDocument,
+  GetNotificationsQuery,
+} from '../GetNotificationsQuery.generated';
 import acknowledgeUserNotificationMutationMock from './Item.mock';
 import NotificationMenuItem from '.';
 
@@ -21,7 +20,7 @@ describe('NotificationMenuItem', () => {
   const itemWithoutDonation = (
     type: NotificationTypeTypeEnum,
     occurredAt = '2020-05-25T20:00:00-04:00',
-  ): Notification => {
+  ): GetNotificationsQuery['userNotifications']['edges'][0]['node'] => {
     return {
       id,
       read: false,
@@ -40,7 +39,9 @@ describe('NotificationMenuItem', () => {
       },
     };
   };
-  const itemWithDonation = (type: NotificationTypeTypeEnum): Notification => {
+  const itemWithDonation = (
+    type: NotificationTypeTypeEnum,
+  ): GetNotificationsQuery['userNotifications']['edges'][0]['node'] => {
     return {
       id,
       read: false,
@@ -91,7 +92,7 @@ describe('NotificationMenuItem', () => {
       <TestWrapper>
         <NotificationMenuItem
           item={itemWithoutDonation(
-            NotificationTypeTypeEnum.CALL_PARTNER_ONCE_PER_YEAR,
+            NotificationTypeTypeEnum.CallPartnerOncePerYear,
           )}
         />
       </TestWrapper>,
@@ -105,7 +106,7 @@ describe('NotificationMenuItem', () => {
     const { getByRole } = render(
       <TestWrapper>
         <NotificationMenuItem
-          item={itemWithoutDonation(NotificationTypeTypeEnum.LARGER_GIFT)}
+          item={itemWithoutDonation(NotificationTypeTypeEnum.LargerGift)}
         />
       </TestWrapper>,
     );
@@ -118,7 +119,7 @@ describe('NotificationMenuItem', () => {
     const { getByRole } = render(
       <TestWrapper>
         <NotificationMenuItem
-          item={itemWithDonation(NotificationTypeTypeEnum.LARGER_GIFT)}
+          item={itemWithDonation(NotificationTypeTypeEnum.LargerGift)}
         />
       </TestWrapper>,
     );
@@ -131,9 +132,7 @@ describe('NotificationMenuItem', () => {
     const { getByRole } = render(
       <TestWrapper>
         <NotificationMenuItem
-          item={itemWithoutDonation(
-            NotificationTypeTypeEnum.LONG_TIME_FRAME_GIFT,
-          )}
+          item={itemWithoutDonation(NotificationTypeTypeEnum.LongTimeFrameGift)}
         />
       </TestWrapper>,
     );
@@ -146,7 +145,7 @@ describe('NotificationMenuItem', () => {
     const { getByRole } = render(
       <TestWrapper>
         <NotificationMenuItem
-          item={itemWithDonation(NotificationTypeTypeEnum.LONG_TIME_FRAME_GIFT)}
+          item={itemWithDonation(NotificationTypeTypeEnum.LongTimeFrameGift)}
         />
       </TestWrapper>,
     );
@@ -160,7 +159,7 @@ describe('NotificationMenuItem', () => {
       <TestWrapper>
         <NotificationMenuItem
           item={itemWithoutDonation(
-            NotificationTypeTypeEnum.MISSING_ADDRESS_IN_NEWSLETTER,
+            NotificationTypeTypeEnum.MissingAddressInNewsletter,
           )}
         />
       </TestWrapper>,
@@ -175,7 +174,7 @@ describe('NotificationMenuItem', () => {
       <TestWrapper>
         <NotificationMenuItem
           item={itemWithoutDonation(
-            NotificationTypeTypeEnum.MISSING_EMAIL_IN_NEWSLETTER,
+            NotificationTypeTypeEnum.MissingEmailInNewsletter,
           )}
         />
       </TestWrapper>,
@@ -190,7 +189,7 @@ describe('NotificationMenuItem', () => {
       <TestWrapper>
         <NotificationMenuItem
           item={itemWithoutDonation(
-            NotificationTypeTypeEnum.NEW_DESIGNATION_ACCOUNT_SUBSCRIPTION,
+            NotificationTypeTypeEnum.NewDesignationAccountSubscription,
           )}
         />
       </TestWrapper>,
@@ -205,7 +204,7 @@ describe('NotificationMenuItem', () => {
       <TestWrapper>
         <NotificationMenuItem
           item={itemWithoutDonation(
-            NotificationTypeTypeEnum.NEW_PARTNER_DUPLICATE_MERGED,
+            NotificationTypeTypeEnum.NewPartnerDuplicateMerged,
           )}
         />
       </TestWrapper>,
@@ -220,7 +219,7 @@ describe('NotificationMenuItem', () => {
       <TestWrapper>
         <NotificationMenuItem
           item={itemWithoutDonation(
-            NotificationTypeTypeEnum.NEW_PARTNER_DUPLICATE_NOT_MERGED,
+            NotificationTypeTypeEnum.NewPartnerDuplicateNotMerged,
           )}
         />
       </TestWrapper>,
@@ -235,7 +234,7 @@ describe('NotificationMenuItem', () => {
       <TestWrapper>
         <NotificationMenuItem
           item={itemWithoutDonation(
-            NotificationTypeTypeEnum.NEW_PARTNER_NO_DUPLICATE,
+            NotificationTypeTypeEnum.NewPartnerNoDuplicate,
           )}
         />
       </TestWrapper>,
@@ -249,7 +248,7 @@ describe('NotificationMenuItem', () => {
     const { getByRole } = render(
       <TestWrapper>
         <NotificationMenuItem
-          item={itemWithoutDonation(NotificationTypeTypeEnum.RECONTINUING_GIFT)}
+          item={itemWithoutDonation(NotificationTypeTypeEnum.RecontinuingGift)}
         />
       </TestWrapper>,
     );
@@ -263,7 +262,7 @@ describe('NotificationMenuItem', () => {
       <TestWrapper>
         <NotificationMenuItem
           item={itemWithoutDonation(
-            NotificationTypeTypeEnum.REMIND_PARTNER_IN_ADVANCE,
+            NotificationTypeTypeEnum.RemindPartnerInAdvance,
           )}
         />
       </TestWrapper>,
@@ -277,7 +276,7 @@ describe('NotificationMenuItem', () => {
     const { getByRole } = render(
       <TestWrapper>
         <NotificationMenuItem
-          item={itemWithoutDonation(NotificationTypeTypeEnum.SMALLER_GIFT)}
+          item={itemWithoutDonation(NotificationTypeTypeEnum.SmallerGift)}
         />
       </TestWrapper>,
     );
@@ -290,7 +289,7 @@ describe('NotificationMenuItem', () => {
     const { getByRole } = render(
       <TestWrapper>
         <NotificationMenuItem
-          item={itemWithDonation(NotificationTypeTypeEnum.SMALLER_GIFT)}
+          item={itemWithDonation(NotificationTypeTypeEnum.SmallerGift)}
         />
       </TestWrapper>,
     );
@@ -303,7 +302,7 @@ describe('NotificationMenuItem', () => {
     const { getByRole } = render(
       <TestWrapper>
         <NotificationMenuItem
-          item={itemWithoutDonation(NotificationTypeTypeEnum.SPECIAL_GIFT)}
+          item={itemWithoutDonation(NotificationTypeTypeEnum.SpecialGift)}
         />
       </TestWrapper>,
     );
@@ -316,7 +315,7 @@ describe('NotificationMenuItem', () => {
     const { getByRole } = render(
       <TestWrapper>
         <NotificationMenuItem
-          item={itemWithDonation(NotificationTypeTypeEnum.SPECIAL_GIFT)}
+          item={itemWithDonation(NotificationTypeTypeEnum.SpecialGift)}
         />
       </TestWrapper>,
     );
@@ -329,7 +328,7 @@ describe('NotificationMenuItem', () => {
     const { getByRole } = render(
       <TestWrapper>
         <NotificationMenuItem
-          item={itemWithoutDonation(NotificationTypeTypeEnum.STARTED_GIVING)}
+          item={itemWithoutDonation(NotificationTypeTypeEnum.StartedGiving)}
         />
       </TestWrapper>,
     );
@@ -342,7 +341,7 @@ describe('NotificationMenuItem', () => {
     const { getByRole } = render(
       <TestWrapper>
         <NotificationMenuItem
-          item={itemWithoutDonation(NotificationTypeTypeEnum.STOPPED_GIVING)}
+          item={itemWithoutDonation(NotificationTypeTypeEnum.StoppedGiving)}
         />
       </TestWrapper>,
     );
@@ -356,7 +355,7 @@ describe('NotificationMenuItem', () => {
       <TestWrapper>
         <NotificationMenuItem
           item={itemWithoutDonation(
-            NotificationTypeTypeEnum.THANK_PARTNER_ONCE_PER_YEAR,
+            NotificationTypeTypeEnum.ThankPartnerOncePerYear,
           )}
         />
       </TestWrapper>,
@@ -371,7 +370,7 @@ describe('NotificationMenuItem', () => {
       <TestWrapper>
         <NotificationMenuItem
           item={itemWithoutDonation(
-            NotificationTypeTypeEnum.UPCOMING_ANNIVERSARY,
+            NotificationTypeTypeEnum.UpcomingAnniversary,
           )}
         />
       </TestWrapper>,
@@ -385,7 +384,7 @@ describe('NotificationMenuItem', () => {
     const { getByRole } = render(
       <TestWrapper>
         <NotificationMenuItem
-          item={itemWithoutDonation(NotificationTypeTypeEnum.UPCOMING_BIRTHDAY)}
+          item={itemWithoutDonation(NotificationTypeTypeEnum.UpcomingBirthday)}
         />
       </TestWrapper>,
     );
@@ -415,11 +414,11 @@ describe('NotificationMenuItem', () => {
         <TestWrapper>
           <NotificationMenuItem
             item={itemWithoutDonation(
-              NotificationTypeTypeEnum.CALL_PARTNER_ONCE_PER_YEAR,
+              NotificationTypeTypeEnum.CallPartnerOncePerYear,
               DateTime.local().toISO(),
             )}
             previousItem={itemWithoutDonation(
-              NotificationTypeTypeEnum.CALL_PARTNER_ONCE_PER_YEAR,
+              NotificationTypeTypeEnum.CallPartnerOncePerYear,
               DateTime.local().minus({ months: 2 }).toISO(),
             )}
           />
@@ -444,7 +443,7 @@ describe('NotificationMenuItem', () => {
         },
       };
       cache.writeQuery({
-        query: GET_NOTIFICATIONS_QUERY,
+        query: GetNotificationsDocument,
         variables: {
           accountListId: '1',
           after: null,
@@ -460,7 +459,7 @@ describe('NotificationMenuItem', () => {
         >
           <NotificationMenuItem
             item={itemWithoutDonation(
-              NotificationTypeTypeEnum.CALL_PARTNER_ONCE_PER_YEAR,
+              NotificationTypeTypeEnum.CallPartnerOncePerYear,
             )}
             onClick={handleClick}
           />
@@ -469,7 +468,7 @@ describe('NotificationMenuItem', () => {
       userEvent.click(getByRole('button'));
       await waitFor(() => expect(handleClick).toHaveBeenCalled());
       expect(cache.writeQuery).toHaveBeenCalledWith({
-        query: GET_NOTIFICATIONS_QUERY,
+        query: GetNotificationsDocument,
         variables: {
           accountListId: '1',
           after: null,

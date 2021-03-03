@@ -12,15 +12,16 @@ import { Formik, FormikHelpers } from 'formik';
 import * as yup from 'yup';
 import { DateTime } from 'luxon';
 import SendIcon from '@material-ui/icons/Send';
-import { useMutation, gql } from '@apollo/client';
 import { motion } from 'framer-motion';
 import reject from 'lodash/fp/reject';
 import { v4 as uuidv4 } from 'uuid';
-import { CreateTaskCommentMutation } from '../../../../../../types/CreateTaskCommentMutation';
-import { TaskCommentCreateInput } from '../../../../../../types/globalTypes';
-import { GET_COMMENTS_FOR_TASK_DRAWER_CONTACT_LIST_QUERY } from '../CommentList';
-import { GetCommentsForTaskDrawerCommentListQuery } from '../../../../../../types/GetCommentsForTaskDrawerCommentListQuery';
 import { useApp } from '../../../../App';
+import { TaskCommentCreateInput } from '../../../../../../graphql/types.generated';
+import {
+  GetCommentsForTaskDrawerCommentListDocument,
+  GetCommentsForTaskDrawerCommentListQuery,
+} from '../TaskListComments.generated';
+import { useCreateTaskCommentMutation } from './CreateTaskComment.generated';
 
 const useStyles = makeStyles((theme: Theme) => ({
   div: {
@@ -40,34 +41,6 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-export const CREATE_TASK_COMMENT_MUTATION = gql`
-  mutation CreateTaskCommentMutation(
-    $accountListId: ID!
-    $taskId: ID!
-    $attributes: TaskCommentCreateInput!
-  ) {
-    createTaskComment(
-      input: {
-        accountListId: $accountListId
-        taskId: $taskId
-        attributes: $attributes
-      }
-    ) {
-      comment {
-        id
-        body
-        createdAt
-        me
-        person {
-          id
-          firstName
-          lastName
-        }
-      }
-    }
-  }
-`;
-
 const commentSchema: yup.SchemaOf<
   Omit<TaskCommentCreateInput, 'id'>
 > = yup.object({
@@ -81,9 +54,7 @@ interface Props {
 
 const Form = ({ accountListId, taskId }: Props): ReactElement => {
   const classes = useStyles();
-  const [createTaskComment] = useMutation<CreateTaskCommentMutation>(
-    CREATE_TASK_COMMENT_MUTATION,
-  );
+  const [createTaskComment] = useCreateTaskCommentMutation();
   const {
     state: { user },
   } = useApp();
@@ -120,7 +91,7 @@ const Form = ({ accountListId, taskId }: Props): ReactElement => {
         },
       ) => {
         const query = {
-          query: GET_COMMENTS_FOR_TASK_DRAWER_CONTACT_LIST_QUERY,
+          query: GetCommentsForTaskDrawerCommentListDocument,
           variables: {
             accountListId,
             taskId,

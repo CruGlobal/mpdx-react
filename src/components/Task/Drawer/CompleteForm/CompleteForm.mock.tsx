@@ -1,25 +1,26 @@
 import { MockedResponse } from '@apollo/client/testing';
 import { DateTime } from 'luxon';
 import {
-  CompleteTaskMutation,
-  CompleteTaskMutation_updateTask_task as Task,
-} from '../../../../../types/CompleteTaskMutation';
-import {
-  ResultEnum,
   ActivityTypeEnum,
-  TaskUpdateInput,
-  NotificationTypeEnum,
   NotificationTimeUnitEnum,
-} from '../../../../../types/globalTypes';
-import { GetTaskForTaskDrawerQuery } from '../../../../../types/GetTaskForTaskDrawerQuery';
-import { GET_TASK_FOR_TASK_DRAWER_QUERY } from '../Drawer';
-import { COMPLETE_TASK_MUTATION } from './CompleteForm';
+  NotificationTypeEnum,
+  ResultEnum,
+  TaskUpdateInput,
+} from '../../../../../graphql/types.generated';
+import {
+  GetTaskForTaskDrawerDocument,
+  GetTaskForTaskDrawerQuery,
+} from '../TaskDrawerTask.generated';
+import {
+  CompleteTaskDocument,
+  CompleteTaskMutation,
+} from './CompleteTask.generated';
 
 export const getCompleteTaskForTaskDrawerMock = (): MockedResponse => {
   const data: GetTaskForTaskDrawerQuery = {
     task: {
       id: 'task-1',
-      activityType: ActivityTypeEnum.NEWSLETTER_EMAIL,
+      activityType: ActivityTypeEnum.NewsletterEmail,
       subject: 'On the Journey with the Johnson Family',
       startAt: DateTime.local(2012, 1, 5, 1, 2).toISO(),
       completedAt: DateTime.local(2015, 1, 5, 1, 2).toISO(),
@@ -32,13 +33,13 @@ export const getCompleteTaskForTaskDrawerMock = (): MockedResponse => {
       },
       user: { id: 'user-1', firstName: 'Anderson', lastName: 'Robert' },
       notificationTimeBefore: 20,
-      notificationType: NotificationTypeEnum.BOTH,
-      notificationTimeUnit: NotificationTimeUnitEnum.HOURS,
+      notificationType: NotificationTypeEnum.Both,
+      notificationTimeUnit: NotificationTimeUnitEnum.Hours,
     },
   };
   return {
     request: {
-      query: GET_TASK_FOR_TASK_DRAWER_QUERY,
+      query: GetTaskForTaskDrawerDocument,
       variables: {
         accountListId: 'abc',
         taskId: 'task-1',
@@ -50,20 +51,19 @@ export const getCompleteTaskForTaskDrawerMock = (): MockedResponse => {
   };
 };
 export const completeSimpleTaskMutationMock = (): MockedResponse => {
-  const task: Task = {
+  const task: CompleteTaskMutation['updateTask']['task'] = {
     id: 'task-1',
     completedAt: DateTime.local(2015, 1, 5, 1, 2).toISO(),
     tagList: ['tag-1', 'tag-2'],
-    result: ResultEnum.NONE,
+    result: ResultEnum.None,
     nextAction: null,
   };
   const attributes: TaskUpdateInput = {
     id: 'task-1',
     completedAt: DateTime.local(2015, 1, 5, 1, 2).toISO(),
     tagList: ['tag-1', 'tag-2'],
-    result: ResultEnum.NONE,
+    result: ResultEnum.None,
   };
-  console.log(attributes);
   const data: CompleteTaskMutation = {
     updateTask: {
       task,
@@ -71,7 +71,7 @@ export const completeSimpleTaskMutationMock = (): MockedResponse => {
   };
   return {
     request: {
-      query: COMPLETE_TASK_MUTATION,
+      query: CompleteTaskDocument,
       variables: {
         accountListId: 'abc',
         attributes,
@@ -81,19 +81,19 @@ export const completeSimpleTaskMutationMock = (): MockedResponse => {
   };
 };
 export const completeTaskMutationMock = (): MockedResponse => {
-  const task: Task = {
+  const task: CompleteTaskMutation['updateTask']['task'] = {
     id: 'task-1',
     completedAt: DateTime.local(2015, 1, 5, 1, 2).toISO(),
     tagList: ['tag-1', 'tag-2'],
-    result: ResultEnum.COMPLETED,
-    nextAction: ActivityTypeEnum.APPOINTMENT,
+    result: ResultEnum.Completed,
+    nextAction: ActivityTypeEnum.Appointment,
   };
   const attributes: TaskUpdateInput = {
     id: 'task-1',
     completedAt: DateTime.local(2015, 1, 5, 1, 2).toISO(),
     tagList: ['tag-1', 'tag-2'],
-    result: ResultEnum.COMPLETED,
-    nextAction: ActivityTypeEnum.APPOINTMENT,
+    result: ResultEnum.Completed,
+    nextAction: ActivityTypeEnum.Appointment,
   };
   const data: CompleteTaskMutation = {
     updateTask: {
@@ -102,7 +102,7 @@ export const completeTaskMutationMock = (): MockedResponse => {
   };
   return {
     request: {
-      query: COMPLETE_TASK_MUTATION,
+      query: CompleteTaskDocument,
       variables: {
         accountListId: 'abc',
         attributes,

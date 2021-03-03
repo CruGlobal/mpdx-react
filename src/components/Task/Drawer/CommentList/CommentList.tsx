@@ -1,11 +1,10 @@
 import React, { ReactElement, useRef, useEffect } from 'react';
 import { makeStyles, Theme, Box, Card, CardContent } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
-import { gql, useQuery } from '@apollo/client';
-import { GetCommentsForTaskDrawerCommentListQuery } from '../../../../../types/GetCommentsForTaskDrawerCommentListQuery';
 import illustration4 from '../../../../images/drawkit/grape/drawkit-grape-pack-illustration-4.svg';
 import TaskDrawerCommentListItem from './Item';
 import TaskDrawerCommentListForm from './Form';
+import { useGetCommentsForTaskDrawerCommentListQuery } from './TaskListComments.generated';
 
 const useStyles = makeStyles((theme: Theme) => ({
   cardContent: {
@@ -26,30 +25,6 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-export const GET_COMMENTS_FOR_TASK_DRAWER_CONTACT_LIST_QUERY = gql`
-  query GetCommentsForTaskDrawerCommentListQuery(
-    $accountListId: ID!
-    $taskId: ID!
-  ) {
-    task(accountListId: $accountListId, id: $taskId) {
-      id
-      comments {
-        nodes {
-          id
-          body
-          createdAt
-          me
-          person {
-            id
-            firstName
-            lastName
-          }
-        }
-      }
-    }
-  }
-`;
-
 interface Props {
   accountListId: string;
   taskId: string;
@@ -62,15 +37,12 @@ const TaskDrawerCommentList = ({
   const classes = useStyles();
   const { t } = useTranslation();
 
-  const { data, loading } = useQuery<GetCommentsForTaskDrawerCommentListQuery>(
-    GET_COMMENTS_FOR_TASK_DRAWER_CONTACT_LIST_QUERY,
-    {
-      variables: {
-        accountListId,
-        taskId,
-      },
+  const { data, loading } = useGetCommentsForTaskDrawerCommentListQuery({
+    variables: {
+      accountListId,
+      taskId,
     },
-  );
+  });
 
   const ref = useRef(null);
 

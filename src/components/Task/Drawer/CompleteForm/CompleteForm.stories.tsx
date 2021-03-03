@@ -4,9 +4,9 @@ import { DateTime } from 'luxon';
 import { getDataForTaskDrawerMock } from '../Form/Form.mock';
 import {
   ActivityTypeEnum,
-  NotificationTypeEnum,
   NotificationTimeUnitEnum,
-} from '../../../../../types/globalTypes';
+  NotificationTypeEnum,
+} from '../../../../../graphql/types.generated';
 import {
   completeTaskMutationMock,
   completeSimpleTaskMutationMock,
@@ -19,7 +19,7 @@ export default {
 
 const task = {
   id: 'task-1',
-  activityType: ActivityTypeEnum.NEWSLETTER_EMAIL,
+  activityType: ActivityTypeEnum.NewsletterEmail,
   subject: 'On the Journey with the Johnson Family',
   startAt: DateTime.local(2012, 1, 5, 1, 2).toISO(),
   completedAt: null,
@@ -32,8 +32,8 @@ const task = {
   },
   user: { id: 'user-1', firstName: 'Anderson', lastName: 'Robert' },
   notificationTimeBefore: 20,
-  notificationType: NotificationTypeEnum.BOTH,
-  notificationTimeUnit: NotificationTimeUnitEnum.HOURS,
+  notificationType: NotificationTypeEnum.Both,
+  notificationTimeUnit: NotificationTimeUnitEnum.Hours,
 };
 
 export const Default = (): ReactElement => {
@@ -70,7 +70,7 @@ export const WithResults = (): ReactElement => {
       <TaskDrawerCompletedForm
         task={{
           ...task,
-          activityType: ActivityTypeEnum.CALL,
+          activityType: ActivityTypeEnum.Call,
           completedAt: DateTime.local(2015, 1, 5, 1, 2).toISO(),
         }}
         accountListId="abc"

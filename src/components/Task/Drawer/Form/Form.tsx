@@ -22,22 +22,24 @@ import { DatePicker, TimePicker } from '@material-ui/pickers';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Formik } from 'formik';
 import * as yup from 'yup';
-import { gql, useQuery, useMutation } from '@apollo/client';
 import { useSnackbar } from 'notistack';
 import { DateTime } from 'luxon';
-import {
-  ActivityTypeEnum,
-  NotificationTypeEnum,
-  NotificationTimeUnitEnum,
-} from '../../../../../types/globalTypes';
+import { DeepOmit } from 'ts-essentials';
 import { dateFormat } from '../../../../lib/intlFormat/intlFormat';
 import {
+  ActivityTypeEnum,
+  NotificationTimeUnitEnum,
+  NotificationTypeEnum,
+  Task,
+} from '../../../../../graphql/types.generated';
+import { GetTaskForTaskDrawerQuery } from '../TaskDrawerTask.generated';
+import {
+  useGetDataForTaskDrawerQuery,
+  useCreateTaskMutation,
+  useUpdateTaskMutation,
   GetDataForTaskDrawerQuery,
-  GetDataForTaskDrawerQuery_contacts_nodes,
-} from '../../../../../types/GetDataForTaskDrawerQuery';
-import { GetTaskForTaskDrawerQuery_task as Task } from '../../../../../types/GetTaskForTaskDrawerQuery';
-import { CreateTaskMutation } from '../../../../../types/CreateTaskMutation';
-import { UpdateTaskMutation } from '../../../../../types/UpdateTaskMutation';
+  TaskMutationResponseFragment,
+} from './TaskDrawer.generated';
 
 const useStyles = makeStyles((theme: Theme) => ({
   formControl: {
@@ -58,129 +60,52 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-export const GET_DATA_FOR_TASK_DRAWER_QUERY = gql`
-  query GetDataForTaskDrawerQuery($accountListId: ID!) {
-    accountList(id: $accountListId) {
-      id
-      taskTagList
-    }
-    accountListUsers(accountListId: $accountListId) {
-      nodes {
-        id
-        user {
-          id
-          firstName
-          lastName
-        }
-      }
-    }
-    contacts(accountListId: $accountListId) {
-      nodes {
-        id
-        name
-      }
-    }
+type TaskMutationResponseFragmentWithoutTypename = DeepOmit<
+  TaskMutationResponseFragment,
+  {
+    __typename?: never;
+    contacts: { __typename?: never };
+    user?: { __typename?: never };
   }
-`;
+>;
 
-export const CREATE_TASK_MUTATION = gql`
-  mutation CreateTaskMutation(
-    $accountListId: ID!
-    $attributes: TaskCreateInput!
-  ) {
-    createTask(
-      input: { accountListId: $accountListId, attributes: $attributes }
-    ) {
-      task {
-        id
-        activityType
-        subject
-        startAt
-        completedAt
-        tagList
-        contacts {
-          nodes {
-            id
-            name
-          }
-        }
-        user {
-          id
-          firstName
-          lastName
-        }
-        notificationTimeBefore
-        notificationType
-        notificationTimeUnit
-      }
-    }
-  }
-`;
-
-export const UPDATE_TASK_MUTATION = gql`
-  mutation UpdateTaskMutation(
-    $accountListId: ID!
-    $attributes: TaskUpdateInput!
-  ) {
-    updateTask(
-      input: { accountListId: $accountListId, attributes: $attributes }
-    ) {
-      task {
-        id
-        activityType
-        subject
-        startAt
-        completedAt
-        tagList
-        contacts {
-          nodes {
-            id
-            name
-          }
-        }
-        user {
-          id
-          firstName
-          lastName
-        }
-        notificationTimeBefore
-        notificationType
-        notificationTimeUnit
-      }
-    }
-  }
-`;
-
-const taskSchema: yup.SchemaOf<Task> = yup.object({
-  id: yup.string().nullable(),
-  activityType: yup.mixed<ActivityTypeEnum>(),
-  subject: yup.string().required(),
-  startAt: yup.date().nullable(),
-  completedAt: yup.date().nullable(),
-  tagList: yup.array().of(yup.string()).default([]),
-  contacts: yup.object({
-    nodes: yup
-      .array()
-      .of(yup.object({ id: yup.string(), name: yup.string() }))
+const taskSchema: yup.SchemaOf<TaskMutationResponseFragmentWithoutTypename> = yup.object(
+  {
+    id: yup.string().nullable(),
+    activityType: yup.mixed<ActivityTypeEnum>(),
+    subject: yup.string().required(),
+    startAt: yup.date().nullable(),
+    completedAt: yup.date().nullable(),
+    tagList: yup.array().of(yup.string()).default([]),
+    contacts: yup.object({
+      nodes: yup
+        .array()
+        .of(
+          yup.object({
+            id: yup.string(),
+            name: yup.string(),
+          }),
+        )
+        .nullable(),
+    }),
+    user: yup
+      .object({
+        id: yup.string(),
+        firstName: yup.string(),
+        lastName: yup.string(),
+      })
       .nullable(),
-  }),
-  user: yup
-    .object({
-      id: yup.string(),
-      firstName: yup.string(),
-      lastName: yup.string(),
-    })
-    .nullable(),
-  notificationTimeBefore: yup.number().nullable(),
-  notificationType: yup.mixed<NotificationTypeEnum>(),
-  notificationTimeUnit: yup.mixed<NotificationTimeUnitEnum>(),
-});
+    notificationTimeBefore: yup.number().nullable(),
+    notificationType: yup.mixed<NotificationTypeEnum>(),
+    notificationTimeUnit: yup.mixed<NotificationTimeUnitEnum>(),
+  },
+);
 
 interface Props {
   accountListId: string;
-  task?: Task;
+  task?: GetTaskForTaskDrawerQuery['task'];
   onClose: () => void;
-  defaultValues?: Partial<Task>;
+  defaultValues?: Partial<GetTaskForTaskDrawerQuery['task']>;
 }
 
 const TaskDrawerForm = ({
@@ -189,7 +114,7 @@ const TaskDrawerForm = ({
   onClose,
   defaultValues,
 }: Props): ReactElement => {
-  const initialTask: Task = task || {
+  const initialTask: TaskMutationResponseFragmentWithoutTypename = task || {
     id: null,
     activityType: null,
     subject: '',
@@ -225,18 +150,11 @@ const TaskDrawerForm = ({
       setFieldValue('notificationTimeUnit', null);
     }
   };
-  const { data, loading } = useQuery<GetDataForTaskDrawerQuery>(
-    GET_DATA_FOR_TASK_DRAWER_QUERY,
-    {
-      variables: { accountListId },
-    },
-  );
-  const [createTask, { loading: creating }] = useMutation<CreateTaskMutation>(
-    CREATE_TASK_MUTATION,
-  );
-  const [updateTask, { loading: saving }] = useMutation<UpdateTaskMutation>(
-    UPDATE_TASK_MUTATION,
-  );
+  const { data, loading } = useGetDataForTaskDrawerQuery({
+    variables: { accountListId },
+  });
+  const [createTask, { loading: creating }] = useCreateTaskMutation();
+  const [updateTask, { loading: saving }] = useUpdateTaskMutation();
   const onSubmit = async (values: Task): Promise<void> => {
     const attributes = {
       ...values,
@@ -268,6 +186,7 @@ const TaskDrawerForm = ({
       enqueueSnackbar(t('Task saved successfully'), { variant: 'success' });
       onClose();
     } catch (error) {
+      debugger;
       enqueueSnackbar(error.message, { variant: 'error' });
     }
   };
@@ -326,7 +245,7 @@ const TaskDrawerForm = ({
                     onChange={handleChange('activityType')}
                   >
                     <MenuItem value={null}>{t('None')}</MenuItem>
-                    {Object.keys(ActivityTypeEnum).map((val) => (
+                    {Object.values(ActivityTypeEnum).map((val) => (
                       <MenuItem key={val} value={val}>
                         {t(val) /* manually added to translation file */}
                       </MenuItem>
@@ -486,7 +405,9 @@ const TaskDrawerForm = ({
                   }
                   getOptionLabel={({
                     name,
-                  }: GetDataForTaskDrawerQuery_contacts_nodes): string => name}
+                  }: GetDataForTaskDrawerQuery['contacts']['nodes'][0]): string =>
+                    name
+                  }
                   loading={loading}
                   renderInput={(params): ReactElement => (
                     <TextField
@@ -557,7 +478,7 @@ const TaskDrawerForm = ({
                               onChange={handleChange('notificationTimeUnit')}
                             >
                               <MenuItem value={null}>{t('None')}</MenuItem>
-                              {Object.keys(NotificationTimeUnitEnum).map(
+                              {Object.values(NotificationTimeUnitEnum).map(
                                 (val) => (
                                   <MenuItem key={val} value={val}>
                                     {
@@ -582,15 +503,17 @@ const TaskDrawerForm = ({
                               onChange={handleChange('notificationType')}
                             >
                               <MenuItem value={null}>{t('None')}</MenuItem>
-                              {Object.keys(NotificationTypeEnum).map((val) => (
-                                <MenuItem key={val} value={val}>
-                                  {
-                                    t(
-                                      val,
-                                    ) /* manually added to translation file */
-                                  }
-                                </MenuItem>
-                              ))}
+                              {Object.values(NotificationTypeEnum).map(
+                                (val) => (
+                                  <MenuItem key={val} value={val}>
+                                    {
+                                      t(
+                                        val,
+                                      ) /* manually added to translation file */
+                                    }
+                                  </MenuItem>
+                                ),
+                              )}
                             </Select>
                           </FormControl>
                         </Grid>

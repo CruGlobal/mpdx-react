@@ -6,6 +6,7 @@ import {
   getTasksForTaskListMock,
   getFilteredTasksForTaskListMock,
 } from '../List/List.mock';
+import { ActivityTypeEnum } from '../../../../graphql/types.generated';
 import TaskHome from '.';
 
 describe('TaskHome', () => {
@@ -23,7 +24,8 @@ describe('TaskHome', () => {
 
   it('has correct overrides', async () => {
     const filter = {
-      activityType: ['APPOINTMENT'],
+      accountListId: 'account-list-1',
+      activityType: [ActivityTypeEnum.Appointment],
       completed: true,
       tags: ['tag-1', 'tag-2'],
       userIds: ['user-1'],

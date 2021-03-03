@@ -1,0 +1,18 @@
+query GetCommentsForTaskDrawerCommentList($accountListId: ID!, $taskId: ID!) {
+  task(accountListId: $accountListId, id: $taskId) {
+    id
+    comments {
+      nodes {
+        id
+        body
+        createdAt
+        me
+        person {
+          id
+          firstName
+          lastName
+        }
+      }
+    }
+  }
+}

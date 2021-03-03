@@ -20,19 +20,19 @@ import { DatePicker, TimePicker } from '@material-ui/pickers';
 import { Formik } from 'formik';
 import * as yup from 'yup';
 import { DateTime } from 'luxon';
-import { gql, useQuery, useMutation } from '@apollo/client';
 import { useSnackbar } from 'notistack';
 import { dateFormat } from '../../../../lib/intlFormat/intlFormat';
-import { GetDataForTaskDrawerQuery } from '../../../../../types/GetDataForTaskDrawerQuery';
-import { GetTaskForTaskDrawerQuery_task as Task } from '../../../../../types/GetTaskForTaskDrawerQuery';
-import { GET_DATA_FOR_TASK_DRAWER_QUERY } from '../Form/Form';
-import {
-  ResultEnum,
-  ActivityTypeEnum,
-  TaskUpdateInput,
-} from '../../../../../types/globalTypes';
-import { CompleteTaskMutation } from '../../../../../types/CompleteTaskMutation';
 import { useApp } from '../../../App';
+import {
+  ActivityTypeEnum,
+  ContactConnection,
+  ResultEnum,
+  TaskUpdateInput,
+  UserScopedToAccountList,
+} from '../../../../../graphql/types.generated';
+import { GetTaskForTaskDrawerQuery } from '../TaskDrawerTask.generated';
+import { useGetDataForTaskDrawerQuery } from '../Form/TaskDrawer.generated';
+import { useCompleteTaskMutation } from './CompleteTask.generated';
 
 const useStyles = makeStyles((theme: Theme) => ({
   formControl: {
@@ -53,25 +53,6 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-export const COMPLETE_TASK_MUTATION = gql`
-  mutation CompleteTaskMutation(
-    $accountListId: ID!
-    $attributes: TaskUpdateInput!
-  ) {
-    updateTask(
-      input: { accountListId: $accountListId, attributes: $attributes }
-    ) {
-      task {
-        id
-        result
-        nextAction
-        tagList
-        completedAt
-      }
-    }
-  }
-`;
-
 const taskSchema: yup.SchemaOf<
   Required<
     Pick<
@@ -89,7 +70,7 @@ const taskSchema: yup.SchemaOf<
 
 interface Props {
   accountListId: string;
-  task: Task;
+  task: GetTaskForTaskDrawerQuery['task'];
   onClose: () => void;
 }
 
@@ -101,7 +82,7 @@ const TaskDrawerCompleteForm = ({
   const initialTask: TaskUpdateInput = {
     id: task.id,
     completedAt: task.completedAt || DateTime.local().toISO(),
-    result: ResultEnum.NONE,
+    result: ResultEnum.None,
     tagList: task.tagList,
   };
 
@@ -109,15 +90,10 @@ const TaskDrawerCompleteForm = ({
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
   const { openTaskDrawer } = useApp();
-  const { data } = useQuery<GetDataForTaskDrawerQuery>(
-    GET_DATA_FOR_TASK_DRAWER_QUERY,
-    {
-      variables: { accountListId },
-    },
-  );
-  const [updateTask, { loading: saving }] = useMutation<CompleteTaskMutation>(
-    COMPLETE_TASK_MUTATION,
-  );
+  const { data } = useGetDataForTaskDrawerQuery({
+    variables: { accountListId },
+  });
+  const [updateTask, { loading: saving }] = useCompleteTaskMutation();
   const onSubmit = async (attributes: TaskUpdateInput): Promise<void> => {
     try {
       await updateTask({ variables: { accountListId, attributes } });
@@ -125,13 +101,14 @@ const TaskDrawerCompleteForm = ({
       onClose();
       if (
         attributes.nextAction &&
-        attributes.nextAction !== ActivityTypeEnum.NONE
+        attributes.nextAction !== ActivityTypeEnum.None
       ) {
         openTaskDrawer({
           defaultValues: {
             activityType: attributes.nextAction,
-            contacts: task.contacts,
-            user: task.user,
+            // TODO: Use fragments to ensure all required fields are loaded
+            contacts: task.contacts as ContactConnection,
+            user: task.user as UserScopedToAccountList,
           },
         });
       }
@@ -141,28 +118,28 @@ const TaskDrawerCompleteForm = ({
   };
 
   const availableResults = ((): ResultEnum[] => {
-    const common = [ResultEnum.NONE, ResultEnum.COMPLETED];
+    const common = [ResultEnum.None, ResultEnum.Completed];
     switch (task.activityType) {
-      case ActivityTypeEnum.CALL:
+      case ActivityTypeEnum.Call:
         return [
           ...common,
-          ResultEnum.ATTEMPTED,
-          ResultEnum.ATTEMPTED_LEFT_MESSAGE,
-          ResultEnum.RECEIVED,
+          ResultEnum.Attempted,
+          ResultEnum.AttemptedLeftMessage,
+          ResultEnum.Received,
         ];
-      case ActivityTypeEnum.APPOINTMENT:
-        return [...common, ResultEnum.ATTEMPTED];
-      case ActivityTypeEnum.EMAIL:
-      case ActivityTypeEnum.TEXT_MESSAGE:
-      case ActivityTypeEnum.FACEBOOK_MESSAGE:
-      case ActivityTypeEnum.TALK_TO_IN_PERSON:
-      case ActivityTypeEnum.LETTER:
-      case ActivityTypeEnum.PRE_CALL_LETTER:
-      case ActivityTypeEnum.REMINDER_LETTER:
-      case ActivityTypeEnum.SUPPORT_LETTER:
-      case ActivityTypeEnum.THANK:
-        return [...common, ResultEnum.RECEIVED];
-      case ActivityTypeEnum.PRAYER_REQUEST:
+      case ActivityTypeEnum.Appointment:
+        return [...common, ResultEnum.Attempted];
+      case ActivityTypeEnum.Email:
+      case ActivityTypeEnum.TextMessage:
+      case ActivityTypeEnum.FacebookMessage:
+      case ActivityTypeEnum.TalkToInPerson:
+      case ActivityTypeEnum.Letter:
+      case ActivityTypeEnum.PreCallLetter:
+      case ActivityTypeEnum.ReminderLetter:
+      case ActivityTypeEnum.SupportLetter:
+      case ActivityTypeEnum.Thank:
+        return [...common, ResultEnum.Received];
+      case ActivityTypeEnum.PrayerRequest:
         return common;
       default:
         return [];
@@ -171,37 +148,37 @@ const TaskDrawerCompleteForm = ({
 
   const availableNextActions = ((): ActivityTypeEnum[] => {
     const common = [
-      ActivityTypeEnum.NONE,
-      ActivityTypeEnum.CALL,
-      ActivityTypeEnum.EMAIL,
-      ActivityTypeEnum.TEXT_MESSAGE,
-      ActivityTypeEnum.FACEBOOK_MESSAGE,
-      ActivityTypeEnum.TALK_TO_IN_PERSON,
+      ActivityTypeEnum.None,
+      ActivityTypeEnum.Call,
+      ActivityTypeEnum.Email,
+      ActivityTypeEnum.TextMessage,
+      ActivityTypeEnum.FacebookMessage,
+      ActivityTypeEnum.TalkToInPerson,
     ];
     switch (task.activityType) {
-      case ActivityTypeEnum.CALL:
-      case ActivityTypeEnum.EMAIL:
-      case ActivityTypeEnum.TEXT_MESSAGE:
-      case ActivityTypeEnum.FACEBOOK_MESSAGE:
-      case ActivityTypeEnum.TALK_TO_IN_PERSON:
-      case ActivityTypeEnum.PRAYER_REQUEST:
+      case ActivityTypeEnum.Call:
+      case ActivityTypeEnum.Email:
+      case ActivityTypeEnum.TextMessage:
+      case ActivityTypeEnum.FacebookMessage:
+      case ActivityTypeEnum.TalkToInPerson:
+      case ActivityTypeEnum.PrayerRequest:
         return [
           ...common,
-          ActivityTypeEnum.APPOINTMENT,
-          ActivityTypeEnum.PRAYER_REQUEST,
-          ActivityTypeEnum.THANK,
+          ActivityTypeEnum.Appointment,
+          ActivityTypeEnum.PrayerRequest,
+          ActivityTypeEnum.Thank,
         ];
-      case ActivityTypeEnum.APPOINTMENT:
+      case ActivityTypeEnum.Appointment:
         return [
           ...common,
-          ActivityTypeEnum.PRAYER_REQUEST,
-          ActivityTypeEnum.THANK,
+          ActivityTypeEnum.PrayerRequest,
+          ActivityTypeEnum.Thank,
         ];
-      case ActivityTypeEnum.LETTER:
-      case ActivityTypeEnum.PRE_CALL_LETTER:
-      case ActivityTypeEnum.REMINDER_LETTER:
-      case ActivityTypeEnum.SUPPORT_LETTER:
-      case ActivityTypeEnum.THANK:
+      case ActivityTypeEnum.Letter:
+      case ActivityTypeEnum.PreCallLetter:
+      case ActivityTypeEnum.ReminderLetter:
+      case ActivityTypeEnum.SupportLetter:
+      case ActivityTypeEnum.Thank:
         return common;
       default:
         return [];

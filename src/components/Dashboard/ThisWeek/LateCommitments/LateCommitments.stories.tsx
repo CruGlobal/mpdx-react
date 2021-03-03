@@ -1,6 +1,6 @@
 import React, { ReactElement } from 'react';
 import { Box } from '@material-ui/core';
-import { GetThisWeekQuery_latePledgeContacts } from '../../../../../types/GetThisWeekQuery';
+import { GetThisWeekQuery } from '../GetThisWeek.generated';
 import LateCommitments from '.';
 
 export default {
@@ -14,7 +14,7 @@ export const Default = (): ReactElement => {
     lateAt: '2012-10-01',
   };
 
-  const latePledgeContacts: GetThisWeekQuery_latePledgeContacts = {
+  const latePledgeContacts: GetThisWeekQuery['latePledgeContacts'] = {
     nodes: [
       { ...contact, id: 'contact_1' },
       { ...contact, id: 'contact_2' },
@@ -30,7 +30,7 @@ export const Default = (): ReactElement => {
 };
 
 export const Empty = (): ReactElement => {
-  const latePledgeContacts: GetThisWeekQuery_latePledgeContacts = {
+  const latePledgeContacts: GetThisWeekQuery['latePledgeContacts'] = {
     nodes: [],
     totalCount: 0,
   };

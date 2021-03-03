@@ -16704,6 +16704,7 @@ fsevents@~2.3.1:
     recharts: ^2.0.6
     regenerator-runtime: ^0.13.7
     storybook-addon-i18next: ^1.3.0
+    ts-essentials: ^7.0.1
     typescript: ^4.1.5
     url-loader: 4.1.1
     uuid: ^8.3.2
@@ -22460,6 +22461,15 @@ resolve@^1.18.1:
   version: 2.0.12
   resolution: "ts-essentials@npm:2.0.12"
   checksum: 40556ad8f5f1628f3e2a2eee068791e430fb05668899f90ccec26acde3730cd27e311c34bf1ac6c963e19edeeb7be2d3130e914f9a489a986df2f8a020d38ec3
+  languageName: node
+  linkType: hard
+
+"ts-essentials@npm:^7.0.1":
+  version: 7.0.1
+  resolution: "ts-essentials@npm:7.0.1"
+  peerDependencies:
+    typescript: ">=3.7.0"
+  checksum: f3b7beedce99ac7a1af1f150ede1a8e5f1195fc7de4c01c308df33a2acfed8fa86ac3d898bdfc3a9132ac897799bf326c74187a088d297724fa7ab8ffd323329
   languageName: node
   linkType: hard
 

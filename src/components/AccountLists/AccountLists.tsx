@@ -12,10 +12,10 @@ import {
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
-import { GetAccountListsQuery } from '../../../types/GetAccountListsQuery';
 import PageHeading from '../PageHeading';
 import AnimatedCard from '../AnimatedCard';
 import { currencyFormat, percentageFormat } from '../../lib/intlFormat';
+import { GetAccountListsQuery } from '../../../pages/GetAccountLists.generated';
 
 interface Props {
   data: GetAccountListsQuery;

@@ -2,6 +2,7 @@ import React, { ReactElement } from 'react';
 import { MockedProvider } from '@apollo/client/testing';
 import { AppProvider } from '../../../../App';
 import { getCommentsForTaskDrawerCommentListMock } from '../CommentList.mock';
+import { User } from '../../../../../../graphql/types.generated';
 import { createTaskCommentMutationMock } from './Form.mock';
 import TaskDrawerCommentListForm from '.';
 
@@ -20,7 +21,7 @@ export const Default = (): ReactElement => {
     >
       <AppProvider
         initialState={{
-          user: { id: 'user-1', firstName: 'John', lastName: 'Smith' },
+          user: { id: 'user-1', firstName: 'John', lastName: 'Smith' } as User,
         }}
       >
         <TaskDrawerCommentListForm accountListId="abc" taskId="task-1" />

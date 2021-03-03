@@ -1,7 +1,9 @@
 import { DateTime, Interval } from 'luxon';
 import { MockedResponse } from '@apollo/client/testing';
-import { GetWeeklyActivityQuery } from '../../../../../types/GetWeeklyActivityQuery';
-import { GET_WEEKLY_ACTIVITY_QUERY } from './WeeklyActivity';
+import {
+  GetWeeklyActivityDocument,
+  GetWeeklyActivityQuery,
+} from './GetWeeklyActivity.generated';
 
 const data: GetWeeklyActivityQuery = {
   completedCalls: { totalCount: 1234 },
@@ -29,7 +31,7 @@ export const GetWeeklyActivityQueryDefaultMocks = (): MockedResponse[] => {
   return [
     {
       request: {
-        query: GET_WEEKLY_ACTIVITY_QUERY,
+        query: GetWeeklyActivityDocument,
         variables: {
           accountListId: 'abc',
           startOfWeek: weekInterval.start.toISO(),
@@ -42,7 +44,7 @@ export const GetWeeklyActivityQueryDefaultMocks = (): MockedResponse[] => {
     },
     {
       request: {
-        query: GET_WEEKLY_ACTIVITY_QUERY,
+        query: GetWeeklyActivityDocument,
         variables: {
           accountListId: 'abc',
           startOfWeek: weekInterval.start.minus({ weeks: 1 }).toISO(),
@@ -55,7 +57,7 @@ export const GetWeeklyActivityQueryDefaultMocks = (): MockedResponse[] => {
     },
     {
       request: {
-        query: GET_WEEKLY_ACTIVITY_QUERY,
+        query: GetWeeklyActivityDocument,
         variables: {
           accountListId: 'abc',
           startOfWeek: weekInterval.start.toISO(),
@@ -87,7 +89,7 @@ export const GetWeeklyActivityQueryEmptyMocks = (): MockedResponse[] => {
   return [
     {
       request: {
-        query: GET_WEEKLY_ACTIVITY_QUERY,
+        query: GetWeeklyActivityDocument,
         variables: {
           accountListId: 'abc',
           startOfWeek: weekInterval.start.toISO(),

@@ -19,12 +19,9 @@ import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { DateTime } from 'luxon';
 import AnimatedCard from '../../../AnimatedCard';
-import {
-  GetThisWeekQuery_onHandReferrals,
-  GetThisWeekQuery_recentReferrals,
-} from '../../../../../types/GetThisWeekQuery';
 import HandoffLink from '../../../HandoffLink';
 import illustration4 from '../../../../images/drawkit/grape/drawkit-grape-pack-illustration-4.svg';
+import { GetThisWeekQuery } from '../GetThisWeek.generated';
 
 const useStyles = makeStyles((theme: Theme) => ({
   div: {
@@ -67,8 +64,8 @@ const useStyles = makeStyles((theme: Theme) => ({
 interface ReferralsTabProps {
   loading: boolean;
   referrals:
-    | GetThisWeekQuery_onHandReferrals
-    | GetThisWeekQuery_recentReferrals;
+    | GetThisWeekQuery['onHandReferrals']
+    | GetThisWeekQuery['recentReferrals'];
   tab: 'Recent' | 'OnHand';
 }
 
@@ -182,8 +179,8 @@ const ReferralsTab = ({
 
 interface Props {
   loading?: boolean;
-  recentReferrals?: GetThisWeekQuery_recentReferrals;
-  onHandReferrals?: GetThisWeekQuery_onHandReferrals;
+  recentReferrals?: GetThisWeekQuery['recentReferrals'];
+  onHandReferrals?: GetThisWeekQuery['onHandReferrals'];
 }
 
 const Referrals = ({

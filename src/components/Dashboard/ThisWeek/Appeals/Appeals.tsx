@@ -14,11 +14,11 @@ import { Skeleton } from '@material-ui/lab';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import AnimatedCard from '../../../AnimatedCard';
-import { GetThisWeekQuery_accountList_primaryAppeal } from '../../../../../types/GetThisWeekQuery';
 import StyledProgress from '../../../StyledProgress';
 import { currencyFormat, percentageFormat } from '../../../../lib/intlFormat';
 import HandoffLink from '../../../HandoffLink';
 import illustration13 from '../../../../images/drawkit/grape/drawkit-grape-pack-illustration-13.svg';
+import { GetThisWeekQuery } from '../GetThisWeek.generated';
 
 const useStyles = makeStyles((theme: Theme) => ({
   div: {
@@ -89,7 +89,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 interface Props {
   loading?: boolean;
-  appeal?: GetThisWeekQuery_accountList_primaryAppeal;
+  appeal?: GetThisWeekQuery['accountList']['primaryAppeal'];
 }
 
 const Appeals = ({ loading, appeal }: Props): ReactElement => {

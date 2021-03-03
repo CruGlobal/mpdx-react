@@ -1,4 +1,3 @@
-import { useMutation, gql } from '@apollo/client';
 import {
   Avatar,
   Badge,
@@ -14,35 +13,23 @@ import { Skeleton } from '@material-ui/lab';
 import React, { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DateTime } from 'luxon';
-import { AcknowledgeUserNotificationMutation } from '../../../../../../../types/AcknowledgeUserNotificationMutation';
-import {
-  GetNotificationsQuery,
-  GetNotificationsQuery_userNotifications_edges_node as Notification,
-} from '../../../../../../../types/GetNotificationsQuery';
-import { NotificationTypeTypeEnum } from '../../../../../../../types/globalTypes';
 import {
   dateFormat,
   monthYearFormat,
 } from '../../../../../../lib/intlFormat/intlFormat';
 import { useApp } from '../../../../../App';
 import HandoffLink from '../../../../../HandoffLink';
-import GET_NOTIFICATIONS_QUERY from '../getNotificationsQuery.graphql';
-
-export const ACKNOWLEDGE_USER_NOTIFICATION_MUTATION = gql`
-  mutation AcknowledgeUserNotificationMutation($notificationId: ID!) {
-    acknowledgeUserNotification(input: { notificationId: $notificationId }) {
-      notification {
-        id
-        read
-      }
-    }
-  }
-`;
+import { NotificationTypeTypeEnum } from '../../../../../../../graphql/types.generated';
+import {
+  GetNotificationsDocument,
+  GetNotificationsQuery,
+} from '../GetNotificationsQuery.generated';
+import { useAcknowledgeUserNotificationMutation } from './AcknowledgeUserNotification.generated';
 
 interface Props {
-  item?: Notification;
+  item?: GetNotificationsQuery['userNotifications']['edges'][0]['node'];
   last?: boolean;
-  previousItem?: Notification;
+  previousItem?: GetNotificationsQuery['userNotifications']['edges'][0]['node'];
   onClick?: () => void;
 }
 
@@ -75,9 +62,7 @@ const NotificationMenuItem = ({
   const amount = item.notification.donation?.amount;
   const [
     acknoweldgeUserNotification,
-  ] = useMutation<AcknowledgeUserNotificationMutation>(
-    ACKNOWLEDGE_USER_NOTIFICATION_MUTATION,
-  );
+  ] = useAcknowledgeUserNotificationMutation();
   const handleClick = async () => {
     let optimisticResponse = true;
     if (!item.read) {
@@ -95,7 +80,7 @@ const NotificationMenuItem = ({
           if (!optimisticResponse) return;
 
           const query = {
-            query: GET_NOTIFICATIONS_QUERY,
+            query: GetNotificationsDocument,
             variables: {
               accountListId: state.accountListId,
               after: null,
@@ -119,10 +104,10 @@ const NotificationMenuItem = ({
   let message;
 
   switch (item.notification.notificationType.type) {
-    case NotificationTypeTypeEnum.CALL_PARTNER_ONCE_PER_YEAR:
+    case NotificationTypeTypeEnum.CallPartnerOncePerYear:
       message = t('No call logged in the past year');
       break;
-    case NotificationTypeTypeEnum.LARGER_GIFT:
+    case NotificationTypeTypeEnum.LargerGift:
       if (amount) {
         message = t(
           'Gave a gift of {{ amount, currency }} which is greater than their commitment amount',
@@ -134,7 +119,7 @@ const NotificationMenuItem = ({
         message = t('Gave a larger gift than their commitment amount');
       }
       break;
-    case NotificationTypeTypeEnum.LONG_TIME_FRAME_GIFT:
+    case NotificationTypeTypeEnum.LongTimeFrameGift:
       if (amount) {
         message = t(
           'Gave a gift of {{ amount, currency }} where commitment frequency is set to semi-annual or greater',
@@ -148,35 +133,35 @@ const NotificationMenuItem = ({
         );
       }
       break;
-    case NotificationTypeTypeEnum.MISSING_ADDRESS_IN_NEWSLETTER:
+    case NotificationTypeTypeEnum.MissingAddressInNewsletter:
       message = t(
         'On your physical newsletter list but has no mailing address',
       );
       break;
-    case NotificationTypeTypeEnum.MISSING_EMAIL_IN_NEWSLETTER:
+    case NotificationTypeTypeEnum.MissingEmailInNewsletter:
       message = t(
         'On your email newsletter list but has no people with a valid email address',
       );
       break;
-    case NotificationTypeTypeEnum.NEW_DESIGNATION_ACCOUNT_SUBSCRIPTION:
+    case NotificationTypeTypeEnum.NewDesignationAccountSubscription:
       message = t('Added through your Give Site subscription form');
       break;
-    case NotificationTypeTypeEnum.NEW_PARTNER_DUPLICATE_MERGED:
+    case NotificationTypeTypeEnum.NewPartnerDuplicateMerged:
       message = t('Added and merged');
       break;
-    case NotificationTypeTypeEnum.NEW_PARTNER_DUPLICATE_NOT_MERGED:
+    case NotificationTypeTypeEnum.NewPartnerDuplicateNotMerged:
       message = t('Added but not merged');
       break;
-    case NotificationTypeTypeEnum.NEW_PARTNER_NO_DUPLICATE:
+    case NotificationTypeTypeEnum.NewPartnerNoDuplicate:
       message = t('Added with no duplicate found');
       break;
-    case NotificationTypeTypeEnum.RECONTINUING_GIFT:
+    case NotificationTypeTypeEnum.RecontinuingGift:
       message = t('Recontinued giving');
       break;
-    case NotificationTypeTypeEnum.REMIND_PARTNER_IN_ADVANCE:
+    case NotificationTypeTypeEnum.RemindPartnerInAdvance:
       message = t('Semi-annual or greater gift is expected one month from now');
       break;
-    case NotificationTypeTypeEnum.SMALLER_GIFT:
+    case NotificationTypeTypeEnum.SmallerGift:
       if (amount) {
         message = t(
           'Gave a gift of {{ amount, currency }} which is less than their commitment amount',
@@ -188,7 +173,7 @@ const NotificationMenuItem = ({
         message = t('Gave a smaller gift than their commitment amount');
       }
       break;
-    case NotificationTypeTypeEnum.SPECIAL_GIFT:
+    case NotificationTypeTypeEnum.SpecialGift:
       if (amount) {
         message = t('Gave a special gift of {{ amount, currency }}', {
           amount,
@@ -197,19 +182,19 @@ const NotificationMenuItem = ({
         message = t('Gave a special gift');
       }
       break;
-    case NotificationTypeTypeEnum.STARTED_GIVING:
+    case NotificationTypeTypeEnum.StartedGiving:
       message = t('Started giving');
       break;
-    case NotificationTypeTypeEnum.STOPPED_GIVING:
+    case NotificationTypeTypeEnum.StoppedGiving:
       message = t('Missed a gift');
       break;
-    case NotificationTypeTypeEnum.THANK_PARTNER_ONCE_PER_YEAR:
+    case NotificationTypeTypeEnum.ThankPartnerOncePerYear:
       message = t('No thank you note logged in the past year');
       break;
-    case NotificationTypeTypeEnum.UPCOMING_ANNIVERSARY:
+    case NotificationTypeTypeEnum.UpcomingAnniversary:
       message = t('Upcoming anniversary');
       break;
-    case NotificationTypeTypeEnum.UPCOMING_BIRTHDAY:
+    case NotificationTypeTypeEnum.UpcomingBirthday:
       message = t('Upcoming birthday');
       break;
     default:

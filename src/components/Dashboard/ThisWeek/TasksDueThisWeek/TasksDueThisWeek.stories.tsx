@@ -1,11 +1,8 @@
 import React, { ReactElement } from 'react';
 import { Box } from '@material-ui/core';
 import { MockedProvider } from '@apollo/client/testing';
-import {
-  GetThisWeekQuery_dueTasks,
-  GetThisWeekQuery_dueTasks_nodes,
-} from '../../../../../types/GetThisWeekQuery';
-import { ActivityTypeEnum } from '../../../../../types/globalTypes';
+import { GetThisWeekQuery } from '../GetThisWeek.generated';
+import { ActivityTypeEnum } from '../../../../../graphql/types.generated';
 import TasksDueThisWeek from '.';
 
 export default {
@@ -13,16 +10,16 @@ export default {
 };
 
 export const Default = (): ReactElement => {
-  const task: GetThisWeekQuery_dueTasks_nodes = {
+  const task: GetThisWeekQuery['dueTasks']['nodes'][0] = {
     id: 'task',
     subject: 'the quick brown fox jumps over the lazy dog',
-    activityType: ActivityTypeEnum.PRAYER_REQUEST,
+    activityType: ActivityTypeEnum.PrayerRequest,
     contacts: { nodes: [{ name: 'Smith, Roger' }] },
     startAt: null,
     completedAt: null,
   };
 
-  const dueTasks: GetThisWeekQuery_dueTasks = {
+  const dueTasks: GetThisWeekQuery['dueTasks'] = {
     nodes: [
       { ...task, id: 'task_1' },
       { ...task, id: 'task_2' },
@@ -44,7 +41,7 @@ export const Default = (): ReactElement => {
 };
 
 export const Empty = (): ReactElement => {
-  const dueTasks: GetThisWeekQuery_dueTasks = {
+  const dueTasks: GetThisWeekQuery['dueTasks'] = {
     nodes: [],
     totalCount: 0,
   };

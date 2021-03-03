@@ -44,11 +44,10 @@ import PeopleOutlineIcon from '@material-ui/icons/PeopleOutline';
 import PeopleIcon from '@material-ui/icons/People';
 import AccountBoxIcon from '@material-ui/icons/AccountBox';
 import { useRouter } from 'next/router';
-import { gql, useQuery } from '@apollo/client';
 import { useApp } from '../../../App';
 import HandoffLink from '../../../HandoffLink';
-import { GetSideBarQuery } from '../../../../../types/GetSideBarQuery';
 import logo from '../../../../images/logo.svg';
+import { useGetSideBarQuery } from './GetSideBar.generated';
 
 export const SIDE_BAR_WIDTH = 256;
 export const SIDE_BAR_MINIMIZED_WIDTH = 57;
@@ -173,55 +172,13 @@ interface Props {
   handleOpenChange: (state?: boolean) => void;
 }
 
-export const GET_SIDEBAR_BAR_QUERY = gql`
-  query GetSideBarQuery($accountListId: ID!) {
-    contactsFixCommitmentInfo: contacts(
-      accountListId: $accountListId
-      statusValid: false
-    ) {
-      totalCount
-    }
-    contactsFixMailingAddress: contacts(
-      accountListId: $accountListId
-      addressValid: false
-    ) {
-      totalCount
-    }
-    contactsFixSendNewsletter: contacts(
-      accountListId: $accountListId
-      status: [PARTNER_FINANCIAL, PARTNER_SPECIAL, PARTNER_PRAY]
-      newsletter: NO_VALUE
-    ) {
-      totalCount
-    }
-    peopleFixEmailAddress: people(
-      accountListId: $accountListId
-      emailAddressValid: false
-    ) {
-      totalCount
-    }
-    peopleFixPhoneNumber: people(
-      accountListId: $accountListId
-      phoneNumberValid: false
-    ) {
-      totalCount
-    }
-    contactDuplicates(accountListId: $accountListId, ignore: false) {
-      totalCount
-    }
-    personDuplicates(accountListId: $accountListId, ignore: false) {
-      totalCount
-    }
-  }
-`;
-
 const SideBar = ({ open, handleOpenChange }: Props): ReactElement => {
   const classes = useStyles();
   const { t } = useTranslation();
   const {
     state: { accountListId },
   } = useApp();
-  const { data } = useQuery<GetSideBarQuery>(GET_SIDEBAR_BAR_QUERY, {
+  const { data } = useGetSideBarQuery({
     variables: { accountListId },
   });
 

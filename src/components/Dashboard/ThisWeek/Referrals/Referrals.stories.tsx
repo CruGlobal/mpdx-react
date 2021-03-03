@@ -1,9 +1,6 @@
 import React, { ReactElement } from 'react';
 import { Box } from '@material-ui/core';
-import {
-  GetThisWeekQuery_recentReferrals,
-  GetThisWeekQuery_onHandReferrals,
-} from '../../../../../types/GetThisWeekQuery';
+import { GetThisWeekQuery } from '../GetThisWeek.generated';
 import Referrals from '.';
 
 export default {
@@ -15,7 +12,7 @@ export const Default = (): ReactElement => {
     id: 'contact',
     name: 'Smith, Sarah',
   };
-  const recentReferrals: GetThisWeekQuery_recentReferrals = {
+  const recentReferrals: GetThisWeekQuery['recentReferrals'] = {
     nodes: [
       { ...contact, id: 'contact_1' },
       { ...contact, id: 'contact_2' },
@@ -23,7 +20,7 @@ export const Default = (): ReactElement => {
     ],
     totalCount: 5,
   };
-  const onHandReferrals: GetThisWeekQuery_onHandReferrals = {
+  const onHandReferrals: GetThisWeekQuery['onHandReferrals'] = {
     nodes: [
       { ...contact, id: 'contact_4' },
       { ...contact, id: 'contact_5' },
@@ -43,11 +40,11 @@ export const Default = (): ReactElement => {
 };
 
 export const Empty = (): ReactElement => {
-  const recentReferrals: GetThisWeekQuery_recentReferrals = {
+  const recentReferrals: GetThisWeekQuery['recentReferrals'] = {
     nodes: [],
     totalCount: 0,
   };
-  const onHandReferrals: GetThisWeekQuery_onHandReferrals = {
+  const onHandReferrals: GetThisWeekQuery['onHandReferrals'] = {
     nodes: [],
     totalCount: 0,
   };

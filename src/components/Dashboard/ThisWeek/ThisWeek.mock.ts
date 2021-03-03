@@ -1,8 +1,7 @@
 import { MockedResponse } from '@apollo/client/testing';
 import { DateTime } from 'luxon';
-import { GetThisWeekQuery } from '../../../../types/GetThisWeekQuery';
-import { ActivityTypeEnum } from '../../../../types/globalTypes';
-import { GET_THIS_WEEK_QUERY } from './ThisWeek';
+import { ActivityTypeEnum } from '../../../../graphql/types.generated';
+import { GetThisWeekDocument, GetThisWeekQuery } from './GetThisWeek.generated';
 import {
   GetWeeklyActivityQueryDefaultMocks,
   GetWeeklyActivityQueryLoadingMocks,
@@ -15,7 +14,7 @@ export const GetThisWeekDefaultMocks = (): MockedResponse[] => {
   const task = {
     id: 'task',
     subject: 'the quick brown fox jumps over the lazy dog',
-    activityType: ActivityTypeEnum.PRAYER_REQUEST,
+    activityType: ActivityTypeEnum.PrayerRequest,
     contacts: { nodes: [{ name: 'Smith, Roger' }] },
     startAt: DateTime.local(2012, 1, 5, 1, 2).toISODate(),
     completedAt: null,
@@ -124,7 +123,7 @@ export const GetThisWeekDefaultMocks = (): MockedResponse[] => {
   return [
     {
       request: {
-        query: GET_THIS_WEEK_QUERY,
+        query: GetThisWeekDocument,
         variables: {
           accountListId: 'abc',
           endOfDay: endOfDay.toISO(),
@@ -159,7 +158,7 @@ export const GetThisWeekEmptyMocks = (): MockedResponse[] => {
   return [
     {
       request: {
-        query: GET_THIS_WEEK_QUERY,
+        query: GetThisWeekDocument,
         variables: {
           accountListId: 'abc',
           endOfDay: endOfDay.toISO(),

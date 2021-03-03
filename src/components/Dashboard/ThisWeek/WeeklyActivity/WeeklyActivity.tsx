@@ -14,16 +14,15 @@ import {
   TableContainer,
 } from '@material-ui/core';
 import { motion } from 'framer-motion';
-import { gql, useQuery } from '@apollo/client';
 import { DateTime, Interval } from 'luxon';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
 import { Skeleton } from '@material-ui/lab';
 import { useTranslation } from 'react-i18next';
 import AnimatedCard from '../../../AnimatedCard';
-import { GetWeeklyActivityQuery } from '../../../../../types/GetWeeklyActivityQuery';
 import { numberFormat } from '../../../../lib/intlFormat';
 import HandoffLink from '../../../HandoffLink';
+import { useGetWeeklyActivityQuery } from './GetWeeklyActivity.generated';
 
 const useStyles = makeStyles((theme: Theme) => ({
   div: {
@@ -53,65 +52,6 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-export const GET_WEEKLY_ACTIVITY_QUERY = gql`
-  query GetWeeklyActivityQuery(
-    $accountListId: ID!
-    $startOfWeek: ISO8601DateTime!
-    $endOfWeek: ISO8601DateTime!
-  ) {
-    completedCalls: tasks(
-      accountListId: $accountListId
-      completedAt: { min: $startOfWeek, max: $endOfWeek }
-      activityType: CALL
-      result: [COMPLETED, DONE]
-    ) {
-      totalCount
-    }
-    callsThatProducedAppointments: tasks(
-      accountListId: $accountListId
-      completedAt: { min: $startOfWeek, max: $endOfWeek }
-      activityType: CALL
-      result: [COMPLETED, DONE]
-      nextAction: APPOINTMENT
-    ) {
-      totalCount
-    }
-    completedMessages: tasks(
-      accountListId: $accountListId
-      completedAt: { min: $startOfWeek, max: $endOfWeek }
-      activityType: [EMAIL, FACEBOOK_MESSAGE, TEXT_MESSAGE]
-      result: [COMPLETED, DONE]
-    ) {
-      totalCount
-    }
-    messagesThatProducedAppointments: tasks(
-      accountListId: $accountListId
-      completedAt: { min: $startOfWeek, max: $endOfWeek }
-      activityType: [EMAIL, FACEBOOK_MESSAGE, TEXT_MESSAGE]
-      result: [COMPLETED, DONE]
-      nextAction: APPOINTMENT
-    ) {
-      totalCount
-    }
-    completedAppointments: tasks(
-      accountListId: $accountListId
-      completedAt: { min: $startOfWeek, max: $endOfWeek }
-      activityType: APPOINTMENT
-      result: [COMPLETED, DONE]
-    ) {
-      totalCount
-    }
-    completedCorrespondence: tasks(
-      accountListId: $accountListId
-      completedAt: { min: $startOfWeek, max: $endOfWeek }
-      activityType: [PRE_CALL_LETTER, REMINDER_LETTER, SUPPORT_LETTER, THANK]
-      result: [COMPLETED, DONE]
-    ) {
-      totalCount
-    }
-  }
-`;
-
 interface Props {
   accountListId: string;
 }
@@ -127,16 +67,13 @@ const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
     ),
   );
 
-  const { data, loading, refetch } = useQuery<GetWeeklyActivityQuery>(
-    GET_WEEKLY_ACTIVITY_QUERY,
-    {
-      variables: {
-        accountListId,
-        startOfWeek: interval.start.toISO(),
-        endOfWeek: interval.end.toISO(),
-      },
+  const { data, loading, refetch } = useGetWeeklyActivityQuery({
+    variables: {
+      accountListId,
+      startOfWeek: interval.start.toISO(),
+      endOfWeek: interval.end.toISO(),
     },
-  );
+  });
 
   const addWeek = (): void =>
     setInterval((interval) =>

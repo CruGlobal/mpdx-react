@@ -1,9 +1,9 @@
 import React from 'react';
 import userEvent from '@testing-library/user-event';
 import { render } from '../../../../../__tests__/util/testingLibraryReactMock';
-import { ActivityTypeEnum } from '../../../../../types/globalTypes';
-import { GetThisWeekQuery_dueTasks } from '../../../../../types/GetThisWeekQuery';
 import { useApp } from '../../../App';
+import { GetThisWeekQuery } from '../GetThisWeek.generated';
+import { ActivityTypeEnum } from '../../../../../graphql/types.generated';
 import TasksDueThisWeek from '.';
 
 jest.mock('../../../App', () => ({
@@ -42,7 +42,7 @@ describe('TasksDueThisWeek', () => {
   });
 
   it('empty', () => {
-    const dueTasks: GetThisWeekQuery_dueTasks = {
+    const dueTasks: GetThisWeekQuery['dueTasks'] = {
       nodes: [],
       totalCount: 0,
     };
@@ -58,12 +58,12 @@ describe('TasksDueThisWeek', () => {
 
   describe('MockDate', () => {
     it('props', () => {
-      const dueTasks: GetThisWeekQuery_dueTasks = {
+      const dueTasks: GetThisWeekQuery['dueTasks'] = {
         nodes: [
           {
             id: 'task_1',
             subject: 'the quick brown fox jumps over the lazy dog',
-            activityType: ActivityTypeEnum.PRAYER_REQUEST,
+            activityType: ActivityTypeEnum.PrayerRequest,
             contacts: { nodes: [{ name: 'Smith, Roger' }] },
             startAt: null,
             completedAt: null,
@@ -71,7 +71,7 @@ describe('TasksDueThisWeek', () => {
           {
             id: 'task_2',
             subject: 'the quick brown fox jumps over the lazy dog',
-            activityType: ActivityTypeEnum.APPOINTMENT,
+            activityType: ActivityTypeEnum.Appointment,
             contacts: { nodes: [{ name: 'Smith, Sarah' }] },
             startAt: null,
             completedAt: null,

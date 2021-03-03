@@ -1,13 +1,9 @@
+import { User } from '../../../graphql/types.generated';
+
 export interface AppState {
   accountListId: string;
   breadcrumb: string;
   user?: User;
-}
-
-interface User {
-  id: string;
-  firstName: string;
-  lastName: string;
 }
 
 export type Action =

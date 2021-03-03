@@ -1,10 +1,10 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import { GetCommentsForTaskDrawerCommentListQuery_task_comments_nodes as Comment } from '../../../../../../types/GetCommentsForTaskDrawerCommentListQuery';
+import { GetCommentsForTaskDrawerCommentListQuery } from '../TaskListComments.generated';
 import Item from '.';
 
 describe('Item', () => {
-  const comment: Comment = {
+  const comment: GetCommentsForTaskDrawerCommentListQuery['task']['comments']['nodes'][0] = {
     id: 'def',
     body: 'The quick brown fox jumped over the lazy dog.',
     createdAt: '2020-01-31',

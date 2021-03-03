@@ -10,7 +10,7 @@ import {
 } from '@material-ui/core';
 import { DateTime } from 'luxon';
 import { Skeleton } from '@material-ui/lab';
-import { GetCommentsForTaskDrawerCommentListQuery_task_comments_nodes as Comment } from '../../../../../../types/GetCommentsForTaskDrawerCommentListQuery';
+import { GetCommentsForTaskDrawerCommentListQuery } from '../TaskListComments.generated';
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
@@ -81,9 +81,9 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 interface Props {
-  comment?: Comment;
+  comment?: GetCommentsForTaskDrawerCommentListQuery['task']['comments']['nodes'][0];
   reverse?: boolean;
-  nextComment?: Comment;
+  nextComment?: GetCommentsForTaskDrawerCommentListQuery['task']['comments']['nodes'][0];
 }
 
 const TaskDrawerCommentListItem = ({

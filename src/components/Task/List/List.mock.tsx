@@ -1,8 +1,11 @@
 import { DateTime } from 'luxon';
 import { MockedResponse } from '@apollo/client/testing';
-import { ActivityTypeEnum } from '../../../../types/globalTypes';
-import { GetTasksForTaskListQuery } from '../../../../types/GetTasksForTaskListQuery';
-import { GET_TASKS_FOR_TASK_LIST_QUERY, TaskFilter } from './List';
+import { ActivityTypeEnum } from '../../../../graphql/types.generated';
+import { TaskFilter } from './List';
+import {
+  GetTasksForTaskListDocument,
+  GetTasksForTaskListQuery,
+} from './TaskList.generated';
 
 export const getTasksForTaskListMock = (): MockedResponse => {
   const data: GetTasksForTaskListQuery = {
@@ -10,7 +13,7 @@ export const getTasksForTaskListMock = (): MockedResponse => {
       nodes: [
         {
           id: 'task-1',
-          activityType: ActivityTypeEnum.APPOINTMENT,
+          activityType: ActivityTypeEnum.Appointment,
           subject: 'On the Journey with the Johnson Family',
           startAt: DateTime.local(2012, 1, 5, 1, 2),
           completedAt: null,
@@ -34,7 +37,7 @@ export const getTasksForTaskListMock = (): MockedResponse => {
 
   return {
     request: {
-      query: GET_TASKS_FOR_TASK_LIST_QUERY,
+      query: GetTasksForTaskListDocument,
       variables: {
         accountListId: 'abc',
         first: 100,
@@ -68,7 +71,7 @@ export const getEmptyTasksForTaskListMock = (): MockedResponse => {
 
   return {
     request: {
-      query: GET_TASKS_FOR_TASK_LIST_QUERY,
+      query: GetTasksForTaskListDocument,
       variables: {
         accountListId: 'abc',
         first: 100,
@@ -93,14 +96,14 @@ interface Attributes extends TaskFilter {
 }
 
 export const getFilteredTasksForTaskListMock = (
-  filter: Attributes,
+  filter: Partial<Attributes>,
 ): MockedResponse => {
   const data: GetTasksForTaskListQuery = {
     tasks: {
       nodes: [
         {
           id: 'task-1',
-          activityType: ActivityTypeEnum.APPOINTMENT,
+          activityType: ActivityTypeEnum.Appointment,
           subject: 'On the Journey with the Johnson Family',
           startAt: DateTime.local(2012, 1, 5, 1, 2),
           completedAt: null,
@@ -115,7 +118,7 @@ export const getFilteredTasksForTaskListMock = (
         },
         {
           id: 'task-1',
-          activityType: ActivityTypeEnum.APPOINTMENT,
+          activityType: ActivityTypeEnum.Appointment,
           subject: 'On the Journey with the Johnson Family 2020',
           startAt: DateTime.fromISO('2020-09-01'),
           completedAt: null,
@@ -139,7 +142,7 @@ export const getFilteredTasksForTaskListMock = (
 
   return {
     request: {
-      query: GET_TASKS_FOR_TASK_LIST_QUERY,
+      query: GetTasksForTaskListDocument,
       variables: {
         accountListId: 'abc',
         first: 100,

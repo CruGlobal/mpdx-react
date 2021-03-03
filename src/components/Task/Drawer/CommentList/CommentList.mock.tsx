@@ -1,6 +1,8 @@
 import { MockedResponse } from '@apollo/client/testing';
-import { GetCommentsForTaskDrawerCommentListQuery } from '../../../../../types/GetCommentsForTaskDrawerCommentListQuery';
-import { GET_COMMENTS_FOR_TASK_DRAWER_CONTACT_LIST_QUERY } from './CommentList';
+import {
+  GetCommentsForTaskDrawerCommentListDocument,
+  GetCommentsForTaskDrawerCommentListQuery,
+} from './TaskListComments.generated';
 
 export const getCommentsForTaskDrawerCommentListMock = (): MockedResponse => {
   const data: GetCommentsForTaskDrawerCommentListQuery = {
@@ -81,7 +83,7 @@ export const getCommentsForTaskDrawerCommentListMock = (): MockedResponse => {
 
   return {
     request: {
-      query: GET_COMMENTS_FOR_TASK_DRAWER_CONTACT_LIST_QUERY,
+      query: GetCommentsForTaskDrawerCommentListDocument,
       variables: {
         accountListId: 'abc',
         taskId: 'task-1',
@@ -105,7 +107,7 @@ export const getCommentsForTaskDrawerCommentListEmptyMock = (): MockedResponse =
 
   return {
     request: {
-      query: GET_COMMENTS_FOR_TASK_DRAWER_CONTACT_LIST_QUERY,
+      query: GetCommentsForTaskDrawerCommentListDocument,
       variables: {
         accountListId: 'abc',
         taskId: 'task-1',

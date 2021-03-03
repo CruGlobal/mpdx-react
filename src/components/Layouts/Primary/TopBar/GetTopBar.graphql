@@ -1,0 +1,24 @@
+query GetTopBar {
+  accountLists {
+    nodes {
+      id
+      name
+    }
+  }
+  user {
+    id
+    firstName
+    lastName
+    admin
+    developer
+    keyAccounts {
+      id
+      email
+    }
+    administrativeOrganizations {
+      nodes {
+        id
+      }
+    }
+  }
+}

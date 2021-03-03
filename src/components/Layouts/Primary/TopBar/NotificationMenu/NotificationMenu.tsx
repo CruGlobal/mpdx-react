@@ -11,14 +11,16 @@ import {
 } from '@material-ui/core';
 import React, { ReactElement, useEffect, useState } from 'react';
 import NotificationsIcon from '@material-ui/icons/Notifications';
-import { gql, useMutation, useLazyQuery } from '@apollo/client';
 import { useTranslation } from 'react-i18next';
 import { useApp } from '../../../../App';
-import { GetNotificationsQuery } from '../../../../../../types/GetNotificationsQuery';
-import { AcknowledgeAllUserNotificationsMutation } from '../../../../../../types/AcknowledgeAllUserNotificationsMutation';
 import illustration13 from '../../../../../images/drawkit/grape/drawkit-grape-pack-illustration-13.svg';
 import NotificationMenuItem from './Item';
-import GET_NOTIFICATIONS_QUERY from './getNotificationsQuery.graphql';
+import {
+  GetNotificationsDocument,
+  GetNotificationsQuery,
+  useGetNotificationsLazyQuery,
+} from './GetNotificationsQuery.generated';
+import { useAcknowledgeAllUserNotificationsMutation } from './AcknowledgeAllUserNotifications.generated';
 
 const useStyles = makeStyles((theme: Theme) => ({
   link: {
@@ -57,14 +59,6 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-export const ACKNOWLEDGE_ALL_USER_NOTIFICATIONS_MUTATION = gql`
-  mutation AcknowledgeAllUserNotificationsMutation($accountListId: ID!) {
-    acknowledgeAllUserNotifications(input: { accountListId: $accountListId }) {
-      notificationIds
-    }
-  }
-`;
-
 const NotificationMenu = (): ReactElement => {
   const classes = useStyles();
   const { t } = useTranslation();
@@ -74,15 +68,13 @@ const NotificationMenu = (): ReactElement => {
   const [
     getNotifications,
     { data, loading, fetchMore },
-  ] = useLazyQuery<GetNotificationsQuery>(GET_NOTIFICATIONS_QUERY, {
+  ] = useGetNotificationsLazyQuery({
     notifyOnNetworkStatusChange: true,
   });
 
   const [
     acknoweldgeAllUserNotifications,
-  ] = useMutation<AcknowledgeAllUserNotificationsMutation>(
-    ACKNOWLEDGE_ALL_USER_NOTIFICATIONS_MUTATION,
-  );
+  ] = useAcknowledgeAllUserNotificationsMutation();
 
   const handleAcknowledgeAllClick = () => {
     const optimisticResponse = true;
@@ -94,11 +86,10 @@ const NotificationMenu = (): ReactElement => {
         },
       },
       update: (cache) => {
-        console.log(cache);
         if (!optimisticResponse) return;
 
         const query = {
-          query: GET_NOTIFICATIONS_QUERY,
+          query: GetNotificationsDocument,
           variables: {
             accountListId: state.accountListId,
             after: null,

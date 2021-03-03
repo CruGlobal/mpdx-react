@@ -1,166 +1,26 @@
 import React, { ReactElement } from 'react';
 import { Box, Typography, Grid } from '@material-ui/core';
-import { gql, useQuery } from '@apollo/client';
 import { useTranslation } from 'react-i18next';
 import { DateTime } from 'luxon';
 import AnimatedBox from '../../AnimatedBox';
-import { GetThisWeekQuery } from '../../../../types/GetThisWeekQuery';
 import PartnerCare from './PartnerCare/PartnerCare';
 import TasksDueThisWeek from './TasksDueThisWeek/TasksDueThisWeek';
 import LateCommitments from './LateCommitments';
 import Referrals from './Referrals';
 import Appeals from './Appeals';
 import WeeklyActivity from './WeeklyActivity';
+import { useGetThisWeekQuery } from './GetThisWeek.generated';
 
 interface Props {
   accountListId: string;
 }
-
-export const GET_THIS_WEEK_QUERY = gql`
-  query GetThisWeekQuery(
-    $accountListId: ID!
-    $endOfDay: ISO8601DateTime!
-    $today: ISO8601Date!
-    $twoWeeksFromNow: ISO8601Date!
-    $twoWeeksAgo: ISO8601Date!
-  ) {
-    accountList(id: $accountListId) {
-      id
-      primaryAppeal {
-        id
-        name
-        amount
-        pledgesAmountTotal
-        pledgesAmountProcessed
-        amountCurrency
-      }
-    }
-    dueTasks: tasks(
-      accountListId: $accountListId
-      first: 3
-      startAt: { max: $endOfDay }
-      completed: false
-    ) {
-      nodes {
-        id
-        subject
-        activityType
-        startAt
-        completedAt
-        contacts {
-          nodes {
-            name
-          }
-        }
-      }
-      totalCount
-    }
-    prayerRequestTasks: tasks(
-      accountListId: $accountListId
-      first: 3
-      activityType: PRAYER_REQUEST
-      completed: false
-    ) {
-      nodes {
-        id
-        subject
-        activityType
-        startAt
-        completedAt
-        contacts {
-          nodes {
-            name
-          }
-        }
-      }
-      totalCount
-    }
-    latePledgeContacts: contacts(
-      accountListId: $accountListId
-      first: 3
-      lateAt: { max: $today }
-      status: PARTNER_FINANCIAL
-    ) {
-      nodes {
-        id
-        name
-        lateAt
-      }
-      totalCount
-    }
-    reportsPeopleWithBirthdays(
-      accountListId: $accountListId
-      range: "1m"
-      endDate: $twoWeeksFromNow
-    ) {
-      periods {
-        people {
-          id
-          birthdayDay
-          birthdayMonth
-          firstName
-          lastName
-          parentContact {
-            id
-          }
-        }
-      }
-    }
-    reportsPeopleWithAnniversaries(
-      accountListId: $accountListId
-      range: "1m"
-      endDate: $twoWeeksFromNow
-    ) {
-      periods {
-        people {
-          id
-          anniversaryDay
-          anniversaryMonth
-          parentContact {
-            id
-            name
-          }
-        }
-      }
-    }
-    recentReferrals: contacts(
-      accountListId: $accountListId
-      first: 3
-      referrer: ANY
-      createdAt: { min: $twoWeeksAgo }
-    ) {
-      nodes {
-        id
-        name
-      }
-      totalCount
-    }
-    onHandReferrals: contacts(
-      accountListId: $accountListId
-      first: 3
-      status: [
-        NEVER_CONTACTED
-        ASK_IN_FUTURE
-        CULTIVATE_RELATIONSHIP
-        CONTACT_FOR_APPOINTMENT
-      ]
-      referrer: ANY
-    ) {
-      nodes {
-        id
-        name
-      }
-      totalCount
-    }
-  }
-`;
 
 const ThisWeek = ({ accountListId }: Props): ReactElement => {
   const endOfDay = DateTime.local().endOf('day');
 
   const { t } = useTranslation();
 
-  const { data, loading } = useQuery<GetThisWeekQuery>(GET_THIS_WEEK_QUERY, {
+  const { data, loading } = useGetThisWeekQuery({
     variables: {
       accountListId,
       endOfDay: endOfDay.toISO(),

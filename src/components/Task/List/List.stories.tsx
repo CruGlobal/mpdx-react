@@ -3,6 +3,7 @@ import { MockedProvider } from '@apollo/client/testing';
 import withDispatch from '../../../decorators/withDispatch';
 import { getDataForTaskDrawerMock } from '../Drawer/Form/Form.mock';
 import withMargin from '../../../decorators/withMargin';
+import { ActivityTypeEnum } from '../../../../graphql/types.generated';
 import {
   getTasksForTaskListMock,
   getFilteredTasksForTaskListMock,
@@ -47,7 +48,8 @@ export const Empty = (): ReactElement => (
 
 export const WithInitialFilter = (): ReactElement => {
   const filter = {
-    activityType: ['APPOINTMENT'],
+    accountListId: 'account-list-1',
+    activityType: [ActivityTypeEnum.Appointment],
     completed: false,
     tags: ['tag-1', 'tag-2'],
     userIds: ['user-1'],

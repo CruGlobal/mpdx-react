@@ -1,21 +1,21 @@
 import { MockedResponse } from '@apollo/client/testing';
 import { DateTime } from 'luxon';
-import { GetDataForTaskDrawerQuery } from '../../../../../types/GetDataForTaskDrawerQuery';
-import { CreateTaskMutation } from '../../../../../types/CreateTaskMutation';
 import {
   ActivityTypeEnum,
-  NotificationTypeEnum,
   NotificationTimeUnitEnum,
+  NotificationTypeEnum,
   TaskCreateInput,
   TaskUpdateInput,
-} from '../../../../../types/globalTypes';
-import { UpdateTaskMutation } from '../../../../../types/UpdateTaskMutation';
-import { GetTaskForTaskDrawerQuery_task as Task } from '../../../../../types/GetTaskForTaskDrawerQuery';
+} from '../../../../../graphql/types.generated';
+import { GetTaskForTaskDrawerQuery } from '../TaskDrawerTask.generated';
 import {
-  GET_DATA_FOR_TASK_DRAWER_QUERY,
-  CREATE_TASK_MUTATION,
-  UPDATE_TASK_MUTATION,
-} from './Form';
+  CreateTaskDocument,
+  CreateTaskMutation,
+  GetDataForTaskDrawerDocument,
+  GetDataForTaskDrawerQuery,
+  UpdateTaskDocument,
+  UpdateTaskMutation,
+} from './TaskDrawer.generated';
 
 export const getDataForTaskDrawerMock = (): MockedResponse => {
   const data: GetDataForTaskDrawerQuery = {
@@ -44,7 +44,7 @@ export const getDataForTaskDrawerMock = (): MockedResponse => {
   };
   return {
     request: {
-      query: GET_DATA_FOR_TASK_DRAWER_QUERY,
+      query: GetDataForTaskDrawerDocument,
       variables: {
         accountListId: 'abc',
       },
@@ -56,7 +56,7 @@ export const getDataForTaskDrawerMock = (): MockedResponse => {
 };
 
 export const createTaskMutationMock = (): MockedResponse => {
-  const task: Task = {
+  const task: GetTaskForTaskDrawerQuery['task'] = {
     id: null,
     activityType: null,
     subject: 'abc',
@@ -85,7 +85,7 @@ export const createTaskMutationMock = (): MockedResponse => {
 
   return {
     request: {
-      query: CREATE_TASK_MUTATION,
+      query: CreateTaskDocument,
       variables: {
         accountListId: 'abc',
         attributes,
@@ -96,9 +96,9 @@ export const createTaskMutationMock = (): MockedResponse => {
 };
 
 export const updateTaskMutationMock = (): MockedResponse => {
-  const task: Task = {
+  const task: GetTaskForTaskDrawerQuery['task'] = {
     id: 'task-1',
-    activityType: ActivityTypeEnum.NEWSLETTER_EMAIL,
+    activityType: ActivityTypeEnum.NewsletterEmail,
     subject: 'On the Journey with the Johnson Family',
     startAt: DateTime.local(2013, 1, 5, 1, 2).toISO(),
     completedAt: DateTime.local(2016, 1, 5, 1, 2).toISO(),
@@ -111,8 +111,8 @@ export const updateTaskMutationMock = (): MockedResponse => {
     },
     user: { id: 'user-1', firstName: 'Robert', lastName: 'Anderson' },
     notificationTimeBefore: 20,
-    notificationType: NotificationTypeEnum.BOTH,
-    notificationTimeUnit: NotificationTimeUnitEnum.HOURS,
+    notificationType: NotificationTypeEnum.Both,
+    notificationTimeUnit: NotificationTimeUnitEnum.Hours,
   };
   const data: UpdateTaskMutation = {
     updateTask: {
@@ -127,7 +127,7 @@ export const updateTaskMutationMock = (): MockedResponse => {
   };
   return {
     request: {
-      query: UPDATE_TASK_MUTATION,
+      query: UpdateTaskDocument,
       variables: {
         accountListId: 'abc',
         attributes,

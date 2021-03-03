@@ -1,11 +1,13 @@
 import { MockedResponse } from '@apollo/client/testing';
-import { GetContactsForTaskDrawerContactListQuery } from '../../../../../types/GetContactsForTaskDrawerContactListQuery';
 import {
-  StatusEnum,
   PledgeFrequencyEnum,
   SendNewsletterEnum,
-} from '../../../../../types/globalTypes';
-import { GET_CONTACTS_FOR_TASK_DRAWER_CONTACT_LIST_QUERY } from './ContactList';
+  StatusEnum,
+} from '../../../../../graphql/types.generated';
+import {
+  GetContactsForTaskDrawerContactListDocument,
+  GetContactsForTaskDrawerContactListQuery,
+} from './TaskDrawerContactList.generated';
 
 export const getContactsForTaskDrawerContactListMock = (): MockedResponse => {
   const data: GetContactsForTaskDrawerContactListQuery = {
@@ -39,8 +41,8 @@ export const getContactsForTaskDrawerContactListMock = (): MockedResponse => {
               location: 'Work',
             },
           },
-          status: StatusEnum.PARTNER_FINANCIAL,
-          sendNewsletter: SendNewsletterEnum.BOTH,
+          status: StatusEnum.PartnerFinancial,
+          sendNewsletter: SendNewsletterEnum.Both,
           lastDonation: {
             id: 'lastDonation-a',
             amount: {
@@ -51,7 +53,7 @@ export const getContactsForTaskDrawerContactListMock = (): MockedResponse => {
           },
           pledgeAmount: 20,
           pledgeCurrency: 'NZD',
-          pledgeFrequency: PledgeFrequencyEnum.MONTHLY,
+          pledgeFrequency: PledgeFrequencyEnum.Monthly,
           tagList: ['test', 'post'],
         },
         {
@@ -72,7 +74,7 @@ export const getContactsForTaskDrawerContactListMock = (): MockedResponse => {
   };
   return {
     request: {
-      query: GET_CONTACTS_FOR_TASK_DRAWER_CONTACT_LIST_QUERY,
+      query: GetContactsForTaskDrawerContactListDocument,
       variables: {
         accountListId: 'abc',
         contactIds: ['contact-1', 'contact-2'],
@@ -87,7 +89,7 @@ export const getContactsForTaskDrawerContactListMock = (): MockedResponse => {
 export const getContactsForTaskDrawerContactListEmptyMock = (): MockedResponse => {
   return {
     request: {
-      query: GET_CONTACTS_FOR_TASK_DRAWER_CONTACT_LIST_QUERY,
+      query: GetContactsForTaskDrawerContactListDocument,
       variables: {
         accountListId: 'abc',
         contactIds: ['contact-1', 'contact-2'],

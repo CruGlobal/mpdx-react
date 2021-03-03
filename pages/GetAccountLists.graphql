@@ -1,0 +1,12 @@
+query GetAccountLists {
+  accountLists {
+    nodes {
+      id
+      name
+      monthlyGoal
+      receivedPledges
+      totalPledges
+      currency
+    }
+  }
+}

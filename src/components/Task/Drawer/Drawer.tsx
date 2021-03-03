@@ -14,19 +14,19 @@ import {
 import CloseIcon from '@material-ui/icons/Close';
 import { useTranslation } from 'react-i18next';
 import { TabContext, TabList, TabPanel } from '@material-ui/lab';
-import { gql, useLazyQuery } from '@apollo/client';
 import { AnimatePresence, motion } from 'framer-motion';
-import {
-  GetTaskForTaskDrawerQuery,
-  GetTaskForTaskDrawerQuery_task as Task,
-} from '../../../../types/GetTaskForTaskDrawerQuery';
 import { useApp } from '../../App';
 import Loading from '../../Loading';
 import TaskStatus from '../Status';
+import { Task } from '../../../../graphql/types.generated';
 import TaskDrawerForm from './Form';
 import TaskDrawerContactList from './ContactList';
 import TaskDrawerCommentList from './CommentList';
 import TaskDrawerCompleteForm from './CompleteForm';
+import {
+  GetTaskForTaskDrawerQuery,
+  useGetTaskForTaskDrawerLazyQuery,
+} from './TaskDrawerTask.generated';
 
 const useStyles = makeStyles((theme: Theme) => ({
   fixed: {
@@ -57,33 +57,6 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-export const GET_TASK_FOR_TASK_DRAWER_QUERY = gql`
-  query GetTaskForTaskDrawerQuery($accountListId: ID!, $taskId: ID!) {
-    task(accountListId: $accountListId, id: $taskId) {
-      id
-      activityType
-      subject
-      startAt
-      completedAt
-      tagList
-      contacts {
-        nodes {
-          id
-          name
-        }
-      }
-      user {
-        id
-        firstName
-        lastName
-      }
-      notificationTimeBefore
-      notificationType
-      notificationTimeUnit
-    }
-  }
-`;
-
 export interface TaskDrawerProps {
   taskId?: string;
   onClose?: () => void;
@@ -102,10 +75,8 @@ const TaskDrawer = ({
   const [open, setOpen] = useState(false);
   const { t } = useTranslation();
   const [tab, setTab] = useState('1');
-  const [getTask, { data, loading }] = useLazyQuery<GetTaskForTaskDrawerQuery>(
-    GET_TASK_FOR_TASK_DRAWER_QUERY,
-  );
-  const [task, setTask] = useState<Task>(null);
+  const [getTask, { data, loading }] = useGetTaskForTaskDrawerLazyQuery();
+  const [task, setTask] = useState<GetTaskForTaskDrawerQuery['task']>(null);
 
   const onLoad = async (): Promise<void> => {
     if (taskId) {
@@ -235,7 +206,7 @@ const TaskDrawer = ({
                       ) : (
                         <TaskDrawerForm
                           accountListId={state.accountListId}
-                          task={task}
+                          task={task as Task} // TODO: Use fragments to ensure all required fields are loaded
                           onClose={onDrawerClose}
                           defaultValues={defaultValues}
                         />

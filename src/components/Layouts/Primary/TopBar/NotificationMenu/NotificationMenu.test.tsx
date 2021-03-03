@@ -12,7 +12,7 @@ import {
   getNotificationsLoadingMock,
   getNotificationsMocks,
 } from './NotificationMenu.mock';
-import GET_NOTIFICATIONS_QUERY from './getNotificationsQuery.graphql';
+import { GetNotificationsDocument } from './GetNotificationsQuery.generated';
 import NotificationMenu from '.';
 
 describe('NotificationMenu', () => {
@@ -54,7 +54,7 @@ describe('NotificationMenu', () => {
     userEvent.click(getByRole('button', { name: 'Mark all as read' }));
     await waitFor(() =>
       expect(cache.writeQuery).toHaveBeenCalledWith({
-        query: GET_NOTIFICATIONS_QUERY,
+        query: GetNotificationsDocument,
         variables: {
           accountListId: '1',
           after: null,

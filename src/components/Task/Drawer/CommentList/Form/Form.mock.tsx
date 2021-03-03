@@ -1,7 +1,9 @@
 import { MockedResponse } from '@apollo/client/testing';
 import { DateTime } from 'luxon';
-import { CreateTaskCommentMutation } from '../../../../../../types/CreateTaskCommentMutation';
-import { CREATE_TASK_COMMENT_MUTATION } from './Form';
+import {
+  CreateTaskCommentDocument,
+  CreateTaskCommentMutation,
+} from './CreateTaskComment.generated';
 
 export const createTaskCommentMutationMock = (): MockedResponse => {
   const data: CreateTaskCommentMutation = {
@@ -22,7 +24,7 @@ export const createTaskCommentMutationMock = (): MockedResponse => {
 
   return {
     request: {
-      query: CREATE_TASK_COMMENT_MUTATION,
+      query: CreateTaskCommentDocument,
       variables: {
         accountListId: 'abc',
         taskId: 'task-1',

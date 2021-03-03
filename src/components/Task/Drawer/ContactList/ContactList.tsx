@@ -8,10 +8,9 @@ import {
   CardContent,
 } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
-import { gql, useLazyQuery } from '@apollo/client';
-import { GetContactsForTaskDrawerContactListQuery } from '../../../../../types/GetContactsForTaskDrawerContactListQuery';
 import illustration4 from '../../../../images/drawkit/grape/drawkit-grape-pack-illustration-4.svg';
 import TaskDrawerContactListItem from './Item';
+import { useGetContactsForTaskDrawerContactListLazyQuery } from './TaskDrawerContactList.generated';
 
 const useStyles = makeStyles((theme: Theme) => ({
   cardContent: {
@@ -32,59 +31,6 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-export const GET_CONTACTS_FOR_TASK_DRAWER_CONTACT_LIST_QUERY = gql`
-  query GetContactsForTaskDrawerContactListQuery(
-    $accountListId: ID!
-    $contactIds: [ID!]
-  ) {
-    contacts(accountListId: $accountListId, ids: $contactIds) {
-      nodes {
-        id
-        name
-        primaryAddress {
-          id
-          street
-          city
-          state
-          postalCode
-          location
-        }
-        primaryPerson {
-          id
-          title
-          firstName
-          lastName
-          suffix
-          primaryEmailAddress {
-            id
-            email
-            location
-          }
-          primaryPhoneNumber {
-            id
-            number
-            location
-          }
-        }
-        status
-        sendNewsletter
-        lastDonation {
-          id
-          amount {
-            amount
-            currency
-            conversionDate
-          }
-        }
-        pledgeAmount
-        pledgeCurrency
-        pledgeFrequency
-        tagList
-      }
-    }
-  }
-`;
-
 interface Props {
   accountListId: string;
   contactIds: string[];
@@ -100,9 +46,7 @@ const TaskDrawerContactList = ({
   const [
     getContacts,
     { data, loading },
-  ] = useLazyQuery<GetContactsForTaskDrawerContactListQuery>(
-    GET_CONTACTS_FOR_TASK_DRAWER_CONTACT_LIST_QUERY,
-  );
+  ] = useGetContactsForTaskDrawerContactListLazyQuery();
 
   useEffect(() => {
     if (contactIds.length > 0) {

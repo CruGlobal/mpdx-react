@@ -1,0 +1,56 @@
+query GetWeeklyActivity(
+  $accountListId: ID!
+  $startOfWeek: ISO8601DateTime!
+  $endOfWeek: ISO8601DateTime!
+) {
+  completedCalls: tasks(
+    accountListId: $accountListId
+    completedAt: { min: $startOfWeek, max: $endOfWeek }
+    activityType: CALL
+    result: [COMPLETED, DONE]
+  ) {
+    totalCount
+  }
+  callsThatProducedAppointments: tasks(
+    accountListId: $accountListId
+    completedAt: { min: $startOfWeek, max: $endOfWeek }
+    activityType: CALL
+    result: [COMPLETED, DONE]
+    nextAction: APPOINTMENT
+  ) {
+    totalCount
+  }
+  completedMessages: tasks(
+    accountListId: $accountListId
+    completedAt: { min: $startOfWeek, max: $endOfWeek }
+    activityType: [EMAIL, FACEBOOK_MESSAGE, TEXT_MESSAGE]
+    result: [COMPLETED, DONE]
+  ) {
+    totalCount
+  }
+  messagesThatProducedAppointments: tasks(
+    accountListId: $accountListId
+    completedAt: { min: $startOfWeek, max: $endOfWeek }
+    activityType: [EMAIL, FACEBOOK_MESSAGE, TEXT_MESSAGE]
+    result: [COMPLETED, DONE]
+    nextAction: APPOINTMENT
+  ) {
+    totalCount
+  }
+  completedAppointments: tasks(
+    accountListId: $accountListId
+    completedAt: { min: $startOfWeek, max: $endOfWeek }
+    activityType: APPOINTMENT
+    result: [COMPLETED, DONE]
+  ) {
+    totalCount
+  }
+  completedCorrespondence: tasks(
+    accountListId: $accountListId
+    completedAt: { min: $startOfWeek, max: $endOfWeek }
+    activityType: [PRE_CALL_LETTER, REMINDER_LETTER, SUPPORT_LETTER, THANK]
+    result: [COMPLETED, DONE]
+  ) {
+    totalCount
+  }
+}
