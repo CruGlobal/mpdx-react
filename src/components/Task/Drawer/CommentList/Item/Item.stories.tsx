@@ -1,13 +1,13 @@
 import React, { ReactElement } from 'react';
 import { Box } from '@material-ui/core';
-import { GetCommentsForTaskDrawerCommentListQuery_task_comments_nodes as Comment } from '../../../../../../types/GetCommentsForTaskDrawerCommentListQuery';
+import { GetCommentsForTaskDrawerCommentListQuery } from '../TaskListComments.generated';
 import TaskDrawerCommentListItem from '.';
 
 export default {
   title: 'Task/Drawer/CommentList/Item',
 };
 
-const comment: Comment = {
+const comment: GetCommentsForTaskDrawerCommentListQuery['task']['comments']['nodes'][0] = {
   id: 'def',
   body:
     'The quick brown fox jumped over the lazy dog. The quick brown fox jumped over the lazy dog. ' +

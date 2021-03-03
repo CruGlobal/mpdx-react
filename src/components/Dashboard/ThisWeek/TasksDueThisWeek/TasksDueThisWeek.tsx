@@ -19,13 +19,10 @@ import { useTranslation } from 'react-i18next';
 import Link from 'next/link';
 import { DateTime } from 'luxon';
 import AnimatedCard from '../../../AnimatedCard';
-import {
-  GetThisWeekQuery_dueTasks,
-  GetThisWeekQuery_dueTasks_nodes as Task,
-} from '../../../../../types/GetThisWeekQuery';
 import { useApp } from '../../../App';
 import TaskStatus from '../../../Task/Status';
 import illustration8 from '../../../../images/drawkit/grape/drawkit-grape-pack-illustration-8.svg';
+import { GetThisWeekQuery } from '../GetThisWeek.generated';
 
 const useStyles = makeStyles((theme: Theme) => ({
   div: {
@@ -64,7 +61,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 interface Props {
   accountListId: string;
   loading?: boolean;
-  dueTasks?: GetThisWeekQuery_dueTasks;
+  dueTasks?: GetThisWeekQuery['dueTasks'];
 }
 
 const TasksDueThisWeek = ({
@@ -76,7 +73,9 @@ const TasksDueThisWeek = ({
   const { t } = useTranslation();
   const { openTaskDrawer } = useApp();
 
-  const handleClick = ({ id: taskId }: Task): void => {
+  const handleClick = ({
+    id: taskId,
+  }: GetThisWeekQuery['dueTasks']['nodes'][0]): void => {
     openTaskDrawer({ taskId });
   };
 

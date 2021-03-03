@@ -1,7 +1,7 @@
 import React, { ReactElement } from 'react';
 import { Container, Grid, Box } from '@material-ui/core';
 import { motion } from 'framer-motion';
-import { GetDashboardQuery } from '../../../types/GetDashboardQuery';
+import { GetDashboardQuery } from '../../../pages/accountLists/GetDashboard.generated';
 import Welcome from './Welcome';
 import MonthlyGoal from './MonthlyGoal';
 import Balance from './Balance';

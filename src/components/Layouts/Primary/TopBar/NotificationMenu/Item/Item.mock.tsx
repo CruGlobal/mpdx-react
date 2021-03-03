@@ -1,6 +1,8 @@
 import { MockedResponse } from '@apollo/client/testing';
-import { AcknowledgeUserNotificationMutation } from '../../../../../../../types/AcknowledgeUserNotificationMutation';
-import { ACKNOWLEDGE_USER_NOTIFICATION_MUTATION } from './Item';
+import {
+  AcknowledgeUserNotificationDocument,
+  AcknowledgeUserNotificationMutation,
+} from './AcknowledgeUserNotification.generated';
 
 const acknowledgeUserNotificationMutationMock = (
   id: string,
@@ -16,7 +18,7 @@ const acknowledgeUserNotificationMutationMock = (
 
   return {
     request: {
-      query: ACKNOWLEDGE_USER_NOTIFICATION_MUTATION,
+      query: AcknowledgeUserNotificationDocument,
       variables: {
         notificationId: id,
       },

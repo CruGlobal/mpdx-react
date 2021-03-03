@@ -6,6 +6,7 @@ import { DateTime } from 'luxon';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import LuxonUtils from '@date-io/luxon';
 import userEvent from '@testing-library/user-event';
+import { ActivityTypeEnum } from '../../../../../graphql/types.generated';
 import {
   getDataForTaskDrawerMock,
   createTaskMutationMock,
@@ -58,6 +59,9 @@ describe('TaskDrawerForm', () => {
                 activityType: null,
                 contacts: {
                   nodes: [],
+                  pageInfo: { hasNextPage: false, hasPreviousPage: false },
+                  totalCount: 0,
+                  totalPageCount: 0,
                 },
                 id: 'task-1',
                 notificationTimeBefore: null,
@@ -82,7 +86,7 @@ describe('TaskDrawerForm', () => {
     userEvent.click(getByRole('button', { name: 'Type' }));
     userEvent.click(
       within(getByRole('listbox', { name: 'Type' })).getByText(
-        'NEWSLETTER_EMAIL',
+        ActivityTypeEnum.NewsletterEmail,
       ),
     );
 
@@ -93,6 +97,8 @@ describe('TaskDrawerForm', () => {
 
     const tagsElement = getByRole('textbox', { name: 'Tags' });
     userEvent.click(tagsElement);
+
+    await new Promise((resolve) => setTimeout(resolve, 0));
     userEvent.click(
       await within(getByRole('presentation')).findByText('tag-1'),
     );

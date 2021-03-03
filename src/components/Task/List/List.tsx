@@ -1,5 +1,4 @@
 import React, { ReactElement, useState, useCallback } from 'react';
-import { gql, useQuery } from '@apollo/client';
 import MUIDataTable, {
   MUIDataTableOptions,
   MUIDataTableColumn,
@@ -23,68 +22,15 @@ import debounce from 'lodash/fp/debounce';
 import { Skeleton } from '@material-ui/lab';
 import { DatePicker } from '@material-ui/pickers';
 import { useApp } from '../../App';
-import { GetTasksForTaskListQuery } from '../../../../types/GetTasksForTaskListQuery';
 import { dateFormat, dayMonthFormat } from '../../../lib/intlFormat/intlFormat';
 import TaskStatus from '../Status';
-import { ActivityTypeEnum } from '../../../../types/globalTypes';
-import { GET_DATA_FOR_TASK_DRAWER_QUERY } from '../Drawer/Form/Form';
-import { GetDataForTaskDrawerQuery } from '../../../../types/GetDataForTaskDrawerQuery';
 import illustration15 from '../../../images/drawkit/grape/drawkit-grape-pack-illustration-15.svg';
-
-export const GET_TASKS_FOR_TASK_LIST_QUERY = gql`
-  query GetTasksForTaskListQuery(
-    $accountListId: ID!
-    $first: Int
-    $before: String
-    $after: String
-    $activityType: [ActivityTypeEnum!]
-    $contactIds: [ID!]
-    $userIds: [ID!]
-    $tags: [String!]
-    $completed: Boolean
-    $wildcardSearch: String
-    $startAt: DateTimeRangeInput
-  ) {
-    tasks(
-      accountListId: $accountListId
-      first: $first
-      before: $before
-      after: $after
-      activityType: $activityType
-      contactIds: $contactIds
-      userIds: $userIds
-      tags: $tags
-      completed: $completed
-      wildcardSearch: $wildcardSearch
-      startAt: $startAt
-    ) {
-      nodes {
-        id
-        activityType
-        subject
-        startAt
-        completedAt
-        tagList
-        contacts {
-          nodes {
-            id
-            name
-          }
-        }
-        user {
-          id
-          firstName
-          lastName
-        }
-      }
-      totalCount
-      pageInfo {
-        startCursor
-        endCursor
-      }
-    }
-  }
-`;
+import { ActivityTypeEnum } from '../../../../graphql/types.generated';
+import { useGetDataForTaskDrawerQuery } from '../Drawer/Form/TaskDrawer.generated';
+import {
+  useGetTasksForTaskListQuery,
+  GetTasksForTaskListQueryVariables,
+} from './TaskList.generated';
 
 const useStyles = makeStyles((theme: Theme) => ({
   chip: {
@@ -110,17 +56,10 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-export interface TaskFilter {
-  userIds?: string[];
-  tags?: string[];
-  contactIds?: string[];
-  activityType?: string[];
-  completed?: boolean;
-  wildcardSearch?: string;
-  startAt?: { min?: string; max?: string };
-  before?: string;
-  after?: string;
-}
+export type TaskFilter = Omit<
+  GetTasksForTaskListQueryVariables,
+  'accountListId'
+>;
 
 interface Props {
   initialFilter?: TaskFilter;
@@ -148,23 +87,17 @@ const TaskList = ({ initialFilter }: Props): ReactElement => {
     openTaskDrawer,
   } = useApp();
 
-  const { data: filterData } = useQuery<GetDataForTaskDrawerQuery>(
-    GET_DATA_FOR_TASK_DRAWER_QUERY,
-    {
-      variables: { accountListId },
-    },
-  );
+  const { data: filterData } = useGetDataForTaskDrawerQuery({
+    variables: { accountListId },
+  });
 
-  const { loading, data } = useQuery<GetTasksForTaskListQuery>(
-    GET_TASKS_FOR_TASK_LIST_QUERY,
-    {
-      variables: {
-        accountListId,
-        first: rowsPerPage,
-        ...filter,
-      },
+  const { loading, data } = useGetTasksForTaskListQuery({
+    variables: {
+      accountListId,
+      first: rowsPerPage,
+      ...filter,
     },
-  );
+  });
 
   const columns: MUIDataTableColumn[] = [
     {
@@ -220,9 +153,11 @@ const TaskList = ({ initialFilter }: Props): ReactElement => {
         filter: true,
         sort: false,
         customBodyRender: t,
-        filterList: initialFilter?.activityType,
+        filterList: Array.isArray(initialFilter?.activityType)
+          ? initialFilter?.activityType
+          : [initialFilter?.activityType],
         filterOptions: {
-          names: Object.keys(ActivityTypeEnum).sort(),
+          names: Object.values(ActivityTypeEnum).sort(),
           renderValue: t,
           fullWidth: true,
         },
@@ -237,7 +172,9 @@ const TaskList = ({ initialFilter }: Props): ReactElement => {
         display: false,
         filter: true,
         sort: false,
-        filterList: initialFilter?.contactIds,
+        filterList: Array.isArray(initialFilter?.contactIds)
+          ? initialFilter?.contactIds
+          : [initialFilter?.contactIds],
         customFilterListOptions: {
           render: (id): string => {
             if (filterData?.contacts?.nodes) {
@@ -271,7 +208,9 @@ const TaskList = ({ initialFilter }: Props): ReactElement => {
       options: {
         filter: true,
         sort: true,
-        filterList: initialFilter?.tags,
+        filterList: Array.isArray(initialFilter?.tags)
+          ? initialFilter?.tags
+          : [initialFilter?.tags],
         filterOptions: {
           names: filterData?.accountList?.taskTagList || [],
           fullWidth: true,
@@ -316,7 +255,9 @@ const TaskList = ({ initialFilter }: Props): ReactElement => {
         filter: true,
         sort: true,
         display: false,
-        filterList: initialFilter?.userIds,
+        filterList: Array.isArray(initialFilter?.userIds)
+          ? initialFilter?.userIds
+          : [initialFilter?.userIds],
         customFilterListOptions: {
           render: (id): string => {
             if (filterData?.accountListUsers?.nodes) {
@@ -324,7 +265,7 @@ const TaskList = ({ initialFilter }: Props): ReactElement => {
                 ({ user: { id: accountListUserId } }) =>
                   accountListUserId === id,
               );
-              return `${accountListUser.user.firstName} ${accountListUser.user.lastName}`;
+              return `${accountListUser?.user.firstName} ${accountListUser?.user.lastName}`;
             }
             return t('Loading');
           },
@@ -340,7 +281,7 @@ const TaskList = ({ initialFilter }: Props): ReactElement => {
                 ({ user: { id: accountListUserId } }) =>
                   accountListUserId === id,
               );
-              return `${accountListUser.user.firstName} ${accountListUser.user.lastName}`;
+              return `${accountListUser?.user.firstName} ${accountListUser?.user.lastName}`;
             }
           },
           fullWidth: true,

@@ -2,6 +2,7 @@ import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestWrapper from '../../../../__tests__/util/TestWrapper';
+import { ActivityTypeEnum } from '../../../../graphql/types.generated';
 import {
   getDataForTaskDrawerMock,
   createTaskMutationMock,
@@ -49,7 +50,7 @@ describe('TaskDrawer', () => {
       </TestWrapper>,
     );
     expect(await findByTestId('TaskDrawerTitle')).toHaveTextContent(
-      'NEWSLETTER_EMAIL',
+      ActivityTypeEnum.NewsletterEmail,
     );
   });
 

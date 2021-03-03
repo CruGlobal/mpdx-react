@@ -2,17 +2,19 @@ import { MockedResponse } from '@apollo/client/testing';
 import { DateTime } from 'luxon';
 import {
   ActivityTypeEnum,
-  NotificationTypeEnum,
   NotificationTimeUnitEnum,
-} from '../../../../types/globalTypes';
-import { GetTaskForTaskDrawerQuery } from '../../../../types/GetTaskForTaskDrawerQuery';
-import { GET_TASK_FOR_TASK_DRAWER_QUERY } from './Drawer';
+  NotificationTypeEnum,
+} from '../../../../graphql/types.generated';
+import {
+  GetTaskForTaskDrawerDocument,
+  GetTaskForTaskDrawerQuery,
+} from './TaskDrawerTask.generated';
 
 export const getTaskForTaskDrawerMock = (): MockedResponse => {
   const data: GetTaskForTaskDrawerQuery = {
     task: {
       id: 'task-1',
-      activityType: ActivityTypeEnum.NEWSLETTER_EMAIL,
+      activityType: ActivityTypeEnum.NewsletterEmail,
       subject: 'On the Journey with the Johnson Family',
       startAt: DateTime.local(2012, 1, 5, 1, 2).toISO(),
       completedAt: null,
@@ -25,13 +27,13 @@ export const getTaskForTaskDrawerMock = (): MockedResponse => {
       },
       user: { id: 'user-1', firstName: 'Anderson', lastName: 'Robert' },
       notificationTimeBefore: 20,
-      notificationType: NotificationTypeEnum.BOTH,
-      notificationTimeUnit: NotificationTimeUnitEnum.HOURS,
+      notificationType: NotificationTypeEnum.Both,
+      notificationTimeUnit: NotificationTimeUnitEnum.Hours,
     },
   };
   return {
     request: {
-      query: GET_TASK_FOR_TASK_DRAWER_QUERY,
+      query: GetTaskForTaskDrawerDocument,
       variables: {
         accountListId: 'abc',
         taskId: 'task-1',

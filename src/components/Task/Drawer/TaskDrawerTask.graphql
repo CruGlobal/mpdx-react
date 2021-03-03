@@ -1,0 +1,24 @@
+query GetTaskForTaskDrawer($accountListId: ID!, $taskId: ID!) {
+  task(accountListId: $accountListId, id: $taskId) {
+    id
+    activityType
+    subject
+    startAt
+    completedAt
+    tagList
+    contacts {
+      nodes {
+        id
+        name
+      }
+    }
+    user {
+      id
+      firstName
+      lastName
+    }
+    notificationTimeBefore
+    notificationType
+    notificationTimeUnit
+  }
+}

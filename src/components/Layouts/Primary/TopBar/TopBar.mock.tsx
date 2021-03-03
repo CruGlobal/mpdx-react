@@ -1,6 +1,5 @@
 import { MockedResponse } from '@apollo/client/testing';
-import { GetTopBarQuery } from '../../../../../types/GetTopBarQuery';
-import { GET_TOP_BAR_QUERY } from './TopBar';
+import { GetTopBarDocument, GetTopBarQuery } from './GetTopBar.generated';
 
 export const getTopBarMock = (): MockedResponse => {
   const data: GetTopBarQuery = {
@@ -21,7 +20,7 @@ export const getTopBarMock = (): MockedResponse => {
   };
   return {
     request: {
-      query: GET_TOP_BAR_QUERY,
+      query: GetTopBarDocument,
     },
     result: {
       data,
@@ -51,7 +50,7 @@ export const getTopBarMultipleMock = (): MockedResponse => {
   };
   return {
     request: {
-      query: GET_TOP_BAR_QUERY,
+      query: GetTopBarDocument,
     },
     result: {
       data,

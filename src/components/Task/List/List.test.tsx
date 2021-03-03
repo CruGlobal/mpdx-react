@@ -4,6 +4,7 @@ import TestWrapper from '../../../../__tests__/util/TestWrapper';
 import { getDataForTaskDrawerMock } from '../Drawer/Form/Form.mock';
 import { render } from '../../../../__tests__/util/testingLibraryReactMock';
 import { useApp } from '../../App';
+import { ActivityTypeEnum } from '../../../../graphql/types.generated';
 import {
   getTasksForTaskListMock,
   getFilteredTasksForTaskListMock,
@@ -35,32 +36,32 @@ describe('TaskList', () => {
       getDataForTaskDrawerMock(),
       getFilteredTasksForTaskListMock({ completed: false }),
       getFilteredTasksForTaskListMock({
-        activityType: ['APPOINTMENT'],
+        activityType: [ActivityTypeEnum.Appointment],
         completed: false,
       }),
       getFilteredTasksForTaskListMock({
         contactIds: ['contact-1'],
-        activityType: ['APPOINTMENT'],
+        activityType: [ActivityTypeEnum.Appointment],
         completed: false,
       }),
       getFilteredTasksForTaskListMock({
         tags: ['tag-1'],
         contactIds: ['contact-1'],
-        activityType: ['APPOINTMENT'],
+        activityType: [ActivityTypeEnum.Appointment],
         completed: false,
       }),
       getFilteredTasksForTaskListMock({
         userIds: ['user-1'],
         tags: ['tag-1'],
         contactIds: ['contact-1'],
-        activityType: ['APPOINTMENT'],
+        activityType: [ActivityTypeEnum.Appointment],
         completed: false,
       }),
       getFilteredTasksForTaskListMock({
         userIds: ['user-1'],
         tags: ['tag-1'],
         contactIds: ['contact-1'],
-        activityType: ['APPOINTMENT'],
+        activityType: [ActivityTypeEnum.Appointment],
         completed: false,
         wildcardSearch: 'a',
       }),
@@ -68,7 +69,7 @@ describe('TaskList', () => {
         userIds: ['user-1'],
         tags: ['tag-1'],
         contactIds: ['contact-1'],
-        activityType: ['APPOINTMENT'],
+        activityType: [ActivityTypeEnum.Appointment],
         completed: false,
         wildcardSearch: 'a',
         first: 250,
@@ -77,7 +78,7 @@ describe('TaskList', () => {
         userIds: ['user-1'],
         tags: ['tag-1'],
         contactIds: ['contact-1'],
-        activityType: ['APPOINTMENT'],
+        activityType: [ActivityTypeEnum.Appointment],
         completed: false,
         wildcardSearch: 'a',
         first: 250,
@@ -87,7 +88,7 @@ describe('TaskList', () => {
         userIds: ['user-1'],
         tags: ['tag-1'],
         contactIds: ['contact-1'],
-        activityType: ['APPOINTMENT'],
+        activityType: [ActivityTypeEnum.Appointment],
         completed: false,
         wildcardSearch: 'a',
         first: 250,
@@ -130,7 +131,8 @@ describe('TaskList', () => {
 
   it('has correct overrides', async () => {
     const filter = {
-      activityType: ['APPOINTMENT'],
+      accountListId: 'account-list-1',
+      activityType: [ActivityTypeEnum.Appointment],
       completed: true,
       tags: ['tag-1', 'tag-2'],
       userIds: ['user-1'],

@@ -1,41 +1,16 @@
 import React, { ReactElement, useEffect } from 'react';
 import Head from 'next/head';
-import { gql } from '@apollo/client';
 import { GetServerSideProps, GetServerSidePropsResult } from 'next';
-import { DateTime } from 'luxon';
 import { getSession } from 'next-auth/client';
 import { useTranslation } from 'react-i18next';
 import Dashboard from '../../src/components/Dashboard';
-import { GetDashboardQuery } from '../../types/GetDashboardQuery';
 import { ssrClient } from '../../src/lib/client';
 import { useApp } from '../../src/components/App';
-
-export const GET_DASHBOARD_QUERY = gql`
-  query GetDashboardQuery($accountListId: ID!) {
-    user {
-      firstName
-    }
-    accountList(id: $accountListId) {
-      name
-      monthlyGoal
-      receivedPledges
-      totalPledges
-      currency
-      balance
-    }
-    reportsDonationHistories(accountListId: $accountListId) {
-      averageIgnoreCurrent
-      periods {
-        startDate
-        convertedTotal
-        totals {
-          currency
-          convertedAmount
-        }
-      }
-    }
-  }
-`;
+import {
+  GetDashboardDocument,
+  GetDashboardQuery,
+  GetDashboardQueryVariables,
+} from './GetDashboard.generated';
 
 interface Props {
   data: GetDashboardQuery;
@@ -75,16 +50,22 @@ export const getServerSideProps: GetServerSideProps = async ({
   }
 
   const client = await ssrClient(session?.user['token']);
-  const response = await client.query<GetDashboardQuery>({
-    query: GET_DASHBOARD_QUERY,
+  const response = await client.query<
+    GetDashboardQuery,
+    GetDashboardQueryVariables
+  >({
+    query: GetDashboardDocument,
     variables: {
-      accountListId: params.accountListId,
-      endOfDay: DateTime.local().endOf('day').toISO(),
-      today: DateTime.local().endOf('day').toISODate(),
-      twoWeeksFromNow: DateTime.local()
-        .endOf('day')
-        .plus({ weeks: 2 })
-        .toISODate(),
+      accountListId: Array.isArray(params.accountListId)
+        ? params.accountListId[0]
+        : params.accountListId,
+      // TODO: implement these variables in query
+      // endOfDay: DateTime.local().endOf('day').toISO(),
+      // today: DateTime.local().endOf('day').toISODate(),
+      // twoWeeksFromNow: DateTime.local()
+      //   .endOf('day')
+      //   .plus({ weeks: 2 })
+      //   .toISODate(),
     },
   });
 

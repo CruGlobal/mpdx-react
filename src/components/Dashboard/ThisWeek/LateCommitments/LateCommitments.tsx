@@ -15,9 +15,9 @@ import { Skeleton } from '@material-ui/lab';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import AnimatedCard from '../../../AnimatedCard';
-import { GetThisWeekQuery_latePledgeContacts } from '../../../../../types/GetThisWeekQuery';
 import HandoffLink from '../../../HandoffLink';
 import illustration14 from '../../../../images/drawkit/grape/drawkit-grape-pack-illustration-14.svg';
+import { GetThisWeekQuery } from '../GetThisWeek.generated';
 
 const useStyles = makeStyles((theme: Theme) => ({
   div: {
@@ -55,7 +55,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 interface Props {
   loading?: boolean;
-  latePledgeContacts?: GetThisWeekQuery_latePledgeContacts;
+  latePledgeContacts?: GetThisWeekQuery['latePledgeContacts'];
 }
 
 const LateCommitments = ({

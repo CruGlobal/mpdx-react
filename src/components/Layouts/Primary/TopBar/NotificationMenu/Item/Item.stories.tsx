@@ -1,7 +1,7 @@
 import React, { ReactElement } from 'react';
 import { MockedProvider } from '@apollo/client/testing';
-import { NotificationTypeTypeEnum } from '../../../../../../../types/globalTypes';
-import { GetNotificationsQuery_userNotifications_edges_node as Notification } from '../../../../../../../types/GetNotificationsQuery';
+import { GetNotificationsQuery } from '../GetNotificationsQuery.generated';
+import { NotificationTypeTypeEnum } from '../../../../../../../graphql/types.generated';
 import acknowledgeUserNotificationMutationMock from './Item.mock';
 import NotificationMenuItem from '.';
 
@@ -13,7 +13,7 @@ export const Default = (): ReactElement => {
   const id = 'd1b7a8c1-9b2e-4234-b2d6-e52c151bbc7b';
   const itemWithoutDonation = (
     type: NotificationTypeTypeEnum,
-  ): Notification => {
+  ): GetNotificationsQuery['userNotifications']['edges'][0]['node'] => {
     return {
       id,
       read: false,
@@ -32,7 +32,9 @@ export const Default = (): ReactElement => {
       },
     };
   };
-  const itemWithDonation = (type: NotificationTypeTypeEnum): Notification => {
+  const itemWithDonation = (
+    type: NotificationTypeTypeEnum,
+  ): GetNotificationsQuery['userNotifications']['edges'][0]['node'] => {
     return {
       id,
       read: false,
@@ -66,71 +68,69 @@ export const Default = (): ReactElement => {
       <>
         <NotificationMenuItem
           item={itemWithoutDonation(
-            NotificationTypeTypeEnum.CALL_PARTNER_ONCE_PER_YEAR,
+            NotificationTypeTypeEnum.CallPartnerOncePerYear,
           )}
         />
         <NotificationMenuItem
-          item={itemWithoutDonation(NotificationTypeTypeEnum.LARGER_GIFT)}
+          item={itemWithoutDonation(NotificationTypeTypeEnum.LargerGift)}
         />
         <NotificationMenuItem
-          item={itemWithDonation(NotificationTypeTypeEnum.LARGER_GIFT)}
+          item={itemWithDonation(NotificationTypeTypeEnum.LargerGift)}
+        />
+        <NotificationMenuItem
+          item={itemWithoutDonation(NotificationTypeTypeEnum.LongTimeFrameGift)}
+        />
+        <NotificationMenuItem
+          item={itemWithDonation(NotificationTypeTypeEnum.LongTimeFrameGift)}
         />
         <NotificationMenuItem
           item={itemWithoutDonation(
-            NotificationTypeTypeEnum.LONG_TIME_FRAME_GIFT,
-          )}
-        />
-        <NotificationMenuItem
-          item={itemWithDonation(NotificationTypeTypeEnum.LONG_TIME_FRAME_GIFT)}
-        />
-        <NotificationMenuItem
-          item={itemWithoutDonation(
-            NotificationTypeTypeEnum.MISSING_ADDRESS_IN_NEWSLETTER,
+            NotificationTypeTypeEnum.MissingAddressInNewsletter,
           )}
         />
         <NotificationMenuItem
           item={itemWithoutDonation(
-            NotificationTypeTypeEnum.MISSING_EMAIL_IN_NEWSLETTER,
+            NotificationTypeTypeEnum.MissingEmailInNewsletter,
           )}
         />
         <NotificationMenuItem
-          item={itemWithoutDonation(NotificationTypeTypeEnum.RECONTINUING_GIFT)}
+          item={itemWithoutDonation(NotificationTypeTypeEnum.RecontinuingGift)}
         />
         <NotificationMenuItem
           item={itemWithoutDonation(
-            NotificationTypeTypeEnum.REMIND_PARTNER_IN_ADVANCE,
+            NotificationTypeTypeEnum.RemindPartnerInAdvance,
           )}
         />
         <NotificationMenuItem
-          item={itemWithoutDonation(NotificationTypeTypeEnum.SMALLER_GIFT)}
+          item={itemWithoutDonation(NotificationTypeTypeEnum.SmallerGift)}
         />
         <NotificationMenuItem
-          item={itemWithDonation(NotificationTypeTypeEnum.SMALLER_GIFT)}
+          item={itemWithDonation(NotificationTypeTypeEnum.SmallerGift)}
         />
         <NotificationMenuItem
-          item={itemWithoutDonation(NotificationTypeTypeEnum.SMALLER_GIFT)}
+          item={itemWithoutDonation(NotificationTypeTypeEnum.SmallerGift)}
         />
         <NotificationMenuItem
-          item={itemWithDonation(NotificationTypeTypeEnum.SPECIAL_GIFT)}
+          item={itemWithDonation(NotificationTypeTypeEnum.SpecialGift)}
         />
         <NotificationMenuItem
-          item={itemWithoutDonation(NotificationTypeTypeEnum.STARTED_GIVING)}
+          item={itemWithoutDonation(NotificationTypeTypeEnum.StartedGiving)}
         />
         <NotificationMenuItem
-          item={itemWithoutDonation(NotificationTypeTypeEnum.STOPPED_GIVING)}
+          item={itemWithoutDonation(NotificationTypeTypeEnum.StoppedGiving)}
         />
         <NotificationMenuItem
           item={itemWithoutDonation(
-            NotificationTypeTypeEnum.THANK_PARTNER_ONCE_PER_YEAR,
+            NotificationTypeTypeEnum.ThankPartnerOncePerYear,
           )}
         />
         <NotificationMenuItem
           item={itemWithoutDonation(
-            NotificationTypeTypeEnum.UPCOMING_ANNIVERSARY,
+            NotificationTypeTypeEnum.UpcomingAnniversary,
           )}
         />
         <NotificationMenuItem
-          item={itemWithoutDonation(NotificationTypeTypeEnum.UPCOMING_BIRTHDAY)}
+          item={itemWithoutDonation(NotificationTypeTypeEnum.UpcomingBirthday)}
           last
         />
       </>

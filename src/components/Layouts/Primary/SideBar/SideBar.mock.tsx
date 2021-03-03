@@ -1,6 +1,5 @@
 import { MockedResponse } from '@apollo/client/testing';
-import { GetSideBarQuery } from '../../../../../types/GetSideBarQuery';
-import { GET_SIDEBAR_BAR_QUERY } from './SideBar';
+import { GetSideBarDocument, GetSideBarQuery } from './GetSideBar.generated';
 
 export const getSideBarMock = (): MockedResponse => {
   const data: GetSideBarQuery = {
@@ -28,7 +27,7 @@ export const getSideBarMock = (): MockedResponse => {
   };
   return {
     request: {
-      query: GET_SIDEBAR_BAR_QUERY,
+      query: GetSideBarDocument,
       variables: {
         accountListId: '1',
       },
@@ -65,7 +64,7 @@ export const getSideBarEmptyMock = (): MockedResponse => {
   };
   return {
     request: {
-      query: GET_SIDEBAR_BAR_QUERY,
+      query: GetSideBarDocument,
       variables: {
         accountListId: '1',
       },

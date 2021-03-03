@@ -4,7 +4,8 @@ import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { InMemoryCache } from '@apollo/client';
 import { AppProvider } from '../../../../App';
-import { GET_COMMENTS_FOR_TASK_DRAWER_CONTACT_LIST_QUERY } from '../CommentList';
+import { GetCommentsForTaskDrawerCommentListDocument } from '../TaskListComments.generated';
+import { User } from '../../../../../../graphql/types.generated';
 import { createTaskCommentMutationMock } from './Form.mock';
 import TaskDrawerCommentListForm from '.';
 
@@ -16,7 +17,7 @@ describe('TaskDrawerCommentListForm', () => {
   it('has correct defaults', async () => {
     const cache = new InMemoryCache({ addTypename: false });
     const query = {
-      query: GET_COMMENTS_FOR_TASK_DRAWER_CONTACT_LIST_QUERY,
+      query: GetCommentsForTaskDrawerCommentListDocument,
       variables: {
         accountListId: 'abc',
         taskId: 'task-1',
@@ -37,7 +38,11 @@ describe('TaskDrawerCommentListForm', () => {
       >
         <AppProvider
           initialState={{
-            user: { id: 'user-1', firstName: 'John', lastName: 'Smith' },
+            user: {
+              id: 'user-1',
+              firstName: 'John',
+              lastName: 'Smith',
+            } as User,
           }}
         >
           <TaskDrawerCommentListForm accountListId="abc" taskId="task-1" />

@@ -4,9 +4,9 @@ import {
   render,
   fireEvent,
 } from '../../../../../__tests__/util/testingLibraryReactMock';
-import { ActivityTypeEnum } from '../../../../../types/globalTypes';
-import { GetThisWeekQuery_prayerRequestTasks } from '../../../../../types/GetThisWeekQuery';
 import { useApp } from '../../../App';
+import { GetThisWeekQuery } from '../GetThisWeek.generated';
+import { ActivityTypeEnum } from '../../../../../graphql/types.generated';
 import PartnerCare from '.';
 
 jest.mock('../../../App', () => ({
@@ -105,12 +105,12 @@ describe('PartnerCare', () => {
   });
 
   it('props', () => {
-    const prayerRequestTasks: GetThisWeekQuery_prayerRequestTasks = {
+    const prayerRequestTasks: GetThisWeekQuery['prayerRequestTasks'] = {
       nodes: [
         {
           id: 'task_1',
           subject: 'the quick brown fox jumps over the lazy dog',
-          activityType: ActivityTypeEnum.PRAYER_REQUEST,
+          activityType: ActivityTypeEnum.PrayerRequest,
           contacts: {
             nodes: [{ name: 'Roger Smith' }, { name: 'Sarah Smith' }],
           },
@@ -120,7 +120,7 @@ describe('PartnerCare', () => {
         {
           id: 'task_2',
           subject: 'on the boat to see uncle johnny',
-          activityType: ActivityTypeEnum.PRAYER_REQUEST,
+          activityType: ActivityTypeEnum.PrayerRequest,
           contacts: {
             nodes: [{ name: 'Roger Parker' }, { name: 'Sarah Parker' }],
           },

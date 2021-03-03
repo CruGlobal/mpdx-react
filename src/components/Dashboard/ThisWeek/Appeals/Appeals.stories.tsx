@@ -1,6 +1,6 @@
 import React, { ReactElement } from 'react';
 import { Box } from '@material-ui/core';
-import { GetThisWeekQuery_accountList_primaryAppeal } from '../../../../../types/GetThisWeekQuery';
+import { GetThisWeekQuery } from '../GetThisWeek.generated';
 import Appeals from '.';
 
 export default {
@@ -8,7 +8,7 @@ export default {
 };
 
 export const Default = (): ReactElement => {
-  const appeal: GetThisWeekQuery_accountList_primaryAppeal = {
+  const appeal: GetThisWeekQuery['accountList']['primaryAppeal'] = {
     id: 'appeal',
     name: '2020 End of Year Ask With Really long Appeal Name!',
     amount: 1000,

@@ -6,6 +6,7 @@ import {
   getFilteredTasksForTaskListMock,
 } from '../List/List.mock';
 import { getDataForTaskDrawerMock } from '../Drawer/Form/Form.mock';
+import { ActivityTypeEnum } from '../../../../graphql/types.generated';
 import TaskHome from '.';
 
 export default {
@@ -25,7 +26,11 @@ export const Default = (): ReactElement => (
 );
 
 export const WithInitialFilter = (): ReactElement => {
-  const filter = { activityType: ['APPOINTMENT'], completed: true };
+  const filter = {
+    accountListId: 'account-list-1',
+    activityType: [ActivityTypeEnum.Appointment],
+    completed: true,
+  };
 
   return (
     <MockedProvider

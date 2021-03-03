@@ -19,7 +19,6 @@ import {
   ListItemAvatar,
   Link,
 } from '@material-ui/core';
-import { useQuery, gql } from '@apollo/client';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import MenuIcon from '@material-ui/icons/Menu';
@@ -27,12 +26,13 @@ import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { signout } from 'next-auth/client';
 import NextLink from 'next/link';
-import { GetTopBarQuery } from '../../../../../types/GetTopBarQuery';
 import { SIDE_BAR_MINIMIZED_WIDTH, SIDE_BAR_WIDTH } from '../SideBar/SideBar';
 import { useApp } from '../../../App';
 import HandoffLink from '../../../HandoffLink';
 import logo from '../../../../images/logo.svg';
+import { User } from '../../../../../graphql/types.generated';
 import NotificationMenu from './NotificationMenu';
+import { useGetTopBarQuery } from './GetTopBar.generated';
 
 const useStyles = makeStyles((theme: Theme) => ({
   appBar: {
@@ -139,33 +139,6 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-export const GET_TOP_BAR_QUERY = gql`
-  query GetTopBarQuery {
-    accountLists {
-      nodes {
-        id
-        name
-      }
-    }
-    user {
-      id
-      firstName
-      lastName
-      admin
-      developer
-      keyAccounts {
-        id
-        email
-      }
-      administrativeOrganizations {
-        nodes {
-          id
-        }
-      }
-    }
-  }
-`;
-
 interface Props {
   open: boolean;
   handleOpenChange: (state?: boolean) => void;
@@ -179,7 +152,7 @@ const TopBar = ({ open, handleOpenChange }: Props): ReactElement => {
     disableHysteresis: true,
     threshold: 0,
   });
-  const { data } = useQuery<GetTopBarQuery>(GET_TOP_BAR_QUERY);
+  const { data } = useGetTopBarQuery();
   const [accountListMenuAnchorEl, setAccountListMenuAnchorEl] = useState(null);
   const accountListMenuOpen = Boolean(accountListMenuAnchorEl);
   const [profileMenuAnchorEl, setProfileMenuAnchorEl] = useState(null);
@@ -211,7 +184,8 @@ const TopBar = ({ open, handleOpenChange }: Props): ReactElement => {
   useEffect(() => {
     data?.user &&
       state.user?.id !== data.user.id &&
-      dispatch({ type: 'updateUser', user: data.user });
+      // TODO: Use fragments to ensure all required fields are loaded
+      dispatch({ type: 'updateUser', user: data.user as User });
   }, [data?.user]);
 
   return (

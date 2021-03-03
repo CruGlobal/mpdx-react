@@ -1,6 +1,6 @@
 import React, { ReactElement } from 'react';
 import { MockedProvider } from '@apollo/client/testing';
-import { GetDashboardQuery } from '../../../types/GetDashboardQuery';
+import { GetDashboardQuery } from '../../../pages/accountLists/GetDashboard.generated';
 import { GetThisWeekDefaultMocks } from './ThisWeek/ThisWeek.mock';
 import Dashboard from '.';
 

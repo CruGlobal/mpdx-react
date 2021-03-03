@@ -2,6 +2,7 @@ import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestWrapper from '../../../../../__tests__/util/TestWrapper';
+import { User } from '../../../../../graphql/types.generated';
 import {
   getCommentsForTaskDrawerCommentListMock,
   getCommentsForTaskDrawerCommentListEmptyMock,
@@ -19,7 +20,7 @@ describe('TaskDrawerCommentList', () => {
     const { queryByTestId, getAllByTestId, getByRole } = render(
       <TestWrapper
         initialState={{
-          user: { id: 'user-1', firstName: 'John', lastName: 'Smith' },
+          user: { id: 'user-1', firstName: 'John', lastName: 'Smith' } as User,
         }}
         mocks={[
           getCommentsForTaskDrawerCommentListMock(),
@@ -55,7 +56,7 @@ describe('TaskDrawerCommentList', () => {
     const { getByTestId } = render(
       <TestWrapper
         initialState={{
-          user: { id: 'user-1', firstName: 'John', lastName: 'Smith' },
+          user: { id: 'user-1', firstName: 'John', lastName: 'Smith' } as User,
         }}
         mocks={[getCommentsForTaskDrawerCommentListLoadingMock()]}
       >
@@ -69,7 +70,7 @@ describe('TaskDrawerCommentList', () => {
     const { queryByTestId, getByTestId } = render(
       <TestWrapper
         initialState={{
-          user: { id: 'user-1', firstName: 'John', lastName: 'Smith' },
+          user: { id: 'user-1', firstName: 'John', lastName: 'Smith' } as User,
         }}
         mocks={[getCommentsForTaskDrawerCommentListEmptyMock()]}
       >

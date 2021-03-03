@@ -1,0 +1,9 @@
+mutation UserKeySignIn($ticket: String!) {
+  userKeySignIn(input: { casTicket: $ticket }) {
+    token
+    user {
+      id
+      name: firstName
+    }
+  }
+}

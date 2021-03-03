@@ -1,12 +1,8 @@
 import React, { ReactElement } from 'react';
 import { Box } from '@material-ui/core';
 import { MockedProvider } from '@apollo/client/testing';
-import {
-  GetThisWeekQuery_prayerRequestTasks,
-  GetThisWeekQuery_reportsPeopleWithBirthdays,
-  GetThisWeekQuery_reportsPeopleWithAnniversaries,
-} from '../../../../../types/GetThisWeekQuery';
-import { ActivityTypeEnum } from '../../../../../types/globalTypes';
+import { ActivityTypeEnum } from '../../../../../graphql/types.generated';
+import { GetThisWeekQuery } from '../GetThisWeek.generated';
 import PartnerCare from '.';
 
 export default {
@@ -17,7 +13,7 @@ export const Default = (): ReactElement => {
   const task = {
     id: 'task',
     subject: 'the quick brown fox jumps over the lazy dog',
-    activityType: ActivityTypeEnum.PRAYER_REQUEST,
+    activityType: ActivityTypeEnum.PrayerRequest,
     contacts: { nodes: [{ name: 'Roger Smith' }, { name: 'Sarah Smith' }] },
     startAt: null,
     completedAt: null,
@@ -41,7 +37,7 @@ export const Default = (): ReactElement => {
       name: 'John and Sarah, Doe',
     },
   };
-  const prayerRequestTasks: GetThisWeekQuery_prayerRequestTasks = {
+  const prayerRequestTasks: GetThisWeekQuery['prayerRequestTasks'] = {
     nodes: [
       { ...task, id: 'task_4' },
       { ...task, id: 'task_5' },
@@ -49,7 +45,7 @@ export const Default = (): ReactElement => {
     ],
     totalCount: 80,
   };
-  const reportsPeopleWithBirthdays: GetThisWeekQuery_reportsPeopleWithBirthdays = {
+  const reportsPeopleWithBirthdays: GetThisWeekQuery['reportsPeopleWithBirthdays'] = {
     periods: [
       {
         people: [
@@ -59,7 +55,7 @@ export const Default = (): ReactElement => {
       },
     ],
   };
-  const reportsPeopleWithAnniversaries: GetThisWeekQuery_reportsPeopleWithAnniversaries = {
+  const reportsPeopleWithAnniversaries: GetThisWeekQuery['reportsPeopleWithAnniversaries'] = {
     periods: [
       {
         people: [
@@ -85,18 +81,18 @@ export const Default = (): ReactElement => {
 };
 
 export const Empty = (): ReactElement => {
-  const prayerRequestTasks: GetThisWeekQuery_prayerRequestTasks = {
+  const prayerRequestTasks: GetThisWeekQuery['prayerRequestTasks'] = {
     nodes: [],
     totalCount: 0,
   };
-  const reportsPeopleWithBirthdays: GetThisWeekQuery_reportsPeopleWithBirthdays = {
+  const reportsPeopleWithBirthdays: GetThisWeekQuery['reportsPeopleWithBirthdays'] = {
     periods: [
       {
         people: [],
       },
     ],
   };
-  const reportsPeopleWithAnniversaries: GetThisWeekQuery_reportsPeopleWithAnniversaries = {
+  const reportsPeopleWithAnniversaries: GetThisWeekQuery['reportsPeopleWithAnniversaries'] = {
     periods: [
       {
         people: [],

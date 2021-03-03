@@ -3,9 +3,11 @@ import { MockedProvider } from '@apollo/client/testing';
 import { DateTime } from 'luxon';
 import {
   ActivityTypeEnum,
+  Contact,
   NotificationTimeUnitEnum,
   NotificationTypeEnum,
-} from '../../../../../types/globalTypes';
+  Task,
+} from '../../../../../graphql/types.generated';
 import {
   getDataForTaskDrawerMock,
   createTaskMutationMock,
@@ -39,23 +41,40 @@ export const Loading = (): ReactElement => {
   );
 };
 
-const task = {
+const task: Task = {
   id: 'task-1',
-  activityType: ActivityTypeEnum.NEWSLETTER_EMAIL,
+  activityType: ActivityTypeEnum.NewsletterEmail,
   subject: 'On the Journey with the Johnson Family',
   startAt: DateTime.local(2012, 1, 5, 1, 2).toISO(),
   completedAt: DateTime.local(2015, 1, 5, 1, 2).toISO(),
   tagList: ['tag-1', 'tag-2'],
   contacts: {
     nodes: [
-      { id: 'contact-1', name: 'Anderson, Robert' },
-      { id: 'contact-2', name: 'Smith, John' },
+      { id: 'contact-1', name: 'Anderson, Robert' } as Contact,
+      { id: 'contact-2', name: 'Smith, John' } as Contact,
     ],
+    pageInfo: { hasNextPage: false, hasPreviousPage: false },
+    totalCount: 2,
+    totalPageCount: 1,
   },
-  user: { id: 'user-1', firstName: 'Anderson', lastName: 'Robert' },
+  user: {
+    id: 'user-1',
+    firstName: 'Anderson',
+    lastName: 'Robert',
+    createdAt: 'date-1',
+    updatedAt: 'date-2',
+  },
   notificationTimeBefore: 20,
-  notificationType: NotificationTypeEnum.BOTH,
-  notificationTimeUnit: NotificationTimeUnitEnum.HOURS,
+  notificationType: NotificationTypeEnum.Both,
+  notificationTimeUnit: NotificationTimeUnitEnum.Hours,
+  comments: {
+    nodes: [],
+    pageInfo: { hasNextPage: false, hasPreviousPage: false },
+    totalCount: 0,
+    totalPageCount: 0,
+  },
+  createdAt: 'date-1',
+  updatedAt: 'date-2',
 };
 
 export const Persisted = (): ReactElement => {

@@ -1,0 +1,50 @@
+query GetContactsForTaskDrawerContactList(
+  $accountListId: ID!
+  $contactIds: [ID!]
+) {
+  contacts(accountListId: $accountListId, ids: $contactIds) {
+    nodes {
+      id
+      name
+      primaryAddress {
+        id
+        street
+        city
+        state
+        postalCode
+        location
+      }
+      primaryPerson {
+        id
+        title
+        firstName
+        lastName
+        suffix
+        primaryEmailAddress {
+          id
+          email
+          location
+        }
+        primaryPhoneNumber {
+          id
+          number
+          location
+        }
+      }
+      status
+      sendNewsletter
+      lastDonation {
+        id
+        amount {
+          amount
+          currency
+          conversionDate
+        }
+      }
+      pledgeAmount
+      pledgeCurrency
+      pledgeFrequency
+      tagList
+    }
+  }
+}

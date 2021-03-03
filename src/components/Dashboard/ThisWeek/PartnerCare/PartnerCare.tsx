@@ -26,16 +26,11 @@ import { useTranslation } from 'react-i18next';
 import Link from 'next/link';
 import { dayMonthFormat } from '../../../../lib/intlFormat';
 import AnimatedCard from '../../../AnimatedCard';
-import {
-  GetThisWeekQuery_prayerRequestTasks,
-  GetThisWeekQuery_reportsPeopleWithBirthdays,
-  GetThisWeekQuery_reportsPeopleWithAnniversaries,
-  GetThisWeekQuery_prayerRequestTasks_nodes as Task,
-} from '../../../../../types/GetThisWeekQuery';
 import { useApp } from '../../../App';
 import TaskStatus from '../../../Task/Status';
 import illustration4 from '../../../../images/drawkit/grape/drawkit-grape-pack-illustration-4.svg';
 import illustration7 from '../../../../images/drawkit/grape/drawkit-grape-pack-illustration-7.svg';
+import { GetThisWeekQuery } from '../GetThisWeek.generated';
 
 const useStyles = makeStyles((theme: Theme) => ({
   div: {
@@ -78,9 +73,9 @@ const useStyles = makeStyles((theme: Theme) => ({
 interface Props {
   accountListId: string;
   loading?: boolean;
-  prayerRequestTasks?: GetThisWeekQuery_prayerRequestTasks;
-  reportsPeopleWithBirthdays?: GetThisWeekQuery_reportsPeopleWithBirthdays;
-  reportsPeopleWithAnniversaries?: GetThisWeekQuery_reportsPeopleWithAnniversaries;
+  prayerRequestTasks?: GetThisWeekQuery['prayerRequestTasks'];
+  reportsPeopleWithBirthdays?: GetThisWeekQuery['reportsPeopleWithBirthdays'];
+  reportsPeopleWithAnniversaries?: GetThisWeekQuery['reportsPeopleWithAnniversaries'];
 }
 
 const PartnerCare = ({
@@ -95,7 +90,9 @@ const PartnerCare = ({
   const [value, setValue] = useState(0);
   const { openTaskDrawer } = useApp();
 
-  const handleClick = ({ id: taskId }: Task): void => {
+  const handleClick = ({
+    id: taskId,
+  }: GetThisWeekQuery['prayerRequestTasks']['nodes'][0]): void => {
     openTaskDrawer({ taskId });
   };
 

@@ -24,10 +24,10 @@ import TextsmsIcon from '@material-ui/icons/Textsms';
 import EmailIcon from '@material-ui/icons/Email';
 import LocationOnIcon from '@material-ui/icons/LocationOn';
 import { Skeleton } from '@material-ui/lab';
-import { GetContactsForTaskDrawerContactListQuery_contacts_nodes as Contact } from '../../../../../../types/GetContactsForTaskDrawerContactListQuery';
 import InfoBlock from '../../../../InfoBlock';
 import { currencyFormat } from '../../../../../lib/intlFormat';
 import { dateFormat } from '../../../../../lib/intlFormat/intlFormat';
+import { GetContactsForTaskDrawerContactListQuery } from '../TaskDrawerContactList.generated';
 
 const useStyles = makeStyles((theme: Theme) => ({
   cardContent: {
@@ -40,7 +40,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 interface Props {
-  contact?: Contact;
+  contact?: GetContactsForTaskDrawerContactListQuery['contacts']['nodes'][0];
 }
 
 const TaskDrawerContactListItem = ({ contact }: Props): ReactElement => {

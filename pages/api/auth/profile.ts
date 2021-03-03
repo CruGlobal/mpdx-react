@@ -1,7 +1,11 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import Axios from 'axios';
-import { gql } from '@apollo/client';
 import client from '../../../src/lib/client';
+import {
+  UserKeySignInDocument,
+  UserKeySignInMutation,
+  UserKeySignInMutationVariables,
+} from './UserKeySignIn.generated';
 
 export interface Profile {
   id: string;
@@ -25,18 +29,11 @@ const profile = async (
     },
   });
 
-  const response = await client.mutate({
-    mutation: gql`
-      mutation UserKeySignIn($ticket: String!) {
-        userKeySignIn(input: { casTicket: $ticket }) {
-          token
-          user {
-            id
-            name: firstName
-          }
-        }
-      }
-    `,
+  const response = await client.mutate<
+    UserKeySignInMutation,
+    UserKeySignInMutationVariables
+  >({
+    mutation: UserKeySignInDocument,
     variables: {
       ticket,
     },

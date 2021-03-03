@@ -1,0 +1,65 @@
+query GetDataForTaskDrawer($accountListId: ID!) {
+  accountList(id: $accountListId) {
+    id
+    taskTagList
+  }
+  accountListUsers(accountListId: $accountListId) {
+    nodes {
+      id
+      user {
+        id
+        firstName
+        lastName
+      }
+    }
+  }
+  contacts(accountListId: $accountListId) {
+    nodes {
+      id
+      name
+    }
+  }
+}
+
+mutation CreateTask($accountListId: ID!, $attributes: TaskCreateInput!) {
+  createTask(
+    input: { accountListId: $accountListId, attributes: $attributes }
+  ) {
+    task {
+      ...TaskMutationResponse
+    }
+  }
+}
+
+mutation UpdateTask($accountListId: ID!, $attributes: TaskUpdateInput!) {
+  updateTask(
+    input: { accountListId: $accountListId, attributes: $attributes }
+  ) {
+    task {
+      ...TaskMutationResponse
+    }
+  }
+}
+
+fragment TaskMutationResponse on Task {
+  id
+  activityType
+  subject
+  startAt
+  completedAt
+  tagList
+  contacts {
+    nodes {
+      id
+      name
+    }
+  }
+  user {
+    id
+    firstName
+    lastName
+  }
+  notificationTimeBefore
+  notificationType
+  notificationTimeUnit
+}

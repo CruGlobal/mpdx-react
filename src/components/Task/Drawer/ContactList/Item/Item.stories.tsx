@@ -1,12 +1,14 @@
 import React, { ReactElement } from 'react';
 import { Box } from '@material-ui/core';
-import { GetContactsForTaskDrawerContactListQuery_contacts_nodes as Contact } from '../../../../../../types/GetContactsForTaskDrawerContactListQuery';
+import { GetContactsForTaskDrawerContactListQuery } from '../TaskDrawerContactList.generated';
 import {
-  StatusEnum,
-  SendNewsletterEnum,
   PledgeFrequencyEnum,
-} from '../../../../../../types/globalTypes';
+  SendNewsletterEnum,
+  StatusEnum,
+} from '../../../../../../graphql/types.generated';
 import TaskDrawerContactListItem from '.';
+
+type Contact = GetContactsForTaskDrawerContactListQuery['contacts']['nodes'][0];
 
 export default {
   title: 'Task/Drawer/ContactList/Item',
@@ -41,8 +43,8 @@ export const Default = (): ReactElement => {
         location: 'Work',
       },
     },
-    status: StatusEnum.PARTNER_FINANCIAL,
-    sendNewsletter: SendNewsletterEnum.BOTH,
+    status: StatusEnum.PartnerFinancial,
+    sendNewsletter: SendNewsletterEnum.Both,
     lastDonation: {
       id: 'lastDonation-a',
       amount: {
@@ -53,7 +55,7 @@ export const Default = (): ReactElement => {
     },
     pledgeAmount: 20,
     pledgeCurrency: 'NZD',
-    pledgeFrequency: PledgeFrequencyEnum.MONTHLY,
+    pledgeFrequency: PledgeFrequencyEnum.Monthly,
     tagList: ['test', 'post', 'long', 'list'],
   };
   return (

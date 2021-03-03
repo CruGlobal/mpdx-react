@@ -1,10 +1,14 @@
 import { MockedResponse } from '@apollo/client/testing';
-import { AcknowledgeAllUserNotificationsMutation } from '../../../../../../types/AcknowledgeAllUserNotificationsMutation';
-import { GetNotificationsQuery } from '../../../../../../types/GetNotificationsQuery';
-import { NotificationTypeTypeEnum } from '../../../../../../types/globalTypes';
+import { NotificationTypeTypeEnum } from '../../../../../../graphql/types.generated';
+import {
+  AcknowledgeAllUserNotificationsDocument,
+  AcknowledgeAllUserNotificationsMutation,
+} from './AcknowledgeAllUserNotifications.generated';
+import {
+  GetNotificationsDocument,
+  GetNotificationsQuery,
+} from './GetNotificationsQuery.generated';
 import acknowledgeUserNotificationMutationMock from './Item/Item.mock';
-import { ACKNOWLEDGE_ALL_USER_NOTIFICATIONS_MUTATION } from './NotificationMenu';
-import GET_NOTIFICATIONS_QUERY from './getNotificationsQuery.graphql';
 
 export const getNotificationsMocks = (): MockedResponse[] => {
   const data: GetNotificationsQuery = {
@@ -23,7 +27,7 @@ export const getNotificationsMocks = (): MockedResponse[] => {
               donation: null,
               notificationType: {
                 id: '6eb32493-c51b-490a-955d-595642160a95',
-                type: NotificationTypeTypeEnum.UPCOMING_ANNIVERSARY,
+                type: NotificationTypeTypeEnum.UpcomingAnniversary,
                 descriptionTemplate: 'Partner has upcoming anniversary',
               },
             },
@@ -42,7 +46,7 @@ export const getNotificationsMocks = (): MockedResponse[] => {
               donation: null,
               notificationType: {
                 id: '577da384-5452-4501-9ec5-d5b2754d29ae',
-                type: NotificationTypeTypeEnum.UPCOMING_BIRTHDAY,
+                type: NotificationTypeTypeEnum.UpcomingBirthday,
                 descriptionTemplate: 'Partner has upcoming birthday',
               },
             },
@@ -55,7 +59,7 @@ export const getNotificationsMocks = (): MockedResponse[] => {
   };
   const mock = {
     request: {
-      query: GET_NOTIFICATIONS_QUERY,
+      query: GetNotificationsDocument,
       variables: {
         accountListId: '1',
         after: null,
@@ -81,7 +85,7 @@ export const getNotificationsMocks = (): MockedResponse[] => {
               donation: null,
               notificationType: {
                 id: '6eb32493-c51b-490a-955d-595642160a9l',
-                type: NotificationTypeTypeEnum.UPCOMING_ANNIVERSARY,
+                type: NotificationTypeTypeEnum.UpcomingAnniversary,
                 descriptionTemplate: 'Partner has upcoming anniversary',
               },
             },
@@ -100,7 +104,7 @@ export const getNotificationsMocks = (): MockedResponse[] => {
               donation: null,
               notificationType: {
                 id: '577da384-5452-4501-9ec5-d5b2754d29sh',
-                type: NotificationTypeTypeEnum.UPCOMING_BIRTHDAY,
+                type: NotificationTypeTypeEnum.UpcomingBirthday,
                 descriptionTemplate: 'Partner has upcoming birthday',
               },
             },
@@ -113,7 +117,7 @@ export const getNotificationsMocks = (): MockedResponse[] => {
   };
   const mock2 = {
     request: {
-      query: GET_NOTIFICATIONS_QUERY,
+      query: GetNotificationsDocument,
       variables: {
         accountListId: '1',
         after: 'Mg',
@@ -145,7 +149,7 @@ export const getNotificationsEmptyMock = (): MockedResponse => {
   };
   return {
     request: {
-      query: GET_NOTIFICATIONS_QUERY,
+      query: GetNotificationsDocument,
       variables: {
         after: null,
         accountListId: '1',
@@ -173,7 +177,7 @@ export const acknowledgeAllUserNotificationsMutationMock = (): MockedResponse =>
 
   return {
     request: {
-      query: ACKNOWLEDGE_ALL_USER_NOTIFICATIONS_MUTATION,
+      query: AcknowledgeAllUserNotificationsDocument,
       variables: {
         accountListId: '1',
       },

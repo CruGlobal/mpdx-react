@@ -1,12 +1,14 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import { GetContactsForTaskDrawerContactListQuery_contacts_nodes as Contact } from '../../../../../../types/GetContactsForTaskDrawerContactListQuery';
 import {
-  StatusEnum,
-  SendNewsletterEnum,
   PledgeFrequencyEnum,
-} from '../../../../../../types/globalTypes';
+  SendNewsletterEnum,
+  StatusEnum,
+} from '../../../../../../graphql/types.generated';
+import { GetContactsForTaskDrawerContactListQuery } from '../TaskDrawerContactList.generated';
 import Item from '.';
+
+type Contact = GetContactsForTaskDrawerContactListQuery['contacts']['nodes'][0];
 
 describe('Item', () => {
   const contact: Contact = {
@@ -37,8 +39,8 @@ describe('Item', () => {
         location: 'Work',
       },
     },
-    status: StatusEnum.PARTNER_FINANCIAL,
-    sendNewsletter: SendNewsletterEnum.BOTH,
+    status: StatusEnum.PartnerFinancial,
+    sendNewsletter: SendNewsletterEnum.Both,
     lastDonation: {
       id: 'lastDonation-a',
       amount: {
@@ -49,7 +51,7 @@ describe('Item', () => {
     },
     pledgeAmount: 20,
     pledgeCurrency: 'NZD',
-    pledgeFrequency: PledgeFrequencyEnum.MONTHLY,
+    pledgeFrequency: PledgeFrequencyEnum.Monthly,
     tagList: ['test', 'post', 'long', 'list'],
   };
 

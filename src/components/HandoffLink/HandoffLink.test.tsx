@@ -2,6 +2,7 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestWrapper from '../../../__tests__/util/TestWrapper';
+import { User } from '../../../graphql/types.generated';
 import HandoffLink from '.';
 
 describe('HandoffLink', () => {
@@ -23,7 +24,7 @@ describe('HandoffLink', () => {
       <TestWrapper
         initialState={{
           accountListId: 'accountListId',
-          user: { id: 'userId', firstName: 'Bob', lastName: 'Jones' },
+          user: { id: 'userId', firstName: 'Bob', lastName: 'Jones' } as User,
         }}
       >
         <HandoffLink path="/contacts">
