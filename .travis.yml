@@ -7,6 +7,7 @@ branches:
     - main
 install:
   - yarn install --immutable --immutable-cache --check-cache
+  - yarn gql
 jobs:
   include:
     - stage: Test
