@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import NextAuth from 'next-auth';
-import { Profile } from './profile';
+import { Profile } from './profile.page';
 
 const options = {
   providers: [

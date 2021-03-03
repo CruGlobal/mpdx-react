@@ -45,5 +45,7 @@ module.exports = withPlugins([
       BEACON_TOKEN:
         process.env.BEACON_TOKEN || '01b4f5f0-7fff-492a-b5ec-d536f3657d10',
     },
+    // Force .page prefix on page files (ex. index.page.tsx) so generated files can be included in /pages directory without Next.js throwing build errors
+    pageExtensions: ['page.tsx', 'page.ts', 'page.jsx', 'page.js'],
   },
 ]);
