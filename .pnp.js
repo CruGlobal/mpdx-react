@@ -76,6 +76,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["apollo-cache-persist", "npm:0.1.1"],
             ["axios", "npm:0.21.1"],
             ["babel-loader", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:8.2.2"],
+            ["babel-plugin-transform-imports", "npm:2.0.0"],
             ["babel-preset-react-app", "npm:10.0.0"],
             ["chromatic", "npm:5.6.2"],
             ["clsx", "npm:1.1.1"],
@@ -4875,6 +4876,16 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/@babel-types-npm-7.12.13-5917a8d71f-b6bb1356a7.zip/node_modules/@babel/types/",
           "packageDependencies": [
             ["@babel/types", "npm:7.12.13"],
+            ["@babel/helper-validator-identifier", "npm:7.12.11"],
+            ["lodash", "npm:4.17.20"],
+            ["to-fast-properties", "npm:2.0.0"]
+          ],
+          "linkType": "HARD",
+        }],
+        ["npm:7.13.0", {
+          "packageLocation": "./.yarn/cache/@babel-types-npm-7.13.0-737e1b9971-a47357647a.zip/node_modules/@babel/types/",
+          "packageDependencies": [
+            ["@babel/types", "npm:7.13.0"],
             ["@babel/helper-validator-identifier", "npm:7.12.11"],
             ["lodash", "npm:4.17.20"],
             ["to-fast-properties", "npm:2.0.0"]
@@ -10237,6 +10248,17 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/babel-plugin-syntax-jsx-npm-6.18.0-fcf0a98a71-a5c8174ad6.zip/node_modules/babel-plugin-syntax-jsx/",
           "packageDependencies": [
             ["babel-plugin-syntax-jsx", "npm:6.18.0"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
+      ["babel-plugin-transform-imports", [
+        ["npm:2.0.0", {
+          "packageLocation": "./.yarn/cache/babel-plugin-transform-imports-npm-2.0.0-9a4d3c5b32-6c093ab3c5.zip/node_modules/babel-plugin-transform-imports/",
+          "packageDependencies": [
+            ["babel-plugin-transform-imports", "npm:2.0.0"],
+            ["@babel/types", "npm:7.13.0"],
+            ["is-valid-path", "npm:0.1.1"]
           ],
           "linkType": "HARD",
         }]
@@ -17418,6 +17440,16 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD",
         }]
       ]],
+      ["is-invalid-path", [
+        ["npm:0.1.0", {
+          "packageLocation": "./.yarn/cache/is-invalid-path-npm-0.1.0-2e4d21fa0c-fc8aaadd59.zip/node_modules/is-invalid-path/",
+          "packageDependencies": [
+            ["is-invalid-path", "npm:0.1.0"],
+            ["is-glob", "npm:2.0.1"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
       ["is-map", [
         ["npm:2.0.1", {
           "packageLocation": "./.yarn/cache/is-map-npm-2.0.1-4c3a8a09a1-16524b5d2e.zip/node_modules/is-map/",
@@ -17704,6 +17736,16 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/is-valid-glob-npm-1.0.0-6b7c17b9e8-7d61129ee5.zip/node_modules/is-valid-glob/",
           "packageDependencies": [
             ["is-valid-glob", "npm:1.0.0"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
+      ["is-valid-path", [
+        ["npm:0.1.1", {
+          "packageLocation": "./.yarn/cache/is-valid-path-npm-0.1.1-314675c9ba-dd48bba886.zip/node_modules/is-valid-path/",
+          "packageDependencies": [
+            ["is-valid-path", "npm:0.1.1"],
+            ["is-invalid-path", "npm:0.1.0"]
           ],
           "linkType": "HARD",
         }]
@@ -20219,6 +20261,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["apollo-cache-persist", "npm:0.1.1"],
             ["axios", "npm:0.21.1"],
             ["babel-loader", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:8.2.2"],
+            ["babel-plugin-transform-imports", "npm:2.0.0"],
             ["babel-preset-react-app", "npm:10.0.0"],
             ["chromatic", "npm:5.6.2"],
             ["clsx", "npm:1.1.1"],

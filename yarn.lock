@@ -2301,6 +2301,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@babel/types@npm:^7.4":
+  version: 7.13.0
+  resolution: "@babel/types@npm:7.13.0"
+  dependencies:
+    "@babel/helper-validator-identifier": ^7.12.11
+    lodash: ^4.17.19
+    to-fast-properties: ^2.0.0
+  checksum: a47357647a92c08ee2f5059210d37fd7fe190e8d4ef71dd97ba61c6ca7b7e979660bc8ba00fdc51249c037199b634dd984fde8d7a622fdd5e3e2161fe65e94c3
+  languageName: node
+  linkType: hard
+
 "@bcoe/v8-coverage@npm:^0.2.3":
   version: 0.2.3
   resolution: "@bcoe/v8-coverage@npm:0.2.3"
@@ -6274,6 +6285,16 @@ __metadata:
   version: 6.18.0
   resolution: "babel-plugin-syntax-jsx@npm:6.18.0"
   checksum: a5c8174ad6165d5f541f9f31cf4b6338ccfb7d586cec111537fa567f13b5fbdcf54f7928db44429d4610aa1be9d07bb03d017b22ba521ff819a6a2090b694797
+  languageName: node
+  linkType: hard
+
+"babel-plugin-transform-imports@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "babel-plugin-transform-imports@npm:2.0.0"
+  dependencies:
+    "@babel/types": ^7.4
+    is-valid-path: ^0.1.1
+  checksum: 6c093ab3c5d9ecb85ac890e2fc0de781cdc131259088427719104de2c2e01a2cb22d5172e9eddd1599fdfd0fe24194670737c9a27823e55caf1d4df367a3bd90
   languageName: node
   linkType: hard
 
@@ -12500,6 +12521,15 @@ fsevents@~2.3.1:
   languageName: node
   linkType: hard
 
+"is-invalid-path@npm:^0.1.0":
+  version: 0.1.0
+  resolution: "is-invalid-path@npm:0.1.0"
+  dependencies:
+    is-glob: ^2.0.0
+  checksum: fc8aaadd59193478d92523a12d9bc773f8ed66699b9ecbbaf942788f3e8a93d73f34b6d0a17b694a21bc8f701573c60da82e9dbd416427fb82737587f1d21ecc
+  languageName: node
+  linkType: hard
+
 "is-map@npm:^2.0.1":
   version: 2.0.1
   resolution: "is-map@npm:2.0.1"
@@ -12741,6 +12771,15 @@ fsevents@~2.3.1:
   version: 1.0.0
   resolution: "is-valid-glob@npm:1.0.0"
   checksum: 7d61129ee5051409cd8b1ba738d1ce7108a20b39f297671f2c07a1d2737fc13d0cc476261b9a5fa6491252e6dbf0bc7cef04444b14455e929b285fddc2f48895
+  languageName: node
+  linkType: hard
+
+"is-valid-path@npm:^0.1.1":
+  version: 0.1.1
+  resolution: "is-valid-path@npm:0.1.1"
+  dependencies:
+    is-invalid-path: ^0.1.0
+  checksum: dd48bba8863e57515807474d2517a4f5ef582a0975af6cb88812788b7371b16f781876fc16920422c060e4077de04e4f16af30e6bee80e5c04806e57d95c3580
   languageName: node
   linkType: hard
 
@@ -15016,6 +15055,7 @@ fsevents@~2.3.1:
     apollo-cache-persist: ^0.1.1
     axios: ^0.21.1
     babel-loader: ^8.2.2
+    babel-plugin-transform-imports: ^2.0.0
     babel-preset-react-app: ^10.0.0
     chromatic: ^5.6.2
     clsx: ^1.1.1
