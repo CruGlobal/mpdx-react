@@ -4,7 +4,6 @@ documents: '**/*.graphql'
 hooks:
   afterOneFileWrite:
     - prettier --write
-    - eslint --fix
 generates:
   ./graphql/types.generated.ts:
     plugins:

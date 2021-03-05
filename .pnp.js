@@ -53,6 +53,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@graphql-codegen/typescript", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:1.21.0"],
             ["@graphql-codegen/typescript-operations", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:1.17.14"],
             ["@graphql-codegen/typescript-react-apollo", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:2.2.1"],
+            ["@graphql-codegen/typescript-resolvers", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:1.18.2"],
             ["@material-ui/core", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:4.11.3"],
             ["@material-ui/icons", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:4.11.2"],
             ["@material-ui/lab", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:4.0.0-alpha.57"],
@@ -6648,6 +6649,34 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             "@types/graphql-tag",
             "@types/graphql",
             "graphql-tag",
+            "graphql"
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
+      ["@graphql-codegen/typescript-resolvers", [
+        ["npm:1.18.2", {
+          "packageLocation": "./.yarn/cache/@graphql-codegen-typescript-resolvers-npm-1.18.2-7a0e05b2c7-5cb653f44e.zip/node_modules/@graphql-codegen/typescript-resolvers/",
+          "packageDependencies": [
+            ["@graphql-codegen/typescript-resolvers", "npm:1.18.2"]
+          ],
+          "linkType": "SOFT",
+        }],
+        ["virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:1.18.2", {
+          "packageLocation": "./.yarn/$$virtual/@graphql-codegen-typescript-resolvers-virtual-e196c3fd31/0/cache/@graphql-codegen-typescript-resolvers-npm-1.18.2-7a0e05b2c7-5cb653f44e.zip/node_modules/@graphql-codegen/typescript-resolvers/",
+          "packageDependencies": [
+            ["@graphql-codegen/typescript-resolvers", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:1.18.2"],
+            ["@graphql-codegen/plugin-helpers", "virtual:2b84467932b2bfebe07bb60daa135c022504b6f2a4f15f26807808abef472b14a1c2f0f757479c03ae411c67aa772822740b1ab1cf5215f3ec11fd56aa3a0b02#npm:1.18.2"],
+            ["@graphql-codegen/typescript", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:1.21.0"],
+            ["@graphql-codegen/visitor-plugin-common", "virtual:d5d80aa1d7620c4d846f0b5f0b4cf12bd01dea15d7898752c70c00d03527176e6227772079fa00bb33939532a9fbbbab2956b8ded1dbc7ca23ab230abc1ca11c#npm:1.18.3"],
+            ["@graphql-tools/utils", "virtual:dfb49c8346b9183546f150c18b83c81f04c919e8aefad0cabd64b4b5b89469437947e5df8064d3299e562b58ff74e6a1cea057ff159c739cfb6aadcff2b8d5a8#npm:7.5.0"],
+            ["@types/graphql", null],
+            ["auto-bind", "npm:4.0.0"],
+            ["graphql", "npm:15.5.0"],
+            ["tslib", "npm:2.1.0"]
+          ],
+          "packagePeers": [
+            "@types/graphql",
             "graphql"
           ],
           "linkType": "HARD",
@@ -24285,6 +24314,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@graphql-codegen/typescript", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:1.21.0"],
             ["@graphql-codegen/typescript-operations", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:1.17.14"],
             ["@graphql-codegen/typescript-react-apollo", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:2.2.1"],
+            ["@graphql-codegen/typescript-resolvers", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:1.18.2"],
             ["@material-ui/core", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:4.11.3"],
             ["@material-ui/icons", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:4.11.2"],
             ["@material-ui/lab", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:4.0.0-alpha.57"],
