@@ -27,7 +27,11 @@ const gateway = new ApolloGateway({
 
 const server = new ApolloServer({
   gateway,
-  playground: true,
+  playground: {
+    settings: {
+      'request.credentials': 'same-origin',
+    },
+  },
   introspection: true,
   subscriptions: false,
   context: async ({ req }: { req: NextApiRequest }) => {
