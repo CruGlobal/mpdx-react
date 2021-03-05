@@ -20,7 +20,7 @@ const gateway = new ApolloGateway({
     { name: 'graphql', url: process.env.API_URL },
     { name: 'rest', url: `${process.env.SITE_URL}/api/graphql-rest` },
   ],
-  buildService({ name, url }) {
+  buildService({ url }) {
     return new AuthenticatedDataSource({ url });
   },
 });
