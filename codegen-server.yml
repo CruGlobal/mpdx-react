@@ -8,6 +8,7 @@ generates:
     plugins:
       - add:
           content: '/* eslint-disable */'
+      - typescript
       - typescript-resolvers
     config:
       federation: true
