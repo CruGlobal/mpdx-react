@@ -11,7 +11,7 @@ import { Resolvers } from './graphql-rest.page.generated';
 
 const typeDefs = gql`
   type Query {
-    contactFilters(accountListId: String): [ContactFilter!]!
+    contactFilters(accountListId: ID!): [ContactFilter!]!
   }
 
   type ContactFilter {
