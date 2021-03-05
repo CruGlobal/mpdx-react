@@ -38,6 +38,8 @@ module.exports = withPlugins([
         process.env.JWT_SECRET ||
         'aed8e0786376a2abe15f5c8f8e2ee74565d0915897b33296594bb1b549098ba7',
       API_URL: process.env.API_URL || 'https://api.stage.mpdx.org/graphql',
+      REST_API_URL:
+        process.env.REST_API_URL || 'https://api.stage.mpdx.org/api/v2/',
       SITE_URL: SiteUrl,
       CLIENT_ID: process.env.CLIENT_ID || '4027334344069527005',
       CLIENT_SECRET: process.env.CLIENT_SECRET,
