@@ -3,6 +3,7 @@ import { buildFederatedSchema } from '@apollo/federation';
 import { gql } from 'graphql-tag';
 import { NextApiRequest } from 'next';
 import { RESTDataSource } from 'apollo-datasource-rest';
+import { Resolvers } from './graphql-rest.page.generated';
 
 const typeDefs = gql`
   type Query {
@@ -23,11 +24,8 @@ const typeDefs = gql`
   }
 `;
 
-const resolvers = {
+const resolvers: Resolvers = {
   Query: {
-    testTypeFromNextJs() {
-      return { id: '1' };
-    },
     contactFilters: async (_source, { accountListId }, { dataSources }) => {
       return dataSources.mpdxRestApi.getContactFilters(accountListId);
     },
@@ -52,6 +50,10 @@ class MpdxRestApi extends RESTDataSource {
   }
 }
 
+export interface Context {
+  authHeader: string;
+}
+
 const server = new ApolloServer({
   schema: buildFederatedSchema([{ typeDefs, resolvers }]),
   dataSources: () => {
@@ -59,7 +61,7 @@ const server = new ApolloServer({
       mpdxRestApi: new MpdxRestApi(),
     };
   },
-  context: async ({ req }: { req: NextApiRequest }) => {
+  context: ({ req }: { req: NextApiRequest }): Context => {
     return { authHeader: req.headers.authorization };
   },
 });

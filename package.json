@@ -19,7 +19,9 @@
     "prettier:check": "prettier . --list-different",
     "prettier:write": "prettier . --write",
     "gql": "graphql-codegen --config codegen.yml",
-    "gql:w": "yarn gql --watch"
+    "gql:w": "yarn gql --watch",
+    "gql:server": "graphql-codegen --config codegen-server.yml",
+    "gql:server:w": "yarn gql:server --watch"
   },
   "dependencies": {
     "@apollo/client": "^3.3.9",
@@ -77,6 +79,7 @@
     "@graphql-codegen/typescript": "1.21.0",
     "@graphql-codegen/typescript-operations": "1.17.14",
     "@graphql-codegen/typescript-react-apollo": "2.2.1",
+    "@graphql-codegen/typescript-resolvers": "^1.18.2",
     "@next/bundle-analyzer": "^10.0.6",
     "@react-dnd/invariant": "^2.0.0",
     "@storybook/addon-actions": "^6.1.17",

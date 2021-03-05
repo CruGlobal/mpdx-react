@@ -1,0 +1,15 @@
+overwrite: true
+schema: ./pages/api/graphql-rest.page.ts
+hooks:
+  afterOneFileWrite:
+    - prettier --write
+generates:
+  ./pages/api/graphql-rest.page.generated.ts:
+    plugins:
+      - add:
+          content: '/* eslint-disable */'
+      - typescript-resolvers
+    config:
+      federation: true
+      useIndexSignature: true
+      contextType: ./graphql-rest.page#Context

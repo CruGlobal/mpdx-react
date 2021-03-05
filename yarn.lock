@@ -3340,7 +3340,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphql-codegen/typescript@npm:1.21.0, @graphql-codegen/typescript@npm:^1.20.1":
+"@graphql-codegen/typescript-resolvers@npm:^1.18.2":
+  version: 1.18.2
+  resolution: "@graphql-codegen/typescript-resolvers@npm:1.18.2"
+  dependencies:
+    "@graphql-codegen/plugin-helpers": ^1.18.2
+    "@graphql-codegen/typescript": ^1.21.0
+    "@graphql-codegen/visitor-plugin-common": ^1.18.3
+    "@graphql-tools/utils": ^7.0.0
+    auto-bind: ~4.0.0
+    tslib: ~2.1.0
+  peerDependencies:
+    graphql: ^0.8.0 || ^0.9.0 || ^0.10.0 || ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0
+  checksum: 5cb653f44e7ceca9c319cd2ba0fece847c6400530b4c655d23cfca34f896171b34ab1f978a5cccd59eb3d3c374ac1b2d0b410fc2c8650245202a8d3ec596d2a5
+  languageName: node
+  linkType: hard
+
+"@graphql-codegen/typescript@npm:1.21.0, @graphql-codegen/typescript@npm:^1.20.1, @graphql-codegen/typescript@npm:^1.21.0":
   version: 1.21.0
   resolution: "@graphql-codegen/typescript@npm:1.21.0"
   dependencies:
@@ -17800,6 +17816,7 @@ fsevents@~2.3.1:
     "@graphql-codegen/typescript": 1.21.0
     "@graphql-codegen/typescript-operations": 1.17.14
     "@graphql-codegen/typescript-react-apollo": 2.2.1
+    "@graphql-codegen/typescript-resolvers": ^1.18.2
     "@material-ui/core": ^4.11.3
     "@material-ui/icons": ^4.11.2
     "@material-ui/lab": ^4.0.0-alpha.57
