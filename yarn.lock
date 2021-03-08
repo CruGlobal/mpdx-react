@@ -3164,6 +3164,27 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@figspec/components@npm:^0.1.1":
+  version: 0.1.6
+  resolution: "@figspec/components@npm:0.1.6"
+  dependencies:
+    copy-to-clipboard: ^3.0.0
+    lit-element: ^2.4.0
+  checksum: bdafff2d0133f78db35a07732f393bc6a3f03f7148dc56ace05c592f8f57388bc92e6fba75b8b2f2fae8fe9993e1862316612fce4c8df8a63bd18796f80dc5ae
+  languageName: node
+  linkType: hard
+
+"@figspec/react@npm:^0.1.4":
+  version: 0.1.5
+  resolution: "@figspec/react@npm:0.1.5"
+  dependencies:
+    "@figspec/components": ^0.1.1
+  peerDependencies:
+    react: ^16.14.0 || ^17.0.0
+  checksum: 7865e26ba414c50478a57473f7bbd7c1cbd2dc5c5473819d1447e106c05e89e14dc3836883cd2d331a3ab330a0e5bae4156eb02e5a5999012ef08cd5803c825b
+  languageName: node
+  linkType: hard
+
 "@graphql-codegen/add@npm:^2.0.2":
   version: 2.0.2
   resolution: "@graphql-codegen/add@npm:2.0.2"
@@ -10026,7 +10047,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"copy-to-clipboard@npm:^3.0.8":
+"copy-to-clipboard@npm:^3.0.0, copy-to-clipboard@npm:^3.0.8":
   version: 3.3.1
   resolution: "copy-to-clipboard@npm:3.3.1"
   dependencies:
@@ -16780,6 +16801,22 @@ fsevents@~2.3.1:
   languageName: node
   linkType: hard
 
+"lit-element@npm:^2.4.0":
+  version: 2.4.0
+  resolution: "lit-element@npm:2.4.0"
+  dependencies:
+    lit-html: ^1.1.1
+  checksum: 1f2c12c5387c147aac0b62eade1a2f7bccc4fbc32f97df50eaf25aa6fb8715b67ceca4aa485e2bcb7537b68c1088e460a873423c60e6075d893b4b046c76d56d
+  languageName: node
+  linkType: hard
+
+"lit-html@npm:^1.1.1, lit-html@npm:^1.3.0":
+  version: 1.3.0
+  resolution: "lit-html@npm:1.3.0"
+  checksum: b32528e92f47d2ad6a306319a16a8301e1d8bd7cd1a065516a4fc14e55904f054bfe38dd1725e584ba2bdd71549c88c90107e493e3094a2f13b507c1ba86bd39
+  languageName: node
+  linkType: hard
+
 "load-json-file@npm:^2.0.0":
   version: 2.0.0
   resolution: "load-json-file@npm:2.0.0"
@@ -17886,6 +17923,7 @@ fsevents@~2.3.1:
     jest-environment-jsdom-sixteen: ^1.0.3
     jest-transform-graphql: ^2.1.0
     lint-staged: ^10.5.4
+    lit-html: ^1.3.0
     lodash: ^4.17.20
     luxon: ^1.26.0
     mockdate: ^3.0.2
@@ -17907,6 +17945,7 @@ fsevents@~2.3.1:
     react-i18next: ^11.8.6
     recharts: ^2.0.6
     regenerator-runtime: ^0.13.7
+    storybook-addon-designs: alpha
     storybook-addon-i18next: ^1.3.0
     ts-essentials: ^7.0.1
     typescript: ^4.1.5
@@ -22663,6 +22702,20 @@ resolve@^1.18.1:
   version: 2.12.0
   resolution: "store2@npm:2.12.0"
   checksum: 517b66b6bed513668b10310b08980e722a919fa8b818262480c5f975575377aedfc40d9bd5de8b2ea0e05d82a830c8664273b1a8bd6169a1ff5020e18db9f88d
+  languageName: node
+  linkType: hard
+
+"storybook-addon-designs@npm:alpha":
+  version: 6.0.0-alpha.3
+  resolution: "storybook-addon-designs@npm:6.0.0-alpha.3"
+  dependencies:
+    "@figspec/react": ^0.1.4
+  peerDependencies:
+    "@storybook/addons": ^5.0.0 || ^6.0.0
+    "@storybook/components": ^5.0.0 || ^6.0.0
+    "@storybook/theming": ^5.0.0 || ^6.0.0
+    react: ">=16.8.0"
+  checksum: 87aaab530ccedc264c7ad8fbcca844b967835ea9ecbe9d18542d9ade8c223257dd602234fb5471ab8b424a5fec25dac3b1fbafd2a99ccb8d18b6637c5dd79be1
   languageName: node
   linkType: hard
 

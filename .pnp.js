@@ -123,6 +123,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["jest-environment-jsdom-sixteen", "npm:1.0.3"],
             ["jest-transform-graphql", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:2.1.0"],
             ["lint-staged", "npm:10.5.4"],
+            ["lit-html", "npm:1.3.0"],
             ["lodash", "npm:4.17.20"],
             ["luxon", "npm:1.26.0"],
             ["mockdate", "npm:3.0.2"],
@@ -144,6 +145,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["react-i18next", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:11.8.6"],
             ["recharts", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:2.0.6"],
             ["regenerator-runtime", "npm:0.13.7"],
+            ["storybook-addon-designs", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:6.0.0-alpha.3"],
             ["storybook-addon-i18next", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:1.3.0"],
             ["ts-essentials", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:7.0.1"],
             ["typescript", "patch:typescript@npm%3A4.1.5#builtin<compat/typescript>::version=4.1.5&hash=a45b0e"],
@@ -6341,6 +6343,40 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["lodash", "npm:4.17.20"],
             ["minimatch", "npm:3.0.4"],
             ["strip-json-comments", "npm:3.1.1"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
+      ["@figspec/components", [
+        ["npm:0.1.6", {
+          "packageLocation": "./.yarn/cache/@figspec-components-npm-0.1.6-bbd89d299c-bdafff2d01.zip/node_modules/@figspec/components/",
+          "packageDependencies": [
+            ["@figspec/components", "npm:0.1.6"],
+            ["copy-to-clipboard", "npm:3.3.1"],
+            ["lit-element", "npm:2.4.0"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
+      ["@figspec/react", [
+        ["npm:0.1.5", {
+          "packageLocation": "./.yarn/cache/@figspec-react-npm-0.1.5-a973515f78-7865e26ba4.zip/node_modules/@figspec/react/",
+          "packageDependencies": [
+            ["@figspec/react", "npm:0.1.5"]
+          ],
+          "linkType": "SOFT",
+        }],
+        ["virtual:dd2828465cc142e1bb05b271a059b8d85d32841d67cc89e39557c6ed72841715b2a8cd87362a06c91813215a133c91b417b0d6df610c3d375ab5401215ac6ed8#npm:0.1.5", {
+          "packageLocation": "./.yarn/$$virtual/@figspec-react-virtual-785f783629/0/cache/@figspec-react-npm-0.1.5-a973515f78-7865e26ba4.zip/node_modules/@figspec/react/",
+          "packageDependencies": [
+            ["@figspec/react", "virtual:dd2828465cc142e1bb05b271a059b8d85d32841d67cc89e39557c6ed72841715b2a8cd87362a06c91813215a133c91b417b0d6df610c3d375ab5401215ac6ed8#npm:0.1.5"],
+            ["@figspec/components", "npm:0.1.6"],
+            ["@types/react", "npm:17.0.1"],
+            ["react", "npm:17.0.1"]
+          ],
+          "packagePeers": [
+            "@types/react",
+            "react"
           ],
           "linkType": "HARD",
         }]
@@ -23157,6 +23193,25 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD",
         }]
       ]],
+      ["lit-element", [
+        ["npm:2.4.0", {
+          "packageLocation": "./.yarn/cache/lit-element-npm-2.4.0-46c50cbef0-1f2c12c538.zip/node_modules/lit-element/",
+          "packageDependencies": [
+            ["lit-element", "npm:2.4.0"],
+            ["lit-html", "npm:1.3.0"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
+      ["lit-html", [
+        ["npm:1.3.0", {
+          "packageLocation": "./.yarn/cache/lit-html-npm-1.3.0-1c0540783a-b32528e92f.zip/node_modules/lit-html/",
+          "packageDependencies": [
+            ["lit-html", "npm:1.3.0"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
       ["load-json-file", [
         ["npm:2.0.0", {
           "packageLocation": "./.yarn/cache/load-json-file-npm-2.0.0-9317df26fa-c6ea93d360.zip/node_modules/load-json-file/",
@@ -24384,6 +24439,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["jest-environment-jsdom-sixteen", "npm:1.0.3"],
             ["jest-transform-graphql", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:2.1.0"],
             ["lint-staged", "npm:10.5.4"],
+            ["lit-html", "npm:1.3.0"],
             ["lodash", "npm:4.17.20"],
             ["luxon", "npm:1.26.0"],
             ["mockdate", "npm:3.0.2"],
@@ -24405,6 +24461,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["react-i18next", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:11.8.6"],
             ["recharts", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:2.0.6"],
             ["regenerator-runtime", "npm:0.13.7"],
+            ["storybook-addon-designs", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:6.0.0-alpha.3"],
             ["storybook-addon-i18next", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:1.3.0"],
             ["ts-essentials", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:7.0.1"],
             ["typescript", "patch:typescript@npm%3A4.1.5#builtin<compat/typescript>::version=4.1.5&hash=a45b0e"],
@@ -30239,6 +30296,41 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/store2-npm-2.12.0-79733c8c4f-517b66b6be.zip/node_modules/store2/",
           "packageDependencies": [
             ["store2", "npm:2.12.0"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
+      ["storybook-addon-designs", [
+        ["npm:6.0.0-alpha.3", {
+          "packageLocation": "./.yarn/cache/storybook-addon-designs-npm-6.0.0-alpha.3-3c308b6dc2-87aaab530c.zip/node_modules/storybook-addon-designs/",
+          "packageDependencies": [
+            ["storybook-addon-designs", "npm:6.0.0-alpha.3"]
+          ],
+          "linkType": "SOFT",
+        }],
+        ["virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:6.0.0-alpha.3", {
+          "packageLocation": "./.yarn/$$virtual/storybook-addon-designs-virtual-dd2828465c/0/cache/storybook-addon-designs-npm-6.0.0-alpha.3-3c308b6dc2-87aaab530c.zip/node_modules/storybook-addon-designs/",
+          "packageDependencies": [
+            ["storybook-addon-designs", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:6.0.0-alpha.3"],
+            ["@figspec/react", "virtual:dd2828465cc142e1bb05b271a059b8d85d32841d67cc89e39557c6ed72841715b2a8cd87362a06c91813215a133c91b417b0d6df610c3d375ab5401215ac6ed8#npm:0.1.5"],
+            ["@storybook/addons", null],
+            ["@storybook/components", null],
+            ["@storybook/theming", null],
+            ["@types/react", "npm:17.0.1"],
+            ["@types/storybook__addons", null],
+            ["@types/storybook__components", null],
+            ["@types/storybook__theming", null],
+            ["react", "npm:17.0.1"]
+          ],
+          "packagePeers": [
+            "@storybook/addons",
+            "@storybook/components",
+            "@storybook/theming",
+            "@types/react",
+            "@types/storybook__addons",
+            "@types/storybook__components",
+            "@types/storybook__theming",
+            "react"
           ],
           "linkType": "HARD",
         }]
