@@ -2,6 +2,7 @@ import React from 'react';
 import Head from 'next/head';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'next/router';
+import { ContactRow } from '../../../src/components/Contacts/ContactRow';
 import { useContactsQuery } from './Contacts.generated';
 import { useContactFiltersLazyQuery } from './ContactFilters.generated';
 
@@ -56,11 +57,9 @@ const ContactsPage: React.FC = () => {
           ) : !data?.contacts?.nodes ? (
             <p>No data</p>
           ) : (
-            <ul>
-              {data.contacts.nodes.map(({ id, name }) => (
-                <li key={id}>{name}</li>
-              ))}
-            </ul>
+            data.contacts.nodes.map((contact) => (
+              <ContactRow key={contact.id} contact={contact} />
+            ))
           )}
         </div>
       </div>

@@ -20,7 +20,6 @@ module.exports = {
     'import/extensions': 'error',
     'import/order': 'error',
     'import/newline-after-import': 'error',
-    'import/prefer-default-export': 'error',
     'import/no-named-default': 'error',
     'import/no-anonymous-default-export': 'error',
     'import/dynamic-import-chunkname': 'error',
@@ -28,6 +27,7 @@ module.exports = {
       'error',
       { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
     ],
+    'react/prop-types': 'off',
   },
   settings: {
     react: {
