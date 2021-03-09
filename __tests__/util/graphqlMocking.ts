@@ -10,7 +10,7 @@ import { ergonomock, ErgonomockOptions } from 'graphql-ergonomock';
 import { mergeSchemas } from '@graphql-tools/merge';
 import { gql } from 'graphql-tag';
 import { DeepPartial } from 'ts-essentials';
-import schema from '../graphql/schema.graphql';
+import schema from '../../graphql/schema.graphql';
 
 // Adapted from https://github.com/smooth-code/fraql/blob/65674bc6a7f523ea3b20d8ecd34007a820cf5c67/src/mock.js#L16-L43
 const generateSchemaWithFragmentsAsQueries = (
