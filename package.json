@@ -34,6 +34,7 @@
     "apollo-cache-persist": "^0.1.1",
     "axios": "^0.21.1",
     "clsx": "^1.1.1",
+    "dotenv": "^8.2.0",
     "formik": "^2.2.6",
     "framer-motion": "^3.3.0",
     "graphql": "^15.5.0",
