@@ -2,6 +2,7 @@ const withPlugins = require('next-compose-plugins');
 const withPWA = require('next-pwa');
 const withOptimizedImages = require('next-optimized-images');
 const withGraphql = require('next-plugin-graphql');
+require('dotenv').config();
 
 const prod = process.env.NODE_ENV === 'production';
 let SiteUrl;
@@ -39,9 +40,7 @@ module.exports = withPlugins([
       API_URL: process.env.API_URL || 'https://api.stage.mpdx.org/graphql',
       SITE_URL: SiteUrl,
       CLIENT_ID: process.env.CLIENT_ID || '4027334344069527005',
-      CLIENT_SECRET:
-        process.env.CLIENT_SECRET ||
-        'V3WBTfLMgXBuL6XNTPm13CIK7Cwvtb0VnQpeQH-Oojx6kuzaD7durA',
+      CLIENT_SECRET: process.env.CLIENT_SECRET,
       BEACON_TOKEN:
         process.env.BEACON_TOKEN || '01b4f5f0-7fff-492a-b5ec-d536f3657d10',
     },

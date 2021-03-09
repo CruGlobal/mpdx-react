@@ -16656,6 +16656,7 @@ fsevents@~2.3.1:
     core-js: ^3.8.3
     cross-env: ^7.0.3
     css-mediaquery: ^0.1.2
+    dotenv: ^8.2.0
     eslint: ^7.19.0
     eslint-config-prettier: ^7.2.0
     eslint-import-resolver-node: ^0.3.4
