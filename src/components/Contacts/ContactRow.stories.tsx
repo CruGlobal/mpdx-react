@@ -2,7 +2,7 @@ import React from 'react';
 import { Story, Meta } from '@storybook/react';
 import { withDesign } from 'storybook-addon-designs';
 
-import { gqlMock } from '../../../testUtils/graphqlMocking';
+import { gqlMock } from '../../../__tests__/util/graphqlMocking';
 import { ContactRow } from './ContactRow';
 import {
   ContactRowFragment,
