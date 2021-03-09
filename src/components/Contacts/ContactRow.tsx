@@ -6,5 +6,5 @@ interface Props {
 }
 
 export const ContactRow: React.FC<Props> = ({ contact }) => {
-  return <div>{contact.name}</div>;
+  return <div role="row">{contact.name}</div>;
 };
