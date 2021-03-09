@@ -68,7 +68,11 @@ const ergonomockFragment = <TData>(
   const res = ergonomock(
     generateSchemaWithFragmentsAsQueries(schema),
     wrappedQuery,
-    { ...options, mocks: { [fieldName]: options.mocks } },
+    options && {
+      ...options,
+      mocks: { [fieldName]: options.mocks },
+      seed: 'seed',
+    },
   ) as ExecutionResult;
 
   if (res.errors && res.errors.length) {
@@ -86,7 +90,10 @@ const ergonomockQuery = <TData>(
   query: DocumentNode,
   options?: ErgonomockOptions,
 ): TData => {
-  const res = ergonomock(schema, query, options) as ExecutionResult;
+  const res = ergonomock(schema, query, {
+    ...options,
+    seed: 'seed',
+  }) as ExecutionResult;
 
   if (res.errors && res.errors.length) {
     throw res.errors[0];
