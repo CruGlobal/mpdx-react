@@ -21,9 +21,11 @@ generates:
           content: '/* eslint-disable */'
       - typescript-operations
       - typescript-react-apollo
-  ./graphql/graphql.schema.json:
+  ./graphql/schema.graphql:
     plugins:
-      - introspection
+      - schema-ast
+    config:
+      federation: true
   ./graphql/possibleTypes.generated.ts:
     plugins:
       - fragment-matcher
