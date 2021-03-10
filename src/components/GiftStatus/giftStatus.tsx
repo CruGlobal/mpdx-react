@@ -9,7 +9,7 @@ interface Props {
 }
 const GiftStatus = ({ isHidden, isLate }: Props): ReactElement => {
   return (
-    <div>
+    <>
       {isHidden ? (
         <Box data-testid="giftStatushidden" />
       ) : (
