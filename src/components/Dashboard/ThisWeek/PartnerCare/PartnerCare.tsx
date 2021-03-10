@@ -24,6 +24,7 @@ import { motion } from 'framer-motion';
 import uniqBy from 'lodash/fp/uniqBy';
 import { useTranslation } from 'react-i18next';
 import Link from 'next/link';
+import { Brightness1Outlined, CheckCircle } from '@material-ui/icons';
 import { dayMonthFormat } from '../../../../lib/intlFormat';
 import AnimatedCard from '../../../AnimatedCard';
 import { useApp } from '../../../App';
@@ -214,11 +215,10 @@ const PartnerCare = ({
                           }
                         />
                         <ListItemSecondaryAction>
-                          <TaskStatus
-                            taskId={task.id}
-                            startAt={task.startAt}
-                            completedAt={task.completedAt}
-                            tooltipPlacement="left"
+                          <Checkbox
+                            icon={<Brightness1Outlined />}
+                            checkedIcon={<CheckCircle />}
+                            edge="end"
                           />
                         </ListItemSecondaryAction>
                       </ListItem>
@@ -332,7 +332,11 @@ const PartnerCare = ({
                           }
                         />
                         <ListItemSecondaryAction>
-                          <Checkbox edge="end" />
+                          <Checkbox
+                            icon={<Brightness1Outlined />}
+                            checkedIcon={<CheckCircle />}
+                            edge="end"
+                          />
                         </ListItemSecondaryAction>
                       </ListItem>
                     ),
@@ -378,7 +382,11 @@ const PartnerCare = ({
                         }
                       />
                       <ListItemSecondaryAction>
-                        <Checkbox edge="end" />
+                        <Checkbox
+                          icon={<Brightness1Outlined />}
+                          checkedIcon={<CheckCircle />}
+                          edge="end"
+                        />
                       </ListItemSecondaryAction>
                     </ListItem>
                   ))}
