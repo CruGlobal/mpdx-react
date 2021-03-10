@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react';
+import React from 'react';
 import { ContactRowFragment } from './ContactRow.generated';
 
 interface Props {
