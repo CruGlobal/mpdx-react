@@ -4,24 +4,21 @@ import { GiftStatus, GiftStatusEnum } from './giftStatus';
 
 describe('GiftStatus', () => {
   it('is Hidden', () => {
-    const { queryByTestId } = render(
+    const { getByTitle } = render(
       <GiftStatus giftStatusEnum={GiftStatusEnum.Hidden} />,
     );
-    expect(queryByTestId('giftStatusLate')).toBeNull();
-    expect(queryByTestId('giftStatusOnTime')).toBeNull();
+    expect(getByTitle('giftStatusHidden')).toBeTruthy();
   });
   it('is Late', () => {
-    const { queryByTestId } = render(
+    const { getByTitle } = render(
       <GiftStatus giftStatusEnum={GiftStatusEnum.Late} />,
     );
-    expect(queryByTestId('giftStatusHidden')).toBeNull();
-    expect(queryByTestId('giftStatusOnTime')).toBeNull();
+    expect(getByTitle('giftStatusLate')).toBeTruthy();
   });
   it('is On Time', () => {
-    const { queryByTestId } = render(
+    const { getByTitle } = render(
       <GiftStatus giftStatusEnum={GiftStatusEnum.OnTime} />,
     );
-    expect(queryByTestId('giftStatusHidden')).toBeNull();
-    expect(queryByTestId('giftStatusLate')).toBeNull();
+    expect(getByTitle('giftStatusOnTime')).toBeTruthy();
   });
 });

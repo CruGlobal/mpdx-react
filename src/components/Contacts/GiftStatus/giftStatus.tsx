@@ -14,11 +14,21 @@ export const GiftStatus: React.FC<Props> = ({ giftStatusEnum }) => {
   const statusView = () => {
     switch (giftStatusEnum) {
       case GiftStatusEnum.Hidden:
-        return null;
+        return <span title="giftStatusHidden" />;
       case GiftStatusEnum.OnTime:
-        return <Circle style={{ color: '#00CA99' }} />;
+        return (
+          <>
+            <span title="giftStatusOnTime" />
+            <Circle style={{ color: '#00CA99' }} />
+          </>
+        );
       case GiftStatusEnum.Late:
-        return <ErrorIcon style={{ color: '#F44336' }} />;
+        return (
+          <>
+            <span title="giftStatusLate" />
+            <ErrorIcon style={{ color: '#F44336' }} />
+          </>
+        );
     }
   };
   return <>{statusView()} </>;
