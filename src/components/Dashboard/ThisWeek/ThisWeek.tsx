@@ -1,7 +1,8 @@
 import React, { ReactElement } from 'react';
-import { Box, Typography, Grid } from '@material-ui/core';
+import { Box, Typography, Grid, Button } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { DateTime } from 'luxon';
+import { ArrowDropDown } from '@material-ui/icons';
 import AnimatedBox from '../../AnimatedBox';
 import PartnerCare from './PartnerCare/PartnerCare';
 import TasksDueThisWeek from './TasksDueThisWeek/TasksDueThisWeek';
@@ -45,7 +46,15 @@ const ThisWeek = ({ accountListId }: Props): ReactElement => {
     <>
       <Box my={{ xs: 1, sm: 2 }}>
         <AnimatedBox>
-          <Typography variant="h6">{t('To Do This Week')}</Typography>
+          <Typography variant="h6">
+            <Box display="flex">
+              <Box flexGrow={1}>{t('To Do This Week')}</Box>
+              <Button>
+                <ArrowDropDown />
+                {t('NEWSLETTER')}
+              </Button>
+            </Box>
+          </Typography>
         </AnimatedBox>
       </Box>
       <Grid container spacing={2}>
