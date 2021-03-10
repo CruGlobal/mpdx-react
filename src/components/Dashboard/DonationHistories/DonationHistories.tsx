@@ -23,6 +23,7 @@ import {
 import { DateTime } from 'luxon';
 import { Skeleton } from '@material-ui/lab';
 import { useTranslation } from 'react-i18next';
+import { max } from 'lodash';
 import { currencyFormat } from '../../../lib/intlFormat';
 import AnimatedCard from '../../AnimatedCard';
 import AnimatedBox from '../../AnimatedBox';
@@ -112,6 +113,12 @@ const DonationHistories = ({
     !loading &&
     (periods === undefined ||
       periods.reduce((result, { total }) => result + total, 0) === 0);
+  const domainMax = max([
+    ...periods.map((period) => period.total),
+    goal,
+    pledged,
+    reportsDonationHistories?.averageIgnoreCurrent,
+  ]);
 
   return (
     <>
@@ -270,6 +277,7 @@ const DonationHistories = ({
                       )}
                       <XAxis tickLine={false} dataKey="startDate" />
                       <YAxis
+                        domain={[0, domainMax]}
                         label={
                           <Text
                             x={0}
