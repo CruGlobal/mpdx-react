@@ -1,39 +1,30 @@
 import React, { ReactElement } from 'react';
 import { Box } from '@material-ui/core';
-import { boolean } from '@storybook/addon-knobs';
-import { GiftStatus } from './giftStatus';
+import { GiftStatus, GiftStatusEnum } from './giftStatus';
 
 export default {
   title: 'Contacts/GiftStatus',
+  component: GiftStatus,
 };
 
 export const Default = (): ReactElement => {
   return (
     <Box m={2}>
-      <GiftStatus
-        isHidden={boolean('isHidden', true)}
-        isLate={boolean('isLate', false)}
-      />
+      <GiftStatus giftStatusEnum={GiftStatusEnum.Hidden} />
     </Box>
   );
 };
 export const LateStatus = (): ReactElement => {
   return (
     <Box m={2}>
-      <GiftStatus
-        isHidden={boolean('isHidden', false)}
-        isLate={boolean('isLate', true)}
-      />
+      <GiftStatus giftStatusEnum={GiftStatusEnum.Late} />
     </Box>
   );
 };
 export const OnTimeStatus = (): ReactElement => {
   return (
     <Box m={2}>
-      <GiftStatus
-        isHidden={boolean('isHidden', false)}
-        isLate={boolean('isLate', false)}
-      />
+      <GiftStatus giftStatusEnum={GiftStatusEnum.OnTime} />
     </Box>
   );
 };
