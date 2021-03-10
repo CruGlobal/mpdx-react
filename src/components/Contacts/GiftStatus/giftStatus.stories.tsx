@@ -4,7 +4,6 @@ import { GiftStatus, GiftStatusEnum } from './giftStatus';
 
 export default {
   title: 'Contacts/GiftStatus',
-  component: GiftStatus,
 };
 
 export const Default = (): ReactElement => {
