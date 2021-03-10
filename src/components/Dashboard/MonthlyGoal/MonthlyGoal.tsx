@@ -7,6 +7,7 @@ import {
   CardContent,
   Box,
   Hidden,
+  Button,
 } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
 import { useTranslation } from 'react-i18next';
@@ -64,6 +65,7 @@ const MonthlyGoal = ({
           <Typography variant="h6">
             <Box display="flex">
               <Box flexGrow={1}>{t('Monthly Goal')}</Box>
+              <Button>{t('GIFTS NOT STARTED (0)')}</Button>
               <Hidden smUp>
                 <Box data-testid="MonthlyGoalTypographyGoalMobile">
                   {!loading && currencyFormat(goal, currencyCode)}
