@@ -27,7 +27,7 @@ const GiftStatus = ({ isHidden, isLate }: Props): ReactElement => {
           )}
         </>
       )}
-    </div>
+    </>
   );
 };
 

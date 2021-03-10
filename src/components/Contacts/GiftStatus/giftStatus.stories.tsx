@@ -4,7 +4,7 @@ import { boolean } from '@storybook/addon-knobs';
 import GiftStatus from '.';
 
 export default {
-  title: 'GiftStatus',
+  title: 'Contacts/GiftStatus',
 };
 
 export const Default = (): ReactElement => {
