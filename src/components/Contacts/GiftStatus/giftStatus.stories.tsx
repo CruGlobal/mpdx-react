@@ -1,7 +1,7 @@
 import React, { ReactElement } from 'react';
 import { Box } from '@material-ui/core';
 import { boolean } from '@storybook/addon-knobs';
-import GiftStatus from '.';
+import GiftStatus from './giftStatus';
 
 export default {
   title: 'Contacts/GiftStatus',

@@ -1,6 +1,6 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import GiftStatus from '.';
+import GiftStatus from './giftStatus';
 
 describe('GiftStatus', () => {
   it('is Hidden', () => {
