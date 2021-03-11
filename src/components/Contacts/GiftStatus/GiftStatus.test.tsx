@@ -13,4 +13,11 @@ describe('GiftStatus', () => {
     );
     expect(getByTitle('On Time')).toBeVisible();
   });
+  it('is hidden', () => {
+    const { queryByTitle } = render(
+      <GiftStatus status={GiftStatusEnum.Hidden} />,
+    );
+    expect(queryByTitle('On Time')).toBeNull();
+    expect(queryByTitle('Late')).toBeNull();
+  });
 });
