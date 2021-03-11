@@ -50,6 +50,10 @@ const useStyles = makeStyles((theme: Theme) => ({
   tableContainer: {
     flex: 1,
   },
+  tableCell: {
+    paddingLeft: 4,
+    paddingRight: 4,
+  },
 }));
 
 interface Props {
@@ -130,19 +134,29 @@ const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
           <Table size="small">
             <TableHead>
               <TableRow>
-                <TableCell data-testid="WeeklyActivityTableCellDateRange">
+                <TableCell
+                  className={classes.tableCell}
+                  data-testid="WeeklyActivityTableCellDateRange"
+                >
                   {`${intlDateFormat(interval.start)} - ${intlDateFormat(
                     interval.end,
                   )}`}
                 </TableCell>
-                <TableCell align="right">{t('Completed')}</TableCell>
-                <TableCell align="right">{t('Appt Produced')}</TableCell>
+                <TableCell align="right" className={classes.tableCell}>
+                  {t('Completed')}
+                </TableCell>
+                <TableCell align="right" className={classes.tableCell}>
+                  {t('Appt Produced')}
+                </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               <TableRow>
-                <TableCell>{t('Calls')}</TableCell>
+                <TableCell className={classes.tableCell}>
+                  {t('Calls')}
+                </TableCell>
                 <TableCell
+                  className={classes.tableCell}
                   align="right"
                   data-testid="WeeklyActivityTableCellCompletedCalls"
                 >
@@ -156,6 +170,7 @@ const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
                   )}
                 </TableCell>
                 <TableCell
+                  className={classes.tableCell}
                   align="right"
                   data-testid="WeeklyActivityTableCellCallsThatProducedAppointments"
                 >
@@ -167,8 +182,11 @@ const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
                 </TableCell>
               </TableRow>
               <TableRow>
-                <TableCell>{t('Messages')}</TableCell>
+                <TableCell className={classes.tableCell}>
+                  {t('Messages')}
+                </TableCell>
                 <TableCell
+                  className={classes.tableCell}
                   align="right"
                   data-testid="WeeklyActivityTableCellCompletedMessages"
                 >
@@ -179,6 +197,7 @@ const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
                   )}
                 </TableCell>
                 <TableCell
+                  className={classes.tableCell}
                   align="right"
                   data-testid="WeeklyActivityTableCellMessagesThatProducedAppointments"
                 >
@@ -192,8 +211,11 @@ const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
                 </TableCell>
               </TableRow>
               <TableRow>
-                <TableCell>{t('Appointments')}</TableCell>
+                <TableCell className={classes.tableCell}>
+                  {t('Appointments')}
+                </TableCell>
                 <TableCell
+                  className={classes.tableCell}
                   align="right"
                   data-testid="WeeklyActivityTableCellCompletedAppointments"
                 >
@@ -203,11 +225,14 @@ const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
                     numberFormat(data.completedAppointments.totalCount)
                   )}
                 </TableCell>
-                <TableCell></TableCell>
+                <TableCell className={classes.tableCell}></TableCell>
               </TableRow>
               <TableRow>
-                <TableCell>{t('Correspondence')}</TableCell>
+                <TableCell className={classes.tableCell}>
+                  {t('Correspondence')}
+                </TableCell>
                 <TableCell
+                  className={classes.tableCell}
                   align="right"
                   data-testid="WeeklyActivityTableCellCompletedCorrespondence"
                 >
@@ -217,7 +242,7 @@ const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
                     numberFormat(data.completedCorrespondence.totalCount)
                   )}
                 </TableCell>
-                <TableCell></TableCell>
+                <TableCell className={classes.tableCell}></TableCell>
               </TableRow>
             </TableBody>
           </Table>
