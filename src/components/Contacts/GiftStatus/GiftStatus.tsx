@@ -4,17 +4,17 @@ import Circle from '@material-ui/icons/FiberManualRecord';
 import { useTranslation } from 'react-i18next';
 
 interface Props {
-  giftStatusEnum: GiftStatusEnum;
+  status: GiftStatusEnum;
 }
 export enum GiftStatusEnum {
   OnTime,
   Late,
   Hidden,
 }
-export const GiftStatus: React.FC<Props> = ({ giftStatusEnum }) => {
+export const GiftStatus: React.FC<Props> = ({ status }) => {
   const { t } = useTranslation();
 
-  switch (giftStatusEnum) {
+  switch (status) {
     case GiftStatusEnum.Hidden:
       return null;
     case GiftStatusEnum.OnTime:

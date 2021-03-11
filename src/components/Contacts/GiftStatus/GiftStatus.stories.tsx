@@ -9,21 +9,21 @@ export default {
 export const Default = (): ReactElement => {
   return (
     <Box m={2}>
-      <GiftStatus giftStatusEnum={GiftStatusEnum.Hidden} />
+      <GiftStatus status={GiftStatusEnum.Hidden} />
     </Box>
   );
 };
 export const LateStatus = (): ReactElement => {
   return (
     <Box m={2}>
-      <GiftStatus giftStatusEnum={GiftStatusEnum.Late} />
+      <GiftStatus status={GiftStatusEnum.Late} />
     </Box>
   );
 };
 export const OnTimeStatus = (): ReactElement => {
   return (
     <Box m={2}>
-      <GiftStatus giftStatusEnum={GiftStatusEnum.OnTime} />
+      <GiftStatus status={GiftStatusEnum.OnTime} />
     </Box>
   );
 };
