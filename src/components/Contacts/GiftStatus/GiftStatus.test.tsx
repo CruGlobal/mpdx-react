@@ -5,7 +5,7 @@ import { GiftStatus, GiftStatusEnum } from './GiftStatus';
 describe('GiftStatus', () => {
   it('is Late', () => {
     const { getByTitle } = render(<GiftStatus status={GiftStatusEnum.Late} />);
-    expect(getByTitle('Late')).toBeTruthy();
+    expect(getByTitle('Late')).toBeVisible();
   });
   it('is On Time', () => {
     const { getByTitle } = render(
