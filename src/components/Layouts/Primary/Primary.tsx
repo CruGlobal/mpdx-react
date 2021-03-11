@@ -51,7 +51,7 @@ const Primary = ({ children }: Props): ReactElement => {
     <Box className={classes.container}>
       <SideBar open={open} handleOpenChange={handleOpenChange} />
       <Box className={clsx(classes.box, { [classes.boxClosed]: !open })}>
-        <TopBar open={open} handleOpenChange={handleOpenChange} />
+        <TopBar handleOpenChange={handleOpenChange} />
         {children}
       </Box>
       <Hidden smUp>

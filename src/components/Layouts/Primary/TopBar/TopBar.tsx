@@ -6,7 +6,6 @@ import {
   MenuItem,
   Box,
   Menu,
-  ListSubheader,
   makeStyles,
   Toolbar,
   AppBar,
@@ -19,27 +18,27 @@ import {
   ListItemAvatar,
   Link,
 } from '@material-ui/core';
-import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
-import MoreVertIcon from '@material-ui/icons/MoreVert';
 import MenuIcon from '@material-ui/icons/Menu';
-import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { signout } from 'next-auth/client';
 import NextLink from 'next/link';
-import { SIDE_BAR_MINIMIZED_WIDTH, SIDE_BAR_WIDTH } from '../SideBar/SideBar';
+import AccountCircleIcon from '@material-ui/icons/AccountCircle';
+import { SIDE_BAR_MINIMIZED_WIDTH } from '../SideBar/SideBar';
 import { useApp } from '../../../App';
 import HandoffLink from '../../../HandoffLink';
-import logo from '../../../../images/logo.svg';
 import { User } from '../../../../../graphql/types.generated';
+import logo from '../../../../images/logo.svg';
 import NotificationMenu from './NotificationMenu';
+import AddMenu from './AddMenu';
 import { useGetTopBarQuery } from './GetTopBar.generated';
+import SearchMenu from './SearchMenu';
 
 const useStyles = makeStyles((theme: Theme) => ({
   appBar: {
     paddingTop: `env(safe-area-inset-top)`,
     paddingLeft: `env(safe-area-inset-left)`,
     paddingRight: `env(safe-area-inset-right)`,
-    backgroundColor: theme.palette.primary.main,
+    backgroundColor: theme.palette.primary.dark,
     width: 'auto',
     left: SIDE_BAR_MINIMIZED_WIDTH,
     [theme.breakpoints.down('sm')]: {
@@ -47,7 +46,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
   },
   toolbar: {
-    backgroundColor: theme.palette.primary.main,
+    backgroundColor: theme.palette.primary.dark,
   },
   container: {
     minHeight: '48px',
@@ -55,35 +54,32 @@ const useStyles = makeStyles((theme: Theme) => ({
   sideBarGrid: {
     order: 1,
   },
-  accountListsGrid: {
+  navListItem: {
     order: 2,
-    [theme.breakpoints.down('xs')]: {
-      order: 6,
-      marginRight: theme.spacing(1),
+    [theme.breakpoints.down('sm')]: {
+      display: 'none',
     },
   },
-  breadcrumbGrid: {
-    order: 3,
-    marginLeft: theme.spacing(1),
-    height: '48px',
-    overflow: 'hidden',
-    flexGrow: 1,
+  addMenuGrid: {
+    order: 5,
+    [theme.breakpoints.down('xs')]: {
+      display: 'none',
+    },
   },
-  helpGrid: {
+  searchMenuGrid: {
     order: 4,
     [theme.breakpoints.down('xs')]: {
       display: 'none',
     },
   },
   notificationsGrid: {
-    order: 5,
-  },
-  avatarGrid: {
     order: 6,
   },
+  avatarGrid: {
+    order: 7,
+  },
   avatar: {
-    height: '32px',
-    width: '32px',
+    color: theme.palette.secondary.dark,
   },
   link: {
     textTransform: 'none',
@@ -95,17 +91,6 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   button: {
     textTransform: 'none',
-  },
-  breadcrumb: {
-    fontWeight: 'bold',
-    transform: 'translate(0, 48px)',
-    transition: 'opacity .15s ease, transform .15s ease',
-    lineHeight: '48px',
-    opacity: 0,
-  },
-  breadcrumbTrigger: {
-    transform: 'translate(0, 0)',
-    opacity: 1,
   },
   menuList: {
     paddingTop: 0,
@@ -134,17 +119,17 @@ const useStyles = makeStyles((theme: Theme) => ({
       marginLeft: -13,
     },
   },
-  logoOpen: {
-    marginRight: SIDE_BAR_WIDTH - 70 - SIDE_BAR_MINIMIZED_WIDTH,
+  accountName: {
+    color: '#FFFFFF',
+    padding: '0px 8px',
   },
 }));
 
 interface Props {
-  open: boolean;
   handleOpenChange: (state?: boolean) => void;
 }
 
-const TopBar = ({ open, handleOpenChange }: Props): ReactElement => {
+const TopBar = ({ handleOpenChange }: Props): ReactElement => {
   const classes = useStyles();
   const { dispatch, state } = useApp();
   const { t } = useTranslation();
@@ -153,21 +138,8 @@ const TopBar = ({ open, handleOpenChange }: Props): ReactElement => {
     threshold: 0,
   });
   const { data } = useGetTopBarQuery();
-  const [accountListMenuAnchorEl, setAccountListMenuAnchorEl] = useState(null);
-  const accountListMenuOpen = Boolean(accountListMenuAnchorEl);
   const [profileMenuAnchorEl, setProfileMenuAnchorEl] = useState(null);
   const profileMenuOpen = Boolean(profileMenuAnchorEl);
-
-  const handleAccountListMenuOpen = (event) => {
-    setAccountListMenuAnchorEl(event.currentTarget);
-  };
-
-  const handleAccountListMenuClose = (accountListId?: string): void => {
-    if (accountListId) {
-      dispatch({ type: 'updateAccountListId', accountListId });
-    }
-    setAccountListMenuAnchorEl(null);
-  };
 
   const handleProfileMenuOpen = (event) => {
     setProfileMenuAnchorEl(event.currentTarget);
@@ -176,10 +148,6 @@ const TopBar = ({ open, handleOpenChange }: Props): ReactElement => {
   const handleProfileMenuClose = () => {
     setProfileMenuAnchorEl(null);
   };
-
-  const currentAccountList = data?.accountLists?.nodes?.find(
-    (node) => node.id == state.accountListId,
-  );
 
   useEffect(() => {
     data?.user &&
@@ -193,131 +161,98 @@ const TopBar = ({ open, handleOpenChange }: Props): ReactElement => {
       <AppBar className={classes.appBar} elevation={trigger ? 3 : 0}>
         <Toolbar className={classes.toolbar}>
           <Grid container className={classes.container} alignItems="center">
-            <Grid item className={classes.sideBarGrid}>
-              <Hidden mdUp>
-                <IconButton
-                  color="inherit"
-                  edge="start"
-                  onClick={() => handleOpenChange(true)}
-                  aria-label="Show Menu"
-                >
-                  <MenuIcon />
-                </IconButton>
-              </Hidden>
-
-              <Hidden smDown>
-                <Box
-                  className={clsx(classes.logo, { [classes.logoOpen]: open })}
-                >
-                  <img src={logo} alt="logo" />
-                </Box>
-              </Hidden>
-            </Grid>
-            <Grid item className={classes.accountListsGrid}>
-              {data?.accountLists?.nodes && (
+            <Grid container item alignItems="center" xs={6}>
+              <Grid item className={classes.sideBarGrid}>
+                <Hidden mdUp>
+                  <IconButton
+                    color="inherit"
+                    edge="start"
+                    onClick={() => handleOpenChange(true)}
+                    aria-label="Show Menu"
+                  >
+                    <MenuIcon />
+                  </IconButton>
+                </Hidden>
+                <Hidden smDown>
+                  <Box className={classes.logo}>
+                    <img src={logo} alt="logo" />
+                  </Box>
+                </Hidden>
+              </Grid>
+              {state.accountListId ? (
                 <>
-                  {data.accountLists.nodes.length == 1 && (
-                    <Box
-                      display={{ xs: 'none', sm: 'block' }}
-                      data-testid="TopBarSingleAccountList"
+                  <Grid item className={classes.navListItem}>
+                    <NextLink
+                      href="/accountLists/[accountListId]"
+                      as={`/accountLists/${state.accountListId}`}
+                      scroll={false}
                     >
-                      {currentAccountList?.name}
-                    </Box>
-                  )}
-                  {data.accountLists.nodes.length > 1 && (
-                    <>
-                      <Hidden only="xs">
-                        <Button
-                          onClick={handleAccountListMenuOpen}
-                          className={[classes.button, classes.link].join(' ')}
-                          endIcon={<ArrowDropDownIcon />}
-                          size="small"
-                          data-testid="TopBarButton"
-                        >
-                          {currentAccountList?.name}
-                        </Button>
-                      </Hidden>
-                      <Hidden smUp>
-                        <IconButton
-                          onClick={handleAccountListMenuOpen}
-                          className={classes.link}
-                          data-testid="TopBarButton"
-                        >
-                          <MoreVertIcon />
-                        </IconButton>
-                      </Hidden>
-                      <Menu
-                        data-testid="TopBarMenu"
-                        anchorEl={accountListMenuAnchorEl}
-                        open={accountListMenuOpen}
-                        onClose={() => handleAccountListMenuClose()}
-                        classes={{ list: classes.menuList }}
-                      >
-                        <NextLink href="/accountLists" scroll={false}>
-                          <MenuItem
-                            onClick={() => handleAccountListMenuClose()}
-                          >
-                            {t('See All Account Lists')}
-                          </MenuItem>
-                        </NextLink>
-                        <ListSubheader>Account Lists</ListSubheader>
-                        {data.accountLists.nodes.map(({ id, name }) => (
-                          <NextLink
-                            key={id}
-                            href="/accountLists/[accountListId]"
-                            as={`/accountLists/${id}`}
-                            scroll={false}
-                          >
-                            <MenuItem
-                              selected={id == state.accountListId}
-                              onClick={() => handleAccountListMenuClose(id)}
-                              data-testid={`TopBarMenuItem${id}`}
-                            >
-                              {name}
-                            </MenuItem>
-                          </NextLink>
-                        ))}
-                      </Menu>
-                    </>
-                  )}
+                      <MenuItem>
+                        <ListItemText primary={t('Dashboard')} />
+                      </MenuItem>
+                    </NextLink>
+                  </Grid>
+                  <Grid item className={classes.navListItem}>
+                    <NextLink
+                      href="/accountLists/[accountListId]/contacts"
+                      as={`/accountLists/${state.accountListId}/contacts`}
+                      scroll={false}
+                    >
+                      <MenuItem>
+                        <ListItemText primary={t('Contacts')} />
+                      </MenuItem>
+                    </NextLink>
+                  </Grid>
+                  <Grid item className={classes.navListItem}>
+                    <HandoffLink path="/reports">
+                      <MenuItem onClick={handleProfileMenuClose} component="a">
+                        <ListItemText primary={t('Reports')} />
+                      </MenuItem>
+                    </HandoffLink>
+                  </Grid>
+                  <Grid item className={classes.navListItem}>
+                    <HandoffLink path="/toolsl">
+                      <MenuItem onClick={handleProfileMenuClose} component="a">
+                        <ListItemText primary={t('Tools')} />
+                      </MenuItem>
+                    </HandoffLink>
+                  </Grid>
+                  <Grid item className={classes.navListItem}>
+                    <HandoffLink path="/coaches">
+                      <MenuItem onClick={handleProfileMenuClose} component="a">
+                        <ListItemText primary={t('Coaches')} />
+                      </MenuItem>
+                    </HandoffLink>
+                  </Grid>
                 </>
-              )}
+              ) : null}
             </Grid>
-            <Grid item className={classes.breadcrumbGrid}>
-              {state.breadcrumb && (
-                <Box
-                  className={clsx(
-                    classes.breadcrumb,
-                    trigger && classes.breadcrumbTrigger,
-                  )}
-                  data-testid="TopBarBreadcrumb"
+            <Grid xs={6} container item alignItems="center" justify="flex-end">
+              <Grid item className={classes.searchMenuGrid}>
+                <SearchMenu />
+              </Grid>
+              <Grid item className={classes.addMenuGrid}>
+                <AddMenu />
+              </Grid>
+              <Grid item className={classes.notificationsGrid}>
+                <NotificationMenu />
+              </Grid>
+              <Grid item className={classes.avatarGrid}>
+                <IconButton
+                  onClick={handleProfileMenuOpen}
+                  data-testid="profileMenuButton"
                 >
-                  {state.breadcrumb}
-                </Box>
-              )}
-            </Grid>
-            <Grid item className={classes.helpGrid}>
-              <Button
-                href="https://help.mpdx.org"
-                className={[classes.button, classes.link].join(' ')}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {t('Go to help')}
-              </Button>
-            </Grid>
-            <Grid item className={classes.notificationsGrid}>
-              <NotificationMenu />
-            </Grid>
-            <Grid item className={classes.avatarGrid}>
-              <IconButton
-                onClick={handleProfileMenuOpen}
-                data-testid="profileMenuButton"
-              >
-                <Avatar className={classes.avatar}>
-                  {state.user?.firstName[0]}
-                </Avatar>
-              </IconButton>
+                  <AccountCircleIcon className={classes.avatar} />
+                  {data && (
+                    <ListItemText
+                      className={classes.accountName}
+                      primary={[data.user.firstName, data.user.lastName]
+                        .filter(Boolean)
+                        .join(' ')}
+                    />
+                  )}
+                </IconButton>
+              </Grid>
             </Grid>
           </Grid>
         </Toolbar>

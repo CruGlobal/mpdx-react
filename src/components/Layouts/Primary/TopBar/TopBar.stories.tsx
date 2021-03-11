@@ -3,7 +3,7 @@ import { Box, Container } from '@material-ui/core';
 import { MockedProvider } from '@apollo/client/testing';
 import withDispatch from '../../../../decorators/withDispatch';
 import { getNotificationsMocks } from './NotificationMenu/NotificationMenu.mock';
-import { getTopBarMock, getTopBarMultipleMock } from './TopBar.mock';
+import { getTopBarMock } from './TopBar.mock';
 import TopBar from '.';
 
 export default {
@@ -40,20 +40,7 @@ export const Default = (): ReactElement => {
   return (
     <>
       <MockedProvider mocks={mocks} addTypename={false}>
-        <TopBar open={false} handleOpenChange={(): void => {}} />
-      </MockedProvider>
-      <Content />
-    </>
-  );
-};
-
-export const MultipleAccountLists = (): ReactElement => {
-  const mocks = [getTopBarMultipleMock(), ...getNotificationsMocks()];
-
-  return (
-    <>
-      <MockedProvider mocks={mocks} addTypename={false}>
-        <TopBar open={false} handleOpenChange={(): void => {}} />
+        <TopBar handleOpenChange={(): void => {}} />
       </MockedProvider>
       <Content />
     </>
