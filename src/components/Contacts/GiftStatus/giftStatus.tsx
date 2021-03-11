@@ -1,6 +1,7 @@
 import React from 'react';
 import ErrorIcon from '@material-ui/icons/Error';
 import Circle from '@material-ui/icons/FiberManualRecord';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
   giftStatusEnum: GiftStatusEnum;
