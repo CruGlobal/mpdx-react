@@ -11,27 +11,26 @@ export enum GiftStatusEnum {
   Hidden,
 }
 export const GiftStatus: React.FC<Props> = ({ giftStatusEnum }) => {
-  const statusView = () => {
-    switch (giftStatusEnum) {
-      case GiftStatusEnum.Hidden:
-        return <span title="giftStatusHidden" />;
-      case GiftStatusEnum.OnTime:
-        return (
-          <>
-            <span title="giftStatusOnTime" />
-            <Circle style={{ color: '#00CA99' }} />
-          </>
-        );
-      case GiftStatusEnum.Late:
-        return (
-          <>
-            <span title="giftStatusLate" />
+  const { t } = useTranslation();
+
+  switch (giftStatusEnum) {
+    case GiftStatusEnum.Hidden:
+      return null;
+    case GiftStatusEnum.OnTime:
+      return (
+        <span title={t('On Time')}>
+          <Circle style={{ color: '#00CA99' }} />
+        </span>
+      );
+    case GiftStatusEnum.Late:
+      return (
+        <>
+          <span title={t('Late')}>
             <ErrorIcon style={{ color: '#F44336' }} />
-          </>
-        );
-    }
-  };
-  return <>{statusView()} </>;
+          </span>
+        </>
+      );
+  }
 };
 
 export default GiftStatus;
