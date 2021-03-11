@@ -114,7 +114,7 @@ const DonationHistories = ({
     (periods === undefined ||
       periods.reduce((result, { total }) => result + total, 0) === 0);
   const domainMax = max([
-    ...periods.map((period) => period.total),
+    ...(periods?.map((period) => period.total) || []),
     goal,
     pledged,
     reportsDonationHistories?.averageIgnoreCurrent,
