@@ -1,6 +1,6 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import { GiftStatus, GiftStatusEnum } from './giftStatus';
+import { GiftStatus, GiftStatusEnum } from './GiftStatus';
 
 describe('GiftStatus', () => {
   it('is Hidden', () => {

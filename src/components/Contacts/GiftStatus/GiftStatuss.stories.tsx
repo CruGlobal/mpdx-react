@@ -1,6 +1,6 @@
 import React, { ReactElement } from 'react';
 import { Box } from '@material-ui/core';
-import { GiftStatus, GiftStatusEnum } from './giftStatus';
+import { GiftStatus, GiftStatusEnum } from './GiftStatus';
 
 export default {
   title: 'Contacts/GiftStatus',
