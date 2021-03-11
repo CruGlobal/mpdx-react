@@ -3,7 +3,6 @@ import { MockedProvider } from '@apollo/client/testing';
 import { Container, Box } from '@material-ui/core';
 import withDispatch from '../../../decorators/withDispatch';
 import { getNotificationsMocks } from './TopBar/NotificationMenu/NotificationMenu.mock';
-import { getSideBarMock } from './SideBar/SideBar.mock';
 import { getTopBarMock } from './TopBar/TopBar.mock';
 import Primary from '.';
 
@@ -18,7 +17,7 @@ export default {
 };
 
 export const Default = (): ReactElement => {
-  const mocks = [...getNotificationsMocks(), getTopBarMock(), getSideBarMock()];
+  const mocks = [...getNotificationsMocks(), getTopBarMock()];
 
   return (
     <MockedProvider mocks={mocks} addTypename={false}>

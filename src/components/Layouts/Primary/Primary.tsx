@@ -1,10 +1,7 @@
-import React, { ReactElement, ReactNode, useState } from 'react';
+import React, { ReactElement, ReactNode } from 'react';
 import { Box, makeStyles, Theme, Hidden } from '@material-ui/core';
-import clsx from 'clsx';
 import AddFab from './AddFab';
 import TopBar from './TopBar';
-import SideBar from './SideBar';
-import { SIDE_BAR_MINIMIZED_WIDTH, SIDE_BAR_WIDTH } from './SideBar/SideBar';
 import BottomBar from './BottomBar';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -19,13 +16,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     transition: theme.transitions.create('margin-left', {
       duration: theme.transitions.duration.enteringScreen,
     }),
-    marginLeft: SIDE_BAR_WIDTH,
-    [theme.breakpoints.down('sm')]: {
-      marginLeft: 0,
-    },
-  },
-  boxClosed: {
-    marginLeft: SIDE_BAR_MINIMIZED_WIDTH,
     [theme.breakpoints.down('sm')]: {
       marginLeft: 0,
     },
@@ -41,17 +31,11 @@ interface Props {
 
 const Primary = ({ children }: Props): ReactElement => {
   const classes = useStyles();
-  const [open, setOpen] = useState(false);
-
-  const handleOpenChange = (state = !open): void => {
-    setOpen(state);
-  };
 
   return (
     <Box className={classes.container}>
-      <SideBar open={open} handleOpenChange={handleOpenChange} />
-      <Box className={clsx(classes.box, { [classes.boxClosed]: !open })}>
-        <TopBar handleOpenChange={handleOpenChange} />
+      <Box className={classes.box}>
+        <TopBar />
         {children}
       </Box>
       <Hidden smUp>

@@ -18,12 +18,10 @@ import {
   ListItemAvatar,
   Link,
 } from '@material-ui/core';
-import MenuIcon from '@material-ui/icons/Menu';
 import { useTranslation } from 'react-i18next';
 import { signout } from 'next-auth/client';
 import NextLink from 'next/link';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
-import { SIDE_BAR_MINIMIZED_WIDTH } from '../SideBar/SideBar';
 import { useApp } from '../../../App';
 import HandoffLink from '../../../HandoffLink';
 import { User } from '../../../../../graphql/types.generated';
@@ -39,19 +37,12 @@ const useStyles = makeStyles((theme: Theme) => ({
     paddingLeft: `env(safe-area-inset-left)`,
     paddingRight: `env(safe-area-inset-right)`,
     backgroundColor: theme.palette.primary.dark,
-    width: 'auto',
-    left: SIDE_BAR_MINIMIZED_WIDTH,
-    [theme.breakpoints.down('sm')]: {
-      left: 0,
-    },
   },
   toolbar: {
     backgroundColor: theme.palette.primary.dark,
+    minHeight: '60px',
   },
-  container: {
-    minHeight: '48px',
-  },
-  sideBarGrid: {
+  logoGrid: {
     order: 1,
   },
   navListItem: {
@@ -110,14 +101,11 @@ const useStyles = makeStyles((theme: Theme) => ({
     marginTop: theme.spacing(1),
   },
   logo: {
-    width: 70,
+    width: 90,
     transition: theme.transitions.create('margin-right', {
       duration: theme.transitions.duration.enteringScreen,
     }),
-    marginRight: theme.spacing(2),
-    '& img': {
-      marginLeft: -13,
-    },
+    marginRight: theme.spacing(4),
   },
   accountName: {
     color: '#FFFFFF',
@@ -125,11 +113,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-interface Props {
-  handleOpenChange: (state?: boolean) => void;
-}
-
-const TopBar = ({ handleOpenChange }: Props): ReactElement => {
+const TopBar = (): ReactElement => {
   const classes = useStyles();
   const { dispatch, state } = useApp();
   const { t } = useTranslation();
@@ -160,19 +144,9 @@ const TopBar = ({ handleOpenChange }: Props): ReactElement => {
     <>
       <AppBar className={classes.appBar} elevation={trigger ? 3 : 0}>
         <Toolbar className={classes.toolbar}>
-          <Grid container className={classes.container} alignItems="center">
-            <Grid container item alignItems="center" xs={6}>
-              <Grid item className={classes.sideBarGrid}>
-                <Hidden mdUp>
-                  <IconButton
-                    color="inherit"
-                    edge="start"
-                    onClick={() => handleOpenChange(true)}
-                    aria-label="Show Menu"
-                  >
-                    <MenuIcon />
-                  </IconButton>
-                </Hidden>
+          <Grid container alignItems="center">
+            <Grid container item alignItems="center" xs="auto" md={7}>
+              <Grid item className={classes.logoGrid}>
                 <Hidden smDown>
                   <Box className={classes.logo}>
                     <img src={logo} alt="logo" />
@@ -227,7 +201,14 @@ const TopBar = ({ handleOpenChange }: Props): ReactElement => {
                 </>
               ) : null}
             </Grid>
-            <Grid xs={6} container item alignItems="center" justify="flex-end">
+            <Grid
+              xs={12}
+              md={5}
+              container
+              item
+              alignItems="center"
+              justify="flex-end"
+            >
               <Grid item className={classes.searchMenuGrid}>
                 <SearchMenu />
               </Grid>
@@ -255,11 +236,6 @@ const TopBar = ({ handleOpenChange }: Props): ReactElement => {
               </Grid>
             </Grid>
           </Grid>
-        </Toolbar>
-      </AppBar>
-      <AppBar position="static" className={classes.appBar} elevation={0}>
-        <Toolbar className={classes.toolbar}>
-          <Grid className={classes.container} />
         </Toolbar>
       </AppBar>
       <Menu

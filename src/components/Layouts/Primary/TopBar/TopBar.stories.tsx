@@ -40,7 +40,7 @@ export const Default = (): ReactElement => {
   return (
     <>
       <MockedProvider mocks={mocks} addTypename={false}>
-        <TopBar handleOpenChange={(): void => {}} />
+        <TopBar />
       </MockedProvider>
       <Content />
     </>

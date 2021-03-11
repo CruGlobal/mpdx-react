@@ -29,7 +29,7 @@ describe('TopBar', () => {
   it('has correct defaults', () => {
     const { queryByText, getByTestId } = render(
       <MockedProvider mocks={mocks} addTypename={false}>
-        <TopBar handleOpenChange={jest.fn()} />
+        <TopBar />
       </MockedProvider>,
     );
     userEvent.click(getByTestId('profileMenuButton'));
