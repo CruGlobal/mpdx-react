@@ -11,6 +11,6 @@ describe('GiftStatus', () => {
     const { getByTitle } = render(
       <GiftStatus status={GiftStatusEnum.OnTime} />,
     );
-    expect(getByTitle('On Time')).toBeTruthy();
+    expect(getByTitle('On Time')).toBeVisible();
   });
 });
