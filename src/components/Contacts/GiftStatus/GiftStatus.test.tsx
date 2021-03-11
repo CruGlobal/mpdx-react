@@ -3,22 +3,16 @@ import { render } from '@testing-library/react';
 import { GiftStatus, GiftStatusEnum } from './GiftStatus';
 
 describe('GiftStatus', () => {
-  it('is Hidden', () => {
-    const { getByTitle } = render(
-      <GiftStatus giftStatusEnum={GiftStatusEnum.Hidden} />,
-    );
-    expect(getByTitle('giftStatusHidden')).toBeTruthy();
-  });
   it('is Late', () => {
     const { getByTitle } = render(
       <GiftStatus giftStatusEnum={GiftStatusEnum.Late} />,
     );
-    expect(getByTitle('giftStatusLate')).toBeTruthy();
+    expect(getByTitle('Late')).toBeTruthy();
   });
   it('is On Time', () => {
     const { getByTitle } = render(
       <GiftStatus giftStatusEnum={GiftStatusEnum.OnTime} />,
     );
-    expect(getByTitle('giftStatusOnTime')).toBeTruthy();
+    expect(getByTitle('On Time')).toBeTruthy();
   });
 });
