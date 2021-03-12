@@ -31,36 +31,10 @@ const ContactsPage: React.FC = () => {
         <title>MPDX | {t('Contacts')}</title>
       </Head>
       <div style={{ display: 'flex' }}>
-        <div style={{ margin: 5 }}>
-          <h2>Filters</h2>
-          <button onClick={() => loadContactFilters()}>Load Filters</button>
-          {contactFiltersError && (
-            <p>Error: {contactFiltersError.toString()}</p>
-          )}
-          {contactFiltersLoading ? (
-            <p>Loading Filters</p>
-          ) : !contactFilters?.contactFilters ? (
-            <p>No filters</p>
-          ) : (
-            <ul>
-              {contactFilters.contactFilters.map(({ id, name }) => (
-                <li key={id}>{name}</li>
-              ))}
-            </ul>
-          )}
-        </div>
+        {filter}
         <div style={{ margin: 5 }}>
           <h2>Contacts</h2>
-          {error && <p>Error: {error.toString()}</p>}
-          {loading ? (
-            <p>Loading</p>
-          ) : !data?.contacts?.nodes ? (
-            <p>No data</p>
-          ) : (
-            data.contacts.nodes.map((contact) => (
-              <ContactRow key={contact.id} contact={contact} />
-            ))
-          )}
+          {table}
         </div>
       </div>
     </>

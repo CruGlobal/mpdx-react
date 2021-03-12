@@ -11,11 +11,20 @@ interface Props {
 
 const ContactsTable: React.FC<Props> = ({ contacts, style }) => {
   return (
-    <Table style={style}>
-      {contacts.map((contact, index) => (
-        <ContactRow key={index} contact={contact} />
-      ))}
-    </Table>
+    <div>
+      {error && <p>Error: {error.toString()}</p>}
+      {loading ? (
+        <p>Loading</p>
+      ) : !data?.contacts?.nodes ? (
+        <p>No data</p>
+      ) : (
+        <Table>
+          {contacts.map((contact) => (
+            <ContactRow key={contact.id} contact={contact} />
+          ))}
+        </Table>
+      )}
+    </div>
   );
 };
 
