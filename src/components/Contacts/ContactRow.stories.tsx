@@ -11,9 +11,7 @@ export default {
 } as Meta;
 
 export const Default: Story = () => {
-  return (
-    <ContactRow contact={{ name: 'Contact Name' } as ContactRowFragment} />
-  );
+  return <ContactRow contact={{ name: 'John Doe' } as ContactRowFragment} />;
 };
 
 Default.parameters = {
