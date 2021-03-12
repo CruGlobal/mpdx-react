@@ -185,7 +185,7 @@ const TopBar = (): ReactElement => {
                     </HandoffLink>
                   </Grid>
                   <Grid item className={classes.navListItem}>
-                    <HandoffLink path="/toolsl">
+                    <HandoffLink path="/tools">
                       <MenuItem onClick={handleProfileMenuClose} component="a">
                         <ListItemText primary={t('Tools')} />
                       </MenuItem>
