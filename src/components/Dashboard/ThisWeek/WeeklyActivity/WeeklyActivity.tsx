@@ -12,6 +12,7 @@ import {
   TableCell,
   TableBody,
   TableContainer,
+  withStyles,
 } from '@material-ui/core';
 import { motion } from 'framer-motion';
 import { DateTime, Interval } from 'luxon';
@@ -50,15 +51,18 @@ const useStyles = makeStyles((theme: Theme) => ({
   tableContainer: {
     flex: 1,
   },
-  tableCell: {
-    paddingLeft: 4,
-    paddingRight: 4,
-  },
 }));
 
 interface Props {
   accountListId: string;
 }
+
+const StyledTableCell = withStyles(() => ({
+  root: {
+    paddingLeft: 4,
+    paddingRight: 4,
+  }
+}))(TableCell);
 
 const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
   const classes = useStyles();
@@ -134,29 +138,27 @@ const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
           <Table size="small">
             <TableHead>
               <TableRow>
-                <TableCell
-                  className={classes.tableCell}
+                <StyledTableCell
                   data-testid="WeeklyActivityTableCellDateRange"
                 >
                   {`${intlDateFormat(interval.start)} - ${intlDateFormat(
                     interval.end,
                   )}`}
-                </TableCell>
-                <TableCell align="right" className={classes.tableCell}>
+                </StyledTableCell>
+                <StyledTableCell align="right">
                   {t('Completed')}
-                </TableCell>
-                <TableCell align="right" className={classes.tableCell}>
+                </StyledTableCell>
+                <StyledTableCell align="right">
                   {t('Appt Produced')}
-                </TableCell>
+                </StyledTableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               <TableRow>
-                <TableCell className={classes.tableCell}>
+                <StyledTableCell>
                   {t('Calls')}
-                </TableCell>
-                <TableCell
-                  className={classes.tableCell}
+                </StyledTableCell>
+                <StyledTableCell
                   align="right"
                   data-testid="WeeklyActivityTableCellCompletedCalls"
                 >
@@ -168,9 +170,8 @@ const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
                   ) : (
                     numberFormat(data.completedCalls.totalCount)
                   )}
-                </TableCell>
-                <TableCell
-                  className={classes.tableCell}
+                </StyledTableCell>
+                <StyledTableCell
                   align="right"
                   data-testid="WeeklyActivityTableCellCallsThatProducedAppointments"
                 >
@@ -179,14 +180,13 @@ const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
                   ) : (
                     numberFormat(data.callsThatProducedAppointments.totalCount)
                   )}
-                </TableCell>
+                </StyledTableCell>
               </TableRow>
               <TableRow>
-                <TableCell className={classes.tableCell}>
+                <StyledTableCell>
                   {t('Messages')}
-                </TableCell>
-                <TableCell
-                  className={classes.tableCell}
+                </StyledTableCell>
+                <StyledTableCell
                   align="right"
                   data-testid="WeeklyActivityTableCellCompletedMessages"
                 >
@@ -195,9 +195,8 @@ const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
                   ) : (
                     numberFormat(data.completedMessages.totalCount)
                   )}
-                </TableCell>
-                <TableCell
-                  className={classes.tableCell}
+                </StyledTableCell>
+                <StyledTableCell
                   align="right"
                   data-testid="WeeklyActivityTableCellMessagesThatProducedAppointments"
                 >
@@ -208,14 +207,13 @@ const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
                       data.messagesThatProducedAppointments.totalCount,
                     )
                   )}
-                </TableCell>
+                </StyledTableCell>
               </TableRow>
               <TableRow>
-                <TableCell className={classes.tableCell}>
+                <StyledTableCell>
                   {t('Appointments')}
-                </TableCell>
-                <TableCell
-                  className={classes.tableCell}
+                </StyledTableCell>
+                <StyledTableCell
                   align="right"
                   data-testid="WeeklyActivityTableCellCompletedAppointments"
                 >
@@ -224,15 +222,14 @@ const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
                   ) : (
                     numberFormat(data.completedAppointments.totalCount)
                   )}
-                </TableCell>
-                <TableCell className={classes.tableCell}></TableCell>
+                </StyledTableCell>
+                <StyledTableCell></StyledTableCell>
               </TableRow>
               <TableRow>
-                <TableCell className={classes.tableCell}>
+                <StyledTableCell>
                   {t('Correspondence')}
-                </TableCell>
-                <TableCell
-                  className={classes.tableCell}
+                </StyledTableCell>
+                <StyledTableCell
                   align="right"
                   data-testid="WeeklyActivityTableCellCompletedCorrespondence"
                 >
@@ -241,8 +238,8 @@ const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
                   ) : (
                     numberFormat(data.completedCorrespondence.totalCount)
                   )}
-                </TableCell>
-                <TableCell className={classes.tableCell}></TableCell>
+                </StyledTableCell>
+                <StyledTableCell></StyledTableCell>
               </TableRow>
             </TableBody>
           </Table>

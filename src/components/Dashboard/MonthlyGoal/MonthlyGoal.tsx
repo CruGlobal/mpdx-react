@@ -65,6 +65,7 @@ const MonthlyGoal = ({
           <Typography variant="h6">
             <Box display="flex">
               <Box flexGrow={1}>{t('Monthly Goal')}</Box>
+              {/*TODO: This button should link to the Gifts screen: https://jira.cru.org/browse/MPDX-6941 */}
               <Button>{t('GIFTS NOT STARTED (0)')}</Button>
               <Hidden smUp>
                 <Box data-testid="MonthlyGoalTypographyGoalMobile">

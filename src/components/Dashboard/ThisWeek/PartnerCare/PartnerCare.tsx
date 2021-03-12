@@ -213,6 +213,7 @@ const PartnerCare = ({
                             </Box>
                           }
                         />
+                        {/*TODO: This button complete the Prayer Task and remove it from the list: https://jira.cru.org/browse/MPDX-6945 */}
                         <ListItemSecondaryAction>
                           <Checkbox
                             icon={<Brightness1Outlined />}
@@ -330,6 +331,7 @@ const PartnerCare = ({
                             </Box>
                           }
                         />
+                        {/*TODO: This button complete the Celebration and remove it from the list: https://jira.cru.org/browse/MPDX-6945 */}
                         <ListItemSecondaryAction>
                           <Checkbox
                             icon={<Brightness1Outlined />}
@@ -380,6 +382,7 @@ const PartnerCare = ({
                           </Box>
                         }
                       />
+                      {/*TODO: This button complete the Celebration and remove it from the list: https://jira.cru.org/browse/MPDX-6945 */}
                       <ListItemSecondaryAction>
                         <Checkbox
                           icon={<Brightness1Outlined />}

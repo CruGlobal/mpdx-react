@@ -49,9 +49,10 @@ const ThisWeek = ({ accountListId }: Props): ReactElement => {
           <Typography variant="h6">
             <Box display="flex">
               <Box flexGrow={1}>{t('To Do This Week')}</Box>
+              {/*TODO: This button should open menu for the Newsletter: https://jira.cru.org/browse/MPDX-6943 */}
               <Button>
                 <ArrowDropDown />
-                {t('NEWSLETTER')}
+                {t('Newsletter').toLocaleUpperCase()}
               </Button>
             </Box>
           </Typography>
