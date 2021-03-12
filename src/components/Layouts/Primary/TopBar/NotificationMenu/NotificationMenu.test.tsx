@@ -13,7 +13,7 @@ import {
   getNotificationsMocks,
 } from './NotificationMenu.mock';
 import { GetNotificationsDocument } from './GetNotificationsQuery.generated';
-import NotificationMenu from '.';
+import NotificationMenu from './NotificationMenu';
 
 describe('NotificationMenu', () => {
   it('default', async () => {

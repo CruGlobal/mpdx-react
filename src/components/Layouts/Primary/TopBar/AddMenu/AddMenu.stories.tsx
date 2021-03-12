@@ -1,7 +1,7 @@
 import React, { ReactElement } from 'react';
 import { AppBar, Box } from '@material-ui/core';
 import withDispatch from '../../../../../decorators/withDispatch';
-import AddMenu from '.';
+import AddMenu from './AddMenu';
 
 export default {
   title: 'Layouts/Primary/TopBar/AddMenu',

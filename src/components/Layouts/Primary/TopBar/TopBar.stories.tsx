@@ -4,7 +4,7 @@ import { MockedProvider } from '@apollo/client/testing';
 import withDispatch from '../../../../decorators/withDispatch';
 import { getNotificationsMocks } from './NotificationMenu/NotificationMenu.mock';
 import { getTopBarMock } from './TopBar.mock';
-import TopBar from '.';
+import TopBar from './TopBar';
 
 export default {
   title: 'Layouts/Primary/TopBar',

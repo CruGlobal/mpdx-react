@@ -1,7 +1,7 @@
 import React, { ReactElement } from 'react';
 import { AppBar, Box } from '@material-ui/core';
 import withDispatch from '../../../../../decorators/withDispatch';
-import SearchMenu from '.';
+import SearchMenu from './SearchMenu';
 
 export default {
   title: 'Layouts/Primary/TopBar/SearchMenu',

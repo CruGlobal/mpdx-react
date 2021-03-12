@@ -8,7 +8,7 @@ import {
   getNotificationsLoadingMock,
   acknowledgeAllUserNotificationsMutationMock,
 } from './NotificationMenu.mock';
-import NotificationMenu from '.';
+import NotificationMenu from './NotificationMenu';
 
 export default {
   title: 'Layouts/Primary/TopBar/NotificationMenu',

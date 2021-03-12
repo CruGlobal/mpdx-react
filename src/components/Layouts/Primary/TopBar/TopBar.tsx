@@ -26,10 +26,10 @@ import { useApp } from '../../../App';
 import HandoffLink from '../../../HandoffLink';
 import { User } from '../../../../../graphql/types.generated';
 import logo from '../../../../images/logo.svg';
-import NotificationMenu from './NotificationMenu';
-import AddMenu from './AddMenu';
+import NotificationMenu from './NotificationMenu/NotificationMenu';
+import AddMenu from './AddMenu/AddMenu';
 import { useGetTopBarQuery } from './GetTopBar.generated';
-import SearchMenu from './SearchMenu';
+import SearchMenu from './SearchMenu/SearchMenu';
 
 const useStyles = makeStyles((theme: Theme) => ({
   appBar: {
@@ -145,7 +145,7 @@ const TopBar = (): ReactElement => {
       <AppBar className={classes.appBar} elevation={trigger ? 3 : 0}>
         <Toolbar className={classes.toolbar}>
           <Grid container alignItems="center">
-            <Grid container item alignItems="center" xs="auto" md={7}>
+            <Grid container alignItems="center" xs="auto" md={7}>
               <Grid item className={classes.logoGrid}>
                 <Hidden smDown>
                   <Box className={classes.logo}>
@@ -205,7 +205,6 @@ const TopBar = (): ReactElement => {
               xs={12}
               md={5}
               container
-              item
               alignItems="center"
               justify="flex-end"
             >

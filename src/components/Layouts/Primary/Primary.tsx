@@ -1,7 +1,7 @@
 import React, { ReactElement, ReactNode } from 'react';
 import { Box, makeStyles, Theme, Hidden } from '@material-ui/core';
 import AddFab from './AddFab';
-import TopBar from './TopBar';
+import TopBar from './TopBar/TopBar';
 import BottomBar from './BottomBar';
 
 const useStyles = makeStyles((theme: Theme) => ({

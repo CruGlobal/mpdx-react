@@ -2,7 +2,7 @@ import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestWrapper from '../../../../../../__tests__/util/TestWrapper';
-import SearchMenu from '.';
+import SearchMenu from './SearchMenu';
 
 describe('SearchMenu', () => {
   it('default', async () => {

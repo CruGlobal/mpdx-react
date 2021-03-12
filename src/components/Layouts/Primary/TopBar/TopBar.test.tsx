@@ -6,7 +6,7 @@ import { AppState } from '../../../App/rootReducer';
 import { useApp } from '../../../App';
 import { getNotificationsMocks } from './NotificationMenu/NotificationMenu.mock';
 import { getTopBarMultipleMock } from './TopBar.mock';
-import TopBar from '.';
+import TopBar from './TopBar';
 
 let state: AppState;
 const dispatch = jest.fn();
