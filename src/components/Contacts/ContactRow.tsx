@@ -1,6 +1,7 @@
 import { Box, Hidden, makeStyles } from '@material-ui/core';
-import { Cake, CheckBox, StarBorderOutlined } from '@material-ui/icons';
+import { CheckBox, StarBorderOutlined } from '@material-ui/icons';
 import React from 'react';
+import { CelebrationIcons } from './CelebrationIcons/CelebrationIcons';
 import { ContactRowFragment } from './ContactRow.generated';
 import GiftStatus, { GiftStatusEnum } from './GiftStatus/GiftStatus';
 
@@ -86,11 +87,7 @@ export const ContactRow: React.FC<Props> = ({ contact }) => {
 
       <Hidden smDown>
         <Box style={{ display: 'inline-block', margin: '10px' }}>
-          {
-            // Todo: add logic to switch celebration icons
-          }
-          <Cake className={classes.contactCelebration} />
-          <Cake className={classes.contactCelebration} />
+          <CelebrationIcons hasBirthday={true} hasAnniversary={true} />
         </Box>
       </Hidden>
 
