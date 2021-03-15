@@ -1,10 +1,10 @@
-import { Box, Hidden, makeStyles, Theme } from '@material-ui/core';
+import { Box, Hidden, makeStyles } from '@material-ui/core';
 import { Cake, CheckBox, StarBorderOutlined } from '@material-ui/icons';
 import React from 'react';
 import { ContactRowFragment } from './ContactRow.generated';
 import GiftStatus, { GiftStatusEnum } from './GiftStatus/GiftStatus';
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles(() => ({
   checkbox: {
     display: 'inline-block',
     width: '24px',
@@ -43,7 +43,6 @@ interface Props {
 
 export const ContactRow: React.FC<Props> = ({ contact }) => {
   const classes = useStyles();
-  const address = contact.primaryAddress;
   return (
     <Box
       style={{
@@ -135,7 +134,14 @@ export const ContactRow: React.FC<Props> = ({ contact }) => {
         style={{ display: 'inline-block' }}
         className={classes.contactStar}
       />
-      <hr style={{ width: '95%', marginRight: '0px' }} />
+      <hr
+        style={{
+          display: 'block',
+          width: '95%',
+          marginBottom: '0px',
+          marginRight: '0px',
+        }}
+      />
     </Box>
   );
 };
