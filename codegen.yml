@@ -1,10 +1,11 @@
 overwrite: true
-schema: ${API_URL:https://api.stage.mpdx.org/graphql}
+schema:
+  - ${API_URL:https://api.stage.mpdx.org/graphql}
+  - ./pages/api/graphql-rest.page.ts
 documents: '**/*.graphql'
 hooks:
   afterOneFileWrite:
     - prettier --write
-    - eslint --fix
 generates:
   ./graphql/types.generated.ts:
     plugins:
