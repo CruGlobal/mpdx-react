@@ -1,10 +1,10 @@
 import React, { ReactElement } from 'react';
 import { AppBar, Box } from '@material-ui/core';
-import withDispatch from '../../../../../decorators/withDispatch';
-import SearchMenu from './SearchMenu';
+import withDispatch from '../../../../../../decorators/withDispatch';
+import AddMenu from './AddMenu';
 
 export default {
-  title: 'Layouts/Primary/TopBar/SearchMenu',
+  title: 'Layouts/Primary/TopBar/Items/AddMenu',
   decorators: [
     withDispatch({ type: 'updateBreadcrumb', breadcrumb: 'Dashboard' }),
   ],
@@ -15,7 +15,7 @@ export const Default = (): ReactElement => {
     <>
       <AppBar>
         <Box>
-          <SearchMenu />
+          <AddMenu />
         </Box>
       </AppBar>
     </>

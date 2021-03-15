@@ -2,7 +2,7 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import matchMediaMock from '../../../../__tests__/util/matchMediaMock';
 import TestWrapper from '../../../../__tests__/util/TestWrapper';
-import { getNotificationsMocks } from './TopBar/NotificationMenu/NotificationMenu.mock';
+import { getNotificationsMocks } from './TopBar/Items/NotificationMenu/NotificationMenu.mock';
 
 import { getTopBarMock } from './TopBar/TopBar.mock';
 import Primary from '.';

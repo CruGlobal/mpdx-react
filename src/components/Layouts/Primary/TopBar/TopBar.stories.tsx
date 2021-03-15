@@ -2,7 +2,7 @@ import React, { ReactElement } from 'react';
 import { Box, Container } from '@material-ui/core';
 import { MockedProvider } from '@apollo/client/testing';
 import withDispatch from '../../../../decorators/withDispatch';
-import { getNotificationsMocks } from './NotificationMenu/NotificationMenu.mock';
+import { getNotificationsMocks } from './Items/NotificationMenu/NotificationMenu.mock';
 import { getTopBarMock } from './TopBar.mock';
 import TopBar from './TopBar';
 

@@ -4,7 +4,7 @@ import { MockedProvider } from '@apollo/client/testing';
 import userEvent from '@testing-library/user-event';
 import { AppState } from '../../../App/rootReducer';
 import { useApp } from '../../../App';
-import { getNotificationsMocks } from './NotificationMenu/NotificationMenu.mock';
+import { getNotificationsMocks } from './Items/NotificationMenu/NotificationMenu.mock';
 import { getTopBarMultipleMock } from './TopBar.mock';
 import TopBar from './TopBar';
 
