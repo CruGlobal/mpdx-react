@@ -10,6 +10,7 @@ export const Default = (): ReactElement => {
   return (
     <Box m={2}>
       <MonthlyGoal
+        accountListId="1111"
         goal={1000}
         received={200}
         pledged={500}
@@ -22,7 +23,13 @@ export const Default = (): ReactElement => {
 export const WhenMin = (): ReactElement => {
   return (
     <Box m={2}>
-      <MonthlyGoal goal={1000} received={0} pledged={0} currencyCode="AUD" />
+      <MonthlyGoal
+        accountListId="1111"
+        goal={1000}
+        received={0}
+        pledged={0}
+        currencyCode="AUD"
+      />
     </Box>
   );
 };
@@ -30,6 +37,7 @@ export const WhenMax = (): ReactElement => {
   return (
     <Box m={2}>
       <MonthlyGoal
+        accountListId="1111"
         goal={1000}
         received={500}
         pledged={1500}
@@ -41,14 +49,14 @@ export const WhenMax = (): ReactElement => {
 export const Loading = (): ReactElement => {
   return (
     <Box m={2}>
-      <MonthlyGoal loading />
+      <MonthlyGoal accountListId="1111" loading />
     </Box>
   );
 };
 export const Empty = (): ReactElement => {
   return (
     <Box m={2}>
-      <MonthlyGoal />
+      <MonthlyGoal accountListId="1111" />
     </Box>
   );
 };

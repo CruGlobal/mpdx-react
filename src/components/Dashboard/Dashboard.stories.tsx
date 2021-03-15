@@ -21,6 +21,9 @@ export const Default = (): ReactElement => {
       currency: 'USD',
       balance: 1000,
     },
+    contacts: {
+      totalCount: 15,
+    },
     reportsDonationHistories: {
       periods: [
         {

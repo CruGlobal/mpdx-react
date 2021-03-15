@@ -9,7 +9,9 @@ describe('MonthlyGoal', () => {
   });
 
   it('default', () => {
-    const { getByTestId, queryByTestId } = render(<MonthlyGoal />);
+    const { getByTestId, queryByTestId } = render(
+      <MonthlyGoal accountListId="1111" />,
+    );
     expect(
       queryByTestId('MonthlyGoalTypographyGoalMobile'),
     ).not.toBeInTheDocument();
@@ -41,7 +43,9 @@ describe('MonthlyGoal', () => {
   });
 
   it('loading', () => {
-    const { getByTestId } = render(<MonthlyGoal loading />);
+    const { getByTestId } = render(
+      <MonthlyGoal accountListId="1111" loading />,
+    );
     expect(
       getByTestId('MonthlyGoalTypographyGoal').children[0].className,
     ).toContain('MuiSkeleton-root');
@@ -71,6 +75,7 @@ describe('MonthlyGoal', () => {
   it('props', () => {
     const { getByTestId, queryByTestId } = render(
       <MonthlyGoal
+        accountListId="1111"
         goal={999.5}
         received={500}
         pledged={750}
@@ -109,6 +114,7 @@ describe('MonthlyGoal', () => {
   it('props above goal', () => {
     const { getByTestId, queryByTestId } = render(
       <MonthlyGoal
+        accountListId="1111"
         goal={999.5}
         received={5000}
         pledged={7500}
@@ -141,7 +147,9 @@ describe('MonthlyGoal', () => {
     });
 
     it('default', () => {
-      const { getByTestId, queryByTestId } = render(<MonthlyGoal />);
+      const { getByTestId, queryByTestId } = render(
+        <MonthlyGoal accountListId="1111" />,
+      );
       expect(
         getByTestId('MonthlyGoalTypographyGoalMobile').textContent,
       ).toEqual('$0');
@@ -159,6 +167,7 @@ describe('MonthlyGoal', () => {
     it('props', () => {
       const { getByTestId } = render(
         <MonthlyGoal
+          accountListId="1111"
           goal={999.5}
           received={500}
           pledged={750}
