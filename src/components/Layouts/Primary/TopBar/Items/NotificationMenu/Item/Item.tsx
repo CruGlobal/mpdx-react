@@ -16,10 +16,10 @@ import { DateTime } from 'luxon';
 import {
   dateFormat,
   monthYearFormat,
-} from '../../../../../../lib/intlFormat/intlFormat';
-import { useApp } from '../../../../../App';
-import HandoffLink from '../../../../../HandoffLink';
-import { NotificationTypeTypeEnum } from '../../../../../../../graphql/types.generated';
+} from '../../../../../../../lib/intlFormat/intlFormat';
+import { useApp } from '../../../../../../App';
+import HandoffLink from '../../../../../../HandoffLink';
+import { NotificationTypeTypeEnum } from '../../../../../../../../graphql/types.generated';
 import {
   GetNotificationsDocument,
   GetNotificationsQuery,

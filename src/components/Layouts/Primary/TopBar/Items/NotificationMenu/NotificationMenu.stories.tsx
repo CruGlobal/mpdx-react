@@ -1,17 +1,17 @@
 import React, { ReactElement } from 'react';
 import { MockedProvider } from '@apollo/client/testing';
 import { AppBar, Box } from '@material-ui/core';
-import withDispatch from '../../../../../decorators/withDispatch';
+import withDispatch from '../../../../../../decorators/withDispatch';
 import {
   getNotificationsMocks,
   getNotificationsEmptyMock,
   getNotificationsLoadingMock,
   acknowledgeAllUserNotificationsMutationMock,
 } from './NotificationMenu.mock';
-import NotificationMenu from '.';
+import NotificationMenu from './NotificationMenu';
 
 export default {
-  title: 'Layouts/Primary/TopBar/NotificationMenu',
+  title: 'Layouts/Primary/TopBar/Items/NotificationMenu',
   decorators: [
     withDispatch(
       { type: 'updateAccountListId', accountListId: '1' },

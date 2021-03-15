@@ -5,7 +5,7 @@ import { getSession } from 'next-auth/client';
 import { useTranslation } from 'react-i18next';
 import AccountLists from '../src/components/AccountLists';
 import { ssrClient } from '../src/lib/client';
-import BaseLayout from '../src/components/Layouts/Basic';
+import BaseLayout from '../src/components/Layouts/Primary';
 import { useApp } from '../src/components/App';
 import {
   GetAccountListsDocument,

@@ -10,10 +10,11 @@ import {
   Theme,
 } from '@material-ui/core';
 import React, { ReactElement, useEffect, useState } from 'react';
+import NotificationsNoneIcon from '@material-ui/icons/NotificationsNone';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import { useTranslation } from 'react-i18next';
-import { useApp } from '../../../../App';
-import illustration13 from '../../../../../images/drawkit/grape/drawkit-grape-pack-illustration-13.svg';
+import { useApp } from '../../../../../App';
+import illustration13 from '../../../../../../images/drawkit/grape/drawkit-grape-pack-illustration-13.svg';
 import NotificationMenuItem from './Item';
 import {
   GetNotificationsDocument,
@@ -153,7 +154,11 @@ const NotificationMenu = (): ReactElement => {
           badgeContent={data?.userNotifications?.unreadCount}
           color="secondary"
         >
-          <NotificationsIcon />
+          {data?.userNotifications?.unreadCount !== 0 ? (
+            <NotificationsIcon />
+          ) : (
+            <NotificationsNoneIcon />
+          )}
         </Badge>
       </IconButton>
       <Menu

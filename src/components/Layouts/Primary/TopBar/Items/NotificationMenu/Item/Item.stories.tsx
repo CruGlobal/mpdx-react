@@ -1,12 +1,12 @@
 import React, { ReactElement } from 'react';
 import { MockedProvider } from '@apollo/client/testing';
 import { GetNotificationsQuery } from '../GetNotificationsQuery.generated';
-import { NotificationTypeTypeEnum } from '../../../../../../../graphql/types.generated';
+import { NotificationTypeTypeEnum } from '../../../../../../../../graphql/types.generated';
 import acknowledgeUserNotificationMutationMock from './Item.mock';
 import NotificationMenuItem from '.';
 
 export default {
-  title: 'Layouts/Primary/TopBar/NotificationMenu/Item',
+  title: 'Layouts/Primary/TopBar/Items/NotificationMenu/Item',
 };
 
 export const Default = (): ReactElement => {
