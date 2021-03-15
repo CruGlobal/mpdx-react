@@ -1,4 +1,4 @@
-import { Box, makeStyles, TextField, Theme } from '@material-ui/core';
+import { Box, makeStyles, Theme } from '@material-ui/core';
 import { Cake, CheckBox, StarBorderOutlined } from '@material-ui/icons';
 import React from 'react';
 import { ContactRowFragment } from './ContactRow.generated';
@@ -50,7 +50,6 @@ export const ContactRow: React.FC<Props> = ({ contact }) => {
         position: 'relative',
         height: '72px',
         width: '100%',
-        minWidth: '1150px',
       }}
     >
       <CheckBox className={classes.checkbox} color="secondary" />
@@ -98,7 +97,14 @@ export const ContactRow: React.FC<Props> = ({ contact }) => {
         <GiftStatus status={GiftStatusEnum.OnTime} />
       </Box>
 
-      <Box style={{ display: 'inline-block', margin: '10px' }}>
+      <Box
+        style={{
+          display: 'inline-block',
+          width: '40%',
+          minWidth: '400px',
+          margin: '10px',
+        }}
+      >
         <p
           style={{
             lineHeight: '20px',
@@ -124,6 +130,7 @@ export const ContactRow: React.FC<Props> = ({ contact }) => {
         style={{ display: 'inline-block' }}
         className={classes.contactStar}
       />
+      <hr style={{ width: '95%', marginRight: '0px' }} />
     </Box>
   );
 };
