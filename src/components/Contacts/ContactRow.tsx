@@ -4,7 +4,7 @@ import React from 'react';
 import { CelebrationIcons } from './CelebrationIcons/CelebrationIcons';
 import { ContactRowFragment } from './ContactRow.generated';
 import GiftStatus, { GiftStatusEnum } from './GiftStatus/GiftStatus';
-import StarContactIcon from './StaredContact/StarContactIcon';
+import StarContactIcon from './StarContactIcon/StarContactIcon';
 
 const useStyles = makeStyles((theme: Theme) => ({
   checkbox: {
