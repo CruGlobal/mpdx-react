@@ -1,5 +1,5 @@
+import React, { ReactElement } from 'react';
 import { Box } from '@material-ui/core';
-import { ReactElement } from 'react';
 import { boolean } from '@storybook/addon-knobs';
 import CelebrationIcons from './CelebrationIcons';
 

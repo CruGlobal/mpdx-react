@@ -13,8 +13,8 @@ const useStyles = makeStyles(() => ({
 }));
 
 interface Props {
-  hasAnniversary: Boolean;
-  hasBirthday: Boolean;
+  hasAnniversary: boolean;
+  hasBirthday: boolean;
 }
 
 export const CelebrationIcons: React.FC<Props> = ({
