@@ -1,4 +1,4 @@
-import { Box, Hidden, makeStyles } from '@material-ui/core';
+import { Box, Hidden, makeStyles, Theme } from '@material-ui/core';
 import { CheckBox } from '@material-ui/icons';
 import React from 'react';
 import { CelebrationIcons } from './CelebrationIcons/CelebrationIcons';
@@ -6,36 +6,23 @@ import { ContactRowFragment } from './ContactRow.generated';
 import GiftStatus, { GiftStatusEnum } from './GiftStatus/GiftStatus';
 import StarContactIcon from './StaredContact/StarContactIcon';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme: Theme) => ({
   checkbox: {
     display: 'inline-block',
     width: '24px',
     height: '24px',
     margin: '10px',
-    background: '#9C9FA1',
+    background: theme.palette.primary.main,
   },
   contactText: {
     margin: '0px',
-    fontFamily: 'Source Sans Pro',
+    fontFamily: theme.typography.fontFamily,
     fontStyle: 'normal',
     fontWeight: 'normal',
-    color: 'primary',
-  },
-  contactStar: {
-    width: '24px',
-    height: '24px',
-    right: '16px',
-    top: '24px',
+    color: theme.palette.text.primary,
   },
   contactStatus: {
     display: 'inline-block',
-  },
-  contactCelebration: {
-    display: 'inline-block',
-    width: '24px',
-    height: '24px',
-    color: '#9c9fa1',
-    margin: '1px',
   },
 }));
 interface Props {
@@ -91,7 +78,7 @@ export const ContactRow: React.FC<Props> = ({ contact }) => {
       </Hidden>
 
       <Box style={{ display: 'inline-block', margin: '10px' }}>
-        <GiftStatus status={GiftStatusEnum.OnTime} />
+        <GiftStatus status={GiftStatusEnum.Late} />
       </Box>
 
       <Hidden mdDown>
