@@ -42,6 +42,7 @@ const Dashboard = ({ data, accountListId }: Props): ReactElement => {
             <Grid container spacing={3} alignItems="stretch">
               <Grid xs={12} sm={8} item>
                 <MonthlyGoal
+                  accountListId={accountListId}
                   goal={data.accountList.monthlyGoal}
                   received={data.accountList.receivedPledges}
                   pledged={data.accountList.totalPledges}

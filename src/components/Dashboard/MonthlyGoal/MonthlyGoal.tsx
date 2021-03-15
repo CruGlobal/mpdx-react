@@ -15,7 +15,6 @@ import { currencyFormat, percentageFormat } from '../../../lib/intlFormat';
 import AnimatedCard from '../../AnimatedCard';
 import AnimatedBox from '../../AnimatedBox';
 import StyledProgress from '../../StyledProgress';
-import HandoffLink from '../../HandoffLink';
 
 const useStyles = makeStyles((_theme: Theme) => ({
   received: {
@@ -38,15 +37,17 @@ const useStyles = makeStyles((_theme: Theme) => ({
 }));
 
 interface Props {
+  accountListId: string;
   loading?: boolean;
   goal?: number;
   received?: number;
   pledged?: number;
-  totalGiftsNotStarted: number;
+  totalGiftsNotStarted?: number;
   currencyCode?: string;
 }
 
 const MonthlyGoal = ({
+  accountListId,
   loading,
   goal,
   received,
@@ -68,20 +69,18 @@ const MonthlyGoal = ({
           <Typography variant="h6">
             <Box display="flex">
               <Box flexGrow={1}>{t('Monthly Goal')}</Box>
-              <HandoffLink
-                path={`/contacts?filters=${encodeURIComponent(
+              <Button
+                href={`/accountLists/${accountListId}/contacts?filters=${encodeURIComponent(
                   JSON.stringify({
                     pledge_received: false,
                     status: 'Partner - Financial',
                   }),
                 )}`}
               >
-                <Button>
-                  {t('GIFTS NOT STARTED ({{ totalGiftsNotStarted, number }})', {
-                    totalGiftsNotStarted,
-                  })}
-                </Button>
-              </HandoffLink>
+                {t('GIFTS NOT STARTED ({{ totalGiftsNotStarted, number }})', {
+                  totalGiftsNotStarted,
+                })}
+              </Button>
               <Hidden smUp>
                 <Box data-testid="MonthlyGoalTypographyGoalMobile">
                   {!loading && currencyFormat(goal, currencyCode)}
