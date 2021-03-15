@@ -42,7 +42,7 @@ interface Props {
   goal?: number;
   received?: number;
   pledged?: number;
-  totalGifts: number;
+  totalGiftsNotStarted: number;
   currencyCode?: string;
 }
 
@@ -51,7 +51,7 @@ const MonthlyGoal = ({
   goal,
   received,
   pledged,
-  totalGifts,
+  totalGiftsNotStarted,
   currencyCode = 'USD',
 }: Props): ReactElement => {
   const classes = useStyles();
@@ -68,8 +68,19 @@ const MonthlyGoal = ({
           <Typography variant="h6">
             <Box display="flex">
               <Box flexGrow={1}>{t('Monthly Goal')}</Box>
-              <HandoffLink path="/contacts">
-                <Button>{t(`GIFTS NOT STARTED (${totalGifts})`)}</Button>
+              <HandoffLink
+                path={`/contacts?filters=${encodeURIComponent(
+                  JSON.stringify({
+                    pledge_received: false,
+                    status: 'Partner - Financial',
+                  }),
+                )}`}
+              >
+                <Button>
+                  {t('GIFTS NOT STARTED ({{ totalGiftsNotStarted, number }})', {
+                    totalGiftsNotStarted,
+                  })}
+                </Button>
               </HandoffLink>
               <Hidden smUp>
                 <Box data-testid="MonthlyGoalTypographyGoalMobile">
