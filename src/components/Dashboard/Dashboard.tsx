@@ -3,7 +3,7 @@ import { Container, Grid, Box } from '@material-ui/core';
 import { motion } from 'framer-motion';
 import { GetDashboardQuery } from '../../../pages/accountLists/GetDashboard.generated';
 import Welcome from './Welcome';
-import MonthlyGoal from './MonthlyGoal';
+import MonthlyGoal from './MonthlyGoal/MonthlyGoal';
 import Balance from './Balance';
 import DonationHistories from './DonationHistories';
 import ThisWeek from './ThisWeek';
@@ -45,6 +45,7 @@ const Dashboard = ({ data, accountListId }: Props): ReactElement => {
                   goal={data.accountList.monthlyGoal}
                   received={data.accountList.receivedPledges}
                   pledged={data.accountList.totalPledges}
+                  totalGifts={data.contacts.totalCount}
                   currencyCode={data.accountList.currency}
                 />
               </Grid>

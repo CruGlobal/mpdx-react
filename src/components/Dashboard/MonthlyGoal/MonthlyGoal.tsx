@@ -15,6 +15,7 @@ import { currencyFormat, percentageFormat } from '../../../lib/intlFormat';
 import AnimatedCard from '../../AnimatedCard';
 import AnimatedBox from '../../AnimatedBox';
 import StyledProgress from '../../StyledProgress';
+import HandoffLink from '../../HandoffLink';
 
 const useStyles = makeStyles((_theme: Theme) => ({
   received: {
@@ -41,6 +42,7 @@ interface Props {
   goal?: number;
   received?: number;
   pledged?: number;
+  totalGifts: number;
   currencyCode?: string;
 }
 
@@ -49,6 +51,7 @@ const MonthlyGoal = ({
   goal,
   received,
   pledged,
+  totalGifts,
   currencyCode = 'USD',
 }: Props): ReactElement => {
   const classes = useStyles();
@@ -65,8 +68,9 @@ const MonthlyGoal = ({
           <Typography variant="h6">
             <Box display="flex">
               <Box flexGrow={1}>{t('Monthly Goal')}</Box>
-              {/*TODO: This button should link to the Gifts screen: https://jira.cru.org/browse/MPDX-6941 */}
-              <Button>{t('GIFTS NOT STARTED (0)')}</Button>
+              <HandoffLink path="/contacts">
+                <Button>{t(`GIFTS NOT STARTED (${totalGifts})`)}</Button>
+              </HandoffLink>
               <Hidden smUp>
                 <Box data-testid="MonthlyGoalTypographyGoalMobile">
                   {!loading && currencyFormat(goal, currencyCode)}

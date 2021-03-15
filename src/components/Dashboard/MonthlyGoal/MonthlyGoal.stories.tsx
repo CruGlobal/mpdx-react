@@ -1,6 +1,6 @@
 import React, { ReactElement } from 'react';
 import { Box } from '@material-ui/core';
-import MonthlyGoal from '.';
+import MonthlyGoal from './MonthlyGoal';
 
 export default {
   title: 'Dashboard/MonthlyGoal',
