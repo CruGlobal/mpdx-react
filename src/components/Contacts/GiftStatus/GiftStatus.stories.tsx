@@ -3,7 +3,7 @@ import { Box } from '@material-ui/core';
 import { GiftStatus, GiftStatusEnum } from './GiftStatus';
 
 export default {
-  title: 'Contacts/GiftStatus',
+  title: 'Contacts/ContactRow/Widgets/GiftStatus',
 };
 
 export const Default = (): ReactElement => {

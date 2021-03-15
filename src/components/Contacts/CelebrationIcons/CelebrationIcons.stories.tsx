@@ -4,7 +4,7 @@ import { boolean } from '@storybook/addon-knobs';
 import CelebrationIcons from './CelebrationIcons';
 
 export default {
-  title: 'Contacts/ContactRow/CelebrationIcons',
+  title: 'Contacts/ContactRow/Widgets/CelebrationIcons',
 };
 
 export const Default = (): ReactElement => {
