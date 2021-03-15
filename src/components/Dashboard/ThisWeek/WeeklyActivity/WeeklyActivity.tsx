@@ -61,7 +61,7 @@ const StyledTableCell = withStyles(() => ({
   root: {
     paddingLeft: 4,
     paddingRight: 4,
-  }
+  },
 }))(TableCell);
 
 const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
@@ -138,9 +138,7 @@ const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
           <Table size="small">
             <TableHead>
               <TableRow>
-                <StyledTableCell
-                  data-testid="WeeklyActivityTableCellDateRange"
-                >
+                <StyledTableCell data-testid="WeeklyActivityTableCellDateRange">
                   {`${intlDateFormat(interval.start)} - ${intlDateFormat(
                     interval.end,
                   )}`}
@@ -155,9 +153,7 @@ const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
             </TableHead>
             <TableBody>
               <TableRow>
-                <StyledTableCell>
-                  {t('Calls')}
-                </StyledTableCell>
+                <StyledTableCell>{t('Calls')}</StyledTableCell>
                 <StyledTableCell
                   align="right"
                   data-testid="WeeklyActivityTableCellCompletedCalls"
@@ -183,9 +179,7 @@ const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
                 </StyledTableCell>
               </TableRow>
               <TableRow>
-                <StyledTableCell>
-                  {t('Messages')}
-                </StyledTableCell>
+                <StyledTableCell>{t('Messages')}</StyledTableCell>
                 <StyledTableCell
                   align="right"
                   data-testid="WeeklyActivityTableCellCompletedMessages"
@@ -210,9 +204,7 @@ const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
                 </StyledTableCell>
               </TableRow>
               <TableRow>
-                <StyledTableCell>
-                  {t('Appointments')}
-                </StyledTableCell>
+                <StyledTableCell>{t('Appointments')}</StyledTableCell>
                 <StyledTableCell
                   align="right"
                   data-testid="WeeklyActivityTableCellCompletedAppointments"
@@ -226,9 +218,7 @@ const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
                 <StyledTableCell></StyledTableCell>
               </TableRow>
               <TableRow>
-                <StyledTableCell>
-                  {t('Correspondence')}
-                </StyledTableCell>
+                <StyledTableCell>{t('Correspondence')}</StyledTableCell>
                 <StyledTableCell
                   align="right"
                   data-testid="WeeklyActivityTableCellCompletedCorrespondence"
