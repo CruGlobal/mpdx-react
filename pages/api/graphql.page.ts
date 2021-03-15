@@ -1,19 +1,47 @@
-import { NextApiRequest, NextApiResponse } from 'next';
-import Axios from 'axios';
+import { ApolloServer } from '@saeris/apollo-server-vercel';
+import { ApolloGateway, RemoteGraphQLDataSource } from '@apollo/gateway';
 import jwt from 'next-auth/jwt';
+import { NextApiRequest } from 'next';
 
-const graphql = async (
-  req: NextApiRequest,
-  res: NextApiResponse,
-): Promise<void> => {
-  const jwtToken = await jwt.getToken({ req, secret: process.env.JWT_SECRET });
-  const response = await Axios.post(process.env.API_URL, req.body, {
-    headers: {
-      Authorization: jwtToken ? `Bearer ${jwtToken['token']}` : null,
-      Accept: 'application/json',
+class AuthenticatedDataSource extends RemoteGraphQLDataSource {
+  async willSendRequest({ request, context }) {
+    try {
+      if (context.jwtToken) {
+        request.http.headers.set('Authorization', `Bearer ${context.jwtToken}`);
+      }
+    } catch (e) {
+      console.error('Error adding Authorization header', e);
+    }
+  }
+}
+
+const gateway = new ApolloGateway({
+  serviceList: [
+    { name: 'graphql', url: process.env.API_URL },
+    { name: 'rest', url: `${process.env.SITE_URL}/api/graphql-rest` },
+  ],
+  buildService({ url }) {
+    return new AuthenticatedDataSource({ url });
+  },
+});
+
+const server = new ApolloServer({
+  gateway,
+  playground: {
+    settings: {
+      'request.credentials': 'same-origin',
     },
-  });
-  res.status(200).json(response.data);
-};
+  },
+  introspection: true,
+  subscriptions: false,
+  context: async ({ req }: { req: NextApiRequest }) => {
+    const jwtToken = (await jwt.getToken({
+      req,
+      secret: process.env.JWT_SECRET,
+    })) as null | { token: string };
 
-export default graphql;
+    return { jwtToken: jwtToken?.token };
+  },
+});
+
+export default server.createHandler();
