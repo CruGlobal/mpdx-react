@@ -1,9 +1,10 @@
 import { Box, Hidden, makeStyles } from '@material-ui/core';
-import { CheckBox, StarBorderOutlined } from '@material-ui/icons';
+import { CheckBox } from '@material-ui/icons';
 import React from 'react';
 import { CelebrationIcons } from './CelebrationIcons/CelebrationIcons';
 import { ContactRowFragment } from './ContactRow.generated';
 import GiftStatus, { GiftStatusEnum } from './GiftStatus/GiftStatus';
+import StarContactIcon from './StaredContact/StarContactIcon';
 
 const useStyles = makeStyles(() => ({
   checkbox: {
@@ -21,7 +22,6 @@ const useStyles = makeStyles(() => ({
     color: 'primary',
   },
   contactStar: {
-    position: 'absolute',
     width: '24px',
     height: '24px',
     right: '16px',
@@ -47,7 +47,6 @@ export const ContactRow: React.FC<Props> = ({ contact }) => {
   return (
     <Box
       style={{
-        position: 'relative',
         height: '72px',
         width: '100%',
       }}
@@ -57,7 +56,7 @@ export const ContactRow: React.FC<Props> = ({ contact }) => {
         style={{
           display: 'inline-block',
           width: '40%',
-          padding: '0px',
+          padding: '0',
           marginTop: '14px',
           marginBottom: '14px',
           marginLeft: '35px',
@@ -127,16 +126,13 @@ export const ContactRow: React.FC<Props> = ({ contact }) => {
         </Box>
       </Hidden>
 
-      <StarBorderOutlined
-        style={{ display: 'inline-block' }}
-        className={classes.contactStar}
-      />
+      <StarContactIcon hasStar={true} />
       <hr
         style={{
           display: 'block',
           width: '95%',
-          marginBottom: '0px',
-          marginRight: '0px',
+          marginBottom: '0',
+          marginRight: '0',
         }}
       />
     </Box>
