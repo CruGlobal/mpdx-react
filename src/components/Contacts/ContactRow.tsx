@@ -1,4 +1,4 @@
-import { Box, makeStyles, Theme } from '@material-ui/core';
+import { Box, Hidden, makeStyles, Theme } from '@material-ui/core';
 import { Cake, CheckBox, StarBorderOutlined } from '@material-ui/icons';
 import React from 'react';
 import { ContactRowFragment } from './ContactRow.generated';
@@ -85,47 +85,52 @@ export const ContactRow: React.FC<Props> = ({ contact }) => {
         </p>
       </Box>
 
-      <Box style={{ display: 'inline-block', margin: '10px' }}>
-        {
-          // Todo: add logic to switch celebration icons
-        }
-        <Cake className={classes.contactCelebration} />
-        <Cake className={classes.contactCelebration} />
-      </Box>
+      <Hidden smDown>
+        <Box style={{ display: 'inline-block', margin: '10px' }}>
+          {
+            // Todo: add logic to switch celebration icons
+          }
+          <Cake className={classes.contactCelebration} />
+          <Cake className={classes.contactCelebration} />
+        </Box>
+      </Hidden>
 
       <Box style={{ display: 'inline-block', margin: '10px' }}>
         <GiftStatus status={GiftStatusEnum.OnTime} />
       </Box>
 
-      <Box
-        style={{
-          display: 'inline-block',
-          width: '40%',
-          minWidth: '400px',
-          margin: '10px',
-        }}
-      >
-        <p
+      <Hidden mdDown>
+        <Box
           style={{
-            lineHeight: '20px',
-            fontSize: '14px',
-            letterSpacing: '0.25',
+            display: 'inline-block',
+            width: '40%',
+            minWidth: '400px',
+            margin: '10px',
           }}
-          className={classes.contactText}
         >
-          Partner - Financial
-        </p>
-        <p
-          style={{
-            lineHeight: '20px',
-            fontSize: '14px',
-            letterSpacing: '0.25',
-          }}
-          className={classes.contactText}
-        >
-          1250 CAD Monthly (60+ days late)
-        </p>
-      </Box>
+          <p
+            style={{
+              lineHeight: '20px',
+              fontSize: '14px',
+              letterSpacing: '0.25',
+            }}
+            className={classes.contactText}
+          >
+            Partner - Financial
+          </p>
+          <p
+            style={{
+              lineHeight: '20px',
+              fontSize: '14px',
+              letterSpacing: '0.25',
+            }}
+            className={classes.contactText}
+          >
+            1250 CAD Monthly (60+ days late)
+          </p>
+        </Box>
+      </Hidden>
+
       <StarBorderOutlined
         style={{ display: 'inline-block' }}
         className={classes.contactStar}
