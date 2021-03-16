@@ -13,7 +13,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     width: '24px',
     height: '24px',
     margin: theme.spacing(1),
-    background: theme.palette.primary.main,
+    background: theme.palette.common.black,
   },
   contactText: {
     margin: '0px',
@@ -21,6 +21,9 @@ const useStyles = makeStyles((theme: Theme) => ({
     fontStyle: 'normal',
     fontWeight: 'normal',
     color: theme.palette.text.primary,
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
   },
   contactStatus: {
     display: 'inline-block',
@@ -49,6 +52,7 @@ export const ContactRow: React.FC<Props> = ({ contact }) => {
           style={{
             display: 'inline-block',
             flexGrow: 4,
+            flexBasis: 0,
             padding: '0',
             margin: theme.spacing(4),
           }}
@@ -69,7 +73,10 @@ export const ContactRow: React.FC<Props> = ({ contact }) => {
             }}
             className={classes.contactText}
           >
-            123 Seaseme Street
+            {contact.primaryAddress == null ||
+            contact.primaryAddress.street == null
+              ? ''
+              : contact.primaryAddress.street}
           </p>
         </Box>
 
@@ -88,6 +95,7 @@ export const ContactRow: React.FC<Props> = ({ contact }) => {
             style={{
               display: 'inline-block',
               flexGrow: 4,
+              flexBasis: 0,
               margin: theme.spacing(1),
             }}
           >
@@ -98,7 +106,7 @@ export const ContactRow: React.FC<Props> = ({ contact }) => {
               }}
               className={classes.contactText}
             >
-              Partner - Financial
+              {contact.status == null ? '' : contact.status}
             </p>
             <p
               style={{
@@ -107,7 +115,12 @@ export const ContactRow: React.FC<Props> = ({ contact }) => {
               }}
               className={classes.contactText}
             >
-              1250 CAD Monthly (60+ days late)
+              {contact.pledgeAmount == null || contact.pledgeAmount == 0
+                ? ''
+                : contact.pledgeCurrency == null
+                ? contact.pledgeAmount
+                : contact.pledgeAmount + ' ' + contact.pledgeCurrency}{' '}
+              {contact.pledgeFrequency == null ? '' : contact.pledgeFrequency}
             </p>
           </Box>
         </Hidden>

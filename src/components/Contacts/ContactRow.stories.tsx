@@ -11,7 +11,26 @@ export default {
 } as Meta;
 
 export const Default: Story = () => {
-  return <ContactRow contact={{ name: 'John Doe' } as ContactRowFragment} />;
+  return (
+    <ContactRow
+      contact={
+        {
+          name: 'John Doe',
+          primaryAddress: {
+            street: '123 Seeseme St',
+            city: 'New York',
+            state: 'NY',
+            postalCode: '123456',
+            country: 'USA',
+          },
+          status: 'Partner - Financial',
+          pledgeAmount: '100',
+          pledgeFrequency: 'Monthly',
+          pledgeCurrency: 'USD',
+        } as ContactRowFragment
+      }
+    />
+  );
 };
 
 Default.parameters = {
