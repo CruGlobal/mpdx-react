@@ -41,6 +41,7 @@ export const ContactRow: React.FC<Props> = ({ contact }) => {
           flexDirection: 'row',
           justifyContent: 'space-evenly',
           alignItems: 'center',
+          alignContent: 'center',
         }}
       >
         <CheckBox className={classes.checkbox} color="secondary" />
@@ -55,7 +56,6 @@ export const ContactRow: React.FC<Props> = ({ contact }) => {
           <p
             style={{
               fontSize: '16px',
-              lineHeight: '24px',
               letterSpacing: '0.15px',
             }}
             className={classes.contactText}
@@ -64,7 +64,6 @@ export const ContactRow: React.FC<Props> = ({ contact }) => {
           </p>
           <p
             style={{
-              lineHeight: '20px',
               fontSize: '14px',
               letterSpacing: '0.25',
             }}
@@ -94,7 +93,6 @@ export const ContactRow: React.FC<Props> = ({ contact }) => {
           >
             <p
               style={{
-                lineHeight: '20px',
                 fontSize: '14px',
                 letterSpacing: '0.25',
               }}
@@ -104,7 +102,6 @@ export const ContactRow: React.FC<Props> = ({ contact }) => {
             </p>
             <p
               style={{
-                lineHeight: '20px',
                 fontSize: '14px',
                 letterSpacing: '0.25',
               }}
@@ -114,7 +111,7 @@ export const ContactRow: React.FC<Props> = ({ contact }) => {
             </p>
           </Box>
         </Hidden>
-        <Box style={{ margin: theme.spacing(1) }}>
+        <Box style={{ margin: theme.spacing(1, 'auto') }}>
           <StarContactIcon hasStar={true} />
         </Box>
       </Box>
