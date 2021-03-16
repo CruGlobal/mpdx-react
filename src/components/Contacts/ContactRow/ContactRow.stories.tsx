@@ -12,7 +12,24 @@ export default {
 
 export const Default: Story = () => {
   return (
-    <ContactRow contact={{ name: 'Contact Name' } as ContactRowFragment} />
+    <ContactRow
+      contact={
+        {
+          name: 'John Doe',
+          primaryAddress: {
+            street: '123 Seeseme St',
+            city: 'New York',
+            state: 'NY',
+            postalCode: '123456',
+            country: 'USA',
+          },
+          status: 'Partner - Financial',
+          pledgeAmount: '100',
+          pledgeFrequency: 'Monthly',
+          pledgeCurrency: 'USD',
+        } as ContactRowFragment
+      }
+    />
   );
 };
 

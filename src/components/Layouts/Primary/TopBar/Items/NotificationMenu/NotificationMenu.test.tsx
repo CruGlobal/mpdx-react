@@ -4,8 +4,8 @@ import { InMemoryCache } from '@apollo/client';
 import {
   render,
   waitFor,
-} from '../../../../../../__tests__/util/testingLibraryReactMock';
-import TestWrapper from '../../../../../../__tests__/util/TestWrapper';
+} from '../../../../../../../__tests__/util/testingLibraryReactMock';
+import TestWrapper from '../../../../../../../__tests__/util/TestWrapper';
 import {
   acknowledgeAllUserNotificationsMutationMock,
   getNotificationsEmptyMock,
@@ -13,7 +13,7 @@ import {
   getNotificationsMocks,
 } from './NotificationMenu.mock';
 import { GetNotificationsDocument } from './GetNotificationsQuery.generated';
-import NotificationMenu from '.';
+import NotificationMenu from './NotificationMenu';
 
 describe('NotificationMenu', () => {
   it('default', async () => {

@@ -61,6 +61,7 @@ query GetThisWeek(
     first: 3
     lateAt: { max: $today }
     status: PARTNER_FINANCIAL
+    pledgeReceived: true
   ) {
     nodes {
       id

@@ -12,6 +12,7 @@ import {
   TableCell,
   TableBody,
   TableContainer,
+  withStyles,
 } from '@material-ui/core';
 import { motion } from 'framer-motion';
 import { DateTime, Interval } from 'luxon';
@@ -55,6 +56,13 @@ const useStyles = makeStyles((theme: Theme) => ({
 interface Props {
   accountListId: string;
 }
+
+const StyledTableCell = withStyles(() => ({
+  root: {
+    paddingLeft: 4,
+    paddingRight: 4,
+  },
+}))(TableCell);
 
 const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
   const classes = useStyles();
@@ -130,19 +138,23 @@ const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
           <Table size="small">
             <TableHead>
               <TableRow>
-                <TableCell data-testid="WeeklyActivityTableCellDateRange">
+                <StyledTableCell data-testid="WeeklyActivityTableCellDateRange">
                   {`${intlDateFormat(interval.start)} - ${intlDateFormat(
                     interval.end,
                   )}`}
-                </TableCell>
-                <TableCell align="right">{t('Completed')}</TableCell>
-                <TableCell align="right">{t('Appt Produced')}</TableCell>
+                </StyledTableCell>
+                <StyledTableCell align="right">
+                  {t('Completed')}
+                </StyledTableCell>
+                <StyledTableCell align="right">
+                  {t('Appt Produced')}
+                </StyledTableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               <TableRow>
-                <TableCell>{t('Calls')}</TableCell>
-                <TableCell
+                <StyledTableCell>{t('Calls')}</StyledTableCell>
+                <StyledTableCell
                   align="right"
                   data-testid="WeeklyActivityTableCellCompletedCalls"
                 >
@@ -154,8 +166,8 @@ const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
                   ) : (
                     numberFormat(data.completedCalls.totalCount)
                   )}
-                </TableCell>
-                <TableCell
+                </StyledTableCell>
+                <StyledTableCell
                   align="right"
                   data-testid="WeeklyActivityTableCellCallsThatProducedAppointments"
                 >
@@ -164,11 +176,11 @@ const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
                   ) : (
                     numberFormat(data.callsThatProducedAppointments.totalCount)
                   )}
-                </TableCell>
+                </StyledTableCell>
               </TableRow>
               <TableRow>
-                <TableCell>{t('Messages')}</TableCell>
-                <TableCell
+                <StyledTableCell>{t('Messages')}</StyledTableCell>
+                <StyledTableCell
                   align="right"
                   data-testid="WeeklyActivityTableCellCompletedMessages"
                 >
@@ -177,8 +189,8 @@ const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
                   ) : (
                     numberFormat(data.completedMessages.totalCount)
                   )}
-                </TableCell>
-                <TableCell
+                </StyledTableCell>
+                <StyledTableCell
                   align="right"
                   data-testid="WeeklyActivityTableCellMessagesThatProducedAppointments"
                 >
@@ -189,11 +201,11 @@ const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
                       data.messagesThatProducedAppointments.totalCount,
                     )
                   )}
-                </TableCell>
+                </StyledTableCell>
               </TableRow>
               <TableRow>
-                <TableCell>{t('Appointments')}</TableCell>
-                <TableCell
+                <StyledTableCell>{t('Appointments')}</StyledTableCell>
+                <StyledTableCell
                   align="right"
                   data-testid="WeeklyActivityTableCellCompletedAppointments"
                 >
@@ -202,12 +214,12 @@ const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
                   ) : (
                     numberFormat(data.completedAppointments.totalCount)
                   )}
-                </TableCell>
-                <TableCell></TableCell>
+                </StyledTableCell>
+                <StyledTableCell></StyledTableCell>
               </TableRow>
               <TableRow>
-                <TableCell>{t('Correspondence')}</TableCell>
-                <TableCell
+                <StyledTableCell>{t('Correspondence')}</StyledTableCell>
+                <StyledTableCell
                   align="right"
                   data-testid="WeeklyActivityTableCellCompletedCorrespondence"
                 >
@@ -216,8 +228,8 @@ const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
                   ) : (
                     numberFormat(data.completedCorrespondence.totalCount)
                   )}
-                </TableCell>
-                <TableCell></TableCell>
+                </StyledTableCell>
+                <StyledTableCell></StyledTableCell>
               </TableRow>
             </TableBody>
           </Table>
