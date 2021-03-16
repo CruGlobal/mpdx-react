@@ -16,6 +16,7 @@ const theme = createMuiTheme({
       default: '#fafafa',
     },
     primary: {
+      dark: '#383F43',
       main: '#05699b',
       light: '#3787a',
       dark: '#03496C',
@@ -23,10 +24,11 @@ const theme = createMuiTheme({
     secondary: {
       main: '#f5be19',
       light: '#F7CB47',
-      dark: '#AB8511'
+      dark: '#9C9FA1',
     },
     error: {
       main: '#F44336'
+      
     },
     text: {
       primary: '#383F43',
