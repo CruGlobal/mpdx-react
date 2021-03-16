@@ -24,10 +24,10 @@ import { motion } from 'framer-motion';
 import uniqBy from 'lodash/fp/uniqBy';
 import { useTranslation } from 'react-i18next';
 import Link from 'next/link';
+import { Brightness1Outlined, CheckCircle } from '@material-ui/icons';
 import { dayMonthFormat } from '../../../../lib/intlFormat';
 import AnimatedCard from '../../../AnimatedCard';
 import { useApp } from '../../../App';
-import TaskStatus from '../../../Task/Status';
 import illustration4 from '../../../../images/drawkit/grape/drawkit-grape-pack-illustration-4.svg';
 import illustration7 from '../../../../images/drawkit/grape/drawkit-grape-pack-illustration-7.svg';
 import { GetThisWeekQuery } from '../GetThisWeek.generated';
@@ -213,12 +213,12 @@ const PartnerCare = ({
                             </Box>
                           }
                         />
+                        {/*TODO: This button complete the Prayer Task and remove it from the list: https://jira.cru.org/browse/MPDX-6945 */}
                         <ListItemSecondaryAction>
-                          <TaskStatus
-                            taskId={task.id}
-                            startAt={task.startAt}
-                            completedAt={task.completedAt}
-                            tooltipPlacement="left"
+                          <Checkbox
+                            icon={<Brightness1Outlined />}
+                            checkedIcon={<CheckCircle />}
+                            edge="end"
                           />
                         </ListItemSecondaryAction>
                       </ListItem>
@@ -331,8 +331,13 @@ const PartnerCare = ({
                             </Box>
                           }
                         />
+                        {/*TODO: This button complete the Celebration and remove it from the list: https://jira.cru.org/browse/MPDX-6945 */}
                         <ListItemSecondaryAction>
-                          <Checkbox edge="end" />
+                          <Checkbox
+                            icon={<Brightness1Outlined />}
+                            checkedIcon={<CheckCircle />}
+                            edge="end"
+                          />
                         </ListItemSecondaryAction>
                       </ListItem>
                     ),
@@ -377,8 +382,13 @@ const PartnerCare = ({
                           </Box>
                         }
                       />
+                      {/*TODO: This button complete the Celebration and remove it from the list: https://jira.cru.org/browse/MPDX-6945 */}
                       <ListItemSecondaryAction>
-                        <Checkbox edge="end" />
+                        <Checkbox
+                          icon={<Brightness1Outlined />}
+                          checkedIcon={<CheckCircle />}
+                          edge="end"
+                        />
                       </ListItemSecondaryAction>
                     </ListItem>
                   ))}
