@@ -4,7 +4,7 @@ import { boolean } from '@storybook/addon-knobs';
 import { StarContactIcon } from './StarContactIcon';
 
 export default {
-  title: 'Contacts/ContactRow/Widgets/StaredContact',
+  title: 'Contacts/ContactRow/Widgets/StarContactIcon',
 };
 
 export const Default = (): ReactElement => {
