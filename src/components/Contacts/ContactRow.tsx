@@ -35,6 +35,53 @@ interface Props {
 
 export const ContactRow: React.FC<Props> = ({ contact }) => {
   const classes = useStyles();
+  function isLate(): GiftStatusEnum {
+    const date = new Date();
+
+    if (contact.lateAt == null) {
+      return GiftStatusEnum.Hidden;
+    }
+
+    const lateDate = new Date(contact.lateAt);
+    if (lateDate > date) {
+      return GiftStatusEnum.Late;
+    } else {
+      return GiftStatusEnum.OnTime;
+    }
+  }
+
+  function contactHasBirtday(): boolean {
+    let isBirthday = false;
+    const today = new Date();
+    const day = today.getDay();
+    const month = today.getMonth();
+    contact.people.nodes.forEach((person) => {
+      if (person.birthdayMonth == month) {
+        const daysLeft = Math.abs(person.birthdayDay - day);
+        if (daysLeft < 5) {
+          isBirthday = true;
+        }
+      }
+    });
+    return isBirthday;
+  }
+
+  function contactHasAnniversary(): boolean {
+    let isAnniversary = false;
+    const today = new Date();
+    const day = today.getDay();
+    const month = today.getMonth();
+    contact.people.nodes.forEach((person) => {
+      if (person.anniversaryMonth == month) {
+        const daysLeft = Math.abs(person.anniversaryDay - day);
+        if (daysLeft < 5) {
+          isAnniversary = true;
+        }
+      }
+    });
+    return isAnniversary;
+  }
+
   return (
     <Box style={{ position: 'relative', width: '100%' }}>
       <Box
@@ -81,13 +128,27 @@ export const ContactRow: React.FC<Props> = ({ contact }) => {
         </Box>
 
         <Hidden smDown>
-          <Box style={{ display: 'inline-block', margin: theme.spacing(1) }}>
-            <CelebrationIcons hasBirthday={true} hasAnniversary={true} />
+          <Box
+            style={{
+              display: 'inline-block',
+              margin: theme.spacing(1),
+            }}
+          >
+            <CelebrationIcons
+              hasBirthday={contactHasBirtday()}
+              hasAnniversary={contactHasAnniversary()}
+            />
           </Box>
         </Hidden>
 
-        <Box style={{ display: 'inline-block', margin: theme.spacing(1) }}>
-          <GiftStatus status={GiftStatusEnum.Late} />
+        <Box
+          style={{
+            display: 'inline-block',
+            flexBasis: 0,
+            margin: theme.spacing(1),
+          }}
+        >
+          <GiftStatus status={isLate()} />
         </Box>
 
         <Hidden mdDown>
@@ -124,7 +185,7 @@ export const ContactRow: React.FC<Props> = ({ contact }) => {
             </p>
           </Box>
         </Hidden>
-        <Box style={{ margin: theme.spacing(1, 'auto') }}>
+        <Box style={{ margin: theme.spacing(1, 'auto'), flexBasis: 0 }}>
           <StarContactIcon hasStar={true} />
         </Box>
       </Box>
