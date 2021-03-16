@@ -9,7 +9,7 @@ const theme = createMuiTheme({
   palette: {
     common: {
       black: '#000',
-      white: '#fff'
+      white: '#fff',
     },
     background: {
       paper: '#fff',
@@ -26,13 +26,12 @@ const theme = createMuiTheme({
       dark: '#9C9FA1',
     },
     error: {
-      main: '#F44336'
-      
+      main: '#F44336',
     },
     text: {
       primary: '#383F43',
       secondary: '#9C9FA1',
-    }
+    },
   },
   overrides: {
     MuiCard: {
