@@ -10,7 +10,11 @@ query GetDashboard($accountListId: ID!) {
     currency
     balance
   }
-  contacts(accountListId: $accountListId, pledgeReceived: false, status: PARTNER_FINANCIAL) {
+  contacts(
+    accountListId: $accountListId
+    pledgeReceived: false
+    status: PARTNER_FINANCIAL
+  ) {
     totalCount
   }
   reportsDonationHistories(accountListId: $accountListId) {
