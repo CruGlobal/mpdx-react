@@ -1,3 +1,4 @@
+import { colors } from '@material-ui/core';
 import { CSSProperties } from '@material-ui/core/styles/withStyles';
 import React from 'react';
 
@@ -6,7 +7,7 @@ interface Props {
 }
 
 const ContactsHeader: React.FC<Props> = ({ style }: Props) => {
-  return <div color={'#0000ff'} style={style} />;
+  return <div style={{ ...style, backgroundColor: colors.blue[600] }} />;
 };
 
 export default ContactsHeader;

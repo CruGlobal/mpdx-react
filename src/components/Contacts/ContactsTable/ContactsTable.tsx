@@ -5,17 +5,24 @@ import ContactRow from '../ContactRow/ContactRow';
 import { ContactRowFragment } from '../ContactRow/ContactRow.generated';
 
 interface Props {
-  contacts: ContactRowFragment[];
+  contacts: ContactRowFragment[] | undefined;
+  loading: boolean;
+  error: Error;
   style: CSSProperties;
 }
 
-const ContactsTable: React.FC<Props> = ({ contacts, style }) => {
+const ContactsTable: React.FC<Props> = ({
+  style,
+  contacts = [],
+  loading,
+  error,
+}: Props) => {
   return (
-    <div>
+    <div style={style}>
       {error && <p>Error: {error.toString()}</p>}
       {loading ? (
         <p>Loading</p>
-      ) : !data?.contacts?.nodes ? (
+      ) : contacts.length === 0 ? (
         <p>No data</p>
       ) : (
         <Table>
