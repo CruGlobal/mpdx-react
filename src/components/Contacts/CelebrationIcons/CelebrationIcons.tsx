@@ -1,13 +1,13 @@
-import { makeStyles, SvgIcon } from '@material-ui/core';
+import { makeStyles, SvgIcon, Theme } from '@material-ui/core';
 import { Cake } from '@material-ui/icons';
 import React from 'react';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme: Theme) => ({
   contactCelebration: {
     display: 'inline-block',
     width: '24px',
     height: '24px',
-    color: '#9c9fa1',
+    color: theme.palette.text.secondary,
     margin: '1px',
   },
 }));

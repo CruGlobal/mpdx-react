@@ -7,12 +7,31 @@ const theme = createMuiTheme({
     fontFamily: "'Source Sans Pro', sans-serif",
   },
   palette: {
+    common: {
+      black: '#000',
+      white: '#fff'
+    },
+    background: {
+      paper: '#fff',
+      default: '#fafafa',
+    },
     primary: {
       main: '#05699b',
+      light: '#3787a',
+      dark: '#03496C',
     },
     secondary: {
       main: '#f5be19',
+      light: '#F7CB47',
+      dark: '#AB8511'
     },
+    error: {
+      main: '#F44336'
+    },
+    text: {
+      primary: '#383F43',
+      secondary: '#9C9FA1',
+    }
   },
   overrides: {
     MuiCard: {

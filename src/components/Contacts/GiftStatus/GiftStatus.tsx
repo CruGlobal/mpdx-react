@@ -2,6 +2,7 @@ import React from 'react';
 import ErrorIcon from '@material-ui/icons/Error';
 import Circle from '@material-ui/icons/FiberManualRecord';
 import { useTranslation } from 'react-i18next';
+import theme from '../../../theme';
 
 interface Props {
   status: GiftStatusEnum;
@@ -27,7 +28,7 @@ export const GiftStatus: React.FC<Props> = ({ status }) => {
       return (
         <>
           <span title={t('Late')}>
-            <ErrorIcon style={{ color: '#F44336' }} />
+            <ErrorIcon style={{ color: theme.palette.error.main }} />
           </span>
         </>
       );
