@@ -25,6 +25,9 @@ const data: GetDashboardQuery = {
     currency: 'NZD',
     balance: 1000,
   },
+  contacts: {
+    totalCount: 15,
+  },
   reportsDonationHistories: {
     periods: [
       {

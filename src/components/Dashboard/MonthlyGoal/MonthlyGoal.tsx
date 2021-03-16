@@ -37,18 +37,22 @@ const useStyles = makeStyles((_theme: Theme) => ({
 }));
 
 interface Props {
+  accountListId: string;
   loading?: boolean;
   goal?: number;
   received?: number;
   pledged?: number;
+  totalGiftsNotStarted?: number;
   currencyCode?: string;
 }
 
 const MonthlyGoal = ({
+  accountListId,
   loading,
   goal,
   received,
   pledged,
+  totalGiftsNotStarted,
   currencyCode = 'USD',
 }: Props): ReactElement => {
   const classes = useStyles();
@@ -65,8 +69,18 @@ const MonthlyGoal = ({
           <Typography variant="h6">
             <Box display="flex">
               <Box flexGrow={1}>{t('Monthly Goal')}</Box>
-              {/*TODO: This button should link to the Gifts screen: https://jira.cru.org/browse/MPDX-6941 */}
-              <Button>{t('GIFTS NOT STARTED (0)')}</Button>
+              <Button
+                href={`/accountLists/${accountListId}/contacts?filters=${encodeURIComponent(
+                  JSON.stringify({
+                    pledge_received: false,
+                    status: 'Partner - Financial',
+                  }),
+                )}`}
+              >
+                {t('GIFTS NOT STARTED ({{ totalGiftsNotStarted, number }})', {
+                  totalGiftsNotStarted,
+                })}
+              </Button>
               <Hidden smUp>
                 <Box data-testid="MonthlyGoalTypographyGoalMobile">
                   {!loading && currencyFormat(goal, currencyCode)}
