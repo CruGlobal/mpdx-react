@@ -1,6 +1,7 @@
 import { Box, Hidden, makeStyles, Theme } from '@material-ui/core';
 import { CheckBox } from '@material-ui/icons';
 import React from 'react';
+import theme from '../../theme';
 import { CelebrationIcons } from './CelebrationIcons/CelebrationIcons';
 import { ContactRowFragment } from './ContactRow.generated';
 import GiftStatus, { GiftStatusEnum } from './GiftStatus/GiftStatus';
@@ -11,7 +12,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     display: 'inline-block',
     width: '24px',
     height: '24px',
-    margin: '10px',
+    margin: theme.spacing(1),
     background: theme.palette.primary.main,
   },
   contactText: {
@@ -48,9 +49,7 @@ export const ContactRow: React.FC<Props> = ({ contact }) => {
             display: 'inline-block',
             flexGrow: 4,
             padding: '0',
-            marginTop: '14px',
-            marginBottom: '14px',
-            marginLeft: '35px',
+            margin: theme.spacing(4),
           }}
         >
           <p
@@ -76,12 +75,12 @@ export const ContactRow: React.FC<Props> = ({ contact }) => {
         </Box>
 
         <Hidden smDown>
-          <Box style={{ display: 'inline-block', margin: '10px' }}>
+          <Box style={{ display: 'inline-block', margin: theme.spacing(1) }}>
             <CelebrationIcons hasBirthday={true} hasAnniversary={true} />
           </Box>
         </Hidden>
 
-        <Box style={{ display: 'inline-block', margin: '10px' }}>
+        <Box style={{ display: 'inline-block', margin: theme.spacing(1) }}>
           <GiftStatus status={GiftStatusEnum.Late} />
         </Box>
 
@@ -90,7 +89,7 @@ export const ContactRow: React.FC<Props> = ({ contact }) => {
             style={{
               display: 'inline-block',
               flexGrow: 4,
-              margin: '10px',
+              margin: theme.spacing(1),
             }}
           >
             <p
@@ -115,8 +114,9 @@ export const ContactRow: React.FC<Props> = ({ contact }) => {
             </p>
           </Box>
         </Hidden>
-
-        <StarContactIcon hasStar={true} />
+        <Box style={{ margin: theme.spacing(1) }}>
+          <StarContactIcon hasStar={true} />
+        </Box>
       </Box>
       <hr
         style={{

@@ -8,8 +8,6 @@ const useStyles = makeStyles(() => ({
   contactStar: {
     width: '24px',
     height: '24px',
-    right: '16px',
-    top: '24px',
     color: theme.palette.secondary.main,
   },
 }));
