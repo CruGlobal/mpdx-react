@@ -1,10 +1,11 @@
 import { Box, Hidden, makeStyles, Theme } from '@material-ui/core';
 import { CheckBox } from '@material-ui/icons';
+import { DateTime, Interval } from 'luxon';
 import React from 'react';
 import theme from '../../theme';
 import { CelebrationIcons } from './CelebrationIcons/CelebrationIcons';
 import { ContactRowFragment } from './ContactRow.generated';
-import { GiftStatus, GiftStatusEnum } from './GiftStatus/GiftStatus';
+import { GiftIsLateStatus, GiftStatus } from './GiftStatus/GiftStatus';
 import { StarContactIcon } from './StarContactIcon/StarContactIcon';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -18,8 +19,6 @@ const useStyles = makeStyles((theme: Theme) => ({
   contactText: {
     margin: '0px',
     fontFamily: theme.typography.fontFamily,
-    fontStyle: 'normal',
-    fontWeight: 'normal',
     color: theme.palette.text.primary,
     whiteSpace: 'nowrap',
     overflow: 'hidden',
@@ -37,61 +36,35 @@ interface Props {
 
 export const ContactRow: React.FC<Props> = ({ contact }) => {
   const classes = useStyles();
-  function isLate(): GiftStatusEnum {
-    const date = new Date();
 
-    if (contact.lateAt == null) {
-      return GiftStatusEnum.Hidden;
-    }
+  const contactHasBirthday = (): boolean =>
+    contact.people.nodes.some((person) =>
+      Interval.after(DateTime.fromJSDate(new Date()).startOf('day'), {
+        days: 5,
+      }).contains(
+        DateTime.fromISO(
+          `${new Date().getFullYear}-${person.birthdayMonth}-${
+            person.birthdayDay
+          }`,
+        ),
+      ),
+    );
 
-    const lateDate = new Date(contact.lateAt);
-    if (lateDate > date) {
-      return GiftStatusEnum.Late;
-    } else {
-      return GiftStatusEnum.OnTime;
-    }
-  }
-
-  function contactHasBirtday(): boolean {
-    let isBirthday = false;
-    const today = new Date();
-    const day = today.getDay();
-    const month = today.getMonth();
-    if (contact.people == null) {
-      return isBirthday;
-    }
-    contact.people.nodes.forEach((person) => {
-      if (person.birthdayMonth == month) {
-        const daysLeft = Math.abs(person.birthdayDay - day);
-        if (daysLeft < 5) {
-          isBirthday = true;
-        }
-      }
-    });
-    return isBirthday;
-  }
-
-  function contactHasAnniversary(): boolean {
-    let isAnniversary = false;
-    const today = new Date();
-    const day = today.getDay();
-    const month = today.getMonth();
-    if (contact.people == null) {
-      return isAnniversary;
-    }
-    contact.people.nodes.forEach((person) => {
-      if (person.anniversaryMonth == month) {
-        const daysLeft = Math.abs(person.anniversaryDay - day);
-        if (daysLeft < 5) {
-          isAnniversary = true;
-        }
-      }
-    });
-    return isAnniversary;
-  }
+  const contactHasAnniversary = (): boolean =>
+    contact.people.nodes.some((person) =>
+      Interval.after(DateTime.fromJSDate(new Date()).startOf('day'), {
+        days: 5,
+      }).contains(
+        DateTime.fromISO(
+          `${new Date().getFullYear}-${person.anniversaryMonth}-${
+            person.anniversaryDay
+          }`,
+        ),
+      ),
+    );
 
   return (
-    <Box style={{ position: 'relative', width: '100%' }}>
+    <Box style={{ width: '100%' }}>
       <Box
         style={{
           height: '72px',
@@ -134,7 +107,7 @@ export const ContactRow: React.FC<Props> = ({ contact }) => {
             }}
           >
             <CelebrationIcons
-              hasBirthday={contactHasBirtday()}
+              hasBirthday={contactHasBirthday()}
               hasAnniversary={contactHasAnniversary()}
             />
           </Box>
@@ -147,7 +120,7 @@ export const ContactRow: React.FC<Props> = ({ contact }) => {
             margin: theme.spacing(1),
           }}
         >
-          <GiftStatus status={isLate()} />
+          <GiftStatus status={GiftIsLateStatus(contact.lateAt)} />
         </Box>
 
         <Hidden mdDown>

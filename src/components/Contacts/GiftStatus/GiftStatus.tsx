@@ -12,6 +12,20 @@ export enum GiftStatusEnum {
   Late,
   Hidden,
 }
+export const GiftIsLateStatus = (
+  giftDate: string | number | Date,
+): GiftStatusEnum => {
+  const date = new Date();
+
+  if (giftDate == null) {
+    return GiftStatusEnum.Hidden;
+  }
+
+  return new Date() > new Date(giftDate)
+    ? GiftStatusEnum.Late
+    : GiftStatusEnum.OnTime;
+};
+
 export const GiftStatus: React.FC<Props> = ({ status }) => {
   const { t } = useTranslation();
 
