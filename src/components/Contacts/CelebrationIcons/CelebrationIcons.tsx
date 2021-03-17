@@ -31,7 +31,7 @@ export const CelebrationIcons: React.FC<Props> = ({
       ) : (
         <></>
       )}
-      {hasBirthday ? <Cake className={classes.contactCelebration} /> : <> </>}
+      {hasBirthday ? <Cake className={classes.contactCelebration} /> : null}
     </>
   );
 };
