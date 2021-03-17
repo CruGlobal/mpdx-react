@@ -173,11 +173,11 @@ export const ContactRow: React.FC<Props> = ({ contact }) => {
               }}
               className={classes.contactText}
             >
-              {contact.pledgeAmount == null || contact.pledgeAmount == 0
-                ? ''
-                : contact.pledgeCurrency == null
-                ? contact.pledgeAmount
-                : contact.pledgeAmount + ' ' + contact.pledgeCurrency}{' '}
+             {contact.pledgeAmount
+                ? contact.pledgeCurrency
+                  ? `${contact.pledgeAmount} ${contact.pledgeCurrency}`
+                  : contact.pledgeAmount
+                : null}{' '}
               {contact.pledgeFrequency}
             </p>
           </Box>
