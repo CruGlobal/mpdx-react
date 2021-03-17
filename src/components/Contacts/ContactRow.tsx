@@ -4,7 +4,7 @@ import React from 'react';
 import theme from '../../theme';
 import { CelebrationIcons } from './CelebrationIcons/CelebrationIcons';
 import { ContactRowFragment } from './ContactRow.generated';
-import GiftStatus, { GiftStatusEnum } from './GiftStatus/GiftStatus';
+import { GiftStatus, GiftStatusEnum } from './GiftStatus/GiftStatus';
 import { StarContactIcon } from './StarContactIcon/StarContactIcon';
 
 const useStyles = makeStyles((theme: Theme) => ({
