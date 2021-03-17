@@ -24,5 +24,3 @@ export const StarContactIcon: React.FC<Props> = ({ hasStar = false }) => {
     <StarBorderOutlined className={classes.contactStar} />
   );
 };
-
-export default StarContactIcon;
