@@ -5,6 +5,11 @@ const withGraphql = require('next-plugin-graphql');
 require('dotenv').config();
 
 const prod = process.env.NODE_ENV === 'production';
+
+if (prod && !process.env.JWT_SECRET) {
+  throw new Error('JWT_SECRET environment variable is not set');
+}
+
 let SiteUrl;
 
 if (process.env.SITE_URL) {
@@ -34,9 +39,7 @@ module.exports = withPlugins([
   withBundleAnalyzer,
   {
     env: {
-      JWT_SECRET:
-        process.env.JWT_SECRET ||
-        'aed8e0786376a2abe15f5c8f8e2ee74565d0915897b33296594bb1b549098ba7',
+      JWT_SECRET: process.env.JWT_SECRET || 'development-key',
       API_URL: process.env.API_URL || 'https://api.stage.mpdx.org/graphql',
       REST_API_URL:
         process.env.REST_API_URL || 'https://api.stage.mpdx.org/api/v2/',
