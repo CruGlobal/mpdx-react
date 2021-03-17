@@ -7,7 +7,11 @@ interface Props {
 }
 
 const ContactsHeader: React.FC<Props> = ({ style }: Props) => {
-  return <div style={{ ...style, backgroundColor: colors.blue[600] }} />;
+  return (
+    <div style={{ ...style, backgroundColor: colors.blue[600] }}>
+      {/*TODO: Work on Header content*/}
+    </div>
+  );
 };
 
 export default ContactsHeader;

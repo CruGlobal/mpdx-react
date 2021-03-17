@@ -9,7 +9,8 @@ interface Props {
 const ContactFilters: React.FC<Props> = ({ style }: Props) => {
   return (
     <div style={{ ...style, backgroundColor: colors.amber[600] }}>
-      {/*<h2>Filters</h2>
+      {/* TODO: Work on Filters content
+      <h2>Filters</h2>
       <button onClick={() => loadContactFilters()}>Load Filters</button>
       {contactFiltersError && <p>Error: {contactFiltersError.toString()}</p>}
       {contactFiltersLoading ? (
