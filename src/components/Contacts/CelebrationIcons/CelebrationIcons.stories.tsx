@@ -1,7 +1,7 @@
 import React, { ReactElement } from 'react';
 import { Box } from '@material-ui/core';
 import { boolean } from '@storybook/addon-knobs';
-import CelebrationIcons from './CelebrationIcons';
+import { CelebrationIcons } from './CelebrationIcons';
 
 export default {
   title: 'Contacts/ContactRow/Widgets/CelebrationIcons',

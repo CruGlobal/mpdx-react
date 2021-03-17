@@ -5,7 +5,7 @@ import theme from '../../theme';
 import { CelebrationIcons } from './CelebrationIcons/CelebrationIcons';
 import { ContactRowFragment } from './ContactRow.generated';
 import GiftStatus, { GiftStatusEnum } from './GiftStatus/GiftStatus';
-import StarContactIcon from './StarContactIcon/StarContactIcon';
+import { StarContactIcon } from './StarContactIcon/StarContactIcon';
 
 const useStyles = makeStyles((theme: Theme) => ({
   checkbox: {
@@ -24,6 +24,8 @@ const useStyles = makeStyles((theme: Theme) => ({
     whiteSpace: 'nowrap',
     overflow: 'hidden',
     textOverflow: 'ellipsis',
+    fontSize: '14px',
+    letterSpacing: '0.25',
   },
   contactStatus: {
     display: 'inline-block',
@@ -113,14 +115,8 @@ export const ContactRow: React.FC<Props> = ({ contact }) => {
           >
             {contact.name}
           </p>
-          <p
-            style={{
-              fontSize: '14px',
-              letterSpacing: '0.25',
-            }}
-            className={classes.contactText}
-          >
-            {contact.primaryAddress?.street}
+          <p className={classes.contactText}>
+            {contact.primaryAddress?.street ?? ''}
           </p>
         </Box>
 
@@ -157,33 +153,19 @@ export const ContactRow: React.FC<Props> = ({ contact }) => {
               margin: theme.spacing(1),
             }}
           >
-            <p
-              style={{
-                fontSize: '14px',
-                letterSpacing: '0.25',
-              }}
-              className={classes.contactText}
-            >
-              {contact.status}
-            </p>
-            <p
-              style={{
-                fontSize: '14px',
-                letterSpacing: '0.25',
-              }}
-              className={classes.contactText}
-            >
-             {contact.pledgeAmount
+            <p className={classes.contactText}>{contact.status ?? ''}</p>
+            <p className={classes.contactText}>
+              {contact.pledgeAmount
                 ? contact.pledgeCurrency
                   ? `${contact.pledgeAmount} ${contact.pledgeCurrency}`
                   : contact.pledgeAmount
-                : null}{' '}
-              {contact.pledgeFrequency}
+                : ''}{' '}
+              {contact.pledgeFrequency ?? ''}
             </p>
           </Box>
         </Hidden>
         <Box style={{ margin: theme.spacing(1, 'auto'), flexBasis: 0 }}>
-          <StarContactIcon hasStar={true} />
+          <StarContactIcon hasStar={false} />
         </Box>
       </Box>
       <hr
