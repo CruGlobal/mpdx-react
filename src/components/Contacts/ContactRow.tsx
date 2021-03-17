@@ -120,10 +120,7 @@ export const ContactRow: React.FC<Props> = ({ contact }) => {
             }}
             className={classes.contactText}
           >
-            {contact.primaryAddress == null ||
-            contact.primaryAddress.street == null
-              ? ''
-              : contact.primaryAddress.street}
+            {contact.primaryAddress?.street}
           </p>
         </Box>
 
