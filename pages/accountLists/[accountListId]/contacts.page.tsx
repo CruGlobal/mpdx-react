@@ -13,13 +13,17 @@ const ContactsPage: React.FC = () => {
   const {
     query: { accountListId },
   } = useRouter();
-  const { data, loading, error } = useContactsQuery({
+  const {
+    data: contactsData,
+    loading: contactsLoading,
+    error: contactsError,
+  } = useContactsQuery({
     variables: { accountListId: accountListId as string },
   });
   const [
     loadContactFilters,
     {
-      data: contactFilters,
+      data: contactFiltersData,
       loading: contactFiltersLoading,
       error: contactFiltersError,
     },
@@ -36,7 +40,15 @@ const ContactsPage: React.FC = () => {
       <Head>
         <title>MPDX | {t('Contacts')}</title>
       </Head>
-      <Contacts data={data} loading={loading} error={error} />
+      <Contacts
+        contactsData={contactsData}
+        contactsLoading={contactsLoading}
+        contactsError={contactsError}
+        filtersData={contactFiltersData}
+        filtersLoading={contactFiltersLoading}
+        filtersError={contactFiltersError}
+        loadContactFilters={loadContactFilters}
+      />
     </>
   );
 };

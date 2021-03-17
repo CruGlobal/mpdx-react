@@ -1,8 +1,17 @@
+import { QueryLazyOptions } from '@apollo/client';
 import { colors } from '@material-ui/core';
 import { CSSProperties } from '@material-ui/core/styles/withStyles';
 import React from 'react';
+import { Exact } from '../../../../graphql/types.generated';
+import { ContactFiltersQuery } from '../../../../pages/accountLists/[accountListId]/ContactFilters.generated';
 
 interface Props {
+  data: ContactFiltersQuery;
+  loading: boolean;
+  error: Error;
+  loadFilters: (
+    options: QueryLazyOptions<Exact<{ accountListId: string }>>,
+  ) => void;
   style: CSSProperties;
 }
 
