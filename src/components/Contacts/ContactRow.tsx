@@ -57,6 +57,9 @@ export const ContactRow: React.FC<Props> = ({ contact }) => {
     const today = new Date();
     const day = today.getDay();
     const month = today.getMonth();
+    if (contact.people == null) {
+      return isBirthday;
+    }
     contact.people.nodes.forEach((person) => {
       if (person.birthdayMonth == month) {
         const daysLeft = Math.abs(person.birthdayDay - day);
@@ -73,6 +76,9 @@ export const ContactRow: React.FC<Props> = ({ contact }) => {
     const today = new Date();
     const day = today.getDay();
     const month = today.getMonth();
+    if (contact.people == null) {
+      return isAnniversary;
+    }
     contact.people.nodes.forEach((person) => {
       if (person.anniversaryMonth == month) {
         const daysLeft = Math.abs(person.anniversaryDay - day);
