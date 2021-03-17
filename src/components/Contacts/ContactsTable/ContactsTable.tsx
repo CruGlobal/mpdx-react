@@ -1,4 +1,4 @@
-import { colors, Table } from '@material-ui/core';
+import { Box, colors, Table } from '@material-ui/core';
 import { CSSProperties } from '@material-ui/core/styles/withStyles';
 import React from 'react';
 import ContactRow from '../ContactRow/ContactRow';
@@ -12,13 +12,14 @@ interface Props {
 }
 
 const ContactsTable: React.FC<Props> = ({
-  style,
   contacts = [],
   loading,
   error,
 }: Props) => {
   const renderLoading = () => (
-    <div style={{ backgroundColor: colors.green[600] }}>Loading</div>
+    <Box flex={1} height={'100%'} bgcolor={colors.green[600]}>
+      <p>Loading</p>
+    </Box>
   );
 
   const renderEmpty = () => (
@@ -32,9 +33,9 @@ const ContactsTable: React.FC<Props> = ({
   );
 
   return (
-    <div style={style}>
+    <Box flex={1}>
       {error && renderError()}
-      {loading ? (
+      {!loading ? (
         renderLoading()
       ) : contacts.length === 0 ? (
         renderEmpty()
@@ -45,7 +46,7 @@ const ContactsTable: React.FC<Props> = ({
           ))}
         </Table>
       )}
-    </div>
+    </Box>
   );
 };
 
