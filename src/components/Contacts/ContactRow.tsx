@@ -164,7 +164,7 @@ export const ContactRow: React.FC<Props> = ({ contact }) => {
               }}
               className={classes.contactText}
             >
-              {contact.status == null ? '' : contact.status}
+              {contact.status}
             </p>
             <p
               style={{
