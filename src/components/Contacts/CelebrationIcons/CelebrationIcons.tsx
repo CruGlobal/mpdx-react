@@ -35,5 +35,3 @@ export const CelebrationIcons: React.FC<Props> = ({
     </>
   );
 };
-
-export default CelebrationIcons;
