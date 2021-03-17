@@ -178,7 +178,7 @@ export const ContactRow: React.FC<Props> = ({ contact }) => {
                 : contact.pledgeCurrency == null
                 ? contact.pledgeAmount
                 : contact.pledgeAmount + ' ' + contact.pledgeCurrency}{' '}
-              {contact.pledgeFrequency == null ? '' : contact.pledgeFrequency}
+              {contact.pledgeFrequency}
             </p>
           </Box>
         </Hidden>
