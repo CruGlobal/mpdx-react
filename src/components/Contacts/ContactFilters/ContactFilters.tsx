@@ -22,7 +22,9 @@ const ContactFilters: React.FC<Props> = ({
   return (
     <div style={{ backgroundColor: colors.amber[600] }}>
       <h2>Filters</h2>
-      <button onClick={() => loadFilters()}>Load Filters</button>
+      <button data-testID="LoadFiltersButton" onClick={() => loadFilters()}>
+        Load Filters
+      </button>
       {error && <p data-testID="ErrorText">Error: {error.toString()}</p>}
       {loading ? (
         <p data-testID="LoadingText">Loading Filters</p>

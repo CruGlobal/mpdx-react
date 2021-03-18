@@ -1,5 +1,6 @@
 import React from 'react';
 import { render } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import matchMediaMock from '../../../../__tests__/util/matchMediaMock';
 import { ContactFiltersQuery } from '../../../../pages/accountLists/[accountListId]/ContactFilters.generated';
 import ContactFilters from './ContactFilters';
@@ -66,5 +67,22 @@ describe('ContactFilters', () => {
     expect(queryByTestId('LoadingText')).toBeNull();
     expect(queryByTestId('EmptyText')).toBeVisible();
     expect(queryByTestId('ErrorText')).toBeNull();
+  });
+
+  it('button pressed', () => {
+    const { queryByTestId } = render(
+      <ContactFilters
+        data={data}
+        loading={false}
+        error={null}
+        loadFilters={loadFilters}
+      />,
+    );
+
+    const loadFiltersButton = queryByTestId('LoadFiltersButton');
+
+    userEvent.click(loadFiltersButton);
+
+    expect(loadFilters).toHaveBeenCalledWith();
   });
 });
