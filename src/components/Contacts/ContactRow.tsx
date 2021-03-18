@@ -51,11 +51,7 @@ export const ContactRow: React.FC<Props> = ({ contact }) => {
       Interval.after(DateTime.now().startOf('day'), {
         days: 5,
       }).contains(
-        DateTime.fromISO(
-          `${new Date().getFullYear}-${person.anniversaryMonth}-${
-            person.anniversaryDay
-          }`,
-        ),
+        DateTime.fromObject({ month: person.anniversaryMonth, day: person.anniversaryDay }),
       ),
     );
 
