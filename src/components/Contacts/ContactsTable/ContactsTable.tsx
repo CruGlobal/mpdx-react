@@ -1,5 +1,5 @@
-import { Box, colors, Table } from '@material-ui/core';
 import React from 'react';
+import { Box, Table, colors } from '@material-ui/core';
 import { ContactRow } from '../ContactRow';
 import { ContactRowFragment } from '../ContactRow/ContactRow.generated';
 
@@ -15,25 +15,30 @@ const ContactsTable: React.FC<Props> = ({
   error,
 }: Props) => {
   const renderLoading = () => (
-    <Box flex={1} height={'100%'} bgcolor={colors.green[600]}>
-      <p>Loading</p>
+    <Box
+      height="100%"
+      alignItems="center"
+      justifyContent="center"
+      bgcolor={colors.green[600]}
+    >
+      Loading
     </Box>
   );
 
   const renderEmpty = () => (
-    <div style={{ backgroundColor: colors.yellow[600] }}>No Data</div>
+    <Box height="100%" bgcolor={colors.yellow[600]}>
+      No Data
+    </Box>
   );
 
   const renderError = () => (
-    <div style={{ backgroundColor: colors.red[600] }}>
-      Error: {error.toString()}
-    </div>
+    <Box bgcolor={colors.red[600]}>Error: {error.toString()}</Box>
   );
 
   return (
-    <Box flex={1}>
+    <Box height="100%">
       {error && renderError()}
-      {!loading ? (
+      {loading ? (
         renderLoading()
       ) : contacts.length === 0 ? (
         renderEmpty()

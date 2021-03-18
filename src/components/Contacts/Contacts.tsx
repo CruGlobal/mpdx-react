@@ -1,6 +1,6 @@
 import React, { ReactElement } from 'react';
 import { QueryLazyOptions } from '@apollo/client';
-import { Box, colors } from '@material-ui/core';
+import { Box } from '@material-ui/core';
 import { Exact } from '../../../graphql/types.generated';
 import { ContactsQuery } from '../../../pages/accountLists/[accountListId]/Contacts.generated';
 import { ContactFiltersQuery } from '../../../pages/accountLists/[accountListId]/ContactFilters.generated';
@@ -30,7 +30,7 @@ const Contacts = ({
   loadContactFilters,
 }: Props): ReactElement => {
   return (
-    <Box display="flex" border={1} borderColor={colors.red[600]}>
+    <Box height="100vh" display="flex">
       <Box flex={1}>
         <ContactFilters
           style={{ flex: 1 }}
