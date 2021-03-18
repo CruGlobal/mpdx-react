@@ -52,6 +52,17 @@ const NavMenu = (): ReactElement => {
             </NextLink>
           </Grid>
           <Grid item className={classes.navListItem}>
+            <NextLink
+              href="/accountLists/[accountListId]/tasks"
+              as={`/accountLists/${state.accountListId}/tasks`}
+              scroll={false}
+            >
+              <MenuItem>
+                <ListItemText primary={t('Tasks')} />
+              </MenuItem>
+            </NextLink>
+          </Grid>
+          <Grid item className={classes.navListItem}>
             <HandoffLink path="/reports">
               <MenuItem component="a">
                 <ListItemText primary={t('Reports')} />
