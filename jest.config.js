@@ -1,5 +1,5 @@
 module.exports = {
-  roots: ['<rootDir>/src', '<rootDir>/__tests__/pages'],
+  roots: ['<rootDir>/src', '<rootDir>/pages', '<rootDir>/__tests__/pages'],
   globalSetup: '<rootDir>/__tests__/util/globalSetup.ts',
   setupFilesAfterEnv: ['<rootDir>/__tests__/util/setup.ts'],
   transform: {

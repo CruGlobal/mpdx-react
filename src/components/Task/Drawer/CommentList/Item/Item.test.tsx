@@ -23,7 +23,7 @@ describe('Item', () => {
       getByText('The quick brown fox jumped over the lazy dog.'),
     ).toBeInTheDocument();
     expect(getByText('B')).toBeInTheDocument();
-    expect(getByText('1 day ago')).toBeInTheDocument();
+    expect(getByText('in 30 days')).toBeInTheDocument();
   });
 
   it('has correct overrides', () => {

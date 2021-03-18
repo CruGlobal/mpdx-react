@@ -7,13 +7,30 @@ const theme = createMuiTheme({
     fontFamily: "'Source Sans Pro', sans-serif",
   },
   palette: {
+    common: {
+      black: '#000',
+      white: '#fff',
+    },
+    background: {
+      paper: '#fff',
+      default: '#fafafa',
+    },
     primary: {
       dark: '#383F43',
       main: '#05699b',
+      light: '#3787a',
     },
     secondary: {
       main: '#f5be19',
+      light: '#F7CB47',
       dark: '#9C9FA1',
+    },
+    error: {
+      main: '#F44336',
+    },
+    text: {
+      primary: '#383F43',
+      secondary: '#9C9FA1',
     },
   },
   overrides: {

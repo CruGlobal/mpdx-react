@@ -14,7 +14,7 @@ window.document.createRange = (): Range =>
 window.HTMLElement.prototype.scrollIntoView = jest.fn();
 
 beforeEach(() => {
-  Settings.now = () => new Date(2020, 1, 1).valueOf();
+  Settings.now = () => new Date(2020, 0, 1).valueOf();
 });
 
 afterEach(() => {

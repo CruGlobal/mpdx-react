@@ -1,5 +1,6 @@
 import React, { ReactElement } from 'react';
 import Document, {
+  Html,
   Head,
   Main,
   NextScript,
@@ -12,7 +13,7 @@ import theme from '../src/theme';
 class MyDocument extends Document {
   render(): ReactElement {
     return (
-      <html lang="en">
+      <Html lang="en">
         <Head>
           <meta name="theme-color" content={theme.palette.primary.main} />
         </Head>
@@ -20,7 +21,7 @@ class MyDocument extends Document {
           <Main />
           <NextScript />
         </body>
-      </html>
+      </Html>
     );
   }
 }

@@ -1,8 +1,13 @@
 import React from 'react';
 import { Story, Meta } from '@storybook/react';
 import { withDesign } from 'storybook-addon-designs';
+
+import { gqlMock } from '../../../__tests__/util/graphqlMocking';
 import { ContactRow } from './ContactRow';
-import { ContactRowFragment } from './ContactRow.generated';
+import {
+  ContactRowFragment,
+  ContactRowFragmentDoc,
+} from './ContactRow.generated';
 
 export default {
   title: 'Contacts/ContactRow',
@@ -11,9 +16,9 @@ export default {
 } as Meta;
 
 export const Default: Story = () => {
-  return (
-    <ContactRow contact={{ name: 'Contact Name' } as ContactRowFragment} />
-  );
+  const contact = gqlMock<ContactRowFragment>(ContactRowFragmentDoc);
+
+  return <ContactRow contact={contact} />;
 };
 
 Default.parameters = {

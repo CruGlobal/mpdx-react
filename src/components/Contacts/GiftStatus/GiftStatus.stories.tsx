@@ -1,29 +1,30 @@
 import React, { ReactElement } from 'react';
 import { Box } from '@material-ui/core';
-import { GiftStatus, GiftStatusEnum } from './GiftStatus';
+import { DateTime } from 'luxon';
+import { GiftStatus } from './GiftStatus';
 
 export default {
-  title: 'Contacts/GiftStatus',
+  title: 'Contacts/ContactRow/Widgets/GiftStatus',
 };
 
 export const Default = (): ReactElement => {
   return (
     <Box m={2}>
-      <GiftStatus status={GiftStatusEnum.Hidden} />
+      <GiftStatus lateAt={null} />
     </Box>
   );
 };
 export const LateStatus = (): ReactElement => {
   return (
     <Box m={2}>
-      <GiftStatus status={GiftStatusEnum.Late} />
+      <GiftStatus lateAt={DateTime.now().minus({ day: 1 }).toISO()} />
     </Box>
   );
 };
 export const OnTimeStatus = (): ReactElement => {
   return (
     <Box m={2}>
-      <GiftStatus status={GiftStatusEnum.OnTime} />
+      <GiftStatus lateAt={DateTime.now().toISO()} />
     </Box>
   );
 };

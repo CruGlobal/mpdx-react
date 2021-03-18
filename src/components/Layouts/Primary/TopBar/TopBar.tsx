@@ -68,7 +68,11 @@ const TopBar = (): ReactElement => {
 
   return (
     <>
-      <AppBar className={classes.appBar} elevation={trigger ? 3 : 0}>
+      <AppBar
+        className={classes.appBar}
+        elevation={trigger ? 3 : 0}
+        position="sticky"
+      >
         <Toolbar className={classes.toolbar}>
           <Grid container alignItems="center">
             <Grid container alignItems="center" xs="auto" md={1}>
