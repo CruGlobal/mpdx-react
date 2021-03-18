@@ -3,33 +3,32 @@ import ErrorIcon from '@material-ui/icons/Error';
 import Circle from '@material-ui/icons/FiberManualRecord';
 import { useTranslation } from 'react-i18next';
 import theme from '../../../theme';
+import { DateTime } from 'luxon';
 
-interface Props {
-  status: GiftStatusEnum;
+interface GiftStatusProps {
+  lateAt: string;
 }
-export enum GiftStatusEnum {
+
+enum GiftStatusEnum {
   OnTime,
   Late,
   Hidden,
 }
-export const GiftIsLateStatus = (
-  giftDate: string | number | Date,
-): GiftStatusEnum => {
-  const date = new Date();
 
-  if (giftDate == null) {
+const giftIsLateStatus = (giftDate: string): GiftStatusEnum => {
+  if (!giftDate) {
     return GiftStatusEnum.Hidden;
   }
 
-  return new Date() > new Date(giftDate)
+  return DateTime.now() > DateTime.fromISO(giftDate)
     ? GiftStatusEnum.Late
     : GiftStatusEnum.OnTime;
 };
 
-export const GiftStatus: React.FC<Props> = ({ status }) => {
+export const GiftStatus: React.FC<GiftStatusProps> = ({ lateAt }) => {
   const { t } = useTranslation();
 
-  switch (status) {
+  switch (giftIsLateStatus(lateAt)) {
     case GiftStatusEnum.Hidden:
       return null;
     case GiftStatusEnum.OnTime:
@@ -40,11 +39,9 @@ export const GiftStatus: React.FC<Props> = ({ status }) => {
       );
     case GiftStatusEnum.Late:
       return (
-        <>
-          <span title={t('Late')}>
-            <ErrorIcon style={{ color: theme.palette.error.main }} />
-          </span>
-        </>
+        <span title={t('Late')}>
+          <ErrorIcon style={{ color: theme.palette.error.main }} />
+        </span>
       );
   }
 };

@@ -5,7 +5,7 @@ import React from 'react';
 import theme from '../../theme';
 import { CelebrationIcons } from './CelebrationIcons/CelebrationIcons';
 import { ContactRowFragment } from './ContactRow.generated';
-import { GiftIsLateStatus, GiftStatus } from './GiftStatus/GiftStatus';
+import { GiftStatus } from './GiftStatus/GiftStatus';
 import { StarContactIcon } from './StarContactIcon/StarContactIcon';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -42,7 +42,10 @@ export const ContactRow: React.FC<Props> = ({ contact }) => {
       Interval.after(DateTime.now().startOf('day'), {
         days: 5,
       }).contains(
-      DateTime.fromObject({ month: person.birthdayMonth, day: person.birthdayDay }),
+        DateTime.fromObject({
+          month: person.birthdayMonth,
+          day: person.birthdayDay,
+        }),
       ),
     );
 
@@ -51,7 +54,10 @@ export const ContactRow: React.FC<Props> = ({ contact }) => {
       Interval.after(DateTime.now().startOf('day'), {
         days: 5,
       }).contains(
-        DateTime.fromObject({ month: person.anniversaryMonth, day: person.anniversaryDay }),
+        DateTime.fromObject({
+          month: person.anniversaryMonth,
+          day: person.anniversaryDay,
+        }),
       ),
     );
 
@@ -112,7 +118,7 @@ export const ContactRow: React.FC<Props> = ({ contact }) => {
             margin: theme.spacing(1),
           }}
         >
-          <GiftStatus status={GiftIsLateStatus(contact.lateAt)} />
+          <GiftStatus lateAt={contact.lateAt} />
         </Box>
 
         <Hidden mdDown>

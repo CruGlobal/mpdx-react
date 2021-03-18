@@ -74,7 +74,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/faker", "npm:5.1.6"],
             ["@types/jest", "npm:26.0.20"],
             ["@types/lodash", "npm:4.14.168"],
-            ["@types/luxon", "npm:1.25.1"],
+            ["@types/luxon", "npm:1.26.2"],
             ["@types/mui-datatables", "npm:3.7.0"],
             ["@types/next-auth", "npm:3.1.24"],
             ["@types/node", "npm:14.14.26"],
@@ -5929,7 +5929,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [
             ["@date-io/luxon", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:1.3.13"],
             ["@date-io/core", "npm:1.3.13"],
-            ["@types/luxon", "npm:1.25.1"],
+            ["@types/luxon", "npm:1.26.2"],
             ["luxon", "npm:1.26.0"]
           ],
           "packagePeers": [
@@ -10569,10 +10569,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]
       ]],
       ["@types/luxon", [
-        ["npm:1.25.1", {
-          "packageLocation": "./.yarn/cache/@types-luxon-npm-1.25.1-6ff94d71b7-5767c3d4b1.zip/node_modules/@types/luxon/",
+        ["npm:1.26.2", {
+          "packageLocation": "./.yarn/cache/@types-luxon-npm-1.26.2-7a6abe2093-b9148779f0.zip/node_modules/@types/luxon/",
           "packageDependencies": [
-            ["@types/luxon", "npm:1.25.1"]
+            ["@types/luxon", "npm:1.26.2"]
           ],
           "linkType": "HARD",
         }]
@@ -24390,7 +24390,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/faker", "npm:5.1.6"],
             ["@types/jest", "npm:26.0.20"],
             ["@types/lodash", "npm:4.14.168"],
-            ["@types/luxon", "npm:1.25.1"],
+            ["@types/luxon", "npm:1.26.2"],
             ["@types/mui-datatables", "npm:3.7.0"],
             ["@types/next-auth", "npm:3.1.24"],
             ["@types/node", "npm:14.14.26"],

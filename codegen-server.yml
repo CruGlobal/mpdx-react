@@ -14,3 +14,5 @@ generates:
       federation: true
       useIndexSignature: true
       contextType: ./graphql-rest.page#Context
+      ISO8601Date: string
+      ISO8601DateTime: string
