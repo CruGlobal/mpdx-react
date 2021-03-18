@@ -42,11 +42,7 @@ export const ContactRow: React.FC<Props> = ({ contact }) => {
       Interval.after(DateTime.now().startOf('day'), {
         days: 5,
       }).contains(
-        DateTime.fromISO(
-          `${new Date().getFullYear}-${person.birthdayMonth}-${
-            person.birthdayDay
-          }`,
-        ),
+      DateTime.fromObject({ month: person.birthdayMonth, day: person.birthdayDay }),
       ),
     );
 
