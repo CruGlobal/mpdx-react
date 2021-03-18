@@ -1,6 +1,6 @@
 import React, { ReactElement } from 'react';
 import { Box } from '@material-ui/core';
-import { boolean } from '@storybook/addon-knobs';
+import { number } from '@storybook/addon-knobs';
 import { CelebrationIcons } from './CelebrationIcons';
 
 export default {
@@ -11,8 +11,18 @@ export const Default = (): ReactElement => {
   return (
     <Box m={2}>
       <CelebrationIcons
-        hasAnniversary={boolean('hasAnniversary', false)}
-        hasBirthday={boolean('hasBirthday', false)}
+        contact={{
+          people: {
+            nodes: [
+              {
+                anniversaryMonth: number('anniversaryMonth', 2),
+                anniversaryDay: number('anniversaryDay', 1),
+                birthdayMonth: number('birthdayMonth', 2),
+                birthdayDay: number('birthdayDay', 1),
+              },
+            ],
+          },
+        }}
       />
     </Box>
   );
@@ -22,8 +32,18 @@ export const HasBirthdayOnly = (): ReactElement => {
   return (
     <Box m={2}>
       <CelebrationIcons
-        hasAnniversary={boolean('hasAnniversary', false)}
-        hasBirthday={boolean('hasBirthday', true)}
+        contact={{
+          people: {
+            nodes: [
+              {
+                anniversaryMonth: number('anniversaryMonth', 2),
+                anniversaryDay: number('anniversaryDay', 1),
+                birthdayMonth: number('birthdayMonth', 1),
+                birthdayDay: number('birthdayDay', 1),
+              },
+            ],
+          },
+        }}
       />
     </Box>
   );
@@ -33,8 +53,18 @@ export const HasAnniversaryOnly = (): ReactElement => {
   return (
     <Box m={2}>
       <CelebrationIcons
-        hasAnniversary={boolean('hasAnniversary', true)}
-        hasBirthday={boolean('hasBirthday', false)}
+        contact={{
+          people: {
+            nodes: [
+              {
+                anniversaryMonth: number('anniversaryMonth', 1),
+                anniversaryDay: number('anniversaryDay', 1),
+                birthdayMonth: number('birthdayMonth', 2),
+                birthdayDay: number('birthdayDay', 1),
+              },
+            ],
+          },
+        }}
       />
     </Box>
   );
@@ -44,8 +74,18 @@ export const HasBoth = (): ReactElement => {
   return (
     <Box m={2}>
       <CelebrationIcons
-        hasAnniversary={boolean('hasAnniversary', true)}
-        hasBirthday={boolean('hasBirthday', true)}
+        contact={{
+          people: {
+            nodes: [
+              {
+                anniversaryMonth: number('anniversaryMonth', 1),
+                anniversaryDay: number('anniversaryDay', 1),
+                birthdayMonth: number('birthdayMonth', 1),
+                birthdayDay: number('birthdayDay', 1),
+              },
+            ],
+          },
+        }}
       />
     </Box>
   );

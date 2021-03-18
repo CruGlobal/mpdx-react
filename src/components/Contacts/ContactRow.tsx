@@ -37,30 +37,6 @@ interface Props {
 export const ContactRow: React.FC<Props> = ({ contact }) => {
   const classes = useStyles();
 
-  const contactHasBirthday = (): boolean =>
-    contact.people.nodes.some((person) =>
-      Interval.after(DateTime.now().startOf('day'), {
-        days: 5,
-      }).contains(
-        DateTime.fromObject({
-          month: person.birthdayMonth,
-          day: person.birthdayDay,
-        }),
-      ),
-    );
-
-  const contactHasAnniversary = (): boolean =>
-    contact.people.nodes.some((person) =>
-      Interval.after(DateTime.now().startOf('day'), {
-        days: 5,
-      }).contains(
-        DateTime.fromObject({
-          month: person.anniversaryMonth,
-          day: person.anniversaryDay,
-        }),
-      ),
-    );
-
   return (
     <Box style={{ width: '100%' }}>
       <Box
@@ -104,10 +80,7 @@ export const ContactRow: React.FC<Props> = ({ contact }) => {
               margin: theme.spacing(1),
             }}
           >
-            <CelebrationIcons
-              hasBirthday={contactHasBirthday()}
-              hasAnniversary={contactHasAnniversary()}
-            />
+            <CelebrationIcons contact={contact} />
           </Box>
         </Hidden>
 

@@ -14,7 +14,7 @@ import TestRouter from '../__tests__/util/TestRouter';
 import theme from '../src/theme';
 import i18n from '../src/lib/i18n';
 
-Settings.now = () => new Date(2020, 1, 1).valueOf();
+Settings.now = () => new Date(2020, 0, 1).valueOf();
 
 addDecorator(
   withI18next({
