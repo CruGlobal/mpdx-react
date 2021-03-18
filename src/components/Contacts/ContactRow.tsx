@@ -39,7 +39,7 @@ export const ContactRow: React.FC<Props> = ({ contact }) => {
 
   const contactHasBirthday = (): boolean =>
     contact.people.nodes.some((person) =>
-      Interval.after(DateTime.fromJSDate(new Date()).startOf('day'), {
+      Interval.after(DateTime.now().startOf('day'), {
         days: 5,
       }).contains(
         DateTime.fromISO(
