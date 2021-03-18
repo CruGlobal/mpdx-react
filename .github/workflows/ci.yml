@@ -21,7 +21,7 @@ jobs:
         run: yarn install --immutable --immutable-cache
       - id: set-test-chunks
         name: Set Chunks
-        run: echo "::set-output name=test-chunks::$(yarn test --silent --listTests --json | jq -cM '[_nwise(length / 4 | floor)]')"
+        run: echo "::set-output name=test-chunks::$(yarn test --silent --listTests --json | jq -cM '[_nwise(length / 4 | ceil)]')"
       - id: set-test-chunk-ids
         name: Set Chunk IDs
         run: echo "::set-output name=test-chunk-ids::$(echo $CHUNKS | jq -cM 'to_entries | map(.key)')"
