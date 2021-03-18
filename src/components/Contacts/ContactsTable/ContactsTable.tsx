@@ -16,6 +16,7 @@ const ContactsTable: React.FC<Props> = ({
 }: Props) => {
   const renderLoading = () => (
     <Box
+      data-testID="LoadingText"
       height="100%"
       alignItems="center"
       justifyContent="center"
@@ -26,13 +27,15 @@ const ContactsTable: React.FC<Props> = ({
   );
 
   const renderEmpty = () => (
-    <Box height="100%" bgcolor={colors.yellow[600]}>
+    <Box data-testID="EmptyText" height="100%" bgcolor={colors.yellow[600]}>
       No Data
     </Box>
   );
 
   const renderError = () => (
-    <Box bgcolor={colors.red[600]}>Error: {error.toString()}</Box>
+    <Box data-testID="ErrorText" bgcolor={colors.red[600]}>
+      Error: {error.toString()}
+    </Box>
   );
 
   return (
@@ -43,7 +46,7 @@ const ContactsTable: React.FC<Props> = ({
       ) : contacts.length === 0 ? (
         renderEmpty()
       ) : (
-        <Table>
+        <Table data-testID="ContactsTable">
           {contacts.map((contact) => (
             <ContactRow key={contact.id} contact={contact} />
           ))}

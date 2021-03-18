@@ -23,13 +23,13 @@ const ContactFilters: React.FC<Props> = ({
     <div style={{ backgroundColor: colors.amber[600] }}>
       <h2>Filters</h2>
       <button onClick={() => loadFilters()}>Load Filters</button>
-      {error && <p>Error: {error.toString()}</p>}
+      {error && <p data-testID="ErrorText">Error: {error.toString()}</p>}
       {loading ? (
-        <p>Loading Filters</p>
+        <p data-testID="LoadingText">Loading Filters</p>
       ) : !data?.contactFilters ? (
-        <p>No filters</p>
+        <p data-testID="EmptyText">No filters</p>
       ) : (
-        <ul>
+        <ul data-testID="FiltersList">
           {data.contactFilters.map(({ id, name }) => (
             <li key={id}>{name}</li>
           ))}

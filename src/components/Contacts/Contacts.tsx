@@ -33,7 +33,6 @@ const Contacts = ({
     <Box height="100vh" display="flex">
       <Box flex={1}>
         <ContactFilters
-          style={{ flex: 1 }}
           data={filtersData}
           loading={filtersLoading}
           error={filtersError}
