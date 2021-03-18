@@ -37,6 +37,6 @@ it('should render list of people', async () => {
   );
   // TODO: Fix custom mocks so we don't have to rely on finding first and checking if it matches a hardcoded random value
   expect((await findAllByRole('row'))[0]).toHaveTextContent(
-    'Bible Videotape Torch',
+    'Stomach BrainCoffee Elephant Bee',
   );
 });

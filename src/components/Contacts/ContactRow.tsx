@@ -1,6 +1,5 @@
 import { Box, Hidden, makeStyles, Theme } from '@material-ui/core';
 import { CheckBox } from '@material-ui/icons';
-import { DateTime, Interval } from 'luxon';
 import React from 'react';
 import theme from '../../theme';
 import { CelebrationIcons } from './CelebrationIcons/CelebrationIcons';
@@ -38,7 +37,7 @@ export const ContactRow: React.FC<Props> = ({ contact }) => {
   const classes = useStyles();
 
   return (
-    <Box style={{ width: '100%' }}>
+    <Box role="row" style={{ width: '100%' }}>
       <Box
         style={{
           height: '72px',

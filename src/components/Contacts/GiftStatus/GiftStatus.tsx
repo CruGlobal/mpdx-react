@@ -2,8 +2,8 @@ import React from 'react';
 import ErrorIcon from '@material-ui/icons/Error';
 import Circle from '@material-ui/icons/FiberManualRecord';
 import { useTranslation } from 'react-i18next';
-import theme from '../../../theme';
 import { DateTime } from 'luxon';
+import theme from '../../../theme';
 
 interface GiftStatusProps {
   lateAt: string;

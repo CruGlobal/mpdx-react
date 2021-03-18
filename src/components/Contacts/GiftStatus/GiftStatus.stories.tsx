@@ -1,7 +1,7 @@
 import React, { ReactElement } from 'react';
 import { Box } from '@material-ui/core';
-import { GiftStatus } from './GiftStatus';
 import { DateTime } from 'luxon';
+import { GiftStatus } from './GiftStatus';
 
 export default {
   title: 'Contacts/ContactRow/Widgets/GiftStatus',

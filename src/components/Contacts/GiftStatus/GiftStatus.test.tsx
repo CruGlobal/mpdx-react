@@ -1,7 +1,7 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import { GiftStatus } from './GiftStatus';
 import { DateTime } from 'luxon';
+import { GiftStatus } from './GiftStatus';
 
 describe('GiftStatus', () => {
   it('is Late', () => {

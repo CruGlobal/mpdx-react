@@ -1,5 +1,5 @@
 import React from 'react';
-import { render } from '@testing-library/react';
+import { render, within } from '@testing-library/react';
 import { gqlMock } from '../../../__tests__/util/graphqlMocking';
 import { ContactRow } from './ContactRow';
 import {
@@ -13,5 +13,5 @@ it('should display contact name', () => {
     mocks: { name },
   });
   const { getByRole } = render(<ContactRow contact={contact} />);
-  expect(getByRole('row').textContent).toEqual(name);
+  expect(within(getByRole('row')).getByText(name)).toBeVisible();
 });

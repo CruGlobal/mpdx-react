@@ -74,8 +74,8 @@ const taskSchema: yup.SchemaOf<TaskMutationResponseFragmentWithoutTypename> = yu
     id: yup.string().nullable(),
     activityType: yup.mixed<ActivityTypeEnum>(),
     subject: yup.string().required(),
-    startAt: yup.date().nullable(),
-    completedAt: yup.date().nullable(),
+    startAt: yup.string().nullable(),
+    completedAt: yup.string().nullable(),
     tagList: yup.array().of(yup.string()).default([]),
     contacts: yup.object({
       nodes: yup
