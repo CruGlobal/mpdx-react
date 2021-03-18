@@ -17,12 +17,5 @@ fragment ContactRow on Contact {
   # TODO: Add when available in schema
   # taskCount
   # starredAt
-  people {
-    nodes {
-      anniversaryMonth
-      anniversaryDay
-      birthdayDay
-      birthdayMonth
-    }
-  }
+  ...CelebrationItems
 }

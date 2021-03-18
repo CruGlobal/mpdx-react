@@ -12,6 +12,10 @@ generates:
       - add:
           content: '/* eslint-disable */'
       - typescript
+    config:
+      scalars:
+        ISO8601Date: string
+        ISO8601DateTime: string
   ./:
     preset: near-operation-file
     presetConfig:

@@ -36,7 +36,7 @@
     "@material-ui/lab": "^4.0.0-alpha.57",
     "@material-ui/pickers": "^3.2.10",
     "@saeris/apollo-server-vercel": "^0.4.0",
-    "@types/luxon": "^1.25.1",
+    "@types/luxon": "^1.26.2",
     "apollo-cache-persist": "^0.1.1",
     "apollo-datasource-rest": "^0.10.0",
     "axios": "^0.21.1",

@@ -15,7 +15,7 @@ export const getTasksForTaskListMock = (): MockedResponse => {
           id: 'task-1',
           activityType: ActivityTypeEnum.Appointment,
           subject: 'On the Journey with the Johnson Family',
-          startAt: DateTime.local(2012, 1, 5, 1, 2),
+          startAt: DateTime.local(2012, 1, 5, 1, 2).toISO(),
           completedAt: null,
           tagList: ['tag-1', 'tag-2'],
           contacts: {
@@ -105,7 +105,7 @@ export const getFilteredTasksForTaskListMock = (
           id: 'task-1',
           activityType: ActivityTypeEnum.Appointment,
           subject: 'On the Journey with the Johnson Family',
-          startAt: DateTime.local(2012, 1, 5, 1, 2),
+          startAt: DateTime.local(2012, 1, 5, 1, 2).toISO(),
           completedAt: null,
           tagList: ['tag-1', 'tag-2'],
           contacts: {
@@ -120,7 +120,7 @@ export const getFilteredTasksForTaskListMock = (
           id: 'task-1',
           activityType: ActivityTypeEnum.Appointment,
           subject: 'On the Journey with the Johnson Family 2020',
-          startAt: DateTime.fromISO('2020-09-01'),
+          startAt: '2020-09-01',
           completedAt: null,
           tagList: ['tag-1', 'tag-2'],
           contacts: {

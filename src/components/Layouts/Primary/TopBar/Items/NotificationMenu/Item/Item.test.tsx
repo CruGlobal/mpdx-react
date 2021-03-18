@@ -424,7 +424,7 @@ describe('NotificationMenuItem', () => {
           />
         </TestWrapper>,
       );
-      expect(getByRole('heading').textContent).toEqual('Feb 2020');
+      expect(getByRole('heading').textContent).toEqual('Jan 2020');
     });
   });
 

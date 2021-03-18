@@ -1,0 +1,10 @@
+fragment CelebrationItems on Contact {
+  people {
+    nodes {
+      anniversaryMonth
+      anniversaryDay
+      birthdayDay
+      birthdayMonth
+    }
+  }
+}

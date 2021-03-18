@@ -65,7 +65,7 @@ const taskSchema: yup.SchemaOf<
   result: yup.mixed<ResultEnum>().required(),
   nextAction: yup.mixed<ActivityTypeEnum>(),
   tagList: yup.array().of(yup.string()).default([]),
-  completedAt: yup.date(),
+  completedAt: yup.string(),
 });
 
 interface Props {

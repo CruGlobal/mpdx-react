@@ -92,7 +92,7 @@ describe('TasksDueThisWeek', () => {
       const viewAllElement = getByTestId('TasksDueThisWeekButtonViewAll');
       expect(viewAllElement).toHaveAttribute(
         'href',
-        '/accountLists/abc/tasks?completed=false&startAt[max]=2020-02-01',
+        '/accountLists/abc/tasks?completed=false&startAt[max]=2020-01-01',
       );
       expect(viewAllElement.textContent).toEqual('View All (1,234)');
       const task1Element = getByTestId('TasksDueThisWeekListItem-task_1');

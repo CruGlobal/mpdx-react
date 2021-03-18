@@ -53,7 +53,7 @@ describe('WeeklyActivity', () => {
       </MockedProvider>,
     );
     expect(getByTestId('WeeklyActivityTableCellDateRange').textContent).toEqual(
-      'Jan 26 - Feb 1',
+      'Dec 29 - Jan 4',
     );
     await waitFor(() =>
       expect(
@@ -87,7 +87,7 @@ describe('WeeklyActivity', () => {
       ).not.toBeInTheDocument(),
     );
     expect(getByTestId('WeeklyActivityTableCellDateRange').textContent).toEqual(
-      'Jan 19 - Jan 25',
+      'Dec 22 - Dec 28',
     );
     expect(
       getByTestId('WeeklyActivityTableCellCompletedCalls').textContent,
@@ -99,7 +99,7 @@ describe('WeeklyActivity', () => {
       ).not.toBeInTheDocument(),
     );
     expect(getByTestId('WeeklyActivityTableCellDateRange').textContent).toEqual(
-      'Jan 26 - Feb 1',
+      'Dec 29 - Jan 4',
     );
     expect(
       getByTestId('WeeklyActivityTableCellCompletedCalls').textContent,
