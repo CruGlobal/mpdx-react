@@ -1,5 +1,12 @@
 import React from 'react';
-import { Box, Table, colors } from '@material-ui/core';
+import {
+  Box,
+  Table,
+  colors,
+  TableHead,
+  TableBody,
+  TableContainer,
+} from '@material-ui/core';
 import { ContactRow } from '../ContactRow';
 import { ContactsHeader } from '../ContactsHeader/ContactsHeader';
 import { useContactsQuery } from '../../../../pages/accountLists/[accountListId]/Contacts.generated';
@@ -38,20 +45,26 @@ export const ContactsTable: React.FC<Props> = ({ accountListId }: Props) => {
   );
 
   return (
-    <Box height="100vh" display="flex" flexDirection="column">
-      <ContactsHeader />
-      {error && renderError()}
-      {loading ? (
-        renderLoading()
-      ) : data.contacts.nodes?.length === 0 ? (
-        renderEmpty()
-      ) : (
-        <Table data-testID="ContactsTable">
-          {data.contacts.nodes?.map((contact) => (
-            <ContactRow key={contact.id} contact={contact} />
-          ))}
-        </Table>
-      )}
-    </Box>
+    <TableContainer>
+      <Table stickyHeader aria-label="sticky table">
+        <TableHead>
+          <ContactsHeader />
+        </TableHead>
+        <TableBody>
+          {error && renderError()}
+          {loading ? (
+            renderLoading()
+          ) : data.contacts.nodes?.length === 0 ? (
+            renderEmpty()
+          ) : (
+            <>
+              {data.contacts.nodes?.map((contact) => (
+                <ContactRow key={contact.id} contact={contact} />
+              ))}
+            </>
+          )}
+        </TableBody>
+      </Table>
+    </TableContainer>
   );
 };
