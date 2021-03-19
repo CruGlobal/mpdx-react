@@ -1,14 +1,14 @@
 import React from 'react';
 import { Box, Table, colors } from '@material-ui/core';
 import { ContactRow } from '../ContactRow';
-import ContactsHeader from '../ContactsHeader/ContactsHeader';
+import { ContactsHeader } from '../ContactsHeader/ContactsHeader';
 import { useContactsQuery } from '../../../../pages/accountLists/[accountListId]/Contacts.generated';
 
 interface Props {
   accountListId: string;
 }
 
-const ContactsTable: React.FC<Props> = ({ accountListId }: Props) => {
+export const ContactsTable: React.FC<Props> = ({ accountListId }: Props) => {
   const { data, loading, error } = useContactsQuery({
     variables: { accountListId: accountListId as string },
   });
@@ -55,5 +55,3 @@ const ContactsTable: React.FC<Props> = ({ accountListId }: Props) => {
     </Box>
   );
 };
-
-export default ContactsTable;

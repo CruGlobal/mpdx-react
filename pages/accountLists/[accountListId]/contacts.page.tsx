@@ -3,8 +3,8 @@ import Head from 'next/head';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'next/router';
 import { Box } from '@material-ui/core';
-import ContactFilters from '../../../src/components/Contacts/ContactFilters/ContactFilters';
-import ContactsTable from '../../../src/components/Contacts/ContactsTable/ContactsTable';
+import { ContactFilters } from '../../../src/components/Contacts/ContactFilters/ContactFilters';
+import { ContactsTable } from '../../../src/components/Contacts/ContactsTable/ContactsTable';
 
 const ContactsPage: React.FC = () => {
   const { t } = useTranslation();

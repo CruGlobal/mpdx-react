@@ -1,7 +1,7 @@
 import React, { ReactElement } from 'react';
 import { StatusEnum } from '../../../../graphql/types.generated';
 import { ContactRowFragment } from '../ContactRow.generated';
-import ContactsTable from './ContactsTable';
+import { ContactsTable } from './ContactsTable';
 
 export default {
   title: 'ContactsTable',

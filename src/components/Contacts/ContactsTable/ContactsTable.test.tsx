@@ -3,7 +3,7 @@ import { render } from '@testing-library/react';
 import matchMediaMock from '../../../../__tests__/util/matchMediaMock';
 import { StatusEnum } from '../../../../graphql/types.generated';
 import { ContactRowFragment } from '../ContactRow/ContactRow.generated';
-import ContactsTable from './ContactsTable';
+import { ContactsTable } from './ContactsTable';
 
 const data: ContactRowFragment[] = [
   {

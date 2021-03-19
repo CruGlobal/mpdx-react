@@ -6,7 +6,7 @@ interface Props {
   accountListId: string;
 }
 
-const ContactFilters: React.FC<Props> = ({ accountListId }: Props) => {
+export const ContactFilters: React.FC<Props> = ({ accountListId }: Props) => {
   const [
     loadContactFilters,
     { data, loading, error },
@@ -33,5 +33,3 @@ const ContactFilters: React.FC<Props> = ({ accountListId }: Props) => {
     </div>
   );
 };
-
-export default ContactFilters;

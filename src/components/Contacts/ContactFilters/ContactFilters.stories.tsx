@@ -1,6 +1,6 @@
 import React, { ReactElement } from 'react';
 import { ContactFiltersQuery } from '../../../../pages/accountLists/[accountListId]/ContactFilters.generated';
-import ContactFilters from './ContactFilters';
+import { ContactFilters } from './ContactFilters';
 
 export default {
   title: 'ContactFilters',

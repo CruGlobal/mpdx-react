@@ -1,12 +1,12 @@
 import React, { ReactElement } from 'react';
-import ContactHeaders from './ContactsHeader';
+import { ContactsHeader } from './ContactsHeader';
 
 export default {
   title: 'ContactHeaders',
 };
 
 export const Default = (): ReactElement => {
-  return <ContactHeaders />;
+  return <ContactsHeader />;
 };
 
 Default.story = {
