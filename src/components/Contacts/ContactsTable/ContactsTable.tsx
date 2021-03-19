@@ -1,19 +1,18 @@
 import React from 'react';
 import { Box, Table, colors } from '@material-ui/core';
 import { ContactRow } from '../ContactRow';
-import { ContactRowFragment } from '../ContactRow/ContactRow.generated';
+import ContactsHeader from '../ContactsHeader/ContactsHeader';
+import { useContactsQuery } from '../../../../pages/accountLists/[accountListId]/Contacts.generated';
 
 interface Props {
-  contacts: ContactRowFragment[] | undefined;
-  loading: boolean;
-  error: Error;
+  accountListId: string;
 }
 
-const ContactsTable: React.FC<Props> = ({
-  contacts = [],
-  loading,
-  error,
-}: Props) => {
+const ContactsTable: React.FC<Props> = ({ accountListId }: Props) => {
+  const { data, loading, error } = useContactsQuery({
+    variables: { accountListId: accountListId as string },
+  });
+
   const renderLoading = () => (
     <Box
       data-testID="LoadingText"
@@ -39,15 +38,16 @@ const ContactsTable: React.FC<Props> = ({
   );
 
   return (
-    <Box height="100%">
+    <Box height="100vh" display="flex" flexDirection="column">
+      <ContactsHeader />
       {error && renderError()}
       {loading ? (
         renderLoading()
-      ) : contacts.length === 0 ? (
+      ) : data.contacts.nodes?.length === 0 ? (
         renderEmpty()
       ) : (
         <Table data-testID="ContactsTable">
-          {contacts.map((contact) => (
+          {data.contacts.nodes?.map((contact) => (
             <ContactRow key={contact.id} contact={contact} />
           ))}
         </Table>

@@ -1,35 +1,28 @@
-import { QueryLazyOptions } from '@apollo/client';
 import { colors } from '@material-ui/core';
 import React from 'react';
-import { Exact } from '../../../../graphql/types.generated';
-import { ContactFiltersQuery } from '../../../../pages/accountLists/[accountListId]/ContactFilters.generated';
+import { useContactFiltersLazyQuery } from '../../../../pages/accountLists/[accountListId]/ContactFilters.generated';
 
 interface Props {
-  data: ContactFiltersQuery;
-  loading: boolean;
-  error: Error;
-  loadFilters: (
-    options?: QueryLazyOptions<Exact<{ accountListId: string }>>,
-  ) => void;
+  accountListId: string;
 }
 
-const ContactFilters: React.FC<Props> = ({
-  data,
-  loading,
-  error,
-  loadFilters,
-}: Props) => {
+const ContactFilters: React.FC<Props> = ({ accountListId }: Props) => {
+  const [
+    loadContactFilters,
+    { data, loading, error },
+  ] = useContactFiltersLazyQuery({
+    variables: { accountListId: accountListId as string },
+  });
+
   return (
     <div style={{ backgroundColor: colors.amber[600] }}>
       <h2>Filters</h2>
-      <button data-testID="LoadFiltersButton" onClick={() => loadFilters()}>
-        Load Filters
-      </button>
-      {error && <p data-testID="ErrorText">Error: {error.toString()}</p>}
+      <button onClick={() => loadContactFilters()}>Load Filters</button>
+      {error && <p>Error: {error.toString()}</p>}
       {loading ? (
-        <p data-testID="LoadingText">Loading Filters</p>
+        <p>Loading Filters</p>
       ) : !data?.contactFilters ? (
-        <p data-testID="EmptyText">No filters</p>
+        <p>No Filters</p>
       ) : (
         <ul data-testID="FiltersList">
           {data.contactFilters.map(({ id, name }) => (
