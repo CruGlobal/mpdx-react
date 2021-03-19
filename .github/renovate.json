@@ -1,5 +1,5 @@
 {
-  "extends": ["config:base"],
+  "extends": [":preserveSemverRanges", "config:base"],
   "labels": ["dependencies"],
   "prConcurrentLimit": 5,
   "ignorePaths": [".yarn/sdks/"]
