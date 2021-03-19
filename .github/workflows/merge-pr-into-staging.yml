@@ -10,7 +10,7 @@ jobs:
     steps:
       - uses: actions/checkout@master
       - name: Merge by labeled
-        uses: devmasx/merge-branch@v1.1.0
+        uses: devmasx/merge-branch@v1.3.1
         with:
           type: now
           target_branch: 'staging'
