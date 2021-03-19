@@ -1,0 +1,6 @@
+{
+  "extends": ["config:base"],
+  "labels": ["dependencies"],
+  "prConcurrentLimit": 5,
+  "ignorePaths": [".yarn/sdks/"]
+}
