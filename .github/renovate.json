@@ -1,7 +1,13 @@
 {
   "extends": [":preserveSemverRanges", "config:base"],
+  "ignorePaths": [".yarn/sdks/"],
+  "packageRules": [
+    {
+      "matchManagers": ["npm"],
+      "enabled": false
+    }
+  ],
   "labels": ["dependencies"],
   "prConcurrentLimit": 5,
-  "prHourlyLimit": 0,
-  "ignorePaths": [".yarn/sdks/"]
+  "prHourlyLimit": 0
 }
