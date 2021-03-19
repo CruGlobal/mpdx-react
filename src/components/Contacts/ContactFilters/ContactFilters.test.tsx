@@ -3,7 +3,7 @@ import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import matchMediaMock from '../../../../__tests__/util/matchMediaMock';
 import { ContactFiltersQuery } from '../../../../pages/accountLists/[accountListId]/ContactFilters.generated';
-import ContactFilters from './ContactFilters';
+import { ContactFilters } from './ContactFilters';
 
 const data: ContactFiltersQuery = {
   contactFilters: [

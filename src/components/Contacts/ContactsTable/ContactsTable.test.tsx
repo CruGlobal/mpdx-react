@@ -1,26 +1,9 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import matchMediaMock from '../../../../__tests__/util/matchMediaMock';
-import { StatusEnum } from '../../../../graphql/types.generated';
-import { ContactRowFragment } from '../ContactRow/ContactRow.generated';
 import { ContactsTable } from './ContactsTable';
 
-const data: ContactRowFragment[] = [
-  {
-    id: '1',
-    name: 'Mouse, Mickey',
-    status: StatusEnum.PartnerFinancial,
-    people: undefined,
-  },
-  {
-    id: '2',
-    name: 'Duck, Donald',
-    status: StatusEnum.PartnerPray,
-    people: undefined,
-  },
-];
-
-const loadFilters = jest.fn();
+const accountListId = '111';
 
 describe('ContactFilters', () => {
   beforeEach(() => {
@@ -29,7 +12,7 @@ describe('ContactFilters', () => {
 
   it('default', async () => {
     const { queryByTestId } = render(
-      <ContactsTable contacts={data} loading={false} error={null} />,
+      <ContactsTable accountListId={accountListId} />,
     );
 
     expect(queryByTestId('ContactsTable')).toBeVisible();
@@ -42,7 +25,7 @@ describe('ContactFilters', () => {
 
   it('loading', async () => {
     const { queryByTestId } = render(
-      <ContactsTable contacts={data} loading={true} error={null} />,
+      <ContactsTable accountListId={accountListId} />,
     );
 
     expect(queryByTestId('ContactsTable')).toBeNull();
@@ -53,7 +36,7 @@ describe('ContactFilters', () => {
 
   it('empty', async () => {
     const { queryByTestId } = render(
-      <ContactsTable contacts={undefined} loading={false} error={null} />,
+      <ContactsTable accountListId={accountListId} />,
     );
 
     expect(queryByTestId('ContactsTable')).toBeNull();
