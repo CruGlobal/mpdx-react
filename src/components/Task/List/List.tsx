@@ -434,7 +434,11 @@ const TaskList = ({ initialFilter }: Props): ReactElement => {
       setCurrentPage(newPage);
     },
     onRowClick: (_rowData, rowMeta) => {
-      openTaskDrawer({ taskId: data.tasks.nodes[rowMeta.dataIndex].id });
+      openTaskDrawer({
+        taskId: data.tasks.nodes[rowMeta.dataIndex].id,
+        filter,
+        rowsPerPage,
+      });
     },
     count: data?.tasks?.totalCount || 0,
     rowsPerPageOptions: [10, 25, 50, 100, 250, 500],

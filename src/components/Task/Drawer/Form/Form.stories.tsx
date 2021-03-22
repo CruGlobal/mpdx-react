@@ -19,6 +19,17 @@ export default {
   title: 'Task/Drawer/Form',
 };
 
+const mockFilter = {
+  userIds: [],
+  tags: [],
+  contactIds: [],
+  activityType: [],
+  completed: null,
+  startAt: null,
+  before: null,
+  after: null,
+};
+
 export const Default = (): ReactElement => {
   return (
     <MockedProvider
@@ -28,7 +39,12 @@ export const Default = (): ReactElement => {
       ]}
       addTypename={false}
     >
-      <TaskDrawerForm accountListId="abc" onClose={(): void => {}} />
+      <TaskDrawerForm
+        accountListId="abc"
+        filter={mockFilter}
+        rowsPerPage={100}
+        onClose={(): void => {}}
+      />
     </MockedProvider>
   );
 };
@@ -36,7 +52,12 @@ export const Default = (): ReactElement => {
 export const Loading = (): ReactElement => {
   return (
     <MockedProvider mocks={[]} addTypename={false}>
-      <TaskDrawerForm accountListId="abc" onClose={(): void => {}} />
+      <TaskDrawerForm
+        accountListId="abc"
+        filter={mockFilter}
+        rowsPerPage={100}
+        onClose={(): void => {}}
+      />
     </MockedProvider>
   );
 };
@@ -88,6 +109,8 @@ export const Persisted = (): ReactElement => {
     >
       <TaskDrawerForm
         accountListId="abc"
+        filter={mockFilter}
+        rowsPerPage={100}
         task={task}
         onClose={(): void => {}}
       />

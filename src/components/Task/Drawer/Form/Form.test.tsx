@@ -15,6 +15,17 @@ import {
 import TaskDrawerForm from '.';
 
 describe('TaskDrawerForm', () => {
+  const mockFilter = {
+    userIds: [],
+    tags: [],
+    contactIds: [],
+    activityType: [],
+    completed: null,
+    startAt: null,
+    before: null,
+    after: null,
+  };
+
   it('default', async () => {
     const onClose = jest.fn();
     const { getByText, getByRole, findByText } = render(
@@ -24,7 +35,12 @@ describe('TaskDrawerForm', () => {
             mocks={[getDataForTaskDrawerMock(), createTaskMutationMock()]}
             addTypename={false}
           >
-            <TaskDrawerForm accountListId="abc" onClose={onClose} />
+            <TaskDrawerForm
+              accountListId="abc"
+              filter={mockFilter}
+              rowsPerPage={100}
+              onClose={onClose}
+            />
           </MockedProvider>
         </SnackbarProvider>
       </MuiPickersUtilsProvider>,
@@ -54,14 +70,13 @@ describe('TaskDrawerForm', () => {
           >
             <TaskDrawerForm
               accountListId="abc"
+              filter={mockFilter}
+              rowsPerPage={100}
               onClose={onClose}
               task={{
                 activityType: null,
                 contacts: {
                   nodes: [],
-                  pageInfo: { hasNextPage: false, hasPreviousPage: false },
-                  totalCount: 0,
-                  totalPageCount: 0,
                 },
                 id: 'task-1',
                 notificationTimeBefore: null,

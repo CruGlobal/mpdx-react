@@ -41,6 +41,12 @@ mutation UpdateTask($accountListId: ID!, $attributes: TaskUpdateInput!) {
   }
 }
 
+mutation DeleteTask($accountListId: ID!, $id: ID!) {
+  deleteTask(input: { accountListId: $accountListId, id: $id }) {
+    id
+  }
+}
+
 fragment TaskMutationResponse on Task {
   id
   activityType
