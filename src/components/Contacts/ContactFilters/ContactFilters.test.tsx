@@ -21,27 +21,6 @@ describe('ContactFilters', () => {
     expect(queryByTestId('FiltersList')).toBeNull();
   });
 
-  it('loading', async () => {
-    const { queryByTestId, queryByText } = render(
-      <GqlMockedProvider<ContactFiltersQuery>>
-        <ContactFilters accountListId={accountListId} />
-      </GqlMockedProvider>,
-    );
-
-    const loadFiltersButton = queryByText('Load Filters');
-
-    userEvent.click(loadFiltersButton);
-
-    await waitFor(() =>
-      expect(queryByText('Load Filters')).not.toBeInTheDocument(),
-    );
-
-    expect(queryByText('Loading Filters')).toBeVisible();
-    expect(queryByText('No Filters')).toBeNull();
-    expect(queryByTestId('ErrorText')).toBeNull();
-    expect(queryByTestId('FiltersList')).toBeNull();
-  });
-
   it('filters loaded', async () => {
     const { queryByTestId, queryByText } = render(
       <GqlMockedProvider<ContactFiltersQuery>>
