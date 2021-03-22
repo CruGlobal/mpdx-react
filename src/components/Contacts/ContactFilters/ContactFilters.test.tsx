@@ -7,6 +7,8 @@ import { ContactFilters } from './ContactFilters';
 
 const accountListId = '111';
 
+//TODO: Need test coverage for loading state and error state
+
 describe('ContactFilters', () => {
   it('default', async () => {
     const { queryByTestId, queryByText } = render(

@@ -6,6 +6,8 @@ import { ContactsTable } from './ContactsTable';
 
 const accountListId = '111';
 
+//TODO: Need test coverage for error state
+
 describe('ContactFilters', () => {
   it('loading', async () => {
     const { queryByTestId, queryByText } = render(
