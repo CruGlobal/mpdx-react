@@ -18,7 +18,7 @@ export const ContactFilters: React.FC<Props> = ({ accountListId }: Props) => {
     <div style={{ backgroundColor: colors.amber[600] }}>
       <h2>Filters</h2>
       <button onClick={() => loadContactFilters()}>Load Filters</button>
-      {error && <p>Error: {error.toString()}</p>}
+      {error && <p data-testID="ErrorText">Error: {error.toString()}</p>}
       {loading ? (
         <p>Loading Filters</p>
       ) : !data?.contactFilters ? (

@@ -22,7 +22,6 @@ export const ContactsTable: React.FC<Props> = ({ accountListId }: Props) => {
 
   const renderLoading = () => (
     <Box
-      data-testID="LoadingText"
       height="100%"
       alignItems="center"
       justifyContent="center"
@@ -33,15 +32,13 @@ export const ContactsTable: React.FC<Props> = ({ accountListId }: Props) => {
   );
 
   const renderEmpty = () => (
-    <Box data-testID="EmptyText" height="100%" bgcolor={colors.yellow[600]}>
+    <Box height="100%" bgcolor={colors.yellow[600]}>
       No Data
     </Box>
   );
 
   const renderError = () => (
-    <Box data-testID="ErrorText" bgcolor={colors.red[600]}>
-      Error: {error.toString()}
-    </Box>
+    <Box bgcolor={colors.red[600]}>Error: {error.toString()}</Box>
   );
 
   return (
@@ -54,14 +51,14 @@ export const ContactsTable: React.FC<Props> = ({ accountListId }: Props) => {
           {error && renderError()}
           {loading ? (
             renderLoading()
-          ) : data.contacts.nodes?.length === 0 ? (
+          ) : !(data.contacts.nodes?.length > 0) ? (
             renderEmpty()
           ) : (
-            <>
+            <div data-testID="ContactRows">
               {data.contacts.nodes?.map((contact) => (
                 <ContactRow key={contact.id} contact={contact} />
               ))}
-            </>
+            </div>
           )}
         </TableBody>
       </Table>

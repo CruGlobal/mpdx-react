@@ -1,47 +1,60 @@
 import React from 'react';
-import { render } from '@testing-library/react';
-import matchMediaMock from '../../../../__tests__/util/matchMediaMock';
+import { render, waitFor } from '@testing-library/react';
+import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
+import { ContactsQuery } from '../../../../pages/accountLists/[accountListId]/Contacts.generated';
 import { ContactsTable } from './ContactsTable';
 
 const accountListId = '111';
 
 describe('ContactFilters', () => {
-  beforeEach(() => {
-    matchMediaMock({ width: '1024px' });
-  });
-
-  it('default', async () => {
-    const { queryByTestId } = render(
-      <ContactsTable accountListId={accountListId} />,
-    );
-
-    expect(queryByTestId('ContactsTable')).toBeVisible();
-    expect(queryByTestId('LoadingText')).toBeNull();
-    expect(queryByTestId('EmptyText')).toBeNull();
-    expect(queryByTestId('ErrorText')).toBeNull();
-
-    expect(queryByTestId('ContactsTable').childNodes.length).toEqual(2);
-  });
-
   it('loading', async () => {
-    const { queryByTestId } = render(
-      <ContactsTable accountListId={accountListId} />,
+    const { queryByTestId, queryByText } = render(
+      <GqlMockedProvider<ContactsQuery>>
+        <ContactsTable accountListId={accountListId} />
+      </GqlMockedProvider>,
     );
 
-    expect(queryByTestId('ContactsTable')).toBeNull();
-    expect(queryByTestId('LoadingText')).toBeVisible();
-    expect(queryByTestId('EmptyText')).toBeNull();
-    expect(queryByTestId('ErrorText')).toBeNull();
+    expect(queryByText('Loading')).toBeVisible();
+    expect(queryByText('No Data')).toBeNull();
+    expect(queryByText('Error:')).toBeNull();
+    expect(queryByTestId('ContactRows')).toBeNull();
+  });
+
+  it('contacts loaded', async () => {
+    const { queryByTestId, queryByText } = render(
+      <GqlMockedProvider<ContactsQuery>>
+        <ContactsTable accountListId={accountListId} />
+      </GqlMockedProvider>,
+    );
+
+    await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());
+
+    expect(queryByText('Loading')).toBeNull();
+    expect(queryByText('No Data')).toBeNull();
+    expect(queryByText('Error:')).toBeNull();
+    expect(queryByTestId('ContactRows').childNodes.length).toEqual(3);
   });
 
   it('empty', async () => {
-    const { queryByTestId } = render(
-      <ContactsTable accountListId={accountListId} />,
+    const mocks = {
+      Contacts: {
+        contacts: {
+          nodes: [],
+        },
+      },
+    };
+
+    const { queryByTestId, queryByText } = render(
+      <GqlMockedProvider<ContactsQuery> mocks={mocks}>
+        <ContactsTable accountListId={accountListId} />
+      </GqlMockedProvider>,
     );
 
-    expect(queryByTestId('ContactsTable')).toBeNull();
-    expect(queryByTestId('LoadingText')).toBeNull();
-    expect(queryByTestId('EmptyText')).toBeVisible();
-    expect(queryByTestId('ErrorText')).toBeNull();
+    await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());
+
+    expect(queryByText('Loading')).toBeNull();
+    expect(queryByText('No Data')).toBeVisible();
+    expect(queryByText('Error:')).toBeNull();
+    expect(queryByTestId('ContactRows')).toBeNull();
   });
 });

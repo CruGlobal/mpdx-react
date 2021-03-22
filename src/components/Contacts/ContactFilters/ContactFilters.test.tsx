@@ -1,88 +1,67 @@
 import React from 'react';
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import matchMediaMock from '../../../../__tests__/util/matchMediaMock';
 import { ContactFiltersQuery } from '../../../../pages/accountLists/[accountListId]/ContactFilters.generated';
+import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
 import { ContactFilters } from './ContactFilters';
 
-const data: ContactFiltersQuery = {
-  contactFilters: [
-    { id: '1', name: 'Late Commitments' },
-    { id: '2', name: 'Status' },
-  ],
-};
-
-const loadFilters = jest.fn();
+const accountListId = '111';
 
 describe('ContactFilters', () => {
-  beforeEach(() => {
-    matchMediaMock({ width: '1024px' });
-  });
-
   it('default', async () => {
-    const { queryByTestId } = render(
-      <ContactFilters
-        data={data}
-        loading={false}
-        error={null}
-        loadFilters={loadFilters}
-      />,
+    const { queryByTestId, queryByText } = render(
+      <GqlMockedProvider<ContactFiltersQuery>>
+        <ContactFilters accountListId={accountListId} />
+      </GqlMockedProvider>,
     );
 
-    expect(queryByTestId('FiltersList')).toBeVisible();
-    expect(queryByTestId('LoadingText')).toBeNull();
-    expect(queryByTestId('EmptyText')).toBeNull();
+    expect(queryByText('Loading Filters')).toBeNull();
+    expect(queryByText('No Filters')).toBeVisible();
     expect(queryByTestId('ErrorText')).toBeNull();
-
-    expect(queryByTestId('FiltersList').childNodes.length).toEqual(2);
+    expect(queryByTestId('FiltersList')).toBeNull();
   });
 
   it('loading', async () => {
-    const { queryByTestId } = render(
-      <ContactFilters
-        data={data}
-        loading={true}
-        error={null}
-        loadFilters={loadFilters}
-      />,
+    const { queryByTestId, queryByText } = render(
+      <GqlMockedProvider<ContactFiltersQuery>>
+        <ContactFilters accountListId={accountListId} />
+      </GqlMockedProvider>,
     );
 
-    expect(queryByTestId('FiltersList')).toBeNull();
-    expect(queryByTestId('LoadingText')).toBeVisible();
-    expect(queryByTestId('EmptyText')).toBeNull();
-    expect(queryByTestId('ErrorText')).toBeNull();
-  });
-
-  it('empty', async () => {
-    const { queryByTestId } = render(
-      <ContactFilters
-        data={undefined}
-        loading={false}
-        error={null}
-        loadFilters={loadFilters}
-      />,
-    );
-
-    expect(queryByTestId('FiltersList')).toBeNull();
-    expect(queryByTestId('LoadingText')).toBeNull();
-    expect(queryByTestId('EmptyText')).toBeVisible();
-    expect(queryByTestId('ErrorText')).toBeNull();
-  });
-
-  it('button pressed', () => {
-    const { queryByTestId } = render(
-      <ContactFilters
-        data={data}
-        loading={false}
-        error={null}
-        loadFilters={loadFilters}
-      />,
-    );
-
-    const loadFiltersButton = queryByTestId('LoadFiltersButton');
+    const loadFiltersButton = queryByText('Load Filters');
 
     userEvent.click(loadFiltersButton);
 
-    expect(loadFilters).toHaveBeenCalledWith();
+    await waitFor(() =>
+      expect(queryByText('Load Filters')).not.toBeInTheDocument(),
+    );
+
+    expect(queryByText('Loading Filters')).toBeVisible();
+    expect(queryByText('No Filters')).toBeNull();
+    expect(queryByTestId('ErrorText')).toBeNull();
+    expect(queryByTestId('FiltersList')).toBeNull();
+  });
+
+  it('filters loaded', async () => {
+    const { queryByTestId, queryByText } = render(
+      <GqlMockedProvider<ContactFiltersQuery>>
+        <ContactFilters accountListId={accountListId} />
+      </GqlMockedProvider>,
+    );
+
+    const loadFiltersButton = queryByText('Load Filters');
+
+    userEvent.click(loadFiltersButton);
+
+    await waitFor(() =>
+      expect(queryByText('Loading Filters')).not.toBeInTheDocument(),
+    );
+
+    expect(queryByText('Loading Filters')).toBeNull();
+    expect(queryByText('No Filters')).toBeNull();
+    expect(queryByTestId('ErrorText')).toBeNull();
+    expect(queryByTestId('FiltersList')).toBeVisible();
+
+    expect(queryByTestId('FiltersList').childNodes.length).toEqual(2);
   });
 });
