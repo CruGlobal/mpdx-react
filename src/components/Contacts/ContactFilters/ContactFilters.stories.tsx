@@ -1,49 +1,22 @@
 import React, { ReactElement } from 'react';
-import { ContactFiltersQuery } from '../../../../pages/accountLists/[accountListId]/ContactFilters.generated';
 import { ContactFilters } from './ContactFilters';
 
 export default {
   title: 'ContactFilters',
 };
 
-const data: ContactFiltersQuery = {
-  contactFilters: [
-    { id: '1', name: 'Late Commitments' },
-    { id: '2', name: 'Status' },
-  ],
-};
+const accountListId = '111';
 
 export const Default = (): ReactElement => {
-  return (
-    <ContactFilters
-      data={null}
-      loading={false}
-      error={null}
-      loadFilters={() => {}}
-    />
-  );
+  return <ContactFilters accountListId={accountListId} />;
 };
 
 export const Loading = (): ReactElement => {
-  return (
-    <ContactFilters
-      data={data}
-      loading={true}
-      error={null}
-      loadFilters={() => {}}
-    />
-  );
+  return <ContactFilters accountListId={accountListId} />;
 };
 
 export const WithData = (): ReactElement => {
-  return (
-    <ContactFilters
-      data={data}
-      loading={false}
-      error={null}
-      loadFilters={() => {}}
-    />
-  );
+  return <ContactFilters accountListId={accountListId} />;
 };
 
 Default.story = {
