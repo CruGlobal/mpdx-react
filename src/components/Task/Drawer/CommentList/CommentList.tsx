@@ -37,7 +37,7 @@ const TaskDrawerCommentList = ({
   const classes = useStyles();
   const { t } = useTranslation();
 
-  const { data, loading } = useGetCommentsForTaskDrawerCommentListQuery({
+  const { data, loading, error } = useGetCommentsForTaskDrawerCommentListQuery({
     variables: {
       accountListId,
       taskId,
@@ -53,7 +53,9 @@ const TaskDrawerCommentList = ({
   return (
     <>
       <Box m={2}>
-        {loading ? (
+        {error ? (
+          <p>{error.toString()}</p>
+        ) : loading ? (
           <Box data-testid="TaskDrawerCommentListLoading">
             <TaskDrawerCommentListItem />
             <TaskDrawerCommentListItem reverse />

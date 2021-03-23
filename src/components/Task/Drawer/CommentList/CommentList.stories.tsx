@@ -4,8 +4,12 @@ import {
   getCommentsForTaskDrawerCommentListMock,
   getCommentsForTaskDrawerCommentListEmptyMock,
   getCommentsForTaskDrawerCommentListLoadingMock,
+  getCommentsForTaskDrawerCommentListErrorMock,
 } from './CommentList.mock';
 import TaskDrawerCommentList from '.';
+
+const accountListId = 'abc';
+const taskId = 'task-1';
 
 export default {
   title: 'Task/Drawer/CommentList',
@@ -14,7 +18,7 @@ export default {
 export const Default = (): ReactElement => {
   return (
     <MockedProvider
-      mocks={[getCommentsForTaskDrawerCommentListMock()]}
+      mocks={[getCommentsForTaskDrawerCommentListMock(accountListId, taskId)]}
       addTypename={false}
     >
       <TaskDrawerCommentList accountListId="abc" taskId="task-1" />
@@ -25,7 +29,9 @@ export const Default = (): ReactElement => {
 export const Loading = (): ReactElement => {
   return (
     <MockedProvider
-      mocks={[getCommentsForTaskDrawerCommentListLoadingMock()]}
+      mocks={[
+        getCommentsForTaskDrawerCommentListLoadingMock(accountListId, taskId),
+      ]}
       addTypename={false}
     >
       <TaskDrawerCommentList accountListId="abc" taskId="task-1" />
@@ -36,7 +42,22 @@ export const Loading = (): ReactElement => {
 export const Empty = (): ReactElement => {
   return (
     <MockedProvider
-      mocks={[getCommentsForTaskDrawerCommentListEmptyMock()]}
+      mocks={[
+        getCommentsForTaskDrawerCommentListEmptyMock(accountListId, taskId),
+      ]}
+      addTypename={false}
+    >
+      <TaskDrawerCommentList accountListId="abc" taskId="task-1" />
+    </MockedProvider>
+  );
+};
+
+export const Error = (): ReactElement => {
+  return (
+    <MockedProvider
+      mocks={[
+        getCommentsForTaskDrawerCommentListErrorMock(accountListId, taskId),
+      ]}
       addTypename={false}
     >
       <TaskDrawerCommentList accountListId="abc" taskId="task-1" />
