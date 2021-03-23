@@ -45,7 +45,7 @@ const TaskDrawerContactList = ({
 
   const [
     getContacts,
-    { data, loading },
+    { data, loading, error },
   ] = useGetContactsForTaskDrawerContactListLazyQuery();
 
   useEffect(() => {
@@ -61,7 +61,9 @@ const TaskDrawerContactList = ({
 
   return (
     <Box m={2}>
-      {loading ? (
+      {error ? (
+        <p>{error.toString()}</p>
+      ) : loading ? (
         <Grid
           container
           spacing={2}
