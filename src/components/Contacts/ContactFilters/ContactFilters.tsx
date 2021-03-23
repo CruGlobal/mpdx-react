@@ -21,7 +21,7 @@ export const ContactFilters: React.FC<Props> = ({ accountListId }: Props) => {
       {error && <p data-testID="ErrorText">Error: {error.toString()}</p>}
       {loading ? (
         <p>Loading Filters</p>
-      ) : !data?.contactFilters ? (
+      ) : !data || data.contactFilters.length === 0 ? (
         <p>No Filters</p>
       ) : (
         <ul data-testID="FiltersList">
