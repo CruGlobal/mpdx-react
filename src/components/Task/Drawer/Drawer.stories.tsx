@@ -12,11 +12,13 @@ import { getTaskForTaskDrawerMock } from './Drawer.mock';
 import { completeTaskMutationMock } from './CompleteForm/CompleteForm.mock';
 import TaskDrawer from '.';
 
+const accountListId = 'abc';
+const contactIds = ['contact-1', 'contact-2'];
+const taskId = 'task-1';
+
 export default {
   title: 'Task/Drawer',
-  decorators: [
-    withDispatch({ type: 'updateAccountListId', accountListId: 'abc' }),
-  ],
+  decorators: [withDispatch({ type: 'updateAccountListId', accountListId })],
 };
 
 export const Default = (): ReactElement => {
@@ -34,15 +36,15 @@ export const Default = (): ReactElement => {
 export const Persisted = (): ReactElement => {
   const mocks = [
     getDataForTaskDrawerMock(),
-    getContactsForTaskDrawerContactListMock(),
-    getCommentsForTaskDrawerCommentListMock(),
+    getContactsForTaskDrawerContactListMock(accountListId, contactIds),
+    getCommentsForTaskDrawerCommentListMock(accountListId, taskId),
     { ...updateTaskMutationMock(), delay: 500 },
     getTaskForTaskDrawerMock(),
   ];
 
   return (
     <MockedProvider mocks={mocks} addTypename={false}>
-      <TaskDrawer taskId="task-1" />
+      <TaskDrawer taskId={taskId} />
     </MockedProvider>
   );
 };
@@ -50,15 +52,15 @@ export const Persisted = (): ReactElement => {
 export const showCompleteForm = (): ReactElement => {
   const mocks = [
     getDataForTaskDrawerMock(),
-    getContactsForTaskDrawerContactListMock(),
-    getCommentsForTaskDrawerCommentListMock(),
+    getContactsForTaskDrawerContactListMock(accountListId, contactIds),
+    getCommentsForTaskDrawerCommentListMock(accountListId, taskId),
     { ...completeTaskMutationMock(), delay: 500 },
     getTaskForTaskDrawerMock(),
   ];
 
   return (
     <MockedProvider mocks={mocks} addTypename={false}>
-      <TaskDrawer taskId="task-1" showCompleteForm />
+      <TaskDrawer taskId={taskId} showCompleteForm />
     </MockedProvider>
   );
 };

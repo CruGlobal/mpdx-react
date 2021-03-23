@@ -21,7 +21,7 @@ export const Default = (): ReactElement => {
       mocks={[getCommentsForTaskDrawerCommentListMock(accountListId, taskId)]}
       addTypename={false}
     >
-      <TaskDrawerCommentList accountListId="abc" taskId="task-1" />
+      <TaskDrawerCommentList accountListId={accountListId} taskId={taskId} />
     </MockedProvider>
   );
 };
@@ -34,7 +34,7 @@ export const Loading = (): ReactElement => {
       ]}
       addTypename={false}
     >
-      <TaskDrawerCommentList accountListId="abc" taskId="task-1" />
+      <TaskDrawerCommentList accountListId={accountListId} taskId={taskId} />
     </MockedProvider>
   );
 };
@@ -47,7 +47,7 @@ export const Empty = (): ReactElement => {
       ]}
       addTypename={false}
     >
-      <TaskDrawerCommentList accountListId="abc" taskId="task-1" />
+      <TaskDrawerCommentList accountListId={accountListId} taskId={taskId} />
     </MockedProvider>
   );
 };
@@ -60,7 +60,7 @@ export const Error = (): ReactElement => {
       ]}
       addTypename={false}
     >
-      <TaskDrawerCommentList accountListId="abc" taskId="task-1" />
+      <TaskDrawerCommentList accountListId={accountListId} taskId={taskId} />
     </MockedProvider>
   );
 };
