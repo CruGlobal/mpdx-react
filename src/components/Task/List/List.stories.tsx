@@ -12,8 +12,11 @@ import {
   getFilteredTasksForTaskListMock,
   getEmptyTasksForTaskListMock,
   getTasksForTaskListLoadingMock,
+  getTasksForTaskListErrorMock,
 } from './List.mock';
 import TaskList from '.';
+
+const accountListId = 'abc';
 
 export default {
   title: 'Task/List',
@@ -25,7 +28,7 @@ export default {
 
 export const Default = (): ReactElement => (
   <MockedProvider
-    mocks={[getTasksForTaskListMock(), getDataForTaskDrawerMock()]}
+    mocks={[getTasksForTaskListMock(accountListId), getDataForTaskDrawerMock()]}
     addTypename={false}
   >
     <TaskList />
@@ -35,7 +38,7 @@ export const Default = (): ReactElement => (
 export const Loading = (): ReactElement => (
   <MockedProvider
     mocks={[
-      getTasksForTaskListLoadingMock(),
+      getTasksForTaskListLoadingMock(accountListId),
       getDataForTaskDrawerLoadingMock(),
     ]}
     addTypename={false}
@@ -46,7 +49,10 @@ export const Loading = (): ReactElement => (
 
 export const Empty = (): ReactElement => (
   <MockedProvider
-    mocks={[getEmptyTasksForTaskListMock(), getDataForTaskDrawerMock()]}
+    mocks={[
+      getEmptyTasksForTaskListMock(accountListId),
+      getDataForTaskDrawerMock(),
+    ]}
     addTypename={false}
   >
     <TaskList />
@@ -66,9 +72,15 @@ export const WithInitialFilter = (): ReactElement => {
   return (
     <MockedProvider
       mocks={[
-        getFilteredTasksForTaskListMock(filter),
-        getFilteredTasksForTaskListMock({ ...filter, after: 'B' }),
-        getFilteredTasksForTaskListMock({ ...filter, before: 'A' }),
+        getFilteredTasksForTaskListMock(accountListId, filter),
+        getFilteredTasksForTaskListMock(accountListId, {
+          ...filter,
+          after: 'B',
+        }),
+        getFilteredTasksForTaskListMock(accountListId, {
+          ...filter,
+          before: 'A',
+        }),
         getDataForTaskDrawerMock(),
       ]}
       addTypename={false}
@@ -77,3 +89,15 @@ export const WithInitialFilter = (): ReactElement => {
     </MockedProvider>
   );
 };
+
+export const Error = (): ReactElement => (
+  <MockedProvider
+    mocks={[
+      getTasksForTaskListErrorMock(accountListId),
+      getDataForTaskDrawerMock(),
+    ]}
+    addTypename={false}
+  >
+    <TaskList />
+  </MockedProvider>
+);

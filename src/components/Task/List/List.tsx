@@ -91,7 +91,7 @@ const TaskList = ({ initialFilter }: Props): ReactElement => {
     variables: { accountListId },
   });
 
-  const { loading, data } = useGetTasksForTaskListQuery({
+  const { data, loading, error } = useGetTasksForTaskListQuery({
     variables: {
       accountListId,
       first: rowsPerPage,
@@ -513,8 +513,20 @@ const TaskList = ({ initialFilter }: Props): ReactElement => {
 
   return (
     <MUIDataTable
-      title={loading && <CircularProgress size={24} />}
-      data={loading ? [['', <Skeleton key={1} />]] : data.tasks.nodes}
+      title={
+        error ? (
+          <p>{error.toString()}</p>
+        ) : (
+          loading && <CircularProgress size={24} />
+        )
+      }
+      data={
+        error
+          ? undefined
+          : loading
+          ? [['', <Skeleton key={1} />]]
+          : data.tasks.nodes
+      }
       columns={columns}
       options={options}
     />
