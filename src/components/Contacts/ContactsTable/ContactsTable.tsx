@@ -51,7 +51,7 @@ export const ContactsTable: React.FC<Props> = ({ accountListId }: Props) => {
           {error && renderError()}
           {loading ? (
             renderLoading()
-          ) : !(data.contacts.nodes?.length > 0) ? (
+          ) : !(data?.contacts.nodes.length > 0) ? (
             renderEmpty()
           ) : (
             <div data-testID="ContactRows">
