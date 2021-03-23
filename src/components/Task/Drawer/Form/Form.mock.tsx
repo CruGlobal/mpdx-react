@@ -136,3 +136,10 @@ export const updateTaskMutationMock = (): MockedResponse => {
     result: { data },
   };
 };
+
+export const getDataForTaskDrawerLoadingMock = (): MockedResponse => {
+  return {
+    ...getDataForTaskDrawerMock(),
+    delay: 100931731455,
+  };
+};

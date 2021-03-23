@@ -1,13 +1,17 @@
 import React, { ReactElement } from 'react';
 import { MockedProvider } from '@apollo/client/testing';
 import withDispatch from '../../../decorators/withDispatch';
-import { getDataForTaskDrawerMock } from '../Drawer/Form/Form.mock';
+import {
+  getDataForTaskDrawerMock,
+  getDataForTaskDrawerLoadingMock,
+} from '../Drawer/Form/Form.mock';
 import withMargin from '../../../decorators/withMargin';
 import { ActivityTypeEnum } from '../../../../graphql/types.generated';
 import {
   getTasksForTaskListMock,
   getFilteredTasksForTaskListMock,
   getEmptyTasksForTaskListMock,
+  getTasksForTaskListLoadingMock,
 } from './List.mock';
 import TaskList from '.';
 
@@ -29,12 +33,15 @@ export const Default = (): ReactElement => (
 );
 
 export const Loading = (): ReactElement => (
-  <TaskList
-    initialFilter={{
-      userIds: ['user-1'],
-      contactIds: ['contact-1'],
-    }}
-  />
+  <MockedProvider
+    mocks={[
+      getTasksForTaskListLoadingMock(),
+      getDataForTaskDrawerLoadingMock(),
+    ]}
+    addTypename={false}
+  >
+    <TaskList />
+  </MockedProvider>
 );
 
 export const Empty = (): ReactElement => (

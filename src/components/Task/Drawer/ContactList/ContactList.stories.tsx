@@ -2,6 +2,7 @@ import React, { ReactElement } from 'react';
 import { MockedProvider } from '@apollo/client/testing';
 import {
   getContactsForTaskDrawerContactListEmptyMock,
+  getContactsForTaskDrawerContactListLoadingMock,
   getContactsForTaskDrawerContactListMock,
 } from './ContactList.mock';
 import TaskDrawerContactList from '.';
@@ -26,7 +27,10 @@ export const Default = (): ReactElement => {
 
 export const Loading = (): ReactElement => {
   return (
-    <MockedProvider mocks={[]} addTypename={false}>
+    <MockedProvider
+      mocks={[getContactsForTaskDrawerContactListLoadingMock()]}
+      addTypename={false}
+    >
       <TaskDrawerContactList
         accountListId="abc"
         contactIds={['contact-1', 'contact-2']}

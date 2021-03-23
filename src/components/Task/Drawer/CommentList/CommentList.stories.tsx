@@ -3,6 +3,7 @@ import { MockedProvider } from '@apollo/client/testing';
 import {
   getCommentsForTaskDrawerCommentListMock,
   getCommentsForTaskDrawerCommentListEmptyMock,
+  getCommentsForTaskDrawerCommentListLoadingMock,
 } from './CommentList.mock';
 import TaskDrawerCommentList from '.';
 
@@ -23,7 +24,10 @@ export const Default = (): ReactElement => {
 
 export const Loading = (): ReactElement => {
   return (
-    <MockedProvider mocks={[]} addTypename={false}>
+    <MockedProvider
+      mocks={[getCommentsForTaskDrawerCommentListLoadingMock()]}
+      addTypename={false}
+    >
       <TaskDrawerCommentList accountListId="abc" taskId="task-1" />
     </MockedProvider>
   );

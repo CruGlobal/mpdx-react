@@ -162,3 +162,10 @@ export const getFilteredTasksForTaskListMock = (
     },
   };
 };
+
+export const getTasksForTaskListLoadingMock = (): MockedResponse => {
+  return {
+    ...getTasksForTaskListMock(),
+    delay: 100931731455,
+  };
+};
