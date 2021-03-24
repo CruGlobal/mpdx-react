@@ -131,7 +131,7 @@ const TaskList = ({ initialFilter }: Props): ReactElement => {
         customHeadLabelRender: (): string => '',
         customBodyRender: (completedAt, { rowIndex }): ReactElement => {
           if (!loading) {
-            const { id, startAt } = data.tasks.nodes[rowIndex];
+            const { id, startAt } = data?.tasks?.nodes[rowIndex];
             return (
               <TaskStatus
                 taskId={id}
@@ -430,19 +430,19 @@ const TaskList = ({ initialFilter }: Props): ReactElement => {
         setFilter({
           ...filter,
           before: null,
-          after: data.tasks.pageInfo.endCursor,
+          after: data?.tasks.pageInfo.endCursor,
         });
       } else {
         setFilter({
           ...filter,
-          before: data.tasks.pageInfo.startCursor,
+          before: data?.tasks.pageInfo.startCursor,
           after: null,
         });
       }
       setCurrentPage(newPage);
     },
     onRowClick: (_rowData, rowMeta) => {
-      openTaskDrawer({ taskId: data.tasks.nodes[rowMeta.dataIndex].id });
+      openTaskDrawer({ taskId: data?.tasks?.nodes[rowMeta.dataIndex].id });
     },
     count: data?.tasks?.totalCount || 0,
     rowsPerPageOptions: [10, 25, 50, 100, 250, 500],
@@ -521,20 +521,8 @@ const TaskList = ({ initialFilter }: Props): ReactElement => {
 
   return (
     <MUIDataTable
-      title={
-        error ? (
-          <p>{error.toString()}</p>
-        ) : (
-          loading && <CircularProgress size={24} />
-        )
-      }
-      data={
-        error
-          ? undefined
-          : loading
-          ? [['', <Skeleton key={1} />]]
-          : data.tasks.nodes
-      }
+      title={loading && <CircularProgress size={24} />}
+      data={loading ? [['', <Skeleton key={1} />]] : data?.tasks?.nodes}
       columns={columns}
       options={options}
     />
