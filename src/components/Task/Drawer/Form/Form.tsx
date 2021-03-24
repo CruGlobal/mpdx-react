@@ -181,7 +181,7 @@ const TaskDrawerForm = ({
   });
   const [createTask, { loading: creating }] = useCreateTaskMutation();
   const [updateTask, { loading: saving }] = useUpdateTaskMutation();
-  const [deleteTask] = useDeleteTaskMutation();
+  const [deleteTask, { loading: deleting }] = useDeleteTaskMutation();
   const onSubmit = async (values: Task): Promise<void> => {
     const attributes = {
       ...values,
@@ -605,8 +605,14 @@ const TaskDrawerForm = ({
                   className={classes.removeButton}
                   onClick={() => handleRemoveDialog(true)}
                 >
-                  <DeleteIcon titleAccess={t('Remove')} />
-                  {t('Remove')}
+                  {deleting ? (
+                    <CircularProgress color="primary" size={20} />
+                  ) : (
+                    <>
+                      <DeleteIcon titleAccess={t('Remove')} />
+                      {t('Remove')}
+                    </>
+                  )}
                 </Button>
               </Grid>
               <Grid item xs={2}>
