@@ -14,6 +14,7 @@ export const Default = (): ReactElement => {
       <StatusSelector
         statuses={knobValue}
         selectedStatus={text('selectedStatus', 'Unknown')}
+        saveContactStatus={null}
       />
     </Box>
   );
