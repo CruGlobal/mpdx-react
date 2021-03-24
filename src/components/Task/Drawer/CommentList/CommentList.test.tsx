@@ -7,9 +7,13 @@ import {
   getCommentsForTaskDrawerCommentListMock,
   getCommentsForTaskDrawerCommentListEmptyMock,
   getCommentsForTaskDrawerCommentListLoadingMock,
+  getCommentsForTaskDrawerCommentListErrorMock,
 } from './CommentList.mock';
 import { createTaskCommentMutationMock } from './Form/Form.mock';
 import TaskDrawerCommentList from '.';
+
+const accountListId = 'abc';
+const taskId = 'task-1';
 
 jest.mock('uuid', () => ({
   v4: (): string => 'comment-0',
@@ -23,11 +27,11 @@ describe('TaskDrawerCommentList', () => {
           user: { id: 'user-1', firstName: 'John', lastName: 'Smith' } as User,
         }}
         mocks={[
-          getCommentsForTaskDrawerCommentListMock(),
+          getCommentsForTaskDrawerCommentListMock(accountListId, taskId),
           createTaskCommentMutationMock(),
         ]}
       >
-        <TaskDrawerCommentList accountListId="abc" taskId="task-1" />
+        <TaskDrawerCommentList accountListId={accountListId} taskId={taskId} />
       </TestWrapper>,
     );
     await waitFor(() =>
@@ -58,9 +62,11 @@ describe('TaskDrawerCommentList', () => {
         initialState={{
           user: { id: 'user-1', firstName: 'John', lastName: 'Smith' } as User,
         }}
-        mocks={[getCommentsForTaskDrawerCommentListLoadingMock()]}
+        mocks={[
+          getCommentsForTaskDrawerCommentListLoadingMock(accountListId, taskId),
+        ]}
       >
-        <TaskDrawerCommentList accountListId="abc" taskId="task-1" />
+        <TaskDrawerCommentList accountListId={accountListId} taskId={taskId} />
       </TestWrapper>,
     );
     expect(getByTestId('TaskDrawerCommentListLoading')).toBeInTheDocument();
@@ -72,9 +78,11 @@ describe('TaskDrawerCommentList', () => {
         initialState={{
           user: { id: 'user-1', firstName: 'John', lastName: 'Smith' } as User,
         }}
-        mocks={[getCommentsForTaskDrawerCommentListEmptyMock()]}
+        mocks={[
+          getCommentsForTaskDrawerCommentListEmptyMock(accountListId, taskId),
+        ]}
       >
-        <TaskDrawerCommentList accountListId="abc" taskId="task-1" />
+        <TaskDrawerCommentList accountListId={accountListId} taskId={taskId} />
       </TestWrapper>,
     );
     await waitFor(() =>
@@ -83,5 +91,28 @@ describe('TaskDrawerCommentList', () => {
       ).not.toBeInTheDocument(),
     );
     expect(getByTestId('TaskDrawerCommentListEmpty')).toBeInTheDocument();
+  });
+
+  it('error', async () => {
+    const { queryByTestId, queryByText } = render(
+      <TestWrapper
+        initialState={{
+          user: { id: 'user-1', firstName: 'John', lastName: 'Smith' } as User,
+        }}
+        mocks={[
+          getCommentsForTaskDrawerCommentListErrorMock(accountListId, taskId),
+        ]}
+      >
+        <TaskDrawerCommentList accountListId={accountListId} taskId={taskId} />
+      </TestWrapper>,
+    );
+    await waitFor(() =>
+      expect(
+        queryByTestId('TaskDrawerCommentListLoading'),
+      ).not.toBeInTheDocument(),
+    );
+    expect(
+      queryByText('Error: Error loading data. Try again.'),
+    ).toBeInTheDocument();
   });
 });

@@ -5,19 +5,25 @@ import {
   getContactsForTaskDrawerContactListMock,
   getContactsForTaskDrawerContactListEmptyMock,
   getContactsForTaskDrawerContactListLoadingMock,
+  getContactsForTaskDrawerContactListErrorMock,
 } from './ContactList.mock';
 import TaskDrawerContactList from '.';
+
+const accountListId = 'abc';
+const contactIds = ['contact-1', 'contact-2'];
 
 describe('TaskDrawerContactList', () => {
   it('default', async () => {
     const { queryByTestId, getAllByTestId, findByTestId } = render(
       <MockedProvider
-        mocks={[getContactsForTaskDrawerContactListMock()]}
+        mocks={[
+          getContactsForTaskDrawerContactListMock(accountListId, contactIds),
+        ]}
         addTypename={false}
       >
         <TaskDrawerContactList
-          accountListId="abc"
-          contactIds={['contact-1', 'contact-2']}
+          accountListId={accountListId}
+          contactIds={contactIds}
         />
       </MockedProvider>,
     );
@@ -40,12 +46,17 @@ describe('TaskDrawerContactList', () => {
   it('loading', async () => {
     const { findByTestId } = render(
       <MockedProvider
-        mocks={[getContactsForTaskDrawerContactListLoadingMock()]}
+        mocks={[
+          getContactsForTaskDrawerContactListLoadingMock(
+            accountListId,
+            contactIds,
+          ),
+        ]}
         addTypename={false}
       >
         <TaskDrawerContactList
-          accountListId="abc"
-          contactIds={['contact-1', 'contact-2']}
+          accountListId={accountListId}
+          contactIds={contactIds}
         />
       </MockedProvider>,
     );
@@ -57,12 +68,17 @@ describe('TaskDrawerContactList', () => {
   it('empty', async () => {
     const { queryByTestId, getByTestId } = render(
       <MockedProvider
-        mocks={[getContactsForTaskDrawerContactListEmptyMock()]}
+        mocks={[
+          getContactsForTaskDrawerContactListEmptyMock(
+            accountListId,
+            contactIds,
+          ),
+        ]}
         addTypename={false}
       >
         <TaskDrawerContactList
-          accountListId="abc"
-          contactIds={['contact-1', 'contact-2']}
+          accountListId={accountListId}
+          contactIds={contactIds}
         />
       </MockedProvider>,
     );
@@ -72,5 +88,32 @@ describe('TaskDrawerContactList', () => {
       ).not.toBeInTheDocument(),
     );
     expect(getByTestId('TaskDrawerContactListEmpty')).toBeInTheDocument();
+  });
+
+  it('error', async () => {
+    const { queryByTestId, getByTestId } = render(
+      <MockedProvider
+        mocks={[
+          getContactsForTaskDrawerContactListErrorMock(
+            accountListId,
+            contactIds,
+          ),
+        ]}
+        addTypename={false}
+      >
+        <TaskDrawerContactList
+          accountListId={accountListId}
+          contactIds={contactIds}
+        />
+      </MockedProvider>,
+    );
+    await waitFor(() =>
+      expect(
+        queryByTestId('TaskDrawerContactListLoading'),
+      ).not.toBeInTheDocument(),
+    );
+    expect(
+      getByTestId('Error: Error loading data. Try again.'),
+    ).toBeInTheDocument();
   });
 });
