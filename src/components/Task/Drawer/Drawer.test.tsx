@@ -17,6 +17,10 @@ import {
 } from './CompleteForm/CompleteForm.mock';
 import TaskDrawer from '.';
 
+const accountListId = 'abc';
+const taskId = 'task-1';
+const contactIds = ['contact-1', 'contact-2'];
+
 describe('TaskDrawer', () => {
   it('default', async () => {
     const onClose = jest.fn();
@@ -39,14 +43,14 @@ describe('TaskDrawer', () => {
     const onClose = jest.fn();
     const mocks = [
       getDataForTaskDrawerMock(),
-      getContactsForTaskDrawerContactListMock(),
-      getCommentsForTaskDrawerCommentListMock(),
+      getContactsForTaskDrawerContactListMock(accountListId, contactIds),
+      getCommentsForTaskDrawerCommentListMock(accountListId, taskId),
       updateTaskMutationMock(),
       getTaskForTaskDrawerMock(),
     ];
     const { findByTestId } = render(
       <TestWrapper mocks={mocks}>
-        <TaskDrawer onClose={onClose} taskId="task-1" />
+        <TaskDrawer onClose={onClose} taskId={taskId} />
       </TestWrapper>,
     );
     expect(await findByTestId('TaskDrawerTitle')).toHaveTextContent(
@@ -58,14 +62,14 @@ describe('TaskDrawer', () => {
     const onClose = jest.fn();
     const mocks = [
       getDataForTaskDrawerMock(),
-      getContactsForTaskDrawerContactListMock(),
-      getCommentsForTaskDrawerCommentListMock(),
+      getContactsForTaskDrawerContactListMock(accountListId, contactIds),
+      getCommentsForTaskDrawerCommentListMock(accountListId, taskId),
       completeTaskMutationMock(),
       getCompleteTaskForTaskDrawerMock(),
     ];
     const { findByTestId } = render(
       <TestWrapper mocks={mocks}>
-        <TaskDrawer onClose={onClose} taskId="task-1" showCompleteForm />
+        <TaskDrawer onClose={onClose} taskId={taskId} showCompleteForm />
       </TestWrapper>,
     );
     expect(await findByTestId('TaskDrawerTitle')).toHaveTextContent(
