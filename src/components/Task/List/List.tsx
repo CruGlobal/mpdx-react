@@ -1,4 +1,4 @@
-import React, { ReactElement, useState, useCallback } from 'react';
+import React, { ReactElement, useState, useCallback, useEffect } from 'react';
 import MUIDataTable, {
   MUIDataTableOptions,
   MUIDataTableColumn,
@@ -21,6 +21,7 @@ import reduce from 'lodash/fp/reduce';
 import debounce from 'lodash/fp/debounce';
 import { Skeleton } from '@material-ui/lab';
 import { DatePicker } from '@material-ui/pickers';
+import { useSnackbar } from 'notistack';
 import { useApp } from '../../App';
 import { dateFormat, dayMonthFormat } from '../../../lib/intlFormat/intlFormat';
 import TaskStatus from '../Status';
@@ -81,6 +82,7 @@ const TaskList = ({ initialFilter }: Props): ReactElement => {
   const { t } = useTranslation();
   const [rowsPerPage, setRowsPerPage] = useState(100);
   const [currentPage, setCurrentPage] = useState(0);
+  const { enqueueSnackbar } = useSnackbar();
 
   const {
     state: { accountListId },
@@ -98,6 +100,12 @@ const TaskList = ({ initialFilter }: Props): ReactElement => {
       ...filter,
     },
   });
+
+  useEffect(() => {
+    if (error) {
+      enqueueSnackbar(error.message, { variant: 'error' });
+    }
+  }, [error]);
 
   const columns: MUIDataTableColumn[] = [
     {

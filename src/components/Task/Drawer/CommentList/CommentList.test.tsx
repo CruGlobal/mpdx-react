@@ -15,6 +15,17 @@ import TaskDrawerCommentList from '.';
 const accountListId = 'abc';
 const taskId = 'task-1';
 
+const mockEnqueue = jest.fn();
+
+jest.mock('notistack', () => ({
+  ...jest.requireActual('notistack'),
+  useSnackbar: () => {
+    return {
+      enqueueSnackbar: mockEnqueue,
+    };
+  },
+}));
+
 jest.mock('uuid', () => ({
   v4: (): string => 'comment-0',
 }));
@@ -94,7 +105,7 @@ describe('TaskDrawerCommentList', () => {
   });
 
   it('error', async () => {
-    const { queryByTestId, queryByText } = render(
+    render(
       <TestWrapper
         initialState={{
           user: { id: 'user-1', firstName: 'John', lastName: 'Smith' } as User,
@@ -106,13 +117,14 @@ describe('TaskDrawerCommentList', () => {
         <TaskDrawerCommentList accountListId={accountListId} taskId={taskId} />
       </TestWrapper>,
     );
+
     await waitFor(() =>
-      expect(
-        queryByTestId('TaskDrawerCommentListLoading'),
-      ).not.toBeInTheDocument(),
+      expect(mockEnqueue).toHaveBeenCalledWith(
+        'Error loading data.  Try again.',
+        {
+          variant: 'error',
+        },
+      ),
     );
-    expect(
-      queryByText('Error: Error loading data. Try again.'),
-    ).toBeInTheDocument();
   });
 });

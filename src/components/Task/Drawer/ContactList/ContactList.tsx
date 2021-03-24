@@ -8,6 +8,7 @@ import {
   CardContent,
 } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
+import { useSnackbar } from 'notistack';
 import illustration4 from '../../../../images/drawkit/grape/drawkit-grape-pack-illustration-4.svg';
 import TaskDrawerContactListItem from './Item';
 import { useGetContactsForTaskDrawerContactListLazyQuery } from './TaskDrawerContactList.generated';
@@ -42,11 +43,18 @@ const TaskDrawerContactList = ({
 }: Props): ReactElement => {
   const classes = useStyles();
   const { t } = useTranslation();
+  const { enqueueSnackbar } = useSnackbar();
 
   const [
     getContacts,
     { data, loading, error },
   ] = useGetContactsForTaskDrawerContactListLazyQuery();
+
+  useEffect(() => {
+    if (error) {
+      enqueueSnackbar(error.message, { variant: 'error' });
+    }
+  }, [error]);
 
   useEffect(() => {
     if (contactIds.length > 0) {
@@ -61,9 +69,7 @@ const TaskDrawerContactList = ({
 
   return (
     <Box m={2}>
-      {error ? (
-        <p>{error.toString()}</p>
-      ) : loading ? (
+      {loading ? (
         <Grid
           container
           spacing={2}

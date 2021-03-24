@@ -2,19 +2,34 @@ import React from 'react';
 import userEvent from '@testing-library/user-event';
 import TestWrapper from '../../../../__tests__/util/TestWrapper';
 import { getDataForTaskDrawerMock } from '../Drawer/Form/Form.mock';
-import { render } from '../../../../__tests__/util/testingLibraryReactMock';
+import {
+  render,
+  waitFor,
+} from '../../../../__tests__/util/testingLibraryReactMock';
 import { useApp } from '../../App';
 import { ActivityTypeEnum } from '../../../../graphql/types.generated';
 import {
   getTasksForTaskListMock,
   getFilteredTasksForTaskListMock,
   getEmptyTasksForTaskListMock,
+  getTasksForTaskListErrorMock,
 } from './List.mock';
 import TaskList from '.';
 
 const accountListId = 'abc';
 
 const openTaskDrawer = jest.fn();
+
+const mockEnqueue = jest.fn();
+
+jest.mock('notistack', () => ({
+  ...jest.requireActual('notistack'),
+  useSnackbar: () => {
+    return {
+      enqueueSnackbar: mockEnqueue,
+    };
+  },
+}));
 
 jest.mock('../../App', () => ({
   useApp: jest.fn(),
@@ -203,5 +218,28 @@ describe('TaskList', () => {
     expect(
       queryByTestId('TaskDrawerCommentListItemAvatar'),
     ).not.toBeInTheDocument();
+  });
+
+  it('error', async () => {
+    render(
+      <TestWrapper
+        mocks={[
+          getTasksForTaskListErrorMock(accountListId),
+          getDataForTaskDrawerMock(),
+        ]}
+        disableAppProvider
+      >
+        <TaskList />
+      </TestWrapper>,
+    );
+
+    await waitFor(() =>
+      expect(mockEnqueue).toHaveBeenCalledWith(
+        'Error loading data.  Try again.',
+        {
+          variant: 'error',
+        },
+      ),
+    );
   });
 });

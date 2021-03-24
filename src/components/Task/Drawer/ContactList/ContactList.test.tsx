@@ -12,6 +12,17 @@ import TaskDrawerContactList from '.';
 const accountListId = 'abc';
 const contactIds = ['contact-1', 'contact-2'];
 
+const mockEnqueue = jest.fn();
+
+jest.mock('notistack', () => ({
+  ...jest.requireActual('notistack'),
+  useSnackbar: () => {
+    return {
+      enqueueSnackbar: mockEnqueue,
+    };
+  },
+}));
+
 describe('TaskDrawerContactList', () => {
   it('default', async () => {
     const { queryByTestId, getAllByTestId, findByTestId } = render(
@@ -91,7 +102,7 @@ describe('TaskDrawerContactList', () => {
   });
 
   it('error', async () => {
-    const { queryByTestId, queryByText } = render(
+    render(
       <MockedProvider
         mocks={[
           getContactsForTaskDrawerContactListErrorMock(
@@ -107,13 +118,14 @@ describe('TaskDrawerContactList', () => {
         />
       </MockedProvider>,
     );
+
     await waitFor(() =>
-      expect(
-        queryByTestId('TaskDrawerContactListLoading'),
-      ).not.toBeInTheDocument(),
+      expect(mockEnqueue).toHaveBeenCalledWith(
+        'Error loading data.  Try again.',
+        {
+          variant: 'error',
+        },
+      ),
     );
-    expect(
-      queryByText('Error: Error loading data. Try again.'),
-    ).toBeInTheDocument();
   });
 });
