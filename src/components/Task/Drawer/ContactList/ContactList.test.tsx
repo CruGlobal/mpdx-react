@@ -91,7 +91,7 @@ describe('TaskDrawerContactList', () => {
   });
 
   it('error', async () => {
-    const { queryByTestId, getByTestId } = render(
+    const { queryByTestId, queryByText } = render(
       <MockedProvider
         mocks={[
           getContactsForTaskDrawerContactListErrorMock(
@@ -113,7 +113,7 @@ describe('TaskDrawerContactList', () => {
       ).not.toBeInTheDocument(),
     );
     expect(
-      getByTestId('Error: Error loading data. Try again.'),
+      queryByText('Error: Error loading data. Try again.'),
     ).toBeInTheDocument();
   });
 });

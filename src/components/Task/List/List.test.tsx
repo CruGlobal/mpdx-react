@@ -12,7 +12,7 @@ import {
 } from './List.mock';
 import TaskList from '.';
 
-const accountListId = 'account-list-1';
+const accountListId = 'abc';
 
 const openTaskDrawer = jest.fn();
 
@@ -23,7 +23,7 @@ jest.mock('../../App', () => ({
 beforeEach(() => {
   (useApp as jest.Mock).mockReturnValue({
     openTaskDrawer,
-    state: { accountListId: 'abc', breadcrumb: 'Tasks' },
+    state: { accountListId, breadcrumb: 'Tasks' },
   });
 });
 
