@@ -28,15 +28,14 @@ it('should render list of people', async () => {
     <TestRouter router={router}>
       <GqlMockedProvider<ContactsQuery>
         mocks={{
-          contacts: { nodes: [{ name }] },
+          Contacts: {
+            contacts: { nodes: [{ name }] },
+          },
         }}
       >
         <Contacts />
       </GqlMockedProvider>
     </TestRouter>,
   );
-  // TODO: Fix custom mocks so we don't have to rely on finding first and checking if it matches a hardcoded random value
-  expect((await findAllByRole('row'))[0]).toHaveTextContent(
-    'Cup SandwichStar God Baby',
-  );
+  expect((await findAllByRole('row'))[0]).toHaveTextContent(name);
 });

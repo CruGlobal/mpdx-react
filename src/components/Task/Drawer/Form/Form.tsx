@@ -72,10 +72,10 @@ const useStyles = makeStyles((theme: Theme) => ({
     flexGrow: 1,
   },
   removeButton: {
-    backgroundColor: '#d9534f',
-    color: '#fff',
+    backgroundColor: theme.palette.error.main,
+    color: theme.palette.common.white,
     '&:hover': {
-      backgroundColor: '#C9302F',
+      backgroundColor: theme.palette.error.dark,
     },
   },
 }));
@@ -181,7 +181,7 @@ const TaskDrawerForm = ({
   });
   const [createTask, { loading: creating }] = useCreateTaskMutation();
   const [updateTask, { loading: saving }] = useUpdateTaskMutation();
-  const [deleteTask, { loading: deleting }] = useDeleteTaskMutation();
+  const [deleteTask] = useDeleteTaskMutation();
   const onSubmit = async (values: Task): Promise<void> => {
     const attributes = {
       ...values,
@@ -258,6 +258,7 @@ const TaskDrawerForm = ({
       }
     } catch (error) {
       enqueueSnackbar(error.message, { variant: 'error' });
+      throw error;
     }
   };
 
@@ -604,17 +605,8 @@ const TaskDrawerForm = ({
                   className={classes.removeButton}
                   onClick={() => handleRemoveDialog(true)}
                 >
-                  {deleting ? (
-                    <>
-                      <CircularProgress color="primary" size={20} />
-                      &nbsp;
-                    </>
-                  ) : (
-                    <>
-                      <DeleteIcon titleAccess={t('Remove')} />
-                      {t('Remove')}
-                    </>
-                  )}
+                  <DeleteIcon titleAccess={t('Remove')} />
+                  {t('Remove')}
                 </Button>
               </Grid>
               <Grid item xs={2}>
@@ -641,10 +633,8 @@ const TaskDrawerForm = ({
               </Grid>
             </Grid>
             <Dialog
-              disableBackdropClick
-              disableEscapeKeyDown
               open={removeDialogOpen}
-              aria-labelledby="remove task confirmation"
+              aria-labelledby={t('Remove task confirmation')}
               maxWidth="sm"
             >
               <DialogTitle>{t('Confirm')}</DialogTitle>
