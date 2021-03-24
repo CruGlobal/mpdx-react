@@ -1,6 +1,6 @@
 import { Box } from '@material-ui/core';
 import { array, text } from '@storybook/addon-knobs';
-import { ReactElement } from 'react';
+import React, { ReactElement } from 'react';
 import { FrequencySelector } from './FrequencySelector';
 
 export default {
