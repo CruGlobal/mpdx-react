@@ -17,7 +17,7 @@ interface Props {
 
 export const ContactsTable: React.FC<Props> = ({ accountListId }: Props) => {
   const { data, loading, error } = useContactsQuery({
-    variables: { accountListId: accountListId as string },
+    variables: { accountListId },
   });
 
   const renderLoading = () => (

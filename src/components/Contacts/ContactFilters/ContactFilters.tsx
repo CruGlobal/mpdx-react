@@ -11,7 +11,7 @@ export const ContactFilters: React.FC<Props> = ({ accountListId }: Props) => {
     loadContactFilters,
     { data, loading, error },
   ] = useContactFiltersLazyQuery({
-    variables: { accountListId: accountListId as string },
+    variables: { accountListId },
   });
 
   return (
