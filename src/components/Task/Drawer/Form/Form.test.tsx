@@ -6,15 +6,45 @@ import { DateTime } from 'luxon';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import LuxonUtils from '@date-io/luxon';
 import userEvent from '@testing-library/user-event';
+import { InMemoryCache } from '@apollo/client';
 import { ActivityTypeEnum } from '../../../../../graphql/types.generated';
+import { GetTasksForTaskListDocument } from '../../List/TaskList.generated';
 import {
   getDataForTaskDrawerMock,
   createTaskMutationMock,
   updateTaskMutationMock,
+  deleteTaskMutationMock,
 } from './Form.mock';
 import TaskDrawerForm from '.';
 
 describe('TaskDrawerForm', () => {
+  const mockFilter = {
+    userIds: [],
+    tags: [],
+    contactIds: [],
+    activityType: [],
+    completed: null,
+    startAt: null,
+    before: null,
+    after: null,
+  };
+
+  const mockTask = {
+    activityType: null,
+    contacts: {
+      nodes: [],
+    },
+    id: 'task-1',
+    notificationTimeBefore: null,
+    notificationTimeUnit: null,
+    notificationType: null,
+    startAt: DateTime.local(2013, 1, 5, 1, 2).toISO(),
+    completedAt: DateTime.local(2016, 1, 5, 1, 2).toISO(),
+    subject: '',
+    tagList: [],
+    user: null,
+  };
+
   it('default', async () => {
     const onClose = jest.fn();
     const { getByText, getByRole, findByText } = render(
@@ -24,7 +54,12 @@ describe('TaskDrawerForm', () => {
             mocks={[getDataForTaskDrawerMock(), createTaskMutationMock()]}
             addTypename={false}
           >
-            <TaskDrawerForm accountListId="abc" onClose={onClose} />
+            <TaskDrawerForm
+              accountListId="abc"
+              filter={mockFilter}
+              rowsPerPage={100}
+              onClose={onClose}
+            />
           </MockedProvider>
         </SnackbarProvider>
       </MuiPickersUtilsProvider>,
@@ -54,25 +89,10 @@ describe('TaskDrawerForm', () => {
           >
             <TaskDrawerForm
               accountListId="abc"
+              filter={mockFilter}
+              rowsPerPage={100}
               onClose={onClose}
-              task={{
-                activityType: null,
-                contacts: {
-                  nodes: [],
-                  pageInfo: { hasNextPage: false, hasPreviousPage: false },
-                  totalCount: 0,
-                  totalPageCount: 0,
-                },
-                id: 'task-1',
-                notificationTimeBefore: null,
-                notificationTimeUnit: null,
-                notificationType: null,
-                startAt: DateTime.local(2013, 1, 5, 1, 2).toISO(),
-                completedAt: DateTime.local(2016, 1, 5, 1, 2).toISO(),
-                subject: '',
-                tagList: [],
-                user: null,
-              }}
+              task={mockTask}
             />
           </MockedProvider>
         </SnackbarProvider>
@@ -133,4 +153,75 @@ describe('TaskDrawerForm', () => {
     userEvent.click(getByText('Save'));
     await waitFor(() => expect(onClose).toHaveBeenCalled());
   }, 25000);
+
+  it('deletes a task', async () => {
+    const onClose = jest.fn();
+    const cache = new InMemoryCache({ addTypename: false });
+    jest.spyOn(cache, 'writeQuery');
+    jest.spyOn(cache, 'readQuery');
+    const query = {
+      query: GetTasksForTaskListDocument,
+      variables: {
+        accountListId: 'abc',
+        first: 100,
+        ...mockFilter,
+      },
+      data: {
+        tasks: {
+          nodes: [{ ...mockTask }],
+        },
+      },
+    };
+    cache.writeQuery(query);
+    const { getByText, getByRole } = render(
+      <MuiPickersUtilsProvider utils={LuxonUtils}>
+        <SnackbarProvider>
+          <MockedProvider
+            mocks={[getDataForTaskDrawerMock(), deleteTaskMutationMock()]}
+            cache={cache}
+            addTypename={false}
+          >
+            <TaskDrawerForm
+              accountListId="abc"
+              filter={mockFilter}
+              rowsPerPage={100}
+              onClose={onClose}
+              task={mockTask}
+            />
+          </MockedProvider>
+        </SnackbarProvider>
+      </MuiPickersUtilsProvider>,
+    );
+    userEvent.click(getByRole('button', { name: 'Remove' }));
+    expect(
+      getByText('Are you sure you wish to delete the selected task?'),
+    ).toBeInTheDocument();
+
+    userEvent.click(getByRole('button', { name: 'Yes' }));
+    await waitFor(() =>
+      expect(cache.readQuery).toHaveBeenCalledWith({
+        query: GetTasksForTaskListDocument,
+        variables: {
+          accountListId: 'abc',
+          first: 100,
+          ...mockFilter,
+        },
+      }),
+    );
+    await waitFor(() =>
+      expect(cache.writeQuery).toHaveBeenCalledWith({
+        query: GetTasksForTaskListDocument,
+        variables: {
+          accountListId: 'abc',
+          first: 100,
+          ...mockFilter,
+        },
+        data: {
+          tasks: {
+            nodes: [],
+          },
+        },
+      }),
+    );
+  });
 });

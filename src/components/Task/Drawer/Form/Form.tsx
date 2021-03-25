@@ -15,10 +15,17 @@ import {
   CircularProgress,
   Button,
   Divider,
+  DialogTitle,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  Dialog,
 } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { Autocomplete } from '@material-ui/lab';
+
 import { DatePicker, TimePicker } from '@material-ui/pickers';
+import DeleteIcon from '@material-ui/icons/Delete';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Formik } from 'formik';
 import * as yup from 'yup';
@@ -34,9 +41,15 @@ import {
 } from '../../../../../graphql/types.generated';
 import { GetTaskForTaskDrawerQuery } from '../TaskDrawerTask.generated';
 import {
+  GetTasksForTaskListDocument,
+  GetTasksForTaskListQuery,
+} from '../../List/TaskList.generated';
+import { TaskFilter } from '../../List/List';
+import {
   useGetDataForTaskDrawerQuery,
   useCreateTaskMutation,
   useUpdateTaskMutation,
+  useDeleteTaskMutation,
   GetDataForTaskDrawerQuery,
   TaskMutationResponseFragment,
 } from './TaskDrawer.generated';
@@ -57,6 +70,17 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   title: {
     flexGrow: 1,
+  },
+  removeButton: {
+    backgroundColor: theme.palette.error.main,
+    color: theme.palette.common.white,
+    '&:hover': {
+      backgroundColor: theme.palette.error.dark,
+    },
+  },
+  loadingIndicator: {
+    display: 'flex',
+    margin: 'auto',
   },
 }));
 
@@ -106,6 +130,8 @@ interface Props {
   task?: GetTaskForTaskDrawerQuery['task'];
   onClose: () => void;
   defaultValues?: Partial<GetTaskForTaskDrawerQuery['task']>;
+  filter: TaskFilter;
+  rowsPerPage: number;
 }
 
 const TaskDrawerForm = ({
@@ -113,6 +139,8 @@ const TaskDrawerForm = ({
   task,
   onClose,
   defaultValues,
+  filter,
+  rowsPerPage,
 }: Props): ReactElement => {
   const initialTask: TaskMutationResponseFragmentWithoutTypename = task || {
     id: null,
@@ -132,6 +160,8 @@ const TaskDrawerForm = ({
   };
   const classes = useStyles();
   const { t } = useTranslation();
+
+  const [removeDialogOpen, handleRemoveDialog] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
   const [notification, setNotification] = useState(
     initialTask.notificationTimeBefore !== null ||
@@ -155,6 +185,7 @@ const TaskDrawerForm = ({
   });
   const [createTask, { loading: creating }] = useCreateTaskMutation();
   const [updateTask, { loading: saving }] = useUpdateTaskMutation();
+  const [deleteTask, { loading: deleting }] = useDeleteTaskMutation();
   const onSubmit = async (values: Task): Promise<void> => {
     const attributes = {
       ...values,
@@ -188,6 +219,51 @@ const TaskDrawerForm = ({
     } catch (error) {
       debugger;
       enqueueSnackbar(error.message, { variant: 'error' });
+    }
+  };
+
+  const onDeleteTask = async (): Promise<void> => {
+    try {
+      if (task) {
+        await deleteTask({
+          variables: {
+            accountListId,
+            id: task.id,
+          },
+          update: (cache) => {
+            const query = {
+              query: GetTasksForTaskListDocument,
+              variables: {
+                accountListId,
+                first: rowsPerPage,
+                ...filter,
+              },
+            };
+            const dataFromCache = cache.readQuery<GetTasksForTaskListQuery>(
+              query,
+            );
+
+            cache.writeQuery({
+              ...query,
+              data: {
+                tasks: {
+                  ...dataFromCache?.tasks,
+                  nodes:
+                    dataFromCache?.tasks.nodes.filter(
+                      ({ id }) => id !== task.id,
+                    ) || [],
+                },
+              },
+            });
+          },
+        });
+        enqueueSnackbar(t('Task deleted successfully'), { variant: 'success' });
+        handleRemoveDialog(false);
+        onClose();
+      }
+    } catch (error) {
+      enqueueSnackbar(error.message, { variant: 'error' });
+      throw error;
     }
   };
 
@@ -527,12 +603,23 @@ const TaskDrawerForm = ({
           <Divider />
           <Box m={2}>
             <Grid container spacing={1} justify="flex-end">
-              <Grid item>
+              <Grid container item xs={8} justify="flex-start">
+                <Button
+                  size="large"
+                  variant="contained"
+                  className={classes.removeButton}
+                  onClick={() => handleRemoveDialog(true)}
+                >
+                  <DeleteIcon />
+                  {t('Remove')}
+                </Button>
+              </Grid>
+              <Grid item xs={2}>
                 <Button size="large" disabled={isSubmitting} onClick={onClose}>
                   {t('Cancel')}
                 </Button>
               </Grid>
-              <Grid item>
+              <Grid item xs={2}>
                 <Button
                   size="large"
                   variant="contained"
@@ -550,6 +637,39 @@ const TaskDrawerForm = ({
                 </Button>
               </Grid>
             </Grid>
+            <Dialog
+              open={removeDialogOpen}
+              aria-labelledby={t('Remove task confirmation')}
+              fullWidth
+              maxWidth="sm"
+            >
+              <DialogTitle>{t('Confirm')}</DialogTitle>
+              <DialogContent dividers>
+                {deleting ? (
+                  <CircularProgress
+                    className={classes.loadingIndicator}
+                    color="primary"
+                    size={50}
+                  />
+                ) : (
+                  <DialogContentText>
+                    {t('Are you sure you wish to delete the selected task?')}
+                  </DialogContentText>
+                )}
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={() => handleRemoveDialog(false)}>
+                  {t('No')}
+                </Button>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={onDeleteTask}
+                >
+                  {t('Yes')}
+                </Button>
+              </DialogActions>
+            </Dialog>
           </Box>
         </form>
       )}

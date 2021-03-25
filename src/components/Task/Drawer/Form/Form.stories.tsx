@@ -1,6 +1,7 @@
 import React, { ReactElement } from 'react';
 import { MockedProvider } from '@apollo/client/testing';
 import { DateTime } from 'luxon';
+import { InMemoryCache } from '@apollo/client';
 import {
   ActivityTypeEnum,
   Contact,
@@ -8,15 +9,29 @@ import {
   NotificationTypeEnum,
   Task,
 } from '../../../../../graphql/types.generated';
+import { getTasksForTaskListMock } from '../../List/List.mock';
+import { GetTasksForTaskListDocument } from '../../List/TaskList.generated';
 import {
   getDataForTaskDrawerMock,
   createTaskMutationMock,
   updateTaskMutationMock,
+  deleteTaskMutationMock,
 } from './Form.mock';
 import TaskDrawerForm from '.';
 
 export default {
   title: 'Task/Drawer/Form',
+};
+
+const mockFilter = {
+  userIds: [],
+  tags: [],
+  contactIds: [],
+  activityType: [],
+  completed: null,
+  startAt: null,
+  before: null,
+  after: null,
 };
 
 export const Default = (): ReactElement => {
@@ -28,7 +43,12 @@ export const Default = (): ReactElement => {
       ]}
       addTypename={false}
     >
-      <TaskDrawerForm accountListId="abc" onClose={(): void => {}} />
+      <TaskDrawerForm
+        accountListId="abc"
+        filter={mockFilter}
+        rowsPerPage={100}
+        onClose={(): void => {}}
+      />
     </MockedProvider>
   );
 };
@@ -36,7 +56,12 @@ export const Default = (): ReactElement => {
 export const Loading = (): ReactElement => {
   return (
     <MockedProvider mocks={[]} addTypename={false}>
-      <TaskDrawerForm accountListId="abc" onClose={(): void => {}} />
+      <TaskDrawerForm
+        accountListId="abc"
+        filter={mockFilter}
+        rowsPerPage={100}
+        onClose={(): void => {}}
+      />
     </MockedProvider>
   );
 };
@@ -78,16 +103,36 @@ const task: Task = {
 };
 
 export const Persisted = (): ReactElement => {
+  const cache = new InMemoryCache({ addTypename: false });
+  const query = {
+    query: GetTasksForTaskListDocument,
+    variables: {
+      accountListId: 'abc',
+      first: 100,
+      ...mockFilter,
+    },
+    data: {
+      tasks: {
+        nodes: [{ ...task }],
+      },
+    },
+  };
+  cache.writeQuery(query);
   return (
     <MockedProvider
       mocks={[
         getDataForTaskDrawerMock(),
+        getTasksForTaskListMock(),
         { ...updateTaskMutationMock(), delay: 500 },
+        { ...deleteTaskMutationMock(), delay: 1000 },
       ]}
+      cache={cache}
       addTypename={false}
     >
       <TaskDrawerForm
         accountListId="abc"
+        filter={mockFilter}
+        rowsPerPage={100}
         task={task}
         onClose={(): void => {}}
       />
