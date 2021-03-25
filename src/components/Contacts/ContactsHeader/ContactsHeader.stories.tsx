@@ -8,9 +8,3 @@ export default {
 export const Default = (): ReactElement => {
   return <ContactsHeader />;
 };
-
-Default.story = {
-  parameters: {
-    chromatic: { delay: 1000 },
-  },
-};
