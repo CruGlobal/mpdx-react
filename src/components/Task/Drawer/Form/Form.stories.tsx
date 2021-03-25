@@ -12,8 +12,10 @@ import {
   getDataForTaskDrawerMock,
   createTaskMutationMock,
   updateTaskMutationMock,
+  deleteTaskMutationMock,
 } from './Form.mock';
 import TaskDrawerForm from '.';
+import { getTasksForTaskListMock } from '../../List/List.mock';
 
 export default {
   title: 'Task/Drawer/Form',
@@ -103,7 +105,9 @@ export const Persisted = (): ReactElement => {
     <MockedProvider
       mocks={[
         getDataForTaskDrawerMock(),
+        getTasksForTaskListMock(),
         { ...updateTaskMutationMock(), delay: 500 },
+        { ...deleteTaskMutationMock(), delay: 1000 },
       ]}
       addTypename={false}
     >
