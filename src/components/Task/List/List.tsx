@@ -1,4 +1,4 @@
-import React, { ReactElement, useState, useCallback, useEffect } from 'react';
+import React, { ReactElement, useState, useCallback } from 'react';
 import MUIDataTable, {
   MUIDataTableOptions,
   MUIDataTableColumn,
@@ -93,19 +93,16 @@ const TaskList = ({ initialFilter }: Props): ReactElement => {
     variables: { accountListId },
   });
 
-  const { data, loading, error } = useGetTasksForTaskListQuery({
+  const { data, loading } = useGetTasksForTaskListQuery({
     variables: {
       accountListId,
       first: rowsPerPage,
       ...filter,
     },
-  });
-
-  useEffect(() => {
-    if (error) {
+    onError: (error) => {
       enqueueSnackbar(error.message, { variant: 'error' });
-    }
-  }, [error]);
+    },
+  });
 
   const columns: MUIDataTableColumn[] = [
     {

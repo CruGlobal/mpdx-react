@@ -47,14 +47,12 @@ const TaskDrawerContactList = ({
 
   const [
     getContacts,
-    { data, loading, error },
-  ] = useGetContactsForTaskDrawerContactListLazyQuery();
-
-  useEffect(() => {
-    if (error) {
+    { data, loading },
+  ] = useGetContactsForTaskDrawerContactListLazyQuery({
+    onError: (error) => {
       enqueueSnackbar(error.message, { variant: 'error' });
-    }
-  }, [error]);
+    },
+  });
 
   useEffect(() => {
     if (contactIds.length > 0) {

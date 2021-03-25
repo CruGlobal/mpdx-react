@@ -39,18 +39,15 @@ const TaskDrawerCommentList = ({
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
 
-  const { data, loading, error } = useGetCommentsForTaskDrawerCommentListQuery({
+  const { data, loading } = useGetCommentsForTaskDrawerCommentListQuery({
     variables: {
       accountListId,
       taskId,
     },
-  });
-
-  useEffect(() => {
-    if (error) {
+    onError: (error) => {
       enqueueSnackbar(error.message, { variant: 'error' });
-    }
-  }, [error]);
+    },
+  });
 
   const ref = useRef(null);
 
