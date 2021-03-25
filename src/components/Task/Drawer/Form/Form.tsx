@@ -78,6 +78,10 @@ const useStyles = makeStyles((theme: Theme) => ({
       backgroundColor: theme.palette.error.dark,
     },
   },
+  loadingIndicator: {
+    display: 'flex',
+    margin: 'auto',
+  },
 }));
 
 type TaskMutationResponseFragmentWithoutTypename = DeepOmit<
@@ -605,14 +609,8 @@ const TaskDrawerForm = ({
                   className={classes.removeButton}
                   onClick={() => handleRemoveDialog(true)}
                 >
-                  {deleting ? (
-                    <CircularProgress color="primary" size={20} />
-                  ) : (
-                    <>
-                      <DeleteIcon titleAccess={t('Remove')} />
-                      {t('Remove')}
-                    </>
-                  )}
+                  <DeleteIcon titleAccess={t('Remove')} />
+                  {t('Remove')}
                 </Button>
               </Grid>
               <Grid item xs={2}>
@@ -641,13 +639,22 @@ const TaskDrawerForm = ({
             <Dialog
               open={removeDialogOpen}
               aria-labelledby={t('Remove task confirmation')}
+              fullWidth
               maxWidth="sm"
             >
               <DialogTitle>{t('Confirm')}</DialogTitle>
               <DialogContent dividers>
-                <DialogContentText>
-                  {t('Are you sure you wish to delete the selected task?')}
-                </DialogContentText>
+                {deleting ? (
+                  <CircularProgress
+                    className={classes.loadingIndicator}
+                    color="primary"
+                    size={50}
+                  />
+                ) : (
+                  <DialogContentText>
+                    {t('Are you sure you wish to delete the selected task?')}
+                  </DialogContentText>
+                )}
               </DialogContent>
               <DialogActions>
                 <Button onClick={() => handleRemoveDialog(false)}>
