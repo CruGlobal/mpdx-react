@@ -247,10 +247,11 @@ const TaskDrawerForm = ({
               ...query,
               data: {
                 tasks: {
-                  ...dataFromCache.tasks,
-                  nodes: dataFromCache.tasks.nodes.filter(
-                    ({ id }) => id !== task.id,
-                  ),
+                  ...dataFromCache?.tasks,
+                  nodes:
+                    dataFromCache?.tasks.nodes.filter(
+                      ({ id }) => id !== task.id,
+                    ) || [],
                 },
               },
             });
@@ -609,7 +610,7 @@ const TaskDrawerForm = ({
                   className={classes.removeButton}
                   onClick={() => handleRemoveDialog(true)}
                 >
-                  <DeleteIcon titleAccess={t('Remove')} />
+                  <DeleteIcon />
                   {t('Remove')}
                 </Button>
               </Grid>
