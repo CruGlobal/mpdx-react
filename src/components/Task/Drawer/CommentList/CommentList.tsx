@@ -58,6 +58,8 @@ const TaskDrawerCommentList = ({
     ref.current.scrollIntoView({ behaviour: 'smooth' });
   }, [data?.task?.comments?.nodes]);
 
+  const nodes = data?.task.comments.nodes;
+
   return (
     <>
       <Box m={2}>
@@ -70,7 +72,7 @@ const TaskDrawerCommentList = ({
           </Box>
         ) : (
           <>
-            {data?.task.comments.nodes?.length === 0 && (
+            {nodes?.length === 0 && (
               <Card data-testid="TaskDrawerCommentListEmpty">
                 <CardContent className={classes.cardContent}>
                   <img
@@ -82,8 +84,8 @@ const TaskDrawerCommentList = ({
                 </CardContent>
               </Card>
             )}
-            {data?.task.comments.nodes?.length > 0 &&
-              data.task.comments.nodes?.reduce((result, comment) => {
+            {nodes?.length > 0 &&
+              nodes.reduce((result, comment, index) => {
                 return [
                   ...result,
                   <Box
@@ -93,7 +95,7 @@ const TaskDrawerCommentList = ({
                     <TaskDrawerCommentListItem
                       comment={comment}
                       reverse={comment.me}
-                      nextComment={data.task.comments?.nodes[result.length + 1]}
+                      nextComment={nodes[index + 1]}
                     />
                   </Box>,
                 ];
