@@ -1,6 +1,6 @@
 import { colors } from '@material-ui/core';
 import React from 'react';
-import { useContactFiltersLazyQuery } from '../../../../pages/accountLists/[accountListId]/ContactFilters.generated';
+import { useContactFiltersLazyQuery } from './ContactFilters.generated';
 
 interface Props {
   accountListId: string;

@@ -1,7 +1,7 @@
 import React, { ReactElement } from 'react';
-import { ContactFiltersQuery } from '../../../../pages/accountLists/[accountListId]/ContactFilters.generated';
 import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
 import { ContactFilters } from './ContactFilters';
+import { ContactFiltersQuery } from './ContactFilters.generated';
 
 export default {
   title: 'Contacts/ContactFilters',
