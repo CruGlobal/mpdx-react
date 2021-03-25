@@ -1,0 +1,12 @@
+query LoadConstants {
+  constant {
+    statuses {
+      id
+      value
+    }
+    activities {
+      id
+      value
+    }
+  }
+}
