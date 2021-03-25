@@ -1,11 +1,7 @@
-import { MockedProvider } from '@apollo/client/testing';
 import React, { ReactElement } from 'react';
+import { ContactFiltersQuery } from '../../../../pages/accountLists/[accountListId]/ContactFilters.generated';
+import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
 import { ContactFilters } from './ContactFilters';
-import {
-  ContactFiltersQueryDefaultMocks,
-  ContactFiltersQueryEmptyMocks,
-  ContactFiltersQueryLoadingMocks,
-} from './ContactFilters.mock';
 
 export default {
   title: 'ContactFilters',
@@ -15,30 +11,51 @@ const accountListId = '111';
 
 export const Default = (): ReactElement => {
   return (
-    <MockedProvider mocks={ContactFiltersQueryDefaultMocks(accountListId)}>
+    <GqlMockedProvider<ContactFiltersQuery>>
       <ContactFilters accountListId={accountListId} />
-    </MockedProvider>
+    </GqlMockedProvider>
   );
 };
 
 export const Loading = (): ReactElement => {
+  const mock = {
+    ContactFilters: {
+      contactFilters: undefined,
+    },
+  };
+
   return (
-    <MockedProvider mocks={ContactFiltersQueryLoadingMocks(accountListId)}>
+    <GqlMockedProvider<ContactFiltersQuery> mocks={mock}>
       <ContactFilters accountListId={accountListId} />
-    </MockedProvider>
+    </GqlMockedProvider>
   );
 };
 
 export const Empty = (): ReactElement => {
+  const mock = {
+    ContactFilters: {
+      contactFilters: [],
+    },
+  };
+
   return (
-    <MockedProvider mocks={ContactFiltersQueryEmptyMocks(accountListId)}>
+    <GqlMockedProvider<ContactFiltersQuery> mocks={mock}>
       <ContactFilters accountListId={accountListId} />
-    </MockedProvider>
+    </GqlMockedProvider>
   );
 };
 
-Default.story = {
-  parameters: {
-    chromatic: { delay: 1000 },
-  },
+export const Error = (): ReactElement => {
+  const mock = {
+    ContactFilters: {
+      contactFilters: undefined,
+    },
+    error: { name: 'error', message: 'Error loading data. Try again.' },
+  };
+
+  return (
+    <GqlMockedProvider<ContactFiltersQuery> mocks={mock}>
+      <ContactFilters accountListId={accountListId} />
+    </GqlMockedProvider>
+  );
 };
