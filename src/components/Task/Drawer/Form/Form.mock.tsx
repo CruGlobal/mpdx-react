@@ -139,12 +139,6 @@ export const updateTaskMutationMock = (): MockedResponse => {
   };
 };
 
-<<<<<<< HEAD
-export const getDataForTaskDrawerLoadingMock = (): MockedResponse => {
-  return {
-    ...getDataForTaskDrawerMock(),
-    delay: 100931731455,
-=======
 export const deleteTaskMutationMock = (): MockedResponse => {
   const task: GetTaskForTaskDrawerQuery['task'] = {
     id: 'task-1',
@@ -180,6 +174,5 @@ export const deleteTaskMutationMock = (): MockedResponse => {
       },
     },
     result: { data },
->>>>>>> origin/main
   };
 };
