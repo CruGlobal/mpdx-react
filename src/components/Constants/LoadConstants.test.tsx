@@ -1,6 +1,6 @@
 import { renderHook } from '@testing-library/react-hooks';
 import { GqlMockedProvider } from '../../../__tests__/util/graphqlMocking';
-import { useApiConstants } from './UseConstants';
+import { useApiConstants } from './UseApiConstants';
 
 describe('LoadConstants', () => {
   it('query correct', async () => {
