@@ -11,6 +11,8 @@ import { GetTaskForTaskDrawerQuery } from '../TaskDrawerTask.generated';
 import {
   CreateTaskDocument,
   CreateTaskMutation,
+  DeleteTaskDocument,
+  DeleteTaskMutation,
   GetDataForTaskDrawerDocument,
   GetDataForTaskDrawerQuery,
   UpdateTaskDocument,
@@ -137,9 +139,47 @@ export const updateTaskMutationMock = (): MockedResponse => {
   };
 };
 
+<<<<<<< HEAD
 export const getDataForTaskDrawerLoadingMock = (): MockedResponse => {
   return {
     ...getDataForTaskDrawerMock(),
     delay: 100931731455,
+=======
+export const deleteTaskMutationMock = (): MockedResponse => {
+  const task: GetTaskForTaskDrawerQuery['task'] = {
+    id: 'task-1',
+    activityType: ActivityTypeEnum.NewsletterEmail,
+    subject: 'On the Journey with the Johnson Family',
+    startAt: DateTime.local(2013, 1, 5, 1, 2).toISO(),
+    completedAt: DateTime.local(2016, 1, 5, 1, 2).toISO(),
+    tagList: ['tag-1', 'tag-2'],
+    contacts: {
+      nodes: [
+        { id: 'contact-1', name: 'Anderson, Robert' },
+        { id: 'contact-2', name: 'Smith, John' },
+      ],
+    },
+    user: { id: 'user-1', firstName: 'Robert', lastName: 'Anderson' },
+    notificationTimeBefore: 20,
+    notificationType: NotificationTypeEnum.Both,
+    notificationTimeUnit: NotificationTimeUnitEnum.Hours,
+  };
+
+  const data: DeleteTaskMutation = {
+    deleteTask: {
+      id: task.id,
+    },
+  };
+
+  return {
+    request: {
+      query: DeleteTaskDocument,
+      variables: {
+        accountListId: 'abc',
+        id: task.id,
+      },
+    },
+    result: { data },
+>>>>>>> origin/main
   };
 };

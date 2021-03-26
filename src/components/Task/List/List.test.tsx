@@ -118,7 +118,20 @@ describe('TaskList', () => {
       </TestWrapper>,
     );
     userEvent.click(await findByText('On the Journey with the Johnson Family'));
-    expect(openTaskDrawer).toHaveBeenCalledWith({ taskId: 'task-1' });
+    expect(openTaskDrawer).toHaveBeenCalledWith({
+      taskId: 'task-1',
+      filter: {
+        userIds: [],
+        tags: [],
+        contactIds: [],
+        activityType: [],
+        completed: null,
+        startAt: null,
+        before: null,
+        after: null,
+      },
+      rowsPerPage: 100,
+    });
     userEvent.click(getByRole('button', { name: 'Filter Table' }));
     const buttons = getAllByRole('button').filter((element) => element.id);
     const buttonWithIdThatEndsWith = (value): HTMLElement =>

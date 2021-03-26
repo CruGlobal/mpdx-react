@@ -19,6 +19,7 @@ import { useApp } from '../../App';
 import Loading from '../../Loading';
 import TaskStatus from '../Status';
 import { Task } from '../../../../graphql/types.generated';
+import { TaskFilter } from '../List/List';
 import TaskDrawerForm from './Form';
 import TaskDrawerContactList from './ContactList';
 import TaskDrawerCommentList from './CommentList';
@@ -62,6 +63,8 @@ export interface TaskDrawerProps {
   onClose?: () => void;
   showCompleteForm?: boolean;
   defaultValues?: Partial<Task>;
+  filter?: TaskFilter;
+  rowsPerPage?: number;
 }
 
 const TaskDrawer = ({
@@ -69,6 +72,8 @@ const TaskDrawer = ({
   onClose,
   showCompleteForm,
   defaultValues,
+  filter,
+  rowsPerPage,
 }: TaskDrawerProps): ReactElement => {
   const { state } = useApp();
   const classes = useStyles();
@@ -209,6 +214,8 @@ const TaskDrawer = ({
                           task={task as Task} // TODO: Use fragments to ensure all required fields are loaded
                           onClose={onDrawerClose}
                           defaultValues={defaultValues}
+                          filter={filter}
+                          rowsPerPage={rowsPerPage}
                         />
                       )}
                     </>
