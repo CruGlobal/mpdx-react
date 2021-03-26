@@ -6,5 +6,5 @@ export const useApiConstants = () => {
     fetchPolicy: 'cache-first',
   });
 
-  return data?.constants;
+  return data?.constant;
 };
