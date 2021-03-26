@@ -34,6 +34,25 @@ describe('LoadConstants', () => {
       fetchPolicy: 'cache-first',
     });
 
-    expect(result.current).toMatchInlineSnapshot(mockConstants.data.constant);
+    expect(result.current).toMatchInlineSnapshot(
+      mockConstants.data.constant,
+      `
+      Object {
+        "activities": Array [],
+        "likelyToGiveOptions": Array [],
+        "locations": Array [],
+        "notifications": Array [],
+        "pledgeCurrencies": Array [],
+        "pledgeFrequencies": Array [],
+        "pledgesReceived": Array [],
+        "preferredContactMethods": Array [],
+        "sendAppeals": Array [],
+        "sendNewsletterOptions": Array [],
+        "statuses": Array [],
+        "times": Array [],
+        "userNotificationTitles": Array [],
+      }
+    `,
+    );
   });
 });
