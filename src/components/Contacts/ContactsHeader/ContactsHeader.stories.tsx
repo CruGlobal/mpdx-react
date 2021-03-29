@@ -2,7 +2,7 @@ import React, { ReactElement } from 'react';
 import { ContactsHeader } from './ContactsHeader';
 
 export default {
-  title: 'ContactHeaders',
+  title: 'Contacts/ContactHeaders',
 };
 
 export const Default = (): ReactElement => {
