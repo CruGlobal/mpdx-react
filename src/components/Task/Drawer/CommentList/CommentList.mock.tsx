@@ -4,10 +4,13 @@ import {
   GetCommentsForTaskDrawerCommentListQuery,
 } from './TaskListComments.generated';
 
-export const getCommentsForTaskDrawerCommentListMock = (): MockedResponse => {
+export const getCommentsForTaskDrawerCommentListMock = (
+  accountListId: string,
+  taskId: string,
+): MockedResponse => {
   const data: GetCommentsForTaskDrawerCommentListQuery = {
     task: {
-      id: 'task-1',
+      id: taskId,
       comments: {
         nodes: [
           {
@@ -85,8 +88,8 @@ export const getCommentsForTaskDrawerCommentListMock = (): MockedResponse => {
     request: {
       query: GetCommentsForTaskDrawerCommentListDocument,
       variables: {
-        accountListId: 'abc',
-        taskId: 'task-1',
+        accountListId,
+        taskId,
       },
     },
     result: {
@@ -95,10 +98,13 @@ export const getCommentsForTaskDrawerCommentListMock = (): MockedResponse => {
   };
 };
 
-export const getCommentsForTaskDrawerCommentListEmptyMock = (): MockedResponse => {
+export const getCommentsForTaskDrawerCommentListEmptyMock = (
+  accountListId: string,
+  taskId: string,
+): MockedResponse => {
   const data: GetCommentsForTaskDrawerCommentListQuery = {
     task: {
-      id: 'task-1',
+      id: taskId,
       comments: {
         nodes: [],
       },
@@ -109,8 +115,8 @@ export const getCommentsForTaskDrawerCommentListEmptyMock = (): MockedResponse =
     request: {
       query: GetCommentsForTaskDrawerCommentListDocument,
       variables: {
-        accountListId: 'abc',
-        taskId: 'task-1',
+        accountListId,
+        taskId,
       },
     },
     result: {
@@ -119,9 +125,28 @@ export const getCommentsForTaskDrawerCommentListEmptyMock = (): MockedResponse =
   };
 };
 
-export const getCommentsForTaskDrawerCommentListLoadingMock = (): MockedResponse => {
+export const getCommentsForTaskDrawerCommentListLoadingMock = (
+  accountListId: string,
+  taskId: string,
+): MockedResponse => {
   return {
-    ...getCommentsForTaskDrawerCommentListMock(),
+    ...getCommentsForTaskDrawerCommentListMock(accountListId, taskId),
     delay: 100931731455,
+  };
+};
+
+export const getCommentsForTaskDrawerCommentListErrorMock = (
+  accountListId: string,
+  taskId: string,
+): MockedResponse => {
+  return {
+    request: {
+      query: GetCommentsForTaskDrawerCommentListDocument,
+      variables: {
+        accountListId,
+        taskId,
+      },
+    },
+    error: { name: 'error', message: 'Error loading data.  Try again.' },
   };
 };

@@ -9,6 +9,8 @@ import { getDataForTaskDrawerMock } from '../Drawer/Form/Form.mock';
 import { ActivityTypeEnum } from '../../../../graphql/types.generated';
 import TaskHome from '.';
 
+const accountListId = 'abc';
+
 export default {
   title: 'Task/Home',
   decorators: [
@@ -18,7 +20,10 @@ export default {
 
 export const Default = (): ReactElement => (
   <MockedProvider
-    mocks={[getTasksForTaskListMock(), getDataForTaskDrawerMock()]}
+    mocks={[
+      getTasksForTaskListMock(accountListId),
+      getDataForTaskDrawerMock(accountListId),
+    ]}
     addTypename={false}
   >
     <TaskHome />
@@ -27,7 +32,7 @@ export const Default = (): ReactElement => (
 
 export const WithInitialFilter = (): ReactElement => {
   const filter = {
-    accountListId: 'account-list-1',
+    accountListId,
     activityType: [ActivityTypeEnum.Appointment],
     completed: true,
   };
@@ -35,8 +40,8 @@ export const WithInitialFilter = (): ReactElement => {
   return (
     <MockedProvider
       mocks={[
-        getFilteredTasksForTaskListMock(filter),
-        getDataForTaskDrawerMock(),
+        getFilteredTasksForTaskListMock(accountListId, filter),
+        getDataForTaskDrawerMock(accountListId),
       ]}
       addTypename={false}
     >

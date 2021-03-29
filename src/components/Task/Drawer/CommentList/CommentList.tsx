@@ -1,6 +1,7 @@
 import React, { ReactElement, useRef, useEffect } from 'react';
 import { makeStyles, Theme, Box, Card, CardContent } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
+import { useSnackbar } from 'notistack';
 import illustration4 from '../../../../images/drawkit/grape/drawkit-grape-pack-illustration-4.svg';
 import TaskDrawerCommentListItem from './Item';
 import TaskDrawerCommentListForm from './Form';
@@ -36,19 +37,25 @@ const TaskDrawerCommentList = ({
 }: Props): ReactElement => {
   const classes = useStyles();
   const { t } = useTranslation();
+  const { enqueueSnackbar } = useSnackbar();
 
   const { data, loading } = useGetCommentsForTaskDrawerCommentListQuery({
     variables: {
       accountListId,
       taskId,
     },
+    onError: (error) => {
+      enqueueSnackbar(error.message, { variant: 'error' });
+    },
   });
 
   const ref = useRef(null);
 
+  const nodes = data?.task?.comments?.nodes;
+
   useEffect(() => {
     ref.current.scrollIntoView({ behaviour: 'smooth' });
-  }, [data?.task?.comments?.nodes]);
+  }, [nodes]);
 
   return (
     <>
@@ -62,7 +69,7 @@ const TaskDrawerCommentList = ({
           </Box>
         ) : (
           <>
-            {data.task.comments.nodes.length === 0 && (
+            {nodes?.length === 0 && (
               <Card data-testid="TaskDrawerCommentListEmpty">
                 <CardContent className={classes.cardContent}>
                   <img
@@ -74,8 +81,8 @@ const TaskDrawerCommentList = ({
                 </CardContent>
               </Card>
             )}
-            {data.task.comments.nodes.length > 0 &&
-              data.task.comments.nodes.reduce((result, comment) => {
+            {nodes?.length > 0 &&
+              nodes.reduce((result, comment, index) => {
                 return [
                   ...result,
                   <Box
@@ -85,7 +92,7 @@ const TaskDrawerCommentList = ({
                     <TaskDrawerCommentListItem
                       comment={comment}
                       reverse={comment.me}
-                      nextComment={data.task.comments.nodes[result.length + 1]}
+                      nextComment={nodes[index + 1]}
                     />
                   </Box>,
                 ];

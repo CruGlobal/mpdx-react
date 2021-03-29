@@ -9,9 +9,14 @@ import {
 import { ActivityTypeEnum } from '../../../../graphql/types.generated';
 import TaskHome from '.';
 
+const accountListId = 'abc';
+
 describe('TaskHome', () => {
   it('has correct defaults', async () => {
-    const mocks = [getTasksForTaskListMock(), getDataForTaskDrawerMock()];
+    const mocks = [
+      getTasksForTaskListMock(accountListId),
+      getDataForTaskDrawerMock(accountListId),
+    ];
     const { findByText } = render(
       <TestWrapper mocks={mocks}>
         <TaskHome />
@@ -24,7 +29,7 @@ describe('TaskHome', () => {
 
   it('has correct overrides', async () => {
     const filter = {
-      accountListId: 'account-list-1',
+      accountListId,
       activityType: [ActivityTypeEnum.Appointment],
       completed: true,
       tags: ['tag-1', 'tag-2'],
@@ -35,8 +40,8 @@ describe('TaskHome', () => {
     const { findByText } = render(
       <TestWrapper
         mocks={[
-          getFilteredTasksForTaskListMock(filter),
-          getDataForTaskDrawerMock(),
+          getFilteredTasksForTaskListMock(accountListId, filter),
+          getDataForTaskDrawerMock(accountListId),
         ]}
       >
         <TaskHome initialFilter={filter} />

@@ -17,6 +17,8 @@ import {
 } from './Form.mock';
 import TaskDrawerForm from '.';
 
+const accountListId = 'abc';
+
 describe('TaskDrawerForm', () => {
   const mockFilter = {
     userIds: [],
@@ -51,11 +53,14 @@ describe('TaskDrawerForm', () => {
       <MuiPickersUtilsProvider utils={LuxonUtils}>
         <SnackbarProvider>
           <MockedProvider
-            mocks={[getDataForTaskDrawerMock(), createTaskMutationMock()]}
+            mocks={[
+              getDataForTaskDrawerMock(accountListId),
+              createTaskMutationMock(),
+            ]}
             addTypename={false}
           >
             <TaskDrawerForm
-              accountListId="abc"
+              accountListId={accountListId}
               filter={mockFilter}
               rowsPerPage={100}
               onClose={onClose}
@@ -69,7 +74,7 @@ describe('TaskDrawerForm', () => {
     onClose.mockClear();
     userEvent.click(getByText('Save'));
     expect(await findByText('Field is required')).toBeInTheDocument();
-    userEvent.type(getByRole('textbox', { name: 'Subject' }), 'abc');
+    userEvent.type(getByRole('textbox', { name: 'Subject' }), accountListId);
     userEvent.click(getByRole('checkbox', { name: 'Notification' }));
     userEvent.type(getByRole('spinbutton', { name: 'Period' }), '20');
     userEvent.click(getByRole('checkbox', { name: 'Notification' }));
@@ -84,11 +89,14 @@ describe('TaskDrawerForm', () => {
       <MuiPickersUtilsProvider utils={LuxonUtils}>
         <SnackbarProvider>
           <MockedProvider
-            mocks={[getDataForTaskDrawerMock(), updateTaskMutationMock()]}
+            mocks={[
+              getDataForTaskDrawerMock(accountListId),
+              updateTaskMutationMock(),
+            ]}
             addTypename={false}
           >
             <TaskDrawerForm
-              accountListId="abc"
+              accountListId={accountListId}
               filter={mockFilter}
               rowsPerPage={100}
               onClose={onClose}
@@ -162,7 +170,7 @@ describe('TaskDrawerForm', () => {
     const query = {
       query: GetTasksForTaskListDocument,
       variables: {
-        accountListId: 'abc',
+        accountListId,
         first: 100,
         ...mockFilter,
       },
@@ -177,12 +185,15 @@ describe('TaskDrawerForm', () => {
       <MuiPickersUtilsProvider utils={LuxonUtils}>
         <SnackbarProvider>
           <MockedProvider
-            mocks={[getDataForTaskDrawerMock(), deleteTaskMutationMock()]}
+            mocks={[
+              getDataForTaskDrawerMock(accountListId),
+              deleteTaskMutationMock(),
+            ]}
             cache={cache}
             addTypename={false}
           >
             <TaskDrawerForm
-              accountListId="abc"
+              accountListId={accountListId}
               filter={mockFilter}
               rowsPerPage={100}
               onClose={onClose}
@@ -202,7 +213,7 @@ describe('TaskDrawerForm', () => {
       expect(cache.readQuery).toHaveBeenCalledWith({
         query: GetTasksForTaskListDocument,
         variables: {
-          accountListId: 'abc',
+          accountListId,
           first: 100,
           ...mockFilter,
         },
@@ -212,7 +223,7 @@ describe('TaskDrawerForm', () => {
       expect(cache.writeQuery).toHaveBeenCalledWith({
         query: GetTasksForTaskListDocument,
         variables: {
-          accountListId: 'abc',
+          accountListId,
           first: 100,
           ...mockFilter,
         },
