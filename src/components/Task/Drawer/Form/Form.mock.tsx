@@ -19,10 +19,12 @@ import {
   UpdateTaskMutation,
 } from './TaskDrawer.generated';
 
-export const getDataForTaskDrawerMock = (): MockedResponse => {
+export const getDataForTaskDrawerMock = (
+  accountListId: string,
+): MockedResponse => {
   const data: GetDataForTaskDrawerQuery = {
     accountList: {
-      id: 'abc',
+      id: accountListId,
       taskTagList: ['tag-1', 'tag-2', 'tag-3'],
     },
     accountListUsers: {
@@ -44,11 +46,50 @@ export const getDataForTaskDrawerMock = (): MockedResponse => {
       ],
     },
   };
+
   return {
     request: {
       query: GetDataForTaskDrawerDocument,
       variables: {
-        accountListId: 'abc',
+        accountListId,
+      },
+    },
+    result: {
+      data,
+    },
+  };
+};
+
+export const getDataForTaskDrawerLoadingMock = (
+  accountListId: string,
+): MockedResponse => {
+  return {
+    ...getDataForTaskDrawerMock(accountListId),
+    delay: 100931731455,
+  };
+};
+
+export const getDataForTaskDrawerEmptyMock = (
+  accountListId: string,
+): MockedResponse => {
+  const data: GetDataForTaskDrawerQuery = {
+    accountList: {
+      id: accountListId,
+      taskTagList: ['tag-1', 'tag-2', 'tag-3'],
+    },
+    accountListUsers: {
+      nodes: [],
+    },
+    contacts: {
+      nodes: [],
+    },
+  };
+
+  return {
+    request: {
+      query: GetDataForTaskDrawerDocument,
+      variables: {
+        accountListId,
       },
     },
     result: {

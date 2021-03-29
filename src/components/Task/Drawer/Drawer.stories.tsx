@@ -23,7 +23,7 @@ export default {
 
 export const Default = (): ReactElement => {
   const mocks = [
-    getDataForTaskDrawerMock(),
+    getDataForTaskDrawerMock(accountListId),
     { ...createTaskMutationMock(), delay: 500 },
   ];
   return (
@@ -35,7 +35,7 @@ export const Default = (): ReactElement => {
 
 export const Persisted = (): ReactElement => {
   const mocks = [
-    getDataForTaskDrawerMock(),
+    getDataForTaskDrawerMock(accountListId),
     getContactsForTaskDrawerContactListMock(accountListId, contactIds),
     getCommentsForTaskDrawerCommentListMock(accountListId, taskId),
     { ...updateTaskMutationMock(), delay: 500 },
@@ -51,7 +51,7 @@ export const Persisted = (): ReactElement => {
 
 export const showCompleteForm = (): ReactElement => {
   const mocks = [
-    getDataForTaskDrawerMock(),
+    getDataForTaskDrawerMock(accountListId),
     getContactsForTaskDrawerContactListMock(accountListId, contactIds),
     getCommentsForTaskDrawerCommentListMock(accountListId, taskId),
     { ...completeTaskMutationMock(), delay: 500 },

@@ -15,7 +15,7 @@ describe('TaskHome', () => {
   it('has correct defaults', async () => {
     const mocks = [
       getTasksForTaskListMock(accountListId),
-      getDataForTaskDrawerMock(),
+      getDataForTaskDrawerMock(accountListId),
     ];
     const { findByText } = render(
       <TestWrapper mocks={mocks}>
@@ -41,7 +41,7 @@ describe('TaskHome', () => {
       <TestWrapper
         mocks={[
           getFilteredTasksForTaskListMock(accountListId, filter),
-          getDataForTaskDrawerMock(),
+          getDataForTaskDrawerMock(accountListId),
         ]}
       >
         <TaskHome initialFilter={filter} />

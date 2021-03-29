@@ -50,7 +50,7 @@ describe('TaskList', () => {
   it('has correct defaults', async () => {
     const mocks = [
       getTasksForTaskListMock(accountListId),
-      getDataForTaskDrawerMock(),
+      getDataForTaskDrawerMock(accountListId),
       getFilteredTasksForTaskListMock(accountListId, { completed: false }),
       getFilteredTasksForTaskListMock(accountListId, {
         activityType: [ActivityTypeEnum.Appointment],
@@ -174,7 +174,7 @@ describe('TaskList', () => {
       <TestWrapper
         mocks={[
           getFilteredTasksForTaskListMock(accountListId, filter),
-          getDataForTaskDrawerMock(),
+          getDataForTaskDrawerMock(accountListId),
         ]}
         disableAppProvider
       >
@@ -194,7 +194,7 @@ describe('TaskList', () => {
 
   it('has loading state', () => {
     const mocks = [
-      { ...getDataForTaskDrawerMock(), delay: 100931731455 },
+      { ...getDataForTaskDrawerMock(accountListId), delay: 100931731455 },
       {
         ...getFilteredTasksForTaskListMock(accountListId, {
           userIds: ['user-1'],
@@ -221,7 +221,7 @@ describe('TaskList', () => {
       <TestWrapper
         mocks={[
           getEmptyTasksForTaskListMock(accountListId),
-          getDataForTaskDrawerMock(),
+          getDataForTaskDrawerMock(accountListId),
         ]}
         disableAppProvider
       >
@@ -238,7 +238,7 @@ describe('TaskList', () => {
       <TestWrapper
         mocks={[
           getTasksForTaskListErrorMock(accountListId),
-          getDataForTaskDrawerMock(),
+          getDataForTaskDrawerMock(accountListId),
         ]}
         disableAppProvider
       >

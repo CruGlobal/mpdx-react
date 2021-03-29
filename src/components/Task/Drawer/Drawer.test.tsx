@@ -24,7 +24,10 @@ const contactIds = ['contact-1', 'contact-2'];
 describe('TaskDrawer', () => {
   it('default', async () => {
     const onClose = jest.fn();
-    const mocks = [getDataForTaskDrawerMock(), createTaskMutationMock()];
+    const mocks = [
+      getDataForTaskDrawerMock(accountListId),
+      createTaskMutationMock(),
+    ];
     const { getByText, getByRole, getByTestId } = render(
       <TestWrapper mocks={mocks}>
         <TaskDrawer onClose={onClose} defaultValues={{ subject: 'abc' }} />
@@ -42,7 +45,7 @@ describe('TaskDrawer', () => {
   it('persisted', async () => {
     const onClose = jest.fn();
     const mocks = [
-      getDataForTaskDrawerMock(),
+      getDataForTaskDrawerMock(accountListId),
       getContactsForTaskDrawerContactListMock(accountListId, contactIds),
       getCommentsForTaskDrawerCommentListMock(accountListId, taskId),
       updateTaskMutationMock(),
@@ -61,11 +64,11 @@ describe('TaskDrawer', () => {
   it('showCompleteForm', async () => {
     const onClose = jest.fn();
     const mocks = [
-      getDataForTaskDrawerMock(),
+      getDataForTaskDrawerMock(accountListId),
       getContactsForTaskDrawerContactListMock(accountListId, contactIds),
       getCommentsForTaskDrawerCommentListMock(accountListId, taskId),
-      completeTaskMutationMock(),
-      getCompleteTaskForTaskDrawerMock(),
+      completeTaskMutationMock(accountListId, taskId),
+      getCompleteTaskForTaskDrawerMock(accountListId, taskId),
     ];
     const { findByTestId } = render(
       <TestWrapper mocks={mocks}>

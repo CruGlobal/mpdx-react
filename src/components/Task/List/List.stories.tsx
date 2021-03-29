@@ -28,7 +28,10 @@ export default {
 
 export const Default = (): ReactElement => (
   <MockedProvider
-    mocks={[getTasksForTaskListMock(accountListId), getDataForTaskDrawerMock()]}
+    mocks={[
+      getTasksForTaskListMock(accountListId),
+      getDataForTaskDrawerMock(accountListId),
+    ]}
     addTypename={false}
   >
     <TaskList />
@@ -39,7 +42,7 @@ export const Loading = (): ReactElement => (
   <MockedProvider
     mocks={[
       getTasksForTaskListLoadingMock(accountListId),
-      getDataForTaskDrawerLoadingMock(),
+      getDataForTaskDrawerLoadingMock(accountListId),
     ]}
     addTypename={false}
   >
@@ -51,7 +54,7 @@ export const Empty = (): ReactElement => (
   <MockedProvider
     mocks={[
       getEmptyTasksForTaskListMock(accountListId),
-      getDataForTaskDrawerMock(),
+      getDataForTaskDrawerMock(accountListId),
     ]}
     addTypename={false}
   >
@@ -81,7 +84,7 @@ export const WithInitialFilter = (): ReactElement => {
           ...filter,
           before: 'A',
         }),
-        getDataForTaskDrawerMock(),
+        getDataForTaskDrawerMock(accountListId),
       ]}
       addTypename={false}
     >
@@ -94,7 +97,7 @@ export const Error = (): ReactElement => (
   <MockedProvider
     mocks={[
       getTasksForTaskListErrorMock(accountListId),
-      getDataForTaskDrawerMock(),
+      getDataForTaskDrawerMock(accountListId),
     ]}
     addTypename={false}
   >

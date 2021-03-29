@@ -51,11 +51,11 @@ const TaskDrawerCommentList = ({
 
   const ref = useRef(null);
 
+  const nodes = data?.task?.comments?.nodes;
+
   useEffect(() => {
     ref.current.scrollIntoView({ behaviour: 'smooth' });
-  }, [data?.task?.comments?.nodes]);
-
-  const nodes = data?.task.comments.nodes;
+  }, [nodes]);
 
   return (
     <>
