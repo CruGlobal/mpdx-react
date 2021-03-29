@@ -4,7 +4,7 @@ import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
 import { ContactFilters } from './ContactFilters';
 
 export default {
-  title: 'ContactFilters',
+  title: 'Contacts/ContactFilters',
 };
 
 const accountListId = '111';
