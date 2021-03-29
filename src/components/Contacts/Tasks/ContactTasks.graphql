@@ -3,17 +3,18 @@ query ContactTasks($accountListId: ID!, $contactIds: [ID!]) {
     totalCount
     nodes {
       id
+      activityType
+      completedAt
       subject
       comments {
         totalCount
       }
-      activityType
       contacts {
         nodes {
+          id
           name
         }
       }
-      completedAt
     }
   }
 }
