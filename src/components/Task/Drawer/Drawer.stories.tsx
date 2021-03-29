@@ -54,7 +54,7 @@ export const showCompleteForm = (): ReactElement => {
     getDataForTaskDrawerMock(accountListId),
     getContactsForTaskDrawerContactListMock(accountListId, contactIds),
     getCommentsForTaskDrawerCommentListMock(accountListId, taskId),
-    { ...completeTaskMutationMock(), delay: 500 },
+    { ...completeTaskMutationMock(accountListId, taskId), delay: 500 },
     getTaskForTaskDrawerMock(),
   ];
 
