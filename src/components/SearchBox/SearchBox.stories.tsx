@@ -27,6 +27,6 @@ Default.parameters = {
   design: {
     type: 'figma',
     url:
-      'https://www.figma.com/file/zvqkcHImucOoPyXrYNqrkn/MPDX-Update-Material-UI?node-id=168%3A17154',
+      'https://www.figma.com/file/zvqkcHImucOoPyXrYNqrkn/MPDX-Update-Material-UI?node-id=631%3A3879',
   },
 };
