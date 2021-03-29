@@ -1,0 +1,19 @@
+query ContactTasks($accountListId: ID!, $contactIds: [ID!]) {
+  tasks(accountListId: $accountListId, contactIds: $contactIds) {
+    totalCount
+    nodes {
+      id
+      subject
+      comments {
+        totalCount
+      }
+      activityType
+      contacts {
+        nodes {
+          name
+        }
+      }
+      completedAt
+    }
+  }
+}
