@@ -1,0 +1,56 @@
+query LoadConstants {
+  constant {
+    activities {
+      id
+      value
+    }
+    likelyToGiveOptions {
+      id
+      value
+    }
+    locations {
+      id
+      value
+    }
+    notifications {
+      id
+      value
+    }
+    pledgeCurrencies {
+      id
+      value
+    }
+    pledgeFrequencies {
+      id
+      value
+    }
+    pledgesReceived {
+      id
+      value
+    }
+    preferredContactMethods {
+      id
+      value
+    }
+    sendAppeals {
+      id
+      value
+    }
+    sendNewsletterOptions {
+      id
+      value
+    }
+    statuses {
+      id
+      value
+    }
+    times {
+      key
+      value
+    }
+    userNotificationTitles {
+      id
+      value
+    }
+  }
+}
