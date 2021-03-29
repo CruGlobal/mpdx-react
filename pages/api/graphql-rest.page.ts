@@ -16,7 +16,7 @@ import { ContactFilterOption, Resolvers } from './graphql-rest.page.generated';
 
 const typeDefs = gql`
   type Query {
-    contactFilters(accountListId: ID!): [ContactFilter!]!
+    contactFilters(accountListId: ID!): [ContactFilterGroup!]!
     taskAnalytics(accountListId: ID!): TaskAnalytics!
   }
 
@@ -71,6 +71,13 @@ const typeDefs = gql`
   type OverdueOrDueTodayTaskAnalytic {
     label: String!
     count: Int!
+  }
+
+  type ContactFilterGroup {
+    id: ID!
+    title: String!
+    alwaysVisible: Boolean!
+    filters: [ContactFilter!]!
   }
 
   type ContactFilter {
@@ -209,20 +216,33 @@ class MpdxRestApi extends RESTDataSource {
     } = await this.get(
       `contacts/filters?filter[account_list_id]=${accountListId}`,
     );
-    return data.map(
-      ({
-        attributes: { type, default_selection, ...attributes },
-        ...filter
-      }) => ({
-        ...filter,
-        ...attributes,
-        filterType: type,
-        defaultSelection:
-          typeof default_selection === 'string'
-            ? default_selection.split(/,\s?/)
-            : [default_selection.toString()],
-      }),
-    );
+    return [
+      {
+        id: 'tags',
+        title: 'Tags',
+        alwaysVisible: true,
+        filters: [],
+      },
+      {
+        id: 'other',
+        title: 'Other',
+        alwaysVisible: false,
+        filters: data.map(
+          ({
+            attributes: { type, default_selection, ...attributes },
+            ...filter
+          }) => ({
+            ...filter,
+            ...attributes,
+            filterType: type,
+            defaultSelection:
+              typeof default_selection === 'string'
+                ? default_selection.split(/,\s?/)
+                : [default_selection],
+          }),
+        ),
+      },
+    ];
   }
 
   async getTaskAnalytics(accountListId: string) {

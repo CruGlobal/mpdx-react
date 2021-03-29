@@ -2,6 +2,10 @@ query ContactFilters($accountListId: ID!) {
   contactFilters(accountListId: $accountListId) {
     id
     title
-    featured
+    alwaysVisible
+    filters {
+      id
+      title
+    }
   }
 }
