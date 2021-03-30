@@ -5,6 +5,8 @@ query ContactFilters($accountListId: ID!) {
     alwaysVisible
     filters {
       id
+      type
+      name
       title
     }
   }

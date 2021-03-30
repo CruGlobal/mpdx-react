@@ -13,6 +13,7 @@ import { ArrowBackIos, ArrowForwardIos } from '@material-ui/icons';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ContactFilterGroup } from '../../../../graphql/types.generated';
+import { FilterListItem } from '../../Shared/Filters/FilterListItem';
 import { FilterListItemShowAll } from '../../Shared/Filters/FilterListItemShowAll';
 import { useContactFiltersLazyQuery } from './ContactFilters.generated';
 
@@ -27,8 +28,13 @@ export const ContactFilters: React.FC<Props> = ({ accountListId }: Props) => {
   ] = useContactFiltersLazyQuery({ variables: { accountListId } });
   const { t } = useTranslation();
 
+  const [selectedFilters, setSelectedFilters] = useState({});
   const [showAll, setShowAll] = useState(false);
   const [selectedGroup, showGroup] = useState<null | ContactFilterGroup>(null);
+
+  const updateSelectedFilter = (name: string, value) => {
+    setSelectedFilters({ ...selectedFilters, [name]: value });
+  };
 
   useEffect(() => {
     loadContactFilters();
@@ -108,13 +114,13 @@ export const ContactFilters: React.FC<Props> = ({ accountListId }: Props) => {
                 primaryTypographyProps={{ variant: 'h6' }}
               />
             </ListItem>
-            {selectedGroup?.filters?.map(({ id, title }) => (
-              <ListItem key={id}>
-                <ListItemText
-                  primary={title}
-                  primaryTypographyProps={{ variant: 'subtitle1' }}
-                />
-              </ListItem>
+            {selectedGroup?.filters?.map((filter) => (
+              <FilterListItem
+                key={filter.id}
+                filter={filter}
+                value={selectedFilters[filter.name]}
+                onUpdate={(value) => updateSelectedFilter(filter.name, value)}
+              />
             ))}
           </List>
         </Slide>
