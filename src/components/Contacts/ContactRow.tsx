@@ -31,22 +31,29 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 interface Props {
   contact: ContactRowFragment;
+  onContactSelected: (contactId: string) => void;
 }
 
-export const ContactRow: React.FC<Props> = ({ contact }) => {
+export const ContactRow: React.FC<Props> = ({ contact, onContactSelected }) => {
   const classes = useStyles();
+
+  const onClick = () => {
+    onContactSelected(contact.id);
+  };
 
   return (
     <Box role="row" style={{ width: '100%' }}>
       <Box
         style={{
           height: '72px',
+          width: '100%',
           display: 'flex',
           flexDirection: 'row',
           justifyContent: 'space-evenly',
           alignItems: 'center',
           alignContent: 'center',
         }}
+        onClick={onClick}
       >
         <CheckBox className={classes.checkbox} color="secondary" />
         <Box
@@ -120,7 +127,6 @@ export const ContactRow: React.FC<Props> = ({ contact }) => {
       <hr
         style={{
           display: 'block',
-          width: '95%',
           marginBottom: '0',
           marginRight: '0',
         }}
