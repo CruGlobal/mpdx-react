@@ -8,6 +8,10 @@ query ContactFilters($accountListId: ID!) {
       type
       name
       title
+      options {
+        id
+        name
+      }
     }
   }
 }

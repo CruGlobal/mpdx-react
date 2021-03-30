@@ -1,12 +1,13 @@
 import { ListItem, ListItemText } from '@material-ui/core';
 import React from 'react';
 import { Filter } from './Filter';
+import { FilterListItemSelect } from './FilterListItemSelect';
 import { FilterListItemTextField } from './FilterListItemTextField';
 
 interface Props {
   filter: Filter;
   value;
-  onUpdate: (value: string) => void;
+  onUpdate: (value) => void;
 }
 
 export const FilterListItem: React.FC<Props> = ({
@@ -20,6 +21,8 @@ export const FilterListItem: React.FC<Props> = ({
       value={value}
       onUpdate={onUpdate}
     />
+  ) : filter.type == 'radio' ? (
+    <FilterListItemSelect filter={filter} value={value} onUpdate={onUpdate} />
   ) : (
     <ListItem>
       <ListItemText

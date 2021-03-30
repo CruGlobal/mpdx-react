@@ -13,6 +13,7 @@ import { ArrowBackIos, ArrowForwardIos } from '@material-ui/icons';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ContactFilterGroup } from '../../../../graphql/types.generated';
+import { Filter } from '../../Shared/Filters/Filter';
 import { FilterListItem } from '../../Shared/Filters/FilterListItem';
 import { FilterListItemShowAll } from '../../Shared/Filters/FilterListItemShowAll';
 import { useContactFiltersLazyQuery } from './ContactFilters.generated';
@@ -117,7 +118,7 @@ export const ContactFilters: React.FC<Props> = ({ accountListId }: Props) => {
             {selectedGroup?.filters?.map((filter) => (
               <FilterListItem
                 key={filter.id}
-                filter={filter}
+                filter={filter as Filter}
                 value={selectedFilters[filter.name]}
                 onUpdate={(value) => updateSelectedFilter(filter.name, value)}
               />
