@@ -1,31 +1,37 @@
-import React from 'react';
+import { Box } from '@material-ui/core';
+import React, { useEffect } from 'react';
 import { gqlMock } from '../../../../__tests__/util/graphqlMocking';
 import {
   GetContactDetailsDocument,
   GetContactDetailsQuery,
   GetContactDetailsQueryVariables,
+  useGetContactDetailsLazyQuery,
   useGetContactDetailsQuery,
 } from './ContactDetails.generated';
 
 interface Props {
   accountListId: string;
-  contactId: string;
+  contactId: string | null;
 }
 
 export const ContactDetails: React.FC<Props> = ({
   accountListId,
   contactId,
 }: Props) => {
-  const contactData = gqlMock<
-    GetContactDetailsQuery,
-    GetContactDetailsQueryVariables
-  >(GetContactDetailsDocument, { variables: { accountListId, contactId } });
+  const [
+    loadContactDetails,
+    { data, loading, error },
+  ] = useGetContactDetailsLazyQuery();
 
-  const { data, loading, error } = useGetContactDetailsQuery({
-    variables: { accountListId, contactId },
-  });
+  useEffect(() => {
+    if (contactId != null) {
+      loadContactDetails({ variables: { accountListId, contactId } });
+    }
+  }, [contactId]);
 
   return (
-    <div>{loading ? <p>loading</p> : <p>{contactData?.contact.name}</p>}</div>
+    <Box position="fixed">
+      {loading ? <p>loading</p> : <p>{data?.contact.name}</p>}
+    </Box>
   );
 };

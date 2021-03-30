@@ -13,13 +13,13 @@ const ContactsPage: React.FC = () => {
     query: { accountListId },
   } = useRouter();
 
-  const contactId = '222';
-
+  const [contactDetailsId, setContactDetailsId] = useState<string | null>(null);
   const [contactDetailsHidden, setContactDetailsHidden] = useState<boolean>(
     true,
   );
 
   const toggleContactDetailsHidden = (contactId: string) => {
+    setContactDetailsId(contactId);
     setContactDetailsHidden(!contactDetailsHidden);
   };
 
@@ -41,7 +41,7 @@ const ContactsPage: React.FC = () => {
         <Box flex={1} hidden={contactDetailsHidden}>
           <ContactDetails
             accountListId={accountListId as string}
-            contactId={contactId}
+            contactId={contactDetailsId}
           />
         </Box>
       </Box>
