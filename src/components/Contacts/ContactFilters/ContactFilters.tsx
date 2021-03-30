@@ -9,15 +9,11 @@ import {
   Slide,
   Typography,
 } from '@material-ui/core';
-import {
-  ArrowBackIos,
-  ArrowForwardIos,
-  ExpandLess,
-  ExpandMore,
-} from '@material-ui/icons';
+import { ArrowBackIos, ArrowForwardIos } from '@material-ui/icons';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ContactFilterGroup } from '../../../../graphql/types.generated';
+import { FilterListItemShowAll } from '../../Shared/Filters/FilterListItemShowAll';
 import { useContactFiltersLazyQuery } from './ContactFilters.generated';
 
 interface Props {
@@ -87,23 +83,10 @@ export const ContactFilters: React.FC<Props> = ({ accountListId }: Props) => {
                       </ListItem>
                     </Collapse>
                   ))}
-                  <ListItem button onClick={() => setShowAll(!showAll)}>
-                    <ListItemText
-                      color="primary"
-                      primary={
-                        showAll ? t('See Fewer Filters') : t('See More Filters')
-                      }
-                      primaryTypographyProps={{
-                        color: 'primary',
-                        variant: 'subtitle1',
-                      }}
-                    />
-                    {showAll ? (
-                      <ExpandLess color="primary" />
-                    ) : (
-                      <ExpandMore color="primary" />
-                    )}
-                  </ListItem>
+                  <FilterListItemShowAll
+                    showAll={showAll}
+                    onToggle={() => setShowAll(!showAll)}
+                  />
                 </>
               )}
             </List>
