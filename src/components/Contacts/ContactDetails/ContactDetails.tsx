@@ -2,6 +2,7 @@ import { AppBar, Box, Tab, Tabs } from '@material-ui/core';
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useGetContactDetailsLazyQuery } from './ContactDetails.generated';
+import { ContactDetailsHeader } from './ContactDetailsHeader/ContactDetailsHeader';
 
 interface Props {
   accountListId: string;
@@ -16,7 +17,7 @@ export const ContactDetails: React.FC<Props> = ({
 
   const [
     loadContactDetails,
-    { data, loading, error },
+    { data, loading },
   ] = useGetContactDetailsLazyQuery();
 
   useEffect(() => {
@@ -27,7 +28,7 @@ export const ContactDetails: React.FC<Props> = ({
 
   return (
     <Box position="fixed">
-      {loading ? <p>loading</p> : <p>{data?.contact.name}</p>}
+      <ContactDetailsHeader loading={loading} contact={data?.contact} />
       <AppBar position="static">
         <Tabs>
           <Tab label={t('Tasks')} />
