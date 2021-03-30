@@ -1,13 +1,6 @@
 import { Box } from '@material-ui/core';
 import React, { useEffect } from 'react';
-import { gqlMock } from '../../../../__tests__/util/graphqlMocking';
-import {
-  GetContactDetailsDocument,
-  GetContactDetailsQuery,
-  GetContactDetailsQueryVariables,
-  useGetContactDetailsLazyQuery,
-  useGetContactDetailsQuery,
-} from './ContactDetails.generated';
+import { useGetContactDetailsLazyQuery } from './ContactDetails.generated';
 
 interface Props {
   accountListId: string;

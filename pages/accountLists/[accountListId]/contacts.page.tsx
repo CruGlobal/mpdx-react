@@ -28,7 +28,7 @@ const ContactsPage: React.FC = () => {
       <Head>
         <title>MPDX | {t('Contacts')}</title>
       </Head>
-      <Box height="100vh" display="flex">
+      <Box height="100vh" display="flex" overflow="hidden">
         <Box width="20vw">
           <ContactFilters accountListId={accountListId as string} />
         </Box>
