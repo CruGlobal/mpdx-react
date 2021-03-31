@@ -29,12 +29,21 @@ export const ContactFilters: React.FC<Props> = ({ accountListId }: Props) => {
   ] = useContactFiltersLazyQuery({ variables: { accountListId } });
   const { t } = useTranslation();
 
+  const [selectedGroup, showGroup] = useState<null | ContactFilterGroup>(null);
   const [selectedFilters, setSelectedFilters] = useState({});
   const [showAll, setShowAll] = useState(false);
-  const [selectedGroup, showGroup] = useState<null | ContactFilterGroup>(null);
 
   const updateSelectedFilter = (name: string, value) => {
-    setSelectedFilters({ ...selectedFilters, [name]: value });
+    if (value)
+      setSelectedFilters((prev) => {
+        return { ...prev, [name]: value };
+      });
+    else
+      setSelectedFilters((prev) => {
+        const updated = { ...prev };
+        delete updated[name];
+        return updated;
+      });
   };
 
   const getSelectedFilters = (group: ContactFilterGroup) =>
@@ -56,7 +65,13 @@ export const ContactFilters: React.FC<Props> = ({ accountListId }: Props) => {
         >
           <div>
             <Box px={2} pt={2}>
-              <Typography variant="h6">{t('Filter')}</Typography>
+              <Typography variant="h6">
+                {Object.keys(selectedFilters).length > 0
+                  ? t('Filter ({{count}})', {
+                      count: Object.keys(selectedFilters).length,
+                    })
+                  : t('Filter')}
+              </Typography>
             </Box>
             <List dense data-testID="FiltersList">
               {error && (
