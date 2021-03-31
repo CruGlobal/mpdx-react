@@ -1,8 +1,31 @@
-import { Box, Button } from '@material-ui/core';
+import {
+  Box,
+  Button,
+  makeStyles,
+  Theme,
+  ThemeProvider,
+} from '@material-ui/core';
 import { Create } from '@material-ui/icons';
 import React from 'react';
+import theme from '../../../../theme';
 import { ContactRowFragment } from '../../ContactRow.generated';
 
+const useStyles = makeStyles((theme: Theme) => ({
+  contactDetailHeadingContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignContent: 'center',
+    alignItems: 'center',
+  },
+  contactDetailHeadingText: {
+    flexGrow: 5,
+  },
+  contactDetailHeadingIcon: {
+    width: '18px',
+    height: '18px',
+    margin: theme.spacing(0),
+  },
+}));
 interface ContactDetailTabProps {
   contact: ContactRowFragment;
 }
@@ -10,25 +33,36 @@ interface ContactDetailTabProps {
 export const ContactDetailTab: React.FC<ContactDetailTabProps> = ({
   contact,
 }) => {
+  const classes = useStyles();
+
   return (
-    <Box style={{ width: '100%' }}>
-      <Box id="contact-detail-tags"></Box>
-      <Box id="contact-detail-people">
-        <Box
-          style={{
-            display: 'flex',
-            flexDirection: 'row',
-            alignContent: 'center',
-            alignItems: 'center',
-          }}
-        >
-          <h6 style={{ flexGrow: 5 }}>{contact.name}</h6>
-          <Create />
+    <ThemeProvider theme={theme}>
+      <Box style={{ width: '100%', paddingRight: '60px', paddingLeft: '60px' }}>
+        <Box id="contact-detail-tags"></Box>
+        <hr />
+        <Box id="contact-detail-people">
+          <Box className={classes.contactDetailHeadingContainer}>
+            <h6 className={classes.contactDetailHeadingText}>{contact.name}</h6>
+            <Create className={classes.contactDetailHeadingIcon} />
+          </Box>
         </Box>
+        <hr />
+        <Box id="contact-detail-mailing">
+          <Box className={classes.contactDetailHeadingContainer}>
+            <h6 className={classes.contactDetailHeadingText}>Mailing</h6>
+            <Create className={classes.contactDetailHeadingIcon} />
+          </Box>
+        </Box>
+        <hr />
+        <Box id="contact-detail-other">
+          <Box className={classes.contactDetailHeadingContainer}>
+            <h6 className={classes.contactDetailHeadingText}>Other</h6>
+            <Create className={classes.contactDetailHeadingIcon} />
+          </Box>
+        </Box>
+        <hr />
+        <Button>DELETE CONTACT</Button>
       </Box>
-      <Box id="contact-detail-mailing"></Box>
-      <Box id="contact-detail-other"></Box>
-      <Button />
-    </Box>
+    </ThemeProvider>
   );
 };
