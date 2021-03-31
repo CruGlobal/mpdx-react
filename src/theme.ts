@@ -10,6 +10,13 @@ const cruColors = {
   grayLight: '#EBECEC',
 };
 
+const mpdxColors = {
+  green: '#00CA99',
+  blue: '#05699B',
+  yellow: '#FFF5CD',
+  gray: '#DCDCDC',
+};
+
 // https://material-ui.com/customization/palette/#adding-new-colors
 declare module '@material-ui/core/styles/createPalette' {
   interface Palette {
@@ -17,12 +24,20 @@ declare module '@material-ui/core/styles/createPalette' {
     cruGrayDark: Palette['primary'];
     cruGrayMedium: Palette['primary'];
     cruGrayLight: Palette['primary'];
+    mpdxGreen: Palette['primary'];
+    mpdxBlue: Palette['primary'];
+    mpdxYellow: Palette['primary'];
+    mpdxGray: Palette['primary'];
   }
   interface PaletteOptions {
     cruYellow: PaletteOptions['primary'];
     cruGrayDark: PaletteOptions['primary'];
     cruGrayMedium: PaletteOptions['primary'];
     cruGrayLight: PaletteOptions['primary'];
+    mpdxGreen: PaletteOptions['primary'];
+    mpdxBlue: PaletteOptions['primary'];
+    mpdxYellow: PaletteOptions['primary'];
+    mpdxGray: PaletteOptions['primary'];
   }
 }
 
@@ -31,31 +46,17 @@ const theme = createMuiTheme({
     fontFamily: "'Source Sans Pro', sans-serif",
   },
   palette: {
-    common: {
-      black: '#000',
-      white: '#fff',
-    },
-    background: {
-      paper: '#fff',
-      default: '#fafafa',
-    },
     primary: {
-      dark: '#383F43',
-      main: '#05699b',
-      light: '#3787a',
+      dark: cruColors.grayDark,
+      main: mpdxColors.blue,
     },
     secondary: {
-      main: '#f5be19',
-      light: '#F7CB47',
-      dark: '#9C9FA1',
-    },
-    error: {
-      main: '#F44336',
-      dark: '#C9302F',
+      main: cruColors.yellow,
+      dark: cruColors.grayMedium,
     },
     text: {
-      primary: '#383F43',
-      secondary: '#9C9FA1',
+      primary: cruColors.grayDark,
+      secondary: cruColors.grayMedium,
     },
     cruYellow: {
       main: cruColors.yellow,
@@ -68,6 +69,18 @@ const theme = createMuiTheme({
     },
     cruGrayLight: {
       main: cruColors.grayLight,
+    },
+    mpdxGreen: {
+      main: mpdxColors.green,
+    },
+    mpdxBlue: {
+      main: mpdxColors.blue,
+    },
+    mpdxYellow: {
+      main: mpdxColors.yellow,
+    },
+    mpdxGray: {
+      main: mpdxColors.gray,
     },
   },
   overrides: {
