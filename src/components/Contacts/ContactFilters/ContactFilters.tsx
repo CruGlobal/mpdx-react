@@ -37,6 +37,9 @@ export const ContactFilters: React.FC<Props> = ({ accountListId }: Props) => {
     setSelectedFilters({ ...selectedFilters, [name]: value });
   };
 
+  const getSelectedFilters = (group: ContactFilterGroup) =>
+    group.filters.filter((value) => selectedFilters[value.name]);
+
   useEffect(() => {
     loadContactFilters();
   }, []);
@@ -73,15 +76,16 @@ export const ContactFilters: React.FC<Props> = ({ accountListId }: Props) => {
                 </ListItem>
               ) : (
                 <>
-                  {data?.contactFilters?.map((group) => (
+                  {data?.contactFilters?.map((group: ContactFilterGroup) => (
                     <Collapse
                       key={group.id}
-                      in={showAll || group.alwaysVisible}
+                      in={
+                        showAll ||
+                        group.alwaysVisible ||
+                        getSelectedFilters(group).length > 0
+                      }
                     >
-                      <ListItem
-                        button
-                        onClick={() => showGroup(group as ContactFilterGroup)}
-                      >
+                      <ListItem button onClick={() => showGroup(group)}>
                         <ListItemText
                           primary={group.title}
                           primaryTypographyProps={{ variant: 'subtitle1' }}
