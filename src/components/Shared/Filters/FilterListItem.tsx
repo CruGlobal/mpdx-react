@@ -1,6 +1,7 @@
 import { ListItem, ListItemText } from '@material-ui/core';
 import React from 'react';
 import { Filter } from './Filter';
+import { FilterListItemMultiselect } from './FilterListItemMultiselect';
 import { FilterListItemSelect } from './FilterListItemSelect';
 import { FilterListItemTextField } from './FilterListItemTextField';
 
@@ -23,6 +24,12 @@ export const FilterListItem: React.FC<Props> = ({
     />
   ) : filter.type == 'radio' ? (
     <FilterListItemSelect filter={filter} value={value} onUpdate={onUpdate} />
+  ) : filter.type == 'multiselect' ? (
+    <FilterListItemMultiselect
+      filter={filter}
+      selected={value}
+      onUpdate={onUpdate}
+    />
   ) : (
     <ListItem>
       <ListItemText
