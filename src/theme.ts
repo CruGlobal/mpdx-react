@@ -83,6 +83,12 @@ const theme = createMuiTheme({
         body: {
           backgroundColor: '#05699b',
         },
+        h6: {
+          fontSize: '16px',
+          color: '#c4c4c4',
+          fontWeight: 600,
+          letterSpacing: '0.15px',
+        },
       },
     },
   },
