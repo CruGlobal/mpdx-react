@@ -63,7 +63,7 @@ it('should render contact detail panel', async () => {
 
   userEvent.click(row);
 
-  const details = (await findAllByRole('tablist'))[0];
+  const detailsTabList = (await findAllByRole('tablist'))[0];
 
-  expect(details).toBeInTheDocument();
+  expect(detailsTabList).toBeInTheDocument();
 });
