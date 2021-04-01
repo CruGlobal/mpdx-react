@@ -1,4 +1,11 @@
-import { Box, Button, makeStyles, styled } from '@material-ui/core';
+import {
+  Box,
+  Button,
+  Divider,
+  makeStyles,
+  styled,
+  Typography,
+} from '@material-ui/core';
 import { Create } from '@material-ui/icons';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -33,10 +40,8 @@ const ContactDeleteButton = styled(Button)(({ theme }) => ({
   marginRight: 'auto',
 }));
 
-const useStyles = makeStyles(() => ({
-  contactDetailHeadingText: {
-    flexGrow: 5,
-  },
+const ContactDetailHeadingText = styled(Typography)(() => ({
+  flexGrow: 5,
 }));
 
 interface ContactDetailTabProps {
@@ -46,7 +51,6 @@ interface ContactDetailTabProps {
 export const ContactDetailTab: React.FC<ContactDetailTabProps> = ({
   contact,
 }) => {
-  const classes = useStyles();
   const calledContact = contact.contact;
   const { t } = useTranslation();
 
@@ -56,39 +60,43 @@ export const ContactDetailTab: React.FC<ContactDetailTabProps> = ({
         // Tag Section
       }
       <ContactDetailHeadingContainer></ContactDetailHeadingContainer>
-      <hr />
+      <Divider />
       {
         // People Section
       }
       <ContactDetailSectionContainer>
         <ContactDetailHeadingContainer>
-          <h6 className={classes.contactDetailHeadingText}>
+          <ContactDetailHeadingText variant="h6">
             {calledContact.name}
-          </h6>
+          </ContactDetailHeadingText>
           <ContactDetailHeadingIcon />
         </ContactDetailHeadingContainer>
       </ContactDetailSectionContainer>
-      <hr />
+      <Divider />
       {
         // Mailing Section
       }
       <ContactDetailSectionContainer>
         <ContactDetailHeadingContainer>
-          <h6 className={classes.contactDetailHeadingText}>{t('Mailing')}</h6>
+          <ContactDetailHeadingText variant="h6">
+            {t('Mailing')}
+          </ContactDetailHeadingText>
           <ContactDetailHeadingIcon />
         </ContactDetailHeadingContainer>
       </ContactDetailSectionContainer>
-      <hr />
+      <Divider />
       {
         // other Section
       }
       <ContactDetailSectionContainer>
         <ContactDetailHeadingContainer>
-          <h6 className={classes.contactDetailHeadingText}>{t('Other')}</h6>
+          <ContactDetailHeadingText variant="h6">
+            {t('Other')}
+          </ContactDetailHeadingText>
           <ContactDetailHeadingIcon />
         </ContactDetailHeadingContainer>
       </ContactDetailSectionContainer>
-      <hr />
+      <Divider />
       <ContactDeleteButton variant="outlined" color="default">
         {t('DELETE CONTACT').toLocaleUpperCase()}
       </ContactDeleteButton>
