@@ -7,6 +7,7 @@ import {
   ListItemIcon,
   ListItemText,
   Slide,
+  styled,
   Typography,
 } from '@material-ui/core';
 import { ArrowBackIos, ArrowForwardIos } from '@material-ui/icons';
@@ -17,6 +18,12 @@ import { Filter } from '../../Shared/Filters/Filter';
 import { FilterListItem } from '../../Shared/Filters/FilterListItem';
 import { FilterListItemShowAll } from '../../Shared/Filters/FilterListItemShowAll';
 import { useContactFiltersLazyQuery } from './ContactFilters.generated';
+
+const FilterList = styled(List)(() => ({
+  '& .MuiListItemIcon-root': {
+    minWidth: '37px',
+  },
+}));
 
 interface Props {
   accountListId: string;
@@ -73,7 +80,7 @@ export const ContactFilters: React.FC<Props> = ({ accountListId }: Props) => {
                   : t('Filter')}
               </Typography>
             </Box>
-            <List dense data-testID="FiltersList">
+            <FilterList dense data-testID="FiltersList">
               {error && (
                 <ListItem>
                   <ListItemText
@@ -115,7 +122,7 @@ export const ContactFilters: React.FC<Props> = ({ accountListId }: Props) => {
                   />
                 </>
               )}
-            </List>
+            </FilterList>
           </div>
         </Slide>
         <Slide
@@ -124,7 +131,7 @@ export const ContactFilters: React.FC<Props> = ({ accountListId }: Props) => {
           mountOnEnter
           unmountOnExit
         >
-          <List dense data-testID="FiltersList">
+          <FilterList dense data-testID="FiltersList">
             <ListItem button onClick={() => showGroup(null)}>
               <ListItemIcon>
                 <ArrowBackIos fontSize="small" />
@@ -142,7 +149,7 @@ export const ContactFilters: React.FC<Props> = ({ accountListId }: Props) => {
                 onUpdate={(value) => updateSelectedFilter(filter.name, value)}
               />
             ))}
-          </List>
+          </FilterList>
         </Slide>
       </div>
     </div>
