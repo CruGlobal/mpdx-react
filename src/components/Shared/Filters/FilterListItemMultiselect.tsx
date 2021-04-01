@@ -33,7 +33,7 @@ export const FilterListItemMultiselect: React.FC<Props> = ({
   };
 
   return (
-    <>
+    <div className="FilterListItemMultiselect-root">
       <ListItem>
         <ListItemText
           primary={filter.title}
@@ -43,7 +43,12 @@ export const FilterListItemMultiselect: React.FC<Props> = ({
       {filter.options.map(({ id, name }) => (
         <ListItem key={id} button onClick={() => toggleValue(id)}>
           <ListItemIcon>
-            <Checkbox edge="start" checked={isChecked(id)} disableRipple />
+            <Checkbox
+              size="small"
+              edge="start"
+              checked={isChecked(id)}
+              disableRipple
+            />
           </ListItemIcon>
           <ListItemText
             primary={name}
@@ -51,6 +56,6 @@ export const FilterListItemMultiselect: React.FC<Props> = ({
           />
         </ListItem>
       ))}
-    </>
+    </div>
   );
 };

@@ -23,6 +23,9 @@ const FilterList = styled(List)(() => ({
   '& .MuiListItemIcon-root': {
     minWidth: '37px',
   },
+  '& .FilterListItemMultiselect-root': {
+    marginBottom: '32px',
+  },
 }));
 
 interface Props {
