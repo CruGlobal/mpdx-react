@@ -4,6 +4,7 @@ import { gqlMock } from '../../../../../__tests__/util/graphqlMocking';
 import {
   ContactDetailDocument,
   ContactDetailQuery,
+  ContactDetailQueryVariables,
 } from '../ContactDetail.generated';
 import { ContactDetailTab } from './ContactDetailTab';
 
@@ -13,8 +14,14 @@ export default {
 };
 
 export const Default: Story = () => {
-  const contact = gqlMock<ContactDetailQuery>(ContactDetailDocument, {
-    mocks: {},
-  });
+  const contact = gqlMock<ContactDetailQuery, ContactDetailQueryVariables>(
+    ContactDetailDocument,
+    {
+      variables: {
+        accountListId: 'accountList-Id',
+        contactId: 'contactList-Id',
+      },
+    },
+  );
   return <ContactDetailTab contact={contact} />;
 };
