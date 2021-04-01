@@ -44,6 +44,7 @@ export const ContactRow: React.FC<Props> = ({ contact, onContactSelected }) => {
   return (
     <Box role="row" style={{ width: '100%' }}>
       <Box
+        role="rowButton"
         style={{
           height: '72px',
           width: '100%',
