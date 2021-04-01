@@ -1,8 +1,8 @@
 import React from 'react';
-import { render } from '../../../__tests__/util/testingLibraryReactMock';
-import Footer from '.';
 import { ThemeProvider } from '@material-ui/core';
+import { render } from '../../../__tests__/util/testingLibraryReactMock';
 import theme from '../../theme';
+import Footer from '.';
 
 describe('Footer', () => {
   it('contains privacy link', () => {
