@@ -15,7 +15,7 @@ export const ContactDetailsHeader: React.FC<Props> = ({
   return (
     <Box>
       {/*TODO: Build Header*/}
-      {loading ? <p>loading</p> : <p>{contact?.name}</p>}
+      {loading ? <p>loading</p> : <p role="contactName">{contact?.name}</p>}
     </Box>
   );
 };
