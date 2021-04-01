@@ -18,7 +18,7 @@ export const Default = (): ReactElement => {
   return (
     <MockedProvider
       mocks={[
-        getDataForTaskDrawerMock(),
+        getDataForTaskDrawerMock('abc'),
         { ...createTaskMutationMock(), delay: 500 },
       ]}
       addTypename={false}

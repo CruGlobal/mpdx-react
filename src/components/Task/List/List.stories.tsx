@@ -1,15 +1,22 @@
 import React, { ReactElement } from 'react';
 import { MockedProvider } from '@apollo/client/testing';
 import withDispatch from '../../../decorators/withDispatch';
-import { getDataForTaskDrawerMock } from '../Drawer/Form/Form.mock';
+import {
+  getDataForTaskDrawerMock,
+  getDataForTaskDrawerLoadingMock,
+} from '../Drawer/Form/Form.mock';
 import withMargin from '../../../decorators/withMargin';
 import { ActivityTypeEnum } from '../../../../graphql/types.generated';
 import {
   getTasksForTaskListMock,
   getFilteredTasksForTaskListMock,
   getEmptyTasksForTaskListMock,
+  getTasksForTaskListLoadingMock,
+  getTasksForTaskListErrorMock,
 } from './List.mock';
 import TaskList from '.';
+
+const accountListId = 'abc';
 
 export default {
   title: 'Task/List',
@@ -21,7 +28,10 @@ export default {
 
 export const Default = (): ReactElement => (
   <MockedProvider
-    mocks={[getTasksForTaskListMock(), getDataForTaskDrawerMock()]}
+    mocks={[
+      getTasksForTaskListMock(accountListId),
+      getDataForTaskDrawerMock(accountListId),
+    ]}
     addTypename={false}
   >
     <TaskList />
@@ -29,17 +39,23 @@ export const Default = (): ReactElement => (
 );
 
 export const Loading = (): ReactElement => (
-  <TaskList
-    initialFilter={{
-      userIds: ['user-1'],
-      contactIds: ['contact-1'],
-    }}
-  />
+  <MockedProvider
+    mocks={[
+      getTasksForTaskListLoadingMock(accountListId),
+      getDataForTaskDrawerLoadingMock(accountListId),
+    ]}
+    addTypename={false}
+  >
+    <TaskList />
+  </MockedProvider>
 );
 
 export const Empty = (): ReactElement => (
   <MockedProvider
-    mocks={[getEmptyTasksForTaskListMock(), getDataForTaskDrawerMock()]}
+    mocks={[
+      getEmptyTasksForTaskListMock(accountListId),
+      getDataForTaskDrawerMock(accountListId),
+    ]}
     addTypename={false}
   >
     <TaskList />
@@ -59,10 +75,16 @@ export const WithInitialFilter = (): ReactElement => {
   return (
     <MockedProvider
       mocks={[
-        getFilteredTasksForTaskListMock(filter),
-        getFilteredTasksForTaskListMock({ ...filter, after: 'B' }),
-        getFilteredTasksForTaskListMock({ ...filter, before: 'A' }),
-        getDataForTaskDrawerMock(),
+        getFilteredTasksForTaskListMock(accountListId, filter),
+        getFilteredTasksForTaskListMock(accountListId, {
+          ...filter,
+          after: 'B',
+        }),
+        getFilteredTasksForTaskListMock(accountListId, {
+          ...filter,
+          before: 'A',
+        }),
+        getDataForTaskDrawerMock(accountListId),
       ]}
       addTypename={false}
     >
@@ -70,3 +92,15 @@ export const WithInitialFilter = (): ReactElement => {
     </MockedProvider>
   );
 };
+
+export const Error = (): ReactElement => (
+  <MockedProvider
+    mocks={[
+      getTasksForTaskListErrorMock(accountListId),
+      getDataForTaskDrawerMock(accountListId),
+    ]}
+    addTypename={false}
+  >
+    <TaskList />
+  </MockedProvider>
+);

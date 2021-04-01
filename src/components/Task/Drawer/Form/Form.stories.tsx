@@ -16,12 +16,15 @@ import {
   createTaskMutationMock,
   updateTaskMutationMock,
   deleteTaskMutationMock,
+  getDataForTaskDrawerLoadingMock,
 } from './Form.mock';
 import TaskDrawerForm from '.';
 
 export default {
   title: 'Task/Drawer/Form',
 };
+
+const accountListId = 'abc';
 
 const mockFilter = {
   userIds: [],
@@ -38,13 +41,13 @@ export const Default = (): ReactElement => {
   return (
     <MockedProvider
       mocks={[
-        getDataForTaskDrawerMock(),
+        getDataForTaskDrawerMock(accountListId),
         { ...createTaskMutationMock(), delay: 500 },
       ]}
       addTypename={false}
     >
       <TaskDrawerForm
-        accountListId="abc"
+        accountListId={accountListId}
         filter={mockFilter}
         rowsPerPage={100}
         onClose={(): void => {}}
@@ -55,9 +58,12 @@ export const Default = (): ReactElement => {
 
 export const Loading = (): ReactElement => {
   return (
-    <MockedProvider mocks={[]} addTypename={false}>
+    <MockedProvider
+      mocks={[getDataForTaskDrawerLoadingMock(accountListId)]}
+      addTypename={false}
+    >
       <TaskDrawerForm
-        accountListId="abc"
+        accountListId={accountListId}
         filter={mockFilter}
         rowsPerPage={100}
         onClose={(): void => {}}
@@ -107,7 +113,7 @@ export const Persisted = (): ReactElement => {
   const query = {
     query: GetTasksForTaskListDocument,
     variables: {
-      accountListId: 'abc',
+      accountListId,
       first: 100,
       ...mockFilter,
     },
@@ -121,8 +127,8 @@ export const Persisted = (): ReactElement => {
   return (
     <MockedProvider
       mocks={[
-        getDataForTaskDrawerMock(),
-        getTasksForTaskListMock(),
+        getDataForTaskDrawerMock(accountListId),
+        getTasksForTaskListMock(accountListId),
         { ...updateTaskMutationMock(), delay: 500 },
         { ...deleteTaskMutationMock(), delay: 1000 },
       ]}
@@ -130,7 +136,7 @@ export const Persisted = (): ReactElement => {
       addTypename={false}
     >
       <TaskDrawerForm
-        accountListId="abc"
+        accountListId={accountListId}
         filter={mockFilter}
         rowsPerPage={100}
         task={task}

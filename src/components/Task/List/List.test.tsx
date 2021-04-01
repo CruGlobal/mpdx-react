@@ -2,17 +2,34 @@ import React from 'react';
 import userEvent from '@testing-library/user-event';
 import TestWrapper from '../../../../__tests__/util/TestWrapper';
 import { getDataForTaskDrawerMock } from '../Drawer/Form/Form.mock';
-import { render } from '../../../../__tests__/util/testingLibraryReactMock';
+import {
+  render,
+  waitFor,
+} from '../../../../__tests__/util/testingLibraryReactMock';
 import { useApp } from '../../App';
 import { ActivityTypeEnum } from '../../../../graphql/types.generated';
 import {
   getTasksForTaskListMock,
   getFilteredTasksForTaskListMock,
   getEmptyTasksForTaskListMock,
+  getTasksForTaskListErrorMock,
 } from './List.mock';
 import TaskList from '.';
 
+const accountListId = 'abc';
+
 const openTaskDrawer = jest.fn();
+
+const mockEnqueue = jest.fn();
+
+jest.mock('notistack', () => ({
+  ...jest.requireActual('notistack'),
+  useSnackbar: () => {
+    return {
+      enqueueSnackbar: mockEnqueue,
+    };
+  },
+}));
 
 jest.mock('../../App', () => ({
   useApp: jest.fn(),
@@ -21,7 +38,7 @@ jest.mock('../../App', () => ({
 beforeEach(() => {
   (useApp as jest.Mock).mockReturnValue({
     openTaskDrawer,
-    state: { accountListId: 'abc', breadcrumb: 'Tasks' },
+    state: { accountListId, breadcrumb: 'Tasks' },
   });
 });
 
@@ -32,32 +49,32 @@ jest.mock('lodash/fp/debounce', () =>
 describe('TaskList', () => {
   it('has correct defaults', async () => {
     const mocks = [
-      getTasksForTaskListMock(),
-      getDataForTaskDrawerMock(),
-      getFilteredTasksForTaskListMock({ completed: false }),
-      getFilteredTasksForTaskListMock({
+      getTasksForTaskListMock(accountListId),
+      getDataForTaskDrawerMock(accountListId),
+      getFilteredTasksForTaskListMock(accountListId, { completed: false }),
+      getFilteredTasksForTaskListMock(accountListId, {
         activityType: [ActivityTypeEnum.Appointment],
         completed: false,
       }),
-      getFilteredTasksForTaskListMock({
+      getFilteredTasksForTaskListMock(accountListId, {
         contactIds: ['contact-1'],
         activityType: [ActivityTypeEnum.Appointment],
         completed: false,
       }),
-      getFilteredTasksForTaskListMock({
+      getFilteredTasksForTaskListMock(accountListId, {
         tags: ['tag-1'],
         contactIds: ['contact-1'],
         activityType: [ActivityTypeEnum.Appointment],
         completed: false,
       }),
-      getFilteredTasksForTaskListMock({
+      getFilteredTasksForTaskListMock(accountListId, {
         userIds: ['user-1'],
         tags: ['tag-1'],
         contactIds: ['contact-1'],
         activityType: [ActivityTypeEnum.Appointment],
         completed: false,
       }),
-      getFilteredTasksForTaskListMock({
+      getFilteredTasksForTaskListMock(accountListId, {
         userIds: ['user-1'],
         tags: ['tag-1'],
         contactIds: ['contact-1'],
@@ -65,7 +82,7 @@ describe('TaskList', () => {
         completed: false,
         wildcardSearch: 'a',
       }),
-      getFilteredTasksForTaskListMock({
+      getFilteredTasksForTaskListMock(accountListId, {
         userIds: ['user-1'],
         tags: ['tag-1'],
         contactIds: ['contact-1'],
@@ -74,7 +91,7 @@ describe('TaskList', () => {
         wildcardSearch: 'a',
         first: 250,
       }),
-      getFilteredTasksForTaskListMock({
+      getFilteredTasksForTaskListMock(accountListId, {
         userIds: ['user-1'],
         tags: ['tag-1'],
         contactIds: ['contact-1'],
@@ -84,7 +101,7 @@ describe('TaskList', () => {
         first: 250,
         after: 'B',
       }),
-      getFilteredTasksForTaskListMock({
+      getFilteredTasksForTaskListMock(accountListId, {
         userIds: ['user-1'],
         tags: ['tag-1'],
         contactIds: ['contact-1'],
@@ -144,7 +161,7 @@ describe('TaskList', () => {
 
   it('has correct overrides', async () => {
     const filter = {
-      accountListId: 'account-list-1',
+      accountListId,
       activityType: [ActivityTypeEnum.Appointment],
       completed: true,
       tags: ['tag-1', 'tag-2'],
@@ -156,8 +173,8 @@ describe('TaskList', () => {
     const { getByRole, getByText, findByText } = render(
       <TestWrapper
         mocks={[
-          getFilteredTasksForTaskListMock(filter),
-          getDataForTaskDrawerMock(),
+          getFilteredTasksForTaskListMock(accountListId, filter),
+          getDataForTaskDrawerMock(accountListId),
         ]}
         disableAppProvider
       >
@@ -177,9 +194,9 @@ describe('TaskList', () => {
 
   it('has loading state', () => {
     const mocks = [
-      { ...getDataForTaskDrawerMock(), delay: 100931731455 },
+      { ...getDataForTaskDrawerMock(accountListId), delay: 100931731455 },
       {
-        ...getFilteredTasksForTaskListMock({
+        ...getFilteredTasksForTaskListMock(accountListId, {
           userIds: ['user-1'],
           contactIds: ['contact-1'],
         }),
@@ -202,7 +219,10 @@ describe('TaskList', () => {
   it('has empty state', () => {
     const { queryByTestId } = render(
       <TestWrapper
-        mocks={[getEmptyTasksForTaskListMock(), getDataForTaskDrawerMock()]}
+        mocks={[
+          getEmptyTasksForTaskListMock(accountListId),
+          getDataForTaskDrawerMock(accountListId),
+        ]}
         disableAppProvider
       >
         <TaskList />
@@ -211,5 +231,28 @@ describe('TaskList', () => {
     expect(
       queryByTestId('TaskDrawerCommentListItemAvatar'),
     ).not.toBeInTheDocument();
+  });
+
+  it('error', async () => {
+    render(
+      <TestWrapper
+        mocks={[
+          getTasksForTaskListErrorMock(accountListId),
+          getDataForTaskDrawerMock(accountListId),
+        ]}
+        disableAppProvider
+      >
+        <TaskList />
+      </TestWrapper>,
+    );
+
+    await waitFor(() =>
+      expect(mockEnqueue).toHaveBeenCalledWith(
+        'Error loading data.  Try again.',
+        {
+          variant: 'error',
+        },
+      ),
+    );
   });
 });

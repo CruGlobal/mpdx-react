@@ -16,10 +16,13 @@ import {
   CompleteTaskMutation,
 } from './CompleteTask.generated';
 
-export const getCompleteTaskForTaskDrawerMock = (): MockedResponse => {
+export const getCompleteTaskForTaskDrawerMock = (
+  accountListId: string,
+  taskId: string,
+): MockedResponse => {
   const data: GetTaskForTaskDrawerQuery = {
     task: {
-      id: 'task-1',
+      id: taskId,
       activityType: ActivityTypeEnum.NewsletterEmail,
       subject: 'On the Journey with the Johnson Family',
       startAt: DateTime.local(2012, 1, 5, 1, 2).toISO(),
@@ -41,8 +44,8 @@ export const getCompleteTaskForTaskDrawerMock = (): MockedResponse => {
     request: {
       query: GetTaskForTaskDrawerDocument,
       variables: {
-        accountListId: 'abc',
-        taskId: 'task-1',
+        accountListId,
+        taskId,
       },
     },
     result: {
@@ -50,9 +53,12 @@ export const getCompleteTaskForTaskDrawerMock = (): MockedResponse => {
     },
   };
 };
-export const completeSimpleTaskMutationMock = (): MockedResponse => {
+export const completeSimpleTaskMutationMock = (
+  accountListId: string,
+  taskId: string,
+): MockedResponse => {
   const task: CompleteTaskMutation['updateTask']['task'] = {
-    id: 'task-1',
+    id: taskId,
     completedAt: DateTime.local(2015, 1, 5, 1, 2).toISO(),
     tagList: ['tag-1', 'tag-2'],
     result: ResultEnum.None,
@@ -73,23 +79,26 @@ export const completeSimpleTaskMutationMock = (): MockedResponse => {
     request: {
       query: CompleteTaskDocument,
       variables: {
-        accountListId: 'abc',
+        accountListId,
         attributes,
       },
     },
     result: { data },
   };
 };
-export const completeTaskMutationMock = (): MockedResponse => {
+export const completeTaskMutationMock = (
+  accountListId: string,
+  taskId: string,
+): MockedResponse => {
   const task: CompleteTaskMutation['updateTask']['task'] = {
-    id: 'task-1',
+    id: taskId,
     completedAt: DateTime.local(2015, 1, 5, 1, 2).toISO(),
     tagList: ['tag-1', 'tag-2'],
     result: ResultEnum.Completed,
     nextAction: ActivityTypeEnum.Appointment,
   };
   const attributes: TaskUpdateInput = {
-    id: 'task-1',
+    id: taskId,
     completedAt: DateTime.local(2015, 1, 5, 1, 2).toISO(),
     tagList: ['tag-1', 'tag-2'],
     result: ResultEnum.Completed,
@@ -104,7 +113,7 @@ export const completeTaskMutationMock = (): MockedResponse => {
     request: {
       query: CompleteTaskDocument,
       variables: {
-        accountListId: 'abc',
+        accountListId,
         attributes,
       },
     },

@@ -9,7 +9,10 @@ import {
   GetContactsForTaskDrawerContactListQuery,
 } from './TaskDrawerContactList.generated';
 
-export const getContactsForTaskDrawerContactListMock = (): MockedResponse => {
+export const getContactsForTaskDrawerContactListMock = (
+  accountListId: string,
+  contactIds: string[],
+): MockedResponse => {
   const data: GetContactsForTaskDrawerContactListQuery = {
     contacts: {
       nodes: [
@@ -76,8 +79,8 @@ export const getContactsForTaskDrawerContactListMock = (): MockedResponse => {
     request: {
       query: GetContactsForTaskDrawerContactListDocument,
       variables: {
-        accountListId: 'abc',
-        contactIds: ['contact-1', 'contact-2'],
+        accountListId,
+        contactIds,
       },
     },
     result: {
@@ -86,13 +89,16 @@ export const getContactsForTaskDrawerContactListMock = (): MockedResponse => {
   };
 };
 
-export const getContactsForTaskDrawerContactListEmptyMock = (): MockedResponse => {
+export const getContactsForTaskDrawerContactListEmptyMock = (
+  accountListId: string,
+  contactIds: string[],
+): MockedResponse => {
   return {
     request: {
       query: GetContactsForTaskDrawerContactListDocument,
       variables: {
-        accountListId: 'abc',
-        contactIds: ['contact-1', 'contact-2'],
+        accountListId,
+        contactIds,
       },
     },
     result: {
@@ -105,9 +111,28 @@ export const getContactsForTaskDrawerContactListEmptyMock = (): MockedResponse =
   };
 };
 
-export const getContactsForTaskDrawerContactListLoadingMock = (): MockedResponse => {
+export const getContactsForTaskDrawerContactListLoadingMock = (
+  accountListId: string,
+  contactIds: string[],
+): MockedResponse => {
   return {
-    ...getContactsForTaskDrawerContactListMock(),
+    ...getContactsForTaskDrawerContactListMock(accountListId, contactIds),
     delay: 100931731455,
+  };
+};
+
+export const getContactsForTaskDrawerContactListErrorMock = (
+  accountListId: string,
+  contactIds: string[],
+): MockedResponse => {
+  return {
+    request: {
+      query: GetContactsForTaskDrawerContactListDocument,
+      variables: {
+        accountListId,
+        contactIds,
+      },
+    },
+    error: { name: 'error', message: 'Error loading data.  Try again.' },
   };
 };

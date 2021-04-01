@@ -17,8 +17,11 @@ export default {
   title: 'Task/Drawer/CompleteForm',
 };
 
+const accountListId = 'abc';
+const taskId = 'task-1';
+
 const task = {
-  id: 'task-1',
+  id: taskId,
   activityType: ActivityTypeEnum.NewsletterEmail,
   subject: 'On the Journey with the Johnson Family',
   startAt: DateTime.local(2012, 1, 5, 1, 2).toISO(),
@@ -40,8 +43,11 @@ export const Default = (): ReactElement => {
   return (
     <MockedProvider
       mocks={[
-        getDataForTaskDrawerMock(),
-        { ...completeSimpleTaskMutationMock(), delay: 500 },
+        getDataForTaskDrawerMock(accountListId),
+        {
+          ...completeSimpleTaskMutationMock(accountListId, taskId),
+          delay: 500,
+        },
       ]}
       addTypename={false}
     >
@@ -51,7 +57,7 @@ export const Default = (): ReactElement => {
           activityType: null,
           completedAt: DateTime.local(2015, 1, 5, 1, 2).toISO(),
         }}
-        accountListId="abc"
+        accountListId={accountListId}
         onClose={(): void => {}}
       />
     </MockedProvider>
@@ -62,8 +68,8 @@ export const WithResults = (): ReactElement => {
   return (
     <MockedProvider
       mocks={[
-        getDataForTaskDrawerMock(),
-        { ...completeTaskMutationMock(), delay: 500 },
+        getDataForTaskDrawerMock(accountListId),
+        { ...completeTaskMutationMock(accountListId, taskId), delay: 500 },
       ]}
       addTypename={false}
     >
@@ -73,7 +79,7 @@ export const WithResults = (): ReactElement => {
           activityType: ActivityTypeEnum.Call,
           completedAt: DateTime.local(2015, 1, 5, 1, 2).toISO(),
         }}
-        accountListId="abc"
+        accountListId={accountListId}
         onClose={(): void => {}}
       />
     </MockedProvider>

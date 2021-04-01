@@ -26,7 +26,7 @@ beforeEach(() => {
 
 describe('AddFab', () => {
   it('default', async () => {
-    const mocks = [getDataForTaskDrawerMock(), createTaskMutationMock()];
+    const mocks = [getDataForTaskDrawerMock('abc'), createTaskMutationMock()];
     const { getByRole } = render(
       <MockedProvider mocks={mocks} addTypename={false}>
         <MuiPickersUtilsProvider utils={LuxonUtils}>
