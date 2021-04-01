@@ -1,10 +1,16 @@
 import React from 'react';
 import { render } from '../../../__tests__/util/testingLibraryReactMock';
 import Footer from '.';
+import { ThemeProvider } from '@material-ui/core';
+import theme from '../../theme';
 
 describe('Footer', () => {
   it('contains privacy link', () => {
-    const { getByTestId } = render(<Footer />);
+    const { getByTestId } = render(
+      <ThemeProvider theme={theme}>
+        <Footer />
+      </ThemeProvider>,
+    );
     expect(getByTestId('privacy')).toHaveAttribute(
       'href',
       'https://get.mpdx.org/privacy-policy/',
@@ -12,7 +18,11 @@ describe('Footer', () => {
   });
 
   it('contains whats-new link', () => {
-    const { getByTestId } = render(<Footer />);
+    const { getByTestId } = render(
+      <ThemeProvider theme={theme}>
+        <Footer />
+      </ThemeProvider>,
+    );
     expect(getByTestId('whats-new')).toHaveAttribute(
       'href',
       'https://get.mpdx.org/release-notes/',
@@ -20,7 +30,11 @@ describe('Footer', () => {
   });
 
   it('contains terms-of-use link', () => {
-    const { getByTestId } = render(<Footer />);
+    const { getByTestId } = render(
+      <ThemeProvider theme={theme}>
+        <Footer />
+      </ThemeProvider>,
+    );
     expect(getByTestId('terms-of-use')).toHaveAttribute(
       'href',
       'https://get.mpdx.org/terms-of-use/',
@@ -29,7 +43,11 @@ describe('Footer', () => {
 
   describe('mocked Date', () => {
     it('has correct text', () => {
-      const { getByTestId } = render(<Footer />);
+      const { getByTestId } = render(
+        <ThemeProvider theme={theme}>
+          <Footer />
+        </ThemeProvider>,
+      );
       expect(getByTestId('copyright').textContent).toEqual(
         '© 2020, Cru. All Rights Reserved.',
       );
