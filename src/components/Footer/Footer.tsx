@@ -8,14 +8,14 @@ import logo from '../../images/logo.svg';
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     box: {
-      backgroundColor: '#323232',
+      backgroundColor: theme.palette.cruGrayDark.main,
     },
     link: {
-      color: '#fff',
+      color: theme.palette.common.white,
     },
     copyright: {
       textAlign: 'right',
-      color: '#fff',
+      color: theme.palette.common.white,
       [theme.breakpoints.down('sm')]: {
         paddingTop: theme.spacing(3),
         textAlign: 'left',
