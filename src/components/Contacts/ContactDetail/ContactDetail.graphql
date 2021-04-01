@@ -1,0 +1,44 @@
+query ContactDetail($accountListId: ID!, $contactId: ID!) {
+  contact(accountListId: $accountListId, id: $contactId) {
+    id
+    name
+    primaryPerson {
+      id
+    }
+    primaryAddress {
+      street
+      city
+      state
+      postalCode
+      country
+    }
+    tagList
+    envelopeGreeting
+    people {
+      nodes {
+        id
+        firstName
+        lastName
+        primaryPhoneNumber {
+          number
+        }
+        primaryEmailAddress {
+          email
+        }
+        anniversaryDay
+        anniversaryMonth
+        anniversaryYear
+        birthdayDay
+        birthdayMonth
+        birthdayYear
+      }
+    }
+    preferredContactMethod
+    timezone
+    user {
+      firstName
+      lastName
+    }
+    website
+  }
+}

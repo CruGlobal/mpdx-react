@@ -2,9 +2,9 @@ import React from 'react';
 import { Story } from '@storybook/react';
 import { gqlMock } from '../../../../../__tests__/util/graphqlMocking';
 import {
-  ContactRowFragment,
-  ContactRowFragmentDoc,
-} from '../../ContactRow.generated';
+  ContactDetailDocument,
+  ContactDetailQuery,
+} from '../ContactDetail.generated';
 import { ContactDetailTab } from './ContactDetailTab';
 
 export default {
@@ -13,6 +13,8 @@ export default {
 };
 
 export const Default: Story = () => {
-  const contact = gqlMock<ContactRowFragment>(ContactRowFragmentDoc);
+  const contact = gqlMock<ContactDetailQuery>(ContactDetailDocument, {
+    mocks: {},
+  });
   return <ContactDetailTab contact={contact} />;
 };

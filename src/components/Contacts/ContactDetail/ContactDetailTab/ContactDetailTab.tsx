@@ -8,7 +8,7 @@ import {
 import { Create } from '@material-ui/icons';
 import React from 'react';
 import theme from '../../../../theme';
-import { ContactRowFragment } from '../../ContactRow.generated';
+import { ContactDetailQuery } from '../ContactDetail.generated';
 
 const useStyles = makeStyles((theme: Theme) => ({
   contactDetailHeadingContainer: {
@@ -24,37 +24,56 @@ const useStyles = makeStyles((theme: Theme) => ({
     width: '18px',
     height: '18px',
     margin: theme.spacing(0),
+    color: '#9C9FA1',
+  },
+  contactDetailContainer: {
+    padding: theme.spacing(1),
   },
 }));
 interface ContactDetailTabProps {
-  contact: ContactRowFragment;
+  contact: ContactDetailQuery;
 }
 
 export const ContactDetailTab: React.FC<ContactDetailTabProps> = ({
   contact,
 }) => {
   const classes = useStyles();
+  const calledContact = contact.contact;
 
   return (
     <ThemeProvider theme={theme}>
       <Box style={{ width: '100%', paddingRight: '60px', paddingLeft: '60px' }}>
-        <Box id="contact-detail-tags"></Box>
+        <Box
+          id="contact-detail-tags"
+          className={classes.contactDetailContainer}
+        ></Box>
         <hr />
-        <Box id="contact-detail-people">
+        <Box
+          id="contact-detail-people"
+          className={classes.contactDetailContainer}
+        >
           <Box className={classes.contactDetailHeadingContainer}>
-            <h6 className={classes.contactDetailHeadingText}>{contact.name}</h6>
+            <h6 className={classes.contactDetailHeadingText}>
+              {calledContact.name}
+            </h6>
             <Create className={classes.contactDetailHeadingIcon} />
           </Box>
         </Box>
         <hr />
-        <Box id="contact-detail-mailing">
+        <Box
+          id="contact-detail-mailing"
+          className={classes.contactDetailContainer}
+        >
           <Box className={classes.contactDetailHeadingContainer}>
             <h6 className={classes.contactDetailHeadingText}>Mailing</h6>
             <Create className={classes.contactDetailHeadingIcon} />
           </Box>
         </Box>
         <hr />
-        <Box id="contact-detail-other">
+        <Box
+          id="contact-detail-other"
+          className={classes.contactDetailContainer}
+        >
           <Box className={classes.contactDetailHeadingContainer}>
             <h6 className={classes.contactDetailHeadingText}>Other</h6>
             <Create className={classes.contactDetailHeadingIcon} />
