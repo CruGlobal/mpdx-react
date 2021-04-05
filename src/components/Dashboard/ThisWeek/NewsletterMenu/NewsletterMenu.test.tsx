@@ -10,8 +10,6 @@ import NewsletterMenu from './NewsletterMenu';
 
 const accountListId = '111';
 
-const mockEnqueue = jest.fn();
-
 describe('NewsletterMenu', () => {
   it('default', async () => {
     const { queryByText } = render(
