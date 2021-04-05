@@ -1,12 +1,12 @@
 import { renderHook } from '@testing-library/react-hooks';
 import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
-import { useContactDetailTabQuery } from './ContactDetailTab.generated';
+import { useContactDetailsTabQuery } from './ContactDetailsTab.generated';
 
 describe('ContactDetailTab', () => {
   it('test query', async () => {
     const { result, waitForNextUpdate } = renderHook(
       () =>
-        useContactDetailTabQuery({
+        useContactDetailsTabQuery({
           variables: {
             accountListId: 'accountList-id',
             contactId: 'contact-id',

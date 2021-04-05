@@ -42,7 +42,7 @@ interface ContactDetailTabProps {
   contactId: string;
 }
 
-export const ContactDetailTab: React.FC<ContactDetailTabProps> = ({
+export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
   accountListId,
   contactId,
 }) => {
