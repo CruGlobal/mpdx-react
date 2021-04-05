@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, styled, Typography } from '@material-ui/core';
+import { Box, Link, styled, Typography } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 
 const ContactOtherContainer = styled(Box)(({ theme }) => ({
@@ -34,6 +34,34 @@ export const ContactDetailsOther: React.FC<ContactDetailsOtherProp> = ({}) => {
             {t('Assignee')}
           </ContactOtherTextLabel>
           <Typography variant="subtitle1">John Doe</Typography>
+        </ContactOtherTextContainer>
+        <ContactOtherTextContainer>
+          <ContactOtherTextLabel variant="subtitle1">
+            {t('Preferred Contact Method')}
+          </ContactOtherTextLabel>
+          <Typography variant="subtitle1">Phone Call</Typography>
+        </ContactOtherTextContainer>
+        <ContactOtherTextContainer>
+          <ContactOtherTextLabel variant="subtitle1">
+            {t('Language')}
+          </ContactOtherTextLabel>
+          <Typography variant="subtitle1">English</Typography>
+        </ContactOtherTextContainer>
+        <ContactOtherTextContainer>
+          <Typography variant="subtitle1">
+            (GMT) Central Time (US & Canada)
+          </Typography>
+        </ContactOtherTextContainer>
+        <ContactOtherTextContainer>
+          <ContactOtherTextLabel variant="subtitle1">
+            {t('Church')}
+          </ContactOtherTextLabel>
+          <Typography variant="subtitle1">The Church on The Corner</Typography>
+        </ContactOtherTextContainer>
+        <ContactOtherTextContainer>
+          <Link href="http://www.google.com" target="_blank" rel="noopener">
+            <Typography variant="subtitle1">www.google.com</Typography>
+          </Link>
         </ContactOtherTextContainer>
       </ContactOtherContainer>
     </Box>
