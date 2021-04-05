@@ -1,26 +1,21 @@
 import { render, waitFor } from '@testing-library/react';
 import React from 'react';
-import { gqlMock } from '../../../../../__tests__/util/graphqlMocking';
-import {
-  ContactDetailsFragment,
-  ContactDetailsFragmentDoc,
-} from '../ContactDetails.generated';
+import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
 import { ContactDetailsHeader } from './ContactDetailsHeader';
+import { GetContactDetailsHeaderQuery } from './ContactDetailsHeader.generated';
 
-const contact = gqlMock<ContactDetailsFragment>(ContactDetailsFragmentDoc);
+const accountListId = 'abc';
+const contactId = 'contact-1';
 
 describe('ContactDetails', () => {
-  it('default', async () => {
-    const { queryByText } = render(
-      <ContactDetailsHeader loading={false} contact={null} />,
-    );
-
-    expect(queryByText('loading')).toBeNull();
-  });
-
   it('should show loading state', async () => {
     const { getByText } = render(
-      <ContactDetailsHeader loading={true} contact={null} />,
+      <GqlMockedProvider<GetContactDetailsHeaderQuery>>
+        <ContactDetailsHeader
+          accountListId={accountListId}
+          contactId={contactId}
+        />
+      </GqlMockedProvider>,
     );
 
     await waitFor(() => expect(getByText('loading')).toBeInTheDocument());
@@ -28,7 +23,12 @@ describe('ContactDetails', () => {
 
   it('should render with contact details', async () => {
     const { findAllByRole, queryAllByText } = render(
-      <ContactDetailsHeader loading={false} contact={contact} />,
+      <GqlMockedProvider<GetContactDetailsHeaderQuery>>
+        <ContactDetailsHeader
+          accountListId={accountListId}
+          contactId={contactId}
+        />
+      </GqlMockedProvider>,
     );
 
     await waitFor(async () =>

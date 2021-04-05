@@ -1,26 +1,24 @@
 import React, { ReactElement } from 'react';
 
-import { gqlMock } from '../../../../../__tests__/util/graphqlMocking';
-import {
-  ContactDetailsFragment,
-  ContactDetailsFragmentDoc,
-} from '../ContactDetails.generated';
+import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
+
 import { ContactDetailsHeader } from './ContactDetailsHeader';
+import { GetContactDetailsHeaderQuery } from './ContactDetailsHeader.generated';
 
 export default {
   title: 'Contacts/ContactDetails/Header',
 };
 
-const contact = gqlMock<ContactDetailsFragment>(ContactDetailsFragmentDoc);
+const accountListId = 'abc';
+const contactId = 'contact-1';
 
 export const Default = (): ReactElement => {
-  return <ContactDetailsHeader loading={false} contact={null} />;
-};
-
-export const Loading = (): ReactElement => {
-  return <ContactDetailsHeader loading={true} contact={null} />;
-};
-
-export const WithContact = (): ReactElement => {
-  return <ContactDetailsHeader loading={false} contact={contact} />;
+  return (
+    <GqlMockedProvider<GetContactDetailsHeaderQuery>>
+      <ContactDetailsHeader
+        accountListId={accountListId}
+        contactId={contactId}
+      />
+    </GqlMockedProvider>
+  );
 };
