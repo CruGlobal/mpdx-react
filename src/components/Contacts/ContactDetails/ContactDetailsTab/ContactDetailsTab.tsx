@@ -2,7 +2,7 @@ import { Box, Button, Divider, styled, Typography } from '@material-ui/core';
 import { Create } from '@material-ui/icons';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { useContactDetailTabQuery } from './ContactDetailTab.generated';
+import { useContactDetailsTabQuery } from './ContactDetailsTab.generated';
 
 const ContactDetailSectionContainer = styled(Box)(({ theme }) => ({
   padding: theme.spacing(0),
@@ -46,7 +46,7 @@ export const ContactDetailTab: React.FC<ContactDetailTabProps> = ({
   accountListId,
   contactId,
 }) => {
-  const { data, loading } = useContactDetailTabQuery({
+  const { data, loading } = useContactDetailsTabQuery({
     variables: { accountListId, contactId },
   });
 
