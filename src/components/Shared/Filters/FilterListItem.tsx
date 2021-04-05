@@ -1,6 +1,7 @@
 import { ListItem, ListItemText } from '@material-ui/core';
 import React from 'react';
 import { Filter } from './Filter';
+import { FilterListItemDateRange } from './FilterListItemDateRange';
 import { FilterListItemMultiselect } from './FilterListItemMultiselect';
 import { FilterListItemSelect } from './FilterListItemSelect';
 import { FilterListItemTextField } from './FilterListItemTextField';
@@ -28,6 +29,12 @@ export const FilterListItem: React.FC<Props> = ({
     <FilterListItemMultiselect
       filter={filter}
       selected={value}
+      onUpdate={onUpdate}
+    />
+  ) : filter.type == 'daterange' ? (
+    <FilterListItemDateRange
+      filter={filter}
+      value={value}
       onUpdate={onUpdate}
     />
   ) : (
