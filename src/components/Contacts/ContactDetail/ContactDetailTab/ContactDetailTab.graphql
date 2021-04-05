@@ -1,4 +1,4 @@
-query ContactDetail($accountListId: ID!, $contactId: ID!) {
+query ContactDetailTab($accountListId: ID!, $contactId: ID!) {
   contact(accountListId: $accountListId, id: $contactId) {
     id
     name
