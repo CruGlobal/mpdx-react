@@ -31,13 +31,14 @@ const CloseButton = styled(IconButton)(({ theme }) => ({
   position: 'absolute',
   right: theme.spacing(1),
   top: theme.spacing(1),
-  color: theme.palette.grey[500],
+  color: theme.palette.text.primary,
+  '&:hover': {
+    backgroundColor: '#EBECEC',
+  },
 }));
 
 const NewsletterTextContainer = styled(ListItemText)(({}) => ({
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'flex-start',
+  textAlign: 'left',
 }));
 
 const TextArea = styled(TextareaAutosize)(({}) => ({
