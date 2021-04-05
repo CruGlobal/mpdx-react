@@ -32,6 +32,11 @@ export const ContactTags: React.FC<ContactTagsProps> = ({
 }) => {
   const { t } = useTranslation();
   const handleTagDelete = (tag: string) => {
+    const index = contactTags.indexOf(tag);
+    if (index > -1) {
+      contactTags = contactTags.splice(index, 1);
+      // TODO: add mutation to remove tag from contact
+    }
     console.info('You clicked the Delete tag for tag' + tag + '' + contactId);
   };
   const handleAddTag = () => {

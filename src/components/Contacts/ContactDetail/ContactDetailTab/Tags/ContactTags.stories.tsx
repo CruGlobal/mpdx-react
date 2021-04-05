@@ -1,27 +1,37 @@
 import React, { ReactElement } from 'react';
 import { Box, CssBaseline, MuiThemeProvider } from '@material-ui/core';
+import { array } from '@storybook/addon-knobs';
 import theme from '../../../../../theme';
 import { ContactTags } from './ContactTags';
 
 export default {
   title: 'Contacts/Tab/ContactDetailTab/ContactTags',
+  component: ContactTags,
 };
-const mockTags = ['help', 'tag', 'something'];
-const emptyTags = [];
+
 export const Default = (): ReactElement => {
-  return contactTagView(mockTags);
-};
-
-export const EmptyTags = (): ReactElement => {
-  return contactTagView(emptyTags);
-};
-
-const contactTagView = (tags: string[]) => {
   return (
     <Box m={2}>
       <MuiThemeProvider theme={theme}>
         <CssBaseline />
-        <ContactTags contactId="contact_id" contactTags={tags} />
+        <ContactTags
+          contactId="contact_id"
+          contactTags={array('contactTags', ['help', 'something'])}
+        />
+      </MuiThemeProvider>
+    </Box>
+  );
+};
+
+export const EmptyTags = (): ReactElement => {
+  return (
+    <Box m={2}>
+      <MuiThemeProvider theme={theme}>
+        <CssBaseline />
+        <ContactTags
+          contactId="contact_id"
+          contactTags={array('contactTags', [])}
+        />
       </MuiThemeProvider>
     </Box>
   );
