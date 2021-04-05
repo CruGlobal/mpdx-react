@@ -22,7 +22,7 @@ describe('ContactDetailTab', () => {
       }
     `);
     expect(result.current.data.contact.name).toMatchInlineSnapshot(
-      `"Pyramid Car Rocket"`,
+      `"Ship Star"`,
     );
   });
 });
