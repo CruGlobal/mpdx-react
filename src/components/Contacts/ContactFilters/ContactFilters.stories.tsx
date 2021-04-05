@@ -1,3 +1,4 @@
+import { GraphQLError } from 'graphql';
 import React, { ReactElement } from 'react';
 import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
 import { ContactFilters } from './ContactFilters';
@@ -48,9 +49,10 @@ export const Empty = (): ReactElement => {
 export const Error = (): ReactElement => {
   const mock = {
     ContactFilters: {
-      contactFilters: null,
+      contactFilters: new GraphQLError(
+        'GraphQL Error #42: Error loading Filters',
+      ),
     },
-    error: { name: 'error', message: 'Error loading data. Try again.' },
   };
 
   return (
