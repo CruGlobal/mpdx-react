@@ -1,0 +1,118 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ContactDetailTab test query 2`] = `
+Object {
+  "__typename": "Contact",
+  "envelopeGreeting": "Man Tunnel",
+  "id": "2211577",
+  "name": "Pyramid Car Rocket",
+  "people": Object {
+    "__typename": "PersonConnection",
+    "nodes": Array [
+      Object {
+        "__typename": "Person",
+        "anniversaryDay": 73,
+        "anniversaryMonth": 31,
+        "anniversaryYear": 38,
+        "birthdayDay": 70,
+        "birthdayMonth": 23,
+        "birthdayYear": 95,
+        "firstName": "Chisel",
+        "id": "3965933",
+        "lastName": "Compact Disc Boss",
+        "primaryEmailAddress": Object {
+          "__typename": "EmailAddress",
+          "email": "Salt Tunnel Pyramid",
+        },
+        "primaryPhoneNumber": Object {
+          "__typename": "PhoneNumber",
+          "number": "Bomb Solid",
+        },
+      },
+      Object {
+        "__typename": "Person",
+        "anniversaryDay": 46,
+        "anniversaryMonth": 54,
+        "anniversaryYear": 22,
+        "birthdayDay": 84,
+        "birthdayMonth": 64,
+        "birthdayYear": 98,
+        "firstName": "Tiger Rifle",
+        "id": "4140142",
+        "lastName": "Grapes",
+        "primaryEmailAddress": Object {
+          "__typename": "EmailAddress",
+          "email": "Ice Earth Prison",
+        },
+        "primaryPhoneNumber": Object {
+          "__typename": "PhoneNumber",
+          "number": "Apple",
+        },
+      },
+      Object {
+        "__typename": "Person",
+        "anniversaryDay": 68,
+        "anniversaryMonth": 69,
+        "anniversaryYear": 50,
+        "birthdayDay": 3,
+        "birthdayMonth": 71,
+        "birthdayYear": 74,
+        "firstName": "Eraser Comet Passport",
+        "id": "7056502",
+        "lastName": "Tennis racquet",
+        "primaryEmailAddress": Object {
+          "__typename": "EmailAddress",
+          "email": "Plane Library",
+        },
+        "primaryPhoneNumber": Object {
+          "__typename": "PhoneNumber",
+          "number": "Snail Feather",
+        },
+      },
+      Object {
+        "__typename": "Person",
+        "anniversaryDay": 81,
+        "anniversaryMonth": 32,
+        "anniversaryYear": 10,
+        "birthdayDay": 16,
+        "birthdayMonth": 10,
+        "birthdayYear": 26,
+        "firstName": "Treadmill Chocolates",
+        "id": "1805674",
+        "lastName": "Surveyor",
+        "primaryEmailAddress": Object {
+          "__typename": "EmailAddress",
+          "email": "Slave Adult Staircase",
+        },
+        "primaryPhoneNumber": Object {
+          "__typename": "PhoneNumber",
+          "number": "Pebble Rope",
+        },
+      },
+    ],
+  },
+  "preferredContactMethod": "FACEBOOK",
+  "primaryAddress": Object {
+    "__typename": "Address",
+    "city": "Chair",
+    "country": "Coffee Drill Cup",
+    "postalCode": "Printer Coffee-shop",
+    "state": "Diamond Feather Sex",
+    "street": "Printer Coffee-shop",
+  },
+  "primaryPerson": Object {
+    "__typename": "Person",
+    "id": "9339842",
+  },
+  "tagList": Array [
+    "Junk Bomb Leather jacket",
+  ],
+  "timezone": "Satellite Eyes God",
+  "user": Object {
+    "__typename": "UserScopedToAccountList",
+    "firstName": "Baby Milk",
+    "lastName": "Stomach",
+  },
+  "website": "Water Plane Chess Board",
+}
+`;
