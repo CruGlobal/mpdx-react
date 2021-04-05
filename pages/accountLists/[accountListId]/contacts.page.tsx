@@ -13,37 +13,32 @@ const ContactsPage: React.FC = () => {
     query: { accountListId },
   } = useRouter();
 
-  const [contactDetailsId, setContactDetailsId] = useState<string | null>(null);
-  const [contactDetailsHidden, setContactDetailsHidden] = useState<boolean>(
-    true,
-  );
-
-  const toggleContactDetailsHidden = (contactId: string) => {
-    setContactDetailsId(contactId);
-    setContactDetailsHidden(!contactDetailsHidden);
-  };
+  const [contactDetailsId, setContactDetailsId] = useState<string>();
 
   return (
     <>
       <Head>
         <title>MPDX | {t('Contacts')}</title>
       </Head>
-      <Box height="100vh" display="flex" overflow="hidden">
+      <Box height="100vh" display="flex" overflow-y="scroll">
         <Box width="20vw">
           <ContactFilters accountListId={accountListId as string} />
         </Box>
         <Box flex={1}>
           <ContactsTable
             accountListId={accountListId as string}
-            onContactSelected={toggleContactDetailsHidden}
+            onContactSelected={setContactDetailsId}
           />
         </Box>
-        <Box flex={1} hidden={contactDetailsHidden}>
-          <ContactDetails
-            accountListId={accountListId as string}
-            contactId={contactDetailsId}
-          />
-        </Box>
+        {contactDetailsId ? (
+          <Box flex={1} hidden={!contactDetailsId}>
+            <ContactDetails
+              accountListId={accountListId as string}
+              contactId={contactDetailsId}
+              onClose={() => setContactDetailsId(undefined)}
+            />
+          </Box>
+        ) : null}
       </Box>
     </>
   );
