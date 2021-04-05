@@ -43,8 +43,8 @@ export const FilterListItem: React.FC<Props> = ({
   ) : (
     <ListItem>
       <ListItemText
-        primary={filter.title}
-        primaryTypographyProps={{ variant: 'subtitle1' }}
+        primary={`Unsupported Filter: ${filter.title} (${filter.type})`}
+        primaryTypographyProps={{ variant: 'subtitle1', color: 'error' }}
       />
     </ListItem>
   );
