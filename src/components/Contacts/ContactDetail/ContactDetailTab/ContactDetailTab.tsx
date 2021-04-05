@@ -2,7 +2,7 @@ import { Box, Button, Divider, styled, Typography } from '@material-ui/core';
 import { Create } from '@material-ui/icons';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { ContactDetailQuery } from '../ContactDetail.generated';
+import { useContactDetailTabQuery } from './ContactDetailTab.generated';
 
 const ContactDetailSectionContainer = styled(Box)(({ theme }) => ({
   padding: theme.spacing(0),
@@ -38,13 +38,18 @@ const ContactDetailHeadingText = styled(Typography)(() => ({
 }));
 
 interface ContactDetailTabProps {
-  contact: ContactDetailQuery;
+  accountListId: string;
+  contactId: string;
 }
 
 export const ContactDetailTab: React.FC<ContactDetailTabProps> = ({
-  contact,
+  accountListId,
+  contactId,
 }) => {
-  const calledContact = contact.contact;
+  const { data, loading } = useContactDetailTabQuery({
+    variables: { accountListId, contactId },
+  });
+
   const { t } = useTranslation();
 
   return (
@@ -60,7 +65,7 @@ export const ContactDetailTab: React.FC<ContactDetailTabProps> = ({
       <ContactDetailSectionContainer>
         <ContactDetailHeadingContainer>
           <ContactDetailHeadingText variant="h6">
-            {calledContact.name}
+            {loading ? t('Loading') : data.contact.name}
           </ContactDetailHeadingText>
           <ContactDetailHeadingIcon />
         </ContactDetailHeadingContainer>
