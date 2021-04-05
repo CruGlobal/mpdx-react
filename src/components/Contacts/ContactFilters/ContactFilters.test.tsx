@@ -1,6 +1,7 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { GraphQLError } from 'graphql';
 import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
 import { ContactFilters } from './ContactFilters';
 import { ContactFiltersQuery } from './ContactFilters.generated';
@@ -11,38 +12,71 @@ const accountListId = '111';
 
 describe('ContactFilters', () => {
   it('default', async () => {
-    const { queryByTestId, queryByText } = render(
-      <GqlMockedProvider<ContactFiltersQuery>>
+    const { getByText, queryByTestId, queryAllByTestId } = render(
+      <GqlMockedProvider<ContactFiltersQuery>
+        mocks={{
+          ContactFilters: {
+            contactFilters: [
+              {
+                title: 'Visible Group',
+                alwaysVisible: true,
+              },
+              {
+                title: 'Hidden Group',
+                alwaysVisible: false,
+              },
+            ],
+          },
+        }}
+      >
         <ContactFilters accountListId={accountListId} />
       </GqlMockedProvider>,
     );
 
-    expect(queryByText('Loading Filters')).toBeNull();
-    expect(queryByText('No Filters')).toBeVisible();
-    expect(queryByTestId('ErrorText')).toBeNull();
-    expect(queryByTestId('FiltersList')).toBeNull();
+    await waitFor(() => expect(queryByTestId('LoadingState')).toBeNull());
+    expect(queryByTestId('LoadingState')).toBeNull();
+    expect(queryByTestId('ErrorState')).toBeNull();
+    expect(queryAllByTestId('FilterGroup').length).toEqual(2);
+
+    expect(getByText('See More Filters')).toBeVisible();
+    expect(getByText('Visible Group')).toBeVisible();
+    expect(getByText('Hidden Group')).not.toBeVisible();
+
+    userEvent.click(getByText('See More Filters'));
+
+    expect(getByText('See Fewer Filters')).toBeVisible();
+    expect(getByText('Visible Group')).toBeVisible();
+    expect(getByText('Hidden Group')).toBeVisible();
   });
 
-  it('filters loaded', async () => {
-    const { getByText, queryByTestId, queryByText, getByTestId } = render(
+  it('loading indicator', async () => {
+    const { getByTestId, queryByTestId, queryAllByTestId } = render(
       <GqlMockedProvider<ContactFiltersQuery>>
         <ContactFilters accountListId={accountListId} />
       </GqlMockedProvider>,
     );
 
-    const loadFiltersButton = getByText('Load Filters');
+    expect(getByTestId('LoadingState')).toBeVisible();
+    expect(queryByTestId('ErrorText')).toBeNull();
+    expect(queryAllByTestId('FilterGroup').length).toEqual(0);
+  });
 
-    userEvent.click(loadFiltersButton);
-
-    await waitFor(() =>
-      expect(queryByText('Loading Filters')).not.toBeInTheDocument(),
+  it('error loading filters', async () => {
+    const { getByTestId, queryByTestId, queryAllByTestId } = render(
+      <GqlMockedProvider<ContactFiltersQuery>
+        mocks={{
+          ContactFilters: {
+            contactFilters: new GraphQLError('Error loading Filters'),
+          },
+        }}
+      >
+        <ContactFilters accountListId={accountListId} />
+      </GqlMockedProvider>,
     );
 
-    expect(queryByText('Loading Filters')).toBeNull();
-    expect(queryByText('No Filters')).toBeNull();
-    expect(queryByTestId('ErrorText')).toBeNull();
-    expect(queryByTestId('FiltersList')).toBeVisible();
-
-    expect(getByTestId('FiltersList').childNodes.length).toEqual(2);
+    await waitFor(() => expect(queryByTestId('LoadingState')).toBeNull());
+    expect(queryByTestId('LoadingState')).toBeNull();
+    expect(getByTestId('ErrorState')).toBeVisible();
+    expect(queryAllByTestId('FilterGroup').length).toEqual(0);
   });
 });

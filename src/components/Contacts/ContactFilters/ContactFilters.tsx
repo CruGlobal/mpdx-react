@@ -12,13 +12,13 @@ import {
 } from '@material-ui/core';
 import { ArrowBackIos, ArrowForwardIos } from '@material-ui/icons';
 import { isArray } from 'lodash';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ContactFilterGroup } from '../../../../graphql/types.generated';
 import { Filter } from '../../Shared/Filters/Filter';
 import { FilterListItem } from '../../Shared/Filters/FilterListItem';
 import { FilterListItemShowAll } from '../../Shared/Filters/FilterListItemShowAll';
-import { useContactFiltersLazyQuery } from './ContactFilters.generated';
+import { useContactFiltersQuery } from './ContactFilters.generated';
 
 const FilterList = styled(List)(() => ({
   '& .MuiListItemIcon-root': {
@@ -34,10 +34,9 @@ interface Props {
 }
 
 export const ContactFilters: React.FC<Props> = ({ accountListId }: Props) => {
-  const [
-    loadContactFilters,
-    { data, loading, error },
-  ] = useContactFiltersLazyQuery({ variables: { accountListId } });
+  const { data, loading, error } = useContactFiltersQuery({
+    variables: { accountListId },
+  });
   const { t } = useTranslation();
 
   const [selectedGroup, showGroup] = useState<null | ContactFilterGroup>(null);
@@ -60,10 +59,6 @@ export const ContactFilters: React.FC<Props> = ({ accountListId }: Props) => {
   const getSelectedFilters = (group: ContactFilterGroup) =>
     group.filters.filter((value) => selectedFilters[value.name]);
 
-  useEffect(() => {
-    loadContactFilters();
-  }, []);
-
   return (
     <div>
       <div style={{ overflow: 'hidden' }}>
@@ -84,11 +79,11 @@ export const ContactFilters: React.FC<Props> = ({ accountListId }: Props) => {
                   : t('Filter')}
               </Typography>
             </Box>
-            <FilterList dense data-testID="FiltersList">
+            <FilterList dense>
               {error && (
-                <ListItem>
+                <ListItem data-testid="ErrorState">
                   <ListItemText
-                    primary={'Error: ' + error.toString()}
+                    primary={error.toString()}
                     primaryTypographyProps={{
                       variant: 'subtitle1',
                       color: 'error',
@@ -97,7 +92,7 @@ export const ContactFilters: React.FC<Props> = ({ accountListId }: Props) => {
                 </ListItem>
               )}
               {loading ? (
-                <ListItem>
+                <ListItem data-testid="LoadingState">
                   <CircularProgress />
                 </ListItem>
               ) : (
@@ -110,6 +105,7 @@ export const ContactFilters: React.FC<Props> = ({ accountListId }: Props) => {
                         group.alwaysVisible ||
                         getSelectedFilters(group).length > 0
                       }
+                      data-testid="FilterGroup"
                     >
                       <ListItem button onClick={() => showGroup(group)}>
                         <ListItemText
@@ -135,7 +131,7 @@ export const ContactFilters: React.FC<Props> = ({ accountListId }: Props) => {
           mountOnEnter
           unmountOnExit
         >
-          <FilterList dense data-testID="FiltersList">
+          <FilterList dense>
             <ListItem button onClick={() => showGroup(null)}>
               <ListItemIcon>
                 <ArrowBackIos fontSize="small" />
