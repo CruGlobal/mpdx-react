@@ -1,6 +1,7 @@
 import { ListItem, ListItemText } from '@material-ui/core';
 import React from 'react';
 import { Filter } from './Filter';
+import { FilterListItemCheckbox } from './FilterListItemCheckbox';
 import { FilterListItemDateRange } from './FilterListItemDateRange';
 import { FilterListItemMultiselect } from './FilterListItemMultiselect';
 import { FilterListItemSelect } from './FilterListItemSelect';
@@ -37,6 +38,8 @@ export const FilterListItem: React.FC<Props> = ({
       value={value}
       onUpdate={onUpdate}
     />
+  ) : filter.type == 'single_checkbox' ? (
+    <FilterListItemCheckbox filter={filter} value={value} onUpdate={onUpdate} />
   ) : (
     <ListItem>
       <ListItemText
