@@ -11,6 +11,7 @@ import {
   Typography,
 } from '@material-ui/core';
 import { ArrowBackIos, ArrowForwardIos } from '@material-ui/icons';
+import { isArray } from 'lodash';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ContactFilterGroup } from '../../../../graphql/types.generated';
@@ -44,7 +45,7 @@ export const ContactFilters: React.FC<Props> = ({ accountListId }: Props) => {
   const [showAll, setShowAll] = useState(false);
 
   const updateSelectedFilter = (name: string, value) => {
-    if (value)
+    if (value && !(isArray(value) && value.length == 0))
       setSelectedFilters((prev) => {
         return { ...prev, [name]: value };
       });
