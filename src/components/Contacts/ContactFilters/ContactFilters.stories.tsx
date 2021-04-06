@@ -1,8 +1,12 @@
+import { MockedProvider } from '@apollo/client/testing';
 import { GraphQLError } from 'graphql';
 import React, { ReactElement } from 'react';
 import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
 import { ContactFilters } from './ContactFilters';
-import { ContactFiltersQuery } from './ContactFilters.generated';
+import {
+  ContactFiltersDocument,
+  ContactFiltersQuery,
+} from './ContactFilters.generated';
 
 export default {
   title: 'Contacts/ContactFilters',
@@ -20,15 +24,18 @@ export const Default = (): ReactElement => {
 
 export const Loading = (): ReactElement => {
   const mock = {
-    ContactFilters: {
-      contactFilters: null,
+    request: {
+      query: ContactFiltersDocument,
+      variables: { accountListId: accountListId },
     },
+    result: {},
+    delay: 86_400_000,
   };
 
   return (
-    <GqlMockedProvider<ContactFiltersQuery> mocks={mock}>
+    <MockedProvider mocks={[mock]}>
       <ContactFilters accountListId={accountListId} />
-    </GqlMockedProvider>
+    </MockedProvider>
   );
 };
 
