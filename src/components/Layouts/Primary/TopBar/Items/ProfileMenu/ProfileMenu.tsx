@@ -22,7 +22,7 @@ import { User } from '../../../../../../../graphql/types.generated';
 
 const useStyles = makeStyles((theme: Theme) => ({
   accountName: {
-    color: '#FFFFFF',
+    color: theme.palette.common.white,
     padding: '0px 8px',
   },
   avatar: {

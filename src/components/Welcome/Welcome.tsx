@@ -32,7 +32,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     minHeight: '100vh',
     minWidth: '100vw',
     backgroundColor: theme.palette.mpdxBlue.main,
-    color: '#fff',
+    color: theme.palette.common.white,
   },
   subtitle: {
     maxWidth: '450px',
