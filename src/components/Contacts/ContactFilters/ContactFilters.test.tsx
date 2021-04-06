@@ -6,6 +6,7 @@ import { ContactFilters } from './ContactFilters';
 import { ContactFiltersQuery } from './ContactFilters.generated';
 import {
   ContactFiltersDefaultMock,
+  ContactFiltersEmptyMock,
   ContactFiltersErrorMock,
 } from './ContactFilters.mocks';
 
@@ -15,7 +16,7 @@ const accountListId = '111';
 
 describe('ContactFilters', () => {
   it('default', async () => {
-    const { getByText, queryByTestId, queryAllByTestId } = render(
+    const { getByTestId, getByText, queryByTestId, queryAllByTestId } = render(
       <GqlMockedProvider<ContactFiltersQuery>
         mocks={{ ContactFilters: ContactFiltersDefaultMock }}
       >
@@ -27,16 +28,33 @@ describe('ContactFilters', () => {
     expect(queryByTestId('LoadingState')).toBeNull();
     expect(queryByTestId('ErrorState')).toBeNull();
     expect(queryAllByTestId('FilterGroup').length).toEqual(2);
+    expect(getByTestId('FilterListItemShowAll')).toBeVisible();
 
     expect(getByText('See More Filters')).toBeVisible();
     expect(getByText('Always Visible')).toBeVisible();
     expect(getByText('Hidden')).not.toBeVisible();
 
-    userEvent.click(getByText('See More Filters'));
+    userEvent.click(getByTestId('FilterListItemShowAll'));
 
     expect(getByText('See Fewer Filters')).toBeVisible();
     expect(getByText('Always Visible')).toBeVisible();
     expect(getByText('Hidden')).toBeVisible();
+  });
+
+  it('no filters', async () => {
+    const { queryByTestId, queryAllByTestId } = render(
+      <GqlMockedProvider<ContactFiltersQuery>
+        mocks={{ ContactFilters: ContactFiltersEmptyMock }}
+      >
+        <ContactFilters accountListId={accountListId} />
+      </GqlMockedProvider>,
+    );
+
+    await waitFor(() => expect(queryByTestId('LoadingState')).toBeNull());
+    expect(queryByTestId('LoadingState')).toBeNull();
+    expect(queryByTestId('ErrorState')).toBeNull();
+    expect(queryAllByTestId('FilterGroup').length).toEqual(0);
+    expect(queryByTestId('FilterListItemShowAll')).toBeNull();
   });
 
   it('loading indicator', async () => {
@@ -49,6 +67,7 @@ describe('ContactFilters', () => {
     expect(getByTestId('LoadingState')).toBeVisible();
     expect(queryByTestId('ErrorText')).toBeNull();
     expect(queryAllByTestId('FilterGroup').length).toEqual(0);
+    expect(queryByTestId('FilterListItemShowAll')).toBeNull();
   });
 
   it('error loading filters', async () => {
@@ -64,5 +83,6 @@ describe('ContactFilters', () => {
     expect(queryByTestId('LoadingState')).toBeNull();
     expect(getByTestId('ErrorState')).toBeVisible();
     expect(queryAllByTestId('FilterGroup').length).toEqual(0);
+    expect(queryByTestId('FilterListItemShowAll')).toBeNull();
   });
 });

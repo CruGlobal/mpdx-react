@@ -8,6 +8,7 @@ import {
 } from './ContactFilters.generated';
 import {
   ContactFiltersDefaultMock,
+  ContactFiltersEmptyMock,
   ContactFiltersErrorMock,
 } from './ContactFilters.mocks';
 
@@ -42,19 +43,13 @@ export const Loading = (): ReactElement => {
   );
 };
 
-export const Empty = (): ReactElement => {
-  const mock = {
-    ContactFilters: {
-      contactFilters: [],
-    },
-  };
-
-  return (
-    <GqlMockedProvider<ContactFiltersQuery> mocks={mock}>
-      <ContactFilters accountListId={accountListId} />
-    </GqlMockedProvider>
-  );
-};
+export const Empty = (): ReactElement => (
+  <GqlMockedProvider<ContactFiltersQuery>
+    mocks={{ ContactFilters: ContactFiltersEmptyMock }}
+  >
+    <ContactFilters accountListId={accountListId} />
+  </GqlMockedProvider>
+);
 
 export const Error = (): ReactElement => (
   <GqlMockedProvider<ContactFiltersQuery>

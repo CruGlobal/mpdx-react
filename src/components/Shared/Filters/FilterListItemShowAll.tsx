@@ -15,7 +15,7 @@ export const FilterListItemShowAll: React.FC<Props> = ({
   const { t } = useTranslation();
 
   return (
-    <ListItem button onClick={onToggle}>
+    <ListItem button onClick={onToggle} data-testid="FilterListItemShowAll">
       <ListItemText
         color="primary"
         primary={showAll ? t('See Fewer Filters') : t('See More Filters')}

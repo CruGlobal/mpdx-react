@@ -58,6 +58,8 @@ export const ContactFilters: React.FC<Props> = ({ accountListId }: Props) => {
 
   const getSelectedFilters = (group: ContactFilterGroup) =>
     group.filters.filter((value) => selectedFilters[value.name]);
+  const isGroupVisible = (group: ContactFilterGroup) =>
+    group.alwaysVisible || getSelectedFilters(group).length > 0;
 
   return (
     <div>
@@ -100,11 +102,7 @@ export const ContactFilters: React.FC<Props> = ({ accountListId }: Props) => {
                   {data?.contactFilters?.map((group: ContactFilterGroup) => (
                     <Collapse
                       key={group.id}
-                      in={
-                        showAll ||
-                        group.alwaysVisible ||
-                        getSelectedFilters(group).length > 0
-                      }
+                      in={showAll || isGroupVisible(group)}
                       data-testid="FilterGroup"
                     >
                       <ListItem button onClick={() => showGroup(group)}>
@@ -116,10 +114,14 @@ export const ContactFilters: React.FC<Props> = ({ accountListId }: Props) => {
                       </ListItem>
                     </Collapse>
                   ))}
-                  <FilterListItemShowAll
-                    showAll={showAll}
-                    onToggle={() => setShowAll(!showAll)}
-                  />
+                  {data?.contactFilters?.some(
+                    (g: ContactFilterGroup) => !isGroupVisible(g),
+                  ) == true ? (
+                    <FilterListItemShowAll
+                      showAll={showAll}
+                      onToggle={() => setShowAll(!showAll)}
+                    />
+                  ) : null}
                 </>
               )}
             </FilterList>

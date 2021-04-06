@@ -15,6 +15,8 @@ export const ContactFiltersDefaultMock = {
   ],
 };
 
+export const ContactFiltersEmptyMock = { contactFilters: [] };
+
 export const ContactFiltersErrorMock = {
   contactFilters: new GraphQLError('GraphQL Error #42: Error loading Filters'),
 };
