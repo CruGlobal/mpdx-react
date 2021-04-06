@@ -40,6 +40,121 @@ describe('NewsletterMenu', () => {
     expect(queryByText('Export Physical')).toBeInTheDocument();
   });
 
+  describe('Newsletter Date', () => {
+    it('Shows most recent date out of two valid dates', async () => {
+      const mocks = {
+        GetTaskAnalytics: {
+          taskAnalytics: {
+            lastElectronicNewsletterCompletedAt: '2021-10-27T16:20:06Z',
+            lastPhysicalNewsletterCompletedAt: '2020-11-11T19:42:03Z',
+          },
+        },
+      };
+      const { queryByTestId } = render(
+        <GqlMockedProvider<
+          GetTaskAnalyticsQuery & GetEmailNewsletterContactsQuery
+        >
+          mocks={mocks}
+        >
+          <NewsletterMenu accountListId={accountListId} />
+        </GqlMockedProvider>,
+      );
+      await waitFor(() =>
+        expect(
+          queryByTestId('NewsletterMenuButton').textContent,
+        ).not.toBeNull(),
+      );
+      expect(queryByTestId('NewsletterMenuButton').textContent).toEqual(
+        'NewsletterLatest: 10/27/2021',
+      );
+    });
+
+    it('Shows most recent date | Electronic', async () => {
+      const mocks = {
+        GetTaskAnalytics: {
+          taskAnalytics: {
+            lastElectronicNewsletterCompletedAt: '2021-10-27T16:20:06Z',
+            lastPhysicalNewsletterCompletedAt: null,
+          },
+        },
+      };
+      const { queryByTestId } = render(
+        <GqlMockedProvider<
+          GetTaskAnalyticsQuery & GetEmailNewsletterContactsQuery
+        >
+          mocks={mocks}
+        >
+          <NewsletterMenu accountListId={accountListId} />
+        </GqlMockedProvider>,
+      );
+      await waitFor(() =>
+        expect(
+          queryByTestId('NewsletterMenuButton').textContent,
+        ).not.toBeNull(),
+      );
+      expect(queryByTestId('NewsletterMenuButton').textContent).toEqual(
+        'NewsletterLatest: 10/27/2021',
+      );
+    });
+
+    it('Shows most recent date | Physical', async () => {
+      const mocks = {
+        GetTaskAnalytics: {
+          taskAnalytics: {
+            lastElectronicNewsletterCompletedAt: null,
+            lastPhysicalNewsletterCompletedAt: '2020-11-11T19:42:03Z',
+          },
+        },
+      };
+      const { queryByTestId } = render(
+        <GqlMockedProvider<
+          GetTaskAnalyticsQuery & GetEmailNewsletterContactsQuery
+        >
+          mocks={mocks}
+        >
+          <NewsletterMenu accountListId={accountListId} />
+        </GqlMockedProvider>,
+      );
+      await waitFor(() =>
+        expect(
+          queryByTestId('NewsletterMenuButton').textContent,
+        ).not.toBeNull(),
+      );
+      expect(queryByTestId('NewsletterMenuButton').textContent).toEqual(
+        'NewsletterLatest: 11/11/2020',
+      );
+    });
+
+    it('Shows "never" if no date data', async () => {
+      const mocks = {
+        GetTaskAnalytics: {
+          taskAnalytics: {
+            lastElectronicNewsletterCompletedAt: null,
+            lastPhysicalNewsletterCompletedAt: null,
+          },
+        },
+      };
+      const { queryByTestId } = render(
+        <GqlMockedProvider<
+          GetTaskAnalyticsQuery & GetEmailNewsletterContactsQuery
+        >
+          mocks={mocks}
+        >
+          <NewsletterMenu accountListId={accountListId} />
+        </GqlMockedProvider>,
+      );
+      await waitFor(() =>
+        expect(
+          queryByTestId('NewsletterMenuButton').textContent,
+        ).not.toBeNull(),
+      );
+
+      expect(queryByTestId('NewsletterMenuButton').textContent).toEqual(
+        'NewsletterLatest: never',
+      );
+    });
+  });
+
   describe('Log Newsletter', () => {
     it('should open Log Newsletter menu', () => {
       const { queryByText, queryByTestId } = render(
