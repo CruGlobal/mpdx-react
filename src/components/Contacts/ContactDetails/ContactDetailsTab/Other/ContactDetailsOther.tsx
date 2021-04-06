@@ -1,6 +1,7 @@
 import React from 'react';
 import { Box, Link, styled, Typography } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
+import { ContactDetailsTabQuery } from '../ContactDetailsTab.generated';
 
 const ContactOtherContainer = styled(Box)(({ theme }) => ({
   marginLeft: theme.spacing(5),
@@ -20,10 +21,12 @@ const ContactOtherTextLabel = styled(Typography)(({ theme }) => ({
 
 interface ContactDetailsOtherProp {
   //TODO: convert to ContactDetailTabQuery
-  contact: string;
+  contact: ContactDetailsTabQuery;
 }
 
-export const ContactDetailsOther: React.FC<ContactDetailsOtherProp> = ({}) => {
+export const ContactDetailsOther: React.FC<ContactDetailsOtherProp> = ({
+  contact,
+}) => {
   const { t } = useTranslation();
   return (
     <Box>
@@ -33,7 +36,7 @@ export const ContactDetailsOther: React.FC<ContactDetailsOtherProp> = ({}) => {
           <ContactOtherTextLabel variant="subtitle1">
             {t('Assignee')}
           </ContactOtherTextLabel>
-          <Typography variant="subtitle1">John Doe</Typography>
+          <Typography variant="subtitle1">{contact.contact.name}</Typography>
         </ContactOtherTextContainer>
         <ContactOtherTextContainer>
           <ContactOtherTextLabel variant="subtitle1">
