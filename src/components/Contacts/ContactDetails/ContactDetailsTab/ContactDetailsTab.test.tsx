@@ -22,7 +22,7 @@ describe('ContactDetailTab', () => {
       }
     `);
     expect(result.current.data.contact.name).toMatchInlineSnapshot(
-      `"Ship Star"`,
+      `"Bridge Junk Rainbow"`,
     );
   });
 });
