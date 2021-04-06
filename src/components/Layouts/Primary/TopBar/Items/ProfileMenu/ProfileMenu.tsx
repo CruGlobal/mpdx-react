@@ -26,7 +26,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     padding: '0px 8px',
   },
   avatar: {
-    color: theme.palette.secondary.dark,
+    color: theme.palette.cruGrayMedium.main,
   },
   menuList: {
     paddingTop: 0,
