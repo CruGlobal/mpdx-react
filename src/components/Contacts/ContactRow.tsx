@@ -8,12 +8,28 @@ import { GiftStatus } from './GiftStatus/GiftStatus';
 import { StarContactIcon } from './StarContactIcon/StarContactIcon';
 
 const useStyles = makeStyles((theme: Theme) => ({
+  contactRowButton: {
+    height: '72px',
+    width: '100%',
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    alignItems: 'center',
+    alignContent: 'center',
+  },
   checkbox: {
     display: 'inline-block',
     width: '24px',
     height: '24px',
     margin: theme.spacing(1),
     background: theme.palette.common.black,
+  },
+  contactTextWrap: {
+    display: 'inline-block',
+    flexGrow: 4,
+    flexBasis: 0,
+    padding: '0',
+    margin: theme.spacing(4),
   },
   contactText: {
     margin: '0px',
@@ -45,27 +61,11 @@ export const ContactRow: React.FC<Props> = ({ contact, onContactSelected }) => {
     <Box role="row" style={{ width: '100%' }}>
       <Box
         role="rowButton"
-        style={{
-          height: '72px',
-          width: '100%',
-          display: 'flex',
-          flexDirection: 'row',
-          justifyContent: 'space-evenly',
-          alignItems: 'center',
-          alignContent: 'center',
-        }}
+        className={classes.contactRowButton}
         onClick={onClick}
       >
         <CheckBox className={classes.checkbox} color="secondary" />
-        <Box
-          style={{
-            display: 'inline-block',
-            flexGrow: 4,
-            flexBasis: 0,
-            padding: '0',
-            margin: theme.spacing(4),
-          }}
-        >
+        <Box className={classes.contactTextWrap}>
           <p
             style={{
               fontSize: '16px',
