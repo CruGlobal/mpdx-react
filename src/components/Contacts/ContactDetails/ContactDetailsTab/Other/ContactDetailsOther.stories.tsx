@@ -5,6 +5,7 @@ import theme from '../../../../../theme';
 import {
   ContactDetailsTabDocument,
   ContactDetailsTabQuery,
+  ContactDetailsTabQueryVariables,
 } from '../ContactDetailsTab.generated';
 import { ContactDetailsOther } from './ContactDetailsOther';
 
@@ -17,12 +18,15 @@ const accountListId = '111';
 const contactId = '222';
 
 export const Default = (): ReactElement => {
-  const mock = gqlMock<ContactDetailsTabQuery>(ContactDetailsTabDocument, {
-    variables: {
-      accountListId: accountListId,
-      contactId: contactId,
+  const mock = gqlMock<ContactDetailsTabQuery, ContactDetailsTabQueryVariables>(
+    ContactDetailsTabDocument,
+    {
+      variables: {
+        accountListId: accountListId,
+        contactId: contactId,
+      },
     },
-  });
+  );
   return (
     <Box m={2}>
       <MuiThemeProvider theme={theme}>
