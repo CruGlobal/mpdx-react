@@ -1,6 +1,8 @@
 import { MockedProvider } from '@apollo/client/testing';
+import { CssBaseline, MuiThemeProvider } from '@material-ui/core';
 import React, { ReactElement } from 'react';
 import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
+import theme from '../../../../theme';
 import { ContactDetailsTab } from './ContactDetailsTab';
 import {
   ContactDetailsTabDocument,
@@ -17,9 +19,15 @@ const contactId = '222';
 
 export const Default = (): ReactElement => {
   return (
-    <GqlMockedProvider<ContactDetailsTabQuery>>
-      <ContactDetailsTab accountListId={accountListId} contactId={contactId} />
-    </GqlMockedProvider>
+    <MuiThemeProvider theme={theme}>
+      <CssBaseline />
+      <GqlMockedProvider<ContactDetailsTabQuery>>
+        <ContactDetailsTab
+          accountListId={accountListId}
+          contactId={contactId}
+        />
+      </GqlMockedProvider>
+    </MuiThemeProvider>
   );
 };
 
