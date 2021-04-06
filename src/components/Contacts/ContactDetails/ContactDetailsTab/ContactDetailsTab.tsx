@@ -33,6 +33,7 @@ const ContactDeleteButton = styled(Button)(({ theme }) => ({
   padding: theme.spacing(2),
   margin: theme.spacing(5, 'auto'),
   borderRadius: '4px',
+  textTransform: 'uppercase',
 }));
 
 const ContactDetailHeadingText = styled(Typography)(() => ({
@@ -98,7 +99,7 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
       </ContactDetailSectionContainer>
       <Divider />
       <ContactDeleteButton variant="outlined" color="default">
-        {t('delete contact').toLocaleUpperCase()}
+        {t('delete contact')}
       </ContactDeleteButton>
     </ContactDetailsTabContainer>
   );
