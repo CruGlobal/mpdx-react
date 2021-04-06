@@ -241,7 +241,7 @@ const NewsletterMenu = ({ accountListId }: Props): ReactElement<Props> => {
       >
         <NewsletterMenuDialogTitle>
           {title()}
-          <CloseButton onClick={handleDialogClose}>
+          <CloseButton role="closeButton" onClick={handleDialogClose}>
             <CloseIcon />
           </CloseButton>
         </NewsletterMenuDialogTitle>

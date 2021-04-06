@@ -200,6 +200,29 @@ describe('NewsletterMenu', () => {
         queryByText('Log Newsletter placeholder text'),
       ).toBeInTheDocument();
     });
+
+    it('should close Log Newsletter menu', () => {
+      const { queryByText, queryByTestId, queryByRole } = render(
+        <GqlMockedProvider<
+          GetTaskAnalyticsQuery & GetEmailNewsletterContactsQuery
+        >>
+          <NewsletterMenu accountListId={accountListId} />
+        </GqlMockedProvider>,
+      );
+
+      userEvent.click(queryByTestId('NewsletterMenuButton'));
+      userEvent.click(queryByText('Log Newsletter'));
+
+      expect(
+        queryByText('Log Newsletter placeholder text'),
+      ).toBeInTheDocument();
+
+      userEvent.click(queryByRole('closeButton'));
+
+      expect(
+        queryByText('Log Newsletter placeholder text'),
+      ).not.toBeInTheDocument();
+    });
   });
 
   describe('Export Email', () => {
