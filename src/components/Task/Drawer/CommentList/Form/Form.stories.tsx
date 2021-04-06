@@ -2,7 +2,7 @@ import React, { ReactElement } from 'react';
 import { MockedProvider } from '@apollo/client/testing';
 import { AppProvider } from '../../../../App';
 import { User } from '../../../../../../graphql/types.generated';
-import createTaskCommentMutationMock from './Form.mock';
+import { createTaskCommentMutationMock } from './Form.mock';
 import TaskDrawerCommentListForm from '.';
 
 const accountListId = 'abc';
