@@ -1,5 +1,4 @@
 import { MockedProvider } from '@apollo/client/testing';
-import { GraphQLError } from 'graphql';
 import React, { ReactElement } from 'react';
 import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
 import { ContactFilters } from './ContactFilters';
@@ -7,6 +6,10 @@ import {
   ContactFiltersDocument,
   ContactFiltersQuery,
 } from './ContactFilters.generated';
+import {
+  ContactFiltersDefaultMock,
+  ContactFiltersErrorMock,
+} from './ContactFilters.mocks';
 
 export default {
   title: 'Contacts/ContactFilters',
@@ -14,13 +17,13 @@ export default {
 
 const accountListId = '111';
 
-export const Default = (): ReactElement => {
-  return (
-    <GqlMockedProvider<ContactFiltersQuery>>
-      <ContactFilters accountListId={accountListId} />
-    </GqlMockedProvider>
-  );
-};
+export const Default = (): ReactElement => (
+  <GqlMockedProvider<ContactFiltersQuery>
+    mocks={{ ContactFilters: ContactFiltersDefaultMock }}
+  >
+    <ContactFilters accountListId={accountListId} />
+  </GqlMockedProvider>
+);
 
 export const Loading = (): ReactElement => {
   const mock = {
@@ -53,18 +56,10 @@ export const Empty = (): ReactElement => {
   );
 };
 
-export const Error = (): ReactElement => {
-  const mock = {
-    ContactFilters: {
-      contactFilters: new GraphQLError(
-        'GraphQL Error #42: Error loading Filters',
-      ),
-    },
-  };
-
-  return (
-    <GqlMockedProvider<ContactFiltersQuery> mocks={mock}>
-      <ContactFilters accountListId={accountListId} />
-    </GqlMockedProvider>
-  );
-};
+export const Error = (): ReactElement => (
+  <GqlMockedProvider<ContactFiltersQuery>
+    mocks={{ ContactFilters: ContactFiltersErrorMock }}
+  >
+    <ContactFilters accountListId={accountListId} />
+  </GqlMockedProvider>
+);

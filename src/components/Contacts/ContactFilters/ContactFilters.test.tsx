@@ -1,10 +1,13 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { GraphQLError } from 'graphql';
 import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
 import { ContactFilters } from './ContactFilters';
 import { ContactFiltersQuery } from './ContactFilters.generated';
+import {
+  ContactFiltersDefaultMock,
+  ContactFiltersErrorMock,
+} from './ContactFilters.mocks';
 
 const accountListId = '111';
 
@@ -14,20 +17,7 @@ describe('ContactFilters', () => {
   it('default', async () => {
     const { getByText, queryByTestId, queryAllByTestId } = render(
       <GqlMockedProvider<ContactFiltersQuery>
-        mocks={{
-          ContactFilters: {
-            contactFilters: [
-              {
-                title: 'Visible Group',
-                alwaysVisible: true,
-              },
-              {
-                title: 'Hidden Group',
-                alwaysVisible: false,
-              },
-            ],
-          },
-        }}
+        mocks={{ ContactFilters: ContactFiltersDefaultMock }}
       >
         <ContactFilters accountListId={accountListId} />
       </GqlMockedProvider>,
@@ -39,14 +29,14 @@ describe('ContactFilters', () => {
     expect(queryAllByTestId('FilterGroup').length).toEqual(2);
 
     expect(getByText('See More Filters')).toBeVisible();
-    expect(getByText('Visible Group')).toBeVisible();
-    expect(getByText('Hidden Group')).not.toBeVisible();
+    expect(getByText('Always Visible')).toBeVisible();
+    expect(getByText('Hidden')).not.toBeVisible();
 
     userEvent.click(getByText('See More Filters'));
 
     expect(getByText('See Fewer Filters')).toBeVisible();
-    expect(getByText('Visible Group')).toBeVisible();
-    expect(getByText('Hidden Group')).toBeVisible();
+    expect(getByText('Always Visible')).toBeVisible();
+    expect(getByText('Hidden')).toBeVisible();
   });
 
   it('loading indicator', async () => {
@@ -64,11 +54,7 @@ describe('ContactFilters', () => {
   it('error loading filters', async () => {
     const { getByTestId, queryByTestId, queryAllByTestId } = render(
       <GqlMockedProvider<ContactFiltersQuery>
-        mocks={{
-          ContactFilters: {
-            contactFilters: new GraphQLError('Error loading Filters'),
-          },
-        }}
+        mocks={{ ContactFilters: ContactFiltersErrorMock }}
       >
         <ContactFilters accountListId={accountListId} />
       </GqlMockedProvider>,
