@@ -41,20 +41,25 @@ describe('NewsletterMenu', () => {
   });
 
   describe('Newsletter Date', () => {
-    it('Shows most recent date out of two valid dates | Electronic', async () => {
-      const mocks = {
+    const createDateMock = (
+      electronic: string | null,
+      physical: string | null,
+    ) => {
+      return {
         GetTaskAnalytics: {
           taskAnalytics: {
-            lastElectronicNewsletterCompletedAt: '2021-10-27T16:20:06Z',
-            lastPhysicalNewsletterCompletedAt: '2020-11-11T19:42:03Z',
+            lastElectronicNewsletterCompletedAt: electronic,
+            lastPhysicalNewsletterCompletedAt: physical,
           },
         },
       };
+    };
+    it('Shows most recent date out of two valid dates | Electronic', async () => {
       const { queryByTestId } = render(
         <GqlMockedProvider<
           GetTaskAnalyticsQuery & GetEmailNewsletterContactsQuery
         >
-          mocks={mocks}
+          mocks={createDateMock('2021-10-27T16:20:06Z', '2020-11-11T19:42:03Z')}
         >
           <NewsletterMenu accountListId={accountListId} />
         </GqlMockedProvider>,
@@ -70,19 +75,11 @@ describe('NewsletterMenu', () => {
     });
 
     it('Shows most recent date out of two valid dates | Physical', async () => {
-      const mocks = {
-        GetTaskAnalytics: {
-          taskAnalytics: {
-            lastElectronicNewsletterCompletedAt: '2020-10-27T16:20:06Z',
-            lastPhysicalNewsletterCompletedAt: '2020-11-11T19:42:03Z',
-          },
-        },
-      };
       const { queryByTestId } = render(
         <GqlMockedProvider<
           GetTaskAnalyticsQuery & GetEmailNewsletterContactsQuery
         >
-          mocks={mocks}
+          mocks={createDateMock('2020-10-27T16:20:06Z', '2020-11-11T19:42:03Z')}
         >
           <NewsletterMenu accountListId={accountListId} />
         </GqlMockedProvider>,
@@ -98,19 +95,11 @@ describe('NewsletterMenu', () => {
     });
 
     it('Shows most recent date | Electronic', async () => {
-      const mocks = {
-        GetTaskAnalytics: {
-          taskAnalytics: {
-            lastElectronicNewsletterCompletedAt: '2021-10-27T16:20:06Z',
-            lastPhysicalNewsletterCompletedAt: null,
-          },
-        },
-      };
       const { queryByTestId } = render(
         <GqlMockedProvider<
           GetTaskAnalyticsQuery & GetEmailNewsletterContactsQuery
         >
-          mocks={mocks}
+          mocks={createDateMock('2021-10-27T16:20:06Z', null)}
         >
           <NewsletterMenu accountListId={accountListId} />
         </GqlMockedProvider>,
@@ -126,19 +115,11 @@ describe('NewsletterMenu', () => {
     });
 
     it('Shows most recent date | Physical', async () => {
-      const mocks = {
-        GetTaskAnalytics: {
-          taskAnalytics: {
-            lastElectronicNewsletterCompletedAt: null,
-            lastPhysicalNewsletterCompletedAt: '2020-11-11T19:42:03Z',
-          },
-        },
-      };
       const { queryByTestId } = render(
         <GqlMockedProvider<
           GetTaskAnalyticsQuery & GetEmailNewsletterContactsQuery
         >
-          mocks={mocks}
+          mocks={createDateMock(null, '2020-11-11T19:42:03Z')}
         >
           <NewsletterMenu accountListId={accountListId} />
         </GqlMockedProvider>,
@@ -154,19 +135,11 @@ describe('NewsletterMenu', () => {
     });
 
     it('Shows "never" if no date data', async () => {
-      const mocks = {
-        GetTaskAnalytics: {
-          taskAnalytics: {
-            lastElectronicNewsletterCompletedAt: null,
-            lastPhysicalNewsletterCompletedAt: null,
-          },
-        },
-      };
       const { queryByTestId } = render(
         <GqlMockedProvider<
           GetTaskAnalyticsQuery & GetEmailNewsletterContactsQuery
         >
-          mocks={mocks}
+          mocks={createDateMock(null, null)}
         >
           <NewsletterMenu accountListId={accountListId} />
         </GqlMockedProvider>,
