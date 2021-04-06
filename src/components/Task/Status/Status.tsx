@@ -24,7 +24,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   buttonPrimary: {
     color: '#fff',
-    backgroundColor: theme.palette.primary.main,
+    backgroundColor: theme.palette.mpdxBlue.main,
   },
   buttonSmall: {
     width: theme.spacing(4.5),

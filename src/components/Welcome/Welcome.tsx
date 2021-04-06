@@ -31,7 +31,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     alignItems: 'center',
     minHeight: '100vh',
     minWidth: '100vw',
-    backgroundColor: theme.palette.primary.main,
+    backgroundColor: theme.palette.mpdxBlue.main,
     color: '#fff',
   },
   subtitle: {

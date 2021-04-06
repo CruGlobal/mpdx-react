@@ -44,7 +44,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     '& $triangle': {
       gridColumn: 2,
       gridRow: 1,
-      borderLeft: `5px solid ${theme.palette.primary.main}`,
+      borderLeft: `5px solid ${theme.palette.mpdxBlue.main}`,
       borderRight: 0,
     },
     '& $content': {
@@ -53,7 +53,7 @@ const useStyles = makeStyles((theme: Theme) => ({
       textAlign: 'right',
     },
     '& $box': {
-      backgroundColor: theme.palette.primary.main,
+      backgroundColor: theme.palette.mpdxBlue.main,
       color: theme.palette.primary.contrastText,
       borderBottomLeftRadius: '8px',
       borderBottomRightRadius: 0,
