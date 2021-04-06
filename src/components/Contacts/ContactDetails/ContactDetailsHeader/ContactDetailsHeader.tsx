@@ -28,35 +28,41 @@ export const ContactDetailsHeader: React.FC<Props> = ({
   }
 
   return (
-    <Box
-      style={{
-        display: 'flex',
-      }}
-    >
-      <Box
-        style={{
-          flex: 1,
-          alignItems: 'center',
-        }}
-      >
+    <Box>
+      <Box display="flex">
         <Box
+          flex={1}
           style={{
-            backgroundColor: '#000000',
-            height: 64,
-            width: 64,
-            borderRadius: 32,
-            display: 'inline-block',
+            alignItems: 'center',
           }}
-        />
-        <p
-          style={{ display: 'inline-block' }}
-        >{`${contact.primaryPerson?.firstName} ${contact.primaryPerson?.lastName}`}</p>
-        <p style={{ display: 'inline-block' }}>{'- Primary'}</p>
+        >
+          <Box
+            style={{
+              backgroundColor: '#000000',
+              height: 64,
+              width: 64,
+              borderRadius: 32,
+              display: 'inline-block',
+            }}
+          />
+          <p
+            style={{ display: 'inline-block' }}
+          >{`${contact.primaryPerson?.firstName} ${contact.primaryPerson?.lastName}`}</p>
+          <p style={{ display: 'inline-block' }}>{'- Primary'}</p>
+        </Box>
+        <Box alignItems="center">
+          <StarOutline style={{ display: 'inline-block' }} />
+          <MoreVert style={{ display: 'inline-block' }} />
+          <Close style={{ display: 'inline-block' }} />
+        </Box>
       </Box>
-      <Box alignItems="center">
-        <StarOutline style={{ display: 'inline-block' }} />
-        <MoreVert style={{ display: 'inline-block' }} />
-        <Close style={{ display: 'inline-block' }} />
+      <Box display="flex">
+        <Box flex={1}>
+          <p>asdf</p>
+        </Box>
+        <Box flex={1}>
+          <p>fdsa</p>
+        </Box>
       </Box>
     </Box>
   );
