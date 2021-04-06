@@ -132,7 +132,7 @@ const theme = createMuiTheme({
           backgroundColor: '#f6f7f9',
         },
         body: {
-          backgroundColor: '#05699b',
+          backgroundColor: mpdxColors.blue,
         },
       },
     },
