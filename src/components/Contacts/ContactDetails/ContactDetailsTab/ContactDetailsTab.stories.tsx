@@ -5,7 +5,6 @@ import { ContactDetailsTab } from './ContactDetailsTab';
 import {
   ContactDetailsTabDocument,
   ContactDetailsTabQuery,
-  useContactDetailsTabQuery,
 } from './ContactDetailsTab.generated';
 
 export default {

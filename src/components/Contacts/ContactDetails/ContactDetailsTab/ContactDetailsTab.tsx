@@ -4,6 +4,11 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useContactDetailsTabQuery } from './ContactDetailsTab.generated';
 
+const ContactDetailsTabContainer = styled(Box)(() => ({
+  width: '100%',
+  padding: '0 5%',
+}));
+
 const ContactDetailSectionContainer = styled(Box)(({ theme }) => ({
   padding: theme.spacing(0),
   paddingTop: '4px',
@@ -13,9 +18,7 @@ const ContactDetailSectionContainer = styled(Box)(({ theme }) => ({
 
 const ContactDetailHeadingContainer = styled(Box)(() => ({
   display: 'flex',
-  flexDirection: 'row',
   alignContent: 'center',
-  alignItems: 'center',
 }));
 
 const ContactDetailHeadingIcon = styled(Create)(({ theme }) => ({
@@ -26,11 +29,10 @@ const ContactDetailHeadingIcon = styled(Create)(({ theme }) => ({
 }));
 
 const ContactDeleteButton = styled(Button)(({ theme }) => ({
-  display: 'block',
+  display: 'flex',
   padding: theme.spacing(2),
-  margin: theme.spacing(5),
-  marginLeft: 'auto',
-  marginRight: 'auto',
+  margin: theme.spacing(5, 'auto'),
+  borderRadius: '4px',
 }));
 
 const ContactDetailHeadingText = styled(Typography)(() => ({
@@ -53,7 +55,7 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
   const { t } = useTranslation();
 
   return (
-    <Box style={{ width: '100%', paddingRight: '5%', paddingLeft: '5%' }}>
+    <ContactDetailsTabContainer>
       {
         // Tag Section
       }
@@ -96,8 +98,8 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
       </ContactDetailSectionContainer>
       <Divider />
       <ContactDeleteButton variant="outlined" color="default">
-        {t('DELETE CONTACT').toLocaleUpperCase()}
+        {t('delete contact').toLocaleUpperCase()}
       </ContactDeleteButton>
-    </Box>
+    </ContactDetailsTabContainer>
   );
 };
