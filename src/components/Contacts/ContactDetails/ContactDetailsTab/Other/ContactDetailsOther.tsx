@@ -42,28 +42,42 @@ export const ContactDetailsOther: React.FC<ContactDetailsOtherProp> = ({
           <ContactOtherTextLabel variant="subtitle1">
             {t('Preferred Contact Method')}
           </ContactOtherTextLabel>
-          <Typography variant="subtitle1">Phone Call</Typography>
+          <Typography variant="subtitle1">
+            {contact.contact.preferredContactMethod}
+          </Typography>
         </ContactOtherTextContainer>
         <ContactOtherTextContainer>
           <ContactOtherTextLabel variant="subtitle1">
             {t('Language')}
           </ContactOtherTextLabel>
-          <Typography variant="subtitle1">English</Typography>
+          <Typography variant="subtitle1">{contact.contact.locale}</Typography>
         </ContactOtherTextContainer>
         <ContactOtherTextContainer>
           <Typography variant="subtitle1">
-            (GMT) Central Time (US & Canada)
+            {contact.contact.timezone}
           </Typography>
         </ContactOtherTextContainer>
         <ContactOtherTextContainer>
           <ContactOtherTextLabel variant="subtitle1">
             {t('Church')}
           </ContactOtherTextLabel>
-          <Typography variant="subtitle1">The Church on The Corner</Typography>
+          <Typography variant="subtitle1">
+            {contact.contact.churchName}
+          </Typography>
         </ContactOtherTextContainer>
         <ContactOtherTextContainer>
-          <Link href="http://www.google.com" target="_blank" rel="noopener">
-            <Typography variant="subtitle1">www.google.com</Typography>
+          <Link
+            href={
+              contact.contact.website.startsWith('http')
+                ? contact.contact.website
+                : 'http://' + contact.contact.website
+            }
+            target="_blank"
+            rel="noopener"
+          >
+            <Typography variant="subtitle1">
+              {contact.contact.website}
+            </Typography>
           </Link>
         </ContactOtherTextContainer>
       </ContactOtherContainer>
