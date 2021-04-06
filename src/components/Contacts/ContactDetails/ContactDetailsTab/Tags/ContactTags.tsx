@@ -1,13 +1,12 @@
-import { Box, Chip, styled, Typography } from '@material-ui/core';
+import { Box, Chip, Link, styled, Typography } from '@material-ui/core';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-const ContactTagsContainer = styled(Box)(() => ({
+const ContactTagsContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
-  flexDirection: 'row',
   alignContent: 'center',
-  alignItems: 'center',
-  marginLeft: '0',
+  flexWrap: 'wrap',
+  margin: theme.spacing(2, 0),
   paddingLeft: '0',
 }));
 
@@ -40,6 +39,7 @@ export const ContactTags: React.FC<ContactTagsProps> = ({
     console.info('You clicked the Delete tag for tag' + tag + '' + contactId);
   };
   const handleAddTag = () => {
+    // TODO: add mutation to update tag for contact
     console.info('You clicked add contact Tag to contact' + contactId);
   };
 
@@ -48,9 +48,11 @@ export const ContactTags: React.FC<ContactTagsProps> = ({
       {contactTags.map((tag, _index) => (
         <ContactTagChip key={tag} label={tag} onDelete={handleTagDelete} />
       ))}
-      <ContactTagAddTagText variant="subtitle1" onClick={handleAddTag}>
-        {t('add tag')}
-      </ContactTagAddTagText>
+      <Link color="textPrimary" onClick={handleAddTag}>
+        <ContactTagAddTagText variant="subtitle1">
+          {t('add tag')}
+        </ContactTagAddTagText>
+      </Link>
     </ContactTagsContainer>
   );
 };
