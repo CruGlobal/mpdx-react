@@ -20,7 +20,7 @@ interface Props {
 
 const useStyles = makeStyles((theme: Theme) => ({
   div: {
-    backgroundColor: theme.palette.primary.main,
+    backgroundColor: theme.palette.mpdxBlue.main,
     height: '250px',
     display: 'flex',
     alignItems: 'flex-end',

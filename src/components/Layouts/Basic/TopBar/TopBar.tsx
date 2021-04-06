@@ -13,10 +13,10 @@ const useStyles = makeStyles((theme: Theme) => ({
     paddingTop: `env(safe-area-inset-top)`,
     paddingLeft: `env(safe-area-inset-left)`,
     paddingRight: `env(safe-area-inset-right)`,
-    backgroundColor: theme.palette.primary.main,
+    backgroundColor: theme.palette.mpdxBlue.main,
   },
   toolbar: {
-    backgroundColor: theme.palette.primary.main,
+    backgroundColor: theme.palette.mpdxBlue.main,
   },
   container: {
     minHeight: '48px',
