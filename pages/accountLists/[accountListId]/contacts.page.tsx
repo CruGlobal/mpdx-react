@@ -22,7 +22,7 @@ const ContactsPage: React.FC = () => {
       </Head>
       <Box height="100vh" display="flex" overflow-y="scroll">
         <Box width="20vw">
-          <ContactFilters accountListId={accountListId as string} />
+          <ContactFilters accountListId={accountListId.toString()} />
         </Box>
         <Box flex={1}>
           <ContactsTable
@@ -31,7 +31,7 @@ const ContactsPage: React.FC = () => {
           />
         </Box>
         {contactDetailsId ? (
-          <Box flex={1} hidden={!contactDetailsId}>
+          <Box flex={1}>
             <ContactDetails
               accountListId={accountListId as string}
               contactId={contactDetailsId}
