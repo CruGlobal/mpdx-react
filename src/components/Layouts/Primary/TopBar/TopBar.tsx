@@ -22,10 +22,10 @@ const useStyles = makeStyles((theme: Theme) => ({
     paddingTop: `env(safe-area-inset-top)`,
     paddingLeft: `env(safe-area-inset-left)`,
     paddingRight: `env(safe-area-inset-right)`,
-    backgroundColor: theme.palette.primary.dark,
+    backgroundColor: theme.palette.cruGrayDark.main,
   },
   toolbar: {
-    backgroundColor: theme.palette.primary.dark,
+    backgroundColor: theme.palette.cruGrayDark.main,
     minHeight: '60px',
   },
   logoGrid: {
