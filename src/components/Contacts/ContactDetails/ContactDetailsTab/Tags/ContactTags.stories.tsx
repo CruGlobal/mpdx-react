@@ -5,7 +5,7 @@ import theme from '../../../../../theme';
 import { ContactTags } from './ContactTags';
 
 export default {
-  title: 'Contacts/Tab/ContactDetailTab/ContactTags',
+  title: 'Contacts/Tab/ContactDetailsTab/ContactTags',
   component: ContactTags,
 };
 
