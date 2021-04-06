@@ -1,8 +1,10 @@
 import { Box, Button, Divider, styled, Typography } from '@material-ui/core';
 import { Create } from '@material-ui/icons';
+import { Skeleton } from '@material-ui/lab';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useContactDetailsTabQuery } from './ContactDetailsTab.generated';
+import { ContactTags } from './Tags/ContactTags';
 
 const ContactDetailsTabContainer = styled(Box)(() => ({
   width: '100%',
@@ -40,6 +42,12 @@ const ContactDetailHeadingText = styled(Typography)(() => ({
   flexGrow: 5,
 }));
 
+const ContactDetailLoadingPlaceHolder = styled(Skeleton)(({ theme }) => ({
+  width: '100%',
+  height: '24px',
+  margin: theme.spacing(2, 0),
+}));
+
 interface ContactDetailTabProps {
   accountListId: string;
   contactId: string;
@@ -60,7 +68,16 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
       {
         // Tag Section
       }
-      <ContactDetailHeadingContainer></ContactDetailHeadingContainer>
+      <ContactDetailHeadingContainer>
+        {loading ? (
+          <ContactDetailLoadingPlaceHolder variant="rect" />
+        ) : (
+          <ContactTags
+            contactId={data.contact.id}
+            contactTags={data.contact.tagList}
+          />
+        )}
+      </ContactDetailHeadingContainer>
       <Divider />
       {
         // People Section
@@ -72,6 +89,15 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
           </ContactDetailHeadingText>
           <ContactDetailHeadingIcon />
         </ContactDetailHeadingContainer>
+        {loading ? (
+          <>
+            <ContactDetailLoadingPlaceHolder variant="rect" />
+            <ContactDetailLoadingPlaceHolder variant="rect" />
+            <ContactDetailLoadingPlaceHolder variant="rect" />
+          </>
+        ) : (
+          <></>
+        )}
       </ContactDetailSectionContainer>
       <Divider />
       {
@@ -84,6 +110,15 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
           </ContactDetailHeadingText>
           <ContactDetailHeadingIcon />
         </ContactDetailHeadingContainer>
+        {loading ? (
+          <>
+            <ContactDetailLoadingPlaceHolder variant="rect" />
+            <ContactDetailLoadingPlaceHolder variant="rect" />
+            <ContactDetailLoadingPlaceHolder variant="rect" />
+          </>
+        ) : (
+          <></>
+        )}
       </ContactDetailSectionContainer>
       <Divider />
       {
@@ -96,6 +131,15 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
           </ContactDetailHeadingText>
           <ContactDetailHeadingIcon />
         </ContactDetailHeadingContainer>
+        {loading ? (
+          <>
+            <ContactDetailLoadingPlaceHolder variant="rect" />
+            <ContactDetailLoadingPlaceHolder variant="rect" />
+            <ContactDetailLoadingPlaceHolder variant="rect" />
+          </>
+        ) : (
+          <></>
+        )}
       </ContactDetailSectionContainer>
       <Divider />
       <ContactDeleteButton variant="outlined" color="default">
