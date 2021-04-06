@@ -1,7 +1,11 @@
+import { MockedProvider, MockedResponse } from '@apollo/client/testing';
+import { GraphQLError } from 'graphql';
 import React, { ReactElement } from 'react';
 import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
 import {
+  GetEmailNewsletterContactsDocument,
   GetEmailNewsletterContactsQuery,
+  GetTaskAnalyticsDocument,
   GetTaskAnalyticsQuery,
 } from '../NewsletterMenu.generated';
 import NewsletterMenu from './NewsletterMenu';
@@ -31,26 +35,33 @@ export const Default = (): ReactElement => {
 };
 
 export const Loading = (): ReactElement => {
-  const mocks = {
-    GetEmailNewsletterContacts: {
-      contacts: {
-        nodes: [],
-      },
-    },
-
-    GetTaskAnalytics: {
-      taskAnalytics: {
-        lastElectronicNewsletterCompletedAt: undefined,
-        lastPhysicalNewsletterCompletedAt: undefined,
-      },
-    },
-  };
   return (
-    <GqlMockedProvider<GetTaskAnalyticsQuery & GetEmailNewsletterContactsQuery>
-      mocks={mocks}
+    <MockedProvider
+      mocks={[
+        {
+          request: {
+            query: GetTaskAnalyticsDocument,
+            variables: {
+              accountListId,
+            },
+          },
+          result: {},
+          delay: 100931731455,
+        },
+        {
+          request: {
+            query: GetEmailNewsletterContactsDocument,
+            variables: {
+              accountListId,
+            },
+          },
+          result: {},
+          delay: 100931731455,
+        },
+      ]}
     >
       <NewsletterMenu accountListId={accountListId} />
-    </GqlMockedProvider>
+    </MockedProvider>
   );
 };
 
@@ -81,18 +92,14 @@ export const Empty = (): ReactElement => {
 export const Error = (): ReactElement => {
   const mocks = {
     GetEmailNewsletterContacts: {
-      contacts: {
-        nodes: [],
-      },
+      contacts: new GraphQLError('Graphql Error #42: Error loading contacts'),
     },
 
     GetTaskAnalytics: {
-      taskAnalytics: {
-        lastElectronicNewsletterCompletedAt: null,
-        lastPhysicalNewsletterCompletedAt: null,
-      },
+      taskAnalytics: new GraphQLError(
+        'Graphql Error #42: Error loading task newsletter date data',
+      ),
     },
-    error: { name: 'error', message: 'Error loading data. Try again.' },
   };
   return (
     <GqlMockedProvider<GetTaskAnalyticsQuery & GetEmailNewsletterContactsQuery>
