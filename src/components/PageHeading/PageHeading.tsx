@@ -32,7 +32,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   pageHeading: {
     flex: 1,
-    color: '#FFF',
+    color: theme.palette.common.white,
   },
 }));
 

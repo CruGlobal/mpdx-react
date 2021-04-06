@@ -12,10 +12,10 @@ const useStyles = makeStyles((_theme: Theme) => ({
     marginTop: '-28px',
   },
   fab: {
-    backgroundColor: '#fff',
+    backgroundColor: _theme.palette.common.white,
     cursor: 'default',
     '&:hover': {
-      backgroundColor: '#fff',
+      backgroundColor: _theme.palette.common.white,
     },
   },
 }));

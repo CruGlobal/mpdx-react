@@ -11,19 +11,19 @@ import { useApp } from '../../App';
 
 const useStyles = makeStyles((theme: Theme) => ({
   buttonGreen: {
-    color: '#fff',
-    backgroundColor: green[500],
+    color: theme.palette.common.white,
+    backgroundColor: theme.palette.mpdxGreen.main,
     cursor: 'default',
     '&:hover': {
-      backgroundColor: green[500],
+      backgroundColor: theme.palette.mpdxGreen.main,
     },
   },
-  buttonOrange: {
-    color: '#fff',
-    backgroundColor: orange[500],
+  buttonRed: {
+    color: theme.palette.common.white,
+    backgroundColor: theme.palette.error.main,
   },
   buttonPrimary: {
-    color: '#fff',
+    color: theme.palette.common.white,
     backgroundColor: theme.palette.mpdxBlue.main,
   },
   buttonSmall: {
@@ -37,7 +37,7 @@ const useStyles = makeStyles((theme: Theme) => ({
       duration: theme.transitions.duration.short,
     }),
     '&:hover': {
-      backgroundColor: green[500],
+      backgroundColor: theme.palette.mpdxGreen.main,
     },
     '&:hover $icon': {
       opacity: 0,
@@ -60,7 +60,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     opacity: 0,
     left: '6px',
     transform: 'rotate(-45deg)',
-    color: '#fff',
+    color: theme.palette.common.white,
   },
 }));
 
@@ -135,7 +135,7 @@ const TaskStatus = ({
           <Fab
             className={[
               classes.buttonSmall,
-              classes.buttonOrange,
+              classes.buttonRed,
               classes.buttonWithHover,
             ].join(' ')}
             onClick={handleClick}
