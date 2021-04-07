@@ -46,6 +46,7 @@ export const FilterListItemMultiselect: React.FC<Props> = ({
             <Checkbox
               size="small"
               edge="start"
+              color="primary"
               checked={isChecked(id)}
               disableRipple
             />

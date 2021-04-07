@@ -24,6 +24,7 @@ export const FilterListItemCheckbox: React.FC<Props> = ({
         size="small"
         edge="start"
         value="true"
+        color="primary"
         checked={!!value}
         disableRipple
       />
