@@ -12,6 +12,7 @@ import React from 'react';
 
 import { useGetContactDetailsHeaderQuery } from './ContactDetailsHeader.generated';
 import { ContactDetailsHeaderSection } from './ContactDetailsHeaderSection/ContactDetailsHeaderSection';
+import { SwapIcon } from './ContactDetailsHeaderSection/SwapIcon';
 
 interface Props {
   accountListId: string;
@@ -90,7 +91,11 @@ export const ContactDetailsHeader: React.FC<Props> = ({
           ) : null}
         </Box>
         <Box flex={1}>
-          <p>fdsa</p>
+          {contact.status ? (
+            <ContactDetailsHeaderSection icon={<SwapIcon />}>
+              <p>{contact.status}</p>
+            </ContactDetailsHeaderSection>
+          ) : null}
         </Box>
       </Box>
     </Box>
