@@ -4,6 +4,21 @@ query ContactDetailsTab($accountListId: ID!, $contactId: ID!) {
     name
     primaryPerson {
       id
+      firstName
+      lastName
+      primaryPhoneNumber {
+        number
+        location
+      }
+      primaryEmailAddress {
+        email
+      }
+      anniversaryDay
+      anniversaryMonth
+      anniversaryYear
+      birthdayDay
+      birthdayMonth
+      birthdayYear
     }
     primaryAddress {
       street
@@ -21,6 +36,7 @@ query ContactDetailsTab($accountListId: ID!, $contactId: ID!) {
         lastName
         primaryPhoneNumber {
           number
+          location
         }
         primaryEmailAddress {
           email
