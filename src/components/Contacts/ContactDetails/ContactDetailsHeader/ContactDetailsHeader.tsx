@@ -1,8 +1,10 @@
 import { Box } from '@material-ui/core';
-import { Close, MoreVert, StarOutline } from '@material-ui/icons';
-import React from 'react';
+import { Close, LocationOn, MoreVert, StarOutline } from '@material-ui/icons';
+import { Skeleton } from '@material-ui/lab';
+import React, { Fragment } from 'react';
 
 import { useGetContactDetailsHeaderQuery } from './ContactDetailsHeader.generated';
+import { ContactDetailsHeaderSection } from './ContactDetailsHeaderSection/ContactDetailsHeaderSection';
 
 interface Props {
   accountListId: string;
@@ -18,7 +20,11 @@ export const ContactDetailsHeader: React.FC<Props> = ({
   });
 
   if (loading) {
-    return <p>loading</p>;
+    return (
+      <Box>
+        <Skeleton></Skeleton>
+      </Box>
+    );
   }
 
   const { contact } = data;
@@ -58,7 +64,15 @@ export const ContactDetailsHeader: React.FC<Props> = ({
       </Box>
       <Box display="flex">
         <Box flex={1}>
-          <p>asdf</p>
+          {contact.primaryAddress ? (
+            <ContactDetailsHeaderSection icon={LocationOn}>
+              <Fragment>
+                <p>{contact.greeting}</p>
+                <p>{contact.primaryAddress.street}</p>
+                <p>{contact.primaryAddress.city}</p>
+              </Fragment>
+            </ContactDetailsHeaderSection>
+          ) : null}
         </Box>
         <Box flex={1}>
           <p>fdsa</p>
