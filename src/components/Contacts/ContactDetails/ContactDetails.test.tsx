@@ -26,7 +26,7 @@ describe('ContactDetails', () => {
   });
 
   it('should render with contact details', async () => {
-    const { findAllByRole, queryAllByText } = render(
+    const { findAllByRole, queryByText } = render(
       <GqlMockedProvider<GetContactDetailsHeaderQuery>
         mocks={{ contact: { id: contactId } }}
       >
@@ -42,6 +42,6 @@ describe('ContactDetails', () => {
       expect((await findAllByRole('contactName'))[0]).toBeInTheDocument(),
     );
 
-    expect(queryAllByText('loading')).toEqual([]);
+    expect(queryByText('loading')).toBeNull();
   });
 });

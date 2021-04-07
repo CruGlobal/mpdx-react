@@ -9,9 +9,9 @@ import { ContactDetails } from '../../../src/components/Contacts/ContactDetails/
 
 const ContactsPage: React.FC = () => {
   const { t } = useTranslation();
-  const {
-    query: { accountListId },
-  } = useRouter();
+  const { query } = useRouter();
+
+  const accountListId = query.accountListId as string;
 
   const [contactDetailsId, setContactDetailsId] = useState<string>();
 
@@ -22,18 +22,18 @@ const ContactsPage: React.FC = () => {
       </Head>
       <Box height="100vh" display="flex" overflow-y="scroll">
         <Box width="20vw">
-          <ContactFilters accountListId={accountListId as string} />
+          <ContactFilters accountListId={accountListId} />
         </Box>
         <Box flex={1}>
           <ContactsTable
-            accountListId={accountListId as string}
+            accountListId={accountListId}
             onContactSelected={setContactDetailsId}
           />
         </Box>
         {contactDetailsId ? (
-          <Box flex={1} hidden={!contactDetailsId}>
+          <Box flex={1}>
             <ContactDetails
-              accountListId={accountListId as string}
+              accountListId={accountListId}
               contactId={contactDetailsId}
               onClose={() => setContactDetailsId(undefined)}
             />
