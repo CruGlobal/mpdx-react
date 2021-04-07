@@ -1,17 +1,16 @@
-import { Box, SvgIconTypeMap } from '@material-ui/core';
-import { OverridableComponent } from '@material-ui/core/OverridableComponent';
+import { Box } from '@material-ui/core';
 
-import React, { ReactNode } from 'react';
+import React, { ReactElement, ReactNode } from 'react';
 
 interface Props {
-  icon?: OverridableComponent<SvgIconTypeMap>;
-  children: ReactNode;
+  children?: ReactNode;
+  icon?: ReactNode;
 }
 
-export const ContactDetailsHeaderSection: React.FC<Props> = ({
+export const ContactDetailsHeaderSection = ({
   icon,
   children,
-}: Props) => {
+}: Props): ReactElement => {
   return (
     <Box>
       <Box style={{ display: 'inline-block', width: 60 }}>{icon}</Box>

@@ -1,7 +1,14 @@
 import { Box } from '@material-ui/core';
-import { Close, LocationOn, MoreVert, StarOutline } from '@material-ui/icons';
+import {
+  Close,
+  Email,
+  LocationOn,
+  MoreVert,
+  Phone,
+  StarOutline,
+} from '@material-ui/icons';
 import { Skeleton } from '@material-ui/lab';
-import React, { Fragment } from 'react';
+import React from 'react';
 
 import { useGetContactDetailsHeaderQuery } from './ContactDetailsHeader.generated';
 import { ContactDetailsHeaderSection } from './ContactDetailsHeaderSection/ContactDetailsHeaderSection';
@@ -65,12 +72,20 @@ export const ContactDetailsHeader: React.FC<Props> = ({
       <Box display="flex">
         <Box flex={1}>
           {contact.primaryAddress ? (
-            <ContactDetailsHeaderSection icon={LocationOn}>
-              <Fragment>
-                <p>{contact.greeting}</p>
-                <p>{contact.primaryAddress.street}</p>
-                <p>{contact.primaryAddress.city}</p>
-              </Fragment>
+            <ContactDetailsHeaderSection icon={<LocationOn />}>
+              <p>{contact.greeting}</p>
+              <p>{contact.primaryAddress.street}</p>
+              <p>{contact.primaryAddress.city}</p>
+            </ContactDetailsHeaderSection>
+          ) : null}
+          {contact.primaryPerson?.primaryPhoneNumber?.number ? (
+            <ContactDetailsHeaderSection icon={<Phone />}>
+              <p>{contact.primaryPerson.primaryPhoneNumber.number}</p>
+            </ContactDetailsHeaderSection>
+          ) : null}
+          {contact.primaryPerson?.primaryEmailAddress?.email ? (
+            <ContactDetailsHeaderSection icon={<Email />}>
+              <p>{contact.primaryPerson.primaryEmailAddress.email}</p>
             </ContactDetailsHeaderSection>
           ) : null}
         </Box>
