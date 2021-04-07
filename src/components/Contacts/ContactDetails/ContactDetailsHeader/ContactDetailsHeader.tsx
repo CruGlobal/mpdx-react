@@ -1,7 +1,8 @@
-import { Box } from '@material-ui/core';
+import { Box, styled, Typography } from '@material-ui/core';
 import {
   Close,
   Email,
+  Image,
   LocationOn,
   MoreVert,
   Phone,
@@ -18,6 +19,17 @@ interface Props {
   accountListId: string;
   contactId: string;
 }
+
+const ContactAvatar = styled(Image)(({}) => ({
+  backgroundColor: '#000000',
+  height: 64,
+  width: 64,
+  borderRadius: 32,
+  display: 'inline-block',
+}));
+const PrimaryContactName = styled('p')(({}) => ({
+  display: 'inline-block',
+}));
 
 export const ContactDetailsHeader: React.FC<Props> = ({
   accountListId,
@@ -44,24 +56,11 @@ export const ContactDetailsHeader: React.FC<Props> = ({
   return (
     <Box>
       <Box display="flex">
-        <Box
-          flex={1}
-          style={{
-            alignItems: 'center',
-          }}
-        >
-          <Box
-            style={{
-              backgroundColor: '#000000',
-              height: 64,
-              width: 64,
-              borderRadius: 32,
-              display: 'inline-block',
-            }}
-          />
-          <p
-            style={{ display: 'inline-block' }}
-          >{`${contact.primaryPerson?.firstName} ${contact.primaryPerson?.lastName}`}</p>
+        <Box flex={1} alignItems="center">
+          <ContactAvatar />
+          <Typography variant="subtitle1">
+            {`${contact.primaryPerson?.firstName} ${contact.primaryPerson?.lastName}`}
+          </Typography>
           <p style={{ display: 'inline-block' }}>{'- Primary'}</p>
         </Box>
         <Box alignItems="center">
