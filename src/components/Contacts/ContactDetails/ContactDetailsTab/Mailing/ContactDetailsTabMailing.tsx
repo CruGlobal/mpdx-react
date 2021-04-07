@@ -2,6 +2,7 @@ import { Box, Link, styled, Typography } from '@material-ui/core';
 import { LocationOn } from '@material-ui/icons';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { ContactDetailsTabQuery } from '../ContactDetailsTab.generated';
 
 const ContactDetailsMailingTitle = styled(Typography)(({ theme }) => ({
   marginTop: theme.spacing(2),
@@ -36,10 +37,10 @@ const ContactDetailsMailingLabel = styled(Typography)(({ theme }) => ({
 }));
 
 interface MailingProp {
-  //TODO: Add ContactDetail Query Result
+  data: ContactDetailsTabQuery;
 }
 
-export const ContactDetailsTabMailing: React.FC<MailingProp> = ({}) => {
+export const ContactDetailsTabMailing: React.FC<MailingProp> = ({ data }) => {
   const { t } = useTranslation();
   return (
     <Box>
@@ -50,9 +51,17 @@ export const ContactDetailsTabMailing: React.FC<MailingProp> = ({}) => {
         <ContactDetailsMailingIcon />
         <ContactDetailsMailingTexContainer>
           {/* Address Section */}
-          <Typography variant="subtitle1">Mr & Mrs. John Doe</Typography>
-          <Typography variant="subtitle1">10 Shire Lane</Typography>
-          <Typography variant="subtitle1">Orlando, Fl 12345</Typography>
+          <Typography variant="subtitle1">{data.contact.name}</Typography>
+          <Typography variant="subtitle1">
+            {data.contact.primaryAddress.street}
+          </Typography>
+          <Typography variant="subtitle1">
+            {data.contact.primaryAddress.city +
+              ', ' +
+              data.contact.primaryAddress.state +
+              ' ' +
+              data.contact.primaryAddress.postalCode}
+          </Typography>
           {/* Show More Section */}
           <ContactDetailsMailingLabelTextContainer>
             <Link href="#">
@@ -64,14 +73,16 @@ export const ContactDetailsTabMailing: React.FC<MailingProp> = ({}) => {
             <ContactDetailsMailingLabel variant="subtitle1">
               {t('Greeting')}
             </ContactDetailsMailingLabel>
-            <Typography variant="subtitle1">Hello Mr & Mrs Doe</Typography>
+            <Typography variant="subtitle1">{data.contact.greeting}</Typography>
           </ContactDetailsMailingLabelTextContainer>
           {/* Newsletter Section */}
           <ContactDetailsMailingLabelTextContainer>
             <ContactDetailsMailingLabel variant="subtitle1">
               {t('Newsletter')}
             </ContactDetailsMailingLabel>
-            <Typography variant="subtitle1">Both</Typography>
+            <Typography variant="subtitle1">
+              {data.contact.sendNewsletter}
+            </Typography>
           </ContactDetailsMailingLabelTextContainer>
           {/* Magizine Section */}
           <ContactDetailsMailingLabelTextContainer>
