@@ -101,6 +101,13 @@ export const ContactFilters: React.FC<Props> = ({
                 <ListItem data-testid="LoadingState">
                   <CircularProgress />
                 </ListItem>
+              ) : data?.contactFilters?.length == 0 ? (
+                <ListItem data-testid="NoFiltersState">
+                  <ListItemText
+                    primary={t('No Contact Filters Found')}
+                    primaryTypographyProps={{ variant: 'subtitle1' }}
+                  />
+                </ListItem>
               ) : (
                 <>
                   {data?.contactFilters?.map((group: ContactFilterGroup) => (
