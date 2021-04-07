@@ -1,4 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing';
+import { Box } from '@material-ui/core';
+import { number, withKnobs } from '@storybook/addon-knobs';
 import React, { ReactElement } from 'react';
 import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
 import { ContactFilters } from './ContactFilters';
@@ -14,15 +16,25 @@ import {
 
 export default {
   title: 'Contacts/ContactFilters',
+  decorators: [withKnobs],
 };
 
 const accountListId = '111';
+
+const StorybookContactFilters = (): ReactElement => (
+  <Box width={number('Width', 290)} height="100vh" bgcolor="#fff">
+    <ContactFilters
+      accountListId={accountListId}
+      width={number('Width', 290)}
+    />
+  </Box>
+);
 
 export const Default = (): ReactElement => (
   <GqlMockedProvider<ContactFiltersQuery>
     mocks={{ ContactFilters: ContactFiltersDefaultMock }}
   >
-    <ContactFilters accountListId={accountListId} />
+    <StorybookContactFilters />
   </GqlMockedProvider>
 );
 
@@ -38,7 +50,7 @@ export const Loading = (): ReactElement => {
 
   return (
     <MockedProvider mocks={[mock]}>
-      <ContactFilters accountListId={accountListId} />
+      <StorybookContactFilters />
     </MockedProvider>
   );
 };
@@ -47,7 +59,7 @@ export const Empty = (): ReactElement => (
   <GqlMockedProvider<ContactFiltersQuery>
     mocks={{ ContactFilters: ContactFiltersEmptyMock }}
   >
-    <ContactFilters accountListId={accountListId} />
+    <StorybookContactFilters />
   </GqlMockedProvider>
 );
 
@@ -55,6 +67,6 @@ export const Error = (): ReactElement => (
   <GqlMockedProvider<ContactFiltersQuery>
     mocks={{ ContactFilters: ContactFiltersErrorMock }}
   >
-    <ContactFilters accountListId={accountListId} />
+    <StorybookContactFilters />
   </GqlMockedProvider>
 );

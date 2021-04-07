@@ -31,9 +31,13 @@ const FilterList = styled(List)(() => ({
 
 interface Props {
   accountListId: string;
+  width?: any;
 }
 
-export const ContactFilters: React.FC<Props> = ({ accountListId }: Props) => {
+export const ContactFilters: React.FC<Props> = ({
+  accountListId,
+  width,
+}: Props) => {
   const { data, loading, error } = useContactFiltersQuery({
     variables: { accountListId },
   });
@@ -62,7 +66,7 @@ export const ContactFilters: React.FC<Props> = ({ accountListId }: Props) => {
     group.alwaysVisible || getSelectedFilters(group).length > 0;
 
   return (
-    <div>
+    <Box width={width}>
       <div style={{ overflow: 'hidden' }}>
         <Slide
           in={selectedGroup == null}
@@ -154,6 +158,6 @@ export const ContactFilters: React.FC<Props> = ({ accountListId }: Props) => {
           </FilterList>
         </Slide>
       </div>
-    </div>
+    </Box>
   );
 };
