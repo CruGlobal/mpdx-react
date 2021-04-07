@@ -11,7 +11,7 @@ const ContactsPage: React.FC = () => {
   const { t } = useTranslation();
   const { query } = useRouter();
 
-  const accountListId = query.accountListId.toString();
+  const accountListId = query.accountListId as string;
 
   const [contactDetailsId, setContactDetailsId] = useState<string>();
 
