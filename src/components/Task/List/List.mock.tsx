@@ -7,7 +7,9 @@ import {
   GetTasksForTaskListQuery,
 } from './TaskList.generated';
 
-export const getTasksForTaskListMock = (): MockedResponse => {
+export const getTasksForTaskListMock = (
+  accountListId: string,
+): MockedResponse => {
   const data: GetTasksForTaskListQuery = {
     tasks: {
       nodes: [
@@ -39,7 +41,7 @@ export const getTasksForTaskListMock = (): MockedResponse => {
     request: {
       query: GetTasksForTaskListDocument,
       variables: {
-        accountListId: 'abc',
+        accountListId,
         first: 100,
         after: null,
         before: null,
@@ -57,7 +59,9 @@ export const getTasksForTaskListMock = (): MockedResponse => {
   };
 };
 
-export const getEmptyTasksForTaskListMock = (): MockedResponse => {
+export const getEmptyTasksForTaskListMock = (
+  accountListId: string,
+): MockedResponse => {
   const data: GetTasksForTaskListQuery = {
     tasks: {
       nodes: [],
@@ -73,7 +77,7 @@ export const getEmptyTasksForTaskListMock = (): MockedResponse => {
     request: {
       query: GetTasksForTaskListDocument,
       variables: {
-        accountListId: 'abc',
+        accountListId,
         first: 100,
         after: null,
         before: null,
@@ -96,6 +100,7 @@ interface Attributes extends TaskFilter {
 }
 
 export const getFilteredTasksForTaskListMock = (
+  accountListId: string,
   filter: Partial<Attributes>,
 ): MockedResponse => {
   const data: GetTasksForTaskListQuery = {
@@ -144,7 +149,7 @@ export const getFilteredTasksForTaskListMock = (
     request: {
       query: GetTasksForTaskListDocument,
       variables: {
-        accountListId: 'abc',
+        accountListId,
         first: 100,
         after: null,
         before: null,
@@ -160,5 +165,37 @@ export const getFilteredTasksForTaskListMock = (
     result: {
       data,
     },
+  };
+};
+
+export const getTasksForTaskListLoadingMock = (
+  accountListId: string,
+): MockedResponse => {
+  return {
+    ...getTasksForTaskListMock(accountListId),
+    delay: 100931731455,
+  };
+};
+
+export const getTasksForTaskListErrorMock = (
+  accountListId: string,
+): MockedResponse => {
+  return {
+    request: {
+      query: GetTasksForTaskListDocument,
+      variables: {
+        accountListId,
+        first: 100,
+        after: null,
+        before: null,
+        userIds: [],
+        tags: [],
+        contactIds: [],
+        activityType: [],
+        completed: null,
+        startAt: null,
+      },
+    },
+    error: { name: 'error', message: 'Error loading data.  Try again.' },
   };
 };

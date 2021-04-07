@@ -21,6 +21,7 @@ import reduce from 'lodash/fp/reduce';
 import debounce from 'lodash/fp/debounce';
 import { Skeleton } from '@material-ui/lab';
 import { DatePicker } from '@material-ui/pickers';
+import { useSnackbar } from 'notistack';
 import { useApp } from '../../App';
 import { dateFormat, dayMonthFormat } from '../../../lib/intlFormat/intlFormat';
 import TaskStatus from '../Status';
@@ -81,6 +82,7 @@ const TaskList = ({ initialFilter }: Props): ReactElement => {
   const { t } = useTranslation();
   const [rowsPerPage, setRowsPerPage] = useState(100);
   const [currentPage, setCurrentPage] = useState(0);
+  const { enqueueSnackbar } = useSnackbar();
 
   const {
     state: { accountListId },
@@ -91,11 +93,14 @@ const TaskList = ({ initialFilter }: Props): ReactElement => {
     variables: { accountListId },
   });
 
-  const { loading, data } = useGetTasksForTaskListQuery({
+  const { data, loading } = useGetTasksForTaskListQuery({
     variables: {
       accountListId,
       first: rowsPerPage,
       ...filter,
+    },
+    onError: (error) => {
+      enqueueSnackbar(error.message, { variant: 'error' });
     },
   });
 
@@ -123,7 +128,7 @@ const TaskList = ({ initialFilter }: Props): ReactElement => {
         customHeadLabelRender: (): string => '',
         customBodyRender: (completedAt, { rowIndex }): ReactElement => {
           if (!loading) {
-            const { id, startAt } = data.tasks.nodes[rowIndex];
+            const { id, startAt } = data?.tasks?.nodes[rowIndex];
             return (
               <TaskStatus
                 taskId={id}
@@ -422,12 +427,12 @@ const TaskList = ({ initialFilter }: Props): ReactElement => {
         setFilter({
           ...filter,
           before: null,
-          after: data.tasks.pageInfo.endCursor,
+          after: data?.tasks.pageInfo.endCursor,
         });
       } else {
         setFilter({
           ...filter,
-          before: data.tasks.pageInfo.startCursor,
+          before: data?.tasks.pageInfo.startCursor,
           after: null,
         });
       }
@@ -435,7 +440,7 @@ const TaskList = ({ initialFilter }: Props): ReactElement => {
     },
     onRowClick: (_rowData, rowMeta) => {
       openTaskDrawer({
-        taskId: data.tasks.nodes[rowMeta.dataIndex].id,
+        taskId: data?.tasks?.nodes[rowMeta.dataIndex].id,
         filter,
         rowsPerPage,
       });
@@ -518,7 +523,7 @@ const TaskList = ({ initialFilter }: Props): ReactElement => {
   return (
     <MUIDataTable
       title={loading && <CircularProgress size={24} />}
-      data={loading ? [['', <Skeleton key={1} />]] : data.tasks.nodes}
+      data={loading ? [['', <Skeleton key={1} />]] : data?.tasks?.nodes}
       columns={columns}
       options={options}
     />

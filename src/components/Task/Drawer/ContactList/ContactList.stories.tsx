@@ -2,9 +2,14 @@ import React, { ReactElement } from 'react';
 import { MockedProvider } from '@apollo/client/testing';
 import {
   getContactsForTaskDrawerContactListEmptyMock,
+  getContactsForTaskDrawerContactListErrorMock,
+  getContactsForTaskDrawerContactListLoadingMock,
   getContactsForTaskDrawerContactListMock,
 } from './ContactList.mock';
 import TaskDrawerContactList from '.';
+
+const accountListId = 'abc';
+const contactIds = ['contact-1', 'contact-2'];
 
 export default {
   title: 'Task/Drawer/ContactList',
@@ -13,12 +18,14 @@ export default {
 export const Default = (): ReactElement => {
   return (
     <MockedProvider
-      mocks={[getContactsForTaskDrawerContactListMock()]}
+      mocks={[
+        getContactsForTaskDrawerContactListMock(accountListId, contactIds),
+      ]}
       addTypename={false}
     >
       <TaskDrawerContactList
-        accountListId="abc"
-        contactIds={['contact-1', 'contact-2']}
+        accountListId={accountListId}
+        contactIds={contactIds}
       />
     </MockedProvider>
   );
@@ -26,10 +33,18 @@ export const Default = (): ReactElement => {
 
 export const Loading = (): ReactElement => {
   return (
-    <MockedProvider mocks={[]} addTypename={false}>
+    <MockedProvider
+      mocks={[
+        getContactsForTaskDrawerContactListLoadingMock(
+          accountListId,
+          contactIds,
+        ),
+      ]}
+      addTypename={false}
+    >
       <TaskDrawerContactList
-        accountListId="abc"
-        contactIds={['contact-1', 'contact-2']}
+        accountListId={accountListId}
+        contactIds={contactIds}
       />
     </MockedProvider>
   );
@@ -38,12 +53,30 @@ export const Loading = (): ReactElement => {
 export const Empty = (): ReactElement => {
   return (
     <MockedProvider
-      mocks={[getContactsForTaskDrawerContactListEmptyMock()]}
+      mocks={[
+        getContactsForTaskDrawerContactListEmptyMock(accountListId, contactIds),
+      ]}
       addTypename={false}
     >
       <TaskDrawerContactList
-        accountListId="abc"
-        contactIds={['contact-1', 'contact-2']}
+        accountListId={accountListId}
+        contactIds={contactIds}
+      />
+    </MockedProvider>
+  );
+};
+
+export const Error = (): ReactElement => {
+  return (
+    <MockedProvider
+      mocks={[
+        getContactsForTaskDrawerContactListErrorMock(accountListId, contactIds),
+      ]}
+      addTypename={false}
+    >
+      <TaskDrawerContactList
+        accountListId={accountListId}
+        contactIds={contactIds}
       />
     </MockedProvider>
   );

@@ -30,9 +30,12 @@ beforeEach(() => {
   });
 });
 
+const accountListId = 'abc';
+const taskId = 'task-1';
+
 describe('TaskDrawerCompleteForm', () => {
   const task = {
-    id: 'task-1',
+    id: taskId,
     activityType: ActivityTypeEnum.NewsletterEmail,
     subject: 'On the Journey with the Johnson Family',
     startAt: DateTime.local(2012, 1, 5, 1, 2).toISO(),
@@ -53,11 +56,14 @@ describe('TaskDrawerCompleteForm', () => {
   it('default', async () => {
     const { getAllByRole } = render(
       <TestWrapper
-        mocks={[getDataForTaskDrawerMock(), completeTaskMutationMock()]}
+        mocks={[
+          getDataForTaskDrawerMock(accountListId),
+          completeTaskMutationMock(accountListId, taskId),
+        ]}
         disableAppProvider
       >
         <TaskDrawerCompleteForm
-          accountListId="abc"
+          accountListId={accountListId}
           onClose={jest.fn()}
           task={task}
         />
@@ -75,11 +81,14 @@ describe('TaskDrawerCompleteForm', () => {
     const onClose = jest.fn();
     const { getByText } = render(
       <TestWrapper
-        mocks={[getDataForTaskDrawerMock(), completeSimpleTaskMutationMock()]}
+        mocks={[
+          getDataForTaskDrawerMock(accountListId),
+          completeSimpleTaskMutationMock(accountListId, taskId),
+        ]}
         disableAppProvider
       >
         <TaskDrawerCompleteForm
-          accountListId="abc"
+          accountListId={accountListId}
           onClose={onClose}
           task={{
             ...task,
@@ -98,11 +107,14 @@ describe('TaskDrawerCompleteForm', () => {
     const onClose = jest.fn();
     const { getByRole, getByText } = render(
       <TestWrapper
-        mocks={[getDataForTaskDrawerMock(), completeTaskMutationMock()]}
+        mocks={[
+          getDataForTaskDrawerMock(accountListId),
+          completeTaskMutationMock(accountListId, taskId),
+        ]}
         disableAppProvider
       >
         <TaskDrawerCompleteForm
-          accountListId="abc"
+          accountListId={accountListId}
           onClose={onClose}
           task={{
             ...task,
@@ -150,9 +162,12 @@ describe('TaskDrawerCompleteForm', () => {
     activityType: ActivityTypeEnum,
   ): { results: ResultEnum[]; nextActions: ActivityTypeEnum[] } => {
     const { getByRole, queryByRole } = render(
-      <TestWrapper mocks={[getDataForTaskDrawerMock()]} disableAppProvider>
+      <TestWrapper
+        mocks={[getDataForTaskDrawerMock(accountListId)]}
+        disableAppProvider
+      >
         <TaskDrawerCompleteForm
-          accountListId="abc"
+          accountListId={accountListId}
           onClose={jest.fn()}
           task={{
             ...task,

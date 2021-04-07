@@ -1,10 +1,15 @@
 import React, { ReactElement } from 'react';
 import { MockedProvider } from '@apollo/client/testing';
 import { AppProvider } from '../../../../App';
-import { getCommentsForTaskDrawerCommentListMock } from '../CommentList.mock';
 import { User } from '../../../../../../graphql/types.generated';
 import { createTaskCommentMutationMock } from './Form.mock';
 import TaskDrawerCommentListForm from '.';
+
+const accountListId = 'abc';
+const taskId = 'task-1';
+const userId = 'user-id';
+const firstName = 'John';
+const lastName = 'Smith';
 
 export default {
   title: 'Task/Drawer/CommentList/Form',
@@ -12,19 +17,16 @@ export default {
 
 export const Default = (): ReactElement => {
   return (
-    <MockedProvider
-      mocks={[
-        createTaskCommentMutationMock(),
-        getCommentsForTaskDrawerCommentListMock(),
-      ]}
-      addTypename={false}
-    >
+    <MockedProvider mocks={[createTaskCommentMutationMock()]}>
       <AppProvider
         initialState={{
-          user: { id: 'user-1', firstName: 'John', lastName: 'Smith' } as User,
+          user: { id: userId, firstName, lastName } as User,
         }}
       >
-        <TaskDrawerCommentListForm accountListId="abc" taskId="task-1" />
+        <TaskDrawerCommentListForm
+          accountListId={accountListId}
+          taskId={taskId}
+        />
       </AppProvider>
     </MockedProvider>
   );
