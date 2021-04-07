@@ -89,7 +89,7 @@ export const ContactDetailsTabMailing: React.FC<MailingProp> = ({ data }) => {
             <ContactDetailsMailingLabel variant="subtitle1">
               {t('Magazine')}
             </ContactDetailsMailingLabel>
-            <Typography variant="subtitle1">Yes</Typography>
+            <Typography variant="subtitle1">Not Implemented</Typography>
           </ContactDetailsMailingLabelTextContainer>
         </ContactDetailsMailingTexContainer>
       </ContactDetailsMailingMainContainer>
