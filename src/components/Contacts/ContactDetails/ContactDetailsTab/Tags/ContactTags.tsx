@@ -45,7 +45,7 @@ export const ContactTags: React.FC<ContactTagsProps> = ({
 
   return (
     <ContactTagsContainer>
-      {contactTags.map((tag, _index) => (
+      {contactTags.map((tag) => (
         <ContactTagChip key={tag} label={tag} onDelete={handleTagDelete} />
       ))}
       <Link color="textSecondary" onClick={handleAddTag}>
