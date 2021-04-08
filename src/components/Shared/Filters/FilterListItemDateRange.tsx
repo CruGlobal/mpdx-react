@@ -1,8 +1,8 @@
 import { ListItem, ListItemText } from '@material-ui/core';
-import { DatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
+import { DatePicker } from '@material-ui/pickers';
 import React from 'react';
-import LuxonUtils from '@date-io/luxon';
 import { DateTime } from 'luxon';
+import { useTranslation } from 'react-i18next';
 import { Filter } from './Filter';
 
 interface Props {
@@ -15,7 +15,9 @@ export const FilterListItemDateRange: React.FC<Props> = ({
   filter,
   value,
   onUpdate,
-}: Props) => {
+}) => {
+  const { t } = useTranslation();
+
   const [startDate, endDate] = ((value: string | null) =>
     value?.split('..', 2)?.map((value) => DateTime.fromISO(value) || null) ?? [
       null,
@@ -25,7 +27,7 @@ export const FilterListItemDateRange: React.FC<Props> = ({
     start.toISODate() + '..' + end.toISODate();
 
   return (
-    <MuiPickersUtilsProvider utils={LuxonUtils}>
+    <>
       <ListItem>
         <ListItemText
           primary={filter.title}
@@ -34,7 +36,8 @@ export const FilterListItemDateRange: React.FC<Props> = ({
       </ListItem>
       <ListItem>
         <DatePicker
-          label="Start Date"
+          placeholder={t('Start Date')}
+          style={{ marginRight: '8px' }}
           clearable
           value={startDate}
           onChange={(date) =>
@@ -46,12 +49,10 @@ export const FilterListItemDateRange: React.FC<Props> = ({
           }
           format="MM/dd/yyyy"
         />
-      </ListItem>
-      <ListItem>
         <DatePicker
-          label="End Date"
+          placeholder={t('End Date')}
+          style={{ marginLeft: '8px' }}
           clearable
-          disablePast={false}
           value={endDate}
           onChange={(date) =>
             onUpdate(
@@ -66,6 +67,6 @@ export const FilterListItemDateRange: React.FC<Props> = ({
           format="MM/dd/yyyy"
         />
       </ListItem>
-    </MuiPickersUtilsProvider>
+    </>
   );
 };
