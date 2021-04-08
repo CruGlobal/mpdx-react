@@ -85,7 +85,7 @@ export const ContactDetailsHeader = ({
         <HeaderBarContactWrap>
           {contact ? (
             <>
-              <PrimaryContactName variant="h5">
+              <PrimaryContactName role="ContactName" variant="h5">
                 {`${contact.primaryPerson?.firstName} ${contact.primaryPerson?.lastName}`}
               </PrimaryContactName>
               <PrimaryText variant="subtitle1">{` - ${t(

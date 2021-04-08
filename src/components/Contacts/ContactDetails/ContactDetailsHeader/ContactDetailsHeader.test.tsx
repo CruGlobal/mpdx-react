@@ -9,7 +9,7 @@ const contactId = 'contact-1';
 
 describe('ContactDetails', () => {
   it('should show loading state', async () => {
-    const { getByText } = render(
+    const { findAllByRole } = render(
       <GqlMockedProvider<GetContactDetailsHeaderQuery>>
         <ContactDetailsHeader
           accountListId={accountListId}
@@ -18,11 +18,11 @@ describe('ContactDetails', () => {
       </GqlMockedProvider>,
     );
 
-    await waitFor(() => expect(getByText('loading')).toBeInTheDocument());
+    expect((await findAllByRole('ContactName'))[0]).toBeInTheDocument();
   });
 
   it('should render with contact details', async () => {
-    const { findAllByRole, queryByText } = render(
+    const { findAllByRole } = render(
       <GqlMockedProvider<GetContactDetailsHeaderQuery>>
         <ContactDetailsHeader
           accountListId={accountListId}
@@ -32,9 +32,7 @@ describe('ContactDetails', () => {
     );
 
     await waitFor(async () =>
-      expect((await findAllByRole('contactName'))[0]).toBeInTheDocument(),
+      expect((await findAllByRole('ContactName'))[0]).toBeInTheDocument(),
     );
-
-    expect(queryByText('loading')).toBeNull();
   });
 });
