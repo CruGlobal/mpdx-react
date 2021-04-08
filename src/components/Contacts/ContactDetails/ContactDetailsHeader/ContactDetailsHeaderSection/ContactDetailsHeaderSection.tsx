@@ -1,4 +1,4 @@
-import { Box } from '@material-ui/core';
+import { Box, styled } from '@material-ui/core';
 
 import React, { ReactElement, ReactNode } from 'react';
 
@@ -7,14 +7,26 @@ interface Props {
   icon?: ReactNode;
 }
 
+const IconWrap = styled(Box)(({}) => ({
+  display: 'flex',
+  width: 64,
+  padding: 0,
+  justifyContent: 'center',
+}));
+const DetailWrap = styled(Box)(({}) => ({
+  display: 'flex',
+  padding: 8,
+  flexDirection: 'column',
+}));
+
 export const ContactDetailsHeaderSection = ({
   icon,
   children,
 }: Props): ReactElement => {
   return (
-    <Box>
-      <Box style={{ display: 'inline-block', width: 60 }}>{icon}</Box>
-      <Box style={{ display: 'inline-block' }}>{children}</Box>
+    <Box display="flex">
+      <IconWrap>{icon}</IconWrap>
+      <DetailWrap>{children}</DetailWrap>
     </Box>
   );
 };

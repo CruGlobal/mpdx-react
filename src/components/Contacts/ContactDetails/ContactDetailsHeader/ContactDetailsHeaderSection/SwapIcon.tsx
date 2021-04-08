@@ -4,11 +4,10 @@ import React, { ReactElement } from 'react';
 import theme from '../../../../../theme';
 
 const SwapIconSvg = styled(SvgIcon)(({}) => ({
-  display: 'inline-block',
-  width: '22px',
-  height: '22px',
+  width: 22,
+  height: 22,
+  margin: 8,
   color: theme.palette.text.secondary,
-  margin: '1px',
 }));
 
 export const SwapIcon = (): ReactElement => (

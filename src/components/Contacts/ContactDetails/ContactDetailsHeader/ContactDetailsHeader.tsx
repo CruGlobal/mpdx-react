@@ -23,7 +23,7 @@ interface Props {
 
 const HeaderBar = styled(Box)(({}) => ({
   display: 'flex',
-  padding: 24,
+  paddingBottom: 24,
 }));
 const HeaderBarContactWrap = styled(Box)(({}) => ({
   flex: 1,
@@ -68,6 +68,27 @@ const CloseButtonIcon = styled(Close)(({}) => ({
   height: 14,
   color: theme.palette.text.primary,
 }));
+const HeaderSectionWrap = styled(Box)(({}) => ({
+  display: 'flex',
+}));
+const LocationIcon = styled(LocationOn)(({}) => ({
+  margin: 8,
+  width: 20,
+  height: 20,
+  color: theme.palette.text.secondary,
+}));
+const PhoneIcon = styled(Phone)(({}) => ({
+  margin: 8,
+  width: 20,
+  height: 20,
+  color: theme.palette.text.secondary,
+}));
+const EmailIcon = styled(Email)(({}) => ({
+  margin: 8,
+  width: 20,
+  height: 20,
+  color: theme.palette.text.secondary,
+}));
 
 export const ContactDetailsHeader = ({
   accountListId,
@@ -93,7 +114,7 @@ export const ContactDetailsHeader = ({
   }
 
   return (
-    <Box>
+    <Box style={{ padding: 24 }}>
       <HeaderBar>
         <ContactAvatar />
         <HeaderBarContactWrap>
@@ -114,34 +135,42 @@ export const ContactDetailsHeader = ({
           </ButtonWrap>
         </HeaderBarButtonsWrap>
       </HeaderBar>
-      <Box display="flex">
+      <HeaderSectionWrap>
         <Box flex={1}>
           {contact.primaryAddress ? (
-            <ContactDetailsHeaderSection icon={<LocationOn />}>
-              <p>{contact.greeting}</p>
-              <p>{contact.primaryAddress.street}</p>
-              <p>{contact.primaryAddress.city}</p>
+            <ContactDetailsHeaderSection icon={<LocationIcon />}>
+              <Typography variant="subtitle1">{contact.greeting}</Typography>
+              <Typography variant="subtitle1">
+                {contact.primaryAddress.street}
+              </Typography>
+              <Typography variant="subtitle1">
+                {contact.primaryAddress.city}
+              </Typography>
             </ContactDetailsHeaderSection>
           ) : null}
           {contact.primaryPerson?.primaryPhoneNumber?.number ? (
-            <ContactDetailsHeaderSection icon={<Phone />}>
-              <p>{contact.primaryPerson.primaryPhoneNumber.number}</p>
+            <ContactDetailsHeaderSection icon={<PhoneIcon />}>
+              <Typography variant="subtitle1">
+                {contact.primaryPerson.primaryPhoneNumber.number}
+              </Typography>
             </ContactDetailsHeaderSection>
           ) : null}
           {contact.primaryPerson?.primaryEmailAddress?.email ? (
-            <ContactDetailsHeaderSection icon={<Email />}>
-              <p>{contact.primaryPerson.primaryEmailAddress.email}</p>
+            <ContactDetailsHeaderSection icon={<EmailIcon />}>
+              <Typography variant="subtitle1">
+                {contact.primaryPerson.primaryEmailAddress.email}
+              </Typography>
             </ContactDetailsHeaderSection>
           ) : null}
         </Box>
         <Box flex={1}>
           {contact.status ? (
             <ContactDetailsHeaderSection icon={<SwapIcon />}>
-              <p>{contact.status}</p>
+              <Typography variant="subtitle1">{contact.status}</Typography>
             </ContactDetailsHeaderSection>
           ) : null}
         </Box>
-      </Box>
+      </HeaderSectionWrap>
     </Box>
   );
 };
