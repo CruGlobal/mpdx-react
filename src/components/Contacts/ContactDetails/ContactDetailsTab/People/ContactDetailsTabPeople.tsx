@@ -121,7 +121,7 @@ export const ContactDetailsTabPeople: React.FC<ContactDetailsPeopleProp> = ({
           {person.anniversaryDay != null ? (
             <ContactPersonRowContainer>
               <ContactPersonIconContainer>
-                <RingIcon />
+                <RingIcon color="disabled" />
               </ContactPersonIconContainer>
               {/* TODO: Change to local format for different countries */}
               <Typography variant="subtitle1">

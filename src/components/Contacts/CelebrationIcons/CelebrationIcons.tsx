@@ -41,7 +41,7 @@ export const CelebrationIcons: React.FC<Props> = ({ contact }) => {
     <>
       {contactHasAnniversary() ? (
         <IconContainer>
-          <RingIcon />
+          <RingIcon color="disabled" />
         </IconContainer>
       ) : null}
       {contactHasBirthday() ? (
