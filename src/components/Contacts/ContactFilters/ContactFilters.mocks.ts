@@ -5,12 +5,18 @@ export const ContactFiltersDefaultMock = {
     {
       title: 'Always Visible',
       alwaysVisible: true,
-      filters: [{ type: 'text' }, { type: 'multiselect' }],
+      filters: [
+        { title: 'Text Field', type: 'text' },
+        { title: 'Date Range', type: 'daterange' },
+        { title: 'Multiselect', type: 'multiselect' },
+        { title: 'Multiselect', type: 'multiselect' },
+        { title: 'Select', type: 'radio' },
+      ],
     },
     {
       title: 'Hidden',
       alwaysVisible: false,
-      filters: [{ type: 'text' }],
+      filters: [{ type: 'text' }, { type: 'single_checkbox' }],
     },
   ],
 };
