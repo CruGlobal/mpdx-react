@@ -1,20 +1,15 @@
 import { Avatar, Box, IconButton, styled, Typography } from '@material-ui/core';
-import {
-  Close,
-  Email,
-  LocationOn,
-  MoreVert,
-  Phone,
-  StarOutline,
-} from '@material-ui/icons';
+import { Close, MoreVert, StarOutline } from '@material-ui/icons';
 import { Skeleton } from '@material-ui/lab';
 import React, { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import theme from '../../../../theme';
 
 import { useGetContactDetailsHeaderQuery } from './ContactDetailsHeader.generated';
-import { ContactDetailsHeaderSection } from './ContactDetailsHeaderSection/ContactDetailsHeaderSection';
-import { SwapIcon } from './ContactDetailsHeaderSection/SwapIcon';
+import { ContactHeaderAddressSection } from './ContactDetailsHeaderSection/ContactHeaderAddressSection';
+import { ContactHeaderPhoneSection } from './ContactDetailsHeaderSection/ContactHeaderPhoneSection';
+import { ContactHeaderEmailSection } from './ContactDetailsHeaderSection/ContactHeaderEmailSection';
+import { ContactHeaderStatusSection } from './ContactDetailsHeaderSection/ContactHeaderStatusSection';
 
 interface Props {
   accountListId: string;
@@ -71,24 +66,6 @@ const CloseButtonIcon = styled(Close)(({}) => ({
 const HeaderSectionWrap = styled(Box)(({}) => ({
   display: 'flex',
 }));
-const LocationIcon = styled(LocationOn)(({}) => ({
-  margin: 8,
-  width: 20,
-  height: 20,
-  color: theme.palette.text.secondary,
-}));
-const PhoneIcon = styled(Phone)(({}) => ({
-  margin: 8,
-  width: 20,
-  height: 20,
-  color: theme.palette.text.secondary,
-}));
-const EmailIcon = styled(Email)(({}) => ({
-  margin: 8,
-  width: 20,
-  height: 20,
-  color: theme.palette.text.secondary,
-}));
 
 export const ContactDetailsHeader = ({
   accountListId,
@@ -99,29 +76,25 @@ export const ContactDetailsHeader = ({
   });
   const { t } = useTranslation();
 
-  if (loading) {
-    return (
-      <Box>
-        <Skeleton></Skeleton>
-      </Box>
-    );
-  }
-
-  const { contact } = data;
-
-  if (!contact) {
-    return null;
-  }
+  const { contact } = data || {};
 
   return (
     <Box style={{ padding: 24 }}>
       <HeaderBar>
         <ContactAvatar />
         <HeaderBarContactWrap>
-          <PrimaryContactName variant="h5">
-            {`${contact.primaryPerson?.firstName} ${contact.primaryPerson?.lastName}`}
-          </PrimaryContactName>
-          <PrimaryText variant="subtitle1">{` - ${t('Primary')}`}</PrimaryText>
+          {contact ? (
+            <>
+              <PrimaryContactName variant="h5">
+                {`${contact.primaryPerson?.firstName} ${contact.primaryPerson?.lastName}`}
+              </PrimaryContactName>
+              <PrimaryText variant="subtitle1">{` - ${t(
+                'Primary',
+              )}`}</PrimaryText>
+            </>
+          ) : (
+            <Skeleton />
+          )}
         </HeaderBarContactWrap>
         <HeaderBarButtonsWrap>
           <ButtonWrap>
@@ -137,38 +110,12 @@ export const ContactDetailsHeader = ({
       </HeaderBar>
       <HeaderSectionWrap>
         <Box flex={1}>
-          {contact.primaryAddress ? (
-            <ContactDetailsHeaderSection icon={<LocationIcon />}>
-              <Typography variant="subtitle1">{contact.greeting}</Typography>
-              <Typography variant="subtitle1">
-                {contact.primaryAddress.street}
-              </Typography>
-              <Typography variant="subtitle1">
-                {contact.primaryAddress.city}
-              </Typography>
-            </ContactDetailsHeaderSection>
-          ) : null}
-          {contact.primaryPerson?.primaryPhoneNumber?.number ? (
-            <ContactDetailsHeaderSection icon={<PhoneIcon />}>
-              <Typography variant="subtitle1">
-                {contact.primaryPerson.primaryPhoneNumber.number}
-              </Typography>
-            </ContactDetailsHeaderSection>
-          ) : null}
-          {contact.primaryPerson?.primaryEmailAddress?.email ? (
-            <ContactDetailsHeaderSection icon={<EmailIcon />}>
-              <Typography variant="subtitle1">
-                {contact.primaryPerson.primaryEmailAddress.email}
-              </Typography>
-            </ContactDetailsHeaderSection>
-          ) : null}
+          <ContactHeaderAddressSection loading={loading} contact={contact} />
+          <ContactHeaderPhoneSection loading={loading} contact={contact} />
+          <ContactHeaderEmailSection loading={loading} contact={contact} />
         </Box>
         <Box flex={1}>
-          {contact.status ? (
-            <ContactDetailsHeaderSection icon={<SwapIcon />}>
-              <Typography variant="subtitle1">{contact.status}</Typography>
-            </ContactDetailsHeaderSection>
-          ) : null}
+          <ContactHeaderStatusSection loading={loading} contact={contact} />
         </Box>
       </HeaderSectionWrap>
     </Box>
