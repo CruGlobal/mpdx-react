@@ -1,5 +1,6 @@
 import {
   Box,
+  BoxProps,
   CircularProgress,
   Collapse,
   IconButton,
@@ -37,10 +38,12 @@ const FilterList = styled(List)(() => ({
 
 interface Props {
   accountListId: string;
-  width?;
 }
 
-export const ContactFilters: React.FC<Props> = ({ accountListId, width }) => {
+export const ContactFilters: React.FC<Props & BoxProps> = ({
+  accountListId,
+  ...boxProps
+}) => {
   const { data, loading, error } = useContactFiltersQuery({
     variables: { accountListId },
   });
@@ -69,7 +72,7 @@ export const ContactFilters: React.FC<Props> = ({ accountListId, width }) => {
     group.alwaysVisible || getSelectedFilters(group).length > 0;
 
   return (
-    <Box width={width}>
+    <Box {...boxProps}>
       <div style={{ overflow: 'hidden' }}>
         <Slide
           in={selectedGroup == null}
