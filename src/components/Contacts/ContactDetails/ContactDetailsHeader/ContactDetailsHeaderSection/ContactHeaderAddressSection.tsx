@@ -6,7 +6,7 @@ import React, { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import theme from '../../../../../theme';
 import { ContactDetailsHeaderFragment } from '../ContactDetailsHeader.generated';
-import { ContactDetailsHeaderSection } from './ContactDetailsHeaderSection';
+import { ContactHeaderSection } from './ContactHeaderSection';
 
 interface Props {
   loading: boolean;
@@ -62,8 +62,8 @@ export const ContactHeaderAddressSection = ({
   }
 
   return (
-    <ContactDetailsHeaderSection icon={<LocationIcon />}>
+    <ContactHeaderSection icon={<LocationIcon />}>
       {content}
-    </ContactDetailsHeaderSection>
+    </ContactHeaderSection>
   );
 };

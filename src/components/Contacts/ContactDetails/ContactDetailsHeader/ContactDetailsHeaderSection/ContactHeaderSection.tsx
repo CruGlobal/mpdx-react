@@ -19,7 +19,7 @@ const DetailWrap = styled(Box)(({}) => ({
   flexDirection: 'column',
 }));
 
-export const ContactDetailsHeaderSection = ({
+export const ContactHeaderSection = ({
   icon,
   children,
 }: Props): ReactElement => {

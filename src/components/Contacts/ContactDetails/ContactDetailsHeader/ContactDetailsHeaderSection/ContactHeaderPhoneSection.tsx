@@ -5,7 +5,7 @@ import { Skeleton } from '@material-ui/lab';
 import React, { ReactElement } from 'react';
 import theme from '../../../../../theme';
 import { ContactDetailsHeaderFragment } from '../ContactDetailsHeader.generated';
-import { ContactDetailsHeaderSection } from './ContactDetailsHeaderSection';
+import { ContactHeaderSection } from './ContactHeaderSection';
 
 interface Props {
   loading: boolean;
@@ -38,8 +38,6 @@ export const ContactHeaderPhoneSection = ({
   }
 
   return (
-    <ContactDetailsHeaderSection icon={<PhoneIcon />}>
-      {content}
-    </ContactDetailsHeaderSection>
+    <ContactHeaderSection icon={<PhoneIcon />}>{content}</ContactHeaderSection>
   );
 };

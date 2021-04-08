@@ -4,7 +4,7 @@ import { Skeleton } from '@material-ui/lab';
 import React, { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ContactDetailsHeaderFragment } from '../ContactDetailsHeader.generated';
-import { ContactDetailsHeaderSection } from './ContactDetailsHeaderSection';
+import { ContactHeaderSection } from './ContactHeaderSection';
 import { HandshakeIcon } from './HandshakeIcon';
 
 interface Props {
@@ -91,8 +91,8 @@ export const ContactHeaderStatusSection = ({
   }
 
   return (
-    <ContactDetailsHeaderSection icon={<HandshakeIcon />}>
+    <ContactHeaderSection icon={<HandshakeIcon />}>
       {content}
-    </ContactDetailsHeaderSection>
+    </ContactHeaderSection>
   );
 };
