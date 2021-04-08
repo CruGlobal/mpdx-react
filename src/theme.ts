@@ -42,7 +42,9 @@ const theme = createMuiTheme({
     },
     MuiChip: {
       root: {
-        borderRadius: '5px',
+        borderRadius: '16px',
+        boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.25)',
+        backgroundColor: '#fff',
       },
     },
     MuiCardHeader: {
