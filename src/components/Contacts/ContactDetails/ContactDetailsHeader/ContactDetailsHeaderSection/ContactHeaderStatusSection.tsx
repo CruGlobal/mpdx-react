@@ -1,4 +1,4 @@
-import { Typography } from '@material-ui/core';
+import { styled, Typography } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
 
 import React, { ReactElement } from 'react';
@@ -12,6 +12,13 @@ interface Props {
   contact?: ContactDetailsHeaderFragment;
 }
 
+const TextSkeleton = styled(Skeleton)(({}) => ({
+  display: 'inline',
+  marginLeft: 18,
+  width: 200,
+  fontSize: 16,
+}));
+
 export const ContactHeaderStatusSection = ({
   loading,
   contact,
@@ -21,7 +28,7 @@ export const ContactHeaderStatusSection = ({
   let content: ReactElement = null;
 
   if (loading) {
-    content = <Skeleton />;
+    content = <TextSkeleton variant="text" />;
   } else if (contact) {
     const { status } = contact;
 

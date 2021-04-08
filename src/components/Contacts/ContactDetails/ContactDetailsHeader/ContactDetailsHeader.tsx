@@ -93,7 +93,15 @@ export const ContactDetailsHeader = ({
               )}`}</PrimaryText>
             </>
           ) : (
-            <Skeleton />
+            <Skeleton
+              variant="text"
+              style={{
+                display: 'inline',
+                marginLeft: 18,
+                width: 240,
+                fontSize: 24,
+              }}
+            />
           )}
         </HeaderBarContactWrap>
         <HeaderBarButtonsWrap>

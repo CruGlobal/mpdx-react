@@ -18,6 +18,12 @@ const PhoneIcon = styled(Phone)(({}) => ({
   height: 20,
   color: theme.palette.text.secondary,
 }));
+const TextSkeleton = styled(Skeleton)(({}) => ({
+  display: 'inline',
+  marginLeft: 18,
+  width: 200,
+  fontSize: 16,
+}));
 
 export const ContactHeaderPhoneSection = ({
   loading,
@@ -26,7 +32,7 @@ export const ContactHeaderPhoneSection = ({
   let content: ReactElement = null;
 
   if (loading) {
-    content = <Skeleton />;
+    content = <TextSkeleton variant="text" />;
   } else if (contact) {
     const {
       primaryPerson: { primaryPhoneNumber: { number } = {} } = {},

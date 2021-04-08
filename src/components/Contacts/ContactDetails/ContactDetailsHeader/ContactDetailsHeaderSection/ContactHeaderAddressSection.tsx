@@ -19,6 +19,12 @@ const LocationIcon = styled(LocationOn)(({}) => ({
   height: 20,
   color: theme.palette.text.secondary,
 }));
+const TextSkeleton = styled(Skeleton)(({}) => ({
+  display: 'inline',
+  marginLeft: 18,
+  width: 200,
+  fontSize: 16,
+}));
 
 export const ContactHeaderAddressSection = ({
   loading,
@@ -31,9 +37,9 @@ export const ContactHeaderAddressSection = ({
   if (loading) {
     content = (
       <>
-        <Skeleton />
-        <Skeleton />
-        <Skeleton />
+        <TextSkeleton variant="text" />
+        <TextSkeleton variant="text" />
+        <TextSkeleton variant="text" />
       </>
     );
   } else if (contact) {
