@@ -1,6 +1,7 @@
 import {
   Box,
   BoxProps,
+  Button,
   CircularProgress,
   Collapse,
   IconButton,
@@ -10,6 +11,7 @@ import {
   Slide,
   styled,
   Typography,
+  useTheme,
 } from '@material-ui/core';
 import { ArrowBackIos, ArrowForwardIos } from '@material-ui/icons';
 import { isArray } from 'lodash';
@@ -27,13 +29,18 @@ const FilterHeader = styled(Box)(({ theme }) => ({
   borderBottomColor: theme.palette.grey[200],
 }));
 
-const FilterList = styled(List)(() => ({
+const FilterList = styled(List)(({ theme }) => ({
   '& .MuiListItemIcon-root': {
     minWidth: '37px',
   },
   '& .FilterListItemMultiselect-root': {
-    marginBottom: '32px',
+    marginBottom: theme.spacing(4),
   },
+}));
+
+const LinkButton = styled(Button)(() => ({
+  minWidth: 0,
+  textTransform: 'none',
 }));
 
 interface Props {
@@ -44,10 +51,12 @@ export const ContactFilters: React.FC<Props & BoxProps> = ({
   accountListId,
   ...boxProps
 }) => {
+  const theme = useTheme();
+  const { t } = useTranslation();
+
   const { data, loading, error } = useContactFiltersQuery({
     variables: { accountListId },
   });
-  const { t } = useTranslation();
 
   const [selectedGroup, showGroup] = useState<null | ContactFilterGroup>(null);
   const [selectedFilters, setSelectedFilters] = useState({});
@@ -90,6 +99,22 @@ export const ContactFilters: React.FC<Props & BoxProps> = ({
                     })
                   : t('Filter')}
               </Typography>
+              <LinkButton
+                color="primary"
+                style={{ marginInlineStart: theme.spacing(-1) }}
+                disabled={Object.keys(selectedFilters).length == 0}
+                onClick={() => alert('TODO')}
+              >
+                {t('Save')}
+              </LinkButton>
+              <LinkButton
+                color="primary"
+                style={{ marginInlineStart: theme.spacing(2) }}
+                disabled={Object.keys(selectedFilters).length == 0}
+                onClick={() => setSelectedFilters({})}
+              >
+                {t('Clear All')}
+              </LinkButton>
             </FilterHeader>
             <FilterList dense>
               {error && (
