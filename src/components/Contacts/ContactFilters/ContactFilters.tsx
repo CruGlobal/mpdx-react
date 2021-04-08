@@ -2,9 +2,9 @@ import {
   Box,
   CircularProgress,
   Collapse,
+  IconButton,
   List,
   ListItem,
-  ListItemIcon,
   ListItemText,
   Slide,
   styled,
@@ -20,6 +20,12 @@ import { FilterListItem } from '../../Shared/Filters/FilterListItem';
 import { FilterListItemShowAll } from '../../Shared/Filters/FilterListItemShowAll';
 import { useContactFiltersQuery } from './ContactFilters.generated';
 
+const FilterHeader = styled(Box)(({ theme }) => ({
+  padding: theme.spacing(2),
+  borderBottom: '1px solid',
+  borderBottomColor: theme.palette.grey[200],
+}));
+
 const FilterList = styled(List)(() => ({
   '& .MuiListItemIcon-root': {
     minWidth: '37px',
@@ -31,13 +37,10 @@ const FilterList = styled(List)(() => ({
 
 interface Props {
   accountListId: string;
-  width?: any;
+  width?;
 }
 
-export const ContactFilters: React.FC<Props> = ({
-  accountListId,
-  width,
-}: Props) => {
+export const ContactFilters: React.FC<Props> = ({ accountListId, width }) => {
   const { data, loading, error } = useContactFiltersQuery({
     variables: { accountListId },
   });
@@ -76,7 +79,7 @@ export const ContactFilters: React.FC<Props> = ({
           unmountOnExit
         >
           <div>
-            <Box px={2} pt={2}>
+            <FilterHeader>
               <Typography variant="h6">
                 {Object.keys(selectedFilters).length > 0
                   ? t('Filter ({{count}})', {
@@ -84,7 +87,7 @@ export const ContactFilters: React.FC<Props> = ({
                     })
                   : t('Filter')}
               </Typography>
-            </Box>
+            </FilterHeader>
             <FilterList dense>
               {error && (
                 <ListItem data-testid="ErrorState">
@@ -144,25 +147,35 @@ export const ContactFilters: React.FC<Props> = ({
           mountOnEnter
           unmountOnExit
         >
-          <FilterList dense>
-            <ListItem button onClick={() => showGroup(null)}>
-              <ListItemIcon>
+          <div>
+            <FilterHeader>
+              <IconButton
+                size="small"
+                edge="start"
+                onClick={() => showGroup(null)}
+                style={{ verticalAlign: 'middle' }}
+              >
                 <ArrowBackIos fontSize="small" />
-              </ListItemIcon>
-              <ListItemText
-                primary={selectedGroup?.title}
-                primaryTypographyProps={{ variant: 'h6' }}
-              />
-            </ListItem>
-            {selectedGroup?.filters?.map((filter) => (
-              <FilterListItem
-                key={filter.id}
-                filter={filter as Filter}
-                value={selectedFilters[filter.name]}
-                onUpdate={(value) => updateSelectedFilter(filter.name, value)}
-              />
-            ))}
-          </FilterList>
+              </IconButton>
+              <Typography
+                variant="h6"
+                component="span"
+                style={{ verticalAlign: 'middle' }}
+              >
+                {selectedGroup?.title}
+              </Typography>
+            </FilterHeader>
+            <FilterList dense>
+              {selectedGroup?.filters?.map((filter) => (
+                <FilterListItem
+                  key={filter.id}
+                  filter={filter as Filter}
+                  value={selectedFilters[filter.name]}
+                  onUpdate={(value) => updateSelectedFilter(filter.name, value)}
+                />
+              ))}
+            </FilterList>
+          </div>
         </Slide>
       </div>
     </Box>
