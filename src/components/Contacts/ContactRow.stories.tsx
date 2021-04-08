@@ -18,7 +18,7 @@ export default {
 export const Default: Story = () => {
   const contact = gqlMock<ContactRowFragment>(ContactRowFragmentDoc);
 
-  return <ContactRow contact={contact} />;
+  return <ContactRow contact={contact} onContactSelected={() => {}} />;
 };
 
 Default.parameters = {
