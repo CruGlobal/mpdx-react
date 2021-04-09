@@ -1,7 +1,6 @@
 import React, { ReactElement } from 'react';
-import { Box, CssBaseline, MuiThemeProvider } from '@material-ui/core';
+import { Box } from '@material-ui/core';
 import { array } from '@storybook/addon-knobs';
-import theme from '../../../../../theme';
 import { ContactTags } from './ContactTags';
 
 export default {
@@ -24,13 +23,11 @@ export const Default = (): ReactElement => {
 export const EmptyTags = (): ReactElement => {
   return (
     <Box m={2}>
-      <MuiThemeProvider theme={theme}>
-        <CssBaseline />
-        <ContactTags
-          contactId="contact_id"
-          contactTags={array('contactTags', [])}
-        />
-      </MuiThemeProvider>
+      <ContactTags
+        accountListId="account_list_id"
+        contactId="contact_id"
+        contactTags={array('contactTags', [])}
+      />
     </Box>
   );
 };
