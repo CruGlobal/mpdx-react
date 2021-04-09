@@ -75,7 +75,6 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
           <ContactTags
             accountListId={accountListId}
             contactId={data.contact.id}
-            contactTags={data.contact.tagList}
           />
         )}
       </ContactDetailHeadingContainer>
