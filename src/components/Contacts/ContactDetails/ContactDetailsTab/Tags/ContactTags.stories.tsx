@@ -12,14 +12,11 @@ export default {
 export const Default = (): ReactElement => {
   return (
     <Box m={2}>
-      <MuiThemeProvider theme={theme}>
-        <CssBaseline />
-        <ContactTags
-          accountListId="account_list_id"
-          contactId="contact_id"
-          contactTags={array('contactTags', ['help', 'something'])}
-        />
-      </MuiThemeProvider>
+      <ContactTags
+        accountListId="account_list_id"
+        contactId="contact_id"
+        contactTags={array('contactTags', ['help', 'something'])}
+      />
     </Box>
   );
 };
