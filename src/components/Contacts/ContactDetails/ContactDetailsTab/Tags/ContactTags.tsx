@@ -1,7 +1,10 @@
 import { Box, Chip, Link, styled, Typography } from '@material-ui/core';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { useUpdateContactTagsMutation } from './ContactTags.generated';
+import {
+  useGetContactTagsQuery,
+  useUpdateContactTagsMutation,
+} from './ContactTags.generated';
 
 const ContactTagsContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -24,30 +27,35 @@ const ContactTagAddTagText = styled(Typography)(({ theme }) => ({
 interface ContactTagsProps {
   accountListId: string;
   contactId: string;
-  contactTags: string[];
 }
 
 export const ContactTags: React.FC<ContactTagsProps> = ({
   accountListId,
   contactId,
-  contactTags,
 }) => {
   const { t } = useTranslation();
-  const handleTagDelete = (tag: string) => {
-    const index = contactTags.indexOf(tag);
-    if (index > -1) {
-      const updatedTags = contactTags.splice(index, 1);
+  const { data, loading } = useGetContactTagsQuery({
+    variables: {
+      accountListID: accountListId, // value for 'accountListID'
+      contactId: contactId, // value for 'contactId'
+    },
+  });
 
-      const [, { data }] = useUpdateContactTagsMutation({
-        variables: {
-          accountList: accountListId,
-          contactId: contactId,
-          tagList: updatedTags,
-        },
-      });
-      contactTags = data.updateContact.contact.tagList;
-    }
-    console.info('You clicked the Delete tag for tag' + tag + '' + contactId);
+  const handleTagDelete = (tag: string) => {
+    console.info('You clicked the Delete tag for tag ' + tag + ' ' + contactId);
+    const list = data.contact.tagList;
+    const updatedTags: string[] = [];
+    list.forEach((element) => {
+      element != tag ? updatedTags.push(tag) : null;
+    });
+
+    const [] = useUpdateContactTagsMutation({
+      variables: {
+        accountList: accountListId,
+        contactId: contactId,
+        tagList: updatedTags,
+      },
+    });
   };
   const handleAddTag = () => {
     // TODO: add mutation to update tag for contact
@@ -56,10 +64,20 @@ export const ContactTags: React.FC<ContactTagsProps> = ({
 
   return (
     <ContactTagsContainer>
-      {contactTags.map((tag) => (
-        <ContactTagChip key={tag} label={tag} onDelete={handleTagDelete} />
-      ))}
-      <Link color="textSecondary" onClick={handleAddTag}>
+      {loading ? (
+        <></>
+      ) : (
+        <>
+          {data.contact.tagList.map((tag) => (
+            <ContactTagChip
+              key={tag}
+              label={tag}
+              onDelete={() => handleTagDelete(tag)}
+            />
+          ))}
+        </>
+      )}
+      <Link color="textSecondary" onClick={() => handleAddTag()}>
         <ContactTagAddTagText variant="subtitle1">
           {t('add tag')}
         </ContactTagAddTagText>
