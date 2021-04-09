@@ -64,7 +64,7 @@ export const ContactDetailsTabPeople: React.FC<ContactDetailsPeopleProp> = ({
             </Typography>
             {isPrimary ? (
               <ContactPersonPrimaryText variant="subtitle1">
-                {' - ' + t('Primary')}
+                {`- ${t('Primary')}`}
               </ContactPersonPrimaryText>
             ) : (
               <></>
