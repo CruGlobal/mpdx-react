@@ -10,7 +10,6 @@ const ContactDetailsMailingTitle = styled(Typography)(({ theme }) => ({
 
 const ContactDetailsMailingMainContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
-  flexDirection: 'row',
   marginTop: theme.spacing(2),
 }));
 
@@ -27,7 +26,6 @@ const ContactDetailsMailingTexContainer = styled(Box)(({}) => ({
 
 const ContactDetailsMailingLabelTextContainer = styled(Box)(({}) => ({
   display: 'flex',
-  flexDirection: 'row',
   marginTop: '10px',
 }));
 
@@ -56,11 +54,7 @@ export const ContactDetailsTabMailing: React.FC<MailingProp> = ({ data }) => {
             {data.contact.primaryAddress.street}
           </Typography>
           <Typography variant="subtitle1">
-            {data.contact.primaryAddress.city +
-              ', ' +
-              data.contact.primaryAddress.state +
-              ' ' +
-              data.contact.primaryAddress.postalCode}
+            {`${data.contact.primaryAddress.city}, ${data.contact.primaryAddress.state} ${data.contact.primaryAddress.postalCode}`}
           </Typography>
           {/* Show More Section */}
           <ContactDetailsMailingLabelTextContainer>
