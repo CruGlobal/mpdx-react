@@ -40,6 +40,12 @@ interface MailingProp {
 
 export const ContactDetailsTabMailing: React.FC<MailingProp> = ({ data }) => {
   const { t } = useTranslation();
+  const {
+    name,
+    primaryAddress: { street, city, state, postalCode },
+    greeting,
+    sendNewsletter,
+  } = data.contact;
   return (
     <Box>
       <ContactDetailsMailingTitle variant="h6">
@@ -49,12 +55,10 @@ export const ContactDetailsTabMailing: React.FC<MailingProp> = ({ data }) => {
         <ContactDetailsMailingIcon />
         <ContactDetailsMailingTexContainer>
           {/* Address Section */}
-          <Typography variant="subtitle1">{data.contact.name}</Typography>
+          <Typography variant="subtitle1">{name}</Typography>
+          <Typography variant="subtitle1">{street}</Typography>
           <Typography variant="subtitle1">
-            {data.contact.primaryAddress.street}
-          </Typography>
-          <Typography variant="subtitle1">
-            {`${data.contact.primaryAddress.city}, ${data.contact.primaryAddress.state} ${data.contact.primaryAddress.postalCode}`}
+            {`${city}, ${state} ${postalCode}`}
           </Typography>
           {/* Show More Section */}
           <ContactDetailsMailingLabelTextContainer>
@@ -67,16 +71,14 @@ export const ContactDetailsTabMailing: React.FC<MailingProp> = ({ data }) => {
             <ContactDetailsMailingLabel variant="subtitle1">
               {t('Greeting')}
             </ContactDetailsMailingLabel>
-            <Typography variant="subtitle1">{data.contact.greeting}</Typography>
+            <Typography variant="subtitle1">{greeting}</Typography>
           </ContactDetailsMailingLabelTextContainer>
           {/* Newsletter Section */}
           <ContactDetailsMailingLabelTextContainer>
             <ContactDetailsMailingLabel variant="subtitle1">
               {t('Newsletter')}
             </ContactDetailsMailingLabel>
-            <Typography variant="subtitle1">
-              {data.contact.sendNewsletter}
-            </Typography>
+            <Typography variant="subtitle1">{sendNewsletter}</Typography>
           </ContactDetailsMailingLabelTextContainer>
           {/* Magazine Section */}
           <ContactDetailsMailingLabelTextContainer>
