@@ -1,6 +1,7 @@
 import { Box, Chip, Link, styled, Typography } from '@material-ui/core';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { useUpdateContactTagsMutation } from './ContactTab.generated';
 
 const ContactTagsContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -21,11 +22,13 @@ const ContactTagAddTagText = styled(Typography)(({ theme }) => ({
 }));
 
 interface ContactTagsProps {
+  accountListId: string;
   contactId: string;
   contactTags: string[];
 }
 
 export const ContactTags: React.FC<ContactTagsProps> = ({
+  accountListId,
   contactId,
   contactTags,
 }) => {
@@ -33,8 +36,16 @@ export const ContactTags: React.FC<ContactTagsProps> = ({
   const handleTagDelete = (tag: string) => {
     const index = contactTags.indexOf(tag);
     if (index > -1) {
-      contactTags = contactTags.splice(index, 1);
-      // TODO: add mutation to update tag for contact
+      const updatedTags = contactTags.splice(index, 1);
+
+      const [, { data }] = useUpdateContactTagsMutation({
+        variables: {
+          accountList: accountListId,
+          contactId: contactId,
+          tagList: updatedTags,
+        },
+      });
+      contactTags = data.updateContact.contact.tagList;
     }
     console.info('You clicked the Delete tag for tag' + tag + '' + contactId);
   };

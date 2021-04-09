@@ -15,6 +15,7 @@ export const Default = (): ReactElement => {
       <MuiThemeProvider theme={theme}>
         <CssBaseline />
         <ContactTags
+          accountListId="account_list_id"
           contactId="contact_id"
           contactTags={array('contactTags', ['help', 'something'])}
         />
