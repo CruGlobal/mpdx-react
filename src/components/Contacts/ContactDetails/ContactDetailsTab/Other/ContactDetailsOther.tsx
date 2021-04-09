@@ -4,8 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { ContactDetailsTabQuery } from '../ContactDetailsTab.generated';
 
 const ContactOtherContainer = styled(Box)(({ theme }) => ({
-  marginLeft: theme.spacing(5),
-  margin: theme.spacing(1),
+  margin: theme.spacing(1, 1, 1, 5)
 }));
 
 const ContactOtherTextContainer = styled(Box)(({ theme }) => ({
