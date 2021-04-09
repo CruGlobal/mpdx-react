@@ -13,9 +13,13 @@ import { useContactsQuery } from '../../../../pages/accountLists/[accountListId]
 
 interface Props {
   accountListId: string;
+  onContactSelected: (contactId: string) => void;
 }
 
-export const ContactsTable: React.FC<Props> = ({ accountListId }: Props) => {
+export const ContactsTable: React.FC<Props> = ({
+  accountListId,
+  onContactSelected,
+}: Props) => {
   const { data, loading, error } = useContactsQuery({
     variables: { accountListId },
   });
@@ -56,7 +60,11 @@ export const ContactsTable: React.FC<Props> = ({ accountListId }: Props) => {
           ) : (
             <div data-testID="ContactRows">
               {data.contacts.nodes?.map((contact) => (
-                <ContactRow key={contact.id} contact={contact} />
+                <ContactRow
+                  key={contact.id}
+                  contact={contact}
+                  onContactSelected={onContactSelected}
+                />
               ))}
             </div>
           )}
