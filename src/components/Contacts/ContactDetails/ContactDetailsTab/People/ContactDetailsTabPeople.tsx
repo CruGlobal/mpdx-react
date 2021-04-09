@@ -107,11 +107,7 @@ export const ContactDetailsTabPeople: React.FC<ContactDetailsPeopleProp> = ({
               </ContactPersonIconContainer>
               {/* TODO: Change to local format for different countries */}
               <Typography variant="subtitle1">
-                {person.birthdayMonth +
-                  '/' +
-                  person.birthdayDay +
-                  '/' +
-                  person.birthdayYear}
+{`${person.birthdayMonth}/${person.birthdayDay}/${person.birthdayYear}`}
               </Typography>
             </ContactPersonRowContainer>
           ) : (
