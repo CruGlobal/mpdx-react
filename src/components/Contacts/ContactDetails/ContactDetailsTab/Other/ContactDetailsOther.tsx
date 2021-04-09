@@ -66,7 +66,7 @@ export const ContactDetailsOther: React.FC<ContactDetailsOtherProp> = ({
         </ContactOtherTextContainer>
         <ContactOtherTextContainer>
           <Link
-            href={website.startsWith('http') ? website : 'http://' + website}
+            href={website.startsWith('http') ? website : `http://${website}`}
             target="_blank"
             rel="noopener"
           >
