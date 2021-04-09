@@ -1,7 +1,6 @@
 import { renderHook } from '@testing-library/react-hooks';
 import { GqlMockedProvider } from '../../../../../../__tests__/util/graphqlMocking';
 import {
-  UpdateContactTagsMutation,
   useGetContactTagsQuery,
   useUpdateContactTagsMutation,
 } from './ContactTags.generated';
