@@ -16,177 +16,160 @@ describe('LoadConstants', () => {
         "activities": Array [
           Object {
             "__typename": "IdValue",
-            "id": "Sphere Box",
-            "value": "Bridge",
-          },
-          Object {
-            "__typename": "IdValue",
-            "id": "Chisel",
-            "value": "Shoes",
-          },
-          Object {
-            "__typename": "IdValue",
-            "id": "Man Spice Vulture",
-            "value": "Roof Car-race Freeway",
+            "id": "Signature Pepper Pants",
+            "value": "Maze Box",
           },
         ],
         "likelyToGiveOptions": Array [
           Object {
             "__typename": "IdValue",
-            "id": "Rifle",
-            "value": "Spice Apple",
+            "id": "Cave Vacuum",
+            "value": "Film",
           },
         ],
         "locations": Array [
           Object {
             "__typename": "IdValue",
-            "id": "Hammer",
-            "value": "Swimming Pool",
+            "id": "Computer Swimming Pool Chess Board",
           },
           Object {
             "__typename": "IdValue",
-            "id": "Highway Onion",
-            "value": "Boy Adult",
+            "id": "Alphabet",
           },
           Object {
             "__typename": "IdValue",
-            "id": "Needle Saddle",
-            "value": "Jet fighter Cycle Pebble",
-          },
-        ],
-        "notifications": Array [
-          Object {
-            "__typename": "IdKeyValue",
-            "id": "Eyes",
-            "value": "Dung Shop",
+            "id": "Aircraft Carrier",
           },
         ],
         "pledgeCurrencies": Array [
           Object {
             "__typename": "IdKeyValue",
-            "id": "Pocket Balloon",
-            "value": "Family",
-          },
-          Object {
-            "__typename": "IdKeyValue",
-            "id": "Bank",
-            "value": "Aircraft Carrier Onion Crystal",
-          },
-          Object {
-            "__typename": "IdKeyValue",
-            "id": "Family",
-            "value": "Salt",
-          },
-          Object {
-            "__typename": "IdKeyValue",
-            "id": "Flower Bathtub Mist",
-            "value": "Compass",
+            "id": "Microscope Chocolates Snail",
+            "value": "Film Vampire",
           },
         ],
         "pledgeFrequencies": Array [
           Object {
             "__typename": "IdKeyValue",
-            "id": "Saddle Hat Prison",
-            "value": "Game Hose Rope",
+            "id": "Pyramid",
+            "value": "Sun Kaleidoscope Ears",
           },
         ],
         "pledgesReceived": Array [
           Object {
             "__typename": "IdValue",
-            "id": "Fungus Foot Chief",
-            "value": "Drum Gloves",
+            "id": "Sphere Umbrella",
+            "value": "Vacuum Pebble Spice",
+          },
+          Object {
+            "__typename": "IdValue",
+            "id": "Swimming Pool Ice",
+            "value": "Festival Rocket",
+          },
+          Object {
+            "__typename": "IdValue",
+            "id": "Plane Box Chief",
+            "value": "Navy",
+          },
+          Object {
+            "__typename": "IdValue",
+            "id": "Festival Bathtub",
+            "value": "Triangle",
           },
         ],
         "preferredContactMethods": Array [
           Object {
             "__typename": "IdKeyValue",
-            "id": "Bank Plane",
-            "value": "Chisel Fan Meteor",
+            "id": "Compass Carpet Explosive",
+            "value": "Army Train PaintBrush",
           },
           Object {
             "__typename": "IdKeyValue",
-            "id": "Horoscope",
-            "value": "Vulture Jet fighter",
+            "id": "Sports-car",
+            "value": "Clown Game",
+          },
+          Object {
+            "__typename": "IdKeyValue",
+            "id": "Airforce",
+            "value": "Potato Foot",
           },
         ],
         "sendAppeals": Array [
           Object {
             "__typename": "IdValue",
-            "id": "Swimming Pool",
-            "value": "Army Carrot",
+            "id": "Pillow",
+            "value": "Arm",
           },
           Object {
             "__typename": "IdValue",
-            "id": "Rocket Computer Boy",
-            "value": "Fire Typewriter Apple",
+            "id": "Snail",
+            "value": "Airport",
           },
           Object {
             "__typename": "IdValue",
-            "id": "Hammer",
-            "value": "Swimming Pool",
+            "id": "Rock",
+            "value": "Tapestry",
+          },
+          Object {
+            "__typename": "IdValue",
+            "id": "Pepper Apple",
+            "value": "Magnet Apple",
           },
         ],
         "sendNewsletterOptions": Array [
           Object {
             "__typename": "IdValue",
             "id": "Mist",
-            "value": "Dress Square",
+            "value": "Comet Post-office Garden",
           },
           Object {
             "__typename": "IdValue",
-            "id": "Mosquito Fan",
-            "value": "Rifle Cappuccino Computer",
+            "id": "Hose Fruit Highway",
+            "value": "Money $$$$",
+          },
+          Object {
+            "__typename": "IdValue",
+            "id": "Child",
+            "value": "Printer Magnet Dung",
+          },
+          Object {
+            "__typename": "IdValue",
+            "id": "Sword",
+            "value": "Staircase Pillow",
           },
         ],
         "statuses": Array [
           Object {
             "__typename": "IdValue",
-            "id": "Bottle Brain Sandpaper",
-            "value": "Fan Girl",
+            "id": "Mouth Feather",
+            "value": "Leather jacket Window",
           },
           Object {
             "__typename": "IdValue",
-            "id": "Drum Slave",
-            "value": "Knife",
+            "id": "Shop Square",
+            "value": "Album Bed",
           },
           Object {
             "__typename": "IdValue",
-            "id": "Money $$$$ Liquid",
-            "value": "Sun",
-          },
-          Object {
-            "__typename": "IdValue",
-            "id": "Bridge Insect Woman",
-            "value": "Horoscope Fruit",
+            "id": "Pendulum Butterfly",
+            "value": "Finger Rock Garden",
           },
         ],
         "times": Array [
           Object {
             "__typename": "Time",
-            "key": 66,
-            "value": "Surveyor Prison",
-          },
-        ],
-        "userNotificationTitles": Array [
-          Object {
-            "__typename": "IdKeyValue",
-            "id": "Air Typewriter",
-            "value": "Girl Toilet Circle",
+            "key": 32,
+            "value": "Snail Hose",
           },
           Object {
-            "__typename": "IdKeyValue",
-            "id": "Meat Brain",
-            "value": "Drill Baby Drill",
+            "__typename": "Time",
+            "key": 53,
+            "value": "Weapon",
           },
           Object {
-            "__typename": "IdKeyValue",
-            "id": "Gas Spoon Bed",
-            "value": "Feather Aircraft Carrier Bed",
-          },
-          Object {
-            "__typename": "IdKeyValue",
-            "id": "Sex Sunglasses Maze",
-            "value": "Teeth",
+            "__typename": "Time",
+            "key": 15,
+            "value": "Spice",
           },
         ],
       }
