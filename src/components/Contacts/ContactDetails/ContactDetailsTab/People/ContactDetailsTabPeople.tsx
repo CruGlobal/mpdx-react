@@ -60,7 +60,7 @@ export const ContactDetailsTabPeople: React.FC<ContactDetailsPeopleProp> = ({
           {/* Heading Section */}
           <ContactPersonRowContainer>
             <Typography variant="h6">
-              {person.firstName + ' ' + person.lastName}
+              {`${person.firstName} ${person.lastName}`}
             </Typography>
             {isPrimary ? (
               <ContactPersonPrimaryText variant="subtitle1">
