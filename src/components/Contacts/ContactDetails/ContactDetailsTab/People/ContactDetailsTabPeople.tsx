@@ -71,7 +71,7 @@ export const ContactDetailsTabPeople: React.FC<ContactDetailsPeopleProp> = ({
             )}
           </ContactPersonRowContainer>
           {/* Phone Number */}
-          {person.primaryPhoneNumber != null ? (
+          {person.primaryPhoneNumber !== null ? (
             <ContactPersonRowContainer>
               <ContactPersonIconContainer>
                 <Phone color="disabled" />
