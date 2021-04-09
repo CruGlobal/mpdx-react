@@ -15,14 +15,7 @@ describe('ContactDetailTab', () => {
       { wrapper: GqlMockedProvider },
     );
     await waitForNextUpdate();
-    expect(result.current.variables).toMatchInlineSnapshot(`
-      Object {
-        "accountListId": "accountList-id",
-        "contactId": "contact-id",
-      }
-    `);
-    expect(result.current.data.contact.name).toMatchInlineSnapshot(
-      `"Elephant Film Stomach"`,
-    );
+    expect(result.current.variables).toMatchSnapshot();
+    expect(result.current.data.contact.name).toMatchSnapshot();
   });
 });

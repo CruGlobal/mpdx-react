@@ -1,0 +1,10 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ContactDetailTab test query 1`] = `
+Object {
+  "accountListId": "accountList-id",
+  "contactId": "contact-id",
+}
+`;
+
+exports[`ContactDetailTab test query 2`] = `"Elephant Film Stomach"`;
