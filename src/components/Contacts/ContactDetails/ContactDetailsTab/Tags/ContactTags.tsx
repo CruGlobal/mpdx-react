@@ -1,7 +1,7 @@
 import { Box, Chip, Link, styled, Typography } from '@material-ui/core';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { useUpdateContactTagsMutation } from './ContactTab.generated';
+import { useUpdateContactTagsMutation } from './ContactTags.generated';
 
 const ContactTagsContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
