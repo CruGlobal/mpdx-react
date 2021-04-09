@@ -29,10 +29,7 @@ export const Default = (): ReactElement => {
   );
   return (
     <Box m={2}>
-      <MuiThemeProvider theme={theme}>
-        <CssBaseline />
-        <ContactDetailsOther contact={mock} />
-      </MuiThemeProvider>
+      <ContactDetailsOther contact={mock} />
     </Box>
   );
 };

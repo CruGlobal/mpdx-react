@@ -4,12 +4,11 @@ import { useTranslation } from 'react-i18next';
 import { ContactDetailsTabQuery } from '../ContactDetailsTab.generated';
 
 const ContactOtherContainer = styled(Box)(({ theme }) => ({
-  margin: theme.spacing(1, 1, 1, 5)
+  margin: theme.spacing(1, 1, 1, 5),
 }));
 
 const ContactOtherTextContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
-  flexDirection: 'row',
   marginLeft: theme.spacing(2),
 }));
 
@@ -19,7 +18,6 @@ const ContactOtherTextLabel = styled(Typography)(({ theme }) => ({
 }));
 
 interface ContactDetailsOtherProp {
-  //TODO: convert to ContactDetailTabQuery
   contact: ContactDetailsTabQuery;
 }
 
@@ -27,6 +25,14 @@ export const ContactDetailsOther: React.FC<ContactDetailsOtherProp> = ({
   contact,
 }) => {
   const { t } = useTranslation();
+  const {
+    name,
+    preferredContactMethod,
+    locale,
+    timezone,
+    churchName,
+    website,
+  } = contact.contact;
   return (
     <Box>
       <Typography variant="h6">{t('Other')}</Typography>
@@ -35,48 +41,36 @@ export const ContactDetailsOther: React.FC<ContactDetailsOtherProp> = ({
           <ContactOtherTextLabel variant="subtitle1">
             {t('Assignee')}
           </ContactOtherTextLabel>
-          <Typography variant="subtitle1">{contact.contact.name}</Typography>
+          <Typography variant="subtitle1">{name}</Typography>
         </ContactOtherTextContainer>
         <ContactOtherTextContainer>
           <ContactOtherTextLabel variant="subtitle1">
             {t('Preferred Contact Method')}
           </ContactOtherTextLabel>
-          <Typography variant="subtitle1">
-            {contact.contact.preferredContactMethod}
-          </Typography>
+          <Typography variant="subtitle1">{preferredContactMethod}</Typography>
         </ContactOtherTextContainer>
         <ContactOtherTextContainer>
           <ContactOtherTextLabel variant="subtitle1">
             {t('Language')}
           </ContactOtherTextLabel>
-          <Typography variant="subtitle1">{contact.contact.locale}</Typography>
+          <Typography variant="subtitle1">{locale}</Typography>
         </ContactOtherTextContainer>
         <ContactOtherTextContainer>
-          <Typography variant="subtitle1">
-            {contact.contact.timezone}
-          </Typography>
+          <Typography variant="subtitle1">{timezone}</Typography>
         </ContactOtherTextContainer>
         <ContactOtherTextContainer>
           <ContactOtherTextLabel variant="subtitle1">
             {t('Church')}
           </ContactOtherTextLabel>
-          <Typography variant="subtitle1">
-            {contact.contact.churchName}
-          </Typography>
+          <Typography variant="subtitle1">{churchName}</Typography>
         </ContactOtherTextContainer>
         <ContactOtherTextContainer>
           <Link
-            href={
-              contact.contact.website.startsWith('http')
-                ? contact.contact.website
-                : 'http://' + contact.contact.website
-            }
+            href={website.startsWith('http') ? website : 'http://' + website}
             target="_blank"
             rel="noopener"
           >
-            <Typography variant="subtitle1">
-              {contact.contact.website}
-            </Typography>
+            <Typography variant="subtitle1">{website}</Typography>
           </Link>
         </ContactOtherTextContainer>
       </ContactOtherContainer>
