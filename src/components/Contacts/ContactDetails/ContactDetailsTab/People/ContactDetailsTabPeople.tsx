@@ -100,7 +100,7 @@ export const ContactDetailsTabPeople: React.FC<ContactDetailsPeopleProp> = ({
             <></>
           )}
           {/* Birthday Section */}
-          {person.birthdayDay != null ? (
+          {person.birthdayDay !== null ? (
             <ContactPersonRowContainer>
               <ContactPersonIconContainer>
                 <Cake color="disabled" />
