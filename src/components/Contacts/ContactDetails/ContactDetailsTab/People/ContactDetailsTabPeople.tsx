@@ -53,7 +53,7 @@ export const ContactDetailsTabPeople: React.FC<ContactDetailsPeopleProp> = ({
     return (
       <ContactPersonContainer>
         <ContactPersonAvatar
-          alt={person.firstName + ' ' + person.lastName}
+          alt={`${person.firstName} ${person.lastName}`}
           src={person.lastName}
         />
         <ContactPersonTextContainer>
