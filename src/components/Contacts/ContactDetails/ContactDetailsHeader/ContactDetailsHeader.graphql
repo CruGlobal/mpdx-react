@@ -1,0 +1,37 @@
+fragment ContactDetailsHeader on Contact {
+  id
+  avatar
+  greeting
+  lateAt
+  name
+  pledgeAmount
+  pledgeCurrency
+  pledgeFrequency
+  primaryAddress {
+    street
+    city
+    state
+    postalCode
+    country
+  }
+  primaryPerson {
+    firstName
+    gender
+    lastName
+    primaryEmailAddress {
+      email
+    }
+    primaryPhoneNumber {
+      number
+    }
+    suffix
+    title
+  }
+  status
+}
+
+query GetContactDetailsHeader($accountListId: ID!, $contactId: ID!) {
+  contact(accountListId: $accountListId, id: $contactId) {
+    ...ContactDetailsHeader
+  }
+}

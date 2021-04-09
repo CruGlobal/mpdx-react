@@ -8,11 +8,15 @@ export default {
 };
 
 const accountListId = '111';
+const onContactSelected = () => {};
 
 export const Default = (): ReactElement => {
   return (
     <GqlMockedProvider<ContactsQuery>>
-      <ContactsTable accountListId={accountListId} />
+      <ContactsTable
+        accountListId={accountListId}
+        onContactSelected={onContactSelected}
+      />
     </GqlMockedProvider>
   );
 };
@@ -28,7 +32,10 @@ export const Loading = (): ReactElement => {
 
   return (
     <GqlMockedProvider<ContactsQuery> mocks={mocks}>
-      <ContactsTable accountListId={accountListId} />
+      <ContactsTable
+        accountListId={accountListId}
+        onContactSelected={onContactSelected}
+      />
     </GqlMockedProvider>
   );
 };
@@ -44,7 +51,10 @@ export const Empty = (): ReactElement => {
 
   return (
     <GqlMockedProvider<ContactsQuery> mocks={mocks}>
-      <ContactsTable accountListId={accountListId} />
+      <ContactsTable
+        accountListId={accountListId}
+        onContactSelected={onContactSelected}
+      />
     </GqlMockedProvider>
   );
 };
@@ -61,7 +71,10 @@ export const Error = (): ReactElement => {
 
   return (
     <GqlMockedProvider<ContactsQuery> mocks={mocks}>
-      <ContactsTable accountListId={accountListId} />
+      <ContactsTable
+        accountListId={accountListId}
+        onContactSelected={onContactSelected}
+      />
     </GqlMockedProvider>
   );
 };
