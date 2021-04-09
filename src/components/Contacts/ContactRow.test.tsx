@@ -12,6 +12,8 @@ it('should display contact name', () => {
   const contact = gqlMock<ContactRowFragment>(ContactRowFragmentDoc, {
     mocks: { name },
   });
-  const { getByRole } = render(<ContactRow contact={contact} />);
+  const { getByRole } = render(
+    <ContactRow contact={contact} onContactSelected={() => {}} />,
+  );
   expect(within(getByRole('row')).getByText(name)).toBeVisible();
 });
