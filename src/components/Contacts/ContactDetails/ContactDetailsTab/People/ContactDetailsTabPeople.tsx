@@ -80,7 +80,7 @@ export const ContactDetailsTabPeople: React.FC<ContactDetailsPeopleProp> = ({
                 {person.primaryPhoneNumber.number}
               </Typography>
               <Typography variant="caption">
-                {' - ' + person.primaryPhoneNumber.location}
+                {` - ${person.primaryPhoneNumber.location}`}
               </Typography>
             </ContactPersonRowContainer>
           ) : (
