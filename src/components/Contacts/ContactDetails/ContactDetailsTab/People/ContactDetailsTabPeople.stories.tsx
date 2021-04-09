@@ -1,7 +1,6 @@
-import { Box, CssBaseline, MuiThemeProvider } from '@material-ui/core';
+import { Box } from '@material-ui/core';
 import React, { ReactElement } from 'react';
 import { gqlMock } from '../../../../../../__tests__/util/graphqlMocking';
-import theme from '../../../../../theme';
 import {
   ContactDetailsTabDocument,
   ContactDetailsTabQuery,
@@ -23,10 +22,7 @@ export const Default = (): ReactElement => {
   );
   return (
     <Box m={2}>
-      <MuiThemeProvider theme={theme}>
-        <CssBaseline />
-        <ContactDetailsTabPeople data={mock} />
-      </MuiThemeProvider>
+      <ContactDetailsTabPeople data={mock} />
     </Box>
   );
 };

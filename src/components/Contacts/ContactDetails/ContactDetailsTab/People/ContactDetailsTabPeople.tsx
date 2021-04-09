@@ -66,9 +66,7 @@ export const ContactDetailsTabPeople: React.FC<ContactDetailsPeopleProp> = ({
               <ContactPersonPrimaryText variant="subtitle1">
                 {`- ${t('Primary')}`}
               </ContactPersonPrimaryText>
-            ) : (
-              <></>
-            )}
+            ) : null}
           </ContactPersonRowContainer>
           {/* Phone Number */}
           {person.primaryPhoneNumber !== null ? (
@@ -83,11 +81,9 @@ export const ContactDetailsTabPeople: React.FC<ContactDetailsPeopleProp> = ({
                 {` - ${person.primaryPhoneNumber.location}`}
               </Typography>
             </ContactPersonRowContainer>
-          ) : (
-            <></>
-          )}
+          ) : null}
           {/* Email Section */}
-          {person.primaryEmailAddress != null ? (
+          {person.primaryEmailAddress !== null ? (
             <ContactPersonRowContainer>
               <ContactPersonIconContainer>
                 <Email color="disabled" />
@@ -96,9 +92,7 @@ export const ContactDetailsTabPeople: React.FC<ContactDetailsPeopleProp> = ({
                 {person.primaryEmailAddress.email}
               </Typography>
             </ContactPersonRowContainer>
-          ) : (
-            <></>
-          )}
+          ) : null}
           {/* Birthday Section */}
           {person.birthdayDay !== null ? (
             <ContactPersonRowContainer>
@@ -107,47 +101,35 @@ export const ContactDetailsTabPeople: React.FC<ContactDetailsPeopleProp> = ({
               </ContactPersonIconContainer>
               {/* TODO: Change to local format for different countries */}
               <Typography variant="subtitle1">
-{`${person.birthdayMonth}/${person.birthdayDay}/${person.birthdayYear}`}
+                {`${person.birthdayMonth}/${person.birthdayDay}/${person.birthdayYear}`}
               </Typography>
             </ContactPersonRowContainer>
-          ) : (
-            <></>
-          )}
+          ) : null}
           {/* Anniversary Section */}
-          {person.anniversaryDay != null ? (
+          {person.anniversaryDay !== null ? (
             <ContactPersonRowContainer>
               <ContactPersonIconContainer>
                 <RingIcon color="disabled" />
               </ContactPersonIconContainer>
               {/* TODO: Change to local format for different countries */}
               <Typography variant="subtitle1">
-                {person.anniversaryMonth +
-                  '/' +
-                  person.anniversaryDay +
-                  '/' +
-                  person.anniversaryYear}
+                {`${person.anniversaryMonth}/${person.anniversaryDay}/${person.anniversaryYear}`}
               </Typography>
             </ContactPersonRowContainer>
-          ) : (
-            <></>
-          )}
+          ) : null}
         </ContactPersonTextContainer>
       </ContactPersonContainer>
     );
   };
   return (
     <>
-      {data.contact.primaryPerson != null ? (
-        personView(data.contact.primaryPerson as Person, true)
-      ) : (
-        <></>
-      )}
+      {data.contact.primaryPerson !== null
+        ? personView(data.contact.primaryPerson as Person, true)
+        : null}
       {data.contact.people.nodes.map((person, _index) =>
-        person.id == data.contact.primaryPerson.id ? (
-          <></>
-        ) : (
-          personView(person as Person, false)
-        ),
+        person.id !== data.contact.primaryPerson.id
+          ? personView(person as Person, false)
+          : null,
       )}
     </>
   );
