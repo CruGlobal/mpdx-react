@@ -21,6 +21,8 @@ describe('ContactDetailTab', () => {
         "contactId": "contact-id",
       }
     `);
-    expect(result.current.data.contact.name).toMatchInlineSnapshot(`"Meteor"`);
+    expect(result.current.data.contact.name).toMatchInlineSnapshot(
+      `"Butterfly Airforce"`,
+    );
   });
 });
