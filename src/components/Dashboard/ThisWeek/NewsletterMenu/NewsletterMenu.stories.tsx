@@ -3,11 +3,13 @@ import { GraphQLError } from 'graphql';
 import React, { ReactElement } from 'react';
 import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
 import {
-  GetEmailNewsletterContactsDocument,
-  GetEmailNewsletterContactsQuery,
   GetTaskAnalyticsDocument,
   GetTaskAnalyticsQuery,
-} from '../NewsletterMenu.generated';
+} from './NewsletterMenu.generated';
+import {
+  GetEmailNewsletterContactsQuery,
+  GetEmailNewsletterContactsDocument,
+} from './MenuItems/ExportEmail/GetNewsletterContacts.generated';
 import NewsletterMenu from './NewsletterMenu';
 
 export default {

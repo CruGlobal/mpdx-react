@@ -1,64 +1,37 @@
-import React, { ReactElement, useState, useEffect } from 'react';
+import React, { ReactElement, useState } from 'react';
 import {
   Button,
   Menu,
   MenuItem,
   Dialog,
-  DialogTitle,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
   ListItemText,
-  IconButton,
   styled,
-  TextareaAutosize,
 } from '@material-ui/core';
 import ArrowDropDown from '@material-ui/icons/ArrowDropDown';
-import CloseIcon from '@material-ui/icons/Close';
 import { useTranslation } from 'react-i18next';
 import { DateTime } from 'luxon';
 import { Skeleton } from '@material-ui/lab';
-import {
-  useGetTaskAnalyticsQuery,
-  useGetEmailNewsletterContactsLazyQuery,
-} from '../NewsletterMenu.generated';
+import { useGetTaskAnalyticsQuery } from './NewsletterMenu.generated';
+import ExportEmail from './MenuItems/ExportEmail/ExportEmail';
+import LogNewsletter from './MenuItems/LogNewsLetter/LogNewsletter';
+import ExportPhysical from './MenuItems/ExportPhysical/ExportPhysical';
 
 interface Props {
   accountListId: string;
 }
 
-const CloseButton = styled(IconButton)(({ theme }) => ({
-  position: 'absolute',
-  right: theme.spacing(1),
-  top: theme.spacing(1),
-  color: theme.palette.text.primary,
-  '&:hover': {
-    backgroundColor: '#EBECEC',
-  },
-}));
-
-const NewsletterTextContainer = styled(ListItemText)(({}) => ({
+const NewsletterTextContainer = styled(ListItemText)(() => ({
   textAlign: 'left',
-}));
-
-const TextArea = styled(TextareaAutosize)(({}) => ({
-  width: '100%',
-}));
-
-const NewsletterMenuDialogTitle = styled(DialogTitle)(({}) => ({
-  textTransform: 'uppercase',
-  textAlign: 'center',
 }));
 
 const NewsletterMenu = ({ accountListId }: Props): ReactElement<Props> => {
   const { t } = useTranslation();
 
-  const [anchorEl, setAnchorEl] = useState(null);
+  const [anchorEl, setAnchorEl] = useState(undefined);
   const [selectedMenuItem, changeSelectedMenuItem] = useState(-1);
   const [newsletterMenuDialogOpen, changeNewsletterMenuDialogOpen] = useState(
     false,
   );
-  const [emailList, changeEmailList] = useState('');
 
   const {
     data: {
@@ -72,30 +45,6 @@ const NewsletterMenu = ({ accountListId }: Props): ReactElement<Props> => {
     variables: { accountListId },
   });
 
-  const [
-    loadEmailNewsletterContacts,
-    { data: newsletterContactsData, loading: contactsLoading },
-  ] = useGetEmailNewsletterContactsLazyQuery({
-    variables: { accountListId },
-  });
-
-  useEffect(() => {
-    if (newsletterContactsData?.contacts.nodes.length > 0) {
-      changeEmailList(
-        newsletterContactsData.contacts.nodes.reduce(
-          (result, contact, index) => {
-            return contact?.primaryPerson?.primaryEmailAddress
-              ? index === 0
-                ? `${contact.primaryPerson.primaryEmailAddress.email}`
-                : `${result},${contact.primaryPerson.primaryEmailAddress.email}`
-              : result;
-          },
-          '',
-        ),
-      );
-    }
-  }, [newsletterContactsData]);
-
   const handleMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -107,15 +56,6 @@ const NewsletterMenu = ({ accountListId }: Props): ReactElement<Props> => {
   const handleMenuItemClick = (menuItem) => {
     changeSelectedMenuItem(menuItem);
     changeNewsletterMenuDialogOpen(true);
-    switch (menuItem) {
-      case 0:
-        break;
-      case 1:
-        loadEmailNewsletterContacts();
-        break;
-      case 2:
-        break;
-    }
   };
 
   const handleDialogClose = () => {
@@ -150,86 +90,31 @@ const NewsletterMenu = ({ accountListId }: Props): ReactElement<Props> => {
         : electronicDate.toLocaleString();
     }
   };
-  // TODO: Finish creating dialog for "Log Newsletter" and "Export Physical"
+
   const renderDialog = () => {
-    const title = () => {
-      switch (selectedMenuItem) {
-        case 0:
-          return t('Log Newsletter');
-        case 1:
-          return t('Email Newsletter List');
-        case 2:
-          return t('Export Contacts');
-      }
-    };
-
-    const content = () => {
+    const renderDialogContent = () => {
       switch (selectedMenuItem) {
         case 0:
           return (
-            <>
-              <DialogContentText>
-                {t('Log Newsletter placeholder text')}
-              </DialogContentText>
-            </>
+            <LogNewsletter
+              accountListId={accountListId}
+              handleClose={handleDialogClose}
+            />
           );
         case 1:
           return (
-            <>
-              <DialogContentText>
-                {t(
-                  'This is the primary email for every person in contacts marked as Newsletter-Email or Newsletter-Both. If they are marked as "Opted out of Email Newsletter", they are not included in this list.',
-                )}
-              </DialogContentText>
-              <br />
-              <DialogContentText>
-                {t(
-                  'Reminder: Please only use the Bcc: field when sending emails to groups of partners.',
-                )}
-              </DialogContentText>
-              {contactsLoading || !newsletterContactsData?.contacts ? (
-                <Skeleton
-                  variant="text"
-                  style={{ display: 'inline-block' }}
-                  width={90}
-                />
-              ) : (
-                <TextArea
-                  disabled={true}
-                  data-testid="emailList"
-                  value={emailList}
-                />
-              )}
-            </>
+            <ExportEmail
+              accountListId={accountListId}
+              handleClose={handleDialogClose}
+            />
           );
         case 2:
           return (
-            <>
-              <DialogContentText>
-                {t('Export contacts placeholder')}
-              </DialogContentText>
-            </>
+            <ExportPhysical
+              accountListId={accountListId}
+              handleClose={handleDialogClose}
+            />
           );
-      }
-    };
-
-    const actions = () => {
-      switch (selectedMenuItem) {
-        case 0:
-          return null;
-        case 1:
-          return (
-            <Button
-              disabled={emailList === ''}
-              variant="contained"
-              color="primary"
-              onClick={() => navigator.clipboard.writeText(emailList)}
-            >
-              {t('Copy All')}
-            </Button>
-          );
-        case 2:
-          return null;
       }
     };
     return (
@@ -239,16 +124,7 @@ const NewsletterMenu = ({ accountListId }: Props): ReactElement<Props> => {
         fullWidth
         maxWidth="md"
       >
-        <NewsletterMenuDialogTitle>
-          {title()}
-          <CloseButton role="closeButton" onClick={handleDialogClose}>
-            <CloseIcon />
-          </CloseButton>
-        </NewsletterMenuDialogTitle>
-        <DialogContent dividers>{content()}</DialogContent>
-        {selectedMenuItem === 2 ? null : (
-          <DialogActions>{actions()}</DialogActions>
-        )}
+        {renderDialogContent()}
       </Dialog>
     );
   };

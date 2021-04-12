@@ -1,10 +1,3 @@
-query GetTaskAnalytics($accountListId: ID!) {
-  taskAnalytics(accountListId: $accountListId) {
-    lastElectronicNewsletterCompletedAt
-    lastPhysicalNewsletterCompletedAt
-  }
-}
-
 query GetEmailNewsletterContacts($accountListId: ID!) {
   contacts(accountListId: $accountListId, newsletter: EMAIL, status: ACTIVE) {
     nodes {
