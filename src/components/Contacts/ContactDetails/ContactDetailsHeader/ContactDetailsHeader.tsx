@@ -1,10 +1,11 @@
 import { Avatar, Box, IconButton, styled, Typography } from '@material-ui/core';
-import { Close, MoreVert, StarOutline } from '@material-ui/icons';
+import { Close, MoreVert } from '@material-ui/icons';
 import { Skeleton } from '@material-ui/lab';
 import React, { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import theme from '../../../../theme';
 
+import { StarContactIcon } from '../../StarContactIcon/StarContactIcon';
 import { useGetContactDetailsHeaderQuery } from './ContactDetailsHeader.generated';
 import { ContactHeaderAddressSection } from './ContactDetailsHeaderSection/ContactHeaderAddressSection';
 import { ContactHeaderPhoneSection } from './ContactDetailsHeaderSection/ContactHeaderPhoneSection';
@@ -48,11 +49,6 @@ const ButtonWrap = styled(IconButton)(({}) => ({
   width: 32,
   height: 32,
 }));
-const StarButtonIcon = styled(StarOutline)(({}) => ({
-  width: 20,
-  height: 20,
-  color: theme.palette.text.primary,
-}));
 const MoreButtonIcon = styled(MoreVert)(({}) => ({
   width: 16,
   height: 16,
@@ -81,7 +77,7 @@ export const ContactDetailsHeader = ({
   return (
     <Box style={{ padding: 24 }}>
       <HeaderBar>
-        <ContactAvatar />
+        <ContactAvatar src={contact?.avatar || ''} />
         <HeaderBarContactWrap>
           {contact ? (
             <>
@@ -106,7 +102,7 @@ export const ContactDetailsHeader = ({
         </HeaderBarContactWrap>
         <HeaderBarButtonsWrap>
           <ButtonWrap>
-            <StarButtonIcon />
+            <StarContactIcon hasStar={false} />
           </ButtonWrap>
           <ButtonWrap>
             <MoreButtonIcon />
