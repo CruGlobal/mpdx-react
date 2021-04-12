@@ -84,7 +84,7 @@ export const ContactFilters: React.FC<Props & BoxProps> = ({
     <Box {...boxProps}>
       <div style={{ overflow: 'hidden' }}>
         <Slide
-          in={selectedGroup == null}
+          in={!selectedGroup}
           direction="right"
           appear={false}
           mountOnEnter
