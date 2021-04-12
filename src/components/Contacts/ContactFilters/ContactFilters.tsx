@@ -102,7 +102,7 @@ export const ContactFilters: React.FC<Props & BoxProps> = ({
               <LinkButton
                 color="primary"
                 style={{ marginInlineStart: theme.spacing(-1) }}
-                disabled={Object.keys(selectedFilters).length == 0}
+                disabled={Object.keys(selectedFilters).length === 0}
                 onClick={() => alert('TODO')}
               >
                 {t('Save')}
