@@ -126,7 +126,7 @@ export const ContactDetailsTabPeople: React.FC<ContactDetailsPeopleProp> = ({
       {data.contact.primaryPerson !== null
         ? personView(data.contact.primaryPerson as Person, true)
         : null}
-      {data.contact.people.nodes.map((person, _index) =>
+      {data.contact.people.nodes.map((person) =>
         person.id !== data.contact.primaryPerson.id
           ? personView(person as Person, false)
           : null,
