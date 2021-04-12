@@ -21,7 +21,7 @@ export const FilterListItemSelect: React.FC<Props> = ({
 }: Props) => {
   return (
     <ListItem>
-      <FormControl style={{ flex: '1 1 auto' }}>
+      <FormControl style={{ flex: 'auto' }}>
         <InputLabel>{filter.title}</InputLabel>
         <Select value={value} onChange={(e) => onUpdate(e.target.value)}>
           {filter.options.map(({ id, name }) => (
