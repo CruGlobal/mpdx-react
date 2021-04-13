@@ -32,15 +32,15 @@ export const ContactHeaderAddressSection = ({
 }: Props): ReactElement => {
   const { t } = useTranslation();
 
-  let content: ReactElement = null;
+  //let content: ReactElement = null;
 
   if (loading) {
-    content = (
-      <>
+    return (
+      <ContactHeaderSection icon={<LocationIcon />}>
         <TextSkeleton variant="text" />
         <TextSkeleton variant="text" />
         <TextSkeleton variant="text" />
-      </>
+      </ContactHeaderSection>
     );
   } else if (contact) {
     const {
@@ -49,8 +49,8 @@ export const ContactHeaderAddressSection = ({
     } = contact;
 
     if (!!greeting && !!street && !!city && !!state && !!postalCode) {
-      content = (
-        <>
+      return (
+        <ContactHeaderSection icon={<LocationIcon />}>
           <Typography variant="subtitle1">{greeting}</Typography>
           <Typography variant="subtitle1">{street}</Typography>
           <Box>
@@ -62,14 +62,10 @@ export const ContactHeaderAddressSection = ({
               {t('Google Maps')}
             </Link>
           </Box>
-        </>
+        </ContactHeaderSection>
       );
     }
   }
 
-  return (
-    <ContactHeaderSection icon={<LocationIcon />}>
-      {content}
-    </ContactHeaderSection>
-  );
+  return <ContactHeaderSection icon={<LocationIcon />} />;
 };

@@ -25,10 +25,12 @@ export const ContactHeaderStatusSection = ({
 }: Props): ReactElement => {
   const { t } = useTranslation();
 
-  let content: ReactElement = null;
-
   if (loading) {
-    content = <TextSkeleton variant="text" />;
+    return (
+      <ContactHeaderSection icon={<HandshakeIcon />}>
+        <TextSkeleton variant="text" />
+      </ContactHeaderSection>
+    );
   } else if (contact) {
     const { status } = contact;
 
@@ -93,13 +95,13 @@ export const ContactHeaderStatusSection = ({
           break;
       }
 
-      content = <Typography variant="subtitle1">{statusText}</Typography>;
+      return (
+        <ContactHeaderSection icon={<HandshakeIcon />}>
+          <Typography variant="subtitle1">{statusText}</Typography>
+        </ContactHeaderSection>
+      );
     }
   }
 
-  return (
-    <ContactHeaderSection icon={<HandshakeIcon />}>
-      {content}
-    </ContactHeaderSection>
-  );
+  return <ContactHeaderSection icon={<HandshakeIcon />} />;
 };

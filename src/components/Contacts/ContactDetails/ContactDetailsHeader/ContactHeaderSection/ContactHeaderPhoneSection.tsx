@@ -29,21 +29,25 @@ export const ContactHeaderPhoneSection = ({
   loading,
   contact,
 }: Props): ReactElement => {
-  let content: ReactElement = null;
-
   if (loading) {
-    content = <TextSkeleton variant="text" />;
+    return (
+      <ContactHeaderSection icon={<PhoneIcon />}>
+        <TextSkeleton variant="text" />
+      </ContactHeaderSection>
+    );
   } else if (contact) {
     const {
       primaryPerson: { primaryPhoneNumber: { number } = {} } = {},
     } = contact;
 
     if (!!number) {
-      content = <Typography variant="subtitle1">{number}</Typography>;
+      return (
+        <ContactHeaderSection icon={<PhoneIcon />}>
+          <Typography variant="subtitle1">{number}</Typography>
+        </ContactHeaderSection>
+      );
     }
   }
 
-  return (
-    <ContactHeaderSection icon={<PhoneIcon />}>{content}</ContactHeaderSection>
-  );
+  return <ContactHeaderSection icon={<PhoneIcon />} />;
 };

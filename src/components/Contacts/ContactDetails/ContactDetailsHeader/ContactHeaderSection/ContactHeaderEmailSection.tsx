@@ -29,21 +29,25 @@ export const ContactHeaderEmailSection = ({
   loading,
   contact,
 }: Props): ReactElement => {
-  let content: ReactElement = null;
-
   if (loading) {
-    content = <TextSkeleton variant="text" />;
+    return (
+      <ContactHeaderSection icon={<EmailIcon />}>
+        <TextSkeleton variant="text" />
+      </ContactHeaderSection>
+    );
   } else if (contact) {
     const {
       primaryPerson: { primaryEmailAddress: { email } = {} } = {},
     } = contact;
 
     if (!!email) {
-      content = <Typography variant="subtitle1">{email}</Typography>;
+      return (
+        <ContactHeaderSection icon={<EmailIcon />}>
+          <Typography variant="subtitle1">{email}</Typography>
+        </ContactHeaderSection>
+      );
     }
   }
 
-  return (
-    <ContactHeaderSection icon={<EmailIcon />}>{content}</ContactHeaderSection>
-  );
+  return <ContactHeaderSection icon={<EmailIcon />} />;
 };
