@@ -1,31 +1,19 @@
 import { Box } from '@material-ui/core';
 import React, { ReactElement } from 'react';
 import { gqlMock } from '../../../../../../__tests__/util/graphqlMocking';
-import {
-  ContactDetailsTabDocument,
-  ContactDetailsTabQuery,
-  ContactDetailsTabQueryVariables,
-} from '../ContactDetailsTab.generated';
 import { ContactDetailsOther } from './ContactDetailsOther';
+import {
+  ContactOtherFragment,
+  ContactOtherFragmentDoc,
+} from './ContactOther.generated';
 
 export default {
   title: 'Contacts/Tab/ContactDetailsTab/Other',
   component: ContactDetailsOther,
 };
 
-const accountListId = '111';
-const contactId = '222';
-
 export const Default = (): ReactElement => {
-  const mock = gqlMock<ContactDetailsTabQuery, ContactDetailsTabQueryVariables>(
-    ContactDetailsTabDocument,
-    {
-      variables: {
-        accountListId: accountListId,
-        contactId: contactId,
-      },
-    },
-  );
+  const mock = gqlMock<ContactOtherFragment>(ContactOtherFragmentDoc);
   return (
     <Box m={2}>
       <ContactDetailsOther contact={mock} />

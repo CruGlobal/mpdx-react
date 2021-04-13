@@ -45,5 +45,6 @@ query ContactDetailsTab($accountListId: ID!, $contactId: ID!) {
     sendNewsletter
     greeting
     #TODO add Magazine
+    ...ContactOther
   }
 }
