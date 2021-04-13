@@ -5,12 +5,12 @@ import { InMemoryCache } from '@apollo/client';
 import {
   ActivityTypeEnum,
   Contact,
-  NotificationTimeUnitEnum,
-  NotificationTypeEnum,
-  Task,
 } from '../../../../../graphql/types.generated';
 import { getTasksForTaskListMock } from '../../List/List.mock';
-import { GetTasksForTaskListDocument } from '../../List/TaskList.generated';
+import {
+  GetTasksForTaskListDocument,
+  GetTasksForTaskListQuery,
+} from '../../List/TaskList.generated';
 import {
   getDataForTaskDrawerMock,
   createTaskMutationMock,
@@ -72,7 +72,7 @@ export const Loading = (): ReactElement => {
   );
 };
 
-const task: Task = {
+const task: GetTasksForTaskListQuery['tasks']['nodes'][0] = {
   id: 'task-1',
   activityType: ActivityTypeEnum.NewsletterEmail,
   subject: 'On the Journey with the Johnson Family',
@@ -84,28 +84,12 @@ const task: Task = {
       { id: 'contact-1', name: 'Anderson, Robert' } as Contact,
       { id: 'contact-2', name: 'Smith, John' } as Contact,
     ],
-    pageInfo: { hasNextPage: false, hasPreviousPage: false },
-    totalCount: 2,
-    totalPageCount: 1,
   },
   user: {
     id: 'user-1',
     firstName: 'Anderson',
     lastName: 'Robert',
-    createdAt: 'date-1',
-    updatedAt: 'date-2',
   },
-  notificationTimeBefore: 20,
-  notificationType: NotificationTypeEnum.Both,
-  notificationTimeUnit: NotificationTimeUnitEnum.Hours,
-  comments: {
-    nodes: [],
-    pageInfo: { hasNextPage: false, hasPreviousPage: false },
-    totalCount: 0,
-    totalPageCount: 0,
-  },
-  createdAt: 'date-1',
-  updatedAt: 'date-2',
 };
 
 export const Persisted = (): ReactElement => {
