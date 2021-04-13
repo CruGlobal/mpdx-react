@@ -1,7 +1,6 @@
 query ContactDetailsTab($accountListId: ID!, $contactId: ID!) {
   contact(accountListId: $accountListId, id: $contactId) {
     id
-    locale
     name
     primaryPerson {
       id
@@ -14,7 +13,6 @@ query ContactDetailsTab($accountListId: ID!, $contactId: ID!) {
       country
     }
     tagList
-    churchName
     envelopeGreeting
     people {
       nodes {
@@ -35,8 +33,6 @@ query ContactDetailsTab($accountListId: ID!, $contactId: ID!) {
         birthdayYear
       }
     }
-    preferredContactMethod
-    timezone
     user {
       firstName
       lastName
