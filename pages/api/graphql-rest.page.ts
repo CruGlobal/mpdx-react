@@ -12,6 +12,26 @@ import { Resolvers } from './graphql-rest.page.generated';
 const typeDefs = gql`
   type Query {
     contactFilters(accountListId: ID!): [ContactFilter!]!
+    taskAnalytics(accountListId: ID!): TaskAnalytics!
+  }
+
+  type TaskAnalytics {
+    id: ID!
+    type: String!
+    createdAt: ISO8601DateTime!
+    lastElectronicNewsletterCompletedAt: ISO8601DateTime
+    lastPhysicalNewsletterCompletedAt: ISO8601DateTime
+    tasksOverdueOrDueTodayCounts: [OverdueOrDueTodayTaskAnalytic!]!
+    totalTasksDueCount: Int!
+    updatedAt: ISO8601DateTime!
+    updatedInDbAt: ISO8601DateTime!
+  }
+
+  scalar ISO8601DateTime
+
+  type OverdueOrDueTodayTaskAnalytic {
+    label: String!
+    count: Int!
   }
 
   type ContactFilter {
@@ -38,6 +58,9 @@ const resolvers: Resolvers = {
   Query: {
     contactFilters: async (_source, { accountListId }, { dataSources }) => {
       return dataSources.mpdxRestApi.getContactFilters(accountListId);
+    },
+    taskAnalytics: async (_source, { accountListId }, { dataSources }) => {
+      return dataSources.mpdxRestApi.getTaskAnalytics(accountListId);
     },
   },
 };
@@ -94,6 +117,35 @@ class MpdxRestApi extends RESTDataSource {
             : [default_selection],
       }),
     );
+  }
+
+  async getTaskAnalytics(accountListId) {
+    const { data } = await this.get(
+      `tasks/analytics?filter[account_list_id]=${accountListId}`,
+    );
+
+    const {
+      attributes: {
+        created_at,
+        last_electronic_newsletter_completed_at,
+        last_physical_newsletter_completed_at,
+        tasks_overdue_or_due_today_counts,
+        total_tasks_due_count,
+        updated_at,
+        updated_in_db_at,
+      },
+    } = data;
+
+    return {
+      ...data,
+      createdAt: created_at,
+      lastElectronicNewsletterCompletedAt: last_electronic_newsletter_completed_at,
+      lastPhysicalNewsletterCompletedAt: last_physical_newsletter_completed_at,
+      tasksOverdueOrDueTodayCounts: tasks_overdue_or_due_today_counts,
+      totalTasksDueCount: total_tasks_due_count,
+      updatedAt: updated_at,
+      updatedInDbAt: updated_in_db_at,
+    };
   }
 }
 

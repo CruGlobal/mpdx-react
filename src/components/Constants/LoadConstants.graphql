@@ -10,12 +10,11 @@ query LoadConstants {
     }
     locations {
       id
-      value
     }
-    notifications {
-      id
-      value
-    }
+    # notifications {
+    #   id
+    #   value
+    # }
     pledgeCurrencies {
       id
       value
@@ -48,9 +47,9 @@ query LoadConstants {
       key
       value
     }
-    userNotificationTitles {
-      id
-      value
-    }
+    # userNotificationTitles {
+    #   id
+    #   value
+    # }
   }
 }
