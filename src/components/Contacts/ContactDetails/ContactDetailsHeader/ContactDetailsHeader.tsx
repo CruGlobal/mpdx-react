@@ -18,7 +18,7 @@ export const ContactDetailsHeader: React.FC<Props> = ({
   });
 
   return (
-    <Box style={{ backgroundColor: theme.palette.common.white }}>
+    <Box style={{ backgroundColor: 'transparent' }}>
       {/*TODO: Build Header*/}
       {loading ? (
         <p>loading</p>

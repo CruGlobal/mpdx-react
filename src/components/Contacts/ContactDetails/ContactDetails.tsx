@@ -1,4 +1,4 @@
-import { AppBar, Box, styled, Tab, Tabs } from '@material-ui/core';
+import { AppBar, Box, styled, Tab, Tabs, withStyles } from '@material-ui/core';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import theme from '../../../theme';
@@ -10,15 +10,40 @@ interface Props {
   onClose: () => void;
 }
 
-const ContactTabBar = styled(AppBar)(({}) => ({
+interface ContactTabsProps {
+  value: number;
+  onChange: (event: React.ChangeEvent<{}>, newValue: number) => void;
+}
+
+const ContactAppBar = styled(AppBar)(({}) => ({
   position: 'static',
-  backgroundColor: theme.palette.common.white,
+  backgroundColor: 'transparent',
+  boxShadow: 'none',
+  borderBottom: '1px solid #DCDCDC',
 }));
 
+const ContactTabs = withStyles({
+  indicator: {
+    display: 'flex',
+    justifyContent: 'center',
+    backgroundColor: 'transparent',
+    '& > span': {
+      width: '100%',
+      height: 2,
+      backgroundColor: '#FFCF07',
+    },
+  },
+})((props: ContactTabsProps) => (
+  <Tabs {...props} TabIndicatorProps={{ children: <span /> }} />
+));
+
 const ContactTab = styled(Tab)(({}) => ({
-  display: 'flex',
-  flexShrink: 1,
+  textTransform: 'none',
+  minWidth: 72,
+  marginRight: theme.spacing(4),
   color: theme.palette.text.primary,
+  opacity: 0.75,
+  '&:hover': { opacity: 1 },
 }));
 
 export const ContactDetails: React.FC<Props> = ({
@@ -27,21 +52,27 @@ export const ContactDetails: React.FC<Props> = ({
 }: Props) => {
   const { t } = useTranslation();
 
+  const [value, setValue] = React.useState(0);
+
+  const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
+    setValue(newValue);
+  };
+
   return (
     <Box position="fixed">
       <ContactDetailsHeader
         accountListId={accountListId}
         contactId={contactId}
       />
-      <ContactTabBar>
-        <Tabs>
+      <ContactAppBar>
+        <ContactTabs value={value} onChange={handleChange}>
           <ContactTab label={t('Tasks')} />
           <ContactTab label={t('Donations')} />
           <ContactTab label={t('Referrals')} />
           <ContactTab label={t('Contact Details')} />
           <ContactTab label={t('Notes')} />
-        </Tabs>
-      </ContactTabBar>
+        </ContactTabs>
+      </ContactAppBar>
     </Box>
   );
 };
