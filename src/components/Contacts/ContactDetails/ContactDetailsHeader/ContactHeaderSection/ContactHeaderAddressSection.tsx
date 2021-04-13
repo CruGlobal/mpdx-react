@@ -32,8 +32,6 @@ export const ContactHeaderAddressSection = ({
 }: Props): ReactElement => {
   const { t } = useTranslation();
 
-  //let content: ReactElement = null;
-
   if (loading) {
     return (
       <ContactHeaderSection icon={<LocationIcon />}>
