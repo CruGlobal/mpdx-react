@@ -2,7 +2,7 @@ import { Box, Link, styled, Typography } from '@material-ui/core';
 import { LocationOn } from '@material-ui/icons';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { ContactDetailsTabQuery } from '../ContactDetailsTab.generated';
+import { ContactMailingFragment } from './ContactMailing.generated';
 
 const ContactDetailsMailingMainContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -31,7 +31,7 @@ const ContactDetailsMailingLabel = styled(Typography)(({ theme }) => ({
 }));
 
 interface MailingProp {
-  data: ContactDetailsTabQuery;
+  data: ContactMailingFragment;
 }
 
 export const ContactDetailsTabMailing: React.FC<MailingProp> = ({ data }) => {
@@ -41,7 +41,7 @@ export const ContactDetailsTabMailing: React.FC<MailingProp> = ({ data }) => {
     primaryAddress: { street, city, state, postalCode },
     greeting,
     sendNewsletter,
-  } = data.contact;
+  } = data;
   return (
     <Box>
       <ContactDetailsMailingMainContainer>
@@ -49,7 +49,7 @@ export const ContactDetailsTabMailing: React.FC<MailingProp> = ({ data }) => {
         <ContactDetailsMailingTexContainer>
           {/* Address Section */}
           <Typography variant="subtitle1">{name}</Typography>
-          {data.contact.primaryAddress ? (
+          {data.primaryAddress ? (
             <>
               <Typography variant="subtitle1">{street ?? ''}</Typography>
               <Typography variant="subtitle1">

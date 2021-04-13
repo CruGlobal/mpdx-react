@@ -5,13 +5,6 @@ query ContactDetailsTab($accountListId: ID!, $contactId: ID!) {
     primaryPerson {
       id
     }
-    primaryAddress {
-      street
-      city
-      state
-      postalCode
-      country
-    }
     tagList
     envelopeGreeting
     people {
@@ -38,9 +31,8 @@ query ContactDetailsTab($accountListId: ID!, $contactId: ID!) {
       lastName
     }
     website
-    sendNewsletter
-    greeting
     #TODO add Magazine
     ...ContactOther
+    ...ContactMailing
   }
 }
