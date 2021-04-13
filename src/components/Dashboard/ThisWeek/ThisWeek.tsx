@@ -1,8 +1,7 @@
 import React, { ReactElement } from 'react';
-import { Box, Typography, Grid, Button } from '@material-ui/core';
+import { Box, Typography, Grid } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { DateTime } from 'luxon';
-import { ArrowDropDown } from '@material-ui/icons';
 import AnimatedBox from '../../AnimatedBox';
 import PartnerCare from './PartnerCare/PartnerCare';
 import TasksDueThisWeek from './TasksDueThisWeek/TasksDueThisWeek';
@@ -11,6 +10,7 @@ import Referrals from './Referrals';
 import Appeals from './Appeals';
 import WeeklyActivity from './WeeklyActivity';
 import { useGetThisWeekQuery } from './GetThisWeek.generated';
+import NewsletterMenu from './NewsletterMenu/NewsletterMenu';
 
 interface Props {
   accountListId: string;
@@ -49,11 +49,7 @@ const ThisWeek = ({ accountListId }: Props): ReactElement => {
           <Typography variant="h6">
             <Box display="flex">
               <Box flexGrow={1}>{t('To Do This Week')}</Box>
-              {/*TODO: This button should open menu for the Newsletter: https://jira.cru.org/browse/MPDX-6943 */}
-              <Button style={{ textTransform: 'uppercase' }}>
-                <ArrowDropDown />
-                {t('Newsletter')}
-              </Button>
+              <NewsletterMenu accountListId={accountListId} />
             </Box>
           </Typography>
         </AnimatedBox>
