@@ -2,24 +2,6 @@ query ContactDetailsTab($accountListId: ID!, $contactId: ID!) {
   contact(accountListId: $accountListId, id: $contactId) {
     id
     name
-    primaryPerson {
-      id
-      firstName
-      lastName
-      primaryPhoneNumber {
-        number
-        location
-      }
-      primaryEmailAddress {
-        email
-      }
-      anniversaryDay
-      anniversaryMonth
-      anniversaryYear
-      birthdayDay
-      birthdayMonth
-      birthdayYear
-    }
     primaryAddress {
       street
       city
@@ -29,26 +11,6 @@ query ContactDetailsTab($accountListId: ID!, $contactId: ID!) {
     }
     tagList
     envelopeGreeting
-    people {
-      nodes {
-        id
-        firstName
-        lastName
-        primaryPhoneNumber {
-          number
-          location
-        }
-        primaryEmailAddress {
-          email
-        }
-        anniversaryDay
-        anniversaryMonth
-        anniversaryYear
-        birthdayDay
-        birthdayMonth
-        birthdayYear
-      }
-    }
     preferredContactMethod
     timezone
     user {
@@ -59,5 +21,6 @@ query ContactDetailsTab($accountListId: ID!, $contactId: ID!) {
     sendNewsletter
     greeting
     #TODO add Magazine
+    ...ContactPeople
   }
 }

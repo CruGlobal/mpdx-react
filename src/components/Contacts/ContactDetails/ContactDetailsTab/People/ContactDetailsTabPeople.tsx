@@ -4,7 +4,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Person } from '../../../../../../graphql/types.generated';
 import { RingIcon } from '../../../RingIcon';
-import { ContactDetailsTabQuery } from '../ContactDetailsTab.generated';
+import { ContactPeopleFragment } from './ContactPeople.generated';
 
 const ContactPersonAvatar = styled(Avatar)(({ theme }) => ({
   margin: theme.spacing(1),
@@ -41,13 +41,15 @@ const ContactPersonIconContainer = styled(Box)(() => ({
 }));
 
 interface ContactDetailsPeopleProp {
-  data: ContactDetailsTabQuery;
+  data: ContactPeopleFragment;
 }
 
 export const ContactDetailsTabPeople: React.FC<ContactDetailsPeopleProp> = ({
   data,
 }) => {
   const { t } = useTranslation();
+
+  const { primaryPerson, people } = data;
 
   const personView = (person: Person) => {
     return (
@@ -62,7 +64,7 @@ export const ContactDetailsTabPeople: React.FC<ContactDetailsPeopleProp> = ({
             <Typography variant="h6">
               {`${person.firstName} ${person.lastName}`}
             </Typography>
-            {data.contact.primaryPerson.id == person.id ? (
+            {primaryPerson.id == person.id ? (
               <ContactPersonPrimaryText variant="subtitle1">
                 {`- ${t('Primary')}`}
               </ContactPersonPrimaryText>
@@ -127,15 +129,12 @@ export const ContactDetailsTabPeople: React.FC<ContactDetailsPeopleProp> = ({
       </ContactPersonContainer>
     );
   };
+
   return (
     <>
-      {data.contact.primaryPerson !== null
-        ? personView(data.contact.primaryPerson as Person)
-        : null}
-      {data.contact.people.nodes.map((person) =>
-        person.id !== data.contact.primaryPerson.id
-          ? personView(person as Person)
-          : null,
+      {primaryPerson !== null ? personView(primaryPerson as Person) : null}
+      {people.nodes.map((person) =>
+        person.id !== primaryPerson.id ? personView(person as Person) : null,
       )}
     </>
   );
