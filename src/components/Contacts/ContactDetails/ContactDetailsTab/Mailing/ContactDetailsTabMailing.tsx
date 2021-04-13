@@ -49,10 +49,15 @@ export const ContactDetailsTabMailing: React.FC<MailingProp> = ({ data }) => {
         <ContactDetailsMailingTexContainer>
           {/* Address Section */}
           <Typography variant="subtitle1">{name}</Typography>
-          <Typography variant="subtitle1">{street}</Typography>
-          <Typography variant="subtitle1">
-            {`${city}, ${state} ${postalCode}`}
-          </Typography>
+          {data.contact.primaryAddress ? (
+            <>
+              <Typography variant="subtitle1">{street ?? ''}</Typography>
+              <Typography variant="subtitle1">
+                {`${city ?? ''}, ${state ?? ''} ${postalCode ?? ''}`}
+              </Typography>
+            </>
+          ) : null}
+
           {/* Show More Section */}
           <ContactDetailsMailingLabelTextContainer>
             <Link href="#">
