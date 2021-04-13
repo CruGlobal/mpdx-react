@@ -35,7 +35,6 @@ export const ContactDetailsOther: React.FC<ContactDetailsOtherProp> = ({
   } = contact;
   return (
     <Box>
-      <Typography variant="h6">{t('Other')}</Typography>
       <ContactOtherContainer>
         <ContactOtherTextContainer>
           <ContactOtherTextLabel variant="subtitle1">

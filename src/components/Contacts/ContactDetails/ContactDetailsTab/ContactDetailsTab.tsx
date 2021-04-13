@@ -5,6 +5,8 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useContactDetailsTabQuery } from './ContactDetailsTab.generated';
 import { ContactDetailsTabMailing } from './Mailing/ContactDetailsTabMailing';
+import { ContactDetailsOther } from './Other/ContactDetailsOther';
+import { ContactOtherFragment } from './Other/ContactOther.generated';
 import { ContactTags } from './Tags/ContactTags';
 
 const ContactDetailsTabContainer = styled(Box)(() => ({
@@ -139,7 +141,7 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
             <ContactDetailLoadingPlaceHolder variant="rect" />
           </>
         ) : (
-          <></>
+          <ContactDetailsOther contact={data.contact as ContactOtherFragment} />
         )}
       </ContactDetailSectionContainer>
       <Divider />
