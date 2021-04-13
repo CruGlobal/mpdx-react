@@ -79,7 +79,19 @@ export const ContactDetailsHeader = ({
       <HeaderBar>
         <ContactAvatar src={contact?.avatar || ''} />
         <HeaderBarContactWrap>
-          {contact ? (
+          {loading ? (
+            <Box role="Skeleton">
+              <Skeleton
+                variant="text"
+                style={{
+                  display: 'inline',
+                  marginLeft: 18,
+                  width: 240,
+                  fontSize: 24,
+                }}
+              />
+            </Box>
+          ) : contact ? (
             <>
               <PrimaryContactName role="ContactName" variant="h5">
                 {`${contact.primaryPerson?.firstName} ${contact.primaryPerson?.lastName}`}
@@ -88,17 +100,7 @@ export const ContactDetailsHeader = ({
                 'Primary',
               )}`}</PrimaryText>
             </>
-          ) : (
-            <Skeleton
-              variant="text"
-              style={{
-                display: 'inline',
-                marginLeft: 18,
-                width: 240,
-                fontSize: 24,
-              }}
-            />
-          )}
+          ) : null}
         </HeaderBarContactWrap>
         <HeaderBarButtonsWrap>
           <ButtonWrap>

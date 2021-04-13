@@ -10,7 +10,7 @@ const onClose = jest.fn();
 
 describe('ContactDetails', () => {
   it('should show loading state', async () => {
-    const { findAllByRole } = render(
+    const { queryByRole } = render(
       <GqlMockedProvider<GetContactDetailsHeaderQuery>
         mocks={{ contact: { id: contactId } }}
       >
@@ -22,11 +22,12 @@ describe('ContactDetails', () => {
       </GqlMockedProvider>,
     );
 
-    expect((await findAllByRole('ContactName'))[0]).toBeInTheDocument();
+    expect(queryByRole('Skeleton')).toBeInTheDocument();
+    expect(queryByRole('ContactName')).toBeNull();
   });
 
   it('should render with contact details', async () => {
-    const { findAllByRole } = render(
+    const { findAllByRole, queryByRole } = render(
       <GqlMockedProvider<GetContactDetailsHeaderQuery>
         mocks={{ contact: { id: contactId } }}
       >
@@ -38,8 +39,10 @@ describe('ContactDetails', () => {
       </GqlMockedProvider>,
     );
 
-    await waitFor(async () =>
-      expect((await findAllByRole('ContactName'))[0]).toBeInTheDocument(),
-    );
+    await waitFor(async () => {
+      expect((await findAllByRole('ContactName'))[0]).toBeInTheDocument();
+    });
+
+    expect(queryByRole('Skeleton')).toBeNull();
   });
 });
