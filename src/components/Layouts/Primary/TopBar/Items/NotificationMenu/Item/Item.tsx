@@ -27,9 +27,9 @@ import {
 import { useAcknowledgeUserNotificationMutation } from './AcknowledgeUserNotification.generated';
 
 interface Props {
-  item?: GetNotificationsQuery['userNotifications']['edges'][0]['node'];
+  item?: GetNotificationsQuery['userNotifications']['nodes'][0];
   last?: boolean;
-  previousItem?: GetNotificationsQuery['userNotifications']['edges'][0]['node'];
+  previousItem?: GetNotificationsQuery['userNotifications']['nodes'][0];
   onClick?: () => void;
 }
 
@@ -87,14 +87,16 @@ const NotificationMenuItem = ({
             },
           };
           const dataFromCache = cache.readQuery<GetNotificationsQuery>(query);
-          const data = {
-            userNotifications: {
-              ...dataFromCache.userNotifications,
-            },
-          };
-          data.userNotifications.unreadCount--;
-          cache.writeQuery({ ...query, data });
-          optimisticResponse = false;
+          if (dataFromCache) {
+            const data = {
+              userNotifications: {
+                ...dataFromCache.userNotifications,
+                unreadCount: dataFromCache.userNotifications.unreadCount - 1,
+              },
+            };
+            cache.writeQuery({ ...query, data });
+            optimisticResponse = false;
+          }
         },
       });
     }

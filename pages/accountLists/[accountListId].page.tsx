@@ -1,6 +1,6 @@
 import React, { ReactElement, useEffect } from 'react';
 import Head from 'next/head';
-import { GetServerSideProps, GetServerSidePropsResult } from 'next';
+import { GetServerSideProps } from 'next';
 import { getSession } from 'next-auth/client';
 import { useTranslation } from 'react-i18next';
 import Dashboard from '../../src/components/Dashboard';
@@ -40,7 +40,7 @@ export const getServerSideProps: GetServerSideProps = async ({
   params,
   req,
   res,
-}): Promise<GetServerSidePropsResult<Props | unknown>> => {
+}) => {
   const session = await getSession({ req });
 
   if (!session?.user['token']) {
@@ -56,9 +56,11 @@ export const getServerSideProps: GetServerSideProps = async ({
   >({
     query: GetDashboardDocument,
     variables: {
-      accountListId: Array.isArray(params.accountListId)
-        ? params.accountListId[0]
-        : params.accountListId,
+      accountListId: params?.accountListId
+        ? Array.isArray(params.accountListId)
+          ? params.accountListId[0]
+          : params.accountListId
+        : '',
       // TODO: implement these variables in query
       // endOfDay: DateTime.local().endOf('day').toISO(),
       // today: DateTime.local().endOf('day').toISODate(),
@@ -72,7 +74,7 @@ export const getServerSideProps: GetServerSideProps = async ({
   return {
     props: {
       data: response.data,
-      accountListId: params.accountListId.toString(),
+      accountListId: params?.accountListId?.toString(),
     },
   };
 };

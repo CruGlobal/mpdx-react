@@ -27,33 +27,32 @@ const NewsletterTextContainer = styled(ListItemText)(() => ({
 const NewsletterMenu = ({ accountListId }: Props): ReactElement<Props> => {
   const { t } = useTranslation();
 
-  const [anchorEl, setAnchorEl] = useState(undefined);
+  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>();
   const [selectedMenuItem, changeSelectedMenuItem] = useState(-1);
   const [newsletterMenuDialogOpen, changeNewsletterMenuDialogOpen] = useState(
     false,
   );
 
-  const {
-    data: {
-      taskAnalytics: {
-        lastElectronicNewsletterCompletedAt,
-        lastPhysicalNewsletterCompletedAt,
-      } = {},
-    } = {},
-    loading,
-  } = useGetTaskAnalyticsQuery({
+  const { data, loading } = useGetTaskAnalyticsQuery({
     variables: { accountListId },
   });
 
-  const handleMenuOpen = (event) => {
+  const lastElectronicNewsletterCompletedAt =
+    data?.taskAnalytics.lastElectronicNewsletterCompletedAt;
+  const lastPhysicalNewsletterCompletedAt =
+    data?.taskAnalytics.lastPhysicalNewsletterCompletedAt;
+
+  const handleMenuOpen = (
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+  ) => {
     setAnchorEl(event.currentTarget);
   };
 
   const handleMenuClose = () => {
-    setAnchorEl(null);
+    setAnchorEl(undefined);
   };
 
-  const handleMenuItemClick = (menuItem) => {
+  const handleMenuItemClick = (menuItem: number) => {
     changeSelectedMenuItem(menuItem);
     changeNewsletterMenuDialogOpen(true);
   };
@@ -64,31 +63,25 @@ const NewsletterMenu = ({ accountListId }: Props): ReactElement<Props> => {
   };
 
   const latestNewsletterDate = () => {
-    const electronicDate = DateTime.fromISO(
-      lastElectronicNewsletterCompletedAt,
-    );
-    const physicalDate = DateTime.fromISO(lastPhysicalNewsletterCompletedAt);
-
-    if (
-      !lastElectronicNewsletterCompletedAt &&
-      !lastPhysicalNewsletterCompletedAt
-    ) {
-      return t('never');
-    } else if (
+    const electronicDate =
       lastElectronicNewsletterCompletedAt &&
-      !lastPhysicalNewsletterCompletedAt
-    ) {
-      return electronicDate.toLocaleString();
-    } else if (
-      !lastElectronicNewsletterCompletedAt &&
-      lastPhysicalNewsletterCompletedAt
-    ) {
-      return physicalDate.toLocaleString();
-    } else {
+      DateTime.fromISO(lastElectronicNewsletterCompletedAt);
+    const physicalDate =
+      lastPhysicalNewsletterCompletedAt &&
+      DateTime.fromISO(lastPhysicalNewsletterCompletedAt);
+
+    if (electronicDate && physicalDate) {
       return electronicDate < physicalDate
         ? physicalDate.toLocaleString()
         : electronicDate.toLocaleString();
     }
+    if (electronicDate) {
+      return electronicDate.toLocaleString();
+    }
+    if (physicalDate) {
+      return physicalDate.toLocaleString();
+    }
+    return t('never');
   };
 
   const renderDialog = () => {

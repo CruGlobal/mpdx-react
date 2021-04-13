@@ -13,7 +13,7 @@ export const Default = (): ReactElement => {
   const id = 'd1b7a8c1-9b2e-4234-b2d6-e52c151bbc7b';
   const itemWithoutDonation = (
     type: NotificationTypeTypeEnum,
-  ): GetNotificationsQuery['userNotifications']['edges'][0]['node'] => {
+  ): GetNotificationsQuery['userNotifications']['nodes'][0] => {
     return {
       id,
       read: false,
@@ -34,7 +34,7 @@ export const Default = (): ReactElement => {
   };
   const itemWithDonation = (
     type: NotificationTypeTypeEnum,
-  ): GetNotificationsQuery['userNotifications']['edges'][0]['node'] => {
+  ): GetNotificationsQuery['userNotifications']['nodes'][0] => {
     return {
       id,
       read: false,

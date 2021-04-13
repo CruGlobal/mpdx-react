@@ -16,10 +16,9 @@ jest.mock('../../../App', () => ({
 }));
 
 describe('TopBar', () => {
-  let mocks;
+  const mocks = [getTopBarMultipleMock(), ...getNotificationsMocks()];
   beforeEach(() => {
-    mocks = [getTopBarMultipleMock(), ...getNotificationsMocks()];
-    state = { accountListId: null, breadcrumb: null };
+    state = { accountListId: 'accountListId-1', breadcrumb: '' };
     (useApp as jest.Mock).mockReturnValue({
       state,
       dispatch,

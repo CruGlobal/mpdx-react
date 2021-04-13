@@ -20,7 +20,7 @@ export const Default = (): ReactElement => {
 export const Loading = (): ReactElement => {
   const mock = {
     ContactFilters: {
-      contactFilters: undefined,
+      contactFilters: null,
     },
   };
 
@@ -48,7 +48,7 @@ export const Empty = (): ReactElement => {
 export const Error = (): ReactElement => {
   const mock = {
     ContactFilters: {
-      contactFilters: undefined,
+      contactFilters: null,
     },
     error: { name: 'error', message: 'Error loading data. Try again.' },
   };

@@ -1,6 +1,7 @@
 import React from 'react';
 import { render, waitFor, fireEvent } from '@testing-library/react';
 import { MockedProvider } from '@apollo/client/testing';
+import { SnackbarProvider } from 'notistack';
 import {
   GetWeeklyActivityQueryDefaultMocks,
   GetWeeklyActivityQueryLoadingMocks,
@@ -10,12 +11,14 @@ import WeeklyActivity from '.';
 describe('WeeklyActivity', () => {
   it('loading', () => {
     const { getByTestId } = render(
-      <MockedProvider
-        mocks={GetWeeklyActivityQueryLoadingMocks()}
-        addTypename={false}
-      >
-        <WeeklyActivity accountListId="abc" />
-      </MockedProvider>,
+      <SnackbarProvider>
+        <MockedProvider
+          mocks={GetWeeklyActivityQueryLoadingMocks()}
+          addTypename={false}
+        >
+          <WeeklyActivity accountListId="abc" />
+        </MockedProvider>
+      </SnackbarProvider>,
     );
     expect(
       getByTestId('WeeklyActivityTableCellCompletedCalls').children[0]
@@ -45,12 +48,14 @@ describe('WeeklyActivity', () => {
 
   it('default', async () => {
     const { getByTestId, queryByTestId, getByRole } = render(
-      <MockedProvider
-        mocks={GetWeeklyActivityQueryDefaultMocks()}
-        addTypename={false}
-      >
-        <WeeklyActivity accountListId="abc" />
-      </MockedProvider>,
+      <SnackbarProvider>
+        <MockedProvider
+          mocks={GetWeeklyActivityQueryDefaultMocks()}
+          addTypename={false}
+        >
+          <WeeklyActivity accountListId="abc" />
+        </MockedProvider>
+      </SnackbarProvider>,
     );
     expect(getByTestId('WeeklyActivityTableCellDateRange').textContent).toEqual(
       'Dec 29 - Jan 4',

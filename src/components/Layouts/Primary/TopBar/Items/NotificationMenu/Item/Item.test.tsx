@@ -20,7 +20,7 @@ describe('NotificationMenuItem', () => {
   const itemWithoutDonation = (
     type: NotificationTypeTypeEnum,
     occurredAt = '2020-05-25T20:00:00-04:00',
-  ): GetNotificationsQuery['userNotifications']['edges'][0]['node'] => {
+  ): GetNotificationsQuery['userNotifications']['nodes'][0] => {
     return {
       id,
       read: false,
@@ -41,7 +41,7 @@ describe('NotificationMenuItem', () => {
   };
   const itemWithDonation = (
     type: NotificationTypeTypeEnum,
-  ): GetNotificationsQuery['userNotifications']['edges'][0]['node'] => {
+  ): GetNotificationsQuery['userNotifications']['nodes'][0] => {
     return {
       id,
       read: false,
@@ -434,7 +434,7 @@ describe('NotificationMenuItem', () => {
       jest.spyOn(cache, 'writeQuery');
       const data: GetNotificationsQuery = {
         userNotifications: {
-          edges: [],
+          nodes: [],
           pageInfo: {
             endCursor: null,
             hasNextPage: false,
@@ -475,7 +475,7 @@ describe('NotificationMenuItem', () => {
         },
         data: {
           userNotifications: {
-            edges: [],
+            nodes: [],
             pageInfo: {
               endCursor: null,
               hasNextPage: false,

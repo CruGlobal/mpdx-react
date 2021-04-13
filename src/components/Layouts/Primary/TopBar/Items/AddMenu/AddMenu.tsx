@@ -24,15 +24,7 @@ const AddMenu = (): ReactElement => {
   const classes = useStyles();
   const { t } = useTranslation();
 
-  const [anchorEl, setAnchorEl] = useState(null);
-
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
+  const [anchorEl, setAnchorEl] = useState<EventTarget & HTMLButtonElement>();
 
   return (
     <>
@@ -40,7 +32,7 @@ const AddMenu = (): ReactElement => {
         className={classes.link}
         aria-controls="add-menu"
         aria-haspopup="true"
-        onClick={handleClick}
+        onClick={(event) => setAnchorEl(event.currentTarget)}
       >
         <AddIcon />
       </IconButton>
@@ -49,7 +41,7 @@ const AddMenu = (): ReactElement => {
         anchorEl={anchorEl}
         keepMounted
         open={Boolean(anchorEl)}
-        onClose={handleClose}
+        onClose={() => setAnchorEl(undefined)}
         classes={{ paper: classes.menuPaper }}
       >
         <Box display="flex" flexDirection="row" justifyContent="center">

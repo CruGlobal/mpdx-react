@@ -172,7 +172,7 @@ const TaskStatus = ({
   } else {
     return (
       <Tooltip
-        title={t('No Due Date')}
+        title={t('No Due Date') ?? ''}
         placement={tooltipPlacement}
         arrow
         disableFocusListener={disableTooltip}

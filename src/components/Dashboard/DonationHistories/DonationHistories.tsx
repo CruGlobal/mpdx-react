@@ -96,13 +96,17 @@ const DonationHistories = ({
   const fills = ['#FFCF07', '#30F2F2', '#1FC0D2', '#007398'];
   const currencies: { dataKey: string; fill: string }[] = [];
   const periods = reportsDonationHistories?.periods?.map((period) => {
-    const data = {
+    const data: {
+      [key: string]: string | number;
+      startDate: string;
+      total: number;
+    } = {
       startDate: DateTime.fromISO(period.startDate).toFormat('LLL yy'),
       total: period.convertedTotal,
     };
     period.totals.forEach((total) => {
       if (!currencies.find((currency) => total.currency == currency.dataKey)) {
-        currencies.push({ dataKey: total.currency, fill: fills.pop() });
+        currencies.push({ dataKey: total.currency, fill: fills.pop() ?? '' });
       }
       data[total.currency] = total.convertedAmount;
     });
@@ -114,9 +118,9 @@ const DonationHistories = ({
       periods.reduce((result, { total }) => result + total, 0) === 0);
   const domainMax = Math.max(
     ...(periods?.map((period) => period.total) || []),
-    goal,
-    pledged,
-    reportsDonationHistories?.averageIgnoreCurrent,
+    goal ?? 0,
+    pledged ?? 0,
+    reportsDonationHistories?.averageIgnoreCurrent ?? 0,
   );
 
   return (
@@ -168,7 +172,7 @@ const DonationHistories = ({
                         data-testid="DonationHistoriesTypographyAverage"
                       >
                         <strong>{t('Average')}</strong>{' '}
-                        {loading ? (
+                        {loading || !reportsDonationHistories ? (
                           <Skeleton
                             variant="text"
                             style={{ display: 'inline-block' }}

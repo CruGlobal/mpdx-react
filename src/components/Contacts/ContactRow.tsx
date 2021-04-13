@@ -85,7 +85,7 @@ export const ContactRow: React.FC<Props> = ({ contact, onContactSelected }) => {
             margin: theme.spacing(1),
           }}
         >
-          <GiftStatus lateAt={contact.lateAt} />
+          <GiftStatus lateAt={contact.lateAt ?? undefined} />
         </Box>
 
         <Hidden mdDown>

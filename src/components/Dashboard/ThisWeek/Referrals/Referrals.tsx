@@ -63,7 +63,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 interface ReferralsTabProps {
   loading: boolean;
-  referrals:
+  referrals?:
     | GetThisWeekQuery['onHandReferrals']
     | GetThisWeekQuery['recentReferrals'];
   tab: 'Recent' | 'OnHand';
@@ -178,7 +178,7 @@ const ReferralsTab = ({
 };
 
 interface Props {
-  loading?: boolean;
+  loading: boolean;
   recentReferrals?: GetThisWeekQuery['recentReferrals'];
   onHandReferrals?: GetThisWeekQuery['onHandReferrals'];
 }
@@ -192,7 +192,10 @@ const Referrals = ({
   const { t } = useTranslation();
   const [value, setValue] = useState(0);
 
-  const handleChange = (_event: React.ChangeEvent, newValue: number): void => {
+  const handleChange = (
+    _event: React.ChangeEvent<Record<string, unknown>>,
+    newValue: number,
+  ): void => {
     setValue(newValue);
   };
 

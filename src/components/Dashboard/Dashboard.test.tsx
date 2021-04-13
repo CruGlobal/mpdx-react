@@ -1,6 +1,7 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import { MockedProvider } from '@apollo/client/testing';
+import { SnackbarProvider } from 'notistack';
 import matchMediaMock from '../../../__tests__/util/matchMediaMock';
 import { AppProviderContext } from '../App/Provider';
 import { GetDashboardQuery } from '../../../pages/accountLists/GetDashboard.generated';
@@ -110,9 +111,11 @@ describe('Dashboard', () => {
 
   it('default', async () => {
     const { getByTestId, queryByTestId } = render(
-      <MockedProvider mocks={GetThisWeekDefaultMocks()} addTypename={false}>
-        <Dashboard accountListId="abc" data={data} />
-      </MockedProvider>,
+      <SnackbarProvider>
+        <MockedProvider mocks={GetThisWeekDefaultMocks()} addTypename={false}>
+          <Dashboard accountListId="abc" data={data} />
+        </MockedProvider>
+      </SnackbarProvider>,
     );
     await waitFor(() =>
       expect(
@@ -147,19 +150,21 @@ describe('Dashboard', () => {
 
   it('handles null fields', async () => {
     const { getByTestId, queryByTestId } = render(
-      <MockedProvider mocks={GetThisWeekDefaultMocks()} addTypename={false}>
-        <Dashboard
-          accountListId="abc"
-          data={{
-            ...data,
-            accountList: {
-              ...data.accountList,
-              monthlyGoal: null,
-              currency: null,
-            },
-          }}
-        />
-      </MockedProvider>,
+      <SnackbarProvider>
+        <MockedProvider mocks={GetThisWeekDefaultMocks()} addTypename={false}>
+          <Dashboard
+            accountListId="abc"
+            data={{
+              ...data,
+              accountList: {
+                ...data.accountList,
+                monthlyGoal: null,
+                currency: 'USD',
+              },
+            }}
+          />
+        </MockedProvider>
+      </SnackbarProvider>,
     );
     await waitFor(() =>
       expect(

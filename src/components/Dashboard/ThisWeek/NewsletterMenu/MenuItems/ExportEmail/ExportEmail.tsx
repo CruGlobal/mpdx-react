@@ -98,7 +98,7 @@ const ExportEmail = ({
           disabled={!emailList}
           variant="contained"
           color="primary"
-          onClick={() => navigator.clipboard.writeText(emailList)}
+          onClick={() => emailList && navigator.clipboard.writeText(emailList)}
         >
           {t('Copy All')}
         </Button>

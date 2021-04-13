@@ -78,8 +78,8 @@ const AccountLists = ({ data }: Props): ReactElement => {
                 totalPledges,
                 currency,
               }) => {
-                const receivedPercentage = receivedPledges / monthlyGoal;
-                const totalPercentage = totalPledges / monthlyGoal;
+                const receivedPercentage = receivedPledges / (monthlyGoal ?? 0);
+                const totalPercentage = totalPledges / (monthlyGoal ?? 0);
 
                 return (
                   <Grid key={id} item xs={12} sm={4}>

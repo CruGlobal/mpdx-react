@@ -21,7 +21,7 @@ describe('ContactDetailTab', () => {
         "contactId": "contact-id",
       }
     `);
-    expect(result.current.data.contact.name).toMatchInlineSnapshot(
+    expect(result.current.data?.contact.name).toMatchInlineSnapshot(
       `"School Feather"`,
     );
   });
