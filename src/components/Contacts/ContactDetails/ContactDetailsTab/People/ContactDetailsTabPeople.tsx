@@ -77,9 +77,11 @@ export const ContactDetailsTabPeople: React.FC<ContactDetailsPeopleProp> = ({
               <Typography variant="subtitle1">
                 {person.primaryPhoneNumber.number}
               </Typography>
-              <Typography variant="caption">
-                {` - ${person.primaryPhoneNumber.location}`}
-              </Typography>
+              {person.primaryPhoneNumber.location ? (
+                <Typography variant="caption">
+                  {` - ${person.primaryPhoneNumber.location}`}
+                </Typography>
+              ) : null}
             </ContactPersonRowContainer>
           ) : null}
           {/* Email Section */}
