@@ -49,7 +49,7 @@ export const ContactDetailsTabPeople: React.FC<ContactDetailsPeopleProp> = ({
 }) => {
   const { t } = useTranslation();
 
-  const personView = (person: Person, isPrimary: boolean) => {
+  const personView = (person: Person) => {
     return (
       <ContactPersonContainer>
         <ContactPersonAvatar
@@ -62,7 +62,7 @@ export const ContactDetailsTabPeople: React.FC<ContactDetailsPeopleProp> = ({
             <Typography variant="h6">
               {`${person.firstName} ${person.lastName}`}
             </Typography>
-            {isPrimary ? (
+            {data.contact.primaryPerson.id == person.id ? (
               <ContactPersonPrimaryText variant="subtitle1">
                 {`- ${t('Primary')}`}
               </ContactPersonPrimaryText>
@@ -124,11 +124,11 @@ export const ContactDetailsTabPeople: React.FC<ContactDetailsPeopleProp> = ({
   return (
     <>
       {data.contact.primaryPerson !== null
-        ? personView(data.contact.primaryPerson as Person, true)
+        ? personView(data.contact.primaryPerson as Person)
         : null}
       {data.contact.people.nodes.map((person) =>
         person.id !== data.contact.primaryPerson.id
-          ? personView(person as Person, false)
+          ? personView(person as Person)
           : null,
       )}
     </>
