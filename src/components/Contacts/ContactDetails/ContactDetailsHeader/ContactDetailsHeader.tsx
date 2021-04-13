@@ -1,5 +1,6 @@
 import { Box } from '@material-ui/core';
 import React from 'react';
+import theme from '../../../../theme';
 
 import { useGetContactDetailsHeaderQuery } from './ContactDetailsHeader.generated';
 
@@ -17,7 +18,7 @@ export const ContactDetailsHeader: React.FC<Props> = ({
   });
 
   return (
-    <Box>
+    <Box style={{ backgroundColor: theme.palette.common.white }}>
       {/*TODO: Build Header*/}
       {loading ? (
         <p>loading</p>

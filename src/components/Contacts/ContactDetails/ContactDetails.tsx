@@ -1,6 +1,7 @@
-import { AppBar, Box, Tab, Tabs } from '@material-ui/core';
+import { AppBar, Box, styled, Tab, Tabs } from '@material-ui/core';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import theme from '../../../theme';
 import { ContactDetailsHeader } from './ContactDetailsHeader/ContactDetailsHeader';
 
 interface Props {
@@ -8,6 +9,17 @@ interface Props {
   contactId: string;
   onClose: () => void;
 }
+
+const ContactTabBar = styled(AppBar)(({}) => ({
+  position: 'static',
+  backgroundColor: theme.palette.common.white,
+}));
+
+const ContactTab = styled(Tab)(({}) => ({
+  display: 'flex',
+  flexShrink: 1,
+  color: theme.palette.text.primary,
+}));
 
 export const ContactDetails: React.FC<Props> = ({
   accountListId,
@@ -21,15 +33,15 @@ export const ContactDetails: React.FC<Props> = ({
         accountListId={accountListId}
         contactId={contactId}
       />
-      <AppBar position="static">
+      <ContactTabBar>
         <Tabs>
-          <Tab label={t('Tasks')} />
-          <Tab label={t('Donations')} />
-          <Tab label={t('Referrals')} />
-          <Tab label={t('Contact Details')} />
-          <Tab label={t('Notes')} />
+          <ContactTab label={t('Tasks')} />
+          <ContactTab label={t('Donations')} />
+          <ContactTab label={t('Referrals')} />
+          <ContactTab label={t('Contact Details')} />
+          <ContactTab label={t('Notes')} />
         </Tabs>
-      </AppBar>
+      </ContactTabBar>
     </Box>
   );
 };
