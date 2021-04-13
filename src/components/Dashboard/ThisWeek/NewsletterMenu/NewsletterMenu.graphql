@@ -1,0 +1,6 @@
+query GetTaskAnalytics($accountListId: ID!) {
+  taskAnalytics(accountListId: $accountListId) {
+    lastElectronicNewsletterCompletedAt
+    lastPhysicalNewsletterCompletedAt
+  }
+}

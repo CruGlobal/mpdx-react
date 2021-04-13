@@ -1,0 +1,14 @@
+query GetEmailNewsletterContacts($accountListId: ID!) {
+  contacts(accountListId: $accountListId, newsletter: EMAIL, status: ACTIVE) {
+    nodes {
+      id
+      primaryPerson {
+        id
+        primaryEmailAddress {
+          id
+          email
+        }
+      }
+    }
+  }
+}
