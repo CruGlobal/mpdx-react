@@ -5,12 +5,12 @@ import { Skeleton } from '@material-ui/lab';
 import React, { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import theme from '../../../../../theme';
-import { ContactDetailsHeaderFragment } from '../ContactDetailsHeader.generated';
+import { ContactHeaderAddressFragment } from './ContactHeaderAddress.generated';
 import { ContactHeaderSection } from './ContactHeaderSection';
 
 interface Props {
   loading: boolean;
-  contact?: ContactDetailsHeaderFragment;
+  contact?: ContactHeaderAddressFragment;
 }
 
 const LocationIcon = styled(LocationOn)(({}) => ({

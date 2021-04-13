@@ -7,10 +7,10 @@ import theme from '../../../../theme';
 
 import { StarContactIcon } from '../../StarContactIcon/StarContactIcon';
 import { useGetContactDetailsHeaderQuery } from './ContactDetailsHeader.generated';
-import { ContactHeaderAddressSection } from './ContactDetailsHeaderSection/ContactHeaderAddressSection';
-import { ContactHeaderPhoneSection } from './ContactDetailsHeaderSection/ContactHeaderPhoneSection';
-import { ContactHeaderEmailSection } from './ContactDetailsHeaderSection/ContactHeaderEmailSection';
-import { ContactHeaderStatusSection } from './ContactDetailsHeaderSection/ContactHeaderStatusSection';
+import { ContactHeaderAddressSection } from './ContactHeaderSection/ContactHeaderAddressSection';
+import { ContactHeaderPhoneSection } from './ContactHeaderSection/ContactHeaderPhoneSection';
+import { ContactHeaderEmailSection } from './ContactHeaderSection/ContactHeaderEmailSection';
+import { ContactHeaderStatusSection } from './ContactHeaderSection/ContactHeaderStatusSection';
 
 interface Props {
   accountListId: string;

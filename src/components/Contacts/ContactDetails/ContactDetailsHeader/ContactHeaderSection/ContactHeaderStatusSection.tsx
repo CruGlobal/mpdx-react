@@ -3,13 +3,13 @@ import { Skeleton } from '@material-ui/lab';
 
 import React, { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ContactDetailsHeaderFragment } from '../ContactDetailsHeader.generated';
 import { ContactHeaderSection } from './ContactHeaderSection';
+import { ContactHeaderStatusFragment } from './ContactHeaderStatus.generated';
 import { HandshakeIcon } from './HandshakeIcon';
 
 interface Props {
   loading: boolean;
-  contact?: ContactDetailsHeaderFragment;
+  contact?: ContactHeaderStatusFragment;
 }
 
 const TextSkeleton = styled(Skeleton)(({}) => ({

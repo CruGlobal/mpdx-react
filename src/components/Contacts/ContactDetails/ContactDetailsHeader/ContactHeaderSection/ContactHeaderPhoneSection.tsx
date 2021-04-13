@@ -1,18 +1,18 @@
 import { styled, Typography } from '@material-ui/core';
-import { Email } from '@material-ui/icons';
+import { Phone } from '@material-ui/icons';
 import { Skeleton } from '@material-ui/lab';
 
 import React, { ReactElement } from 'react';
 import theme from '../../../../../theme';
-import { ContactDetailsHeaderFragment } from '../ContactDetailsHeader.generated';
+import { ContactHeaderPhoneFragment } from './ContactHeaderPhone.generated';
 import { ContactHeaderSection } from './ContactHeaderSection';
 
 interface Props {
   loading: boolean;
-  contact?: ContactDetailsHeaderFragment;
+  contact?: ContactHeaderPhoneFragment;
 }
 
-const EmailIcon = styled(Email)(({}) => ({
+const PhoneIcon = styled(Phone)(({}) => ({
   margin: 8,
   width: 20,
   height: 20,
@@ -25,7 +25,7 @@ const TextSkeleton = styled(Skeleton)(({}) => ({
   fontSize: 16,
 }));
 
-export const ContactHeaderEmailSection = ({
+export const ContactHeaderPhoneSection = ({
   loading,
   contact,
 }: Props): ReactElement => {
@@ -35,15 +35,15 @@ export const ContactHeaderEmailSection = ({
     content = <TextSkeleton variant="text" />;
   } else if (contact) {
     const {
-      primaryPerson: { primaryEmailAddress: { email } = {} } = {},
+      primaryPerson: { primaryPhoneNumber: { number } = {} } = {},
     } = contact;
 
-    if (!!email) {
-      content = <Typography variant="subtitle1">{email}</Typography>;
+    if (!!number) {
+      content = <Typography variant="subtitle1">{number}</Typography>;
     }
   }
 
   return (
-    <ContactHeaderSection icon={<EmailIcon />}>{content}</ContactHeaderSection>
+    <ContactHeaderSection icon={<PhoneIcon />}>{content}</ContactHeaderSection>
   );
 };
