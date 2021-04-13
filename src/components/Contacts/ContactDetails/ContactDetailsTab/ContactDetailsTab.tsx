@@ -4,6 +4,7 @@ import { Skeleton } from '@material-ui/lab';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useContactDetailsTabQuery } from './ContactDetailsTab.generated';
+import { ContactDetailsTabMailing } from './Mailing/ContactDetailsTabMailing';
 import { ContactTags } from './Tags/ContactTags';
 
 const ContactDetailsTabContainer = styled(Box)(() => ({
@@ -117,7 +118,7 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
             <ContactDetailLoadingPlaceHolder variant="rect" />
           </>
         ) : (
-          <></>
+          <ContactDetailsTabMailing data={data} />
         )}
       </ContactDetailSectionContainer>
       <Divider />

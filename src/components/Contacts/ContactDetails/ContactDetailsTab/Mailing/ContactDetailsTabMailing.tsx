@@ -4,10 +4,6 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { ContactDetailsTabQuery } from '../ContactDetailsTab.generated';
 
-const ContactDetailsMailingTitle = styled(Typography)(({ theme }) => ({
-  marginTop: theme.spacing(2),
-}));
-
 const ContactDetailsMailingMainContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
   marginTop: theme.spacing(2),
@@ -48,9 +44,6 @@ export const ContactDetailsTabMailing: React.FC<MailingProp> = ({ data }) => {
   } = data.contact;
   return (
     <Box>
-      <ContactDetailsMailingTitle variant="h6">
-        {t('Mailing')}
-      </ContactDetailsMailingTitle>
       <ContactDetailsMailingMainContainer>
         <ContactDetailsMailingIcon />
         <ContactDetailsMailingTexContainer>
