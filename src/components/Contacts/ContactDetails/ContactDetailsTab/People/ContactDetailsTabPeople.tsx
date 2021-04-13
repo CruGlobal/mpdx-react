@@ -96,26 +96,30 @@ export const ContactDetailsTabPeople: React.FC<ContactDetailsPeopleProp> = ({
             </ContactPersonRowContainer>
           ) : null}
           {/* Birthday Section */}
-          {person.birthdayDay !== null ? (
+          {person.birthdayDay !== null && person.birthdayMonth ? (
             <ContactPersonRowContainer>
               <ContactPersonIconContainer>
                 <Cake color="disabled" />
               </ContactPersonIconContainer>
               {/* TODO: Change to local format for different countries */}
               <Typography variant="subtitle1">
-                {`${person.birthdayMonth}/${person.birthdayDay}/${person.birthdayYear}`}
+                {person.birthdayYear
+                  ? `${person.birthdayMonth}/${person.birthdayDay}/${person.birthdayYear}`
+                  : `${person.birthdayMonth}/${person.birthdayDay}/1900`}
               </Typography>
             </ContactPersonRowContainer>
           ) : null}
           {/* Anniversary Section */}
-          {person.anniversaryDay !== null ? (
+          {person.anniversaryDay !== null && person.anniversaryMonth ? (
             <ContactPersonRowContainer>
               <ContactPersonIconContainer>
                 <RingIcon color="disabled" />
               </ContactPersonIconContainer>
               {/* TODO: Change to local format for different countries */}
               <Typography variant="subtitle1">
-                {`${person.anniversaryMonth}/${person.anniversaryDay}/${person.anniversaryYear}`}
+                {person.anniversaryYear
+                  ? `${person.anniversaryMonth}/${person.anniversaryDay}/${person.anniversaryYear}`
+                  : `${person.anniversaryMonth}/${person.anniversaryDay}/1900`}
               </Typography>
             </ContactPersonRowContainer>
           ) : null}
