@@ -33,8 +33,6 @@ query ContactDetailsTab($accountListId: ID!, $contactId: ID!) {
         birthdayYear
       }
     }
-    preferredContactMethod
-    timezone
     user {
       firstName
       lastName
@@ -43,5 +41,6 @@ query ContactDetailsTab($accountListId: ID!, $contactId: ID!) {
     sendNewsletter
     greeting
     #TODO add Magazine
+    ...ContactOther
   }
 }
