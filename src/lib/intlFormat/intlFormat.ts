@@ -21,13 +21,13 @@ export const percentageFormat = (
 
 export const currencyFormat = (
   value: number,
-  currency: string,
+  currency = 'USD',
   minimumFractionDigits = 0,
   language = getLanguage(),
 ): string =>
   new Intl.NumberFormat(language, {
     style: 'currency',
-    currency: currency ?? 'USD',
+    currency,
     minimumFractionDigits,
   }).format(
     Number.isFinite(value)

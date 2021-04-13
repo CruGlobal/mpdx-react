@@ -72,7 +72,7 @@ describe('TaskDrawerCompleteForm', () => {
     const dateString = dateFormat(DateTime.local());
     expect(
       getAllByRole('textbox').find(
-        (item: HTMLInputElement) => item.value === dateString,
+        (item) => (item as HTMLInputElement).value === dateString,
       ),
     ).toBeInTheDocument();
   });
@@ -159,7 +159,7 @@ describe('TaskDrawerCompleteForm', () => {
   });
 
   const getOptions = (
-    activityType: ActivityTypeEnum,
+    activityType?: ActivityTypeEnum,
   ): { results: ResultEnum[]; nextActions: ActivityTypeEnum[] } => {
     const { getByRole, queryByRole } = render(
       <TestWrapper
@@ -176,20 +176,22 @@ describe('TaskDrawerCompleteForm', () => {
         />
       </TestWrapper>,
     );
-    let results = [];
+    let results: ResultEnum[] = [];
     if (queryByRole('button', { name: 'Result' })) {
       userEvent.click(getByRole('button', { name: 'Result' }));
       results = within(getByRole('listbox', { name: 'Result' }))
         .getAllByRole('option')
-        .map((option) => option.textContent);
+        .map((option) => option.textContent)
+        .filter(Boolean) as ResultEnum[];
       userEvent.click(getByRole('option', { name: 'NONE' }));
     }
-    let nextActions = [];
+    let nextActions: ActivityTypeEnum[] = [];
     if (queryByRole('button', { name: 'Next Action' })) {
       userEvent.click(getByRole('button', { name: 'Next Action' }));
       nextActions = within(getByRole('listbox', { name: 'Next Action' }))
         .getAllByRole('option')
-        .map((option) => option.textContent);
+        .map((option) => option.textContent)
+        .filter(Boolean) as ActivityTypeEnum[];
     }
     return { results, nextActions };
   };
@@ -451,7 +453,7 @@ describe('TaskDrawerCompleteForm', () => {
   });
 
   it('has correct options for null', () => {
-    const { results, nextActions } = getOptions(null);
+    const { results, nextActions } = getOptions(undefined);
     expect(results).toEqual([]);
     expect(nextActions).toEqual([]);
   });

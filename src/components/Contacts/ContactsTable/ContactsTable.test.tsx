@@ -29,7 +29,7 @@ describe('ContactFilters', () => {
   });
 
   it('contacts loaded', async () => {
-    const { queryByTestId, queryByText } = render(
+    const { getByTestId, queryByText } = render(
       <GqlMockedProvider<ContactsQuery>>
         <ContactsTable
           accountListId={accountListId}
@@ -43,7 +43,7 @@ describe('ContactFilters', () => {
     expect(queryByText('Loading')).toBeNull();
     expect(queryByText('No Data')).toBeNull();
     expect(queryByText('Error:')).toBeNull();
-    expect(queryByTestId('ContactRows').childNodes.length).toEqual(3);
+    expect(getByTestId('ContactRows').childNodes.length).toEqual(3);
   });
 
   it('empty', async () => {

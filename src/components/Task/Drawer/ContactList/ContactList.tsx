@@ -1,4 +1,4 @@
-import React, { ReactElement, useEffect } from 'react';
+import React, { ReactElement } from 'react';
 import {
   makeStyles,
   Theme,
@@ -11,7 +11,7 @@ import { useTranslation } from 'react-i18next';
 import { useSnackbar } from 'notistack';
 import illustration4 from '../../../../images/drawkit/grape/drawkit-grape-pack-illustration-4.svg';
 import TaskDrawerContactListItem from './Item';
-import { useGetContactsForTaskDrawerContactListLazyQuery } from './TaskDrawerContactList.generated';
+import { useGetContactsForTaskDrawerContactListQuery } from './TaskDrawerContactList.generated';
 
 const useStyles = makeStyles((theme: Theme) => ({
   cardContent: {
@@ -45,25 +45,16 @@ const TaskDrawerContactList = ({
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
 
-  const [
-    getContacts,
-    { data, loading },
-  ] = useGetContactsForTaskDrawerContactListLazyQuery({
+  const { data, loading } = useGetContactsForTaskDrawerContactListQuery({
+    variables: {
+      accountListId,
+      contactIds,
+    },
+    skip: !(contactIds.length > 0),
     onError: (error) => {
       enqueueSnackbar(error.message, { variant: 'error' });
     },
   });
-
-  useEffect(() => {
-    if (contactIds.length > 0) {
-      getContacts({
-        variables: {
-          accountListId,
-          contactIds,
-        },
-      });
-    }
-  }, [contactIds]);
 
   return (
     <Box m={2}>

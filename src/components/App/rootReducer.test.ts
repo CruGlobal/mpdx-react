@@ -3,8 +3,8 @@ import rootReducer, { Action, AppState } from './rootReducer';
 
 describe('rootReducer', () => {
   const state: AppState = {
-    accountListId: null,
-    breadcrumb: null,
+    accountListId: undefined,
+    breadcrumb: undefined,
   };
 
   describe('updateAccountListId', () => {

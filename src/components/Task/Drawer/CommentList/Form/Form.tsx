@@ -75,21 +75,16 @@ const Form = ({ accountListId, taskId }: Props): ReactElement => {
             createdAt: DateTime.local().toISO(),
             me: true,
             person: {
-              id: user.id,
-              firstName: user.firstName,
-              lastName: user.lastName,
+              id: user?.id || '',
+              firstName: user?.firstName,
+              lastName: user?.lastName,
             },
           },
         },
       },
-      update: (
-        cache,
-        {
-          data: {
-            createTaskComment: { comment },
-          },
-        },
-      ) => {
+      update: (cache, { data: updatedData }) => {
+        const comment = updatedData?.createTaskComment?.comment;
+
         const query = {
           query: GetCommentsForTaskDrawerCommentListDocument,
           variables: {
@@ -102,13 +97,13 @@ const Form = ({ accountListId, taskId }: Props): ReactElement => {
         );
         const data = {
           task: {
-            ...dataFromCache.task,
+            ...dataFromCache?.task,
             comments: {
-              ...dataFromCache.task.comments,
+              ...dataFromCache?.task.comments,
               nodes: [
                 ...reject(
                   ({ id: commentId }) => id === commentId,
-                  dataFromCache.task.comments.nodes,
+                  dataFromCache?.task.comments.nodes,
                 ),
                 { ...comment },
               ],

@@ -49,12 +49,12 @@ const TaskDrawerCommentList = ({
     },
   });
 
-  const ref = useRef(null);
+  const ref = useRef<HTMLDivElement>(null);
 
-  const nodes = data?.task?.comments?.nodes;
+  const nodes = data?.task.comments.nodes;
 
   useEffect(() => {
-    ref.current.scrollIntoView({ behaviour: 'smooth' });
+    ref.current?.scrollIntoView({ behavior: 'smooth' });
   }, [nodes]);
 
   return (
@@ -81,22 +81,21 @@ const TaskDrawerCommentList = ({
                 </CardContent>
               </Card>
             )}
-            {nodes?.length > 0 &&
-              nodes.reduce((result, comment, index) => {
-                return [
-                  ...result,
-                  <Box
-                    data-testid={`TaskDrawerCommentListItem-${comment.id}`}
-                    key={comment.id}
-                  >
-                    <TaskDrawerCommentListItem
-                      comment={comment}
-                      reverse={comment.me}
-                      nextComment={nodes[index + 1]}
-                    />
-                  </Box>,
-                ];
-              }, [])}
+            {nodes?.reduce<JSX.Element[]>((result, comment, index) => {
+              return [
+                ...result,
+                <Box
+                  data-testid={`TaskDrawerCommentListItem-${comment.id}`}
+                  key={comment.id}
+                >
+                  <TaskDrawerCommentListItem
+                    comment={comment}
+                    reverse={comment.me}
+                    nextComment={nodes[index + 1]}
+                  />
+                </Box>,
+              ];
+            }, [])}
           </>
         )}
       </Box>

@@ -116,6 +116,9 @@ const LateCommitments = ({
                 data-testid="LateCommitmentsListContacts"
               >
                 {latePledgeContacts.nodes.map((contact) => {
+                  if (!contact.lateAt) {
+                    return null;
+                  }
                   const count = DateTime.local().diff(
                     DateTime.fromISO(contact.lateAt),
                     'days',

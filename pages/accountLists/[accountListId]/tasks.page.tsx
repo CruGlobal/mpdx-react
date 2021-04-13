@@ -13,56 +13,59 @@ export const initialFilterFromPath = (path: string): TaskFilter => {
   let initialFilter: TaskFilter = {};
   const queryString = path.split('?')[1];
 
-  if (queryString) {
-    const filter = parse(queryString);
-
-    initialFilter = Object.entries(filter).reduce(
-      (result: TaskFilter, [key, value]) => {
-        switch (key) {
-          case 'completed':
-            result.completed = value === 'true';
-            break;
-          case 'wildcardSearch':
-            result.wildcardSearch = value.toString();
-            break;
-          case 'startAt[max]':
-            if (!result.startAt) result.startAt = {};
-            result.startAt.max = value.toString();
-            break;
-          case 'startAt[min]':
-            if (!result.startAt) result.startAt = {};
-            result.startAt.min = value.toString();
-            break;
-          default:
-            result[key.replace('[]', '')] = Array.isArray(value)
-              ? value
-              : [value];
-        }
-        return result;
-      },
-      {},
-    );
-
-    const {
-      userIds,
-      tags,
-      contactIds,
-      activityType,
-      completed,
-      wildcardSearch,
-      startAt,
-    } = initialFilter;
-
-    return {
-      userIds,
-      tags,
-      contactIds,
-      activityType,
-      completed,
-      wildcardSearch,
-      startAt,
-    };
+  if (!queryString) {
+    return {};
   }
+  const filter = parse(queryString);
+
+  initialFilter = Object.entries(filter).reduce<TaskFilter>(
+    (result, [key, value]) => {
+      switch (key) {
+        case 'completed':
+          result.completed = value === 'true';
+          break;
+        case 'wildcardSearch':
+          result.wildcardSearch = value?.toString();
+          break;
+        case 'startAt[max]':
+          if (!result.startAt) result.startAt = {};
+          result.startAt.max = value?.toString();
+          break;
+        case 'startAt[min]':
+          if (!result.startAt) result.startAt = {};
+          result.startAt.min = value?.toString();
+          break;
+        default:
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          result[key.replace('[]', '')] = Array.isArray(value)
+            ? value
+            : [value];
+      }
+      return result;
+    },
+    {},
+  );
+
+  const {
+    userIds,
+    tags,
+    contactIds,
+    activityType,
+    completed,
+    wildcardSearch,
+    startAt,
+  } = initialFilter;
+
+  return {
+    userIds,
+    tags,
+    contactIds,
+    activityType,
+    completed,
+    wildcardSearch,
+    startAt,
+  };
 };
 
 const TasksPage = (): ReactElement => {
@@ -74,7 +77,7 @@ const TasksPage = (): ReactElement => {
     dispatch({ type: 'updateBreadcrumb', breadcrumb: t('Tasks') });
     dispatch({
       type: 'updateAccountListId',
-      accountListId: router.query.accountListId.toString(),
+      accountListId: router.query.accountListId?.toString() ?? '',
     });
   }, []);
 

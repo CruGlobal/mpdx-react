@@ -16,16 +16,16 @@ const TestRouter = ({ children, router = {} }: Props): ReactElement => {
     asPath: '',
     push: async (): Promise<boolean> => true,
     replace: async (): Promise<boolean> => true,
-    reload: (): void => null,
-    back: (): void => null,
+    reload: (): void => undefined,
+    back: (): void => undefined,
     prefetch: async (): Promise<void> => undefined,
-    beforePopState: (): void => null,
+    beforePopState: (): void => undefined,
     isFallback: false,
     isReady: false,
     events: {
-      on: (): void => null,
-      off: (): void => null,
-      emit: (): void => null,
+      on: (): void => undefined,
+      off: (): void => undefined,
+      emit: (): void => undefined,
     },
   };
 

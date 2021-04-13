@@ -1,11 +1,18 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import jwt from 'next-auth/jwt';
 
+if (!process.env.JWT_SECRET) {
+  throw new Error('JWT_SECRET env var is not set');
+}
+
 const handoff = async (
   req: NextApiRequest,
   res: NextApiResponse,
 ): Promise<void> => {
-  const jwtToken = await jwt.getToken({ req, secret: process.env.JWT_SECRET });
+  const jwtToken = (await jwt.getToken({
+    req,
+    secret: process.env.JWT_SECRET as string,
+  })) as { token: string } | null;
   if (
     jwtToken &&
     req.query.accountListId &&
@@ -19,7 +26,7 @@ const handoff = async (
       }mpdx.org/handoff`,
     );
 
-    url.searchParams.append('accessToken', jwtToken['token']);
+    url.searchParams.append('accessToken', jwtToken.token);
     url.searchParams.append(
       'accountListId',
       req.query.accountListId.toString(),

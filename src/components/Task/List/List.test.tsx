@@ -23,6 +23,8 @@ const openTaskDrawer = jest.fn();
 const mockEnqueue = jest.fn();
 
 jest.mock('notistack', () => ({
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   ...jest.requireActual('notistack'),
   useSnackbar: () => {
     return {
@@ -134,8 +136,13 @@ describe('TaskList', () => {
     });
     userEvent.click(getByRole('button', { name: 'Filter Table' }));
     const buttons = getAllByRole('button').filter((element) => element.id);
-    const buttonWithIdThatEndsWith = (value): HTMLElement =>
-      buttons.find((element) => element.id.endsWith(value));
+    const buttonWithIdThatEndsWith = (value: string): HTMLElement => {
+      const button = buttons.find((element) => element.id.endsWith(value));
+      if (!button) {
+        throw new Error(`buttonWithIdThatEndsWith(${value}) not found`);
+      }
+      return button;
+    };
     userEvent.click(buttonWithIdThatEndsWith('completedAt'));
     userEvent.click(getByRole('option', { name: 'Incomplete' }));
     userEvent.click(buttonWithIdThatEndsWith('activityType'));

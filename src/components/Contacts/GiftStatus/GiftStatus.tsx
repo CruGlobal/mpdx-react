@@ -6,7 +6,7 @@ import { DateTime } from 'luxon';
 import theme from '../../../theme';
 
 interface GiftStatusProps {
-  lateAt: string;
+  lateAt?: string;
 }
 
 enum GiftStatusEnum {
@@ -15,7 +15,7 @@ enum GiftStatusEnum {
   Hidden,
 }
 
-const giftIsLateStatus = (giftDate: string): GiftStatusEnum => {
+const giftIsLateStatus = (giftDate?: string): GiftStatusEnum => {
   if (!giftDate) {
     return GiftStatusEnum.Hidden;
   }

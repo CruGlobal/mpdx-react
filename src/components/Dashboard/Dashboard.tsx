@@ -30,7 +30,7 @@ const variants = {
 const Dashboard = ({ data, accountListId }: Props): ReactElement => {
   return (
     <>
-      <Welcome firstName={data.user.firstName} />
+      <Welcome firstName={data.user.firstName ?? undefined} />
       <Box py={5}>
         <Container>
           <motion.div
@@ -43,7 +43,7 @@ const Dashboard = ({ data, accountListId }: Props): ReactElement => {
               <Grid xs={12} sm={8} item>
                 <MonthlyGoal
                   accountListId={accountListId}
-                  goal={data.accountList.monthlyGoal}
+                  goal={data.accountList.monthlyGoal ?? undefined}
                   received={data.accountList.receivedPledges}
                   pledged={data.accountList.totalPledges}
                   totalGiftsNotStarted={data.contacts.totalCount}
@@ -58,7 +58,7 @@ const Dashboard = ({ data, accountListId }: Props): ReactElement => {
               </Grid>
               <Grid xs={12} item>
                 <DonationHistories
-                  goal={data.accountList.monthlyGoal}
+                  goal={data.accountList.monthlyGoal ?? undefined}
                   pledged={data.accountList.totalPledges}
                   reportsDonationHistories={data.reportsDonationHistories}
                   currencyCode={data.accountList.currency}

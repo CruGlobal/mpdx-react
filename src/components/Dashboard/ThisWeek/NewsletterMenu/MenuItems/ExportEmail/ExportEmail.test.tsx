@@ -88,13 +88,13 @@ describe('LogNewsletter', () => {
         },
       },
     };
-    const { queryByTestId, queryByText } = render(
+    const { queryByTestId, getByText } = render(
       <GqlMockedProvider<GetEmailNewsletterContactsQuery> mocks={mocks}>
         <ExportEmail accountListId={accountListId} handleClose={handleClose} />
       </GqlMockedProvider>,
     );
     await waitFor(() => expect(queryByTestId('emailList')).not.toBeNull());
-    userEvent.click(queryByText('Copy All'));
+    userEvent.click(getByText('Copy All'));
     expect(navigator.clipboard.writeText).toHaveBeenCalledWith(
       `${email1},${email2}`,
     );

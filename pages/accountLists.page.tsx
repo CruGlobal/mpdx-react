@@ -14,7 +14,7 @@ import {
 } from './GetAccountLists.generated';
 
 interface Props {
-  data: GetAccountListsQuery;
+  data?: GetAccountListsQuery;
 }
 
 const AccountListsPage = ({ data }: Props): ReactElement => {
@@ -30,7 +30,7 @@ const AccountListsPage = ({ data }: Props): ReactElement => {
       <Head>
         <title>MPDX | {t('Account Lists')}</title>
       </Head>
-      <AccountLists data={data} />
+      {data && <AccountLists data={data} />}
     </>
   );
 };
@@ -40,16 +40,18 @@ AccountListsPage.layout = BaseLayout;
 export const getServerSideProps: GetServerSideProps = async ({
   res,
   req,
-}): Promise<GetServerSidePropsResult<Props | unknown>> => {
+}): Promise<GetServerSidePropsResult<Props>> => {
   const session = await getSession({ req });
 
-  if (!session?.user['token']) {
+  const token = session?.user.token;
+
+  if (!token) {
     res.writeHead(302, { Location: '/' });
     res.end();
     return { props: {} };
   }
 
-  const client = await ssrClient(session?.user['token']);
+  const client = await ssrClient(token);
   const response = await client.query<
     GetAccountListsQuery,
     GetAccountListsQueryVariables
@@ -62,7 +64,7 @@ export const getServerSideProps: GetServerSideProps = async ({
     response.data.accountLists.nodes.length == 1
   ) {
     res.writeHead(302, {
-      Location: `/accountLists/${response.data.accountLists.nodes[0].id}`,
+      Location: `/accountLists/${response.data.accountLists.nodes[0]?.id}`,
     });
     res.end();
     return { props: {} };

@@ -24,14 +24,16 @@ const SearchMenu = (): ReactElement => {
   const classes = useStyles();
   const { t } = useTranslation();
 
-  const [anchorEl, setAnchorEl] = useState(null);
+  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>();
 
-  const handleClick = (event) => {
+  const handleClick = (
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+  ) => {
     setAnchorEl(event.currentTarget);
   };
 
   const handleClose = () => {
-    setAnchorEl(null);
+    setAnchorEl(undefined);
   };
 
   return (

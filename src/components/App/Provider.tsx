@@ -28,9 +28,9 @@ interface TaskDrawerPropsWithId extends TaskDrawerProps {
 
 const AppProvider = ({ initialState, children }: Props): ReactElement => {
   const [taskDrawers, setTaskDrawers] = useState<TaskDrawerPropsWithId[]>([]);
-  const [state, dispatch] = useReducer(rootReducer, {
-    accountListId: null,
-    breadcrumb: null,
+  const [state, dispatch] = useReducer<typeof rootReducer>(rootReducer, {
+    accountListId: undefined,
+    breadcrumb: undefined,
     ...initialState,
   });
 

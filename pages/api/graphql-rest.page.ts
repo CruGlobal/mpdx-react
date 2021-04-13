@@ -7,7 +7,7 @@ import {
   Response,
   RESTDataSource,
 } from 'apollo-datasource-rest';
-import { Resolvers } from './graphql-rest.page.generated';
+import { ContactFilterOption, Resolvers } from './graphql-rest.page.generated';
 
 const typeDefs = gql`
   type Query {
@@ -56,7 +56,7 @@ const typeDefs = gql`
 
 const resolvers: Resolvers = {
   Query: {
-    contactFilters: async (_source, { accountListId }, { dataSources }) => {
+    contactFilters: (_source, { accountListId }, { dataSources }) => {
       return dataSources.mpdxRestApi.getContactFilters(accountListId);
     },
     taskAnalytics: async (_source, { accountListId }, { dataSources }) => {
@@ -99,8 +99,25 @@ class MpdxRestApi extends RESTDataSource {
     }
   }
 
-  async getContactFilters(accountListId) {
-    const { data } = await this.get(
+  async getContactFilters(accountListId: string) {
+    const {
+      data,
+    }: {
+      data: {
+        id: string;
+        type: string;
+        attributes: {
+          type: string;
+          default_selection: string | boolean;
+          featured: boolean;
+          multiple: boolean;
+          name: string;
+          options: ContactFilterOption[];
+          parent: string;
+          title: string;
+        };
+      }[];
+    } = await this.get(
       `contacts/filters?filter[account_list_id]=${accountListId}`,
     );
     return data.map(
@@ -114,12 +131,12 @@ class MpdxRestApi extends RESTDataSource {
         defaultSelection:
           typeof default_selection === 'string'
             ? default_selection.split(/,\s?/)
-            : [default_selection],
+            : [default_selection.toString()],
       }),
     );
   }
 
-  async getTaskAnalytics(accountListId) {
+  async getTaskAnalytics(accountListId: string) {
     const { data } = await this.get(
       `tasks/analytics?filter[account_list_id]=${accountListId}`,
     );

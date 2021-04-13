@@ -54,11 +54,9 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 const taskSchema: yup.SchemaOf<
-  Required<
-    Pick<
-      TaskUpdateInput,
-      'id' | 'result' | 'nextAction' | 'tagList' | 'completedAt'
-    >
+  Pick<
+    TaskUpdateInput,
+    'id' | 'result' | 'nextAction' | 'tagList' | 'completedAt'
   >
 > = yup.object({
   id: yup.string(),
@@ -250,7 +248,9 @@ const TaskDrawerCompleteForm = ({
                     <Grid xs={6} item>
                       <DatePicker
                         fullWidth
-                        labelFunc={dateFormat}
+                        labelFunc={(date, invalidLabel) =>
+                          date ? dateFormat(date) : invalidLabel
+                        }
                         autoOk
                         label={t('Completed Date')}
                         value={completedAt}
@@ -302,7 +302,7 @@ const TaskDrawerCompleteForm = ({
                   onChange={(_, tagList): void =>
                     setFieldValue('tagList', tagList)
                   }
-                  value={tagList}
+                  value={tagList ?? undefined}
                   options={data?.accountList?.taskTagList || []}
                 />
               </Grid>
