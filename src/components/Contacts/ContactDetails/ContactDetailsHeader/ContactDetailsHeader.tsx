@@ -1,7 +1,7 @@
 import { Avatar, Box, IconButton, styled, Typography } from '@material-ui/core';
 import { Close, MoreVert } from '@material-ui/icons';
 import { Skeleton } from '@material-ui/lab';
-import React, { ReactElement } from 'react';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
 import theme from '../../../../theme';
 
@@ -19,7 +19,7 @@ interface Props {
 
 const HeaderBar = styled(Box)(({}) => ({
   display: 'flex',
-  paddingBottom: 24,
+  paddingBottom: theme.spacing(1),
 }));
 const HeaderBarContactWrap = styled(Box)(({}) => ({
   flex: 1,
@@ -63,21 +63,19 @@ const HeaderSectionWrap = styled(Box)(({}) => ({
   display: 'flex',
 }));
 
-export const ContactDetailsHeader = ({
+export const ContactDetailsHeader: React.FC<Props> = ({
   accountListId,
   contactId,
-}: Props): ReactElement => {
+}: Props) => {
   const { data, loading } = useGetContactDetailsHeaderQuery({
     variables: { accountListId, contactId },
   });
   const { t } = useTranslation();
 
-  const { contact } = data || {};
-
   return (
     <Box style={{ padding: 24 }}>
       <HeaderBar>
-        <ContactAvatar src={contact?.avatar || ''} />
+        <ContactAvatar src={data?.contact?.avatar || ''} />
         <HeaderBarContactWrap>
           {loading ? (
             <Box role="Skeleton">
@@ -91,10 +89,10 @@ export const ContactDetailsHeader = ({
                 }}
               />
             </Box>
-          ) : contact ? (
+          ) : data?.contact ? (
             <>
               <PrimaryContactName role="ContactName" variant="h5">
-                {`${contact.primaryPerson?.firstName} ${contact.primaryPerson?.lastName}`}
+                {`${data.contact.primaryPerson?.firstName} ${data.contact.primaryPerson?.lastName}`}
               </PrimaryContactName>
               <PrimaryText variant="subtitle1">{` - ${t(
                 'Primary',
@@ -116,12 +114,24 @@ export const ContactDetailsHeader = ({
       </HeaderBar>
       <HeaderSectionWrap>
         <Box flex={1}>
-          <ContactHeaderAddressSection loading={loading} contact={contact} />
-          <ContactHeaderPhoneSection loading={loading} contact={contact} />
-          <ContactHeaderEmailSection loading={loading} contact={contact} />
+          <ContactHeaderAddressSection
+            loading={loading}
+            contact={data?.contact}
+          />
+          <ContactHeaderPhoneSection
+            loading={loading}
+            contact={data?.contact}
+          />
+          <ContactHeaderEmailSection
+            loading={loading}
+            contact={data?.contact}
+          />
         </Box>
         <Box flex={1}>
-          <ContactHeaderStatusSection loading={loading} contact={contact} />
+          <ContactHeaderStatusSection
+            loading={loading}
+            contact={data?.contact}
+          />
         </Box>
       </HeaderSectionWrap>
     </Box>
