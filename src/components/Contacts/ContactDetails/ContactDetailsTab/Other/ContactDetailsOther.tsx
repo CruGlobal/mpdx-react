@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Link, styled, Typography } from '@material-ui/core';
+import { Box, styled, Typography } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { ContactOtherFragment } from './ContactOther.generated';
 
@@ -65,13 +65,7 @@ export const ContactDetailsOther: React.FC<ContactDetailsOtherProp> = ({
           <Typography variant="subtitle1">{churchName}</Typography>
         </ContactOtherTextContainer>
         <ContactOtherTextContainer>
-          <Link
-            href={website.startsWith('http') ? website : `http://${website}`}
-            target="_blank"
-            rel="noopener"
-          >
-            <Typography variant="subtitle1">{website}</Typography>
-          </Link>
+          <Typography variant="subtitle1">{website}</Typography>
         </ContactOtherTextContainer>
       </ContactOtherContainer>
     </Box>
