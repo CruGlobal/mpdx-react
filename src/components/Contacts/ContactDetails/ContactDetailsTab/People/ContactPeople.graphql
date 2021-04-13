@@ -1,0 +1,41 @@
+fragment ContactPeople on Contact {
+  id
+  primaryPerson {
+    id
+    firstName
+    lastName
+    primaryPhoneNumber {
+      number
+      location
+    }
+    primaryEmailAddress {
+      email
+    }
+    anniversaryDay
+    anniversaryMonth
+    anniversaryYear
+    birthdayDay
+    birthdayMonth
+    birthdayYear
+  }
+  people {
+    nodes {
+      id
+      firstName
+      lastName
+      primaryPhoneNumber {
+        number
+        location
+      }
+      primaryEmailAddress {
+        email
+      }
+      anniversaryDay
+      anniversaryMonth
+      anniversaryYear
+      birthdayDay
+      birthdayMonth
+      birthdayYear
+    }
+  }
+}
