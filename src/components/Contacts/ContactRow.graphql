@@ -14,8 +14,8 @@ fragment ContactRow on Contact {
   pledgeCurrency
   lateAt
   sendNewsletter
+  starredAt
   # TODO: Add when available in schema
   # taskCount
-  # starredAt
   ...CelebrationItems
 }
