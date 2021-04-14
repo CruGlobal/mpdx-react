@@ -1,6 +1,8 @@
 # dependencies
 .yarn
 .pnp.js
+.pnp.cjs
+.yarnrc.yml
 
 # testing
 /coverage
@@ -10,6 +12,8 @@
 
 # next.js
 /.next
+/public/sw*
+/public/workbox*
 
 # debug
 npm-debug.log*
