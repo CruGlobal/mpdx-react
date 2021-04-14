@@ -124,6 +124,30 @@ jobs:
         run: yarn chromatic --auto-accept-changes --skip 'dependabot/**' --exit-once-uploaded
         env:
           CHROMATIC_PROJECT_TOKEN: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+  lighthouse:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 15
+      - name: 📦 Install Dependencies
+        run: yarn install --immutable --immutable-cache
+      - name: 📈 Run GraphQL Codegen
+        run: |
+          yarn gql
+          yarn gql:server
+      - name: 🏗️ Create production build
+        run: yarn build
+        env:
+          # Needed since NODE_ENV is set to production
+          JWT_SECRET: github-actions-jwt-secret
+      - name: 🚨 Run Lighthouse
+        run: yarn lighthouse
+        env:
+          LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
+          # Needed since NODE_ENV is set to production
+          JWT_SECRET: github-actions-jwt-secret
   yarn-check-cache:
     runs-on: ubuntu-latest
     steps:
