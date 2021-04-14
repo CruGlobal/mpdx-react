@@ -22,7 +22,8 @@
     "gql": "graphql-codegen --config codegen.yml",
     "gql:w": "yarn gql --watch",
     "gql:server": "graphql-codegen --config codegen-server.yml",
-    "gql:server:w": "yarn gql:server --watch"
+    "gql:server:w": "yarn gql:server --watch",
+    "lighthouse": "lhci autorun"
   },
   "dependencies": {
     "@apollo/client": "^3.3.9",
@@ -83,6 +84,7 @@
     "@graphql-codegen/typescript-react-apollo": "2.2.1",
     "@graphql-codegen/typescript-resolvers": "^1.18.2",
     "@graphql-tools/merge": "^6.2.10",
+    "@lhci/cli": "^0.7.1",
     "@next/bundle-analyzer": "^10.0.6",
     "@react-dnd/invariant": "^2.0.0",
     "@storybook/addon-actions": "^6.1.17",

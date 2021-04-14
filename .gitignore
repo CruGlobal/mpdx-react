@@ -42,3 +42,6 @@ yarn-error.log*
 # GraphQL Codegen
 /graphql
 *.generated.ts
+
+# Lighthouse
+.lighthouseci
