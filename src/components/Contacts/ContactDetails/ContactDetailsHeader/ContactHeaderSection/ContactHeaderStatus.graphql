@@ -1,0 +1,4 @@
+fragment ContactHeaderStatus on Contact {
+  id
+  status
+}

@@ -1,33 +1,14 @@
 fragment ContactDetailsHeader on Contact {
   id
   avatar
-  greeting
-  lateAt
-  name
-  pledgeAmount
-  pledgeCurrency
-  pledgeFrequency
-  primaryAddress {
-    street
-    city
-    state
-    postalCode
-    country
-  }
   primaryPerson {
     firstName
-    gender
     lastName
-    primaryEmailAddress {
-      email
-    }
-    primaryPhoneNumber {
-      number
-    }
-    suffix
-    title
   }
-  status
+  ...ContactHeaderAddress
+  ...ContactHeaderEmail
+  ...ContactHeaderPhone
+  ...ContactHeaderStatus
 }
 
 query GetContactDetailsHeader($accountListId: ID!, $contactId: ID!) {
