@@ -17,7 +17,7 @@ describe('GiftStatus', () => {
     expect(getByTitle('On Time')).toBeVisible();
   });
   it('is hidden', () => {
-    const { queryByTitle } = render(<GiftStatus lateAt={null} />);
+    const { queryByTitle } = render(<GiftStatus lateAt={undefined} />);
     expect(queryByTitle('On Time')).toBeNull();
     expect(queryByTitle('Late')).toBeNull();
   });

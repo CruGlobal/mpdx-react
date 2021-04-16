@@ -49,9 +49,9 @@ interface Props {
 const MonthlyGoal = ({
   accountListId,
   loading,
-  goal,
-  received,
-  pledged,
+  goal = 0,
+  received = 0,
+  pledged = 0,
   totalGiftsNotStarted,
   currencyCode = 'USD',
 }: Props): ReactElement => {

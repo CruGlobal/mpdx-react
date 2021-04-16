@@ -52,14 +52,19 @@ const ProfileMenu = (): ReactElement => {
   const { dispatch, state } = useApp();
   const { t } = useTranslation();
   const { data } = useGetTopBarQuery();
-  const [profileMenuAnchorEl, setProfileMenuAnchorEl] = useState(null);
+  const [
+    profileMenuAnchorEl,
+    setProfileMenuAnchorEl,
+  ] = useState<HTMLButtonElement>();
   const profileMenuOpen = Boolean(profileMenuAnchorEl);
-  const handleProfileMenuOpen = (event) => {
+  const handleProfileMenuOpen = (
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+  ) => {
     setProfileMenuAnchorEl(event.currentTarget);
   };
 
   const handleProfileMenuClose = () => {
-    setProfileMenuAnchorEl(null);
+    setProfileMenuAnchorEl(undefined);
   };
 
   useEffect(() => {
@@ -94,7 +99,7 @@ const ProfileMenu = (): ReactElement => {
         {data && (
           <MenuItem button={false} className={classes.menuItemAccount}>
             <ListItemAvatar>
-              <Avatar>{data.user.firstName[0]}</Avatar>
+              <Avatar>{data.user.firstName?.[0]}</Avatar>
             </ListItemAvatar>
             <ListItemText
               primary={[data.user.firstName, data.user.lastName]

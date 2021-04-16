@@ -1,0 +1,8 @@
+fragment ContactOther on Contact {
+  name
+  preferredContactMethod
+  locale
+  timezone
+  churchName
+  website
+}

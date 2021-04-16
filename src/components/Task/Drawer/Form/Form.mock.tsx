@@ -15,6 +15,7 @@ import {
   DeleteTaskMutation,
   GetDataForTaskDrawerDocument,
   GetDataForTaskDrawerQuery,
+  TaskMutationResponseFragment,
   UpdateTaskDocument,
   UpdateTaskMutation,
 } from './TaskDrawer.generated';
@@ -99,31 +100,23 @@ export const getDataForTaskDrawerEmptyMock = (
 };
 
 export const createTaskMutationMock = (): MockedResponse => {
-  const task: GetTaskForTaskDrawerQuery['task'] = {
+  const task: TaskCreateInput = {
     id: null,
     activityType: null,
     subject: 'abc',
     startAt: DateTime.local().plus({ hours: 1 }).startOf('hour').toISO(),
     completedAt: null,
     tagList: [],
-    contacts: {
-      nodes: [],
-    },
-    user: null,
+    contactIds: [],
+    userId: null,
     notificationTimeBefore: null,
     notificationType: null,
     notificationTimeUnit: null,
   };
   const data: CreateTaskMutation = {
     createTask: {
-      task: { ...task, id: 'task-1' },
+      task: { ...task, id: 'task-1' } as TaskMutationResponseFragment,
     },
-  };
-  const { contacts: _contacts, user: _user, id: _id, ...createTask } = task;
-  const attributes: TaskCreateInput = {
-    ...createTask,
-    userId: null,
-    contactIds: [],
   };
 
   return {
@@ -131,7 +124,7 @@ export const createTaskMutationMock = (): MockedResponse => {
       query: CreateTaskDocument,
       variables: {
         accountListId: 'abc',
-        attributes,
+        attributes: task,
       },
     },
     result: { data },
@@ -139,41 +132,30 @@ export const createTaskMutationMock = (): MockedResponse => {
 };
 
 export const updateTaskMutationMock = (): MockedResponse => {
-  const task: GetTaskForTaskDrawerQuery['task'] = {
+  const task: TaskUpdateInput = {
     id: 'task-1',
     activityType: ActivityTypeEnum.NewsletterEmail,
     subject: 'On the Journey with the Johnson Family',
     startAt: DateTime.local(2013, 1, 5, 1, 2).toISO(),
     completedAt: DateTime.local(2016, 1, 5, 1, 2).toISO(),
     tagList: ['tag-1', 'tag-2'],
-    contacts: {
-      nodes: [
-        { id: 'contact-1', name: 'Anderson, Robert' },
-        { id: 'contact-2', name: 'Smith, John' },
-      ],
-    },
-    user: { id: 'user-1', firstName: 'Robert', lastName: 'Anderson' },
+    contactIds: ['contact-1', 'contact-2'],
+    userId: 'user-1',
     notificationTimeBefore: 20,
     notificationType: NotificationTypeEnum.Both,
     notificationTimeUnit: NotificationTimeUnitEnum.Hours,
   };
   const data: UpdateTaskMutation = {
     updateTask: {
-      task,
+      task: task as TaskMutationResponseFragment,
     },
-  };
-  const { contacts: _contacts, user: _user, ...updateTask } = task;
-  const attributes: TaskUpdateInput = {
-    ...updateTask,
-    userId: task.user.id,
-    contactIds: task.contacts.nodes.map(({ id }) => id),
   };
   return {
     request: {
       query: UpdateTaskDocument,
       variables: {
         accountListId: 'abc',
-        attributes,
+        attributes: task,
       },
     },
     result: { data },

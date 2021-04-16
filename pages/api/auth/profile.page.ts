@@ -8,8 +8,8 @@ import {
 } from './UserKeySignIn.generated';
 
 export interface Profile {
-  id: string;
-  name: string;
+  id?: string;
+  name?: string;
   token: string;
 }
 
@@ -38,8 +38,16 @@ const profile = async (
       ticket,
     },
   });
-  const { user, token } = response.data.userKeySignIn;
-  res.status(200).json({ ...user, token });
+  const payload = response.data?.userKeySignIn;
+  if (payload?.token) {
+    res.status(200).json({
+      id: payload.user?.id,
+      name: payload.user?.name ?? undefined,
+      token: payload.token,
+    });
+  } else {
+    throw new Error('userKeySignIn ticket exchange failed');
+  }
 };
 
 export default profile;

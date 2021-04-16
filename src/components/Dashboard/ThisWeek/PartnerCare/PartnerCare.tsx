@@ -96,7 +96,10 @@ const PartnerCare = ({
     openTaskDrawer({ taskId });
   };
 
-  const handleChange = (_event: React.ChangeEvent, newValue: number): void => {
+  const handleChange = (
+    _event: React.ChangeEvent<Record<string, unknown>>,
+    newValue: number,
+  ): void => {
     setValue(newValue);
   };
 
@@ -160,7 +163,7 @@ const PartnerCare = ({
           {!loading && (
             <>
               {(!prayerRequestTasks ||
-                prayerRequestTasks.nodes.length === 0) && (
+                prayerRequestTasks?.nodes.length === 0) && (
                 <CardContent
                   className={classes.cardContent}
                   data-testid="PartnerCarePrayerCardContentEmpty"
@@ -293,105 +296,111 @@ const PartnerCare = ({
                   className={classes.list}
                   data-testid="PartnerCareCelebrationList"
                 >
-                  {reportsPeopleWithBirthdays.periods[0].people.map(
-                    (person) => (
-                      <ListItem
-                        key={person.id}
-                        button
-                        data-testid={`PartnerCareBirthdayListItem-${person.id}`}
-                      >
-                        <ListItemIcon>
-                          <CakeIcon />
-                        </ListItemIcon>
-                        <ListItemText
-                          disableTypography={true}
-                          primary={
-                            <Typography variant="body1">
-                              {person.firstName} {person.lastName}
-                            </Typography>
-                          }
-                          secondary={
-                            <Box style={{ whiteSpace: 'nowrap' }}>
-                              <Box
-                                component="div"
-                                textOverflow="ellipsis"
-                                overflow="hidden"
-                              >
-                                <Typography
-                                  component="span"
-                                  variant="body2"
-                                  color="textSecondary"
+                  {reportsPeopleWithBirthdays?.periods[0].people.map(
+                    (person) =>
+                      person.birthdayDay &&
+                      person.birthdayMonth && (
+                        <ListItem
+                          key={person.id}
+                          button
+                          data-testid={`PartnerCareBirthdayListItem-${person.id}`}
+                        >
+                          <ListItemIcon>
+                            <CakeIcon />
+                          </ListItemIcon>
+                          <ListItemText
+                            disableTypography={true}
+                            primary={
+                              <Typography variant="body1">
+                                {person.firstName} {person.lastName}
+                              </Typography>
+                            }
+                            secondary={
+                              <Box style={{ whiteSpace: 'nowrap' }}>
+                                <Box
+                                  component="div"
+                                  textOverflow="ellipsis"
+                                  overflow="hidden"
                                 >
-                                  {dayMonthFormat(
-                                    person.birthdayDay,
-                                    person.birthdayMonth,
-                                  )}
-                                </Typography>
+                                  <Typography
+                                    component="span"
+                                    variant="body2"
+                                    color="textSecondary"
+                                  >
+                                    {dayMonthFormat(
+                                      person.birthdayDay,
+                                      person.birthdayMonth,
+                                    )}
+                                  </Typography>
+                                </Box>
                               </Box>
-                            </Box>
-                          }
-                        />
-                        {/*TODO: This button complete the Celebration and remove it from the list: https://jira.cru.org/browse/MPDX-6945 */}
-                        <ListItemSecondaryAction>
-                          <Checkbox
-                            icon={<Brightness1Outlined />}
-                            checkedIcon={<CheckCircle />}
-                            edge="end"
+                            }
                           />
-                        </ListItemSecondaryAction>
-                      </ListItem>
-                    ),
+                          {/*TODO: This button complete the Celebration and remove it from the list: https://jira.cru.org/browse/MPDX-6945 */}
+                          <ListItemSecondaryAction>
+                            <Checkbox
+                              icon={<Brightness1Outlined />}
+                              checkedIcon={<CheckCircle />}
+                              edge="end"
+                            />
+                          </ListItemSecondaryAction>
+                        </ListItem>
+                      ),
                   )}
                   {uniqBy(
                     ({ parentContact: id }) => id,
-                    reportsPeopleWithAnniversaries.periods[0].people,
-                  ).map((person) => (
-                    <ListItem
-                      key={person.id}
-                      data-testid={`PartnerCareAnniversaryListItem-${person.id}`}
-                      button
-                    >
-                      <ListItemIcon>
-                        <FavoriteIcon />
-                      </ListItemIcon>
-                      <ListItemText
-                        disableTypography={true}
-                        primary={
-                          <Typography variant="body1">
-                            {person.parentContact.name}
-                          </Typography>
-                        }
-                        secondary={
-                          <Box style={{ whiteSpace: 'nowrap' }}>
-                            <Box
-                              component="div"
-                              textOverflow="ellipsis"
-                              overflow="hidden"
-                            >
-                              <Typography
-                                component="span"
-                                variant="body2"
-                                color="textSecondary"
-                              >
-                                {dayMonthFormat(
-                                  person.anniversaryDay,
-                                  person.anniversaryMonth,
-                                )}
+                    reportsPeopleWithAnniversaries?.periods[0].people,
+                  ).map(
+                    (person) =>
+                      person.anniversaryDay &&
+                      person.anniversaryMonth && (
+                        <ListItem
+                          key={person.id}
+                          data-testid={`PartnerCareAnniversaryListItem-${person.id}`}
+                          button
+                        >
+                          <ListItemIcon>
+                            <FavoriteIcon />
+                          </ListItemIcon>
+                          <ListItemText
+                            disableTypography={true}
+                            primary={
+                              <Typography variant="body1">
+                                {person.parentContact.name}
                               </Typography>
-                            </Box>
-                          </Box>
-                        }
-                      />
-                      {/*TODO: This button complete the Celebration and remove it from the list: https://jira.cru.org/browse/MPDX-6945 */}
-                      <ListItemSecondaryAction>
-                        <Checkbox
-                          icon={<Brightness1Outlined />}
-                          checkedIcon={<CheckCircle />}
-                          edge="end"
-                        />
-                      </ListItemSecondaryAction>
-                    </ListItem>
-                  ))}
+                            }
+                            secondary={
+                              <Box style={{ whiteSpace: 'nowrap' }}>
+                                <Box
+                                  component="div"
+                                  textOverflow="ellipsis"
+                                  overflow="hidden"
+                                >
+                                  <Typography
+                                    component="span"
+                                    variant="body2"
+                                    color="textSecondary"
+                                  >
+                                    {dayMonthFormat(
+                                      person.anniversaryDay,
+                                      person.anniversaryMonth,
+                                    )}
+                                  </Typography>
+                                </Box>
+                              </Box>
+                            }
+                          />
+                          {/*TODO: This button complete the Celebration and remove it from the list: https://jira.cru.org/browse/MPDX-6945 */}
+                          <ListItemSecondaryAction>
+                            <Checkbox
+                              icon={<Brightness1Outlined />}
+                              checkedIcon={<CheckCircle />}
+                              edge="end"
+                            />
+                          </ListItemSecondaryAction>
+                        </ListItem>
+                      ),
+                  )}
                 </List>
               )}
             </>

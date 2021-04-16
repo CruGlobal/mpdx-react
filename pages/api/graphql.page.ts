@@ -4,10 +4,18 @@ import jwt from 'next-auth/jwt';
 import { NextApiRequest } from 'next';
 
 class AuthenticatedDataSource extends RemoteGraphQLDataSource {
-  async willSendRequest({ request, context }) {
+  willSendRequest({
+    request,
+    context,
+  }: Parameters<
+    NonNullable<InstanceType<typeof RemoteGraphQLDataSource>['willSendRequest']>
+  >[0]) {
     try {
       if (context.jwtToken) {
-        request.http.headers.set('Authorization', `Bearer ${context.jwtToken}`);
+        request?.http?.headers.set(
+          'Authorization',
+          `Bearer ${context.jwtToken}`,
+        );
       }
     } catch (e) {
       console.error('Error adding Authorization header', e);
@@ -25,6 +33,10 @@ const gateway = new ApolloGateway({
   },
 });
 
+if (!process.env.JWT_SECRET) {
+  throw new Error('JWT_SECRET env var is not set');
+}
+
 const server = new ApolloServer({
   gateway,
   playground: {
@@ -37,8 +49,8 @@ const server = new ApolloServer({
   context: async ({ req }: { req: NextApiRequest }) => {
     const jwtToken = (await jwt.getToken({
       req,
-      secret: process.env.JWT_SECRET,
-    })) as null | { token: string };
+      secret: process.env.JWT_SECRET as string,
+    })) as { token: string } | null;
 
     return { jwtToken: jwtToken?.token };
   },

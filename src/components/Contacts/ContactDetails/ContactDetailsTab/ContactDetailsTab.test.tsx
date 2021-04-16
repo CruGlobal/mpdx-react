@@ -21,8 +21,8 @@ describe('ContactDetailTab', () => {
         "contactId": "contact-id",
       }
     `);
-    expect(result.current.data.contact.name).toMatchInlineSnapshot(
-      `"Elephant Film Stomach"`,
+    expect(result.current.data?.contact.name).toMatchInlineSnapshot(
+      `"School Feather"`,
     );
   });
 });

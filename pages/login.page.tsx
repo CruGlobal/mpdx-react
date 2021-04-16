@@ -2,7 +2,7 @@ import React, { ReactElement } from 'react';
 import { signin, getSession } from 'next-auth/client';
 import { Button } from '@material-ui/core';
 import SubjectIcon from '@material-ui/icons/Subject';
-import { GetServerSideProps, GetServerSidePropsResult } from 'next';
+import { GetServerSideProps } from 'next';
 import Head from 'next/head';
 import Welcome from '../src/components/Welcome';
 import BaseLayout from '../src/components/Layouts/Basic';
@@ -41,9 +41,7 @@ partners in a quick and easy way."
 
 IndexPage.layout = BaseLayout;
 
-export const getServerSideProps: GetServerSideProps = async (
-  context,
-): Promise<GetServerSidePropsResult<unknown>> => {
+export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getSession(context);
 
   if (context.res && session) {

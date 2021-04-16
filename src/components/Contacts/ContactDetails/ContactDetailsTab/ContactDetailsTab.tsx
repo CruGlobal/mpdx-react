@@ -69,7 +69,7 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
         // Tag Section
       }
       <ContactDetailHeadingContainer>
-        {loading ? (
+        {loading || !data ? (
           <ContactDetailLoadingPlaceHolder variant="rect" />
         ) : (
           <ContactTags
@@ -85,7 +85,7 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
       <ContactDetailSectionContainer>
         <ContactDetailHeadingContainer>
           <ContactDetailHeadingText variant="h6">
-            {loading ? t('Loading') : data.contact.name}
+            {loading || !data ? t('Loading') : data.contact.name}
           </ContactDetailHeadingText>
           <ContactDetailHeadingIcon />
         </ContactDetailHeadingContainer>

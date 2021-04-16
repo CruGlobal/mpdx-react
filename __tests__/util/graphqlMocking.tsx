@@ -41,6 +41,9 @@ export const GqlMockedProvider = <TData,>({
 const generateSchemaWithFragmentsAsQueries = (
   schemaDocument: DocumentNode,
 ): GraphQLSchema => {
+  if (!schemaDocument.loc?.source.body) {
+    throw new Error('generateSchemaWithFragmentsAsQueries: Schema invalid');
+  }
   const originalSchema = buildSchema(schemaDocument.loc.source.body);
   const typeMap = originalSchema.getTypeMap();
   const fields = Object.keys(typeMap).reduce((fields, typeName) => {
@@ -93,18 +96,19 @@ const ergonomockFragment = <TData,>(
   const res = ergonomock(
     generateSchemaWithFragmentsAsQueries(schema),
     wrappedQuery,
-    options && {
-      ...options,
-      mocks: { [fieldName]: options.mocks },
-      seed: 'seed',
-    },
+    options &&
+      ({
+        ...options,
+        mocks: { [fieldName]: options.mocks },
+        seed: 'seed',
+      } as ErgonomockOptions),
   ) as ExecutionResult;
 
   if (res.errors && res.errors.length) {
     throw res.errors[0];
   }
 
-  if (res.data[fieldName] === undefined) {
+  if (res?.data?.[fieldName] === undefined) {
     throw new Error(`fraql: type "${typeName}" not found`);
   }
   return res.data[fieldName];
