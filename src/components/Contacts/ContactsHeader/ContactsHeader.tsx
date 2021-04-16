@@ -9,6 +9,7 @@ const HeaderWrap = styled(Box)(({}) => ({
   backgroundColor: theme.palette.background.default,
   display: 'flex',
   flexDirection: 'row',
+  justifyContent: 'space-evenly',
   alignItems: 'center',
   alignContent: 'center',
 }));
@@ -42,7 +43,10 @@ const PlaceholderSearchBar = styled(Box)(({}) => ({
   margin: theme.spacing(1),
   backgroundColor: 'red',
 }));
-const ContactsShowingText = styled('p')(({}) => ({}));
+const ContactsShowingText = styled('p')(({}) => ({
+  flexGrow: 4,
+  flexBasis: 0,
+}));
 const PlaceholderActionsDropdown = styled(Box)(({}) => ({
   display: 'inline-block',
   width: 114,
