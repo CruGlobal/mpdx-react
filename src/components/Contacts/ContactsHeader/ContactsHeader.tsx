@@ -1,27 +1,18 @@
-import { Box, styled, Checkbox, IconButton } from '@material-ui/core';
+import { Box, styled, IconButton } from '@material-ui/core';
 import { FilterList } from '@material-ui/icons';
 import React, { useState } from 'react';
 import theme from '../../../theme';
+import { CheckBox, CheckBoxState } from '../ContactDetails/CheckBox/CheckBox';
 import { StarContactIcon } from '../StarContactIcon/StarContactIcon';
 
 const HeaderWrap = styled(Box)(({}) => ({
   height: 96,
-  backgroundColor: theme.palette.background.default,
+  padding: theme.spacing(1),
   display: 'flex',
   flexDirection: 'row',
   justifyContent: 'space-evenly',
   alignItems: 'center',
-  alignContent: 'center',
-}));
-const StyledCheckBox = styled(Checkbox)(({}) => ({
-  display: 'inline-block',
-  width: '18px',
-  height: '18px',
-  margin: theme.spacing(1),
-  color: theme.palette.secondary.dark,
-  checked: {
-    color: theme.palette.primary.dark,
-  },
+  backgroundColor: theme.palette.background.default,
 }));
 const FilterButton = styled(IconButton)(({}) => ({
   display: 'inline-block',
@@ -76,10 +67,7 @@ export const ContactsHeader: React.FC = () => {
 
   return (
     <HeaderWrap>
-      <StyledCheckBox
-        checked={allContactsChecked}
-        onChange={toggleAllContactsCheckbox}
-      />
+      <CheckBox state={CheckBoxState.unchecked} />
       <FilterButton>
         <FilterIcon />
       </FilterButton>
