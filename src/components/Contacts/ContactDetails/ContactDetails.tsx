@@ -1,4 +1,4 @@
-import { Box, styled, Tab, Tabs, withStyles } from '@material-ui/core';
+import { Box, styled, Tab, Tabs } from '@material-ui/core';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import theme from '../../../theme';
@@ -8,11 +8,6 @@ interface Props {
   accountListId: string;
   contactId: string;
   onClose: () => void;
-}
-
-interface ContactTabsProps {
-  value: number;
-  onChange: (event: React.ChangeEvent, newIndex: number) => void;
 }
 
 const ContactDetailsWrapper = styled(Box)(({}) => ({
@@ -26,11 +21,9 @@ const ContactTabsWrapper = styled(Box)(({}) => ({
   borderBottom: '1px solid #DCDCDC',
 }));
 
-const ContactTabs = withStyles({
-  root: {
-    width: '100%',
-    minHeight: 40,
-  },
+const ContactTabs = styled(Tabs)(({}) => ({
+  width: '100%',
+  minHeight: 40,
   indicator: {
     display: 'flex',
     '& > span': {
@@ -39,9 +32,7 @@ const ContactTabs = withStyles({
       backgroundColor: '#FFCF07',
     },
   },
-})((props: ContactTabsProps) => (
-  <Tabs {...props} TabIndicatorProps={{ children: <span /> }} />
-));
+}));
 
 const ContactTab = styled(Tab)(({}) => ({
   textTransform: 'none',
@@ -72,7 +63,11 @@ export const ContactDetails: React.FC<Props> = ({
         contactId={contactId}
       />
       <ContactTabsWrapper>
-        <ContactTabs value={selectedTabIndex} onChange={handleChange}>
+        <ContactTabs
+          value={selectedTabIndex}
+          onChange={handleChange}
+          TabIndicatorProps={{ children: <span /> }}
+        >
           <ContactTab label={t('Tasks')} />
           <ContactTab label={t('Donations')} />
           <ContactTab label={t('Referrals')} />
