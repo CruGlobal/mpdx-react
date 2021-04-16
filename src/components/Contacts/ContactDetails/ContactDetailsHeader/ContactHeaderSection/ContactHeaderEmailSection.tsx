@@ -35,9 +35,15 @@ export const ContactHeaderEmailSection = ({
         <TextSkeleton variant="text" />
       </ContactHeaderSection>
     );
-  } else if (contact) {
+  } else if (
+    contact &&
+    contact.primaryPerson &&
+    contact.primaryPerson.primaryEmailAddress
+  ) {
     const {
-      primaryPerson: { primaryEmailAddress: { email } = {} } = {},
+      primaryPerson: {
+        primaryEmailAddress: { email },
+      },
     } = contact;
 
     if (!!email) {

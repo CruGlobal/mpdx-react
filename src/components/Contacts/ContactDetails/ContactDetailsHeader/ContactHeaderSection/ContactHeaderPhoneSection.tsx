@@ -35,9 +35,15 @@ export const ContactHeaderPhoneSection = ({
         <TextSkeleton variant="text" />
       </ContactHeaderSection>
     );
-  } else if (contact) {
+  } else if (
+    contact &&
+    contact.primaryPerson &&
+    contact.primaryPerson.primaryPhoneNumber
+  ) {
     const {
-      primaryPerson: { primaryPhoneNumber: { number } = {} } = {},
+      primaryPerson: {
+        primaryPhoneNumber: { number },
+      },
     } = contact;
 
     if (!!number) {

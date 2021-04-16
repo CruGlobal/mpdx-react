@@ -35,7 +35,7 @@ export const ContactHeaderStatusSection = ({
     const { status } = contact;
 
     if (!!status) {
-      let statusText: string;
+      let statusText = '';
 
       switch (status) {
         case 'NEVER_CONTACTED':

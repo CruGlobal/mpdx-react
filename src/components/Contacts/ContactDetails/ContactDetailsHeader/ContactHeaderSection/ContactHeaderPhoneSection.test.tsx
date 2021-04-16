@@ -14,11 +14,11 @@ const contact = gqlMock<ContactDetailsHeaderFragment>(
 describe('ContactHeaderPhoneSection', () => {
   it('should show loading state', async () => {
     const { queryByText } = render(
-      <ContactHeaderPhoneSection loading={true} contact={null} />,
+      <ContactHeaderPhoneSection loading={true} contact={undefined} />,
     );
 
     expect(
-      queryByText(contact.primaryPerson.primaryPhoneNumber.number),
+      queryByText(contact.primaryPerson?.primaryPhoneNumber?.number || ''),
     ).toBeNull();
   });
 
@@ -28,7 +28,7 @@ describe('ContactHeaderPhoneSection', () => {
     );
 
     expect(
-      queryByText(contact.primaryPerson.primaryPhoneNumber.number),
+      queryByText(contact.primaryPerson?.primaryPhoneNumber?.number || ''),
     ).toBeInTheDocument();
   });
 });

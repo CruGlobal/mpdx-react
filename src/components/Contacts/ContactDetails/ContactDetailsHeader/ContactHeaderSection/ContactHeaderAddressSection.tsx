@@ -40,10 +40,10 @@ export const ContactHeaderAddressSection = ({
         <TextSkeleton variant="text" />
       </ContactHeaderSection>
     );
-  } else if (contact) {
+  } else if (contact && contact.primaryAddress) {
     const {
       greeting,
-      primaryAddress: { street, city, state, postalCode } = {},
+      primaryAddress: { street, city, state, postalCode },
     } = contact;
 
     if (!!greeting && !!street && !!city && !!state && !!postalCode) {

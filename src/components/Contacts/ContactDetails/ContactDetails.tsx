@@ -52,7 +52,10 @@ export const ContactDetails: React.FC<Props> = ({
 
   const [selectedTabIndex, setSelectedTabIndex] = React.useState(0);
 
-  const handleChange = (event: React.ChangeEvent, newIndex: number) => {
+  const handleChange = (
+    _event: React.ChangeEvent<Record<string, unknown>>,
+    newIndex: number,
+  ) => {
     setSelectedTabIndex(newIndex);
   };
 

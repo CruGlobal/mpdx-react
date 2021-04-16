@@ -20,5 +20,5 @@ export const Default = (): ReactElement => {
 };
 
 export const Loading = (): ReactElement => {
-  return <ContactHeaderEmailSection loading={true} contact={null} />;
+  return <ContactHeaderEmailSection loading={true} contact={undefined} />;
 };
