@@ -21,8 +21,6 @@ describe('ContactDetailTab', () => {
         "contactId": "contact-id",
       }
     `);
-    expect(result.current.data?.contact.name).toMatchInlineSnapshot(
-      `"Cup Shower Bomb"`,
-    );
+    expect(result.current.data?.contact.name).toMatchInlineSnapshot(`"Garden"`);
   });
 });

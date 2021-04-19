@@ -2,9 +2,11 @@ import { Avatar, Box, styled, Typography } from '@material-ui/core';
 import { Cake, Email, Phone } from '@material-ui/icons';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Person } from '../../../../../../graphql/types.generated';
 import { RingIcon } from '../../../RingIcon';
-import { ContactPeopleFragment } from './ContactPeople.generated';
+import {
+  ContactPeopleFragment,
+  ContactPersonFragment,
+} from './ContactPeople.generated';
 
 const ContactPersonAvatar = styled(Avatar)(({ theme }) => ({
   margin: theme.spacing(1),
@@ -51,12 +53,13 @@ export const ContactDetailsTabPeople: React.FC<ContactDetailsPeopleProp> = ({
 
   const { primaryPerson, people } = data;
 
-  const personView = (person: Person) => {
+  const personView = (person: ContactPersonFragment) => {
     return (
       <ContactPersonContainer>
+        {/* TODO - add avatar link */}
         <ContactPersonAvatar
           alt={`${person.firstName} ${person.lastName}`}
-          src={person.lastName}
+          src={person.lastName ?? ''}
         />
         <ContactPersonTextContainer>
           {/* Heading Section */}
@@ -64,7 +67,7 @@ export const ContactDetailsTabPeople: React.FC<ContactDetailsPeopleProp> = ({
             <Typography variant="h6">
               {`${person.firstName} ${person.lastName}`}
             </Typography>
-            {primaryPerson.id == person.id ? (
+            {primaryPerson?.id == person.id ? (
               <ContactPersonPrimaryText variant="subtitle1">
                 {`- ${t('Primary')}`}
               </ContactPersonPrimaryText>
@@ -77,9 +80,9 @@ export const ContactDetailsTabPeople: React.FC<ContactDetailsPeopleProp> = ({
                 <Phone color="disabled" />
               </ContactPersonIconContainer>
               <Typography variant="subtitle1">
-                {person.primaryPhoneNumber.number}
+                {person.primaryPhoneNumber?.number}
               </Typography>
-              {person.primaryPhoneNumber.location ? (
+              {person.primaryPhoneNumber?.location ? (
                 <Typography variant="caption">
                   {` - ${person.primaryPhoneNumber.location}`}
                 </Typography>
@@ -93,7 +96,7 @@ export const ContactDetailsTabPeople: React.FC<ContactDetailsPeopleProp> = ({
                 <Email color="disabled" />
               </ContactPersonIconContainer>
               <Typography variant="subtitle1">
-                {person.primaryEmailAddress.email}
+                {person.primaryEmailAddress?.email}
               </Typography>
             </ContactPersonRowContainer>
           ) : null}
@@ -132,9 +135,13 @@ export const ContactDetailsTabPeople: React.FC<ContactDetailsPeopleProp> = ({
 
   return (
     <>
-      {primaryPerson !== null ? personView(primaryPerson as Person) : null}
+      {primaryPerson !== null
+        ? personView(primaryPerson as ContactPersonFragment)
+        : null}
       {people.nodes.map((person) =>
-        person.id !== primaryPerson.id ? personView(person as Person) : null,
+        person.id !== primaryPerson?.id
+          ? personView(person as ContactPersonFragment)
+          : null,
       )}
     </>
   );
