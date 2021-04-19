@@ -19,10 +19,6 @@ const typeDefs = gql`
     exportContacts(input: ExportContactsInput!): String!
   }
 
-  type ExportedContacts {
-    id: ID!
-  }
-
   input ExportContactsInput {
     format: String!
     mailing: Boolean!
@@ -161,7 +157,7 @@ class MpdxRestApi extends RESTDataSource {
         type: 'export_logs',
       },
     });
-    console.log(data);
+
     return `${process.env.REST_API_URL}contacts/exports${pathAddition}/${data.id}.${format}?access_token=`;
   }
 

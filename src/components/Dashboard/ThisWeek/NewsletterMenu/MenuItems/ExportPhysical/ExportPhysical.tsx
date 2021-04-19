@@ -1,4 +1,4 @@
-import React, { ReactElement, useEffect } from 'react';
+import React, { ReactElement } from 'react';
 import {
   DialogTitle,
   DialogActions,
@@ -12,8 +12,8 @@ import {
 
 import CloseIcon from '@material-ui/icons/Close';
 import { useTranslation } from 'react-i18next';
-import { useCreateExportedContactsMutation } from './ExportPhysical.generated';
 import { useSession } from 'next-auth/client';
+import { useCreateExportedContactsMutation } from './ExportPhysical.generated';
 
 interface Props {
   accountListId: string;
