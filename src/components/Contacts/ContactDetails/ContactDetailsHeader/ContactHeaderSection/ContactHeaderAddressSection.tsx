@@ -32,6 +32,9 @@ export const ContactHeaderAddressSection = ({
 }: Props): ReactElement => {
   const { t } = useTranslation();
 
+  const greeting = contact?.greeting;
+  const primaryAddress = contact?.primaryAddress;
+
   if (loading) {
     return (
       <ContactHeaderSection icon={<LocationIcon />}>
@@ -40,13 +43,10 @@ export const ContactHeaderAddressSection = ({
         <TextSkeleton variant="text" />
       </ContactHeaderSection>
     );
-  } else if (contact) {
-    const {
-      greeting,
-      primaryAddress: { street, city, state, postalCode } = {},
-    } = contact;
+  } else if (greeting && primaryAddress) {
+    const { street, city, state, postalCode } = primaryAddress;
 
-    if (!!greeting && !!street && !!city && !!state && !!postalCode) {
+    if (street && city && state && postalCode) {
       return (
         <ContactHeaderSection icon={<LocationIcon />}>
           <Typography variant="subtitle1">{greeting}</Typography>
