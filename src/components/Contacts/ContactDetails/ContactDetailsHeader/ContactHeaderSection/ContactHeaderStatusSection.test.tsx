@@ -16,7 +16,7 @@ const contact = gqlMock<ContactDetailsHeaderFragment>(
 describe('ContactHeaderStatusSection', () => {
   it('should show loading state', async () => {
     const { queryByText } = render(
-      <ContactHeaderStatusSection loading={true} contact={null} />,
+      <ContactHeaderStatusSection loading={true} contact={undefined} />,
     );
 
     expect(queryByText('Partner - Financial')).toBeNull();

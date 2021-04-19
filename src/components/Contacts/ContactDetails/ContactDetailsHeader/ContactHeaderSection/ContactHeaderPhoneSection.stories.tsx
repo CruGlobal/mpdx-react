@@ -20,5 +20,5 @@ export const Default = (): ReactElement => {
 };
 
 export const Loading = (): ReactElement => {
-  return <ContactHeaderPhoneSection loading={true} contact={null} />;
+  return <ContactHeaderPhoneSection loading={true} contact={undefined} />;
 };
