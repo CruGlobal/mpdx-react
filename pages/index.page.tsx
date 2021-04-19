@@ -1,15 +1,13 @@
 import React, { ReactElement } from 'react';
 import { getSession } from 'next-auth/client';
-import { GetServerSideProps, GetServerSidePropsResult } from 'next';
+import { GetServerSideProps } from 'next';
 import BaseLayout from '../src/components/Layouts/Basic';
 
 const IndexPage = (): ReactElement => <></>;
 
 IndexPage.layout = BaseLayout;
 
-export const getServerSideProps: GetServerSideProps = async (
-  context,
-): Promise<GetServerSidePropsResult<unknown>> => {
+export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getSession(context);
 
   if (session) {

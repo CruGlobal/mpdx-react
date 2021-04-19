@@ -11,7 +11,7 @@ describe('InfoBlock', () => {
     );
     const element = getByTestId('children');
     expect(element).toBeInTheDocument();
-    expect(element.parentElement.tagName).toEqual('P');
+    expect(element.parentElement?.tagName).toEqual('P');
     expect(getByText('Hello World')).toBeInTheDocument();
   });
 
@@ -22,6 +22,6 @@ describe('InfoBlock', () => {
       </InfoBlock>,
     );
     const element = getByTestId('children');
-    expect(element.parentElement.tagName).toEqual('DIV');
+    expect(element.parentElement?.tagName).toEqual('DIV');
   });
 });

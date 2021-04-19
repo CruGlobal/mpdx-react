@@ -78,8 +78,9 @@ const AccountLists = ({ data }: Props): ReactElement => {
                 totalPledges,
                 currency,
               }) => {
-                const receivedPercentage = receivedPledges / monthlyGoal;
-                const totalPercentage = totalPledges / monthlyGoal;
+                const receivedPercentage =
+                  receivedPledges / (monthlyGoal ?? NaN);
+                const totalPercentage = totalPledges / (monthlyGoal ?? NaN);
 
                 return (
                   <Grid key={id} item xs={12} sm={4}>
@@ -118,9 +119,9 @@ const AccountLists = ({ data }: Props): ReactElement => {
                                   {t('Gifts Started')}
                                 </Typography>
                                 <Typography variant="h6">
-                                  {isNaN(receivedPercentage)
-                                    ? '-'
-                                    : percentageFormat(receivedPercentage)}
+                                  {Number.isFinite(receivedPercentage)
+                                    ? percentageFormat(receivedPercentage)
+                                    : '-'}
                                 </Typography>
                               </Grid>
                               <Grid xs={monthlyGoal ? 4 : 6} item>
@@ -131,9 +132,9 @@ const AccountLists = ({ data }: Props): ReactElement => {
                                   {t('Committed')}
                                 </Typography>
                                 <Typography variant="h6">
-                                  {isNaN(totalPercentage)
-                                    ? '-'
-                                    : percentageFormat(totalPercentage)}
+                                  {Number.isFinite(totalPercentage)
+                                    ? percentageFormat(totalPercentage)
+                                    : '-'}
                                 </Typography>
                               </Grid>
                             </Grid>

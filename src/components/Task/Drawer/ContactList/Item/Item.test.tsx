@@ -8,7 +8,9 @@ import {
 import { GetContactsForTaskDrawerContactListQuery } from '../TaskDrawerContactList.generated';
 import Item from '.';
 
-type Contact = GetContactsForTaskDrawerContactListQuery['contacts']['nodes'][0];
+type Contact = NonNullable<
+  GetContactsForTaskDrawerContactListQuery['contacts']['nodes'][0]
+>;
 
 describe('Item', () => {
   const contact: Contact = {
@@ -111,7 +113,10 @@ describe('Item', () => {
       <Item
         contact={{
           ...minimalContact,
-          primaryPerson: { ...contact.primaryPerson, primaryPhoneNumber: null },
+          primaryPerson: {
+            ...contact.primaryPerson,
+            primaryPhoneNumber: null,
+          } as Contact['primaryPerson'],
         }}
       />,
     );
@@ -125,7 +130,7 @@ describe('Item', () => {
           primaryPerson: {
             ...contact.primaryPerson,
             primaryEmailAddress: null,
-          },
+          } as Contact['primaryPerson'],
         }}
       />,
     );

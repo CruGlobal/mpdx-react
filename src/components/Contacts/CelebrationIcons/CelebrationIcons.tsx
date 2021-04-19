@@ -32,14 +32,20 @@ export const CelebrationIcons: React.FC<Props> = ({ contact }) => {
     );
 
   const contactHasAnniversary = (): boolean =>
-    contact.people.nodes.some((person) =>
-      occasionIsUpcoming(person.anniversaryMonth, person.anniversaryDay),
-    );
+    contact.people.nodes.some(
+      ({ anniversaryMonth, anniversaryDay }) =>
+        anniversaryMonth &&
+        anniversaryDay &&
+        occasionIsUpcoming(anniversaryMonth, anniversaryDay),
+    ) ?? false;
 
   const contactHasBirthday = (): boolean =>
-    contact.people.nodes.some((person) =>
-      occasionIsUpcoming(person.birthdayMonth, person.birthdayDay),
-    );
+    contact.people.nodes.some(
+      ({ birthdayMonth, birthdayDay }) =>
+        birthdayMonth &&
+        birthdayDay &&
+        occasionIsUpcoming(birthdayMonth, birthdayDay),
+    ) ?? false;
 
   return (
     <>

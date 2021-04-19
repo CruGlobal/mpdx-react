@@ -140,14 +140,14 @@ const Appeals = ({ loading, appeal }: Props): ReactElement => {
                   {loading ? (
                     <Skeleton variant="text" width="50%" />
                   ) : (
-                    appeal.name
+                    appeal?.name
                   )}
                 </Box>
                 <Box data-testid="AppealsBoxAmount">
-                  {loading ? (
+                  {loading || !appeal?.amount ? (
                     <Skeleton variant="text" width={100} />
                   ) : (
-                    currencyFormat(appeal.amount, appeal.amountCurrency)
+                    currencyFormat(appeal.amount, appeal?.amountCurrency)
                   )}
                 </Box>
               </Box>
@@ -182,7 +182,7 @@ const Appeals = ({ loading, appeal }: Props): ReactElement => {
                   component="small"
                   data-testid="AppealsTypographyPledgesAmountProcessed"
                 >
-                  {loading ? (
+                  {loading || !appeal ? (
                     <Skeleton variant="text" />
                   ) : (
                     currencyFormat(
@@ -216,7 +216,7 @@ const Appeals = ({ loading, appeal }: Props): ReactElement => {
                   component="small"
                   data-testid="AppealsTypographyPledgesAmountTotal"
                 >
-                  {loading ? (
+                  {loading || !appeal ? (
                     <Skeleton variant="text" />
                   ) : (
                     currencyFormat(

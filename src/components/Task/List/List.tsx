@@ -31,6 +31,7 @@ import { useGetDataForTaskDrawerQuery } from '../Drawer/Form/TaskDrawer.generate
 import {
   useGetTasksForTaskListQuery,
   GetTasksForTaskListQueryVariables,
+  GetTasksForTaskListQuery,
 } from './TaskList.generated';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -90,12 +91,12 @@ const TaskList = ({ initialFilter }: Props): ReactElement => {
   } = useApp();
 
   const { data: filterData } = useGetDataForTaskDrawerQuery({
-    variables: { accountListId },
+    variables: { accountListId: accountListId ?? '' },
   });
 
   const { data, loading } = useGetTasksForTaskListQuery({
     variables: {
-      accountListId,
+      accountListId: accountListId ?? '',
       first: rowsPerPage,
       ...filter,
     },
@@ -112,9 +113,9 @@ const TaskList = ({ initialFilter }: Props): ReactElement => {
         filter: true,
         sort: false,
         filterType: 'dropdown',
-        filterList: initialFilter?.completed !== undefined && [
-          initialFilter.completed.toString(),
-        ],
+        filterList: initialFilter?.completed
+          ? [initialFilter.completed.toString()]
+          : undefined,
         filterOptions: {
           names: ['true', 'false'],
           renderValue: (val): string =>
@@ -127,12 +128,13 @@ const TaskList = ({ initialFilter }: Props): ReactElement => {
         },
         customHeadLabelRender: (): string => '',
         customBodyRender: (completedAt, { rowIndex }): ReactElement => {
-          if (!loading) {
-            const { id, startAt } = data?.tasks?.nodes[rowIndex];
+          const task = data?.tasks.nodes[rowIndex];
+          if (!loading && task) {
+            const { id, startAt } = task;
             return (
               <TaskStatus
                 taskId={id}
-                startAt={startAt}
+                startAt={startAt ?? undefined}
                 completedAt={completedAt}
               />
             );
@@ -158,9 +160,11 @@ const TaskList = ({ initialFilter }: Props): ReactElement => {
         filter: true,
         sort: false,
         customBodyRender: t,
-        filterList: Array.isArray(initialFilter?.activityType)
-          ? initialFilter?.activityType
-          : [initialFilter?.activityType],
+        filterList: initialFilter?.activityType
+          ? Array.isArray(initialFilter.activityType)
+            ? initialFilter.activityType
+            : [initialFilter.activityType]
+          : undefined,
         filterOptions: {
           names: Object.values(ActivityTypeEnum).sort(),
           renderValue: t,
@@ -177,34 +181,42 @@ const TaskList = ({ initialFilter }: Props): ReactElement => {
         display: false,
         filter: true,
         sort: false,
-        filterList: Array.isArray(initialFilter?.contactIds)
-          ? initialFilter?.contactIds
-          : [initialFilter?.contactIds],
+        filterList: initialFilter?.contactIds
+          ? Array.isArray(initialFilter.contactIds)
+            ? initialFilter.contactIds
+            : [initialFilter.contactIds]
+          : undefined,
         customFilterListOptions: {
           render: (id): string => {
-            if (filterData?.contacts?.nodes) {
-              return filterData.contacts.nodes.find(
-                ({ id: contactId }) => contactId === id,
-              )?.name;
+            if (filterData?.contacts) {
+              return (
+                filterData.contacts.nodes.find(
+                  ({ id: contactId }) => contactId === id,
+                )?.name ?? ''
+              );
             }
             return t('Loading');
           },
         },
         filterOptions: {
-          names: filterData?.contacts?.nodes?.map(({ id }) => id) || [],
+          names: filterData?.contacts.nodes.map(({ id }) => id) || [],
           renderValue: (id): string => {
-            if (filterData?.contacts?.nodes) {
-              return filterData.contacts.nodes.find(
+            return (
+              filterData?.contacts.nodes.find(
                 ({ id: contactId }) => contactId === id,
-              )?.name;
-            }
+              )?.name ?? ''
+            );
           },
           fullWidth: true,
         },
         filterType: 'multiselect',
-        customBodyRender: (contacts): string =>
-          contacts &&
-          contacts.nodes.map(({ name }) => name).join(t('List Separator')),
+        customBodyRender: (
+          contacts:
+            | GetTasksForTaskListQuery['tasks']['nodes'][0]['contacts']
+            | null,
+        ): string =>
+          contacts?.nodes.map(({ name }) => name).join(t('List Separator')) ??
+          '',
       },
     },
     {
@@ -213,9 +225,11 @@ const TaskList = ({ initialFilter }: Props): ReactElement => {
       options: {
         filter: true,
         sort: true,
-        filterList: Array.isArray(initialFilter?.tags)
-          ? initialFilter?.tags
-          : [initialFilter?.tags],
+        filterList: initialFilter?.tags
+          ? Array.isArray(initialFilter.tags)
+            ? initialFilter.tags
+            : [initialFilter.tags]
+          : undefined,
         filterOptions: {
           names: filterData?.accountList?.taskTagList || [],
           fullWidth: true,
@@ -224,7 +238,11 @@ const TaskList = ({ initialFilter }: Props): ReactElement => {
         customFilterListOptions: {
           render: (tag): string => t('Tag {{tag}}', { tag }),
         },
-        customBodyRender: (tagList): ReactElement => {
+        customBodyRender: (
+          tagList:
+            | GetTasksForTaskListQuery['tasks']['nodes'][0]['tagList']
+            | undefined,
+        ) => {
           if (loading) {
             return (
               <Grid container spacing={2}>
@@ -237,18 +255,15 @@ const TaskList = ({ initialFilter }: Props): ReactElement => {
               </Grid>
             );
           } else {
-            return (
-              tagList &&
-              tagList.map((tag) => (
-                <Chip
-                  key={tag}
-                  size="small"
-                  label={tag}
-                  color="primary"
-                  className={classes.chip}
-                />
-              ))
-            );
+            return tagList?.map((tag) => (
+              <Chip
+                key={tag}
+                size="small"
+                label={tag}
+                color="primary"
+                className={classes.chip}
+              />
+            ));
           }
         },
       },
@@ -260,9 +275,11 @@ const TaskList = ({ initialFilter }: Props): ReactElement => {
         filter: true,
         sort: true,
         display: false,
-        filterList: Array.isArray(initialFilter?.userIds)
-          ? initialFilter?.userIds
-          : [initialFilter?.userIds],
+        filterList: initialFilter?.userIds
+          ? Array.isArray(initialFilter.userIds)
+            ? initialFilter.userIds
+            : [initialFilter.userIds]
+          : undefined,
         customFilterListOptions: {
           render: (id): string => {
             if (filterData?.accountListUsers?.nodes) {
@@ -277,22 +294,18 @@ const TaskList = ({ initialFilter }: Props): ReactElement => {
         },
         filterOptions: {
           names:
-            filterData?.accountListUsers?.nodes?.map(
-              ({ user: { id } }) => id,
-            ) || [],
-          renderValue: (id): string => {
-            if (filterData?.accountListUsers?.nodes) {
-              const accountListUser = filterData.accountListUsers.nodes.find(
-                ({ user: { id: accountListUserId } }) =>
-                  accountListUserId === id,
-              );
-              return `${accountListUser?.user.firstName} ${accountListUser?.user.lastName}`;
-            }
+            filterData?.accountListUsers.nodes.map(({ user: { id } }) => id) ||
+            [],
+          renderValue: (id) => {
+            const accountListUser = filterData?.accountListUsers.nodes.find(
+              ({ user: { id: accountListUserId } }) => accountListUserId === id,
+            );
+            return `${accountListUser?.user.firstName} ${accountListUser?.user.lastName}`;
           },
           fullWidth: true,
         },
         filterType: 'multiselect',
-        customBodyRender: (user): ReactElement => {
+        customBodyRender: (user) => {
           if (user) {
             return (
               <Tooltip
@@ -312,33 +325,29 @@ const TaskList = ({ initialFilter }: Props): ReactElement => {
       options: {
         filter: true,
         filterType: 'custom',
-        filterList:
-          initialFilter?.startAt &&
-          (([
-            initialFilter.startAt.min &&
-              DateTime.fromISO(initialFilter.startAt.min),
-            initialFilter.startAt.max &&
-              DateTime.fromISO(initialFilter.startAt.max),
-          ] as unknown) as string[]),
+        filterList: initialFilter?.startAt
+          ? [
+              ...(initialFilter.startAt.min ? [initialFilter.startAt.min] : []),
+              ...(initialFilter.startAt.max ? [initialFilter.startAt.max] : []),
+            ]
+          : [],
         customFilterListOptions: {
-          render: (v) => {
-            const returnable: string[] = [];
-            if (v[0]) {
-              returnable.push(
-                t('Minimum Due Date {{ minimumDate }}', {
-                  minimumDate: dateFormat(v[0]),
-                }),
-              );
-            }
-            if (v[1]) {
-              returnable.push(
-                t('Maximum Due Date {{ maximumDate }}', {
-                  maximumDate: dateFormat(v[1]),
-                }),
-              );
-            }
-            return returnable;
-          },
+          render: ([min, max]: [string | undefined, string | undefined]) => [
+            ...(min
+              ? [
+                  t('Minimum Due Date {{ minimumDate }}', {
+                    minimumDate: dateFormat(DateTime.fromISO(min)),
+                  }),
+                ]
+              : []),
+            ...(max
+              ? [
+                  t('Maximum Due Date {{ maximumDate }}', {
+                    maximumDate: dateFormat(DateTime.fromISO(max)),
+                  }),
+                ]
+              : []),
+          ],
         },
         filterOptions: {
           display: (filterList, onChange, index, column) => {
@@ -350,12 +359,14 @@ const TaskList = ({ initialFilter }: Props): ReactElement => {
                     <DatePicker
                       clearable
                       fullWidth
-                      labelFunc={dateFormat}
+                      labelFunc={(date, invalidLabel) =>
+                        date ? dateFormat(date) : invalidLabel
+                      }
                       autoOk
                       label={t('Minimum')}
                       value={filterList[index][0] || null}
                       onChange={(date) => {
-                        ((filterList as unknown) as Date[])[index][0] = date;
+                        filterList[index][0] = date?.toISO() ?? '';
                         onChange(filterList[index], index, column);
                       }}
                       okLabel={t('OK')}
@@ -368,12 +379,14 @@ const TaskList = ({ initialFilter }: Props): ReactElement => {
                     <DatePicker
                       clearable
                       fullWidth
-                      labelFunc={dateFormat}
+                      labelFunc={(date, invalidLabel) =>
+                        date ? dateFormat(date) : invalidLabel
+                      }
                       autoOk
                       label={t('Maximum')}
                       value={filterList[index][1] || null}
                       onChange={(date) => {
-                        ((filterList as unknown) as Date[])[index][1] = date;
+                        filterList[index][1] = date?.toISO() ?? '';
                         onChange(filterList[index], index, column);
                       }}
                       okLabel={t('OK')}
@@ -391,7 +404,7 @@ const TaskList = ({ initialFilter }: Props): ReactElement => {
           fullWidth: true,
         },
         sort: true,
-        customBodyRender: (startAt): string | ReactElement => {
+        customBodyRender: (startAt) => {
           if (startAt) {
             const date = DateTime.fromISO(startAt);
             if (date.hasSame(DateTime.local(), 'year')) {
@@ -440,7 +453,7 @@ const TaskList = ({ initialFilter }: Props): ReactElement => {
     },
     onRowClick: (_rowData, rowMeta) => {
       openTaskDrawer({
-        taskId: data?.tasks?.nodes[rowMeta.dataIndex].id,
+        taskId: data?.tasks.nodes[rowMeta.dataIndex].id,
         filter,
         rowsPerPage,
       });
@@ -501,13 +514,17 @@ const TaskList = ({ initialFilter }: Props): ReactElement => {
           ...filter,
           after: null,
           before: null,
+        } as typeof filter & {
+          after: null;
+          before: null;
+          [key: string]: string[] | null;
         },
         filterList,
       );
       setFilter(updatedFilter);
     },
     onSearchChange,
-    searchText: initialFilter?.wildcardSearch,
+    searchText: initialFilter?.wildcardSearch ?? undefined,
     textLabels: {
       body: {
         noMatch: (
@@ -523,7 +540,7 @@ const TaskList = ({ initialFilter }: Props): ReactElement => {
   return (
     <MUIDataTable
       title={loading && <CircularProgress size={24} />}
-      data={loading ? [['', <Skeleton key={1} />]] : data?.tasks?.nodes}
+      data={loading || !data ? [['', <Skeleton key={1} />]] : data?.tasks.nodes}
       columns={columns}
       options={options}
     />

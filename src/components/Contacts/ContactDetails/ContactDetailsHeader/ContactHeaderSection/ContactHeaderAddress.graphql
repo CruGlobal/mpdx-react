@@ -1,0 +1,11 @@
+fragment ContactHeaderAddress on Contact {
+  id
+  greeting
+  primaryAddress {
+    street
+    city
+    state
+    postalCode
+    country
+  }
+}

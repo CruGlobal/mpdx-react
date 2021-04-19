@@ -57,7 +57,7 @@ export const completeSimpleTaskMutationMock = (
   accountListId: string,
   taskId: string,
 ): MockedResponse => {
-  const task: CompleteTaskMutation['updateTask']['task'] = {
+  const task: NonNullable<CompleteTaskMutation['updateTask']>['task'] = {
     id: taskId,
     completedAt: DateTime.local(2015, 1, 5, 1, 2).toISO(),
     tagList: ['tag-1', 'tag-2'],
@@ -90,7 +90,7 @@ export const completeTaskMutationMock = (
   accountListId: string,
   taskId: string,
 ): MockedResponse => {
-  const task: CompleteTaskMutation['updateTask']['task'] = {
+  const task: NonNullable<CompleteTaskMutation['updateTask']>['task'] = {
     id: taskId,
     completedAt: DateTime.local(2015, 1, 5, 1, 2).toISO(),
     tagList: ['tag-1', 'tag-2'],

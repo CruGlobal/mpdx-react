@@ -9,7 +9,7 @@ import {
   Menu,
   Theme,
 } from '@material-ui/core';
-import React, { ReactElement, useEffect, useState } from 'react';
+import React, { ReactElement, useState } from 'react';
 import NotificationsNoneIcon from '@material-ui/icons/NotificationsNone';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import { useTranslation } from 'react-i18next';
@@ -19,7 +19,7 @@ import NotificationMenuItem from './Item';
 import {
   GetNotificationsDocument,
   GetNotificationsQuery,
-  useGetNotificationsLazyQuery,
+  useGetNotificationsQuery,
 } from './GetNotificationsQuery.generated';
 import { useAcknowledgeAllUserNotificationsMutation } from './AcknowledgeAllUserNotifications.generated';
 
@@ -64,12 +64,14 @@ const NotificationMenu = (): ReactElement => {
   const classes = useStyles();
   const { t } = useTranslation();
   const { state } = useApp();
-  const [anchorEl, setAnchorEl] = useState(null);
+  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>();
 
-  const [
-    getNotifications,
-    { data, loading, fetchMore },
-  ] = useGetNotificationsLazyQuery({
+  const { data, loading, fetchMore } = useGetNotificationsQuery({
+    variables: {
+      accountListId: state.accountListId ?? '',
+      after: null,
+    },
+    skip: !state.accountListId,
     notifyOnNetworkStatusChange: true,
   });
 
@@ -80,7 +82,7 @@ const NotificationMenu = (): ReactElement => {
   const handleAcknowledgeAllClick = () => {
     const optimisticResponse = true;
     acknoweldgeAllUserNotifications({
-      variables: { accountListId: state.accountListId },
+      variables: { accountListId: state.accountListId ?? '' },
       optimisticResponse: {
         acknowledgeAllUserNotifications: {
           notificationIds: [],
@@ -99,48 +101,35 @@ const NotificationMenu = (): ReactElement => {
         const dataFromCache = cache.readQuery<GetNotificationsQuery>(query);
         const data = {
           userNotifications: {
-            ...dataFromCache.userNotifications,
-          },
-        };
-        data.userNotifications.unreadCount = 0;
-        data.userNotifications.edges = data.userNotifications.edges.map(
-          ({ node }) => ({
-            node: {
+            ...dataFromCache?.userNotifications,
+            unreadCount: 0,
+            nodes: dataFromCache?.userNotifications.nodes.map((node) => ({
               ...node,
               read: true,
-            },
-          }),
-        );
+            })),
+          },
+        };
         cache.writeQuery({ ...query, data });
       },
     });
     handleClose();
   };
 
-  const handleClick = (event) => {
+  const handleClick = (
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+  ) => {
     setAnchorEl(event.currentTarget);
   };
 
   const handleClose = () => {
-    setAnchorEl(null);
+    setAnchorEl(undefined);
   };
 
   const handleFetchMore = () => {
     fetchMore({
-      variables: { after: data.userNotifications.pageInfo.endCursor },
+      variables: { after: data?.userNotifications.pageInfo.endCursor },
     });
   };
-
-  useEffect(() => {
-    if (state?.accountListId) {
-      getNotifications({
-        variables: {
-          accountListId: state.accountListId,
-          after: null,
-        },
-      });
-    }
-  }, [state?.accountListId]);
 
   return (
     <>
@@ -176,10 +165,9 @@ const NotificationMenu = (): ReactElement => {
               <Button
                 size="small"
                 disabled={
-                  data?.userNotifications?.edges === undefined ||
-                  data.userNotifications.edges.filter(
-                    ({ node: { read } }) => !read,
-                  ).length === 0
+                  !data ||
+                  data.userNotifications.nodes.filter(({ read }) => !read)
+                    .length === 0
                 }
                 onClick={handleAcknowledgeAllClick}
               >
@@ -188,12 +176,12 @@ const NotificationMenu = (): ReactElement => {
             </Box>
           </Box>
         </ListSubheader>
-        {data?.userNotifications?.edges?.map(({ node: item }, index) => (
+        {data?.userNotifications?.nodes.map((item, index, nodes) => (
           <NotificationMenuItem
             key={item.id}
             item={item}
-            previousItem={data.userNotifications.edges[index - 1]?.node}
-            last={index + 1 === data.userNotifications.edges.length && !loading}
+            previousItem={nodes[index - 1]}
+            last={index + 1 === nodes.length && !loading}
             onClick={handleClose}
           />
         ))}
@@ -209,7 +197,7 @@ const NotificationMenu = (): ReactElement => {
             </Button>
           </ListItem>
         )}
-        {!loading && data?.userNotifications?.edges?.length === 0 && (
+        {!loading && data?.userNotifications.nodes.length === 0 && (
           <ListItem className={classes.listItemEmpty}>
             <img src={illustration13} className={classes.img} alt="empty" />
             {t('No notifications to show.')}

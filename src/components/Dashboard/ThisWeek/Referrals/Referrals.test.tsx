@@ -7,7 +7,9 @@ import Referrals from '.';
 
 describe('Referrals', () => {
   it('default', () => {
-    const { getByTestId, queryByTestId } = render(<Referrals />);
+    const { getByTestId, queryByTestId } = render(
+      <Referrals loading={false} />,
+    );
     expect(getByTestId('ReferralsDivRecent')).toBeInTheDocument();
     expect(queryByTestId('ReferralsDivOnHand')).not.toBeInTheDocument();
     expect(getByTestId('ReferralsTabRecent').textContent).toEqual('Recent (0)');
@@ -37,7 +39,11 @@ describe('Referrals', () => {
       totalCount: 0,
     };
     const { getByTestId, queryByTestId } = render(
-      <Referrals recentReferrals={referrals} onHandReferrals={referrals} />,
+      <Referrals
+        loading={false}
+        recentReferrals={referrals}
+        onHandReferrals={referrals}
+      />,
     );
     expect(
       getByTestId('ReferralsTabRecentCardContentEmpty'),
@@ -86,6 +92,7 @@ describe('Referrals', () => {
     };
     const { getByTestId, queryByTestId, getByRole } = render(
       <Referrals
+        loading={false}
         recentReferrals={recentReferrals}
         onHandReferrals={onHandReferrals}
       />,

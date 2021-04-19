@@ -15,6 +15,8 @@ const contactIds = ['contact-1', 'contact-2'];
 const mockEnqueue = jest.fn();
 
 jest.mock('notistack', () => ({
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   ...jest.requireActual('notistack'),
   useSnackbar: () => {
     return {

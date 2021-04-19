@@ -36,12 +36,7 @@ interface MailingProp {
 
 export const ContactDetailsTabMailing: React.FC<MailingProp> = ({ data }) => {
   const { t } = useTranslation();
-  const {
-    name,
-    primaryAddress: { street, city, state, postalCode },
-    greeting,
-    sendNewsletter,
-  } = data;
+  const { name, primaryAddress, greeting, sendNewsletter } = data;
   return (
     <Box>
       <ContactDetailsMailingMainContainer>
@@ -49,15 +44,16 @@ export const ContactDetailsTabMailing: React.FC<MailingProp> = ({ data }) => {
         <ContactDetailsMailingTexContainer>
           {/* Address Section */}
           <Typography variant="subtitle1">{name}</Typography>
-          {data.primaryAddress ? (
+          {primaryAddress && (
             <>
-              <Typography variant="subtitle1">{street ?? ''}</Typography>
               <Typography variant="subtitle1">
-                {`${city ?? ''}, ${state ?? ''} ${postalCode ?? ''}`}
+                {primaryAddress.street}
+              </Typography>
+              <Typography variant="subtitle1">
+                {`${primaryAddress.city}, ${primaryAddress.state} ${primaryAddress.postalCode}`}
               </Typography>
             </>
-          ) : null}
-
+          )}
           {/* Show More Section */}
           <ContactDetailsMailingLabelTextContainer>
             <Link href="#">

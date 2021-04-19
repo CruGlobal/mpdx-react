@@ -52,7 +52,7 @@ const Balance = ({
       <AnimatedCard className={classes.card}>
         <CardContent className={classes.cardContent}>
           <Typography variant="h5" data-testid="BalanceTypography">
-            {loading ? (
+            {loading || balance === undefined ? (
               <Skeleton variant="text" />
             ) : (
               currencyFormat(balance, currencyCode)
