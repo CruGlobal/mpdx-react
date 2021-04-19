@@ -29,30 +29,20 @@ export const ContactHeaderPhoneSection = ({
   loading,
   contact,
 }: Props): ReactElement => {
+  const number = contact?.primaryPerson?.primaryPhoneNumber?.number;
+
   if (loading) {
     return (
       <ContactHeaderSection icon={<PhoneIcon />}>
         <TextSkeleton variant="text" />
       </ContactHeaderSection>
     );
-  } else if (
-    contact &&
-    contact.primaryPerson &&
-    contact.primaryPerson.primaryPhoneNumber
-  ) {
-    const {
-      primaryPerson: {
-        primaryPhoneNumber: { number },
-      },
-    } = contact;
-
-    if (!!number) {
-      return (
-        <ContactHeaderSection icon={<PhoneIcon />}>
-          <Typography variant="subtitle1">{number}</Typography>
-        </ContactHeaderSection>
-      );
-    }
+  } else if (number) {
+    return (
+      <ContactHeaderSection icon={<PhoneIcon />}>
+        <Typography variant="subtitle1">{number}</Typography>
+      </ContactHeaderSection>
+    );
   }
 
   return <ContactHeaderSection icon={<PhoneIcon />} />;
