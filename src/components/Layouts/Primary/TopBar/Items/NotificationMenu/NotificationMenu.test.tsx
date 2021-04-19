@@ -61,42 +61,38 @@ describe('NotificationMenu', () => {
         },
         data: {
           userNotifications: {
-            edges: [
+            nodes: [
               {
-                node: {
-                  id: 'd1b7a8c1-9b2e-4234-b2d6-e52c151bbc7b',
-                  read: true,
-                  notification: {
-                    occurredAt: '2020-05-25T20:00:00-04:00',
-                    contact: {
-                      id: '942ea954-c251-44d6-8166-7a1879ecdbc7',
-                      name: 'Smith, Roger',
-                    },
-                    donation: null,
-                    notificationType: {
-                      id: '6eb32493-c51b-490a-955d-595642160a95',
-                      type: 'UPCOMING_ANNIVERSARY',
-                      descriptionTemplate: 'Partner has upcoming anniversary',
-                    },
+                id: 'd1b7a8c1-9b2e-4234-b2d6-e52c151bbc7b',
+                read: true,
+                notification: {
+                  occurredAt: '2020-05-25T20:00:00-04:00',
+                  contact: {
+                    id: '942ea954-c251-44d6-8166-7a1879ecdbc7',
+                    name: 'Smith, Roger',
+                  },
+                  donation: null,
+                  notificationType: {
+                    id: '6eb32493-c51b-490a-955d-595642160a95',
+                    type: 'UPCOMING_ANNIVERSARY',
+                    descriptionTemplate: 'Partner has upcoming anniversary',
                   },
                 },
               },
               {
-                node: {
-                  id: '5055f90b-fb09-4bf2-bbcd-09f29aeb5147',
-                  read: true,
-                  notification: {
-                    occurredAt: '2020-05-25T20:00:00-04:00',
-                    contact: {
-                      id: '942ea954-c251-44d6-8166-7a1879ecdbce',
-                      name: 'Robertson, Tara',
-                    },
-                    donation: null,
-                    notificationType: {
-                      id: '577da384-5452-4501-9ec5-d5b2754d29ae',
-                      type: 'UPCOMING_BIRTHDAY',
-                      descriptionTemplate: 'Partner has upcoming birthday',
-                    },
+                id: '5055f90b-fb09-4bf2-bbcd-09f29aeb5147',
+                read: true,
+                notification: {
+                  occurredAt: '2020-05-25T20:00:00-04:00',
+                  contact: {
+                    id: '942ea954-c251-44d6-8166-7a1879ecdbce',
+                    name: 'Robertson, Tara',
+                  },
+                  donation: null,
+                  notificationType: {
+                    id: '577da384-5452-4501-9ec5-d5b2754d29ae',
+                    type: 'UPCOMING_BIRTHDAY',
+                    descriptionTemplate: 'Partner has upcoming birthday',
                   },
                 },
               },

@@ -5,7 +5,7 @@ import {
   NormalizedCacheObject,
 } from '@apollo/client';
 import { relayStylePagination } from '@apollo/client/utilities';
-import { persistCache } from 'apollo-cache-persist';
+import { persistCache, LocalStorageWrapper } from 'apollo3-cache-persist';
 import fetch from 'isomorphic-fetch';
 import generatedIntrospection from '../../graphql/possibleTypes.generated';
 
@@ -28,7 +28,7 @@ const httpLink = createHttpLink({
 if (process.browser && process.env.NODE_ENV === 'production') {
   persistCache({
     cache,
-    storage: window.localStorage,
+    storage: new LocalStorageWrapper(window.localStorage),
   });
 }
 

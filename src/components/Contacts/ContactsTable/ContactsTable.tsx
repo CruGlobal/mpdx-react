@@ -42,7 +42,7 @@ export const ContactsTable: React.FC<Props> = ({
   );
 
   const renderError = () => (
-    <Box bgcolor={colors.red[600]}>Error: {error.toString()}</Box>
+    <Box bgcolor={colors.red[600]}>Error: {error?.toString()}</Box>
   );
 
   return (
@@ -55,7 +55,7 @@ export const ContactsTable: React.FC<Props> = ({
           {error && renderError()}
           {loading ? (
             renderLoading()
-          ) : !(data?.contacts.nodes.length > 0) ? (
+          ) : !(data && data.contacts.nodes.length > 0) ? (
             renderEmpty()
           ) : (
             <div data-testID="ContactRows">

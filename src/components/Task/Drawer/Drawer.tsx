@@ -1,4 +1,4 @@
-import React, { ReactElement, useState, useEffect } from 'react';
+import React, { ReactElement, useState } from 'react';
 import {
   makeStyles,
   Theme,
@@ -24,10 +24,7 @@ import TaskDrawerForm from './Form';
 import TaskDrawerContactList from './ContactList';
 import TaskDrawerCommentList from './CommentList';
 import TaskDrawerCompleteForm from './CompleteForm';
-import {
-  GetTaskForTaskDrawerQuery,
-  useGetTaskForTaskDrawerLazyQuery,
-} from './TaskDrawerTask.generated';
+import { useGetTaskForTaskDrawerQuery } from './TaskDrawerTask.generated';
 
 const useStyles = makeStyles((theme: Theme) => ({
   fixed: {
@@ -77,23 +74,22 @@ const TaskDrawer = ({
 }: TaskDrawerProps): ReactElement => {
   const { state } = useApp();
   const classes = useStyles();
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(!taskId);
   const { t } = useTranslation();
   const [tab, setTab] = useState('1');
-  const [getTask, { data, loading }] = useGetTaskForTaskDrawerLazyQuery();
-  const [task, setTask] = useState<GetTaskForTaskDrawerQuery['task']>(null);
+  const { data, loading } = useGetTaskForTaskDrawerQuery({
+    variables: {
+      accountListId: state.accountListId ?? '',
+      taskId: taskId ?? '',
+    },
+    skip: !taskId,
+    onCompleted: () => setOpen(true),
+  });
 
-  const onLoad = async (): Promise<void> => {
-    if (taskId) {
-      await getTask({
-        variables: { accountListId: state.accountListId, taskId },
-      });
-    } else {
-      setOpen(true);
-    }
-  };
-
-  const handleTabChange = (_, tab: string): void => {
+  const handleTabChange = (
+    _: React.ChangeEvent<Record<string, unknown>>,
+    tab: string,
+  ): void => {
     setTab(tab);
   };
 
@@ -102,18 +98,7 @@ const TaskDrawer = ({
     onClose && onClose();
   };
 
-  useEffect(() => {
-    onLoad();
-  }, []);
-
-  if (data?.task && task !== data?.task) {
-    setTask(data.task);
-    setOpen(true);
-  }
-
-  useEffect(() => {
-    onLoad();
-  }, [taskId]);
+  const task = data?.task;
 
   const title = ((): string => {
     if (task) {
@@ -155,8 +140,8 @@ const TaskDrawer = ({
                     {task ? (
                       <TaskStatus
                         taskId={task.id}
-                        startAt={task.startAt}
-                        completedAt={task.completedAt}
+                        startAt={task.startAt ?? undefined}
+                        completedAt={task.completedAt ?? undefined}
                         disableTooltip
                       />
                     ) : (
@@ -200,29 +185,31 @@ const TaskDrawer = ({
                   animate={{ x: 0, opacity: 1 }}
                   exit={{ x: -300, opacity: 0 }}
                 >
-                  {!loading && (
+                  {!loading && state.accountListId && (
                     <>
                       {showCompleteForm ? (
-                        <TaskDrawerCompleteForm
-                          accountListId={state.accountListId}
-                          task={task}
-                          onClose={onDrawerClose}
-                        />
+                        task && (
+                          <TaskDrawerCompleteForm
+                            accountListId={state.accountListId}
+                            task={task}
+                            onClose={onDrawerClose}
+                          />
+                        )
                       ) : (
                         <TaskDrawerForm
                           accountListId={state.accountListId}
-                          task={task as Task} // TODO: Use fragments to ensure all required fields are loaded
+                          task={task} // TODO: Use fragments to ensure all required fields are loaded
                           onClose={onDrawerClose}
                           defaultValues={defaultValues}
                           filter={filter}
-                          rowsPerPage={rowsPerPage}
+                          rowsPerPage={rowsPerPage || 100}
                         />
                       )}
                     </>
                   )}
                 </motion.div>
               </TabPanel>
-              {task && (
+              {task && state.accountListId && (
                 <>
                   <TabPanel key="2" value="2" className={classes.tabPanel}>
                     <motion.div

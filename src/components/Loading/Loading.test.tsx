@@ -1,23 +1,24 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
+import { NextRouter } from 'next/router';
 import TestRouter from '../../../__tests__/util/TestRouter';
 import Loading from '.';
 
 describe('Loading', () => {
-  let router, events: { [key: string]: () => void };
+  let events: { [key: string]: () => void } = {};
+
+  const router: Pick<NextRouter, 'events'> = {
+    events: {
+      on: jest
+        .fn()
+        .mockImplementation((key, eventFn) => (events[key] = eventFn)),
+      off: jest.fn().mockImplementation((key, _eventFn) => delete events[key]),
+      emit: (key): void => events[key](),
+    },
+  };
+
   beforeEach(() => {
     events = {};
-    router = {
-      events: {
-        on: jest
-          .fn()
-          .mockImplementation((key, eventFn) => (events[key] = eventFn)),
-        off: jest
-          .fn()
-          .mockImplementation((key, _eventFn) => delete events[key]),
-        emit: (key): void => events[key](),
-      },
-    };
   });
 
   it('has correct overrides', () => {

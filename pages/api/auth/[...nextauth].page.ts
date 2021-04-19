@@ -1,8 +1,14 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import NextAuth from 'next-auth';
+import NextAuth, { InitOptions } from 'next-auth';
 import { Profile } from './profile.page';
 
-const options = {
+declare module 'next-auth' {
+  interface User {
+    token?: string;
+  }
+}
+
+const options: InitOptions = {
   providers: [
     {
       id: 'thekey',
@@ -21,13 +27,13 @@ const options = {
     },
   ],
   callbacks: {
-    session: (session, token): Promise<unknown> => {
+    session: (session, user) => {
       return Promise.resolve({
         ...session,
-        user: { ...session.user, token: token.token },
+        user: { ...session.user, token: user.token },
       });
     },
-    jwt: async (token, user, _account, profile): Promise<unknown> => {
+    jwt: async (token, user, _account, profile) => {
       if (user) {
         return Promise.resolve({ ...token, token: profile.token });
       } else {

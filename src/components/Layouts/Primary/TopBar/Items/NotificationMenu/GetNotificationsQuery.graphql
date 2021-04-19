@@ -1,28 +1,26 @@
 query GetNotifications($accountListId: ID!, $after: String) {
   userNotifications(accountListId: $accountListId, after: $after, first: 20) {
-    edges {
-      node {
-        id
-        read
-        notification {
-          occurredAt
-          contact {
-            id
-            name
+    nodes {
+      id
+      read
+      notification {
+        occurredAt
+        contact {
+          id
+          name
+        }
+        donation {
+          id
+          amount {
+            amount
+            currency
+            conversionDate
           }
-          donation {
-            id
-            amount {
-              amount
-              currency
-              conversionDate
-            }
-          }
-          notificationType {
-            id
-            type
-            descriptionTemplate
-          }
+        }
+        notificationType {
+          id
+          type
+          descriptionTemplate
         }
       }
     }

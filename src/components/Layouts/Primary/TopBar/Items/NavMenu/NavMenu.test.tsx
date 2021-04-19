@@ -19,7 +19,7 @@ describe('NavMenu', () => {
 
   it('hidden', () => {
     const { queryByRole } = render(
-      <TestWrapper initialState={null}>
+      <TestWrapper initialState={{}}>
         <NavMenu />
       </TestWrapper>,
     );

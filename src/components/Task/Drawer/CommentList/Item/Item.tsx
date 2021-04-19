@@ -122,7 +122,7 @@ const TaskDrawerCommentListItem = ({
                 className={classes.avatar}
               >
                 <Avatar data-testid="TaskDrawerCommentListItemAvatar">
-                  {comment.person.firstName[0]}
+                  {comment.person.firstName?.[0]}
                 </Avatar>
               </Tooltip>
             ) : (

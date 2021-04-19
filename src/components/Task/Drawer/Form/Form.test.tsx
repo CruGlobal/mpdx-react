@@ -108,7 +108,7 @@ describe('TaskDrawerForm', () => {
     );
     expect(
       getAllByRole('textbox').find(
-        (item: HTMLInputElement) => item.value === 'Jan 5, 2016',
+        (item) => (item as HTMLInputElement).value === 'Jan 5, 2016',
       ),
     ).toBeInTheDocument();
     userEvent.click(getByRole('button', { name: 'Type' }));

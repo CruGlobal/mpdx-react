@@ -11,8 +11,8 @@ const options = {
   language: 'en',
 };
 
-glob('public/locales/en/*.json', (_er, paths) => {
-  paths.forEach((path: string) => {
+glob('public/locales/en/*.json', (_er: never, paths: string[]) => {
+  paths.forEach((path) => {
     const content = fs.readFileSync(path, 'utf8').toString();
     const fileName = path.split('/').pop();
     onesky.postFile({ ...options, content, fileName });

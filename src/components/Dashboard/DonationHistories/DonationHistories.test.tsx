@@ -3,7 +3,9 @@ import { render } from '@testing-library/react';
 import DonationHistories from '.';
 
 describe('DonationHistories', () => {
-  let reportsDonationHistories;
+  let reportsDonationHistories: Parameters<
+    typeof DonationHistories
+  >[0]['reportsDonationHistories'];
 
   it('default', () => {
     const { getByTestId, queryByTestId } = render(<DonationHistories />);

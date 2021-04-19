@@ -8,9 +8,8 @@ import { getTopBarMock } from './TopBar/TopBar.mock';
 import Primary from '.';
 
 describe('Primary', () => {
-  let mocks;
+  const mocks = [...getNotificationsMocks(), getTopBarMock()];
   beforeEach(() => {
-    mocks = [...getNotificationsMocks(), getTopBarMock()];
     matchMediaMock({ width: '1024px' });
   });
 

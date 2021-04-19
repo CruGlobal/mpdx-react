@@ -21,8 +21,6 @@ describe('ContactDetailTab', () => {
         "contactId": "contact-id",
       }
     `);
-    expect(result.current.data.contact.name).toMatchInlineSnapshot(
-      `"Flower Compact Disc Computer"`,
-    );
+    expect(result.current.data.contact.name).toMatchInlineSnapshot();
   });
 });

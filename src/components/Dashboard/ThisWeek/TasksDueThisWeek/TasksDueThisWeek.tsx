@@ -160,7 +160,7 @@ const TasksDueThisWeek = ({
                             >
                               {
                                 t(
-                                  task.activityType,
+                                  task.activityType ?? '',
                                 ) /* manually added to translation file */
                               }
                             </Typography>{' '}
@@ -178,8 +178,8 @@ const TasksDueThisWeek = ({
                     <ListItemSecondaryAction>
                       <TaskStatus
                         taskId={task.id}
-                        startAt={task.startAt}
-                        completedAt={task.completedAt}
+                        startAt={task.startAt ?? undefined}
+                        completedAt={task.completedAt ?? undefined}
                         tooltipPlacement="left"
                       />
                     </ListItemSecondaryAction>

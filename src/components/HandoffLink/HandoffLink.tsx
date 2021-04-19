@@ -17,8 +17,8 @@ const HandoffLink = ({ path, auth, children }: Props): ReactElement => {
   if (auth) {
     url.searchParams.append('auth', 'true');
   } else {
-    url.searchParams.append('accountListId', app?.state?.accountListId);
-    url.searchParams.append('userId', app?.state?.user?.id);
+    url.searchParams.append('accountListId', app?.state?.accountListId ?? '');
+    url.searchParams.append('userId', app?.state?.user?.id ?? '');
   }
   url.searchParams.append('path', path);
 

@@ -25,7 +25,7 @@ const handleExitComplete = (): void => {
 };
 
 export type PageWithLayout = NextPage & {
-  layout?: ({ children }) => ReactElement;
+  layout?: React.FC;
 };
 
 const App = ({ Component, pageProps, router }: AppProps): ReactElement => {

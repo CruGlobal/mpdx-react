@@ -1,8 +1,9 @@
+import { Reducer } from 'react';
 import { User } from '../../../graphql/types.generated';
 
 export interface AppState {
-  accountListId: string;
-  breadcrumb: string;
+  accountListId?: string;
+  breadcrumb?: string;
   user?: User;
 }
 
@@ -26,7 +27,7 @@ type UpdateUserAction = {
   user: User;
 };
 
-const rootReducer = (state: AppState, action: Action): AppState => {
+const rootReducer: Reducer<AppState, Action> = (state, action) => {
   switch (action.type) {
     case 'updateAccountListId':
       return { ...state, accountListId: action.accountListId };

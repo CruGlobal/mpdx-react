@@ -25,14 +25,6 @@ describe('intlFormat', () => {
       expect(numberFormat(NaN)).toEqual('0');
     });
 
-    it('handles null case', () => {
-      expect(numberFormat(null)).toEqual('0');
-    });
-
-    it('handles undefined case', () => {
-      expect(numberFormat(undefined)).toEqual('0');
-    });
-
     it('handles language', () => {
       expect(numberFormat(1000.01, 'fr')).toEqual('1 000,01');
     });
@@ -55,14 +47,6 @@ describe('intlFormat', () => {
 
     it('handles NaN case', () => {
       expect(percentageFormat(NaN)).toEqual('0%');
-    });
-
-    it('handles null case', () => {
-      expect(percentageFormat(null)).toEqual('0%');
-    });
-
-    it('handles undefined case', () => {
-      expect(percentageFormat(undefined)).toEqual('0%');
     });
 
     it('handles language', () => {
@@ -93,21 +77,9 @@ describe('intlFormat', () => {
       it('handles NaN case', () => {
         expect(currencyFormat(NaN, 'NZD')).toEqual('NZ$0');
       });
-
-      it('handles null case', () => {
-        expect(currencyFormat(null, 'NZD')).toEqual('NZ$0');
-      });
-
-      it('handles undefined case', () => {
-        expect(currencyFormat(undefined, 'NZD')).toEqual('NZ$0');
-      });
     });
 
     describe('currency', () => {
-      it('handles null case', () => {
-        expect(currencyFormat(1000, null)).toEqual('$1,000');
-      });
-
       it('handles undefined case', () => {
         expect(currencyFormat(1000, undefined)).toEqual('$1,000');
       });
@@ -173,10 +145,6 @@ describe('intlFormat', () => {
       expect(dateFormat(DateTime.local(2020, 1, 5), 'fr')).toEqual(
         '5 janv. 2020',
       );
-    });
-
-    it('handles null case', () => {
-      expect(dateFormat(null)).toEqual('');
     });
 
     describe('default language', () => {

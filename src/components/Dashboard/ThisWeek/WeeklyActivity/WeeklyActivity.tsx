@@ -20,6 +20,7 @@ import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
 import { Skeleton } from '@material-ui/lab';
 import { useTranslation } from 'react-i18next';
+import { useSnackbar } from 'notistack';
 import AnimatedCard from '../../../AnimatedCard';
 import { numberFormat } from '../../../../lib/intlFormat';
 import HandoffLink from '../../../HandoffLink';
@@ -75,11 +76,16 @@ const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
     ),
   );
 
+  const { enqueueSnackbar } = useSnackbar();
+
   const { data, loading, refetch } = useGetWeeklyActivityQuery({
     variables: {
       accountListId,
       startOfWeek: interval.start.toISO(),
       endOfWeek: interval.end.toISO(),
+    },
+    onError: (error) => {
+      enqueueSnackbar(error.message, { variant: 'error' });
     },
   });
 
@@ -158,7 +164,7 @@ const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
                   align="right"
                   data-testid="WeeklyActivityTableCellCompletedCalls"
                 >
-                  {loading ? (
+                  {loading || !data ? (
                     <Skeleton
                       variant="text"
                       data-testid="WeeklyActivitySkeletonLoading"
@@ -171,7 +177,7 @@ const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
                   align="right"
                   data-testid="WeeklyActivityTableCellCallsThatProducedAppointments"
                 >
-                  {loading ? (
+                  {loading || !data ? (
                     <Skeleton variant="text" />
                   ) : (
                     numberFormat(data.callsThatProducedAppointments.totalCount)
@@ -184,7 +190,7 @@ const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
                   align="right"
                   data-testid="WeeklyActivityTableCellCompletedMessages"
                 >
-                  {loading ? (
+                  {loading || !data ? (
                     <Skeleton variant="text" />
                   ) : (
                     numberFormat(data.completedMessages.totalCount)
@@ -194,7 +200,7 @@ const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
                   align="right"
                   data-testid="WeeklyActivityTableCellMessagesThatProducedAppointments"
                 >
-                  {loading ? (
+                  {loading || !data ? (
                     <Skeleton variant="text" />
                   ) : (
                     numberFormat(
@@ -209,7 +215,7 @@ const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
                   align="right"
                   data-testid="WeeklyActivityTableCellCompletedAppointments"
                 >
-                  {loading ? (
+                  {loading || !data ? (
                     <Skeleton variant="text" />
                   ) : (
                     numberFormat(data.completedAppointments.totalCount)
@@ -223,7 +229,7 @@ const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
                   align="right"
                   data-testid="WeeklyActivityTableCellCompletedCorrespondence"
                 >
-                  {loading ? (
+                  {loading || !data ? (
                     <Skeleton variant="text" />
                   ) : (
                     numberFormat(data.completedCorrespondence.totalCount)

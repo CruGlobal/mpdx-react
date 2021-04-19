@@ -24,13 +24,13 @@ describe('ContactFilters', () => {
   });
 
   it('filters loaded', async () => {
-    const { queryByTestId, queryByText } = render(
+    const { getByText, queryByTestId, queryByText, getByTestId } = render(
       <GqlMockedProvider<ContactFiltersQuery>>
         <ContactFilters accountListId={accountListId} />
       </GqlMockedProvider>,
     );
 
-    const loadFiltersButton = queryByText('Load Filters');
+    const loadFiltersButton = getByText('Load Filters');
 
     userEvent.click(loadFiltersButton);
 
@@ -43,6 +43,6 @@ describe('ContactFilters', () => {
     expect(queryByTestId('ErrorText')).toBeNull();
     expect(queryByTestId('FiltersList')).toBeVisible();
 
-    expect(queryByTestId('FiltersList').childNodes.length).toEqual(2);
+    expect(getByTestId('FiltersList').childNodes.length).toEqual(2);
   });
 });

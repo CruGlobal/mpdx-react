@@ -10,7 +10,7 @@ export default {
 export const Default = (): ReactElement => {
   return (
     <Box m={2}>
-      <GiftStatus lateAt={null} />
+      <GiftStatus lateAt={undefined} />
     </Box>
   );
 };
