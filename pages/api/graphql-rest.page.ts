@@ -15,6 +15,22 @@ const typeDefs = gql`
     taskAnalytics(accountListId: ID!): TaskAnalytics!
   }
 
+  type Mutation {
+    exportContacts(input: ExportContactsInput!): String!
+  }
+
+  type ExportedContacts {
+    id: ID!
+  }
+
+  input ExportContactsInput {
+    format: String!
+    mailing: Boolean!
+    labelType: String
+    sort: String
+    accountListId: ID!
+  }
+
   type TaskAnalytics {
     id: ID!
     type: String!
@@ -63,6 +79,27 @@ const resolvers: Resolvers = {
       return dataSources.mpdxRestApi.getTaskAnalytics(accountListId);
     },
   },
+  Mutation: {
+    exportContacts: (
+      _source,
+      { input: { mailing, format, labelType, sort, accountListId } },
+      { dataSources },
+    ) => {
+      const filter = {
+        account_list_id: accountListId,
+        newsletter: 'address',
+        status: 'active',
+      };
+
+      return dataSources.mpdxRestApi.createExportedContacts(
+        mailing,
+        format,
+        filter,
+        labelType,
+        sort,
+      );
+    },
+  },
 };
 
 class MpdxRestApi extends RESTDataSource {
@@ -97,6 +134,35 @@ class MpdxRestApi extends RESTDataSource {
     } else {
       return response.text();
     }
+  }
+
+  async createExportedContacts(
+    mailing: boolean,
+    format: string,
+    filter: {
+      account_list_id: string;
+      newsletter: string;
+      status: string;
+    },
+    labelType?: string | null,
+    sort?: string | null,
+  ) {
+    let pathAddition = '';
+    if (mailing) {
+      pathAddition = '/mailing';
+    }
+    const { data } = await this.post(`contacts/exports${pathAddition}`, {
+      data: {
+        params: {
+          filter,
+          type: labelType,
+          sort,
+        },
+        type: 'export_logs',
+      },
+    });
+    console.log(data);
+    return `${process.env.REST_API_URL}contacts/exports${pathAddition}/${data.id}.${format}?access_token=`;
   }
 
   async getContactFilters(accountListId: string) {
