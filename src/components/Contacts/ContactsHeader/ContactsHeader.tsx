@@ -2,7 +2,7 @@ import { Box, styled, IconButton } from '@material-ui/core';
 import { FilterList } from '@material-ui/icons';
 import React, { useState } from 'react';
 import theme from '../../../theme';
-import { CheckBox, CheckBoxState } from '../ContactDetails/CheckBox/CheckBox';
+import { CheckBox, CheckBoxState } from '../CheckBox/CheckBox';
 import { StarContactIcon } from '../StarContactIcon/StarContactIcon';
 
 const HeaderWrap = styled(Box)(({}) => ({
@@ -59,15 +59,24 @@ const DisplayOptionButton = styled(IconButton)(({}) => ({
 }));
 
 export const ContactsHeader: React.FC = () => {
-  const [allContactsChecked, setAllContactsChecked] = useState(false);
+  const [checkBoxState, setCheckboxState] = useState(CheckBoxState.unchecked);
 
   const toggleAllContactsCheckbox = () => {
-    setAllContactsChecked(!allContactsChecked);
+    switch (checkBoxState) {
+      case CheckBoxState.unchecked:
+        return setCheckboxState(CheckBoxState.checked);
+
+      case CheckBoxState.checked:
+        return setCheckboxState(CheckBoxState.unchecked);
+
+      case CheckBoxState.partial:
+        return setCheckboxState(CheckBoxState.checked);
+    }
   };
 
   return (
     <HeaderWrap>
-      <CheckBox state={CheckBoxState.unchecked} />
+      <CheckBox state={checkBoxState} onClick={toggleAllContactsCheckbox} />
       <FilterButton>
         <FilterIcon />
       </FilterButton>
