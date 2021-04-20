@@ -5,6 +5,12 @@ import theme from '../../../theme';
 import { CheckBox, CheckBoxState } from '../CheckBox/CheckBox';
 import { StarContactIcon } from '../StarContactIcon/StarContactIcon';
 
+interface Props {
+  activeFilters: boolean;
+  filterPanelOpen: boolean;
+  toggleFilterPanel: () => void;
+}
+
 const HeaderWrap = styled(Box)(({}) => ({
   height: 96,
   padding: theme.spacing(1),
@@ -14,14 +20,26 @@ const HeaderWrap = styled(Box)(({}) => ({
   alignItems: 'center',
   backgroundColor: theme.palette.background.default,
 }));
-const FilterButton = styled(IconButton)(({}) => ({
-  display: 'inline-block',
-  width: 48,
-  height: 48,
-  borderRadius: 24,
-  margin: theme.spacing(1),
-  backgroundColor: '#FFCF07',
-}));
+const FilterButton = styled(IconButton)(
+  ({
+    activeFilters,
+    panelOpen,
+  }: {
+    activeFilters: boolean;
+    panelOpen: boolean;
+  }) => ({
+    display: 'inline-block',
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    margin: theme.spacing(1),
+    backgroundColor: activeFilters
+      ? '#FFCF07'
+      : panelOpen
+      ? theme.palette.secondary.dark
+      : 'transparent',
+  }),
+);
 const FilterIcon = styled(FilterList)(({}) => ({
   width: 24,
   height: 24,
@@ -58,7 +76,11 @@ const DisplayOptionButton = styled(IconButton)(({}) => ({
   height: 48,
 }));
 
-export const ContactsHeader: React.FC = () => {
+export const ContactsHeader: React.FC<Props> = ({
+  activeFilters,
+  filterPanelOpen,
+  toggleFilterPanel,
+}) => {
   const [checkBoxState, setCheckboxState] = useState(CheckBoxState.unchecked);
 
   const toggleAllContactsCheckbox = () => {
@@ -77,7 +99,11 @@ export const ContactsHeader: React.FC = () => {
   return (
     <HeaderWrap>
       <CheckBox state={checkBoxState} onClick={toggleAllContactsCheckbox} />
-      <FilterButton>
+      <FilterButton
+        activeFilters={activeFilters}
+        panelOpen={filterPanelOpen}
+        onClick={toggleFilterPanel}
+      >
         <FilterIcon />
       </FilterButton>
       <PlaceholderSearchBar />

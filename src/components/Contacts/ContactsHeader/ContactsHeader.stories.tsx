@@ -6,5 +6,11 @@ export default {
 };
 
 export const Default = (): ReactElement => {
-  return <ContactsHeader />;
+  return (
+    <ContactsHeader
+      activeFilters={false}
+      filterPanelOpen={false}
+      toggleFilterPanel={() => {}}
+    />
+  );
 };

@@ -14,6 +14,13 @@ const ContactsPage: React.FC = () => {
   const accountListId = query.accountListId as string;
 
   const [contactDetailsId, setContactDetailsId] = useState<string>();
+  //TODO: Connect these to ContactFilters, and use actual filter data for activeFilters
+  const [filterPanelOpen, setFilterPanelOpen] = useState<boolean>(true);
+  const [activeFilters, setActiveFilters] = useState<boolean>(true);
+
+  const toggleFilterPanel = () => {
+    setFilterPanelOpen(!filterPanelOpen);
+  };
 
   return (
     <>
@@ -28,6 +35,9 @@ const ContactsPage: React.FC = () => {
           <ContactsTable
             accountListId={accountListId}
             onContactSelected={setContactDetailsId}
+            activeFilters={activeFilters}
+            filterPanelOpen={filterPanelOpen}
+            toggleFilterPanel={toggleFilterPanel}
           />
         </Box>
         {contactDetailsId ? (
