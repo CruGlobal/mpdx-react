@@ -1,4 +1,4 @@
-import { Box, styled, IconButton } from '@material-ui/core';
+import { Box, styled, IconButton, Hidden } from '@material-ui/core';
 import { FilterList, FormatListBulleted, ViewColumn } from '@material-ui/icons';
 import { ToggleButton, ToggleButtonProps } from '@material-ui/lab';
 import React, { useState } from 'react';
@@ -128,44 +128,64 @@ export const ContactsHeader: React.FC<Props> = ({
 
   return (
     <HeaderWrap>
-      <CheckBox state={checkBoxState} onClick={toggleAllContactsCheckbox} />
-      <FilterButton
-        activeFilters={activeFilters}
-        panelOpen={filterPanelOpen}
-        onClick={toggleFilterPanel}
-      >
-        <FilterIcon />
-      </FilterButton>
+      <Hidden smDown>
+        <CheckBox state={checkBoxState} onClick={toggleAllContactsCheckbox} />
+      </Hidden>
+
+      <Hidden xsDown>
+        <FilterButton
+          activeFilters={activeFilters}
+          panelOpen={filterPanelOpen}
+          onClick={toggleFilterPanel}
+        >
+          <FilterIcon />
+        </FilterButton>
+      </Hidden>
+
       {/*TODO: Replace this with Search Box: MPDX-6948*/}
       <PlaceholderSearchBar />
       <ContactsShowingText>
         {t('Showing 43', { count: totalContacts })}
       </ContactsShowingText>
-      {/*TODO: Replace this with Actions Dropdown*/}
-      <PlaceholderActionsDropdown />
-      <DisplayOptionButtonLeft
-        selected={contactsTableDisplayState === ContactsTableDisplayState.list}
-        onClick={() =>
-          setContactsTableDisplayState(ContactsTableDisplayState.list)
-        }
-      >
-        <FormatListBulleted style={{ color: theme.palette.primary.dark }} />
-      </DisplayOptionButtonLeft>
-      <DisplayOptionButtonRight
-        selected={
-          contactsTableDisplayState === ContactsTableDisplayState.columns
-        }
-        onClick={() =>
-          setContactsTableDisplayState(ContactsTableDisplayState.columns)
-        }
-      >
-        <ViewColumn style={{ color: theme.palette.primary.dark }} />
-      </DisplayOptionButtonRight>
-      <Box
-        style={{ marginLeft: theme.spacing(4), marginRight: theme.spacing(1) }}
-      >
-        <StarContactIcon hasStar={false} />
-      </Box>
+
+      <Hidden smDown>
+        {/*TODO: Replace this with Actions Dropdown*/}
+        <PlaceholderActionsDropdown />
+      </Hidden>
+
+      <Hidden xsDown>
+        <DisplayOptionButtonLeft
+          selected={
+            contactsTableDisplayState === ContactsTableDisplayState.list
+          }
+          onClick={() =>
+            setContactsTableDisplayState(ContactsTableDisplayState.list)
+          }
+        >
+          <FormatListBulleted style={{ color: theme.palette.primary.dark }} />
+        </DisplayOptionButtonLeft>
+        <DisplayOptionButtonRight
+          selected={
+            contactsTableDisplayState === ContactsTableDisplayState.columns
+          }
+          onClick={() =>
+            setContactsTableDisplayState(ContactsTableDisplayState.columns)
+          }
+        >
+          <ViewColumn style={{ color: theme.palette.primary.dark }} />
+        </DisplayOptionButtonRight>
+      </Hidden>
+
+      <Hidden smDown>
+        <Box
+          style={{
+            marginLeft: theme.spacing(4),
+            marginRight: theme.spacing(1),
+          }}
+        >
+          <StarContactIcon hasStar={false} />
+        </Box>
+      </Hidden>
     </HeaderWrap>
   );
 };
