@@ -136,7 +136,7 @@ export const ContactDetailsTabPeople: React.FC<ContactDetailsPeopleProp> = ({
   return (
     <>
       {primaryPerson !== null
-        ? personView(primaryPerson as ContactPersonFragment)
+        ? personView(primaryPerson)
         : null}
       {people.nodes.map((person) =>
         person.id !== primaryPerson?.id
