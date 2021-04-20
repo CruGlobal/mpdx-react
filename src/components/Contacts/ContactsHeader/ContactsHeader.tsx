@@ -1,6 +1,7 @@
 import { Box, styled, IconButton } from '@material-ui/core';
 import { FilterList } from '@material-ui/icons';
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import theme from '../../../theme';
 import { CheckBox, CheckBoxState } from '../CheckBox/CheckBox';
 import { StarContactIcon } from '../StarContactIcon/StarContactIcon';
@@ -9,6 +10,7 @@ interface Props {
   activeFilters: boolean;
   filterPanelOpen: boolean;
   toggleFilterPanel: () => void;
+  totalContacts?: number;
 }
 
 const HeaderWrap = styled(Box)(({}) => ({
@@ -55,6 +57,8 @@ const PlaceholderSearchBar = styled(Box)(({}) => ({
 const ContactsShowingText = styled('p')(({}) => ({
   flexGrow: 4,
   flexBasis: 0,
+  margin: theme.spacing(1),
+  color: theme.palette.text.secondary,
 }));
 const PlaceholderActionsDropdown = styled(Box)(({}) => ({
   display: 'inline-block',
@@ -67,7 +71,6 @@ const DisplayOptionsWrap = styled(Box)(({}) => ({
   display: 'inline-block',
   width: 96,
   height: 48,
-  margin: theme.spacing(1),
   border: '1px solid #000000',
 }));
 const DisplayOptionButton = styled(IconButton)(({}) => ({
@@ -80,7 +83,10 @@ export const ContactsHeader: React.FC<Props> = ({
   activeFilters,
   filterPanelOpen,
   toggleFilterPanel,
+  totalContacts = 0,
 }) => {
+  const { t } = useTranslation();
+
   const [checkBoxState, setCheckboxState] = useState(CheckBoxState.unchecked);
 
   const toggleAllContactsCheckbox = () => {
@@ -106,8 +112,12 @@ export const ContactsHeader: React.FC<Props> = ({
       >
         <FilterIcon />
       </FilterButton>
+      {/*TODO: Replace this with Search Box: MPDX-6948*/}
       <PlaceholderSearchBar />
-      <ContactsShowingText>Showing 43</ContactsShowingText>
+      <ContactsShowingText>
+        {t('Showing 43', { count: totalContacts })}
+      </ContactsShowingText>
+      {/*TODO: Replace this with Actions Dropdown*/}
       <PlaceholderActionsDropdown />
       <DisplayOptionsWrap>
         <DisplayOptionButton />
