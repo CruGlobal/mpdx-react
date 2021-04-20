@@ -124,6 +124,24 @@ jobs:
         run: yarn chromatic --auto-accept-changes --skip 'dependabot/**' --exit-once-uploaded
         env:
           CHROMATIC_PROJECT_TOKEN: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+
+  apollo-schema:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 15
+      - name: 📦 Install Dependencies
+        run: yarn install --immutable --immutable-cache
+      - name: 📈 Run GraphQL Codegen
+        run: |
+          yarn gql
+      - name: 📈🔼 Register Schema with Apollo Studio
+        run: yarn apollo service:push --localSchemaFile=./graphql/schema.graphql --key=$APOLLO_STUDIO_KEY --graph=MPDX --variant=${GITHUB_REF##*/}
+        env:
+          APOLLO_STUDIO_KEY: ${{ secrets.APOLLO_STUDIO_KEY }}
+
   yarn-check-cache:
     runs-on: ubuntu-latest
     steps:
@@ -137,7 +155,7 @@ jobs:
   # onesky-upload:
   #   runs-on: ubuntu-latest
   #   needs: [test, eslint, typescript, prettier]
-  #   if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+  #   if: github.event_name == 'push' && github.ref == 'refs/heads/main'
   #   steps:
   #     - uses: actions/checkout@v2
   #     - uses: actions/setup-node@v2
