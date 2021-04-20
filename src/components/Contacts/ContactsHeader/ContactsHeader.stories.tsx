@@ -14,3 +14,23 @@ export const Default = (): ReactElement => {
     />
   );
 };
+
+export const ActiveFilters = (): ReactElement => {
+  return (
+    <ContactsHeader
+      activeFilters={true}
+      filterPanelOpen={false}
+      toggleFilterPanel={() => {}}
+    />
+  );
+};
+
+export const FilterPanelOpen = (): ReactElement => {
+  return (
+    <ContactsHeader
+      activeFilters={false}
+      filterPanelOpen={true}
+      toggleFilterPanel={() => {}}
+    />
+  );
+};
