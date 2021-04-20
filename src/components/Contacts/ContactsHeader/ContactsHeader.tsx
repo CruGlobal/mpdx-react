@@ -1,5 +1,6 @@
 import { Box, styled, IconButton } from '@material-ui/core';
-import { FilterList } from '@material-ui/icons';
+import { FilterList, FormatListBulleted, ViewColumn } from '@material-ui/icons';
+import { ToggleButton, ToggleButtonProps } from '@material-ui/lab';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import theme from '../../../theme';
@@ -11,6 +12,11 @@ interface Props {
   filterPanelOpen: boolean;
   toggleFilterPanel: () => void;
   totalContacts?: number;
+}
+
+enum ContactsTableDisplayState {
+  'list',
+  'columns',
 }
 
 const HeaderWrap = styled(Box)(({}) => ({
@@ -67,17 +73,32 @@ const PlaceholderActionsDropdown = styled(Box)(({}) => ({
   margin: theme.spacing(1),
   backgroundColor: 'red',
 }));
-const DisplayOptionsWrap = styled(Box)(({}) => ({
-  display: 'inline-block',
-  width: 96,
-  height: 48,
-  border: '1px solid #000000',
-}));
-const DisplayOptionButton = styled(IconButton)(({}) => ({
-  display: 'inline-block',
-  width: 48,
-  height: 48,
-}));
+const DisplayOptionButtonLeft = styled(ToggleButton)(
+  ({ selected }: ToggleButtonProps) => ({
+    display: 'inline-block',
+    width: 48,
+    height: 48,
+    backgroundColor: selected ? '#EBECEC' : 'transparent',
+    border: `1px solid ${selected ? theme.palette.primary.dark : '#EBECEC'}`,
+    borderTopLeftRadius: 5,
+    borderBottomLeftRadius: 5,
+    borderTopRightRadius: 0,
+    borderBottomRightRadius: 0,
+  }),
+);
+const DisplayOptionButtonRight = styled(ToggleButton)(
+  ({ selected }: ToggleButtonProps) => ({
+    display: 'inline-block',
+    width: 48,
+    height: 48,
+    backgroundColor: selected ? '#EBECEC' : 'transparent',
+    border: `1px solid ${selected ? theme.palette.primary.dark : '#EBECEC'}`,
+    borderTopLeftRadius: 0,
+    borderBottomLeftRadius: 0,
+    borderTopRightRadius: 5,
+    borderBottomRightRadius: 5,
+  }),
+);
 
 export const ContactsHeader: React.FC<Props> = ({
   activeFilters,
@@ -88,6 +109,9 @@ export const ContactsHeader: React.FC<Props> = ({
   const { t } = useTranslation();
 
   const [checkBoxState, setCheckboxState] = useState(CheckBoxState.unchecked);
+  const [contactsTableDisplayState, setContactsTableDisplayState] = useState(
+    ContactsTableDisplayState.list,
+  );
 
   const toggleAllContactsCheckbox = () => {
     switch (checkBoxState) {
@@ -119,10 +143,24 @@ export const ContactsHeader: React.FC<Props> = ({
       </ContactsShowingText>
       {/*TODO: Replace this with Actions Dropdown*/}
       <PlaceholderActionsDropdown />
-      <DisplayOptionsWrap>
-        <DisplayOptionButton />
-        <DisplayOptionButton />
-      </DisplayOptionsWrap>
+      <DisplayOptionButtonLeft
+        selected={contactsTableDisplayState === ContactsTableDisplayState.list}
+        onClick={() =>
+          setContactsTableDisplayState(ContactsTableDisplayState.list)
+        }
+      >
+        <FormatListBulleted style={{ color: theme.palette.primary.dark }} />
+      </DisplayOptionButtonLeft>
+      <DisplayOptionButtonRight
+        selected={
+          contactsTableDisplayState === ContactsTableDisplayState.columns
+        }
+        onClick={() =>
+          setContactsTableDisplayState(ContactsTableDisplayState.columns)
+        }
+      >
+        <ViewColumn style={{ color: theme.palette.primary.dark }} />
+      </DisplayOptionButtonRight>
       <StarContactIcon hasStar={false} />
     </HeaderWrap>
   );
