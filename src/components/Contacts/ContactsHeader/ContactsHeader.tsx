@@ -161,7 +161,11 @@ export const ContactsHeader: React.FC<Props> = ({
       >
         <ViewColumn style={{ color: theme.palette.primary.dark }} />
       </DisplayOptionButtonRight>
-      <StarContactIcon hasStar={false} />
+      <Box
+        style={{ marginLeft: theme.spacing(4), marginRight: theme.spacing(1) }}
+      >
+        <StarContactIcon hasStar={false} />
+      </Box>
     </HeaderWrap>
   );
 };
