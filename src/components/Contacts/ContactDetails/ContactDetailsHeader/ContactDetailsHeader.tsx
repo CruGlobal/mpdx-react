@@ -73,7 +73,7 @@ export const ContactDetailsHeader: React.FC<Props> = ({
   const { t } = useTranslation();
 
   return (
-    <Box style={{ padding: 24 }}>
+    <Box style={{ padding: 24, backgroundColor: 'transparent' }}>
       <HeaderBar>
         <ContactAvatar src={data?.contact?.avatar || ''} />
         <HeaderBarContactWrap>
