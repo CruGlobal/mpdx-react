@@ -7,6 +7,7 @@ import {
   Response,
   RESTDataSource,
 } from 'apollo-datasource-rest';
+import { ExportFormatEnum } from '../../graphql/types.generated';
 import { ContactFilterOption, Resolvers } from './graphql-rest.page.generated';
 
 const typeDefs = gql`
@@ -20,11 +21,22 @@ const typeDefs = gql`
   }
 
   input ExportContactsInput {
-    format: String!
+    """
+    Enum value to determine the file format of the exported contacts(Either csv or xlsx)
+    """
+    format: ExportFormatEnum!
+    """
+    Boolean value to determine if export is going to be used for mailing purposes.
+    """
     mailing: Boolean!
     labelType: String
     sort: String
     accountListId: ID!
+  }
+
+  enum ExportFormatEnum {
+    csv
+    xlsx
   }
 
   type TaskAnalytics {
@@ -134,7 +146,7 @@ class MpdxRestApi extends RESTDataSource {
 
   async createExportedContacts(
     mailing: boolean,
-    format: string,
+    format: ExportFormatEnum,
     filter: {
       account_list_id: string;
       newsletter: string;
@@ -143,22 +155,22 @@ class MpdxRestApi extends RESTDataSource {
     labelType?: string | null,
     sort?: string | null,
   ) {
-    let pathAddition = '';
-    if (mailing) {
-      pathAddition = '/mailing';
-    }
+    const pathAddition = mailing ? '/mailing' : '';
+
     const { data } = await this.post(`contacts/exports${pathAddition}`, {
       data: {
-        params: {
-          filter,
-          type: labelType,
-          sort,
+        attributes: {
+          params: {
+            filter,
+            type: labelType,
+            sort,
+          },
         },
         type: 'export_logs',
       },
     });
 
-    return `${process.env.REST_API_URL}contacts/exports${pathAddition}/${data.id}.${format}?access_token=`;
+    return `${process.env.REST_API_URL}contacts/exports${pathAddition}/${data.id}.${format}`;
   }
 
   async getContactFilters(accountListId: string) {

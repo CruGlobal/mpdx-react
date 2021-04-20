@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react';
+import React from 'react';
 import {
   DialogTitle,
   DialogActions,
@@ -13,16 +13,12 @@ import {
 import CloseIcon from '@material-ui/icons/Close';
 import { useTranslation } from 'react-i18next';
 import { useSession } from 'next-auth/client';
+import { ExportFormatEnum } from '../../../../../../../graphql/types.generated';
 import { useCreateExportedContactsMutation } from './ExportPhysical.generated';
 
 interface Props {
   accountListId: string;
   handleClose: () => void;
-}
-
-enum ExportFormatEnum {
-  CSV = 'csv',
-  XLSX = 'xlsx',
 }
 
 const ExportPhysicalTitle = styled(DialogTitle)(() => ({
@@ -45,16 +41,18 @@ const LabelButton = styled(Button)(({ theme }) => ({
   margin: theme.spacing(1, 0),
 }));
 
-const ExportPhysical = ({
+const ExportPhysical: React.FC<Props> = ({
   handleClose,
   accountListId,
-}: Props): ReactElement<Props> => {
+}: Props) => {
   const { t } = useTranslation();
   const [session] = useSession();
 
   const [createExportedContacts] = useCreateExportedContactsMutation({
     onCompleted: (data) => {
-      window.location.replace(`${data.exportContacts}${session?.user.token}`);
+      window.location.replace(
+        `${data.exportContacts}?access_token=${session?.user.token}`,
+      );
       handleClose();
     },
   });
@@ -97,7 +95,7 @@ const ExportPhysical = ({
                 <LabelButton
                   variant="contained"
                   color="primary"
-                  onClick={() => handleOnClick(ExportFormatEnum.CSV, true)}
+                  onClick={() => handleOnClick(ExportFormatEnum.Csv, true)}
                 >
                   {t('CSV for Mail Merge')}
                 </LabelButton>
@@ -113,7 +111,7 @@ const ExportPhysical = ({
                 <LabelButton
                   variant="contained"
                   color="primary"
-                  onClick={() => handleOnClick(ExportFormatEnum.CSV)}
+                  onClick={() => handleOnClick(ExportFormatEnum.Csv)}
                 >
                   {t('Advanced CSV')}
                 </LabelButton>
@@ -127,7 +125,7 @@ const ExportPhysical = ({
                 <LabelButton
                   variant="contained"
                   color="primary"
-                  onClick={() => handleOnClick(ExportFormatEnum.XLSX)}
+                  onClick={() => handleOnClick(ExportFormatEnum.Xlsx)}
                 >
                   {t('Advanced Excel (XLSX)')}
                 </LabelButton>
