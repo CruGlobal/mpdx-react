@@ -16,7 +16,7 @@ const ContactsPage: React.FC = () => {
   const [contactDetailsId, setContactDetailsId] = useState<string>();
   //TODO: Connect these to ContactFilters, and use actual filter data for activeFilters
   const [filterPanelOpen, setFilterPanelOpen] = useState<boolean>(true);
-  const [activeFilters, setActiveFilters] = useState<boolean>(true);
+  const [activeFilters] = useState<boolean>(true);
 
   const toggleFilterPanel = () => {
     setFilterPanelOpen(!filterPanelOpen);

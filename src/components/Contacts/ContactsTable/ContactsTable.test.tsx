@@ -18,6 +18,9 @@ describe('ContactFilters', () => {
         <ContactsTable
           accountListId={accountListId}
           onContactSelected={onContactSelected}
+          activeFilters={false}
+          filterPanelOpen={false}
+          toggleFilterPanel={() => {}}
         />
       </GqlMockedProvider>,
     );
@@ -34,6 +37,9 @@ describe('ContactFilters', () => {
         <ContactsTable
           accountListId={accountListId}
           onContactSelected={onContactSelected}
+          activeFilters={false}
+          filterPanelOpen={false}
+          toggleFilterPanel={() => {}}
         />
       </GqlMockedProvider>,
     );
@@ -60,6 +66,9 @@ describe('ContactFilters', () => {
         <ContactsTable
           accountListId={accountListId}
           onContactSelected={onContactSelected}
+          activeFilters={false}
+          filterPanelOpen={false}
+          toggleFilterPanel={() => {}}
         />
       </GqlMockedProvider>,
     );
@@ -86,6 +95,9 @@ describe('ContactFilters', () => {
         <ContactsTable
           accountListId={accountListId}
           onContactSelected={onContactSelected}
+          activeFilters={false}
+          filterPanelOpen={false}
+          toggleFilterPanel={() => {}}
         />
       </GqlMockedProvider>,
     );
