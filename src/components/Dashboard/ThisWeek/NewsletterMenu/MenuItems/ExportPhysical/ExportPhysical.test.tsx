@@ -88,7 +88,7 @@ describe('ExportPhysical', () => {
       userEvent.click(getByText('Advanced CSV'));
       await waitFor(() =>
         expect(window.location.replace).toHaveBeenCalledWith(
-          `${url}?access_token=someToken1234`,
+          `${url}?access_token=${token}`,
         ),
       );
     });

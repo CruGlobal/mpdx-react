@@ -26,7 +26,7 @@ const typeDefs = gql`
 
   input ExportContactsInput {
     """
-    Enum value to determine the file format of the exported contacts(Either csv,xlsx, or pdf)
+    Enum value to determine the file format of the exported contacts(Either csv, xlsx, or pdf)
     """
     format: ExportFormatEnum!
     """
