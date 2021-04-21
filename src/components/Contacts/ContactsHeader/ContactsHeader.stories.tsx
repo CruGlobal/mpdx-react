@@ -34,3 +34,13 @@ export const FilterPanelOpen = (): ReactElement => {
     />
   );
 };
+
+export const ActiveFiltersAndFilterPanelOpen = (): ReactElement => {
+  return (
+    <ContactsHeader
+      activeFilters={true}
+      filterPanelOpen={true}
+      toggleFilterPanel={() => {}}
+    />
+  );
+};

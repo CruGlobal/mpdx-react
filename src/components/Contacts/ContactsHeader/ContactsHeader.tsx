@@ -134,6 +134,7 @@ export const ContactsHeader: React.FC<Props> = ({
 
       <Hidden xsDown>
         <FilterButton
+          role="FilterButton"
           activeFilters={activeFilters}
           panelOpen={filterPanelOpen}
           onClick={toggleFilterPanel}
