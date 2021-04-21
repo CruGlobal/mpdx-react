@@ -7,7 +7,11 @@ import {
   Response,
   RESTDataSource,
 } from 'apollo-datasource-rest';
-import { ExportFormatEnum } from '../../graphql/types.generated';
+import {
+  ExportFormatEnum,
+  ExportLabelTypeEnum,
+  ExportSortEnum,
+} from '../../graphql/types.generated';
 import { ContactFilterOption, Resolvers } from './graphql-rest.page.generated';
 
 const typeDefs = gql`
@@ -22,21 +26,32 @@ const typeDefs = gql`
 
   input ExportContactsInput {
     """
-    Enum value to determine the file format of the exported contacts(Either csv or xlsx)
+    Enum value to determine the file format of the exported contacts(Either csv,xlsx, or pdf)
     """
     format: ExportFormatEnum!
     """
     Boolean value to determine if export is going to be used for mailing purposes.
     """
     mailing: Boolean!
-    labelType: String
-    sort: String
+    labelType: ExportLabelTypeEnum
+    sort: ExportSortEnum
     accountListId: ID!
   }
 
   enum ExportFormatEnum {
     csv
     xlsx
+    pdf
+  }
+
+  enum ExportLabelTypeEnum {
+    Avery5160
+    Avery7160
+  }
+
+  enum ExportSortEnum {
+    name
+    zip
   }
 
   type TaskAnalytics {
@@ -103,8 +118,8 @@ const resolvers: Resolvers = {
         mailing,
         format,
         filter,
-        labelType,
-        sort,
+        labelType ?? undefined,
+        sort ?? undefined,
       );
     },
   },
@@ -152,8 +167,8 @@ class MpdxRestApi extends RESTDataSource {
       newsletter: string;
       status: string;
     },
-    labelType?: string | null,
-    sort?: string | null,
+    labelType?: ExportLabelTypeEnum,
+    sort?: ExportSortEnum,
   ) {
     const pathAddition = mailing ? '/mailing' : '';
 

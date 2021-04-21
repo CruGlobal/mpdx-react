@@ -1,5 +1,9 @@
 import { MockedResponse } from '@apollo/client/testing';
-import { ExportFormatEnum } from '../../../../../../../graphql/types.generated';
+import {
+  ExportFormatEnum,
+  ExportLabelTypeEnum,
+  ExportSortEnum,
+} from '../../../../../../../graphql/types.generated';
 import {
   CreateExportedContactsDocument,
   CreateExportedContactsMutation,
@@ -9,6 +13,8 @@ export const createExportedContactsMock = (
   format: ExportFormatEnum,
   mailing = false,
   accountListId: string,
+  labelType?: ExportLabelTypeEnum,
+  sort?: ExportSortEnum,
 ): MockedResponse => {
   const data: CreateExportedContactsMutation = {
     exportContacts: `restAPI/contacts/exports${
@@ -22,6 +28,8 @@ export const createExportedContactsMock = (
         mailing,
         format,
         accountListId,
+        labelType,
+        sort,
       },
     },
     result: { data },
