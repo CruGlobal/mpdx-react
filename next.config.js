@@ -10,15 +10,14 @@ if (prod && !process.env.JWT_SECRET) {
   throw new Error('JWT_SECRET environment variable is not set');
 }
 
-let SiteUrl;
-
-if (process.env.SITE_URL) {
-  SiteUrl = process.env.SITE_URL;
-} else if (process.env.VERCEL_URL) {
-  SiteUrl = `https://${process.env.VERCEL_URL}`;
-} else {
-  SiteUrl = 'http://localhost:3000';
-}
+const siteUrl =
+  process.env.VERCEL_GIT_COMMIT_REF === 'main'
+    ? 'https://next.mpdx.org'
+    : process.env.VERCEL_GIT_COMMIT_REF === 'staging'
+    ? 'https://next.stage.mpdx.org'
+    : process.env.VERCEL_URL
+    ? `https://${process.env.VERCEL_URL}`
+    : 'http://localhost:3000';
 
 const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true',
@@ -43,7 +42,8 @@ module.exports = withPlugins([
       API_URL: process.env.API_URL || 'https://api.stage.mpdx.org/graphql',
       REST_API_URL:
         process.env.REST_API_URL || 'https://api.stage.mpdx.org/api/v2/',
-      SITE_URL: SiteUrl,
+      SITE_URL: siteUrl,
+      NEXTAUTH_URL: siteUrl,
       CLIENT_ID: process.env.CLIENT_ID || '4027334344069527005',
       CLIENT_SECRET: process.env.CLIENT_SECRET,
       BEACON_TOKEN:
