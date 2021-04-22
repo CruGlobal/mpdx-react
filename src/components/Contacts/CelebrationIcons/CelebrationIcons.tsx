@@ -44,17 +44,17 @@ export const CelebrationIcons: React.FC<Props> = ({ contact }) => {
     ) ?? false;
 
   return (
-    <>
+    <span role="celebration">
       {contactHasAnniversary() ? (
-        <IconContainer>
+        <IconContainer role="ring">
           <RingIcon color="disabled" />
         </IconContainer>
       ) : null}
       {contactHasBirthday() ? (
-        <IconContainer>
+        <IconContainer role="cake">
           <Cake color="disabled" />
         </IconContainer>
       ) : null}
-    </>
+    </span>
   );
 };
