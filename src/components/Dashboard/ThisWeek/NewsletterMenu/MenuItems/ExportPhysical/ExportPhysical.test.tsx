@@ -1,9 +1,7 @@
 import React from 'react';
 import { render, waitFor, within } from '@testing-library/react';
-import { MockedProvider } from '@apollo/client/testing';
 import { useSession } from 'next-auth/client';
 import userEvent from '@testing-library/user-event';
-
 import {
   ExportFormatEnum,
   ExportLabelTypeEnum,
@@ -11,7 +9,6 @@ import {
 } from '../../../../../../../graphql/types.generated';
 import { GqlMockedProvider } from '../../../../../../../__tests__/util/graphqlMocking';
 import ExportPhysical from './ExportPhysical';
-import { createExportedContactsMock } from './ExportPhysical.mock';
 import { CreateExportedContactsMutation } from './ExportPhysical.generated';
 
 const accountListId = '111';
@@ -32,42 +29,32 @@ describe('ExportPhysical', () => {
     ]);
   });
 
+  const mocks = {
+    CreateExportedContacts: {
+      exportContacts: 'someRandomUrlToFile/abc1234',
+    },
+  };
+
   it('default', () => {
     const { getByText } = render(
-      <MockedProvider
-        mocks={[
-          createExportedContactsMock(
-            ExportFormatEnum.Csv,
-            false,
-            accountListId,
-          ),
-        ]}
-      >
+      <GqlMockedProvider<CreateExportedContactsMutation> mocks={mocks}>
         <ExportPhysical
           accountListId={accountListId}
           handleClose={handleClose}
         />
-      </MockedProvider>,
+      </GqlMockedProvider>,
     );
     expect(getByText('Export Contacts')).toBeInTheDocument();
   });
 
   it('handles closing menu', () => {
     const { getByRole } = render(
-      <MockedProvider
-        mocks={[
-          createExportedContactsMock(
-            ExportFormatEnum.Csv,
-            false,
-            accountListId,
-          ),
-        ]}
-      >
+      <GqlMockedProvider<CreateExportedContactsMutation> mocks={mocks}>
         <ExportPhysical
           accountListId={accountListId}
           handleClose={handleClose}
         />
-      </MockedProvider>,
+      </GqlMockedProvider>,
     );
     userEvent.click(getByRole('closeButton'));
     expect(handleClose).toHaveBeenCalled();
