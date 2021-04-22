@@ -4,7 +4,10 @@ import { ToggleButton, ToggleButtonProps } from '@material-ui/lab';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import theme from '../../../theme';
-import { CheckBox, CheckBoxState } from '../CheckBox/CheckBox';
+import {
+  ContactCheckBox,
+  ContactCheckBoxState,
+} from '../ContactCheckBox/ContactCheckBox';
 import { StarContactIcon } from '../StarContactIcon/StarContactIcon';
 
 interface Props {
@@ -108,28 +111,33 @@ export const ContactsHeader: React.FC<Props> = ({
 }) => {
   const { t } = useTranslation();
 
-  const [checkBoxState, setCheckboxState] = useState(CheckBoxState.unchecked);
+  const [checkBoxState, setCheckboxState] = useState(
+    ContactCheckBoxState.unchecked,
+  );
   const [contactsTableDisplayState, setContactsTableDisplayState] = useState(
     ContactsTableDisplayState.list,
   );
 
   const toggleAllContactsCheckbox = () => {
     switch (checkBoxState) {
-      case CheckBoxState.unchecked:
-        return setCheckboxState(CheckBoxState.checked);
+      case ContactCheckBoxState.unchecked:
+        return setCheckboxState(ContactCheckBoxState.checked);
 
-      case CheckBoxState.checked:
-        return setCheckboxState(CheckBoxState.unchecked);
+      case ContactCheckBoxState.checked:
+        return setCheckboxState(ContactCheckBoxState.unchecked);
 
-      case CheckBoxState.partial:
-        return setCheckboxState(CheckBoxState.checked);
+      case ContactCheckBoxState.partial:
+        return setCheckboxState(ContactCheckBoxState.checked);
     }
   };
 
   return (
     <HeaderWrap>
       <Hidden smDown>
-        <CheckBox state={checkBoxState} onClick={toggleAllContactsCheckbox} />
+        <ContactCheckBox
+          state={checkBoxState}
+          onClick={toggleAllContactsCheckbox}
+        />
       </Hidden>
 
       <Hidden xsDown>
@@ -156,6 +164,7 @@ export const ContactsHeader: React.FC<Props> = ({
 
       <Hidden xsDown>
         <DisplayOptionButtonLeft
+          role="DisplayOptionLeft"
           selected={
             contactsTableDisplayState === ContactsTableDisplayState.list
           }
@@ -166,6 +175,7 @@ export const ContactsHeader: React.FC<Props> = ({
           <FormatListBulleted style={{ color: theme.palette.primary.dark }} />
         </DisplayOptionButtonLeft>
         <DisplayOptionButtonRight
+          role="DisplayOptionRight"
           selected={
             contactsTableDisplayState === ContactsTableDisplayState.columns
           }

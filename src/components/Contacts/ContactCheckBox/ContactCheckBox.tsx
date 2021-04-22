@@ -2,14 +2,14 @@ import { Checkbox, CheckboxProps, styled } from '@material-ui/core';
 import React from 'react';
 import theme from '../../../theme';
 
-export enum CheckBoxState {
+export enum ContactCheckBoxState {
   'unchecked',
   'checked',
   'partial',
 }
 
 interface Props {
-  state?: CheckBoxState;
+  state?: ContactCheckBoxState;
   onClick?: () => void;
 }
 
@@ -19,12 +19,12 @@ const StyledCheckBox = styled(Checkbox)(({ checked }: CheckboxProps) => ({
   color: checked ? theme.palette.primary.dark : theme.palette.secondary.dark,
 }));
 
-export const CheckBox: React.FC<Props> = ({
-  state = CheckBoxState.unchecked,
+export const ContactCheckBox: React.FC<Props> = ({
+  state = ContactCheckBoxState.unchecked,
   onClick,
 }) => {
-  const checked = state != CheckBoxState.unchecked;
-  const indeterminate = state === CheckBoxState.partial;
+  const checked = state != ContactCheckBoxState.unchecked;
+  const indeterminate = state === ContactCheckBoxState.partial;
 
   return (
     <StyledCheckBox

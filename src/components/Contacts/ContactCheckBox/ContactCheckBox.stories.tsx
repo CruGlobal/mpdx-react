@@ -1,6 +1,6 @@
 import React, { ReactElement } from 'react';
 import { Box } from '@material-ui/core';
-import { CheckBox, CheckBoxState } from './CheckBox';
+import { ContactCheckBox, ContactCheckBoxState } from './ContactCheckBox';
 
 export default {
   title: 'Contacts/ContactRow/Widgets/CheckBox',
@@ -9,7 +9,10 @@ export default {
 export const Default = (): ReactElement => {
   return (
     <Box m={2}>
-      <CheckBox state={CheckBoxState.unchecked} onClick={() => {}} />
+      <ContactCheckBox
+        state={ContactCheckBoxState.unchecked}
+        onClick={() => {}}
+      />
     </Box>
   );
 };
@@ -17,7 +20,10 @@ export const Default = (): ReactElement => {
 export const Checked = (): ReactElement => {
   return (
     <Box m={2}>
-      <CheckBox state={CheckBoxState.checked} onClick={() => {}} />
+      <ContactCheckBox
+        state={ContactCheckBoxState.checked}
+        onClick={() => {}}
+      />
     </Box>
   );
 };
@@ -25,7 +31,10 @@ export const Checked = (): ReactElement => {
 export const Partial = (): ReactElement => {
   return (
     <Box m={2}>
-      <CheckBox state={CheckBoxState.partial} onClick={() => {}} />
+      <ContactCheckBox
+        state={ContactCheckBoxState.partial}
+        onClick={() => {}}
+      />
     </Box>
   );
 };
