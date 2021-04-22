@@ -18,11 +18,7 @@ const IndexPage = (): ReactElement => (
       subtitle="MPDX is fundraising software from Cru that helps you grow and maintain your ministry
 partners in a quick and easy way."
     >
-      <Button
-        size="large"
-        variant="contained"
-        onClick={() => signin('thekey', { callbackUrl: process.env.SITE_URL })}
-      >
+      <Button size="large" variant="contained" onClick={() => signin('thekey')}>
         Sign In
       </Button>
       <Button
