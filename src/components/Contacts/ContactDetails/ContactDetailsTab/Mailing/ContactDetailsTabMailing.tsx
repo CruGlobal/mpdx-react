@@ -11,13 +11,12 @@ const ContactDetailsMailingMainContainer = styled(Box)(({ theme }) => ({
 
 const ContactDetailsMailingIcon = styled(LocationOn)(({ theme }) => ({
   margin: theme.spacing(1),
-  width: '14px',
-  height: '20px',
-  flexGrow: 1,
+  width: '34px',
+  height: '34px',
 }));
 
 const ContactDetailsMailingTexContainer = styled(Box)(({}) => ({
-  flexGrow: 8,
+  flexGrow: 4,
 }));
 
 const ContactDetailsMailingLabelTextContainer = styled(Box)(({}) => ({
