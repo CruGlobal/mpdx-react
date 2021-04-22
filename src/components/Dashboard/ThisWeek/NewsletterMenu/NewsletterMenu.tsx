@@ -115,7 +115,7 @@ const NewsletterMenu = ({ accountListId }: Props): ReactElement<Props> => {
         open={newsletterMenuDialogOpen}
         aria-labelledby={t('Newsletter Dialog')}
         fullWidth
-        maxWidth="md"
+        maxWidth="sm"
       >
         {renderDialogContent()}
       </Dialog>

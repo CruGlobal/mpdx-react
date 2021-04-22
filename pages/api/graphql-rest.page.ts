@@ -7,12 +7,51 @@ import {
   Response,
   RESTDataSource,
 } from 'apollo-datasource-rest';
+import {
+  ExportFormatEnum,
+  ExportLabelTypeEnum,
+  ExportSortEnum,
+} from '../../graphql/types.generated';
 import { ContactFilterOption, Resolvers } from './graphql-rest.page.generated';
 
 const typeDefs = gql`
   type Query {
     contactFilters(accountListId: ID!): [ContactFilter!]!
     taskAnalytics(accountListId: ID!): TaskAnalytics!
+  }
+
+  type Mutation {
+    exportContacts(input: ExportContactsInput!): String!
+  }
+
+  input ExportContactsInput {
+    """
+    Enum value to determine the file format of the exported contacts (Either csv, xlsx, or pdf)
+    """
+    format: ExportFormatEnum!
+    """
+    Boolean value to determine if export is going to be used for mailing purposes.
+    """
+    mailing: Boolean!
+    labelType: ExportLabelTypeEnum
+    sort: ExportSortEnum
+    accountListId: ID!
+  }
+
+  enum ExportFormatEnum {
+    csv
+    xlsx
+    pdf
+  }
+
+  enum ExportLabelTypeEnum {
+    Avery5160
+    Avery7160
+  }
+
+  enum ExportSortEnum {
+    name
+    zip
   }
 
   type TaskAnalytics {
@@ -63,6 +102,27 @@ const resolvers: Resolvers = {
       return dataSources.mpdxRestApi.getTaskAnalytics(accountListId);
     },
   },
+  Mutation: {
+    exportContacts: (
+      _source,
+      { input: { mailing, format, labelType, sort, accountListId } },
+      { dataSources },
+    ) => {
+      const filter = {
+        account_list_id: accountListId,
+        newsletter: 'address',
+        status: 'active',
+      };
+
+      return dataSources.mpdxRestApi.createExportedContacts(
+        mailing,
+        format,
+        filter,
+        labelType,
+        sort,
+      );
+    },
+  },
 };
 
 class MpdxRestApi extends RESTDataSource {
@@ -97,6 +157,35 @@ class MpdxRestApi extends RESTDataSource {
     } else {
       return response.text();
     }
+  }
+
+  async createExportedContacts(
+    mailing: boolean,
+    format: ExportFormatEnum,
+    filter: {
+      account_list_id: string;
+      newsletter: string;
+      status: string;
+    },
+    labelType?: ExportLabelTypeEnum | null,
+    sort?: ExportSortEnum | null,
+  ) {
+    const pathAddition = mailing ? '/mailing' : '';
+
+    const { data } = await this.post(`contacts/exports${pathAddition}`, {
+      data: {
+        attributes: {
+          params: {
+            filter,
+            type: labelType,
+            sort,
+          },
+        },
+        type: 'export_logs',
+      },
+    });
+
+    return `${process.env.REST_API_URL}contacts/exports${pathAddition}/${data.id}.${format}`;
   }
 
   async getContactFilters(accountListId: string) {
