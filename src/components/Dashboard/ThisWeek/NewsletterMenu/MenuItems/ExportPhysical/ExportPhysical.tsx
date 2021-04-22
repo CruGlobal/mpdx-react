@@ -106,6 +106,7 @@ const ExportPhysical: React.FC<Props> = ({
                     {t('Label Template')}
                   </SelectInputLabel>
                   <ExportSelect
+                    data-testid="label-template-select"
                     labelId="label-template-label"
                     value={labelType}
                     onChange={(event) =>
@@ -123,6 +124,7 @@ const ExportPhysical: React.FC<Props> = ({
                     {t('Sort By')}
                   </SelectInputLabel>
                   <ExportSelect
+                    data-testid="sort-by-select"
                     labelId="sort-by-label"
                     value={sort}
                     onChange={(event) =>

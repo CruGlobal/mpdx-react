@@ -26,7 +26,7 @@ const typeDefs = gql`
 
   input ExportContactsInput {
     """
-    Enum value to determine the file format of the exported contacts(Either csv, xlsx, or pdf)
+    Enum value to determine the file format of the exported contacts (Either csv, xlsx, or pdf)
     """
     format: ExportFormatEnum!
     """
@@ -118,8 +118,8 @@ const resolvers: Resolvers = {
         mailing,
         format,
         filter,
-        labelType ?? undefined,
-        sort ?? undefined,
+        labelType,
+        sort,
       );
     },
   },
@@ -167,8 +167,8 @@ class MpdxRestApi extends RESTDataSource {
       newsletter: string;
       status: string;
     },
-    labelType?: ExportLabelTypeEnum,
-    sort?: ExportSortEnum,
+    labelType?: ExportLabelTypeEnum | null,
+    sort?: ExportSortEnum | null,
   ) {
     const pathAddition = mailing ? '/mailing' : '';
 
