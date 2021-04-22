@@ -8,6 +8,7 @@ import { ContactDetailsTabMailing } from './Mailing/ContactDetailsTabMailing';
 import { ContactMailingFragment } from './Mailing/ContactMailing.generated';
 import { ContactDetailsOther } from './Other/ContactDetailsOther';
 import { ContactOtherFragment } from './Other/ContactOther.generated';
+import { ContactDetailsTabPeople } from './People/ContactDetailsTabPeople';
 import { ContactTags } from './Tags/ContactTags';
 
 const ContactDetailsTabContainer = styled(Box)(() => ({
@@ -93,14 +94,14 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
           </ContactDetailHeadingText>
           <ContactDetailHeadingIcon />
         </ContactDetailHeadingContainer>
-        {loading ? (
+        {loading || !data ? (
           <>
             <ContactDetailLoadingPlaceHolder variant="rect" />
             <ContactDetailLoadingPlaceHolder variant="rect" />
             <ContactDetailLoadingPlaceHolder variant="rect" />
           </>
         ) : (
-          <></>
+          <ContactDetailsTabPeople data={data?.contact} />
         )}
       </ContactDetailSectionContainer>
       <Divider />
@@ -114,7 +115,7 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
           </ContactDetailHeadingText>
           <ContactDetailHeadingIcon />
         </ContactDetailHeadingContainer>
-        {loading ? (
+        {loading || !data ? (
           <>
             <ContactDetailLoadingPlaceHolder variant="rect" />
             <ContactDetailLoadingPlaceHolder variant="rect" />
@@ -137,7 +138,7 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
           </ContactDetailHeadingText>
           <ContactDetailHeadingIcon />
         </ContactDetailHeadingContainer>
-        {loading ? (
+        {loading || !data ? (
           <>
             <ContactDetailLoadingPlaceHolder variant="rect" />
             <ContactDetailLoadingPlaceHolder variant="rect" />
