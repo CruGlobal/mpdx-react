@@ -1,0 +1,32 @@
+fragment ContactPeople on Contact {
+  id
+  primaryPerson {
+    ...ContactPerson
+  }
+  people {
+    nodes {
+      ...ContactPerson
+    }
+  }
+}
+
+fragment ContactPerson on Person {
+  id
+  firstName
+  lastName
+  primaryPhoneNumber {
+    number
+    location
+  }
+  primaryEmailAddress {
+    email
+  }
+  anniversaryDay
+  anniversaryMonth
+  anniversaryYear
+  birthdayDay
+  birthdayMonth
+  birthdayYear
+  # TODO add Mising Below
+  # avatar
+}

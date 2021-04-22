@@ -2,9 +2,6 @@ query ContactDetailsTab($accountListId: ID!, $contactId: ID!) {
   contact(accountListId: $accountListId, id: $contactId) {
     id
     name
-    primaryPerson {
-      id
-    }
     primaryAddress {
       street
       city
@@ -14,6 +11,8 @@ query ContactDetailsTab($accountListId: ID!, $contactId: ID!) {
     }
     tagList
     envelopeGreeting
+    preferredContactMethod
+    timezone
     people {
       nodes {
         id
@@ -41,6 +40,7 @@ query ContactDetailsTab($accountListId: ID!, $contactId: ID!) {
     sendNewsletter
     greeting
     #TODO add Magazine
+    ...ContactPeople
     ...ContactOther
   }
 }
