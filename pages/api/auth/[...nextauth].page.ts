@@ -1,6 +1,10 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import NextAuth, { InitOptions } from 'next-auth';
+import getConfig from 'next/config';
 import { Profile } from './profile.page';
+
+const { serverRuntimeConfig } = getConfig();
+process.env.NEXTAUTH_URL = serverRuntimeConfig.NEXTAUTH_URL;
 
 declare module 'next-auth' {
   interface User {

@@ -37,13 +37,15 @@ module.exports = withPlugins([
   withGraphql,
   withBundleAnalyzer,
   {
+    serverRuntimeConfig: {
+      NEXTAUTH_URL: siteUrl,
+    },
     env: {
       JWT_SECRET: process.env.JWT_SECRET || 'development-key',
       API_URL: process.env.API_URL || 'https://api.stage.mpdx.org/graphql',
       REST_API_URL:
         process.env.REST_API_URL || 'https://api.stage.mpdx.org/api/v2/',
       SITE_URL: siteUrl,
-      NEXTAUTH_URL: siteUrl,
       CLIENT_ID: process.env.CLIENT_ID || '4027334344069527005',
       CLIENT_SECRET: process.env.CLIENT_SECRET,
       BEACON_TOKEN:
