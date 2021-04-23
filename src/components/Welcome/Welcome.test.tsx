@@ -1,13 +1,17 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import Welcome from '.';
+import { ThemeProvider } from '@material-ui/core';
+import theme from '../../theme';
 
 describe('Welcome', () => {
   it('has correct defaults', () => {
     const { getByTestId } = render(
-      <Welcome title="test title" subtitle="test subtitle">
-        <div data-testid="children">children</div>
-      </Welcome>,
+      <ThemeProvider theme={theme}>
+        <Welcome title="test title" subtitle="test subtitle">
+          <div data-testid="children">children</div>
+        </Welcome>
+      </ThemeProvider>,
     );
     expect(getByTestId('welcomeTitle')).toHaveTextContent('test title');
     expect(getByTestId('welcomeSubtitle')).toHaveTextContent('test subtitle');
@@ -20,11 +24,13 @@ describe('Welcome', () => {
 
   it('has correct overrides', () => {
     const { getByTestId } = render(
-      <Welcome
-        title={<div data-testid="testTitle">test title</div>}
-        subtitle={<div data-testid="testSubtitle">test subtitle</div>}
-        imgSrc={require(`../../images/drawkit/grape/drawkit-grape-pack-illustration-1.svg`)}
-      />,
+      <ThemeProvider theme={theme}>
+        <Welcome
+          title={<div data-testid="testTitle">test title</div>}
+          subtitle={<div data-testid="testSubtitle">test subtitle</div>}
+          imgSrc={require(`../../images/drawkit/grape/drawkit-grape-pack-illustration-1.svg`)}
+        />
+      </ThemeProvider>,
     );
     expect(() => getByTestId('welcomeTitle')).toThrowError();
     expect(() => getByTestId('welcomeSubtitle')).toThrowError();

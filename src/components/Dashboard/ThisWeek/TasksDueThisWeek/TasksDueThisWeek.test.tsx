@@ -5,6 +5,8 @@ import { useApp } from '../../../App';
 import { GetThisWeekQuery } from '../GetThisWeek.generated';
 import { ActivityTypeEnum } from '../../../../../graphql/types.generated';
 import TasksDueThisWeek from '.';
+import { ThemeProvider } from '@material-ui/core';
+import theme from '../../../../theme';
 
 jest.mock('../../../App', () => ({
   useApp: jest.fn(),
@@ -21,7 +23,9 @@ beforeEach(() => {
 describe('TasksDueThisWeek', () => {
   it('default', () => {
     const { getByTestId, queryByTestId } = render(
-      <TasksDueThisWeek accountListId="abc" />,
+      <ThemeProvider theme={theme}>
+        <TasksDueThisWeek accountListId="abc" />
+      </ThemeProvider>,
     );
     expect(getByTestId('TasksDueThisWeekCardContentEmpty')).toBeInTheDocument();
     expect(queryByTestId('TasksDueThisWeekList')).not.toBeInTheDocument();
@@ -32,7 +36,9 @@ describe('TasksDueThisWeek', () => {
 
   it('loading', () => {
     const { getByTestId, queryByTestId } = render(
-      <TasksDueThisWeek loading accountListId="abc" />,
+      <ThemeProvider theme={theme}>
+        <TasksDueThisWeek loading accountListId="abc" />
+      </ThemeProvider>,
     );
     expect(getByTestId('TasksDueThisWeekListLoading')).toBeInTheDocument();
     expect(queryByTestId('TasksDueThisWeekList')).not.toBeInTheDocument();
@@ -47,7 +53,9 @@ describe('TasksDueThisWeek', () => {
       totalCount: 0,
     };
     const { getByTestId, queryByTestId } = render(
-      <TasksDueThisWeek dueTasks={dueTasks} accountListId="abc" />,
+      <ThemeProvider theme={theme}>
+        <TasksDueThisWeek dueTasks={dueTasks} accountListId="abc" />
+      </ThemeProvider>,
     );
     expect(getByTestId('TasksDueThisWeekCardContentEmpty')).toBeInTheDocument();
     expect(queryByTestId('TasksDueThisWeekList')).not.toBeInTheDocument();
@@ -80,7 +88,9 @@ describe('TasksDueThisWeek', () => {
         totalCount: 1234,
       };
       const { getByTestId, queryByTestId } = render(
-        <TasksDueThisWeek dueTasks={dueTasks} accountListId="abc" />,
+        <ThemeProvider theme={theme}>
+          <TasksDueThisWeek dueTasks={dueTasks} accountListId="abc" />
+        </ThemeProvider>,
       );
       expect(getByTestId('TasksDueThisWeekList')).toBeInTheDocument();
       expect(

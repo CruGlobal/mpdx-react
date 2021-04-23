@@ -6,6 +6,8 @@ import { getNotificationsMocks } from './TopBar/Items/NotificationMenu/Notificat
 
 import { getTopBarMock } from './TopBar/TopBar.mock';
 import Primary from '.';
+import { ThemeProvider } from '@material-ui/core';
+import theme from '../../../theme';
 
 describe('Primary', () => {
   const mocks = [...getNotificationsMocks(), getTopBarMock()];
@@ -15,14 +17,16 @@ describe('Primary', () => {
 
   it('has correct defaults', () => {
     const { getByTestId, getByRole } = render(
-      <TestWrapper
-        mocks={mocks}
-        initialState={{ accountListId: '1', breadcrumb: 'Dashboard' }}
-      >
-        <Primary>
-          <div data-testid="PrimaryTestChildren"></div>
-        </Primary>
-      </TestWrapper>,
+      <ThemeProvider theme={theme}>
+        <TestWrapper
+          mocks={mocks}
+          initialState={{ accountListId: '1', breadcrumb: 'Dashboard' }}
+        >
+          <Primary>
+            <div data-testid="PrimaryTestChildren"></div>
+          </Primary>
+        </TestWrapper>
+      </ThemeProvider>,
     );
     expect(getByTestId('PrimaryTestChildren')).toBeInTheDocument();
     expect(getByRole('menuitem', { name: 'Dashboard' })).toBeVisible();
