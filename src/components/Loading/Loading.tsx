@@ -3,7 +3,7 @@ import { makeStyles, Theme, Fab, CircularProgress } from '@material-ui/core';
 import { useRouter } from 'next/router';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const useStyles = makeStyles((_theme: Theme) => ({
+const useStyles = makeStyles((theme: Theme) => ({
   box: {
     position: 'fixed',
     top: '50%',
@@ -12,10 +12,10 @@ const useStyles = makeStyles((_theme: Theme) => ({
     marginTop: '-28px',
   },
   fab: {
-    backgroundColor: _theme.palette.common.white,
+    backgroundColor: theme.palette.common.white,
     cursor: 'default',
     '&:hover': {
-      backgroundColor: _theme.palette.common.white,
+      backgroundColor: theme.palette.common.white,
     },
   },
 }));
