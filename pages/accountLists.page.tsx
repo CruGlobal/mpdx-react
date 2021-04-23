@@ -61,7 +61,7 @@ export const getServerSideProps: GetServerSideProps = async ({
 
   if (
     response.data.accountLists.nodes &&
-    response.data.accountLists.nodes.length == 1
+    response.data.accountLists.nodes.length === 1
   ) {
     res.writeHead(302, {
       Location: `/accountLists/${response.data.accountLists.nodes[0]?.id}`,

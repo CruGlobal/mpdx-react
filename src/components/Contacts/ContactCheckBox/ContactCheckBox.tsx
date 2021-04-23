@@ -23,7 +23,7 @@ export const ContactCheckBox: React.FC<Props> = ({
   state = ContactCheckBoxState.unchecked,
   onClick,
 }) => {
-  const checked = state != ContactCheckBoxState.unchecked;
+  const checked = state !== ContactCheckBoxState.unchecked;
   const indeterminate = state === ContactCheckBoxState.partial;
 
   return (

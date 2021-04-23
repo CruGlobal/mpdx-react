@@ -23,6 +23,7 @@ module.exports = {
     'import/no-named-default': 'error',
     'import/no-anonymous-default-export': 'error',
     'import/dynamic-import-chunkname': 'error',
+    eqeqeq: 'error',
     '@typescript-eslint/no-unused-vars': [
       'error',
       { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },

@@ -105,7 +105,7 @@ const DonationHistories = ({
       total: period.convertedTotal,
     };
     period.totals.forEach((total) => {
-      if (!currencies.find((currency) => total.currency == currency.dataKey)) {
+      if (!currencies.find((currency) => total.currency === currency.dataKey)) {
         currencies.push({ dataKey: total.currency, fill: fills.pop() ?? '' });
       }
       data[total.currency] = total.convertedAmount;

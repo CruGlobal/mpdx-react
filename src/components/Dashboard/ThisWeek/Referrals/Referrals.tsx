@@ -222,7 +222,7 @@ const Referrals = ({
           data-testid="ReferralsTabOnHand"
         />
       </Tabs>
-      {value == 0 && (
+      {value === 0 && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -237,7 +237,7 @@ const Referrals = ({
           />
         </motion.div>
       )}
-      {value == 1 && (
+      {value === 1 && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
