@@ -1,72 +1,57 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { createMuiTheme, MuiThemeProvider } from '@material-ui/core';
+import { ThemeProvider } from '@material-ui/core';
+import theme from '../../../theme';
 import { ContactsHeader } from './ContactsHeader';
 
 describe('ContactFilters', () => {
   it('checkbox is unchecked', async () => {
-    const theme = createMuiTheme({
-      props: { MuiWithWidth: { initialWidth: 'md' } },
-    });
-
     const { getByRole } = render(
-      <MuiThemeProvider theme={theme}>
+      <ThemeProvider theme={theme}>
         <ContactsHeader
           activeFilters={false}
           filterPanelOpen={false}
           toggleFilterPanel={() => {}}
         />
-        ,
-      </MuiThemeProvider>,
+      </ThemeProvider>,
     );
 
     const checkbox = getByRole('checkbox');
 
     await userEvent.click(checkbox);
+    await userEvent.click(checkbox);
 
-    expect(checkbox.getAttribute('class')).toEqual('PrivateSwitchBase-input-9');
+    expect(checkbox).toHaveProperty('checked', false);
   });
 
   it('checkbox is checked', async () => {
-    const theme = createMuiTheme({
-      props: { MuiWithWidth: { initialWidth: 'md' } },
-    });
-
     const { getByRole } = render(
-      <MuiThemeProvider theme={theme}>
+      <ThemeProvider theme={theme}>
         <ContactsHeader
           activeFilters={false}
           filterPanelOpen={false}
           toggleFilterPanel={() => {}}
         />
-        ,
-      </MuiThemeProvider>,
+      </ThemeProvider>,
     );
 
     const checkbox = getByRole('checkbox');
 
     await userEvent.click(checkbox);
 
-    expect(checkbox.getAttribute('class')).toEqual(
-      'PrivateSwitchBase-input-37',
-    );
+    expect(checkbox).toHaveProperty('checked', true);
   });
 
   it('filters button displays for no filters', async () => {
-    const theme = createMuiTheme({
-      props: { MuiWithWidth: { initialWidth: 'md' } },
-    });
-
     const { getByRole } = render(
-      <MuiThemeProvider theme={theme}>
+      <ThemeProvider theme={theme}>
         <ContactsHeader
           activeFilters={false}
           filterPanelOpen={false}
           toggleFilterPanel={() => {}}
         />
-        ,
-      </MuiThemeProvider>,
+      </ThemeProvider>,
     );
 
     const filterButton = getByRole('FilterButton');
@@ -76,19 +61,14 @@ describe('ContactFilters', () => {
   });
 
   it('filters button displays for open filter panel', async () => {
-    const theme = createMuiTheme({
-      props: { MuiWithWidth: { initialWidth: 'md' } },
-    });
-
     const { getByRole } = render(
-      <MuiThemeProvider theme={theme}>
+      <ThemeProvider theme={theme}>
         <ContactsHeader
           activeFilters={false}
           filterPanelOpen={true}
           toggleFilterPanel={() => {}}
         />
-        ,
-      </MuiThemeProvider>,
+      </ThemeProvider>,
     );
 
     const filterButton = getByRole('FilterButton');
@@ -98,19 +78,14 @@ describe('ContactFilters', () => {
   });
 
   it('filters button displays for active filters', async () => {
-    const theme = createMuiTheme({
-      props: { MuiWithWidth: { initialWidth: 'md' } },
-    });
-
     const { getByRole } = render(
-      <MuiThemeProvider theme={theme}>
+      <ThemeProvider theme={theme}>
         <ContactsHeader
           activeFilters={true}
           filterPanelOpen={false}
           toggleFilterPanel={() => {}}
         />
-        ,
-      </MuiThemeProvider>,
+      </ThemeProvider>,
     );
 
     const filterButton = getByRole('FilterButton');
@@ -120,19 +95,14 @@ describe('ContactFilters', () => {
   });
 
   it('filters button displays for active filters and filter panel open', async () => {
-    const theme = createMuiTheme({
-      props: { MuiWithWidth: { initialWidth: 'md' } },
-    });
-
     const { getByRole } = render(
-      <MuiThemeProvider theme={theme}>
+      <ThemeProvider theme={theme}>
         <ContactsHeader
           activeFilters={true}
           filterPanelOpen={false}
           toggleFilterPanel={() => {}}
         />
-        ,
-      </MuiThemeProvider>,
+      </ThemeProvider>,
     );
 
     const filterButton = getByRole('FilterButton');
