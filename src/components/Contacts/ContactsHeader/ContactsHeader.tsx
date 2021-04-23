@@ -46,7 +46,7 @@ const FilterButton = styled(IconButton)(
     borderRadius: 24,
     margin: theme.spacing(1),
     backgroundColor: activeFilters
-      ? '#FFCF07'
+      ? theme.palette.cruYellow.main
       : panelOpen
       ? theme.palette.secondary.dark
       : 'transparent',
@@ -82,8 +82,10 @@ const DisplayOptionButtonLeft = styled(ToggleButton)(
     display: 'inline-block',
     width: 48,
     height: 48,
-    backgroundColor: selected ? '#EBECEC' : 'transparent',
-    border: `1px solid ${selected ? theme.palette.primary.dark : '#EBECEC'}`,
+    backgroundColor: selected ? theme.palette.cruGrayLight.main : 'transparent',
+    border: `1px solid ${
+      selected ? theme.palette.primary.dark : theme.palette.cruGrayLight.main
+    }`,
     borderTopLeftRadius: 5,
     borderBottomLeftRadius: 5,
     borderTopRightRadius: 0,
@@ -95,8 +97,10 @@ const DisplayOptionButtonRight = styled(ToggleButton)(
     display: 'inline-block',
     width: 48,
     height: 48,
-    backgroundColor: selected ? '#EBECEC' : 'transparent',
-    border: `1px solid ${selected ? theme.palette.primary.dark : '#EBECEC'}`,
+    backgroundColor: selected ? theme.palette.cruGrayLight.main : 'transparent',
+    border: `1px solid ${
+      selected ? theme.palette.primary.dark : theme.palette.cruGrayLight.main
+    }`,
     borderTopLeftRadius: 0,
     borderBottomLeftRadius: 0,
     borderTopRightRadius: 5,
