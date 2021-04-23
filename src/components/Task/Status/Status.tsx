@@ -4,7 +4,6 @@ import { DateTime } from 'luxon';
 import AssignmentLateIcon from '@material-ui/icons/AssignmentLate';
 import AssignmentIcon from '@material-ui/icons/Assignment';
 import AssignmentTurnedInIcon from '@material-ui/icons/AssignmentTurnedIn';
-import { green, orange } from '@material-ui/core/colors';
 import { useTranslation } from 'react-i18next';
 import DoneIcon from '@material-ui/icons/Done';
 import { useApp } from '../../App';

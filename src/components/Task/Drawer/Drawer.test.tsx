@@ -1,8 +1,10 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { ThemeProvider } from '@material-ui/core';
 import TestWrapper from '../../../../__tests__/util/TestWrapper';
 import { ActivityTypeEnum } from '../../../../graphql/types.generated';
+import theme from '../../../theme';
 import {
   getDataForTaskDrawerMock,
   createTaskMutationMock,
@@ -16,8 +18,6 @@ import {
   getCompleteTaskForTaskDrawerMock,
 } from './CompleteForm/CompleteForm.mock';
 import TaskDrawer from '.';
-import { ThemeProvider } from '@material-ui/core';
-import theme from '../../../theme';
 
 const accountListId = 'abc';
 const taskId = 'task-1';

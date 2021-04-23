@@ -67,7 +67,7 @@ export const ContactDetailsTabPeople: React.FC<ContactDetailsPeopleProp> = ({
             <Typography variant="h6">
               {`${person.firstName} ${person.lastName}`}
             </Typography>
-            {primaryPerson?.id == person.id ? (
+            {primaryPerson?.id === person.id ? (
               <ContactPersonPrimaryText variant="subtitle1">
                 {`- ${t('Primary')}`}
               </ContactPersonPrimaryText>

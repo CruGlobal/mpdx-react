@@ -1,8 +1,8 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import Basic from '.';
 import { ThemeProvider } from '@material-ui/core';
 import theme from '../../../theme';
+import Basic from '.';
 
 describe('Basic', () => {
   it('has correct defaults', () => {

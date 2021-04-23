@@ -1,5 +1,6 @@
 import React from 'react';
 import userEvent from '@testing-library/user-event';
+import { ThemeProvider } from '@material-ui/core';
 import {
   render,
   waitFor,
@@ -8,9 +9,8 @@ import { AppState } from '../../../../../App/rootReducer';
 import { useApp } from '../../../../../App';
 import { getTopBarMock } from '../../TopBar.mock';
 import TestWrapper from '../../../../../../../__tests__/util/TestWrapper';
-import ProfileMenu from './ProfileMenu';
-import { ThemeProvider } from '@material-ui/core';
 import theme from '../../../../../../theme';
+import ProfileMenu from './ProfileMenu';
 
 let state: AppState;
 const dispatch = jest.fn();

@@ -1,5 +1,6 @@
 import React from 'react';
 import userEvent from '@testing-library/user-event';
+import { ThemeProvider } from '@material-ui/core';
 import TestWrapper from '../../../../__tests__/util/TestWrapper';
 import { getDataForTaskDrawerMock } from '../Drawer/Form/Form.mock';
 import {
@@ -8,6 +9,7 @@ import {
 } from '../../../../__tests__/util/testingLibraryReactMock';
 import { useApp } from '../../App';
 import { ActivityTypeEnum } from '../../../../graphql/types.generated';
+import theme from '../../../theme';
 import {
   getTasksForTaskListMock,
   getFilteredTasksForTaskListMock,
@@ -15,8 +17,6 @@ import {
   getTasksForTaskListErrorMock,
 } from './List.mock';
 import TaskList from '.';
-import { ThemeProvider } from '@material-ui/core';
-import theme from '../../../theme';
 
 const accountListId = 'abc';
 

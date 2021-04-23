@@ -1,9 +1,9 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import { GetCommentsForTaskDrawerCommentListQuery } from '../TaskListComments.generated';
-import Item from '.';
 import { ThemeProvider } from '@material-ui/core';
+import { GetCommentsForTaskDrawerCommentListQuery } from '../TaskListComments.generated';
 import theme from '../../../../../theme';
+import Item from '.';
 
 describe('Item', () => {
   const comment: GetCommentsForTaskDrawerCommentListQuery['task']['comments']['nodes'][0] = {

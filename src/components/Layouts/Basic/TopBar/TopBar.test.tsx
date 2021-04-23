@@ -1,9 +1,9 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import TestRouter from '../../../../../__tests__/util/TestRouter';
-import TopBar from '.';
 import { ThemeProvider } from '@material-ui/core';
+import TestRouter from '../../../../../__tests__/util/TestRouter';
 import theme from '../../../../theme';
+import TopBar from '.';
 
 describe('TopBar', () => {
   it('has correct defaults', () => {
