@@ -14,6 +14,8 @@ const router = {
   query: { accountListId },
 };
 
+const contact = { id: '1', name: 'Test Person' };
+
 it('should show loading state', () => {
   const { getByText } = render(
     <ThemeProvider theme={theme}>
@@ -28,15 +30,13 @@ it('should show loading state', () => {
 });
 
 it('should render list of people', async () => {
-  const name = 'Test Person';
-
-  const { findAllByRole } = render(
+  const { findByTestId } = render(
     <ThemeProvider theme={theme}>
       <TestRouter router={router}>
         <GqlMockedProvider<ContactsQuery>
           mocks={{
             Contacts: {
-              contacts: { nodes: [{ name }] },
+              contacts: { nodes: [contact] },
             },
           }}
         >
@@ -45,19 +45,17 @@ it('should render list of people', async () => {
       </TestRouter>
     </ThemeProvider>,
   );
-  expect((await findAllByRole('row'))[0]).toHaveTextContent(name);
+  expect(await findByTestId('rowButton')).toHaveTextContent(contact.name);
 });
 
 it('should render contact detail panel', async () => {
-  const contactId = '1';
-
-  const { findAllByRole } = render(
+  const { findByTestId, findAllByRole } = render(
     <ThemeProvider theme={theme}>
       <TestRouter router={router}>
         <GqlMockedProvider<ContactsQuery>
           mocks={{
             Contacts: {
-              contacts: { nodes: [{ id: contactId }] },
+              contacts: { nodes: [contact] },
             },
           }}
         >
@@ -67,7 +65,7 @@ it('should render contact detail panel', async () => {
     </ThemeProvider>,
   );
 
-  const row = (await findAllByRole('rowButton'))[0];
+  const row = await findByTestId('rowButton');
 
   userEvent.click(row);
 

@@ -38,8 +38,8 @@ const LogNewsletter = ({ handleClose }: Props): ReactElement<Props> => {
     <>
       <LogNewsletterTitle>
         {t('Log Newsletter')}
-        <CloseButton role="closeButton" onClick={handleClose}>
-          <CloseIcon />
+        <CloseButton onClick={handleClose}>
+          <CloseIcon titleAccess={t('Close')} />
         </CloseButton>
       </LogNewsletterTitle>
       <DialogContent dividers>
