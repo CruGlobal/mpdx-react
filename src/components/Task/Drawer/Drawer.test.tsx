@@ -16,6 +16,8 @@ import {
   getCompleteTaskForTaskDrawerMock,
 } from './CompleteForm/CompleteForm.mock';
 import TaskDrawer from '.';
+import { ThemeProvider } from '@material-ui/core';
+import theme from '../../../theme';
 
 const accountListId = 'abc';
 const taskId = 'task-1';
@@ -29,9 +31,11 @@ describe('TaskDrawer', () => {
       createTaskMutationMock(),
     ];
     const { getByText, getByRole, getByTestId } = render(
-      <TestWrapper mocks={mocks}>
-        <TaskDrawer onClose={onClose} defaultValues={{ subject: 'abc' }} />
-      </TestWrapper>,
+      <ThemeProvider theme={theme}>
+        <TestWrapper mocks={mocks}>
+          <TaskDrawer onClose={onClose} defaultValues={{ subject: 'abc' }} />
+        </TestWrapper>
+      </ThemeProvider>,
     );
     expect(
       getByRole('tab', { name: 'Contacts ({{ contactCount }})' }),
@@ -52,9 +56,11 @@ describe('TaskDrawer', () => {
       getTaskForTaskDrawerMock(),
     ];
     const { findByTestId } = render(
-      <TestWrapper mocks={mocks}>
-        <TaskDrawer onClose={onClose} taskId={taskId} />
-      </TestWrapper>,
+      <ThemeProvider theme={theme}>
+        <TestWrapper mocks={mocks}>
+          <TaskDrawer onClose={onClose} taskId={taskId} />
+        </TestWrapper>
+      </ThemeProvider>,
     );
     expect(await findByTestId('TaskDrawerTitle')).toHaveTextContent(
       ActivityTypeEnum.NewsletterEmail,
@@ -71,9 +77,11 @@ describe('TaskDrawer', () => {
       getCompleteTaskForTaskDrawerMock(accountListId, taskId),
     ];
     const { findByTestId } = render(
-      <TestWrapper mocks={mocks}>
-        <TaskDrawer onClose={onClose} taskId={taskId} showCompleteForm />
-      </TestWrapper>,
+      <ThemeProvider theme={theme}>
+        <TestWrapper mocks={mocks}>
+          <TaskDrawer onClose={onClose} taskId={taskId} showCompleteForm />
+        </TestWrapper>
+      </ThemeProvider>,
     );
     expect(await findByTestId('TaskDrawerTitle')).toHaveTextContent(
       'Complete {{activityType}}',

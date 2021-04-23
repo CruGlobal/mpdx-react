@@ -2,6 +2,8 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import { GetCommentsForTaskDrawerCommentListQuery } from '../TaskListComments.generated';
 import Item from '.';
+import { ThemeProvider } from '@material-ui/core';
+import theme from '../../../../../theme';
 
 describe('Item', () => {
   const comment: GetCommentsForTaskDrawerCommentListQuery['task']['comments']['nodes'][0] = {
@@ -17,7 +19,11 @@ describe('Item', () => {
   };
 
   it('has correct defaults', () => {
-    const { getByTestId, getByText } = render(<Item comment={comment} />);
+    const { getByTestId, getByText } = render(
+      <ThemeProvider theme={theme}>
+        <Item comment={comment} />
+      </ThemeProvider>,
+    );
     expect(getByTestId('TaskDrawerCommentListItemAvatar')).toBeInTheDocument();
     expect(
       getByText('The quick brown fox jumped over the lazy dog.'),
@@ -27,14 +33,22 @@ describe('Item', () => {
   });
 
   it('has correct overrides', () => {
-    const { queryByTestId } = render(<Item comment={comment} reverse={true} />);
+    const { queryByTestId } = render(
+      <ThemeProvider theme={theme}>
+        <Item comment={comment} reverse={true} />
+      </ThemeProvider>,
+    );
     expect(
       queryByTestId('TaskDrawerCommentListItemAvatar'),
     ).not.toBeInTheDocument();
   });
 
   it('has loading state', () => {
-    const { queryByTestId } = render(<Item />);
+    const { queryByTestId } = render(
+      <ThemeProvider theme={theme}>
+        <Item />
+      </ThemeProvider>,
+    );
     expect(
       queryByTestId('TaskDrawerCommentListItemAvatar'),
     ).not.toBeInTheDocument();

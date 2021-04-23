@@ -9,6 +9,8 @@ import {
   GetThisWeekDefaultMocks,
 } from './ThisWeek.mock';
 import ThisWeek from '.';
+import { ThemeProvider } from '@material-ui/core';
+import theme from '../../../theme';
 
 jest.mock('../../App', () => ({
   useApp: (): Partial<AppProviderContext> => ({
@@ -19,11 +21,13 @@ jest.mock('../../App', () => ({
 describe('ThisWeek', () => {
   it('default', async () => {
     const { getByTestId, queryByTestId } = render(
-      <SnackbarProvider>
-        <MockedProvider mocks={GetThisWeekDefaultMocks()} addTypename={false}>
-          <ThisWeek accountListId="abc" />
-        </MockedProvider>
-      </SnackbarProvider>,
+      <ThemeProvider theme={theme}>
+        <SnackbarProvider>
+          <MockedProvider mocks={GetThisWeekDefaultMocks()} addTypename={false}>
+            <ThisWeek accountListId="abc" />
+          </MockedProvider>
+        </SnackbarProvider>
+      </ThemeProvider>,
     );
     await waitFor(() =>
       expect(
@@ -39,11 +43,13 @@ describe('ThisWeek', () => {
 
   it('loading', () => {
     const { getByTestId } = render(
-      <SnackbarProvider>
-        <MockedProvider mocks={GetThisWeekLoadingMocks()} addTypename={false}>
-          <ThisWeek accountListId="abc" />
-        </MockedProvider>
-      </SnackbarProvider>,
+      <ThemeProvider theme={theme}>
+        <SnackbarProvider>
+          <MockedProvider mocks={GetThisWeekLoadingMocks()} addTypename={false}>
+            <ThisWeek accountListId="abc" />
+          </MockedProvider>
+        </SnackbarProvider>
+      </ThemeProvider>,
     );
     expect(getByTestId('PartnerCarePrayerListLoading')).toBeInTheDocument();
     expect(getByTestId('TasksDueThisWeekListLoading')).toBeInTheDocument();
@@ -53,11 +59,13 @@ describe('ThisWeek', () => {
 
   it('empty', async () => {
     const { getByTestId, queryByTestId } = render(
-      <SnackbarProvider>
-        <MockedProvider mocks={GetThisWeekEmptyMocks()} addTypename={false}>
-          <ThisWeek accountListId="abc" />
-        </MockedProvider>
-      </SnackbarProvider>,
+      <ThemeProvider theme={theme}>
+        <SnackbarProvider>
+          <MockedProvider mocks={GetThisWeekEmptyMocks()} addTypename={false}>
+            <ThisWeek accountListId="abc" />
+          </MockedProvider>
+        </SnackbarProvider>
+      </ThemeProvider>,
     );
     await waitFor(() =>
       expect(

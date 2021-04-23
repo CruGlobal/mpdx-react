@@ -7,6 +7,8 @@ import { AppProviderContext } from '../App/Provider';
 import { GetDashboardQuery } from '../../../pages/accountLists/GetDashboard.generated';
 import { GetThisWeekDefaultMocks } from './ThisWeek/ThisWeek.mock';
 import Dashboard from '.';
+import { ThemeProvider } from '@material-ui/core';
+import theme from '../../theme';
 
 jest.mock('../App', () => ({
   useApp: (): Partial<AppProviderContext> => ({
@@ -111,11 +113,13 @@ describe('Dashboard', () => {
 
   it('default', async () => {
     const { getByTestId, queryByTestId } = render(
-      <SnackbarProvider>
-        <MockedProvider mocks={GetThisWeekDefaultMocks()} addTypename={false}>
-          <Dashboard accountListId="abc" data={data} />
-        </MockedProvider>
-      </SnackbarProvider>,
+      <ThemeProvider theme={theme}>
+        <SnackbarProvider>
+          <MockedProvider mocks={GetThisWeekDefaultMocks()} addTypename={false}>
+            <Dashboard accountListId="abc" data={data} />
+          </MockedProvider>
+        </SnackbarProvider>
+      </ThemeProvider>,
     );
     await waitFor(() =>
       expect(
@@ -150,21 +154,23 @@ describe('Dashboard', () => {
 
   it('handles null fields', async () => {
     const { getByTestId, queryByTestId } = render(
-      <SnackbarProvider>
-        <MockedProvider mocks={GetThisWeekDefaultMocks()} addTypename={false}>
-          <Dashboard
-            accountListId="abc"
-            data={{
-              ...data,
-              accountList: {
-                ...data.accountList,
-                monthlyGoal: null,
-                currency: 'USD',
-              },
-            }}
-          />
-        </MockedProvider>
-      </SnackbarProvider>,
+      <ThemeProvider theme={theme}>
+        <SnackbarProvider>
+          <MockedProvider mocks={GetThisWeekDefaultMocks()} addTypename={false}>
+            <Dashboard
+              accountListId="abc"
+              data={{
+                ...data,
+                accountList: {
+                  ...data.accountList,
+                  monthlyGoal: null,
+                  currency: 'USD',
+                },
+              }}
+            />
+          </MockedProvider>
+        </SnackbarProvider>
+      </ThemeProvider>,
     );
     await waitFor(() =>
       expect(

@@ -2,6 +2,8 @@ import React from 'react';
 import { Settings } from 'luxon';
 import { render } from '../../../../__tests__/util/testingLibraryReactMock';
 import Welcome from '.';
+import { ThemeProvider } from '@material-ui/core';
+import theme from '../../../theme';
 
 describe('Welcome', () => {
   afterEach(() => {
@@ -14,14 +16,22 @@ describe('Welcome', () => {
     });
 
     it('default', () => {
-      const { getByTestId } = render(<Welcome />);
+      const { getByTestId } = render(
+        <ThemeProvider theme={theme}>
+          <Welcome />
+        </ThemeProvider>,
+      );
       expect(getByTestId('PageHeadingHeading').textContent).toEqual(
         'Good Morning,',
       );
     });
 
     it('props', () => {
-      const { getByTestId } = render(<Welcome firstName="John" />);
+      const { getByTestId } = render(
+        <ThemeProvider theme={theme}>
+          <Welcome firstName="John" />
+        </ThemeProvider>,
+      );
       expect(getByTestId('PageHeadingHeading').textContent).toEqual(
         'Good Morning, John.',
       );
@@ -33,14 +43,22 @@ describe('Welcome', () => {
     });
 
     it('default', () => {
-      const { getByTestId } = render(<Welcome />);
+      const { getByTestId } = render(
+        <ThemeProvider theme={theme}>
+          <Welcome />
+        </ThemeProvider>,
+      );
       expect(getByTestId('PageHeadingHeading').textContent).toEqual(
         'Good Afternoon,',
       );
     });
 
     it('props', () => {
-      const { getByTestId } = render(<Welcome firstName="John" />);
+      const { getByTestId } = render(
+        <ThemeProvider theme={theme}>
+          <Welcome firstName="John" />
+        </ThemeProvider>,
+      );
       expect(getByTestId('PageHeadingHeading').textContent).toEqual(
         'Good Afternoon, John.',
       );
@@ -53,14 +71,22 @@ describe('Welcome', () => {
     });
 
     it('default', () => {
-      const { getByTestId } = render(<Welcome />);
+      const { getByTestId } = render(
+        <ThemeProvider theme={theme}>
+          <Welcome />
+        </ThemeProvider>,
+      );
       expect(getByTestId('PageHeadingHeading').textContent).toEqual(
         'Good Evening,',
       );
     });
 
     it('props', () => {
-      const { getByTestId } = render(<Welcome firstName="John" />);
+      const { getByTestId } = render(
+        <ThemeProvider theme={theme}>
+          <Welcome firstName="John" />
+        </ThemeProvider>,
+      );
       expect(getByTestId('PageHeadingHeading').textContent).toEqual(
         'Good Evening, John.',
       );

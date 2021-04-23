@@ -8,6 +8,8 @@ import {
 } from '../List/List.mock';
 import { ActivityTypeEnum } from '../../../../graphql/types.generated';
 import TaskHome from '.';
+import { ThemeProvider } from '@material-ui/core';
+import theme from '../../../theme';
 
 const accountListId = 'abc';
 
@@ -18,9 +20,11 @@ describe('TaskHome', () => {
       getDataForTaskDrawerMock(accountListId),
     ];
     const { findByText } = render(
-      <TestWrapper mocks={mocks}>
-        <TaskHome />
-      </TestWrapper>,
+      <ThemeProvider theme={theme}>
+        <TestWrapper mocks={mocks}>
+          <TaskHome />
+        </TestWrapper>
+      </ThemeProvider>,
     );
     expect(
       await findByText('On the Journey with the Johnson Family'),
@@ -38,14 +42,16 @@ describe('TaskHome', () => {
       wildcardSearch: 'journey',
     };
     const { findByText } = render(
-      <TestWrapper
-        mocks={[
-          getFilteredTasksForTaskListMock(accountListId, filter),
-          getDataForTaskDrawerMock(accountListId),
-        ]}
-      >
-        <TaskHome initialFilter={filter} />
-      </TestWrapper>,
+      <ThemeProvider theme={theme}>
+        <TestWrapper
+          mocks={[
+            getFilteredTasksForTaskListMock(accountListId, filter),
+            getDataForTaskDrawerMock(accountListId),
+          ]}
+        >
+          <TaskHome initialFilter={filter} />
+        </TestWrapper>
+      </ThemeProvider>,
     );
     expect(
       await findByText('On the Journey with the Johnson Family'),

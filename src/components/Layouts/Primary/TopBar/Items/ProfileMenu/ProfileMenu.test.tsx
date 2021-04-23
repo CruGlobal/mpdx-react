@@ -9,6 +9,8 @@ import { useApp } from '../../../../../App';
 import { getTopBarMock } from '../../TopBar.mock';
 import TestWrapper from '../../../../../../../__tests__/util/TestWrapper';
 import ProfileMenu from './ProfileMenu';
+import { ThemeProvider } from '@material-ui/core';
+import theme from '../../../../../../theme';
 
 let state: AppState;
 const dispatch = jest.fn();
@@ -24,12 +26,14 @@ describe('ProfileMenu', () => {
     });
 
     const { getByTestId, queryByText, getByText } = render(
-      <TestWrapper
-        initialState={{ accountListId: '1' }}
-        mocks={[getTopBarMock()]}
-      >
-        <ProfileMenu />
-      </TestWrapper>,
+      <ThemeProvider theme={theme}>
+        <TestWrapper
+          initialState={{ accountListId: '1' }}
+          mocks={[getTopBarMock()]}
+        >
+          <ProfileMenu />
+        </TestWrapper>
+      </ThemeProvider>,
     );
     await waitFor(() => expect(getByText('John Smith')).toBeInTheDocument());
     userEvent.click(getByTestId('profileMenuButton'));

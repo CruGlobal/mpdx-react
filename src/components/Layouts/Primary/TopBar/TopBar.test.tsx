@@ -7,6 +7,8 @@ import { useApp } from '../../../App';
 import { getNotificationsMocks } from './Items/NotificationMenu/NotificationMenu.mock';
 import { getTopBarMultipleMock } from './TopBar.mock';
 import TopBar from './TopBar';
+import { ThemeProvider } from '@material-ui/core';
+import theme from '../../../../theme';
 
 let state: AppState;
 const dispatch = jest.fn();
@@ -27,9 +29,11 @@ describe('TopBar', () => {
 
   it('has correct defaults', () => {
     const { queryByText, getByTestId } = render(
-      <MockedProvider mocks={mocks} addTypename={false}>
-        <TopBar />
-      </MockedProvider>,
+      <ThemeProvider theme={theme}>
+        <MockedProvider mocks={mocks} addTypename={false}>
+          <TopBar />
+        </MockedProvider>
+      </ThemeProvider>,
     );
     userEvent.click(getByTestId('profileMenuButton'));
     expect(queryByText('Manage Organizations')).not.toBeInTheDocument();

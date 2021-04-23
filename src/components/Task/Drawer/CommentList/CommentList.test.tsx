@@ -11,6 +11,8 @@ import {
 } from './CommentList.mock';
 import { createTaskCommentMutationMock } from './Form/Form.mock';
 import TaskDrawerCommentList from '.';
+import { ThemeProvider } from '@material-ui/core';
+import theme from '../../../../theme';
 
 const accountListId = 'abc';
 const taskId = 'task-1';
@@ -35,17 +37,19 @@ jest.mock('uuid', () => ({
 describe('TaskDrawerCommentList', () => {
   it('default', async () => {
     const { queryByTestId, getAllByTestId, getByRole } = render(
-      <TestWrapper
-        initialState={{
-          user: { id: 'user-1', firstName: 'John', lastName: 'Smith' } as User,
-        }}
-        mocks={[
-          getCommentsForTaskDrawerCommentListMock(accountListId, taskId),
-          createTaskCommentMutationMock(),
-        ]}
-      >
-        <TaskDrawerCommentList accountListId={accountListId} taskId={taskId} />
-      </TestWrapper>,
+      <ThemeProvider theme={theme}>
+        <TestWrapper
+          initialState={{
+            user: { id: 'user-1', firstName: 'John', lastName: 'Smith' } as User,
+          }}
+          mocks={[
+            getCommentsForTaskDrawerCommentListMock(accountListId, taskId),
+            createTaskCommentMutationMock(),
+          ]}
+        >
+          <TaskDrawerCommentList accountListId={accountListId} taskId={taskId} />
+        </TestWrapper>
+      </ThemeProvider>,
     );
     await waitFor(() =>
       expect(
@@ -71,32 +75,36 @@ describe('TaskDrawerCommentList', () => {
 
   it('loading', () => {
     const { getByTestId } = render(
-      <TestWrapper
-        initialState={{
-          user: { id: 'user-1', firstName: 'John', lastName: 'Smith' } as User,
-        }}
-        mocks={[
-          getCommentsForTaskDrawerCommentListLoadingMock(accountListId, taskId),
-        ]}
-      >
-        <TaskDrawerCommentList accountListId={accountListId} taskId={taskId} />
-      </TestWrapper>,
+      <ThemeProvider theme={theme}>
+        <TestWrapper
+          initialState={{
+            user: { id: 'user-1', firstName: 'John', lastName: 'Smith' } as User,
+          }}
+          mocks={[
+            getCommentsForTaskDrawerCommentListLoadingMock(accountListId, taskId),
+          ]}
+        >
+          <TaskDrawerCommentList accountListId={accountListId} taskId={taskId} />
+        </TestWrapper>
+      </ThemeProvider>,
     );
     expect(getByTestId('TaskDrawerCommentListLoading')).toBeInTheDocument();
   });
 
   it('empty', async () => {
     const { queryByTestId, getByTestId } = render(
-      <TestWrapper
-        initialState={{
-          user: { id: 'user-1', firstName: 'John', lastName: 'Smith' } as User,
-        }}
-        mocks={[
-          getCommentsForTaskDrawerCommentListEmptyMock(accountListId, taskId),
-        ]}
-      >
-        <TaskDrawerCommentList accountListId={accountListId} taskId={taskId} />
-      </TestWrapper>,
+      <ThemeProvider theme={theme}>
+        <TestWrapper
+          initialState={{
+            user: { id: 'user-1', firstName: 'John', lastName: 'Smith' } as User,
+          }}
+          mocks={[
+            getCommentsForTaskDrawerCommentListEmptyMock(accountListId, taskId),
+          ]}
+        >
+          <TaskDrawerCommentList accountListId={accountListId} taskId={taskId} />
+        </TestWrapper>
+      </ThemeProvider>,
     );
     await waitFor(() =>
       expect(
@@ -108,16 +116,18 @@ describe('TaskDrawerCommentList', () => {
 
   it('error', async () => {
     render(
-      <TestWrapper
-        initialState={{
-          user: { id: 'user-1', firstName: 'John', lastName: 'Smith' } as User,
-        }}
-        mocks={[
-          getCommentsForTaskDrawerCommentListErrorMock(accountListId, taskId),
-        ]}
-      >
-        <TaskDrawerCommentList accountListId={accountListId} taskId={taskId} />
-      </TestWrapper>,
+      <ThemeProvider theme={theme}>
+        <TestWrapper
+          initialState={{
+            user: { id: 'user-1', firstName: 'John', lastName: 'Smith' } as User,
+          }}
+          mocks={[
+            getCommentsForTaskDrawerCommentListErrorMock(accountListId, taskId),
+          ]}
+        >
+          <TaskDrawerCommentList accountListId={accountListId} taskId={taskId} />
+        </TestWrapper>
+      </ThemeProvider>,
     );
 
     await waitFor(() =>

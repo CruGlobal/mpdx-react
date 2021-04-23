@@ -15,6 +15,8 @@ import {
   getTasksForTaskListErrorMock,
 } from './List.mock';
 import TaskList from '.';
+import { ThemeProvider } from '@material-ui/core';
+import theme from '../../../theme';
 
 const accountListId = 'abc';
 
@@ -115,9 +117,11 @@ describe('TaskList', () => {
       }),
     ];
     const { findByText, getByRole, getAllByRole } = render(
-      <TestWrapper mocks={mocks} disableAppProvider>
-        <TaskList />
-      </TestWrapper>,
+      <ThemeProvider theme={theme}>
+        <TestWrapper mocks={mocks} disableAppProvider>
+          <TaskList />
+        </TestWrapper>
+      </ThemeProvider>,
     );
     userEvent.click(await findByText('On the Journey with the Johnson Family'));
     expect(openTaskDrawer).toHaveBeenCalledWith({
@@ -178,15 +182,17 @@ describe('TaskList', () => {
       startAt: { min: '2020-10-10', max: '2020-12-10' },
     };
     const { getByRole, getByText, findByText } = render(
-      <TestWrapper
-        mocks={[
-          getFilteredTasksForTaskListMock(accountListId, filter),
-          getDataForTaskDrawerMock(accountListId),
-        ]}
-        disableAppProvider
-      >
-        <TaskList initialFilter={filter} />
-      </TestWrapper>,
+      <ThemeProvider theme={theme}>
+        <TestWrapper
+          mocks={[
+            getFilteredTasksForTaskListMock(accountListId, filter),
+            getDataForTaskDrawerMock(accountListId),
+          ]}
+          disableAppProvider
+        >
+          <TaskList initialFilter={filter} />
+        </TestWrapper>
+      </ThemeProvider>,
     );
     expect(getByText('Appointment')).toBeInTheDocument();
     expect(getByText('Complete')).toBeInTheDocument();
@@ -211,29 +217,33 @@ describe('TaskList', () => {
       },
     ];
     const { getAllByRole } = render(
-      <TestWrapper mocks={mocks} disableAppProvider>
-        <TaskList
-          initialFilter={{
-            userIds: ['user-1'],
-            contactIds: ['contact-1'],
-          }}
-        />
-      </TestWrapper>,
+      <ThemeProvider theme={theme}>
+        <TestWrapper mocks={mocks} disableAppProvider>
+          <TaskList
+            initialFilter={{
+              userIds: ['user-1'],
+              contactIds: ['contact-1'],
+            }}
+          />
+        </TestWrapper>
+      </ThemeProvider>,
     );
     expect(getAllByRole('button', { name: 'Loading' }).length).toEqual(2);
   });
 
   it('has empty state', () => {
     const { queryByTestId } = render(
-      <TestWrapper
-        mocks={[
-          getEmptyTasksForTaskListMock(accountListId),
-          getDataForTaskDrawerMock(accountListId),
-        ]}
-        disableAppProvider
-      >
-        <TaskList />
-      </TestWrapper>,
+      <ThemeProvider theme={theme}>
+        <TestWrapper
+          mocks={[
+            getEmptyTasksForTaskListMock(accountListId),
+            getDataForTaskDrawerMock(accountListId),
+          ]}
+          disableAppProvider
+        >
+          <TaskList />
+        </TestWrapper>
+      </ThemeProvider>,
     );
     expect(
       queryByTestId('TaskDrawerCommentListItemAvatar'),
@@ -242,15 +252,17 @@ describe('TaskList', () => {
 
   it('error', async () => {
     render(
-      <TestWrapper
-        mocks={[
-          getTasksForTaskListErrorMock(accountListId),
-          getDataForTaskDrawerMock(accountListId),
-        ]}
-        disableAppProvider
-      >
-        <TaskList />
-      </TestWrapper>,
+      <ThemeProvider theme={theme}>
+        <TestWrapper
+          mocks={[
+            getTasksForTaskListErrorMock(accountListId),
+            getDataForTaskDrawerMock(accountListId),
+          ]}
+          disableAppProvider
+        >
+          <TaskList />
+        </TestWrapper>
+      </ThemeProvider>,
     );
 
     await waitFor(() =>
