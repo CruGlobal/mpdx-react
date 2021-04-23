@@ -1,8 +1,10 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { ThemeProvider } from '@material-ui/core';
 import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
 import { ContactsQuery } from '../../../../pages/accountLists/[accountListId]/Contacts.generated';
+import theme from '../../../theme';
 import { ContactsTable } from './ContactsTable';
 
 const accountListId = '111';
@@ -14,15 +16,17 @@ const onContactSelected = jest.fn();
 describe('ContactFilters', () => {
   it('loading', async () => {
     const { queryByTestId, queryByText } = render(
-      <GqlMockedProvider<ContactsQuery>>
-        <ContactsTable
-          accountListId={accountListId}
-          onContactSelected={onContactSelected}
-          activeFilters={false}
-          filterPanelOpen={false}
-          toggleFilterPanel={() => {}}
-        />
-      </GqlMockedProvider>,
+      <ThemeProvider theme={theme}>
+        <GqlMockedProvider<ContactsQuery>>
+          <ContactsTable
+            accountListId={accountListId}
+            onContactSelected={onContactSelected}
+            activeFilters={false}
+            filterPanelOpen={false}
+            toggleFilterPanel={() => {}}
+          />
+        </GqlMockedProvider>
+      </ThemeProvider>,
     );
 
     expect(queryByText('Loading')).toBeVisible();
@@ -33,15 +37,17 @@ describe('ContactFilters', () => {
 
   it('contacts loaded', async () => {
     const { getByTestId, queryByText } = render(
-      <GqlMockedProvider<ContactsQuery>>
-        <ContactsTable
-          accountListId={accountListId}
-          onContactSelected={onContactSelected}
-          activeFilters={false}
-          filterPanelOpen={false}
-          toggleFilterPanel={() => {}}
-        />
-      </GqlMockedProvider>,
+      <ThemeProvider theme={theme}>
+        <GqlMockedProvider<ContactsQuery>>
+          <ContactsTable
+            accountListId={accountListId}
+            onContactSelected={onContactSelected}
+            activeFilters={false}
+            filterPanelOpen={false}
+            toggleFilterPanel={() => {}}
+          />
+        </GqlMockedProvider>
+      </ThemeProvider>,
     );
 
     await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());
@@ -62,15 +68,17 @@ describe('ContactFilters', () => {
     };
 
     const { queryByTestId, queryByText } = render(
-      <GqlMockedProvider<ContactsQuery> mocks={mocks}>
-        <ContactsTable
-          accountListId={accountListId}
-          onContactSelected={onContactSelected}
-          activeFilters={false}
-          filterPanelOpen={false}
-          toggleFilterPanel={() => {}}
-        />
-      </GqlMockedProvider>,
+      <ThemeProvider theme={theme}>
+        <GqlMockedProvider<ContactsQuery> mocks={mocks}>
+          <ContactsTable
+            accountListId={accountListId}
+            onContactSelected={onContactSelected}
+            activeFilters={false}
+            filterPanelOpen={false}
+            toggleFilterPanel={() => {}}
+          />
+        </GqlMockedProvider>
+      </ThemeProvider>,
     );
 
     await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());
@@ -91,15 +99,17 @@ describe('ContactFilters', () => {
     };
 
     const { findAllByRole, queryByText } = render(
-      <GqlMockedProvider<ContactsQuery> mocks={mocks}>
-        <ContactsTable
-          accountListId={accountListId}
-          onContactSelected={onContactSelected}
-          activeFilters={false}
-          filterPanelOpen={false}
-          toggleFilterPanel={() => {}}
-        />
-      </GqlMockedProvider>,
+      <ThemeProvider theme={theme}>
+        <GqlMockedProvider<ContactsQuery> mocks={mocks}>
+          <ContactsTable
+            accountListId={accountListId}
+            onContactSelected={onContactSelected}
+            activeFilters={false}
+            filterPanelOpen={false}
+            toggleFilterPanel={() => {}}
+          />
+        </GqlMockedProvider>
+      </ThemeProvider>,
     );
 
     await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());

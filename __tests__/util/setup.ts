@@ -1,5 +1,6 @@
 import '@testing-library/jest-dom';
 import { Settings } from 'luxon';
+import matchMediaMock from './matchMediaMock';
 
 window.document.createRange = (): Range =>
   (({
@@ -15,6 +16,7 @@ window.HTMLElement.prototype.scrollIntoView = jest.fn();
 
 beforeEach(() => {
   Settings.now = () => new Date(2020, 0, 1).valueOf();
+  matchMediaMock({ width: window.innerWidth });
 });
 
 afterEach(() => {
