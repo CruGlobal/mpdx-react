@@ -14,11 +14,17 @@ import { useContactsQuery } from '../../../../pages/accountLists/[accountListId]
 interface Props {
   accountListId: string;
   onContactSelected: (contactId: string) => void;
+  activeFilters: boolean;
+  filterPanelOpen: boolean;
+  toggleFilterPanel: () => void;
 }
 
 export const ContactsTable: React.FC<Props> = ({
   accountListId,
   onContactSelected,
+  activeFilters,
+  filterPanelOpen,
+  toggleFilterPanel,
 }: Props) => {
   const { data, loading, error } = useContactsQuery({
     variables: { accountListId },
@@ -49,7 +55,11 @@ export const ContactsTable: React.FC<Props> = ({
     <TableContainer>
       <Table stickyHeader aria-label="sticky table">
         <TableHead>
-          <ContactsHeader />
+          <ContactsHeader
+            activeFilters={activeFilters}
+            filterPanelOpen={filterPanelOpen}
+            toggleFilterPanel={toggleFilterPanel}
+          />
         </TableHead>
         <TableBody>
           {error && renderError()}

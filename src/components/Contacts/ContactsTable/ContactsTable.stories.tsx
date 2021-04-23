@@ -16,6 +16,9 @@ export const Default = (): ReactElement => {
       <ContactsTable
         accountListId={accountListId}
         onContactSelected={onContactSelected}
+        activeFilters={false}
+        filterPanelOpen={false}
+        toggleFilterPanel={() => {}}
       />
     </GqlMockedProvider>
   );
@@ -35,6 +38,9 @@ export const Loading = (): ReactElement => {
       <ContactsTable
         accountListId={accountListId}
         onContactSelected={onContactSelected}
+        activeFilters={false}
+        filterPanelOpen={false}
+        toggleFilterPanel={() => {}}
       />
     </GqlMockedProvider>
   );
@@ -54,6 +60,9 @@ export const Empty = (): ReactElement => {
       <ContactsTable
         accountListId={accountListId}
         onContactSelected={onContactSelected}
+        activeFilters={false}
+        filterPanelOpen={false}
+        toggleFilterPanel={() => {}}
       />
     </GqlMockedProvider>
   );
@@ -74,6 +83,9 @@ export const Error = (): ReactElement => {
       <ContactsTable
         accountListId={accountListId}
         onContactSelected={onContactSelected}
+        activeFilters={false}
+        filterPanelOpen={false}
+        toggleFilterPanel={() => {}}
       />
     </GqlMockedProvider>
   );

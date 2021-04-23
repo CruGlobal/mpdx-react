@@ -128,7 +128,7 @@ const PartnerCare = ({
           data-testid="PartnerCareTabCelebrations"
         />
       </Tabs>
-      {value == 0 && (
+      {value === 0 && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -246,7 +246,7 @@ const PartnerCare = ({
           )}
         </motion.div>
       )}
-      {value == 1 && (
+      {value === 1 && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}

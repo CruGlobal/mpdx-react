@@ -2,6 +2,30 @@ import { createMuiTheme } from '@material-ui/core/styles';
 
 const defaultTheme = createMuiTheme();
 
+// https://www.cru.org/brand/color/
+const cruColors = {
+  yellow: '#FFCF07',
+  grayDark: '#383F43',
+  grayMedium: '#9C9FA1',
+  grayLight: '#EBECEC',
+};
+
+// https://material-ui.com/customization/palette/#adding-new-colors
+declare module '@material-ui/core/styles/createPalette' {
+  interface Palette {
+    cruYellow: Palette['primary'];
+    cruGrayDark: Palette['primary'];
+    cruGrayMedium: Palette['primary'];
+    cruGrayLight: Palette['primary'];
+  }
+  interface PaletteOptions {
+    cruYellow: PaletteOptions['primary'];
+    cruGrayDark: PaletteOptions['primary'];
+    cruGrayMedium: PaletteOptions['primary'];
+    cruGrayLight: PaletteOptions['primary'];
+  }
+}
+
 const theme = createMuiTheme({
   typography: {
     fontFamily: "'Source Sans Pro', sans-serif",
@@ -32,6 +56,18 @@ const theme = createMuiTheme({
     text: {
       primary: '#383F43',
       secondary: '#9C9FA1',
+    },
+    cruYellow: {
+      main: cruColors.yellow,
+    },
+    cruGrayDark: {
+      main: cruColors.grayDark,
+    },
+    cruGrayMedium: {
+      main: cruColors.grayMedium,
+    },
+    cruGrayLight: {
+      main: cruColors.grayLight,
     },
   },
   overrides: {
