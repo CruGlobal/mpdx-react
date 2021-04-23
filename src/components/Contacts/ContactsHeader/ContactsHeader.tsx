@@ -1,9 +1,8 @@
-import { Box, styled, IconButton, Hidden } from '@material-ui/core';
+import { Box, styled, IconButton, Hidden, Theme } from '@material-ui/core';
 import { FilterList, FormatListBulleted, ViewColumn } from '@material-ui/icons';
 import { ToggleButton, ToggleButtonProps } from '@material-ui/lab';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import theme from '../../../theme';
 import {
   ContactCheckBox,
   ContactCheckBoxState,
@@ -22,7 +21,7 @@ enum ContactsTableDisplayState {
   'columns',
 }
 
-const HeaderWrap = styled(Box)(({}) => ({
+const HeaderWrap = styled(Box)(({ theme }) => ({
   height: 96,
   padding: theme.spacing(1),
   display: 'flex',
@@ -33,9 +32,11 @@ const HeaderWrap = styled(Box)(({}) => ({
 }));
 const FilterButton = styled(IconButton)(
   ({
+    theme,
     activeFilters,
     panelOpen,
   }: {
+    theme: Theme;
     activeFilters: boolean;
     panelOpen: boolean;
   }) => ({
@@ -51,25 +52,25 @@ const FilterButton = styled(IconButton)(
       : 'transparent',
   }),
 );
-const FilterIcon = styled(FilterList)(({}) => ({
+const FilterIcon = styled(FilterList)(({ theme }) => ({
   width: 24,
   height: 24,
   color: theme.palette.primary.dark,
 }));
-const PlaceholderSearchBar = styled(Box)(({}) => ({
+const PlaceholderSearchBar = styled(Box)(({ theme }) => ({
   display: 'inline-block',
   width: 256,
   height: 48,
   margin: theme.spacing(1),
   backgroundColor: 'red',
 }));
-const ContactsShowingText = styled('p')(({}) => ({
+const ContactsShowingText = styled('p')(({ theme }) => ({
   flexGrow: 4,
   flexBasis: 0,
   margin: theme.spacing(1),
   color: theme.palette.text.secondary,
 }));
-const PlaceholderActionsDropdown = styled(Box)(({}) => ({
+const PlaceholderActionsDropdown = styled(Box)(({ theme }) => ({
   display: 'inline-block',
   width: 114,
   height: 48,
@@ -77,7 +78,7 @@ const PlaceholderActionsDropdown = styled(Box)(({}) => ({
   backgroundColor: 'red',
 }));
 const DisplayOptionButtonLeft = styled(ToggleButton)(
-  ({ selected }: ToggleButtonProps) => ({
+  ({ theme, selected }: { theme: Theme } & ToggleButtonProps) => ({
     display: 'inline-block',
     width: 48,
     height: 48,
@@ -90,7 +91,7 @@ const DisplayOptionButtonLeft = styled(ToggleButton)(
   }),
 );
 const DisplayOptionButtonRight = styled(ToggleButton)(
-  ({ selected }: ToggleButtonProps) => ({
+  ({ theme, selected }: { theme: Theme } & ToggleButtonProps) => ({
     display: 'inline-block',
     width: 48,
     height: 48,
@@ -102,6 +103,16 @@ const DisplayOptionButtonRight = styled(ToggleButton)(
     borderBottomRightRadius: 5,
   }),
 );
+const BulletedListIcon = styled(FormatListBulleted)(({ theme }) => ({
+  color: theme.palette.primary.dark,
+}));
+const ViewColumnIcon = styled(ViewColumn)(({ theme }) => ({
+  color: theme.palette.primary.dark,
+}));
+const StarIconWrap = styled(Box)(({ theme }) => ({
+  marginLeft: theme.spacing(4),
+  marginRight: theme.spacing(1),
+}));
 
 export const ContactsHeader: React.FC<Props> = ({
   activeFilters,
@@ -172,7 +183,7 @@ export const ContactsHeader: React.FC<Props> = ({
             setContactsTableDisplayState(ContactsTableDisplayState.list)
           }
         >
-          <FormatListBulleted style={{ color: theme.palette.primary.dark }} />
+          <BulletedListIcon />
         </DisplayOptionButtonLeft>
         <DisplayOptionButtonRight
           role="DisplayOptionRight"
@@ -183,19 +194,14 @@ export const ContactsHeader: React.FC<Props> = ({
             setContactsTableDisplayState(ContactsTableDisplayState.columns)
           }
         >
-          <ViewColumn style={{ color: theme.palette.primary.dark }} />
+          <ViewColumnIcon />
         </DisplayOptionButtonRight>
       </Hidden>
 
       <Hidden smDown>
-        <Box
-          style={{
-            marginLeft: theme.spacing(4),
-            marginRight: theme.spacing(1),
-          }}
-        >
+        <StarIconWrap>
           <StarContactIcon hasStar={false} />
-        </Box>
+        </StarIconWrap>
       </Hidden>
     </HeaderWrap>
   );
