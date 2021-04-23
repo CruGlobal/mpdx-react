@@ -2,6 +2,7 @@ import { Box, styled } from '@material-ui/core';
 import { Cake } from '@material-ui/icons';
 import { DateTime, Interval } from 'luxon';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { RingIcon } from '../RingIcon';
 import { CelebrationItemsFragment } from './CelebrationItems.generated';
 
@@ -17,6 +18,8 @@ interface Props {
 }
 
 export const CelebrationIcons: React.FC<Props> = ({ contact }) => {
+  const { t } = useTranslation();
+
   const occasionIsUpcoming = (month: number, day: number): boolean =>
     Interval.after(DateTime.now().startOf('day'), {
       days: 5,
@@ -44,17 +47,17 @@ export const CelebrationIcons: React.FC<Props> = ({ contact }) => {
     ) ?? false;
 
   return (
-    <span role="celebration">
+    <>
       {contactHasAnniversary() ? (
-        <IconContainer role="ring">
-          <RingIcon color="disabled" />
+        <IconContainer>
+          <RingIcon color="disabled" titleAccess={t('Ring')} />
         </IconContainer>
       ) : null}
       {contactHasBirthday() ? (
-        <IconContainer role="cake">
-          <Cake color="disabled" />
+        <IconContainer>
+          <Cake color="disabled" titleAccess={t('Cake')} />
         </IconContainer>
       ) : null}
-    </span>
+    </>
   );
 };

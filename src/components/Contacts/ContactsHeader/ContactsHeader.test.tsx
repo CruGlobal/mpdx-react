@@ -54,7 +54,9 @@ describe('ContactFilters', () => {
       </ThemeProvider>,
     );
 
-    const filterButton = getByRole('FilterButton');
+    const filterButton = getByRole('button', {
+      name: 'Toggle Filter Panel',
+    });
     const style = window.getComputedStyle(filterButton);
 
     expect(style.backgroundColor).toMatchInlineSnapshot(`"transparent"`);
@@ -71,7 +73,9 @@ describe('ContactFilters', () => {
       </ThemeProvider>,
     );
 
-    const filterButton = getByRole('FilterButton');
+    const filterButton = getByRole('button', {
+      name: 'Toggle Filter Panel',
+    });
     const style = window.getComputedStyle(filterButton);
 
     expect(style.backgroundColor).toMatchInlineSnapshot(`"rgb(156, 159, 161)"`);
@@ -88,7 +92,9 @@ describe('ContactFilters', () => {
       </ThemeProvider>,
     );
 
-    const filterButton = getByRole('FilterButton');
+    const filterButton = getByRole('button', {
+      name: 'Toggle Filter Panel',
+    });
     const style = window.getComputedStyle(filterButton);
 
     expect(style.backgroundColor).toMatchInlineSnapshot(`"rgb(255, 207, 7)"`);
@@ -105,7 +111,9 @@ describe('ContactFilters', () => {
       </ThemeProvider>,
     );
 
-    const filterButton = getByRole('FilterButton');
+    const filterButton = getByRole('button', {
+      name: 'Toggle Filter Panel',
+    });
     const style = window.getComputedStyle(filterButton);
 
     expect(style.backgroundColor).toMatchInlineSnapshot(`"rgb(255, 207, 7)"`);

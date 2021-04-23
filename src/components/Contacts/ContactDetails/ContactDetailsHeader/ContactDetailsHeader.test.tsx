@@ -1,4 +1,4 @@
-import { render, waitFor } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import React from 'react';
 import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
 import { ContactDetailsHeader } from './ContactDetailsHeader';
@@ -9,7 +9,7 @@ const contactId = 'contact-1';
 
 describe('ContactDetails', () => {
   it('should show loading state', async () => {
-    const { queryByRole } = render(
+    const { queryByTestId } = render(
       <GqlMockedProvider<GetContactDetailsHeaderQuery>>
         <ContactDetailsHeader
           accountListId={accountListId}
@@ -18,13 +18,20 @@ describe('ContactDetails', () => {
       </GqlMockedProvider>,
     );
 
-    expect(queryByRole('Skeleton')).toBeInTheDocument();
-    expect(queryByRole('ContactName')).toBeNull();
+    expect(queryByTestId('Skeleton')).toBeInTheDocument();
   });
 
   it('should render with contact details', async () => {
-    const { findAllByRole, queryByRole } = render(
-      <GqlMockedProvider<GetContactDetailsHeaderQuery>>
+    const { findByText, queryByTestId } = render(
+      <GqlMockedProvider<GetContactDetailsHeaderQuery>
+        mocks={{
+          GetContactDetailsHeader: {
+            contact: {
+              primaryPerson: { firstName: 'Fname', lastName: 'Lname' },
+            },
+          },
+        }}
+      >
         <ContactDetailsHeader
           accountListId={accountListId}
           contactId={contactId}
@@ -32,10 +39,8 @@ describe('ContactDetails', () => {
       </GqlMockedProvider>,
     );
 
-    await waitFor(async () => {
-      expect((await findAllByRole('ContactName'))[0]).toBeInTheDocument();
-    });
+    expect(await findByText('Fname Lname')).toBeVisible();
 
-    expect(queryByRole('Skeleton')).toBeNull();
+    expect(queryByTestId('Skeleton')).toBeNull();
   });
 });

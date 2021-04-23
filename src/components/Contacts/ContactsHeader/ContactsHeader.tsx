@@ -157,12 +157,11 @@ export const ContactsHeader: React.FC<Props> = ({
 
       <Hidden xsDown>
         <FilterButton
-          role="FilterButton"
           activeFilters={activeFilters}
           panelOpen={filterPanelOpen}
           onClick={toggleFilterPanel}
         >
-          <FilterIcon />
+          <FilterIcon titleAccess={t('Toggle Filter Panel')} />
         </FilterButton>
       </Hidden>
 
@@ -179,7 +178,6 @@ export const ContactsHeader: React.FC<Props> = ({
 
       <Hidden xsDown>
         <DisplayOptionButtonLeft
-          role="DisplayOptionLeft"
           selected={
             contactsTableDisplayState === ContactsTableDisplayState.list
           }
@@ -187,10 +185,9 @@ export const ContactsHeader: React.FC<Props> = ({
             setContactsTableDisplayState(ContactsTableDisplayState.list)
           }
         >
-          <BulletedListIcon />
+          <BulletedListIcon titleAccess={t('List View')} />
         </DisplayOptionButtonLeft>
         <DisplayOptionButtonRight
-          role="DisplayOptionRight"
           selected={
             contactsTableDisplayState === ContactsTableDisplayState.columns
           }
@@ -198,7 +195,7 @@ export const ContactsHeader: React.FC<Props> = ({
             setContactsTableDisplayState(ContactsTableDisplayState.columns)
           }
         >
-          <ViewColumnIcon />
+          <ViewColumnIcon titleAccess={t('Column Workflow View')} />
         </DisplayOptionButtonRight>
       </Hidden>
 

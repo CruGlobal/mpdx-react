@@ -61,8 +61,8 @@ const ExportEmail = ({
     <>
       <ExportEmailTitle>
         {t('Email Newsletter List')}
-        <CloseButton role="closeButton" onClick={handleClose}>
-          <CloseIcon />
+        <CloseButton onClick={handleClose}>
+          <CloseIcon titleAccess={t('Close')} />
         </CloseButton>
       </ExportEmailTitle>
       <DialogContent dividers>
