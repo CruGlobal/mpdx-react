@@ -1,9 +1,9 @@
 import React from 'react';
 import { Settings } from 'luxon';
-import { render } from '../../../../__tests__/util/testingLibraryReactMock';
-import Welcome from '.';
 import { ThemeProvider } from '@material-ui/core';
+import { render } from '../../../../__tests__/util/testingLibraryReactMock';
 import theme from '../../../theme';
+import Welcome from '.';
 
 describe('Welcome', () => {
   afterEach(() => {

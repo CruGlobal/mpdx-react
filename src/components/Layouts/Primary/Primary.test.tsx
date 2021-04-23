@@ -1,13 +1,13 @@
 import React from 'react';
 import { render } from '@testing-library/react';
+import { ThemeProvider } from '@material-ui/core';
 import matchMediaMock from '../../../../__tests__/util/matchMediaMock';
 import TestWrapper from '../../../../__tests__/util/TestWrapper';
+import theme from '../../../theme';
 import { getNotificationsMocks } from './TopBar/Items/NotificationMenu/NotificationMenu.mock';
 
 import { getTopBarMock } from './TopBar/TopBar.mock';
 import Primary from '.';
-import { ThemeProvider } from '@material-ui/core';
-import theme from '../../../theme';
 
 describe('Primary', () => {
   const mocks = [...getNotificationsMocks(), getTopBarMock()];

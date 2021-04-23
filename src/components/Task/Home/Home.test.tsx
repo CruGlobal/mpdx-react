@@ -1,4 +1,5 @@
 import React from 'react';
+import { ThemeProvider } from '@material-ui/core';
 import TestWrapper from '../../../../__tests__/util/TestWrapper';
 import { getDataForTaskDrawerMock } from '../Drawer/Form/Form.mock';
 import { render } from '../../../../__tests__/util/testingLibraryReactMock';
@@ -7,9 +8,8 @@ import {
   getFilteredTasksForTaskListMock,
 } from '../List/List.mock';
 import { ActivityTypeEnum } from '../../../../graphql/types.generated';
-import TaskHome from '.';
-import { ThemeProvider } from '@material-ui/core';
 import theme from '../../../theme';
+import TaskHome from '.';
 
 const accountListId = 'abc';
 

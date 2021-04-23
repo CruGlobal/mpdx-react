@@ -1,8 +1,8 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import AccountLists from '.';
 import { ThemeProvider } from '@material-ui/core';
 import theme from '../../theme';
+import AccountLists from '.';
 
 describe('AccountLists', () => {
   it('has correct defaults', () => {

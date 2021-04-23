@@ -1,8 +1,8 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import PageHeading from '.';
 import { ThemeProvider } from '@material-ui/core';
 import theme from '../../theme';
+import PageHeading from '.';
 
 describe('PageHeading', () => {
   it('has correct defaults', () => {

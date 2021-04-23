@@ -1,12 +1,12 @@
 import React from 'react';
 import userEvent from '@testing-library/user-event';
+import { ThemeProvider } from '@material-ui/core';
 import { render } from '../../../../../__tests__/util/testingLibraryReactMock';
 import { useApp } from '../../../App';
 import { GetThisWeekQuery } from '../GetThisWeek.generated';
 import { ActivityTypeEnum } from '../../../../../graphql/types.generated';
-import TasksDueThisWeek from '.';
-import { ThemeProvider } from '@material-ui/core';
 import theme from '../../../../theme';
+import TasksDueThisWeek from '.';
 
 jest.mock('../../../App', () => ({
   useApp: jest.fn(),

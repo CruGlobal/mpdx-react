@@ -2,15 +2,15 @@ import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import { MockedProvider } from '@apollo/client/testing';
 import { SnackbarProvider } from 'notistack';
+import { ThemeProvider } from '@material-ui/core';
 import { AppProviderContext } from '../../App/Provider';
+import theme from '../../../theme';
 import {
   GetThisWeekEmptyMocks,
   GetThisWeekLoadingMocks,
   GetThisWeekDefaultMocks,
 } from './ThisWeek.mock';
 import ThisWeek from '.';
-import { ThemeProvider } from '@material-ui/core';
-import theme from '../../../theme';
 
 jest.mock('../../App', () => ({
   useApp: (): Partial<AppProviderContext> => ({

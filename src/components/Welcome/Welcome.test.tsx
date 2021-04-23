@@ -1,8 +1,8 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import Welcome from '.';
 import { ThemeProvider } from '@material-ui/core';
 import theme from '../../theme';
+import Welcome from '.';
 
 describe('Welcome', () => {
   it('has correct defaults', () => {

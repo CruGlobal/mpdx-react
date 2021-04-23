@@ -1,10 +1,10 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { useApp } from '../../App';
-import TaskStatus from '.';
 import { ThemeProvider } from '@material-ui/core';
+import { useApp } from '../../App';
 import theme from '../../../theme';
+import TaskStatus from '.';
 
 jest.mock('../../App', () => ({
   useApp: jest.fn(),

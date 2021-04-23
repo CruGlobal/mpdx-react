@@ -1,8 +1,10 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { ThemeProvider } from '@material-ui/core';
 import TestWrapper from '../../../../../__tests__/util/TestWrapper';
 import { User } from '../../../../../graphql/types.generated';
+import theme from '../../../../theme';
 import {
   getCommentsForTaskDrawerCommentListMock,
   getCommentsForTaskDrawerCommentListEmptyMock,
@@ -11,8 +13,6 @@ import {
 } from './CommentList.mock';
 import { createTaskCommentMutationMock } from './Form/Form.mock';
 import TaskDrawerCommentList from '.';
-import { ThemeProvider } from '@material-ui/core';
-import theme from '../../../../theme';
 
 const accountListId = 'abc';
 const taskId = 'task-1';
@@ -40,14 +40,21 @@ describe('TaskDrawerCommentList', () => {
       <ThemeProvider theme={theme}>
         <TestWrapper
           initialState={{
-            user: { id: 'user-1', firstName: 'John', lastName: 'Smith' } as User,
+            user: {
+              id: 'user-1',
+              firstName: 'John',
+              lastName: 'Smith',
+            } as User,
           }}
           mocks={[
             getCommentsForTaskDrawerCommentListMock(accountListId, taskId),
             createTaskCommentMutationMock(),
           ]}
         >
-          <TaskDrawerCommentList accountListId={accountListId} taskId={taskId} />
+          <TaskDrawerCommentList
+            accountListId={accountListId}
+            taskId={taskId}
+          />
         </TestWrapper>
       </ThemeProvider>,
     );
@@ -78,13 +85,23 @@ describe('TaskDrawerCommentList', () => {
       <ThemeProvider theme={theme}>
         <TestWrapper
           initialState={{
-            user: { id: 'user-1', firstName: 'John', lastName: 'Smith' } as User,
+            user: {
+              id: 'user-1',
+              firstName: 'John',
+              lastName: 'Smith',
+            } as User,
           }}
           mocks={[
-            getCommentsForTaskDrawerCommentListLoadingMock(accountListId, taskId),
+            getCommentsForTaskDrawerCommentListLoadingMock(
+              accountListId,
+              taskId,
+            ),
           ]}
         >
-          <TaskDrawerCommentList accountListId={accountListId} taskId={taskId} />
+          <TaskDrawerCommentList
+            accountListId={accountListId}
+            taskId={taskId}
+          />
         </TestWrapper>
       </ThemeProvider>,
     );
@@ -96,13 +113,20 @@ describe('TaskDrawerCommentList', () => {
       <ThemeProvider theme={theme}>
         <TestWrapper
           initialState={{
-            user: { id: 'user-1', firstName: 'John', lastName: 'Smith' } as User,
+            user: {
+              id: 'user-1',
+              firstName: 'John',
+              lastName: 'Smith',
+            } as User,
           }}
           mocks={[
             getCommentsForTaskDrawerCommentListEmptyMock(accountListId, taskId),
           ]}
         >
-          <TaskDrawerCommentList accountListId={accountListId} taskId={taskId} />
+          <TaskDrawerCommentList
+            accountListId={accountListId}
+            taskId={taskId}
+          />
         </TestWrapper>
       </ThemeProvider>,
     );
@@ -119,13 +143,20 @@ describe('TaskDrawerCommentList', () => {
       <ThemeProvider theme={theme}>
         <TestWrapper
           initialState={{
-            user: { id: 'user-1', firstName: 'John', lastName: 'Smith' } as User,
+            user: {
+              id: 'user-1',
+              firstName: 'John',
+              lastName: 'Smith',
+            } as User,
           }}
           mocks={[
             getCommentsForTaskDrawerCommentListErrorMock(accountListId, taskId),
           ]}
         >
-          <TaskDrawerCommentList accountListId={accountListId} taskId={taskId} />
+          <TaskDrawerCommentList
+            accountListId={accountListId}
+            taskId={taskId}
+          />
         </TestWrapper>
       </ThemeProvider>,
     );

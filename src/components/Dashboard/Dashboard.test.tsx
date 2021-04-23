@@ -2,13 +2,13 @@ import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import { MockedProvider } from '@apollo/client/testing';
 import { SnackbarProvider } from 'notistack';
+import { ThemeProvider } from '@material-ui/core';
 import matchMediaMock from '../../../__tests__/util/matchMediaMock';
 import { AppProviderContext } from '../App/Provider';
 import { GetDashboardQuery } from '../../../pages/accountLists/GetDashboard.generated';
+import theme from '../../theme';
 import { GetThisWeekDefaultMocks } from './ThisWeek/ThisWeek.mock';
 import Dashboard from '.';
-import { ThemeProvider } from '@material-ui/core';
-import theme from '../../theme';
 
 jest.mock('../App', () => ({
   useApp: (): Partial<AppProviderContext> => ({

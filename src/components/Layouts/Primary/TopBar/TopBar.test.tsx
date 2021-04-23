@@ -2,13 +2,13 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import { MockedProvider } from '@apollo/client/testing';
 import userEvent from '@testing-library/user-event';
+import { ThemeProvider } from '@material-ui/core';
 import { AppState } from '../../../App/rootReducer';
 import { useApp } from '../../../App';
+import theme from '../../../../theme';
 import { getNotificationsMocks } from './Items/NotificationMenu/NotificationMenu.mock';
 import { getTopBarMultipleMock } from './TopBar.mock';
 import TopBar from './TopBar';
-import { ThemeProvider } from '@material-ui/core';
-import theme from '../../../../theme';
 
 let state: AppState;
 const dispatch = jest.fn();
