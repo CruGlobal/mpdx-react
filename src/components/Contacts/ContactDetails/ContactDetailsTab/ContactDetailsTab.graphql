@@ -37,10 +37,9 @@ query ContactDetailsTab($accountListId: ID!, $contactId: ID!) {
       lastName
     }
     website
-    sendNewsletter
-    greeting
     #TODO add Magazine
     ...ContactPeople
     ...ContactOther
+    ...ContactMailing
   }
 }
