@@ -1,10 +1,5 @@
-export type Filter = {
-  title: string;
-  type: string;
-  options: FilterOption[];
-};
+import { ContactFiltersQuery } from '../../Contacts/ContactFilters/ContactFilters.generated';
 
-export type FilterOption = {
-  id: string | null;
-  name: string;
-};
+export type FilterGroup = ContactFiltersQuery['contactFilters'][0];
+export type Filter = FilterGroup['filters'][0];
+export type FilterOption = Filter['options'][0];
