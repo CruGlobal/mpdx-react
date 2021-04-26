@@ -17,8 +17,7 @@ import { ArrowBackIos, ArrowForwardIos } from '@material-ui/icons';
 import { isArray } from 'lodash';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ContactFilterGroup } from '../../../../graphql/types.generated';
-import { Filter } from '../../Shared/Filters/Filter';
+import { Filter, FilterGroup } from '../../Shared/Filters/Filter';
 import { FilterListItem } from '../../Shared/Filters/FilterListItem';
 import { FilterListItemShowAll } from '../../Shared/Filters/FilterListItemShowAll';
 import { useContactFiltersQuery } from './ContactFilters.generated';
@@ -58,7 +57,7 @@ export const ContactFilters: React.FC<Props & BoxProps> = ({
     variables: { accountListId },
   });
 
-  const [selectedGroup, showGroup] = useState<null | ContactFilterGroup>(null);
+  const [selectedGroup, showGroup] = useState<FilterGroup | null>();
   const [selectedFilters, setSelectedFilters] = useState<{
     [name: string]: any;
   }>({});
@@ -77,9 +76,9 @@ export const ContactFilters: React.FC<Props & BoxProps> = ({
       });
   };
 
-  const getSelectedFilters = (group: ContactFilterGroup) =>
+  const getSelectedFilters = (group: FilterGroup) =>
     group.filters.filter((value) => selectedFilters[value.name]);
-  const isGroupVisible = (group: ContactFilterGroup) =>
+  const isGroupVisible = (group: FilterGroup) =>
     group.alwaysVisible || getSelectedFilters(group).length > 0;
 
   return (
@@ -143,7 +142,7 @@ export const ContactFilters: React.FC<Props & BoxProps> = ({
                 </ListItem>
               ) : (
                 <>
-                  {data?.contactFilters?.map((group: ContactFilterGroup) => (
+                  {data?.contactFilters?.map((group) => (
                     <Collapse
                       key={group.id}
                       in={showAll || isGroupVisible(group)}
@@ -158,9 +157,8 @@ export const ContactFilters: React.FC<Props & BoxProps> = ({
                       </ListItem>
                     </Collapse>
                   ))}
-                  {data?.contactFilters?.some(
-                    (g: ContactFilterGroup) => !isGroupVisible(g),
-                  ) === true ? (
+                  {data?.contactFilters?.some((g) => !isGroupVisible(g)) ===
+                  true ? (
                     <FilterListItemShowAll
                       showAll={showAll}
                       onToggle={() => setShowAll(!showAll)}
