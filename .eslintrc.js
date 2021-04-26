@@ -49,6 +49,9 @@ module.exports = {
       rules: {
         'import/no-anonymous-default-export': 'off',
         '@typescript-eslint/no-empty-function': 'off',
+        'jsx-a11y/anchor-is-valid': 'off',
+        'jsx-a11y/click-events-have-key-events': 'off',
+        'jsx-a11y/no-static-element-interactions': 'off',
       },
     },
     {
