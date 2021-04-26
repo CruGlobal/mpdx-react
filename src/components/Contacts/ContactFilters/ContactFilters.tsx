@@ -59,11 +59,13 @@ export const ContactFilters: React.FC<Props & BoxProps> = ({
   });
 
   const [selectedGroup, showGroup] = useState<null | ContactFilterGroup>(null);
-  const [selectedFilters, setSelectedFilters] = useState({});
+  const [selectedFilters, setSelectedFilters] = useState<{
+    [name: string]: any;
+  }>({});
   const [showAll, setShowAll] = useState(false);
 
-  const updateSelectedFilter = (name: string, value) => {
-    if (value && !(isArray(value) && value.length == 0))
+  const updateSelectedFilter = (name: string, value: any) => {
+    if (value && !(isArray(value) && value.length === 0))
       setSelectedFilters((prev) => {
         return { ...prev, [name]: value };
       });
@@ -110,7 +112,7 @@ export const ContactFilters: React.FC<Props & BoxProps> = ({
               <LinkButton
                 color="primary"
                 style={{ marginInlineStart: theme.spacing(2) }}
-                disabled={Object.keys(selectedFilters).length == 0}
+                disabled={Object.keys(selectedFilters).length === 0}
                 onClick={() => setSelectedFilters({})}
               >
                 {t('Clear All')}
@@ -132,7 +134,7 @@ export const ContactFilters: React.FC<Props & BoxProps> = ({
                 <ListItem data-testid="LoadingState">
                   <CircularProgress />
                 </ListItem>
-              ) : data?.contactFilters?.length == 0 ? (
+              ) : data?.contactFilters?.length === 0 ? (
                 <ListItem data-testid="NoFiltersState">
                   <ListItemText
                     primary={t('No Contact Filters Found')}
@@ -158,7 +160,7 @@ export const ContactFilters: React.FC<Props & BoxProps> = ({
                   ))}
                   {data?.contactFilters?.some(
                     (g: ContactFilterGroup) => !isGroupVisible(g),
-                  ) == true ? (
+                  ) === true ? (
                     <FilterListItemShowAll
                       showAll={showAll}
                       onToggle={() => setShowAll(!showAll)}
@@ -169,12 +171,7 @@ export const ContactFilters: React.FC<Props & BoxProps> = ({
             </FilterList>
           </div>
         </Slide>
-        <Slide
-          in={selectedGroup != null}
-          direction="left"
-          mountOnEnter
-          unmountOnExit
-        >
+        <Slide in={!!selectedGroup} direction="left" mountOnEnter unmountOnExit>
           <div>
             <FilterHeader>
               <IconButton

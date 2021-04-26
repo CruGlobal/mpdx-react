@@ -21,12 +21,12 @@ export const FilterListItemMultiselect: React.FC<Props> = ({
 }: Props) => {
   const isChecked = (value: string) =>
     isArray(selected)
-      ? selected.findIndex((it) => it == value) != -1
-      : selected == value;
+      ? selected.findIndex((it) => it === value) !== -1
+      : selected === value;
 
   const toggleValue = (value: string) => {
     if (isChecked(value)) {
-      onUpdate(isArray(selected) ? selected.filter((it) => it != value) : []);
+      onUpdate(isArray(selected) ? selected.filter((it) => it !== value) : []);
     } else {
       onUpdate(isArray(selected) ? [...selected, value] : [value]);
     }

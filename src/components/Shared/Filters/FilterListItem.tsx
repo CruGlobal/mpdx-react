@@ -18,27 +18,27 @@ export const FilterListItem: React.FC<Props> = ({
   value,
   onUpdate,
 }: Props) => {
-  return filter.type == 'text' ? (
+  return filter.type === 'text' ? (
     <FilterListItemTextField
       filter={filter}
       value={value}
       onUpdate={onUpdate}
     />
-  ) : filter.type == 'radio' ? (
+  ) : filter.type === 'radio' ? (
     <FilterListItemSelect filter={filter} value={value} onUpdate={onUpdate} />
-  ) : filter.type == 'multiselect' ? (
+  ) : filter.type === 'multiselect' ? (
     <FilterListItemMultiselect
       filter={filter}
       selected={value}
       onUpdate={onUpdate}
     />
-  ) : filter.type == 'daterange' ? (
+  ) : filter.type === 'daterange' ? (
     <FilterListItemDateRange
       filter={filter}
       value={value}
       onUpdate={onUpdate}
     />
-  ) : filter.type == 'single_checkbox' ? (
+  ) : filter.type === 'single_checkbox' ? (
     <FilterListItemCheckbox filter={filter} value={value} onUpdate={onUpdate} />
   ) : (
     <ListItem>
