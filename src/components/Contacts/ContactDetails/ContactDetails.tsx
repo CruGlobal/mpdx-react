@@ -3,6 +3,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import theme from '../../../theme';
 import { ContactDetailsHeader } from './ContactDetailsHeader/ContactDetailsHeader';
+import { ContactTasksTab } from './ContactTasksTab/ContactTasksTab';
 
 interface Props {
   accountListId: string;
@@ -71,7 +72,10 @@ export const ContactDetails: React.FC<Props> = ({
           onChange={handleChange}
           TabIndicatorProps={{ children: <span /> }}
         >
-          <ContactTab label={t('Tasks')} />
+          <ContactTasksTab
+            accountListId={accountListId}
+            contactId={contactId}
+          />
           <ContactTab label={t('Donations')} />
           <ContactTab label={t('Referrals')} />
           <ContactTab label={t('Contact Details')} />
