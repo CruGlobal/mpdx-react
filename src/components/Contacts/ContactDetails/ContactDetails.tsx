@@ -1,4 +1,5 @@
-import { Box, styled, Tab, Tabs } from '@material-ui/core';
+import { Box, styled, Tab } from '@material-ui/core';
+import { TabContext, TabList, TabPanel } from '@material-ui/lab';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import theme from '../../../theme';
@@ -21,7 +22,7 @@ const ContactTabsWrapper = styled(Box)(({}) => ({
   borderBottom: '1px solid #DCDCDC',
 }));
 
-const ContactTabs = styled(Tabs)(({}) => ({
+const ContactTabs = styled(TabList)(({}) => ({
   width: '100%',
   minHeight: 40,
   indicator: {
@@ -50,11 +51,11 @@ export const ContactDetails: React.FC<Props> = ({
 }: Props) => {
   const { t } = useTranslation();
 
-  const [selectedTabIndex, setSelectedTabIndex] = React.useState(0);
+  const [selectedTabIndex, setSelectedTabIndex] = React.useState('0');
 
   const handleChange = (
     _event: React.ChangeEvent<Record<string, unknown>>,
-    newIndex: number,
+    newIndex: string,
   ) => {
     setSelectedTabIndex(newIndex);
   };
@@ -65,19 +66,25 @@ export const ContactDetails: React.FC<Props> = ({
         accountListId={accountListId}
         contactId={contactId}
       />
-      <ContactTabsWrapper>
-        <ContactTabs
-          value={selectedTabIndex}
-          onChange={handleChange}
-          TabIndicatorProps={{ children: <span /> }}
-        >
-          <ContactTab label={t('Tasks')} />
-          <ContactTab label={t('Donations')} />
-          <ContactTab label={t('Referrals')} />
-          <ContactTab label={t('Contact Details')} />
-          <ContactTab label={t('Notes')} />
-        </ContactTabs>
-      </ContactTabsWrapper>
+      <TabContext value={selectedTabIndex}>
+        <ContactTabsWrapper>
+          <ContactTabs
+            onChange={handleChange}
+            TabIndicatorProps={{ children: <span /> }}
+          >
+            <ContactTab value="0" label={t('Tasks')} />
+            <ContactTab value="1" label={t('Donations')} />
+            <ContactTab value="2" label={t('Referrals')} />
+            <ContactTab value="3" label={t('Contact Details')} />
+            <ContactTab value="4" label={t('Notes')} />
+          </ContactTabs>
+        </ContactTabsWrapper>
+        <TabPanel value="0">{t('Tasks')}</TabPanel>
+        <TabPanel value="1">{t('Donations')}</TabPanel>
+        <TabPanel value="2">{t('Referrals')}</TabPanel>
+        <TabPanel value="3">{t('Contact Details')}</TabPanel>
+        <TabPanel value="4">{t('Notes')}</TabPanel>
+      </TabContext>
     </ContactDetailsWrapper>
   );
 };
