@@ -28,7 +28,6 @@ describe('HandoffLink', () => {
         }}
       >
         <HandoffLink path="/contacts">
-          {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
           <a>Link</a>
         </HandoffLink>
       </TestWrapper>,
@@ -48,7 +47,6 @@ describe('HandoffLink', () => {
   it('default auth', async () => {
     const { getByRole } = render(
       <HandoffLink path="/contacts" auth>
-        {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
         <a>Link</a>
       </HandoffLink>,
     );
@@ -68,7 +66,6 @@ describe('HandoffLink', () => {
     const handleClick = jest.fn((e) => e.preventDefault());
     const { getByRole } = render(
       <HandoffLink path="/contacts">
-        {/* eslint-disable-next-line jsx-a11y/anchor-is-valid, jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
         <a onClick={handleClick}>Link</a>
       </HandoffLink>,
     );
@@ -86,9 +83,7 @@ describe('HandoffLink', () => {
     expect(() =>
       render(
         <HandoffLink path="/contacts">
-          {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
           <a>Link</a>
-          {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
           <a>Link</a>
         </HandoffLink>,
       ),
@@ -110,7 +105,6 @@ describe('HandoffLink', () => {
     it('changes base URL', () => {
       const { getByRole } = render(
         <HandoffLink path="/contacts">
-          {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
           <a>Link</a>
         </HandoffLink>,
       );
@@ -123,7 +117,6 @@ describe('HandoffLink', () => {
     it('default auth', async () => {
       const { getByRole } = render(
         <HandoffLink path="/contacts" auth>
-          {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
           <a>Link</a>
         </HandoffLink>,
       );
