@@ -28,7 +28,7 @@ const NavMenu = (): ReactElement => {
   return (
     <>
       {state.accountListId ? (
-        <Grid container alignItems="center" xs="auto" md={6}>
+        <Grid container item alignItems="center" xs="auto" md={6}>
           <Grid item className={classes.navListItem}>
             <NextLink
               href="/accountLists/[accountListId]"
