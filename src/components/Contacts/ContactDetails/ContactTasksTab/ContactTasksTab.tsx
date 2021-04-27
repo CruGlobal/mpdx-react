@@ -64,11 +64,21 @@ const TaskButtonText = styled(Typography)(({}) => ({
   color: '#2196F3',
 }));
 
-const PlaceholderSearchBar = styled(Box)(({}) => ({}));
+const PlaceholderSearchBar = styled(Box)(({ theme }) => ({
+  height: 40,
+  width: 192,
+  margin: theme.spacing(2),
+  backgroundColor: '#F4F4F4',
+}));
 
 const Spacer = styled(Box)(({}) => ({ flex: 1 }));
 
-const PlaceholderActionBar = styled(Box)(({}) => ({}));
+const PlaceholderActionBar = styled(Box)(({ theme }) => ({
+  height: 40,
+  width: 111,
+  margin: theme.spacing(2),
+  backgroundColor: '#F4F4F4',
+}));
 
 const StarButtonWrap = styled(Box)(({ theme }) => ({
   marginLeft: theme.spacing(4),
@@ -114,71 +124,6 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
         </HeaderRow>
       </ContactTasksHeaderContainer>
       <Divider />
-      {/*
-      <ContactDetailSectionContainer>
-        <ContactDetailHeadingContainer>
-          <ContactDetailHeadingText variant="h6">
-            {loading || !data ? t('Loading') : data.contact.name}
-          </ContactDetailHeadingText>
-          <ContactDetailHeadingIcon />
-        </ContactDetailHeadingContainer>
-        {loading ? (
-          <>
-            <ContactDetailLoadingPlaceHolder variant="rect" />
-            <ContactDetailLoadingPlaceHolder variant="rect" />
-            <ContactDetailLoadingPlaceHolder variant="rect" />
-          </>
-        ) : (
-          <></>
-        )}
-      </ContactDetailSectionContainer>
-      <Divider />
-      {
-        // Mailing Section
-      }
-      <ContactDetailSectionContainer>
-        <ContactDetailHeadingContainer>
-          <ContactDetailHeadingText variant="h6">
-            {t('Mailing')}
-          </ContactDetailHeadingText>
-          <ContactDetailHeadingIcon />
-        </ContactDetailHeadingContainer>
-        {loading ? (
-          <>
-            <ContactDetailLoadingPlaceHolder variant="rect" />
-            <ContactDetailLoadingPlaceHolder variant="rect" />
-            <ContactDetailLoadingPlaceHolder variant="rect" />
-          </>
-        ) : (
-          <></>
-        )}
-      </ContactDetailSectionContainer>
-      <Divider />
-      {
-        // other Section
-      }
-      <ContactDetailSectionContainer>
-        <ContactDetailHeadingContainer>
-          <ContactDetailHeadingText variant="h6">
-            {t('Other')}
-          </ContactDetailHeadingText>
-          <ContactDetailHeadingIcon />
-        </ContactDetailHeadingContainer>
-        {loading ? (
-          <>
-            <ContactDetailLoadingPlaceHolder variant="rect" />
-            <ContactDetailLoadingPlaceHolder variant="rect" />
-            <ContactDetailLoadingPlaceHolder variant="rect" />
-          </>
-        ) : (
-          <></>
-        )}
-      </ContactDetailSectionContainer>
-      <Divider />
-      <ContactDeleteButton variant="outlined" color="default">
-        {t('delete contact')}
-      </ContactDeleteButton>
-      */}
     </ContactDetailsTabContainer>
   );
 };
