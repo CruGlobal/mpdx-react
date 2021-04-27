@@ -1,5 +1,12 @@
 import { Box, Button, Divider, styled, Typography } from '@material-ui/core';
-import { CheckBox, Create } from '@material-ui/icons';
+import {
+  Add,
+  CheckBox,
+  CheckCircle,
+  CheckCircleOutline,
+  Create,
+  PlusOneOutlined,
+} from '@material-ui/icons';
 import { Skeleton } from '@material-ui/lab';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -18,16 +25,44 @@ const ContactTasksHeaderContainer = styled(Box)(({}) => ({
   flexDirection: 'column',
 }));
 
-const HeaderRow = styled(Box)(({}) => ({
+const HeaderRow = styled(Box)(({ theme }) => ({
   display: 'flex',
   flexDirection: 'row',
+  alignItems: 'center',
+  margin: theme.spacing(1),
 }));
 
 const TasksTitle = styled(Typography)(({ theme }) => ({
-  margin: theme.spacing(0),
+  fontSize: 32,
+  color: theme.palette.text.primary,
 }));
 
-const TaskButton = styled(Button)(({}) => ({}));
+const TaskButton = styled(Button)(({ theme }) => ({
+  margin: theme.spacing(1),
+}));
+
+const AddTaskButtonIcon = styled(Add)(({ theme }) => ({
+  width: 20,
+  height: 20,
+  fontWeight: 600,
+  margin: theme.spacing(0.5),
+  color: '#2196F3',
+}));
+
+const LogTaskButtonIcon = styled(CheckCircleOutline)(({ theme }) => ({
+  width: 20,
+  height: 20,
+  fontWeight: 600,
+  margin: theme.spacing(0.5),
+  color: '#2196F3',
+}));
+
+const TaskButtonText = styled(Typography)(({}) => ({
+  fontSize: 14,
+  fontWeight: 600,
+  letterSpacing: 1.25,
+  color: '#2196F3',
+}));
 
 const PlaceholderSearchBar = styled(Box)(({}) => ({}));
 
@@ -59,10 +94,16 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
     <ContactDetailsTabContainer>
       <ContactTasksHeaderContainer>
         <HeaderRow>
-          <TasksTitle>Tasks</TasksTitle>
+          <TasksTitle>{t('Tasks')}</TasksTitle>
           <Spacer />
-          <TaskButton>ADD TASK</TaskButton>
-          <TaskButton>LOG TASK</TaskButton>
+          <TaskButton>
+            <AddTaskButtonIcon />
+            <TaskButtonText>{t('add task').toLocaleUpperCase()}</TaskButtonText>
+          </TaskButton>
+          <TaskButton>
+            <LogTaskButtonIcon />
+            <TaskButtonText>{t('log task').toLocaleUpperCase()}</TaskButtonText>
+          </TaskButton>
         </HeaderRow>
         <HeaderRow>
           <ContactCheckBox />
