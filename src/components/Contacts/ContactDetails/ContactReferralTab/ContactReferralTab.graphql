@@ -1,11 +1,14 @@
 query ContactReferralTab($accountListId: ID!, $contactId: ID!) {
-  contacts(accountListId: $accountListId, referrerIds: [$contactId]) {
-    nodes {
-      id
-      name
-      contactReferralsToMe {
-        nodes {
-          createdAt
+  contact(accountListId: $accountListId, id: $contactId) {
+    id
+    name
+    contactReferralsByMe {
+      nodes {
+        id
+        createdAt
+        referredTo {
+          id
+          name
         }
       }
     }

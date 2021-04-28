@@ -56,13 +56,11 @@ export const ContactReferralTab: React.FC<ContactReferralTabProps> = ({
               </TableRow>
             </TableHead>
             <TableBody>
-              {data?.contacts ? (
-                data?.contacts.nodes.map((contact) => (
-                  <TableRow key={contact.id}>
-                    <TableCell>{contact.name}</TableCell>
-                    <TableCell>
-                      {contact.contactReferralsToMe.nodes[0]?.createdAt ?? ''}
-                    </TableCell>
+              {data?.contact ? (
+                data?.contact.contactReferralsByMe.nodes.map((referral) => (
+                  <TableRow key={referral.id}>
+                    <TableCell>{referral.referredTo.name}</TableCell>
+                    <TableCell>{referral.createdAt ?? ''}</TableCell>
                   </TableRow>
                 ))
               ) : (
