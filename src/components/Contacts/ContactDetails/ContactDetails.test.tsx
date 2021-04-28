@@ -1,4 +1,5 @@
 import { render } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
 import { ContactDetails } from './ContactDetails';
@@ -47,5 +48,20 @@ describe('ContactDetails', () => {
     expect(await findByText('Fname Lname')).toBeVisible();
 
     expect(queryByTestId('Skeleton')).toBeNull();
+  });
+  it('should change tab', async () => {
+    const { getByRole } = render(
+      <GqlMockedProvider>
+        <ContactDetails
+          accountListId={accountListId}
+          contactId={contactId}
+          onClose={onClose}
+        />
+      </GqlMockedProvider>,
+    );
+    const tasksPanel = getByRole('tabpanel', { name: 'Tasks' });
+    expect(tasksPanel).toBeVisible();
+    userEvent.click(getByRole('tab', { name: 'Donations' }));
+    expect(tasksPanel).not.toBeVisible();
   });
 });

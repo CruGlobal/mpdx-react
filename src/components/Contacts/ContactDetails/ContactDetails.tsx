@@ -46,19 +46,27 @@ const ContactTab = styled(Tab)(({}) => ({
   '&:hover': { opacity: 1 },
 }));
 
+enum TabKey {
+  Tasks = 'Tasks',
+  Donations = 'Donations',
+  Referrals = 'Referrals',
+  ContactDetails = 'ContactDetails',
+  Notes = 'Notes',
+}
+
 export const ContactDetails: React.FC<Props> = ({
   accountListId,
   contactId,
 }: Props) => {
   const { t } = useTranslation();
 
-  const [selectedTabIndex, setSelectedTabIndex] = React.useState('0');
+  const [selectedTabKey, setSelectedTabKey] = React.useState(TabKey.Tasks);
 
   const handleChange = (
     _event: React.ChangeEvent<Record<string, unknown>>,
-    newIndex: string,
+    newKey: TabKey,
   ) => {
-    setSelectedTabIndex(newIndex);
+    setSelectedTabKey(newKey);
   };
 
   return (
@@ -67,29 +75,33 @@ export const ContactDetails: React.FC<Props> = ({
         accountListId={accountListId}
         contactId={contactId}
       />
-      <TabContext value={selectedTabIndex}>
+      <TabContext value={selectedTabKey}>
         <ContactTabsWrapper>
           <ContactTabs
             onChange={handleChange}
             TabIndicatorProps={{ children: <span /> }}
           >
-            <ContactTab value="0" label={t('Tasks')} />
-            <ContactTab value="1" label={t('Donations')} />
-            <ContactTab value="2" label={t('Referrals')} />
-            <ContactTab value="3" label={t('Contact Details')} />
-            <ContactTab value="4" label={t('Notes')} />
+            <ContactTab value={TabKey.Tasks} label={t('Tasks')} />
+            <ContactTab value={TabKey.Donations} label={t('Donations')} />
+            <ContactTab value={TabKey.Referrals} label={t('Referrals')} />
+            <ContactTab
+              value={TabKey.ContactDetails}
+              label={t('Contact Details')}
+            />
+            <ContactTab value={TabKey.Notes} label={t('Notes')} />
           </ContactTabs>
         </ContactTabsWrapper>
-        <TabPanel value="0">{t('Tasks')}</TabPanel>
-        <TabPanel value="1">{t('Donations')}</TabPanel>
-        <TabPanel value="2">{t('Referrals')}</TabPanel>
-        <TabPanel value="3">
+
+        <TabPanel value={TabKey.Tasks}>{t('Tasks')}</TabPanel>
+        <TabPanel value={TabKey.Donations}>{t('Donations')}</TabPanel>
+        <TabPanel value={TabKey.Referrals}>{t('Referrals')}</TabPanel>
+        <TabPanel value={TabKey.ContactDetails}>
           <ContactDetailsTab
             accountListId={accountListId}
             contactId={contactId}
           />
         </TabPanel>
-        <TabPanel value="4">{t('Notes')}</TabPanel>
+        <TabPanel value={TabKey.Notes}>{t('Notes')}</TabPanel>
       </TabContext>
     </ContactDetailsWrapper>
   );
