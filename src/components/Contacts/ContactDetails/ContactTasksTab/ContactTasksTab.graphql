@@ -1,18 +1,7 @@
 query ContactTasksTab($accountListId: ID!, $contactId: ID!) {
   tasks(accountListId: $accountListId, contactIds: [$contactId]) {
     nodes {
-      id
-      activityType
-      comments {
-        totalCount
-      }
-      contacts {
-        nodes {
-          name
-        }
-      }
-      result
-      subject
+      ...ContactTaskRow
     }
     pageInfo {
       endCursor

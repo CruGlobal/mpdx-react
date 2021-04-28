@@ -5,6 +5,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { ContactCheckBox } from '../../ContactCheckBox/ContactCheckBox';
 import { StarContactIcon } from '../../StarContactIcon/StarContactIcon';
+import { ContactTaskRow } from '../ContactTaskRow/ContactTaskRow';
 import { useContactTasksTabQuery } from './ContactTasksTab.generated';
 
 const ContactDetailsTabContainer = styled(Box)(() => ({
@@ -121,8 +122,8 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
         {loading || !data ? (
           <ContactTasksLoadingPlaceHolder variant="rect" />
         ) : (
-          data.tasks.nodes.map((item) => (
-            <Typography key={item.id}>{item.subject}</Typography>
+          data.tasks.nodes.map((task) => (
+            <ContactTaskRow key={task.id} task={task} />
           ))
         )}
       </Box>
