@@ -1,19 +1,11 @@
 import { Box, Button, Divider, styled, Typography } from '@material-ui/core';
-import {
-  Add,
-  CheckBox,
-  CheckCircle,
-  CheckCircleOutline,
-  Create,
-  PlusOneOutlined,
-} from '@material-ui/icons';
+import { Add, CheckCircleOutline } from '@material-ui/icons';
 import { Skeleton } from '@material-ui/lab';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { ContactCheckBox } from '../../ContactCheckBox/ContactCheckBox';
 import { StarContactIcon } from '../../StarContactIcon/StarContactIcon';
-//import { useContactDetailsTabQuery } from './ContactDetailsTab.generated';
-//import { ContactTags } from './Tags/ContactTags';
+import { useContactTasksTabQuery } from './ContactTasksTab.generated';
 
 const ContactDetailsTabContainer = styled(Box)(() => ({
   width: '100%',
@@ -80,9 +72,10 @@ const PlaceholderActionBar = styled(Box)(({ theme }) => ({
   backgroundColor: '#F4F4F4',
 }));
 
-const StarButtonWrap = styled(Box)(({ theme }) => ({
-  marginLeft: theme.spacing(4),
-  marginRight: theme.spacing(1),
+const ContactTasksLoadingPlaceHolder = styled(Skeleton)(({ theme }) => ({
+  width: '100%',
+  height: '24px',
+  margin: theme.spacing(2, 0),
 }));
 
 interface ContactTasksTabProps {
@@ -94,9 +87,9 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
   accountListId,
   contactId,
 }) => {
-  /*const { data, loading } = useContactDetailsTabQuery({
+  const { data, loading } = useContactTasksTabQuery({
     variables: { accountListId, contactId },
-  });*/
+  });
 
   const { t } = useTranslation();
 
@@ -124,6 +117,15 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
         </HeaderRow>
       </ContactTasksHeaderContainer>
       <Divider />
+      <Box>
+        {loading || !data ? (
+          <ContactTasksLoadingPlaceHolder variant="rect" />
+        ) : (
+          data.tasks.nodes.map((item) => (
+            <Typography key={item.id}>{item.subject}</Typography>
+          ))
+        )}
+      </Box>
     </ContactDetailsTabContainer>
   );
 };
