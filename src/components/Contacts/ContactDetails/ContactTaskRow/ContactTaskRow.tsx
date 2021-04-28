@@ -8,6 +8,7 @@ import { StarContactIcon } from '../../StarContactIcon/StarContactIcon';
 import { ContactTaskRowFragment } from './ContactTaskRow.generated';
 import { TaskCommentsButton } from './TaskCommentsButton/TaskCommentsButton';
 import { TaskCompleteButton } from './TaskCompleteButton/TaskCompleteButton';
+import { TaskDueDate } from './TaskDueDate/TaskDueDate';
 
 const TaskRowWrap = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -33,7 +34,7 @@ const Spacer = styled(Box)(({}) => ({ flex: 1 }));
 const ContactName = styled(Typography)(({ theme }) => ({
   fontSize: 14,
   color: theme.palette.text.primary,
-  marginLeft: theme.spacing(0.5),
+  maring: theme.spacing(1),
 }));
 
 const StarIconWrap = styled(Box)(({ theme }) => ({
@@ -131,6 +132,7 @@ export const ContactTaskRow: React.FC<ContactTaskRowProps> = ({ task }) => {
       <TaskDescription>{task.subject}</TaskDescription>
       <Spacer />
       <ContactName>{contactName}</ContactName>
+      <TaskDueDate isLate={false} isComplete={false} dueDate={new Date()} />
       <TaskCommentsButton
         isComplete={false}
         numberOfComments={task.comments.totalCount}
