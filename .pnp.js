@@ -59,6 +59,8 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@material-ui/icons", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:4.11.2"],
             ["@material-ui/lab", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:4.0.0-alpha.57"],
             ["@material-ui/pickers", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:3.2.10"],
+            ["@mdi/js", "npm:5.9.55"],
+            ["@mdi/react", "npm:1.5.0"],
             ["@next/bundle-analyzer", "npm:10.0.6"],
             ["@react-dnd/invariant", "npm:2.0.0"],
             ["@saeris/apollo-server-vercel", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:0.4.0"],
@@ -8368,6 +8370,24 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             "@types/react",
             "react-dom",
             "react"
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
+      ["@mdi/js", [
+        ["npm:5.9.55", {
+          "packageLocation": "./.yarn/cache/@mdi-js-npm-5.9.55-4a4fcc7bcf-e026acf430.zip/node_modules/@mdi/js/",
+          "packageDependencies": [
+            ["@mdi/js", "npm:5.9.55"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
+      ["@mdi/react", [
+        ["npm:1.5.0", {
+          "packageLocation": "./.yarn/cache/@mdi-react-npm-1.5.0-0686e28c5d-e2c3612d39.zip/node_modules/@mdi/react/",
+          "packageDependencies": [
+            ["@mdi/react", "npm:1.5.0"]
           ],
           "linkType": "HARD",
         }]
@@ -24752,6 +24772,8 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@material-ui/icons", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:4.11.2"],
             ["@material-ui/lab", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:4.0.0-alpha.57"],
             ["@material-ui/pickers", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:3.2.10"],
+            ["@mdi/js", "npm:5.9.55"],
+            ["@mdi/react", "npm:1.5.0"],
             ["@next/bundle-analyzer", "npm:10.0.6"],
             ["@react-dnd/invariant", "npm:2.0.0"],
             ["@saeris/apollo-server-vercel", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:0.4.0"],

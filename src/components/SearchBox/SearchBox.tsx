@@ -3,6 +3,8 @@ import { useTranslation } from 'react-i18next';
 import { PersonAdd } from '@material-ui/icons';
 import { Input } from '@material-ui/core';
 import { makeStyles, Theme } from '@material-ui/core/styles';
+import Icon from '@mdi/react'
+import { mdiAccountSearch } from '@mdi/js';
 
 export interface SearchBoxProps {
   searchTerm: string;
@@ -11,16 +13,28 @@ export interface SearchBoxProps {
 
 const useStyle = makeStyles((theme: Theme) => ({
   searchWrapper: {
-    backgroundColor: '#EBECEC',
+    backgroundColor: theme.palette.common.white,
     color: theme.palette.text.secondary,
+    borderWidth: '2px',
+    borderColor: theme.palette.cruGrayLight.main,
+    borderStyle: 'solid',
     borderRadius: '5px',
-    padding: '16px',
+    padding: '10px 16px',
+    overflow: 'hidden',
   },
   input: {
-    backgroundColor: 'cyan',
-    lineHeight: '20px',
+    backgroundColor: 'transparent',
+    lineHeight: '24px',
     padding: '0',
-    marginLeft: '17px',
+    marginLeft: '16px',
+    fontSize: '16px',
+    width: 'auto',
+    height: 'auto',
+    minWidth: '176px',
+    '&::placeholder': {
+      color: theme.palette.text.secondary,
+      opacity: 1,
+    }
   }
 }));
 
@@ -38,7 +52,13 @@ export const SearchBox: React.FC<SearchBoxProps> = ({
         className: classes.input,
       }}
       disableUnderline={true}
-      startAdornment={<PersonAdd />}
+      startAdornment={
+        <Icon
+          path={mdiAccountSearch}
+          title="Search contacts"
+          size="24px"
+        />
+      }
       value={searchTerm}
       placeholder={t('Search')}
       onChange={(event) => {
