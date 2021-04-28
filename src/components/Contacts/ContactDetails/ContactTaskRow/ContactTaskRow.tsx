@@ -4,7 +4,9 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityTypeEnum } from '../../../../../graphql/types.generated';
 import { ContactCheckBox } from '../../ContactCheckBox/ContactCheckBox';
+import { StarContactIcon } from '../../StarContactIcon/StarContactIcon';
 import { ContactTaskRowFragment } from './ContactTaskRow.generated';
+import { TaskCommentsButton } from './TaskCommentsButton/TaskCommentsButton';
 import { TaskCompleteButton } from './TaskCompleteButton/TaskCompleteButton';
 
 const TaskRowWrap = styled(Box)(({ theme }) => ({
@@ -24,6 +26,18 @@ const TaskDescription = styled(Typography)(({ theme }) => ({
   fontSize: 14,
   color: theme.palette.text.primary,
   marginLeft: theme.spacing(0.5),
+}));
+
+const Spacer = styled(Box)(({}) => ({ flex: 1 }));
+
+const ContactName = styled(Typography)(({ theme }) => ({
+  fontSize: 14,
+  color: theme.palette.text.primary,
+  marginLeft: theme.spacing(0.5),
+}));
+
+const StarIconWrap = styled(Box)(({ theme }) => ({
+  margin: theme.spacing(1),
 }));
 
 const getLocalizedTaskType = (
@@ -100,15 +114,31 @@ export const ContactTaskRow: React.FC<ContactTaskRowProps> = ({ task }) => {
     //trigger complete task flow
   };
 
+  const handleCommentButtonPressed = () => {
+    //navigate to comments list
+  };
+
+  const contactName = task.contacts.nodes[0].name;
+
   return (
     <TaskRowWrap>
-      <ContactCheckBox />
+      <ContactCheckBox onClick={handleContactCheckPressed} />
       <TaskCompleteButton
         isComplete={false}
         onClick={handleCompleteButtonPressed}
       />
       <TaskType>{getLocalizedTaskType(t, task.activityType)}</TaskType>
       <TaskDescription>{task.subject}</TaskDescription>
+      <Spacer />
+      <ContactName>{contactName}</ContactName>
+      <TaskCommentsButton
+        isComplete={false}
+        numberOfComments={task.comments.totalCount}
+        onClick={handleCommentButtonPressed}
+      />
+      <StarIconWrap>
+        <StarContactIcon hasStar={false} />
+      </StarIconWrap>
     </TaskRowWrap>
   );
 };

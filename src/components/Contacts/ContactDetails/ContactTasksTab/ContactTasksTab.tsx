@@ -79,6 +79,10 @@ const ContactTasksLoadingPlaceHolder = styled(Skeleton)(({ theme }) => ({
   margin: theme.spacing(2, 0),
 }));
 
+const StarIconWrap = styled(Box)(({ theme }) => ({
+  margin: theme.spacing(1),
+}));
+
 interface ContactTasksTabProps {
   accountListId: string;
   contactId: string;
@@ -114,7 +118,9 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
           <PlaceholderSearchBar />
           <Spacer />
           <PlaceholderActionBar />
-          <StarContactIcon hasStar={false} />
+          <StarIconWrap>
+            <StarContactIcon hasStar={false} />
+          </StarIconWrap>
         </HeaderRow>
       </ContactTasksHeaderContainer>
       <Divider />

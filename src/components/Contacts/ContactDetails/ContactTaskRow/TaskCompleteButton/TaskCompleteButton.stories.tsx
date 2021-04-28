@@ -7,9 +7,9 @@ export default {
 };
 
 export const Default = (): ReactElement => {
-  return <TaskCompleteButton isComplete={false} />;
+  return <TaskCompleteButton isComplete={false} onClick={() => {}} />;
 };
 
 export const Complete = (): ReactElement => {
-  return <TaskCompleteButton isComplete={true} />;
+  return <TaskCompleteButton isComplete={true} onClick={() => {}} />;
 };

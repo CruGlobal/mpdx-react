@@ -9,8 +9,12 @@ export default {
   component: ContactTaskRow,
 };
 
-export const Default = (): ReactElement => {
-  const task = gqlMock<ContactTaskRowFragment>(ContactRowFragmentDoc);
+const task = gqlMock<ContactTaskRowFragment>(ContactRowFragmentDoc);
 
+export const Default = (): ReactElement => {
+  return <ContactTaskRow task={task} />;
+};
+
+export const Complete = (): ReactElement => {
   return <ContactTaskRow task={task} />;
 };
