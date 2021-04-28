@@ -8,6 +8,7 @@ import {
   ContactCheckBoxState,
 } from '../ContactCheckBox/ContactCheckBox';
 import { StarContactIcon } from '../StarContactIcon/StarContactIcon';
+import { SearchBox } from '../../SearchBox/SearchBox';
 
 interface Props {
   activeFilters: boolean;
@@ -56,13 +57,6 @@ const FilterIcon = styled(FilterList)(({ theme }) => ({
   width: 24,
   height: 24,
   color: theme.palette.primary.dark,
-}));
-const PlaceholderSearchBar = styled(Box)(({ theme }) => ({
-  display: 'inline-block',
-  width: 256,
-  height: 48,
-  margin: theme.spacing(1),
-  backgroundColor: 'red',
 }));
 const ContactsShowingText = styled('p')(({ theme }) => ({
   flexGrow: 4,
@@ -165,8 +159,7 @@ export const ContactsHeader: React.FC<Props> = ({
         </FilterButton>
       </Hidden>
 
-      {/*TODO: Replace this with Search Box: MPDX-6948*/}
-      <PlaceholderSearchBar />
+      <SearchBox searchTerm="" onChange={() => ''} placeholder="Search List" />
       <ContactsShowingText>
         {t('Showing 43', { count: totalContacts })}
       </ContactsShowingText>
