@@ -1,14 +1,14 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { PersonAdd } from '@material-ui/icons';
 import { Input } from '@material-ui/core';
 import { makeStyles, Theme } from '@material-ui/core/styles';
-import Icon from '@mdi/react'
+import Icon from '@mdi/react';
 import { mdiAccountSearch } from '@mdi/js';
 
 export interface SearchBoxProps {
   searchTerm: string;
   onChange: (searchTerm: string) => void;
+  placeholder?: string;
 }
 
 const useStyle = makeStyles((theme: Theme) => ({
@@ -34,13 +34,14 @@ const useStyle = makeStyles((theme: Theme) => ({
     '&::placeholder': {
       color: theme.palette.text.secondary,
       opacity: 1,
-    }
-  }
+    },
+  },
 }));
 
 export const SearchBox: React.FC<SearchBoxProps> = ({
   searchTerm,
   onChange,
+  placeholder,
 }) => {
   const { t } = useTranslation();
   const classes = useStyle();
@@ -53,14 +54,10 @@ export const SearchBox: React.FC<SearchBoxProps> = ({
       }}
       disableUnderline={true}
       startAdornment={
-        <Icon
-          path={mdiAccountSearch}
-          title="Search contacts"
-          size="24px"
-        />
+        <Icon path={mdiAccountSearch} title="Search contacts" size="24px" />
       }
       value={searchTerm}
-      placeholder={t('Search')}
+      placeholder={placeholder ?? t('Search')}
       onChange={(event) => {
         onChange(event.target.value);
       }}
