@@ -98,7 +98,7 @@ describe('ContactFilters', () => {
       },
     };
 
-    const { findAllByRole, queryByText } = render(
+    const { findByTestId, queryByText } = render(
       <ThemeProvider theme={theme}>
         <GqlMockedProvider<ContactsQuery> mocks={mocks}>
           <ContactsTable
@@ -114,7 +114,7 @@ describe('ContactFilters', () => {
 
     await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());
 
-    const row = (await findAllByRole('rowButton'))[0];
+    const row = await findByTestId('rowButton');
 
     userEvent.click(row);
 

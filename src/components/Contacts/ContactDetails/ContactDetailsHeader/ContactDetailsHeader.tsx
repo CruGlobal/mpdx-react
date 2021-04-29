@@ -78,7 +78,7 @@ export const ContactDetailsHeader: React.FC<Props> = ({
         <ContactAvatar src={data?.contact?.avatar || ''} />
         <HeaderBarContactWrap>
           {loading ? (
-            <Box role="Skeleton">
+            <Box data-testid="Skeleton">
               <Skeleton
                 variant="text"
                 style={{
@@ -91,7 +91,7 @@ export const ContactDetailsHeader: React.FC<Props> = ({
             </Box>
           ) : data?.contact ? (
             <>
-              <PrimaryContactName role="ContactName" variant="h5">
+              <PrimaryContactName data-testid="ContactName" variant="h5">
                 {`${data.contact.primaryPerson?.firstName} ${data.contact.primaryPerson?.lastName}`}
               </PrimaryContactName>
               <PrimaryText variant="subtitle1">{` - ${t(
