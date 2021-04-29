@@ -1,7 +1,7 @@
 import { ListItem, ListItemText } from '@material-ui/core';
 import { DatePicker } from '@material-ui/pickers';
 import React from 'react';
-import { DateTime } from 'luxon';
+import { DateTime, Interval } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { Filter } from './Filter';
 
@@ -18,9 +18,7 @@ export const FilterListItemDateRange: React.FC<Props> = ({
 }) => {
   const { t } = useTranslation();
 
-  const [startDate, endDate] = value
-    ?.split('..', 2)
-    ?.map((value) => DateTime.fromISO(value) || null) ?? [null, null];
+  const range = value ? Interval.fromISO(value.replace('..', '/')) : undefined;
   const createRange = (start: DateTime, end: DateTime) =>
     start.toISODate() + '..' + end.toISODate();
 
@@ -37,12 +35,15 @@ export const FilterListItemDateRange: React.FC<Props> = ({
           placeholder={t('Start Date')}
           style={{ marginRight: '8px' }}
           clearable
-          value={startDate}
+          value={range?.start ?? null}
           onChange={(date) =>
             onUpdate(
               !date
                 ? undefined
-                : createRange(date, endDate && endDate > date ? endDate : date),
+                : createRange(
+                    date,
+                    range?.end && range.end > date ? range.end : date,
+                  ),
             )
           }
           format="MM/dd/yyyy"
@@ -51,13 +52,13 @@ export const FilterListItemDateRange: React.FC<Props> = ({
           placeholder={t('End Date')}
           style={{ marginLeft: '8px' }}
           clearable
-          value={endDate}
+          value={range?.end ?? null}
           onChange={(date) =>
             onUpdate(
               !date
                 ? undefined
                 : createRange(
-                    startDate && startDate < date ? startDate : date,
+                    range?.start && range.start < date ? range.start : date,
                     date,
                   ),
             )
