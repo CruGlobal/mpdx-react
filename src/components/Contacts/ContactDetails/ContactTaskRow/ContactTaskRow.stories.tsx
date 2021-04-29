@@ -3,16 +3,23 @@ import { ResultEnum } from '../../../../../graphql/types.generated';
 import { gqlMock } from '../../../../../__tests__/util/graphqlMocking';
 import { ContactRowFragmentDoc } from '../../ContactRow.generated';
 import { ContactTaskRow } from './ContactTaskRow';
-import { ContactTaskRowFragment } from './ContactTaskRow.generated';
+import {
+  ContactTaskRowFragment,
+  ContactTaskRowFragmentDoc,
+} from './ContactTaskRow.generated';
 
 export default {
   title: 'Contacts/Tab/ContactTasksTab/Row',
   component: ContactTaskRow,
 };
 
+const startAt = '2021-04-12';
+const lateStartAt = '2019-10-12';
+
 export const Default = (): ReactElement => {
-  const task = gqlMock<ContactTaskRowFragment>(ContactRowFragmentDoc, {
+  const task = gqlMock<ContactTaskRowFragment>(ContactTaskRowFragmentDoc, {
     mocks: {
+      startAt,
       result: ResultEnum.None,
     },
   });
@@ -21,11 +28,10 @@ export const Default = (): ReactElement => {
 };
 
 export const Complete = (): ReactElement => {
-  const task = gqlMock<ContactTaskRowFragment>(ContactRowFragmentDoc, {
+  const task = gqlMock<ContactTaskRowFragment>(ContactTaskRowFragmentDoc, {
     mocks: {
-      mocks: {
-        result: ResultEnum.Completed,
-      },
+      startAt,
+      result: ResultEnum.Completed,
     },
   });
 
@@ -33,11 +39,10 @@ export const Complete = (): ReactElement => {
 };
 
 export const Late = (): ReactElement => {
-  const task = gqlMock<ContactTaskRowFragment>(ContactRowFragmentDoc, {
+  const task = gqlMock<ContactTaskRowFragment>(ContactTaskRowFragmentDoc, {
     mocks: {
-      mocks: {
-        result: ResultEnum.None,
-      },
+      startAt: lateStartAt,
+      result: ResultEnum.None,
     },
   });
 

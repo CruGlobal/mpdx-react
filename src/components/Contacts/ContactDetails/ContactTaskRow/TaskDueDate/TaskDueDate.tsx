@@ -1,7 +1,7 @@
 import { Button, styled, Theme, Typography } from '@material-ui/core';
 import { CalendarToday } from '@material-ui/icons';
+import { DateTime } from 'luxon';
 import React from 'react';
-import { dayMonthFormat } from '../../../../../lib/intlFormat';
 
 const TaskRowWrap = styled(Button)(({ theme }) => ({
   display: 'flex',
@@ -41,7 +41,7 @@ const DueDate = styled(Typography)(
 interface TaskDueDateProps {
   isLate: boolean;
   isComplete: boolean;
-  dueDate: Date;
+  dueDate: DateTime | null;
 }
 
 export const TaskDueDate: React.FC<TaskDueDateProps> = ({
@@ -49,7 +49,11 @@ export const TaskDueDate: React.FC<TaskDueDateProps> = ({
   isComplete,
   dueDate,
 }) => {
-  const formattedDate = dayMonthFormat(dueDate.getDay(), dueDate.getMonth());
+  if (!dueDate) {
+    return null;
+  }
+
+  const formattedDate = dueDate.toFormat('MMM dd');
 
   return (
     <TaskRowWrap>

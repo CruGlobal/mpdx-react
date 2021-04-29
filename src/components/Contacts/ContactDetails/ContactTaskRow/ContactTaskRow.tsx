@@ -1,8 +1,12 @@
 import { Box, styled, Typography } from '@material-ui/core';
 import { TFunction } from 'i18next';
+import { DateTime } from 'luxon';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityTypeEnum } from '../../../../../graphql/types.generated';
+import {
+  ActivityTypeEnum,
+  ResultEnum,
+} from '../../../../../graphql/types.generated';
 import { ContactCheckBox } from '../../ContactCheckBox/ContactCheckBox';
 import { StarContactIcon } from '../../StarContactIcon/StarContactIcon';
 import { ContactTaskRowFragment } from './ContactTaskRow.generated';
@@ -119,23 +123,31 @@ export const ContactTaskRow: React.FC<ContactTaskRowProps> = ({ task }) => {
     //navigate to comments list
   };
 
-  const contactName = task.contacts?.nodes[0]?.name;
+  const { activityType, contacts, comments, result, startAt, subject } = task;
+
+  const dueDate = (startAt && DateTime.fromISO(startAt)) || null;
+
+  const contactName = contacts?.nodes[0]?.name;
+
+  const isComplete = result === ResultEnum.Completed;
+
+  const isLate = (dueDate && dueDate < DateTime.local()) || false;
 
   return (
     <TaskRowWrap>
       <ContactCheckBox onClick={handleContactCheckPressed} />
       <TaskCompleteButton
-        isComplete={false}
+        isComplete={isComplete}
         onClick={handleCompleteButtonPressed}
       />
-      <TaskType>{getLocalizedTaskType(t, task.activityType)}</TaskType>
-      <TaskDescription>{task.subject}</TaskDescription>
+      <TaskType>{getLocalizedTaskType(t, activityType)}</TaskType>
+      <TaskDescription>{subject}</TaskDescription>
       <Spacer />
       <ContactName>{contactName}</ContactName>
-      <TaskDueDate isLate={false} isComplete={false} dueDate={new Date()} />
+      <TaskDueDate isLate={isLate} isComplete={isComplete} dueDate={dueDate} />
       <TaskCommentsButton
-        isComplete={false}
-        numberOfComments={task.comments?.totalCount}
+        isComplete={isComplete}
+        numberOfComments={comments?.totalCount}
         onClick={handleCommentButtonPressed}
       />
       <StarIconWrap>

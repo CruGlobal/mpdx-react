@@ -1,3 +1,4 @@
+import { DateTime } from 'luxon';
 import React, { ReactElement } from 'react';
 import { TaskDueDate } from './TaskDueDate';
 
@@ -6,7 +7,7 @@ export default {
   component: TaskDueDate,
 };
 
-const dueDate = new Date(2020, 10, 12);
+const dueDate = DateTime.local(2020, 10, 12);
 
 export const Default = (): ReactElement => {
   return <TaskDueDate isLate={false} isComplete={false} dueDate={dueDate} />;
