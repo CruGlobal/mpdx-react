@@ -4,11 +4,8 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import theme from '../../../theme';
 import { ContactDetailsHeader } from './ContactDetailsHeader/ContactDetailsHeader';
-<<<<<<< HEAD
 import { ContactTasksTab } from './ContactTasksTab/ContactTasksTab';
-=======
 import { ContactDetailsTab } from './ContactDetailsTab/ContactDetailsTab';
->>>>>>> origin/main
 
 interface Props {
   accountListId: string;
@@ -79,24 +76,6 @@ export const ContactDetails: React.FC<Props> = ({
         accountListId={accountListId}
         contactId={contactId}
       />
-<<<<<<< HEAD
-      <ContactTabsWrapper>
-        <ContactTabs
-          value={selectedTabIndex}
-          onChange={handleChange}
-          TabIndicatorProps={{ children: <span /> }}
-        >
-          <ContactTasksTab
-            accountListId={accountListId}
-            contactId={contactId}
-          />
-          <ContactTab label={t('Donations')} />
-          <ContactTab label={t('Referrals')} />
-          <ContactTab label={t('Contact Details')} />
-          <ContactTab label={t('Notes')} />
-        </ContactTabs>
-      </ContactTabsWrapper>
-=======
       <TabContext value={selectedTabKey}>
         <ContactTabsWrapper>
           <ContactTabs
@@ -114,7 +93,12 @@ export const ContactDetails: React.FC<Props> = ({
           </ContactTabs>
         </ContactTabsWrapper>
 
-        <TabPanel value={TabKey.Tasks}>{t('Tasks')}</TabPanel>
+        <TabPanel value={TabKey.Tasks}>
+          <ContactTasksTab
+            accountListId={accountListId}
+            contactId={contactId}
+          />
+        </TabPanel>
         <TabPanel value={TabKey.Donations}>{t('Donations')}</TabPanel>
         <TabPanel value={TabKey.Referrals}>{t('Referrals')}</TabPanel>
         <TabPanel value={TabKey.ContactDetails}>
@@ -125,7 +109,6 @@ export const ContactDetails: React.FC<Props> = ({
         </TabPanel>
         <TabPanel value={TabKey.Notes}>{t('Notes')}</TabPanel>
       </TabContext>
->>>>>>> origin/main
     </ContactDetailsWrapper>
   );
 };

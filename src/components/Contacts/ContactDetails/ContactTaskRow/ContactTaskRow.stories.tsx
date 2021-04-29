@@ -1,7 +1,6 @@
 import React, { ReactElement } from 'react';
 import { ResultEnum } from '../../../../../graphql/types.generated';
 import { gqlMock } from '../../../../../__tests__/util/graphqlMocking';
-import { ContactRowFragmentDoc } from '../../ContactRow.generated';
 import { ContactTaskRow } from './ContactTaskRow';
 import {
   ContactTaskRowFragment,
