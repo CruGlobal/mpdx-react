@@ -18,11 +18,9 @@ export const FilterListItemDateRange: React.FC<Props> = ({
 }) => {
   const { t } = useTranslation();
 
-  const [startDate, endDate] = ((value?: string) =>
-    value?.split('..', 2)?.map((value) => DateTime.fromISO(value) || null) ?? [
-      null,
-      null,
-    ])(value);
+  const [startDate, endDate] = value
+    ?.split('..', 2)
+    ?.map((value) => DateTime.fromISO(value) || null) ?? [null, null];
   const createRange = (start: DateTime, end: DateTime) =>
     start.toISODate() + '..' + end.toISODate();
 
