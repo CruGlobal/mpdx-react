@@ -194,7 +194,7 @@ export const ContactFilters: React.FC<Props & BoxProps> = ({
               {selectedGroup?.filters?.map((filter) => (
                 <FilterListItem
                   key={filter.id}
-                  filter={filter as Filter}
+                  filter={filter}
                   value={selectedFilters[filter.name]}
                   onUpdate={(value) => updateSelectedFilter(filter.name, value)}
                 />
