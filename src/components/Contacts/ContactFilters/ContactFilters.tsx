@@ -56,7 +56,7 @@ export const ContactFilters: React.FC<Props & BoxProps> = ({
     variables: { accountListId },
   });
 
-  const [selectedGroup, showGroup] = useState<FilterGroup | null>();
+  const [selectedGroup, showGroup] = useState<FilterGroup>();
   const [selectedFilters, setSelectedFilters] = useState<{
     [name: string]: boolean | string | Array<string>;
   }>({});
@@ -177,7 +177,7 @@ export const ContactFilters: React.FC<Props & BoxProps> = ({
               <IconButton
                 size="small"
                 edge="start"
-                onClick={() => showGroup(null)}
+                onClick={() => showGroup(undefined)}
                 style={{ verticalAlign: 'middle' }}
               >
                 <ArrowBackIos fontSize="small" />
