@@ -179,8 +179,8 @@ const LogNewsletter = ({
         <form onSubmit={handleSubmit} noValidate>
           <LogNewsletterTitle>
             {t('Log Newsletter')}
-            <CloseButton role="closeButton" onClick={handleClose}>
-              <CloseIcon />
+            <CloseButton onClick={handleClose}>
+              <CloseIcon titleAccess={t('Close')} />
             </CloseButton>
           </LogNewsletterTitle>
           <DialogContent dividers>

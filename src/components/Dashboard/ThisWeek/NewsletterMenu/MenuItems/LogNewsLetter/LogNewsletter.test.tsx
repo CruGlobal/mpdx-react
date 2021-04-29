@@ -44,6 +44,33 @@ describe('LogNewsletter', () => {
     expect(queryByText('Log Newsletter')).toBeInTheDocument();
   });
 
+  it('closes menu', () => {
+    const { getByRole } = render(
+      <MuiPickersUtilsProvider utils={LuxonUtils}>
+        <AppProvider
+          initialState={{
+            user: {
+              id: 'user-1',
+              firstName: 'John',
+              lastName: 'Smith',
+            } as User,
+          }}
+        >
+          <SnackbarProvider>
+            <GqlMockedProvider<CreateTaskMutation>>
+              <LogNewsletter
+                accountListId={accountListId}
+                handleClose={handleClose}
+              />
+            </GqlMockedProvider>
+          </SnackbarProvider>
+        </AppProvider>
+      </MuiPickersUtilsProvider>,
+    );
+    userEvent.click(getByRole('button', { name: 'Close' }));
+    expect(handleClose).toHaveBeenCalled();
+  });
+
   describe('Logging Newsletter', () => {
     it('Logs Physical Newsletter', async () => {
       const { getByRole, getByText, findByText } = render(
