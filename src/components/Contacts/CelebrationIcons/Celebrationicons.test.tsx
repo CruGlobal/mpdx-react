@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, within } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import { DateTime } from 'luxon';
 import { gqlMock } from '../../../../__tests__/util/graphqlMocking';
 import { CelebrationIcons } from './CelebrationIcons';
@@ -28,5 +28,6 @@ it('should display ring', () => {
   });
   const { getByRole } = render(<CelebrationIcons contact={mock} />);
 
-  expect(within(getByRole('celebration')).getByRole('cake')).toBeVisible();
+  expect(getByRole('img', { name: 'Cake' })).toBeVisible();
+  expect(getByRole('img', { name: 'Ring' })).toBeVisible();
 });

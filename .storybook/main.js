@@ -15,7 +15,7 @@ module.exports = {
     return config;
   },
   addons: [
-    '@storybook/addon-actions/register',
+    '@storybook/addon-actions',
     '@storybook/addon-viewport/register',
     '@storybook/addon-knobs/register',
     'storybook-addon-i18next/register',
