@@ -12,6 +12,7 @@ import {
 import { Skeleton } from '@material-ui/lab';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { Contact } from '../../../../../graphql/types.generated';
 import { useContactReferralTabQuery } from './ContactReferralTab.generated';
 
 const ContactReferralContainer = styled(Box)(({ theme }) => ({
@@ -41,6 +42,7 @@ export const ContactReferralTab: React.FC<ContactReferralTabProps> = ({
   });
 
   const { t } = useTranslation();
+
   return (
     <ContactReferralContainer>
       {loading ? (
@@ -59,11 +61,13 @@ export const ContactReferralTab: React.FC<ContactReferralTabProps> = ({
               </TableRow>
             </TableHead>
             <TableBody>
-              {data?.contact.contactReferralsByMe.nodes.length > 0 ? (
+              {(data?.contact as Contact)?.contactReferralsByMe.nodes.length >
+              0 ? (
                 data?.contact.contactReferralsByMe.nodes.map((referral) => (
                   <TableRow key={referral.id}>
                     <TableCell>{referral.referredTo.name}</TableCell>
                     <TableCell>{'1/1/1900'}</TableCell>
+                    {/* TODO: add CreatedAt */}
                   </TableRow>
                 ))
               ) : (
