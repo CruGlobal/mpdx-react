@@ -119,7 +119,7 @@ export const ContactTaskRow: React.FC<ContactTaskRowProps> = ({ task }) => {
     //navigate to comments list
   };
 
-  const contactName = task.contacts.nodes[0].name;
+  const contactName = task.contacts?.nodes[0]?.name;
 
   return (
     <TaskRowWrap>
@@ -135,7 +135,7 @@ export const ContactTaskRow: React.FC<ContactTaskRowProps> = ({ task }) => {
       <TaskDueDate isLate={false} isComplete={false} dueDate={new Date()} />
       <TaskCommentsButton
         isComplete={false}
-        numberOfComments={task.comments.totalCount}
+        numberOfComments={task.comments?.totalCount}
         onClick={handleCommentButtonPressed}
       />
       <StarIconWrap>
