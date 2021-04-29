@@ -16,7 +16,7 @@ import {
 import { ArrowBackIos, ArrowForwardIos } from '@material-ui/icons';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Filter, FilterGroup } from '../../Shared/Filters/Filter';
+import { FilterGroup } from '../../Shared/Filters/Filter';
 import { FilterListItem } from '../../Shared/Filters/FilterListItem';
 import { FilterListItemShowAll } from '../../Shared/Filters/FilterListItemShowAll';
 import { useContactFiltersQuery } from './ContactFilters.generated';
