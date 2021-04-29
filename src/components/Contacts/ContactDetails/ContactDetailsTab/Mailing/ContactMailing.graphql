@@ -1,0 +1,11 @@
+fragment ContactMailing on Contact {
+  name
+  primaryAddress {
+    street
+    city
+    state
+    postalCode
+  }
+  greeting
+  sendNewsletter
+}

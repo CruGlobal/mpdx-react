@@ -21,6 +21,8 @@ describe('ContactDetailTab', () => {
         "contactId": "contact-id",
       }
     `);
-    expect(result.current.data?.contact.name).toMatchInlineSnapshot(`"Garden"`);
+    expect(result.current.data?.contact.name).toMatchInlineSnapshot(
+      `"Data Base Restaurant"`,
+    );
   });
 });

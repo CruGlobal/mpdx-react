@@ -2,11 +2,7 @@ import { Box, Link, styled, Typography } from '@material-ui/core';
 import { LocationOn } from '@material-ui/icons';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { ContactDetailsTabQuery } from '../ContactDetailsTab.generated';
-
-const ContactDetailsMailingTitle = styled(Typography)(({ theme }) => ({
-  marginTop: theme.spacing(2),
-}));
+import { ContactMailingFragment } from './ContactMailing.generated';
 
 const ContactDetailsMailingMainContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -15,13 +11,12 @@ const ContactDetailsMailingMainContainer = styled(Box)(({ theme }) => ({
 
 const ContactDetailsMailingIcon = styled(LocationOn)(({ theme }) => ({
   margin: theme.spacing(1),
-  width: '14px',
-  height: '20px',
-  flexGrow: 1,
+  width: '34px',
+  height: '34px',
 }));
 
 const ContactDetailsMailingTexContainer = styled(Box)(({}) => ({
-  flexGrow: 8,
+  flexGrow: 4,
 }));
 
 const ContactDetailsMailingLabelTextContainer = styled(Box)(({}) => ({
@@ -35,17 +30,14 @@ const ContactDetailsMailingLabel = styled(Typography)(({ theme }) => ({
 }));
 
 interface MailingProp {
-  data: ContactDetailsTabQuery;
+  data: ContactMailingFragment;
 }
 
 export const ContactDetailsTabMailing: React.FC<MailingProp> = ({ data }) => {
   const { t } = useTranslation();
-  const { name, primaryAddress, greeting, sendNewsletter } = data.contact;
+  const { name, primaryAddress, greeting, sendNewsletter } = data;
   return (
     <Box>
-      <ContactDetailsMailingTitle variant="h6">
-        {t('Mailing')}
-      </ContactDetailsMailingTitle>
       <ContactDetailsMailingMainContainer>
         <ContactDetailsMailingIcon />
         <ContactDetailsMailingTexContainer>

@@ -53,7 +53,7 @@ export const ContactRow: React.FC<Props> = ({ contact, onContactSelected }) => {
 
   return (
     <Box role="row" style={{ width: '100%' }}>
-      <ContactRowButton role="rowButton" onClick={onClick}>
+      <ContactRowButton data-testid="rowButton" onClick={onClick}>
         <StyledCheckBox color="secondary" />
         <ContactTextWrap>
           <ContactText

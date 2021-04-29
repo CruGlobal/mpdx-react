@@ -75,7 +75,7 @@ const TopBar = (): ReactElement => {
       >
         <Toolbar className={classes.toolbar}>
           <Grid container alignItems="center">
-            <Grid container alignItems="center" xs="auto" md={1}>
+            <Grid container item alignItems="center" xs="auto" md={1}>
               <Grid item className={classes.logoGrid}>
                 <Hidden smDown>
                   <Box className={classes.logo}>
@@ -86,6 +86,7 @@ const TopBar = (): ReactElement => {
             </Grid>
             <NavMenu />
             <Grid
+              item
               xs={12}
               md={state.accountListId ? 5 : 11}
               container

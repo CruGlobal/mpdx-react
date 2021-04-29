@@ -92,8 +92,8 @@ const ExportPhysical: React.FC<Props> = ({
     <>
       <ExportPhysicalTitle>
         {t(isExportingPdf ? 'Pdf of Mail Merged Labels' : 'Export Contacts')}
-        <CloseButton role="closeButton" onClick={handleClose}>
-          <CloseIcon />
+        <CloseButton onClick={handleClose}>
+          <CloseIcon titleAccess={t('Close')} />
         </CloseButton>
       </ExportPhysicalTitle>
       <DialogContent dividers>

@@ -8,6 +8,7 @@ import {
   ContactCheckBoxState,
 } from '../ContactCheckBox/ContactCheckBox';
 import { StarContactIcon } from '../StarContactIcon/StarContactIcon';
+import { SearchBox } from '../../SearchBox/SearchBox';
 
 interface Props {
   activeFilters: boolean;
@@ -56,13 +57,6 @@ const FilterIcon = styled(FilterList)(({ theme }) => ({
   width: 24,
   height: 24,
   color: theme.palette.primary.dark,
-}));
-const PlaceholderSearchBar = styled(Box)(({ theme }) => ({
-  display: 'inline-block',
-  width: 256,
-  height: 48,
-  margin: theme.spacing(1),
-  backgroundColor: 'red',
 }));
 const ContactsShowingText = styled('p')(({ theme }) => ({
   flexGrow: 4,
@@ -157,17 +151,15 @@ export const ContactsHeader: React.FC<Props> = ({
 
       <Hidden xsDown>
         <FilterButton
-          role="FilterButton"
           activeFilters={activeFilters}
           panelOpen={filterPanelOpen}
           onClick={toggleFilterPanel}
         >
-          <FilterIcon />
+          <FilterIcon titleAccess={t('Toggle Filter Panel')} />
         </FilterButton>
       </Hidden>
 
-      {/*TODO: Replace this with Search Box: MPDX-6948*/}
-      <PlaceholderSearchBar />
+      <SearchBox searchTerm="" onChange={() => ''} placeholder="Search List" />
       <ContactsShowingText>
         {t('Showing 43', { count: totalContacts })}
       </ContactsShowingText>
@@ -179,7 +171,6 @@ export const ContactsHeader: React.FC<Props> = ({
 
       <Hidden xsDown>
         <DisplayOptionButtonLeft
-          role="DisplayOptionLeft"
           selected={
             contactsTableDisplayState === ContactsTableDisplayState.list
           }
@@ -187,10 +178,9 @@ export const ContactsHeader: React.FC<Props> = ({
             setContactsTableDisplayState(ContactsTableDisplayState.list)
           }
         >
-          <BulletedListIcon />
+          <BulletedListIcon titleAccess={t('List View')} />
         </DisplayOptionButtonLeft>
         <DisplayOptionButtonRight
-          role="DisplayOptionRight"
           selected={
             contactsTableDisplayState === ContactsTableDisplayState.columns
           }
@@ -198,7 +188,7 @@ export const ContactsHeader: React.FC<Props> = ({
             setContactsTableDisplayState(ContactsTableDisplayState.columns)
           }
         >
-          <ViewColumnIcon />
+          <ViewColumnIcon titleAccess={t('Column Workflow View')} />
         </DisplayOptionButtonRight>
       </Hidden>
 
