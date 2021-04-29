@@ -82,6 +82,10 @@ const LogTextField = styled(TextField)(({ theme }) => ({
   },
 }));
 
+const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
+  margin: theme.spacing(0, 1, 0, 0),
+}));
+
 const taskSchema: yup.SchemaOf<
   Omit<TaskCreateInput, 'result' | 'nextAction'>
 > = yup.object({
@@ -320,12 +324,7 @@ const LogNewsletter = ({
               disabled={!isValid || isSubmitting}
               type="submit"
             >
-              {creating && (
-                <>
-                  <CircularProgress color="primary" size={20} />
-                  &nbsp;
-                </>
-              )}
+              {creating && <LoadingIndicator color="primary" size={20} />}
               {t('Save')}
             </Button>
           </DialogActions>
