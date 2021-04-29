@@ -17,7 +17,9 @@ describe('ContactReferralTab', () => {
       },
     );
     await waitForNextUpdate();
-    expect(result.current.data).toMatchInlineSnapshot(`undefined`);
+    expect(
+      result.current.data?.contact.contactReferralsByMe.nodes.length,
+    ).toMatchInlineSnapshot(`4`);
     expect(result.current.variables).toMatchInlineSnapshot(`
       Object {
         "accountListId": "accountList-id",
