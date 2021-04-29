@@ -246,6 +246,7 @@ const LogNewsletter = ({
                         clearable
                         fullWidth
                         autoOk
+                        data-testid="completedDate"
                         inputVariant="outlined"
                         label={t('Completed Date')}
                         okLabel={t('OK')}
@@ -267,11 +268,12 @@ const LogNewsletter = ({
                       <TimePicker
                         value={completedAt}
                         onChange={(date): void =>
-                          setFieldValue('completed', date)
+                          setFieldValue('completedAt', date)
                         }
                         clearable
                         fullWidth
                         autoOk
+                        data-testid="completedTime"
                         inputVariant="outlined"
                         label={t('Completed Time')}
                         okLabel={t('OK')}
