@@ -16,7 +16,7 @@ export const FilterListItemTextField: React.FC<Props> = ({
   return (
     <ListItem>
       <TextField
-        style={{ flex: '1 1 auto' }}
+        style={{ flex: 'auto' }}
         label={filter.title}
         value={value}
         onChange={(event) => onUpdate(event.target.value)}
