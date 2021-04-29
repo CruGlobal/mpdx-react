@@ -4,8 +4,6 @@ import { SnackbarProvider } from 'notistack';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import LuxonUtils from '@date-io/luxon';
 import userEvent from '@testing-library/user-event';
-import { AppProvider } from '../../../../../App';
-import { User } from '../../../../../../../graphql/types.generated';
 import { GqlMockedProvider } from '../../../../../../../__tests__/util/graphqlMocking';
 import { CreateTaskMutation } from '../../../../../Task/Drawer/Form/TaskDrawer.generated';
 import { CreateTaskCommentMutation } from '../../../../../Task/Drawer/CommentList/Form/CreateTaskComment.generated';
@@ -21,24 +19,14 @@ describe('LogNewsletter', () => {
   it('default', () => {
     const { queryByText } = render(
       <MuiPickersUtilsProvider utils={LuxonUtils}>
-        <AppProvider
-          initialState={{
-            user: {
-              id: 'user-1',
-              firstName: 'John',
-              lastName: 'Smith',
-            } as User,
-          }}
-        >
-          <SnackbarProvider>
-            <GqlMockedProvider<CreateTaskMutation>>
-              <LogNewsletter
-                accountListId={accountListId}
-                handleClose={handleClose}
-              />
-            </GqlMockedProvider>
-          </SnackbarProvider>
-        </AppProvider>
+        <SnackbarProvider>
+          <GqlMockedProvider<CreateTaskMutation>>
+            <LogNewsletter
+              accountListId={accountListId}
+              handleClose={handleClose}
+            />
+          </GqlMockedProvider>
+        </SnackbarProvider>
       </MuiPickersUtilsProvider>,
     );
     expect(queryByText('Log Newsletter')).toBeInTheDocument();
@@ -47,24 +35,14 @@ describe('LogNewsletter', () => {
   it('closes menu', () => {
     const { getByRole } = render(
       <MuiPickersUtilsProvider utils={LuxonUtils}>
-        <AppProvider
-          initialState={{
-            user: {
-              id: 'user-1',
-              firstName: 'John',
-              lastName: 'Smith',
-            } as User,
-          }}
-        >
-          <SnackbarProvider>
-            <GqlMockedProvider<CreateTaskMutation>>
-              <LogNewsletter
-                accountListId={accountListId}
-                handleClose={handleClose}
-              />
-            </GqlMockedProvider>
-          </SnackbarProvider>
-        </AppProvider>
+        <SnackbarProvider>
+          <GqlMockedProvider<CreateTaskMutation>>
+            <LogNewsletter
+              accountListId={accountListId}
+              handleClose={handleClose}
+            />
+          </GqlMockedProvider>
+        </SnackbarProvider>
       </MuiPickersUtilsProvider>,
     );
     userEvent.click(getByRole('button', { name: 'Close' }));
@@ -75,24 +53,14 @@ describe('LogNewsletter', () => {
     it('Logs Physical Newsletter', async () => {
       const { getByRole, getByText, findByText } = render(
         <MuiPickersUtilsProvider utils={LuxonUtils}>
-          <AppProvider
-            initialState={{
-              user: {
-                id: 'user-1',
-                firstName: 'John',
-                lastName: 'Smith',
-              } as User,
-            }}
-          >
-            <SnackbarProvider>
-              <GqlMockedProvider<CreateTaskMutation>>
-                <LogNewsletter
-                  accountListId={accountListId}
-                  handleClose={handleClose}
-                />
-              </GqlMockedProvider>
-            </SnackbarProvider>
-          </AppProvider>
+          <SnackbarProvider>
+            <GqlMockedProvider<CreateTaskMutation>>
+              <LogNewsletter
+                accountListId={accountListId}
+                handleClose={handleClose}
+              />
+            </GqlMockedProvider>
+          </SnackbarProvider>
         </MuiPickersUtilsProvider>,
       );
       expect(getByText('Log Newsletter')).toBeInTheDocument();
@@ -109,24 +77,14 @@ describe('LogNewsletter', () => {
     it('Logs Email Newsletter', async () => {
       const { getByRole, getByText, findByText } = render(
         <MuiPickersUtilsProvider utils={LuxonUtils}>
-          <AppProvider
-            initialState={{
-              user: {
-                id: 'user-1',
-                firstName: 'John',
-                lastName: 'Smith',
-              } as User,
-            }}
-          >
-            <SnackbarProvider>
-              <GqlMockedProvider<CreateTaskMutation>>
-                <LogNewsletter
-                  accountListId={accountListId}
-                  handleClose={handleClose}
-                />
-              </GqlMockedProvider>
-            </SnackbarProvider>
-          </AppProvider>
+          <SnackbarProvider>
+            <GqlMockedProvider<CreateTaskMutation>>
+              <LogNewsletter
+                accountListId={accountListId}
+                handleClose={handleClose}
+              />
+            </GqlMockedProvider>
+          </SnackbarProvider>
         </MuiPickersUtilsProvider>,
       );
       expect(getByText('Log Newsletter')).toBeInTheDocument();
@@ -144,24 +102,14 @@ describe('LogNewsletter', () => {
     it('Logs Newsletter with completedAt date', async () => {
       const { getByRole, getByText, findByText, getByTestId } = render(
         <MuiPickersUtilsProvider utils={LuxonUtils}>
-          <AppProvider
-            initialState={{
-              user: {
-                id: 'user-1',
-                firstName: 'John',
-                lastName: 'Smith',
-              } as User,
-            }}
-          >
-            <SnackbarProvider>
-              <GqlMockedProvider<CreateTaskMutation>>
-                <LogNewsletter
-                  accountListId={accountListId}
-                  handleClose={handleClose}
-                />
-              </GqlMockedProvider>
-            </SnackbarProvider>
-          </AppProvider>
+          <SnackbarProvider>
+            <GqlMockedProvider<CreateTaskMutation>>
+              <LogNewsletter
+                accountListId={accountListId}
+                handleClose={handleClose}
+              />
+            </GqlMockedProvider>
+          </SnackbarProvider>
         </MuiPickersUtilsProvider>,
       );
       expect(getByText('Log Newsletter')).toBeInTheDocument();
@@ -184,26 +132,14 @@ describe('LogNewsletter', () => {
     it('Logs Newsletter with Comment', async () => {
       const { getByRole, getByText, findByText } = render(
         <MuiPickersUtilsProvider utils={LuxonUtils}>
-          <AppProvider
-            initialState={{
-              user: {
-                id: 'user-1',
-                firstName: 'John',
-                lastName: 'Smith',
-              } as User,
-            }}
-          >
-            <SnackbarProvider>
-              <GqlMockedProvider<
-                CreateTaskMutation & CreateTaskCommentMutation
-              >>
-                <LogNewsletter
-                  accountListId={accountListId}
-                  handleClose={handleClose}
-                />
-              </GqlMockedProvider>
-            </SnackbarProvider>
-          </AppProvider>
+          <SnackbarProvider>
+            <GqlMockedProvider<CreateTaskMutation & CreateTaskCommentMutation>>
+              <LogNewsletter
+                accountListId={accountListId}
+                handleClose={handleClose}
+              />
+            </GqlMockedProvider>
+          </SnackbarProvider>
         </MuiPickersUtilsProvider>,
       );
       expect(getByText('Log Newsletter')).toBeInTheDocument();
