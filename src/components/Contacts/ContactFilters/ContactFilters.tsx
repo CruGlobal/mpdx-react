@@ -14,7 +14,6 @@ import {
   useTheme,
 } from '@material-ui/core';
 import { ArrowBackIos, ArrowForwardIos } from '@material-ui/icons';
-import { isArray } from 'lodash';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Filter, FilterGroup } from '../../Shared/Filters/Filter';
@@ -59,12 +58,15 @@ export const ContactFilters: React.FC<Props & BoxProps> = ({
 
   const [selectedGroup, showGroup] = useState<FilterGroup | null>();
   const [selectedFilters, setSelectedFilters] = useState<{
-    [name: string]: any;
+    [name: string]: boolean | string | Array<string>;
   }>({});
   const [showAll, setShowAll] = useState(false);
 
-  const updateSelectedFilter = (name: string, value: any) => {
-    if (value && !(isArray(value) && value.length === 0))
+  const updateSelectedFilter = (
+    name: string,
+    value?: boolean | string | Array<string>,
+  ) => {
+    if (value)
       setSelectedFilters((prev) => {
         return { ...prev, [name]: value };
       });

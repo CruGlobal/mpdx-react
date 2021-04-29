@@ -9,8 +9,8 @@ import { Filter } from './Filter';
 
 interface Props {
   filter: Filter;
-  value;
-  onUpdate: (value) => void;
+  value?: boolean;
+  onUpdate: (value: boolean) => void;
 }
 
 export const FilterListItemCheckbox: React.FC<Props> = ({

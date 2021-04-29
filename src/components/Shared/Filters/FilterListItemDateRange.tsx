@@ -7,8 +7,8 @@ import { Filter } from './Filter';
 
 interface Props {
   filter: Filter;
-  value;
-  onUpdate: (value: string) => void;
+  value?: string;
+  onUpdate: (value?: string) => void;
 }
 
 export const FilterListItemDateRange: React.FC<Props> = ({
@@ -18,7 +18,7 @@ export const FilterListItemDateRange: React.FC<Props> = ({
 }) => {
   const { t } = useTranslation();
 
-  const [startDate, endDate] = ((value: string | null) =>
+  const [startDate, endDate] = ((value?: string) =>
     value?.split('..', 2)?.map((value) => DateTime.fromISO(value) || null) ?? [
       null,
       null,
@@ -43,7 +43,7 @@ export const FilterListItemDateRange: React.FC<Props> = ({
           onChange={(date) =>
             onUpdate(
               !date
-                ? null
+                ? undefined
                 : createRange(date, endDate && endDate > date ? endDate : date),
             )
           }
@@ -57,7 +57,7 @@ export const FilterListItemDateRange: React.FC<Props> = ({
           onChange={(date) =>
             onUpdate(
               !date
-                ? null
+                ? undefined
                 : createRange(
                     startDate && startDate < date ? startDate : date,
                     date,

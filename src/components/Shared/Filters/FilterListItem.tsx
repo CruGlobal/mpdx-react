@@ -9,8 +9,8 @@ import { FilterListItemTextField } from './FilterListItemTextField';
 
 interface Props {
   filter: Filter;
-  value;
-  onUpdate: (value) => void;
+  value?: boolean | string | Array<string>;
+  onUpdate: (value?: boolean | string | Array<string>) => void;
 }
 
 export const FilterListItem: React.FC<Props> = ({
@@ -21,25 +21,33 @@ export const FilterListItem: React.FC<Props> = ({
   return filter.type === 'text' ? (
     <FilterListItemTextField
       filter={filter}
-      value={value}
-      onUpdate={onUpdate}
+      value={value?.toString()}
+      onUpdate={(value) => onUpdate(value)}
     />
   ) : filter.type === 'radio' ? (
-    <FilterListItemSelect filter={filter} value={value} onUpdate={onUpdate} />
+    <FilterListItemSelect
+      filter={filter}
+      value={value?.toString()}
+      onUpdate={onUpdate}
+    />
   ) : filter.type === 'multiselect' ? (
     <FilterListItemMultiselect
       filter={filter}
-      selected={value}
+      selected={Array.isArray(value) ? value : undefined}
       onUpdate={onUpdate}
     />
   ) : filter.type === 'daterange' ? (
     <FilterListItemDateRange
       filter={filter}
-      value={value}
+      value={value?.toString()}
       onUpdate={onUpdate}
     />
   ) : filter.type === 'single_checkbox' ? (
-    <FilterListItemCheckbox filter={filter} value={value} onUpdate={onUpdate} />
+    <FilterListItemCheckbox
+      filter={filter}
+      value={!!value}
+      onUpdate={onUpdate}
+    />
   ) : (
     <ListItem>
       <ListItemText

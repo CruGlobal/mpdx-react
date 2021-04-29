@@ -4,14 +4,13 @@ import {
   ListItemIcon,
   ListItemText,
 } from '@material-ui/core';
-import { isArray } from 'lodash';
 import React from 'react';
 import { Filter } from './Filter';
 
 interface Props {
   filter: Filter;
-  selected;
-  onUpdate: (value) => void;
+  selected?: Array<string>;
+  onUpdate: (value?: Array<string>) => void;
 }
 
 export const FilterListItemMultiselect: React.FC<Props> = ({
@@ -19,16 +18,14 @@ export const FilterListItemMultiselect: React.FC<Props> = ({
   selected,
   onUpdate,
 }: Props) => {
-  const isChecked = (value: string) =>
-    isArray(selected)
-      ? selected.findIndex((it) => it === value) !== -1
-      : selected === value;
+  const isChecked = (value?: string | null) =>
+    selected && selected.some((it) => it === value);
 
-  const toggleValue = (value: string) => {
-    if (isChecked(value)) {
-      onUpdate(isArray(selected) ? selected.filter((it) => it !== value) : []);
+  const toggleValue = (value?: string | null) => {
+    if (value && !isChecked(value)) {
+      onUpdate(selected ? [...selected, value] : [value]);
     } else {
-      onUpdate(isArray(selected) ? [...selected, value] : [value]);
+      onUpdate(selected?.filter((it) => it !== value));
     }
   };
 

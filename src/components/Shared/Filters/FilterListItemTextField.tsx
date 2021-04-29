@@ -4,7 +4,7 @@ import { Filter } from './Filter';
 
 interface Props {
   filter: Filter;
-  value;
+  value?: string;
   onUpdate: (value: string) => void;
 }
 

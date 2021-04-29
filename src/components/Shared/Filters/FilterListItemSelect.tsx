@@ -10,8 +10,8 @@ import { Filter } from './Filter';
 
 interface Props {
   filter: Filter;
-  value;
-  onUpdate: (value) => void;
+  value?: string;
+  onUpdate: (value?: string) => void;
 }
 
 export const FilterListItemSelect: React.FC<Props> = ({
@@ -23,9 +23,12 @@ export const FilterListItemSelect: React.FC<Props> = ({
     <ListItem>
       <FormControl style={{ flex: 'auto' }}>
         <InputLabel>{filter.title}</InputLabel>
-        <Select value={value} onChange={(e) => onUpdate(e.target.value)}>
+        <Select
+          value={value}
+          onChange={(e) => onUpdate(e.target.value as string)}
+        >
           {filter.options.map(({ id, name }) => (
-            <MenuItem key={id} value={id}>
+            <MenuItem key={id} value={id?.toString()}>
               {name}
             </MenuItem>
           ))}
