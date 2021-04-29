@@ -34,7 +34,10 @@ export const ContactReferralTab: React.FC<ContactReferralTabProps> = ({
   contactId,
 }) => {
   const { data, loading } = useContactReferralTabQuery({
-    variables: { accountListId, contactId },
+    variables: {
+      accountListId: accountListId,
+      contactId: contactId,
+    },
   });
 
   const { t } = useTranslation();
@@ -56,11 +59,11 @@ export const ContactReferralTab: React.FC<ContactReferralTabProps> = ({
               </TableRow>
             </TableHead>
             <TableBody>
-              {data?.contact ? (
+              {data?.contact.contactReferralsByMe.nodes.length > 0 ? (
                 data?.contact.contactReferralsByMe.nodes.map((referral) => (
                   <TableRow key={referral.id}>
                     <TableCell>{referral.referredTo.name}</TableCell>
-                    <TableCell>{referral.createdAt ?? ''}</TableCell>
+                    <TableCell>{'1/1/1900'}</TableCell>
                   </TableRow>
                 ))
               ) : (
