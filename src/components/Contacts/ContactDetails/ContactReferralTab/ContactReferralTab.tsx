@@ -13,7 +13,6 @@ import { Skeleton } from '@material-ui/lab';
 import { DateTime } from 'luxon';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Contact } from '../../../../../graphql/types.generated';
 import { useContactReferralTabQuery } from './ContactReferralTab.generated';
 
 const ContactReferralContainer = styled(Box)(({ theme }) => ({
@@ -62,16 +61,18 @@ export const ContactReferralTab: React.FC<ContactReferralTabProps> = ({
               </TableRow>
             </TableHead>
             <TableBody>
-              {(data?.contact as Contact)?.contactReferralsByMe.nodes.length >
-              0 ? (
-                data?.contact.contactReferralsByMe.nodes.map((referral) => (
-                  <TableRow key={referral.id}>
-                    <TableCell>{referral.referredTo.name}</TableCell>
-                    <TableCell>
-                      {DateTime.fromISO(referral.createdAt).toLocaleString()}
-                    </TableCell>
-                  </TableRow>
-                ))
+              {data?.contact &&
+              data.contact.contactReferralsByMe.nodes.length > 0 ? (
+                data?.contact.contactReferralsByMe.nodes.map(
+                  ({ id, referredTo, createdAt }) => (
+                    <TableRow key={id}>
+                      <TableCell>{referredTo.name}</TableCell>
+                      <TableCell>
+                        {DateTime.fromISO(createdAt).toLocaleString()}
+                      </TableCell>
+                    </TableRow>
+                  ),
+                )
               ) : (
                 <TableRow key="no_data">
                   <TableCell>{t('No Referrals')}</TableCell>

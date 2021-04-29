@@ -1,4 +1,4 @@
-/* eslint-disable react/react-in-jsx-scope */
+import React from 'react';
 import { renderHook } from '@testing-library/react-hooks';
 import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
 import { render } from '../../../../../__tests__/util/testingLibraryReactMock';
