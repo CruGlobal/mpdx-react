@@ -10,6 +10,7 @@ import {
   TableRow,
 } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
+import { DateTime } from 'luxon';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Contact } from '../../../../../graphql/types.generated';
@@ -66,8 +67,9 @@ export const ContactReferralTab: React.FC<ContactReferralTabProps> = ({
                 data?.contact.contactReferralsByMe.nodes.map((referral) => (
                   <TableRow key={referral.id}>
                     <TableCell>{referral.referredTo.name}</TableCell>
-                    <TableCell>{'1/1/1900'}</TableCell>
-                    {/* TODO: add CreatedAt */}
+                    <TableCell>
+                      {DateTime.fromISO(referral.createdAt).toLocaleString()}
+                    </TableCell>
                   </TableRow>
                 ))
               ) : (

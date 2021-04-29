@@ -12,7 +12,7 @@ query ContactReferralTab($accountListId: ID!, $contactId: ID!) {
 
 fragment ContactReferral on Referral {
   id
-  # add createdAt after testing and after Tabs are added to Contact Detail
+  createdAt
   referredTo {
     id
     name
