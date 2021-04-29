@@ -159,8 +159,7 @@ export const ContactFilters: React.FC<Props & BoxProps> = ({
                       </ListItem>
                     </Collapse>
                   ))}
-                  {data?.contactFilters?.some((g) => !isGroupVisible(g)) ===
-                  true ? (
+                  {data?.contactFilters?.some((g) => !isGroupVisible(g)) ? (
                     <FilterListItemShowAll
                       showAll={showAll}
                       onToggle={() => setShowAll(!showAll)}
