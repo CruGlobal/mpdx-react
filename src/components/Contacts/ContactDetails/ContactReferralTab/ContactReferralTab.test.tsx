@@ -36,7 +36,20 @@ describe('ContactReferralTab', () => {
     const { findByText } = render(
       <GqlMockedProvider<ContactReferralTabQuery>
         mocks={{
-          contact: { id: 'contact-id' },
+          contact: {
+            id: 'contact-id',
+            name: 'name',
+            contactReferralsByMe: [
+              {
+                id: 'referral-id',
+                createdAt: '2021-04-29T07:48:28+0000',
+                referredTo: {
+                  id: 'contact-id-2',
+                  name: 'name-2',
+                },
+              },
+            ],
+          },
         }}
       >
         <ContactReferralTab
