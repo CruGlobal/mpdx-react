@@ -1,0 +1,17 @@
+query ContactFilters($accountListId: ID!) {
+  contactFilters(accountListId: $accountListId) {
+    id
+    title
+    alwaysVisible
+    filters {
+      id
+      type
+      name
+      title
+      options {
+        id
+        name
+      }
+    }
+  }
+}
