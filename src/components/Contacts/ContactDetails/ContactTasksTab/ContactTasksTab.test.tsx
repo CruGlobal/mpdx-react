@@ -1,12 +1,12 @@
 import { renderHook } from '@testing-library/react-hooks';
 import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
-import { useContactDetailsTabQuery } from './ContactDetailsTab.generated';
+import { useContactTasksTabQuery } from './ContactTasksTab.generated';
 
-describe('ContactDetailTab', () => {
+describe('ContactTasksTab', () => {
   it('test query', async () => {
     const { result, waitForNextUpdate } = renderHook(
       () =>
-        useContactDetailsTabQuery({
+        useContactTasksTabQuery({
           variables: {
             accountListId: 'accountList-id',
             contactId: 'contact-id',
@@ -21,6 +21,8 @@ describe('ContactDetailTab', () => {
         "contactId": "contact-id",
       }
     `);
-    expect(result.current.data?.contact.name).toMatchInlineSnapshot(`"Garden"`);
+    expect(
+      result.current.data?.tasks.nodes[0].contacts.nodes[0].name,
+    ).toMatchInlineSnapshot(`"Bottle Swimming Pool Bed"`);
   });
 });

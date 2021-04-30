@@ -131,8 +131,6 @@ export const ContactTaskRow: React.FC<ContactTaskRowProps> = ({ task }) => {
 
   const isComplete = result === ResultEnum.Completed;
 
-  const isLate = (dueDate && dueDate < DateTime.local()) || false;
-
   return (
     <TaskRowWrap>
       <ContactCheckBox onClick={handleContactCheckPressed} />
@@ -144,7 +142,7 @@ export const ContactTaskRow: React.FC<ContactTaskRowProps> = ({ task }) => {
       <TaskDescription>{subject}</TaskDescription>
       <Spacer />
       <ContactName>{contactName}</ContactName>
-      <TaskDueDate isLate={isLate} isComplete={isComplete} dueDate={dueDate} />
+      <TaskDueDate isComplete={isComplete} dueDate={dueDate} />
       <TaskCommentsButton
         isComplete={isComplete}
         numberOfComments={comments?.totalCount}

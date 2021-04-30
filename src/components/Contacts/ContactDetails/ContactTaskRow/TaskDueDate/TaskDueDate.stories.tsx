@@ -7,16 +7,17 @@ export default {
   component: TaskDueDate,
 };
 
-const dueDate = DateTime.local(2020, 10, 12);
+const notLateDueDate = DateTime.local(2021, 10, 12);
+const lateDueDate = DateTime.local(2019, 10, 12);
 
 export const Default = (): ReactElement => {
-  return <TaskDueDate isLate={false} isComplete={false} dueDate={dueDate} />;
+  return <TaskDueDate isComplete={false} dueDate={notLateDueDate} />;
 };
 
 export const Late = (): ReactElement => {
-  return <TaskDueDate isLate={true} isComplete={false} dueDate={dueDate} />;
+  return <TaskDueDate isComplete={false} dueDate={lateDueDate} />;
 };
 
 export const Complete = (): ReactElement => {
-  return <TaskDueDate isLate={false} isComplete={true} dueDate={dueDate} />;
+  return <TaskDueDate isComplete={true} dueDate={notLateDueDate} />;
 };

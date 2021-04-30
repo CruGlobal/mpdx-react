@@ -39,19 +39,19 @@ const DueDate = styled(Typography)(
 );
 
 interface TaskDueDateProps {
-  isLate: boolean;
   isComplete: boolean;
   dueDate: DateTime | null;
 }
 
 export const TaskDueDate: React.FC<TaskDueDateProps> = ({
-  isLate,
   isComplete,
   dueDate,
 }) => {
   if (!dueDate) {
     return null;
   }
+
+  const isLate = (dueDate && dueDate < DateTime.local()) || false;
 
   const formattedDate = dueDate.toFormat('MMM dd');
 

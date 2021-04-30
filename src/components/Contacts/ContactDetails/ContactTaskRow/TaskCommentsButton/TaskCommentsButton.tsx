@@ -38,7 +38,7 @@ export const TaskCommentsButton: React.FC<TaskCommentsButtonProps> = ({
   onClick,
 }) => {
   return (
-    <TaskRowWrap onClick={onClick}>
+    <TaskRowWrap onClick={() => onClick()}>
       <TaskCommentIcon />
       <TaskCommentNumber isComplete={isComplete}>
         {numberOfComments}
