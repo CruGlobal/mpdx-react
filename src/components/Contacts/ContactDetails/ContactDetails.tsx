@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import theme from '../../../theme';
 import { ContactDetailsHeader } from './ContactDetailsHeader/ContactDetailsHeader';
 import { ContactDetailsTab } from './ContactDetailsTab/ContactDetailsTab';
+import { ContactDonationsTab } from './ContactDontationsTab/ContactDonationsTab';
 
 interface Props {
   accountListId: string;
@@ -93,7 +94,12 @@ export const ContactDetails: React.FC<Props> = ({
         </ContactTabsWrapper>
 
         <TabPanel value={TabKey.Tasks}>{t('Tasks')}</TabPanel>
-        <TabPanel value={TabKey.Donations}>{t('Donations')}</TabPanel>
+        <TabPanel value={TabKey.Donations}>
+          <ContactDonationsTab
+            accountListId={accountListId}
+            contactId={contactId}
+          />
+        </TabPanel>
         <TabPanel value={TabKey.Referrals}>{t('Referrals')}</TabPanel>
         <TabPanel value={TabKey.ContactDetails}>
           <ContactDetailsTab
