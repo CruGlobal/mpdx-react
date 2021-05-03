@@ -18,6 +18,15 @@ const TaskRowWrap = styled(Box)(({ theme }) => ({
   display: 'flex',
   flexDirection: 'row',
   alignItems: 'center',
+  justifyContent: 'space-between',
+  margin: theme.spacing(1),
+}));
+
+const TaskItemWrap = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  flexDirection: 'row',
+  alignItems: 'center',
+  justifyContent: 'space-between',
   margin: theme.spacing(1),
 }));
 
@@ -31,11 +40,6 @@ const TaskDescription = styled(Typography)(({ theme }) => ({
   fontSize: 14,
   color: theme.palette.text.primary,
   marginLeft: theme.spacing(0.5),
-}));
-
-const Spacer = styled(Box)(({}) => ({
-  display: 'flex',
-  justifyContent: 'space-between',
 }));
 
 const ContactName = styled(Typography)(({ theme }) => ({
@@ -136,24 +140,27 @@ export const ContactTaskRow: React.FC<ContactTaskRowProps> = ({ task }) => {
 
   return (
     <TaskRowWrap>
-      <ContactCheckBox onClick={handleContactCheckPressed} />
-      <TaskCompleteButton
-        isComplete={isComplete}
-        onClick={handleCompleteButtonPressed}
-      />
-      <TaskType>{getLocalizedTaskType(t, activityType)}</TaskType>
-      <TaskDescription>{subject}</TaskDescription>
-      <Spacer />
-      <ContactName>{contactName}</ContactName>
-      <TaskDueDate isComplete={isComplete} dueDate={dueDate} />
-      <TaskCommentsButton
-        isComplete={isComplete}
-        numberOfComments={comments?.totalCount}
-        onClick={handleCommentButtonPressed}
-      />
-      <StarIconWrap>
-        <StarContactIcon hasStar={false} />
-      </StarIconWrap>
+      <TaskItemWrap>
+        <ContactCheckBox onClick={handleContactCheckPressed} />
+        <TaskCompleteButton
+          isComplete={isComplete}
+          onClick={handleCompleteButtonPressed}
+        />
+        <TaskType>{getLocalizedTaskType(t, activityType)}</TaskType>
+        <TaskDescription>{subject}</TaskDescription>
+      </TaskItemWrap>
+      <TaskItemWrap>
+        <ContactName>{contactName}</ContactName>
+        <TaskDueDate isComplete={isComplete} dueDate={dueDate} />
+        <TaskCommentsButton
+          isComplete={isComplete}
+          numberOfComments={comments?.totalCount}
+          onClick={handleCommentButtonPressed}
+        />
+        <StarIconWrap>
+          <StarContactIcon hasStar={false} />
+        </StarIconWrap>
+      </TaskItemWrap>
     </TaskRowWrap>
   );
 };

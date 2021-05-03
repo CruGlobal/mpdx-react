@@ -22,7 +22,14 @@ const HeaderRow = styled(Box)(({ theme }) => ({
   display: 'flex',
   flexDirection: 'row',
   alignItems: 'center',
+  justifyContent: 'space-between',
   margin: theme.spacing(1),
+}));
+
+const HeaderItemsWrap = styled(Box)(({}) => ({
+  display: 'flex',
+  alignItems: 'center',
+  flexDirection: 'row',
 }));
 
 const TasksTitle = styled(Typography)(({ theme }) => ({
@@ -64,11 +71,6 @@ const PlaceholderSearchBar = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.background.paper,
 }));
 
-const Spacer = styled(Box)(({}) => ({
-  display: 'flex',
-  justifyContent: 'space-between',
-}));
-
 const PlaceholderActionBar = styled(Box)(({ theme }) => ({
   height: 40,
   width: 111,
@@ -106,24 +108,32 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
       <ContactTasksHeaderContainer>
         <HeaderRow>
           <TasksTitle>{t('Tasks')}</TasksTitle>
-          <Spacer />
-          <TaskButton>
-            <AddTaskButtonIcon />
-            <TaskButtonText>{t('add task').toLocaleUpperCase()}</TaskButtonText>
-          </TaskButton>
-          <TaskButton>
-            <LogTaskButtonIcon />
-            <TaskButtonText>{t('log task').toLocaleUpperCase()}</TaskButtonText>
-          </TaskButton>
+          <HeaderItemsWrap>
+            <TaskButton>
+              <AddTaskButtonIcon />
+              <TaskButtonText>
+                {t('add task').toLocaleUpperCase()}
+              </TaskButtonText>
+            </TaskButton>
+            <TaskButton>
+              <LogTaskButtonIcon />
+              <TaskButtonText>
+                {t('log task').toLocaleUpperCase()}
+              </TaskButtonText>
+            </TaskButton>
+          </HeaderItemsWrap>
         </HeaderRow>
         <HeaderRow>
-          <ContactCheckBox />
-          <PlaceholderSearchBar />
-          <Spacer />
-          <PlaceholderActionBar />
-          <StarIconWrap>
-            <StarContactIcon hasStar={false} />
-          </StarIconWrap>
+          <HeaderItemsWrap>
+            <ContactCheckBox />
+            <PlaceholderSearchBar />
+          </HeaderItemsWrap>
+          <HeaderItemsWrap>
+            <PlaceholderActionBar />
+            <StarIconWrap>
+              <StarContactIcon hasStar={false} />
+            </StarIconWrap>
+          </HeaderItemsWrap>
         </HeaderRow>
       </ContactTasksHeaderContainer>
       <Divider />
