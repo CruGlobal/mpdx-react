@@ -51,15 +51,13 @@ export const TaskDueDate: React.FC<TaskDueDateProps> = ({
     return null;
   }
 
-  const isLate = (dueDate && dueDate < DateTime.local()) || false;
-
-  const formattedDate = dueDate.toFormat('MMM dd');
+  const isLate = dueDate < DateTime.local();
 
   return (
     <TaskRowWrap>
       <TaskCommentIcon isLate={isLate} />
       <DueDate isLate={isLate} isComplete={isComplete}>
-        {formattedDate}
+        {dueDate.toFormat('MMM dd')}
       </DueDate>
     </TaskRowWrap>
   );
