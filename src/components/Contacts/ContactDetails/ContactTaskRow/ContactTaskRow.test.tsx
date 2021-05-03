@@ -16,6 +16,16 @@ import {
 const startAt = '2021-04-12';
 
 describe('ContactTaskRow', () => {
+  it('should render loading', async () => {
+    const { findAllByRole } = render(
+      <MuiThemeProvider theme={theme}>
+        <ContactTaskRow task={undefined} />
+      </MuiThemeProvider>,
+    );
+
+    expect((await findAllByRole('MuiSkeleton-root'))[0]).toBeVisible();
+  });
+
   it('should render not complete', async () => {
     const task = gqlMock<ContactTaskRowFragment>(ContactTaskRowFragmentDoc, {
       mocks: {
@@ -24,11 +34,13 @@ describe('ContactTaskRow', () => {
       },
     });
 
-    const { findByText } = render(
+    const { findAllByRole, findByText } = render(
       <MuiThemeProvider theme={theme}>
         <ContactTaskRow task={task} />
       </MuiThemeProvider>,
     );
+
+    expect((await findAllByRole('MuiSkeleton-root'))[0]).toBeNull();
 
     expect(await findByText(task.subject)).toBeVisible();
 

@@ -26,6 +26,10 @@ export const Default = (): ReactElement => {
   return <ContactTaskRow task={task} />;
 };
 
+export const Loading = (): ReactElement => {
+  return <ContactTaskRow task={undefined} />;
+};
+
 export const Complete = (): ReactElement => {
   const task = gqlMock<ContactTaskRowFragment>(ContactTaskRowFragmentDoc, {
     mocks: {

@@ -1,4 +1,5 @@
-import { Box, styled, Typography } from '@material-ui/core';
+import { Box, styled, Theme, Typography } from '@material-ui/core';
+import { Skeleton } from '@material-ui/lab';
 import { TFunction } from 'i18next';
 import { DateTime } from 'luxon';
 import React from 'react';
@@ -7,6 +8,7 @@ import {
   ActivityTypeEnum,
   ResultEnum,
 } from '../../../../../graphql/types.generated';
+import theme from '../../../../theme';
 import { ContactCheckBox } from '../../ContactCheckBox/ContactCheckBox';
 import { StarContactIcon } from '../../StarContactIcon/StarContactIcon';
 import { ContactTaskRowFragment } from './ContactTaskRow.generated';
@@ -51,6 +53,14 @@ const ContactName = styled(Typography)(({ theme }) => ({
 const StarIconWrap = styled(Box)(({ theme }) => ({
   margin: theme.spacing(1),
 }));
+
+const FieldLoadingState = styled(Skeleton)(
+  ({ width, margin }: { width: number; margin: number }) => ({
+    width,
+    height: '24px',
+    margin: margin,
+  }),
+);
 
 const getLocalizedTaskType = (
   t: TFunction,
@@ -112,7 +122,7 @@ const getLocalizedTaskType = (
 };
 
 interface ContactTaskRowProps {
-  task: ContactTaskRowFragment;
+  task?: ContactTaskRowFragment;
 }
 
 export const ContactTaskRow: React.FC<ContactTaskRowProps> = ({ task }) => {
@@ -129,6 +139,26 @@ export const ContactTaskRow: React.FC<ContactTaskRowProps> = ({ task }) => {
   const handleCommentButtonPressed = () => {
     //navigate to comments list
   };
+
+  if (!task) {
+    return (
+      <TaskRowWrap>
+        <TaskItemWrap>
+          <ContactCheckBox />
+          <FieldLoadingState width={55} margin={theme.spacing(2)} />
+          <FieldLoadingState width={200} margin={theme.spacing(0.5)} />
+        </TaskItemWrap>
+        <TaskItemWrap>
+          <FieldLoadingState width={120} margin={theme.spacing(1)} />
+          <FieldLoadingState width={80} margin={theme.spacing(1)} />
+          <FieldLoadingState width={58} margin={theme.spacing(2)} />
+          <StarIconWrap>
+            <StarContactIcon hasStar={false} />
+          </StarIconWrap>
+        </TaskItemWrap>
+      </TaskRowWrap>
+    );
+  }
 
   const { activityType, contacts, comments, result, startAt, subject } = task;
 

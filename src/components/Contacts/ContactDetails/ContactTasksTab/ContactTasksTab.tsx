@@ -78,12 +78,6 @@ const PlaceholderActionBar = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.background.paper,
 }));
 
-const ContactTasksLoadingPlaceHolder = styled(Skeleton)(({ theme }) => ({
-  width: '100%',
-  height: '24px',
-  margin: theme.spacing(2, 0),
-}));
-
 const StarIconWrap = styled(Box)(({ theme }) => ({
   margin: theme.spacing(1),
 }));
@@ -139,7 +133,11 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
       <Divider />
       <Box>
         {loading || !data ? (
-          <ContactTasksLoadingPlaceHolder variant="rect" />
+          <>
+            <ContactTaskRow key="0" task={undefined} />
+            <ContactTaskRow key="1" task={undefined} />
+            <ContactTaskRow key="2" task={undefined} />
+          </>
         ) : (
           data.tasks.nodes.map((task) => (
             <ContactTaskRow key={task.id} task={task} />
