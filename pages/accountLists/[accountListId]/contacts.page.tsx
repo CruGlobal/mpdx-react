@@ -28,9 +28,7 @@ const ContactsPage: React.FC = () => {
         <title>MPDX | {t('Contacts')}</title>
       </Head>
       <Box height="100vh" display="flex" overflow-y="scroll">
-        <Box width="20vw">
-          <ContactFilters accountListId={accountListId} />
-        </Box>
+        <ContactFilters accountListId={accountListId} width="290px" />
         <Box flex={1}>
           <ContactsTable
             accountListId={accountListId}

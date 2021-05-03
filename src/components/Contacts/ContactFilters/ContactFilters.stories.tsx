@@ -1,61 +1,72 @@
+import { MockedProvider } from '@apollo/client/testing';
+import { Box } from '@material-ui/core';
+import { number, withKnobs } from '@storybook/addon-knobs';
 import React, { ReactElement } from 'react';
-import { ContactFiltersQuery } from '../../../../pages/accountLists/[accountListId]/ContactFilters.generated';
 import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
 import { ContactFilters } from './ContactFilters';
+import {
+  ContactFiltersDocument,
+  ContactFiltersQuery,
+} from './ContactFilters.generated';
+import {
+  ContactFiltersDefaultMock,
+  ContactFiltersEmptyMock,
+  ContactFiltersErrorMock,
+} from './ContactFilters.mocks';
 
 export default {
   title: 'Contacts/ContactFilters',
+  decorators: [withKnobs],
 };
 
 const accountListId = '111';
 
-export const Default = (): ReactElement => {
-  return (
-    <GqlMockedProvider<ContactFiltersQuery>>
-      <ContactFilters accountListId={accountListId} />
-    </GqlMockedProvider>
-  );
-};
+const StorybookContactFilters = (): ReactElement => (
+  <Box width={number('Width', 290)} height="100vh" bgcolor="#fff">
+    <ContactFilters
+      accountListId={accountListId}
+      width={number('Width', 290)}
+    />
+  </Box>
+);
+
+export const Default = (): ReactElement => (
+  <GqlMockedProvider<ContactFiltersQuery>
+    mocks={{ ContactFilters: ContactFiltersDefaultMock }}
+  >
+    <StorybookContactFilters />
+  </GqlMockedProvider>
+);
 
 export const Loading = (): ReactElement => {
   const mock = {
-    ContactFilters: {
-      contactFilters: null,
+    request: {
+      query: ContactFiltersDocument,
+      variables: { accountListId: accountListId },
     },
+    result: {},
+    delay: 86_400_000,
   };
 
   return (
-    <GqlMockedProvider<ContactFiltersQuery> mocks={mock}>
-      <ContactFilters accountListId={accountListId} />
-    </GqlMockedProvider>
+    <MockedProvider mocks={[mock]}>
+      <StorybookContactFilters />
+    </MockedProvider>
   );
 };
 
-export const Empty = (): ReactElement => {
-  const mock = {
-    ContactFilters: {
-      contactFilters: [],
-    },
-  };
+export const Empty = (): ReactElement => (
+  <GqlMockedProvider<ContactFiltersQuery>
+    mocks={{ ContactFilters: ContactFiltersEmptyMock }}
+  >
+    <StorybookContactFilters />
+  </GqlMockedProvider>
+);
 
-  return (
-    <GqlMockedProvider<ContactFiltersQuery> mocks={mock}>
-      <ContactFilters accountListId={accountListId} />
-    </GqlMockedProvider>
-  );
-};
-
-export const Error = (): ReactElement => {
-  const mock = {
-    ContactFilters: {
-      contactFilters: null,
-    },
-    error: { name: 'error', message: 'Error loading data. Try again.' },
-  };
-
-  return (
-    <GqlMockedProvider<ContactFiltersQuery> mocks={mock}>
-      <ContactFilters accountListId={accountListId} />
-    </GqlMockedProvider>
-  );
-};
+export const Error = (): ReactElement => (
+  <GqlMockedProvider<ContactFiltersQuery>
+    mocks={{ ContactFilters: ContactFiltersErrorMock }}
+  >
+    <StorybookContactFilters />
+  </GqlMockedProvider>
+);

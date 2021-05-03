@@ -1,6 +1,0 @@
-query ContactFilters($accountListId: ID!) {
-  contactFilters(accountListId: $accountListId) {
-    id
-    name
-  }
-}
