@@ -4,12 +4,16 @@ import { SnackbarProvider } from 'notistack';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import LuxonUtils from '@date-io/luxon';
 import userEvent from '@testing-library/user-event';
-import { GqlMockedProvider } from '../../../../../../../__tests__/util/graphqlMocking';
 import { CreateTaskMutation } from '../../../../../Task/Drawer/Form/TaskDrawer.generated';
-import { CreateTaskCommentMutation } from '../../../../../Task/Drawer/CommentList/Form/CreateTaskComment.generated';
+import { GqlMockedProvider } from '../../../../../../../__tests__/util/graphqlMocking';
+import TestWrapper from '../../../../../../../__tests__/util/TestWrapper';
 import LogNewsletter from './LogNewsletter';
+import {
+  createNewsLetterTaskCommentMutation,
+  createNewsletterTaskMutationMock,
+} from './LogNewsLetter.mock';
 
-const accountListId = '111';
+const accountListId = 'abc';
 const handleClose = jest.fn();
 jest.mock('uuid', () => ({
   v4: (): string => 'comment-0',
@@ -131,16 +135,17 @@ describe('LogNewsletter', () => {
 
     it('Logs Newsletter with Comment', async () => {
       const { getByRole, getByText, findByText } = render(
-        <MuiPickersUtilsProvider utils={LuxonUtils}>
-          <SnackbarProvider>
-            <GqlMockedProvider<CreateTaskMutation & CreateTaskCommentMutation>>
-              <LogNewsletter
-                accountListId={accountListId}
-                handleClose={handleClose}
-              />
-            </GqlMockedProvider>
-          </SnackbarProvider>
-        </MuiPickersUtilsProvider>,
+        <TestWrapper
+          mocks={[
+            createNewsletterTaskMutationMock(),
+            createNewsLetterTaskCommentMutation(),
+          ]}
+        >
+          <LogNewsletter
+            accountListId={accountListId}
+            handleClose={handleClose}
+          />
+        </TestWrapper>,
       );
       expect(getByText('Log Newsletter')).toBeInTheDocument();
 
@@ -149,15 +154,12 @@ describe('LogNewsletter', () => {
 
       userEvent.type(getByRole('textbox', { name: 'Subject' }), accountListId);
       await waitFor(() => expect(getByText('Save')).not.toBeDisabled());
-      userEvent.click(getByRole('radio', { name: 'Newsletter - Email' }));
-      userEvent.type(
-        getByRole('textbox', { name: 'Comment' }),
-        'Some Random Comment',
-      );
 
-      // userEvent.click(getByText('Save'));
+      userEvent.type(getByRole('textbox', { name: 'Comment' }), 'comment');
 
-      // await waitFor(() => expect(handleClose).toHaveBeenCalled());
+      userEvent.click(getByText('Save'));
+
+      await waitFor(() => expect(handleClose).toHaveBeenCalled());
     });
   });
 });

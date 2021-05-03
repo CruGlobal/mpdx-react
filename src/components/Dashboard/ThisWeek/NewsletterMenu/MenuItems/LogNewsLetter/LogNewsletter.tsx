@@ -123,7 +123,7 @@ const LogNewsletter = ({
     notificationTimeUnit: null,
     notificationType: null,
     result: null,
-    startAt: DateTime.local().minus({ hours: 1 }).startOf('hour').toISO(),
+    startAt: DateTime.local().plus({ hours: 1 }).startOf('hour').toISO(),
     subject: '',
     tagList: [],
     userId: null,
