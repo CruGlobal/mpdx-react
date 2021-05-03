@@ -1,0 +1,38 @@
+query GetContactDonations($accountListId: ID!, $contactId: ID!) {
+  contact(accountListId: $accountListId, id: $contactId) {
+    id
+    name
+    contactDonorAccounts {
+      nodes {
+        id
+        donorAccount {
+          ...ContactDonorAccount
+        }
+      }
+    }
+    donations {
+      nodes {
+        ...ContactDonation
+      }
+    }
+  }
+}
+
+fragment ContactDonation on Donation {
+  id
+  amount {
+    ...DonationMoney
+  }
+}
+
+fragment DonationMoney on Money {
+  amount
+  convertedAmount
+  currency
+  convertedCurrency
+}
+
+fragment ContactDonorAccount on DonorAccount {
+  id
+  displayName
+}

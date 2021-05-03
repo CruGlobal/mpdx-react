@@ -6,6 +6,8 @@ import theme from '../../../theme';
 import { ContactDetailsHeader } from './ContactDetailsHeader/ContactDetailsHeader';
 import { ContactTasksTab } from './ContactTasksTab/ContactTasksTab';
 import { ContactDetailsTab } from './ContactDetailsTab/ContactDetailsTab';
+import { ContactDonationsTab } from './ContactDontationsTab/ContactDonationsTab';
+import { ContactReferralTab } from './ContactReferralTab/ContactReferralTab';
 
 interface Props {
   accountListId: string;
@@ -92,15 +94,24 @@ export const ContactDetails: React.FC<Props> = ({
             <ContactTab value={TabKey.Notes} label={t('Notes')} />
           </ContactTabs>
         </ContactTabsWrapper>
-
         <TabPanel value={TabKey.Tasks}>
           <ContactTasksTab
             accountListId={accountListId}
             contactId={contactId}
           />
         </TabPanel>
-        <TabPanel value={TabKey.Donations}>{t('Donations')}</TabPanel>
-        <TabPanel value={TabKey.Referrals}>{t('Referrals')}</TabPanel>
+        <TabPanel value={TabKey.Donations}>
+          <ContactDonationsTab
+            accountListId={accountListId}
+            contactId={contactId}
+          />
+        </TabPanel>
+        <TabPanel value={TabKey.Referrals}>
+          <ContactReferralTab
+            accountListId={accountListId}
+            contactId={contactId}
+          />
+        </TabPanel>
         <TabPanel value={TabKey.ContactDetails}>
           <ContactDetailsTab
             accountListId={accountListId}
