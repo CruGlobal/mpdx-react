@@ -1,6 +1,5 @@
 import { Box, Button, Divider, styled, Typography } from '@material-ui/core';
 import { Add, CheckCircleOutline } from '@material-ui/icons';
-import { Skeleton } from '@material-ui/lab';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { ContactCheckBox } from '../../ContactCheckBox/ContactCheckBox';

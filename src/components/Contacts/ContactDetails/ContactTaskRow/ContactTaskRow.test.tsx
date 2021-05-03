@@ -16,14 +16,14 @@ import {
 const startAt = '2021-04-12';
 
 describe('ContactTaskRow', () => {
-  it('should render loading', async () => {
-    const { findAllByRole } = render(
+  it('should render loading', () => {
+    const { getByTestId } = render(
       <MuiThemeProvider theme={theme}>
         <ContactTaskRow task={undefined} />
       </MuiThemeProvider>,
     );
 
-    expect((await findAllByRole('MuiSkeleton-root'))[0]).toBeVisible();
+    expect(getByTestId('loadingRow')).toBeVisible();
   });
 
   it('should render not complete', async () => {
@@ -34,258 +34,258 @@ describe('ContactTaskRow', () => {
       },
     });
 
-    const { findAllByRole, findByText } = render(
+    const { findByText, queryByTestId } = render(
       <MuiThemeProvider theme={theme}>
         <ContactTaskRow task={task} />
       </MuiThemeProvider>,
     );
 
-    expect((await findAllByRole('MuiSkeleton-root'))[0]).toBeNull();
-
     expect(await findByText(task.subject)).toBeVisible();
 
     expect(await findByText(task.contacts.nodes[0].name)).toBeVisible();
+
+    expect(queryByTestId('loadingRow')).toBeNull();
   });
 
   describe('activity type', () => {
-    it('displays Appointment', async () => {
+    it('displays Appointment', () => {
       const task = gqlMock<ContactTaskRowFragment>(ContactTaskRowFragmentDoc, {
         mocks: {
           activityType: ActivityTypeEnum.Appointment,
         },
       });
 
-      const { findByText } = render(
+      const { getByText } = render(
         <MuiThemeProvider theme={theme}>
           <ContactTaskRow task={task} />
         </MuiThemeProvider>,
       );
 
-      expect(await findByText('Appointment')).toBeVisible();
+      expect(getByText('Appointment')).toBeVisible();
     });
 
-    it('displays Call', async () => {
+    it('displays Call', () => {
       const task = gqlMock<ContactTaskRowFragment>(ContactTaskRowFragmentDoc, {
         mocks: {
           activityType: ActivityTypeEnum.Call,
         },
       });
 
-      const { findByText } = render(
+      const { getByText } = render(
         <MuiThemeProvider theme={theme}>
           <ContactTaskRow task={task} />
         </MuiThemeProvider>,
       );
 
-      expect(await findByText('Call')).toBeVisible();
+      expect(getByText('Call')).toBeVisible();
     });
 
-    it('displays Email', async () => {
+    it('displays Email', () => {
       const task = gqlMock<ContactTaskRowFragment>(ContactTaskRowFragmentDoc, {
         mocks: {
           activityType: ActivityTypeEnum.Email,
         },
       });
 
-      const { findByText } = render(
+      const { getByText } = render(
         <MuiThemeProvider theme={theme}>
           <ContactTaskRow task={task} />
         </MuiThemeProvider>,
       );
 
-      expect(await findByText('Email')).toBeVisible();
+      expect(getByText('Email')).toBeVisible();
     });
 
-    it('displays Facebook Message', async () => {
+    it('displays Facebook Message', () => {
       const task = gqlMock<ContactTaskRowFragment>(ContactTaskRowFragmentDoc, {
         mocks: {
           activityType: ActivityTypeEnum.FacebookMessage,
         },
       });
 
-      const { findByText } = render(
+      const { getByText } = render(
         <MuiThemeProvider theme={theme}>
           <ContactTaskRow task={task} />
         </MuiThemeProvider>,
       );
 
-      expect(await findByText('Facebook Message')).toBeVisible();
+      expect(getByText('Facebook Message')).toBeVisible();
     });
 
-    it('displays Letter', async () => {
+    it('displays Letter', () => {
       const task = gqlMock<ContactTaskRowFragment>(ContactTaskRowFragmentDoc, {
         mocks: {
           activityType: ActivityTypeEnum.Letter,
         },
       });
 
-      const { findByText } = render(
+      const { getByText } = render(
         <MuiThemeProvider theme={theme}>
           <ContactTaskRow task={task} />
         </MuiThemeProvider>,
       );
 
-      expect(await findByText('Letter')).toBeVisible();
+      expect(getByText('Letter')).toBeVisible();
     });
 
-    it('displays Newslatter - Email', async () => {
+    it('displays Newslatter - Email', () => {
       const task = gqlMock<ContactTaskRowFragment>(ContactTaskRowFragmentDoc, {
         mocks: {
           activityType: ActivityTypeEnum.NewsletterEmail,
         },
       });
 
-      const { findByText } = render(
+      const { getByText } = render(
         <MuiThemeProvider theme={theme}>
           <ContactTaskRow task={task} />
         </MuiThemeProvider>,
       );
 
-      expect(await findByText('Newsletter - Email')).toBeVisible();
+      expect(getByText('Newsletter - Email')).toBeVisible();
     });
 
-    it('displays Newsletter - Physical', async () => {
+    it('displays Newsletter - Physical', () => {
       const task = gqlMock<ContactTaskRowFragment>(ContactTaskRowFragmentDoc, {
         mocks: {
           activityType: ActivityTypeEnum.NewsletterPhysical,
         },
       });
 
-      const { findByText } = render(
+      const { getByText } = render(
         <MuiThemeProvider theme={theme}>
           <ContactTaskRow task={task} />
         </MuiThemeProvider>,
       );
 
-      expect(await findByText('Newsletter - Physical')).toBeVisible();
+      expect(getByText('Newsletter - Physical')).toBeVisible();
     });
 
-    it('displays Prayer Request', async () => {
+    it('displays Prayer Request', () => {
       const task = gqlMock<ContactTaskRowFragment>(ContactTaskRowFragmentDoc, {
         mocks: {
           activityType: ActivityTypeEnum.PrayerRequest,
         },
       });
 
-      const { findByText } = render(
+      const { getByText } = render(
         <MuiThemeProvider theme={theme}>
           <ContactTaskRow task={task} />
         </MuiThemeProvider>,
       );
 
-      expect(await findByText('Prayer Request')).toBeVisible();
+      expect(getByText('Prayer Request')).toBeVisible();
     });
 
-    it('displays Pre-Call Letter', async () => {
+    it('displays Pre-Call Letter', () => {
       const task = gqlMock<ContactTaskRowFragment>(ContactTaskRowFragmentDoc, {
         mocks: {
           activityType: ActivityTypeEnum.PreCallLetter,
         },
       });
 
-      const { findByText } = render(
+      const { getByText } = render(
         <MuiThemeProvider theme={theme}>
           <ContactTaskRow task={task} />
         </MuiThemeProvider>,
       );
 
-      expect(await findByText('Pre-Call Letter')).toBeVisible();
+      expect(getByText('Pre-Call Letter')).toBeVisible();
     });
 
-    it('displays Reminder Letter', async () => {
+    it('displays Reminder Letter', () => {
       const task = gqlMock<ContactTaskRowFragment>(ContactTaskRowFragmentDoc, {
         mocks: {
           activityType: ActivityTypeEnum.ReminderLetter,
         },
       });
 
-      const { findByText } = render(
+      const { getByText } = render(
         <MuiThemeProvider theme={theme}>
           <ContactTaskRow task={task} />
         </MuiThemeProvider>,
       );
 
-      expect(await findByText('Reminder Letter')).toBeVisible();
+      expect(getByText('Reminder Letter')).toBeVisible();
     });
 
-    it('displays Support Letter', async () => {
+    it('displays Support Letter', () => {
       const task = gqlMock<ContactTaskRowFragment>(ContactTaskRowFragmentDoc, {
         mocks: {
           activityType: ActivityTypeEnum.SupportLetter,
         },
       });
 
-      const { findByText } = render(
+      const { getByText } = render(
         <MuiThemeProvider theme={theme}>
           <ContactTaskRow task={task} />
         </MuiThemeProvider>,
       );
 
-      expect(await findByText('Support Letter')).toBeVisible();
+      expect(getByText('Support Letter')).toBeVisible();
     });
 
-    it('displays Talk To In Person', async () => {
+    it('displays Talk To In Person', () => {
       const task = gqlMock<ContactTaskRowFragment>(ContactTaskRowFragmentDoc, {
         mocks: {
           activityType: ActivityTypeEnum.TalkToInPerson,
         },
       });
 
-      const { findByText } = render(
+      const { getByText } = render(
         <MuiThemeProvider theme={theme}>
           <ContactTaskRow task={task} />
         </MuiThemeProvider>,
       );
 
-      expect(await findByText('Talk To In Person')).toBeVisible();
+      expect(getByText('Talk To In Person')).toBeVisible();
     });
 
-    it('displays Text Message', async () => {
+    it('displays Text Message', () => {
       const task = gqlMock<ContactTaskRowFragment>(ContactTaskRowFragmentDoc, {
         mocks: {
           activityType: ActivityTypeEnum.TextMessage,
         },
       });
 
-      const { findByText } = render(
+      const { getByText } = render(
         <MuiThemeProvider theme={theme}>
           <ContactTaskRow task={task} />
         </MuiThemeProvider>,
       );
 
-      expect(await findByText('Text Message')).toBeVisible();
+      expect(getByText('Text Message')).toBeVisible();
     });
 
-    it('displays Thank', async () => {
+    it('displays Thank', () => {
       const task = gqlMock<ContactTaskRowFragment>(ContactTaskRowFragmentDoc, {
         mocks: {
           activityType: ActivityTypeEnum.Thank,
         },
       });
 
-      const { findByText } = render(
+      const { getByText } = render(
         <MuiThemeProvider theme={theme}>
           <ContactTaskRow task={task} />
         </MuiThemeProvider>,
       );
 
-      expect(await findByText('Thank')).toBeVisible();
+      expect(getByText('Thank')).toBeVisible();
     });
 
-    it('displays To Do', async () => {
+    it('displays To Do', () => {
       const task = gqlMock<ContactTaskRowFragment>(ContactTaskRowFragmentDoc, {
         mocks: {
           activityType: ActivityTypeEnum.ToDo,
         },
       });
 
-      const { findByText } = render(
+      const { getByText } = render(
         <MuiThemeProvider theme={theme}>
           <ContactTaskRow task={task} />
         </MuiThemeProvider>,
       );
 
-      expect(await findByText('To Do')).toBeVisible();
+      expect(getByText('To Do')).toBeVisible();
     });
   });
 });

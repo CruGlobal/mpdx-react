@@ -8,10 +8,10 @@ import { TaskCommentsButton } from './TaskCommentsButton';
 const numberOfComments = 10;
 
 describe('TaskCommentsButton', () => {
-  it('should render not complete', async () => {
+  it('should render not complete', () => {
     const onClick = jest.fn();
 
-    const { findByText } = render(
+    const { getByText } = render(
       <MuiThemeProvider theme={theme}>
         <TaskCommentsButton
           isComplete={false}
@@ -21,7 +21,7 @@ describe('TaskCommentsButton', () => {
       </MuiThemeProvider>,
     );
 
-    const numberText = await findByText(`${numberOfComments}`);
+    const numberText = getByText(`${numberOfComments}`);
 
     expect(numberText).toBeInTheDocument();
 
@@ -30,10 +30,10 @@ describe('TaskCommentsButton', () => {
     expect(style?.color).toMatchInlineSnapshot(`"rgb(56, 63, 67)"`);
   });
 
-  it('should render complete', async () => {
+  it('should render complete', () => {
     const onClick = jest.fn();
 
-    const { findByText } = render(
+    const { getByText } = render(
       <MuiThemeProvider theme={theme}>
         <TaskCommentsButton
           isComplete={true}
@@ -43,7 +43,7 @@ describe('TaskCommentsButton', () => {
       </MuiThemeProvider>,
     );
 
-    const numberText = await findByText(`${numberOfComments}`);
+    const numberText = getByText(`${numberOfComments}`);
 
     expect(numberText).toBeInTheDocument();
 
@@ -52,10 +52,10 @@ describe('TaskCommentsButton', () => {
     expect(style?.color).toMatchInlineSnapshot(`"rgb(156, 159, 161)"`);
   });
 
-  it('should handle click', async () => {
+  it('should handle click', () => {
     const onClick = jest.fn();
 
-    const { findByRole } = render(
+    const { getByRole } = render(
       <MuiThemeProvider theme={theme}>
         <TaskCommentsButton
           isComplete={true}
@@ -65,7 +65,7 @@ describe('TaskCommentsButton', () => {
       </MuiThemeProvider>,
     );
 
-    const commentsButton = await findByRole('button');
+    const commentsButton = getByRole('button');
 
     expect(commentsButton).toBeInTheDocument();
 

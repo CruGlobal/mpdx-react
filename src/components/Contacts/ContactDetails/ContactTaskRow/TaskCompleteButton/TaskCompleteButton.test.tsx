@@ -6,17 +6,17 @@ import theme from '../../../../../theme';
 import { TaskCompleteButton } from './TaskCompleteButton';
 
 describe('TaskCommentsButton', () => {
-  it('should render not complete', async () => {
+  it('should render not complete', () => {
     const onClick = jest.fn();
 
-    const { findByRole } = render(
+    const { getByRole } = render(
       <MuiThemeProvider theme={theme}>
         <TaskCompleteButton isComplete={false} onClick={onClick} />
       </MuiThemeProvider>,
     );
 
-    const completeButton = await findByRole('button');
-    const checkIcon = await findByRole('img', { name: 'Check Icon' });
+    const completeButton = getByRole('button');
+    const checkIcon = getByRole('img', { name: 'Check Icon' });
 
     expect(completeButton).toBeInTheDocument();
     expect(checkIcon).toBeInTheDocument();
@@ -31,17 +31,17 @@ describe('TaskCommentsButton', () => {
     expect(checkIconStyle?.color).toMatchInlineSnapshot(`"rgb(0, 202, 153)"`);
   });
 
-  it('should render complete', async () => {
+  it('should render complete', () => {
     const onClick = jest.fn();
 
-    const { findByRole } = render(
+    const { getByRole } = render(
       <MuiThemeProvider theme={theme}>
         <TaskCompleteButton isComplete={true} onClick={onClick} />
       </MuiThemeProvider>,
     );
 
-    const completeButton = await findByRole('button');
-    const checkIcon = await findByRole('img', { name: 'Check Icon' });
+    const completeButton = getByRole('button');
+    const checkIcon = getByRole('img', { name: 'Check Icon' });
 
     expect(completeButton).toBeInTheDocument();
     expect(checkIcon).toBeInTheDocument();
@@ -56,16 +56,16 @@ describe('TaskCommentsButton', () => {
     expect(checkIconStyle?.color).toMatchInlineSnapshot(`"rgb(255, 255, 255)"`);
   });
 
-  it('should handle click', async () => {
+  it('should handle click', () => {
     const onClick = jest.fn();
 
-    const { findByRole } = render(
+    const { getByRole } = render(
       <MuiThemeProvider theme={theme}>
         <TaskCompleteButton isComplete={true} onClick={onClick} />
       </MuiThemeProvider>,
     );
 
-    const completeButton = await findByRole('button');
+    const completeButton = getByRole('button');
 
     expect(completeButton).toBeInTheDocument();
 

@@ -1,4 +1,4 @@
-import { Box, styled, Theme, Typography } from '@material-ui/core';
+import { Box, styled, Typography } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
 import { TFunction } from 'i18next';
 import { DateTime } from 'luxon';
@@ -142,7 +142,7 @@ export const ContactTaskRow: React.FC<ContactTaskRowProps> = ({ task }) => {
 
   if (!task) {
     return (
-      <TaskRowWrap>
+      <TaskRowWrap data-testid="loadingRow">
         <TaskItemWrap>
           <ContactCheckBox />
           <FieldLoadingState width={55} margin={theme.spacing(2)} />
