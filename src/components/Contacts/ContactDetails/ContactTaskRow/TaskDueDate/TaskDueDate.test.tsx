@@ -10,13 +10,13 @@ const lateDueDate = DateTime.local(2019, 10, 12);
 
 describe('TaskCommentsButton', () => {
   it('should render not complete', async () => {
-    const { queryByText } = render(
+    const { findByText } = render(
       <MuiThemeProvider theme={theme}>
         <TaskDueDate isComplete={false} dueDate={notLateDueDate} />
       </MuiThemeProvider>,
     );
 
-    const dateText = queryByText(notLateDueDate.toFormat('MMM dd'));
+    const dateText = await findByText(notLateDueDate.toFormat('MMM dd'));
 
     expect(dateText).toBeInTheDocument();
 
@@ -26,13 +26,13 @@ describe('TaskCommentsButton', () => {
   });
 
   it('should render complete', async () => {
-    const { queryByText } = render(
+    const { findByText } = render(
       <MuiThemeProvider theme={theme}>
         <TaskDueDate isComplete={true} dueDate={notLateDueDate} />
       </MuiThemeProvider>,
     );
 
-    const dateText = queryByText(notLateDueDate.toFormat('MMM dd'));
+    const dateText = await findByText(notLateDueDate.toFormat('MMM dd'));
 
     expect(dateText).toBeInTheDocument();
 
@@ -42,13 +42,13 @@ describe('TaskCommentsButton', () => {
   });
 
   it('should render late', async () => {
-    const { queryByText } = render(
+    const { findByText } = render(
       <MuiThemeProvider theme={theme}>
         <TaskDueDate isComplete={false} dueDate={lateDueDate} />
       </MuiThemeProvider>,
     );
 
-    const dateText = queryByText(notLateDueDate.toFormat('MMM dd'));
+    const dateText = await findByText(notLateDueDate.toFormat('MMM dd'));
 
     expect(dateText).toBeInTheDocument();
 

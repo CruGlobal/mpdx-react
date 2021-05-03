@@ -24,15 +24,15 @@ describe('ContactTaskRow', () => {
       },
     });
 
-    const { queryByText } = render(
+    const { findByText } = render(
       <MuiThemeProvider theme={theme}>
         <ContactTaskRow task={task} />
       </MuiThemeProvider>,
     );
 
-    expect(queryByText(task.subject)).toBeInTheDocument();
+    expect(findByText(task.subject)).toBeVisible();
 
-    expect(queryByText(task.contacts.nodes[0].name)).toBeInTheDocument();
+    expect(findByText(task.contacts.nodes[0].name)).toBeVisible();
   });
 
   describe('activity type', () => {
@@ -43,13 +43,13 @@ describe('ContactTaskRow', () => {
         },
       });
 
-      const { queryByText } = render(
+      const { findByText } = render(
         <MuiThemeProvider theme={theme}>
           <ContactTaskRow task={task} />
         </MuiThemeProvider>,
       );
 
-      expect(queryByText('Appointment')).toBeInTheDocument();
+      expect(findByText('Appointment')).toBeVisible();
     });
 
     it('displays Call', () => {
@@ -59,13 +59,13 @@ describe('ContactTaskRow', () => {
         },
       });
 
-      const { queryByText } = render(
+      const { findByText } = render(
         <MuiThemeProvider theme={theme}>
           <ContactTaskRow task={task} />
         </MuiThemeProvider>,
       );
 
-      expect(queryByText('Call')).toBeInTheDocument();
+      expect(findByText('Call')).toBeVisible();
     });
 
     it('displays Email', () => {
@@ -75,13 +75,13 @@ describe('ContactTaskRow', () => {
         },
       });
 
-      const { queryByText } = render(
+      const { findByText } = render(
         <MuiThemeProvider theme={theme}>
           <ContactTaskRow task={task} />
         </MuiThemeProvider>,
       );
 
-      expect(queryByText('Email')).toBeInTheDocument();
+      expect(findByText('Email')).toBeVisible();
     });
 
     it('displays Facebook Message', () => {
@@ -91,13 +91,13 @@ describe('ContactTaskRow', () => {
         },
       });
 
-      const { queryByText } = render(
+      const { findByText } = render(
         <MuiThemeProvider theme={theme}>
           <ContactTaskRow task={task} />
         </MuiThemeProvider>,
       );
 
-      expect(queryByText('Facebook Message')).toBeInTheDocument();
+      expect(findByText('Facebook Message')).toBeVisible();
     });
 
     it('displays Letter', () => {
@@ -107,13 +107,13 @@ describe('ContactTaskRow', () => {
         },
       });
 
-      const { queryByText } = render(
+      const { findByText } = render(
         <MuiThemeProvider theme={theme}>
           <ContactTaskRow task={task} />
         </MuiThemeProvider>,
       );
 
-      expect(queryByText('Letter')).toBeInTheDocument();
+      expect(findByText('Letter')).toBeVisible();
     });
 
     it('displays Newslatter - Email', () => {
@@ -123,13 +123,13 @@ describe('ContactTaskRow', () => {
         },
       });
 
-      const { queryByText } = render(
+      const { findByText } = render(
         <MuiThemeProvider theme={theme}>
           <ContactTaskRow task={task} />
         </MuiThemeProvider>,
       );
 
-      expect(queryByText('Newsletter - Email')).toBeInTheDocument();
+      expect(findByText('Newsletter - Email')).toBeVisible();
     });
 
     it('displays Newsletter - Physical', () => {
@@ -139,13 +139,13 @@ describe('ContactTaskRow', () => {
         },
       });
 
-      const { queryByText } = render(
+      const { findByText } = render(
         <MuiThemeProvider theme={theme}>
           <ContactTaskRow task={task} />
         </MuiThemeProvider>,
       );
 
-      expect(queryByText('Newsletter - Physical')).toBeInTheDocument();
+      expect(findByText('Newsletter - Physical')).toBeVisible();
     });
 
     it('displays Prayer Request', () => {
@@ -155,13 +155,13 @@ describe('ContactTaskRow', () => {
         },
       });
 
-      const { queryByText } = render(
+      const { findByText } = render(
         <MuiThemeProvider theme={theme}>
           <ContactTaskRow task={task} />
         </MuiThemeProvider>,
       );
 
-      expect(queryByText('Prayer Request')).toBeInTheDocument();
+      expect(findByText('Prayer Request')).toBeVisible();
     });
 
     it('displays Pre-Call Letter', () => {
@@ -171,13 +171,13 @@ describe('ContactTaskRow', () => {
         },
       });
 
-      const { queryByText } = render(
+      const { findByText } = render(
         <MuiThemeProvider theme={theme}>
           <ContactTaskRow task={task} />
         </MuiThemeProvider>,
       );
 
-      expect(queryByText('Pre-Call Letter')).toBeInTheDocument();
+      expect(findByText('Pre-Call Letter')).toBeVisible();
     });
 
     it('displays Reminder Letter', () => {
@@ -187,13 +187,13 @@ describe('ContactTaskRow', () => {
         },
       });
 
-      const { queryByText } = render(
+      const { findByText } = render(
         <MuiThemeProvider theme={theme}>
           <ContactTaskRow task={task} />
         </MuiThemeProvider>,
       );
 
-      expect(queryByText('Reminder Letter')).toBeInTheDocument();
+      expect(findByText('Reminder Letter')).toBeVisible();
     });
 
     it('displays Support Letter', () => {
@@ -203,13 +203,13 @@ describe('ContactTaskRow', () => {
         },
       });
 
-      const { queryByText } = render(
+      const { findByText } = render(
         <MuiThemeProvider theme={theme}>
           <ContactTaskRow task={task} />
         </MuiThemeProvider>,
       );
 
-      expect(queryByText('Support Letter')).toBeInTheDocument();
+      expect(findByText('Support Letter')).toBeVisible();
     });
 
     it('displays Talk To In Person', () => {
@@ -219,13 +219,13 @@ describe('ContactTaskRow', () => {
         },
       });
 
-      const { queryByText } = render(
+      const { findByText } = render(
         <MuiThemeProvider theme={theme}>
           <ContactTaskRow task={task} />
         </MuiThemeProvider>,
       );
 
-      expect(queryByText('Talk To In Person')).toBeInTheDocument();
+      expect(findByText('Talk To In Person')).toBeVisible();
     });
 
     it('displays Text Message', () => {
@@ -235,13 +235,13 @@ describe('ContactTaskRow', () => {
         },
       });
 
-      const { queryByText } = render(
+      const { findByText } = render(
         <MuiThemeProvider theme={theme}>
           <ContactTaskRow task={task} />
         </MuiThemeProvider>,
       );
 
-      expect(queryByText('Text Message')).toBeInTheDocument();
+      expect(findByText('Text Message')).toBeVisible();
     });
 
     it('displays Thank', () => {
@@ -251,13 +251,13 @@ describe('ContactTaskRow', () => {
         },
       });
 
-      const { queryByText } = render(
+      const { findByText } = render(
         <MuiThemeProvider theme={theme}>
           <ContactTaskRow task={task} />
         </MuiThemeProvider>,
       );
 
-      expect(queryByText('Thank')).toBeInTheDocument();
+      expect(findByText('Thank')).toBeVisible();
     });
 
     it('displays To Do', () => {
@@ -267,13 +267,13 @@ describe('ContactTaskRow', () => {
         },
       });
 
-      const { queryByText } = render(
+      const { findByText } = render(
         <MuiThemeProvider theme={theme}>
           <ContactTaskRow task={task} />
         </MuiThemeProvider>,
       );
 
-      expect(queryByText('To Do')).toBeInTheDocument();
+      expect(findByText('To Do')).toBeVisible();
     });
   });
 });

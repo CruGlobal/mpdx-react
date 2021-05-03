@@ -9,14 +9,14 @@ describe('TaskCommentsButton', () => {
   it('should render not complete', async () => {
     const onClick = jest.fn();
 
-    const { getByRole, getByTestId } = render(
+    const { findByRole } = render(
       <MuiThemeProvider theme={theme}>
         <TaskCompleteButton isComplete={false} onClick={onClick} />
       </MuiThemeProvider>,
     );
 
-    const completeButton = getByRole('button');
-    const checkIcon = getByTestId('checkIcon');
+    const completeButton = await findByRole('button');
+    const checkIcon = await findByRole('checkIcon');
 
     expect(completeButton).toBeInTheDocument();
     expect(checkIcon).toBeInTheDocument();
@@ -34,14 +34,14 @@ describe('TaskCommentsButton', () => {
   it('should render complete', async () => {
     const onClick = jest.fn();
 
-    const { getByRole, getByTestId } = render(
+    const { findByRole } = render(
       <MuiThemeProvider theme={theme}>
         <TaskCompleteButton isComplete={true} onClick={onClick} />
       </MuiThemeProvider>,
     );
 
-    const completeButton = getByRole('button');
-    const checkIcon = getByTestId('checkIcon');
+    const completeButton = await findByRole('button');
+    const checkIcon = await findByRole('img', { name: 'Check Icon' });
 
     expect(completeButton).toBeInTheDocument();
     expect(checkIcon).toBeInTheDocument();
@@ -59,13 +59,13 @@ describe('TaskCommentsButton', () => {
   it('should handle click', async () => {
     const onClick = jest.fn();
 
-    const { getByRole } = render(
+    const { findByRole } = render(
       <MuiThemeProvider theme={theme}>
         <TaskCompleteButton isComplete={true} onClick={onClick} />
       </MuiThemeProvider>,
     );
 
-    const completeButton = getByRole('button');
+    const completeButton = await findByRole('button');
 
     expect(completeButton).toBeInTheDocument();
 

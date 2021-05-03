@@ -13,7 +13,7 @@ const onClose = jest.fn();
 
 describe('ContactDetails', () => {
   it('should show loading state', async () => {
-    const { getByTestId } = render(
+    const { findByTestId } = render(
       <GqlMockedProvider<GetContactDetailsHeaderQuery>
         mocks={{ contact: { id: contactId } }}
       >
@@ -27,11 +27,11 @@ describe('ContactDetails', () => {
       </GqlMockedProvider>,
     );
 
-    expect(getByTestId('Skeleton')).toBeInTheDocument();
+    expect(await findByTestId('Skeleton')).toBeVisible();
   });
 
   it('should render with contact details', async () => {
-    const { findByText, queryByTestId } = render(
+    const { findByText, findByTestId } = render(
       <GqlMockedProvider<GetContactDetailsHeaderQuery>
         mocks={{
           GetContactDetailsHeader: {
@@ -53,11 +53,11 @@ describe('ContactDetails', () => {
 
     expect(await findByText('Fname Lname')).toBeVisible();
 
-    expect(queryByTestId('Skeleton')).toBeNull();
+    expect(await findByTestId('Skeleton')).toBeNull();
   });
 
   it('should change tab', async () => {
-    const { getAllByRole } = render(
+    const { findAllByRole } = render(
       <GqlMockedProvider>
         <MuiThemeProvider theme={theme}>
           <ContactDetails
@@ -69,10 +69,10 @@ describe('ContactDetails', () => {
       </GqlMockedProvider>,
     );
 
-    const tasksPanel = getAllByRole('tabpanel')[0];
+    const tasksPanel = (await findAllByRole('tabpanel'))[0];
     expect(tasksPanel).toBeVisible();
 
-    userEvent.click(getAllByRole('tab')[1]);
+    userEvent.click((await findAllByRole('tab'))[1]);
     expect(tasksPanel).not.toBeVisible();
   });
 });

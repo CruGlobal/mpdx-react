@@ -11,7 +11,7 @@ describe('TaskCommentsButton', () => {
   it('should render not complete', async () => {
     const onClick = jest.fn();
 
-    const { queryByText } = render(
+    const { findByText } = render(
       <MuiThemeProvider theme={theme}>
         <TaskCommentsButton
           isComplete={false}
@@ -21,7 +21,7 @@ describe('TaskCommentsButton', () => {
       </MuiThemeProvider>,
     );
 
-    const numberText = queryByText(`${numberOfComments}`);
+    const numberText = await findByText(`${numberOfComments}`);
 
     expect(numberText).toBeInTheDocument();
 
@@ -33,7 +33,7 @@ describe('TaskCommentsButton', () => {
   it('should render complete', async () => {
     const onClick = jest.fn();
 
-    const { queryByText } = render(
+    const { findByText } = render(
       <MuiThemeProvider theme={theme}>
         <TaskCommentsButton
           isComplete={true}
@@ -43,7 +43,7 @@ describe('TaskCommentsButton', () => {
       </MuiThemeProvider>,
     );
 
-    const numberText = queryByText(`${numberOfComments}`);
+    const numberText = await findByText(`${numberOfComments}`);
 
     expect(numberText).toBeInTheDocument();
 
@@ -55,7 +55,7 @@ describe('TaskCommentsButton', () => {
   it('should handle click', async () => {
     const onClick = jest.fn();
 
-    const { getByRole } = render(
+    const { findByRole } = render(
       <MuiThemeProvider theme={theme}>
         <TaskCommentsButton
           isComplete={true}
@@ -65,7 +65,7 @@ describe('TaskCommentsButton', () => {
       </MuiThemeProvider>,
     );
 
-    const commentsButton = getByRole('button');
+    const commentsButton = await findByRole('button');
 
     expect(commentsButton).toBeInTheDocument();
 
