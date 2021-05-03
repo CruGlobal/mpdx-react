@@ -2,7 +2,7 @@ import { Button, styled, Theme } from '@material-ui/core';
 import { Check } from '@material-ui/icons';
 import React from 'react';
 
-const TaskRowWrap = styled(Button)(
+const ButtonWrap = styled(Button)(
   ({ theme, isComplete }: { theme: Theme; isComplete: boolean }) => ({
     display: 'flex',
     justifyContent: 'center',
@@ -11,7 +11,7 @@ const TaskRowWrap = styled(Button)(
     height: 24,
     width: 55,
     borderRadius: 26,
-    border: '2px solid #00CA99',
+    border: `2px solid ${theme.palette.mpdxGreen.main}`,
     margin: theme.spacing(2),
   }),
 );
@@ -34,8 +34,8 @@ export const TaskCompleteButton: React.FC<TaskCompleteButtonProps> = ({
   onClick,
 }) => {
   return (
-    <TaskRowWrap isComplete={isComplete} onClick={() => onClick()}>
-      <TaskCheckIcon data-testid="checkIcon" isComplete={isComplete} />
-    </TaskRowWrap>
+    <ButtonWrap isComplete={isComplete} onClick={() => onClick()}>
+      <TaskCheckIcon titleAccess="Check Icon" isComplete={isComplete} />
+    </ButtonWrap>
   );
 };

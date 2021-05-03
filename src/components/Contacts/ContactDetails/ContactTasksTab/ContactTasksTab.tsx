@@ -39,7 +39,7 @@ const AddTaskButtonIcon = styled(Add)(({ theme }) => ({
   height: 20,
   fontWeight: 600,
   margin: theme.spacing(0.5),
-  color: '#2196F3',
+  color: theme.palette.info.main,
 }));
 
 const LogTaskButtonIcon = styled(CheckCircleOutline)(({ theme }) => ({
@@ -47,30 +47,33 @@ const LogTaskButtonIcon = styled(CheckCircleOutline)(({ theme }) => ({
   height: 20,
   fontWeight: 600,
   margin: theme.spacing(0.5),
-  color: '#2196F3',
+  color: theme.palette.info.main,
 }));
 
-const TaskButtonText = styled(Typography)(({}) => ({
+const TaskButtonText = styled(Typography)(({ theme }) => ({
   fontSize: 14,
   fontWeight: 600,
   letterSpacing: 1.25,
-  color: '#2196F3',
+  color: theme.palette.info.main,
 }));
 
 const PlaceholderSearchBar = styled(Box)(({ theme }) => ({
   height: 40,
   width: 192,
   margin: theme.spacing(2),
-  backgroundColor: '#F4F4F4',
+  backgroundColor: theme.palette.background.paper,
 }));
 
-const Spacer = styled(Box)(({}) => ({ flex: 1 }));
+const Spacer = styled(Box)(({}) => ({
+  display: 'flex',
+  justifyContent: 'space-between',
+}));
 
 const PlaceholderActionBar = styled(Box)(({ theme }) => ({
   height: 40,
   width: 111,
   margin: theme.spacing(2),
-  backgroundColor: '#F4F4F4',
+  backgroundColor: theme.palette.background.paper,
 }));
 
 const ContactTasksLoadingPlaceHolder = styled(Skeleton)(({ theme }) => ({

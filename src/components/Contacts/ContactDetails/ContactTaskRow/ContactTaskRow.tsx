@@ -33,12 +33,15 @@ const TaskDescription = styled(Typography)(({ theme }) => ({
   marginLeft: theme.spacing(0.5),
 }));
 
-const Spacer = styled(Box)(({}) => ({ flex: 1 }));
+const Spacer = styled(Box)(({}) => ({
+  display: 'flex',
+  justifyContent: 'space-between',
+}));
 
 const ContactName = styled(Typography)(({ theme }) => ({
   fontSize: 14,
   color: theme.palette.text.primary,
-  maring: theme.spacing(1),
+  margin: theme.spacing(1),
 }));
 
 const StarIconWrap = styled(Box)(({ theme }) => ({
@@ -127,7 +130,7 @@ export const ContactTaskRow: React.FC<ContactTaskRowProps> = ({ task }) => {
 
   const dueDate = (startAt && DateTime.fromISO(startAt)) || null;
 
-  const contactName = contacts?.nodes[0]?.name;
+  const contactName = contacts.nodes[0].name;
 
   const isComplete = result === ResultEnum.Completed;
 
