@@ -1,0 +1,11 @@
+query ContactTasksTab($accountListId: ID!, $contactId: ID!) {
+  tasks(accountListId: $accountListId, contactIds: [$contactId]) {
+    nodes {
+      ...ContactTaskRow
+    }
+    pageInfo {
+      endCursor
+      hasNextPage
+    }
+  }
+}
