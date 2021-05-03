@@ -16,7 +16,7 @@ describe('TaskCommentsButton', () => {
     );
 
     const completeButton = await findByRole('button');
-    const checkIcon = await findByRole('checkIcon');
+    const checkIcon = await findByRole('img', { name: 'Check Icon' });
 
     expect(completeButton).toBeInTheDocument();
     expect(checkIcon).toBeInTheDocument();

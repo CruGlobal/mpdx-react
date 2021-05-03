@@ -13,7 +13,7 @@ const onClose = jest.fn();
 
 describe('ContactDetails', () => {
   it('should show loading state', async () => {
-    const { findByTestId } = render(
+    const { getByTestId } = render(
       <GqlMockedProvider<GetContactDetailsHeaderQuery>
         mocks={{ contact: { id: contactId } }}
       >
@@ -27,11 +27,11 @@ describe('ContactDetails', () => {
       </GqlMockedProvider>,
     );
 
-    expect(await findByTestId('Skeleton')).toBeVisible();
+    expect(getByTestId('Skeleton')).toBeVisible();
   });
 
   it('should render with contact details', async () => {
-    const { findByText, findByTestId } = render(
+    const { findByText, getByTestId } = render(
       <GqlMockedProvider<GetContactDetailsHeaderQuery>
         mocks={{
           GetContactDetailsHeader: {
@@ -53,7 +53,7 @@ describe('ContactDetails', () => {
 
     expect(await findByText('Fname Lname')).toBeVisible();
 
-    expect(await findByTestId('Skeleton')).toBeNull();
+    expect(getByTestId('Skeleton')).toBeNull();
   });
 
   it('should change tab', async () => {
