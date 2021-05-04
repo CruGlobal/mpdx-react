@@ -2,6 +2,11 @@ query GetContactDonations($accountListId: ID!, $contactId: ID!) {
   contact(accountListId: $accountListId, id: $contactId) {
     id
     name
+    donations {
+      nodes {
+        ...ContactDonation
+      }
+    }
     contactDonorAccounts {
       nodes {
         id
@@ -10,11 +15,12 @@ query GetContactDonations($accountListId: ID!, $contactId: ID!) {
         }
       }
     }
-    donations {
-      nodes {
-        ...ContactDonation
-      }
-    }
+  }
+}
+
+fragment DonationsContact on DonationConnection {
+  nodes {
+    ...ContactDonation
   }
 }
 
@@ -23,6 +29,7 @@ fragment ContactDonation on Donation {
   amount {
     ...DonationMoney
   }
+  donationDate
 }
 
 fragment DonationMoney on Money {
