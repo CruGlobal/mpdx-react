@@ -1,7 +1,9 @@
+import { MuiThemeProvider } from '@material-ui/core';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
+import theme from '../../../theme';
 import { ContactDetails } from './ContactDetails';
 import { GetContactDetailsHeaderQuery } from './ContactDetailsHeader/ContactDetailsHeader.generated';
 
@@ -15,15 +17,17 @@ describe('ContactDetails', () => {
       <GqlMockedProvider<GetContactDetailsHeaderQuery>
         mocks={{ contact: { id: contactId } }}
       >
-        <ContactDetails
-          accountListId={accountListId}
-          contactId={contactId}
-          onClose={onClose}
-        />
+        <MuiThemeProvider theme={theme}>
+          <ContactDetails
+            accountListId={accountListId}
+            contactId={contactId}
+            onClose={onClose}
+          />
+        </MuiThemeProvider>
       </GqlMockedProvider>,
     );
 
-    expect(getByTestId('Skeleton')).toBeInTheDocument();
+    expect(getByTestId('Skeleton')).toBeVisible();
   });
 
   it('should render with contact details', async () => {
@@ -37,11 +41,13 @@ describe('ContactDetails', () => {
           },
         }}
       >
-        <ContactDetails
-          accountListId={accountListId}
-          contactId={contactId}
-          onClose={onClose}
-        />
+        <MuiThemeProvider theme={theme}>
+          <ContactDetails
+            accountListId={accountListId}
+            contactId={contactId}
+            onClose={onClose}
+          />
+        </MuiThemeProvider>
       </GqlMockedProvider>,
     );
 
@@ -49,19 +55,24 @@ describe('ContactDetails', () => {
 
     expect(queryByTestId('Skeleton')).toBeNull();
   });
+
   it('should change tab', async () => {
-    const { getByRole } = render(
+    const { getAllByRole } = render(
       <GqlMockedProvider>
-        <ContactDetails
-          accountListId={accountListId}
-          contactId={contactId}
-          onClose={onClose}
-        />
+        <MuiThemeProvider theme={theme}>
+          <ContactDetails
+            accountListId={accountListId}
+            contactId={contactId}
+            onClose={onClose}
+          />
+        </MuiThemeProvider>
       </GqlMockedProvider>,
     );
-    const tasksPanel = getByRole('tabpanel', { name: 'Tasks' });
+
+    const tasksPanel = getAllByRole('tabpanel')[0];
     expect(tasksPanel).toBeVisible();
-    userEvent.click(getByRole('tab', { name: 'Donations' }));
+
+    userEvent.click(getAllByRole('tab')[1]);
     expect(tasksPanel).not.toBeVisible();
   });
 });
