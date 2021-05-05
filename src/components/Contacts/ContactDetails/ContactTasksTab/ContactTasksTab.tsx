@@ -2,8 +2,8 @@ import { Box, Button, Divider, styled, Typography } from '@material-ui/core';
 import { Add, CheckCircleOutline } from '@material-ui/icons';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { StarredItemIcon } from '../../../common/StarredItemIcon';
 import { ContactCheckBox } from '../../ContactCheckBox/ContactCheckBox';
-import { StarContactIcon } from '../../StarContactIcon/StarContactIcon';
 import { ContactTaskRow } from '../ContactTaskRow/ContactTaskRow';
 import { useContactTasksTabQuery } from './ContactTasksTab.generated';
 
@@ -124,7 +124,7 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
           <HeaderItemsWrap>
             <PlaceholderActionBar />
             <StarIconWrap>
-              <StarContactIcon hasStar={false} />
+              <StarredItemIcon isStarred={false} />
             </StarIconWrap>
           </HeaderItemsWrap>
         </HeaderRow>

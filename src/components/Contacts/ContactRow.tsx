@@ -5,7 +5,7 @@ import theme from '../../theme';
 import { CelebrationIcons } from './CelebrationIcons/CelebrationIcons';
 import { ContactRowFragment } from './ContactRow.generated';
 import { GiftStatus } from './GiftStatus/GiftStatus';
-import { StarContactIcon } from './StarContactIcon/StarContactIcon';
+import { StarContactIconButton } from './StarContactIconButton/StarContactIconButton';
 
 const ContactRowButton = styled(Box)(({}) => ({
   height: '72px',
@@ -42,11 +42,16 @@ const ContactText = styled('p')(({}) => ({
 }));
 
 interface Props {
+  accountListId: string;
   contact: ContactRowFragment;
   onContactSelected: (contactId: string) => void;
 }
 
-export const ContactRow: React.FC<Props> = ({ contact, onContactSelected }) => {
+export const ContactRow: React.FC<Props> = ({
+  accountListId,
+  contact,
+  onContactSelected,
+}) => {
   const onClick = () => {
     onContactSelected(contact.id);
   };
@@ -108,9 +113,10 @@ export const ContactRow: React.FC<Props> = ({ contact, onContactSelected }) => {
             </ContactText>
           </Box>
         </Hidden>
-        <Box style={{ margin: theme.spacing(1, 'auto'), flexBasis: 0 }}>
-          <StarContactIcon hasStar={false} />
-        </Box>
+        <StarContactIconButton
+          accountListId={accountListId}
+          contactId={contact.id}
+        />
       </ContactRowButton>
       <hr
         style={{

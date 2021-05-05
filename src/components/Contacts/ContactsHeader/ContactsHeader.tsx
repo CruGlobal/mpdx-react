@@ -7,8 +7,8 @@ import {
   ContactCheckBox,
   ContactCheckBoxState,
 } from '../ContactCheckBox/ContactCheckBox';
-import { StarContactIcon } from '../StarContactIcon/StarContactIcon';
 import { SearchBox } from '../../SearchBox/SearchBox';
+import { StarredItemIcon } from '../../common/StarredItemIcon';
 
 interface Props {
   activeFilters: boolean;
@@ -194,7 +194,7 @@ export const ContactsHeader: React.FC<Props> = ({
 
       <Hidden smDown>
         <StarIconWrap>
-          <StarContactIcon hasStar={false} />
+          <StarredItemIcon isStarred={false} />
         </StarIconWrap>
       </Hidden>
     </HeaderWrap>
