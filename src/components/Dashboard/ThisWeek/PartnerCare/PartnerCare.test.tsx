@@ -7,7 +7,7 @@ import {
 import { useApp } from '../../../App';
 import { GetThisWeekQuery } from '../GetThisWeek.generated';
 import { ActivityTypeEnum } from '../../../../../graphql/types.generated';
-import PartnerCare from '.';
+import PartnerCare from './PartnerCare';
 
 jest.mock('../../../App', () => ({
   useApp: jest.fn(),

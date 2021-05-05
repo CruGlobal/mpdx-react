@@ -3,7 +3,7 @@ import { Box } from '@material-ui/core';
 import { MockedProvider } from '@apollo/client/testing';
 import { ActivityTypeEnum } from '../../../../../graphql/types.generated';
 import { GetThisWeekQuery } from '../GetThisWeek.generated';
-import PartnerCare from '.';
+import PartnerCare from './PartnerCare';
 
 export default {
   title: 'Dashboard/ThisWeek/PartnerCare',

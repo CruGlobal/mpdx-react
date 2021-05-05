@@ -2,8 +2,6 @@ import React, { ReactElement, useState } from 'react';
 import {
   Box,
   Typography,
-  makeStyles,
-  Theme,
   CardHeader,
   CardActions,
   Button,
@@ -16,6 +14,7 @@ import {
   Tab,
   ListItemIcon,
   CardContent,
+  styled,
 } from '@material-ui/core';
 import CakeIcon from '@material-ui/icons/Cake';
 import FavoriteIcon from '@material-ui/icons/Favorite';
@@ -32,35 +31,37 @@ import illustration4 from '../../../../images/drawkit/grape/drawkit-grape-pack-i
 import illustration7 from '../../../../images/drawkit/grape/drawkit-grape-pack-illustration-7.svg';
 import { GetThisWeekQuery } from '../GetThisWeek.generated';
 
-const useStyles = makeStyles((theme: Theme) => ({
-  div: {
-    flex: 1,
-    display: 'flex',
-    flexDirection: 'column',
-    overflow: 'auto',
+const CardContainer = styled(AnimatedCard)(({ theme }) => ({
+  flex: 'flex',
+  flexDirection: 'column',
+  height: '322px',
+  [theme.breakpoints.down('xs')]: {
+    height: 'auto',
   },
-  list: {
-    flex: 1,
-    padding: 0,
-    overflow: 'auto',
-  },
-  card: {
-    display: 'flex',
-    flexDirection: 'column',
-    height: '322px',
-    [theme.breakpoints.down('xs')]: {
-      height: 'auto',
-    },
-  },
-  cardContent: {
-    padding: theme.spacing(2),
-    display: 'flex',
-    flex: 1,
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  img: {
+}));
+
+const MotionDiv = styled(motion.div)(() => ({
+  flex: 1,
+  display: 'flex',
+  flexDirection: 'column',
+  overflow: 'auto',
+}));
+
+const CardList = styled(List)(() => ({
+  flex: 1,
+  padding: 0,
+  overflow: 'auto',
+}));
+
+const CardContentContainer = styled(CardContent)(({ theme }) => ({
+  padding: theme.spacing(2),
+  display: 'flex',
+  flex: 1,
+  flexDirection: 'column',
+  alignItems: 'center',
+  justifyContent: 'center',
+
+  '& > img': {
     height: '120px',
     marginBottom: 0,
     [theme.breakpoints.down('xs')]: {
@@ -85,7 +86,6 @@ const PartnerCare = ({
   reportsPeopleWithBirthdays,
   reportsPeopleWithAnniversaries,
 }: Props): ReactElement => {
-  const classes = useStyles();
   const { t } = useTranslation();
   const [value, setValue] = useState(0);
   const { openTaskDrawer } = useApp();
@@ -104,7 +104,7 @@ const PartnerCare = ({
   };
 
   return (
-    <AnimatedCard className={classes.card}>
+    <CardContainer>
       <CardHeader title={t('Partner Care')} />
       <Tabs
         value={value}
@@ -129,18 +129,14 @@ const PartnerCare = ({
         />
       </Tabs>
       {value === 0 && (
-        <motion.div
+        <MotionDiv
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className={classes.div}
         >
           {loading && (
             <>
-              <List
-                className={classes.list}
-                data-testid="PartnerCarePrayerListLoading"
-              >
+              <CardList data-testid="PartnerCarePrayerListLoading">
                 {[0, 1].map((index) => (
                   <ListItem key={index}>
                     <ListItemText
@@ -152,7 +148,7 @@ const PartnerCare = ({
                     </ListItemSecondaryAction>
                   </ListItem>
                 ))}
-              </List>
+              </CardList>
               <CardActions>
                 <Button size="small" color="primary" disabled>
                   {t('View All ({{ totalCount, number }})', { totalCount: 0 })}
@@ -164,24 +160,17 @@ const PartnerCare = ({
             <>
               {(!prayerRequestTasks ||
                 prayerRequestTasks?.nodes.length === 0) && (
-                <CardContent
-                  className={classes.cardContent}
-                  data-testid="PartnerCarePrayerCardContentEmpty"
-                >
+                <CardContentContainer data-testid="PartnerCarePrayerCardContentEmpty">
                   <img
                     src={illustration4}
-                    className={classes.img}
-                    alt="empty"
+                    alt="Partner care prayer request empty image"
                   />
                   {t('No prayer requests to show.')}
-                </CardContent>
+                </CardContentContainer>
               )}
               {prayerRequestTasks && prayerRequestTasks.nodes.length > 0 && (
                 <>
-                  <List
-                    className={classes.list}
-                    data-testid="PartnerCarePrayerList"
-                  >
+                  <CardList data-testid="PartnerCarePrayerList">
                     {prayerRequestTasks.nodes.map((task) => (
                       <ListItem
                         key={task.id}
@@ -226,7 +215,7 @@ const PartnerCare = ({
                         </ListItemSecondaryAction>
                       </ListItem>
                     ))}
-                  </List>
+                  </CardList>
                   <CardActions>
                     <Link
                       href="/accountLists/[accountListId]/tasks"
@@ -244,20 +233,16 @@ const PartnerCare = ({
               )}
             </>
           )}
-        </motion.div>
+        </MotionDiv>
       )}
       {value === 1 && (
-        <motion.div
+        <MotionDiv
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className={classes.div}
         >
           {loading && (
-            <List
-              className={classes.list}
-              data-testid="PartnerCareCelebrationListLoading"
-            >
+            <CardList data-testid="PartnerCareCelebrationListLoading">
               {[0, 1, 2].map((index) => (
                 <ListItem key={index}>
                   <ListItemText
@@ -269,7 +254,7 @@ const PartnerCare = ({
                   </ListItemSecondaryAction>
                 </ListItem>
               ))}
-            </List>
+            </CardList>
           )}
           {!loading && (
             <>
@@ -280,22 +265,15 @@ const PartnerCare = ({
                 (reportsPeopleWithAnniversaries.periods[0].people &&
                   reportsPeopleWithAnniversaries.periods[0].people.length ===
                     0)) ? (
-                <CardContent
-                  className={classes.cardContent}
-                  data-testid="PartnerCareCelebrationCardContentEmpty"
-                >
+                <CardContentContainer data-testid="PartnerCareCelebrationCardContentEmpty">
                   <img
                     src={illustration7}
-                    className={classes.img}
-                    alt="empty"
+                    alt="Partner care celebration empty image"
                   />
                   {t('No celebrations to show.')}
-                </CardContent>
+                </CardContentContainer>
               ) : (
-                <List
-                  className={classes.list}
-                  data-testid="PartnerCareCelebrationList"
-                >
+                <CardList data-testid="PartnerCareCelebrationList">
                   {reportsPeopleWithBirthdays?.periods[0].people.map(
                     (person) =>
                       person.birthdayDay &&
@@ -401,13 +379,13 @@ const PartnerCare = ({
                         </ListItem>
                       ),
                   )}
-                </List>
+                </CardList>
               )}
             </>
           )}
-        </motion.div>
+        </MotionDiv>
       )}
-    </AnimatedCard>
+    </CardContainer>
   );
 };
 
