@@ -14,6 +14,7 @@ interface Props {
   activeFilters: boolean;
   filterPanelOpen: boolean;
   toggleFilterPanel: () => void;
+  onSearchTermChanged: (searchTerm: string) => void;
   totalContacts?: number;
 }
 
@@ -116,6 +117,7 @@ export const ContactsHeader: React.FC<Props> = ({
   activeFilters,
   filterPanelOpen,
   toggleFilterPanel,
+  onSearchTermChanged,
   totalContacts = 0,
 }) => {
   const { t } = useTranslation();
@@ -161,7 +163,7 @@ export const ContactsHeader: React.FC<Props> = ({
 
       <SearchBox
         searchTerm=""
-        onChange={() => ''}
+        onChange={onSearchTermChanged}
         placeholder={t('Search List')}
       />
       <ContactsShowingText>

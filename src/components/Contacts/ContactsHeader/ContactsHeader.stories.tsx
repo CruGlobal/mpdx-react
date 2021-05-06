@@ -11,6 +11,7 @@ export const Default = (): ReactElement => {
       activeFilters={false}
       filterPanelOpen={false}
       toggleFilterPanel={() => {}}
+      onSearchTermChanged={() => {}}
     />
   );
 };
@@ -21,6 +22,7 @@ export const ActiveFilters = (): ReactElement => {
       activeFilters={true}
       filterPanelOpen={false}
       toggleFilterPanel={() => {}}
+      onSearchTermChanged={() => {}}
     />
   );
 };
@@ -31,6 +33,7 @@ export const FilterPanelOpen = (): ReactElement => {
       activeFilters={false}
       filterPanelOpen={true}
       toggleFilterPanel={() => {}}
+      onSearchTermChanged={() => {}}
     />
   );
 };
@@ -41,6 +44,7 @@ export const ActiveFiltersAndFilterPanelOpen = (): ReactElement => {
       activeFilters={true}
       filterPanelOpen={true}
       toggleFilterPanel={() => {}}
+      onSearchTermChanged={() => {}}
     />
   );
 };

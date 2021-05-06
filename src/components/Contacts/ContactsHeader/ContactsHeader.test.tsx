@@ -13,6 +13,7 @@ describe('ContactFilters', () => {
           activeFilters={false}
           filterPanelOpen={false}
           toggleFilterPanel={() => {}}
+          onSearchTermChanged={() => {}}
         />
       </ThemeProvider>,
     );
@@ -32,6 +33,7 @@ describe('ContactFilters', () => {
           activeFilters={false}
           filterPanelOpen={false}
           toggleFilterPanel={() => {}}
+          onSearchTermChanged={() => {}}
         />
       </ThemeProvider>,
     );
@@ -50,6 +52,7 @@ describe('ContactFilters', () => {
           activeFilters={false}
           filterPanelOpen={false}
           toggleFilterPanel={() => {}}
+          onSearchTermChanged={() => {}}
         />
       </ThemeProvider>,
     );
@@ -69,6 +72,7 @@ describe('ContactFilters', () => {
           activeFilters={false}
           filterPanelOpen={true}
           toggleFilterPanel={() => {}}
+          onSearchTermChanged={() => {}}
         />
       </ThemeProvider>,
     );
@@ -88,6 +92,7 @@ describe('ContactFilters', () => {
           activeFilters={true}
           filterPanelOpen={false}
           toggleFilterPanel={() => {}}
+          onSearchTermChanged={() => {}}
         />
       </ThemeProvider>,
     );
@@ -107,6 +112,7 @@ describe('ContactFilters', () => {
           activeFilters={true}
           filterPanelOpen={false}
           toggleFilterPanel={() => {}}
+          onSearchTermChanged={() => {}}
         />
       </ThemeProvider>,
     );
