@@ -4,7 +4,7 @@ import { StarContactIconButton } from './StarContactIconButton';
 import { SetContactStarredMutation } from './SetContactStarred.generated';
 
 export default {
-  title: 'Contacts/ContactRow/Widgets/StarContactIcon',
+  title: 'Contacts/ContactRow/Widgets/StarContactIconButton',
 };
 
 const accountListId = 'abc';
@@ -13,26 +13,26 @@ const contactId = '1';
 export const Default = (): ReactElement => {
   return (
     <GqlMockedProvider<SetContactStarredMutation>
-      mocks={{ contact: { id: contactId, noAppeal: false } }}
+      mocks={{
+        updateContact: { contact: { id: contactId, noAppeals: false } },
+      }}
     >
       <StarContactIconButton
         accountListId={accountListId}
         contactId={contactId}
-        hasStar={false}
       />
     </GqlMockedProvider>
   );
 };
 
-export const IsStared = (): ReactElement => {
+export const IsStarred = (): ReactElement => {
   return (
     <GqlMockedProvider<SetContactStarredMutation>
-      mocks={{ contact: { id: contactId, noAppeal: true } }}
+      mocks={{ updateContact: { contact: { id: contactId, noAppeals: true } } }}
     >
       <StarContactIconButton
         accountListId={accountListId}
         contactId={contactId}
-        hasStar={false}
       />
     </GqlMockedProvider>
   );
