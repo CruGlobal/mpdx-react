@@ -7,10 +7,10 @@ import { useTranslation } from 'react-i18next';
 import {
   ActivityTypeEnum,
   ResultEnum,
-} from '../../../../../graphql/types.generated';
-import theme from '../../../../theme';
-import { StarredItemIcon } from '../../../common/StarredItemIcon';
-import { ContactCheckBox } from '../../ContactCheckBox/ContactCheckBox';
+} from '../../../../../../graphql/types.generated';
+import theme from '../../../../../theme';
+import { StarredItemIcon } from '../../../../common/StarredItemIcon';
+import { ContactCheckBox } from '../../../ContactCheckBox/ContactCheckBox';
 import { ContactTaskRowFragment } from './ContactTaskRow.generated';
 import { TaskCommentsButton } from './TaskCommentsButton/TaskCommentsButton';
 import { TaskCompleteButton } from './TaskCompleteButton/TaskCompleteButton';

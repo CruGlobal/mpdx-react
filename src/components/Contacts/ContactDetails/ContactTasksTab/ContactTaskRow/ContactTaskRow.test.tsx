@@ -4,9 +4,9 @@ import React from 'react';
 import {
   ActivityTypeEnum,
   ResultEnum,
-} from '../../../../../graphql/types.generated';
-import { gqlMock } from '../../../../../__tests__/util/graphqlMocking';
-import theme from '../../../../theme';
+} from '../../../../../../graphql/types.generated';
+import { gqlMock } from '../../../../../../__tests__/util/graphqlMocking';
+import theme from '../../../../../theme';
 import { ContactTaskRow } from './ContactTaskRow';
 import {
   ContactTaskRowFragment,

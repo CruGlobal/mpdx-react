@@ -4,7 +4,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { StarredItemIcon } from '../../../common/StarredItemIcon';
 import { ContactCheckBox } from '../../ContactCheckBox/ContactCheckBox';
-import { ContactTaskRow } from '../ContactTaskRow/ContactTaskRow';
+import { ContactTaskRow } from './ContactTaskRow/ContactTaskRow';
 import { useContactTasksTabQuery } from './ContactTasksTab.generated';
 
 const ContactDetailsTabContainer = styled(Box)(() => ({
