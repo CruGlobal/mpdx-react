@@ -9,12 +9,12 @@ import {
   ListItem,
   ListItemText,
   ListItemSecondaryAction,
-  Checkbox,
   Tabs,
   Tab,
   ListItemIcon,
   CardContent,
   styled,
+  IconButton,
 } from '@material-ui/core';
 import CakeIcon from '@material-ui/icons/Cake';
 import FavoriteIcon from '@material-ui/icons/Favorite';
@@ -23,7 +23,9 @@ import { motion } from 'framer-motion';
 import uniqBy from 'lodash/fp/uniqBy';
 import { useTranslation } from 'react-i18next';
 import Link from 'next/link';
-import { Brightness1Outlined, CheckCircle } from '@material-ui/icons';
+import Brightness1Outlined from '@material-ui/icons/Brightness1Outlined';
+import DoneIcon from '@material-ui/icons/Done';
+import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import { dayMonthFormat } from '../../../../lib/intlFormat';
 import AnimatedCard from '../../../AnimatedCard';
 import { useApp } from '../../../App';
@@ -71,12 +73,61 @@ const CardContentContainer = styled(CardContent)(({ theme }) => ({
   },
 }));
 
+const CompleteButton = styled(IconButton)(({ theme }) => ({
+  width: theme.spacing(3.5),
+  height: theme.spacing(3.5),
+  fontSize: '1.4rem',
+  cursor: 'pointer',
+  background: 'none',
+  transition: theme.transitions.create(['background'], {
+    duration: theme.transitions.duration.short,
+  }),
+  '&:hover': {
+    backgroundColor: theme.palette.mpdxGreen.main,
+  },
+  '&:hover [name="Circle Icon"]': {
+    opacity: 0,
+  },
+  '&:hover [name="Done Icon"]': {
+    opacity: 1,
+  },
+  '&:hover [name="Add Icon"]': {
+    opacity: 1,
+  },
+}));
+
+const DoneHoverIcon = styled(DoneIcon)(({ theme }) => ({
+  opacity: 0,
+  color: theme.palette.common.white,
+  position: 'absolute',
+  left: '2px',
+  transition: theme.transitions.create(['transform', 'opacity'], {
+    duration: theme.transitions.duration.short,
+  }),
+  transform: 'rotate(0deg)',
+}));
+
+const AddHoverIcon = styled(AddCircleOutlineIcon)(({ theme }) => ({
+  opacity: 0,
+  color: theme.palette.common.white,
+  position: 'absolute',
+  left: '2px',
+  transition: theme.transitions.create(['transform', 'opacity'], {
+    duration: theme.transitions.duration.short,
+  }),
+}));
+
 interface Props {
   accountListId: string;
   loading?: boolean;
   prayerRequestTasks?: GetThisWeekQuery['prayerRequestTasks'];
   reportsPeopleWithBirthdays?: GetThisWeekQuery['reportsPeopleWithBirthdays'];
   reportsPeopleWithAnniversaries?: GetThisWeekQuery['reportsPeopleWithAnniversaries'];
+}
+
+enum CelebrationTypeEnum {
+  'birthday',
+  'anniversary',
 }
 
 const PartnerCare = ({
@@ -101,6 +152,27 @@ const PartnerCare = ({
     newValue: number,
   ): void => {
     setValue(newValue);
+  };
+
+  const handleCreateClick = (
+    celebrationType: CelebrationTypeEnum,
+    person: GetThisWeekQuery['reportsPeopleWithAnniversaries']['periods'][0]['people'][0] &
+      GetThisWeekQuery['reportsPeopleWithBirthdays']['periods'][0]['people'][0],
+  ) => {
+    openTaskDrawer({
+      defaultValues: {
+        subject:
+          celebrationType === CelebrationTypeEnum.birthday
+            ? `${person.firstName} ${person.lastName}'s Birthday`
+            : `${person.parentContact.name}'s Anniversary`,
+      },
+    });
+  };
+
+  const handleCompleteClick = ({
+    id: taskId,
+  }: GetThisWeekQuery['prayerRequestTasks']['nodes'][0]): void => {
+    openTaskDrawer({ taskId, showCompleteForm: true });
   };
 
   return (
@@ -163,7 +235,7 @@ const PartnerCare = ({
                 <CardContentContainer data-testid="PartnerCarePrayerCardContentEmpty">
                   <img
                     src={illustration4}
-                    alt="Partner care prayer request empty image"
+                    alt="No partner care prayer requests"
                   />
                   {t('No prayer requests to show.')}
                 </CardContentContainer>
@@ -205,13 +277,15 @@ const PartnerCare = ({
                             </Box>
                           }
                         />
-                        {/*TODO: This button complete the Prayer Task and remove it from the list: https://jira.cru.org/browse/MPDX-6945 */}
                         <ListItemSecondaryAction>
-                          <Checkbox
-                            icon={<Brightness1Outlined />}
-                            checkedIcon={<CheckCircle />}
-                            edge="end"
-                          />
+                          <CompleteButton
+                            role="button"
+                            aria-label="Complete Button"
+                            onClick={() => handleCompleteClick(task)}
+                          >
+                            <Brightness1Outlined name="Circle Icon" />
+                            <DoneHoverIcon name="Done Icon" />
+                          </CompleteButton>
                         </ListItemSecondaryAction>
                       </ListItem>
                     ))}
@@ -266,10 +340,7 @@ const PartnerCare = ({
                   reportsPeopleWithAnniversaries.periods[0].people.length ===
                     0)) ? (
                 <CardContentContainer data-testid="PartnerCareCelebrationCardContentEmpty">
-                  <img
-                    src={illustration7}
-                    alt="Partner care celebration empty image"
-                  />
+                  <img src={illustration7} alt="No partner care celebrations" />
                   {t('No celebrations to show.')}
                 </CardContentContainer>
               ) : (
@@ -314,13 +385,20 @@ const PartnerCare = ({
                               </Box>
                             }
                           />
-                          {/*TODO: This button complete the Celebration and remove it from the list: https://jira.cru.org/browse/MPDX-6945 */}
                           <ListItemSecondaryAction>
-                            <Checkbox
-                              icon={<Brightness1Outlined />}
-                              checkedIcon={<CheckCircle />}
-                              edge="end"
-                            />
+                            <CompleteButton
+                              role="button"
+                              aria-label="Complete Button"
+                              onClick={() =>
+                                handleCreateClick(
+                                  CelebrationTypeEnum.birthday,
+                                  person,
+                                )
+                              }
+                            >
+                              <Brightness1Outlined name="Circle Icon" />
+                              <AddHoverIcon name="Add Icon" />
+                            </CompleteButton>
                           </ListItemSecondaryAction>
                         </ListItem>
                       ),
@@ -368,13 +446,20 @@ const PartnerCare = ({
                               </Box>
                             }
                           />
-                          {/*TODO: This button complete the Celebration and remove it from the list: https://jira.cru.org/browse/MPDX-6945 */}
                           <ListItemSecondaryAction>
-                            <Checkbox
-                              icon={<Brightness1Outlined />}
-                              checkedIcon={<CheckCircle />}
-                              edge="end"
-                            />
+                            <CompleteButton
+                              role="button"
+                              aria-label="Complete Button"
+                              onClick={() =>
+                                handleCreateClick(
+                                  CelebrationTypeEnum.anniversary,
+                                  person,
+                                )
+                              }
+                            >
+                              <Brightness1Outlined name="Circle Icon" />
+                              <AddHoverIcon name="Add Icon" />
+                            </CompleteButton>
                           </ListItemSecondaryAction>
                         </ListItem>
                       ),

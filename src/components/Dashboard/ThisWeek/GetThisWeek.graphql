@@ -84,6 +84,7 @@ query GetThisWeek(
         lastName
         parentContact {
           id
+          name
         }
       }
     }

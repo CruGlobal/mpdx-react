@@ -1,5 +1,6 @@
 import React from 'react';
 import userEvent from '@testing-library/user-event';
+import { ThemeProvider } from '@material-ui/core';
 import {
   render,
   fireEvent,
@@ -7,6 +8,7 @@ import {
 import { useApp } from '../../../App';
 import { GetThisWeekQuery } from '../GetThisWeek.generated';
 import { ActivityTypeEnum } from '../../../../../graphql/types.generated';
+import theme from '../../../../theme';
 import PartnerCare from './PartnerCare';
 
 jest.mock('../../../App', () => ({
@@ -20,6 +22,69 @@ beforeEach(() => {
     openTaskDrawer,
   });
 });
+const prayerRequestTasks: GetThisWeekQuery['prayerRequestTasks'] = {
+  nodes: [
+    {
+      id: 'task_1',
+      subject: 'the quick brown fox jumps over the lazy dog',
+      activityType: ActivityTypeEnum.PrayerRequest,
+      contacts: {
+        nodes: [{ name: 'Roger Smith' }, { name: 'Sarah Smith' }],
+      },
+      startAt: null,
+      completedAt: null,
+    },
+    {
+      id: 'task_2',
+      subject: 'on the boat to see uncle johnny',
+      activityType: ActivityTypeEnum.PrayerRequest,
+      contacts: {
+        nodes: [{ name: 'Roger Parker' }, { name: 'Sarah Parker' }],
+      },
+      startAt: null,
+      completedAt: null,
+    },
+  ],
+  totalCount: 2560,
+};
+const personWithBirthday = {
+  birthdayDay: 1,
+  birthdayMonth: 1,
+  firstName: 'John',
+  lastName: 'Doe',
+  parentContact: {
+    id: 'contact',
+    name: 'John and Sarah, Doe',
+  },
+};
+const personWithAnniversary = {
+  anniversaryDay: 5,
+  anniversaryMonth: 10,
+  parentContact: {
+    id: 'contact',
+    name: 'John and Sarah, Doe',
+  },
+};
+const reportsPeopleWithBirthdays = {
+  periods: [
+    {
+      people: [
+        { ...personWithBirthday, id: 'person_1' },
+        { ...personWithBirthday, id: 'person_2' },
+      ],
+    },
+  ],
+};
+const reportsPeopleWithAnniversaries = {
+  periods: [
+    {
+      people: [
+        { ...personWithAnniversary, id: 'person_3' },
+        { ...personWithAnniversary, id: 'person_4' },
+      ],
+    },
+  ],
+};
 
 describe('PartnerCare', () => {
   it('default', () => {
@@ -105,75 +170,16 @@ describe('PartnerCare', () => {
   });
 
   it('props', () => {
-    const prayerRequestTasks: GetThisWeekQuery['prayerRequestTasks'] = {
-      nodes: [
-        {
-          id: 'task_1',
-          subject: 'the quick brown fox jumps over the lazy dog',
-          activityType: ActivityTypeEnum.PrayerRequest,
-          contacts: {
-            nodes: [{ name: 'Roger Smith' }, { name: 'Sarah Smith' }],
-          },
-          startAt: null,
-          completedAt: null,
-        },
-        {
-          id: 'task_2',
-          subject: 'on the boat to see uncle johnny',
-          activityType: ActivityTypeEnum.PrayerRequest,
-          contacts: {
-            nodes: [{ name: 'Roger Parker' }, { name: 'Sarah Parker' }],
-          },
-          startAt: null,
-          completedAt: null,
-        },
-      ],
-      totalCount: 2560,
-    };
-    const personWithBirthday = {
-      birthdayDay: 1,
-      birthdayMonth: 1,
-      firstName: 'John',
-      lastName: 'Doe',
-      parentContact: {
-        id: 'contact',
-      },
-    };
-    const personWithAnniversary = {
-      anniversaryDay: 5,
-      anniversaryMonth: 10,
-      parentContact: {
-        id: 'contact',
-        name: 'John and Sarah, Doe',
-      },
-    };
-    const reportsPeopleWithBirthdays = {
-      periods: [
-        {
-          people: [
-            { ...personWithBirthday, id: 'person_1' },
-            { ...personWithBirthday, id: 'person_2' },
-          ],
-        },
-      ],
-    };
-    const reportsPeopleWithAnniversaries = {
-      periods: [
-        {
-          people: [
-            { ...personWithAnniversary, id: 'person_3' },
-            { ...personWithAnniversary, id: 'person_4' },
-          ],
-        },
-      ],
-    };
     const { getByTestId, queryByTestId } = render(
-      <PartnerCare
-        accountListId="abc"
-        prayerRequestTasks={prayerRequestTasks}
-        reportsPeopleWithBirthdays={reportsPeopleWithBirthdays}
-        reportsPeopleWithAnniversaries={reportsPeopleWithAnniversaries}
-      />,
+      <ThemeProvider theme={theme}>
+        <PartnerCare
+          accountListId="abc"
+          prayerRequestTasks={prayerRequestTasks}
+          reportsPeopleWithBirthdays={reportsPeopleWithBirthdays}
+          reportsPeopleWithAnniversaries={reportsPeopleWithAnniversaries}
+        />
+        ,
+      </ThemeProvider>,
     );
     expect(
       queryByTestId('PartnerCarePrayerCardContentEmpty'),
@@ -210,5 +216,84 @@ describe('PartnerCare', () => {
     expect(
       queryByTestId('PartnerCareAnniversaryListItem-person_4'),
     ).not.toBeInTheDocument();
+  });
+
+  it('Opens complete task form for prayer request', () => {
+    const { getByTestId, queryByTestId, queryAllByRole } = render(
+      <ThemeProvider theme={theme}>
+        <PartnerCare
+          accountListId="abc"
+          prayerRequestTasks={prayerRequestTasks}
+        />
+      </ThemeProvider>,
+    );
+    expect(
+      queryByTestId('PartnerCarePrayerCardContentEmpty'),
+    ).not.toBeInTheDocument();
+    expect(getByTestId('PartnerCarePrayerList')).toBeInTheDocument();
+    expect(getByTestId('PartnerCareTabPrayer').textContent).toEqual(
+      'Prayer (2,560)',
+    );
+    userEvent.click(queryAllByRole('button', { name: 'Complete Button' })[0]);
+    expect(openTaskDrawer).toHaveBeenCalledWith({
+      taskId: 'task_1',
+      showCompleteForm: true,
+    });
+  });
+
+  it('Opens task drawer to create a new task for celebration | Birthday', () => {
+    const { getByTestId, queryAllByRole } = render(
+      <ThemeProvider theme={theme}>
+        <PartnerCare
+          accountListId="abc"
+          reportsPeopleWithBirthdays={reportsPeopleWithBirthdays}
+          reportsPeopleWithAnniversaries={reportsPeopleWithAnniversaries}
+        />
+      </ThemeProvider>,
+    );
+
+    const CelebrationsTab = getByTestId('PartnerCareTabCelebrations');
+    expect(CelebrationsTab.textContent).toEqual('Celebrations (4)');
+    fireEvent.click(CelebrationsTab);
+    expect(
+      getByTestId('PartnerCareBirthdayListItem-person_1').textContent,
+    ).toEqual('John DoeJan 1');
+    expect(
+      getByTestId('PartnerCareBirthdayListItem-person_2').textContent,
+    ).toEqual('John DoeJan 1');
+    userEvent.click(queryAllByRole('button', { name: 'Complete Button' })[0]);
+    expect(openTaskDrawer).toHaveBeenCalledWith({
+      defaultValues: {
+        subject: "John Doe's Birthday",
+      },
+    });
+  });
+
+  it('Opens task drawer to create a new task for celebration | Anniversary', () => {
+    const { getByTestId, queryAllByRole, queryByTestId } = render(
+      <ThemeProvider theme={theme}>
+        <PartnerCare
+          accountListId="abc"
+          reportsPeopleWithBirthdays={reportsPeopleWithBirthdays}
+          reportsPeopleWithAnniversaries={reportsPeopleWithAnniversaries}
+        />
+      </ThemeProvider>,
+    );
+
+    const CelebrationsTab = getByTestId('PartnerCareTabCelebrations');
+    expect(CelebrationsTab.textContent).toEqual('Celebrations (4)');
+    fireEvent.click(CelebrationsTab);
+    expect(
+      getByTestId('PartnerCareAnniversaryListItem-person_3').textContent,
+    ).toEqual('John and Sarah, DoeOct 5');
+    expect(
+      queryByTestId('PartnerCareAnniversaryListItem-person_4'),
+    ).not.toBeInTheDocument();
+    userEvent.click(queryAllByRole('button', { name: 'Complete Button' })[2]);
+    expect(openTaskDrawer).toHaveBeenCalledWith({
+      defaultValues: {
+        subject: "John and Sarah, Doe's Anniversary",
+      },
+    });
   });
 });
