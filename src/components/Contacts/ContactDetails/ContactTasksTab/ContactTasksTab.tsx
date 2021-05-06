@@ -2,6 +2,7 @@ import { Box, Button, Divider, styled, Typography } from '@material-ui/core';
 import { Add, CheckCircleOutline } from '@material-ui/icons';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { SearchBox } from '../../../common/SearchBox/SearchBox';
 import { ContactCheckBox } from '../../ContactCheckBox/ContactCheckBox';
 import { StarContactIcon } from '../../StarContactIcon/StarContactIcon';
 import { ContactTaskRow } from '../ContactTaskRow/ContactTaskRow';
@@ -63,13 +64,6 @@ const TaskButtonText = styled(Typography)(({ theme }) => ({
   color: theme.palette.info.main,
 }));
 
-const PlaceholderSearchBar = styled(Box)(({ theme }) => ({
-  height: 40,
-  width: 192,
-  margin: theme.spacing(2),
-  backgroundColor: theme.palette.background.paper,
-}));
-
 const PlaceholderActionBar = styled(Box)(({ theme }) => ({
   height: 40,
   width: 111,
@@ -119,7 +113,11 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
         <HeaderRow>
           <HeaderItemsWrap>
             <ContactCheckBox />
-            <PlaceholderSearchBar />
+            <SearchBox
+              searchTerm=""
+              onChange={() => ''}
+              placeholder={t('Search Tasks')}
+            />
           </HeaderItemsWrap>
           <HeaderItemsWrap>
             <PlaceholderActionBar />
