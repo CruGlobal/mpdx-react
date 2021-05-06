@@ -24,7 +24,7 @@ enum ContactsTableDisplayState {
 
 const HeaderWrap = styled(Box)(({ theme }) => ({
   height: 96,
-  padding: theme.spacing(1),
+  padding: theme.spacing(2),
   display: 'flex',
   flexDirection: 'row',
   justifyContent: 'space-evenly',

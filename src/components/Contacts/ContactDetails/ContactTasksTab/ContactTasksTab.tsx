@@ -12,9 +12,10 @@ const ContactDetailsTabContainer = styled(Box)(() => ({
   padding: '0 5%',
 }));
 
-const ContactTasksHeaderContainer = styled(Box)(({}) => ({
+const ContactTasksHeaderContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
+  margin: theme.spacing(1),
 }));
 
 const HeaderRow = styled(Box)(({ theme }) => ({
