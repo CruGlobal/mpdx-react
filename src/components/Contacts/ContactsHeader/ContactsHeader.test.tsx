@@ -7,13 +7,16 @@ import { ContactsHeader } from './ContactsHeader';
 
 describe('ContactFilters', () => {
   it('checkbox is unchecked', async () => {
+    const toggleFilterPanel = jest.fn();
+    const onSearchTermChanged = jest.fn();
+
     const { getByRole } = render(
       <ThemeProvider theme={theme}>
         <ContactsHeader
           activeFilters={false}
           filterPanelOpen={false}
-          toggleFilterPanel={() => {}}
-          onSearchTermChanged={() => {}}
+          toggleFilterPanel={toggleFilterPanel}
+          onSearchTermChanged={onSearchTermChanged}
         />
       </ThemeProvider>,
     );
@@ -24,16 +27,21 @@ describe('ContactFilters', () => {
     await userEvent.click(checkbox);
 
     expect(checkbox).toHaveProperty('checked', false);
+    expect(toggleFilterPanel).not.toHaveBeenCalled();
+    expect(onSearchTermChanged).not.toHaveBeenCalled();
   });
 
   it('checkbox is checked', async () => {
+    const toggleFilterPanel = jest.fn();
+    const onSearchTermChanged = jest.fn();
+
     const { getByRole } = render(
       <ThemeProvider theme={theme}>
         <ContactsHeader
           activeFilters={false}
           filterPanelOpen={false}
-          toggleFilterPanel={() => {}}
-          onSearchTermChanged={() => {}}
+          toggleFilterPanel={toggleFilterPanel}
+          onSearchTermChanged={onSearchTermChanged}
         />
       </ThemeProvider>,
     );
@@ -43,16 +51,21 @@ describe('ContactFilters', () => {
     await userEvent.click(checkbox);
 
     expect(checkbox).toHaveProperty('checked', true);
+    expect(toggleFilterPanel).not.toHaveBeenCalled();
+    expect(onSearchTermChanged).not.toHaveBeenCalled();
   });
 
   it('filters button displays for no filters', async () => {
+    const toggleFilterPanel = jest.fn();
+    const onSearchTermChanged = jest.fn();
+
     const { getByRole } = render(
       <ThemeProvider theme={theme}>
         <ContactsHeader
           activeFilters={false}
           filterPanelOpen={false}
-          toggleFilterPanel={() => {}}
-          onSearchTermChanged={() => {}}
+          toggleFilterPanel={toggleFilterPanel}
+          onSearchTermChanged={onSearchTermChanged}
         />
       </ThemeProvider>,
     );
@@ -63,16 +76,21 @@ describe('ContactFilters', () => {
     const style = window.getComputedStyle(filterButton);
 
     expect(style.backgroundColor).toMatchInlineSnapshot(`"transparent"`);
+    expect(toggleFilterPanel).not.toHaveBeenCalled();
+    expect(onSearchTermChanged).not.toHaveBeenCalled();
   });
 
   it('filters button displays for open filter panel', async () => {
+    const toggleFilterPanel = jest.fn();
+    const onSearchTermChanged = jest.fn();
+
     const { getByRole } = render(
       <ThemeProvider theme={theme}>
         <ContactsHeader
           activeFilters={false}
           filterPanelOpen={true}
-          toggleFilterPanel={() => {}}
-          onSearchTermChanged={() => {}}
+          toggleFilterPanel={toggleFilterPanel}
+          onSearchTermChanged={onSearchTermChanged}
         />
       </ThemeProvider>,
     );
@@ -83,16 +101,21 @@ describe('ContactFilters', () => {
     const style = window.getComputedStyle(filterButton);
 
     expect(style.backgroundColor).toMatchInlineSnapshot(`"rgb(156, 159, 161)"`);
+    expect(toggleFilterPanel).not.toHaveBeenCalled();
+    expect(onSearchTermChanged).not.toHaveBeenCalled();
   });
 
   it('filters button displays for active filters', async () => {
+    const toggleFilterPanel = jest.fn();
+    const onSearchTermChanged = jest.fn();
+
     const { getByRole } = render(
       <ThemeProvider theme={theme}>
         <ContactsHeader
           activeFilters={true}
           filterPanelOpen={false}
-          toggleFilterPanel={() => {}}
-          onSearchTermChanged={() => {}}
+          toggleFilterPanel={toggleFilterPanel}
+          onSearchTermChanged={onSearchTermChanged}
         />
       </ThemeProvider>,
     );
@@ -103,16 +126,21 @@ describe('ContactFilters', () => {
     const style = window.getComputedStyle(filterButton);
 
     expect(style.backgroundColor).toMatchInlineSnapshot(`"rgb(255, 207, 7)"`);
+    expect(toggleFilterPanel).not.toHaveBeenCalled();
+    expect(onSearchTermChanged).not.toHaveBeenCalled();
   });
 
   it('filters button displays for active filters and filter panel open', async () => {
+    const toggleFilterPanel = jest.fn();
+    const onSearchTermChanged = jest.fn();
+
     const { getByRole } = render(
       <ThemeProvider theme={theme}>
         <ContactsHeader
           activeFilters={true}
           filterPanelOpen={false}
-          toggleFilterPanel={() => {}}
-          onSearchTermChanged={() => {}}
+          toggleFilterPanel={toggleFilterPanel}
+          onSearchTermChanged={onSearchTermChanged}
         />
       </ThemeProvider>,
     );
@@ -123,5 +151,56 @@ describe('ContactFilters', () => {
     const style = window.getComputedStyle(filterButton);
 
     expect(style.backgroundColor).toMatchInlineSnapshot(`"rgb(255, 207, 7)"`);
+    expect(toggleFilterPanel).not.toHaveBeenCalled();
+    expect(onSearchTermChanged).not.toHaveBeenCalled();
+  });
+
+  it('filters button pressed', async () => {
+    const toggleFilterPanel = jest.fn();
+    const onSearchTermChanged = jest.fn();
+
+    const { getByRole } = render(
+      <ThemeProvider theme={theme}>
+        <ContactsHeader
+          activeFilters={false}
+          filterPanelOpen={false}
+          toggleFilterPanel={toggleFilterPanel}
+          onSearchTermChanged={onSearchTermChanged}
+        />
+      </ThemeProvider>,
+    );
+
+    const filterButton = getByRole('button', {
+      name: 'Toggle Filter Panel',
+    });
+
+    userEvent.click(filterButton);
+
+    expect(toggleFilterPanel).toHaveBeenCalled();
+    expect(onSearchTermChanged).not.toHaveBeenCalled();
+  });
+
+  it('search text changed', async () => {
+    const toggleFilterPanel = jest.fn();
+    const onSearchTermChanged = jest.fn();
+    const searchText = 'name';
+
+    const { getByRole } = render(
+      <ThemeProvider theme={theme}>
+        <ContactsHeader
+          activeFilters={true}
+          filterPanelOpen={false}
+          toggleFilterPanel={toggleFilterPanel}
+          onSearchTermChanged={onSearchTermChanged}
+        />
+      </ThemeProvider>,
+    );
+
+    const textbox = getByRole('textbox');
+
+    userEvent.type(textbox, searchText);
+
+    expect(toggleFilterPanel).not.toHaveBeenCalled();
+    expect(onSearchTermChanged).toHaveBeenCalledWith(searchText);
   });
 });

@@ -162,7 +162,6 @@ export const ContactsHeader: React.FC<Props> = ({
       </Hidden>
 
       <SearchBox
-        searchTerm=""
         onChange={onSearchTermChanged}
         placeholder={t('Search List')}
       />
