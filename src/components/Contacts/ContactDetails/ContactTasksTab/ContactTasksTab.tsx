@@ -84,9 +84,13 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
   accountListId,
   contactId,
 }) => {
-  const { data, loading } = useContactTasksTabQuery({
+  const { data, loading, refetch } = useContactTasksTabQuery({
     variables: { accountListId, contactId },
   });
+
+  const handleSearchTermChanged = (searchTerm: string) => {
+    refetch({ accountListId, contactId, searchTerm });
+  };
 
   const { t } = useTranslation();
 
@@ -113,8 +117,10 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
         <HeaderRow>
           <HeaderItemsWrap>
             <ContactCheckBox />
-            {/*TODO: Connect SearchBox to Tasks Query*/}
-            <SearchBox onChange={() => ''} placeholder={t('Search Tasks')} />
+            <SearchBox
+              onChange={handleSearchTermChanged}
+              placeholder={t('Search Tasks')}
+            />
           </HeaderItemsWrap>
           <HeaderItemsWrap>
             <PlaceholderActionBar />
