@@ -178,7 +178,6 @@ describe('PartnerCare', () => {
           reportsPeopleWithBirthdays={reportsPeopleWithBirthdays}
           reportsPeopleWithAnniversaries={reportsPeopleWithAnniversaries}
         />
-        ,
       </ThemeProvider>,
     );
     expect(
