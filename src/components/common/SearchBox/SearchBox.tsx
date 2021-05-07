@@ -7,7 +7,6 @@ import { mdiAccountSearch } from '@mdi/js';
 
 export interface SearchBoxProps {
   onChange: (searchTerm: string) => void;
-  startText?: string;
   placeholder?: string;
 }
 
@@ -40,7 +39,6 @@ const useStyle = makeStyles((theme: Theme) => ({
 
 export const SearchBox: React.FC<SearchBoxProps> = ({
   onChange,
-  startText,
   placeholder,
 }) => {
   const { t } = useTranslation();
@@ -56,7 +54,6 @@ export const SearchBox: React.FC<SearchBoxProps> = ({
       startAdornment={
         <Icon path={mdiAccountSearch} title="Search contacts" size="24px" />
       }
-      value={startText}
       placeholder={placeholder ?? t('Search')}
       onChange={(event) => {
         onChange(event.target.value);

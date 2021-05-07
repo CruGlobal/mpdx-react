@@ -23,8 +23,8 @@ describe('ContactFilters', () => {
 
     const checkbox = getByRole('checkbox');
 
-    await userEvent.click(checkbox);
-    await userEvent.click(checkbox);
+    userEvent.click(checkbox);
+    userEvent.click(checkbox);
 
     expect(checkbox).toHaveProperty('checked', false);
     expect(toggleFilterPanel).not.toHaveBeenCalled();
@@ -48,7 +48,7 @@ describe('ContactFilters', () => {
 
     const checkbox = getByRole('checkbox');
 
-    await userEvent.click(checkbox);
+    userEvent.click(checkbox);
 
     expect(checkbox).toHaveProperty('checked', true);
     expect(toggleFilterPanel).not.toHaveBeenCalled();

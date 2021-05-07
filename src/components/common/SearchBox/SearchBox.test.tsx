@@ -19,26 +19,6 @@ it('starts without value', () => {
   expect(textbox).toHaveValue('');
 });
 
-it('starts with value', () => {
-  const startText = 'start';
-  const placeholderText = 'placeholder';
-
-  const { getByRole } = render(
-    <MuiThemeProvider theme={theme}>
-      <SearchBox
-        startText={startText}
-        placeholder={placeholderText}
-        onChange={() => {}}
-      />
-      ,
-    </MuiThemeProvider>,
-  );
-
-  const textbox = getByRole('textbox');
-
-  expect(textbox).toHaveValue(startText);
-});
-
 it('triggers onChange', () => {
   const onChange = jest.fn();
   const inputText = 'name';
