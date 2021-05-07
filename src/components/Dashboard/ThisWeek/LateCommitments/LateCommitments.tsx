@@ -110,10 +110,13 @@ const LateCommitments = ({
                   if (!contact.lateAt) {
                     return null;
                   }
-                  const count = DateTime.local().diff(
-                    DateTime.fromISO(contact.lateAt),
-                    'days',
-                  ).days;
+                  const count = Math.round(
+                    DateTime.local().diff(
+                      DateTime.fromISO(contact.lateAt),
+                      'days',
+                    ).days,
+                  );
+
                   return (
                     <HandoffLink
                       key={contact.id}
