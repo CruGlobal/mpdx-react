@@ -5,7 +5,7 @@ import { DateTime } from 'luxon';
 import AnimatedBox from '../../AnimatedBox';
 import PartnerCare from './PartnerCare/PartnerCare';
 import TasksDueThisWeek from './TasksDueThisWeek/TasksDueThisWeek';
-import LateCommitments from './LateCommitments';
+import LateCommitments from './LateCommitments/LateCommitments';
 import Referrals from './Referrals';
 import Appeals from './Appeals';
 import WeeklyActivity from './WeeklyActivity';

@@ -1,7 +1,5 @@
 import React, { ReactElement } from 'react';
 import {
-  makeStyles,
-  Theme,
   CardHeader,
   CardActions,
   Button,
@@ -9,6 +7,7 @@ import {
   ListItem,
   ListItemText,
   CardContent,
+  styled,
 } from '@material-ui/core';
 import { DateTime } from 'luxon';
 import { Skeleton } from '@material-ui/lab';
@@ -19,35 +18,36 @@ import HandoffLink from '../../../HandoffLink';
 import illustration14 from '../../../../images/drawkit/grape/drawkit-grape-pack-illustration-14.svg';
 import { GetThisWeekQuery } from '../GetThisWeek.generated';
 
-const useStyles = makeStyles((theme: Theme) => ({
-  div: {
-    flex: 1,
-    display: 'flex',
-    flexDirection: 'column',
-    overflow: 'auto',
+const LateCommitmentsContainer = styled(AnimatedCard)(({ theme }) => ({
+  display: 'flex',
+  flexDirection: 'column',
+  height: '322px',
+  [theme.breakpoints.down('xs')]: {
+    height: 'auto',
   },
-  list: {
-    flex: 1,
-    padding: 0,
-    overflow: 'auto',
-  },
-  card: {
-    display: 'flex',
-    flexDirection: 'column',
-    height: '322px',
-    [theme.breakpoints.down('xs')]: {
-      height: 'auto',
-    },
-  },
-  cardContent: {
-    padding: theme.spacing(2),
-    display: 'flex',
-    flex: 1,
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  img: {
+}));
+
+const MotionDiv = styled(motion.div)(() => ({
+  flex: 1,
+  display: 'flex',
+  flexDirection: 'column',
+  overflow: 'auto',
+}));
+
+const CardList = styled(List)(() => ({
+  flex: 1,
+  padding: 0,
+  overflow: 'auto',
+}));
+
+const LateCommitmentsCardContent = styled(CardContent)(({ theme }) => ({
+  padding: theme.spacing(2),
+  display: 'flex',
+  flex: 1,
+  flexDirection: 'column',
+  alignItems: 'center',
+  justifyContent: 'center',
+  '& > img': {
     height: '150px',
     marginBottom: theme.spacing(2),
   },
@@ -62,21 +62,19 @@ const LateCommitments = ({
   loading,
   latePledgeContacts,
 }: Props): ReactElement => {
-  const classes = useStyles();
   const { t } = useTranslation();
 
   return (
-    <AnimatedCard className={classes.card}>
+    <LateCommitmentsContainer>
       <CardHeader title={t('Late Commitments')} />
       {loading && (
-        <motion.div
+        <MotionDiv
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className={classes.div}
           data-testid="LateCommitmentsDivLoading"
         >
-          <List className={classes.list}>
+          <CardList>
             {[0, 1, 2].map((index) => (
               <ListItem key={index}>
                 <ListItemText
@@ -85,36 +83,29 @@ const LateCommitments = ({
                 />
               </ListItem>
             ))}
-          </List>
+          </CardList>
           <CardActions>
             <Button size="small" color="primary" disabled>
               {t('View All ({{ totalCount, number }})', { totalCount: 0 })}
             </Button>
           </CardActions>
-        </motion.div>
+        </MotionDiv>
       )}
       {!loading && (
-        <motion.div
+        <MotionDiv
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className={classes.div}
         >
           {(!latePledgeContacts || latePledgeContacts.nodes.length === 0) && (
-            <CardContent
-              className={classes.cardContent}
-              data-testid="LateCommitmentsCardContentEmpty"
-            >
-              <img src={illustration14} className={classes.img} alt="empty" />
+            <LateCommitmentsCardContent data-testid="LateCommitmentsCardContentEmpty">
+              <img src={illustration14} alt="empty" />
               {t('No late commitments to show.')}
-            </CardContent>
+            </LateCommitmentsCardContent>
           )}
           {latePledgeContacts && latePledgeContacts.nodes.length > 0 && (
             <>
-              <List
-                className={classes.list}
-                data-testid="LateCommitmentsListContacts"
-              >
+              <CardList data-testid="LateCommitmentsListContacts">
                 {latePledgeContacts.nodes.map((contact) => {
                   if (!contact.lateAt) {
                     return null;
@@ -146,7 +137,7 @@ const LateCommitments = ({
                     </HandoffLink>
                   );
                 })}
-              </List>
+              </CardList>
               <CardActions>
                 <HandoffLink
                   path={`/contacts?filters=${encodeURIComponent(
@@ -171,9 +162,9 @@ const LateCommitments = ({
               </CardActions>
             </>
           )}
-        </motion.div>
+        </MotionDiv>
       )}
-    </AnimatedCard>
+    </LateCommitmentsContainer>
   );
 };
 
