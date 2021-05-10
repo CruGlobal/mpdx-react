@@ -26,6 +26,6 @@ describe('ContactDonationsTab', () => {
     `);
     expect(
       result.current.data?.contact.donations.nodes.length,
-    ).toMatchInlineSnapshot(`3`);
+    ).toMatchInlineSnapshot(`undefined`);
   });
 });
