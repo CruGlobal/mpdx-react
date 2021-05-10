@@ -77,7 +77,7 @@ export const DonationsGraph: React.FC<DonationsGraphProps> = ({
 
   return (
     <GraphContainer>
-      <LegendText variant="body1">{`${t(
+      <LegendText variant="body1" role="banner">{`${t(
         'Curreny',
       )} (${convertedCurrency})`}</LegendText>
       <BarChart width={600} height={300} data={contactDonationsMap}>
