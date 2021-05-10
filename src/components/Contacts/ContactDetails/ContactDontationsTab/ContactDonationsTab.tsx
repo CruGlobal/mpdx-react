@@ -74,7 +74,7 @@ export const ContactDonationsTab: React.FC<ContactDontationsProp> = ({
   return (
     <ContactDonationsContainer>
       <DonationsGraphContainer>
-        {loading || data?.contact.donations == null ? (
+        {loading ? (
           <>
             <ContactDonationsLoadingPlaceHolder />
             <ContactDonationsLoadingPlaceHolder />

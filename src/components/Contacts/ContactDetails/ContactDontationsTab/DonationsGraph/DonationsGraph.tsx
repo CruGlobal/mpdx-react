@@ -1,3 +1,4 @@
+/* eslint-disable eqeqeq */
 import { Box, styled, Typography } from '@material-ui/core';
 import { DateTime } from 'luxon';
 import React from 'react';
@@ -24,23 +25,26 @@ const GraphContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
   margin: theme.spacing(0, 2, 0, 0),
 }));
+
+const NoDonationsBox = styled(Box)(({ theme }) => ({
+  margin: theme.spacing(4),
+}));
 interface DonationsGraphProps {
-  donations: DonationsContactFragment;
+  donations: DonationsContactFragment | null;
 }
 
 export const DonationsGraph: React.FC<DonationsGraphProps> = ({
   donations,
 }) => {
   const { t } = useTranslation();
-  const { nodes } = donations;
-  const donationsForThisYear = nodes.filter((donation) => {
+  const donationsForThisYear = donations?.nodes.filter((donation) => {
     return (
       DateTime.fromISO(donation.donationDate).toJSDate() >
       DateTime.local().minus({ year: 1 }).toJSDate()
     );
   });
 
-  const donationsForLastYear = nodes.filter((donation) => {
+  const donationsForLastYear = donations?.nodes.filter((donation) => {
     return (
       DateTime.fromISO(donation.donationDate).toJSDate() <
         DateTime.local().minus({ year: 1 }).toJSDate() ||
@@ -55,16 +59,17 @@ export const DonationsGraph: React.FC<DonationsGraphProps> = ({
     const mapDate = DateTime.now().minus({ month: i });
     let thisYearCurrencyConvertedTotal = 0;
     let lastYearCurrencyConvertedTotal = 0;
-    donationsForThisYear.forEach((thisDonation) => {
+    donationsForThisYear?.forEach((thisDonation) => {
       if (DateTime.fromISO(thisDonation.donationDate).month === mapDate.month) {
         thisYearCurrencyConvertedTotal += thisDonation.amount.convertedAmount;
       }
       convertedCurrency = thisDonation.amount.convertedCurrency;
     });
-    donationsForLastYear.forEach((lastDonation) => {
+    donationsForLastYear?.forEach((lastDonation) => {
       if (DateTime.fromISO(lastDonation.donationDate).month === mapDate.month) {
         lastYearCurrencyConvertedTotal += lastDonation.amount.convertedAmount;
       }
+      convertedCurrency = lastDonation.amount.convertedCurrency;
     });
 
     const data: { month: string; lastYear: number; thisYear: number } = {
@@ -77,18 +82,28 @@ export const DonationsGraph: React.FC<DonationsGraphProps> = ({
 
   return (
     <GraphContainer>
-      <LegendText variant="body1" role="banner">{`${t(
-        'Curreny',
-      )} (${convertedCurrency})`}</LegendText>
-      <BarChart width={600} height={300} data={contactDonationsMap}>
-        <CartesianGrid strokeDasharray="3 3" display={'Test'} />
-        <XAxis dataKey="month" />
-        <YAxis />
-        <Tooltip />
-        <Legend />
-        <Bar dataKey="thisYear" fill={theme.palette.secondary.main} />
-        <Bar dataKey="lastYear" fill={theme.palette.secondary.dark} />
-      </BarChart>
+      {donations == null || donations.nodes.length < 1 ? (
+        <NoDonationsBox>
+          <Typography variant="subtitle2" role="status">
+            {t('No Donations Data')}
+          </Typography>
+        </NoDonationsBox>
+      ) : (
+        <>
+          <LegendText variant="body1" role="banner">{`${t(
+            'Curreny',
+          )} (${convertedCurrency})`}</LegendText>
+          <BarChart width={600} height={300} data={contactDonationsMap}>
+            <CartesianGrid strokeDasharray="3 3" display={'Test'} />
+            <XAxis dataKey="month" />
+            <YAxis />
+            <Tooltip />
+            <Legend />
+            <Bar dataKey="thisYear" fill={theme.palette.secondary.main} />
+            <Bar dataKey="lastYear" fill={theme.palette.secondary.dark} />
+          </BarChart>
+        </>
+      )}
     </GraphContainer>
   );
 };
