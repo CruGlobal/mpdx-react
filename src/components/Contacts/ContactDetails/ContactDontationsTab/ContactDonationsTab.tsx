@@ -1,3 +1,4 @@
+/* eslint-disable eqeqeq */
 import { Box, styled, Tab } from '@material-ui/core';
 import { Skeleton, TabContext, TabList, TabPanel } from '@material-ui/lab';
 import React from 'react';
@@ -73,7 +74,7 @@ export const ContactDonationsTab: React.FC<ContactDontationsProp> = ({
   return (
     <ContactDonationsContainer>
       <DonationsGraphContainer>
-        {loading ? (
+        {loading || data?.contact.donations == null ? (
           <>
             <ContactDonationsLoadingPlaceHolder />
             <ContactDonationsLoadingPlaceHolder />
