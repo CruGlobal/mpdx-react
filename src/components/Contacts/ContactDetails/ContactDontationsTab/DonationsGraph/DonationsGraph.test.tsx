@@ -10,4 +10,9 @@ describe('Donations Graph', () => {
     );
     expect(await findByRole('banner')).toBeVisible();
   });
+
+  it('test null renderer', async () => {
+    const { findByRole } = render(<DonationsGraph donations={null} />);
+    expect(await findByRole('alert')).toBeVisible();
+  });
 });

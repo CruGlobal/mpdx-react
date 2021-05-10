@@ -83,7 +83,7 @@ export const DonationsGraph: React.FC<DonationsGraphProps> = ({
   return (
     <GraphContainer>
       {donations == null || donations.nodes.length < 1 ? (
-        <NoDonationsBox>
+        <NoDonationsBox role="alert">
           <Typography variant="subtitle2" role="status">
             {t('No Donations Data')}
           </Typography>
