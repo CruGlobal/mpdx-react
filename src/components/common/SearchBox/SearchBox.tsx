@@ -1,9 +1,9 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Input } from '@material-ui/core';
 import { makeStyles, Theme } from '@material-ui/core/styles';
 import Icon from '@mdi/react';
 import { mdiAccountSearch } from '@mdi/js';
+import { DebounceInput } from 'react-debounce-input';
 
 export interface SearchBoxProps {
   onChange: (searchTerm: string) => void;
@@ -45,8 +45,9 @@ export const SearchBox: React.FC<SearchBoxProps> = ({
   const classes = useStyle();
 
   return (
-    <Input
+    <DebounceInput
       className={classes.searchWrapper}
+      debounceTimeout={300}
       inputProps={{
         className: classes.input,
       }}

@@ -148,6 +148,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["prop-types", "npm:15.7.2"],
             ["query-string", "npm:6.14.0"],
             ["react", "npm:17.0.1"],
+            ["react-debounce-input", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:3.2.3"],
             ["react-dom", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:17.0.1"],
             ["react-i18next", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:11.8.11"],
             ["recharts", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:2.0.6"],
@@ -24861,6 +24862,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["prop-types", "npm:15.7.2"],
             ["query-string", "npm:6.14.0"],
             ["react", "npm:17.0.1"],
+            ["react-debounce-input", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:3.2.3"],
             ["react-dom", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:17.0.1"],
             ["react-i18next", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:11.8.11"],
             ["recharts", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:2.0.6"],
@@ -27743,6 +27745,30 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["react", "npm:17.0.1"],
             ["reactcss", "virtual:ab08be937851b44a8732413a26538f72860ae0249d4e436770c24a0d396c6e4a160013fc30e5ce0f8e6a94a3c1ec2eda61057050d861521251a4340030130e86#npm:1.2.3"],
             ["tinycolor2", "npm:1.4.1"]
+          ],
+          "packagePeers": [
+            "@types/react",
+            "react"
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
+      ["react-debounce-input", [
+        ["npm:3.2.3", {
+          "packageLocation": "./.yarn/cache/react-debounce-input-npm-3.2.3-ab16455ad4-4816c963fb.zip/node_modules/react-debounce-input/",
+          "packageDependencies": [
+            ["react-debounce-input", "npm:3.2.3"]
+          ],
+          "linkType": "SOFT",
+        }],
+        ["virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:3.2.3", {
+          "packageLocation": "./.yarn/$$virtual/react-debounce-input-virtual-a4352758f2/0/cache/react-debounce-input-npm-3.2.3-ab16455ad4-4816c963fb.zip/node_modules/react-debounce-input/",
+          "packageDependencies": [
+            ["react-debounce-input", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:3.2.3"],
+            ["@types/react", "npm:17.0.1"],
+            ["lodash.debounce", "npm:4.0.8"],
+            ["prop-types", "npm:15.7.2"],
+            ["react", "npm:17.0.1"]
           ],
           "packagePeers": [
             "@types/react",
