@@ -19,13 +19,79 @@ import {
   ContactFilter,
 } from './graphql-rest.page.generated';
 
-const typeDefs = gql`
-  type Query {
+const ContactFiltersTypeDefs = gql`
+  extend type Query {
     contactFilters(accountListId: ID!): [ContactFilterGroup!]!
-    taskAnalytics(accountListId: ID!): TaskAnalytics!
   }
 
-  type Mutation {
+  type ContactFilterGroup {
+    id: ID!
+    title: String!
+    alwaysVisible: Boolean!
+    filters: [ContactFilter!]!
+  }
+
+  type ContactFilter {
+    id: ID!
+    name: String!
+    type: String!
+    defaultSelection: [String]!
+    featured: Boolean!
+    multiple: Boolean!
+    options: [ContactFilterOption!]!
+    parent: String
+    title: String!
+  }
+
+  type ContactFilterOption {
+    id: String
+    name: String!
+    placeholder: String
+  }
+`;
+
+const ContactFiltersResolvers: Resolvers = {
+  Query: {
+    contactFilters: (_source, { accountListId }, { dataSources }) => {
+      return dataSources.mpdxRestApi.getContactFilters(accountListId);
+    },
+  },
+};
+
+const TaskAnalyticsTypeDefs = gql`
+  extend type Query {
+    taskAnalytics(accountListId: ID!): TaskAnalytics!
+  }
+  type TaskAnalytics {
+    id: ID!
+    type: String!
+    createdAt: ISO8601DateTime!
+    lastElectronicNewsletterCompletedAt: ISO8601DateTime
+    lastPhysicalNewsletterCompletedAt: ISO8601DateTime
+    tasksOverdueOrDueTodayCounts: [OverdueOrDueTodayTaskAnalytic!]!
+    totalTasksDueCount: Int!
+    updatedAt: ISO8601DateTime!
+    updatedInDbAt: ISO8601DateTime!
+  }
+
+  scalar ISO8601DateTime
+
+  type OverdueOrDueTodayTaskAnalytic {
+    label: String!
+    count: Int!
+  }
+`;
+
+const TaskAnalyticsResolvers: Resolvers = {
+  Query: {
+    taskAnalytics: async (_source, { accountListId }, { dataSources }) => {
+      return dataSources.mpdxRestApi.getTaskAnalytics(accountListId);
+    },
+  },
+};
+
+const ExportContactsTypeDefs = gql`
+  extend type Mutation {
     exportContacts(input: ExportContactsInput!): String!
   }
 
@@ -58,61 +124,9 @@ const typeDefs = gql`
     name
     zip
   }
-
-  type TaskAnalytics {
-    id: ID!
-    type: String!
-    createdAt: ISO8601DateTime!
-    lastElectronicNewsletterCompletedAt: ISO8601DateTime
-    lastPhysicalNewsletterCompletedAt: ISO8601DateTime
-    tasksOverdueOrDueTodayCounts: [OverdueOrDueTodayTaskAnalytic!]!
-    totalTasksDueCount: Int!
-    updatedAt: ISO8601DateTime!
-    updatedInDbAt: ISO8601DateTime!
-  }
-
-  scalar ISO8601DateTime
-
-  type OverdueOrDueTodayTaskAnalytic {
-    label: String!
-    count: Int!
-  }
-
-  type ContactFilterGroup {
-    id: ID!
-    title: String!
-    alwaysVisible: Boolean!
-    filters: [ContactFilter!]!
-  }
-
-  type ContactFilter {
-    id: ID!
-    name: String!
-    type: String!
-    defaultSelection: [String]!
-    featured: Boolean!
-    multiple: Boolean!
-    options: [ContactFilterOption!]!
-    parent: String
-    title: String!
-  }
-
-  type ContactFilterOption {
-    id: String
-    name: String!
-    placeholder: String
-  }
 `;
 
-const resolvers: Resolvers = {
-  Query: {
-    contactFilters: (_source, { accountListId }, { dataSources }) => {
-      return dataSources.mpdxRestApi.getContactFilters(accountListId);
-    },
-    taskAnalytics: async (_source, { accountListId }, { dataSources }) => {
-      return dataSources.mpdxRestApi.getTaskAnalytics(accountListId);
-    },
-  },
+const ExportContactsResolvers: Resolvers = {
   Mutation: {
     exportContacts: (
       _source,
@@ -301,7 +315,11 @@ export interface Context {
 }
 
 const server = new ApolloServer({
-  schema: buildFederatedSchema([{ typeDefs, resolvers }]),
+  schema: buildFederatedSchema([
+    { typeDefs: ContactFiltersTypeDefs, resolvers: ContactFiltersResolvers },
+    { typeDefs: TaskAnalyticsTypeDefs, resolvers: TaskAnalyticsResolvers },
+    { typeDefs: ExportContactsTypeDefs, resolvers: ExportContactsResolvers },
+  ]),
   dataSources: () => {
     return {
       mpdxRestApi: new MpdxRestApi(),
