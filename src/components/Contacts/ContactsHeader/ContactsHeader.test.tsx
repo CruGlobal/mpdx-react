@@ -5,7 +5,7 @@ import { ThemeProvider } from '@material-ui/core';
 import theme from '../../../theme';
 import { ContactsHeader } from './ContactsHeader';
 
-describe('ContactFilters', () => {
+describe('ContactsHeader', () => {
   it('checkbox is unchecked', async () => {
     const toggleFilterPanel = jest.fn();
     const onSearchTermChanged = jest.fn();
@@ -195,12 +195,13 @@ describe('ContactFilters', () => {
         />
       </ThemeProvider>,
     );
-
     const textbox = getByRole('textbox');
 
     userEvent.type(textbox, searchText);
 
     expect(toggleFilterPanel).not.toHaveBeenCalled();
-    expect(onSearchTermChanged).toHaveBeenCalledWith(searchText);
+    setTimeout(() => {
+      expect(onSearchTermChanged).toHaveBeenCalledWith(searchText);
+    }, 500);
   });
 });

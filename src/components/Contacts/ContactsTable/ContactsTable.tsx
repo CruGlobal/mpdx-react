@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Box,
   Table,
@@ -26,12 +26,14 @@ export const ContactsTable: React.FC<Props> = ({
   filterPanelOpen,
   toggleFilterPanel,
 }: Props) => {
-  const { data, loading, error, refetch } = useContactsQuery({
-    variables: { accountListId },
+  const [searchTerm, setSearchTerm] = useState<string | undefined>(undefined);
+
+  const { data, loading, error } = useContactsQuery({
+    variables: { accountListId, searchTerm },
   });
 
   const handleSearchTermChanged = (searchTerm: string) => {
-    refetch({ accountListId, searchTerm });
+    setSearchTerm(searchTerm);
   };
 
   const renderLoading = () => (

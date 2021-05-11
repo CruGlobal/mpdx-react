@@ -1,6 +1,6 @@
 import { Box, Button, Divider, styled, Typography } from '@material-ui/core';
 import { Add, CheckCircleOutline } from '@material-ui/icons';
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { SearchBox } from '../../../common/SearchBox/SearchBox';
 import { ContactCheckBox } from '../../ContactCheckBox/ContactCheckBox';
@@ -84,12 +84,14 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
   accountListId,
   contactId,
 }) => {
-  const { data, loading, refetch } = useContactTasksTabQuery({
-    variables: { accountListId, contactId },
+  const [searchTerm, setSearchTerm] = useState<string | undefined>(undefined);
+
+  const { data, loading } = useContactTasksTabQuery({
+    variables: { accountListId, contactId, searchTerm },
   });
 
   const handleSearchTermChanged = (searchTerm: string) => {
-    refetch({ accountListId, contactId, searchTerm });
+    setSearchTerm(searchTerm);
   };
 
   const { t } = useTranslation();

@@ -37,5 +37,7 @@ it('triggers onChange', () => {
   userEvent.type(textbox, inputText);
 
   expect(textbox).toHaveValue(inputText);
-  expect(onChange).toHaveBeenCalledWith(inputText);
+  setTimeout(() => {
+    expect(onChange).toHaveBeenCalledWith(inputText);
+  }, 500);
 });
