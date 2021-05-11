@@ -1,0 +1,26 @@
+query GetDonationsGraph(
+  $accountListId: ID!
+  $designationAccountIds: [ID]!
+  $donorAccountIds: [ID]!
+  $endDate: ISO8601Date
+) {
+  reportsDonationHistories(
+    accountListId: "3c051f91-7806-4ce3-9132-314eaba7c5f4"
+    designationAccountId: ["0532be1c-94ea-419d-9ce2-0e52bcc44a81"]
+    donorAccountId: ["b230fadb-e391-4756-9c69-345f62fe4bdc"]
+    endDate: $endDate
+    range: "12m"
+  ) {
+    average
+    periods {
+      totals {
+        amount
+        convertedAmount
+        currency
+      }
+      convertedTotal
+      endDate
+      startDate
+    }
+  }
+}

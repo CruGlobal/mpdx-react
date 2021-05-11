@@ -1,5 +1,6 @@
 /* eslint-disable eqeqeq */
 import { Box, styled, Typography } from '@material-ui/core';
+import { Skeleton } from '@material-ui/lab';
 import { DateTime } from 'luxon';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -13,7 +14,7 @@ import {
   YAxis,
 } from 'recharts';
 import theme from '../../../../../theme';
-import { DonationsContactFragment } from '../ContactDonationsTab.generated';
+import { useGetDonationsGraphQuery } from './DonationsGraph.generated';
 
 const LegendText = styled(Typography)(({ theme }) => ({
   margin: theme.spacing(3, 0),
@@ -26,50 +27,59 @@ const GraphContainer = styled(Box)(({ theme }) => ({
   margin: theme.spacing(0, 2, 0, 0),
 }));
 
-const NoDonationsBox = styled(Box)(({ theme }) => ({
-  margin: theme.spacing(4),
+const GraphLoadingPlaceHolder = styled(Skeleton)(({ theme }) => ({
+  width: '100%',
+  height: '24px',
+  margin: theme.spacing(2, 0),
 }));
+
 interface DonationsGraphProps {
-  donations: DonationsContactFragment | null;
+  accountListId: string;
+  designationAccountIds: string[];
+  donorAccountIds: string[];
   convertedCurrency: string;
 }
 
 export const DonationsGraph: React.FC<DonationsGraphProps> = ({
-  donations,
+  accountListId,
+  designationAccountIds,
+  donorAccountIds,
   convertedCurrency,
 }) => {
   const { t } = useTranslation();
-  const donationsForThisYear = donations?.nodes.filter((donation) => {
-    return (
-      DateTime.fromISO(donation.donationDate).toJSDate() >
-      DateTime.local().minus({ year: 1 }).toJSDate()
-    );
+  const thisYearsData = useGetDonationsGraphQuery({
+    variables: {
+      accountListId: accountListId,
+      designationAccountIds: designationAccountIds,
+      donorAccountIds: donorAccountIds,
+      endDate: DateTime.now().toISO(),
+    },
   });
 
-  const donationsForLastYear = donations?.nodes.filter((donation) => {
-    return (
-      DateTime.fromISO(donation.donationDate) <
-        DateTime.local().minus({ year: 1 }) ||
-      DateTime.fromISO(donation.donationDate) >
-        DateTime.local().minus({ year: 2 })
-    );
+  const lastYearsData = useGetDonationsGraphQuery({
+    variables: {
+      accountListId: accountListId,
+      designationAccountIds: designationAccountIds,
+      donorAccountIds: donorAccountIds,
+      endDate: DateTime.now().minus({ year: 1 }).toISO(),
+    },
   });
 
+  const loading = thisYearsData.loading || lastYearsData.loading;
   const contactDonationsMap = [...Array(12)].map((x, i) => {
     const mapDate = DateTime.now().plus({ month: i });
-    let thisYearCurrencyConvertedTotal = 0;
     let lastYearCurrencyConvertedTotal = 0;
-    donationsForThisYear?.forEach((thisDonation) => {
-      if (DateTime.fromISO(thisDonation.donationDate).month === mapDate.month) {
-        thisYearCurrencyConvertedTotal += thisDonation.amount.convertedAmount;
+    let thisYearCurrencyConvertedTotal = 0;
+    thisYearsData.data?.reportsDonationHistories.periods.forEach((period) => {
+      if (DateTime.fromISO(period.startDate).month === mapDate.month) {
+        thisYearCurrencyConvertedTotal += period.convertedTotal;
       }
     });
-    donationsForLastYear?.forEach((lastDonation) => {
-      if (DateTime.fromISO(lastDonation.donationDate).month === mapDate.month) {
-        lastYearCurrencyConvertedTotal += lastDonation.amount.convertedAmount;
+    lastYearsData.data?.reportsDonationHistories.periods.forEach((period) => {
+      if (DateTime.fromISO(period.startDate).month === mapDate.month) {
+        lastYearCurrencyConvertedTotal += period.convertedTotal;
       }
     });
-
     return {
       month: mapDate.monthShort,
       lastYear: lastYearCurrencyConvertedTotal,
@@ -79,19 +89,19 @@ export const DonationsGraph: React.FC<DonationsGraphProps> = ({
 
   return (
     <GraphContainer>
-      {donations == null || donations.nodes.length < 1 ? (
-        <NoDonationsBox role="alert">
-          <Typography variant="subtitle2" role="status">
-            {t('No Donations Data')}
-          </Typography>
-        </NoDonationsBox>
+      {loading ? (
+        <>
+          <GraphLoadingPlaceHolder />
+          <GraphLoadingPlaceHolder />
+          <GraphLoadingPlaceHolder />
+        </>
       ) : (
         <>
           <LegendText variant="body1" role="banner">{`${t(
             'Curreny',
           )} (${convertedCurrency})`}</LegendText>
           <BarChart width={600} height={300} data={contactDonationsMap}>
-            <CartesianGrid strokeDasharray="3 3" display={'Test'} />
+            <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="month" />
             <YAxis />
             <Tooltip />
