@@ -11,7 +11,10 @@ export default {
 export const Default = (): ReactElement => {
   return (
     <Box m={2}>
-      <DonationsGraph donations={contactDonationsMock} />
+      <DonationsGraph
+        donations={contactDonationsMock}
+        convertedCurrency={'USD'}
+      />
     </Box>
   );
 };

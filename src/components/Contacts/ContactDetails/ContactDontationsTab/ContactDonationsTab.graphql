@@ -2,10 +2,11 @@ query GetContactDonations($accountListId: ID!, $contactId: ID!) {
   contact(accountListId: $accountListId, id: $contactId) {
     id
     name
+    lastDonation {
+      ...ContactDonation
+    }
     donations {
-      nodes {
-        ...ContactDonation
-      }
+      ...DonationsContact
     }
     contactDonorAccounts {
       nodes {

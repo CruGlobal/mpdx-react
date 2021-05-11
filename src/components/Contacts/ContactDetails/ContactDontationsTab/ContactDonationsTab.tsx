@@ -3,10 +3,7 @@ import { Box, styled, Tab } from '@material-ui/core';
 import { Skeleton, TabContext, TabList, TabPanel } from '@material-ui/lab';
 import React from 'react';
 import { useTranslation } from 'react-i18next/';
-import {
-  DonationsContactFragment,
-  useGetContactDonationsQuery,
-} from './ContactDonationsTab.generated';
+import { useGetContactDonationsQuery } from './ContactDonationsTab.generated';
 import { DonationsGraph } from './DonationsGraph/DonationsGraph';
 
 const ContactDonationsContainer = styled(Box)(({ theme }) => ({
@@ -82,7 +79,10 @@ export const ContactDonationsTab: React.FC<ContactDontationsProp> = ({
           </>
         ) : (
           <DonationsGraph
-            donations={data?.contact.donations as DonationsContactFragment}
+            donations={data?.contact.donations ?? null}
+            convertedCurrency={
+              data?.contact.lastDonation?.amount.convertedCurrency ?? ''
+            }
           />
         )}
       </DonationsGraphContainer>

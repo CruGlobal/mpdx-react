@@ -31,10 +31,12 @@ const NoDonationsBox = styled(Box)(({ theme }) => ({
 }));
 interface DonationsGraphProps {
   donations: DonationsContactFragment | null;
+  convertedCurrency: string;
 }
 
 export const DonationsGraph: React.FC<DonationsGraphProps> = ({
   donations,
+  convertedCurrency,
 }) => {
   const { t } = useTranslation();
   const donationsForThisYear = donations?.nodes.filter((donation) => {
@@ -46,38 +48,33 @@ export const DonationsGraph: React.FC<DonationsGraphProps> = ({
 
   const donationsForLastYear = donations?.nodes.filter((donation) => {
     return (
-      DateTime.fromISO(donation.donationDate).toJSDate() <
-        DateTime.local().minus({ year: 1 }).toJSDate() ||
-      DateTime.fromISO(donation.donationDate).toJSDate() >
-        DateTime.local().minus({ year: 2 }).toJSDate()
+      DateTime.fromISO(donation.donationDate) <
+        DateTime.local().minus({ year: 1 }) ||
+      DateTime.fromISO(donation.donationDate) >
+        DateTime.local().minus({ year: 2 })
     );
   });
 
-  let convertedCurrency = '';
-
   const contactDonationsMap = [...Array(12)].map((x, i) => {
-    const mapDate = DateTime.now().minus({ month: i });
+    const mapDate = DateTime.now().plus({ month: i });
     let thisYearCurrencyConvertedTotal = 0;
     let lastYearCurrencyConvertedTotal = 0;
     donationsForThisYear?.forEach((thisDonation) => {
       if (DateTime.fromISO(thisDonation.donationDate).month === mapDate.month) {
         thisYearCurrencyConvertedTotal += thisDonation.amount.convertedAmount;
       }
-      convertedCurrency = thisDonation.amount.convertedCurrency;
     });
     donationsForLastYear?.forEach((lastDonation) => {
       if (DateTime.fromISO(lastDonation.donationDate).month === mapDate.month) {
         lastYearCurrencyConvertedTotal += lastDonation.amount.convertedAmount;
       }
-      convertedCurrency = lastDonation.amount.convertedCurrency;
     });
 
-    const data: { month: string; lastYear: number; thisYear: number } = {
+    return {
       month: mapDate.monthShort,
       lastYear: lastYearCurrencyConvertedTotal,
       thisYear: thisYearCurrencyConvertedTotal,
     };
-    return data;
   });
 
   return (
