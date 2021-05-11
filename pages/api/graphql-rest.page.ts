@@ -14,7 +14,6 @@ import {
 } from '../../graphql/types.generated';
 import {
   ContactFilterOption,
-  Resolvers,
   ContactFilterGroup,
   ContactFilter,
 } from './graphql-rest.page.generated';
