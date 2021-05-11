@@ -1,6 +1,5 @@
 import { ApolloServer } from '@saeris/apollo-server-vercel';
 import { buildFederatedSchema } from '@apollo/federation';
-import { gql } from 'graphql-tag';
 import { NextApiRequest } from 'next';
 import {
   RequestOptions,
@@ -20,97 +19,9 @@ import {
 import ContactFiltersResolvers from './Schema/ContactFilters/resolvers';
 import TaskAnalyticsResolvers from './Schema/TaskAnalytics/resolvers';
 import ExportContactsResolvers from './Schema/ExportContacts/resolvers';
-
-const ContactFiltersTypeDefs = gql`
-  extend type Query {
-    contactFilters(accountListId: ID!): [ContactFilterGroup!]!
-  }
-
-  type ContactFilterGroup {
-    id: ID!
-    title: String!
-    alwaysVisible: Boolean!
-    filters: [ContactFilter!]!
-  }
-
-  type ContactFilter {
-    id: ID!
-    name: String!
-    type: String!
-    defaultSelection: [String]!
-    featured: Boolean!
-    multiple: Boolean!
-    options: [ContactFilterOption!]!
-    parent: String
-    title: String!
-  }
-
-  type ContactFilterOption {
-    id: String
-    name: String!
-    placeholder: String
-  }
-`;
-
-const TaskAnalyticsTypeDefs = gql`
-  extend type Query {
-    taskAnalytics(accountListId: ID!): TaskAnalytics!
-  }
-  type TaskAnalytics {
-    id: ID!
-    type: String!
-    createdAt: ISO8601DateTime!
-    lastElectronicNewsletterCompletedAt: ISO8601DateTime
-    lastPhysicalNewsletterCompletedAt: ISO8601DateTime
-    tasksOverdueOrDueTodayCounts: [OverdueOrDueTodayTaskAnalytic!]!
-    totalTasksDueCount: Int!
-    updatedAt: ISO8601DateTime!
-    updatedInDbAt: ISO8601DateTime!
-  }
-
-  scalar ISO8601DateTime
-
-  type OverdueOrDueTodayTaskAnalytic {
-    label: String!
-    count: Int!
-  }
-`;
-
-const ExportContactsTypeDefs = gql`
-  extend type Mutation {
-    exportContacts(input: ExportContactsInput!): String!
-  }
-
-  input ExportContactsInput {
-    """
-    Enum value to determine the file format of the exported contacts (Either csv, xlsx, or pdf)
-    """
-    format: ExportFormatEnum!
-    """
-    Boolean value to determine if export is going to be used for mailing purposes.
-    """
-    mailing: Boolean!
-    labelType: ExportLabelTypeEnum
-    sort: ExportSortEnum
-    accountListId: ID!
-  }
-
-  enum ExportFormatEnum {
-    csv
-    xlsx
-    pdf
-  }
-
-  enum ExportLabelTypeEnum {
-    Avery5160
-    Avery7160
-  }
-
-  enum ExportSortEnum {
-    name
-    zip
-  }
-`;
+import ContactFiltersTypeDefs from './Schema/ContactFilters/typeDefs';
+import TaskAnalyticsTypeDefs from './Schema/TaskAnalytics/typeDefs';
+import ExportContactsTypeDefs from './Schema/ExportContacts/typeDefs';
 
 class MpdxRestApi extends RESTDataSource {
   constructor() {
