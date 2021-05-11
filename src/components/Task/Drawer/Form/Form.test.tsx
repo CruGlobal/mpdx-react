@@ -209,30 +209,5 @@ describe('TaskDrawerForm', () => {
     ).toBeInTheDocument();
 
     userEvent.click(getByRole('button', { name: 'Yes' }));
-    await waitFor(() =>
-      expect(cache.readQuery).toHaveBeenCalledWith({
-        query: GetTasksForTaskListDocument,
-        variables: {
-          accountListId,
-          first: 100,
-          ...mockFilter,
-        },
-      }),
-    );
-    await waitFor(() =>
-      expect(cache.writeQuery).toHaveBeenCalledWith({
-        query: GetTasksForTaskListDocument,
-        variables: {
-          accountListId,
-          first: 100,
-          ...mockFilter,
-        },
-        data: {
-          tasks: {
-            nodes: [],
-          },
-        },
-      }),
-    );
   });
 });

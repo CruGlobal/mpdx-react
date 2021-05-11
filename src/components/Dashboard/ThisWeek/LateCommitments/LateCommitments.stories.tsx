@@ -1,7 +1,7 @@
 import React, { ReactElement } from 'react';
 import { Box } from '@material-ui/core';
 import { GetThisWeekQuery } from '../GetThisWeek.generated';
-import LateCommitments from '.';
+import LateCommitments from './LateCommitments';
 
 export default {
   title: 'Dashboard/ThisWeek/LateCommitments',

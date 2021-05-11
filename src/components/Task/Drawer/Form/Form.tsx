@@ -40,11 +40,9 @@ import {
   TaskUpdateInput,
 } from '../../../../../graphql/types.generated';
 import { GetTaskForTaskDrawerQuery } from '../TaskDrawerTask.generated';
-import {
-  GetTasksForTaskListDocument,
-  GetTasksForTaskListQuery,
-} from '../../List/TaskList.generated';
+import { GetTasksForTaskListDocument } from '../../List/TaskList.generated';
 import { TaskFilter } from '../../List/List';
+import { GetThisWeekDocument } from '../../../Dashboard/ThisWeek/GetThisWeek.generated';
 import {
   useGetDataForTaskDrawerQuery,
   useCreateTaskMutation,
@@ -191,37 +189,28 @@ const TaskDrawerForm = ({
   const onDeleteTask = async (): Promise<void> => {
     try {
       if (task) {
+        const endOfDay = DateTime.local().endOf('day');
         await deleteTask({
           variables: {
             accountListId,
             id: task.id,
           },
-          update: (cache) => {
-            const query = {
+          refetchQueries: [
+            {
               query: GetTasksForTaskListDocument,
+              variables: { accountListId, first: rowsPerPage, ...filter },
+            },
+            {
+              query: GetThisWeekDocument,
               variables: {
                 accountListId,
-                first: rowsPerPage,
-                ...filter,
+                endOfDay: endOfDay.toISO(),
+                today: endOfDay.toISODate(),
+                twoWeeksFromNow: endOfDay.plus({ weeks: 2 }).toISODate(),
+                twoWeeksAgo: endOfDay.minus({ weeks: 2 }).toISODate(),
               },
-            };
-            const dataFromCache = cache.readQuery<GetTasksForTaskListQuery>(
-              query,
-            );
-
-            cache.writeQuery({
-              ...query,
-              data: {
-                tasks: {
-                  ...dataFromCache?.tasks,
-                  nodes:
-                    dataFromCache?.tasks.nodes.filter(
-                      ({ id }) => id !== task.id,
-                    ) || [],
-                },
-              },
-            });
-          },
+            },
+          ],
         });
         enqueueSnackbar(t('Task deleted successfully'), { variant: 'success' });
         handleRemoveDialog(false);
