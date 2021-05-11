@@ -18,6 +18,9 @@ import {
   ContactFilterGroup,
   ContactFilter,
 } from './graphql-rest.page.generated';
+import ContactFiltersResolvers from './Schema/ContactFilters/resolvers';
+import TaskAnalyticsResolvers from './Schema/TaskAnalytics/resolvers';
+import ExportContactsResolvers from './Schema/ExportContacts/resolvers';
 
 const ContactFiltersTypeDefs = gql`
   extend type Query {
@@ -50,14 +53,6 @@ const ContactFiltersTypeDefs = gql`
   }
 `;
 
-const ContactFiltersResolvers: Resolvers = {
-  Query: {
-    contactFilters: (_source, { accountListId }, { dataSources }) => {
-      return dataSources.mpdxRestApi.getContactFilters(accountListId);
-    },
-  },
-};
-
 const TaskAnalyticsTypeDefs = gql`
   extend type Query {
     taskAnalytics(accountListId: ID!): TaskAnalytics!
@@ -81,14 +76,6 @@ const TaskAnalyticsTypeDefs = gql`
     count: Int!
   }
 `;
-
-const TaskAnalyticsResolvers: Resolvers = {
-  Query: {
-    taskAnalytics: async (_source, { accountListId }, { dataSources }) => {
-      return dataSources.mpdxRestApi.getTaskAnalytics(accountListId);
-    },
-  },
-};
 
 const ExportContactsTypeDefs = gql`
   extend type Mutation {
@@ -125,30 +112,6 @@ const ExportContactsTypeDefs = gql`
     zip
   }
 `;
-
-const ExportContactsResolvers: Resolvers = {
-  Mutation: {
-    exportContacts: (
-      _source,
-      { input: { mailing, format, labelType, sort, accountListId } },
-      { dataSources },
-    ) => {
-      const filter = {
-        account_list_id: accountListId,
-        newsletter: 'address',
-        status: 'active',
-      };
-
-      return dataSources.mpdxRestApi.createExportedContacts(
-        mailing,
-        format,
-        filter,
-        labelType,
-        sort,
-      );
-    },
-  },
-};
 
 class MpdxRestApi extends RESTDataSource {
   constructor() {
