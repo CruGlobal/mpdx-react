@@ -16,7 +16,7 @@ const StarButton = styled(IconButton)(({ theme }) => ({
 export const StarContactIconButton: React.FC<Props> = ({
   accountListId,
   contactId,
-  isStarred = false,
+  isStarred,
 }) => {
   const [setContactStarred] = useSetContactStarredMutation();
 

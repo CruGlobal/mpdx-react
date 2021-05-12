@@ -56,6 +56,18 @@ export const ContactRow: React.FC<Props> = ({
     onContactSelected(contact.id);
   };
 
+  const {
+    id: contactId,
+    lateAt,
+    name,
+    pledgeAmount,
+    pledgeCurrency,
+    pledgeFrequency,
+    primaryAddress,
+    starred,
+    status,
+  } = contact;
+
   return (
     <Box role="row" style={{ width: '100%' }}>
       <ContactRowButton data-testid="rowButton" onClick={onClick}>
@@ -67,9 +79,9 @@ export const ContactRow: React.FC<Props> = ({
               letterSpacing: '0.15px',
             }}
           >
-            {contact.name}
+            {name}
           </ContactText>
-          <ContactText>{contact.primaryAddress?.street ?? ''}</ContactText>
+          <ContactText>{primaryAddress?.street || ''}</ContactText>
         </ContactTextWrap>
 
         <Hidden smDown>
@@ -90,7 +102,7 @@ export const ContactRow: React.FC<Props> = ({
             margin: theme.spacing(1),
           }}
         >
-          <GiftStatus lateAt={contact.lateAt ?? undefined} />
+          <GiftStatus lateAt={lateAt ?? undefined} />
         </Box>
 
         <Hidden mdDown>
@@ -102,21 +114,21 @@ export const ContactRow: React.FC<Props> = ({
               margin: theme.spacing(1),
             }}
           >
-            <ContactText>{contact.status ?? ''}</ContactText>
+            <ContactText>{status ?? ''}</ContactText>
             <ContactText>
-              {contact.pledgeAmount
-                ? contact.pledgeCurrency
-                  ? `${contact.pledgeAmount} ${contact.pledgeCurrency}`
-                  : contact.pledgeAmount
+              {pledgeAmount
+                ? pledgeCurrency
+                  ? `${pledgeAmount} ${pledgeCurrency}`
+                  : pledgeAmount
                 : ''}{' '}
-              {contact.pledgeFrequency ?? ''}
+              {pledgeFrequency ?? ''}
             </ContactText>
           </Box>
         </Hidden>
         <StarContactIconButton
           accountListId={accountListId}
-          contactId={contact.id}
-          isStarred={contact.starred || false}
+          contactId={contactId}
+          isStarred={starred || false}
         />
       </ContactRowButton>
       <hr
