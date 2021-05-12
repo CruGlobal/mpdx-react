@@ -4,10 +4,7 @@ hooks:
     - prettier --write
 generates:
   ./pages/api/graphql-rest.page.generated.ts:
-    schema:
-      - './pages/api/Schema/ContactFilters/contactFilters.graphql'
-      - './pages/api/Schema/ExportContacts/exportContacts.graphql'
-      - './pages/api/Schema/TaskAnalytics/taskAnalytics.graphql'
+    schema: ./pages/api/Schema/**/*.graphql
     plugins:
       - add:
           content: '/* eslint-disable */'
