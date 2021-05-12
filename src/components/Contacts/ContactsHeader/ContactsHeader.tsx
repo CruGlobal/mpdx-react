@@ -8,12 +8,13 @@ import {
   ContactCheckBoxState,
 } from '../ContactCheckBox/ContactCheckBox';
 import { StarContactIcon } from '../StarContactIcon/StarContactIcon';
-import { SearchBox } from '../../SearchBox/SearchBox';
+import { SearchBox } from '../../common/SearchBox/SearchBox';
 
 interface Props {
   activeFilters: boolean;
   filterPanelOpen: boolean;
   toggleFilterPanel: () => void;
+  onSearchTermChanged: (searchTerm: string) => void;
   totalContacts?: number;
 }
 
@@ -116,6 +117,7 @@ export const ContactsHeader: React.FC<Props> = ({
   activeFilters,
   filterPanelOpen,
   toggleFilterPanel,
+  onSearchTermChanged,
   totalContacts = 0,
 }) => {
   const { t } = useTranslation();
@@ -159,7 +161,10 @@ export const ContactsHeader: React.FC<Props> = ({
         </FilterButton>
       </Hidden>
 
-      <SearchBox searchTerm="" onChange={() => ''} placeholder="Search List" />
+      <SearchBox
+        onChange={onSearchTermChanged}
+        placeholder={t('Search List')}
+      />
       <ContactsShowingText>
         {t('Showing 43', { count: totalContacts })}
       </ContactsShowingText>
