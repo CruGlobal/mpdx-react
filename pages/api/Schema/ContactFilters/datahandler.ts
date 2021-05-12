@@ -19,7 +19,7 @@ const getContactFilters = (
       title: string;
     };
   }[],
-) => {
+): ContactFilterGroup[] => {
   const groups: { [name: string]: ContactFilterGroup } = {};
   const createFilterGroup: (parent: string) => ContactFilterGroup = (
     parent,
