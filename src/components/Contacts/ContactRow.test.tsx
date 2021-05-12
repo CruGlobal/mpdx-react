@@ -1,6 +1,9 @@
 import React from 'react';
 import { render, within } from '@testing-library/react';
-import { gqlMock } from '../../../__tests__/util/graphqlMocking';
+import {
+  gqlMock,
+  GqlMockedProvider,
+} from '../../../__tests__/util/graphqlMocking';
 import { ContactRow } from './ContactRow';
 import {
   ContactRowFragment,
@@ -15,11 +18,13 @@ it('should display contact name', () => {
     mocks: { name },
   });
   const { getByRole } = render(
-    <ContactRow
-      accountListId={accountListId}
-      contact={contact}
-      onContactSelected={() => {}}
-    />,
+    <GqlMockedProvider>
+      <ContactRow
+        accountListId={accountListId}
+        contact={contact}
+        onContactSelected={() => {}}
+      />
+    </GqlMockedProvider>,
   );
   expect(within(getByRole('row')).getByText(name)).toBeVisible();
 });

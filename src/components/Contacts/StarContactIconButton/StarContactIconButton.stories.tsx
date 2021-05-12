@@ -20,6 +20,7 @@ export const Default = (): ReactElement => {
       <StarContactIconButton
         accountListId={accountListId}
         contactId={contactId}
+        isStarred={false}
       />
     </GqlMockedProvider>
   );
@@ -33,6 +34,7 @@ export const IsStarred = (): ReactElement => {
       <StarContactIconButton
         accountListId={accountListId}
         contactId={contactId}
+        isStarred={true}
       />
     </GqlMockedProvider>
   );
