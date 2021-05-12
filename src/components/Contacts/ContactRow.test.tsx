@@ -7,13 +7,19 @@ import {
   ContactRowFragmentDoc,
 } from './ContactRow.generated';
 
+const accountListId = 'abc';
+
 it('should display contact name', () => {
   const name = 'Name';
   const contact = gqlMock<ContactRowFragment>(ContactRowFragmentDoc, {
     mocks: { name },
   });
   const { getByRole } = render(
-    <ContactRow contact={contact} onContactSelected={() => {}} />,
+    <ContactRow
+      accountListId={accountListId}
+      contact={contact}
+      onContactSelected={() => {}}
+    />,
   );
   expect(within(getByRole('row')).getByText(name)).toBeVisible();
 });

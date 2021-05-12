@@ -6,13 +6,12 @@ mutation SetContactStarred(
   updateContact(
     input: {
       accountListId: $accountListId
-      attributes: { id: $contactId, noAppeals: $starred }
+      attributes: { id: $contactId, starred: $starred }
     }
   ) {
     contact {
       id
-      noAppeals
-      starredAt
+      starred
     }
   }
 }

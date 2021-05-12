@@ -71,6 +71,7 @@ export const ContactsTable: React.FC<Props> = ({
             <div data-testID="ContactRows">
               {data.contacts.nodes?.map((contact) => (
                 <ContactRow
+                  accountListId={accountListId}
                   key={contact.id}
                   contact={contact}
                   onContactSelected={onContactSelected}

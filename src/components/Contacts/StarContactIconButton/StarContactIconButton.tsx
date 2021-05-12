@@ -18,7 +18,7 @@ export const StarContactIconButton: React.FC<Props> = ({
 }) => {
   const [setContactStarred, { data }] = useSetContactStarredMutation();
 
-  const isStarred = data?.updateContact?.contact.noAppeals || false;
+  const isStarred = data?.updateContact?.contact.starred || false;
 
   const toggleStarred = async () => {
     setContactStarred({

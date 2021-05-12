@@ -15,10 +15,18 @@ export default {
   decorators: [withDesign],
 } as Meta;
 
+const accountListId = 'abc';
+
 export const Default: Story = () => {
   const contact = gqlMock<ContactRowFragment>(ContactRowFragmentDoc);
 
-  return <ContactRow contact={contact} onContactSelected={() => {}} />;
+  return (
+    <ContactRow
+      accountListId={accountListId}
+      contact={contact}
+      onContactSelected={() => {}}
+    />
+  );
 };
 
 Default.parameters = {
