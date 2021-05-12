@@ -26,15 +26,11 @@ export const ContactsTable: React.FC<Props> = ({
   filterPanelOpen,
   toggleFilterPanel,
 }: Props) => {
-  const [searchTerm, setSearchTerm] = useState<string | undefined>(undefined);
+  const [searchTerm, setSearchTerm] = useState<string>();
 
   const { data, loading, error } = useContactsQuery({
     variables: { accountListId, searchTerm },
   });
-
-  const handleSearchTermChanged = (searchTerm: string) => {
-    setSearchTerm(searchTerm);
-  };
 
   const renderLoading = () => (
     <Box
@@ -65,7 +61,7 @@ export const ContactsTable: React.FC<Props> = ({
             activeFilters={activeFilters}
             filterPanelOpen={filterPanelOpen}
             toggleFilterPanel={toggleFilterPanel}
-            onSearchTermChanged={handleSearchTermChanged}
+            onSearchTermChanged={setSearchTerm}
           />
         </TableHead>
         <TableBody>

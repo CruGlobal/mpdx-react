@@ -19,7 +19,7 @@ it('starts without value', () => {
   expect(textbox).toHaveValue('');
 });
 
-it('triggers onChange', () => {
+it('triggers onChange', async () => {
   const onChange = jest.fn();
   const inputText = 'name';
   const placeholderText = 'placeholder';
@@ -37,7 +37,8 @@ it('triggers onChange', () => {
   userEvent.type(textbox, inputText);
 
   expect(textbox).toHaveValue(inputText);
-  setTimeout(() => {
-    expect(onChange).toHaveBeenCalledWith(inputText);
-  }, 500);
+
+  await new Promise((resolve) => setTimeout(resolve, 500));
+
+  expect(onChange).toHaveBeenCalledWith(inputText);
 });

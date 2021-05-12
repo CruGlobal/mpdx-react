@@ -200,8 +200,9 @@ describe('ContactsHeader', () => {
     userEvent.type(textbox, searchText);
 
     expect(toggleFilterPanel).not.toHaveBeenCalled();
-    setTimeout(() => {
-      expect(onSearchTermChanged).toHaveBeenCalledWith(searchText);
-    }, 500);
+
+    await new Promise((resolve) => setTimeout(resolve, 500));
+
+    expect(onSearchTermChanged).toHaveBeenCalledWith(searchText);
   });
 });
