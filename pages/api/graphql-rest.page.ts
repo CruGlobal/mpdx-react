@@ -1,5 +1,4 @@
 import { ApolloServer } from '@saeris/apollo-server-vercel';
-import { buildFederatedSchema } from '@apollo/federation';
 import { NextApiRequest } from 'next';
 import {
   RequestOptions,
@@ -11,17 +10,10 @@ import {
   ExportLabelTypeEnum,
   ExportSortEnum,
 } from '../../graphql/types.generated';
-import {
-  ContactFilterOption,
-  ContactFilterGroup,
-  ContactFilter,
-} from './graphql-rest.page.generated';
-import ContactFiltersResolvers from './Schema/ContactFilters/resolvers';
-import TaskAnalyticsResolvers from './Schema/TaskAnalytics/resolvers';
-import ExportContactsResolvers from './Schema/ExportContacts/resolvers';
-import ContactFiltersTypeDefs from './Schema/ContactFilters/typeDefs';
-import TaskAnalyticsTypeDefs from './Schema/TaskAnalytics/typeDefs';
-import ExportContactsTypeDefs from './Schema/ExportContacts/typeDefs';
+import { ContactFilterOption } from './graphql-rest.page.generated';
+import schema from './Schema';
+import getTaskAnalytics from './Schema/TaskAnalytics/dataHandler';
+import getContactFilters from './Schema/ContactFilters/datahandler';
 
 class MpdxRestApi extends RESTDataSource {
   constructor() {
@@ -108,48 +100,7 @@ class MpdxRestApi extends RESTDataSource {
       `contacts/filters?filter[account_list_id]=${accountListId}`,
     );
 
-    const groups: { [name: string]: ContactFilterGroup } = {};
-    const createFilterGroup: (parent: string) => ContactFilterGroup = (
-      parent,
-    ) => {
-      return {
-        id: parent,
-        title: parent,
-        alwaysVisible: false,
-        filters: [],
-      };
-    };
-
-    const response: ContactFilterGroup[] = [];
-    data.forEach(
-      ({
-        id,
-        attributes: { default_selection, parent, title, ...attributes },
-      }) => {
-        const filter: ContactFilter = {
-          id: id,
-          title: title,
-          ...attributes,
-          defaultSelection:
-            typeof default_selection === 'string'
-              ? default_selection.split(/,\s?/)
-              : [default_selection.toString()],
-        };
-
-        if (parent) {
-          if (!groups[parent]) {
-            groups[parent] = createFilterGroup(parent);
-            response.push(groups[parent]);
-          }
-          groups[parent].filters.push(filter);
-        } else {
-          const group = createFilterGroup(title);
-          response.push(group);
-          group.filters.push(filter);
-        }
-      },
-    );
-    return response;
+    return getContactFilters(data);
   }
 
   async getTaskAnalytics(accountListId: string) {
@@ -157,28 +108,7 @@ class MpdxRestApi extends RESTDataSource {
       `tasks/analytics?filter[account_list_id]=${accountListId}`,
     );
 
-    const {
-      attributes: {
-        created_at,
-        last_electronic_newsletter_completed_at,
-        last_physical_newsletter_completed_at,
-        tasks_overdue_or_due_today_counts,
-        total_tasks_due_count,
-        updated_at,
-        updated_in_db_at,
-      },
-    } = data;
-
-    return {
-      ...data,
-      createdAt: created_at,
-      lastElectronicNewsletterCompletedAt: last_electronic_newsletter_completed_at,
-      lastPhysicalNewsletterCompletedAt: last_physical_newsletter_completed_at,
-      tasksOverdueOrDueTodayCounts: tasks_overdue_or_due_today_counts,
-      totalTasksDueCount: total_tasks_due_count,
-      updatedAt: updated_at,
-      updatedInDbAt: updated_in_db_at,
-    };
+    return getTaskAnalytics(data);
   }
 }
 
@@ -188,11 +118,7 @@ export interface Context {
 }
 
 const server = new ApolloServer({
-  schema: buildFederatedSchema([
-    { typeDefs: ContactFiltersTypeDefs, resolvers: ContactFiltersResolvers },
-    { typeDefs: TaskAnalyticsTypeDefs, resolvers: TaskAnalyticsResolvers },
-    { typeDefs: ExportContactsTypeDefs, resolvers: ExportContactsResolvers },
-  ]),
+  schema,
   dataSources: () => {
     return {
       mpdxRestApi: new MpdxRestApi(),
