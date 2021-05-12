@@ -90,10 +90,6 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
     variables: { accountListId, contactId, searchTerm },
   });
 
-  const handleSearchTermChanged = (searchTerm: string) => {
-    setSearchTerm(searchTerm);
-  };
-
   const { t } = useTranslation();
 
   return (
@@ -120,7 +116,7 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
           <HeaderItemsWrap>
             <ContactCheckBox />
             <SearchBox
-              onChange={handleSearchTermChanged}
+              onChange={setSearchTerm}
               placeholder={t('Search Tasks')}
             />
           </HeaderItemsWrap>
