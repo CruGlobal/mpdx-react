@@ -19,6 +19,6 @@ const StarOutline = styled(StarBorderOutlined)(({ theme }) => ({
   color: theme.palette.secondary.dark,
 }));
 
-export const StarredItemIcon: React.FC<Props> = ({ isStarred }) => {
+export const StarredItemIcon: React.FC<Props> = ({ isStarred = false }) => {
   return isStarred ? <StarFilled /> : <StarOutline />;
 };

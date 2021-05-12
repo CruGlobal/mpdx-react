@@ -116,6 +116,7 @@ export const ContactRow: React.FC<Props> = ({
         <StarContactIconButton
           accountListId={accountListId}
           contactId={contact.id}
+          isStarred={contact.starred || false}
         />
       </ContactRowButton>
       <hr

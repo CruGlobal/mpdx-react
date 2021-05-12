@@ -14,7 +14,7 @@ export const Default = (): ReactElement => {
   return (
     <GqlMockedProvider<SetContactStarredMutation>
       mocks={{
-        updateContact: { contact: { id: contactId, noAppeals: false } },
+        updateContact: { contact: { id: contactId, starred: false } },
       }}
     >
       <StarContactIconButton
@@ -28,7 +28,7 @@ export const Default = (): ReactElement => {
 export const IsStarred = (): ReactElement => {
   return (
     <GqlMockedProvider<SetContactStarredMutation>
-      mocks={{ updateContact: { contact: { id: contactId, noAppeals: true } } }}
+      mocks={{ updateContact: { contact: { id: contactId, starred: true } } }}
     >
       <StarContactIconButton
         accountListId={accountListId}

@@ -6,6 +6,7 @@ import { useSetContactStarredMutation } from './SetContactStarred.generated';
 interface Props {
   accountListId: string;
   contactId: string;
+  isStarred: boolean;
 }
 
 const StarButton = styled(IconButton)(({ theme }) => ({
@@ -15,12 +16,11 @@ const StarButton = styled(IconButton)(({ theme }) => ({
 export const StarContactIconButton: React.FC<Props> = ({
   accountListId,
   contactId,
+  isStarred = false,
 }) => {
-  const [setContactStarred, { data }] = useSetContactStarredMutation();
+  const [setContactStarred] = useSetContactStarredMutation();
 
-  const isStarred = data?.updateContact?.contact.starred || false;
-
-  const toggleStarred = async () => {
+  const toggleStarred = () => {
     setContactStarred({
       variables: { accountListId, contactId, starred: !isStarred },
     });

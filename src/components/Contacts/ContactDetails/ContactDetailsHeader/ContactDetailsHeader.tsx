@@ -104,6 +104,7 @@ export const ContactDetailsHeader: React.FC<Props> = ({
           <StarContactIconButton
             accountListId={accountListId}
             contactId={contactId}
+            isStarred={data?.contact?.starred || false}
           />
           <ButtonWrap>
             <MoreButtonIcon />
