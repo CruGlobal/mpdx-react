@@ -79,7 +79,12 @@ export const ContactDonationsTab: React.FC<ContactDontationsProp> = ({
           </>
         ) : (
           <DonationsGraph
-            donations={data?.contact.donations ?? null}
+            accountListId={accountListId}
+            donorAccountIds={
+              data?.contact.contactDonorAccounts.nodes.map((donor) => {
+                return donor.donorAccount.id;
+              }) ?? []
+            }
             convertedCurrency={
               data?.contact.lastDonation?.amount.convertedCurrency ?? ''
             }
@@ -87,7 +92,7 @@ export const ContactDonationsTab: React.FC<ContactDontationsProp> = ({
         )}
       </DonationsGraphContainer>
       <TabContext value={selectedDonationTabKey}>
-        <DonationsTabContainer>
+        <DonationsTabContainer role="banner">
           <DonationsTabList
             onChange={handleDonationTabChange}
             TabIndicatorProps={{ children: <span /> }}

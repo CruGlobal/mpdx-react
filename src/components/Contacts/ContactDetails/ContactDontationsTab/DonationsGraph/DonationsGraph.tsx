@@ -28,56 +28,42 @@ const GraphContainer = styled(Box)(({ theme }) => ({
 }));
 
 const GraphLoadingPlaceHolder = styled(Skeleton)(({ theme }) => ({
-  width: '100%',
+  width: '400',
   height: '24px',
   margin: theme.spacing(2, 0),
 }));
 
 interface DonationsGraphProps {
   accountListId: string;
-  designationAccountIds: string[];
   donorAccountIds: string[];
   convertedCurrency: string;
 }
 
 export const DonationsGraph: React.FC<DonationsGraphProps> = ({
   accountListId,
-  designationAccountIds,
   donorAccountIds,
   convertedCurrency,
 }) => {
   const { t } = useTranslation();
-  const thisYearsData = useGetDonationsGraphQuery({
+  const { data, loading } = useGetDonationsGraphQuery({
     variables: {
       accountListId: accountListId,
-      designationAccountIds: designationAccountIds,
       donorAccountIds: donorAccountIds,
-      endDate: DateTime.now().toISO(),
     },
   });
 
-  const lastYearsData = useGetDonationsGraphQuery({
-    variables: {
-      accountListId: accountListId,
-      designationAccountIds: designationAccountIds,
-      donorAccountIds: donorAccountIds,
-      endDate: DateTime.now().minus({ year: 1 }).toISO(),
-    },
-  });
-
-  const loading = thisYearsData.loading || lastYearsData.loading;
   const contactDonationsMap = [...Array(12)].map((x, i) => {
-    const mapDate = DateTime.now().plus({ month: i });
+    const mapDate = DateTime.now().minus({ month: i });
     let lastYearCurrencyConvertedTotal = 0;
     let thisYearCurrencyConvertedTotal = 0;
-    thisYearsData.data?.reportsDonationHistories.periods.forEach((period) => {
-      if (DateTime.fromISO(period.startDate).month === mapDate.month) {
-        thisYearCurrencyConvertedTotal += period.convertedTotal;
-      }
-    });
-    lastYearsData.data?.reportsDonationHistories.periods.forEach((period) => {
-      if (DateTime.fromISO(period.startDate).month === mapDate.month) {
-        lastYearCurrencyConvertedTotal += period.convertedTotal;
+    data?.reportsDonationHistories.periods.forEach((period) => {
+      const periodDate = DateTime.fromISO(period.startDate);
+      if (periodDate.month === mapDate.month) {
+        if (periodDate.year === mapDate.year) {
+          thisYearCurrencyConvertedTotal += period.convertedTotal;
+        } else {
+          lastYearCurrencyConvertedTotal += period.convertedTotal;
+        }
       }
     });
     return {
@@ -90,11 +76,11 @@ export const DonationsGraph: React.FC<DonationsGraphProps> = ({
   return (
     <GraphContainer>
       {loading ? (
-        <>
+        <Box style={{ width: '100%' }}>
           <GraphLoadingPlaceHolder />
           <GraphLoadingPlaceHolder />
           <GraphLoadingPlaceHolder />
-        </>
+        </Box>
       ) : (
         <>
           <LegendText variant="body1" role="banner">{`${t(

@@ -32,7 +32,7 @@ describe('ContactDonationsTab', () => {
     `);
     expect(
       result.current.data?.contact.donations.nodes.length,
-    ).toMatchInlineSnapshot(`undefined`);
+    ).toMatchInlineSnapshot(`1`);
   });
   it('test renderer', async () => {
     const { findByRole } = render(
@@ -43,6 +43,6 @@ describe('ContactDonationsTab', () => {
         />
       </GqlMockedProvider>,
     );
-    expect(await findByRole('alert')).toBeVisible();
+    expect(await findByRole('banner')).toBeVisible();
   });
 });

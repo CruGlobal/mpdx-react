@@ -30,7 +30,6 @@ fragment ContactDonation on Donation {
   amount {
     ...DonationMoney
   }
-  donationDate
 }
 
 fragment DonationMoney on Money {

@@ -1,7 +1,8 @@
 import { Box } from '@material-ui/core';
 import React, { ReactElement } from 'react';
-import { contactDonationsMock } from '../ContactDonationsTab.mocks';
+import { GqlMockedProvider } from '../../../../../../__tests__/util/graphqlMocking';
 import { DonationsGraph } from './DonationsGraph';
+import { GetDonationsGraphQuery } from './DonationsGraph.generated';
 
 export default {
   title: 'Contacts/Tab/ContactDonationsTab/DonationsGraph',
@@ -11,10 +12,13 @@ export default {
 export const Default = (): ReactElement => {
   return (
     <Box m={2}>
-      <DonationsGraph
-        donations={contactDonationsMock}
-        convertedCurrency={'USD'}
-      />
+      <GqlMockedProvider<GetDonationsGraphQuery>>
+        <DonationsGraph
+          accountListId="accountListId-1"
+          donorAccountIds={['donationsAccountIds']}
+          convertedCurrency={'USD'}
+        />
+      </GqlMockedProvider>
     </Box>
   );
 };
