@@ -7,7 +7,7 @@ import {
   TableBody,
   TableContainer,
 } from '@material-ui/core';
-import { ContactRow } from '../ContactRow';
+import { ContactRow } from '../ContactRow/ContactRow';
 import { ContactsHeader } from '../ContactsHeader/ContactsHeader';
 import { useContactsQuery } from '../../../../pages/accountLists/[accountListId]/Contacts.generated';
 
@@ -74,6 +74,7 @@ export const ContactsTable: React.FC<Props> = ({
             <div data-testID="ContactRows">
               {data.contacts.nodes?.map((contact) => (
                 <ContactRow
+                  accountListId={accountListId}
                   key={contact.id}
                   contact={contact}
                   onContactSelected={onContactSelected}

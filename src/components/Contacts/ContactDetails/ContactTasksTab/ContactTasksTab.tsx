@@ -2,10 +2,10 @@ import { Box, Button, Divider, styled, Typography } from '@material-ui/core';
 import { Add, CheckCircleOutline } from '@material-ui/icons';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { StarredItemIcon } from '../../../common/StarredItemIcon';
 import { SearchBox } from '../../../common/SearchBox/SearchBox';
 import { ContactCheckBox } from '../../ContactCheckBox/ContactCheckBox';
-import { StarContactIcon } from '../../StarContactIcon/StarContactIcon';
-import { ContactTaskRow } from '../ContactTaskRow/ContactTaskRow';
+import { ContactTaskRow } from './ContactTaskRow/ContactTaskRow';
 import { useContactTasksTabQuery } from './ContactTasksTab.generated';
 
 const ContactDetailsTabContainer = styled(Box)(() => ({
@@ -13,9 +13,10 @@ const ContactDetailsTabContainer = styled(Box)(() => ({
   padding: '0 5%',
 }));
 
-const ContactTasksHeaderContainer = styled(Box)(({}) => ({
+const ContactTasksHeaderContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
+  margin: theme.spacing(1),
 }));
 
 const HeaderRow = styled(Box)(({ theme }) => ({
@@ -123,7 +124,7 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
           <HeaderItemsWrap>
             <PlaceholderActionBar />
             <StarIconWrap>
-              <StarContactIcon hasStar={false} />
+              <StarredItemIcon isStarred={false} />
             </StarIconWrap>
           </HeaderItemsWrap>
         </HeaderRow>

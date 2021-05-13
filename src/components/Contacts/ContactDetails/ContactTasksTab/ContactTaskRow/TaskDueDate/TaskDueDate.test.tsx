@@ -2,7 +2,7 @@ import { MuiThemeProvider } from '@material-ui/core';
 import { render } from '@testing-library/react';
 import { DateTime } from 'luxon';
 import React from 'react';
-import theme from '../../../../../theme';
+import theme from '../../../../../../theme';
 import { TaskDueDate } from './TaskDueDate';
 
 const notLateDueDate = DateTime.local(2021, 10, 12);

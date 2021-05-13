@@ -7,7 +7,7 @@ import {
   ContactCheckBox,
   ContactCheckBoxState,
 } from '../ContactCheckBox/ContactCheckBox';
-import { StarContactIcon } from '../StarContactIcon/StarContactIcon';
+import { StarredItemIcon } from '../../common/StarredItemIcon';
 import { SearchBox } from '../../common/SearchBox/SearchBox';
 
 interface Props {
@@ -25,7 +25,7 @@ enum ContactsTableDisplayState {
 
 const HeaderWrap = styled(Box)(({ theme }) => ({
   height: 96,
-  padding: theme.spacing(1),
+  padding: theme.spacing(2),
   display: 'flex',
   flexDirection: 'row',
   justifyContent: 'space-evenly',
@@ -199,7 +199,7 @@ export const ContactsHeader: React.FC<Props> = ({
 
       <Hidden smDown>
         <StarIconWrap>
-          <StarContactIcon hasStar={false} />
+          <StarredItemIcon isStarred={false} />
         </StarIconWrap>
       </Hidden>
     </HeaderWrap>
