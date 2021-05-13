@@ -1,6 +1,6 @@
 import { IconButton, styled } from '@material-ui/core';
 import React from 'react';
-import { StarredItemIcon } from '../../common/StarredItemIcon';
+import { StarredItemIcon } from '../../common/StarredItemIcon/StarredItemIcon';
 import { useSetContactStarredMutation } from './SetContactStarred.generated';
 
 interface Props {

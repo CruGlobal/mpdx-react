@@ -9,7 +9,7 @@ import {
   ResultEnum,
 } from '../../../../../../graphql/types.generated';
 import theme from '../../../../../theme';
-import { StarredItemIcon } from '../../../../common/StarredItemIcon';
+import { StarredItemIcon } from '../../../../common/StarredItemIcon/StarredItemIcon';
 import { ContactCheckBox } from '../../../ContactCheckBox/ContactCheckBox';
 import { StarTaskIconButton } from '../StarTaskIconButton/StarTaskIconButton';
 import { ContactTaskRowFragment } from './ContactTaskRow.generated';

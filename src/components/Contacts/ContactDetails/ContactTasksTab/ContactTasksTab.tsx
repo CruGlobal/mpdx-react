@@ -2,7 +2,7 @@ import { Box, Button, Divider, styled, Typography } from '@material-ui/core';
 import { Add, CheckCircleOutline } from '@material-ui/icons';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { StarredItemIcon } from '../../../common/StarredItemIcon';
+import { StarredItemIcon } from '../../../common/StarredItemIcon/StarredItemIcon';
 import { SearchBox } from '../../../common/SearchBox/SearchBox';
 import { ContactCheckBox } from '../../ContactCheckBox/ContactCheckBox';
 import { ContactTaskRow } from './ContactTaskRow/ContactTaskRow';
