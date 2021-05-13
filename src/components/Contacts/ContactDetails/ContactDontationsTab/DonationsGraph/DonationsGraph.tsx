@@ -76,7 +76,7 @@ export const DonationsGraph: React.FC<DonationsGraphProps> = ({
   return (
     <GraphContainer>
       {loading ? (
-        <Box style={{ width: '100%' }}>
+        <Box style={{ width: '100%' }} role="alert">
           <GraphLoadingPlaceHolder />
           <GraphLoadingPlaceHolder />
           <GraphLoadingPlaceHolder />

@@ -1,24 +1,103 @@
+import { MockedProvider } from '@apollo/client/testing';
 import { Box } from '@material-ui/core';
+import { DateTime } from 'luxon';
 import React, { ReactElement } from 'react';
-import { GqlMockedProvider } from '../../../../../../__tests__/util/graphqlMocking';
 import { DonationsGraph } from './DonationsGraph';
-import { GetDonationsGraphQuery } from './DonationsGraph.generated';
+import { GetDonationsGraphDocument } from './DonationsGraph.generated';
 
 export default {
   title: 'Contacts/Tab/ContactDonationsTab/DonationsGraph',
   component: DonationsGraph,
 };
 
+const accountListId = 'account-list-id';
+const donorAccountIds = ['donor-Account-Id'];
+const currency = 'USD';
+
 export const Default = (): ReactElement => {
   return (
     <Box m={2}>
-      <GqlMockedProvider<GetDonationsGraphQuery>>
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: GetDonationsGraphDocument,
+              variables: {
+                accountListId: accountListId,
+                donorAccountIds: donorAccountIds,
+                convertCurrency: currency,
+              },
+            },
+            result: {
+              data: {
+                reportsDonationHistories: {
+                  periods: [...Array(24)].map((x, i) => {
+                    const iso = DateTime.now().minus(i).toISO;
+                    return {
+                      endDate: iso,
+                      startDate: iso,
+                      convertedTotal: i * 3,
+                    };
+                  }),
+                },
+              },
+            },
+          },
+        ]}
+      >
         <DonationsGraph
-          accountListId="accountListId-1"
-          donorAccountIds={['donationsAccountIds']}
-          convertedCurrency={'USD'}
+          accountListId="accountListID"
+          donorAccountIds={['donorAccountId']}
+          convertedCurrency="USD"
         />
-      </GqlMockedProvider>
+      </MockedProvider>
     </Box>
+  );
+};
+
+export const Loading = (): ReactElement => {
+  return (
+    <MockedProvider
+      mocks={[
+        {
+          request: {
+            query: GetDonationsGraphDocument,
+            variables: {
+              accountListId: accountListId,
+              donorAccountIds: donorAccountIds,
+              convertCurrency: currency,
+            },
+          },
+          result: {
+            data: {
+              reportsDonationHistories: {
+                periods: [...Array(24)].map((x, i) => {
+                  const iso = DateTime.now().minus(i).toISO;
+                  return {
+                    endDate: iso,
+                    startDate: iso,
+                    convertedTotal: i * 3,
+                    totals: [
+                      {
+                        amount: i * 3,
+                        convertedAmount: i * 2,
+                        currency: 'USD',
+                      },
+                    ],
+                  };
+                }),
+              },
+            },
+          },
+          delay: 8640000,
+        },
+      ]}
+    >
+      <DonationsGraph
+        accountListId="accountListID"
+        donorAccountIds={['donorAccountId']}
+        convertedCurrency="USD"
+      />
+    </MockedProvider>
   );
 };
