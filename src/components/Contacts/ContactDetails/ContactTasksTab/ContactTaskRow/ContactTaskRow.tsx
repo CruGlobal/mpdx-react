@@ -11,6 +11,7 @@ import {
 import theme from '../../../../../theme';
 import { StarredItemIcon } from '../../../../common/StarredItemIcon';
 import { ContactCheckBox } from '../../../ContactCheckBox/ContactCheckBox';
+import { StarContactIconButton } from '../../../StarContactIconButton/StarContactIconButton';
 import { ContactTaskRowFragment } from './ContactTaskRow.generated';
 import { TaskCommentsButton } from './TaskCommentsButton/TaskCommentsButton';
 import { TaskCompleteButton } from './TaskCompleteButton/TaskCompleteButton';
@@ -152,9 +153,11 @@ export const ContactTaskRow: React.FC<ContactTaskRowProps> = ({ task }) => {
           <FieldLoadingState width={120} margin={theme.spacing(1)} />
           <FieldLoadingState width={80} margin={theme.spacing(1)} />
           <FieldLoadingState width={58} margin={theme.spacing(2)} />
-          <StarIconWrap>
-            <StarredItemIcon isStarred={false} />
-          </StarIconWrap>
+          <StarContactIconButton
+            accountListId={accountListId}
+            contactId={contactId}
+            isStarred={starred}
+          />
         </TaskItemWrap>
       </TaskRowWrap>
     );
