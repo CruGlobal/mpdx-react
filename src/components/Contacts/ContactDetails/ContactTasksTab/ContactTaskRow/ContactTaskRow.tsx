@@ -11,7 +11,7 @@ import {
 import theme from '../../../../../theme';
 import { StarredItemIcon } from '../../../../common/StarredItemIcon';
 import { ContactCheckBox } from '../../../ContactCheckBox/ContactCheckBox';
-import { StarContactIconButton } from '../../../StarContactIconButton/StarContactIconButton';
+import { StarTaskIconButton } from '../StarTaskIconButton/StarTaskIconButton';
 import { ContactTaskRowFragment } from './ContactTaskRow.generated';
 import { TaskCommentsButton } from './TaskCommentsButton/TaskCommentsButton';
 import { TaskCompleteButton } from './TaskCompleteButton/TaskCompleteButton';
@@ -123,10 +123,14 @@ const getLocalizedTaskType = (
 };
 
 interface ContactTaskRowProps {
+  accountListId: string;
   task?: ContactTaskRowFragment;
 }
 
-export const ContactTaskRow: React.FC<ContactTaskRowProps> = ({ task }) => {
+export const ContactTaskRow: React.FC<ContactTaskRowProps> = ({
+  accountListId,
+  task,
+}) => {
   const { t } = useTranslation();
 
   const handleContactCheckPressed = () => {
@@ -153,11 +157,9 @@ export const ContactTaskRow: React.FC<ContactTaskRowProps> = ({ task }) => {
           <FieldLoadingState width={120} margin={theme.spacing(1)} />
           <FieldLoadingState width={80} margin={theme.spacing(1)} />
           <FieldLoadingState width={58} margin={theme.spacing(2)} />
-          <StarContactIconButton
-            accountListId={accountListId}
-            contactId={contactId}
-            isStarred={starred}
-          />
+          <StarIconWrap>
+            <StarredItemIcon isStarred={false} />
+          </StarIconWrap>
         </TaskItemWrap>
       </TaskRowWrap>
     );
@@ -190,9 +192,11 @@ export const ContactTaskRow: React.FC<ContactTaskRowProps> = ({ task }) => {
           numberOfComments={comments?.totalCount}
           onClick={handleCommentButtonPressed}
         />
-        <StarIconWrap>
-          <StarredItemIcon isStarred={false} />
-        </StarIconWrap>
+        <StarTaskIconButton
+          accountListId={accountListId}
+          taskId={task.id}
+          isStarred={task.starred}
+        />
       </TaskItemWrap>
     </TaskRowWrap>
   );

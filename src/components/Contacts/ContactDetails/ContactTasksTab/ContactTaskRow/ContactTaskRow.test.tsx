@@ -13,13 +13,14 @@ import {
   ContactTaskRowFragmentDoc,
 } from './ContactTaskRow.generated';
 
+const accountListId = 'abc';
 const startAt = '2021-04-12';
 
 describe('ContactTaskRow', () => {
   it('should render loading', () => {
     const { getByTestId } = render(
       <MuiThemeProvider theme={theme}>
-        <ContactTaskRow task={undefined} />
+        <ContactTaskRow accountListId={accountListId} task={undefined} />
       </MuiThemeProvider>,
     );
 
@@ -36,7 +37,7 @@ describe('ContactTaskRow', () => {
 
     const { findByText, queryByTestId } = render(
       <MuiThemeProvider theme={theme}>
-        <ContactTaskRow task={task} />
+        <ContactTaskRow accountListId={accountListId} task={task} />
       </MuiThemeProvider>,
     );
 
@@ -57,7 +58,7 @@ describe('ContactTaskRow', () => {
 
       const { getByText } = render(
         <MuiThemeProvider theme={theme}>
-          <ContactTaskRow task={task} />
+          <ContactTaskRow accountListId={accountListId} task={task} />
         </MuiThemeProvider>,
       );
 
@@ -73,7 +74,7 @@ describe('ContactTaskRow', () => {
 
       const { getByText } = render(
         <MuiThemeProvider theme={theme}>
-          <ContactTaskRow task={task} />
+          <ContactTaskRow accountListId={accountListId} task={task} />
         </MuiThemeProvider>,
       );
 
@@ -89,7 +90,7 @@ describe('ContactTaskRow', () => {
 
       const { getByText } = render(
         <MuiThemeProvider theme={theme}>
-          <ContactTaskRow task={task} />
+          <ContactTaskRow accountListId={accountListId} task={task} />
         </MuiThemeProvider>,
       );
 
@@ -105,7 +106,7 @@ describe('ContactTaskRow', () => {
 
       const { getByText } = render(
         <MuiThemeProvider theme={theme}>
-          <ContactTaskRow task={task} />
+          <ContactTaskRow accountListId={accountListId} task={task} />
         </MuiThemeProvider>,
       );
 
@@ -121,7 +122,7 @@ describe('ContactTaskRow', () => {
 
       const { getByText } = render(
         <MuiThemeProvider theme={theme}>
-          <ContactTaskRow task={task} />
+          <ContactTaskRow accountListId={accountListId} task={task} />
         </MuiThemeProvider>,
       );
 
@@ -137,7 +138,7 @@ describe('ContactTaskRow', () => {
 
       const { getByText } = render(
         <MuiThemeProvider theme={theme}>
-          <ContactTaskRow task={task} />
+          <ContactTaskRow accountListId={accountListId} task={task} />
         </MuiThemeProvider>,
       );
 
@@ -153,7 +154,7 @@ describe('ContactTaskRow', () => {
 
       const { getByText } = render(
         <MuiThemeProvider theme={theme}>
-          <ContactTaskRow task={task} />
+          <ContactTaskRow accountListId={accountListId} task={task} />
         </MuiThemeProvider>,
       );
 
@@ -169,7 +170,7 @@ describe('ContactTaskRow', () => {
 
       const { getByText } = render(
         <MuiThemeProvider theme={theme}>
-          <ContactTaskRow task={task} />
+          <ContactTaskRow accountListId={accountListId} task={task} />
         </MuiThemeProvider>,
       );
 
@@ -185,7 +186,7 @@ describe('ContactTaskRow', () => {
 
       const { getByText } = render(
         <MuiThemeProvider theme={theme}>
-          <ContactTaskRow task={task} />
+          <ContactTaskRow accountListId={accountListId} task={task} />
         </MuiThemeProvider>,
       );
 
@@ -201,7 +202,7 @@ describe('ContactTaskRow', () => {
 
       const { getByText } = render(
         <MuiThemeProvider theme={theme}>
-          <ContactTaskRow task={task} />
+          <ContactTaskRow accountListId={accountListId} task={task} />
         </MuiThemeProvider>,
       );
 
@@ -217,7 +218,7 @@ describe('ContactTaskRow', () => {
 
       const { getByText } = render(
         <MuiThemeProvider theme={theme}>
-          <ContactTaskRow task={task} />
+          <ContactTaskRow accountListId={accountListId} task={task} />
         </MuiThemeProvider>,
       );
 
@@ -233,7 +234,7 @@ describe('ContactTaskRow', () => {
 
       const { getByText } = render(
         <MuiThemeProvider theme={theme}>
-          <ContactTaskRow task={task} />
+          <ContactTaskRow accountListId={accountListId} task={task} />
         </MuiThemeProvider>,
       );
 
@@ -249,7 +250,7 @@ describe('ContactTaskRow', () => {
 
       const { getByText } = render(
         <MuiThemeProvider theme={theme}>
-          <ContactTaskRow task={task} />
+          <ContactTaskRow accountListId={accountListId} task={task} />
         </MuiThemeProvider>,
       );
 
@@ -265,7 +266,7 @@ describe('ContactTaskRow', () => {
 
       const { getByText } = render(
         <MuiThemeProvider theme={theme}>
-          <ContactTaskRow task={task} />
+          <ContactTaskRow accountListId={accountListId} task={task} />
         </MuiThemeProvider>,
       );
 
@@ -281,7 +282,7 @@ describe('ContactTaskRow', () => {
 
       const { getByText } = render(
         <MuiThemeProvider theme={theme}>
-          <ContactTaskRow task={task} />
+          <ContactTaskRow accountListId={accountListId} task={task} />
         </MuiThemeProvider>,
       );
 

@@ -133,13 +133,29 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
       <Box>
         {loading || !data ? (
           <>
-            <ContactTaskRow key="0" task={undefined} />
-            <ContactTaskRow key="1" task={undefined} />
-            <ContactTaskRow key="2" task={undefined} />
+            <ContactTaskRow
+              key="0"
+              accountListId={accountListId}
+              task={undefined}
+            />
+            <ContactTaskRow
+              key="1"
+              accountListId={accountListId}
+              task={undefined}
+            />
+            <ContactTaskRow
+              key="2"
+              accountListId={accountListId}
+              task={undefined}
+            />
           </>
         ) : (
           data.tasks.nodes.map((task) => (
-            <ContactTaskRow key={task.id} task={task} />
+            <ContactTaskRow
+              key={task.id}
+              accountListId={accountListId}
+              task={task}
+            />
           ))
         )}
       </Box>
