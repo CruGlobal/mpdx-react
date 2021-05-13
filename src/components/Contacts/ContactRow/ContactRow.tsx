@@ -1,11 +1,11 @@
 import { Box, Hidden, styled } from '@material-ui/core';
 import { CheckBox } from '@material-ui/icons';
 import React from 'react';
-import theme from '../../theme';
-import { CelebrationIcons } from './CelebrationIcons/CelebrationIcons';
+import theme from '../../../theme';
+import { CelebrationIcons } from '../CelebrationIcons/CelebrationIcons';
+import { GiftStatus } from '../GiftStatus/GiftStatus';
+import { StarContactIconButton } from '../StarContactIconButton/StarContactIconButton';
 import { ContactRowFragment } from './ContactRow.generated';
-import { GiftStatus } from './GiftStatus/GiftStatus';
-import { StarContactIconButton } from './StarContactIconButton/StarContactIconButton';
 
 const ContactRowButton = styled(Box)(({}) => ({
   height: '72px',

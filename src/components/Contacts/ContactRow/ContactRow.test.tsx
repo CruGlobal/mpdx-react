@@ -3,7 +3,7 @@ import { render, within } from '@testing-library/react';
 import {
   gqlMock,
   GqlMockedProvider,
-} from '../../../__tests__/util/graphqlMocking';
+} from '../../../../__tests__/util/graphqlMocking';
 import { ContactRow } from './ContactRow';
 import {
   ContactRowFragment,

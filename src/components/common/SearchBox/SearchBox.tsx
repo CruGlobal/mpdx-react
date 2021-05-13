@@ -1,12 +1,11 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Input } from '@material-ui/core';
 import { makeStyles, Theme } from '@material-ui/core/styles';
 import Icon from '@mdi/react';
 import { mdiAccountSearch } from '@mdi/js';
+import { DebounceInput } from 'react-debounce-input';
 
 export interface SearchBoxProps {
-  searchTerm: string;
   onChange: (searchTerm: string) => void;
   placeholder?: string;
 }
@@ -39,7 +38,6 @@ const useStyle = makeStyles((theme: Theme) => ({
 }));
 
 export const SearchBox: React.FC<SearchBoxProps> = ({
-  searchTerm,
   onChange,
   placeholder,
 }) => {
@@ -47,8 +45,9 @@ export const SearchBox: React.FC<SearchBoxProps> = ({
   const classes = useStyle();
 
   return (
-    <Input
+    <DebounceInput
       className={classes.searchWrapper}
+      debounceTimeout={300}
       inputProps={{
         className: classes.input,
       }}
@@ -56,7 +55,6 @@ export const SearchBox: React.FC<SearchBoxProps> = ({
       startAdornment={
         <Icon path={mdiAccountSearch} title="Search contacts" size="24px" />
       }
-      value={searchTerm}
       placeholder={placeholder ?? t('Search')}
       onChange={(event) => {
         onChange(event.target.value);
