@@ -7,10 +7,10 @@ import { useTranslation } from 'react-i18next';
 import {
   ActivityTypeEnum,
   ResultEnum,
-} from '../../../../../graphql/types.generated';
-import theme from '../../../../theme';
-import { ContactCheckBox } from '../../ContactCheckBox/ContactCheckBox';
-import { StarContactIcon } from '../../StarContactIcon/StarContactIcon';
+} from '../../../../../../graphql/types.generated';
+import theme from '../../../../../theme';
+import { StarredItemIcon } from '../../../../common/StarredItemIcon';
+import { ContactCheckBox } from '../../../ContactCheckBox/ContactCheckBox';
 import { ContactTaskRowFragment } from './ContactTaskRow.generated';
 import { TaskCommentsButton } from './TaskCommentsButton/TaskCommentsButton';
 import { TaskCompleteButton } from './TaskCompleteButton/TaskCompleteButton';
@@ -153,7 +153,7 @@ export const ContactTaskRow: React.FC<ContactTaskRowProps> = ({ task }) => {
           <FieldLoadingState width={80} margin={theme.spacing(1)} />
           <FieldLoadingState width={58} margin={theme.spacing(2)} />
           <StarIconWrap>
-            <StarContactIcon hasStar={false} />
+            <StarredItemIcon isStarred={false} />
           </StarIconWrap>
         </TaskItemWrap>
       </TaskRowWrap>
@@ -188,7 +188,7 @@ export const ContactTaskRow: React.FC<ContactTaskRowProps> = ({ task }) => {
           onClick={handleCommentButtonPressed}
         />
         <StarIconWrap>
-          <StarContactIcon hasStar={false} />
+          <StarredItemIcon isStarred={false} />
         </StarIconWrap>
       </TaskItemWrap>
     </TaskRowWrap>

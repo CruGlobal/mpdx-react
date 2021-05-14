@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Box,
   Table,
@@ -7,7 +7,7 @@ import {
   TableBody,
   TableContainer,
 } from '@material-ui/core';
-import { ContactRow } from '../ContactRow';
+import { ContactRow } from '../ContactRow/ContactRow';
 import { ContactsHeader } from '../ContactsHeader/ContactsHeader';
 import { useContactsQuery } from '../../../../pages/accountLists/[accountListId]/Contacts.generated';
 
@@ -26,8 +26,10 @@ export const ContactsTable: React.FC<Props> = ({
   filterPanelOpen,
   toggleFilterPanel,
 }: Props) => {
+  const [searchTerm, setSearchTerm] = useState<string>();
+
   const { data, loading, error } = useContactsQuery({
-    variables: { accountListId },
+    variables: { accountListId, searchTerm },
   });
 
   const renderLoading = () => (
@@ -59,6 +61,7 @@ export const ContactsTable: React.FC<Props> = ({
             activeFilters={activeFilters}
             filterPanelOpen={filterPanelOpen}
             toggleFilterPanel={toggleFilterPanel}
+            onSearchTermChanged={setSearchTerm}
           />
         </TableHead>
         <TableBody>
@@ -71,6 +74,7 @@ export const ContactsTable: React.FC<Props> = ({
             <div data-testID="ContactRows">
               {data.contacts.nodes?.map((contact) => (
                 <ContactRow
+                  accountListId={accountListId}
                   key={contact.id}
                   contact={contact}
                   onContactSelected={onContactSelected}

@@ -2,7 +2,7 @@ import { MuiThemeProvider } from '@material-ui/core';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
-import theme from '../../../../../theme';
+import theme from '../../../../../../theme';
 import { TaskCompleteButton } from './TaskCompleteButton';
 
 describe('TaskCommentsButton', () => {

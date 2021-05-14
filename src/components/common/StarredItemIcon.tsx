@@ -4,7 +4,7 @@ import { StarBorderOutlined } from '@material-ui/icons';
 import StarIcon from '@material-ui/icons/Star';
 
 interface Props {
-  hasStar: boolean;
+  isStarred: boolean;
 }
 
 const StarFilled = styled(StarIcon)(({ theme }) => ({
@@ -19,6 +19,6 @@ const StarOutline = styled(StarBorderOutlined)(({ theme }) => ({
   color: theme.palette.secondary.dark,
 }));
 
-export const StarContactIcon: React.FC<Props> = ({ hasStar = false }) => {
-  return hasStar ? <StarFilled /> : <StarOutline />;
+export const StarredItemIcon: React.FC<Props> = ({ isStarred }) => {
+  return isStarred ? <StarFilled /> : <StarOutline />;
 };

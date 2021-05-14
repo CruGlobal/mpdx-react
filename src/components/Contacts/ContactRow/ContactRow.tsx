@@ -1,11 +1,11 @@
 import { Box, Hidden, styled } from '@material-ui/core';
 import { CheckBox } from '@material-ui/icons';
 import React from 'react';
-import theme from '../../theme';
-import { CelebrationIcons } from './CelebrationIcons/CelebrationIcons';
+import theme from '../../../theme';
+import { CelebrationIcons } from '../CelebrationIcons/CelebrationIcons';
+import { GiftStatus } from '../GiftStatus/GiftStatus';
+import { StarContactIconButton } from '../StarContactIconButton/StarContactIconButton';
 import { ContactRowFragment } from './ContactRow.generated';
-import { GiftStatus } from './GiftStatus/GiftStatus';
-import { StarContactIcon } from './StarContactIcon/StarContactIcon';
 
 const ContactRowButton = styled(Box)(({}) => ({
   height: '72px',
@@ -42,14 +42,31 @@ const ContactText = styled('p')(({}) => ({
 }));
 
 interface Props {
+  accountListId: string;
   contact: ContactRowFragment;
   onContactSelected: (contactId: string) => void;
 }
 
-export const ContactRow: React.FC<Props> = ({ contact, onContactSelected }) => {
+export const ContactRow: React.FC<Props> = ({
+  accountListId,
+  contact,
+  onContactSelected,
+}) => {
   const onClick = () => {
     onContactSelected(contact.id);
   };
+
+  const {
+    id: contactId,
+    lateAt,
+    name,
+    pledgeAmount,
+    pledgeCurrency,
+    pledgeFrequency,
+    primaryAddress,
+    starred,
+    status,
+  } = contact;
 
   return (
     <Box role="row" style={{ width: '100%' }}>
@@ -62,9 +79,9 @@ export const ContactRow: React.FC<Props> = ({ contact, onContactSelected }) => {
               letterSpacing: '0.15px',
             }}
           >
-            {contact.name}
+            {name}
           </ContactText>
-          <ContactText>{contact.primaryAddress?.street ?? ''}</ContactText>
+          <ContactText>{primaryAddress?.street || ''}</ContactText>
         </ContactTextWrap>
 
         <Hidden smDown>
@@ -85,7 +102,7 @@ export const ContactRow: React.FC<Props> = ({ contact, onContactSelected }) => {
             margin: theme.spacing(1),
           }}
         >
-          <GiftStatus lateAt={contact.lateAt ?? undefined} />
+          <GiftStatus lateAt={lateAt ?? undefined} />
         </Box>
 
         <Hidden mdDown>
@@ -97,20 +114,22 @@ export const ContactRow: React.FC<Props> = ({ contact, onContactSelected }) => {
               margin: theme.spacing(1),
             }}
           >
-            <ContactText>{contact.status ?? ''}</ContactText>
+            <ContactText>{status ?? ''}</ContactText>
             <ContactText>
-              {contact.pledgeAmount
-                ? contact.pledgeCurrency
-                  ? `${contact.pledgeAmount} ${contact.pledgeCurrency}`
-                  : contact.pledgeAmount
+              {pledgeAmount
+                ? pledgeCurrency
+                  ? `${pledgeAmount} ${pledgeCurrency}`
+                  : pledgeAmount
                 : ''}{' '}
-              {contact.pledgeFrequency ?? ''}
+              {pledgeFrequency ?? ''}
             </ContactText>
           </Box>
         </Hidden>
-        <Box style={{ margin: theme.spacing(1, 'auto'), flexBasis: 0 }}>
-          <StarContactIcon hasStar={false} />
-        </Box>
+        <StarContactIconButton
+          accountListId={accountListId}
+          contactId={contactId}
+          isStarred={starred || false}
+        />
       </ContactRowButton>
       <hr
         style={{

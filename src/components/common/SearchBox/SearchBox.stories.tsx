@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Story, Meta } from '@storybook/react';
 import { withDesign } from 'storybook-addon-designs';
 import { SearchBox } from './SearchBox';
@@ -11,12 +11,9 @@ export default {
 } as Meta;
 
 export const Default: Story = (args) => {
-  const [searchTerm, setSearchTerm] = useState('');
   return (
     <SearchBox
-      searchTerm={searchTerm}
       onChange={(searchTerm) => {
-        setSearchTerm(searchTerm);
         args.onChange(searchTerm);
       }}
     />
