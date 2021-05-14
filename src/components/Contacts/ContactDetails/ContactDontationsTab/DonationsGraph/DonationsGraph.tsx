@@ -90,8 +90,16 @@ export const DonationsGraph: React.FC<DonationsGraphProps> = ({
             <YAxis />
             <Tooltip />
             <Legend />
-            <Bar dataKey="thisYear" fill={theme.palette.secondary.main} />
-            <Bar dataKey="lastYear" fill={theme.palette.secondary.dark} />
+            <Bar
+              name={t('Last Year')}
+              dataKey="lastYear"
+              fill={theme.palette.secondary.dark}
+            />
+            <Bar
+              name={t('This Year')}
+              dataKey="thisYear"
+              fill={theme.palette.secondary.main}
+            />
           </BarChart>
         </>
       )}
