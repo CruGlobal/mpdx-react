@@ -86,6 +86,7 @@ const taskSchema: yup.SchemaOf<
   id: yup.string().nullable(),
   activityType: yup.mixed<ActivityTypeEnum>(),
   subject: yup.string().required(),
+  starred: yup.boolean().notRequired(),
   startAt: yup.string().nullable(),
   completedAt: yup.string().nullable(),
   tagList: yup.array().of(yup.string()).default([]),
