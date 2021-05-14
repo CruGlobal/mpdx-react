@@ -81,7 +81,7 @@ export const DonationsGraph: React.FC<DonationsGraphProps> = ({
         </Box>
       ) : (
         <>
-          <LegendText variant="body1" role="banner">{`${t(
+          <LegendText variant="body1" role="textbox">{`${t(
             'Amount',
           )} (${convertedCurrency})`}</LegendText>
           <BarChart width={600} height={300} data={months}>

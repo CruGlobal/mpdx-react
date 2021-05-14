@@ -92,7 +92,7 @@ export const ContactDonationsTab: React.FC<ContactDontationsProp> = ({
         )}
       </DonationsGraphContainer>
       <TabContext value={selectedDonationTabKey}>
-        <DonationsTabContainer role="banner">
+        <DonationsTabContainer role="region">
           <DonationsTabList
             onChange={handleDonationTabChange}
             TabIndicatorProps={{ children: <span /> }}

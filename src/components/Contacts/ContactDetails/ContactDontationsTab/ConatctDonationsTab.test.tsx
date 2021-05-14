@@ -43,6 +43,6 @@ describe('ContactDonationsTab', () => {
         />
       </GqlMockedProvider>,
     );
-    expect(await findByRole('banner')).toBeVisible();
+    expect(await findByRole('region')).toBeVisible();
   });
 });

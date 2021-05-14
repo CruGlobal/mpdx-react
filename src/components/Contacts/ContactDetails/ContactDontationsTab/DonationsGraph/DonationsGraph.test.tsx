@@ -24,7 +24,7 @@ describe('Donations Graph', () => {
         />
       </GqlMockedProvider>,
     );
-    expect(await findByRole('banner')).toBeVisible();
+    expect(await findByRole('textbox')).toBeVisible();
   });
 
   it('test loading renderer', async () => {
