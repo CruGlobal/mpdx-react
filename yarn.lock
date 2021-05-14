@@ -17212,7 +17212,7 @@ fsevents@~2.3.1:
   languageName: node
   linkType: hard
 
-"lodash.debounce@npm:^4.0.8":
+"lodash.debounce@npm:^4, lodash.debounce@npm:^4.0.8":
   version: 4.0.8
   resolution: "lodash.debounce@npm:4.0.8"
   checksum: b6042bd8c09ff1961c9127d32266316bc21f946ece5e3464a663ec61fadb98e7d56ec0ef7e23b47d393695310c19cf24e651c1756be6da91ac02c72be7f79465
@@ -18241,6 +18241,7 @@ fsevents@~2.3.1:
     prop-types: ^15.7.2
     query-string: ^6.14.0
     react: 17.0.1
+    react-debounce-input: ^3.2.3
     react-dom: 17.0.1
     react-i18next: ^11.8.11
     recharts: ^2.0.6
@@ -20706,6 +20707,18 @@ fsevents@~2.3.1:
     reactcss: ^1.2.0
     tinycolor2: ^1.4.1
   checksum: 554cea86900cb47d91d8ef09df827f5797a5d011194011c9a2f322c0725a6a73c9e9ce8ed4d61e98f2868e5da3acbcca5bb4fbf9a56129a5c8ecf3113e2b0558
+  languageName: node
+  linkType: hard
+
+"react-debounce-input@npm:^3.2.3":
+  version: 3.2.3
+  resolution: "react-debounce-input@npm:3.2.3"
+  dependencies:
+    lodash.debounce: ^4
+    prop-types: ^15.7.2
+  peerDependencies:
+    react: ^15.3.0 || ^16.0.0
+  checksum: 4816c963fb4d81d59ee84aee96011ba6a4e68cbe1906866454477e939fbf63aa3f5e4519544ba3ddc1e61f7154f218a0bd7ca8415ca0bfc5da0625c5626dbd8e
   languageName: node
   linkType: hard
 

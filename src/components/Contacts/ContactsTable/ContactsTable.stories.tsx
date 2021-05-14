@@ -8,14 +8,13 @@ export default {
 };
 
 const accountListId = '111';
-const onContactSelected = () => {};
 
 export const Default = (): ReactElement => {
   return (
     <GqlMockedProvider<ContactsQuery>>
       <ContactsTable
         accountListId={accountListId}
-        onContactSelected={onContactSelected}
+        onContactSelected={() => {}}
         activeFilters={false}
         filterPanelOpen={false}
         toggleFilterPanel={() => {}}
@@ -37,7 +36,7 @@ export const Loading = (): ReactElement => {
     <GqlMockedProvider<ContactsQuery> mocks={mocks}>
       <ContactsTable
         accountListId={accountListId}
-        onContactSelected={onContactSelected}
+        onContactSelected={() => {}}
         activeFilters={false}
         filterPanelOpen={false}
         toggleFilterPanel={() => {}}
@@ -59,7 +58,7 @@ export const Empty = (): ReactElement => {
     <GqlMockedProvider<ContactsQuery> mocks={mocks}>
       <ContactsTable
         accountListId={accountListId}
-        onContactSelected={onContactSelected}
+        onContactSelected={() => {}}
         activeFilters={false}
         filterPanelOpen={false}
         toggleFilterPanel={() => {}}
@@ -82,7 +81,7 @@ export const Error = (): ReactElement => {
     <GqlMockedProvider<ContactsQuery> mocks={mocks}>
       <ContactsTable
         accountListId={accountListId}
-        onContactSelected={onContactSelected}
+        onContactSelected={() => {}}
         activeFilters={false}
         filterPanelOpen={false}
         toggleFilterPanel={() => {}}
