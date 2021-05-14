@@ -12,6 +12,7 @@ import {
   NotificationTypeEnum,
   ResultEnum,
 } from '../../../../../graphql/types.generated';
+import { GetThisWeekDefaultMocks } from '../../../Dashboard/ThisWeek/ThisWeek.mock';
 import {
   completeTaskMutationMock,
   completeSimpleTaskMutationMock,
@@ -59,6 +60,7 @@ describe('TaskDrawerCompleteForm', () => {
         mocks={[
           getDataForTaskDrawerMock(accountListId),
           completeTaskMutationMock(accountListId, taskId),
+          GetThisWeekDefaultMocks()[0],
         ]}
         disableAppProvider
       >
@@ -84,6 +86,7 @@ describe('TaskDrawerCompleteForm', () => {
         mocks={[
           getDataForTaskDrawerMock(accountListId),
           completeSimpleTaskMutationMock(accountListId, taskId),
+          GetThisWeekDefaultMocks()[0],
         ]}
         disableAppProvider
       >
@@ -110,6 +113,7 @@ describe('TaskDrawerCompleteForm', () => {
         mocks={[
           getDataForTaskDrawerMock(accountListId),
           completeTaskMutationMock(accountListId, taskId),
+          GetThisWeekDefaultMocks()[0],
         ]}
         disableAppProvider
       >
