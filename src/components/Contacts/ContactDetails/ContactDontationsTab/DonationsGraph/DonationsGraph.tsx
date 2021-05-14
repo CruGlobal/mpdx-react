@@ -52,26 +52,24 @@ export const DonationsGraph: React.FC<DonationsGraphProps> = ({
     },
   });
 
-  const contactDonationsMap = [...Array(12)].map((x, i) => {
-    const mapDate = DateTime.now().minus({ month: i });
-    let lastYearCurrencyConvertedTotal = 0;
-    let thisYearCurrencyConvertedTotal = 0;
-    data?.reportsDonationHistories.periods.forEach((period) => {
-      const periodDate = DateTime.fromISO(period.startDate);
-      if (periodDate.month === mapDate.month) {
-        if (periodDate.year === mapDate.year) {
-          thisYearCurrencyConvertedTotal += period.convertedTotal;
-        } else {
-          lastYearCurrencyConvertedTotal += period.convertedTotal;
-        }
-      }
-    });
-    return {
-      month: mapDate.monthShort,
-      lastYear: lastYearCurrencyConvertedTotal,
-      thisYear: thisYearCurrencyConvertedTotal,
-    };
-  });
+  const months = Object.values(
+    data?.reportsDonationHistories.periods.reduce<{
+      [month: string]: { month: string; lastYear: number; thisYear: number };
+    }>((acc, period) => {
+      const date = DateTime.fromISO(period.startDate);
+      const month = date.monthShort;
+      return {
+        ...acc,
+        [month]: {
+          ...acc[month],
+          month,
+          ...(date.diff(DateTime.now().startOf('month'), 'years').years <= -1
+            ? { lastYear: period.convertedTotal }
+            : { thisYear: period.convertedTotal }),
+        },
+      };
+    }, {}) ?? {},
+  );
 
   return (
     <GraphContainer>
