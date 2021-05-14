@@ -84,7 +84,7 @@ export const DonationsGraph: React.FC<DonationsGraphProps> = ({
           <LegendText variant="body1" role="banner">{`${t(
             'Amount',
           )} (${convertedCurrency})`}</LegendText>
-          <BarChart width={600} height={300} data={contactDonationsMap}>
+          <BarChart width={600} height={300} data={months}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="month" />
             <YAxis />
