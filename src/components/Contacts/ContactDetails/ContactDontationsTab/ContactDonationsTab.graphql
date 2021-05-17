@@ -20,6 +20,14 @@ query GetContactDonations($accountListId: ID!, $contactId: ID!) {
 }
 
 fragment DonationsContact on DonationConnection {
+  pageInfo {
+    endCursor
+    hasNextPage
+    hasPreviousPage
+    startCursor
+  }
+  totalCount
+  totalPageCount
   nodes {
     ...ContactDonation
   }
@@ -27,6 +35,7 @@ fragment DonationsContact on DonationConnection {
 
 fragment ContactDonation on Donation {
   id
+  donationDate
   amount {
     ...DonationMoney
   }
