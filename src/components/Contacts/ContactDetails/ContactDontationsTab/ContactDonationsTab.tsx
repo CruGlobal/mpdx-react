@@ -1,8 +1,10 @@
+/* eslint-disable eqeqeq */
 import { Box, styled, Tab } from '@material-ui/core';
 import { Skeleton, TabContext, TabList, TabPanel } from '@material-ui/lab';
 import React from 'react';
 import { useTranslation } from 'react-i18next/';
 import { useGetContactDonationsQuery } from './ContactDonationsTab.generated';
+import { DonationsGraph } from './DonationsGraph/DonationsGraph';
 
 const ContactDonationsContainer = styled(Box)(({ theme }) => ({
   padding: theme.spacing(0),
@@ -76,11 +78,21 @@ export const ContactDonationsTab: React.FC<ContactDontationsProp> = ({
             <ContactDonationsLoadingPlaceHolder />
           </>
         ) : (
-          'Graph goes here'
+          <DonationsGraph
+            accountListId={accountListId}
+            donorAccountIds={
+              data?.contact.contactDonorAccounts.nodes.map((donor) => {
+                return donor.donorAccount.id;
+              }) ?? []
+            }
+            convertedCurrency={
+              data?.contact.lastDonation?.amount.convertedCurrency ?? ''
+            }
+          />
         )}
       </DonationsGraphContainer>
       <TabContext value={selectedDonationTabKey}>
-        <DonationsTabContainer>
+        <DonationsTabContainer role="region">
           <DonationsTabList
             onChange={handleDonationTabChange}
             TabIndicatorProps={{ children: <span /> }}

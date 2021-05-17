@@ -1,0 +1,19 @@
+query GetDonationsGraph($accountListId: ID!, $donorAccountIds: [ID!]) {
+  reportsDonationHistories(
+    accountListId: $accountListId
+    donorAccountId: $donorAccountIds
+    range: "24m"
+  ) {
+    average
+    periods {
+      totals {
+        amount
+        convertedAmount
+        currency
+      }
+      convertedTotal
+      endDate
+      startDate
+    }
+  }
+}
