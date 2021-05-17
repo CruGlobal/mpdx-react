@@ -94,6 +94,7 @@ const taskSchema: yup.SchemaOf<
   notificationTimeBefore: yup.number().nullable(),
   notificationType: yup.mixed<NotificationTypeEnum>(),
   notificationTimeUnit: yup.mixed<NotificationTimeUnitEnum>(),
+  starred: yup.boolean().nullable(),
 });
 
 interface Props {

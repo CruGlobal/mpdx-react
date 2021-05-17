@@ -36,6 +36,7 @@ export const GetThisWeekDefaultMocks = (): MockedResponse[] => {
     lastName: 'Doe',
     parentContact: {
       id: 'contact',
+      name: 'John and Sarah, Doe',
     },
   };
   const personWithAnniversary = {

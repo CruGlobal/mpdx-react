@@ -8,7 +8,7 @@ import {
 } from './ContactDonationsTab.generated';
 
 export default {
-  title: 'Contacts/Tab/ContactDetailsTab/ContactDonations',
+  title: 'Contacts/Tab/ContactDonationsTab',
   component: ContactDonationsTab,
 };
 

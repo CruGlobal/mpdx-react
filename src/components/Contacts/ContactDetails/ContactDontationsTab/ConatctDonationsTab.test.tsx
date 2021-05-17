@@ -1,6 +1,12 @@
 import { renderHook } from '@testing-library/react-hooks';
+import React from 'react';
 import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
-import { useGetContactDonationsQuery } from './ContactDonationsTab.generated';
+import { render } from '../../../../../__tests__/util/testingLibraryReactMock';
+import { ContactDonationsTab } from './ContactDonationsTab';
+import {
+  GetContactDonationsQuery,
+  useGetContactDonationsQuery,
+} from './ContactDonationsTab.generated';
 
 const accountListId = 'account-list-1';
 const contactId = 'contact-id-1';
@@ -26,6 +32,17 @@ describe('ContactDonationsTab', () => {
     `);
     expect(
       result.current.data?.contact.donations.nodes.length,
-    ).toMatchInlineSnapshot(`3`);
+    ).toMatchInlineSnapshot(`1`);
+  });
+  it('test renderer', async () => {
+    const { findByRole } = render(
+      <GqlMockedProvider<GetContactDonationsQuery>>
+        <ContactDonationsTab
+          accountListId={accountListId}
+          contactId={contactId}
+        />
+      </GqlMockedProvider>,
+    );
+    expect(await findByRole('region')).toBeVisible();
   });
 });
