@@ -1,8 +1,9 @@
-import { Box, styled, Typography } from '@material-ui/core';
+import { Box, Divider, styled, Typography } from '@material-ui/core';
 import {
   CheckCircleOutline,
   Clear,
   DateRangeOutlined,
+  Delete,
   FiberManualRecordOutlined,
 } from '@material-ui/icons';
 import { DateTime } from 'luxon';
@@ -61,9 +62,12 @@ export const PartnershipInfo: React.FC<PartnershipInfoProp> = ({ contact }) => {
           <HandshakeIcon />
         </IconContainer>
         <Box style={{ margin: 0, padding: 0 }}>
-          <LabelsAndText variant="subtitle1">{contact?.status}</LabelsAndText>
+          <LabelsAndText variant="subtitle1">{status}</LabelsAndText>
           <LabelsAndText variant="subtitle1">
-            {`${contact?.pledgeAmount} ${contact?.pledgeCurrency} ${contact?.pledgeFrequency}`}
+            {`${currencyFormat(
+              contact?.pledgeAmount ?? 0,
+              contact?.pledgeCurrency ?? 'USD',
+            )} ${contact?.pledgeFrequency ?? t('No Frequency Set')}`}
           </LabelsAndText>
           <LabelsAndText variant="subtitle1">{contact?.source}</LabelsAndText>
         </Box>
@@ -80,7 +84,7 @@ export const PartnershipInfo: React.FC<PartnershipInfoProp> = ({ contact }) => {
           {t('Commitment Recieved ')}
         </LabelsAndText>
         <LabelsAndText variant="subtitle1">
-          {contact?.pledgeReceived ? ' Yes' : ' No'}
+          {contact?.pledgeReceived ? t('Yes') : t('No')}
         </LabelsAndText>
       </IconAndTextContainerCenter>
       <IconAndTextContainerCenter>
@@ -125,6 +129,61 @@ export const PartnershipInfo: React.FC<PartnershipInfoProp> = ({ contact }) => {
           )}
         </LabelsAndText>
       </IconAndTextContainerCenter>
+      <IconAndTextContainerCenter>
+        <IconContainer>
+          <Clear style={{ color: 'transparent', margin: 8 }} />
+        </IconContainer>
+        <LabelsAndText variant="subtitle1" color="textSecondary">
+          {t('Referred by ')}
+        </LabelsAndText>
+        <LabelsAndText variant="subtitle1">
+          {contact?.contactReferralsToMe.nodes
+            .map((referral) => {
+              return referral.referredBy.name;
+            })
+            .toLocaleString()}
+        </LabelsAndText>
+      </IconAndTextContainerCenter>
+      <IconAndTextContainerCenter>
+        <IconContainer>
+          <Clear style={{ color: 'transparent', margin: 8 }} />
+        </IconContainer>
+        <LabelsAndText variant="subtitle1" color="textSecondary">
+          {t('Send Appeals')}
+        </LabelsAndText>
+        <LabelsAndText variant="subtitle1">
+          {contact?.noAppeals ? t('No') : t('Yes')}
+        </LabelsAndText>
+      </IconAndTextContainerCenter>
+      <IconAndTextContainerCenter>
+        <IconContainer>
+          <Clear style={{ color: 'transparent', margin: 8 }} />
+        </IconContainer>
+        <LabelsAndText variant="subtitle1" color="textSecondary">
+          {t('Next Increase Ask')}
+        </LabelsAndText>
+        <LabelsAndText variant="subtitle1" role="textbox">
+          {DateTime.fromISO(contact?.nextAsk ?? '').toLocaleString()}
+        </LabelsAndText>
+      </IconAndTextContainerCenter>
+      <Divider />
+      <PartnershipTitle variant="h6">{t('Partner Account')}</PartnershipTitle>
+      {contact?.contactDonorAccounts.nodes.map((donor) => {
+        return (
+          <IconAndTextContainerCenter key={donor.id}>
+            <IconContainer />
+            <LabelsAndText variant="subtitle1" color="textSecondary">
+              {t('Name Account')}
+            </LabelsAndText>
+            <LabelsAndText variant="subtitle1">
+              {donor.donorAccount.displayName}
+            </LabelsAndText>
+            <IconContainer>
+              <Delete color="disabled" style={{ flexGrow: 1 }} />
+            </IconContainer>
+          </IconAndTextContainerCenter>
+        );
+      })}
     </PartnershipInfoContainer>
   );
 };
