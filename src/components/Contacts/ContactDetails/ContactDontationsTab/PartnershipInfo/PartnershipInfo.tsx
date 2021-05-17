@@ -1,4 +1,4 @@
-import { Box, Divider, styled, Typography } from '@material-ui/core';
+import { Box, Button, Divider, styled, Typography } from '@material-ui/core';
 import {
   CheckCircleOutline,
   Clear,
@@ -39,6 +39,11 @@ const IconContainer = styled(Box)(({ theme }) => ({
 
 const PartnershipInfoContainer = styled(Box)(({ theme }) => ({
   margin: theme.spacing(1),
+}));
+
+const AddAccountButton = styled(Button)(({ theme }) => ({
+  margin: theme.spacing(2, 0),
+  color: theme.palette.text.secondary,
 }));
 
 const PartnershipTitle = styled(Typography)(({ theme }) => ({
@@ -182,6 +187,11 @@ export const PartnershipInfo: React.FC<PartnershipInfoProp> = ({ contact }) => {
           </IconAndTextContainerCenter>
         );
       })}
+      <IconAndTextContainerCenter>
+        <AddAccountButton variant="outlined" color="default">
+          {t('Add Account')}
+        </AddAccountButton>
+      </IconAndTextContainerCenter>
     </PartnershipInfoContainer>
   );
 };
