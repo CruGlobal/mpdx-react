@@ -54,14 +54,12 @@ export const PartnershipInfo: React.FC<PartnershipInfoProp> = ({ contact }) => {
 
   return (
     <PartnershipInfoContainer>
-      <PartnershipTitle variant="h6" role="textbox">
-        {t('Partnership')}
-      </PartnershipTitle>
+      <PartnershipTitle variant="h6">{t('Partnership')}</PartnershipTitle>
       <IconAndTextContainer>
         <IconContainer>
           <HandshakeIcon />
         </IconContainer>
-        <Box style={{ margin: 0, padding: 0 }}>
+        <Box style={{ margin: 0, padding: 0 }} role="cell">
           <LabelsAndText variant="subtitle1">{status}</LabelsAndText>
           <LabelsAndText variant="subtitle1">
             {`${currencyFormat(
