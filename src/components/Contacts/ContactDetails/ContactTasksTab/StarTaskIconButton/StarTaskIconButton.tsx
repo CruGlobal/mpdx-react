@@ -1,11 +1,11 @@
 import { IconButton, styled } from '@material-ui/core';
 import React from 'react';
-import { StarredItemIcon } from '../../common/StarredItemIcon/StarredItemIcon';
-import { useSetContactStarredMutation } from './SetContactStarred.generated';
+import { StarredItemIcon } from '../../../../common/StarredItemIcon/StarredItemIcon';
+import { useSetTaskStarredMutation } from './SetTaskStarred.generated';
 
 interface Props {
   accountListId: string;
-  contactId: string;
+  taskId: string;
   isStarred: boolean;
 }
 
@@ -13,16 +13,16 @@ const StarButton = styled(IconButton)(({ theme }) => ({
   margin: theme.spacing(1),
 }));
 
-export const StarContactIconButton: React.FC<Props> = ({
+export const StarTaskIconButton: React.FC<Props> = ({
   accountListId,
-  contactId,
+  taskId,
   isStarred,
 }) => {
-  const [setContactStarred] = useSetContactStarredMutation();
+  const [setTaskStarred] = useSetTaskStarredMutation();
 
   const toggleStarred = () => {
-    setContactStarred({
-      variables: { accountListId, contactId, starred: !isStarred },
+    setTaskStarred({
+      variables: { accountListId, taskId, starred: !isStarred },
     });
   };
 

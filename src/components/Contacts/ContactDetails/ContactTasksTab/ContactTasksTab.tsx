@@ -2,7 +2,7 @@ import { Box, Button, Divider, styled, Typography } from '@material-ui/core';
 import { Add, CheckCircleOutline } from '@material-ui/icons';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { StarredItemIcon } from '../../../common/StarredItemIcon';
+import { StarredItemIcon } from '../../../common/StarredItemIcon/StarredItemIcon';
 import { SearchBox } from '../../../common/SearchBox/SearchBox';
 import { ContactCheckBox } from '../../ContactCheckBox/ContactCheckBox';
 import { ContactTaskRow } from './ContactTaskRow/ContactTaskRow';
@@ -133,13 +133,29 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
       <Box>
         {loading || !data ? (
           <>
-            <ContactTaskRow key="0" task={undefined} />
-            <ContactTaskRow key="1" task={undefined} />
-            <ContactTaskRow key="2" task={undefined} />
+            <ContactTaskRow
+              key="0"
+              accountListId={accountListId}
+              task={undefined}
+            />
+            <ContactTaskRow
+              key="1"
+              accountListId={accountListId}
+              task={undefined}
+            />
+            <ContactTaskRow
+              key="2"
+              accountListId={accountListId}
+              task={undefined}
+            />
           </>
         ) : (
           data.tasks.nodes.map((task) => (
-            <ContactTaskRow key={task.id} task={task} />
+            <ContactTaskRow
+              key={task.id}
+              accountListId={accountListId}
+              task={task}
+            />
           ))
         )}
       </Box>

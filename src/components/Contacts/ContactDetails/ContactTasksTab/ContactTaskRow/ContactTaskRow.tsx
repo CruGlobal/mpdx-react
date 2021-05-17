@@ -9,8 +9,9 @@ import {
   ResultEnum,
 } from '../../../../../../graphql/types.generated';
 import theme from '../../../../../theme';
-import { StarredItemIcon } from '../../../../common/StarredItemIcon';
+import { StarredItemIcon } from '../../../../common/StarredItemIcon/StarredItemIcon';
 import { ContactCheckBox } from '../../../ContactCheckBox/ContactCheckBox';
+import { StarTaskIconButton } from '../StarTaskIconButton/StarTaskIconButton';
 import { ContactTaskRowFragment } from './ContactTaskRow.generated';
 import { TaskCommentsButton } from './TaskCommentsButton/TaskCommentsButton';
 import { TaskCompleteButton } from './TaskCompleteButton/TaskCompleteButton';
@@ -122,10 +123,14 @@ const getLocalizedTaskType = (
 };
 
 interface ContactTaskRowProps {
+  accountListId: string;
   task?: ContactTaskRowFragment;
 }
 
-export const ContactTaskRow: React.FC<ContactTaskRowProps> = ({ task }) => {
+export const ContactTaskRow: React.FC<ContactTaskRowProps> = ({
+  accountListId,
+  task,
+}) => {
   const { t } = useTranslation();
 
   const handleContactCheckPressed = () => {
@@ -187,9 +192,11 @@ export const ContactTaskRow: React.FC<ContactTaskRowProps> = ({ task }) => {
           numberOfComments={comments?.totalCount}
           onClick={handleCommentButtonPressed}
         />
-        <StarIconWrap>
-          <StarredItemIcon isStarred={false} />
-        </StarIconWrap>
+        <StarTaskIconButton
+          accountListId={accountListId}
+          taskId={task.id}
+          isStarred={task.starred}
+        />
       </TaskItemWrap>
     </TaskRowWrap>
   );

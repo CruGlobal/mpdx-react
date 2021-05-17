@@ -23,6 +23,6 @@ describe('ContactTasksTab', () => {
     `);
     expect(
       result.current.data?.tasks.nodes[0].contacts.nodes[0].name,
-    ).toMatchInlineSnapshot(`"Airport Map"`);
+    ).toMatchInlineSnapshot(`"Comet"`);
   });
 });

@@ -13,5 +13,6 @@ fragment ContactTaskRow on Task {
     }
   }
   result
+  starred
   subject
 }
