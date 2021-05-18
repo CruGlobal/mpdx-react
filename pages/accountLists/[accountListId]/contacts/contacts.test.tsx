@@ -2,16 +2,17 @@ import { render } from '@testing-library/react';
 import React from 'react';
 import userEvent from '@testing-library/user-event';
 import { ThemeProvider } from '@material-ui/core';
-import { GqlMockedProvider } from '../../../__tests__/util/graphqlMocking';
-import TestRouter from '../../../__tests__/util/TestRouter';
-import theme from '../../../src/theme';
-import Contacts from './contacts.page';
+import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
+import TestRouter from '../../../../__tests__/util/TestRouter';
+import theme from '../../../../src/theme';
+import Contacts from './[[...contactId]].page';
 import { ContactsQuery } from './Contacts.generated';
 
 const accountListId = 'account-list-1';
 
 const router = {
   query: { accountListId },
+  isReady: true,
 };
 
 const contact = { id: '1', name: 'Test Person' };

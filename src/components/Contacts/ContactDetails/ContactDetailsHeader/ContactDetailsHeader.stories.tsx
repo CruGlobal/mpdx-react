@@ -22,6 +22,7 @@ export const Default = (): ReactElement => {
       <ContactDetailsHeader
         accountListId={accountListId}
         contactId={contactId}
+        onClose={() => {}}
       />
     </GqlMockedProvider>
   );
@@ -47,6 +48,7 @@ export const Loading = (): ReactElement => {
       <ContactDetailsHeader
         accountListId={accountListId}
         contactId={contactId}
+        onClose={() => {}}
       />
     </MockedProvider>
   );
