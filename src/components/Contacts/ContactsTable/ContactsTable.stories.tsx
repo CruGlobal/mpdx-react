@@ -1,5 +1,5 @@
 import React, { ReactElement } from 'react';
-import { ContactsQuery } from '../../../../pages/accountLists/[accountListId]/Contacts.generated';
+import { ContactsQuery } from '../../../../pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
 import { ContactsTable } from './ContactsTable';
 

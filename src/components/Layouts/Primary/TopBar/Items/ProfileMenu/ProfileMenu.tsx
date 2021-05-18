@@ -72,7 +72,6 @@ const ProfileMenu = (): ReactElement => {
       state.user?.id !== data.user.id &&
       // TODO: Use fragments to ensure all required fields are loaded
       dispatch({ type: 'updateUser', user: data.user as User });
-    console.log(data);
   }, [data?.user]);
   return (
     <>
