@@ -5,6 +5,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next/';
 import { useGetContactDonationsQuery } from './ContactDonationsTab.generated';
 import { DonationsGraph } from './DonationsGraph/DonationsGraph';
+import { PartnershipInfo } from './PartnershipInfo/PartnershipInfo';
 
 const ContactDonationsContainer = styled(Box)(({ theme }) => ({
   padding: theme.spacing(0),
@@ -126,7 +127,7 @@ export const ContactDonationsTab: React.FC<ContactDontationsProp> = ({
               <ContactDonationsLoadingPlaceHolder />
             </>
           ) : (
-            `The Partner Info for ${data?.contact.name} goes here`
+            <PartnershipInfo contact={data?.contact ?? null} />
           )}
         </TabPanel>
       </TabContext>
