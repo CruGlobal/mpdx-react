@@ -30,9 +30,9 @@ describe('ContactDonationsTab', () => {
         "contactId": "contact-id-1",
       }
     `);
-    expect(
-      result.current.data?.contact.donations.nodes.length,
-    ).toMatchInlineSnapshot(`1`);
+    expect(result.current.data?.contact.name).toMatchInlineSnapshot(
+      `undefined`,
+    );
   });
   it('test renderer', async () => {
     const { findByRole } = render(

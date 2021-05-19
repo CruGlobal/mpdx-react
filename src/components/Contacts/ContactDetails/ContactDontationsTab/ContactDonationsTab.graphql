@@ -5,9 +5,7 @@ query GetContactDonations($accountListId: ID!, $contactId: ID!) {
     lastDonation {
       ...ContactDonation
     }
-    donations {
-      ...DonationsContact
-    }
+
     contactDonorAccounts {
       nodes {
         id
@@ -20,6 +18,12 @@ query GetContactDonations($accountListId: ID!, $contactId: ID!) {
 }
 
 fragment DonationsContact on DonationConnection {
+  edges {
+    cursor
+    node {
+      ...ContactDonation
+    }
+  }
   pageInfo {
     endCursor
     hasNextPage

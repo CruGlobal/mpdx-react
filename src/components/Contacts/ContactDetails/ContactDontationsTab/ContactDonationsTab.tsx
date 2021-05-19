@@ -1,18 +1,8 @@
-import {
-  Box,
-  CircularProgress,
-  styled,
-  Tab,
-  Typography,
-} from '@material-ui/core';
+import { Box, styled, Tab } from '@material-ui/core';
 import { Skeleton, TabContext, TabList, TabPanel } from '@material-ui/lab';
-import MUIDataTable, {
-  MUIDataTableOptions,
-  MUIDataTableColumn,
-} from 'mui-datatables';
-import React, { ReactElement, useState } from 'react';
+import React from 'react';
 import { useTranslation } from 'react-i18next/';
-import { currencyFormat } from '../../../../lib/intlFormat';
+import { ContactDonationsList } from './ContactDonationsList/ContactDonationsList';
 import {
   GetContactDonationsQueryVariables,
   useGetContactDonationsQuery,
@@ -71,8 +61,11 @@ export const ContactDonationsTab: React.FC<ContactDontationsProp> = ({
   accountListId,
   contactId,
 }) => {
-  const { data, loading } = useGetContactDonationsQuery({
-    variables: { accountListId: accountListId, contactId: contactId },
+  const { data, loading, fetchMore } = useGetContactDonationsQuery({
+    variables: {
+      accountListId: accountListId,
+      contactId: contactId,
+    },
   });
 
   const { t } = useTranslation();
@@ -80,79 +73,6 @@ export const ContactDonationsTab: React.FC<ContactDontationsProp> = ({
   const [selectedDonationTabKey, setSelectedDonationTabKey] = React.useState(
     DonationTabKey.Donations,
   );
-
-  const columns: MUIDataTableColumn[] = [
-    {
-      name: 'amount',
-      label: t('Amount'),
-      options: {
-        filter: false,
-        sort: true,
-        customBodyRender: (amount, { rowIndex }): ReactElement => {
-          const donation = data?.contact.donations.nodes[rowIndex];
-          if (!loading && donation) {
-            const {
-              amount: { amount, currency },
-            } = donation;
-            return (
-              <Typography variant="body1">
-                {currencyFormat(amount, currency)}
-              </Typography>
-            );
-          } else {
-            return <Skeleton variant="circle" width={40} height={40} />;
-          }
-        },
-      },
-    },
-    {
-      name: 'amount.convertedAmount',
-      label: t('Converted Amount'),
-      options: {
-        filter: false,
-        sort: false,
-        customBodyRender: (amount, { rowIndex }): ReactElement => {
-          const donation = data?.contact.donations.nodes[rowIndex];
-          if (!loading && donation) {
-            const {
-              amount: { convertedAmount, convertedCurrency },
-            } = donation;
-            return (
-              <Typography variant="body1">
-                {currencyFormat(convertedAmount, convertedCurrency)}
-              </Typography>
-            );
-          } else {
-            return <Skeleton variant="circle" width={40} height={40} />;
-          }
-        },
-      },
-    },
-    {
-      name: 'donationDate',
-      label: t('Date'),
-      options: { filter: false, sort: true },
-    },
-  ];
-
-  const [currentPage, setCurrentPage] = useState(0);
-
-  const options: MUIDataTableOptions = {
-    serverSide: true,
-    onChangePage: (newPage) => {
-      setCurrentPage(newPage);
-    },
-    page: currentPage,
-    count: data?.contact.donations.totalCount || 0,
-    rowsPerPage: 25,
-    rowsPerPageOptions: [25],
-    fixedHeader: false,
-    fixedSelectColumn: false,
-    print: false,
-    download: false,
-    selectableRows: 'none',
-    search: false,
-  };
 
   const handleDonationTabChange = (
     _event: React.ChangeEvent<Record<string, unknown>>,
@@ -200,22 +120,16 @@ export const ContactDonationsTab: React.FC<ContactDontationsProp> = ({
           </DonationsTabList>
         </DonationsTabContainer>
         <TabPanel value={DonationTabKey.Donations}>
-          {loading ? (
+          {loading && fetchMore ? (
             <>
               <ContactDonationsLoadingPlaceHolder />
               <ContactDonationsLoadingPlaceHolder />
               <ContactDonationsLoadingPlaceHolder />
             </>
           ) : (
-            <MUIDataTable
-              title={loading && <CircularProgress size={24} />}
-              data={
-                loading || !data
-                  ? [['', <Skeleton key={1} />]]
-                  : data?.contact.donations.nodes
-              }
-              columns={columns}
-              options={options}
+            <ContactDonationsList
+              accountListId={accountListId}
+              contactId={contactId}
             />
           )}
         </TabPanel>
