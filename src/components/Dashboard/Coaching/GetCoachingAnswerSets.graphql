@@ -1,0 +1,11 @@
+query GetCoachingAnswerSets($accountListId: ID!) {
+  tasks(accountListId: $accountListId) {
+    nodes {
+      ...ContactTaskRow
+    }
+    pageInfo {
+      endCursor
+      hasNextPage
+    }
+  }
+}

@@ -42,3 +42,4 @@ yarn-error.log*
 # GraphQL Codegen
 /graphql
 *.generated.ts
+node_modules
