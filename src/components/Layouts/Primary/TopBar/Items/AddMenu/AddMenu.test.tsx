@@ -12,6 +12,6 @@ describe('AddMenu', () => {
       </TestWrapper>,
     );
     userEvent.click(getByRole('button'));
-    await waitFor(() => expect(getByText('Add Menu')).toBeInTheDocument());
+    await waitFor(() => expect(getByText('Add Contacts')).toBeInTheDocument());
   });
 });
