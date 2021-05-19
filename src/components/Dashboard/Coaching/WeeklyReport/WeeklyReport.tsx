@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { Box, Button, Popover, Typography } from '@material-ui/core';
+import { Box, Button, Typography } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { ChevronLeft, ChevronRight } from '@material-ui/icons';
-import { useQuery } from '@apollo/client';
+import { DateTime } from 'luxon';
 import Loading from '../../../Loading';
 import { useGetCoachingAnswerSetsQuery } from '../GetCoachingAnswerSets.generated';
 
@@ -27,27 +27,24 @@ const WeeklyReport: React.FC<Props> = ({ accountListId }) => {
   };
 
   const load = () => {
-    setLoading(true);
+    refetch();
   };
 
-  const activate = () => {};
+  const hasNext = () => currentAnswerSet > 0;
 
-  const cancel = () => {};
+  const next = () => {
+    if (hasNext()) {
+      setCurrentAnswerSet(currentAnswerSet - 1);
+    }
+  };
 
-  const back = () => {};
+  const hasPrevious = () => currentAnswerSet < answerSets.length - 1;
 
-  const hasNext = () => {};
-
-  const next = () => {};
-
-  const hasPrevious = () => {};
-
-  const previous = () => {};
-
-  const getFirstQuestion = () => currentQuestion === 0;
-
-  const getFinalQuestion = () =>
-    currentQuestion >= answerSet?.questions.length - 1;
+  const previous = () => {
+    if (hasPrevious()) {
+      setCurrentAnswerSet(currentAnswerSet + 1);
+    }
+  };
 
   const renderQuestionRow = (question: any) => (
     <Box>
@@ -73,10 +70,10 @@ const WeeklyReport: React.FC<Props> = ({ accountListId }) => {
   );
 
   return (
-    <Popover>
+    <Box>
       <Typography>{t('Weekly Report')}</Typography>
       <Typography>
-        {answerSets[currentAnswerSet].completed_at | date}
+        {answerSets[currentAnswerSet].completed_at | DateTime.now().toISO()}
       </Typography>
       <Box>
         <Button onClick={previous}>
@@ -89,7 +86,7 @@ const WeeklyReport: React.FC<Props> = ({ accountListId }) => {
         </Button>
       </Box>
       {loading ? renderLoading() : renderQuestionList()}
-    </Popover>
+    </Box>
   );
 };
 
