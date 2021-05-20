@@ -4,15 +4,10 @@ import {
   Button,
   Drawer,
   LinearProgress,
-  Modal,
   TextField,
   Typography,
 } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
-import { ChevronLeft, ChevronRight } from '@material-ui/icons';
-import { DateTime } from 'luxon';
-import Loading from '../../../Loading';
-import { useGetCoachingAnswerSetsQuery } from '../GetCoachingAnswerSets.generated';
 
 interface Props {
   accountListId: string;
@@ -20,6 +15,7 @@ interface Props {
 
 interface MockQuestion {
   prompt: string;
+  required: boolean;
   response_options: string[] | null;
   answer: { response: string };
 }
@@ -38,36 +34,27 @@ const CoachingQuestionsModal: React.FC<Props> = ({ accountListId }) => {
     questions: [],
   };
 
-  /*const { data, loading, refetch } = useGetCoachingAnswerSetsQuery({
-    variables: { accountListId },
-  });*/
+  const [questionIndex, setQuestionIndex] = useState(0);
 
-  const [currentQuestion, setCurrentQuestion] = useState(0);
+  const questionCount = answerSet.questions.length;
+  const question = answerSet.questions[questionIndex];
 
-  const onChanges = () => {
-    setCurrentAnswerSet(0);
-    load();
-  };
-
-  const load = () => {
-    refetch();
-  };
-
-  const hasNext = () => currentAnswerSet > 0;
+  const hasNext = questionIndex < questionCount - 1;
+  const hasPrevious = questionIndex !== 0;
 
   const next = () => {
-    if (hasNext()) {
-      setCurrentAnswerSet(currentAnswerSet - 1);
+    if (hasNext) {
+      setQuestionIndex(questionIndex + 1);
     }
   };
-
-  const hasPrevious = () => currentAnswerSet < answerSets.length - 1;
 
   const previous = () => {
-    if (hasPrevious()) {
-      setCurrentAnswerSet(currentAnswerSet + 1);
+    if (hasPrevious) {
+      setQuestionIndex(questionIndex - 1);
     }
   };
+
+  const onClose = () => {};
 
   const renderNull = () => (
     <Typography>
@@ -81,25 +68,30 @@ const CoachingQuestionsModal: React.FC<Props> = ({ accountListId }) => {
 
   const renderShortAnswerField = () => <TextField></TextField>;
 
-  const progress = (currentQuestion / answerSet.questions.length) * 10.0;
+  const progress = (questionIndex / questionCount) * 10.0;
 
   return (
     <Drawer title={t('Weekly Report')} onClose={onClose}>
       <LinearProgress variant="determinate" value={progress} />
-      {answerSet.questions.length === 0 ? (
+      {questionCount === 0 ? (
         renderNull()
       ) : (
         <Box>
-          <Typography>{answerSet.questions[currentQuestion].prompt}</Typography>
-          {answerSet.questions[currentQuestion].response_options === null
+          <Typography>{question.prompt}</Typography>
+          {question.response_options === null
             ? renderShortAnswerField()
             : renderResponseOptions()}
           <Box>
-            <Button>
-              <Typography>{t('Back')}</Typography>
-            </Button>
-            <Button>
-              <Typography>{t('Next')}</Typography>
+            {hasPrevious ? (
+              <Button onClick={previous}>
+                <Typography>{t('Back')}</Typography>
+              </Button>
+            ) : null}
+            <Button
+              onClick={next}
+              disabled={question.required && !question.answer.response}
+            >
+              <Typography>{t(hasNext ? 'Next' : 'Submit')}</Typography>
             </Button>
           </Box>
         </Box>
