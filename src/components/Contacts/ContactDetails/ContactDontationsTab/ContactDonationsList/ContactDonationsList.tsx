@@ -45,8 +45,6 @@ export const ContactDonationsList: React.FC<ContactDonationsListProp> = ({
 
     const endCursor = data?.contact.donations.pageInfo.endCursor;
     const startCursor = data?.contact.donations.pageInfo.startCursor;
-    console.log(endCursor);
-    console.log(startCursor);
 
     if (moveNext && data?.contact.donations.pageInfo.hasNextPage) {
       fetchMore({
@@ -162,7 +160,10 @@ export const ContactDonationsList: React.FC<ContactDonationsListProp> = ({
   const options: MUIDataTableOptions = {
     serverSide: true,
     onChangePage: (newPage) => {
-      currentPage === newPage ?? currentPage > newPage
+      if (currentPage === newPage) {
+        return;
+      }
+      currentPage > newPage
         ? handleNextPage(false, newPage)
         : handleNextPage(true, newPage);
     },
