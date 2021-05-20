@@ -18,6 +18,7 @@ export const Default = (): ReactElement => {
       mocks={{
         ContactDonationsList: {
           donations: {
+            totalCount: 125,
             nodes: [...Array(25)].map((x, i) => {
               return {
                 donationDate: DateTime.local().minus({ month: i }).toISO,

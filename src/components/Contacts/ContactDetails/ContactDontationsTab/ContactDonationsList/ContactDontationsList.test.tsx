@@ -40,7 +40,7 @@ describe('ContactDonationsList', () => {
   });
 
   it('test Renderer', async () => {
-    const { findAllByRole, getByTestId } = render(
+    const { findAllByRole, getByTestId, getByRole } = render(
       <GqlMockedProvider<ContactDonationsListQuery>
         mocks={{
           ContactDonationsList: {
@@ -76,6 +76,13 @@ describe('ContactDonationsList', () => {
       `25`,
     );
     userEvent.click(getByTestId('pagination-back'));
+    expect(await (await findAllByRole('textbox')).length).toMatchInlineSnapshot(
+      `25`,
+    );
+
+    userEvent.click(getByTestId('pagination-rows'));
+    userEvent.click(getByRole('option', { name: '10' }));
+
     expect(await (await findAllByRole('textbox')).length).toMatchInlineSnapshot(
       `25`,
     );
