@@ -1,34 +1,51 @@
 import React, { useState } from 'react';
-import { Box, Button, Typography } from '@material-ui/core';
+import { Box, Button, styled, Typography } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { ChevronLeft, ChevronRight } from '@material-ui/icons';
-import { DateTime } from 'luxon';
 import Loading from '../../../Loading';
 import { useGetCoachingAnswerSetsQuery } from '../GetCoachingAnswerSets.generated';
 
 interface Props {
   accountListId: string;
 }
+interface MockQuestion {
+  prompt: string;
+  answer: { response: string };
+}
+
+interface MockAnswerSet {
+  completed_at: string;
+  questions: MockQuestion[];
+}
+
+const Header = styled(Box)(({}) => ({
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+}));
+const QuestionWrap = styled(Box)(({}) => ({
+  display: 'grid',
+  gridTemplateColumns: '1fr 1fr 1fr',
+  columnGap: 2,
+  rowGap: 2,
+  h5: {
+    fontWeight: 'bold',
+  },
+}));
 
 const WeeklyReport: React.FC<Props> = ({ accountListId }) => {
   const { t } = useTranslation();
 
-  const { data, loading, refetch } = useGetCoachingAnswerSetsQuery({
+  const { data, loading } = useGetCoachingAnswerSetsQuery({
     variables: { accountListId },
   });
 
-  const answerSets = []; //replace with GQL
+  const answerSets: MockAnswerSet[] = [
+    { completed_at: '2020-12-30', questions: [] },
+    { completed_at: '2020-06-06', questions: [] },
+  ]; //replace with GQL
 
   const [currentAnswerSet, setCurrentAnswerSet] = useState(0);
-
-  const onChanges = () => {
-    setCurrentAnswerSet(0);
-    load();
-  };
-
-  const load = () => {
-    refetch();
-  };
 
   const hasNext = () => currentAnswerSet > 0;
 
@@ -46,9 +63,9 @@ const WeeklyReport: React.FC<Props> = ({ accountListId }) => {
     }
   };
 
-  const renderQuestionRow = (question: any) => (
+  const renderQuestionRow = (question: MockQuestion) => (
     <Box>
-      <Typography>{question.prompt}</Typography>
+      <Typography variant="h5">{question.prompt}</Typography>
       <Typography>{question.answer.response}</Typography>
     </Box>
   );
@@ -60,7 +77,7 @@ const WeeklyReport: React.FC<Props> = ({ accountListId }) => {
 
     const { questions } = answerSets[currentAnswerSet];
 
-    <Box>{questions.map(renderQuestionRow)}</Box>;
+    <QuestionWrap>{questions.map(renderQuestionRow)}</QuestionWrap>;
   };
 
   const renderLoading = () => (
@@ -71,20 +88,20 @@ const WeeklyReport: React.FC<Props> = ({ accountListId }) => {
 
   return (
     <Box>
-      <Typography>{t('Weekly Report')}</Typography>
-      <Typography>
-        {answerSets[currentAnswerSet].completed_at | DateTime.now().toISO()}
-      </Typography>
-      <Box>
-        <Button onClick={previous}>
-          <ChevronLeft />
-          <Typography>{t('Previous')}</Typography>
-        </Button>
-        <Button onClick={next}>
-          <Typography>{t('Next')}</Typography>
-          <ChevronRight />
-        </Button>
-      </Box>
+      <Header>
+        <Typography>{t('Weekly Report')}</Typography>
+        <Typography>{answerSets[currentAnswerSet].completed_at}</Typography>
+        <Box>
+          <Button onClick={previous} disabled={hasPrevious()}>
+            <ChevronLeft />
+            <Typography>{t('Previous')}</Typography>
+          </Button>
+          <Button onClick={next} disabled={hasNext()}>
+            <Typography>{t('Next')}</Typography>
+            <ChevronRight />
+          </Button>
+        </Box>
+      </Header>
       {loading ? renderLoading() : renderQuestionList()}
     </Box>
   );
