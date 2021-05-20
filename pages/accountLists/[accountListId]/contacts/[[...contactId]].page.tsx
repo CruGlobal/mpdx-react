@@ -30,6 +30,7 @@ const ContactsPageWrapper = styled(FullHeightBox)(({ theme }) => ({
   display: 'flex',
   width: '100vw',
   backgroundColor: theme.palette.common.white,
+  overflowX: 'hidden',
 }));
 
 const ScrollBox = styled(FullHeightBox)({
@@ -56,7 +57,7 @@ const ContactDetailsSlidePanel = styled(ScrollBox)(
     flex: 3,
     background: theme.palette.common.white,
     borderRight: `1px solid ${theme.palette.cruGrayLight.main}`,
-    marginRight: open ? 0 : '-848px',
+    marginRight: open ? 0 : '-150%',
     transition: 'margin 225ms cubic-bezier(0, 0, 0.2, 1) 0ms',
     [theme.breakpoints.down('sm')]: {
       position: 'absolute',
