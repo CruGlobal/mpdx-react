@@ -30,7 +30,7 @@ const HeaderWrap = styled(Box)(({ theme }) => ({
   flexDirection: 'row',
   justifyContent: 'space-evenly',
   alignItems: 'center',
-  backgroundColor: theme.palette.background.default,
+  backgroundColor: theme.palette.common.white,
 }));
 const FilterButton = styled(IconButton)(
   ({

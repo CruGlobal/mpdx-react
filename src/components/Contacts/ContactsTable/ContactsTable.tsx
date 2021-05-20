@@ -71,7 +71,7 @@ export const ContactsTable: React.FC<Props> = ({
           ) : !(data && data.contacts.nodes.length > 0) ? (
             renderEmpty()
           ) : (
-            <div data-testID="ContactRows">
+            <div data-testid="ContactRows">
               {data.contacts.nodes?.map((contact) => (
                 <ContactRow
                   accountListId={accountListId}
