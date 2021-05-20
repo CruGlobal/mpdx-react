@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import {
   Box,
   Button,
+  Drawer,
   LinearProgress,
   Modal,
+  TextField,
   Typography,
 } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
@@ -16,11 +18,25 @@ interface Props {
   accountListId: string;
 }
 
+interface MockQuestion {
+  prompt: string;
+  response_options: string[] | null;
+  answer: { response: string };
+}
+
+interface MockAnswerSet {
+  completed_at: string;
+  questions: MockQuestion[];
+}
+
 const CoachingQuestionsModal: React.FC<Props> = ({ accountListId }) => {
   const { t } = useTranslation();
 
   const currentAnswerSet = 0;
-  const answerSet = [];
+  const answerSet: MockAnswerSet = {
+    completed_at: '2020-12-30',
+    questions: [],
+  };
 
   /*const { data, loading, refetch } = useGetCoachingAnswerSetsQuery({
     variables: { accountListId },
@@ -53,33 +69,42 @@ const CoachingQuestionsModal: React.FC<Props> = ({ accountListId }) => {
     }
   };
 
-  const renderQuestionRow = (question: any) => (
-    <Box>
-      <Typography>{question.prompt}</Typography>
-      <Typography>{question.answer.response}</Typography>
-    </Box>
+  const renderNull = () => (
+    <Typography>
+      {t('Weekly report questions have not been setup for your organization')}
+    </Typography>
   );
 
-  const renderQuestionList = () => {
-    if (answerSets.length === 0) {
-      return <Typography>{t('No anwsers found.')}</Typography>;
-    }
-
-    const { questions } = answerSets[currentAnswerSet];
-
-    <Box>{questions.map(renderQuestionRow)}</Box>;
+  const renderResponseOptions = () => {
+    <Field></Field>;
   };
 
-  const renderLoading = () => (
-    <Box>
-      <Loading />
-    </Box>
-  );
+  const renderShortAnswerField = () => <TextField></TextField>;
+
+  const progress = (currentQuestion / answerSet.questions.length) * 10.0;
 
   return (
-    <Modal title={t('Weekly Report')} onClose={onClose}>
-      <LinearProgress></LinearProgress>
-    </Modal>
+    <Drawer title={t('Weekly Report')} onClose={onClose}>
+      <LinearProgress variant="determinate" value={progress} />
+      {answerSet.questions.length === 0 ? (
+        renderNull()
+      ) : (
+        <Box>
+          <Typography>{answerSet.questions[currentQuestion].prompt}</Typography>
+          {answerSet.questions[currentQuestion].response_options === null
+            ? renderShortAnswerField()
+            : renderResponseOptions()}
+          <Box>
+            <Button>
+              <Typography>{t('Back')}</Typography>
+            </Button>
+            <Button>
+              <Typography>{t('Next')}</Typography>
+            </Button>
+          </Box>
+        </Box>
+      )}
+    </Drawer>
   );
 };
 
