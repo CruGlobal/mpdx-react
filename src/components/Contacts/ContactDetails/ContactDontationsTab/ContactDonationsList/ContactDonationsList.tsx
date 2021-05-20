@@ -43,14 +43,16 @@ export const ContactDonationsList: React.FC<ContactDonationsListProp> = ({
       return;
     }
 
+    const endCursor = data?.contact.donations.pageInfo.endCursor;
+    const startCursor = data?.contact.donations.pageInfo.startCursor;
+    console.log(endCursor);
+    console.log(startCursor);
+
     if (moveNext && data?.contact.donations.pageInfo.hasNextPage) {
       fetchMore({
         variables: {
-          last: range,
-          after:
-            data.contact.donations.nodes[
-              data.contact.donations.nodes.length - 1
-            ].id,
+          first: range,
+          after: endCursor,
         },
         updateQuery: (prev, { fetchMoreResult }) => {
           if (!fetchMoreResult) {
@@ -68,7 +70,10 @@ export const ContactDonationsList: React.FC<ContactDonationsListProp> = ({
     }
     if (!moveNext && data?.contact.donations.pageInfo.hasPreviousPage) {
       fetchMore({
-        variables: { first: range, before: data.contact.donations.nodes[0].id },
+        variables: {
+          last: range,
+          before: startCursor,
+        },
         updateQuery: (prev, { fetchMoreResult }) => {
           if (!fetchMoreResult) {
             return prev;
