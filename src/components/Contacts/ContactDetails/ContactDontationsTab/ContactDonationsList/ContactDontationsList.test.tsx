@@ -1,4 +1,5 @@
 import { renderHook } from '@testing-library/react-hooks';
+import userEvent from '@testing-library/user-event';
 import { DateTime } from 'luxon';
 import React from 'react';
 import { GqlMockedProvider } from '../../../../../../__tests__/util/graphqlMocking';
@@ -39,12 +40,13 @@ describe('ContactDonationsList', () => {
   });
 
   it('test Renderer', async () => {
-    const { findAllByRole } = render(
+    const { findAllByRole, getByTestId } = render(
       <GqlMockedProvider<ContactDonationsListQuery>
         mocks={{
           ContactDonationsList: {
             contact: {
               donations: {
+                totalCount: 125,
                 nodes: [...Array(25)].map((x, i) => {
                   return {
                     donationDate: DateTime.local().minus({ month: i }).toISO(),
@@ -65,8 +67,17 @@ describe('ContactDonationsList', () => {
         />
       </GqlMockedProvider>,
     );
-    expect(
-      await await (await findAllByRole('textbox')).length,
-    ).toMatchInlineSnapshot(`25`);
+
+    expect(await (await findAllByRole('textbox')).length).toMatchInlineSnapshot(
+      `25`,
+    );
+    userEvent.click(getByTestId('pagination-next'));
+    expect(await (await findAllByRole('textbox')).length).toMatchInlineSnapshot(
+      `25`,
+    );
+    userEvent.click(getByTestId('pagination-back'));
+    expect(await (await findAllByRole('textbox')).length).toMatchInlineSnapshot(
+      `25`,
+    );
   });
 });
