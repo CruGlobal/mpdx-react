@@ -4,10 +4,13 @@ import {
   Button,
   Drawer,
   LinearProgress,
+  styled,
   TextField,
   Typography,
 } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
+import { useGetCoachingAnswerSetsQuery } from '../GetCoachingAnswerSets.generated';
+import theme from '../../../../theme';
 
 interface Props {
   accountListId: string;
@@ -25,14 +28,46 @@ interface MockAnswerSet {
   questions: MockQuestion[];
 }
 
+const ProgressBar = styled(LinearProgress)(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  padding: 0,
+  height: 10,
+  borderRadius: 5,
+  backgroundColor: theme.palette.cruGrayLight.main,
+  barColorPrimary: theme.palette.mpdxBlue.main,
+}));
+
 const CoachingQuestionsModal: React.FC<Props> = ({ accountListId }) => {
   const { t } = useTranslation();
 
   const currentAnswerSet = 0;
-  const answerSet: MockAnswerSet = {
-    completed_at: '2020-12-30',
-    questions: [],
-  };
+
+  const { data } = useGetCoachingAnswerSetsQuery({
+    variables: { accountListId },
+  });
+
+  const answerSets: MockAnswerSet[] = [
+    {
+      completed_at: '2020-12-30',
+      questions: [
+        {
+          prompt: 'Question1',
+          required: true,
+          response_options: null,
+          answer: { response: 'answer' },
+        },
+        {
+          prompt: 'Question2',
+          required: false,
+          response_options: ['answer', 'answer'],
+          answer: { response: 'answer' },
+        },
+      ],
+    },
+  ];
+  const answerSet = answerSets[currentAnswerSet];
 
   const [questionIndex, setQuestionIndex] = useState(0);
 
@@ -54,33 +89,29 @@ const CoachingQuestionsModal: React.FC<Props> = ({ accountListId }) => {
     }
   };
 
-  const onClose = () => {};
-
-  const renderNull = () => (
-    <Typography>
-      {t('Weekly report questions have not been setup for your organization')}
-    </Typography>
-  );
-
-  const renderResponseOptions = () => {
-    <Field></Field>;
+  const onClose = () => {
+    //close
   };
-
-  const renderShortAnswerField = () => <TextField></TextField>;
 
   const progress = (questionIndex / questionCount) * 10.0;
 
   return (
     <Drawer title={t('Weekly Report')} onClose={onClose}>
-      <LinearProgress variant="determinate" value={progress} />
+      <ProgressBar variant="determinate" value={progress} />
       {questionCount === 0 ? (
-        renderNull()
+        <Typography>
+          {t(
+            'Weekly report questions have not been setup for your organization',
+          )}
+        </Typography>
       ) : (
         <Box>
           <Typography>{question.prompt}</Typography>
-          {question.response_options === null
-            ? renderShortAnswerField()
-            : renderResponseOptions()}
+          {question.response_options === null ? (
+            <Box></Box>
+          ) : (
+            <TextField></TextField>
+          )}
           <Box>
             {hasPrevious ? (
               <Button onClick={previous}>
