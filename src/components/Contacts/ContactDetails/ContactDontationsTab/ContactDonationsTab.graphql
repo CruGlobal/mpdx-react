@@ -24,12 +24,6 @@ query GetContactDonations($accountListId: ID!, $contactId: ID!) {
 }
 
 fragment DonationsContact on DonationConnection {
-  edges {
-    cursor
-    node {
-      ...ContactDonation
-    }
-  }
   pageInfo {
     endCursor
     hasNextPage

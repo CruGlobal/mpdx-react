@@ -5,7 +5,7 @@ import { ContactDonationsList } from './ContactDonationsList';
 import { ContactDonationsListQuery } from './ContactDonationsList.generated';
 
 export default {
-  title: 'Contact/Tab/ContactDonationsTab/ContactDonationsList',
+  title: 'Contacts/Tab/ContactDonationsTab/ContactDonationsList',
   component: ContactDonationsList,
 };
 
@@ -16,11 +16,15 @@ export const Default = (): ReactElement => {
   return (
     <GqlMockedProvider<ContactDonationsListQuery>
       mocks={{
-        ContactDonationsListQuery: {
+        ContactDonationsList: {
           donations: {
             nodes: [...Array(25)].map((x, i) => {
               return {
                 donationDate: DateTime.local().minus({ month: i }).toISO,
+                amount: {
+                  currency: 'USD',
+                  convertedCurrency: 'EUR',
+                },
               };
             }),
           },

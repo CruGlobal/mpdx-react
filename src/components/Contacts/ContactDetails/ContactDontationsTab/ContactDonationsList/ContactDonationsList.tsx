@@ -99,9 +99,12 @@ export const ContactDonationsList: React.FC<ContactDonationsListProp> = ({
           const donation = data?.contact.donations.nodes[rowIndex];
           if (!loading && donation && networkStatus !== 3) {
             return (
-              <Typography variant="subtitle1">
-                {DateTime.fromISO(donation.donationDate).toLocaleString()}
-              </Typography>
+              <>
+                <span role="textbox" />
+                <Typography variant="subtitle1">
+                  {DateTime.fromISO(donation.donationDate).toLocaleString()}
+                </Typography>
+              </>
             );
           } else {
             return <Skeleton variant="circle" width={40} height={40} />;
