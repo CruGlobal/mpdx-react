@@ -3,7 +3,7 @@ import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ThemeProvider } from '@material-ui/core';
 import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
-import { ContactsQuery } from '../../../../pages/accountLists/[accountListId]/Contacts.generated';
+import { ContactsQuery } from '../../../../pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import theme from '../../../theme';
 import { ContactsTable } from './ContactsTable';
 

@@ -5,7 +5,10 @@ import {
   ActivityTypeEnum,
   ResultEnum,
 } from '../../../../../../graphql/types.generated';
-import { gqlMock } from '../../../../../../__tests__/util/graphqlMocking';
+import {
+  gqlMock,
+  GqlMockedProvider,
+} from '../../../../../../__tests__/util/graphqlMocking';
 import theme from '../../../../../theme';
 import { ContactTaskRow } from './ContactTaskRow';
 import {
@@ -13,14 +16,17 @@ import {
   ContactTaskRowFragmentDoc,
 } from './ContactTaskRow.generated';
 
+const accountListId = 'abc';
 const startAt = '2021-04-12';
 
 describe('ContactTaskRow', () => {
   it('should render loading', () => {
     const { getByTestId } = render(
-      <MuiThemeProvider theme={theme}>
-        <ContactTaskRow task={undefined} />
-      </MuiThemeProvider>,
+      <GqlMockedProvider>
+        <MuiThemeProvider theme={theme}>
+          <ContactTaskRow accountListId={accountListId} task={undefined} />
+        </MuiThemeProvider>
+      </GqlMockedProvider>,
     );
 
     expect(getByTestId('loadingRow')).toBeVisible();
@@ -35,9 +41,11 @@ describe('ContactTaskRow', () => {
     });
 
     const { findByText, queryByTestId } = render(
-      <MuiThemeProvider theme={theme}>
-        <ContactTaskRow task={task} />
-      </MuiThemeProvider>,
+      <GqlMockedProvider>
+        <MuiThemeProvider theme={theme}>
+          <ContactTaskRow accountListId={accountListId} task={task} />
+        </MuiThemeProvider>
+      </GqlMockedProvider>,
     );
 
     expect(await findByText(task.subject)).toBeVisible();
@@ -56,9 +64,11 @@ describe('ContactTaskRow', () => {
       });
 
       const { getByText } = render(
-        <MuiThemeProvider theme={theme}>
-          <ContactTaskRow task={task} />
-        </MuiThemeProvider>,
+        <GqlMockedProvider>
+          <MuiThemeProvider theme={theme}>
+            <ContactTaskRow accountListId={accountListId} task={task} />
+          </MuiThemeProvider>
+        </GqlMockedProvider>,
       );
 
       expect(getByText('Appointment')).toBeVisible();
@@ -72,9 +82,11 @@ describe('ContactTaskRow', () => {
       });
 
       const { getByText } = render(
-        <MuiThemeProvider theme={theme}>
-          <ContactTaskRow task={task} />
-        </MuiThemeProvider>,
+        <GqlMockedProvider>
+          <MuiThemeProvider theme={theme}>
+            <ContactTaskRow accountListId={accountListId} task={task} />
+          </MuiThemeProvider>
+        </GqlMockedProvider>,
       );
 
       expect(getByText('Call')).toBeVisible();
@@ -88,9 +100,11 @@ describe('ContactTaskRow', () => {
       });
 
       const { getByText } = render(
-        <MuiThemeProvider theme={theme}>
-          <ContactTaskRow task={task} />
-        </MuiThemeProvider>,
+        <GqlMockedProvider>
+          <MuiThemeProvider theme={theme}>
+            <ContactTaskRow accountListId={accountListId} task={task} />
+          </MuiThemeProvider>
+        </GqlMockedProvider>,
       );
 
       expect(getByText('Email')).toBeVisible();
@@ -104,9 +118,11 @@ describe('ContactTaskRow', () => {
       });
 
       const { getByText } = render(
-        <MuiThemeProvider theme={theme}>
-          <ContactTaskRow task={task} />
-        </MuiThemeProvider>,
+        <GqlMockedProvider>
+          <MuiThemeProvider theme={theme}>
+            <ContactTaskRow accountListId={accountListId} task={task} />
+          </MuiThemeProvider>
+        </GqlMockedProvider>,
       );
 
       expect(getByText('Facebook Message')).toBeVisible();
@@ -120,9 +136,11 @@ describe('ContactTaskRow', () => {
       });
 
       const { getByText } = render(
-        <MuiThemeProvider theme={theme}>
-          <ContactTaskRow task={task} />
-        </MuiThemeProvider>,
+        <GqlMockedProvider>
+          <MuiThemeProvider theme={theme}>
+            <ContactTaskRow accountListId={accountListId} task={task} />
+          </MuiThemeProvider>
+        </GqlMockedProvider>,
       );
 
       expect(getByText('Letter')).toBeVisible();
@@ -136,9 +154,11 @@ describe('ContactTaskRow', () => {
       });
 
       const { getByText } = render(
-        <MuiThemeProvider theme={theme}>
-          <ContactTaskRow task={task} />
-        </MuiThemeProvider>,
+        <GqlMockedProvider>
+          <MuiThemeProvider theme={theme}>
+            <ContactTaskRow accountListId={accountListId} task={task} />
+          </MuiThemeProvider>
+        </GqlMockedProvider>,
       );
 
       expect(getByText('Newsletter - Email')).toBeVisible();
@@ -152,9 +172,11 @@ describe('ContactTaskRow', () => {
       });
 
       const { getByText } = render(
-        <MuiThemeProvider theme={theme}>
-          <ContactTaskRow task={task} />
-        </MuiThemeProvider>,
+        <GqlMockedProvider>
+          <MuiThemeProvider theme={theme}>
+            <ContactTaskRow accountListId={accountListId} task={task} />
+          </MuiThemeProvider>
+        </GqlMockedProvider>,
       );
 
       expect(getByText('Newsletter - Physical')).toBeVisible();
@@ -168,9 +190,11 @@ describe('ContactTaskRow', () => {
       });
 
       const { getByText } = render(
-        <MuiThemeProvider theme={theme}>
-          <ContactTaskRow task={task} />
-        </MuiThemeProvider>,
+        <GqlMockedProvider>
+          <MuiThemeProvider theme={theme}>
+            <ContactTaskRow accountListId={accountListId} task={task} />
+          </MuiThemeProvider>
+        </GqlMockedProvider>,
       );
 
       expect(getByText('Prayer Request')).toBeVisible();
@@ -184,9 +208,11 @@ describe('ContactTaskRow', () => {
       });
 
       const { getByText } = render(
-        <MuiThemeProvider theme={theme}>
-          <ContactTaskRow task={task} />
-        </MuiThemeProvider>,
+        <GqlMockedProvider>
+          <MuiThemeProvider theme={theme}>
+            <ContactTaskRow accountListId={accountListId} task={task} />
+          </MuiThemeProvider>
+        </GqlMockedProvider>,
       );
 
       expect(getByText('Pre-Call Letter')).toBeVisible();
@@ -200,9 +226,11 @@ describe('ContactTaskRow', () => {
       });
 
       const { getByText } = render(
-        <MuiThemeProvider theme={theme}>
-          <ContactTaskRow task={task} />
-        </MuiThemeProvider>,
+        <GqlMockedProvider>
+          <MuiThemeProvider theme={theme}>
+            <ContactTaskRow accountListId={accountListId} task={task} />
+          </MuiThemeProvider>
+        </GqlMockedProvider>,
       );
 
       expect(getByText('Reminder Letter')).toBeVisible();
@@ -216,9 +244,11 @@ describe('ContactTaskRow', () => {
       });
 
       const { getByText } = render(
-        <MuiThemeProvider theme={theme}>
-          <ContactTaskRow task={task} />
-        </MuiThemeProvider>,
+        <GqlMockedProvider>
+          <MuiThemeProvider theme={theme}>
+            <ContactTaskRow accountListId={accountListId} task={task} />
+          </MuiThemeProvider>
+        </GqlMockedProvider>,
       );
 
       expect(getByText('Support Letter')).toBeVisible();
@@ -232,9 +262,11 @@ describe('ContactTaskRow', () => {
       });
 
       const { getByText } = render(
-        <MuiThemeProvider theme={theme}>
-          <ContactTaskRow task={task} />
-        </MuiThemeProvider>,
+        <GqlMockedProvider>
+          <MuiThemeProvider theme={theme}>
+            <ContactTaskRow accountListId={accountListId} task={task} />
+          </MuiThemeProvider>
+        </GqlMockedProvider>,
       );
 
       expect(getByText('Talk To In Person')).toBeVisible();
@@ -248,9 +280,11 @@ describe('ContactTaskRow', () => {
       });
 
       const { getByText } = render(
-        <MuiThemeProvider theme={theme}>
-          <ContactTaskRow task={task} />
-        </MuiThemeProvider>,
+        <GqlMockedProvider>
+          <MuiThemeProvider theme={theme}>
+            <ContactTaskRow accountListId={accountListId} task={task} />
+          </MuiThemeProvider>
+        </GqlMockedProvider>,
       );
 
       expect(getByText('Text Message')).toBeVisible();
@@ -264,9 +298,11 @@ describe('ContactTaskRow', () => {
       });
 
       const { getByText } = render(
-        <MuiThemeProvider theme={theme}>
-          <ContactTaskRow task={task} />
-        </MuiThemeProvider>,
+        <GqlMockedProvider>
+          <MuiThemeProvider theme={theme}>
+            <ContactTaskRow accountListId={accountListId} task={task} />
+          </MuiThemeProvider>
+        </GqlMockedProvider>,
       );
 
       expect(getByText('Thank')).toBeVisible();
@@ -280,9 +316,11 @@ describe('ContactTaskRow', () => {
       });
 
       const { getByText } = render(
-        <MuiThemeProvider theme={theme}>
-          <ContactTaskRow task={task} />
-        </MuiThemeProvider>,
+        <GqlMockedProvider>
+          <MuiThemeProvider theme={theme}>
+            <ContactTaskRow accountListId={accountListId} task={task} />
+          </MuiThemeProvider>
+        </GqlMockedProvider>,
       );
 
       expect(getByText('To Do')).toBeVisible();

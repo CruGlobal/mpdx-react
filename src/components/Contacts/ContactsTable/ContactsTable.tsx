@@ -9,7 +9,7 @@ import {
 } from '@material-ui/core';
 import { ContactRow } from '../ContactRow/ContactRow';
 import { ContactsHeader } from '../ContactsHeader/ContactsHeader';
-import { useContactsQuery } from '../../../../pages/accountLists/[accountListId]/Contacts.generated';
+import { useContactsQuery } from '../../../../pages/accountLists/[accountListId]/contacts/Contacts.generated';
 
 interface Props {
   accountListId: string;

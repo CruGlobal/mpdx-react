@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: [main]
 
+env:
+  # Use production API for codegen to make sure production is compatible with the code to be merged
+  API_URL: 'https://api.mpdx.org/graphql'
+
 jobs:
   split-tests:
     runs-on: ubuntu-latest

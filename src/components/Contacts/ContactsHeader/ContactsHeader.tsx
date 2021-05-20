@@ -7,7 +7,7 @@ import {
   ContactCheckBox,
   ContactCheckBoxState,
 } from '../ContactCheckBox/ContactCheckBox';
-import { StarredItemIcon } from '../../common/StarredItemIcon';
+import { StarredItemIcon } from '../../common/StarredItemIcon/StarredItemIcon';
 import { SearchBox } from '../../common/SearchBox/SearchBox';
 
 interface Props {

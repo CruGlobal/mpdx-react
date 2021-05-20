@@ -86,6 +86,7 @@ const taskSchema: yup.SchemaOf<
   id: yup.string().nullable(),
   activityType: yup.mixed<ActivityTypeEnum>(),
   subject: yup.string().required(),
+  starred: yup.boolean().nullable(),
   startAt: yup.string().nullable(),
   completedAt: yup.string().nullable(),
   tagList: yup.array().of(yup.string()).default([]),
@@ -94,7 +95,6 @@ const taskSchema: yup.SchemaOf<
   notificationTimeBefore: yup.number().nullable(),
   notificationType: yup.mixed<NotificationTypeEnum>(),
   notificationTimeUnit: yup.mixed<NotificationTimeUnitEnum>(),
-  starred: yup.boolean().nullable(),
 });
 
 interface Props {

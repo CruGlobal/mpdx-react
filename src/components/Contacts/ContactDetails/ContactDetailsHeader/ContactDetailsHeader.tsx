@@ -15,6 +15,7 @@ import { ContactHeaderStatusSection } from './ContactHeaderSection/ContactHeader
 interface Props {
   accountListId: string;
   contactId: string;
+  onClose: () => void;
 }
 
 const HeaderBar = styled(Box)(({}) => ({
@@ -66,6 +67,7 @@ const HeaderSectionWrap = styled(Box)(({}) => ({
 export const ContactDetailsHeader: React.FC<Props> = ({
   accountListId,
   contactId,
+  onClose,
 }: Props) => {
   const { data, loading } = useGetContactDetailsHeaderQuery({
     variables: { accountListId, contactId },
@@ -110,7 +112,7 @@ export const ContactDetailsHeader: React.FC<Props> = ({
             <MoreButtonIcon />
           </ButtonWrap>
           <ButtonWrap>
-            <CloseButtonIcon />
+            <CloseButtonIcon onClick={onClose} />
           </ButtonWrap>
         </HeaderBarButtonsWrap>
       </HeaderBar>

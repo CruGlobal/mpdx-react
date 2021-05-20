@@ -1,0 +1,13 @@
+mutation SetTaskStarred($accountListId: ID!, $taskId: ID!, $starred: Boolean!) {
+  updateTask(
+    input: {
+      accountListId: $accountListId
+      attributes: { id: $taskId, starred: $starred }
+    }
+  ) {
+    task {
+      id
+      starred
+    }
+  }
+}

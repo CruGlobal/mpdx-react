@@ -14,6 +14,7 @@ describe('ContactDetails', () => {
         <ContactDetailsHeader
           accountListId={accountListId}
           contactId={contactId}
+          onClose={() => {}}
         />
       </GqlMockedProvider>,
     );
@@ -35,6 +36,7 @@ describe('ContactDetails', () => {
         <ContactDetailsHeader
           accountListId={accountListId}
           contactId={contactId}
+          onClose={() => {}}
         />
       </GqlMockedProvider>,
     );

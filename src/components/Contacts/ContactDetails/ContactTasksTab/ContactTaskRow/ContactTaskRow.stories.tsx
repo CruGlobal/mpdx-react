@@ -12,6 +12,7 @@ export default {
   component: ContactTaskRow,
 };
 
+const accountListId = 'abc';
 const startAt = '2021-04-12';
 const lateStartAt = '2019-10-12';
 
@@ -23,11 +24,11 @@ export const Default = (): ReactElement => {
     },
   });
 
-  return <ContactTaskRow task={task} />;
+  return <ContactTaskRow accountListId={accountListId} task={task} />;
 };
 
 export const Loading = (): ReactElement => {
-  return <ContactTaskRow task={undefined} />;
+  return <ContactTaskRow accountListId={accountListId} task={undefined} />;
 };
 
 export const Complete = (): ReactElement => {
@@ -38,7 +39,7 @@ export const Complete = (): ReactElement => {
     },
   });
 
-  return <ContactTaskRow task={task} />;
+  return <ContactTaskRow accountListId={accountListId} task={task} />;
 };
 
 export const Late = (): ReactElement => {
@@ -49,5 +50,5 @@ export const Late = (): ReactElement => {
     },
   });
 
-  return <ContactTaskRow task={task} />;
+  return <ContactTaskRow accountListId={accountListId} task={task} />;
 };
