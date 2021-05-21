@@ -23,13 +23,10 @@ type CoachingQuestion {
 
 type CoachingAnswer {
   id: ID!
-  answerSet: CoachingAnswerSet!
   createdAt: ISO8601DateTime!
   response: String
   question: CoachingQuestion!
-  submittedByUser: User!
   updatedAt: ISO8601DateTime!
 }
 
 scalar ISO8601DateTime
-scalar User

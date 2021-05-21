@@ -26,11 +26,9 @@ const CoachingAnswerSetsTypeDefs = gql`
 
   type CoachingAnswer {
     id: ID!
-    answerSet: CoachingAnswerSet!
     createdAt: ISO8601DateTime!
     response: String
     question: CoachingQuestion!
-    submittedByUser: User!
     updatedAt: ISO8601DateTime!
   }
 

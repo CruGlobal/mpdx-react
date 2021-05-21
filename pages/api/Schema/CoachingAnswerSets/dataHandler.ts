@@ -4,6 +4,32 @@ import {
   CoachingQuestion,
 } from '../../../../graphql/types.generated';
 
+const createCoachingQuestion = ({
+  id,
+  created_at,
+  position,
+  prompt,
+  required,
+  response_options,
+  updated_at,
+}: {
+  id: string;
+  created_at: string;
+  position: number;
+  prompt: string;
+  required: boolean;
+  response_options: string[] | null;
+  updated_at: string;
+}): CoachingQuestion => ({
+  id,
+  createdAt: created_at,
+  position,
+  prompt,
+  required,
+  responseOptions: response_options,
+  updatedAt: updated_at,
+});
+
 const createCoachingQuestionsList = (
   data: {
     id: string;
@@ -17,29 +43,11 @@ const createCoachingQuestionsList = (
 ): CoachingQuestion[] => {
   const questions: CoachingQuestion[] = [];
 
-  data.forEach(
-    ({
-      id,
-      created_at,
-      position,
-      prompt,
-      required,
-      response_options,
-      updated_at,
-    }) => {
-      const question: CoachingQuestion = {
-        id,
-        createdAt: created_at,
-        position,
-        prompt,
-        required,
-        responseOptions: response_options,
-        updatedAt: updated_at,
-      };
+  data.forEach((questionData) => {
+    const question = createCoachingQuestion(questionData);
 
-      questions.push(question);
-    },
-  );
+    questions.push(question);
+  });
 
   return questions;
 };
@@ -47,39 +55,33 @@ const createCoachingQuestionsList = (
 const createCoachingAnswersList = (
   data: {
     id: string;
-    answer_set: any;
     created_at: string;
     response: string;
-    question: any;
-    submitted_by_user: any;
+    question: {
+      id: string;
+      created_at: string;
+      position: number;
+      prompt: string;
+      required: boolean;
+      response_options: string[] | null;
+      updated_at: string;
+    };
     updated_at: string;
   }[],
 ): CoachingAnswer[] => {
   const answers: CoachingAnswer[] = [];
 
-  data.forEach(
-    ({
+  data.forEach(({ id, created_at, response, question, updated_at }) => {
+    const answer: CoachingAnswer = {
       id,
-      answer_set,
-      created_at,
+      createdAt: created_at,
       response,
-      question,
-      submitted_by_user,
-      updated_at,
-    }) => {
-      const answer: CoachingAnswer = {
-        id,
-        answerSet: answer_set,
-        createdAt: created_at,
-        response,
-        question,
-        submittedByUser: submitted_by_user,
-        updatedAt: updated_at,
-      };
+      question: createCoachingQuestion(question),
+      updatedAt: updated_at,
+    };
 
-      answers.push(answer);
-    },
-  );
+    answers.push(answer);
+  });
 
   return answers;
 };
@@ -97,11 +99,17 @@ const getCoachingAnswerSets = (
       answers: {
         data: {
           id: string;
-          answer_set: any;
           created_at: string;
           response: string;
-          question: any;
-          submitted_by_user: any;
+          question: {
+            id: string;
+            created_at: string;
+            position: number;
+            prompt: string;
+            required: boolean;
+            response_options: string[] | null;
+            updated_at: string;
+          };
           updated_at: string;
         }[];
       };
