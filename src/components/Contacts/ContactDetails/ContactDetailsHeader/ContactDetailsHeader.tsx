@@ -45,11 +45,6 @@ const PrimaryText = styled(Typography)(({}) => ({
   display: 'inline',
   marginRight: 8,
 }));
-const ButtonWrap = styled(IconButton)(({}) => ({
-  margin: 4,
-  width: 32,
-  height: 32,
-}));
 const MoreButtonIcon = styled(MoreVert)(({}) => ({
   width: 16,
   height: 16,
@@ -108,12 +103,12 @@ export const ContactDetailsHeader: React.FC<Props> = ({
             contactId={contactId}
             isStarred={data?.contact?.starred || false}
           />
-          <ButtonWrap>
-            <MoreButtonIcon />
-          </ButtonWrap>
-          <ButtonWrap>
-            <CloseButtonIcon onClick={onClose} />
-          </ButtonWrap>
+          <IconButton>
+            <MoreButtonIcon titleAccess={t('More')} />
+          </IconButton>
+          <IconButton onClick={onClose}>
+            <CloseButtonIcon titleAccess={t('Close')} />
+          </IconButton>
         </HeaderBarButtonsWrap>
       </HeaderBar>
       <HeaderSectionWrap>
