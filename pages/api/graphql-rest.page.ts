@@ -14,6 +14,7 @@ import { ContactFilterOption } from './graphql-rest.page.generated';
 import schema from './Schema';
 import getTaskAnalytics from './Schema/TaskAnalytics/dataHandler';
 import getContactFilters from './Schema/ContactFilters/datahandler';
+import getCoachingAnswerSets from './Schema/CoachingAnswerSets/dataHandler';
 
 class MpdxRestApi extends RESTDataSource {
   constructor() {
@@ -109,6 +110,14 @@ class MpdxRestApi extends RESTDataSource {
     );
 
     return getTaskAnalytics(data);
+  }
+
+  async getCoachingAnswerSets(accountListId: string) {
+    const { data } = await this.get(
+      `coaching/answer_sets?filter[account_list_id]=${accountListId}`,
+    );
+
+    return getCoachingAnswerSets(data);
   }
 }
 
