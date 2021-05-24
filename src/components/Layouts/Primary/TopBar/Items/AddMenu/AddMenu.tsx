@@ -1,5 +1,12 @@
 import React, { ReactElement, useState } from 'react';
-import { Box, IconButton, ListItemText, Menu, styled } from '@material-ui/core';
+import {
+  Box,
+  Dialog,
+  IconButton,
+  ListItemText,
+  Menu,
+  styled,
+} from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 import PersonIcon from '@material-ui/icons/Person';
 import PeopleIcon from '@material-ui/icons/People';
@@ -7,6 +14,8 @@ import CardGiftcardIcon from '@material-ui/icons/CardGiftcard';
 import ListIcon from '@material-ui/icons/FormatListBulleted';
 import EditIcon from '@material-ui/icons/Edit';
 import { useTranslation } from 'react-i18next';
+import { useApp } from '../../../../../App';
+import CreateContact from './Items/CreateContact/CreateContact';
 
 const HoverAddIcon = styled(AddIcon)(() => ({
   textTransform: 'none',
@@ -50,6 +59,76 @@ const MenuItemText = styled(ListItemText)(({ theme }) => ({
 
 const AddMenu = (): ReactElement => {
   const { t } = useTranslation();
+  const { state } = useApp();
+  const { accountListId } = state;
+  const [selectedMenuItem, changeSelectedMenuItem] = useState(-1);
+  const [dialogOpen, changeDialogOpen] = useState(false);
+  const { openTaskDrawer } = useApp();
+
+  const handleAddTaskClick = (): void => {
+    setAnchorEl(undefined);
+    openTaskDrawer({});
+  };
+
+  const handleMenuItemClick = (menuItem: number) => {
+    changeSelectedMenuItem(menuItem);
+    changeDialogOpen(true);
+  };
+
+  const handleDialogClose = () => {
+    changeDialogOpen(false);
+  };
+
+  const renderDialog = () => {
+    const renderDialogContent = () => {
+      switch (selectedMenuItem) {
+        case 0:
+          return (
+            <CreateContact
+              accountListId={accountListId ?? ''}
+              handleClose={handleDialogClose}
+            />
+          );
+      }
+    };
+    return (
+      <Dialog
+        open={dialogOpen}
+        aria-labelledby={t('Create Contact Dialog')}
+        fullWidth
+        maxWidth="sm"
+      >
+        {renderDialogContent()}
+      </Dialog>
+    );
+  };
+
+  const addMenuContent = [
+    {
+      text: 'Add Contacts',
+      icon: <PersonIcon />,
+    },
+    {
+      text: 'Multiple Contact',
+      icon: <PeopleIcon />,
+      customOnClick: () => console.log('multiple contact'),
+    },
+    {
+      text: 'Add Donation',
+      icon: <CardGiftcardIcon />,
+      customOnClick: () => console.log('add donation'),
+    },
+    {
+      text: 'Add Task',
+      icon: <ListIcon />,
+      customOnClick: handleAddTaskClick,
+    },
+    {
+      text: 'Log Task',
+      icon: <EditIcon />,
+      customOnClick: () => console.log('log task'),
+    },
+  ];
 
   const [anchorEl, setAnchorEl] = useState<EventTarget & HTMLButtonElement>();
 
@@ -73,28 +152,21 @@ const AddMenu = (): ReactElement => {
         transformOrigin={{ vertical: 'top', horizontal: 'center' }}
       >
         <Box display="flex" flexDirection="column" justifyContent="center">
-          <RowContainer display="flex">
-            <PersonIcon />
-            <MenuItemText primary={t('Add Contacts')} />
-          </RowContainer>
-          <RowContainer display="flex">
-            <PeopleIcon />
-            <MenuItemText primary={t('Multiple Contacts')} />
-          </RowContainer>
-          <RowContainer display="flex">
-            <CardGiftcardIcon />
-            <MenuItemText primary={t('Add Donation')} />
-          </RowContainer>
-          <RowContainer display="flex">
-            <ListIcon />
-            <MenuItemText primary={t('Add Task')} />
-          </RowContainer>
-          <RowContainer display="flex">
-            <EditIcon />
-            <MenuItemText primary={t('Log Task')} />
-          </RowContainer>
+          {addMenuContent.map(({ text, icon, customOnClick }, index) => (
+            <RowContainer
+              key={index}
+              display="flex"
+              onClick={() =>
+                customOnClick ? customOnClick() : handleMenuItemClick(index)
+              }
+            >
+              {icon}
+              <MenuItemText primary={t(`${text}`)} />
+            </RowContainer>
+          ))}
         </Box>
       </MenuContainer>
+      {renderDialog()}
     </>
   );
 };

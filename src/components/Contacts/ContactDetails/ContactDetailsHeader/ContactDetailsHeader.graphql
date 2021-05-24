@@ -1,6 +1,7 @@
 fragment ContactDetailsHeader on Contact {
   id
   avatar
+  name
   primaryPerson {
     firstName
     lastName
