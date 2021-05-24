@@ -8,4 +8,4 @@ const ContactFiltersResolvers: Resolvers = {
   },
 };
 
-export default ContactFiltersResolvers;
+export { ContactFiltersResolvers };

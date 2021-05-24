@@ -24,4 +24,4 @@ const ExportContactsResolvers: Resolvers = {
   },
 };
 
-export default ExportContactsResolvers;
+export { ExportContactsResolvers };

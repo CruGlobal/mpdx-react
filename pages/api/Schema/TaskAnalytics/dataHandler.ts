@@ -37,4 +37,4 @@ const getTaskAnalytics = (data: {
   };
 };
 
-export default getTaskAnalytics;
+export { getTaskAnalytics };

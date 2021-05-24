@@ -64,4 +64,4 @@ const getContactFilters = (
   return response;
 };
 
-export default getContactFilters;
+export { getContactFilters };
