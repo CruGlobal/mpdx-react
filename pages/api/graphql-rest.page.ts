@@ -12,8 +12,8 @@ import {
 } from '../../graphql/types.generated';
 import { ContactFilterOption } from './graphql-rest.page.generated';
 import schema from './Schema';
-import getTaskAnalytics from './Schema/TaskAnalytics/dataHandler';
-import getContactFilters from './Schema/ContactFilters/datahandler';
+import { getTaskAnalytics } from './Schema/TaskAnalytics/dataHandler';
+import { getContactFilters } from './Schema/ContactFilters/datahandler';
 
 class MpdxRestApi extends RESTDataSource {
   constructor() {
