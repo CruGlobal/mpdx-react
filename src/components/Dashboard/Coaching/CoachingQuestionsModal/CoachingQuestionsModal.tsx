@@ -10,22 +10,10 @@ import {
 } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { useGetCoachingAnswerSetsQuery } from '../GetCoachingAnswerSets.generated';
-import theme from '../../../../theme';
+import Loading from '../../../Loading';
 
 interface Props {
   accountListId: string;
-}
-
-interface MockQuestion {
-  prompt: string;
-  required: boolean;
-  response_options: string[] | null;
-  answer: { response: string };
-}
-
-interface MockAnswerSet {
-  completed_at: string;
-  questions: MockQuestion[];
 }
 
 const ProgressBar = styled(LinearProgress)(({ theme }) => ({
@@ -44,35 +32,19 @@ const CoachingQuestionsModal: React.FC<Props> = ({ accountListId }) => {
 
   const currentAnswerSet = 0;
 
-  const { data } = useGetCoachingAnswerSetsQuery({
+  const { data, loading } = useGetCoachingAnswerSetsQuery({
     variables: { accountListId },
   });
 
-  const answerSets: MockAnswerSet[] = [
-    {
-      completed_at: '2020-12-30',
-      questions: [
-        {
-          prompt: 'Question1',
-          required: true,
-          response_options: null,
-          answer: { response: 'answer' },
-        },
-        {
-          prompt: 'Question2',
-          required: false,
-          response_options: ['answer', 'answer'],
-          answer: { response: 'answer' },
-        },
-      ],
-    },
-  ];
-  const answerSet = answerSets[currentAnswerSet];
-
   const [questionIndex, setQuestionIndex] = useState(0);
 
-  const questionCount = answerSet.questions.length;
-  const question = answerSet.questions[questionIndex];
+  const onClose = () => {
+    //close
+  };
+
+  const answerSet = data && data[currentAnswerSet];
+  const questionCount = answerSet?.questions.length || 0;
+  const question = answerSet?.questions[questionIndex];
 
   const hasNext = questionIndex < questionCount - 1;
   const hasPrevious = questionIndex !== 0;
@@ -89,16 +61,14 @@ const CoachingQuestionsModal: React.FC<Props> = ({ accountListId }) => {
     }
   };
 
-  const onClose = () => {
-    //close
-  };
-
   const progress = (questionIndex / questionCount) * 10.0;
 
   return (
     <Drawer title={t('Weekly Report')} onClose={onClose}>
       <ProgressBar variant="determinate" value={progress} />
-      {questionCount === 0 ? (
+      {loading || !answerSet ? (
+        <Loading />
+      ) : questionCount === 0 ? (
         <Typography>
           {t(
             'Weekly report questions have not been setup for your organization',

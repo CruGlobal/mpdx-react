@@ -1,11 +1,23 @@
 query GetCoachingAnswerSets($accountListId: ID!) {
-  tasks(accountListId: $accountListId) {
-    nodes {
-      ...ContactTaskRow
+  coachingAnswerSets(accountListId: $accountListId) {
+    id
+    answers {
+      ...AnswerFragment
     }
-    pageInfo {
-      endCursor
-      hasNextPage
+    questions {
+      ...QuestionFragment
     }
   }
+}
+
+fragment QuestionFragment on CoachingQuestion {
+  id
+  prompt
+  required
+  responseOptions
+}
+
+fragment AnswerFragment on CoachingAnswer {
+  id
+  response
 }
