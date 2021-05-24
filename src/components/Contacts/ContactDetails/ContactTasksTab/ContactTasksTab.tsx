@@ -1,10 +1,11 @@
 import { Box, Button, Divider, styled, Typography } from '@material-ui/core';
 import { Add, CheckCircleOutline } from '@material-ui/icons';
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { StarredItemIcon } from '../../../common/StarredItemIcon/StarredItemIcon';
+import { SearchBox } from '../../../common/SearchBox/SearchBox';
 import { ContactCheckBox } from '../../ContactCheckBox/ContactCheckBox';
-import { StarContactIcon } from '../../StarContactIcon/StarContactIcon';
-import { ContactTaskRow } from '../ContactTaskRow/ContactTaskRow';
+import { ContactTaskRow } from './ContactTaskRow/ContactTaskRow';
 import { useContactTasksTabQuery } from './ContactTasksTab.generated';
 
 const ContactDetailsTabContainer = styled(Box)(() => ({
@@ -12,9 +13,10 @@ const ContactDetailsTabContainer = styled(Box)(() => ({
   padding: '0 5%',
 }));
 
-const ContactTasksHeaderContainer = styled(Box)(({}) => ({
+const ContactTasksHeaderContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
+  margin: theme.spacing(1),
 }));
 
 const HeaderRow = styled(Box)(({ theme }) => ({
@@ -63,13 +65,6 @@ const TaskButtonText = styled(Typography)(({ theme }) => ({
   color: theme.palette.info.main,
 }));
 
-const PlaceholderSearchBar = styled(Box)(({ theme }) => ({
-  height: 40,
-  width: 192,
-  margin: theme.spacing(2),
-  backgroundColor: theme.palette.background.paper,
-}));
-
 const PlaceholderActionBar = styled(Box)(({ theme }) => ({
   height: 40,
   width: 111,
@@ -90,8 +85,10 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
   accountListId,
   contactId,
 }) => {
+  const [searchTerm, setSearchTerm] = useState<string | undefined>(undefined);
+
   const { data, loading } = useContactTasksTabQuery({
-    variables: { accountListId, contactId },
+    variables: { accountListId, contactId, searchTerm },
   });
 
   const { t } = useTranslation();
@@ -119,12 +116,15 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
         <HeaderRow>
           <HeaderItemsWrap>
             <ContactCheckBox />
-            <PlaceholderSearchBar />
+            <SearchBox
+              onChange={setSearchTerm}
+              placeholder={t('Search Tasks')}
+            />
           </HeaderItemsWrap>
           <HeaderItemsWrap>
             <PlaceholderActionBar />
             <StarIconWrap>
-              <StarContactIcon hasStar={false} />
+              <StarredItemIcon isStarred={false} />
             </StarIconWrap>
           </HeaderItemsWrap>
         </HeaderRow>
@@ -133,13 +133,29 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
       <Box>
         {loading || !data ? (
           <>
-            <ContactTaskRow key="0" task={undefined} />
-            <ContactTaskRow key="1" task={undefined} />
-            <ContactTaskRow key="2" task={undefined} />
+            <ContactTaskRow
+              key="0"
+              accountListId={accountListId}
+              task={undefined}
+            />
+            <ContactTaskRow
+              key="1"
+              accountListId={accountListId}
+              task={undefined}
+            />
+            <ContactTaskRow
+              key="2"
+              accountListId={accountListId}
+              task={undefined}
+            />
           </>
         ) : (
           data.tasks.nodes.map((task) => (
-            <ContactTaskRow key={task.id} task={task} />
+            <ContactTaskRow
+              key={task.id}
+              accountListId={accountListId}
+              task={task}
+            />
           ))
         )}
       </Box>

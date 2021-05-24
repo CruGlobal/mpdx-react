@@ -1,0 +1,17 @@
+mutation SetContactStarred(
+  $accountListId: ID!
+  $contactId: ID!
+  $starred: Boolean!
+) {
+  updateContact(
+    input: {
+      accountListId: $accountListId
+      attributes: { id: $contactId, starred: $starred }
+    }
+  ) {
+    contact {
+      id
+      starred
+    }
+  }
+}

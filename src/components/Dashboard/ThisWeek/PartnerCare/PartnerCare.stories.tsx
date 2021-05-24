@@ -3,7 +3,11 @@ import { Box } from '@material-ui/core';
 import { MockedProvider } from '@apollo/client/testing';
 import { ActivityTypeEnum } from '../../../../../graphql/types.generated';
 import { GetThisWeekQuery } from '../GetThisWeek.generated';
-import PartnerCare from '.';
+import {
+  createTaskMutationMock,
+  updateTaskMutationMock,
+} from '../../../Task/Drawer/Form/Form.mock';
+import PartnerCare from './PartnerCare';
 
 export default {
   title: 'Dashboard/ThisWeek/PartnerCare',
@@ -26,6 +30,7 @@ export const Default = (): ReactElement => {
     lastName: 'Doe',
     parentContact: {
       id: 'contact',
+      name: 'John and Sarah, Doe',
     },
   };
   const personWithAnniversary = {
@@ -67,7 +72,10 @@ export const Default = (): ReactElement => {
   };
   return (
     <Box m={2}>
-      <MockedProvider mocks={[]} addTypename={false}>
+      <MockedProvider
+        mocks={[createTaskMutationMock(), updateTaskMutationMock()]}
+        addTypename={false}
+      >
         <PartnerCare
           accountListId="abc"
           loading={false}

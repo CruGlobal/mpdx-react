@@ -60,6 +60,7 @@ enum TabKey {
 export const ContactDetails: React.FC<Props> = ({
   accountListId,
   contactId,
+  onClose,
 }: Props) => {
   const { t } = useTranslation();
 
@@ -77,6 +78,7 @@ export const ContactDetails: React.FC<Props> = ({
       <ContactDetailsHeader
         accountListId={accountListId}
         contactId={contactId}
+        onClose={onClose}
       />
       <TabContext value={selectedTabKey}>
         <ContactTabsWrapper>

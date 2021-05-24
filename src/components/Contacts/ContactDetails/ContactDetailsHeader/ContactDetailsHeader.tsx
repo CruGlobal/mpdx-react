@@ -5,7 +5,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import theme from '../../../../theme';
 
-import { StarContactIcon } from '../../StarContactIcon/StarContactIcon';
+import { StarContactIconButton } from '../../StarContactIconButton/StarContactIconButton';
 import { useGetContactDetailsHeaderQuery } from './ContactDetailsHeader.generated';
 import { ContactHeaderAddressSection } from './ContactHeaderSection/ContactHeaderAddressSection';
 import { ContactHeaderPhoneSection } from './ContactHeaderSection/ContactHeaderPhoneSection';
@@ -15,6 +15,7 @@ import { ContactHeaderStatusSection } from './ContactHeaderSection/ContactHeader
 interface Props {
   accountListId: string;
   contactId: string;
+  onClose: () => void;
 }
 
 const HeaderBar = styled(Box)(({}) => ({
@@ -66,6 +67,7 @@ const HeaderSectionWrap = styled(Box)(({}) => ({
 export const ContactDetailsHeader: React.FC<Props> = ({
   accountListId,
   contactId,
+  onClose,
 }: Props) => {
   const { data, loading } = useGetContactDetailsHeaderQuery({
     variables: { accountListId, contactId },
@@ -101,14 +103,16 @@ export const ContactDetailsHeader: React.FC<Props> = ({
           ) : null}
         </HeaderBarContactWrap>
         <HeaderBarButtonsWrap>
-          <ButtonWrap>
-            <StarContactIcon hasStar={false} />
-          </ButtonWrap>
+          <StarContactIconButton
+            accountListId={accountListId}
+            contactId={contactId}
+            isStarred={data?.contact?.starred || false}
+          />
           <ButtonWrap>
             <MoreButtonIcon />
           </ButtonWrap>
           <ButtonWrap>
-            <CloseButtonIcon />
+            <CloseButtonIcon onClick={onClose} />
           </ButtonWrap>
         </HeaderBarButtonsWrap>
       </HeaderBar>

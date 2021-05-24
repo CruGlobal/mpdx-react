@@ -1,0 +1,21 @@
+fragment ContactRow on Contact {
+  id
+  name
+  primaryAddress {
+    street
+    city
+    state
+    postalCode
+    country
+  }
+  status
+  pledgeAmount
+  pledgeFrequency
+  pledgeCurrency
+  lateAt
+  sendNewsletter
+  starred
+  # TODO: Add when available in schema
+  # taskCount
+  ...CelebrationItems
+}

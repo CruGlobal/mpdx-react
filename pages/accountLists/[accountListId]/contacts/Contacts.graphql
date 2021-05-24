@@ -1,0 +1,8 @@
+query Contacts($accountListId: ID!, $searchTerm: String) {
+  contacts(accountListId: $accountListId, wildcardSearch: $searchTerm) {
+    nodes {
+      id
+      ...ContactRow
+    }
+  }
+}

@@ -1,8 +1,0 @@
-query Contacts($accountListId: ID!) {
-  contacts(accountListId: $accountListId) {
-    nodes {
-      id
-      ...ContactRow
-    }
-  }
-}

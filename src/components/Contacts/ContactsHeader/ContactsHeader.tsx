@@ -7,13 +7,14 @@ import {
   ContactCheckBox,
   ContactCheckBoxState,
 } from '../ContactCheckBox/ContactCheckBox';
-import { StarContactIcon } from '../StarContactIcon/StarContactIcon';
-import { SearchBox } from '../../SearchBox/SearchBox';
+import { StarredItemIcon } from '../../common/StarredItemIcon/StarredItemIcon';
+import { SearchBox } from '../../common/SearchBox/SearchBox';
 
 interface Props {
   activeFilters: boolean;
   filterPanelOpen: boolean;
   toggleFilterPanel: () => void;
+  onSearchTermChanged: (searchTerm: string) => void;
   totalContacts?: number;
 }
 
@@ -24,7 +25,7 @@ enum ContactsTableDisplayState {
 
 const HeaderWrap = styled(Box)(({ theme }) => ({
   height: 96,
-  padding: theme.spacing(1),
+  padding: theme.spacing(2),
   display: 'flex',
   flexDirection: 'row',
   justifyContent: 'space-evenly',
@@ -116,6 +117,7 @@ export const ContactsHeader: React.FC<Props> = ({
   activeFilters,
   filterPanelOpen,
   toggleFilterPanel,
+  onSearchTermChanged,
   totalContacts = 0,
 }) => {
   const { t } = useTranslation();
@@ -159,7 +161,10 @@ export const ContactsHeader: React.FC<Props> = ({
         </FilterButton>
       </Hidden>
 
-      <SearchBox searchTerm="" onChange={() => ''} placeholder="Search List" />
+      <SearchBox
+        onChange={onSearchTermChanged}
+        placeholder={t('Search List')}
+      />
       <ContactsShowingText>
         {t('Showing 43', { count: totalContacts })}
       </ContactsShowingText>
@@ -194,7 +199,7 @@ export const ContactsHeader: React.FC<Props> = ({
 
       <Hidden smDown>
         <StarIconWrap>
-          <StarContactIcon hasStar={false} />
+          <StarredItemIcon isStarred={false} />
         </StarIconWrap>
       </Hidden>
     </HeaderWrap>

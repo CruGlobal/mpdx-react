@@ -1,0 +1,18 @@
+fragment ContactTaskRow on Task {
+  id
+  activityType
+  startAt
+  completedAt
+  comments {
+    totalCount
+  }
+  contacts {
+    nodes {
+      id
+      name
+    }
+  }
+  result
+  starred
+  subject
+}

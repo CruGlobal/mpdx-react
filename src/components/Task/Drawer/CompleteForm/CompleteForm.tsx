@@ -32,6 +32,7 @@ import {
 } from '../../../../../graphql/types.generated';
 import { GetTaskForTaskDrawerQuery } from '../TaskDrawerTask.generated';
 import { useGetDataForTaskDrawerQuery } from '../Form/TaskDrawer.generated';
+import { GetThisWeekDocument } from '../../../Dashboard/ThisWeek/GetThisWeek.generated';
 import { useCompleteTaskMutation } from './CompleteTask.generated';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -94,7 +95,22 @@ const TaskDrawerCompleteForm = ({
   const [updateTask, { loading: saving }] = useCompleteTaskMutation();
   const onSubmit = async (attributes: TaskUpdateInput): Promise<void> => {
     try {
-      await updateTask({ variables: { accountListId, attributes } });
+      const endOfDay = DateTime.local().endOf('day');
+      await updateTask({
+        variables: { accountListId, attributes },
+        refetchQueries: [
+          {
+            query: GetThisWeekDocument,
+            variables: {
+              accountListId,
+              endOfDay: endOfDay.toISO(),
+              today: endOfDay.toISODate(),
+              twoWeeksFromNow: endOfDay.plus({ weeks: 2 }).toISODate(),
+              twoWeeksAgo: endOfDay.minus({ weeks: 2 }).toISODate(),
+            },
+          },
+        ],
+      });
       enqueueSnackbar(t('Task saved successfully'), { variant: 'success' });
       onClose();
       if (

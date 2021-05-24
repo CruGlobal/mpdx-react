@@ -1,4 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing';
+import { DateTime } from 'luxon';
 import React, { ReactElement } from 'react';
 import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
 import { ContactDonationsTab } from './ContactDonationsTab';
@@ -8,7 +9,7 @@ import {
 } from './ContactDonationsTab.generated';
 
 export default {
-  title: 'Contacts/Tab/ContactDetailsTab/ContactDonations',
+  title: 'Contacts/Tab/ContactDonationsTab',
   component: ContactDonationsTab,
 };
 
@@ -17,7 +18,20 @@ const contactId = '222';
 
 export const Default = (): ReactElement => {
   return (
-    <GqlMockedProvider<GetContactDonationsQuery>>
+    <GqlMockedProvider<GetContactDonationsQuery>
+      mocks={{
+        GetContactDonations: {
+          contact: {
+            nextAsk: DateTime.now().plus({ month: 5 }).toISO(),
+            pledgeStartDate: DateTime.now().minus({ month: 5 }).toISO(),
+            pledgeCurrency: 'USD',
+            lastDonation: {
+              donationDate: DateTime.now().toISO(),
+            },
+          },
+        },
+      }}
+    >
       <ContactDonationsTab
         accountListId={accountListId}
         contactId={contactId}

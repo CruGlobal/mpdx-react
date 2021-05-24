@@ -2,8 +2,6 @@ import React, { ReactElement, useState } from 'react';
 import {
   Box,
   Typography,
-  makeStyles,
-  Theme,
   CardHeader,
   CardActions,
   Button,
@@ -11,11 +9,12 @@ import {
   ListItem,
   ListItemText,
   ListItemSecondaryAction,
-  Checkbox,
   Tabs,
   Tab,
   ListItemIcon,
   CardContent,
+  styled,
+  IconButton,
 } from '@material-ui/core';
 import CakeIcon from '@material-ui/icons/Cake';
 import FavoriteIcon from '@material-ui/icons/Favorite';
@@ -24,7 +23,9 @@ import { motion } from 'framer-motion';
 import uniqBy from 'lodash/fp/uniqBy';
 import { useTranslation } from 'react-i18next';
 import Link from 'next/link';
-import { Brightness1Outlined, CheckCircle } from '@material-ui/icons';
+import Brightness1Outlined from '@material-ui/icons/Brightness1Outlined';
+import DoneIcon from '@material-ui/icons/Done';
+import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import { dayMonthFormat } from '../../../../lib/intlFormat';
 import AnimatedCard from '../../../AnimatedCard';
 import { useApp } from '../../../App';
@@ -32,35 +33,37 @@ import illustration4 from '../../../../images/drawkit/grape/drawkit-grape-pack-i
 import illustration7 from '../../../../images/drawkit/grape/drawkit-grape-pack-illustration-7.svg';
 import { GetThisWeekQuery } from '../GetThisWeek.generated';
 
-const useStyles = makeStyles((theme: Theme) => ({
-  div: {
-    flex: 1,
-    display: 'flex',
-    flexDirection: 'column',
-    overflow: 'auto',
+const CardContainer = styled(AnimatedCard)(({ theme }) => ({
+  flex: 'flex',
+  flexDirection: 'column',
+  height: '322px',
+  [theme.breakpoints.down('xs')]: {
+    height: 'auto',
   },
-  list: {
-    flex: 1,
-    padding: 0,
-    overflow: 'auto',
-  },
-  card: {
-    display: 'flex',
-    flexDirection: 'column',
-    height: '322px',
-    [theme.breakpoints.down('xs')]: {
-      height: 'auto',
-    },
-  },
-  cardContent: {
-    padding: theme.spacing(2),
-    display: 'flex',
-    flex: 1,
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  img: {
+}));
+
+const MotionDiv = styled(motion.div)(() => ({
+  flex: 1,
+  display: 'flex',
+  flexDirection: 'column',
+  overflow: 'auto',
+}));
+
+const CardList = styled(List)(() => ({
+  flex: 1,
+  padding: 0,
+  overflow: 'auto',
+}));
+
+const CardContentContainer = styled(CardContent)(({ theme }) => ({
+  padding: theme.spacing(2),
+  display: 'flex',
+  flex: 1,
+  flexDirection: 'column',
+  alignItems: 'center',
+  justifyContent: 'center',
+
+  '& > img': {
     height: '120px',
     marginBottom: 0,
     [theme.breakpoints.down('xs')]: {
@@ -68,6 +71,50 @@ const useStyles = makeStyles((theme: Theme) => ({
       marginBottom: theme.spacing(2),
     },
   },
+}));
+
+const CompleteButton = styled(IconButton)(({ theme }) => ({
+  width: theme.spacing(3.5),
+  height: theme.spacing(3.5),
+  fontSize: '1.4rem',
+  cursor: 'pointer',
+  background: 'none',
+  transition: theme.transitions.create(['background'], {
+    duration: theme.transitions.duration.short,
+  }),
+  '&:hover': {
+    backgroundColor: theme.palette.mpdxGreen.main,
+  },
+  '&:hover [name="Circle Icon"]': {
+    opacity: 0,
+  },
+  '&:hover [name="Done Icon"]': {
+    opacity: 1,
+  },
+  '&:hover [name="Add Icon"]': {
+    opacity: 1,
+  },
+}));
+
+const DoneHoverIcon = styled(DoneIcon)(({ theme }) => ({
+  opacity: 0,
+  color: theme.palette.common.white,
+  position: 'absolute',
+  left: '2px',
+  transition: theme.transitions.create(['transform', 'opacity'], {
+    duration: theme.transitions.duration.short,
+  }),
+  transform: 'rotate(0deg)',
+}));
+
+const AddHoverIcon = styled(AddCircleOutlineIcon)(({ theme }) => ({
+  opacity: 0,
+  color: theme.palette.common.white,
+  position: 'absolute',
+  left: '2px',
+  transition: theme.transitions.create(['transform', 'opacity'], {
+    duration: theme.transitions.duration.short,
+  }),
 }));
 
 interface Props {
@@ -78,6 +125,11 @@ interface Props {
   reportsPeopleWithAnniversaries?: GetThisWeekQuery['reportsPeopleWithAnniversaries'];
 }
 
+enum CelebrationTypeEnum {
+  'birthday',
+  'anniversary',
+}
+
 const PartnerCare = ({
   accountListId,
   loading,
@@ -85,7 +137,6 @@ const PartnerCare = ({
   reportsPeopleWithBirthdays,
   reportsPeopleWithAnniversaries,
 }: Props): ReactElement => {
-  const classes = useStyles();
   const { t } = useTranslation();
   const [value, setValue] = useState(0);
   const { openTaskDrawer } = useApp();
@@ -103,8 +154,29 @@ const PartnerCare = ({
     setValue(newValue);
   };
 
+  const handleCreateClick = (
+    celebrationType: CelebrationTypeEnum,
+    person: GetThisWeekQuery['reportsPeopleWithAnniversaries']['periods'][0]['people'][0] &
+      GetThisWeekQuery['reportsPeopleWithBirthdays']['periods'][0]['people'][0],
+  ) => {
+    openTaskDrawer({
+      defaultValues: {
+        subject:
+          celebrationType === CelebrationTypeEnum.birthday
+            ? `${person.firstName} ${person.lastName}'s Birthday`
+            : `${person.parentContact.name}'s Anniversary`,
+      },
+    });
+  };
+
+  const handleCompleteClick = ({
+    id: taskId,
+  }: GetThisWeekQuery['prayerRequestTasks']['nodes'][0]): void => {
+    openTaskDrawer({ taskId, showCompleteForm: true });
+  };
+
   return (
-    <AnimatedCard className={classes.card}>
+    <CardContainer>
       <CardHeader title={t('Partner Care')} />
       <Tabs
         value={value}
@@ -129,18 +201,14 @@ const PartnerCare = ({
         />
       </Tabs>
       {value === 0 && (
-        <motion.div
+        <MotionDiv
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className={classes.div}
         >
           {loading && (
             <>
-              <List
-                className={classes.list}
-                data-testid="PartnerCarePrayerListLoading"
-              >
+              <CardList data-testid="PartnerCarePrayerListLoading">
                 {[0, 1].map((index) => (
                   <ListItem key={index}>
                     <ListItemText
@@ -152,7 +220,7 @@ const PartnerCare = ({
                     </ListItemSecondaryAction>
                   </ListItem>
                 ))}
-              </List>
+              </CardList>
               <CardActions>
                 <Button size="small" color="primary" disabled>
                   {t('View All ({{ totalCount, number }})', { totalCount: 0 })}
@@ -164,24 +232,17 @@ const PartnerCare = ({
             <>
               {(!prayerRequestTasks ||
                 prayerRequestTasks?.nodes.length === 0) && (
-                <CardContent
-                  className={classes.cardContent}
-                  data-testid="PartnerCarePrayerCardContentEmpty"
-                >
+                <CardContentContainer data-testid="PartnerCarePrayerCardContentEmpty">
                   <img
                     src={illustration4}
-                    className={classes.img}
-                    alt="empty"
+                    alt="No partner care prayer requests"
                   />
                   {t('No prayer requests to show.')}
-                </CardContent>
+                </CardContentContainer>
               )}
               {prayerRequestTasks && prayerRequestTasks.nodes.length > 0 && (
                 <>
-                  <List
-                    className={classes.list}
-                    data-testid="PartnerCarePrayerList"
-                  >
+                  <CardList data-testid="PartnerCarePrayerList">
                     {prayerRequestTasks.nodes.map((task) => (
                       <ListItem
                         key={task.id}
@@ -216,17 +277,19 @@ const PartnerCare = ({
                             </Box>
                           }
                         />
-                        {/*TODO: This button complete the Prayer Task and remove it from the list: https://jira.cru.org/browse/MPDX-6945 */}
                         <ListItemSecondaryAction>
-                          <Checkbox
-                            icon={<Brightness1Outlined />}
-                            checkedIcon={<CheckCircle />}
-                            edge="end"
-                          />
+                          <CompleteButton
+                            role="button"
+                            aria-label="Complete Button"
+                            onClick={() => handleCompleteClick(task)}
+                          >
+                            <Brightness1Outlined name="Circle Icon" />
+                            <DoneHoverIcon name="Done Icon" />
+                          </CompleteButton>
                         </ListItemSecondaryAction>
                       </ListItem>
                     ))}
-                  </List>
+                  </CardList>
                   <CardActions>
                     <Link
                       href="/accountLists/[accountListId]/tasks"
@@ -244,20 +307,16 @@ const PartnerCare = ({
               )}
             </>
           )}
-        </motion.div>
+        </MotionDiv>
       )}
       {value === 1 && (
-        <motion.div
+        <MotionDiv
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className={classes.div}
         >
           {loading && (
-            <List
-              className={classes.list}
-              data-testid="PartnerCareCelebrationListLoading"
-            >
+            <CardList data-testid="PartnerCareCelebrationListLoading">
               {[0, 1, 2].map((index) => (
                 <ListItem key={index}>
                   <ListItemText
@@ -269,7 +328,7 @@ const PartnerCare = ({
                   </ListItemSecondaryAction>
                 </ListItem>
               ))}
-            </List>
+            </CardList>
           )}
           {!loading && (
             <>
@@ -280,22 +339,12 @@ const PartnerCare = ({
                 (reportsPeopleWithAnniversaries.periods[0].people &&
                   reportsPeopleWithAnniversaries.periods[0].people.length ===
                     0)) ? (
-                <CardContent
-                  className={classes.cardContent}
-                  data-testid="PartnerCareCelebrationCardContentEmpty"
-                >
-                  <img
-                    src={illustration7}
-                    className={classes.img}
-                    alt="empty"
-                  />
+                <CardContentContainer data-testid="PartnerCareCelebrationCardContentEmpty">
+                  <img src={illustration7} alt="No partner care celebrations" />
                   {t('No celebrations to show.')}
-                </CardContent>
+                </CardContentContainer>
               ) : (
-                <List
-                  className={classes.list}
-                  data-testid="PartnerCareCelebrationList"
-                >
+                <CardList data-testid="PartnerCareCelebrationList">
                   {reportsPeopleWithBirthdays?.periods[0].people.map(
                     (person) =>
                       person.birthdayDay &&
@@ -336,13 +385,20 @@ const PartnerCare = ({
                               </Box>
                             }
                           />
-                          {/*TODO: This button complete the Celebration and remove it from the list: https://jira.cru.org/browse/MPDX-6945 */}
                           <ListItemSecondaryAction>
-                            <Checkbox
-                              icon={<Brightness1Outlined />}
-                              checkedIcon={<CheckCircle />}
-                              edge="end"
-                            />
+                            <CompleteButton
+                              role="button"
+                              aria-label="Complete Button"
+                              onClick={() =>
+                                handleCreateClick(
+                                  CelebrationTypeEnum.birthday,
+                                  person,
+                                )
+                              }
+                            >
+                              <Brightness1Outlined name="Circle Icon" />
+                              <AddHoverIcon name="Add Icon" />
+                            </CompleteButton>
                           </ListItemSecondaryAction>
                         </ListItem>
                       ),
@@ -390,24 +446,31 @@ const PartnerCare = ({
                               </Box>
                             }
                           />
-                          {/*TODO: This button complete the Celebration and remove it from the list: https://jira.cru.org/browse/MPDX-6945 */}
                           <ListItemSecondaryAction>
-                            <Checkbox
-                              icon={<Brightness1Outlined />}
-                              checkedIcon={<CheckCircle />}
-                              edge="end"
-                            />
+                            <CompleteButton
+                              role="button"
+                              aria-label="Complete Button"
+                              onClick={() =>
+                                handleCreateClick(
+                                  CelebrationTypeEnum.anniversary,
+                                  person,
+                                )
+                              }
+                            >
+                              <Brightness1Outlined name="Circle Icon" />
+                              <AddHoverIcon name="Add Icon" />
+                            </CompleteButton>
                           </ListItemSecondaryAction>
                         </ListItem>
                       ),
                   )}
-                </List>
+                </CardList>
               )}
             </>
           )}
-        </motion.div>
+        </MotionDiv>
       )}
-    </AnimatedCard>
+    </CardContainer>
   );
 };
 
