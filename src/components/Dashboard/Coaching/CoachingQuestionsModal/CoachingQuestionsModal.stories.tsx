@@ -15,12 +15,14 @@ export default {
 const accountListId = 'abc';
 
 export const Null = (): ReactElement => {
-  const mock: GetCoachingAnswerSetsQuery = {
-    coachingAnswerSets: [{ id: '1', answers: [], questions: [] }],
+  const mock = {
+    GetCoachingAnswerSets: {
+      coachingAnswerSets: [{ id: '1', answers: [], questions: [] }],
+    },
   };
 
   return (
-    <GqlMockedProvider<GetCoachingAnswerSetsQuery> mocks={{ mock }}>
+    <GqlMockedProvider<GetCoachingAnswerSetsQuery> mocks={mock}>
       <MuiThemeProvider theme={theme}>
         <CoachingQuestionsModal accountListId={accountListId} />
       </MuiThemeProvider>
@@ -29,26 +31,30 @@ export const Null = (): ReactElement => {
 };
 
 export const ShortAnswer = (): ReactElement => {
-  const mock: GetCoachingAnswerSetsQuery = {
-    coachingAnswerSets: [{ questions: [{ responseOptions: null }] }],
+  const mock = {
+    GetCoachingAnswerSets: {
+      coachingAnswerSets: [{ questions: [{ responseOptions: null }] }],
+    },
   };
 
   return (
-    <GqlMockedProvider<GetCoachingAnswerSetsQuery> mocks={{ mock }}>
+    <GqlMockedProvider<GetCoachingAnswerSetsQuery> mocks={mock}>
       <CoachingQuestionsModal accountListId={accountListId} />
     </GqlMockedProvider>
   );
 };
 
 export const ResponseOptions = (): ReactElement => {
-  const mock: GetCoachingAnswerSetsQuery = {
-    coachingAnswerSets: [
-      { questions: [{ responseOptions: ['option 1', 'option 2'] }] },
-    ],
+  const mock = {
+    GetCoachingAnswerSets: {
+      coachingAnswerSets: [
+        { questions: [{ responseOptions: ['option 1', 'option 2'] }] },
+      ],
+    },
   };
 
   return (
-    <GqlMockedProvider<GetCoachingAnswerSetsQuery> mocks={{ mock }}>
+    <GqlMockedProvider<GetCoachingAnswerSetsQuery> mocks={mock}>
       <CoachingQuestionsModal accountListId={accountListId} />
     </GqlMockedProvider>
   );

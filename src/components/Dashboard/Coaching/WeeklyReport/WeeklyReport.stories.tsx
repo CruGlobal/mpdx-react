@@ -10,26 +10,30 @@ export default {
 const accountListId = '111';
 
 export const NoQuestions = (): ReactElement => {
-  const mock: GetCoachingAnswerSetsQuery = {
-    coachingAnswerSets: [{ id: '1', answers: [], questions: [] }],
+  const mock = {
+    GetCoachingAnswerSets: {
+      coachingAnswerSets: [{ id: '1', answers: [], questions: [] }],
+    },
   };
 
   return (
-    <GqlMockedProvider<GetCoachingAnswerSetsQuery> mocks={{ mock }}>
+    <GqlMockedProvider<GetCoachingAnswerSetsQuery> mocks={mock}>
       <WeeklyReport accountListId={accountListId} />
     </GqlMockedProvider>
   );
 };
 
 export const Questions = (): ReactElement => {
-  const mock: GetCoachingAnswerSetsQuery = {
-    coachingAnswerSets: [
-      { id: '1', answers: [], questions: [{ id: '2' }, { id: '3' }] },
-    ],
+  const mock = {
+    GetCoachingAnswerSets: {
+      coachingAnswerSets: [
+        { id: '1', answers: [], questions: [{ id: '2' }, { id: '3' }] },
+      ],
+    },
   };
 
   return (
-    <GqlMockedProvider<GetCoachingAnswerSetsQuery> mocks={{ mock }}>
+    <GqlMockedProvider<GetCoachingAnswerSetsQuery> mocks={mock}>
       <WeeklyReport accountListId={accountListId} />
     </GqlMockedProvider>
   );
