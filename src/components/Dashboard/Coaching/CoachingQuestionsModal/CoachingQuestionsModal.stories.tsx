@@ -5,7 +5,10 @@ import {
   GqlMockedProvider,
 } from '../../../../../__tests__/util/graphqlMocking';
 import theme from '../../../../theme';
-import { GetCoachingAnswerSetsQuery } from '../GetCoachingAnswerSets.generated';
+import {
+  GetCoachingAnswerSetsDocument,
+  GetCoachingAnswerSetsQuery,
+} from '../GetCoachingAnswerSets.generated';
 import CoachingQuestionsModal from './CoachingQuestionsModal';
 
 export default {
@@ -15,41 +18,62 @@ export default {
 const accountListId = 'abc';
 
 export const Null = (): ReactElement => {
-  const mock: GetCoachingAnswerSetsQuery = {
-    coachingAnswerSets: [{ id: '1', answers: [], questions: [] }],
-  };
+  const mock = gqlMock(GetCoachingAnswerSetsDocument, {
+    mocks: {
+      coachingAnswerSets: [{ id: '1', answers: [], questions: [] }],
+    },
+  });
 
   return (
     <GqlMockedProvider<GetCoachingAnswerSetsQuery> mocks={{ mock }}>
       <MuiThemeProvider theme={theme}>
-        <CoachingQuestionsModal accountListId={accountListId} />
+        <CoachingQuestionsModal
+          accountListId={accountListId}
+          isOpen={true}
+          closeDrawer={() => {}}
+        />
       </MuiThemeProvider>
     </GqlMockedProvider>
   );
 };
 
 export const ShortAnswer = (): ReactElement => {
-  const mock: GetCoachingAnswerSetsQuery = {
-    coachingAnswerSets: [{ questions: [{ responseOptions: null }] }],
-  };
+  const mock = gqlMock(GetCoachingAnswerSetsDocument, {
+    mocks: {
+      coachingAnswerSets: [{ questions: [{ responseOptions: null }] }],
+    },
+  });
 
   return (
     <GqlMockedProvider<GetCoachingAnswerSetsQuery> mocks={{ mock }}>
-      <CoachingQuestionsModal accountListId={accountListId} />
+      <CoachingQuestionsModal
+        accountListId={accountListId}
+        isOpen={true}
+        closeDrawer={() => {}}
+      />
     </GqlMockedProvider>
   );
 };
 
 export const ResponseOptions = (): ReactElement => {
-  const mock: GetCoachingAnswerSetsQuery = {
-    coachingAnswerSets: [
-      { questions: [{ responseOptions: ['option 1', 'option 2'] }] },
-    ],
-  };
+  const mock = gqlMock(GetCoachingAnswerSetsDocument, {
+    mocks: {
+      coachingAnswerSets: [
+        {
+          id: '1',
+          questions: [{ id: '2', responseOptions: ['option 1', 'option 2'] }],
+        },
+      ],
+    },
+  });
 
   return (
     <GqlMockedProvider<GetCoachingAnswerSetsQuery> mocks={{ mock }}>
-      <CoachingQuestionsModal accountListId={accountListId} />
+      <CoachingQuestionsModal
+        accountListId={accountListId}
+        isOpen={true}
+        closeDrawer={() => {}}
+      />
     </GqlMockedProvider>
   );
 };
