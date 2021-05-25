@@ -41,8 +41,6 @@ declare module '@material-ui/core/styles/createPalette' {
   }
 }
 
-const appBarHeight = '60px';
-
 const theme = createMuiTheme({
   typography: {
     fontFamily: "'Source Sans Pro', sans-serif",

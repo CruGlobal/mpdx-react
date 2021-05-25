@@ -29,8 +29,8 @@ const ContactsPage: React.FC = () => {
   }
 
   useEffect(() => {
-    if (isReady) {
-      setContactDetailsId(contactId ? contactId[0] : undefined);
+    if (isReady && contactId) {
+      setContactDetailsId(contactId[0]);
     }
   }, [isReady, query]);
 
