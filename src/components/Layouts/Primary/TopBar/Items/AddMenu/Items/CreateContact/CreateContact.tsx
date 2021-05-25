@@ -86,22 +86,20 @@ const CreateContact = ({
 
   const onSubmit = async (attributes: ContactCreateInput) => {
     try {
-      await createContact({
+      const { data } = await createContact({
         variables: {
           accountListId,
           attributes,
         },
-        update: (_cache, { data }) => {
-          const contactId = data?.createContact?.contact.id;
-          if (contactId) {
-            push({
-              pathname: '/accountLists/[accountListId]/contacts/[contactId]',
-              query: { accountListId, contactId },
-            });
-          }
-        },
       });
 
+      const contactId = data?.createContact?.contact.id;
+      if (contactId) {
+        push({
+          pathname: '/accountLists/[accountListId]/contacts/[contactId]',
+          query: { accountListId, contactId },
+        });
+      }
       enqueueSnackbar(t('Contact successfully created'), {
         variant: 'success',
       });
