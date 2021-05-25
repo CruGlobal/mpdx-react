@@ -59,11 +59,10 @@ const MenuItemText = styled(ListItemText)(({ theme }) => ({
 
 const AddMenu = (): ReactElement => {
   const { t } = useTranslation();
-  const { state } = useApp();
+  const { state, openTaskDrawer } = useApp();
   const { accountListId } = state;
   const [selectedMenuItem, changeSelectedMenuItem] = useState(-1);
   const [dialogOpen, changeDialogOpen] = useState(false);
-  const { openTaskDrawer } = useApp();
 
   const handleAddTaskClick = (): void => {
     setAnchorEl(undefined);
@@ -105,11 +104,11 @@ const AddMenu = (): ReactElement => {
 
   const addMenuContent = [
     {
-      text: 'Add Contacts',
+      text: 'Add Contact',
       icon: <PersonIcon />,
     },
     {
-      text: 'Multiple Contact',
+      text: 'Multiple Contacts',
       icon: <PeopleIcon />,
       customOnClick: () => console.log('multiple contact'),
     },
@@ -139,7 +138,7 @@ const AddMenu = (): ReactElement => {
         aria-haspopup="true"
         onClick={(event) => setAnchorEl(event.currentTarget)}
       >
-        <HoverAddIcon />
+        <HoverAddIcon titleAccess="Add Button" />
       </IconButton>
       <MenuContainer
         id="add-menu"
