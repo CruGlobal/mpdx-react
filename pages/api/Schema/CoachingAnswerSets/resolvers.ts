@@ -8,4 +8,4 @@ const CoachingAnswerSetsResolvers: Resolvers = {
   },
 };
 
-export default CoachingAnswerSetsResolvers;
+export { CoachingAnswerSetsResolvers };

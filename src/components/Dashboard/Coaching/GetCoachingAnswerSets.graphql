@@ -12,6 +12,9 @@ query GetCoachingAnswerSets($accountListId: ID!) {
 
 fragment QuestionFragment on CoachingQuestion {
   id
+  answer {
+    response
+  }
   prompt
   required
   responseOptions

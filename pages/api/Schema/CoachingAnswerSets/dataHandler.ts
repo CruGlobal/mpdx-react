@@ -6,6 +6,7 @@ import {
 
 const createCoachingQuestion = ({
   id,
+  answer,
   created_at,
   position,
   prompt,
@@ -14,6 +15,12 @@ const createCoachingQuestion = ({
   updated_at,
 }: {
   id: string;
+  answer: {
+    id: string;
+    created_at: string;
+    response: string;
+    updated_at: string;
+  };
   created_at: string;
   position: number;
   prompt: string;
@@ -22,6 +29,12 @@ const createCoachingQuestion = ({
   updated_at: string;
 }): CoachingQuestion => ({
   id,
+  answer: {
+    id: answer.id,
+    createdAt: answer.created_at,
+    response: answer.response,
+    updatedAt: answer.updated_at,
+  },
   createdAt: created_at,
   position,
   prompt,
@@ -33,6 +46,12 @@ const createCoachingQuestion = ({
 const createCoachingQuestionsList = (
   data: {
     id: string;
+    answer: {
+      id: string;
+      created_at: string;
+      response: string;
+      updated_at: string;
+    };
     created_at: string;
     position: number;
     prompt: string;
@@ -76,7 +95,15 @@ const createCoachingAnswersList = (
       id,
       createdAt: created_at,
       response,
-      question: createCoachingQuestion(question),
+      question: {
+        id: question.id,
+        createdAt: question.created_at,
+        position: question.position,
+        prompt: question.prompt,
+        required: question.required,
+        responseOptions: question.response_options,
+        updatedAt: question.updated_at,
+      },
       updatedAt: updated_at,
     };
 
@@ -116,6 +143,12 @@ const getCoachingAnswerSets = (
       questions: {
         data: {
           id: string;
+          answer: {
+            id: string;
+            created_at: string;
+            response: string;
+            updated_at: string;
+          };
           created_at: string;
           position: number;
           prompt: string;
@@ -159,4 +192,4 @@ const getCoachingAnswerSets = (
   return response;
 };
 
-export default getCoachingAnswerSets;
+export { getCoachingAnswerSets };

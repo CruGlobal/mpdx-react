@@ -5,8 +5,8 @@ import { ExportContactsResolvers } from './ExportContacts/resolvers';
 import ExportContactsTypeDefs from './ExportContacts/exportContacts.graphql';
 import { TaskAnalyticsResolvers } from './TaskAnalytics/resolvers';
 import TaskAnalyticsTypeDefs from './TaskAnalytics/taskAnalytics.graphql';
-import CoachingAnswerSetsResolvers from './CoachingAnswerSets/resolvers';
-import CoachingAnswerSetsTypeDefs from './CoachingAnswerSets/typeDefs';
+import { CoachingAnswerSetsResolvers } from './CoachingAnswerSets/resolvers';
+import CoachingAnswerSetsTypeDefs from './CoachingAnswerSets/coachingAnswerSets.graphql';
 
 const schema = buildFederatedSchema([
   {
