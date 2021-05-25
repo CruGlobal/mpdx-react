@@ -1,7 +1,9 @@
 import { MuiThemeProvider } from '@material-ui/core';
 import React, { ReactElement } from 'react';
-import { CoachingAnswerSet } from '../../../../../graphql/types.generated';
-import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
+import {
+  gqlMock,
+  GqlMockedProvider,
+} from '../../../../../__tests__/util/graphqlMocking';
 import theme from '../../../../theme';
 import { GetCoachingAnswerSetsQuery } from '../GetCoachingAnswerSets.generated';
 import CoachingQuestionsModal from './CoachingQuestionsModal';
@@ -10,21 +12,15 @@ export default {
   title: 'Coaching/CoachingQuestionsModal',
 };
 
-const accountListId = '111';
-
-export const Loading = (): ReactElement => {
-  return (
-    <GqlMockedProvider<GetCoachingAnswerSetsQuery>>
-      <CoachingQuestionsModal accountListId={accountListId} />
-    </GqlMockedProvider>
-  );
-};
+const accountListId = 'abc';
 
 export const Null = (): ReactElement => {
+  const mock: GetCoachingAnswerSetsQuery = {
+    coachingAnswerSets: [{ id: '1', answers: [], questions: [] }],
+  };
+
   return (
-    <GqlMockedProvider<GetCoachingAnswerSetsQuery>
-      mocks={{ coachingAnswerSets: [{ questions: [] }] }}
-    >
+    <GqlMockedProvider<GetCoachingAnswerSetsQuery> mocks={{ mock }}>
       <MuiThemeProvider theme={theme}>
         <CoachingQuestionsModal accountListId={accountListId} />
       </MuiThemeProvider>
@@ -33,16 +29,26 @@ export const Null = (): ReactElement => {
 };
 
 export const ShortAnswer = (): ReactElement => {
+  const mock: GetCoachingAnswerSetsQuery = {
+    coachingAnswerSets: [{ questions: [{ responseOptions: null }] }],
+  };
+
   return (
-    <GqlMockedProvider<GetCoachingAnswerSetsQuery>>
+    <GqlMockedProvider<GetCoachingAnswerSetsQuery> mocks={{ mock }}>
       <CoachingQuestionsModal accountListId={accountListId} />
     </GqlMockedProvider>
   );
 };
 
 export const ResponseOptions = (): ReactElement => {
+  const mock: GetCoachingAnswerSetsQuery = {
+    coachingAnswerSets: [
+      { questions: [{ responseOptions: ['option 1', 'option 2'] }] },
+    ],
+  };
+
   return (
-    <GqlMockedProvider<GetCoachingAnswerSetsQuery>>
+    <GqlMockedProvider<GetCoachingAnswerSetsQuery> mocks={{ mock }}>
       <CoachingQuestionsModal accountListId={accountListId} />
     </GqlMockedProvider>
   );
