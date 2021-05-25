@@ -38,11 +38,7 @@ const CoachingQuestionsModal: React.FC<Props> = ({ accountListId }) => {
 
   const [questionIndex, setQuestionIndex] = useState(0);
 
-  const onClose = () => {
-    //close
-  };
-
-  const answerSet = data && data[currentAnswerSet];
+  const answerSet = data?.coachingAnswerSets[currentAnswerSet];
   const questionCount = answerSet?.questions.length || 0;
   const question = answerSet?.questions[questionIndex];
 
@@ -61,12 +57,15 @@ const CoachingQuestionsModal: React.FC<Props> = ({ accountListId }) => {
     }
   };
 
+  const onClose = () => {
+    //close
+  };
+
   const progress = (questionIndex / questionCount) * 10.0;
 
   return (
     <Drawer title={t('Weekly Report')} onClose={onClose}>
-      <ProgressBar variant="determinate" value={progress} />
-      {loading || !answerSet ? (
+      {loading || !question ? (
         <Loading />
       ) : questionCount === 0 ? (
         <Typography>
@@ -76,8 +75,9 @@ const CoachingQuestionsModal: React.FC<Props> = ({ accountListId }) => {
         </Typography>
       ) : (
         <Box>
+          <ProgressBar variant="determinate" value={progress} />
           <Typography>{question.prompt}</Typography>
-          {question.response_options === null ? (
+          {question.responseOptions === null ? (
             <Box></Box>
           ) : (
             <TextField></TextField>
