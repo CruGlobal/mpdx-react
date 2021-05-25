@@ -4,6 +4,7 @@ import {
   Button,
   Drawer,
   LinearProgress,
+  Radio,
   styled,
   TextField,
   Typography,
@@ -14,6 +15,8 @@ import Loading from '../../../Loading';
 
 interface Props {
   accountListId: string;
+  isOpen: boolean;
+  closeDrawer: () => void;
 }
 
 const ProgressBar = styled(LinearProgress)(({ theme }) => ({
@@ -27,7 +30,27 @@ const ProgressBar = styled(LinearProgress)(({ theme }) => ({
   barColorPrimary: theme.palette.mpdxBlue.main,
 }));
 
-const CoachingQuestionsModal: React.FC<Props> = ({ accountListId }) => {
+const ShortAnswer = styled(TextField)(({}) => ({
+  width: '100%',
+  border: '1px solid #000000',
+  borderRadius: 3.5,
+  margin: 6,
+  padding: 2,
+}));
+
+const RadioPill = styled(Radio)(({}) => ({}));
+
+const actionButtonWrap = styled(Box)(({}) => ({
+  display: 'flex',
+  justifyContent: 'space-between',
+  marginTop: 2,
+}));
+
+const CoachingQuestionsModal: React.FC<Props> = ({
+  accountListId,
+  isOpen,
+  closeDrawer,
+}) => {
   const { t } = useTranslation();
 
   const currentAnswerSet = 0;
@@ -35,6 +58,7 @@ const CoachingQuestionsModal: React.FC<Props> = ({ accountListId }) => {
   const { data, loading } = useGetCoachingAnswerSetsQuery({
     variables: { accountListId },
   });
+  const [saveAnswer] = useSaveAnswerMutation();
 
   const [questionIndex, setQuestionIndex] = useState(0);
 
@@ -46,6 +70,7 @@ const CoachingQuestionsModal: React.FC<Props> = ({ accountListId }) => {
   const hasPrevious = questionIndex !== 0;
 
   const next = () => {
+    saveAnswer(answerSet?.id, question?.id, question?.answer);
     if (hasNext) {
       setQuestionIndex(questionIndex + 1);
     }
@@ -57,14 +82,15 @@ const CoachingQuestionsModal: React.FC<Props> = ({ accountListId }) => {
     }
   };
 
-  const onClose = () => {
-    //close
-  };
-
   const progress = (questionIndex / questionCount) * 10.0;
 
   return (
-    <Drawer title={t('Weekly Report')} onClose={onClose}>
+    <Drawer
+      anchor="top"
+      title={t('Weekly Report')}
+      open={isOpen}
+      onClose={closeDrawer}
+    >
       {loading || !question ? (
         <Loading />
       ) : questionCount === 0 ? (
@@ -76,7 +102,7 @@ const CoachingQuestionsModal: React.FC<Props> = ({ accountListId }) => {
       ) : (
         <Box>
           <ProgressBar variant="determinate" value={progress} />
-          <Typography>{question.prompt}</Typography>
+          <Typography variant="h5">{question.prompt}</Typography>
           {question.responseOptions === null ? (
             <Box></Box>
           ) : (
