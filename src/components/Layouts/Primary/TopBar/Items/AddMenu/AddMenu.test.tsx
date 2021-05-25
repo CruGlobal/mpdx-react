@@ -49,7 +49,7 @@ describe('AddMenu', () => {
     await waitFor(() => expect(getByText('Add Contact')).toBeInTheDocument());
   });
 
-  it('handles menu item click | no custom onClick', async () => {
+  it('handles menu item click | Add Contact', async () => {
     const { getByRole, getByText } = render(
       <SnackbarProvider>
         <TestRouter router={router}>
@@ -67,7 +67,7 @@ describe('AddMenu', () => {
     await waitFor(() => expect(getByText('New Contact')).toBeInTheDocument());
   });
 
-  it('handles menu item click | custom onClick', async () => {
+  it('handles menu item click | Add Task', async () => {
     const { getByRole, getByText } = render(
       <SnackbarProvider>
         <TestRouter router={router}>

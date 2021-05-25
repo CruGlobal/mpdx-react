@@ -18,14 +18,7 @@ import { Formik } from 'formik';
 import * as yup from 'yup';
 import { useSnackbar } from 'notistack';
 import { useRouter } from 'next/router';
-import {
-  ContactCreateInput,
-  LikelyToGiveEnum,
-  PledgeFrequencyEnum,
-  PreferredContactMethodEnum,
-  SendNewsletterEnum,
-  StatusEnum,
-} from '../../../../../../../../../graphql/types.generated';
+import { ContactCreateInput } from '../../../../../../../../../graphql/types.generated';
 import { useCreateContactMutation } from './CreateContact.generated';
 
 interface Props {
@@ -71,30 +64,10 @@ const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
   margin: theme.spacing(0, 1, 0, 0),
 }));
 
-const contactSchema: yup.SchemaOf<ContactCreateInput> = yup.object({
-  churchName: yup.string().nullable(),
-  envelopeGreeting: yup.string().nullable(),
-  greeting: yup.string().nullable(),
-  id: yup.string().nullable(),
-  likelyToGive: yup.mixed<LikelyToGiveEnum>().nullable(),
-  locale: yup.string().nullable(),
+const contactSchema: yup.SchemaOf<
+  Pick<ContactCreateInput, 'name'>
+> = yup.object({
   name: yup.string().required(),
-  nextAsk: yup.string().nullable(),
-  noAppeals: yup.boolean().nullable(),
-  notes: yup.string().nullable(),
-  pledgeAmount: yup.number().nullable(),
-  pledgeCurrency: yup.string().nullable(),
-  pledgeFrequency: yup.mixed<PledgeFrequencyEnum>().nullable(),
-  pledgeReceived: yup.boolean().nullable(),
-  pledgeStartDate: yup.string().nullable(),
-  preferredContactMethod: yup.mixed<PreferredContactMethodEnum>().nullable(),
-  sendNewsletter: yup.mixed<SendNewsletterEnum>().nullable(),
-  starred: yup.boolean().nullable(),
-  status: yup.mixed<StatusEnum>().nullable(),
-  tagList: yup.array().of(yup.string()).default([]),
-  timezone: yup.string().nullable(),
-  userId: yup.string().nullable(),
-  website: yup.string().nullable(),
 });
 
 const CreateContact = ({
@@ -172,7 +145,7 @@ const CreateContact = ({
                     fullWidth
                     multiline
                     placeholder={t('Last Name, First Name and Spouse Name')}
-                    inputProps={{ 'aria-label': 'Name' }}
+                    inputProps={{ 'aria-label': t('Name') }}
                     error={!!errors.name && touched.name}
                     helperText={
                       errors.name && touched.name && t('Field is required')

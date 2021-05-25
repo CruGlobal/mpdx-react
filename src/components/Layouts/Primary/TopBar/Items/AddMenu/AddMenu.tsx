@@ -17,12 +17,13 @@ import { useTranslation } from 'react-i18next';
 import { useApp } from '../../../../../App';
 import CreateContact from './Items/CreateContact/CreateContact';
 
-const HoverAddIcon = styled(AddIcon)(() => ({
+const HoverAddIcon = styled(AddIcon)(({ theme }) => ({
   textTransform: 'none',
-  color: 'rgba(255,255,255,0.75)',
+  color: theme.palette.common.white,
+  opacity: '0.75',
   transition: 'color 0.2s ease-in-out',
   '&:hover': {
-    color: 'rgba(255,255,255,1)',
+    opacity: '1',
   },
 }));
 
@@ -43,11 +44,11 @@ const MenuContainer = styled(Menu)(({ theme }) => ({
 
 const RowContainer = styled(Box)(({ theme }) => ({
   padding: theme.spacing(1),
-  borderBottom: '1px solid rgb(230, 230, 230)',
+  borderBottom: '1px solid',
+  borderBottomColor: theme.palette.divider,
   '&:hover': {
-    backgroundColor: '#f2f2f2',
+    backgroundColor: theme.palette.grey[100],
   },
-  '&:first-child': {},
   '&:last-child': {
     borderBottom: 'none',
   },
@@ -63,16 +64,6 @@ const AddMenu = (): ReactElement => {
   const { accountListId } = state;
   const [selectedMenuItem, changeSelectedMenuItem] = useState(-1);
   const [dialogOpen, changeDialogOpen] = useState(false);
-
-  const handleAddTaskClick = (): void => {
-    setAnchorEl(undefined);
-    openTaskDrawer({});
-  };
-
-  const handleMenuItemClick = (menuItem: number) => {
-    changeSelectedMenuItem(menuItem);
-    changeDialogOpen(true);
-  };
 
   const handleDialogClose = () => {
     changeDialogOpen(false);
@@ -106,26 +97,34 @@ const AddMenu = (): ReactElement => {
     {
       text: 'Add Contact',
       icon: <PersonIcon />,
+      onClick: () => {
+        changeSelectedMenuItem(0);
+        changeDialogOpen(true);
+        setAnchorEl(undefined);
+      },
     },
     {
       text: 'Multiple Contacts',
       icon: <PeopleIcon />,
-      customOnClick: () => console.log('multiple contact'),
+      onClick: () => console.log('multiple contacts'),
     },
     {
       text: 'Add Donation',
       icon: <CardGiftcardIcon />,
-      customOnClick: () => console.log('add donation'),
+      onClick: () => console.log('add donation'),
     },
     {
       text: 'Add Task',
       icon: <ListIcon />,
-      customOnClick: handleAddTaskClick,
+      onClick: () => {
+        openTaskDrawer({});
+        setAnchorEl(undefined);
+      },
     },
     {
       text: 'Log Task',
       icon: <EditIcon />,
-      customOnClick: () => console.log('log task'),
+      onClick: () => console.log('log task'),
     },
   ];
 
@@ -151,14 +150,8 @@ const AddMenu = (): ReactElement => {
         transformOrigin={{ vertical: 'top', horizontal: 'center' }}
       >
         <Box display="flex" flexDirection="column" justifyContent="center">
-          {addMenuContent.map(({ text, icon, customOnClick }, index) => (
-            <RowContainer
-              key={index}
-              display="flex"
-              onClick={() =>
-                customOnClick ? customOnClick() : handleMenuItemClick(index)
-              }
-            >
+          {addMenuContent.map(({ text, icon, onClick }, index) => (
+            <RowContainer key={index} display="flex" onClick={onClick}>
               {icon}
               <MenuItemText primary={t(`${text}`)} />
             </RowContainer>
