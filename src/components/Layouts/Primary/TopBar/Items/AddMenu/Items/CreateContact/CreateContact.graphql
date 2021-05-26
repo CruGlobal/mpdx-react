@@ -1,0 +1,9 @@
+mutation CreateContact($accountListId: ID!, $attributes: ContactCreateInput!) {
+  createContact(
+    input: { accountListId: $accountListId, attributes: $attributes }
+  ) {
+    contact {
+      id
+    }
+  }
+}

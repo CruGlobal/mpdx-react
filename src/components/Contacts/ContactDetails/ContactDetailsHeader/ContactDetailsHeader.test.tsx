@@ -45,4 +45,29 @@ describe('ContactDetails', () => {
 
     expect(queryByTestId('Skeleton')).toBeNull();
   });
+
+  it('should render without primaryPerson', async () => {
+    const { findByText, queryByTestId } = render(
+      <GqlMockedProvider<GetContactDetailsHeaderQuery>
+        mocks={{
+          GetContactDetailsHeader: {
+            contact: {
+              name: 'Lname, Fname',
+              primaryPerson: null,
+            },
+          },
+        }}
+      >
+        <ContactDetailsHeader
+          accountListId={accountListId}
+          contactId={contactId}
+          onClose={() => {}}
+        />
+      </GqlMockedProvider>,
+    );
+
+    expect(await findByText('Lname, Fname')).toBeVisible();
+
+    expect(queryByTestId('Skeleton')).toBeNull();
+  });
 });
