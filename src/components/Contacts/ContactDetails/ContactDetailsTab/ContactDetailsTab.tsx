@@ -76,6 +76,7 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
           <ContactDetailLoadingPlaceHolder variant="rect" />
         ) : (
           <ContactTags
+            accountListId={accountListId}
             contactId={data.contact.id}
             contactTags={data.contact.tagList}
           />
