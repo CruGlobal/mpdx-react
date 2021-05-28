@@ -3,6 +3,7 @@ import { InMemoryCache } from '@apollo/client';
 import { MuiThemeProvider } from '@material-ui/core';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
+import { MockedProvider } from '@apollo/client/testing';
 import { GqlMockedProvider } from '../../../../../../__tests__/util/graphqlMocking';
 import {
   render,
@@ -15,6 +16,7 @@ import {
 } from '../ContactDetailsTab.generated';
 import { ContactTags } from './ContactTags';
 import { UpdateContactTagsMutation } from './ContactTags.generated';
+import { createContactTagMutationMock } from './ContactTags.mock';
 
 const accountListId = '123';
 const contactId = 'abc';
@@ -41,11 +43,10 @@ describe('ContactTags', () => {
   });
 
   it('should add a tag', async () => {
-    const cache = new InMemoryCache();
+    const cache = new InMemoryCache({ addTypename: false });
     jest.spyOn(cache, 'writeQuery');
     const data: ContactDetailsTabQuery = {
       contact: {
-        __typename: 'Contact',
         id: contactId,
         tagList: contactTags,
         people: {
@@ -65,23 +66,10 @@ describe('ContactTags', () => {
     cache.writeQuery(query);
     const { getByRole } = render(
       <SnackbarProvider>
-        <GqlMockedProvider<UpdateContactTagsMutation>
-          mocks={{
-            UpdateContactTags: {
-              updateContact: {
-                contact: {
-                  __typename: 'Contact',
-                  id: contactId,
-                  tagList: [...contactTags, 'tag4'],
-                  people: {
-                    nodes: [],
-                  },
-                  name: 'Lname, Fname',
-                },
-              },
-            },
-          }}
+        <MockedProvider
+          mocks={[createContactTagMutationMock()]}
           cache={cache}
+          addTypename={false}
         >
           <MuiThemeProvider theme={theme}>
             <ContactTags
@@ -90,7 +78,7 @@ describe('ContactTags', () => {
               contactTags={contactTags}
             />
           </MuiThemeProvider>
-        </GqlMockedProvider>
+        </MockedProvider>
       </SnackbarProvider>,
     );
     userEvent.type(getByRole('textbox', { name: 'Tag' }), 'tag4{enter}');
@@ -108,7 +96,6 @@ describe('ContactTags', () => {
     //     },
     //     data: {
     //       contact: {
-    //         __typename: 'Contact',
     //         id: contactId,
     //         tagList: [...contactTags, 'tag4'],
     //         people: {

@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Box, Chip, Link, styled, TextField } from '@material-ui/core';
 import TagIcon from '@material-ui/icons/LocalOfferOutlined';
 import * as yup from 'yup';
-import { Formik } from 'formik';
+import { Formik, FormikHelpers } from 'formik';
 import { useSnackbar } from 'notistack';
 import {
   ContactDetailsTabDocument,
@@ -115,13 +115,25 @@ export const ContactTags: React.FC<ContactTagsProps> = ({
     }
   };
 
-  const onSubmit = async ({ tag }: { tag: string }) => {
+  const onSubmit = async (
+    { tag }: { tag: string },
+    { resetForm }: FormikHelpers<{ tag: string }>,
+  ): Promise<void> => {
     try {
+      resetForm();
       updateContactTags({
         variables: {
           accountListId,
           contactId,
           tagList: [...contactTags, tag],
+        },
+        optimisticResponse: {
+          updateContact: {
+            contact: {
+              id: contactId,
+              tagList: [...contactTags, tag],
+            },
+          },
         },
         update: (cache, { data: updateData }) => {
           const tagList = updateData?.updateContact?.contact.tagList;
@@ -170,11 +182,7 @@ export const ContactTags: React.FC<ContactTagsProps> = ({
         <Formik
           initialValues={{ tag: '' }}
           validationSchema={tagSchema}
-          onSubmit={(values, { setSubmitting, resetForm }) => {
-            onSubmit(values);
-            resetForm();
-            setSubmitting(false);
-          }}
+          onSubmit={onSubmit}
         >
           {({
             values: { tag },
