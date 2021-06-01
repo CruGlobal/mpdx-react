@@ -1,12 +1,12 @@
 import { buildFederatedSchema } from '@apollo/federation';
+import { CoachingAnswerSetsResolvers } from './CoachingAnswerSets/resolvers';
+import CoachingAnswerSetsTypeDefs from './CoachingAnswerSets/coachingAnswerSets.graphql';
 import { ContactFiltersResolvers } from './ContactFilters/resolvers';
 import ContactFiltersTypeDefs from './ContactFilters/contactFilters.graphql';
 import { ExportContactsResolvers } from './ExportContacts/resolvers';
 import ExportContactsTypeDefs from './ExportContacts/exportContacts.graphql';
 import { TaskAnalyticsResolvers } from './TaskAnalytics/resolvers';
 import TaskAnalyticsTypeDefs from './TaskAnalytics/taskAnalytics.graphql';
-import { CoachingAnswerSetsResolvers } from './CoachingAnswerSets/resolvers';
-import CoachingAnswerSetsTypeDefs from './CoachingAnswerSets/coachingAnswerSets.graphql';
 
 const schema = buildFederatedSchema([
   {

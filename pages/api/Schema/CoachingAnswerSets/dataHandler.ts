@@ -4,115 +4,6 @@ import {
   CoachingQuestion,
 } from '../../../../graphql/types.generated';
 
-const createCoachingQuestion = ({
-  id,
-  answer,
-  created_at,
-  position,
-  prompt,
-  required,
-  response_options,
-  updated_at,
-}: {
-  id: string;
-  answer: {
-    id: string;
-    created_at: string;
-    response: string;
-    updated_at: string;
-  };
-  created_at: string;
-  position: number;
-  prompt: string;
-  required: boolean;
-  response_options: string[] | null;
-  updated_at: string;
-}): CoachingQuestion => ({
-  id,
-  answer: {
-    id: answer.id,
-    createdAt: answer.created_at,
-    response: answer.response,
-    updatedAt: answer.updated_at,
-  },
-  createdAt: created_at,
-  position,
-  prompt,
-  required,
-  responseOptions: response_options,
-  updatedAt: updated_at,
-});
-
-const createCoachingQuestionsList = (
-  data: {
-    id: string;
-    answer: {
-      id: string;
-      created_at: string;
-      response: string;
-      updated_at: string;
-    };
-    created_at: string;
-    position: number;
-    prompt: string;
-    required: boolean;
-    response_options: string[] | null;
-    updated_at: string;
-  }[],
-): CoachingQuestion[] => {
-  const questions: CoachingQuestion[] = [];
-
-  data.forEach((questionData) => {
-    const question = createCoachingQuestion(questionData);
-
-    questions.push(question);
-  });
-
-  return questions;
-};
-
-const createCoachingAnswersList = (
-  data: {
-    id: string;
-    created_at: string;
-    response: string;
-    question: {
-      id: string;
-      created_at: string;
-      position: number;
-      prompt: string;
-      required: boolean;
-      response_options: string[] | null;
-      updated_at: string;
-    };
-    updated_at: string;
-  }[],
-): CoachingAnswer[] => {
-  const answers: CoachingAnswer[] = [];
-
-  data.forEach(({ id, created_at, response, question, updated_at }) => {
-    const answer: CoachingAnswer = {
-      id,
-      createdAt: created_at,
-      response,
-      question: {
-        id: question.id,
-        createdAt: question.created_at,
-        position: question.position,
-        prompt: question.prompt,
-        required: question.required,
-        responseOptions: question.response_options,
-        updatedAt: question.updated_at,
-      },
-      updatedAt: updated_at,
-    };
-
-    answers.push(answer);
-  });
-
-  return answers;
-};
-
 const getCoachingAnswerSets = (
   data: {
     id: string;
@@ -190,6 +81,101 @@ const getCoachingAnswerSets = (
   );
 
   return response;
+};
+
+const createCoachingQuestionsList = (
+  data: {
+    id: string;
+    answer: {
+      id: string;
+      created_at: string;
+      response: string;
+      updated_at: string;
+    };
+    created_at: string;
+    position: number;
+    prompt: string;
+    required: boolean;
+    response_options: string[] | null;
+    updated_at: string;
+  }[],
+): CoachingQuestion[] => {
+  const questions: CoachingQuestion[] = [];
+
+  data.forEach(
+    ({
+      id,
+      answer,
+      created_at,
+      position,
+      prompt,
+      required,
+      response_options,
+      updated_at,
+    }) => {
+      const question: CoachingQuestion = {
+        id,
+        answer: {
+          id: answer.id,
+          createdAt: answer.created_at,
+          response: answer.response,
+          updatedAt: answer.updated_at,
+        },
+        createdAt: created_at,
+        position,
+        prompt,
+        required,
+        responseOptions: response_options,
+        updatedAt: updated_at,
+      };
+
+      questions.push(question);
+    },
+  );
+
+  return questions;
+};
+
+const createCoachingAnswersList = (
+  data: {
+    id: string;
+    created_at: string;
+    response: string;
+    question: {
+      id: string;
+      created_at: string;
+      position: number;
+      prompt: string;
+      required: boolean;
+      response_options: string[] | null;
+      updated_at: string;
+    };
+    updated_at: string;
+  }[],
+): CoachingAnswer[] => {
+  const answers: CoachingAnswer[] = [];
+
+  data.forEach(({ id, created_at, response, question, updated_at }) => {
+    const answer: CoachingAnswer = {
+      id,
+      createdAt: created_at,
+      response,
+      question: {
+        id: question.id,
+        createdAt: question.created_at,
+        position: question.position,
+        prompt: question.prompt,
+        required: question.required,
+        responseOptions: question.response_options,
+        updatedAt: question.updated_at,
+      },
+      updatedAt: updated_at,
+    };
+
+    answers.push(answer);
+  });
+
+  return answers;
 };
 
 export { getCoachingAnswerSets };
