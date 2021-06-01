@@ -17,7 +17,7 @@ const accountListId = 'abc';
 export const Null = (): ReactElement => {
   const mock = {
     GetCoachingAnswerSets: {
-      coachingAnswerSets: [{ id: '1', answers: [], questions: [] }],
+      coachingAnswerSets: [{ id: '1', questions: [] }],
     },
   };
 
