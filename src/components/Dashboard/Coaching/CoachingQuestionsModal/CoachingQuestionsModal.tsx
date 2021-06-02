@@ -50,6 +50,8 @@ const CloseButtonIcon = styled(CloseOutlined)(({}) => ({
 }));
 
 const ModalContentWrap = styled(Box)(({}) => ({
+  display: 'flex',
+  flexDirection: 'column',
   padding: '32px 24px 32px 24px',
 }));
 
@@ -67,15 +69,13 @@ const ProgressBar = styled(LinearProgress)(({ theme }) => ({
 
 const PromptText = styled(Typography)(({ theme }) => ({
   ...theme.typography.h5,
+  flex: 1,
   margin: 12,
 }));
 
 const ShortAnswer = styled(TextField)(({}) => ({
-  width: '100%',
-  border: '1px solid #000000',
-  borderRadius: 3.5,
-  margin: 6,
-  padding: 2,
+  flex: 1,
+  margin: 12,
 }));
 
 const RadioPill = styled(Radio)(({}) => ({}));
@@ -153,13 +153,18 @@ const CoachingQuestionsModal: React.FC<Props> = ({
             )}
           </NoQuestionsAlert>
         ) : (
-          <Box>
+          <>
             <ProgressBar variant="determinate" value={progress} />
             <PromptText>{question.prompt}</PromptText>
             {question.responseOptions !== null ? (
               <Box></Box>
             ) : (
-              <ShortAnswer></ShortAnswer>
+              <ShortAnswer
+                multiline
+                rows={4}
+                variant="outlined"
+                placeholder={t('Response')}
+              />
             )}
             <ActionButtonWrap>
               <PreviousWrap>
@@ -178,7 +183,7 @@ const CoachingQuestionsModal: React.FC<Props> = ({
                 </Button>
               </NextWrap>
             </ActionButtonWrap>
-          </Box>
+          </>
         )}
       </ModalContentWrap>
     </DrawerModal>
