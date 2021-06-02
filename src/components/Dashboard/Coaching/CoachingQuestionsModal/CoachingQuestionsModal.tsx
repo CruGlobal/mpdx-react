@@ -52,7 +52,7 @@ const CloseButtonIcon = styled(CloseOutlined)(({}) => ({
 const ModalContentWrap = styled(Box)(({}) => ({
   display: 'flex',
   flexDirection: 'column',
-  padding: '32px 24px 32px 24px',
+  padding: 24,
 }));
 
 const NoQuestionsAlert = styled(Alert)(({}) => ({}));
@@ -62,15 +62,16 @@ const ProgressBar = styled(LinearProgress)(({ theme }) => ({
   alignItems: 'center',
   justifyContent: 'center',
   height: 16,
-  borderRadius: 5,
+  borderRadius: 8,
   backgroundColor: theme.palette.cruGrayLight.main,
   barColorPrimary: theme.palette.mpdxBlue.main,
+  marginBottom: 24,
 }));
 
 const PromptText = styled(Typography)(({ theme }) => ({
   ...theme.typography.h5,
   flex: 1,
-  margin: 12,
+  marginHorizontal: 24,
 }));
 
 const ShortAnswer = styled(TextField)(({}) => ({
@@ -81,8 +82,8 @@ const ShortAnswer = styled(TextField)(({}) => ({
 const RadioPill = styled(Radio)(({}) => ({}));
 
 const ActionButtonWrap = styled(Box)(({}) => ({
-  width: '100%',
-  marginTop: 2,
+  display: 'flex',
+  flex: 1,
 }));
 
 const PreviousWrap = styled(Box)(({}) => ({
@@ -95,6 +96,11 @@ const NextWrap = styled(Box)(({}) => ({
   display: 'flex',
   flex: 1,
   justifyContent: 'flex-end',
+}));
+
+const NavButton = styled(Button)(({}) => ({
+  height: 48,
+  width: 96,
 }));
 
 const CoachingQuestionsModal: React.FC<Props> = ({
@@ -169,18 +175,18 @@ const CoachingQuestionsModal: React.FC<Props> = ({
             <ActionButtonWrap>
               <PreviousWrap>
                 {hasPrevious ? (
-                  <Button onClick={previous}>
+                  <NavButton onClick={previous}>
                     <Typography>{t('Back')}</Typography>
-                  </Button>
+                  </NavButton>
                 ) : null}
               </PreviousWrap>
               <NextWrap>
-                <Button
+                <NavButton
                   onClick={next}
                   disabled={question.required && !question.answer.response}
                 >
                   <Typography>{t(hasNext ? 'Next' : 'Submit')}</Typography>
-                </Button>
+                </NavButton>
               </NextWrap>
             </ActionButtonWrap>
           </>
