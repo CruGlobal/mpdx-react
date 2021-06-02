@@ -2,10 +2,7 @@ import { MuiThemeProvider } from '@material-ui/core';
 import React, { ReactElement } from 'react';
 import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
 import theme from '../../../../theme';
-import {
-  GetCoachingAnswerSetsDocument,
-  GetCoachingAnswerSetsQuery,
-} from '../GetCoachingAnswerSets.generated';
+import { GetCoachingAnswerSetsQuery } from '../GetCoachingAnswerSets.generated';
 import CoachingQuestionsModal from './CoachingQuestionsModal';
 
 export default {
@@ -15,14 +12,14 @@ export default {
 const accountListId = 'abc';
 
 export const Null = (): ReactElement => {
-  const mock = {
-    GetCoachingAnswerSets: {
-      coachingAnswerSets: [{ id: '1', questions: [] }],
-    },
-  };
-
   return (
-    <GqlMockedProvider<GetCoachingAnswerSetsQuery> mocks={mock}>
+    <GqlMockedProvider<GetCoachingAnswerSetsQuery>
+      mocks={{
+        GetCoachingAnswerSets: {
+          coachingAnswerSets: [{ id: '1', questions: [] }],
+        },
+      }}
+    >
       <MuiThemeProvider theme={theme}>
         <CoachingQuestionsModal
           accountListId={accountListId}
@@ -35,14 +32,22 @@ export const Null = (): ReactElement => {
 };
 
 export const ShortAnswer = (): ReactElement => {
-  const mock = {
-    GetCoachingAnswerSets: {
-      coachingAnswerSets: [{ questions: [{ responseOptions: null }] }],
-    },
-  };
-
   return (
-    <GqlMockedProvider<GetCoachingAnswerSetsQuery> mocks={mock}>
+    <GqlMockedProvider<GetCoachingAnswerSetsQuery>
+      mocks={{
+        GetCoachingAnswerSets: {
+          coachingAnswerSets: [
+            {
+              questions: [
+                { responseOptions: null },
+                { responseOptions: null },
+                { responseOptions: null },
+              ],
+            },
+          ],
+        },
+      }}
+    >
       <CoachingQuestionsModal
         accountListId={accountListId}
         isOpen={true}
@@ -56,7 +61,13 @@ export const ResponseOptions = (): ReactElement => {
   const mock = {
     GetCoachingAnswerSets: {
       coachingAnswerSets: [
-        { questions: [{ responseOptions: ['option 1', 'option 2'] }] },
+        {
+          questions: [
+            { responseOptions: ['option 1', 'option 2'] },
+            { responseOptions: ['option 1', 'option 2'] },
+            { responseOptions: ['option 1', 'option 2'] },
+          ],
+        },
       ],
     },
   };

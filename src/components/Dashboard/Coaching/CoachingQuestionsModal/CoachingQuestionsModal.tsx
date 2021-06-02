@@ -23,23 +23,34 @@ interface Props {
 }
 
 const DrawerModal = styled(Drawer)(({}) => ({
-  display: 'flex',
   width: 640,
 }));
 
 const ModalHeaderWrap = styled(Box)(({}) => ({
   display: 'flex',
   flexDirection: 'row',
-  padding: '20px 0px 20px 0px',
+  padding: 0,
+  alignItems: 'center',
 }));
 
-const HeaderText = styled(Typography)(({}) => ({
+const HeaderText = styled(Typography)(({ theme }) => ({
+  ...theme.typography.h5,
   flex: 1,
   textAlign: 'center',
+  color: theme.palette.text.primary,
+}));
+
+const CloseButton = styled(IconButton)(({}) => ({
+  width: 48,
+  height: 48,
+}));
+
+const CloseButtonIcon = styled(CloseOutlined)(({}) => ({
+  fontSize: 32,
 }));
 
 const ModalContentWrap = styled(Box)(({}) => ({
-  padding: '20px 10px 20px 10px',
+  padding: '32px 24px 32px 24px',
 }));
 
 const NoQuestionsAlert = styled(Alert)(({}) => ({}));
@@ -48,11 +59,15 @@ const ProgressBar = styled(LinearProgress)(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  padding: 0,
-  height: 10,
+  height: 16,
   borderRadius: 5,
   backgroundColor: theme.palette.cruGrayLight.main,
   barColorPrimary: theme.palette.mpdxBlue.main,
+}));
+
+const PromptText = styled(Typography)(({ theme }) => ({
+  ...theme.typography.h5,
+  margin: 12,
 }));
 
 const ShortAnswer = styled(TextField)(({}) => ({
@@ -66,9 +81,20 @@ const ShortAnswer = styled(TextField)(({}) => ({
 const RadioPill = styled(Radio)(({}) => ({}));
 
 const ActionButtonWrap = styled(Box)(({}) => ({
-  display: 'flex',
-  justifyContent: 'space-between',
+  width: '100%',
   marginTop: 2,
+}));
+
+const PreviousWrap = styled(Box)(({}) => ({
+  display: 'flex',
+  flex: 1,
+  justifyContent: 'flex-start',
+}));
+
+const NextWrap = styled(Box)(({}) => ({
+  display: 'flex',
+  flex: 1,
+  justifyContent: 'flex-end',
 }));
 
 const CoachingQuestionsModal: React.FC<Props> = ({
@@ -107,20 +133,20 @@ const CoachingQuestionsModal: React.FC<Props> = ({
     }
   };
 
-  const progress = (questionIndex / questionCount) * 10.0;
+  const progress = (questionIndex / questionCount) * 100.0;
 
   return (
     <DrawerModal anchor="top" open={isOpen}>
       <ModalHeaderWrap>
-        <HeaderText variant="h4">{t('Weekly Report').toUpperCase()}</HeaderText>
-        <IconButton onClick={closeDrawer}>
-          <CloseOutlined />
-        </IconButton>
+        <HeaderText>{t('Weekly Report').toUpperCase()}</HeaderText>
+        <CloseButton onClick={closeDrawer}>
+          <CloseButtonIcon />
+        </CloseButton>
       </ModalHeaderWrap>
       <ModalContentWrap>
         {loading || !answerSet ? (
           <Loading />
-        ) : questionCount === 0 ? (
+        ) : questionCount === 0 || !question ? (
           <NoQuestionsAlert severity="warning">
             {t(
               'Weekly report questions have not been setup for your organization',
@@ -129,24 +155,28 @@ const CoachingQuestionsModal: React.FC<Props> = ({
         ) : (
           <Box>
             <ProgressBar variant="determinate" value={progress} />
-            <Typography variant="h5">{question.prompt}</Typography>
-            {question.responseOptions === null ? (
+            <PromptText>{question.prompt}</PromptText>
+            {question.responseOptions !== null ? (
               <Box></Box>
             ) : (
               <ShortAnswer></ShortAnswer>
             )}
             <ActionButtonWrap>
-              {hasPrevious ? (
-                <Button onClick={previous}>
-                  <Typography>{t('Back')}</Typography>
+              <PreviousWrap>
+                {hasPrevious ? (
+                  <Button onClick={previous}>
+                    <Typography>{t('Back')}</Typography>
+                  </Button>
+                ) : null}
+              </PreviousWrap>
+              <NextWrap>
+                <Button
+                  onClick={next}
+                  disabled={question.required && !question.answer.response}
+                >
+                  <Typography>{t(hasNext ? 'Next' : 'Submit')}</Typography>
                 </Button>
-              ) : null}
-              <Button
-                onClick={next}
-                disabled={question.required && !question.answer.response}
-              >
-                <Typography>{t(hasNext ? 'Next' : 'Submit')}</Typography>
-              </Button>
+              </NextWrap>
             </ActionButtonWrap>
           </Box>
         )}
