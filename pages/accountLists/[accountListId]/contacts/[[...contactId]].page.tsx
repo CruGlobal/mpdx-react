@@ -17,6 +17,7 @@ const ContactsPage: React.FC = () => {
   const { t } = useTranslation();
   const { query, push, isReady } = useRouter();
 
+  const [contactDetailsOpen, setContactDetailsOpen] = useState(false);
   const [contactDetailsId, setContactDetailsId] = useState<string>();
 
   const { accountListId, contactId } = query;
@@ -31,6 +32,7 @@ const ContactsPage: React.FC = () => {
   useEffect(() => {
     if (isReady && contactId) {
       setContactDetailsId(contactId[0]);
+      setContactDetailsOpen(true);
     }
   }, [isReady, query]);
 
@@ -55,7 +57,8 @@ const ContactsPage: React.FC = () => {
             query: queryWithoutContactId,
           },
     );
-    setContactDetailsId(id);
+    id && setContactDetailsId(id);
+    setContactDetailsOpen(!!id);
   };
 
   return (
@@ -94,7 +97,7 @@ const ContactsPage: React.FC = () => {
                 <></>
               )
             }
-            rightOpen={!!contactDetailsId}
+            rightOpen={contactDetailsOpen}
             rightWidth="45%"
           />
         </ContactsPageWrapper>

@@ -58,17 +58,37 @@ const PanelWrapper = styled(ScrollBox)(
 );
 
 const LeftPanelWrapper = styled(PanelWrapper)(
-  ({ theme, open }: { theme: Theme; open: boolean }) => ({
+  ({
+    theme,
+    breakpoint,
+    open,
+  }: {
+    theme: Theme;
+    open: boolean;
+    breakpoint: Breakpoint | number;
+  }) => ({
     borderRight: `1px solid ${theme.palette.cruGrayLight.main}`,
     left: 0,
-    transform: open ? 'none' : 'translate(-100%)',
+    [theme.breakpoints.down(breakpoint)]: {
+      transform: open ? 'none' : 'translate(-100%)',
+    },
   }),
 );
 const RightPanelWrapper = styled(PanelWrapper)(
-  ({ theme, open }: { theme: Theme; open: boolean }) => ({
+  ({
+    theme,
+    breakpoint,
+    open,
+  }: {
+    theme: Theme;
+    open: boolean;
+    breakpoint: Breakpoint | number;
+  }) => ({
     borderLeft: `1px solid ${theme.palette.cruGrayLight.main}`,
     right: 0,
-    transform: open ? 'none' : 'translate(100%)',
+    [theme.breakpoints.down(breakpoint)]: {
+      transform: open ? 'none' : 'translate(100%)',
+    },
     [theme.breakpoints.down('sm')]: {
       width: '100%',
     },
