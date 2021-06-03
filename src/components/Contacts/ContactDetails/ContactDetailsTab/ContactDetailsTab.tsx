@@ -22,7 +22,7 @@ import { useRouter } from 'next/router';
 import {
   ContactsDocument,
   ContactsQuery,
-} from '../../../../../pages/accountLists/[accountListId]/Contacts.generated';
+} from '../../../../../pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import {
   useContactDetailsTabQuery,
   useDeleteContactMutation,

@@ -10,7 +10,7 @@ import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking'
 import {
   ContactsDocument,
   ContactsQuery,
-} from '../../../../../pages/accountLists/[accountListId]/Contacts.generated';
+} from '../../../../../pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import { ContactDetailsTab } from './ContactDetailsTab';
 import { ContactDetailsTabQuery } from './ContactDetailsTab.generated';
 
