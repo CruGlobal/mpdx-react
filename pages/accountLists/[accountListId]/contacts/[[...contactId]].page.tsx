@@ -37,17 +37,17 @@ const ContactsPage: React.FC = () => {
     setFilterPanelOpen(!filterPanelOpen);
   };
 
-  const setContactFocus = (id?: string) => {
+  const setContactFocus = (id?: string, searchTerm?: string) => {
     const { contactId: _, ...queryWithoutContactId } = query;
     push(
       id
         ? {
             pathname: '/accountLists/[accountListId]/contacts/[contactId]',
-            query: { ...queryWithoutContactId, contactId: id },
+            query: { ...queryWithoutContactId, contactId: id, searchTerm },
           }
         : {
             pathname: '/accountLists/[accountListId]/contacts/',
-            query: queryWithoutContactId,
+            query: { ...queryWithoutContactId, searchTerm },
           },
     );
     setContactDetailsId(id);

@@ -13,7 +13,7 @@ import { useContactsQuery } from '../../../../pages/accountLists/[accountListId]
 
 interface Props {
   accountListId: string;
-  onContactSelected: (contactId: string) => void;
+  onContactSelected: (contactId: string, searchTerm?: string) => void;
   activeFilters: boolean;
   filterPanelOpen: boolean;
   toggleFilterPanel: () => void;
@@ -53,6 +53,10 @@ export const ContactsTable: React.FC<Props> = ({
     <Box bgcolor={colors.red[600]}>Error: {error?.toString()}</Box>
   );
 
+  const handleOnContactSelected = (id: string) => {
+    onContactSelected(id, searchTerm);
+  };
+
   return (
     <TableContainer>
       <Table stickyHeader aria-label="sticky table">
@@ -62,6 +66,7 @@ export const ContactsTable: React.FC<Props> = ({
             filterPanelOpen={filterPanelOpen}
             toggleFilterPanel={toggleFilterPanel}
             onSearchTermChanged={setSearchTerm}
+            totalContacts={data?.contacts.nodes.length}
           />
         </TableHead>
         <TableBody>
@@ -71,13 +76,13 @@ export const ContactsTable: React.FC<Props> = ({
           ) : !(data && data.contacts.nodes.length > 0) ? (
             renderEmpty()
           ) : (
-            <div data-testID="ContactRows">
+            <div data-testid="ContactRows">
               {data.contacts.nodes?.map((contact) => (
                 <ContactRow
                   accountListId={accountListId}
                   key={contact.id}
                   contact={contact}
-                  onContactSelected={onContactSelected}
+                  onContactSelected={handleOnContactSelected}
                 />
               ))}
             </div>

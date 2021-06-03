@@ -118,6 +118,39 @@ describe('ContactFilters', () => {
 
     userEvent.click(row);
 
-    expect(onContactSelected).toHaveBeenCalledWith(contactId);
+    expect(onContactSelected).toHaveBeenCalledWith(contactId, undefined);
+  });
+
+  it('simulate row click with searchTerm', async () => {
+    const querySpy = jest.fn();
+    const searchTerm = 'test';
+    const { findByTestId, queryByText, getByRole } = render(
+      <ThemeProvider theme={theme}>
+        <GqlMockedProvider<ContactsQuery> onCall={querySpy}>
+          <ContactsTable
+            accountListId={accountListId}
+            onContactSelected={onContactSelected}
+            activeFilters={false}
+            filterPanelOpen={false}
+            toggleFilterPanel={() => {}}
+          />
+        </GqlMockedProvider>
+      </ThemeProvider>,
+    );
+
+    await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());
+    userEvent.type(getByRole('textbox'), searchTerm);
+    await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());
+    const row = await findByTestId('rowButton');
+
+    userEvent.click(row);
+    const { operation, response } = querySpy.mock.calls[1][0];
+
+    expect(operation.variables.accountListId).toEqual(accountListId);
+    expect(operation.variables.searchTerm).toEqual(searchTerm);
+    expect(onContactSelected).toHaveBeenCalledWith(
+      response.data.contacts.nodes[0].id,
+      searchTerm,
+    );
   });
 });
