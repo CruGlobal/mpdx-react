@@ -5,10 +5,6 @@ import TagIcon from '@material-ui/icons/LocalOfferOutlined';
 import * as yup from 'yup';
 import { Formik, FormikHelpers } from 'formik';
 import { useSnackbar } from 'notistack';
-import {
-  ContactDetailsTabDocument,
-  ContactDetailsTabQuery,
-} from '../ContactDetailsTab.generated';
 import { useUpdateContactTagsMutation } from './ContactTags.generated';
 
 const ContactTagsContainer = styled(Box)(({ theme }) => ({
@@ -52,10 +48,6 @@ interface ContactTagsProps {
   contactTags: string[];
 }
 
-const tagSchema = yup.object({
-  tag: yup.string().required(),
-});
-
 export const ContactTags: React.FC<ContactTagsProps> = ({
   accountListId,
   contactId,
@@ -68,46 +60,33 @@ export const ContactTags: React.FC<ContactTagsProps> = ({
     { loading: updating },
   ] = useUpdateContactTagsMutation();
 
-  const handleTagDelete = (tag: string) => {
+  const tagSchema = yup.object({
+    tag: yup
+      .string()
+      .notOneOf(contactTags, 'A tag of that value already exist')
+      .required(),
+  });
+
+  const handleTagDelete = async (tag: string) => {
     const index = contactTags.indexOf(tag);
 
     if (index > -1) {
       const tagList = [...contactTags];
       tagList.splice(index, 1);
       try {
-        updateContactTags({
+        const { data } = await updateContactTags({
           variables: {
             accountListId,
             contactId,
             tagList,
           },
-          update: (cache, { data: updateData }) => {
-            const query = {
-              query: ContactDetailsTabDocument,
-              variables: {
-                accountListId,
-                contactId,
-              },
-            };
-
-            const dataFromCache = cache.readQuery<ContactDetailsTabQuery>(
-              query,
-            );
-
-            if (dataFromCache) {
-              const data = {
-                contact: {
-                  ...dataFromCache.contact,
-                  tagList: updateData?.updateContact?.contact.tagList,
-                },
-              };
-              cache.writeQuery({ ...query, data });
-              enqueueSnackbar(t('Tag successfully removed'), {
-                variant: 'success',
-              });
-            }
-          },
         });
+
+        if (data?.updateContact?.contact.tagList) {
+          enqueueSnackbar(t('Tag successfully removed'), {
+            variant: 'success',
+          });
+        }
       } catch (error) {
         enqueueSnackbar(error.message, { variant: 'error' });
         throw error;
@@ -121,7 +100,7 @@ export const ContactTags: React.FC<ContactTagsProps> = ({
   ): Promise<void> => {
     try {
       resetForm();
-      updateContactTags({
+      const { data } = await updateContactTags({
         variables: {
           accountListId,
           contactId,
@@ -129,37 +108,21 @@ export const ContactTags: React.FC<ContactTagsProps> = ({
         },
         optimisticResponse: {
           updateContact: {
+            __typename: 'ContactUpdateMutationPayload',
             contact: {
+              __typename: 'Contact',
               id: contactId,
               tagList: [...contactTags, tag],
             },
           },
         },
-        update: (cache, { data: updateData }) => {
-          const tagList = updateData?.updateContact?.contact.tagList;
-          const query = {
-            query: ContactDetailsTabDocument,
-            variables: {
-              accountListId,
-              contactId,
-            },
-          };
-          const dataFromCache = cache.readQuery<ContactDetailsTabQuery>(query);
-
-          if (dataFromCache) {
-            const data = {
-              contact: {
-                ...dataFromCache.contact,
-                tagList,
-              },
-            };
-            cache.writeQuery({ ...query, data });
-            enqueueSnackbar(t('Tag successfully added'), {
-              variant: 'success',
-            });
-          }
-        },
       });
+
+      if (data?.updateContact?.contact.tagList) {
+        enqueueSnackbar(t('Tag successfully added'), {
+          variant: 'success',
+        });
+      }
     } catch (error) {
       enqueueSnackbar(error.message, { variant: 'error' });
       throw error;
@@ -189,6 +152,8 @@ export const ContactTags: React.FC<ContactTagsProps> = ({
             handleChange,
             handleSubmit,
             isSubmitting,
+            errors,
+            touched,
           }): ReactElement => (
             <form onSubmit={handleSubmit} noValidate>
               <ContactTagInput
@@ -197,6 +162,8 @@ export const ContactTags: React.FC<ContactTagsProps> = ({
                 inputProps={{ 'aria-label': t('Tag') }}
                 disabled={isSubmitting || updating}
                 onChange={handleChange('tag')}
+                error={!!errors.tag && touched.tag}
+                helperText={errors.tag && touched.tag && t(`${errors.tag}`)}
                 onKeyPress={(event): void => {
                   if (event.key === 'Enter' && !event.shiftKey) {
                     handleSubmit();

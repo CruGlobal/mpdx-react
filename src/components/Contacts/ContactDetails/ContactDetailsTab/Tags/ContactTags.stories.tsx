@@ -1,5 +1,5 @@
 import React, { ReactElement } from 'react';
-import { Box, CssBaseline, MuiThemeProvider } from '@material-ui/core';
+import { Box, MuiThemeProvider } from '@material-ui/core';
 import { array } from '@storybook/addon-knobs';
 import theme from '../../../../../theme';
 import { GqlMockedProvider } from '../../../../../../__tests__/util/graphqlMocking';
@@ -18,7 +18,6 @@ export const Default = (): ReactElement => {
     <Box m={2}>
       <GqlMockedProvider<UpdateContactTagsMutation>>
         <MuiThemeProvider theme={theme}>
-          <CssBaseline />
           <ContactTags
             accountListId={accountListId}
             contactId={contactId}
@@ -35,7 +34,6 @@ export const EmptyTags = (): ReactElement => {
     <Box m={2}>
       <GqlMockedProvider<UpdateContactTagsMutation>>
         <MuiThemeProvider theme={theme}>
-          <CssBaseline />
           <ContactTags
             accountListId={accountListId}
             contactId={contactId}

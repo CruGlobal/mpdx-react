@@ -1,7 +1,7 @@
 mutation UpdateContactTags(
   $accountListId: ID!
   $contactId: ID!
-  $tagList: [String!]
+  $tagList: [String!]!
 ) {
   updateContact(
     input: {

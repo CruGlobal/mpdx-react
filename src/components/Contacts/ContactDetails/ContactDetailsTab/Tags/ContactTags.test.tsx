@@ -1,26 +1,32 @@
 import React from 'react';
-import { InMemoryCache } from '@apollo/client';
 import { MuiThemeProvider } from '@material-ui/core';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
-import { MockedProvider } from '@apollo/client/testing';
 import { GqlMockedProvider } from '../../../../../../__tests__/util/graphqlMocking';
 import {
   render,
   waitFor,
 } from '../../../../../../__tests__/util/testingLibraryReactMock';
 import theme from '../../../../../theme';
-import {
-  ContactDetailsTabDocument,
-  ContactDetailsTabQuery,
-} from '../ContactDetailsTab.generated';
 import { ContactTags } from './ContactTags';
 import { UpdateContactTagsMutation } from './ContactTags.generated';
-import { createContactTagMutationMock } from './ContactTags.mock';
 
 const accountListId = '123';
 const contactId = 'abc';
 const contactTags = ['tag1', 'tag2', 'tag3'];
+
+const mockEnqueue = jest.fn();
+
+jest.mock('notistack', () => ({
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  ...jest.requireActual('notistack'),
+  useSnackbar: () => {
+    return {
+      enqueueSnackbar: mockEnqueue,
+    };
+  },
+}));
 
 describe('ContactTags', () => {
   it('should render with tags', () => {
@@ -43,32 +49,19 @@ describe('ContactTags', () => {
   });
 
   it('should add a tag', async () => {
-    const cache = new InMemoryCache({ addTypename: false });
-    jest.spyOn(cache, 'writeQuery');
-    const data: ContactDetailsTabQuery = {
-      contact: {
-        id: contactId,
-        tagList: contactTags,
-        people: {
-          nodes: [],
-        },
-        name: 'Lname, Fname',
-      },
-    };
-    const query = {
-      query: ContactDetailsTabDocument,
-      variables: {
-        accountListId,
-        contactId,
-      },
-      data,
-    };
-    cache.writeQuery(query);
     const { getByRole } = render(
       <SnackbarProvider>
-        <MockedProvider
-          mocks={[createContactTagMutationMock()]}
-          cache={cache}
+        <GqlMockedProvider<UpdateContactTagsMutation>
+          mocks={{
+            UpdateContactTags: {
+              updateContact: {
+                contact: {
+                  id: contactId,
+                  tagList: [...contactTags, 'tag4'],
+                },
+              },
+            },
+          }}
           addTypename={false}
         >
           <MuiThemeProvider theme={theme}>
@@ -78,7 +71,7 @@ describe('ContactTags', () => {
               contactTags={contactTags}
             />
           </MuiThemeProvider>
-        </MockedProvider>
+        </GqlMockedProvider>
       </SnackbarProvider>,
     );
     userEvent.type(getByRole('textbox', { name: 'Tag' }), 'tag4{enter}');
@@ -86,26 +79,9 @@ describe('ContactTags', () => {
       expect(getByRole('textbox', { name: 'Tag' })).toHaveValue(''),
     );
 
-    // TODO: Figure out why readQuery value is always null
-    // await waitFor(() =>
-    //   expect(cache.writeQuery).toHaveBeenCalledWith({
-    //     query: ContactDetailsTabDocument,
-    //     variables: {
-    //       accountListId,
-    //       contactId,
-    //     },
-    //     data: {
-    //       contact: {
-    //         id: contactId,
-    //         tagList: [...contactTags, 'tag4'],
-    //         people: {
-    //           nodes: [],
-    //         },
-    //         name: 'Lname, Fname',
-    //       },
-    //     },
-    //   }),
-    // );
+    expect(mockEnqueue).toHaveBeenCalledWith('Tag successfully added', {
+      variant: 'success',
+    });
   });
 
   it('should delete a tag', async () => {
@@ -114,14 +90,12 @@ describe('ContactTags', () => {
       <SnackbarProvider>
         <GqlMockedProvider<UpdateContactTagsMutation>
           mocks={{
-            ContactDetailsTab: {
-              contact: {
-                id: contactId,
-                tagList: contactTags,
-                people: {
-                  nodes: [],
+            UpdateContactTags: {
+              updateContact: {
+                contact: {
+                  id: contactId,
+                  tagList: ['tag2', 'tag3'],
                 },
-                name: 'Lname, Fname',
               },
             },
           }}
@@ -144,5 +118,10 @@ describe('ContactTags', () => {
 
     expect(tag1DeleteIcon).toBeInTheDocument();
     tag1DeleteIcon && userEvent.click(tag1DeleteIcon);
+    await waitFor(() =>
+      expect(mockEnqueue).toHaveBeenCalledWith('Tag successfully removed', {
+        variant: 'success',
+      }),
+    );
   });
 });
