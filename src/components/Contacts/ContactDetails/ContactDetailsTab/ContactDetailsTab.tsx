@@ -53,7 +53,7 @@ const ContactDetailHeadingIcon = styled(CreateIcon)(({ theme }) => ({
   width: '18px',
   height: '18px',
   margin: theme.spacing(0),
-  color: '#9C9FA1',
+  color: theme.palette.cruGrayMedium.main,
 }));
 
 const ContactDeleteButton = styled(Button)(({ theme }) => ({
@@ -96,7 +96,7 @@ const CloseButton = styled(IconButton)(({ theme }) => ({
   top: theme.spacing(1),
   color: theme.palette.text.primary,
   '&:hover': {
-    backgroundColor: '#EBECEC',
+    backgroundColor: theme.palette.cruGrayLight.main,
   },
 }));
 
