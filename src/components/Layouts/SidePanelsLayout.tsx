@@ -47,7 +47,6 @@ const PanelWrapper = styled(ScrollBox)(
     theme: Theme;
     breakpoint: Breakpoint | number;
   }) => ({
-    flexGrow: 0,
     flexShrink: 0,
     [theme.breakpoints.down(breakpoint)]: {
       transition: 'transform ease-in-out 225ms',
