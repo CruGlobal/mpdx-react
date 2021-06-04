@@ -1,0 +1,17 @@
+mutation UpdateContactTags(
+  $accountListId: ID!
+  $contactId: ID!
+  $tagList: [String!]!
+) {
+  updateContact(
+    input: {
+      accountListId: $accountListId
+      attributes: { id: $contactId, tagList: $tagList }
+    }
+  ) {
+    contact {
+      id
+      tagList
+    }
+  }
+}
