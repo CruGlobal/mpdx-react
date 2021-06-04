@@ -67,27 +67,34 @@ export const ContactDonationsList: React.FC<ContactDonationsListProp> = ({
               <TableCell>{t('Amount')}</TableCell>
               <TableCell>{t('Converted Amount')}</TableCell>
             </TableHead>
-            {data?.contact.donations.nodes.map((donation) => (
-              <TableRow key={donation.id}>
-                <TableCell>
-                  {DateTime.fromISO(donation.donationDate).toLocaleString()}
-                </TableCell>
-                <TableCell>
-                  {currencyFormat(
-                    donation.amount.amount,
-                    donation.amount.currency,
-                  )}
-                </TableCell>
-                <TableCell>
-                  {currencyFormat(
-                    donation.amount.convertedAmount,
-                    donation.amount.convertedCurrency,
-                  )}
-                </TableCell>
-              </TableRow>
-            ))}
+            {data?.contact !== null &&
+            data?.contact.donations.nodes !== undefined ? (
+              data?.contact.donations.nodes.map((donation) => (
+                <TableRow key={donation.id}>
+                  <TableCell>
+                    {DateTime.fromISO(donation.donationDate).toLocaleString()}
+                  </TableCell>
+                  <TableCell>
+                    {currencyFormat(
+                      donation.amount.amount,
+                      donation.amount.currency,
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    {currencyFormat(
+                      donation.amount.convertedAmount,
+                      donation.amount.convertedCurrency,
+                    )}
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <></>
+            )}
           </Table>
-          {!loading && data?.contact.donations.pageInfo.hasNextPage ? (
+          {!loading &&
+          data?.contact.donations.pageInfo !== undefined &&
+          data?.contact.donations.pageInfo.hasNextPage === true ? (
             <LoadMoreButton
               variant="outlined"
               onClick={() => {
