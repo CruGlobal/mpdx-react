@@ -49,7 +49,7 @@ describe('ContactTags', () => {
   });
 
   it('should add a tag', async () => {
-    const { getByRole } = render(
+    const { getByPlaceholderText } = render(
       <SnackbarProvider>
         <GqlMockedProvider<UpdateContactTagsMutation>
           mocks={{
@@ -74,14 +74,17 @@ describe('ContactTags', () => {
         </GqlMockedProvider>
       </SnackbarProvider>,
     );
-    userEvent.type(getByRole('textbox', { name: 'Tag' }), 'tag4{enter}');
+    userEvent.type(getByPlaceholderText('add tag'), 'tag4{enter}');
     await waitFor(() =>
-      expect(getByRole('textbox', { name: 'Tag' })).toHaveValue(''),
+      expect(getByPlaceholderText('add tag')).toHaveValue(''),
     );
+    userEvent.type(getByPlaceholderText('add tag'), '{enter}');
 
-    expect(mockEnqueue).toHaveBeenCalledWith('Tag successfully added', {
-      variant: 'success',
-    });
+    await waitFor(() =>
+      expect(mockEnqueue).toHaveBeenCalledWith('Tag successfully added', {
+        variant: 'success',
+      }),
+    );
   });
 
   it('should delete a tag', async () => {
