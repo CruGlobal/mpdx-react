@@ -6,7 +6,6 @@ import {
   TableCell,
   TableHead,
   TableRow,
-  Typography,
 } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
 import { DateTime } from 'luxon';
@@ -19,6 +18,11 @@ interface ContactDonationsListProp {
   accountListId: string;
   contactId: string;
 }
+
+const LoadMoreButton = styled(Button)(({ theme }) => ({
+  margin: theme.spacing(1),
+}));
+
 const DonationLoadingPlaceHolder = styled(Skeleton)(({ theme }) => ({
   width: '100%',
   height: '24px',
@@ -29,7 +33,6 @@ export const ContactDonationsList: React.FC<ContactDonationsListProp> = ({
   accountListId,
   contactId,
 }) => {
-  const [currentPage, setCurrentPage] = useState(0);
   const [range, setRange] = useState(10);
 
   const {
@@ -50,49 +53,79 @@ export const ContactDonationsList: React.FC<ContactDonationsListProp> = ({
 
   return (
     <Box>
-      <Table>
-        <TableHead>
-          <TableCell>{t('Date')}</TableCell>
-          <TableCell>{t('Amount')}</TableCell>
-          <TableCell>{t('Converted Amount')}</TableCell>
-        </TableHead>
-        {loading ? (
-          <TableRow>
-            <TableCell>
-              <DonationLoadingPlaceHolder />
-            </TableCell>
-            <TableCell>
-              <DonationLoadingPlaceHolder />
-            </TableCell>
-            <TableCell>
-              <DonationLoadingPlaceHolder />
-            </TableCell>
-          </TableRow>
-        ) : (
-          data?.contact.donations.nodes.map((donation) => (
-            <TableRow key={donation.id}>
-              <TableCell>
-                {DateTime.fromISO(donation.donationDate).toLocaleString()}
-              </TableCell>
-              <TableCell>
-                {currencyFormat(
-                  donation.amount.amount,
-                  donation.amount.currency,
-                )}
-              </TableCell>
-              <TableCell>
-                {currencyFormat(
-                  donation.amount.convertedAmount,
-                  donation.amount.convertedCurrency,
-                )}
-              </TableCell>
-            </TableRow>
-          ))
-        )}
-      </Table>
-      {!loading && data?.contact.donations.pageInfo.hasNextPage ? (
-        <Button variant="outlined">{t('Load More')}</Button>
-      ) : null}
+      {loading || networkStatus === 3 ? (
+        <>
+          <DonationLoadingPlaceHolder />
+          <DonationLoadingPlaceHolder />
+          <DonationLoadingPlaceHolder />
+        </>
+      ) : (
+        <>
+          <Table>
+            <TableHead>
+              <TableCell>{t('Date')}</TableCell>
+              <TableCell>{t('Amount')}</TableCell>
+              <TableCell>{t('Converted Amount')}</TableCell>
+            </TableHead>
+            {data?.contact.donations.nodes.map((donation) => (
+              <TableRow key={donation.id}>
+                <TableCell>
+                  {DateTime.fromISO(donation.donationDate).toLocaleString()}
+                </TableCell>
+                <TableCell>
+                  {currencyFormat(
+                    donation.amount.amount,
+                    donation.amount.currency,
+                  )}
+                </TableCell>
+                <TableCell>
+                  {currencyFormat(
+                    donation.amount.convertedAmount,
+                    donation.amount.convertedCurrency,
+                  )}
+                </TableCell>
+              </TableRow>
+            ))}
+          </Table>
+          {!loading && data?.contact.donations.pageInfo.hasNextPage ? (
+            <LoadMoreButton
+              variant="outlined"
+              onClick={() => {
+                fetchMore({
+                  variables: {
+                    first: range,
+                    after: data.contact.donations.pageInfo.endCursor,
+                  },
+                  updateQuery: (prev, { fetchMoreResult }) => {
+                    if (!fetchMoreResult) {
+                      return prev;
+                    }
+                    return {
+                      contact: {
+                        donations: {
+                          nodes: [
+                            ...prev.contact.donations.nodes,
+                            ...fetchMoreResult.contact.donations.nodes,
+                          ],
+                          pageInfo: fetchMoreResult.contact.donations.pageInfo,
+                          totalCount:
+                            fetchMoreResult.contact.donations.totalCount,
+                          totalPageCount:
+                            fetchMoreResult.contact.donations.totalPageCount,
+                        },
+                      },
+                    };
+                  },
+                }).finally(() => {
+                  setRange(range + 1);
+                });
+              }}
+            >
+              {t('Load More')}
+            </LoadMoreButton>
+          ) : null}
+        </>
+      )}
     </Box>
   );
 };
