@@ -3,9 +3,14 @@ import {
   Box,
   Button,
   Drawer,
+  FormControl,
+  FormControlLabel,
   IconButton,
   LinearProgress,
+  Radio,
+  RadioGroup,
   styled,
+  TextField,
   Typography,
 } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
@@ -13,8 +18,6 @@ import { Alert } from '@material-ui/lab';
 import { CloseOutlined } from '@material-ui/icons';
 import { useGetCoachingAnswerSetsQuery } from '../GetCoachingAnswerSets.generated';
 import Loading from '../../../Loading';
-import { CoachingQuestion } from '../../../../../pages/api/graphql-rest.page.generated';
-import CoachingQuestionResponseSection from './CoachingQuestionResponseSection/CoachingQuestionResponseSection';
 
 interface Props {
   accountListId: string;
@@ -68,6 +71,19 @@ const ProgressBar = styled(LinearProgress)(({ theme }) => ({
   marginBottom: 24,
 }));
 
+const PromptText = styled(Typography)(({ theme }) => ({
+  ...theme.typography.h5,
+  flex: 1,
+  marginHorizontal: 24,
+}));
+
+const ShortAnswer = styled(TextField)(({}) => ({
+  flex: 1,
+  margin: 12,
+}));
+
+const RadioPill = styled(Radio)(({}) => ({}));
+
 const ActionButtonWrap = styled(Box)(({}) => ({
   display: 'flex',
   flex: 1,
@@ -90,7 +106,7 @@ const NavButton = styled(Button)(({}) => ({
   width: 96,
 }));
 
-const CoachingQuestionsModal: React.FC<Props> = ({
+const CoachingQuestionShortAnswer: React.FC<Props> = ({
   accountListId,
   isOpen,
   closeDrawer,
@@ -106,8 +122,6 @@ const CoachingQuestionsModal: React.FC<Props> = ({
 
   const [questionIndex, setQuestionIndex] = useState(0);
 
-  const [responseValue, setResponseValue] = useState<string>();
-
   const answerSet = data?.coachingAnswerSets[currentAnswerSet];
   const questionCount = answerSet?.questions.length || 0;
   const question = answerSet?.questions[questionIndex];
@@ -119,67 +133,25 @@ const CoachingQuestionsModal: React.FC<Props> = ({
     //saveAnswer(answerSet?.id, question?.id, question?.answer);
     if (hasNext) {
       setQuestionIndex(questionIndex + 1);
-
-      setResponseValue(undefined);
     }
   };
 
   const previous = () => {
     if (hasPrevious) {
       setQuestionIndex(questionIndex - 1);
-
-      setResponseValue(undefined);
     }
   };
 
   const progress = (questionIndex / questionCount) * 100.0;
 
   return (
-    <DrawerModal anchor="top" open={isOpen}>
-      <ModalHeaderWrap>
-        <HeaderText>{t('Weekly Report').toUpperCase()}</HeaderText>
-        <CloseButton onClick={closeDrawer}>
-          <CloseButtonIcon />
-        </CloseButton>
-      </ModalHeaderWrap>
-      <ModalContentWrap>
-        {loading || !answerSet ? (
-          <Loading />
-        ) : questionCount > 0 && question instanceof CoachingQuestion ? (
-          <Box>
-            <ProgressBar variant="determinate" value={progress} />
-            <CoachingQuestionResponseSection
-              question={question}
-              onResponseChanged={setResponseValue}
-            />
-            <ActionButtonWrap>
-              <PreviousWrap>
-                {hasPrevious ? (
-                  <NavButton onClick={previous}>
-                    <Typography>{t('Back')}</Typography>
-                  </NavButton>
-                ) : null}
-              </PreviousWrap>
-              <NextWrap>
-                <NavButton
-                  onClick={next}
-                  disabled={question.required && !question.answer.response}
-                >
-                  <Typography>{t(hasNext ? 'Next' : 'Submit')}</Typography>
-                </NavButton>
-              </NextWrap>
-            </ActionButtonWrap>
-          </Box>
-        ) : (
-          <NoQuestionsAlert severity="warning">
-            {t(
-              'Weekly report questions have not been setup for your organization',
-            )}
-          </NoQuestionsAlert>
-        )}
-      </ModalContentWrap>
-    </DrawerModal>
+    <ShortAnswer
+      multiline
+      rows={4}
+      variant="outlined"
+      placeholder={t('Response')}
+    />
   );
 };
 
-export default CoachingQuestionsModal;
+export default CoachingQuestionShortAnswer;
