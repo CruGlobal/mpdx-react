@@ -3,6 +3,7 @@ import { MockedProvider } from '@apollo/client/testing';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { InMemoryCache } from '@apollo/client';
+import { DateTime } from 'luxon';
 import { AppProvider } from '../../../../App';
 import { GetCommentsForTaskDrawerCommentListDocument } from '../TaskListComments.generated';
 import { User } from '../../../../../../graphql/types.generated';
@@ -16,6 +17,7 @@ jest.mock('uuid', () => ({
 describe('TaskDrawerCommentListForm', () => {
   it('has correct defaults', async () => {
     const cache = new InMemoryCache({ addTypename: false });
+    jest.spyOn(cache, 'writeQuery');
     const query = {
       query: GetCommentsForTaskDrawerCommentListDocument,
       variables: {
@@ -53,5 +55,34 @@ describe('TaskDrawerCommentListForm', () => {
     await waitFor(() => expect(getByRole('button')).toBeDisabled());
     userEvent.type(getByRole('textbox'), 'comment{enter}');
     await waitFor(() => expect(getByRole('textbox')).toHaveValue(''));
+    await waitFor(() =>
+      expect(cache.writeQuery).toHaveBeenCalledWith({
+        query: GetCommentsForTaskDrawerCommentListDocument,
+        variables: {
+          accountListId: 'abc',
+          taskId: 'task-1',
+        },
+        data: {
+          task: {
+            id: 'task-1',
+            comments: {
+              nodes: [
+                {
+                  id: 'comment-0',
+                  body: 'comment',
+                  createdAt: DateTime.local().toISO(),
+                  me: true,
+                  person: {
+                    id: 'user-1',
+                    firstName: 'John',
+                    lastName: 'Smith',
+                  },
+                },
+              ],
+            },
+          },
+        },
+      }),
+    );
   });
 });
