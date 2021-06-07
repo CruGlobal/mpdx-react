@@ -23,6 +23,10 @@ const PromptText = styled(Typography)(({ theme }) => ({
   marginHorizontal: 24,
 }));
 
+const ResponseOption = styled(FormControlLabel)(({}) => ({
+  margin: 12,
+}));
+
 const ShortAnswer = styled(TextField)(({}) => ({
   display: 'flex',
   flex: 1,
@@ -53,6 +57,19 @@ const CoachingQuestionResponseSection: React.FC<Props> = ({
     onResponseChanged(value);
   };
 
+  const renderResponseOption = (option: string) => {
+    const value = question.responseOptions?.indexOf(option).toString();
+
+    return (
+      <ResponseOption
+        key={value}
+        value={value}
+        label={option}
+        control={<Radio />}
+      />
+    );
+  };
+
   return (
     <Box>
       <PromptText>{prompt}</PromptText>
@@ -63,15 +80,9 @@ const CoachingQuestionResponseSection: React.FC<Props> = ({
             name="responseOptions"
             value={responseValue}
             onChange={onFormControlChange}
+            row
           >
-            {question.responseOptions?.map((option) => (
-              <FormControlLabel
-                key={question.responseOptions?.indexOf(option)}
-                value={question.responseOptions?.indexOf(option)}
-                label={option}
-                control={<Radio />}
-              />
-            ))}
+            {question.responseOptions?.map(renderResponseOption)}
           </RadioGroup>
         </FormControl>
       ) : (
