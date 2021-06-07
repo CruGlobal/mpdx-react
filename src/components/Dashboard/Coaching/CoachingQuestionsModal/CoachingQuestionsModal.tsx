@@ -152,7 +152,9 @@ const CoachingQuestionsModal: React.FC<Props> = ({
           <Box>
             <ProgressBar variant="determinate" value={progress} />
             <CoachingQuestionResponseSection
-              question={question}
+              questionPrompt={question.prompt}
+              responseOptions={question.responseOptions || null}
+              selectedResponseValue={responseValue}
               onResponseChanged={setResponseValue}
             />
             <ActionButtonWrap>
