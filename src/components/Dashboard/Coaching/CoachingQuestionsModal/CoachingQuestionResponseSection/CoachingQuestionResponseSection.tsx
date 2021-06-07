@@ -24,6 +24,7 @@ const PromptText = styled(Typography)(({ theme }) => ({
 }));
 
 const ShortAnswer = styled(TextField)(({}) => ({
+  display: 'flex',
   flex: 1,
   margin: 12,
 }));

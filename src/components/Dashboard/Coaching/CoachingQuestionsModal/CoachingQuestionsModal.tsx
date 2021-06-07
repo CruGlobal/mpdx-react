@@ -135,7 +135,7 @@ const CoachingQuestionsModal: React.FC<Props> = ({
     }
   };
 
-  const progress = (questionIndex / questionCount) * 100.0;
+  const progress = ((questionIndex + 1) / questionCount) * 100.0;
 
   return (
     <DrawerModal anchor="top" open={isOpen}>
