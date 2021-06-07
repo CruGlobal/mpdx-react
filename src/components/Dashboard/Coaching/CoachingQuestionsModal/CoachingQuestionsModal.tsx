@@ -166,7 +166,7 @@ const CoachingQuestionsModal: React.FC<Props> = ({
               <NextWrap>
                 <NavButton
                   onClick={next}
-                  disabled={question.required && !question.answer.response}
+                  disabled={question.required && !responseValue}
                 >
                   <Typography>{t(hasNext ? 'Next' : 'Submit')}</Typography>
                 </NavButton>

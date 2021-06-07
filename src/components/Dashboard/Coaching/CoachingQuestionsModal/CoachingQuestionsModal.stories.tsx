@@ -82,3 +82,25 @@ export const ResponseOptions = (): ReactElement => {
     </GqlMockedProvider>
   );
 };
+
+export const RequiredQuestion = (): ReactElement => {
+  return (
+    <GqlMockedProvider<GetCoachingAnswerSetsQuery>
+      mocks={{
+        GetCoachingAnswerSets: {
+          coachingAnswerSets: [
+            {
+              questions: [{ required: true, responseOptions: null }],
+            },
+          ],
+        },
+      }}
+    >
+      <CoachingQuestionsModal
+        accountListId={accountListId}
+        isOpen={true}
+        closeDrawer={() => {}}
+      />
+    </GqlMockedProvider>
+  );
+};
