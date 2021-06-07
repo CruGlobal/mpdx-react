@@ -1,16 +1,13 @@
 query GetCoachingAnswerSets($accountListId: ID!) {
   coachingAnswerSets(accountListId: $accountListId) {
     id
-    answers {
-      ...AnswerFragment
-    }
     questions {
-      ...QuestionFragment
+      ...FormQuestion
     }
   }
 }
 
-fragment QuestionFragment on CoachingQuestion {
+fragment FormQuestion on CoachingQuestion {
   id
   answer {
     response
@@ -18,9 +15,4 @@ fragment QuestionFragment on CoachingQuestion {
   prompt
   required
   responseOptions
-}
-
-fragment AnswerFragment on CoachingAnswer {
-  id
-  response
 }

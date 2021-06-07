@@ -11,9 +11,11 @@ import {
 import { useTranslation } from 'react-i18next';
 import { Alert } from '@material-ui/lab';
 import { CloseOutlined } from '@material-ui/icons';
-import { useGetCoachingAnswerSetsQuery } from '../GetCoachingAnswerSets.generated';
+import {
+  FormQuestionFragment,
+  useGetCoachingAnswerSetsQuery,
+} from '../GetCoachingAnswerSets.generated';
 import Loading from '../../../Loading';
-import { CoachingQuestion } from '../../../../../pages/api/graphql-rest.page.generated';
 import CoachingQuestionResponseSection from './CoachingQuestionResponseSection/CoachingQuestionResponseSection';
 
 interface Props {
@@ -110,7 +112,8 @@ const CoachingQuestionsModal: React.FC<Props> = ({
 
   const answerSet = data?.coachingAnswerSets[currentAnswerSet];
   const questionCount = answerSet?.questions.length || 0;
-  const question = answerSet?.questions[questionIndex];
+  const question: FormQuestionFragment | undefined =
+    answerSet?.questions[questionIndex];
 
   const hasNext = questionIndex < questionCount - 1;
   const hasPrevious = questionIndex !== 0;
@@ -145,7 +148,7 @@ const CoachingQuestionsModal: React.FC<Props> = ({
       <ModalContentWrap>
         {loading || !answerSet ? (
           <Loading />
-        ) : questionCount > 0 && question instanceof CoachingQuestion ? (
+        ) : questionCount > 0 && question ? (
           <Box>
             <ProgressBar variant="determinate" value={progress} />
             <CoachingQuestionResponseSection

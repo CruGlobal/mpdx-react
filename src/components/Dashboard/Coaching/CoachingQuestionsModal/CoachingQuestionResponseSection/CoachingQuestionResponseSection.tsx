@@ -10,10 +10,10 @@ import {
   Typography,
 } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
-import { CoachingQuestion } from '../../../../../../graphql/types.generated';
+import { FormQuestionFragment } from '../../GetCoachingAnswerSets.generated';
 
 interface Props {
-  question: CoachingQuestion;
+  question: FormQuestionFragment;
   onResponseChanged: (response: string) => void;
 }
 
