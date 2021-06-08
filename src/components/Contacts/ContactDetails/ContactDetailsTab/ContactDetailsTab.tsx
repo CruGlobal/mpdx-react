@@ -101,7 +101,7 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
   const { enqueueSnackbar } = useSnackbar();
   const { push, query } = useRouter();
   const [deleteContact, { loading: deleting }] = useDeleteContactMutation();
-  const [deleteDialogOpen, changeDeleteDialogOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
   const { searchTerm } = query;
 
@@ -168,7 +168,7 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
           <>
             <Button
               disabled={deleting}
-              onClick={() => changeDeleteDialogOpen(false)}
+              onClick={() => setDeleteDialogOpen(false)}
             >
               {t('Cancel')}
             </Button>
@@ -183,7 +183,7 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
             </DialogDeleteButton>
           </>
         }
-        handleClose={() => changeDeleteDialogOpen(false)}
+        handleClose={() => setDeleteDialogOpen(false)}
         handleConfirm={handleDeleteContact}
       />
     );
@@ -273,7 +273,7 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
         <ContactDeleteButton
           variant="contained"
           size="large"
-          onClick={() => changeDeleteDialogOpen(true)}
+          onClick={() => setDeleteDialogOpen(true)}
         >
           {t('delete contact')}
         </ContactDeleteButton>
