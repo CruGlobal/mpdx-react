@@ -6,7 +6,6 @@ import {
   DialogContent,
   DialogProps,
   DialogTitle,
-  Grid,
   IconButton,
   styled,
 } from '@material-ui/core';
@@ -66,7 +65,6 @@ const Modal = ({
           <CloseIcon titleAccess={t('Close')} />
         </CloseButton>
       </ModalTitle>
-
       <DialogContent dividers={dividers}>{content}</DialogContent>
       <DialogActions>
         {customActionSection ? (
