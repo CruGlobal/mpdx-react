@@ -6,6 +6,7 @@ import {
   DialogContent,
   DialogProps,
   DialogTitle,
+  Grid,
   IconButton,
   styled,
 } from '@material-ui/core';
@@ -18,9 +19,6 @@ const ModalTitle = styled(DialogTitle)(() => ({
 }));
 
 const CloseButton = styled(IconButton)(({ theme }) => ({
-  position: 'absolute',
-  right: theme.spacing(1),
-  top: theme.spacing(1),
   color: theme.palette.text.primary,
   '&:hover': {
     backgroundColor: theme.palette.cruGrayLight.main,
@@ -59,12 +57,16 @@ const Modal = ({
   const { t } = useTranslation();
   return (
     <Dialog open={isOpen} fullWidth={fullWidth} maxWidth={size}>
-      <ModalTitle>
-        {title}
-        <CloseButton onClick={() => handleClose()}>
-          <CloseIcon titleAccess={t('Close')} />
-        </CloseButton>
-      </ModalTitle>
+      <Grid container alignItems="center">
+        <Grid item xs={11}>
+          <ModalTitle>{title}</ModalTitle>
+        </Grid>
+        <Grid item xs>
+          <CloseButton onClick={() => handleClose()}>
+            <CloseIcon titleAccess={t('Close')} />
+          </CloseButton>
+        </Grid>
+      </Grid>
       <DialogContent dividers={dividers}>{content}</DialogContent>
       <DialogActions>
         {customActionSection ? (
