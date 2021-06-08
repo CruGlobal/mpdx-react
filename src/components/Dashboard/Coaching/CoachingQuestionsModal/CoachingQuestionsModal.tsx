@@ -108,7 +108,7 @@ const CoachingQuestionsModal: React.FC<Props> = ({
 
   const [questionIndex, setQuestionIndex] = useState(0);
 
-  const [responseValue, setResponseValue] = useState<string>();
+  const [responseValue, setResponseValue] = useState<string | null>(null);
 
   const answerSet = data?.coachingAnswerSets[currentAnswerSet];
   const questionCount = answerSet?.questions.length || 0;
@@ -123,7 +123,7 @@ const CoachingQuestionsModal: React.FC<Props> = ({
     if (hasNext) {
       setQuestionIndex(questionIndex + 1);
 
-      setResponseValue(undefined);
+      setResponseValue(null);
     }
   };
 
@@ -131,7 +131,7 @@ const CoachingQuestionsModal: React.FC<Props> = ({
     if (hasPrevious) {
       setQuestionIndex(questionIndex - 1);
 
-      setResponseValue(undefined);
+      setResponseValue(null);
     }
   };
 

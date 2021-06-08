@@ -1,4 +1,4 @@
-import React, { ChangeEvent } from 'react';
+import React, { ChangeEvent, useRef, useEffect } from 'react';
 import {
   Box,
   FormControl,
@@ -13,7 +13,7 @@ import {
 interface Props {
   questionPrompt: string;
   responseOptions: string[] | null;
-  selectedResponseValue?: string;
+  selectedResponseValue: string | null;
   onResponseChanged: (response: string) => void;
 }
 
@@ -39,6 +39,17 @@ const CoachingQuestionResponseSection: React.FC<Props> = ({
   selectedResponseValue,
   onResponseChanged,
 }) => {
+  const textInput = useRef<HTMLInputElement>(null);
+  const radioInput = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    return () => {
+      if (selectedResponseValue === null) {
+        clearForm();
+      }
+    };
+  }, [selectedResponseValue]);
+
   const onFormControlChange = ({
     target: { value },
   }: ChangeEvent<HTMLInputElement>) => {
@@ -49,6 +60,15 @@ const CoachingQuestionResponseSection: React.FC<Props> = ({
     target: { value },
   }: ChangeEvent<HTMLInputElement>) => {
     onResponseChanged(value);
+  };
+
+  const clearForm = () => {
+    if (textInput.current !== null) {
+      textInput.current.value = '';
+    }
+    if (radioInput.current !== null) {
+      radioInput.current.value = '';
+    }
   };
 
   const renderResponseOption = (option: string) => {
@@ -85,7 +105,7 @@ const CoachingQuestionResponseSection: React.FC<Props> = ({
           rows={4}
           variant="outlined"
           onChange={onTextFieldChange}
-          value={selectedResponseValue}
+          inputRef={textInput}
         />
       )}
     </Box>
