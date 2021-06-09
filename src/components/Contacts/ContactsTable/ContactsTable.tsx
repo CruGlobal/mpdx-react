@@ -13,7 +13,8 @@ import { useContactsQuery } from '../../../../pages/accountLists/[accountListId]
 
 interface Props {
   accountListId: string;
-  onContactSelected: (contactId: string, searchTerm?: string) => void;
+  onContactSelected: (contactId: string) => void;
+  onSearchTermChange: (searchTerm?: string) => void;
   activeFilters: boolean;
   filterPanelOpen: boolean;
   toggleFilterPanel: () => void;
@@ -22,6 +23,7 @@ interface Props {
 export const ContactsTable: React.FC<Props> = ({
   accountListId,
   onContactSelected,
+  onSearchTermChange,
   activeFilters,
   filterPanelOpen,
   toggleFilterPanel,
@@ -54,7 +56,12 @@ export const ContactsTable: React.FC<Props> = ({
   );
 
   const handleOnContactSelected = (id: string) => {
-    onContactSelected(id, searchTerm);
+    onContactSelected(id);
+  };
+
+  const handleSetSearchTerm = (searchTerm: string) => {
+    setSearchTerm(searchTerm);
+    onSearchTermChange(searchTerm);
   };
 
   return (
@@ -65,7 +72,7 @@ export const ContactsTable: React.FC<Props> = ({
             activeFilters={activeFilters}
             filterPanelOpen={filterPanelOpen}
             toggleFilterPanel={toggleFilterPanel}
-            onSearchTermChanged={setSearchTerm}
+            onSearchTermChanged={handleSetSearchTerm}
             totalContacts={data?.contacts.nodes.length}
           />
         </TableHead>

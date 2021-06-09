@@ -37,20 +37,39 @@ const ContactsPage: React.FC = () => {
     setFilterPanelOpen(!filterPanelOpen);
   };
 
-  const setContactFocus = (id?: string, searchTerm?: string) => {
+  const setContactFocus = (id?: string) => {
     const { contactId: _, ...queryWithoutContactId } = query;
     push(
       id
         ? {
             pathname: '/accountLists/[accountListId]/contacts/[contactId]',
-            query: { ...queryWithoutContactId, contactId: id, searchTerm },
+            query: { ...queryWithoutContactId, contactId: id },
+          }
+        : {
+            pathname: '/accountLists/[accountListId]/contacts/',
+            query: { ...queryWithoutContactId },
+          },
+    );
+    setContactDetailsId(id);
+  };
+
+  const setSearchTerm = (searchTerm?: string) => {
+    const { contactId: _, ...queryWithoutContactId } = query;
+    push(
+      contactDetailsId
+        ? {
+            pathname: '/accountLists/[accountListId]/contacts/[contactId]',
+            query: {
+              ...queryWithoutContactId,
+              contactId: contactDetailsId,
+              searchTerm,
+            },
           }
         : {
             pathname: '/accountLists/[accountListId]/contacts/',
             query: { ...queryWithoutContactId, searchTerm },
           },
     );
-    setContactDetailsId(id);
   };
 
   return (
@@ -65,6 +84,7 @@ const ContactsPage: React.FC = () => {
             <ContactsTable
               accountListId={accountListId}
               onContactSelected={setContactFocus}
+              onSearchTermChange={setSearchTerm}
               activeFilters={activeFilters}
               filterPanelOpen={filterPanelOpen}
               toggleFilterPanel={toggleFilterPanel}

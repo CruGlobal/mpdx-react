@@ -10,6 +10,7 @@ import { ContactsTable } from './ContactsTable';
 const accountListId = '111';
 const contactId = 'contact-1';
 const onContactSelected = jest.fn();
+const onSearchTermChanged = jest.fn();
 
 //TODO: Need test coverage for error state
 
@@ -21,6 +22,7 @@ describe('ContactFilters', () => {
           <ContactsTable
             accountListId={accountListId}
             onContactSelected={onContactSelected}
+            onSearchTermChange={onSearchTermChanged}
             activeFilters={false}
             filterPanelOpen={false}
             toggleFilterPanel={() => {}}
@@ -42,6 +44,7 @@ describe('ContactFilters', () => {
           <ContactsTable
             accountListId={accountListId}
             onContactSelected={onContactSelected}
+            onSearchTermChange={onSearchTermChanged}
             activeFilters={false}
             filterPanelOpen={false}
             toggleFilterPanel={() => {}}
@@ -73,6 +76,7 @@ describe('ContactFilters', () => {
           <ContactsTable
             accountListId={accountListId}
             onContactSelected={onContactSelected}
+            onSearchTermChange={onSearchTermChanged}
             activeFilters={false}
             filterPanelOpen={false}
             toggleFilterPanel={() => {}}
@@ -104,6 +108,7 @@ describe('ContactFilters', () => {
           <ContactsTable
             accountListId={accountListId}
             onContactSelected={onContactSelected}
+            onSearchTermChange={onSearchTermChanged}
             activeFilters={false}
             filterPanelOpen={false}
             toggleFilterPanel={() => {}}
@@ -118,7 +123,7 @@ describe('ContactFilters', () => {
 
     userEvent.click(row);
 
-    expect(onContactSelected).toHaveBeenCalledWith(contactId, undefined);
+    expect(onContactSelected).toHaveBeenCalledWith(contactId);
   });
 
   it('simulate row click with searchTerm', async () => {
@@ -130,6 +135,7 @@ describe('ContactFilters', () => {
           <ContactsTable
             accountListId={accountListId}
             onContactSelected={onContactSelected}
+            onSearchTermChange={onSearchTermChanged}
             activeFilters={false}
             filterPanelOpen={false}
             toggleFilterPanel={() => {}}
@@ -150,7 +156,7 @@ describe('ContactFilters', () => {
     expect(operation.variables.searchTerm).toEqual(searchTerm);
     expect(onContactSelected).toHaveBeenCalledWith(
       response.data.contacts.nodes[0].id,
-      searchTerm,
     );
+    expect(onSearchTermChanged).toHaveBeenCalledWith(searchTerm);
   });
 });
