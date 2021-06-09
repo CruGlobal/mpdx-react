@@ -103,7 +103,7 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
   const [deleteContact, { loading: deleting }] = useDeleteContactMutation();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
-  const { searchTerm } = query;
+  const { contactId: _, searchTerm, ...queryWithoutContactId } = query;
 
   const handleDeleteContact = () => {
     try {
@@ -138,7 +138,7 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
 
             push({
               pathname: '/accountLists/[accountListId]/contacts',
-              query: { accountListId, searchTerm },
+              query: { searchTerm, ...queryWithoutContactId },
             });
             enqueueSnackbar(t('Contact successfully deleted'), {
               variant: 'success',

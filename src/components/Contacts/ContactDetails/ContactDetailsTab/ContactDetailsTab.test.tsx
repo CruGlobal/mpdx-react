@@ -17,7 +17,7 @@ import { ContactDetailsTabQuery } from './ContactDetailsTab.generated';
 const accountListId = '111';
 const contactId = 'contact-1';
 const router = {
-  query: { searchTerm: undefined },
+  query: { searchTerm: undefined, accountListId },
   push: jest.fn(),
 };
 

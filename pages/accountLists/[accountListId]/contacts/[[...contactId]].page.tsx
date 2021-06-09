@@ -10,7 +10,7 @@ import Loading from '../../../../src/components/Loading';
 
 const ContactsPage: React.FC = () => {
   const { t } = useTranslation();
-  const { query, push, isReady, pathname } = useRouter();
+  const { query, push, replace, isReady, pathname } = useRouter();
 
   const [contactDetailsId, setContactDetailsId] = useState<string>();
 
@@ -47,14 +47,14 @@ const ContactsPage: React.FC = () => {
           }
         : {
             pathname: '/accountLists/[accountListId]/contacts/',
-            query: { ...queryWithoutContactId },
+            query: queryWithoutContactId,
           },
     );
     setContactDetailsId(id);
   };
 
   const setSearchTerm = (searchTerm?: string) => {
-    push({
+    replace({
       pathname,
       query: {
         ...query,
