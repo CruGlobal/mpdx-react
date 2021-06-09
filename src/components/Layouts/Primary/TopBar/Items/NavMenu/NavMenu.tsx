@@ -5,6 +5,7 @@ import {
   MenuItem,
   ListItemText,
   Theme,
+  Select,
 } from '@material-ui/core';
 import NextLink from 'next/link';
 import { useTranslation } from 'react-i18next';
@@ -63,11 +64,21 @@ const NavMenu = (): ReactElement => {
             </NextLink>
           </Grid>
           <Grid item className={classes.navListItem}>
-            <HandoffLink path="/reports">
-              <MenuItem component="a">
-                <ListItemText primary={t('Reports')} />
-              </MenuItem>
-            </HandoffLink>
+            <NextLink
+              href="/accountLists/[accountListId]/contacts"
+              as={`/accountLists/${state.accountListId}/contacts`}
+              scroll={false}
+            >
+              <Select
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                value={'Report'}
+              >
+                <MenuItem>Ten</MenuItem>
+                <MenuItem>Twenty</MenuItem>
+                <MenuItem>Thirty</MenuItem>
+              </Select>
+            </NextLink>
           </Grid>
           <Grid item className={classes.navListItem}>
             <HandoffLink path="/tools">
