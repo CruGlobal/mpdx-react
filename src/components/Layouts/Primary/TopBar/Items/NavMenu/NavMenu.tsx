@@ -116,12 +116,12 @@ const NavMenu = (): ReactElement => {
                         id="menu-list-grow"
                       >
                         <NextLink
-                          href="/accountLists/[accountListId]/reports/dashboard"
-                          as={`/accountLists/${state.accountListId}/reports/dashboard`}
+                          href="/accountLists/[accountListId]/reports/donations"
+                          as={`/accountLists/${state.accountListId}/reports/donations`}
                           scroll={false}
                         >
                           <MenuItem onClick={handleReportsMenuClose}>
-                            <ListItemText primary={t('Dashboard')} />
+                            <ListItemText primary={t('Donations')} />
                           </MenuItem>
                         </NextLink>
                         <NextLink

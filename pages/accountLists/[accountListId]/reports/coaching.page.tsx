@@ -3,8 +3,8 @@ import Head from 'next/head';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'next/router';
 import { Box } from '@material-ui/core';
-import { MonthlyActivity } from '../../../../src/components/Reports/DonationsReport/MonthlyActivity';
-import { DonationsList } from '../../../../src/components/Reports/DonationsReport/DonationsList';
+import { MonthlyActivity } from '../../../../src/components/Reports/DonationsReport/MonthlyActivityReport';
+import { DonationsList } from '../../../../src/components/Reports/DonationsReport/DonationsReportTable';
 import Loading from '../../../../src/components/Loading';
 
 const CoachingReportPage = (): ReactElement => {
