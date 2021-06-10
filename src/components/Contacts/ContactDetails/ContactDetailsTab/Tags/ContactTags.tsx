@@ -39,6 +39,17 @@ const ContactTagInput = styled(TextField)(({ theme }) => ({
   '&& .MuiInputBase-input': {
     minWidth: '200px',
   },
+  '& ::placeholder': {
+    color: '#2196F3',
+    opacity: 1,
+  },
+  '& :hover::placeholder': {
+    textDecoration: 'underline',
+  },
+  '& :focus::placeholder': {
+    textDecoration: 'none',
+    color: theme.palette.cruGrayMedium.main,
+  },
   margin: theme.spacing(1),
   marginLeft: '0',
 }));

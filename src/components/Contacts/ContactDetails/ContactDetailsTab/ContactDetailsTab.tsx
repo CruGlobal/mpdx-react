@@ -4,6 +4,7 @@ import {
   Button,
   CircularProgress,
   DialogContentText,
+  IconButton,
   Divider,
   styled,
   Typography,
@@ -41,10 +42,10 @@ const ContactDetailSectionContainer = styled(Box)(({ theme }) => ({
 
 const ContactDetailHeadingContainer = styled(Box)(() => ({
   display: 'flex',
-  alignContent: 'center',
+  alignItems: 'center',
 }));
 
-const ContactDetailHeadingIcon = styled(CreateIcon)(({ theme }) => ({
+const ContactDetailEditIcon = styled(CreateIcon)(({ theme }) => ({
   width: '18px',
   height: '18px',
   margin: theme.spacing(0),
@@ -53,13 +54,8 @@ const ContactDetailHeadingIcon = styled(CreateIcon)(({ theme }) => ({
 
 const ContactDeleteButton = styled(Button)(({ theme }) => ({
   display: 'flex',
-  padding: theme.spacing(1, 2),
   margin: theme.spacing(5, 'auto'),
-  backgroundColor: theme.palette.error.main,
-  color: theme.palette.common.white,
-  '&:hover': {
-    backgroundColor: theme.palette.error.dark,
-  },
+  color: theme.palette.cruGrayMedium.main,
 }));
 
 const DialogDeleteButton = styled(Button)(({ theme }) => ({
@@ -72,6 +68,7 @@ const DialogDeleteButton = styled(Button)(({ theme }) => ({
 
 const ContactDetailHeadingText = styled(Typography)(() => ({
   flexGrow: 5,
+  fontWeight: 'bold',
 }));
 
 const ContactDetailLoadingPlaceHolder = styled(Skeleton)(({ theme }) => ({
@@ -215,7 +212,9 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
             <ContactDetailHeadingText variant="h6">
               {loading || !data ? t('Loading') : data.contact.name}
             </ContactDetailHeadingText>
-            <ContactDetailHeadingIcon />
+            <IconButton>
+              <ContactDetailEditIcon />
+            </IconButton>
           </ContactDetailHeadingContainer>
           {loading || !data ? (
             <>
@@ -236,7 +235,9 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
             <ContactDetailHeadingText variant="h6">
               {t('Mailing')}
             </ContactDetailHeadingText>
-            <ContactDetailHeadingIcon />
+            <IconButton>
+              <ContactDetailEditIcon />
+            </IconButton>
           </ContactDetailHeadingContainer>
           {loading || !data ? (
             <>
@@ -257,7 +258,9 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
             <ContactDetailHeadingText variant="h6">
               {t('Other')}
             </ContactDetailHeadingText>
-            <ContactDetailHeadingIcon />
+            <IconButton>
+              <ContactDetailEditIcon />
+            </IconButton>
           </ContactDetailHeadingContainer>
           {loading || !data ? (
             <>
@@ -271,7 +274,7 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
         </ContactDetailSectionContainer>
         <Divider />
         <ContactDeleteButton
-          variant="contained"
+          variant="outlined"
           size="large"
           onClick={() => setDeleteDialogOpen(true)}
         >

@@ -6,13 +6,12 @@ import { ContactMailingFragment } from './ContactMailing.generated';
 
 const ContactDetailsMailingMainContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
-  marginTop: theme.spacing(2),
+  marginTop: theme.spacing(1),
 }));
 
 const ContactDetailsMailingIcon = styled(LocationOn)(({ theme }) => ({
-  margin: theme.spacing(1),
-  width: '34px',
-  height: '34px',
+  margin: theme.spacing(1, 2),
+  color: theme.palette.cruGrayMedium.main,
 }));
 
 const ContactDetailsMailingTexContainer = styled(Box)(({}) => ({
@@ -27,6 +26,10 @@ const ContactDetailsMailingLabelTextContainer = styled(Box)(({}) => ({
 const ContactDetailsMailingLabel = styled(Typography)(({ theme }) => ({
   color: theme.palette.text.hint,
   marginRight: '5px',
+}));
+
+const ContactDetailsShowMoreLabel = styled(Typography)(() => ({
+  color: '#2196F3',
 }));
 
 interface MailingProp {
@@ -56,7 +59,9 @@ export const ContactDetailsTabMailing: React.FC<MailingProp> = ({ data }) => {
           {/* Show More Section */}
           <ContactDetailsMailingLabelTextContainer>
             <Link href="#">
-              <Typography variant="subtitle1">{t('Show More')}</Typography>
+              <ContactDetailsShowMoreLabel variant="subtitle1">
+                {t('Show More')}
+              </ContactDetailsShowMoreLabel>
             </Link>
           </ContactDetailsMailingLabelTextContainer>
           {/* Greeting Section */}

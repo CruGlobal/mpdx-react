@@ -31,6 +31,10 @@ const ContactPersonRowContainer = styled(Box)(({ theme }) => ({
   alignItems: 'center',
 }));
 
+const ContactPersonNameText = styled(Typography)(() => ({
+  fontWeight: 'bold',
+}));
+
 const ContactPersonPrimaryText = styled(Typography)(({ theme }) => ({
   margin: theme.spacing(0, 1),
   color: theme.palette.text.hint,
@@ -64,9 +68,9 @@ export const ContactDetailsTabPeople: React.FC<ContactDetailsPeopleProp> = ({
         <ContactPersonTextContainer>
           {/* Heading Section */}
           <ContactPersonRowContainer>
-            <Typography variant="h6">
+            <ContactPersonNameText variant="h6">
               {`${person.firstName} ${person.lastName}`}
-            </Typography>
+            </ContactPersonNameText>
             {primaryPerson?.id === person.id ? (
               <ContactPersonPrimaryText variant="subtitle1">
                 {`- ${t('Primary')}`}
