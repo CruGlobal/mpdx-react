@@ -3,9 +3,10 @@ import Head from 'next/head';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'next/router';
 import { Box } from '@material-ui/core';
-import { MonthlyActivity } from '../../../../src/components/Reports/DonationsReport/MonthlyActivityReport';
+import { MonthlyActivity } from '../../../../src/components/Reports/DonationsReport/MonthlyActivitySection';
 import { DonationsList } from '../../../../src/components/Reports/DonationsReport/DonationsReportTable';
 import Loading from '../../../../src/components/Loading';
+import PageHeading from '../../../../src/components/PageHeading';
 
 const DonationsReportPage = (): ReactElement => {
   const { t } = useTranslation();
@@ -26,6 +27,7 @@ const DonationsReportPage = (): ReactElement => {
       </Head>
       {isReady && accountListId ? (
         <Box>
+          <PageHeading heading={t('Donations')} />
           <MonthlyActivity accountListId={accountListId} />
           <DonationsList accountListId={accountListId} />
         </Box>

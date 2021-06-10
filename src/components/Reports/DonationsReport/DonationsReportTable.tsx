@@ -5,6 +5,6 @@ interface Props {
   accountListId: string;
 }
 
-export const DonationsList: React.FC<Props> = () => {
+export const DonationsReportTable: React.FC<Props> = () => {
   return <Box />;
 };

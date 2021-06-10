@@ -5,6 +5,6 @@ interface Props {
   accountListId: string;
 }
 
-export const MonthlyActivity: React.FC<Props> = () => {
+export const MonthlyActivitySection: React.FC<Props> = () => {
   return <Box />;
 };
