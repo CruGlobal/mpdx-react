@@ -3,8 +3,8 @@ import Head from 'next/head';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'next/router';
 import { Box } from '@material-ui/core';
-import { MonthlyActivity } from '../../../../src/components/Reports/DonationsReport/MonthlyActivitySection';
-import { DonationsList } from '../../../../src/components/Reports/DonationsReport/DonationsReportTable';
+import PageHeading from '../../../../src/components/PageHeading';
+import { DesignationAccountsReportTable } from '../../../../src/components/Reports/DesignationAccountsReport/DesignationAccountsReportTable';
 import Loading from '../../../../src/components/Loading';
 
 const DesignationAccountsReportPage = (): ReactElement => {
@@ -26,8 +26,8 @@ const DesignationAccountsReportPage = (): ReactElement => {
       </Head>
       {isReady && accountListId ? (
         <Box>
-          <MonthlyActivity accountListId={accountListId} />
-          <DonationsList accountListId={accountListId} />
+          <PageHeading heading={t('Designation Accounts')} />
+          <DesignationAccountsReportTable accountListId={accountListId} />
         </Box>
       ) : (
         <Loading loading />
