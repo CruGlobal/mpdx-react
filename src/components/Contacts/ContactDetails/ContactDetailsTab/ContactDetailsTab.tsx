@@ -98,7 +98,7 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
   const { enqueueSnackbar } = useSnackbar();
   const { push, query } = useRouter();
   const [deleteContact, { loading: deleting }] = useDeleteContactMutation();
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
   const { contactId: _, searchTerm, ...queryWithoutContactId } = query;
 
@@ -149,10 +149,10 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
     }
   };
 
-  const renderDeleteContactDialog = () => {
+  const renderDeleteContactModal = () => {
     return (
       <Modal
-        isOpen={deleteDialogOpen}
+        isOpen={deleteModalOpen}
         title={t('Delete Contact')}
         content={
           <DialogContentText>
@@ -165,7 +165,7 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
           <>
             <Button
               disabled={deleting}
-              onClick={() => setDeleteDialogOpen(false)}
+              onClick={() => setDeleteModalOpen(false)}
             >
               {t('Cancel')}
             </Button>
@@ -180,7 +180,7 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
             </DialogDeleteButton>
           </>
         }
-        handleClose={() => setDeleteDialogOpen(false)}
+        handleClose={() => setDeleteModalOpen(false)}
         handleConfirm={handleDeleteContact}
       />
     );
@@ -276,12 +276,12 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
         <ContactDeleteButton
           variant="outlined"
           size="large"
-          onClick={() => setDeleteDialogOpen(true)}
+          onClick={() => setDeleteModalOpen(true)}
         >
           {t('delete contact')}
         </ContactDeleteButton>
       </ContactDetailsTabContainer>
-      {renderDeleteContactDialog()}
+      {renderDeleteContactModal()}
     </>
   );
 };
