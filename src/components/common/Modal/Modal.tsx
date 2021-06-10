@@ -1,6 +1,5 @@
 import React, { ReactElement } from 'react';
 import {
-  Button,
   Dialog,
   DialogActions,
   DialogContent,
@@ -26,18 +25,22 @@ const CloseButton = styled(IconButton)(({ theme }) => ({
 }));
 
 interface Props {
+  /** determines whether the modal is currently open or not */
   isOpen: boolean;
+  /** determines whether the modal should occupy the full width, dependent on the size prop, default is true  */
   fullWidth?: boolean;
+  /** determines the size of the modal, default is 'sm' */
   size?: DialogProps['maxWidth'];
+  /** title to be rendered in modal header */
   title: string;
+  /** content to be rendered in modal body */
   content: ReactElement;
+  /** function to be fired when close button is pressed */
   handleClose: () => void;
-  handleConfirm: () => void;
-  confirmText?: string;
-  cancelText?: string;
+  /** determines whether to render dividers between modal sections, default is true */
   dividers?: boolean;
+  /** action section to be rendered in modal footer */
   customActionSection?: ReactElement;
-  disableActionButtons?: boolean;
 }
 
 const Modal = ({
@@ -46,13 +49,9 @@ const Modal = ({
   content,
   customActionSection,
   handleClose,
-  handleConfirm,
-  confirmText,
-  cancelText,
   size = 'sm',
   fullWidth = true,
   dividers = true,
-  disableActionButtons = false,
 }: Props): ReactElement<Props> => {
   const { t } = useTranslation();
   return (
@@ -69,26 +68,7 @@ const Modal = ({
       </Grid>
       <DialogContent dividers={dividers}>{content}</DialogContent>
       <DialogActions>
-        {customActionSection ? (
-          customActionSection
-        ) : (
-          <>
-            <Button
-              disabled={disableActionButtons}
-              onClick={() => handleClose()}
-            >
-              {cancelText ? cancelText : t('Cancel')}
-            </Button>
-            <Button
-              disabled={disableActionButtons}
-              variant="contained"
-              color="primary"
-              onClick={() => handleConfirm()}
-            >
-              {confirmText ? confirmText : t('Save')}
-            </Button>
-          </>
-        )}
+        {customActionSection ? customActionSection : null}
       </DialogActions>
     </Dialog>
   );

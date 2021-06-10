@@ -43,10 +43,6 @@ export const Default: Story = (args) => {
             changeModalOpen(false);
             args.handleClose();
           }}
-          handleConfirm={() => {
-            changeModalOpen(false);
-            args.handleConfirm();
-          }}
           fullWidth={boolean('Full Width', true)}
           dividers={boolean('Dividers', true)}
           title={text('modal title', 'Default Title')}
@@ -99,10 +95,6 @@ export const CustomActionSection: Story = (args) => {
             changeModalOpen(false);
             args.handleClose();
           }}
-          handleConfirm={() => {
-            changeModalOpen(false);
-            args.handleConfirm();
-          }}
         />
       </MuiThemeProvider>
     </Box>
@@ -133,12 +125,6 @@ export const CustomActionButtonText: Story = (args) => {
             changeModalOpen(false);
             args.handleClose();
           }}
-          handleConfirm={() => {
-            changeModalOpen(false);
-            args.handleConfirm();
-          }}
-          confirmText={text('confirm text', 'Custom Confirm Text')}
-          cancelText={text('cancel text', 'Custom Cancel Text')}
         />
       </MuiThemeProvider>
     </Box>
@@ -169,11 +155,6 @@ export const Diasbled: Story = (args) => {
             changeModalOpen(false);
             args.handleClose();
           }}
-          handleConfirm={() => {
-            changeModalOpen(false);
-            args.handleConfirm();
-          }}
-          disableActionButtons={true}
         />
       </MuiThemeProvider>
     </Box>
