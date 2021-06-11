@@ -89,6 +89,16 @@ export const mapFourteenMonthReport = (
             month: data.attributes.months[index],
             total: Number(total),
           })),
+          average: currencyGroup.donation_infos.reduce(
+            (averageTotal, contactDonationInfo) =>
+              averageTotal + Number(contactDonationInfo.average),
+            0,
+          ),
+          minimum: currencyGroup.donation_infos.reduce(
+            (minimumTotal, contactDonationInfo) =>
+              minimumTotal + Number(contactDonationInfo.minimum),
+            0,
+          ),
         },
         contacts: currencyGroup.donation_infos.map((contactDonationInfo) => {
           const contact = data.attributes.donor_infos.find(
@@ -96,10 +106,10 @@ export const mapFourteenMonthReport = (
           );
           return {
             id: contactDonationInfo.contact_id,
+            name: contact?.contact_name ?? '',
             total: Number(contactDonationInfo.total),
             average: Number(contactDonationInfo.average),
             minimum: Number(contactDonationInfo.minimum),
-            maximum: Number(contactDonationInfo.maximum),
             months: contactDonationInfo.months.map((month, index) => ({
               month: data.attributes.months[index],
               total: Number(month.total),
@@ -107,6 +117,7 @@ export const mapFourteenMonthReport = (
                 amount: Number(donation.amount),
                 date: donation.donation_date,
                 paymentMethod: donation.payment_method,
+                currency: donation.currency,
               })),
             })),
             accountNumbers: contact?.account_numbers ?? [],
