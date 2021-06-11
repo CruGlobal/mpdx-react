@@ -129,8 +129,8 @@ class MpdxRestApi extends RESTDataSource {
           ? 'salary_currency_donations'
           : 'donor_currency_donations'
       }?filter[account_list_id]=${accountListId}&filter[month_range]=${Interval.before(
-        DateTime.now(),
-        Duration.fromObject({ months: 14 }),
+        DateTime.now().endOf('month'),
+        Duration.fromObject({ months: 14 }).minus({ day: 1 }),
       )
         .toISODate()
         .replace('/', '...')}`,

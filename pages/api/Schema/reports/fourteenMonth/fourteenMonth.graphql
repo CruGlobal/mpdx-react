@@ -27,6 +27,8 @@ type FourteenMonthReportCurrencyGroup {
 type FourteenMonthReportCurrencyGroupTotals {
   year: Float!
   months: [FourteenMonthReportCurrencyGroupTotalsMonth!]!
+  average: Float!
+  minimum: Float!
 }
 
 type FourteenMonthReportCurrencyGroupTotalsMonth {
@@ -36,10 +38,10 @@ type FourteenMonthReportCurrencyGroupTotalsMonth {
 
 type FourteenMonthReportContact {
   id: ID!
+  name: String!
   total: Float!
   average: Float!
   minimum: Float!
-  maximum: Float!
   months: [FourteenMonthReportContactMonths!]
   accountNumbers: [String!]!
   lateBy30Days: Boolean!
@@ -59,5 +61,6 @@ type FourteenMonthReportContactMonths {
 type FourteenMonthReportContactDonation {
   amount: Float!
   date: ISO8601Date!
+  currency: String!
   paymentMethod: String
 }
