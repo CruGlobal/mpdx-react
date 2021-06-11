@@ -11,10 +11,8 @@ enum FourteenMonthReportCurrencyType {
 }
 
 type FourteenMonthReport {
-  # id: ID!
   currencyType: FourteenMonthReportCurrencyType
   currencyGroups: [FourteenMonthReportCurrencyGroup!]!
-  ## months: [ISO8601Date!]!
   salaryCurrency: String!
 }
 
