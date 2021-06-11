@@ -13,8 +13,6 @@ type TaskAnalytics {
   updatedInDbAt: ISO8601DateTime!
 }
 
-scalar ISO8601DateTime
-
 type OverdueOrDueTodayTaskAnalytic {
   label: String!
   count: Int!
