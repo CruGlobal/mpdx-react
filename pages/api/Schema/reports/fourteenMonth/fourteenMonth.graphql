@@ -55,6 +55,7 @@ type FourteenMonthReportContact {
 type FourteenMonthReportContactMonths {
   month: ISO8601Date!
   total: Float!
+  salaryCurrencyTotal: Float!
   donations: [FourteenMonthReportContactDonation!]!
 }
 
