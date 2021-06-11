@@ -14,16 +14,23 @@ const HeaderWrapper = styled(Box)(({}) => ({
 }));
 
 const ProgressBarWrapper = styled(Box)(({}) => ({
-  width: 300,
+  width: 350,
   display: 'flex',
   flexDirection: 'row',
-  height: 30,
+  height: 45,
+  border: '2px solid white',
+  borderRadius: 30,
+  overflow: 'hidden',
 }));
 
 const ProgressBarSection = styled(Box)(({}) => ({
   height: '100%',
   width: '33%',
+  textAlign: 'center',
+  color: 'white',
+  flexGrow: 1,
 }));
+
 export const ExpectedMonthlyTotalReportHeader: React.FC<Props> = () => {
   const { t } = useTranslation();
   return (
@@ -31,18 +38,18 @@ export const ExpectedMonthlyTotalReportHeader: React.FC<Props> = () => {
       <HeaderWrapper>
         <Typography variant="h4">{t('Expected Monthly Total')}</Typography>
         <ProgressBarWrapper>
-          <ProgressBarSection style={{ backgroundColor: 'red' }}>
-            <Typography>Received</Typography>
+          <ProgressBarSection style={{ backgroundColor: '#fec627' }}>
+            <Typography>{t('Received')}</Typography>
           </ProgressBarSection>
-          <ProgressBarSection style={{ backgroundColor: 'blue' }}>
-            <Typography>Likely</Typography>
+          <ProgressBarSection style={{ backgroundColor: '#fedb72' }}>
+            <Typography>{t('Likely')}</Typography>
           </ProgressBarSection>
-          <ProgressBarSection style={{ backgroundColor: 'green' }}>
-            <Typography>Possible</Typography>
+          <ProgressBarSection style={{ backgroundColor: '#c89a37' }}>
+            <Typography>{t('Possible')}</Typography>
           </ProgressBarSection>
         </ProgressBarWrapper>
       </HeaderWrapper>
-      <Divider variant="middle"></Divider>
+      <Divider style={{ margin: 16 }} variant="middle"></Divider>
     </Box>
   );
 };
