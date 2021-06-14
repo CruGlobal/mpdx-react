@@ -62,7 +62,7 @@ export const ContactDonationsTab: React.FC<ContactDontationsProp> = ({
   accountListId,
   contactId,
 }) => {
-  const { data, loading, fetchMore } = useGetContactDonationsQuery({
+  const { data, loading } = useGetContactDonationsQuery({
     variables: {
       accountListId: accountListId,
       contactId: contactId,
@@ -121,7 +121,7 @@ export const ContactDonationsTab: React.FC<ContactDontationsProp> = ({
           </DonationsTabList>
         </DonationsTabContainer>
         <TabPanel value={DonationTabKey.Donations}>
-          {loading && fetchMore ? (
+          {loading ? (
             <>
               <ContactDonationsLoadingPlaceHolder />
               <ContactDonationsLoadingPlaceHolder />
