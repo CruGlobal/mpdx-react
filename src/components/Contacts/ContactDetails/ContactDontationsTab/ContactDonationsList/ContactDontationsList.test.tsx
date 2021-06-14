@@ -22,7 +22,6 @@ describe('ContactDonationsList', () => {
           variables: {
             accountListId: accountListId,
             contactId: contactId,
-            first: first,
           },
         }),
       {
@@ -34,7 +33,6 @@ describe('ContactDonationsList', () => {
       Object {
         "accountListId": "account-list-1",
         "contactId": "contact-id-1",
-        "first": 25,
       }
     `);
   });
