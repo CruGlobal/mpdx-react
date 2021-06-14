@@ -21,7 +21,7 @@ export const NextLinkComposed = React.forwardRef<
   const {
     to,
     linkAs,
-    href,
+    // href,
     replace,
     scroll,
     passHref,
@@ -67,7 +67,6 @@ const Link = React.forwardRef<HTMLAnchorElement, LinkProps>(function Link(
     className: classNameProps,
     href,
     noLinkStyle,
-    role, // Link don't have roles.
     ...rest
   } = props;
 
@@ -87,7 +86,7 @@ const Link = React.forwardRef<HTMLAnchorElement, LinkProps>(function Link(
         <a
           className={className}
           href={href as string}
-          ref={ref as any}
+          ref={ref as ref}
           {...rest}
         />
       );
@@ -107,7 +106,7 @@ const Link = React.forwardRef<HTMLAnchorElement, LinkProps>(function Link(
     return (
       <NextLinkComposed
         className={className}
-        ref={ref as any}
+        ref={ref as ref}
         to={href}
         {...rest}
       />
