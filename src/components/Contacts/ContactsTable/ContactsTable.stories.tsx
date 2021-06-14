@@ -15,6 +15,7 @@ export const Default = (): ReactElement => {
       <ContactsTable
         accountListId={accountListId}
         onContactSelected={() => {}}
+        onSearchTermChange={() => {}}
         activeFilters={false}
         filterPanelOpen={false}
         toggleFilterPanel={() => {}}
@@ -37,6 +38,7 @@ export const Loading = (): ReactElement => {
       <ContactsTable
         accountListId={accountListId}
         onContactSelected={() => {}}
+        onSearchTermChange={() => {}}
         activeFilters={false}
         filterPanelOpen={false}
         toggleFilterPanel={() => {}}
@@ -59,6 +61,7 @@ export const Empty = (): ReactElement => {
       <ContactsTable
         accountListId={accountListId}
         onContactSelected={() => {}}
+        onSearchTermChange={() => {}}
         activeFilters={false}
         filterPanelOpen={false}
         toggleFilterPanel={() => {}}
@@ -82,6 +85,7 @@ export const Error = (): ReactElement => {
       <ContactsTable
         accountListId={accountListId}
         onContactSelected={() => {}}
+        onSearchTermChange={() => {}}
         activeFilters={false}
         filterPanelOpen={false}
         toggleFilterPanel={() => {}}
