@@ -116,8 +116,7 @@ const NavMenu = (): ReactElement => {
                         id="menu-list-grow"
                       >
                         <NextLink
-                          href="/accountLists/[accountListId]/reports/donations"
-                          as={`/accountLists/${state.accountListId}/reports/donations`}
+                          href={`/accountLists/${state.accountListId}/reports/donations`}
                           scroll={false}
                         >
                           <MenuItem onClick={handleReportsMenuClose}>
@@ -125,8 +124,7 @@ const NavMenu = (): ReactElement => {
                           </MenuItem>
                         </NextLink>
                         <NextLink
-                          href="/accountLists/[accountListId]/reports/partner"
-                          as={`/accountLists/${state.accountListId}/reports/partner`}
+                          href={`/accountLists/${state.accountListId}/reports/partner`}
                           scroll={false}
                         >
                           <MenuItem onClick={handleReportsMenuClose}>
@@ -136,8 +134,7 @@ const NavMenu = (): ReactElement => {
                           </MenuItem>
                         </NextLink>
                         <NextLink
-                          href="/accountLists/[accountListId]/reports/salary"
-                          as={`/accountLists/${state.accountListId}/reports/salary`}
+                          href={`/accountLists/${state.accountListId}/reports/salary`}
                           scroll={false}
                         >
                           <MenuItem onClick={handleReportsMenuClose}>
@@ -147,8 +144,7 @@ const NavMenu = (): ReactElement => {
                           </MenuItem>
                         </NextLink>
                         <NextLink
-                          href="/accountLists/[accountListId]/reports/designation_accounts"
-                          as={`/accountLists/${state.accountListId}/reports/designation_accounts`}
+                          href={`/accountLists/${state.accountListId}/reports/designation_accounts`}
                           scroll={false}
                         >
                           <MenuItem onClick={handleReportsMenuClose}>
@@ -156,8 +152,7 @@ const NavMenu = (): ReactElement => {
                           </MenuItem>
                         </NextLink>
                         <NextLink
-                          href="/accountLists/[accountListId]/reports/financial_accounts"
-                          as={`/accountLists/${state.accountListId}/reports/financial_accounts`}
+                          href={`/accountLists/${state.accountListId}/reports/financial_accounts`}
                           scroll={false}
                         >
                           <MenuItem onClick={handleReportsMenuClose}>
@@ -167,8 +162,7 @@ const NavMenu = (): ReactElement => {
                           </MenuItem>
                         </NextLink>
                         <NextLink
-                          href="/accountLists/[accountListId]/reports/monthly"
-                          as={`/accountLists/${state.accountListId}/reports/monthly`}
+                          href={`/accountLists/${state.accountListId}/reports/monthly`}
                           scroll={false}
                         >
                           <MenuItem onClick={handleReportsMenuClose}>
@@ -178,8 +172,7 @@ const NavMenu = (): ReactElement => {
                           </MenuItem>
                         </NextLink>
                         <NextLink
-                          href="/accountLists/[accountListId]/reports/analysis"
-                          as={`/accountLists/${state.accountListId}/reports/analysis`}
+                          href={`/accountLists/${state.accountListId}/reports/analysis`}
                           scroll={false}
                         >
                           <MenuItem onClick={handleReportsMenuClose}>
@@ -189,8 +182,7 @@ const NavMenu = (): ReactElement => {
                           </MenuItem>
                         </NextLink>
                         <NextLink
-                          href="/accountLists/[accountListId]/reports/coaching"
-                          as={`/accountLists/${state.accountListId}/reports/coaching`}
+                          href={`/accountLists/${state.accountListId}/reports/coaching`}
                           scroll={false}
                         >
                           <MenuItem onClick={handleReportsMenuClose}>
