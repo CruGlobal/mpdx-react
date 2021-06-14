@@ -106,17 +106,18 @@ export const ContactDonationsList: React.FC<ContactDonationsListProp> = ({
                       return prev;
                     }
                     return {
+                      ...prev
+                      ...fetchMoreResult,
                       contact: {
+                        ...prev.contact,
+                        ...fetchMoreResult.contact,
                         donations: {
+                          ...prev.contact.donations,
+                          ...fetchMoreResult.contact.donations,
                           nodes: [
                             ...prev.contact.donations.nodes,
                             ...fetchMoreResult.contact.donations.nodes,
                           ],
-                          pageInfo: fetchMoreResult.contact.donations.pageInfo,
-                          totalCount:
-                            fetchMoreResult.contact.donations.totalCount,
-                          totalPageCount:
-                            fetchMoreResult.contact.donations.totalPageCount,
                         },
                       },
                     };
