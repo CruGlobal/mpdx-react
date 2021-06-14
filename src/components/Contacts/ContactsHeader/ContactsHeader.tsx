@@ -166,7 +166,7 @@ export const ContactsHeader: React.FC<Props> = ({
         placeholder={t('Search List')}
       />
       <ContactsShowingText>
-        {t('Showing 43', { count: totalContacts })}
+        {t('Showing {{count}}', { count: totalContacts })}
       </ContactsShowingText>
 
       <Hidden smDown>

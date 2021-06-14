@@ -1,11 +1,15 @@
 import React, { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Box, Chip, Link, styled, TextField } from '@material-ui/core';
+import { Box, Chip, styled, TextField } from '@material-ui/core';
 import TagIcon from '@material-ui/icons/LocalOfferOutlined';
 import * as yup from 'yup';
 import { Formik, FormikHelpers } from 'formik';
 import { useSnackbar } from 'notistack';
-import { useUpdateContactTagsMutation } from './ContactTags.generated';
+import { Autocomplete } from '@material-ui/lab';
+import {
+  useGetContactTagListQuery,
+  useUpdateContactTagsMutation,
+} from './ContactTags.generated';
 
 const ContactTagsContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -26,9 +30,6 @@ const ContactTagIcon = styled(TagIcon)(({ theme }) => ({
 }));
 
 const ContactTagInput = styled(TextField)(({ theme }) => ({
-  '&& .MuiFormLabel-root.Mui-focused': {
-    color: theme.palette.cruGrayDark.main,
-  },
   '&& .MuiInput-underline:before ': {
     borderBottom: 'none',
   },
@@ -36,7 +37,7 @@ const ContactTagInput = styled(TextField)(({ theme }) => ({
     borderBottom: `2px solid ${theme.palette.divider}`,
   },
   '&& .MuiInputBase-input': {
-    marginBottom: '13px',
+    minWidth: '200px',
   },
   margin: theme.spacing(1),
   marginLeft: '0',
@@ -60,11 +61,14 @@ export const ContactTags: React.FC<ContactTagsProps> = ({
     { loading: updating },
   ] = useUpdateContactTagsMutation();
 
+  const { data, loading } = useGetContactTagListQuery({
+    variables: {
+      accountListId,
+    },
+  });
+
   const tagSchema = yup.object({
-    tag: yup
-      .string()
-      .notOneOf(contactTags, 'A tag of that value already exist')
-      .required(),
+    tagList: yup.array().of(yup.string()).default([]),
   });
 
   const handleTagDelete = async (tag: string) => {
@@ -95,16 +99,17 @@ export const ContactTags: React.FC<ContactTagsProps> = ({
   };
 
   const onSubmit = async (
-    { tag }: { tag: string },
-    { resetForm }: FormikHelpers<{ tag: string }>,
+    { tagList }: { tagList: string[] & never[] },
+    { resetForm }: FormikHelpers<{ tagList: string[] & never[] }>,
   ): Promise<void> => {
+    resetForm();
+    if (tagList.length === 0) return;
     try {
-      resetForm();
       const { data } = await updateContactTags({
         variables: {
           accountListId,
           contactId,
-          tagList: [...contactTags, tag],
+          tagList: [...contactTags, ...tagList],
         },
         optimisticResponse: {
           updateContact: {
@@ -112,7 +117,7 @@ export const ContactTags: React.FC<ContactTagsProps> = ({
             contact: {
               __typename: 'Contact',
               id: contactId,
-              tagList: [...contactTags, tag],
+              tagList: [...contactTags, ...tagList],
             },
           },
         },
@@ -141,40 +146,39 @@ export const ContactTags: React.FC<ContactTagsProps> = ({
           title={t('Delete Icon')}
         />
       ))}
-      <Link color="textSecondary">
-        <Formik
-          initialValues={{ tag: '' }}
-          validationSchema={tagSchema}
-          onSubmit={onSubmit}
-        >
-          {({
-            values: { tag },
-            handleChange,
-            handleSubmit,
-            isSubmitting,
-            errors,
-            touched,
-          }): ReactElement => (
-            <form onSubmit={handleSubmit} noValidate>
-              <ContactTagInput
-                value={tag}
-                label={t('add tag')}
-                inputProps={{ 'aria-label': t('Tag') }}
-                disabled={isSubmitting || updating}
-                onChange={handleChange('tag')}
-                error={!!errors.tag && touched.tag}
-                helperText={errors.tag && touched.tag && t(`${errors.tag}`)}
-                onKeyPress={(event): void => {
-                  if (event.key === 'Enter' && !event.shiftKey) {
-                    handleSubmit();
-                    event.preventDefault();
-                  }
-                }}
-              />
-            </form>
-          )}
-        </Formik>
-      </Link>
+      <Formik
+        initialValues={{ tagList: [] }}
+        validationSchema={tagSchema}
+        onSubmit={onSubmit}
+      >
+        {({
+          values: { tagList },
+          handleSubmit,
+          isSubmitting,
+          setFieldValue,
+        }): ReactElement => (
+          <form onSubmit={handleSubmit} noValidate>
+            <Autocomplete
+              multiple
+              freeSolo
+              fullWidth
+              loading={loading}
+              popupIcon={<ContactTagIcon />}
+              filterSelectedOptions
+              value={tagList}
+              options={data?.accountList?.contactTagList || []}
+              renderInput={(params): ReactElement => (
+                <ContactTagInput
+                  {...params}
+                  placeholder={t('add tag')}
+                  disabled={isSubmitting || updating}
+                />
+              )}
+              onChange={(_, tagList): void => setFieldValue('tagList', tagList)}
+            />
+          </form>
+        )}
+      </Formik>
     </ContactTagsContainer>
   );
 };
