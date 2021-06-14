@@ -1,7 +1,6 @@
 import React, { ReactElement } from 'react';
 import Head from 'next/head';
 import { useTranslation } from 'react-i18next';
-import { useRouter } from 'next/router';
 import { Box } from '@material-ui/core';
 import { ControlsSection } from '../../../../src/components/Reports/CoachingReport/CoachingReportSidePanel/ControlsSection';
 import { MpdInfoSection } from '../../../../src/components/Reports/CoachingReport/CoachingReportSidePanel/MpdInfoSection';
@@ -19,16 +18,11 @@ import { ContactTagsSection } from '../../../../src/components/Reports/CoachingR
 import { TaskTagsSection } from '../../../../src/components/Reports/CoachingReport/CoachingReportMainSection/TaskTagsSection';
 import { WeeklyReportSection } from '../../../../src/components/Reports/CoachingReport/CoachingReportMainSection/WeeklyReportSection';
 import Loading from '../../../../src/components/Loading';
+import { useAccountListId } from '../../../../src/hooks/useAccountListId';
 
 const CoachingReportPage = (): ReactElement => {
   const { t } = useTranslation();
-  const { query, isReady } = useRouter();
-
-  const { accountListId } = query;
-
-  if (Array.isArray(accountListId)) {
-    throw new Error('accountListId should not be an array');
-  }
+  const accountListId = useAccountListId();
 
   return (
     <>
@@ -37,7 +31,7 @@ const CoachingReportPage = (): ReactElement => {
           MPDX | {t('Reports')} | {t('Coaching')}
         </title>
       </Head>
-      {isReady && accountListId ? (
+      {accountListId ? (
         <Box height="100vh" display="flex" overflow-y="scroll">
           <Box width="290px">
             <ControlsSection accountListId={accountListId} />

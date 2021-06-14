@@ -1,20 +1,14 @@
 import React, { ReactElement } from 'react';
 import Head from 'next/head';
 import { useTranslation } from 'react-i18next';
-import { useRouter } from 'next/router';
 import { Box } from '@material-ui/core';
 import { SalaryReportTable } from '../../../../src/components/Reports/SalaryReport/SalaryReportTable';
 import Loading from '../../../../src/components/Loading';
+import { useAccountListId } from '../../../../src/hooks/useAccountListId';
 
 const SalaryReportPage = (): ReactElement => {
   const { t } = useTranslation();
-  const { query, isReady } = useRouter();
-
-  const { accountListId } = query;
-
-  if (Array.isArray(accountListId)) {
-    throw new Error('accountListId should not be an array');
-  }
+  const accountListId = useAccountListId();
 
   return (
     <>
@@ -23,7 +17,7 @@ const SalaryReportPage = (): ReactElement => {
           MPDX | {t('Reports')} | {t('14 Month Report (Salary)')}
         </title>
       </Head>
-      {isReady && accountListId ? (
+      {accountListId ? (
         <Box>
           <SalaryReportTable accountListId={accountListId} />
         </Box>

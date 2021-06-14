@@ -7,18 +7,17 @@ import { ContactFilters } from '../../../../src/components/Contacts/ContactFilte
 import { ContactsTable } from '../../../../src/components/Contacts/ContactsTable/ContactsTable';
 import { ContactDetails } from '../../../../src/components/Contacts/ContactDetails/ContactDetails';
 import Loading from '../../../../src/components/Loading';
+import { useAccountListId } from '../../../../src/hooks/useAccountListId';
 
 const ContactsPage: React.FC = () => {
   const { t } = useTranslation();
+  const accountListId = useAccountListId();
   const { query, push, isReady } = useRouter();
 
   const [contactDetailsId, setContactDetailsId] = useState<string>();
 
-  const { accountListId, contactId } = query;
+  const { contactId } = query;
 
-  if (Array.isArray(accountListId)) {
-    throw new Error('accountListId should not be an array');
-  }
   if (contactId !== undefined && !Array.isArray(contactId)) {
     throw new Error('contactId should be an array or undefined');
   }
@@ -58,7 +57,7 @@ const ContactsPage: React.FC = () => {
       <Head>
         <title>MPDX | {t('Contacts')}</title>
       </Head>
-      {isReady && accountListId ? (
+      {accountListId ? (
         <Box height="100vh" display="flex" overflow-y="scroll">
           <ContactFilters accountListId={accountListId} width="290px" />
           <Box flex={1}>
