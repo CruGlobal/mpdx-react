@@ -12,7 +12,6 @@ import {
 
 const accountListId = 'account-list-1';
 const contactId = 'contact-id-1';
-const first = 25;
 
 describe('ContactDonationsList', () => {
   it('test query', async () => {
