@@ -38,7 +38,7 @@ const ContactsPage: React.FC = () => {
 
   const [filterPanelOpen, setFilterPanelOpen] = useState<boolean>(false);
   //TODO: Connect these to ContactFilters, and use actual filter data for activeFilters
-  const [activeFilters] = useState<boolean>(true);
+  const [activeFilters] = useState<boolean>(false);
 
   const toggleFilterPanel = () => {
     setFilterPanelOpen(!filterPanelOpen);
