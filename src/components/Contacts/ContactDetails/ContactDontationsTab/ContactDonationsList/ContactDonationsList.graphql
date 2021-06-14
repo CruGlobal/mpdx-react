@@ -1,13 +1,10 @@
 query ContactDonationsList(
   $accountListId: ID!
   $contactId: ID!
-  $first: Int
-  $last: Int
   $after: String
-  $before: String
 ) {
   contact(accountListId: $accountListId, id: $contactId) {
-    donations(after: $after, first: $first, before: $before, last: $last) {
+    donations(first: 13, after: $after) {
       ...DonationsContact
     }
   }

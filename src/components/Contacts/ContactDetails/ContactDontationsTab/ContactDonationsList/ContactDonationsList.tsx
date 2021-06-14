@@ -44,7 +44,6 @@ export const ContactDonationsList: React.FC<ContactDonationsListProp> = ({
     variables: {
       accountListId: accountListId,
       contactId: contactId,
-      first: range,
     },
     notifyOnNetworkStatusChange: true,
   });
@@ -91,14 +90,12 @@ export const ContactDonationsList: React.FC<ContactDonationsListProp> = ({
               <></>
             )}
           </Table>
-          {!loading &&
-          data?.contact.donations.pageInfo.hasNextPage ? (
+          {!loading && data?.contact.donations.pageInfo.hasNextPage ? (
             <LoadMoreButton
               variant="outlined"
               onClick={() => {
                 fetchMore({
                   variables: {
-                    first: range,
                     after: data.contact.donations.pageInfo.endCursor,
                   },
                   updateQuery: (prev, { fetchMoreResult }) => {
@@ -106,7 +103,7 @@ export const ContactDonationsList: React.FC<ContactDonationsListProp> = ({
                       return prev;
                     }
                     return {
-                      ...prev
+                      ...prev,
                       ...fetchMoreResult,
                       contact: {
                         ...prev.contact,
@@ -114,6 +111,7 @@ export const ContactDonationsList: React.FC<ContactDonationsListProp> = ({
                         donations: {
                           ...prev.contact.donations,
                           ...fetchMoreResult.contact.donations,
+                          pageInfo: fetchMoreResult.contact.donations.pageInfo,
                           nodes: [
                             ...prev.contact.donations.nodes,
                             ...fetchMoreResult.contact.donations.nodes,
