@@ -89,7 +89,9 @@ export const ContactDetailsHeader: React.FC<Props> = ({
           ) : data?.contact ? (
             <>
               <PrimaryContactName data-testid="ContactName" variant="h5">
-                {`${data.contact.primaryPerson?.firstName} ${data.contact.primaryPerson?.lastName}`}
+                {data.contact.primaryPerson
+                  ? `${data.contact.primaryPerson?.firstName} ${data.contact.primaryPerson?.lastName}`
+                  : data.contact.name}
               </PrimaryContactName>
               <PrimaryText variant="subtitle1">{` - ${t(
                 'Primary',

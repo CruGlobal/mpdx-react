@@ -1,10 +1,10 @@
 overwrite: true
-schema: ./pages/api/graphql-rest.page.ts
 hooks:
   afterOneFileWrite:
     - prettier --write
 generates:
   ./pages/api/graphql-rest.page.generated.ts:
+    schema: ./pages/api/Schema/**/*.graphql
     plugins:
       - add:
           content: '/* eslint-disable */'
@@ -14,5 +14,6 @@ generates:
       federation: true
       useIndexSignature: true
       contextType: ./graphql-rest.page#Context
-      ISO8601Date: string
-      ISO8601DateTime: string
+      scalars:
+        ISO8601Date: string
+        ISO8601DateTime: string

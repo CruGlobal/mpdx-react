@@ -8,6 +8,7 @@ import { ContactsTable } from '../../../../src/components/Contacts/ContactsTable
 import { ContactDetails } from '../../../../src/components/Contacts/ContactDetails/ContactDetails';
 import Loading from '../../../../src/components/Loading';
 import { SidePanelsLayout } from '../../../../src/components/Layouts/SidePanelsLayout';
+import { useAccountListId } from '../../../../src/hooks/useAccountListId';
 
 const ContactsPageWrapper = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.common.white,
@@ -15,16 +16,14 @@ const ContactsPageWrapper = styled(Box)(({ theme }) => ({
 
 const ContactsPage: React.FC = () => {
   const { t } = useTranslation();
-  const { query, push, isReady } = useRouter();
+  const accountListId = useAccountListId();
+  const { query, push, replace, isReady, pathname } = useRouter();
 
   const [contactDetailsOpen, setContactDetailsOpen] = useState(false);
   const [contactDetailsId, setContactDetailsId] = useState<string>();
 
-  const { accountListId, contactId } = query;
+  const { contactId } = query;
 
-  if (Array.isArray(accountListId)) {
-    throw new Error('accountListId should not be an array');
-  }
   if (contactId !== undefined && !Array.isArray(contactId)) {
     throw new Error('contactId should be an array or undefined');
   }
@@ -61,12 +60,22 @@ const ContactsPage: React.FC = () => {
     setContactDetailsOpen(!!id);
   };
 
+  const setSearchTerm = (searchTerm?: string) => {
+    replace({
+      pathname,
+      query: {
+        ...query,
+        searchTerm,
+      },
+    });
+  };
+
   return (
     <>
       <Head>
         <title>MPDX | {t('Contacts')}</title>
       </Head>
-      {isReady && accountListId ? (
+      {accountListId ? (
         <ContactsPageWrapper>
           <SidePanelsLayout
             leftPanel={
@@ -81,6 +90,7 @@ const ContactsPage: React.FC = () => {
               <ContactsTable
                 accountListId={accountListId}
                 onContactSelected={setContactFocus}
+                onSearchTermChange={setSearchTerm}
                 activeFilters={activeFilters}
                 filterPanelOpen={filterPanelOpen}
                 toggleFilterPanel={toggleFilterPanel}

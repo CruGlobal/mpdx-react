@@ -14,6 +14,7 @@ import { useContactsQuery } from '../../../../pages/accountLists/[accountListId]
 interface Props {
   accountListId: string;
   onContactSelected: (contactId: string) => void;
+  onSearchTermChange: (searchTerm?: string) => void;
   activeFilters: boolean;
   filterPanelOpen: boolean;
   toggleFilterPanel: () => void;
@@ -22,6 +23,7 @@ interface Props {
 export const ContactsTable: React.FC<Props> = ({
   accountListId,
   onContactSelected,
+  onSearchTermChange,
   activeFilters,
   filterPanelOpen,
   toggleFilterPanel,
@@ -53,6 +55,15 @@ export const ContactsTable: React.FC<Props> = ({
     <Box bgcolor={colors.red[600]}>Error: {error?.toString()}</Box>
   );
 
+  const handleOnContactSelected = (id: string) => {
+    onContactSelected(id);
+  };
+
+  const handleSetSearchTerm = (searchTerm: string) => {
+    setSearchTerm(searchTerm);
+    onSearchTermChange(searchTerm);
+  };
+
   return (
     <TableContainer>
       <Table stickyHeader aria-label="sticky table">
@@ -61,7 +72,8 @@ export const ContactsTable: React.FC<Props> = ({
             activeFilters={activeFilters}
             filterPanelOpen={filterPanelOpen}
             toggleFilterPanel={toggleFilterPanel}
-            onSearchTermChanged={setSearchTerm}
+            onSearchTermChanged={handleSetSearchTerm}
+            totalContacts={data?.contacts.nodes.length}
           />
         </TableHead>
         <TableBody>
@@ -77,7 +89,7 @@ export const ContactsTable: React.FC<Props> = ({
                   accountListId={accountListId}
                   key={contact.id}
                   contact={contact}
-                  onContactSelected={onContactSelected}
+                  onContactSelected={handleOnContactSelected}
                 />
               ))}
             </div>

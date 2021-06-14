@@ -1,12 +1,11 @@
 import { ApolloServer } from '@saeris/apollo-server-vercel';
-import { buildFederatedSchema } from '@apollo/federation';
-import { gql } from 'graphql-tag';
 import { NextApiRequest } from 'next';
 import {
   RequestOptions,
   Response,
   RESTDataSource,
 } from 'apollo-datasource-rest';
+import { DateTime, Duration, Interval } from 'luxon';
 import {
   ExportFormatEnum,
   ExportLabelTypeEnum,
@@ -14,127 +13,15 @@ import {
 } from '../../graphql/types.generated';
 import {
   ContactFilterOption,
-  Resolvers,
-  ContactFilterGroup,
-  ContactFilter,
+  FourteenMonthReportCurrencyType,
 } from './graphql-rest.page.generated';
-
-const typeDefs = gql`
-  type Query {
-    contactFilters(accountListId: ID!): [ContactFilterGroup!]!
-    taskAnalytics(accountListId: ID!): TaskAnalytics!
-  }
-
-  type Mutation {
-    exportContacts(input: ExportContactsInput!): String!
-  }
-
-  input ExportContactsInput {
-    """
-    Enum value to determine the file format of the exported contacts (Either csv, xlsx, or pdf)
-    """
-    format: ExportFormatEnum!
-    """
-    Boolean value to determine if export is going to be used for mailing purposes.
-    """
-    mailing: Boolean!
-    labelType: ExportLabelTypeEnum
-    sort: ExportSortEnum
-    accountListId: ID!
-  }
-
-  enum ExportFormatEnum {
-    csv
-    xlsx
-    pdf
-  }
-
-  enum ExportLabelTypeEnum {
-    Avery5160
-    Avery7160
-  }
-
-  enum ExportSortEnum {
-    name
-    zip
-  }
-
-  type TaskAnalytics {
-    id: ID!
-    type: String!
-    createdAt: ISO8601DateTime!
-    lastElectronicNewsletterCompletedAt: ISO8601DateTime
-    lastPhysicalNewsletterCompletedAt: ISO8601DateTime
-    tasksOverdueOrDueTodayCounts: [OverdueOrDueTodayTaskAnalytic!]!
-    totalTasksDueCount: Int!
-    updatedAt: ISO8601DateTime!
-    updatedInDbAt: ISO8601DateTime!
-  }
-
-  scalar ISO8601DateTime
-
-  type OverdueOrDueTodayTaskAnalytic {
-    label: String!
-    count: Int!
-  }
-
-  type ContactFilterGroup {
-    id: ID!
-    title: String!
-    alwaysVisible: Boolean!
-    filters: [ContactFilter!]!
-  }
-
-  type ContactFilter {
-    id: ID!
-    name: String!
-    type: String!
-    defaultSelection: [String]!
-    featured: Boolean!
-    multiple: Boolean!
-    options: [ContactFilterOption!]!
-    parent: String
-    title: String!
-  }
-
-  type ContactFilterOption {
-    id: String
-    name: String!
-    placeholder: String
-  }
-`;
-
-const resolvers: Resolvers = {
-  Query: {
-    contactFilters: (_source, { accountListId }, { dataSources }) => {
-      return dataSources.mpdxRestApi.getContactFilters(accountListId);
-    },
-    taskAnalytics: async (_source, { accountListId }, { dataSources }) => {
-      return dataSources.mpdxRestApi.getTaskAnalytics(accountListId);
-    },
-  },
-  Mutation: {
-    exportContacts: (
-      _source,
-      { input: { mailing, format, labelType, sort, accountListId } },
-      { dataSources },
-    ) => {
-      const filter = {
-        account_list_id: accountListId,
-        newsletter: 'address',
-        status: 'active',
-      };
-
-      return dataSources.mpdxRestApi.createExportedContacts(
-        mailing,
-        format,
-        filter,
-        labelType,
-        sort,
-      );
-    },
-  },
-};
+import schema from './Schema';
+import { getTaskAnalytics } from './Schema/TaskAnalytics/dataHandler';
+import { getContactFilters } from './Schema/ContactFilters/datahandler';
+import {
+  FourteenMonthReportResponse,
+  mapFourteenMonthReport,
+} from './Schema/reports/fourteenMonth/datahandler';
 
 class MpdxRestApi extends RESTDataSource {
   constructor() {
@@ -221,48 +108,7 @@ class MpdxRestApi extends RESTDataSource {
       `contacts/filters?filter[account_list_id]=${accountListId}`,
     );
 
-    const groups: { [name: string]: ContactFilterGroup } = {};
-    const createFilterGroup: (parent: string) => ContactFilterGroup = (
-      parent,
-    ) => {
-      return {
-        id: parent,
-        title: parent,
-        alwaysVisible: false,
-        filters: [],
-      };
-    };
-
-    const response: ContactFilterGroup[] = [];
-    data.forEach(
-      ({
-        id,
-        attributes: { default_selection, parent, title, ...attributes },
-      }) => {
-        const filter: ContactFilter = {
-          id: id,
-          title: title,
-          ...attributes,
-          defaultSelection:
-            typeof default_selection === 'string'
-              ? default_selection.split(/,\s?/)
-              : [default_selection.toString()],
-        };
-
-        if (parent) {
-          if (!groups[parent]) {
-            groups[parent] = createFilterGroup(parent);
-            response.push(groups[parent]);
-          }
-          groups[parent].filters.push(filter);
-        } else {
-          const group = createFilterGroup(title);
-          response.push(group);
-          group.filters.push(filter);
-        }
-      },
-    );
-    return response;
+    return getContactFilters(data);
   }
 
   async getTaskAnalytics(accountListId: string) {
@@ -270,28 +116,26 @@ class MpdxRestApi extends RESTDataSource {
       `tasks/analytics?filter[account_list_id]=${accountListId}`,
     );
 
-    const {
-      attributes: {
-        created_at,
-        last_electronic_newsletter_completed_at,
-        last_physical_newsletter_completed_at,
-        tasks_overdue_or_due_today_counts,
-        total_tasks_due_count,
-        updated_at,
-        updated_in_db_at,
-      },
-    } = data;
+    return getTaskAnalytics(data);
+  }
 
-    return {
-      ...data,
-      createdAt: created_at,
-      lastElectronicNewsletterCompletedAt: last_electronic_newsletter_completed_at,
-      lastPhysicalNewsletterCompletedAt: last_physical_newsletter_completed_at,
-      tasksOverdueOrDueTodayCounts: tasks_overdue_or_due_today_counts,
-      totalTasksDueCount: total_tasks_due_count,
-      updatedAt: updated_at,
-      updatedInDbAt: updated_in_db_at,
-    };
+  async getFourteenMonthReport(
+    accountListId: string,
+    currencyType: FourteenMonthReportCurrencyType,
+  ) {
+    const { data }: { data: FourteenMonthReportResponse } = await this.get(
+      `reports/${
+        currencyType === 'salary'
+          ? 'salary_currency_donations'
+          : 'donor_currency_donations'
+      }?filter[account_list_id]=${accountListId}&filter[month_range]=${Interval.before(
+        DateTime.now().endOf('month'),
+        Duration.fromObject({ months: 14 }).minus({ day: 1 }),
+      )
+        .toISODate()
+        .replace('/', '...')}`,
+    );
+    return mapFourteenMonthReport(data, currencyType);
   }
 }
 
@@ -301,7 +145,7 @@ export interface Context {
 }
 
 const server = new ApolloServer({
-  schema: buildFederatedSchema([{ typeDefs, resolvers }]),
+  schema,
   dataSources: () => {
     return {
       mpdxRestApi: new MpdxRestApi(),
