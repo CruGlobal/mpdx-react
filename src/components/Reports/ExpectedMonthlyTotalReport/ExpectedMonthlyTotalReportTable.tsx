@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Box,
   Typography,
@@ -33,8 +33,17 @@ function createData(
   commitment: string,
   frequency: string,
   converted: string,
+  currency: string,
 ) {
-  return { contact, contactId, status, commitment, frequency, converted };
+  return {
+    contact,
+    contactId,
+    status,
+    commitment,
+    frequency,
+    converted,
+    currency,
+  };
 }
 
 const rows = [
@@ -42,72 +51,99 @@ const rows = [
     'Adriano, Selinda',
     'abc',
     'Partner - Financial',
-    '50 CAD',
+    '50',
     'Monthly',
-    '50 CAD',
+    '50',
+    'CAD',
   ),
   createData(
     'Adriano, Selinda',
     'abc',
     'Partner - Financial',
-    '50 CAD',
+    '50',
     'Monthly',
-    '50 CAD',
+    '50',
+    'CAD',
   ),
   createData(
     'Adriano, Selinda',
     'abc',
     'Partner - Financial',
-    '50 CAD',
+    '50',
     'Monthly',
-    '50 CAD',
+    '50',
+    'CAD',
   ),
   createData(
     'Adriano, Selinda',
     'abc',
     'Partner - Financial',
-    '50 CAD',
+    '50',
     'Monthly',
-    '50 CAD',
+    '50',
+    'CAD',
   ),
   createData(
     'Adriano, Selinda',
     'abc',
     'Partner - Financial',
-    '50 CAD',
+    '50',
     'Monthly',
-    '50 CAD',
+    '50',
+    'CAD',
   ),
   createData(
     'Adriano, Selinda',
     'abc',
     'Partner - Financial',
-    '50 CAD',
+    '50',
     'Monthly',
-    '50 CAD',
+    '50',
+    'CAD',
   ),
 ];
 
 export const ExpectedMonthlyTotalReportTable: React.FC<Props> = () => {
   const { t } = useTranslation();
+
+  const totalPartners = () => {
+    return 25;
+  };
+
+  const [visible, setVisible] = useState(true);
+
+  const total = () => {
+    return 3920;
+  };
+
+  const showTotalPartners = () => {
+    if (visible) {
+      return t(' Show ' + totalPartners() + ' Partners');
+    }
+  };
   return (
     <Box>
-      <Accordion>
+      <Accordion onClick={() => setVisible((v) => !v)}>
         <AccordionSummary
           expandIcon={<ExpandMore />}
           aria-controls="panel1a-content"
           id="panel1a-header"
         >
           <Typography>{t('Possible Partners This Month')}</Typography>
-          <Typography style={{ align: 'right' }}>{t('3920 CAD')}</Typography>
+          <Typography style={{ fontSize: 12, margin: 4 }}>
+            {showTotalPartners()}
+          </Typography>
+          <Typography>{total()}</Typography>
         </AccordionSummary>
         <AccordionDetails>
           <TableContainer component={Paper}>
             <Table style={{ minWidth: 700 }} aria-label="customized table">
               <TableHead>
                 <TableRow>
-                  <TableCellWrapper>{t('Partner')}</TableCellWrapper>
-                  <TableCellWrapper align="right">
+                  <TableCellWrapper align="left">
+                    {t('Partner')}
+                  </TableCellWrapper>
+                  <TableCellWrapper align="left">
                     {t('Status')}
                   </TableCellWrapper>
                   <TableCellWrapper align="right">
@@ -122,24 +158,29 @@ export const ExpectedMonthlyTotalReportTable: React.FC<Props> = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {rows.map((row) => (
-                  <TableRow key={row.contact}>
-                    <TableCellWrapper>
+                {rows.map((row, index) => (
+                  <TableRow
+                    key={row.contact}
+                    style={{
+                      backgroundColor: index % 2 ? '#f0f0f0' : 'white',
+                    }}
+                  >
+                    <TableCellWrapper align="left">
                       <Link href="../../../pages/accountLists/[accountListId]/contacts/[[...contactId]].page.tsx">
                         {row.contact}
                       </Link>
                     </TableCellWrapper>
-                    <TableCellWrapper align="right">
+                    <TableCellWrapper align="left">
                       {row.status}
                     </TableCellWrapper>
                     <TableCellWrapper align="right">
-                      {row.commitment}
+                      {row.commitment + ' ' + row.currency}
                     </TableCellWrapper>
                     <TableCellWrapper align="right">
                       {row.frequency}
                     </TableCellWrapper>
                     <TableCellWrapper align="right">
-                      {row.converted}
+                      {row.converted + ' ' + row.currency}
                     </TableCellWrapper>
                   </TableRow>
                 ))}

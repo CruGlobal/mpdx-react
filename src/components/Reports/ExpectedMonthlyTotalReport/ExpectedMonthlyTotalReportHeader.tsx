@@ -10,7 +10,7 @@ const HeaderWrapper = styled(Box)(({}) => ({
   display: 'flex',
   flexDirection: 'row',
   justifyContent: 'space-between',
-  padding: 16,
+  padding: 32,
 }));
 
 const ProgressBarWrapper = styled(Box)(({}) => ({
@@ -49,7 +49,7 @@ export const ExpectedMonthlyTotalReportHeader: React.FC<Props> = () => {
           </ProgressBarSection>
         </ProgressBarWrapper>
       </HeaderWrapper>
-      <Divider style={{ margin: 16 }} variant="middle"></Divider>
+      <Divider style={{ marginBottom: 12 }} variant="middle"></Divider>
     </Box>
   );
 };
