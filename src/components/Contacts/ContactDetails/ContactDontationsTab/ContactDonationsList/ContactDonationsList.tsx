@@ -92,8 +92,7 @@ export const ContactDonationsList: React.FC<ContactDonationsListProp> = ({
             )}
           </Table>
           {!loading &&
-          data?.contact.donations.pageInfo !== undefined &&
-          data?.contact.donations.pageInfo.hasNextPage === true ? (
+          data?.contact.donations.pageInfo.hasNextPage ? (
             <LoadMoreButton
               variant="outlined"
               onClick={() => {
