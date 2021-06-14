@@ -67,8 +67,7 @@ export const ContactDonationsList: React.FC<ContactDonationsListProp> = ({
               <TableCell>{t('Amount')}</TableCell>
               <TableCell>{t('Converted Amount')}</TableCell>
             </TableHead>
-            {data?.contact !== null &&
-            data?.contact.donations.nodes !== undefined ? (
+            {data?.contact.donations.nodes ? (
               data?.contact.donations.nodes.map((donation) => (
                 <TableRow key={donation.id}>
                   <TableCell>
