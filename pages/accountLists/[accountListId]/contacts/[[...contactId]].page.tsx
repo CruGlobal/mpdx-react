@@ -12,7 +12,7 @@ import { useAccountListId } from '../../../../src/hooks/useAccountListId';
 const ContactsPage: React.FC = () => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
-  const { query, push, isReady } = useRouter();
+  const { query, push, replace, isReady, pathname } = useRouter();
 
   const [contactDetailsId, setContactDetailsId] = useState<string>();
 
@@ -52,6 +52,16 @@ const ContactsPage: React.FC = () => {
     setContactDetailsId(id);
   };
 
+  const setSearchTerm = (searchTerm?: string) => {
+    replace({
+      pathname,
+      query: {
+        ...query,
+        searchTerm,
+      },
+    });
+  };
+
   return (
     <>
       <Head>
@@ -64,6 +74,7 @@ const ContactsPage: React.FC = () => {
             <ContactsTable
               accountListId={accountListId}
               onContactSelected={setContactFocus}
+              onSearchTermChange={setSearchTerm}
               activeFilters={activeFilters}
               filterPanelOpen={filterPanelOpen}
               toggleFilterPanel={toggleFilterPanel}

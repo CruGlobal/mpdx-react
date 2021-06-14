@@ -43,3 +43,9 @@ query ContactDetailsTab($accountListId: ID!, $contactId: ID!) {
     ...ContactMailing
   }
 }
+
+mutation DeleteContact($accountListId: ID!, $contactId: ID!) {
+  deleteContact(input: { accountListId: $accountListId, id: $contactId }) {
+    id
+  }
+}
