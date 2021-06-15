@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   Box,
   BoxProps,
@@ -14,41 +14,42 @@ const reportItems: ReportOption[] = [
   {
     id: 'donations',
     title: 'Donations',
-    href: '/reports/donations',
   },
   {
-    id: 'partner',
+    id: 'partnerCurrency',
     title: 'Month Report',
-    href: '/reports/partner',
     subTitle: 'Partner Currency',
   },
   {
-    id: 'salary',
+    id: 'salaryCurrency',
     title: 'Month Report',
-    href: '/reports/salary',
     subTitle: 'Salary Currency',
   },
   {
-    id: 'designation_accounts',
+    id: 'designationAccounts',
     title: 'Designation Accounts',
-    href: '/reports/designation_accounts',
   },
   {
-    id: 'monthly',
+    id: 'responsibilityCenters',
+    title: 'Responsibility Centers',
+  },
+  {
+    id: 'expectedMonthlyTotal',
     title: 'Expected Monthly Total',
-    href: '/reports/monthly',
   },
   {
-    id: 'analysis',
+    id: 'partnerGivingAnalysis',
     title: 'Partner Giving Analysis',
-    href: '/reports/analysis',
   },
   {
     id: 'coaching',
     title: 'Coaching',
-    href: '/reports/coaching',
   },
 ];
+
+interface Props {
+  selected: string;
+}
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -71,30 +72,25 @@ const FilterList = styled(List)(({ theme }) => ({
   },
 }));
 
-const NavReportsList: React.FC<BoxProps> = ({ ...BoxProps }) => {
+const NavReportsList: React.FC<Props & BoxProps> = ({
+  selected,
+  ...BoxProps
+}) => {
   const classes = useStyles();
   const { t } = useTranslation();
 
-  const [selectedReportId, setSelectedReportId] = useState<string | null>(null);
-
-  const handleSelectReport = (value: string): void => {
-    setSelectedReportId(value);
-    console.log(selectedReportId);
-  };
-
   return (
-    <Box {...BoxProps}>
+    <Box width={280} {...BoxProps}>
       <div className={classes.root}>
         <FilterHeader>
-          <Typography variant="h6">Report</Typography>
+          <Typography variant="h6">{t('Reports')}</Typography>
         </FilterHeader>
         <FilterList dense>
           {reportItems.map((item) => (
             <NavReportListItem
               key={item.id}
               item={item}
-              isSelected={item.id === selectedReportId}
-              onSelect={handleSelectReport}
+              isSelected={item.id === selected}
             />
           ))}
         </FilterList>

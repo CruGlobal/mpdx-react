@@ -1,11 +1,11 @@
 import React from 'react';
 import { ListItem, ListItemProps, ListItemText } from '@material-ui/core';
 import { ArrowForwardIos } from '@material-ui/icons';
-import Link from 'src/components/Link';
+import { NextLinkComposed } from 'src/components/Link';
+import { useApp } from 'src/components/App';
 
 export interface ReportOption {
   id: string;
-  href: string;
   title: string;
   subTitle?: string | undefined;
 }
@@ -13,23 +13,24 @@ export interface ReportOption {
 interface Props {
   item: ReportOption;
   isSelected: boolean;
-  onSelect: (value: string) => void;
 }
 
 const NavReportListItem: React.FC<Props & ListItemProps> = ({
   item,
   isSelected,
-  onSelect,
-  ...rest
+  ...ListItemProps
 }) => {
+  const { state } = useApp();
+
   return (
     <ListItem
-      component={Link}
+      component={NextLinkComposed}
       selected={isSelected}
-      href={item.href}
+      to={{
+        pathname: `/accountLists/${state.accountListId}/reports/${item.id}`,
+      }}
       noLinkStyle
-      onClick={() => onSelect(item.id)}
-      {...rest}
+      {...ListItemProps}
     >
       <ListItemText
         primaryTypographyProps={{
