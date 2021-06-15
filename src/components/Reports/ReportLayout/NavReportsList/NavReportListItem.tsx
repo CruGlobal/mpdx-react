@@ -1,5 +1,5 @@
 import React from 'react';
-import { ListItem, ListItemProps, ListItemText } from '@material-ui/core';
+import { ListItem, ListItemText } from '@material-ui/core';
 import { ArrowForwardIos } from '@material-ui/icons';
 import NextLink from 'next/link';
 import { useApp } from 'src/components/App';
