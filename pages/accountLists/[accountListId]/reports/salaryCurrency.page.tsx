@@ -1,10 +1,10 @@
 import React, { ReactElement } from 'react';
 import Head from 'next/head';
 import { useTranslation } from 'react-i18next';
-import { Box } from '@material-ui/core';
-import { SalaryReportTable } from '../../../../src/components/Reports/SalaryReport/SalaryReportTable';
-import Loading from '../../../../src/components/Loading';
-import { useAccountListId } from '../../../../src/hooks/useAccountListId';
+import { SalaryReportTable } from 'src/components/Reports/SalaryReport/SalaryReportTable';
+import Loading from 'src/components/Loading';
+import { useAccountListId } from 'src/hooks/useAccountListId';
+import ReportLayout from 'src/components/Reports/ReportLayout';
 
 const SalaryReportPage = (): ReactElement => {
   const { t } = useTranslation();
@@ -18,9 +18,12 @@ const SalaryReportPage = (): ReactElement => {
         </title>
       </Head>
       {accountListId ? (
-        <Box>
+        <ReportLayout
+          id="salaryCurrency"
+          title="Contributions by Salary Currency"
+        >
           <SalaryReportTable accountListId={accountListId} />
-        </Box>
+        </ReportLayout>
       ) : (
         <Loading loading />
       )}
