@@ -1,7 +1,7 @@
 import React from 'react';
 import { ListItem, ListItemProps, ListItemText } from '@material-ui/core';
 import { ArrowForwardIos } from '@material-ui/icons';
-import { NextLinkComposed } from 'src/components/Link';
+import NextLink from 'next/link';
 import { useApp } from 'src/components/App';
 
 export interface ReportOption {
@@ -15,33 +15,26 @@ interface Props {
   isSelected: boolean;
 }
 
-const NavReportListItem: React.FC<Props & ListItemProps> = ({
-  item,
-  isSelected,
-  ...ListItemProps
-}) => {
+const NavReportListItem: React.FC<Props> = ({ item, isSelected, ...rest }) => {
   const { state } = useApp();
 
   return (
-    <ListItem
-      component={NextLinkComposed}
-      selected={isSelected}
-      to={{
-        pathname: `/accountLists/${state.accountListId}/reports/${item.id}`,
-      }}
-      noLinkStyle
-      {...ListItemProps}
+    <NextLink
+      href={`/accountLists/${state.accountListId}/reports/${item.id}`}
+      scroll={false}
     >
-      <ListItemText
-        primaryTypographyProps={{
-          variant: 'subtitle1',
-          color: 'textPrimary',
-        }}
-        primary={item.title}
-        secondary={item.subTitle}
-      />
-      <ArrowForwardIos fontSize="small" color="disabled" />
-    </ListItem>
+      <ListItem button selected={isSelected} {...rest}>
+        <ListItemText
+          primaryTypographyProps={{
+            variant: 'subtitle1',
+            color: 'textPrimary',
+          }}
+          primary={item.title}
+          secondary={item.subTitle}
+        />
+        <ArrowForwardIos fontSize="small" color="disabled" />
+      </ListItem>
+    </NextLink>
   );
 };
 
