@@ -22,6 +22,7 @@ it('renders when isOpen is true', () => {
   );
   expect(getByText(modalTitle)).toBeInTheDocument();
   expect(getByText(modalTextContent)).toBeInTheDocument();
+  expect(getByText('Ok')).toBeInTheDocument();
 });
 
 it('does not render when isOpen is false', () => {
@@ -37,6 +38,23 @@ it('does not render when isOpen is false', () => {
   );
   expect(queryByText(modalTitle)).not.toBeInTheDocument();
   expect(queryByText(modalTextContent)).not.toBeInTheDocument();
+});
+
+it('calls onClose if no customActionSection is passed and Ok button is pressed', () => {
+  const { getByText, getByRole } = render(
+    <MuiThemeProvider theme={theme}>
+      <Modal
+        isOpen={true}
+        title={modalTitle}
+        content={<>{modalTextContent}</>}
+        handleClose={handleClose}
+      />
+    </MuiThemeProvider>,
+  );
+  expect(getByText(modalTitle)).toBeInTheDocument();
+  expect(getByText(modalTextContent)).toBeInTheDocument();
+  userEvent.click(getByRole('button', { name: 'Ok' }));
+  expect(handleClose).toHaveBeenCalled();
 });
 
 it('renders customActionSection', () => {

@@ -1,5 +1,6 @@
 import React, { ReactElement } from 'react';
 import {
+  Button,
   Dialog,
   DialogActions,
   DialogContent,
@@ -68,7 +69,17 @@ const Modal = ({
       </Grid>
       <DialogContent dividers={dividers}>{content}</DialogContent>
       <DialogActions>
-        {customActionSection ? customActionSection : null}
+        {customActionSection ? (
+          customActionSection
+        ) : (
+          <Button
+            onClick={() => handleClose()}
+            variant="contained"
+            color="primary"
+          >
+            {t('Ok')}
+          </Button>
+        )}
       </DialogActions>
     </Dialog>
   );
