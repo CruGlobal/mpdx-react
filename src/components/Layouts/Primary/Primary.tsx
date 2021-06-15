@@ -20,9 +20,6 @@ const useStyles = makeStyles((theme: Theme) => ({
       marginLeft: 0,
     },
   },
-  addFabSpacer: {
-    height: '100px',
-  },
 }));
 
 interface Props {
@@ -42,7 +39,6 @@ const Primary = ({ children }: Props): ReactElement => {
         <BottomBar />
       </Hidden>
       <AddFab />
-      <Box className={classes.addFabSpacer}></Box>
     </Box>
   );
 };
