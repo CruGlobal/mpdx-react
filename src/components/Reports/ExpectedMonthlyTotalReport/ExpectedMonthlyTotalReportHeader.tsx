@@ -10,15 +10,15 @@ const HeaderWrapper = styled(Box)(({}) => ({
   display: 'flex',
   flexDirection: 'row',
   justifyContent: 'space-between',
-  padding: 32,
+  padding: 24,
 }));
 
 const ProgressBarWrapper = styled(Box)(({}) => ({
-  width: 350,
+  width: 450,
   display: 'flex',
   flexDirection: 'row',
-  height: 45,
-  border: '2px solid white',
+  height: 35,
+  border: '2px solid inherit',
   borderRadius: 30,
   overflow: 'hidden',
 }));
@@ -49,7 +49,7 @@ export const ExpectedMonthlyTotalReportHeader: React.FC<Props> = () => {
           </ProgressBarSection>
         </ProgressBarWrapper>
       </HeaderWrapper>
-      <Divider style={{ marginBottom: 12 }} variant="middle"></Divider>
+      <Divider style={{ marginBottom: 8 }} variant="middle"></Divider>
     </Box>
   );
 };
