@@ -106,6 +106,29 @@ describe('ContactDetailTab', () => {
     expect(queryByText('123 Sesame Street')).toBeInTheDocument();
   });
 
+  it('should close delete modal', async () => {
+    const { queryByText, queryAllByText, getByRole } = render(
+      <SnackbarProvider>
+        <TestRouter router={router}>
+          <ThemeProvider theme={theme}>
+            <GqlMockedProvider<ContactDetailsTabQuery>>
+              <ContactDetailsTab
+                accountListId={accountListId}
+                contactId={contactId}
+              />
+            </GqlMockedProvider>
+          </ThemeProvider>
+        </TestRouter>
+      </SnackbarProvider>,
+    );
+    await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());
+    userEvent.click(queryAllByText('delete contact')[0]);
+    userEvent.click(getByRole('button', { name: 'Close' }));
+    await waitFor(() =>
+      expect(queryByText('Delete Contact')).not.toBeInTheDocument(),
+    );
+  });
+
   it('handles deleting contact', async () => {
     const cache = new InMemoryCache({ addTypename: false });
     jest.spyOn(cache, 'writeQuery');
