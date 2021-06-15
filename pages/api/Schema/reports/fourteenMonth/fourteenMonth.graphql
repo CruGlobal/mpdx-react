@@ -1,0 +1,65 @@
+extend type Query {
+  fourteenMonthReport(
+    accountListId: ID!
+    currencyType: FourteenMonthReportCurrencyType!
+  ): FourteenMonthReport!
+}
+
+enum FourteenMonthReportCurrencyType {
+  salary
+  donor
+}
+
+type FourteenMonthReport {
+  currencyType: FourteenMonthReportCurrencyType
+  currencyGroups: [FourteenMonthReportCurrencyGroup!]!
+  salaryCurrency: String!
+}
+
+type FourteenMonthReportCurrencyGroup {
+  currency: String!
+  totals: FourteenMonthReportCurrencyGroupTotals!
+  contacts: [FourteenMonthReportContact!]!
+}
+
+type FourteenMonthReportCurrencyGroupTotals {
+  year: Float!
+  months: [FourteenMonthReportCurrencyGroupTotalsMonth!]!
+  average: Float!
+  minimum: Float!
+}
+
+type FourteenMonthReportCurrencyGroupTotalsMonth {
+  month: ISO8601Date!
+  total: Float!
+}
+
+type FourteenMonthReportContact {
+  id: ID!
+  name: String!
+  total: Float!
+  average: Float!
+  minimum: Float!
+  months: [FourteenMonthReportContactMonths!]
+  accountNumbers: [String!]!
+  lateBy30Days: Boolean!
+  lateBy60Days: Boolean!
+  pledgeAmount: Float
+  pledgeCurrency: String
+  pledgeFrequency: String
+  status: String
+}
+
+type FourteenMonthReportContactMonths {
+  month: ISO8601Date!
+  total: Float!
+  salaryCurrencyTotal: Float!
+  donations: [FourteenMonthReportContactDonation!]!
+}
+
+type FourteenMonthReportContactDonation {
+  amount: Float!
+  date: ISO8601Date!
+  currency: String!
+  paymentMethod: String
+}

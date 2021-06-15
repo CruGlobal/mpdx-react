@@ -5,15 +5,23 @@ import {
   Response,
   RESTDataSource,
 } from 'apollo-datasource-rest';
+import { DateTime, Duration, Interval } from 'luxon';
 import {
   ExportFormatEnum,
   ExportLabelTypeEnum,
   ExportSortEnum,
 } from '../../graphql/types.generated';
-import { ContactFilterOption } from './graphql-rest.page.generated';
+import {
+  ContactFilterOption,
+  FourteenMonthReportCurrencyType,
+} from './graphql-rest.page.generated';
 import schema from './Schema';
 import { getTaskAnalytics } from './Schema/TaskAnalytics/dataHandler';
 import { getContactFilters } from './Schema/ContactFilters/datahandler';
+import {
+  FourteenMonthReportResponse,
+  mapFourteenMonthReport,
+} from './Schema/reports/fourteenMonth/datahandler';
 
 class MpdxRestApi extends RESTDataSource {
   constructor() {
@@ -109,6 +117,25 @@ class MpdxRestApi extends RESTDataSource {
     );
 
     return getTaskAnalytics(data);
+  }
+
+  async getFourteenMonthReport(
+    accountListId: string,
+    currencyType: FourteenMonthReportCurrencyType,
+  ) {
+    const { data }: { data: FourteenMonthReportResponse } = await this.get(
+      `reports/${
+        currencyType === 'salary'
+          ? 'salary_currency_donations'
+          : 'donor_currency_donations'
+      }?filter[account_list_id]=${accountListId}&filter[month_range]=${Interval.before(
+        DateTime.now().endOf('month'),
+        Duration.fromObject({ months: 14 }).minus({ day: 1 }),
+      )
+        .toISODate()
+        .replace('/', '...')}`,
+    );
+    return mapFourteenMonthReport(data, currencyType);
   }
 }
 
