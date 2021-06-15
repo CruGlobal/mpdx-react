@@ -6,8 +6,8 @@ import NavReportsList from './NavReportsList';
 
 interface ReportLayoutProps {
   id: string;
-  title?: string;
-  children?: ReactNode;
+  title: string;
+  children: ReactNode;
 }
 
 const ReportLayout: FC<ReportLayoutProps> = ({ id, title, children }) => {
