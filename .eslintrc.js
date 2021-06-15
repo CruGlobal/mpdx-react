@@ -30,6 +30,7 @@ module.exports = {
       { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
     ],
     'react/prop-types': 'off',
+    'react/react-in-jsx-scope': 'off',
   },
   settings: {
     react: {
