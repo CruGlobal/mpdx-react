@@ -9,43 +9,7 @@ import {
 } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import NavReportListItem, { ReportOption } from './NavReportListItem';
-
-const reportItems: ReportOption[] = [
-  {
-    id: 'donations',
-    title: 'Donations',
-  },
-  {
-    id: 'partnerCurrency',
-    title: 'Month Report',
-    subTitle: 'Partner Currency',
-  },
-  {
-    id: 'salaryCurrency',
-    title: 'Month Report',
-    subTitle: 'Salary Currency',
-  },
-  {
-    id: 'designationAccounts',
-    title: 'Designation Accounts',
-  },
-  {
-    id: 'responsibilityCenters',
-    title: 'Responsibility Centers',
-  },
-  {
-    id: 'expectedMonthlyTotal',
-    title: 'Expected Monthly Total',
-  },
-  {
-    id: 'partnerGivingAnalysis',
-    title: 'Partner Giving Analysis',
-  },
-  {
-    id: 'coaching',
-    title: 'Coaching',
-  },
-];
+import reportItems from './ReportItems';
 
 interface Props {
   selected: string;
@@ -86,7 +50,7 @@ export const NavReportsList: React.FC<Props & BoxProps> = ({
           <Typography variant="h6">{t('Reports')}</Typography>
         </FilterHeader>
         <FilterList dense>
-          {reportItems.map((item) => (
+          {reportItems.map((item: ReportOption) => (
             <NavReportListItem
               key={item.id}
               item={item}
