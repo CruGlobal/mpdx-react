@@ -9,7 +9,7 @@ export default {
 export const Default = (): ReactElement => {
   return (
     <Box>
-      <ExpectedMonthlyTotalReportEmpty accountListId="abc"></ExpectedMonthlyTotalReportEmpty>
+      <ExpectedMonthlyTotalReportEmpty></ExpectedMonthlyTotalReportEmpty>
     </Box>
   );
 };

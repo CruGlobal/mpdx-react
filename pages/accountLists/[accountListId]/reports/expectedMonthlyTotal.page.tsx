@@ -116,10 +116,7 @@ const ExpectedMonthlyTotalReportPage = (): ReactElement => {
         ></ExpectedMonthlyTotalReport>
       ) : (
         <Box>
-          <ExpectedMonthlyTotalReportHeader
-            accountListId={accountListId}
-            empty={true}
-          />
+          <ExpectedMonthlyTotalReportHeader empty={true} />
           <Loading loading />
         </Box>
       )}

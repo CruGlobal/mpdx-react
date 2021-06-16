@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import {
   Box,
   Typography,
-  styled,
   Table,
   TableBody,
   TableCell,
@@ -18,7 +17,7 @@ import {
 import { ExpandMore } from '@material-ui/icons';
 import { useTranslation } from 'react-i18next';
 
-interface Contact {
+export interface Contact {
   contact: string;
   contactId: string;
   status: string;
@@ -30,14 +29,12 @@ interface Contact {
 }
 
 interface Props {
-  accountListId: string;
   title: string;
   data: Contact[];
   donations: boolean;
 }
 
 export const ExpectedMonthlyTotalReportTable: React.FC<Props> = ({
-  accountListId,
   title,
   data,
   donations,

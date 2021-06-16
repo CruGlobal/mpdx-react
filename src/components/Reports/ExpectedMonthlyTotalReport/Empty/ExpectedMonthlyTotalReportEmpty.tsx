@@ -2,9 +2,7 @@ import React from 'react';
 import { Box, Typography, styled, Button } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 
-interface Props {
-  accountListId: string;
-}
+/*interface Props {}*/
 
 const BoxWrapper = styled(Box)(({}) => ({
   backgroundColor: '#f0f0f0',
@@ -20,7 +18,7 @@ const BoxWrapper = styled(Box)(({}) => ({
   alignItems: 'center',
 }));
 
-export const ExpectedMonthlyTotalReportEmpty: React.FC<Props> = () => {
+export const ExpectedMonthlyTotalReportEmpty: React.FC = () => {
   const { t } = useTranslation();
   return (
     <BoxWrapper boxShadow={3}>

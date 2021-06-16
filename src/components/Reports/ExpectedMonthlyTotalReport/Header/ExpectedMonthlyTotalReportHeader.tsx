@@ -3,7 +3,6 @@ import { Box, Typography, styled, Divider } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 
 interface Props {
-  accountListId: string;
   empty: boolean;
 }
 
@@ -32,7 +31,6 @@ const ProgressBarSection = styled(Box)(({}) => ({
 }));
 
 export const ExpectedMonthlyTotalReportHeader: React.FC<Props> = ({
-  accountListId,
   empty,
 }) => {
   const { t } = useTranslation();
