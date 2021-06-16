@@ -113,11 +113,11 @@ export const ExpectedMonthlyTotalReportTable: React.FC<Props> = ({
                         {row.contact}
                       </Link>
                     </TableCell>
-                    <TableCell align="left">{row.status}</TableCell>
+                    <TableCell align="left">{t(row.status)}</TableCell>
                     <TableCell align="right">
                       {row.commitment + ' ' + row.currency}
                     </TableCell>
-                    <TableCell align="right">{row.frequency}</TableCell>
+                    <TableCell align="right">{t(row.frequency)}</TableCell>
                     {title[0] === 'D' ? (
                       <TableCell align="right">{row.donation}</TableCell>
                     ) : null}

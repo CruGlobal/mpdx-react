@@ -1,36 +1,102 @@
 import React, { ReactElement } from 'react';
 import { Box } from '@material-ui/core';
-import Loading from '../../Loading';
-import { ExpectedMonthlyTotalReportHeader } from './Header/ExpectedMonthlyTotalReportHeader';
-import { ExpectedMonthlyTotalReportTable } from './Table/ExpectedMonthlyTotalReportTable';
-import { ExpectedMonthlyTotalReportEmpty } from './Empty/ExpectedMonthlyTotalReportEmpty';
+import { ExpectedMonthlyTotalReport } from './ExpectedMonthlyTotalReport';
 
 export default {
   title: 'Reports/ExpectedMonthlyTotal',
 };
 
+function createData(
+  contact: string,
+  contactId: string,
+  status: string,
+  commitment: string,
+  frequency: string,
+  converted: string,
+  currency: string,
+  donation: string,
+) {
+  return {
+    contact,
+    contactId,
+    status,
+    commitment,
+    frequency,
+    converted,
+    currency,
+    donation,
+  };
+}
+
+const rows = [
+  createData(
+    'Adriano, Selinda',
+    'abc',
+    'Partner - Financial',
+    '50',
+    'Monthly',
+    '50',
+    'CAD',
+    '50',
+  ),
+  createData(
+    'Adriano, Selinda',
+    'abc',
+    'Partner - Financial',
+    '50',
+    'Monthly',
+    '50',
+    'CAD',
+    '50',
+  ),
+  createData(
+    'Adriano, Selinda',
+    'abc',
+    'Partner - Financial',
+    '50',
+    'Monthly',
+    '50',
+    'CAD',
+    '50',
+  ),
+  createData(
+    'Adriano, Selinda',
+    'abc',
+    'Partner - Financial',
+    '50',
+    'Monthly',
+    '50',
+    'CAD',
+    '50',
+  ),
+  createData(
+    'Adriano, Selinda',
+    'abc',
+    'Partner - Financial',
+    '50',
+    'Monthly',
+    '50',
+    'CAD',
+    '50',
+  ),
+  createData(
+    'Adriano, Selinda',
+    'abc',
+    'Partner - Financial',
+    '50',
+    'Monthly',
+    '50',
+    'CAD',
+    '50',
+  ),
+];
 export const Default = (): ReactElement => {
   return (
     <Box>
-      <ExpectedMonthlyTotalReportHeader accountListId="abc" empty={false} />
-      <ExpectedMonthlyTotalReportTable
+      <ExpectedMonthlyTotalReport
         accountListId={'abc'}
-        title={'Donations So Far This Month'}
-        data={[]}
-        donations={true}
-      />
-      <ExpectedMonthlyTotalReportTable
-        accountListId={'abc'}
-        title={'Likely Partners This Month'}
-        data={[]}
-        donations={false}
-      />
-      <ExpectedMonthlyTotalReportTable
-        accountListId={'abc'}
-        title={'Possible Partners This Month'}
-        data={[]}
-        donations={false}
-      />
+        data={rows}
+      ></ExpectedMonthlyTotalReport>
     </Box>
   );
 };
@@ -38,42 +104,10 @@ export const Default = (): ReactElement => {
 export const Empty = (): ReactElement => {
   return (
     <Box>
-      <ExpectedMonthlyTotalReportHeader accountListId="abc" empty={true} />
-      <ExpectedMonthlyTotalReportEmpty accountListId="abc" />
-    </Box>
-  );
-};
-
-export const Table = (): ReactElement => {
-  return (
-    <Box>
-      <ExpectedMonthlyTotalReportTable
+      <ExpectedMonthlyTotalReport
         accountListId={'abc'}
-        title={'Donations So Far This Month'}
         data={[]}
-        donations={true}
-      />
-      <ExpectedMonthlyTotalReportTable
-        accountListId={'abc'}
-        title={'Likely Partners This Month'}
-        data={[]}
-        donations={false}
-      />
-      <ExpectedMonthlyTotalReportTable
-        accountListId={'abc'}
-        title={'Possible Partners This Month'}
-        data={[]}
-        donations={false}
-      />
-    </Box>
-  );
-};
-
-export const Load = (): ReactElement => {
-  return (
-    <Box>
-      <ExpectedMonthlyTotalReportHeader accountListId={'abc'} empty={true} />
-      <Loading loading />
+      ></ExpectedMonthlyTotalReport>
     </Box>
   );
 };
