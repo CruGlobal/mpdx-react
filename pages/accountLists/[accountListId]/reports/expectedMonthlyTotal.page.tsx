@@ -3,9 +3,8 @@ import Head from 'next/head';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'next/router';
 import { Box } from '@material-ui/core';
+import { ExpectedMonthlyTotalReport } from '../../../../src/components/Reports/ExpectedMonthlyTotalReport/ExpectedMonthlyTotalReport';
 import { ExpectedMonthlyTotalReportHeader } from '../../../../src/components/Reports/ExpectedMonthlyTotalReport/Header/ExpectedMonthlyTotalReportHeader';
-import { ExpectedMonthlyTotalReportTable } from '../../../../src/components/Reports/ExpectedMonthlyTotalReport/Table/ExpectedMonthlyTotalReportTable';
-import { ExpectedMonthlyTotalReportEmpty } from '../../../../src/components/Reports/ExpectedMonthlyTotalReport/Empty/ExpectedMonthlyTotalReportEmpty';
 import Loading from '../../../../src/components/Loading';
 
 const ExpectedMonthlyTotalReportPage = (): ReactElement => {
@@ -110,39 +109,11 @@ const ExpectedMonthlyTotalReportPage = (): ReactElement => {
           MPDX | {t('Reports')} | {t('Expect Monthly Total')}
         </title>
       </Head>
-      {isReady && accountListId && rows.length !== 0 ? (
-        <Box>
-          <ExpectedMonthlyTotalReportHeader
-            accountListId={accountListId}
-            empty={false}
-          />
-          <ExpectedMonthlyTotalReportTable
-            accountListId={accountListId}
-            title={'Donations So Far This Month'}
-            data={rows}
-            donations={true}
-          />
-          <ExpectedMonthlyTotalReportTable
-            accountListId={accountListId}
-            title={'Likely Partners This Month'}
-            data={rows}
-            donations={false}
-          />
-          <ExpectedMonthlyTotalReportTable
-            accountListId={accountListId}
-            title={'Possible Partners This Month'}
-            data={rows}
-            donations={false}
-          />
-        </Box>
-      ) : isReady && accountListId && rows.length === 0 ? (
-        <Box>
-          <ExpectedMonthlyTotalReportHeader
-            accountListId={accountListId}
-            empty={true}
-          />
-          <ExpectedMonthlyTotalReportEmpty accountListId={accountListId} />
-        </Box>
+      {isReady && accountListId ? (
+        <ExpectedMonthlyTotalReport
+          accountListId={accountListId}
+          data={rows}
+        ></ExpectedMonthlyTotalReport>
       ) : (
         <Box>
           <ExpectedMonthlyTotalReportHeader
