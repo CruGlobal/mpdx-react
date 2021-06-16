@@ -3,9 +3,9 @@ import Head from 'next/head';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'next/router';
 import { Box } from '@material-ui/core';
-import { ExpectedMonthlyTotalReportHeader } from '../../../../src/components/Reports/ExpectedMonthlyTotalReport/ExpectedMonthlyTotalReportHeader';
-import { ExpectedMonthlyTotalReportTable } from '../../../../src/components/Reports/ExpectedMonthlyTotalReport/ExpectedMonthlyTotalReportTable';
-import { ExpectedMonthlyTotalReportEmpty } from '../../../../src/components/Reports/ExpectedMonthlyTotalReport/ExpectedMonthlyTotalReportEmpty';
+import { ExpectedMonthlyTotalReportHeader } from '../../../../src/components/Reports/ExpectedMonthlyTotalReport/Header/ExpectedMonthlyTotalReportHeader';
+import { ExpectedMonthlyTotalReportTable } from '../../../../src/components/Reports/ExpectedMonthlyTotalReport/Table/ExpectedMonthlyTotalReportTable';
+import { ExpectedMonthlyTotalReportEmpty } from '../../../../src/components/Reports/ExpectedMonthlyTotalReport/Empty/ExpectedMonthlyTotalReportEmpty';
 import Loading from '../../../../src/components/Loading';
 
 const ExpectedMonthlyTotalReportPage = (): ReactElement => {
