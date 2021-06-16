@@ -26,23 +26,26 @@ interface Contact {
   frequency: string;
   converted: string;
   currency: string;
+  donation?: string;
 }
 
 interface Props {
   accountListId: string;
   title: string;
   data: Contact[];
+  donations: boolean;
 }
 
 export const ExpectedMonthlyTotalReportTable: React.FC<Props> = ({
   accountListId,
   title,
   data,
+  donations,
 }) => {
   const { t } = useTranslation();
 
   const totalPartners = () => {
-    return 25;
+    return 6;
   };
 
   const [visible, setVisible] = useState(true);
@@ -64,13 +67,23 @@ export const ExpectedMonthlyTotalReportTable: React.FC<Props> = ({
         margin: 'auto',
       }}
     >
-      <Accordion onClick={() => setVisible((v) => !v)}>
-        <AccordionSummary expandIcon={<ExpandMore />}>
+      <Accordion
+        style={{ marginLeft: 0 }}
+        onClick={() => setVisible((v) => !v)}
+      >
+        <AccordionSummary
+          expandIcon={<ExpandMore />}
+          style={{
+            backgroundColor: '#f0f0f0',
+          }}
+        >
           <Typography>{t(title)}</Typography>
           <Typography style={{ fontSize: 12, margin: 4 }}>
             {showTotalPartners()}
           </Typography>
-          <Typography>{total()}</Typography>
+          <Typography style={{ marginLeft: 'auto' }}>
+            {total() + ' CAD'}
+          </Typography>
         </AccordionSummary>
         <AccordionDetails>
           <TableContainer component={Paper}>
@@ -81,6 +94,9 @@ export const ExpectedMonthlyTotalReportTable: React.FC<Props> = ({
                   <TableCell align="left">{t('Status')}</TableCell>
                   <TableCell align="right">{t('Commitment')}</TableCell>
                   <TableCell align="right">{t('Frequency')}</TableCell>
+                  {donations ? (
+                    <TableCell align="right">{t('Donation')}</TableCell>
+                  ) : null}
                   <TableCell align="right">{t('Converted')}</TableCell>
                 </TableRow>
               </TableHead>
@@ -89,7 +105,7 @@ export const ExpectedMonthlyTotalReportTable: React.FC<Props> = ({
                   <TableRow
                     key={row.contact}
                     style={{
-                      backgroundColor: index % 2 ? '#f0f0f0' : 'white',
+                      backgroundColor: index % 2 ? 'white' : '#f0f0f0',
                     }}
                   >
                     <TableCell align="left">
@@ -102,6 +118,9 @@ export const ExpectedMonthlyTotalReportTable: React.FC<Props> = ({
                       {row.commitment + ' ' + row.currency}
                     </TableCell>
                     <TableCell align="right">{row.frequency}</TableCell>
+                    {title[0] === 'D' ? (
+                      <TableCell align="right">{row.donation}</TableCell>
+                    ) : null}
                     <TableCell align="right">
                       {row.converted + ' ' + row.currency}
                     </TableCell>

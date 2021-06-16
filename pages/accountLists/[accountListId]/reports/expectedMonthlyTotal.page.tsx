@@ -26,6 +26,7 @@ const ExpectedMonthlyTotalReportPage = (): ReactElement => {
     frequency: string,
     converted: string,
     currency: string,
+    donation: string,
   ) {
     return {
       contact,
@@ -35,6 +36,7 @@ const ExpectedMonthlyTotalReportPage = (): ReactElement => {
       frequency,
       converted,
       currency,
+      donation,
     };
   }
 
@@ -47,6 +49,7 @@ const ExpectedMonthlyTotalReportPage = (): ReactElement => {
       'Monthly',
       '50',
       'CAD',
+      '50',
     ),
     createData(
       'Adriano, Selinda',
@@ -56,6 +59,7 @@ const ExpectedMonthlyTotalReportPage = (): ReactElement => {
       'Monthly',
       '50',
       'CAD',
+      '50',
     ),
     createData(
       'Adriano, Selinda',
@@ -65,6 +69,7 @@ const ExpectedMonthlyTotalReportPage = (): ReactElement => {
       'Monthly',
       '50',
       'CAD',
+      '50',
     ),
     createData(
       'Adriano, Selinda',
@@ -74,6 +79,7 @@ const ExpectedMonthlyTotalReportPage = (): ReactElement => {
       'Monthly',
       '50',
       'CAD',
+      '50',
     ),
     createData(
       'Adriano, Selinda',
@@ -83,6 +89,7 @@ const ExpectedMonthlyTotalReportPage = (): ReactElement => {
       'Monthly',
       '50',
       'CAD',
+      '50',
     ),
     createData(
       'Adriano, Selinda',
@@ -92,6 +99,7 @@ const ExpectedMonthlyTotalReportPage = (): ReactElement => {
       'Monthly',
       '50',
       'CAD',
+      '50',
     ),
   ];
 
@@ -102,28 +110,45 @@ const ExpectedMonthlyTotalReportPage = (): ReactElement => {
           MPDX | {t('Reports')} | {t('Expect Monthly Total')}
         </title>
       </Head>
-      {isReady && accountListId ? (
+      {isReady && accountListId && rows.length !== 0 ? (
         <Box>
-          <ExpectedMonthlyTotalReportHeader accountListId={accountListId} />
+          <ExpectedMonthlyTotalReportHeader
+            accountListId={accountListId}
+            empty={false}
+          />
           <ExpectedMonthlyTotalReportTable
             accountListId={accountListId}
             title={'Donations So Far This Month'}
             data={rows}
+            donations={true}
           />
           <ExpectedMonthlyTotalReportTable
             accountListId={accountListId}
             title={'Likely Partners This Month'}
             data={rows}
+            donations={false}
           />
           <ExpectedMonthlyTotalReportTable
             accountListId={accountListId}
             title={'Possible Partners This Month'}
             data={rows}
+            donations={false}
           />
+        </Box>
+      ) : isReady && accountListId && rows.length === 0 ? (
+        <Box>
+          <ExpectedMonthlyTotalReportHeader
+            accountListId={accountListId}
+            empty={true}
+          />
+          <ExpectedMonthlyTotalReportEmpty accountListId={accountListId} />
         </Box>
       ) : (
         <Box>
-          <ExpectedMonthlyTotalReportEmpty accountListId={accountListId} />
+          <ExpectedMonthlyTotalReportHeader
+            accountListId={accountListId}
+            empty={true}
+          />
           <Loading loading />
         </Box>
       )}
