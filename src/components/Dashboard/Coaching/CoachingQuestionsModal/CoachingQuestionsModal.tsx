@@ -2,20 +2,18 @@ import React, { useState } from 'react';
 import {
   Box,
   Button,
-  Drawer,
-  IconButton,
   LinearProgress,
   styled,
   Typography,
 } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { Alert } from '@material-ui/lab';
-import { CloseOutlined } from '@material-ui/icons';
 import {
   FormQuestionFragment,
   useGetCoachingAnswerSetsQuery,
 } from '../GetCoachingAnswerSets.generated';
 import Loading from '../../../Loading';
+import Modal from '../../../common/Modal/Modal';
 import CoachingQuestionResponseSection from './CoachingQuestionResponseSection/CoachingQuestionResponseSection';
 
 interface Props {
@@ -23,41 +21,6 @@ interface Props {
   isOpen: boolean;
   closeDrawer: () => void;
 }
-
-const DrawerModal = styled(Drawer)(({}) => ({
-  width: 640,
-}));
-
-const ModalHeaderWrap = styled(Box)(({}) => ({
-  display: 'flex',
-  flexDirection: 'row',
-  padding: 0,
-  alignItems: 'center',
-}));
-
-const HeaderText = styled(Typography)(({ theme }) => ({
-  ...theme.typography.h5,
-  flex: 1,
-  textAlign: 'center',
-  color: theme.palette.text.primary,
-}));
-
-const CloseButton = styled(IconButton)(({}) => ({
-  width: 48,
-  height: 48,
-}));
-
-const CloseButtonIcon = styled(CloseOutlined)(({}) => ({
-  fontSize: 32,
-}));
-
-const ModalContentWrap = styled(Box)(({}) => ({
-  display: 'flex',
-  flexDirection: 'column',
-  padding: 24,
-}));
-
-const NoQuestionsAlert = styled(Alert)(({}) => ({}));
 
 const ProgressBar = styled(LinearProgress)(({ theme }) => ({
   display: 'flex',
@@ -137,53 +100,56 @@ const CoachingQuestionsModal: React.FC<Props> = ({
 
   const progress = ((questionIndex + 1) / questionCount) * 100.0;
 
+  const renderContent = () =>
+    loading || !answerSet ? (
+      <Loading />
+    ) : questionCount > 0 && question ? (
+      <Box>
+        <ProgressBar variant="determinate" value={progress} />
+        <CoachingQuestionResponseSection
+          questionPrompt={question.prompt}
+          responseOptions={question.responseOptions || null}
+          selectedResponseValue={responseValue}
+          onResponseChanged={setResponseValue}
+        />
+      </Box>
+    ) : (
+      <Alert severity="warning">
+        {t('Weekly report questions have not been setup for your organization')}
+      </Alert>
+    );
+
+  const renderActionSection = () =>
+    loading || !answerSet || questionCount === 0 || !question ? (
+      <Box />
+    ) : (
+      <ActionButtonWrap>
+        <PreviousWrap>
+          {hasPrevious ? (
+            <NavButton onClick={previous}>
+              <Typography>{t('Back')}</Typography>
+            </NavButton>
+          ) : null}
+        </PreviousWrap>
+        <NextWrap>
+          <NavButton
+            onClick={next}
+            disabled={question.required && !responseValue}
+          >
+            <Typography>{t(hasNext ? 'Next' : 'Submit')}</Typography>
+          </NavButton>
+        </NextWrap>
+      </ActionButtonWrap>
+    );
+
   return (
-    <DrawerModal anchor="top" open={isOpen}>
-      <ModalHeaderWrap>
-        <HeaderText>{t('Weekly Report').toUpperCase()}</HeaderText>
-        <CloseButton onClick={closeDrawer}>
-          <CloseButtonIcon />
-        </CloseButton>
-      </ModalHeaderWrap>
-      <ModalContentWrap>
-        {loading || !answerSet ? (
-          <Loading />
-        ) : questionCount > 0 && question ? (
-          <Box>
-            <ProgressBar variant="determinate" value={progress} />
-            <CoachingQuestionResponseSection
-              questionPrompt={question.prompt}
-              responseOptions={question.responseOptions || null}
-              selectedResponseValue={responseValue}
-              onResponseChanged={setResponseValue}
-            />
-            <ActionButtonWrap>
-              <PreviousWrap>
-                {hasPrevious ? (
-                  <NavButton onClick={previous}>
-                    <Typography>{t('Back')}</Typography>
-                  </NavButton>
-                ) : null}
-              </PreviousWrap>
-              <NextWrap>
-                <NavButton
-                  onClick={next}
-                  disabled={question.required && !responseValue}
-                >
-                  <Typography>{t(hasNext ? 'Next' : 'Submit')}</Typography>
-                </NavButton>
-              </NextWrap>
-            </ActionButtonWrap>
-          </Box>
-        ) : (
-          <NoQuestionsAlert severity="warning">
-            {t(
-              'Weekly report questions have not been setup for your organization',
-            )}
-          </NoQuestionsAlert>
-        )}
-      </ModalContentWrap>
-    </DrawerModal>
+    <Modal
+      isOpen={isOpen}
+      title={t('Weekly Report').toUpperCase()}
+      content={renderContent()}
+      customActionSection={renderActionSection()}
+      handleClose={closeDrawer}
+    />
   );
 };
 
