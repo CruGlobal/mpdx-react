@@ -9,9 +9,6 @@ query GetCoachingAnswerSets($accountListId: ID!) {
 
 fragment FormQuestion on CoachingQuestion {
   id
-  answer {
-    response
-  }
   prompt
   required
   responseOptions

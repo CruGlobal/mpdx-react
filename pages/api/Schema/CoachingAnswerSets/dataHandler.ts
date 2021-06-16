@@ -4,53 +4,39 @@ import {
   CoachingQuestion,
 } from '../../../../graphql/types.generated';
 
-const getCoachingAnswerSets = (
-  data: {
-    id: string;
-    type: string;
-    attributes: {
-      completed_at: string;
+export interface CoachingAnswerSetResponse {
+  id: string;
+  type: string;
+  attributes: {
+    completed_at: string;
+    created_at: string;
+    updated_at: string;
+  };
+  relationships: {
+    answers: {
+      id: string;
       created_at: string;
+      response: string;
       updated_at: string;
+    }[];
+    questions: {
+      data: {
+        id: string;
+        created_at: string;
+        position: number;
+        prompt: string;
+        required: boolean;
+        response_options: string[] | null;
+        updated_at: string;
+      }[];
     };
-    relationships: {
-      answers: {
-        data: {
-          id: string;
-          created_at: string;
-          response: string;
-          question: {
-            id: string;
-            created_at: string;
-            position: number;
-            prompt: string;
-            required: boolean;
-            response_options: string[] | null;
-            updated_at: string;
-          };
-          updated_at: string;
-        }[];
-      };
-      questions: {
-        data: {
-          id: string;
-          answer: {
-            id: string;
-            created_at: string;
-            response: string;
-            updated_at: string;
-          };
-          created_at: string;
-          position: number;
-          prompt: string;
-          required: boolean;
-          response_options: string[] | null;
-          updated_at: string;
-        }[];
-      };
-    };
-  }[],
+  };
+}
+
+const getCoachingAnswerSets = (
+  data: CoachingAnswerSetResponse[],
 ): CoachingAnswerSet[] => {
+  debugger;
   const response: CoachingAnswerSet[] = [];
 
   data.forEach(
@@ -58,7 +44,7 @@ const getCoachingAnswerSets = (
       id,
       attributes: { completed_at, created_at, updated_at },
       relationships: {
-        answers: { data: answersData },
+        answers: answersData,
         questions: { data: questionsData },
       },
     }) => {
@@ -86,12 +72,6 @@ const getCoachingAnswerSets = (
 const createCoachingQuestionsList = (
   data: {
     id: string;
-    answer: {
-      id: string;
-      created_at: string;
-      response: string;
-      updated_at: string;
-    };
     created_at: string;
     position: number;
     prompt: string;
@@ -100,12 +80,12 @@ const createCoachingQuestionsList = (
     updated_at: string;
   }[],
 ): CoachingQuestion[] => {
+  debugger;
   const questions: CoachingQuestion[] = [];
 
   data.forEach(
     ({
       id,
-      answer,
       created_at,
       position,
       prompt,
@@ -115,12 +95,6 @@ const createCoachingQuestionsList = (
     }) => {
       const question: CoachingQuestion = {
         id,
-        answer: {
-          id: answer.id,
-          createdAt: answer.created_at,
-          response: answer.response,
-          updatedAt: answer.updated_at,
-        },
         createdAt: created_at,
         position,
         prompt,
@@ -141,34 +115,17 @@ const createCoachingAnswersList = (
     id: string;
     created_at: string;
     response: string;
-    question: {
-      id: string;
-      created_at: string;
-      position: number;
-      prompt: string;
-      required: boolean;
-      response_options: string[] | null;
-      updated_at: string;
-    };
     updated_at: string;
   }[],
 ): CoachingAnswer[] => {
+  debugger;
   const answers: CoachingAnswer[] = [];
 
-  data.forEach(({ id, created_at, response, question, updated_at }) => {
+  data.forEach(({ id, created_at, response, updated_at }) => {
     const answer: CoachingAnswer = {
       id,
       createdAt: created_at,
       response,
-      question: {
-        id: question.id,
-        createdAt: question.created_at,
-        position: question.position,
-        prompt: question.prompt,
-        required: question.required,
-        responseOptions: question.response_options,
-        updatedAt: question.updated_at,
-      },
       updatedAt: updated_at,
     };
 

@@ -13,7 +13,6 @@ type CoachingAnswerSet {
 
 type CoachingQuestion {
   id: ID!
-  answer: CoachingQuestionAnswer!
   createdAt: ISO8601DateTime!
   position: Int!
   prompt: String!
@@ -33,7 +32,6 @@ type CoachingAnswer {
   id: ID!
   createdAt: ISO8601DateTime!
   response: String
-  question: CoachingAnswerQuestion!
   updatedAt: ISO8601DateTime!
 }
 
