@@ -1,8 +1,12 @@
+import { MockedProvider } from '@apollo/client/testing';
 import { MuiThemeProvider } from '@material-ui/core';
 import React, { ReactElement } from 'react';
 import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
 import theme from '../../../../theme';
-import { GetCoachingAnswerSetsQuery } from '../GetCoachingAnswerSets.generated';
+import {
+  GetCoachingAnswerSetsDocument,
+  GetCoachingAnswerSetsQuery,
+} from '../GetCoachingAnswerSets.generated';
 import CoachingQuestionsModal from './CoachingQuestionsModal';
 
 export default {
@@ -31,6 +35,33 @@ export const Null = (): ReactElement => {
   );
 };
 
+export const Loading = (): ReactElement => {
+  return (
+    <MockedProvider
+      mocks={[
+        {
+          request: {
+            query: GetCoachingAnswerSetsDocument,
+            variables: {
+              accountListId: accountListId,
+            },
+          },
+          result: {},
+          delay: 8640000,
+        },
+      ]}
+    >
+      <MuiThemeProvider theme={theme}>
+        <CoachingQuestionsModal
+          accountListId={accountListId}
+          isOpen={true}
+          closeDrawer={() => {}}
+        />
+      </MuiThemeProvider>
+    </MockedProvider>
+  );
+};
+
 export const ShortAnswer = (): ReactElement => {
   return (
     <GqlMockedProvider<GetCoachingAnswerSetsQuery>
@@ -38,10 +69,11 @@ export const ShortAnswer = (): ReactElement => {
         GetCoachingAnswerSets: {
           coachingAnswerSets: [
             {
+              id: '1',
               questions: [
-                { responseOptions: null },
-                { responseOptions: null },
-                { responseOptions: null },
+                { responseOptions: null, required: false },
+                { responseOptions: null, required: false },
+                { responseOptions: null, required: false },
               ],
             },
           ],
@@ -62,15 +94,19 @@ export const ResponseOptions = (): ReactElement => {
     GetCoachingAnswerSets: {
       coachingAnswerSets: [
         {
+          id: '1',
           questions: [
             {
               responseOptions: ['option 1', 'option 2', 'option 3', 'option 4'],
+              required: false,
             },
             {
               responseOptions: ['option 1', 'option 2', 'option 3', 'option 4'],
+              required: false,
             },
             {
               responseOptions: ['option 1', 'option 2', 'option 3', 'option 4'],
+              required: false,
             },
           ],
         },
@@ -96,6 +132,7 @@ export const RequiredQuestion = (): ReactElement => {
         GetCoachingAnswerSets: {
           coachingAnswerSets: [
             {
+              id: '1',
               questions: [{ required: true, responseOptions: null }],
             },
           ],

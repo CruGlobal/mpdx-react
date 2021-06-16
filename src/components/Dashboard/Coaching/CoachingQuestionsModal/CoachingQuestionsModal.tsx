@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import {
   Box,
   Button,
+  CircularProgress,
   LinearProgress,
   styled,
   Typography,
@@ -12,7 +13,6 @@ import {
   FormQuestionFragment,
   useGetCoachingAnswerSetsQuery,
 } from '../GetCoachingAnswerSets.generated';
-import Loading from '../../../Loading';
 import Modal from '../../../common/Modal/Modal';
 import CoachingQuestionResponseSection from './CoachingQuestionResponseSection/CoachingQuestionResponseSection';
 
@@ -102,7 +102,9 @@ const CoachingQuestionsModal: React.FC<Props> = ({
 
   const renderContent = () =>
     loading || !answerSet ? (
-      <Loading />
+      <Box display="flex" justifyContent="center" alignItems="center">
+        <CircularProgress />
+      </Box>
     ) : questionCount > 0 && question ? (
       <Box>
         <ProgressBar variant="determinate" value={progress} />
