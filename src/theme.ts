@@ -133,6 +133,7 @@ const theme = createMuiTheme({
         },
         body: {
           backgroundColor: mpdxColors.blue,
+          overflowX: 'hidden',
         },
       },
     },

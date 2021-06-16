@@ -569,15 +569,17 @@ const TaskDrawerForm = ({
           <Box m={2}>
             <Grid container spacing={1} justify="flex-end">
               <Grid container item xs={8} justify="flex-start">
-                <Button
-                  size="large"
-                  variant="contained"
-                  className={classes.removeButton}
-                  onClick={() => handleRemoveDialog(true)}
-                >
-                  <DeleteIcon />
-                  {t('Remove')}
-                </Button>
+                {task?.id ? (
+                  <Button
+                    size="large"
+                    variant="contained"
+                    className={classes.removeButton}
+                    onClick={() => handleRemoveDialog(true)}
+                  >
+                    <DeleteIcon />
+                    {t('Remove')}
+                  </Button>
+                ) : null}
               </Grid>
               <Grid item xs={2}>
                 <Button size="large" disabled={isSubmitting} onClick={onClose}>

@@ -1,10 +1,15 @@
-import React, { ReactElement } from 'react';
+import React, { ReactElement, useState } from 'react';
 import {
   makeStyles,
   Grid,
   MenuItem,
   ListItemText,
   Theme,
+  Popper,
+  Grow,
+  ClickAwayListener,
+  MenuList,
+  Paper,
 } from '@material-ui/core';
 import NextLink from 'next/link';
 import { useTranslation } from 'react-i18next';
@@ -24,6 +29,21 @@ const NavMenu = (): ReactElement => {
   const classes = useStyles();
   const { state } = useApp();
   const { t } = useTranslation();
+
+  const [reportsMenuOpen, setReportsMenuOpen] = useState(false);
+  const anchorRef = React.useRef<HTMLLIElement>(null);
+
+  const handleReportsMenuToggle = () => {
+    setReportsMenuOpen((prevOpen) => !prevOpen);
+  };
+
+  const handleReportsMenuClose = (event: React.MouseEvent<EventTarget>) => {
+    if (anchorRef.current?.contains(event.target as HTMLElement)) {
+      return;
+    }
+
+    setReportsMenuOpen(false);
+  };
 
   return (
     <>
@@ -63,11 +83,115 @@ const NavMenu = (): ReactElement => {
             </NextLink>
           </Grid>
           <Grid item className={classes.navListItem}>
-            <HandoffLink path="/reports">
-              <MenuItem component="a">
-                <ListItemText primary={t('Reports')} />
-              </MenuItem>
-            </HandoffLink>
+            <MenuItem
+              ref={anchorRef}
+              aria-controls={reportsMenuOpen ? 'menu-list-grow' : undefined}
+              aria-haspopup="true"
+              onClick={handleReportsMenuToggle}
+            >
+              <ListItemText primary={t('Reports')} />
+            </MenuItem>
+            <Popper
+              open={reportsMenuOpen}
+              anchorEl={anchorRef.current}
+              role={undefined}
+              transition
+              disablePortal
+            >
+              {({ TransitionProps, placement }) => (
+                <Grow
+                  {...TransitionProps}
+                  style={{
+                    transformOrigin:
+                      placement === 'bottom' ? 'center top' : 'center bottom',
+                  }}
+                >
+                  <Paper>
+                    <ClickAwayListener onClickAway={handleReportsMenuClose}>
+                      <MenuList
+                        autoFocusItem={reportsMenuOpen}
+                        id="menu-list-grow"
+                      >
+                        <NextLink
+                          href={`/accountLists/${state.accountListId}/reports/donations`}
+                          scroll={false}
+                        >
+                          <MenuItem onClick={handleReportsMenuClose}>
+                            <ListItemText primary={t('Donations')} />
+                          </MenuItem>
+                        </NextLink>
+                        <NextLink
+                          href={`/accountLists/${state.accountListId}/reports/partnerCurrency`}
+                          scroll={false}
+                        >
+                          <MenuItem onClick={handleReportsMenuClose}>
+                            <ListItemText
+                              primary={t('14-Month Report (Partner Currency)')}
+                            />
+                          </MenuItem>
+                        </NextLink>
+                        <NextLink
+                          href={`/accountLists/${state.accountListId}/reports/salaryCurrency`}
+                          scroll={false}
+                        >
+                          <MenuItem onClick={handleReportsMenuClose}>
+                            <ListItemText
+                              primary={t('14-Month Report (Salary Currency)')}
+                            />
+                          </MenuItem>
+                        </NextLink>
+                        <NextLink
+                          href={`/accountLists/${state.accountListId}/reports/designationAccounts`}
+                          scroll={false}
+                        >
+                          <MenuItem onClick={handleReportsMenuClose}>
+                            <ListItemText primary={t('Designation Accounts')} />
+                          </MenuItem>
+                        </NextLink>
+                        <NextLink
+                          href={`/accountLists/${state.accountListId}/reports/responsibilityCenters`}
+                          scroll={false}
+                        >
+                          <MenuItem onClick={handleReportsMenuClose}>
+                            <ListItemText
+                              primary={t('Responsibility Centers')}
+                            />
+                          </MenuItem>
+                        </NextLink>
+                        <NextLink
+                          href={`/accountLists/${state.accountListId}/reports/expectedMonthlyTotal`}
+                          scroll={false}
+                        >
+                          <MenuItem onClick={handleReportsMenuClose}>
+                            <ListItemText
+                              primary={t('Expected Monthly Total')}
+                            />
+                          </MenuItem>
+                        </NextLink>
+                        <NextLink
+                          href={`/accountLists/${state.accountListId}/reports/partnerGivingAnalysis`}
+                          scroll={false}
+                        >
+                          <MenuItem onClick={handleReportsMenuClose}>
+                            <ListItemText
+                              primary={t('Partner Giving Analysis')}
+                            />
+                          </MenuItem>
+                        </NextLink>
+                        <NextLink
+                          href={`/accountLists/${state.accountListId}/reports/coaching`}
+                          scroll={false}
+                        >
+                          <MenuItem onClick={handleReportsMenuClose}>
+                            <ListItemText primary={t('Coaching')} />
+                          </MenuItem>
+                        </NextLink>
+                      </MenuList>
+                    </ClickAwayListener>
+                  </Paper>
+                </Grow>
+              )}
+            </Popper>
           </Grid>
           <Grid item className={classes.navListItem}>
             <HandoffLink path="/tools">
