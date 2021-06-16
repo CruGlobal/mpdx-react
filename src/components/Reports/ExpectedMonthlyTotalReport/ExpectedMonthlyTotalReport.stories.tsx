@@ -1,6 +1,6 @@
 import React, { ReactElement } from 'react';
 import { Box } from '@material-ui/core';
-import Loading from '../../../../src/components/Loading';
+import Loading from '../../Loading';
 import { ExpectedMonthlyTotalReportHeader } from './Header/ExpectedMonthlyTotalReportHeader';
 import { ExpectedMonthlyTotalReportTable } from './Table/ExpectedMonthlyTotalReportTable';
 import { ExpectedMonthlyTotalReportEmpty } from './Empty/ExpectedMonthlyTotalReportEmpty';
