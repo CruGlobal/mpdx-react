@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { SalaryReportTable } from 'src/components/Reports/SalaryReport/SalaryReportTable';
 import Loading from 'src/components/Loading';
 import { useAccountListId } from 'src/hooks/useAccountListId';
-import ReportLayout from 'src/components/Reports/ReportLayout';
+import { ReportLayout } from 'src/components/Reports/ReportLayout/ReportLayout';
 
 const SalaryReportPage = (): ReactElement => {
   const { t } = useTranslation();

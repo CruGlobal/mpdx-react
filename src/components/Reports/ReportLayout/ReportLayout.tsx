@@ -2,7 +2,7 @@ import React from 'react';
 import type { FC, ReactNode } from 'react';
 import { Box, Typography } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
-import NavReportsList from './NavReportsList';
+import { NavReportsList } from './NavReportsList/NavReportsList';
 
 interface ReportLayoutProps {
   id: string;
@@ -10,7 +10,11 @@ interface ReportLayoutProps {
   children: ReactNode;
 }
 
-const ReportLayout: FC<ReportLayoutProps> = ({ id, title, children }) => {
+export const ReportLayout: FC<ReportLayoutProps> = ({
+  id,
+  title,
+  children,
+}) => {
   const { t } = useTranslation();
 
   return (
@@ -27,5 +31,3 @@ const ReportLayout: FC<ReportLayoutProps> = ({ id, title, children }) => {
     </>
   );
 };
-
-export default ReportLayout;

@@ -72,7 +72,7 @@ const FilterList = styled(List)(({ theme }) => ({
   },
 }));
 
-const NavReportsList: React.FC<Props & BoxProps> = ({
+export const NavReportsList: React.FC<Props & BoxProps> = ({
   selected,
   ...BoxProps
 }) => {
@@ -98,5 +98,3 @@ const NavReportsList: React.FC<Props & BoxProps> = ({
     </Box>
   );
 };
-
-export default NavReportsList;

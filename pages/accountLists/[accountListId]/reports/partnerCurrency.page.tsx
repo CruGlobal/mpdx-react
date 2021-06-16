@@ -1,10 +1,10 @@
 import React, { ReactElement } from 'react';
 import Head from 'next/head';
 import { useTranslation } from 'react-i18next';
-import { PartnerReportTable } from '../../../../src/components/Reports/PartnerReport/PartnerReportTable';
-import Loading from '../../../../src/components/Loading';
-import { useAccountListId } from '../../../../src/hooks/useAccountListId';
-import ReportLayout from 'src/components/Reports/ReportLayout';
+import { PartnerReportTable } from 'src/components/Reports/PartnerReport/PartnerReportTable';
+import Loading from 'src/components/Loading';
+import { useAccountListId } from 'src/hooks/useAccountListId';
+import { ReportLayout } from 'src/components/Reports/ReportLayout/ReportLayout';
 
 const PartnerReportPage = (): ReactElement => {
   const { t } = useTranslation();
