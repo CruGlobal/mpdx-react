@@ -30,7 +30,7 @@ const HeaderWrap = styled(Box)(({ theme }) => ({
   flexDirection: 'row',
   justifyContent: 'space-evenly',
   alignItems: 'center',
-  backgroundColor: theme.palette.background.default,
+  backgroundColor: theme.palette.common.white,
 }));
 const FilterButton = styled(IconButton)(
   ({
@@ -151,22 +151,20 @@ export const ContactsHeader: React.FC<Props> = ({
         />
       </Hidden>
 
-      <Hidden xsDown>
-        <FilterButton
-          activeFilters={activeFilters}
-          panelOpen={filterPanelOpen}
-          onClick={toggleFilterPanel}
-        >
-          <FilterIcon titleAccess={t('Toggle Filter Panel')} />
-        </FilterButton>
-      </Hidden>
+      <FilterButton
+        activeFilters={activeFilters}
+        panelOpen={filterPanelOpen}
+        onClick={toggleFilterPanel}
+      >
+        <FilterIcon titleAccess={t('Toggle Filter Panel')} />
+      </FilterButton>
 
       <SearchBox
         onChange={onSearchTermChanged}
         placeholder={t('Search List')}
       />
       <ContactsShowingText>
-        {t('Showing 43', { count: totalContacts })}
+        {t('Showing {{count}}', { count: totalContacts })}
       </ContactsShowingText>
 
       <Hidden smDown>

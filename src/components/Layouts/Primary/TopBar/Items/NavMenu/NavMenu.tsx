@@ -11,6 +11,8 @@ import {
   MenuList,
   Paper,
 } from '@material-ui/core';
+import clsx from 'clsx';
+import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import NextLink from 'next/link';
 import { useTranslation } from 'react-i18next';
 import { useApp } from '../../../../../App';
@@ -22,6 +24,16 @@ const useStyles = makeStyles((theme: Theme) => ({
     [theme.breakpoints.down('sm')]: {
       display: 'none',
     },
+  },
+  expand: {
+    transform: 'rotate(0deg)',
+    marginLeft: 'auto',
+    transition: theme.transitions.create('transform', {
+      duration: theme.transitions.duration.shortest,
+    }),
+  },
+  expandOpen: {
+    transform: 'rotate(180deg)',
   },
 }));
 
@@ -90,6 +102,11 @@ const NavMenu = (): ReactElement => {
               onClick={handleReportsMenuToggle}
             >
               <ListItemText primary={t('Reports')} />
+              <ArrowDropDownIcon
+                className={clsx(classes.expand, {
+                  [classes.expandOpen]: reportsMenuOpen,
+                })}
+              />
             </MenuItem>
             <Popper
               open={reportsMenuOpen}

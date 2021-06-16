@@ -26,7 +26,6 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   toolbar: {
     backgroundColor: theme.palette.cruGrayDark.main,
-    minHeight: '60px',
   },
   logoGrid: {
     order: 1,

@@ -18,7 +18,7 @@ describe('ContactFilters', () => {
       <GqlMockedProvider<ContactFiltersQuery>
         mocks={{ ContactFilters: ContactFiltersDefaultMock }}
       >
-        <ContactFilters accountListId={accountListId} />
+        <ContactFilters accountListId={accountListId} onClose={() => {}} />
       </GqlMockedProvider>,
     );
 
@@ -44,7 +44,7 @@ describe('ContactFilters', () => {
       <GqlMockedProvider<ContactFiltersQuery>
         mocks={{ ContactFilters: ContactFiltersEmptyMock }}
       >
-        <ContactFilters accountListId={accountListId} />
+        <ContactFilters accountListId={accountListId} onClose={() => {}} />
       </GqlMockedProvider>,
     );
 
@@ -58,7 +58,7 @@ describe('ContactFilters', () => {
   it('loading indicator', async () => {
     const { getByTestId, queryByTestId, queryAllByTestId } = render(
       <GqlMockedProvider<ContactFiltersQuery>>
-        <ContactFilters accountListId={accountListId} />
+        <ContactFilters accountListId={accountListId} onClose={() => {}} />
       </GqlMockedProvider>,
     );
 
@@ -73,7 +73,7 @@ describe('ContactFilters', () => {
       <GqlMockedProvider<ContactFiltersQuery>
         mocks={{ ContactFilters: ContactFiltersErrorMock }}
       >
-        <ContactFilters accountListId={accountListId} />
+        <ContactFilters accountListId={accountListId} onClose={() => {}} />
       </GqlMockedProvider>,
     );
 
