@@ -24,6 +24,7 @@ import { useSnackbar } from 'notistack';
 import AnimatedCard from '../../../AnimatedCard';
 import { numberFormat } from '../../../../lib/intlFormat';
 import HandoffLink from '../../../HandoffLink';
+import CoachingQuestionsModal from '../../Coaching/CoachingQuestionsModal/CoachingQuestionsModal';
 import { useGetWeeklyActivityQuery } from './GetWeeklyActivity.generated';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -75,6 +76,7 @@ const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
       DateTime.local().set({ weekday: 6 }),
     ),
   );
+  const [coachingQuestionsIsOpen, setCoachingQuestionsIsOpen] = useState(false);
 
   const { enqueueSnackbar } = useSnackbar();
 
@@ -114,6 +116,11 @@ const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
 
   return (
     <AnimatedCard className={classes.card}>
+      <CoachingQuestionsModal
+        accountListId={accountListId}
+        isOpen={coachingQuestionsIsOpen}
+        closeDrawer={() => setCoachingQuestionsIsOpen(false)}
+      />
       <CardHeader
         title={t('Weekly Activity')}
         action={
@@ -240,12 +247,19 @@ const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
             </TableBody>
           </Table>
         </TableContainer>
-        <CardActions>
+        <CardActions style={{ justifyContent: 'space-between' }}>
           <HandoffLink path="/reports/coaching">
             <Button size="small" color="primary">
               {t('View Activity Detail')}
             </Button>
           </HandoffLink>
+          <Button
+            size="small"
+            color="primary"
+            onClick={() => setCoachingQuestionsIsOpen(true)}
+          >
+            {t('Fill Out Weekly Report')}
+          </Button>
         </CardActions>
       </motion.div>
     </AnimatedCard>
