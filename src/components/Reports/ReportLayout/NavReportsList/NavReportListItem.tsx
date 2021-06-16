@@ -2,7 +2,7 @@ import React from 'react';
 import { ListItem, ListItemText } from '@material-ui/core';
 import { ArrowForwardIos } from '@material-ui/icons';
 import NextLink from 'next/link';
-import { useApp } from 'src/components/App';
+import { useAccountListId } from 'src/hooks/useAccountListId';
 
 export interface ReportOption {
   id: string;
@@ -16,11 +16,11 @@ interface Props {
 }
 
 const NavReportListItem: React.FC<Props> = ({ item, isSelected, ...rest }) => {
-  const { state } = useApp();
+  const accountListId = useAccountListId();
 
   return (
     <NextLink
-      href={`/accountLists/${state.accountListId}/reports/${item.id}`}
+      href={`/accountLists/${accountListId}/reports/${item.id}`}
       scroll={false}
     >
       <ListItem button selected={isSelected} {...rest}>
