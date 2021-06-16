@@ -70,8 +70,7 @@ const CoachingQuestionsModal: React.FC<Props> = ({
   //const [saveAnswer] = useSaveAnswerMutation();
 
   const [questionIndex, setQuestionIndex] = useState(0);
-
-  const [responseValue, setResponseValue] = useState<string | null>(null);
+  const [responseValues, setResponseValues] = useState<(string | null)[]>([]);
 
   const answerSet = data?.coachingAnswerSets[currentAnswerSet];
   const questionCount = answerSet?.questions.length || 0;
@@ -81,24 +80,25 @@ const CoachingQuestionsModal: React.FC<Props> = ({
   const hasNext = questionIndex < questionCount - 1;
   const hasPrevious = questionIndex !== 0;
 
-  const next = () => {
-    //saveAnswer(answerSet?.id, question?.id, question?.answer);
-    if (hasNext) {
-      setQuestionIndex(questionIndex + 1);
+  const currentResponse = responseValues[questionIndex] || null;
 
-      setResponseValue(null);
-    }
+  const setCurrentResponse = (value: string | null) => {
+    debugger;
+    const newResponseValues = responseValues;
+    newResponseValues[questionIndex] = value;
+
+    setResponseValues(newResponseValues);
+  };
+
+  const next = () => {
+    hasNext && setQuestionIndex(questionIndex + 1);
   };
 
   const previous = () => {
-    if (hasPrevious) {
-      setQuestionIndex(questionIndex - 1);
-
-      setResponseValue(null);
-    }
+    hasPrevious && setQuestionIndex(questionIndex - 1);
   };
 
-  const progress = ((questionIndex + 1) / questionCount) * 100.0;
+  const progress = (questionIndex / questionCount) * 100.0;
 
   const renderContent = () =>
     loading || !answerSet ? (
@@ -109,10 +109,10 @@ const CoachingQuestionsModal: React.FC<Props> = ({
       <Box>
         <ProgressBar variant="determinate" value={progress} />
         <CoachingQuestionResponseSection
-          questionPrompt={question.prompt}
-          responseOptions={question.responseOptions || null}
-          selectedResponseValue={responseValue}
-          onResponseChanged={setResponseValue}
+          questionIndex={questionIndex}
+          responseValue={currentResponse}
+          question={question}
+          onResponseChanged={setCurrentResponse}
         />
       </Box>
     ) : (
@@ -136,7 +136,7 @@ const CoachingQuestionsModal: React.FC<Props> = ({
         <NextWrap>
           <NavButton
             onClick={next}
-            disabled={question.required && !responseValue}
+            disabled={question.required && !currentResponse}
           >
             <Typography>{t(hasNext ? 'Next' : 'Submit')}</Typography>
           </NavButton>
