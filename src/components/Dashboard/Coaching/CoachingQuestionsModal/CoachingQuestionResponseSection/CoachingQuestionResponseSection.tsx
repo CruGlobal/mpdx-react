@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useRef } from 'react';
+import React, { ChangeEvent, useEffect, useRef } from 'react';
 import {
   Box,
   FormControl,
@@ -12,6 +12,8 @@ import {
 import { FormQuestionFragment } from '../../GetCoachingAnswerSets.generated';
 
 interface Props {
+  questionIndex: number;
+  responseValue: string | null;
   question: FormQuestionFragment;
   onResponseChanged: (response: string) => void;
 }
@@ -33,9 +35,21 @@ const ShortAnswer = styled(TextField)(({}) => ({
 }));
 
 const CoachingQuestionResponseSection: React.FC<Props> = ({
+  questionIndex,
+  responseValue,
   question,
   onResponseChanged,
 }) => {
+  const textField = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    debugger;
+    if (textField.current) {
+      debugger;
+      textField.current.value = responseValue || '';
+    }
+  }, [questionIndex]);
+
   const onFormControlChange = ({
     target: { value },
   }: ChangeEvent<HTMLInputElement>) => {
@@ -81,6 +95,7 @@ const CoachingQuestionResponseSection: React.FC<Props> = ({
           rows={4}
           variant="outlined"
           onChange={onTextFieldChange}
+          ref={textField}
         />
       )}
     </Box>
