@@ -1,4 +1,9 @@
 import React, { ReactElement } from 'react';
+import { gqlMock } from '../../../../../../__tests__/util/graphqlMocking';
+import {
+  FormQuestionFragment,
+  FormQuestionFragmentDoc,
+} from '../../GetCoachingAnswerSets.generated';
 
 import CoachingQuestionResponseSection from './CoachingQuestionResponseSection';
 
@@ -6,47 +11,31 @@ export default {
   title: 'Coaching/CoachingQuestionsModal/ResponseSection',
 };
 
-const questionPrompt = 'Question';
-
 export const ShortAnswer = (): ReactElement => {
-  return (
-    <CoachingQuestionResponseSection
-      questionPrompt={questionPrompt}
-      responseOptions={null}
-      selectedResponseValue={undefined}
-      onResponseChanged={() => {}}
-    />
-  );
-};
+  const question = gqlMock<FormQuestionFragment>(FormQuestionFragmentDoc, {
+    mocks: {
+      responseOptions: null,
+    },
+  });
 
-export const ShortAnswerWithResponse = (): ReactElement => {
   return (
     <CoachingQuestionResponseSection
-      questionPrompt={questionPrompt}
-      responseOptions={null}
-      selectedResponseValue={'my response'}
+      question={question}
       onResponseChanged={() => {}}
     />
   );
 };
 
 export const ResponseOptions = (): ReactElement => {
-  return (
-    <CoachingQuestionResponseSection
-      questionPrompt={questionPrompt}
-      responseOptions={['option 1', 'option 2', 'option 3', 'option 4']}
-      selectedResponseValue={undefined}
-      onResponseChanged={() => {}}
-    />
-  );
-};
+  const question = gqlMock<FormQuestionFragment>(FormQuestionFragmentDoc, {
+    mocks: {
+      responseOptions: ['option 1', 'option 2', 'option 3', 'option 4'],
+    },
+  });
 
-export const ResponseOptionsWithResponse = (): ReactElement => {
   return (
     <CoachingQuestionResponseSection
-      questionPrompt={questionPrompt}
-      responseOptions={['option 1', 'option 2', 'option 3', 'option 4']}
-      selectedResponseValue={'1'}
+      question={question}
       onResponseChanged={() => {}}
     />
   );

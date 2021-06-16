@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useRef, useEffect } from 'react';
+import React, { ChangeEvent, useRef } from 'react';
 import {
   Box,
   FormControl,
@@ -9,11 +9,10 @@ import {
   TextField,
   Typography,
 } from '@material-ui/core';
+import { FormQuestionFragment } from '../../GetCoachingAnswerSets.generated';
 
 interface Props {
-  questionPrompt: string;
-  responseOptions: string[] | null;
-  selectedResponseValue: string | null;
+  question: FormQuestionFragment;
   onResponseChanged: (response: string) => void;
 }
 
@@ -34,22 +33,9 @@ const ShortAnswer = styled(TextField)(({}) => ({
 }));
 
 const CoachingQuestionResponseSection: React.FC<Props> = ({
-  questionPrompt,
-  responseOptions,
-  selectedResponseValue,
+  question,
   onResponseChanged,
 }) => {
-  const textInput = useRef<HTMLInputElement>(null);
-  const radioInput = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    return () => {
-      if (selectedResponseValue === null) {
-        clearForm();
-      }
-    };
-  }, [selectedResponseValue]);
-
   const onFormControlChange = ({
     target: { value },
   }: ChangeEvent<HTMLInputElement>) => {
@@ -62,17 +48,8 @@ const CoachingQuestionResponseSection: React.FC<Props> = ({
     onResponseChanged(value);
   };
 
-  const clearForm = () => {
-    if (textInput.current !== null) {
-      textInput.current.value = '';
-    }
-    if (radioInput.current !== null) {
-      radioInput.current.value = '';
-    }
-  };
-
   const renderResponseOption = (option: string) => {
-    const value = responseOptions?.indexOf(option).toString();
+    const value = question.responseOptions?.indexOf(option).toString();
 
     return (
       <ResponseOption
@@ -86,17 +63,16 @@ const CoachingQuestionResponseSection: React.FC<Props> = ({
 
   return (
     <Box>
-      <PromptText>{questionPrompt}</PromptText>
-      {responseOptions !== null ? (
+      <PromptText>{question.prompt}</PromptText>
+      {!!question.responseOptions ? (
         <FormControl>
           <RadioGroup
             aria-label="responseOptions"
             name="responseOptions"
-            value={selectedResponseValue}
             onChange={onFormControlChange}
             row
           >
-            {responseOptions?.map(renderResponseOption)}
+            {question.responseOptions.map(renderResponseOption)}
           </RadioGroup>
         </FormControl>
       ) : (
@@ -105,7 +81,6 @@ const CoachingQuestionResponseSection: React.FC<Props> = ({
           rows={4}
           variant="outlined"
           onChange={onTextFieldChange}
-          inputRef={textInput}
         />
       )}
     </Box>
