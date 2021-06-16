@@ -19,7 +19,7 @@ const SalaryReportPage = (): ReactElement => {
       </Head>
       {accountListId ? (
         <ReportLayout
-          id="salaryCurrency"
+          selectedId="salaryCurrency"
           title="Contributions by Salary Currency"
         >
           <SalaryReportTable accountListId={accountListId} />

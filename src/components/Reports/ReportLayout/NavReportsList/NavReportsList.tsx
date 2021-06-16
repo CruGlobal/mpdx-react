@@ -1,4 +1,5 @@
 import React from 'react';
+import { useRouter } from 'next/router';
 import {
   Box,
   BoxProps,
@@ -77,7 +78,9 @@ export const NavReportsList: React.FC<Props & BoxProps> = ({
   ...BoxProps
 }) => {
   const classes = useStyles();
+  const router = useRouter();
   const { t } = useTranslation();
+  console.log(router);
 
   return (
     <Box width={280} {...BoxProps}>

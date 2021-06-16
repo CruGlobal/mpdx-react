@@ -5,13 +5,13 @@ import { useTranslation } from 'react-i18next';
 import { NavReportsList } from './NavReportsList/NavReportsList';
 
 interface ReportLayoutProps {
-  id: string;
+  selectedId: string;
   title: string;
   children: ReactNode;
 }
 
 export const ReportLayout: FC<ReportLayoutProps> = ({
-  id,
+  selectedId,
   title,
   children,
 }) => {
@@ -20,7 +20,7 @@ export const ReportLayout: FC<ReportLayoutProps> = ({
   return (
     <>
       <Box height="100vh" display="flex" overflow-y="scroll">
-        <NavReportsList selected={id} />
+        <NavReportsList selected={selectedId} />
         <Box flex={1}>
           <Box my={2}>
             <Typography variant="h5">{t(title)}</Typography>
