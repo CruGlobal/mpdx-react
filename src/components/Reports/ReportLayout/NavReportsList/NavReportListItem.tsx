@@ -7,7 +7,7 @@ import { useApp } from 'src/components/App';
 export interface ReportOption {
   id: string;
   title: string;
-  subTitle?: string | undefined;
+  subTitle?: string;
 }
 
 interface Props {
