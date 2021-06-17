@@ -18,11 +18,11 @@ const PartnerReportPage = (): ReactElement => {
         </title>
       </Head>
       {accountListId ? (
-        <ReportLayout
-          selectedId="partnerCurrency"
-          title="Contributions by Partner Currency"
-        >
-          <PartnerReportTable accountListId={accountListId} />
+        <ReportLayout selectedId="partnerCurrency">
+          <PartnerReportTable
+            accountListId={accountListId}
+            title="Contributions by Partner Currency"
+          />
         </ReportLayout>
       ) : (
         <Loading loading />
