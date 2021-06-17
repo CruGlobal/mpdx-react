@@ -31,11 +31,11 @@ const SalaryReportPage = (): ReactElement => {
         </title>
       </Head>
       {accountListId ? (
-        <ReportLayout
-          selectedId="salaryCurrency"
-          title="Contributions by Salary Currency"
-        >
-          <SalaryReportTable accountListId={accountListId} />
+        <ReportLayout selectedId="salaryCurrency">
+          <SalaryReportTable
+            accountListId={accountListId}
+            title="Contributions by Salary Currency"
+          />
         </ReportLayout>
       ) : (
         <Loading loading />
