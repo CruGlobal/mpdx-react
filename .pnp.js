@@ -85,6 +85,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/node", "npm:14.14.26"],
             ["@types/query-string", "npm:6.3.0"],
             ["@types/react", "npm:17.0.1"],
+            ["@types/react-csv", "npm:1.1.1"],
             ["@types/testing-library__jest-dom", "npm:5.9.5"],
             ["@types/uuid", "npm:8.3.0"],
             ["@types/yup", "npm:0.29.11"],
@@ -148,6 +149,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["prop-types", "npm:15.7.2"],
             ["query-string", "npm:6.14.0"],
             ["react", "npm:17.0.1"],
+            ["react-csv", "npm:2.0.3"],
             ["react-debounce-input", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:3.2.3"],
             ["react-dom", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:17.0.1"],
             ["react-i18next", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:11.8.11"],
@@ -11022,6 +11024,16 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/react-color", "npm:3.0.4"],
             ["@types/react", "npm:16.9.49"],
             ["@types/reactcss", "npm:1.2.3"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
+      ["@types/react-csv", [
+        ["npm:1.1.1", {
+          "packageLocation": "./.yarn/cache/@types-react-csv-npm-1.1.1-e7568d6430-e7d568e36a.zip/node_modules/@types/react-csv/",
+          "packageDependencies": [
+            ["@types/react-csv", "npm:1.1.1"],
+            ["@types/react", "npm:16.9.49"]
           ],
           "linkType": "HARD",
         }]
@@ -24799,6 +24811,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/node", "npm:14.14.26"],
             ["@types/query-string", "npm:6.3.0"],
             ["@types/react", "npm:17.0.1"],
+            ["@types/react-csv", "npm:1.1.1"],
             ["@types/testing-library__jest-dom", "npm:5.9.5"],
             ["@types/uuid", "npm:8.3.0"],
             ["@types/yup", "npm:0.29.11"],
@@ -24862,6 +24875,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["prop-types", "npm:15.7.2"],
             ["query-string", "npm:6.14.0"],
             ["react", "npm:17.0.1"],
+            ["react-csv", "npm:2.0.3"],
             ["react-debounce-input", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:3.2.3"],
             ["react-dom", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:17.0.1"],
             ["react-i18next", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:11.8.11"],
@@ -27749,6 +27763,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packagePeers": [
             "@types/react",
             "react"
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
+      ["react-csv", [
+        ["npm:2.0.3", {
+          "packageLocation": "./.yarn/cache/react-csv-npm-2.0.3-2d5e3093e6-19335bb439.zip/node_modules/react-csv/",
+          "packageDependencies": [
+            ["react-csv", "npm:2.0.3"]
           ],
           "linkType": "HARD",
         }]
