@@ -27,6 +27,7 @@ import { ContactDetailsTabMailing } from './Mailing/ContactDetailsTabMailing';
 import { ContactDetailsOther } from './Other/ContactDetailsOther';
 import { ContactDetailsTabPeople } from './People/ContactDetailsTabPeople';
 import { ContactTags } from './Tags/ContactTags';
+import { EditContactModal } from './EditContactModal/EditContactModal';
 
 const ContactDetailsTabContainer = styled(Box)(() => ({
   width: '100%',
@@ -99,6 +100,7 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
   const { push, query } = useRouter();
   const [deleteContact, { loading: deleting }] = useDeleteContactMutation();
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false);
 
   const { contactId: _, searchTerm, ...queryWithoutContactId } = query;
 
@@ -211,9 +213,11 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
             <ContactDetailHeadingText variant="h6">
               {loading || !data ? t('Loading') : data.contact.name}
             </ContactDetailHeadingText>
-            <IconButton>
-              <ContactDetailEditIcon />
-            </IconButton>
+            {loading || !data ? null : (
+              <IconButton onClick={() => setEditModalOpen(true)}>
+                <ContactDetailEditIcon titleAccess={t('Edit Icon')} />
+              </IconButton>
+            )}
           </ContactDetailHeadingContainer>
           {loading || !data ? (
             <>
@@ -234,9 +238,11 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
             <ContactDetailHeadingText variant="h6">
               {t('Mailing')}
             </ContactDetailHeadingText>
-            <IconButton>
-              <ContactDetailEditIcon />
-            </IconButton>
+            {loading || !data ? null : (
+              <IconButton onClick={() => setEditModalOpen(true)}>
+                <ContactDetailEditIcon titleAccess={t('Edit Icon')} />
+              </IconButton>
+            )}
           </ContactDetailHeadingContainer>
           {loading || !data ? (
             <>
@@ -257,9 +263,11 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
             <ContactDetailHeadingText variant="h6">
               {t('Other')}
             </ContactDetailHeadingText>
-            <IconButton>
-              <ContactDetailEditIcon />
-            </IconButton>
+            {loading || !data ? null : (
+              <IconButton onClick={() => setEditModalOpen(true)}>
+                <ContactDetailEditIcon titleAccess={t('Edit Icon')} />
+              </IconButton>
+            )}
           </ContactDetailHeadingContainer>
           {loading || !data ? (
             <>
@@ -272,15 +280,24 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
           )}
         </ContactDetailSectionContainer>
         <Divider />
-        <ContactDeleteButton
-          variant="outlined"
-          size="large"
-          onClick={() => setDeleteModalOpen(true)}
-        >
-          {t('delete contact')}
-        </ContactDeleteButton>
+        {loading || !data ? null : (
+          <ContactDeleteButton
+            variant="outlined"
+            size="large"
+            onClick={() => setDeleteModalOpen(true)}
+          >
+            {t('delete contact')}
+          </ContactDeleteButton>
+        )}
       </ContactDetailsTabContainer>
       {renderDeleteContactModal()}
+      {loading || !data ? null : (
+        <EditContactModal
+          contact={data.contact}
+          isOpen={editModalOpen}
+          handleOpenModal={setEditModalOpen}
+        />
+      )}
     </>
   );
 };
