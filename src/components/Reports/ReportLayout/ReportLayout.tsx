@@ -1,7 +1,8 @@
 import React from 'react';
 import type { FC, ReactNode } from 'react';
-import { Box, Typography } from '@material-ui/core';
+import { Box } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
+import { ReportHeader } from './ReportHeader/ReportHeader';
 import { NavReportsList } from './NavReportsList/NavReportsList';
 
 interface ReportLayoutProps {
@@ -19,12 +20,10 @@ export const ReportLayout: FC<ReportLayoutProps> = ({
 
   return (
     <>
-      <Box height="100vh" display="flex" overflow-y="scroll">
+      <Box height="100vh" display="flex" overflow-y="scroll" mx={2}>
         <NavReportsList selected={selectedId} />
         <Box flex={1}>
-          <Box my={2}>
-            <Typography variant="h5">{t(title)}</Typography>
-          </Box>
+          <ReportHeader title={t(title)} />
           {children}
         </Box>
       </Box>
