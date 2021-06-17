@@ -1,4 +1,5 @@
 /* eslint-disable import/no-unresolved */
+/* eslint-disable import/extensions */
 import React, { ChangeEvent, useEffect, useState } from 'react';
 import _ from 'lodash';
 import {
@@ -17,7 +18,6 @@ import { useTranslation } from 'react-i18next';
 import {
   FourteenMonthReportContact,
   FourteenMonthReportCurrencyType,
-  // eslint-disable-next-line import/extensions
 } from 'graphql/types.generated';
 import { useFourteenMonthReportQuery } from 'pages/accountLists/[accountListId]/reports/graphql/GetReportFourteenMonth.generated';
 
