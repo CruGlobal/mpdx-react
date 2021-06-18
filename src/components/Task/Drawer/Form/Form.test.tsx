@@ -49,7 +49,7 @@ describe('TaskDrawerForm', () => {
 
   it('default', async () => {
     const onClose = jest.fn();
-    const { getByText, getByRole, findByText } = render(
+    const { getByText, getByRole, findByText, queryByText } = render(
       <MuiPickersUtilsProvider utils={LuxonUtils}>
         <SnackbarProvider>
           <MockedProvider
@@ -74,6 +74,7 @@ describe('TaskDrawerForm', () => {
     onClose.mockClear();
     userEvent.click(getByText('Save'));
     expect(await findByText('Field is required')).toBeInTheDocument();
+    expect(await queryByText('Remove')).not.toBeInTheDocument();
     userEvent.type(getByRole('textbox', { name: 'Subject' }), accountListId);
     userEvent.click(getByRole('checkbox', { name: 'Notification' }));
     userEvent.type(getByRole('spinbutton', { name: 'Period' }), '20');

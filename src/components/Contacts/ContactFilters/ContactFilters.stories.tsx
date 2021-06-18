@@ -26,6 +26,7 @@ const StorybookContactFilters = (): ReactElement => (
     <ContactFilters
       accountListId={accountListId}
       width={number('Width', 290)}
+      onClose={() => {}}
     />
   </Box>
 );
