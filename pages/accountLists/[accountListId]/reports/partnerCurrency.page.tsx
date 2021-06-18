@@ -21,7 +21,7 @@ const PartnerReportPage = (): ReactElement => {
         <ReportLayout selectedId="partnerCurrency">
           <PartnerReportTable
             accountListId={accountListId}
-            title="Contributions by Partner Currency"
+            title={t('Contributions by Partner Currency')}
           />
         </ReportLayout>
       ) : (
