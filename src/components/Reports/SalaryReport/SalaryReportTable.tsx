@@ -214,8 +214,7 @@ export const SalaryReportTable: React.FC<Props> = ({
                   {},
                 );
 
-                return Object.keys(monthCount).map((year) => {
-                  const count = monthCount[year];
+                return Object.entries(monthCount).map(([year, count]) => {
                   console.log('count, year-------------', count, year);
 
                   return (
