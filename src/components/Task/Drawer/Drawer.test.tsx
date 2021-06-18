@@ -142,4 +142,37 @@ describe('TaskDrawer', () => {
       expect(getByText('Doing well thank you!')).toBeInTheDocument(),
     );
   });
+
+  it('handles tab change', async () => {
+    const onClose = jest.fn();
+    const mocks = [
+      getDataForTaskDrawerMock(accountListId),
+      getContactsForTaskDrawerContactListMock(accountListId, contactIds),
+      getCommentsForTaskDrawerCommentListMock(accountListId, taskId),
+      completeTaskMutationMock(accountListId, taskId),
+      getCompleteTaskForTaskDrawerMock(accountListId, taskId),
+    ];
+    const { getByText } = render(
+      <ThemeProvider theme={theme}>
+        <TestWrapper mocks={mocks}>
+          <TaskDrawer
+            onClose={onClose}
+            taskId={taskId}
+            specificTab={TaskDrawerTabsEnum.contacts}
+          />
+        </TestWrapper>
+      </ThemeProvider>,
+    );
+    await waitFor(() =>
+      expect(getByText('Quinn, Anthony')).toBeInTheDocument(),
+    );
+    userEvent.click(getByText('Comments'));
+    await waitFor(() => expect(getByText('Hello')).toBeInTheDocument());
+    await waitFor(() =>
+      expect(getByText('How are you doing today?')).toBeInTheDocument(),
+    );
+    await waitFor(() =>
+      expect(getByText('Doing well thank you!')).toBeInTheDocument(),
+    );
+  });
 });
