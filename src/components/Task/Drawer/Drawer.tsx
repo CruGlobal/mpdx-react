@@ -59,7 +59,7 @@ export interface TaskDrawerProps {
   taskId?: string;
   onClose?: () => void;
   showCompleteForm?: boolean;
-  specificTab?: '1' | '2' | '3';
+  specificTab?: TaskDrawerTabsEnum;
   defaultValues?: Partial<Task>;
   filter?: TaskFilter;
   rowsPerPage?: number;
