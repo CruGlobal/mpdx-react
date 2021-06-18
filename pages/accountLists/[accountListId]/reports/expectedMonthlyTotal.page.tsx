@@ -9,7 +9,7 @@ import Loading from '../../../../src/components/Loading';
 
 const ExpectedMonthlyTotalReportPage = (): ReactElement => {
   const { t } = useTranslation();
-  const { query, isReady } = useRouter();
+  const { query } = useRouter();
 
   const { accountListId } = query;
 
@@ -18,7 +18,7 @@ const ExpectedMonthlyTotalReportPage = (): ReactElement => {
   }
 
   function createData(
-    contact: string,
+    name: string,
     contactId: string,
     status: string,
     commitment: string,
@@ -28,7 +28,7 @@ const ExpectedMonthlyTotalReportPage = (): ReactElement => {
     donation: string,
   ) {
     return {
-      contact,
+      name,
       contactId,
       status,
       commitment,
@@ -109,11 +109,8 @@ const ExpectedMonthlyTotalReportPage = (): ReactElement => {
           MPDX | {t('Reports')} | {t('Expect Monthly Total')}
         </title>
       </Head>
-      {isReady && accountListId ? (
-        <ExpectedMonthlyTotalReport
-          accountListId={accountListId}
-          data={rows}
-        ></ExpectedMonthlyTotalReport>
+      {accountListId ? (
+        <ExpectedMonthlyTotalReport accountListId={accountListId} data={rows} />
       ) : (
         <Box>
           <ExpectedMonthlyTotalReportHeader empty={true} />

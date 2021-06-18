@@ -1,5 +1,4 @@
 import React, { ReactElement } from 'react';
-import { Box } from '@material-ui/core';
 import { ExpectedMonthlyTotalReportHeader } from './ExpectedMonthlyTotalReportHeader';
 
 export default {
@@ -7,23 +6,9 @@ export default {
 };
 
 export const Default = (): ReactElement => {
-  return (
-    <Box>
-      <ExpectedMonthlyTotalReportHeader
-        accountListId="abc"
-        empty={false}
-      ></ExpectedMonthlyTotalReportHeader>
-    </Box>
-  );
+  return <ExpectedMonthlyTotalReportHeader empty={false} />;
 };
 
 export const NoDonations = (): ReactElement => {
-  return (
-    <Box>
-      <ExpectedMonthlyTotalReportHeader
-        accountListId="abc"
-        empty={true}
-      ></ExpectedMonthlyTotalReportHeader>
-    </Box>
-  );
+  return <ExpectedMonthlyTotalReportHeader empty={true} />;
 };

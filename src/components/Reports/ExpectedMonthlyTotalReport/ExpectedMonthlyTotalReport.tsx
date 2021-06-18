@@ -16,11 +16,13 @@ interface Props {
 export const ExpectedMonthlyTotalReport: React.FC<Props> = ({ data }) => {
   const { t } = useTranslation();
 
+  const isEmpty = data.length === 0;
+
   return (
-    <>
-      {data.length > 0 ? (
-        <Box>
-          <ExpectedMonthlyTotalReportHeader empty={false} />
+    <Box>
+      <ExpectedMonthlyTotalReportHeader empty={isEmpty} />
+      {!isEmpty ? (
+        <>
           <ExpectedMonthlyTotalReportTable
             title={t('Donations So Far This Month')}
             data={data}
@@ -36,13 +38,10 @@ export const ExpectedMonthlyTotalReport: React.FC<Props> = ({ data }) => {
             data={data}
             donations={false}
           />
-        </Box>
+        </>
       ) : (
-        <Box>
-          <ExpectedMonthlyTotalReportHeader empty={true} />
-          <ExpectedMonthlyTotalReportEmpty />
-        </Box>
+        <ExpectedMonthlyTotalReportEmpty />
       )}
-    </>
+    </Box>
   );
 };

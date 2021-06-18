@@ -1,6 +1,7 @@
 import React from 'react';
 import { Box, Typography, styled, Divider } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
+import theme from '../../../../theme';
 
 interface Props {
   empty: boolean;
@@ -38,20 +39,29 @@ export const ExpectedMonthlyTotalReportHeader: React.FC<Props> = ({
     <Box>
       <HeaderWrapper>
         <Typography variant="h4">{t('Expected Monthly Total')}</Typography>
-        {empty === false ? (
+        {!empty ? (
           <ProgressBarWrapper>
             <ProgressBarSection
-              style={{ backgroundColor: '#f9b625', width: '36%' }}
+              style={{
+                backgroundColor: theme.palette.progressBarYellow.main,
+                width: '36%',
+              }}
             >
               <Typography style={{ marginTop: 4 }}>{t('Received')}</Typography>
             </ProgressBarSection>
             <ProgressBarSection
-              style={{ backgroundColor: '#dd7d1a', width: '50%' }}
+              style={{
+                backgroundColor: theme.palette.progressBarOrange.main,
+                width: '50%',
+              }}
             >
               <Typography style={{ marginTop: 4 }}>{t('Likely')}</Typography>
             </ProgressBarSection>
             <ProgressBarSection
-              style={{ backgroundColor: '#808080', width: '24%' }}
+              style={{
+                backgroundColor: theme.palette.progressBarGray.main,
+                width: '24%',
+              }}
             >
               <Typography style={{ marginTop: 4 }}>{t('Possible')}</Typography>
             </ProgressBarSection>

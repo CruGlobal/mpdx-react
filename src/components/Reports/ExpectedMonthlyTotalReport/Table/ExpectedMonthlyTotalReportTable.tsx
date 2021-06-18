@@ -16,9 +16,10 @@ import {
 } from '@material-ui/core';
 import { ExpandMore } from '@material-ui/icons';
 import { useTranslation } from 'react-i18next';
+import theme from '../../../../theme';
 
 export interface Contact {
-  contact: string;
+  name: string;
   contactId: string;
   status: string;
   commitment: string;
@@ -71,7 +72,7 @@ export const ExpectedMonthlyTotalReportTable: React.FC<Props> = ({
         <AccordionSummary
           expandIcon={<ExpandMore />}
           style={{
-            backgroundColor: '#f0f0f0',
+            backgroundColor: theme.palette.cruGrayLight.main,
           }}
         >
           <Typography>{t(title)}</Typography>
@@ -100,14 +101,17 @@ export const ExpectedMonthlyTotalReportTable: React.FC<Props> = ({
               <TableBody>
                 {data.map((row, index) => (
                   <TableRow
-                    key={row.contact}
+                    key={row.contactId}
                     style={{
-                      backgroundColor: index % 2 ? 'white' : '#f0f0f0',
+                      backgroundColor:
+                        index % 2
+                          ? theme.palette.common.white
+                          : theme.palette.cruGrayLight.main,
                     }}
                   >
                     <TableCell align="left">
                       <Link href="../../../pages/accountLists/[accountListId]/contacts/[[...contactId]].page.tsx">
-                        {row.contact}
+                        {row.name}
                       </Link>
                     </TableCell>
                     <TableCell align="left">{t(row.status)}</TableCell>
@@ -115,7 +119,7 @@ export const ExpectedMonthlyTotalReportTable: React.FC<Props> = ({
                       {row.commitment + ' ' + row.currency}
                     </TableCell>
                     <TableCell align="right">{t(row.frequency)}</TableCell>
-                    {title[0] === 'D' ? (
+                    {donations ? (
                       <TableCell align="right">{row.donation}</TableCell>
                     ) : null}
                     <TableCell align="right">

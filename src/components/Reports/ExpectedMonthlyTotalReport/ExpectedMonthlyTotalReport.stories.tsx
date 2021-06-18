@@ -1,5 +1,5 @@
 import React, { ReactElement } from 'react';
-import { Box } from '@material-ui/core';
+
 import { ExpectedMonthlyTotalReport } from './ExpectedMonthlyTotalReport';
 
 export default {
@@ -7,7 +7,7 @@ export default {
 };
 
 function createData(
-  contact: string,
+  name: string,
   contactId: string,
   status: string,
   commitment: string,
@@ -17,7 +17,7 @@ function createData(
   donation: string,
 ) {
   return {
-    contact,
+    name,
     contactId,
     status,
     commitment,
@@ -91,23 +91,9 @@ const rows = [
   ),
 ];
 export const Default = (): ReactElement => {
-  return (
-    <Box>
-      <ExpectedMonthlyTotalReport
-        accountListId={'abc'}
-        data={rows}
-      ></ExpectedMonthlyTotalReport>
-    </Box>
-  );
+  return <ExpectedMonthlyTotalReport accountListId={'abc'} data={rows} />;
 };
 
 export const Empty = (): ReactElement => {
-  return (
-    <Box>
-      <ExpectedMonthlyTotalReport
-        accountListId={'abc'}
-        data={[]}
-      ></ExpectedMonthlyTotalReport>
-    </Box>
-  );
+  return <ExpectedMonthlyTotalReport accountListId={'abc'} data={[]} />;
 };
