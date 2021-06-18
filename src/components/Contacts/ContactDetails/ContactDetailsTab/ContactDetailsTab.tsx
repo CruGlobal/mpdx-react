@@ -184,7 +184,6 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
           </>
         }
         handleClose={() => setDeleteDialogOpen(false)}
-        handleConfirm={handleDeleteContact}
       />
     );
   };

@@ -153,12 +153,8 @@ const TaskDrawer = ({
                   </Typography>
                 </Grid>
                 <Grid item>
-                  <IconButton
-                    size="small"
-                    onClick={onDrawerClose}
-                    aria-label="Close"
-                  >
-                    <CloseIcon />
+                  <IconButton size="small" onClick={onDrawerClose}>
+                    <CloseIcon titleAccess={t('Close')} />
                   </IconButton>
                 </Grid>
               </Grid>

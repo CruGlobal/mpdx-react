@@ -13,7 +13,7 @@ import {
   Typography,
   useTheme,
 } from '@material-ui/core';
-import { ArrowBackIos, ArrowForwardIos } from '@material-ui/icons';
+import { ArrowBackIos, ArrowForwardIos, Close } from '@material-ui/icons';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FilterGroup } from '../../Shared/Filters/Filter';
@@ -43,10 +43,12 @@ const LinkButton = styled(Button)(() => ({
 
 interface Props {
   accountListId: string;
+  onClose: () => void;
 }
 
 export const ContactFilters: React.FC<Props & BoxProps> = ({
   accountListId,
+  onClose,
   ...boxProps
 }) => {
   const theme = useTheme();
@@ -95,13 +97,18 @@ export const ContactFilters: React.FC<Props & BoxProps> = ({
         >
           <div>
             <FilterHeader>
-              <Typography variant="h6">
-                {Object.keys(selectedFilters).length > 0
-                  ? t('Filter ({{count}})', {
-                      count: Object.keys(selectedFilters).length,
-                    })
-                  : t('Filter')}
-              </Typography>
+              <Box display="flex" justifyContent="space-between">
+                <Typography variant="h6">
+                  {Object.keys(selectedFilters).length > 0
+                    ? t('Filter ({{count}})', {
+                        count: Object.keys(selectedFilters).length,
+                      })
+                    : t('Filter')}
+                </Typography>
+                <IconButton onClick={onClose}>
+                  <Close titleAccess={t('Close')} />
+                </IconButton>
+              </Box>
               <LinkButton
                 color="primary"
                 style={{ marginInlineStart: theme.spacing(-1) }}
