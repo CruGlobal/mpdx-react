@@ -1,24 +1,40 @@
-import React, { ReactElement, ReactNode } from 'react';
-import { Box, makeStyles, Theme, Hidden } from '@material-ui/core';
+import React, { ReactElement, ReactNode, useState } from 'react';
+import { Box, Hidden, Theme, makeStyles } from '@material-ui/core';
 import AddFab from './AddFab';
 import TopBar from './TopBar/TopBar';
 import BottomBar from './BottomBar';
+import { NavReportsList } from 'src/components/Reports/ReportLayout/NavReportsList/NavReportsList';
+import { NavBar } from 'src/components/Layouts/Primary/NavBar/NavBar';
 
 const useStyles = makeStyles((theme: Theme) => ({
-  container: {
-    backgroundColor: '#f6f7f9',
-    minHeight: 'calc(100vh - 122px)',
-    [theme.breakpoints.down('xs')]: {
-      minHeight: '100vh',
+  root: {
+    backgroundColor: theme.palette.common.white,
+    display: 'flex',
+    height: '100%',
+    overflow: 'hidden',
+    width: '100%',
+  },
+  wrapper: {
+    display: 'flex',
+    flex: '1 1 auto',
+    overflow: 'hidden',
+    paddingTop: 60,
+    [theme.breakpoints.up('lg')]: {
+      paddingLeft: 290,
     },
   },
-  box: {
-    transition: theme.transitions.create('margin-left', {
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-    [theme.breakpoints.down('sm')]: {
-      marginLeft: 0,
-    },
+  contentContainer: {
+    display: 'flex',
+    flex: '1 1 auto',
+    overflow: 'hidden',
+  },
+  content: {
+    flex: '1 1 auto',
+    height: '100%',
+    overflow: 'auto',
+  },
+  addFabSpacer: {
+    height: '100px',
   },
 }));
 
@@ -28,18 +44,30 @@ interface Props {
 
 const Primary = ({ children }: Props): ReactElement => {
   const classes = useStyles();
+  const [isMobileNavOpen, setMobileNavOpen] = useState<boolean>(false);
 
   return (
-    <Box className={classes.container}>
-      <Box className={classes.box}>
-        <TopBar />
-        {children}
-      </Box>
-      <Hidden smUp>
+    <>
+      <div className={classes.root}>
+        <TopBar onMobileNavOpen={() => setMobileNavOpen(true)} />
+        <NavBar
+          onMobileClose={() => setMobileNavOpen(false)}
+          openMobile={isMobileNavOpen}
+        >
+          <NavReportsList selected="salaryCurrency" />
+        </NavBar>
+        <div className={classes.wrapper}>
+          <div className={classes.contentContainer}>
+            <div className={classes.content}>{children}</div>
+          </div>
+        </div>
+      </div>
+      <Hidden mdUp>
         <BottomBar />
       </Hidden>
       <AddFab />
-    </Box>
+      <Box className={classes.addFabSpacer} />
+    </>
   );
 };
 
