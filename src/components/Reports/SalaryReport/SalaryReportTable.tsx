@@ -205,7 +205,7 @@ export const SalaryReportTable: React.FC<Props> = ({
                   (month) => month.month.split('-')[0],
                 );
                 const monthCount = allYears.reduce(
-                  (year, count) => (
+                  (count, year) => (
                     {
                       ...year,
                       [count]: (year[count] || 0) + 1,
