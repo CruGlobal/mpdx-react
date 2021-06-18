@@ -243,7 +243,7 @@ export const SalaryReportTable: React.FC<Props> = ({
             {error && renderError()}
             {loading
               ? renderLoading()
-              : !(currencyGroups && currencyGroups.length > 0)
+              : !(currencyGroups?.length > 0)
               ? renderEmpty()
               : paginatedContacts.map((contact) => (
                   <TableRow key={contact.id} hover>
