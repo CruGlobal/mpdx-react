@@ -206,7 +206,10 @@ export const SalaryReportTable: React.FC<Props> = ({
                 );
                 const monthCount = allYears.reduce(
                   (year, count) => (
-                    (year[count] = (year[count] || 0) + 1), year
+                    {
+                      ...year,
+                      [count]: (year[count] || 0) + 1,
+                    } 
                   ),
                   Object.create(null),
                 );
