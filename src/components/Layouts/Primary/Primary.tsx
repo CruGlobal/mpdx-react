@@ -1,5 +1,5 @@
 import React, { ReactElement, ReactNode, useState } from 'react';
-import { Box, Hidden, Theme, makeStyles } from '@material-ui/core';
+import { Hidden, Theme, makeStyles } from '@material-ui/core';
 import AddFab from './AddFab';
 import TopBar from './TopBar/TopBar';
 import BottomBar from './BottomBar';
@@ -33,9 +33,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     height: '100%',
     overflow: 'auto',
   },
-  addFabSpacer: {
-    height: '100px',
-  },
 }));
 
 interface Props {
@@ -66,7 +63,6 @@ const Primary = ({ children }: Props): ReactElement => {
         <BottomBar />
       </Hidden>
       <AddFab />
-      <Box className={classes.addFabSpacer} />
     </>
   );
 };
