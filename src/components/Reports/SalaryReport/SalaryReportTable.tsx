@@ -1,5 +1,5 @@
 /* eslint-disable import/no-unresolved */
-import React, { ChangeEvent, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import _ from 'lodash';
 import clsx from 'clsx';
 import {
@@ -14,7 +14,6 @@ import {
   TableCell,
   TableContainer,
   TableHead,
-  TablePagination,
   TableRow,
   Typography,
   makeStyles,
@@ -47,14 +46,6 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const applyPagination = (
-  contacts: FourteenMonthReportContact[],
-  page: number,
-  limit: number,
-) => {
-  return contacts.slice(page * limit, page * limit + limit);
-};
-
 export const SalaryReportTable: React.FC<Props> = ({
   className,
   accountListId,
@@ -64,8 +55,6 @@ export const SalaryReportTable: React.FC<Props> = ({
   const classes = useStyles();
   const { t } = useTranslation();
   const [contacts, setContacts] = useState<FourteenMonthReportContact[]>([]);
-  const [page, setPage] = useState<number>(0);
-  const [limit, setLimit] = useState<number>(10);
 
   const { data, loading, error } = useFourteenMonthReportQuery({
     variables: {
@@ -79,7 +68,9 @@ export const SalaryReportTable: React.FC<Props> = ({
 
   useEffect(() => {
     if (currencyGroups) {
-      setContacts(_.flatten(_.map(currencyGroups, 'contacts')));
+      setContacts(
+        currencyGroups.flatMap((currencyGroup) => [...currencyGroup.contacts]),
+      );
     }
   }, [currencyGroups]);
 
@@ -112,36 +103,6 @@ export const SalaryReportTable: React.FC<Props> = ({
     </TableRow>
   );
 
-  const handlePageChange = (
-    event: React.MouseEvent<HTMLButtonElement> | null,
-    newPage: number,
-  ): void => {
-    setPage(newPage);
-  };
-
-  const handleLimitChange = (event: ChangeEvent<HTMLInputElement>): void => {
-    setLimit(parseInt(event.target.value));
-  };
-
-  const paginatedContacts = applyPagination(contacts, page, limit);
-
-  // let years: any[] = [];
-  // currencyGroups?.totals?.months.forEach((item: any) => {
-  //   const yearItem = { count: 1, year: item.split('-')[0] };
-  //   let found = false;
-  //   years = years.map((year) => {
-  //     if (year.year === yearItem.year) {
-  //       found = true;
-  //       return { count: year.count + 1, ...year };
-  //     }
-  //     return year;
-  //   });
-
-  //   if (!found) {
-  //     years.push(yearItem);
-  //   }
-  // });
-
   return (
     <Box>
       <Box my={2}>
@@ -163,7 +124,7 @@ export const SalaryReportTable: React.FC<Props> = ({
                   </SvgIcon>
                 }
               >
-                Expand Partner Info
+                {t('Expand Partner Info')}
               </Button>
               <Button
                 startIcon={
@@ -177,7 +138,7 @@ export const SalaryReportTable: React.FC<Props> = ({
                   filename={`mpdx-salary-contributions-export-${DateTime.now().toISODate()}.csv`}
                   className={classes.downloadCsv}
                 >
-                  Export
+                  {t('Export')}
                 </CSVLink>
               </Button>
               <Button
@@ -187,7 +148,7 @@ export const SalaryReportTable: React.FC<Props> = ({
                   </SvgIcon>
                 }
               >
-                Print
+                {t('Print')}
               </Button>
             </ButtonGroup>
           </Grid>
@@ -206,21 +167,22 @@ export const SalaryReportTable: React.FC<Props> = ({
                 );
                 const monthCount = allYears.reduce(
                   (count, year) => ({
-                    ...year,
-                    [count]: (year[count] || 0) + 1,
+                    ...count,
+                    [year]:
+                      ((count as { [key: string]: number })[year] || 0) + 1,
                   }),
                   {},
                 );
 
-                return Object.entries(monthCount).map(([year, count]) => {
-                  console.log('count, year-------------', count, year);
-
-                  return (
-                    <TableCell key={year} colSpan={count} align="center">
-                      <Typography variant="h6">{year}</Typography>
-                    </TableCell>
-                  );
-                });
+                return Object.entries(monthCount).map(([year, count]) => (
+                  <TableCell
+                    key={year}
+                    colSpan={count as number}
+                    align="center"
+                  >
+                    <Typography variant="h6">{year}</Typography>
+                  </TableCell>
+                ));
               })}
               <TableCell />
             </TableRow>
@@ -240,9 +202,9 @@ export const SalaryReportTable: React.FC<Props> = ({
             {error && renderError()}
             {loading
               ? renderLoading()
-              : !(currencyGroups?.length > 0)
+              : !(currencyGroups?.length === 0)
               ? renderEmpty()
-              : paginatedContacts.map((contact) => (
+              : contacts.map((contact) => (
                   <TableRow key={contact.id} hover>
                     <TableCell>{contact.name}</TableCell>
                     {contact.months?.map((month) => (
@@ -255,7 +217,7 @@ export const SalaryReportTable: React.FC<Props> = ({
                     </TableCell>
                   </TableRow>
                 ))}
-            {/* {!loading && currencyGroups && currencyGroups.length > 0 && (
+            {!loading && currencyGroups && currencyGroups.length > 0 && (
               <TableRow>
                 <TableCell>{t('Totals')}</TableCell>
                 {currencyGroups?.map((currencyGroup) =>
@@ -267,18 +229,9 @@ export const SalaryReportTable: React.FC<Props> = ({
                 )}
                 <TableCell align="right" />
               </TableRow>
-            )} */}
+            )}
           </TableBody>
         </Table>
-        <TablePagination
-          component="div"
-          count={contacts.length}
-          onChangePage={handlePageChange}
-          onChangeRowsPerPage={handleLimitChange}
-          page={page}
-          rowsPerPage={limit}
-          rowsPerPageOptions={[5, 10, 25]}
-        />
       </TableContainer>
     </Box>
   );
