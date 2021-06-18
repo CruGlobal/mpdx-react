@@ -14,11 +14,13 @@ export interface CoachingAnswerSetResponse {
   };
   relationships: {
     answers: {
-      id: string;
-      created_at: string;
-      response: string;
-      updated_at: string;
-    }[];
+      data: {
+        id: string;
+        created_at: string;
+        response: string;
+        updated_at: string;
+      }[];
+    };
     questions: {
       data: {
         id: string;
@@ -44,7 +46,7 @@ const getCoachingAnswerSets = (
       id,
       attributes: { completed_at, created_at, updated_at },
       relationships: {
-        answers: answersData,
+        answers: { data: answersData },
         questions: { data: questionsData },
       },
     }) => {
