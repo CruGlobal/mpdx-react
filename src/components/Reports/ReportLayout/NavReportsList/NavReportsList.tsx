@@ -1,12 +1,5 @@
 import React from 'react';
-import {
-  Box,
-  BoxProps,
-  List,
-  styled,
-  Typography,
-  makeStyles,
-} from '@material-ui/core';
+import { Box, BoxProps, List, styled, Typography } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import NavReportListItem, { ReportOption } from './NavReportListItem';
 
@@ -51,12 +44,6 @@ interface Props {
   selected: string;
 }
 
-const useStyles = makeStyles(() => ({
-  root: {
-    overflow: 'hidden',
-  },
-}));
-
 const FilterHeader = styled(Box)(({ theme }) => ({
   padding: theme.spacing(2),
   borderBottom: '1px solid',
@@ -76,25 +63,22 @@ export const NavReportsList: React.FC<Props & BoxProps> = ({
   selected,
   ...BoxProps
 }) => {
-  const classes = useStyles();
   const { t } = useTranslation();
 
   return (
-    <Box width={280} {...BoxProps}>
-      <div className={classes.root}>
-        <FilterHeader>
-          <Typography variant="h6">{t('Reports')}</Typography>
-        </FilterHeader>
-        <FilterList dense>
-          {reportItems.map((item) => (
-            <NavReportListItem
-              key={item.id}
-              item={item}
-              isSelected={item.id === selected}
-            />
-          ))}
-        </FilterList>
-      </div>
+    <Box {...BoxProps}>
+      <FilterHeader>
+        <Typography variant="h6">{t('Reports')}</Typography>
+      </FilterHeader>
+      <FilterList dense>
+        {reportItems.map((item) => (
+          <NavReportListItem
+            key={item.id}
+            item={item}
+            isSelected={item.id === selected}
+          />
+        ))}
+      </FilterList>
     </Box>
   );
 };
