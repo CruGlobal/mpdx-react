@@ -211,7 +211,7 @@ export const SalaryReportTable: React.FC<Props> = ({
                       [count]: (year[count] || 0) + 1,
                     } 
                   ),
-                  Object.create(null),
+                  {},
                 );
 
                 return Object.keys(monthCount).map((year) => {
