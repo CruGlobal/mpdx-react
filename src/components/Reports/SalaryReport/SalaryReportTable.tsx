@@ -168,18 +168,13 @@ export const SalaryReportTable: React.FC<Props> = ({
                 const monthCount = allYears.reduce<{ [key: string]: number }>(
                   (count, year) => ({
                     ...count,
-                    [year]:
-                      (count[year] || 0) + 1,
+                    [year]: (count[year] || 0) + 1,
                   }),
                   {},
                 );
 
                 return Object.entries(monthCount).map(([year, count]) => (
-                  <TableCell
-                    key={year}
-                    colSpan={count}
-                    align="center"
-                  >
+                  <TableCell key={year} colSpan={count} align="center">
                     <Typography variant="h6">{year}</Typography>
                   </TableCell>
                 ));
