@@ -165,11 +165,11 @@ export const SalaryReportTable: React.FC<Props> = ({
                 const allYears = currencyGroup.totals.months.map(
                   (month) => month.month.split('-')[0],
                 );
-                const monthCount = allYears.reduce(
+                const monthCount = allYears.reduce<{ [key: string]: number }>(
                   (count, year) => ({
                     ...count,
                     [year]:
-                      ((count as { [key: string]: number })[year] || 0) + 1,
+                      (count[year] || 0) + 1,
                   }),
                   {},
                 );
