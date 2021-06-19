@@ -177,7 +177,7 @@ export const SalaryReportTable: React.FC<Props> = ({
                 return Object.entries(monthCount).map(([year, count]) => (
                   <TableCell
                     key={year}
-                    colSpan={count as number}
+                    colSpan={count}
                     align="center"
                   >
                     <Typography variant="h6">{year}</Typography>
