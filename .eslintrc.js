@@ -36,6 +36,11 @@ module.exports = {
     react: {
       version: 'detect',
     },
+    'import/resolver': {
+      node: {
+        paths: ['.'],
+      },
+    },
   },
   overrides: [
     {
