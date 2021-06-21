@@ -68,7 +68,7 @@ const CoachingQuestionsModal: React.FC<Props> = ({
     variables: { accountListId },
   });
   //const [saveAnswer] = useSaveAnswerMutation();
-
+  debugger;
   const [questionIndex, setQuestionIndex] = useState(0);
   const [responseValues, setResponseValues] = useState<(string | null)[]>([]);
 

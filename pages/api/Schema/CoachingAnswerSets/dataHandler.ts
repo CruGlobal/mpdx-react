@@ -6,7 +6,7 @@ import {
 
 export interface CoachingAnswerSetResponse {
   id: string;
-  type: string;
+  type: 'coaching_answer_sets';
   attributes: {
     completed_at: string;
     created_at: string;
@@ -16,20 +16,26 @@ export interface CoachingAnswerSetResponse {
     answers: {
       data: {
         id: string;
-        created_at: string;
-        response: string;
-        updated_at: string;
+        type: 'coaching_answers';
+        attributes: {
+          created_at: string;
+          response: string;
+          updated_at: string;
+        };
       }[];
     };
     questions: {
       data: {
         id: string;
-        created_at: string;
-        position: number;
-        prompt?: string;
-        required: boolean;
-        response_options: string[] | null;
-        updated_at: string;
+        type: 'coaching_questions';
+        attributes: {
+          created_at: string;
+          position: number;
+          prompt: string;
+          required: boolean;
+          response_options: string[] | null;
+          updated_at: string;
+        };
       }[];
     };
   };
@@ -74,26 +80,29 @@ const getCoachingAnswerSets = (
 const createCoachingQuestionsList = (
   data: {
     id: string;
-    created_at: string;
-    position: number;
-    prompt?: string;
-    required: boolean;
-    response_options: string[] | null;
-    updated_at: string;
+    attributes: {
+      created_at: string;
+      position: number;
+      prompt: string;
+      required: boolean;
+      response_options: string[] | null;
+      updated_at: string;
+    };
   }[],
 ): CoachingQuestion[] => {
-  debugger;
   const questions: CoachingQuestion[] = [];
 
   data.forEach(
     ({
       id,
-      created_at,
-      position,
-      prompt,
-      required,
-      response_options,
-      updated_at,
+      attributes: {
+        created_at,
+        position,
+        prompt,
+        required,
+        response_options,
+        updated_at,
+      },
     }) => {
       const question: CoachingQuestion = {
         id,
@@ -115,15 +124,17 @@ const createCoachingQuestionsList = (
 const createCoachingAnswersList = (
   data: {
     id: string;
-    created_at: string;
-    response: string;
-    updated_at: string;
+    attributes: {
+      created_at: string;
+      response: string;
+      updated_at: string;
+    };
   }[],
 ): CoachingAnswer[] => {
   debugger;
   const answers: CoachingAnswer[] = [];
 
-  data.forEach(({ id, created_at, response, updated_at }) => {
+  data.forEach(({ id, attributes: { created_at, response, updated_at } }) => {
     const answer: CoachingAnswer = {
       id,
       createdAt: created_at,
