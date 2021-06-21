@@ -17,6 +17,7 @@ import NextLink from 'next/link';
 import { useTranslation } from 'react-i18next';
 import { useApp } from '../../../../../App';
 import HandoffLink from '../../../../../HandoffLink';
+import { ReportNavItems } from 'src/components/Reports/ReportLayout/NavReportsList/ReportNavItems';
 
 const useStyles = makeStyles((theme: Theme) => ({
   navListItem: {
@@ -129,80 +130,25 @@ const NavMenu = (): ReactElement => {
                         autoFocusItem={reportsMenuOpen}
                         id="menu-list-grow"
                       >
-                        <NextLink
-                          href={`/accountLists/${state.accountListId}/reports/donations`}
-                          scroll={false}
-                        >
-                          <MenuItem onClick={handleReportsMenuClose}>
-                            <ListItemText primary={t('Donations')} />
-                          </MenuItem>
-                        </NextLink>
-                        <NextLink
-                          href={`/accountLists/${state.accountListId}/reports/partnerCurrency`}
-                          scroll={false}
-                        >
-                          <MenuItem onClick={handleReportsMenuClose}>
-                            <ListItemText
-                              primary={t('14-Month Report (Partner Currency)')}
-                            />
-                          </MenuItem>
-                        </NextLink>
-                        <NextLink
-                          href={`/accountLists/${state.accountListId}/reports/salaryCurrency`}
-                          scroll={false}
-                        >
-                          <MenuItem onClick={handleReportsMenuClose}>
-                            <ListItemText
-                              primary={t('14-Month Report (Salary Currency)')}
-                            />
-                          </MenuItem>
-                        </NextLink>
-                        <NextLink
-                          href={`/accountLists/${state.accountListId}/reports/designationAccounts`}
-                          scroll={false}
-                        >
-                          <MenuItem onClick={handleReportsMenuClose}>
-                            <ListItemText primary={t('Designation Accounts')} />
-                          </MenuItem>
-                        </NextLink>
-                        <NextLink
-                          href={`/accountLists/${state.accountListId}/reports/responsibilityCenters`}
-                          scroll={false}
-                        >
-                          <MenuItem onClick={handleReportsMenuClose}>
-                            <ListItemText
-                              primary={t('Responsibility Centers')}
-                            />
-                          </MenuItem>
-                        </NextLink>
-                        <NextLink
-                          href={`/accountLists/${state.accountListId}/reports/expectedMonthlyTotal`}
-                          scroll={false}
-                        >
-                          <MenuItem onClick={handleReportsMenuClose}>
-                            <ListItemText
-                              primary={t('Expected Monthly Total')}
-                            />
-                          </MenuItem>
-                        </NextLink>
-                        <NextLink
-                          href={`/accountLists/${state.accountListId}/reports/partnerGivingAnalysis`}
-                          scroll={false}
-                        >
-                          <MenuItem onClick={handleReportsMenuClose}>
-                            <ListItemText
-                              primary={t('Partner Giving Analysis')}
-                            />
-                          </MenuItem>
-                        </NextLink>
-                        <NextLink
-                          href={`/accountLists/${state.accountListId}/reports/coaching`}
-                          scroll={false}
-                        >
-                          <MenuItem onClick={handleReportsMenuClose}>
-                            <ListItemText primary={t('Coaching')} />
-                          </MenuItem>
-                        </NextLink>
+                        {ReportNavItems.map((reportItem) => (
+                          <NextLink
+                            key={reportItem.id}
+                            href={`/accountLists/${state.accountListId}/reports/${reportItem.id}`}
+                            scroll={false}
+                          >
+                            <MenuItem onClick={handleReportsMenuClose}>
+                              <ListItemText
+                                primary={t(
+                                  `${reportItem.title}${
+                                    reportItem.subTitle
+                                      ? ' (' + reportItem.subTitle + ')'
+                                      : ''
+                                  }`,
+                                )}
+                              />
+                            </MenuItem>
+                          </NextLink>
+                        ))}
                       </MenuList>
                     </ClickAwayListener>
                   </Paper>
