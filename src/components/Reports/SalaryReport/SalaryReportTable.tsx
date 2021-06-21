@@ -6,6 +6,7 @@ import {
   Button,
   ButtonGroup,
   Grid,
+  styled,
   SvgIcon,
   Table,
   TableBody,
@@ -31,6 +32,7 @@ import {
 import { useFourteenMonthReportQuery } from 'pages/accountLists/[accountListId]/reports/graphql/GetReportFourteenMonth.generated';
 import Loading from 'src/components/Loading';
 import { Notification } from 'src/components/Notification/Notification';
+import { EmptyReport } from 'src/components/Reports/EmptyReport/EmptyReport';
 
 interface Props {
   className?: string;
@@ -44,6 +46,11 @@ const useStyles = makeStyles(() => ({
     color: 'inherit',
     textDecoration: 'none',
   },
+}));
+
+const DownloadCsvLink = styled(CSVLink)(({}) => ({
+  color: 'inherit',
+  textDecoration: 'none',
 }));
 
 export const SalaryReportTable: React.FC<Props> = ({
@@ -104,13 +111,12 @@ export const SalaryReportTable: React.FC<Props> = ({
                   </SvgIcon>
                 }
               >
-                <CSVLink
+                <DownloadCsvLink
                   data={contacts}
                   filename={`mpdx-salary-contributions-export-${DateTime.now().toISODate()}.csv`}
-                  className={classes.downloadCsv}
                 >
                   {t('Export')}
-                </CSVLink>
+                </DownloadCsvLink>
               </Button>
               <Button
                 startIcon={
@@ -130,7 +136,10 @@ export const SalaryReportTable: React.FC<Props> = ({
       ) : error ? (
         <Notification type="error" message={error.toString()} />
       ) : currencyGroups?.length === 0 ? (
-        <Notification type="info" message="No Data" />
+        <EmptyReport
+          title="You have received no donations in the last thirteen months"
+          subTitle="You can setup an organization account to import them or add a new donation."
+        />
       ) : (
         <TableContainer>
           <Table>
