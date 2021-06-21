@@ -12,7 +12,7 @@ const ExpectedMonthlyTotalReportPage = (): ReactElement => {
   const accountListId = useAccountListId();
 
   function createData(
-    contact: string,
+    name: string,
     contactId: string,
     status: string,
     commitment: string,
@@ -22,7 +22,7 @@ const ExpectedMonthlyTotalReportPage = (): ReactElement => {
     donation: string,
   ) {
     return {
-      contact,
+      name,
       contactId,
       status,
       commitment,
@@ -103,7 +103,7 @@ const ExpectedMonthlyTotalReportPage = (): ReactElement => {
           MPDX | {t('Reports')} | {t('Expect Monthly Total')}
         </title>
       </Head>
-      {isReady && accountListId ? (
+      {accountListId ? (
         <ExpectedMonthlyTotalReport
           accountListId={accountListId}
           data={rows}
