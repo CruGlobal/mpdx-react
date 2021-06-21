@@ -17,6 +17,11 @@ const mpdxColors = {
   gray: '#DCDCDC',
 };
 
+const progressBarColors = {
+  yellow: '#F9B625',
+  orange: '#DD7D1A',
+  gray: '#808080',
+};
 // https://material-ui.com/customization/palette/#adding-new-colors
 declare module '@material-ui/core/styles/createPalette' {
   interface Palette {
@@ -28,6 +33,9 @@ declare module '@material-ui/core/styles/createPalette' {
     mpdxBlue: Palette['primary'];
     mpdxYellow: Palette['primary'];
     mpdxGray: Palette['primary'];
+    progressBarYellow: Palette['primary'];
+    progressBarOrange: Palette['primary'];
+    progressBarGray: Palette['primary'];
   }
   interface PaletteOptions {
     cruYellow: PaletteOptions['primary'];
@@ -38,6 +46,9 @@ declare module '@material-ui/core/styles/createPalette' {
     mpdxBlue: PaletteOptions['primary'];
     mpdxYellow: PaletteOptions['primary'];
     mpdxGray: PaletteOptions['primary'];
+    progressBarYellow: PaletteOptions['primary'];
+    progressBarOrange: PaletteOptions['primary'];
+    progressBarGray: PaletteOptions['primary'];
   }
 }
 
@@ -81,6 +92,15 @@ const theme = createMuiTheme({
     },
     mpdxGray: {
       main: mpdxColors.gray,
+    },
+    progressBarYellow: {
+      main: progressBarColors.yellow,
+    },
+    progressBarOrange: {
+      main: progressBarColors.orange,
+    },
+    progressBarGray: {
+      main: progressBarColors.gray,
     },
   },
   overrides: {
