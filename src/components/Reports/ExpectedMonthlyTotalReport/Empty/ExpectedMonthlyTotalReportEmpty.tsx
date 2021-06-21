@@ -20,9 +20,13 @@ const BoxWrapper = styled(Box)(({ theme }) => ({
 export const ExpectedMonthlyTotalReportEmpty: React.FC = () => {
   const { t } = useTranslation();
 
-  const connectServices = () => {};
+  const connectServices = () => {
+    return;
+  };
 
-  const addNewDonation = () => {};
+  const addNewDonation = () => {
+    return;
+  };
 
   return (
     <BoxWrapper boxShadow={3}>
