@@ -7,11 +7,11 @@ import userEvent from '@testing-library/user-event';
 import {
   ContactPeopleFragment,
   ContactPeopleFragmentDoc,
-} from '../People/ContactPeople.generated';
-import { ContactDetailsTabQuery } from '../ContactDetailsTab.generated';
-import { gqlMock } from '../../../../../../__tests__/util/graphqlMocking';
-import theme from '../../../../../theme';
-import { EditContactModal } from './EditContactModal';
+} from '../../ContactPeople.generated';
+import { ContactDetailsTabQuery } from '../../../ContactDetailsTab.generated';
+import { gqlMock } from '../../../../../../../../__tests__/util/graphqlMocking';
+import theme from '../../../../../../../theme';
+import { EditPersonModal } from './EditPersonModal';
 
 const handleOpenModal = jest.fn();
 const mock = gqlMock<ContactPeopleFragment>(ContactPeopleFragmentDoc);
@@ -30,7 +30,7 @@ describe('EditContactModal', () => {
     const { getByText } = render(
       <MuiPickersUtilsProvider utils={LuxonUtils}>
         <ThemeProvider theme={theme}>
-          <EditContactModal
+          <EditPersonModal
             isOpen={true}
             handleOpenModal={handleOpenModal}
             contact={mockContact}
@@ -47,7 +47,7 @@ describe('EditContactModal', () => {
     const { getByRole, getByText } = render(
       <MuiPickersUtilsProvider utils={LuxonUtils}>
         <ThemeProvider theme={theme}>
-          <EditContactModal
+          <EditPersonModal
             isOpen={true}
             handleOpenModal={handleOpenModal}
             contact={mockContact}
@@ -65,7 +65,7 @@ describe('EditContactModal', () => {
     const { getByText } = render(
       <MuiPickersUtilsProvider utils={LuxonUtils}>
         <ThemeProvider theme={theme}>
-          <EditContactModal
+          <EditPersonModal
             isOpen={true}
             handleOpenModal={handleOpenModal}
             contact={mockContact}
@@ -83,7 +83,7 @@ describe('EditContactModal', () => {
     const { getByText } = render(
       <MuiPickersUtilsProvider utils={LuxonUtils}>
         <ThemeProvider theme={theme}>
-          <EditContactModal
+          <EditPersonModal
             isOpen={true}
             handleOpenModal={handleOpenModal}
             contact={mockContact}
@@ -101,7 +101,7 @@ describe('EditContactModal', () => {
     const { queryAllByText, getByText } = render(
       <MuiPickersUtilsProvider utils={LuxonUtils}>
         <ThemeProvider theme={theme}>
-          <EditContactModal
+          <EditPersonModal
             isOpen={true}
             handleOpenModal={handleOpenModal}
             contact={mockContact}
@@ -119,7 +119,7 @@ describe('EditContactModal', () => {
     const { queryAllByText, getByText, queryByText } = render(
       <MuiPickersUtilsProvider utils={LuxonUtils}>
         <ThemeProvider theme={theme}>
-          <EditContactModal
+          <EditPersonModal
             isOpen={true}
             handleOpenModal={handleOpenModal}
             contact={mockContact}

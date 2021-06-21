@@ -27,9 +27,9 @@ import SchoolIcon from '@material-ui/icons/School';
 import BusinessIcon from '@material-ui/icons/Business';
 import SocialIcon from '@material-ui/icons/Language';
 import { useTranslation } from 'react-i18next';
-import { RingIcon } from '../../../RingIcon';
-import { ContactDetailsTabQuery } from '../ContactDetailsTab.generated';
-import Modal from '../../../../common/Modal/Modal';
+import { RingIcon } from '../../../../../RingIcon';
+import { ContactDetailsTabQuery } from '../../../ContactDetailsTab.generated';
+import Modal from '../../../../../../common/Modal/Modal';
 
 const useStyles = makeStyles((theme: Theme) => ({
   leftIcon: {
@@ -116,16 +116,16 @@ const ShowExtraText = styled(Typography)(() => ({
   fontWeight: 'bold',
 }));
 
-interface EditContactModalProps {
+interface EditPersonModalProps {
   contact: ContactDetailsTabQuery['contact'];
   isOpen: boolean;
   handleOpenModal: (open: boolean) => void;
 }
-export const EditContactModal: React.FC<EditContactModalProps> = ({
+export const EditPersonModal: React.FC<EditPersonModalProps> = ({
   contact,
   isOpen,
   handleOpenModal,
-}): ReactElement<EditContactModalProps> => {
+}): ReactElement<EditPersonModalProps> => {
   const { t } = useTranslation();
   const classes = useStyles();
   const [personEditShowMore, setPersonEditShowMore] = useState<Array<string>>(

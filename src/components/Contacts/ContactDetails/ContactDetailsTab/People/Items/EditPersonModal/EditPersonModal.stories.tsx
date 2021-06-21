@@ -1,17 +1,17 @@
 import React, { ReactElement, useState } from 'react';
 import { Box, Button, MuiThemeProvider } from '@material-ui/core';
-import { gqlMock } from '../../../../../../__tests__/util/graphqlMocking';
-import { ContactDetailsTabQuery } from '../ContactDetailsTab.generated';
+import { gqlMock } from '../../../../../../../../__tests__/util/graphqlMocking';
+import { ContactDetailsTabQuery } from '../../../ContactDetailsTab.generated';
 import {
   ContactPeopleFragment,
   ContactPeopleFragmentDoc,
-} from '../People/ContactPeople.generated';
-import theme from '../../../../../theme';
-import { EditContactModal } from './EditContactModal';
+} from '../../ContactPeople.generated';
+import theme from '../../../../../../../theme';
+import { EditPersonModal } from './EditPersonModal';
 
 export default {
-  title: 'Contacts/Tab/ContactDetailsTab/EditContactModal',
-  component: EditContactModal,
+  title: 'Contacts/Tab/ContactDetailsTab/People/Items/EditPersonModal',
+  component: EditPersonModal,
 };
 
 export const Default = (): ReactElement => {
@@ -31,7 +31,7 @@ export const Default = (): ReactElement => {
   return (
     <MuiThemeProvider theme={theme}>
       <Box m={2}>
-        <EditContactModal
+        <EditPersonModal
           contact={mockContact}
           isOpen={modalOpen}
           handleOpenModal={setModalOpen}
