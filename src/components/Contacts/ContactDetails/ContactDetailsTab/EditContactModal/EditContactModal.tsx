@@ -14,6 +14,8 @@ import {
   InputLabel,
   Avatar,
   Checkbox,
+  makeStyles,
+  Theme,
 } from '@material-ui/core';
 import { DatePicker } from '@material-ui/pickers';
 import { DateTime } from 'luxon';
@@ -28,6 +30,16 @@ import { useTranslation } from 'react-i18next';
 import { RingIcon } from '../../../RingIcon';
 import { ContactDetailsTabQuery } from '../ContactDetailsTab.generated';
 import Modal from '../../../../common/Modal/Modal';
+
+const useStyles = makeStyles((theme: Theme) => ({
+  leftIcon: {
+    position: 'absolute',
+    top: '50%',
+    left: 8,
+    transform: 'translateY(-50%)',
+    color: theme.palette.cruGrayMedium.main,
+  },
+}));
 
 // Container Styles
 const ContactEditModalFooterButton = styled(Button)(() => ({
@@ -68,56 +80,8 @@ const ContactAvatar = styled(Avatar)(() => ({
   height: '34px',
 }));
 
-const PrimaryContactIcon = styled(BookmarkIcon)(({ theme }) => ({
-  position: 'absolute',
-  top: '50%',
-  left: 8,
-  transform: 'translateY(-50%)',
-  color: theme.palette.cruGrayMedium.main,
-}));
-
 const ContactAddIcon = styled(AddIcon)(() => ({
   color: '#2196F3',
-}));
-
-const ContactBirthdayIcon = styled(CakeIcon)(({ theme }) => ({
-  position: 'absolute',
-  top: '50%',
-  left: 8,
-  transform: 'translateY(-50%)',
-  color: theme.palette.cruGrayMedium.main,
-}));
-
-const ContactAnniversaryIcon = styled(RingIcon)(({ theme }) => ({
-  position: 'absolute',
-  top: '50%',
-  left: 8,
-  transform: 'translateY(-50%)',
-  color: theme.palette.cruGrayMedium.main,
-}));
-
-const ContactEducationIcon = styled(SchoolIcon)(({ theme }) => ({
-  position: 'absolute',
-  top: '50%',
-  left: 8,
-  transform: 'translateY(-50%)',
-  color: theme.palette.cruGrayMedium.main,
-}));
-
-const ContactJobIcon = styled(BusinessIcon)(({ theme }) => ({
-  position: 'absolute',
-  top: '50%',
-  left: 8,
-  transform: 'translateY(-50%)',
-  color: theme.palette.cruGrayMedium.main,
-}));
-
-const ContactSocialIcon = styled(SocialIcon)(({ theme }) => ({
-  position: 'absolute',
-  top: '50%',
-  left: 8,
-  transform: 'translateY(-50%)',
-  color: theme.palette.cruGrayMedium.main,
 }));
 
 // Input Styles
@@ -134,10 +98,6 @@ const ContactEditDeleteIconButton = styled(IconButton)(({ theme }) => ({
   right: 0,
   transform: 'translateY(-50%)',
   color: theme.palette.cruGrayMedium.main,
-}));
-
-const ContactPersonNameText = styled(Typography)(() => ({
-  fontWeight: 'bold',
 }));
 
 const ContactAddText = styled(Typography)(() => ({
@@ -167,7 +127,7 @@ export const EditContactModal: React.FC<EditContactModalProps> = ({
   handleOpenModal,
 }): ReactElement<EditContactModalProps> => {
   const { t } = useTranslation();
-  console.log(contact);
+  const classes = useStyles();
   const [personEditShowMore, setPersonEditShowMore] = useState<Array<string>>(
     [],
   );
@@ -185,22 +145,22 @@ export const EditContactModal: React.FC<EditContactModalProps> = ({
       ...person.facebookAccounts.nodes.map((account) => ({
         ...account,
         type: 'facebook',
-        name: 'Facebook',
+        name: t('Facebook'),
       })),
       ...person.twitterAccounts.nodes.map((account) => ({
         ...account,
         type: 'twitter',
-        name: 'Twitter',
+        name: t('Twitter'),
       })),
       ...person.linkedinAccounts.nodes.map((account) => ({
         ...account,
         type: 'linkedin',
-        name: 'LinkedIn',
+        name: t('LinkedIn'),
       })),
       ...person.websites.nodes.map((account) => ({
         ...account,
         type: 'website',
-        name: 'Website',
+        name: t('Website'),
       })),
     ];
     return socialAccounts.length > 0 ? (
@@ -208,7 +168,7 @@ export const EditContactModal: React.FC<EditContactModalProps> = ({
         {socialAccounts.map((account, index) => (
           <>
             <ContactInputWrapper>
-              {index === 0 ? <ContactSocialIcon /> : null}
+              {index === 0 ? <SocialIcon className={classes.leftIcon} /> : null}
               <Grid container spacing={3}>
                 <Grid item xs={6}>
                   <TextField
@@ -241,7 +201,7 @@ export const EditContactModal: React.FC<EditContactModalProps> = ({
     ) : (
       <>
         <ContactInputWrapper>
-          <ContactSocialIcon />
+          <SocialIcon className={classes.leftIcon} />
           <Grid container spacing={3}>
             <Grid item xs={6}>
               <TextField label={t('Username/URL')} value={null} fullWidth />
@@ -281,7 +241,7 @@ export const EditContactModal: React.FC<EditContactModalProps> = ({
               />
             </ContactInputWrapper>
             <ContactInputWrapper>
-              <PrimaryContactIcon />
+              <BookmarkIcon className={classes.leftIcon} />
 
               <FormControl fullWidth={true}>
                 <ContactPrimaryPersonSelectLabel id="primary-person-select-label">
@@ -315,7 +275,9 @@ export const EditContactModal: React.FC<EditContactModalProps> = ({
                         alt={`${person.firstName} ${person.lastName}`}
                         src={person.lastName ?? ''}
                       />
-                      <ContactPersonNameText>{`${person.firstName} ${person.lastName}`}</ContactPersonNameText>
+                      <Typography>
+                        <Box fontWeight="fontWeightBold">{`${person.firstName} ${person.lastName}`}</Box>
+                      </Typography>
                       <ContactEditDeleteIconButton>
                         <DeleteIcon />
                       </ContactEditDeleteIconButton>
@@ -358,14 +320,13 @@ export const EditContactModal: React.FC<EditContactModalProps> = ({
                     <ContactInputWrapper>
                       {person.primaryPhoneNumber?.number ? (
                         <>
-                          <PrimaryContactIcon />
+                          <BookmarkIcon className={classes.leftIcon} />
                           <FormControl fullWidth={true}>
                             <ContactPrimaryPersonSelectLabel id="primary-phone-number-label">
                               {t('Primary Phone')}
                             </ContactPrimaryPersonSelectLabel>
                             <Select
                               id="primary-phone-number-label"
-                              label={t('Primary Phone')}
                               value={person.primaryPhoneNumber?.number}
                             >
                               {person.phoneNumbers.nodes.map((phoneNumber) => (
@@ -417,14 +378,13 @@ export const EditContactModal: React.FC<EditContactModalProps> = ({
                     <ContactInputWrapper>
                       {person.primaryEmailAddress?.email ? (
                         <>
-                          <PrimaryContactIcon />
+                          <BookmarkIcon className={classes.leftIcon} />
                           <FormControl fullWidth={true}>
                             <ContactPrimaryPersonSelectLabel id="primary-email-label">
                               {t('Primary Email')}
                             </ContactPrimaryPersonSelectLabel>
                             <Select
                               id="primary-email-label"
-                              label={t('Primary Email')}
                               value={person.primaryEmailAddress.email}
                             >
                               {person.emailAddresses.nodes.map(
@@ -486,7 +446,7 @@ export const EditContactModal: React.FC<EditContactModalProps> = ({
                     </ContactInputWrapper>
                     {/* Birthday Section */}
                     <ContactInputWrapper>
-                      <ContactBirthdayIcon />
+                      <CakeIcon className={classes.leftIcon} />
                       <DatePicker
                         onChange={(date) =>
                           !date ? null : handleDateChange(date)
@@ -566,7 +526,7 @@ export const EditContactModal: React.FC<EditContactModalProps> = ({
                         </ContactInputWrapper>
                         {/* Anniversary Section */}
                         <ContactInputWrapper>
-                          <ContactAnniversaryIcon />
+                          <RingIcon className={classes.leftIcon} />
                           <DatePicker
                             onChange={(date) =>
                               !date ? null : handleDateChange(date)
@@ -589,7 +549,7 @@ export const EditContactModal: React.FC<EditContactModalProps> = ({
                         </ContactInputWrapper>
                         {/* Alma Mater Section */}
                         <ContactInputWrapper>
-                          <ContactEducationIcon />
+                          <SchoolIcon className={classes.leftIcon} />
                           <TextField
                             label={t('Alma Mater')}
                             value={person.almaMater}
@@ -598,7 +558,7 @@ export const EditContactModal: React.FC<EditContactModalProps> = ({
                         </ContactInputWrapper>
                         {/* Job Section */}
                         <ContactInputWrapper>
-                          <ContactJobIcon />
+                          <BusinessIcon className={classes.leftIcon} />
                           <Grid container spacing={3}>
                             <Grid item xs={6}>
                               <TextField
