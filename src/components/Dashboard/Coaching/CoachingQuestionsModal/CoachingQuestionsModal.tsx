@@ -73,9 +73,10 @@ const CoachingQuestionsModal: React.FC<Props> = ({
   const [responseValues, setResponseValues] = useState<(string | null)[]>([]);
 
   const answerSet = data?.coachingAnswerSets[currentAnswerSet];
-  const questionCount = answerSet?.questions.length || 0;
-  const question: FormQuestionFragment | undefined =
-    answerSet?.questions[questionIndex];
+  const questions = answerSet?.questions;
+  const questionCount = questions?.length || 0;
+  const question: FormQuestionFragment | null =
+    (questions && questions[questionIndex]) || null;
 
   const hasNext = questionIndex < questionCount - 1;
   const hasPrevious = questionIndex !== 0;

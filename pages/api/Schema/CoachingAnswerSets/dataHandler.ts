@@ -26,7 +26,7 @@ export interface CoachingAnswerSetResponse {
         id: string;
         created_at: string;
         position: number;
-        prompt: string;
+        prompt?: string;
         required: boolean;
         response_options: string[] | null;
         updated_at: string;
@@ -76,7 +76,7 @@ const createCoachingQuestionsList = (
     id: string;
     created_at: string;
     position: number;
-    prompt: string;
+    prompt?: string;
     required: boolean;
     response_options: string[] | null;
     updated_at: string;
