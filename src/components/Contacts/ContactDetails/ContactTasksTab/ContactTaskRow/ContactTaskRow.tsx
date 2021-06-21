@@ -9,7 +9,9 @@ import {
   ResultEnum,
 } from '../../../../../../graphql/types.generated';
 import theme from '../../../../../theme';
+import { useApp } from '../../../../App';
 import { StarredItemIcon } from '../../../../common/StarredItemIcon/StarredItemIcon';
+import { TaskDrawerTabsEnum } from '../../../../Task/Drawer/Drawer';
 import { ContactCheckBox } from '../../../ContactCheckBox/ContactCheckBox';
 import { StarTaskIconButton } from '../StarTaskIconButton/StarTaskIconButton';
 import { ContactTaskRowFragment } from './ContactTaskRow.generated';
@@ -133,16 +135,21 @@ export const ContactTaskRow: React.FC<ContactTaskRowProps> = ({
 }) => {
   const { t } = useTranslation();
 
+  const { openTaskDrawer } = useApp();
+
   const handleContactCheckPressed = () => {
     //select contact for actions
   };
 
   const handleCompleteButtonPressed = () => {
-    //trigger complete task flow
+    openTaskDrawer({ taskId: task?.id, showCompleteForm: true });
   };
 
   const handleCommentButtonPressed = () => {
-    //navigate to comments list
+    openTaskDrawer({
+      taskId: task?.id,
+      specificTab: TaskDrawerTabsEnum.comments,
+    });
   };
 
   if (!task) {
