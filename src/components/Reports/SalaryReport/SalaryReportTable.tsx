@@ -1,12 +1,10 @@
 /* eslint-disable import/no-unresolved */
-import React, { useEffect, useState } from 'react';
-import _ from 'lodash';
+import React, { useMemo, useState } from 'react';
 import clsx from 'clsx';
 import {
   Box,
   Button,
   ButtonGroup,
-  colors,
   Grid,
   SvgIcon,
   Table,
@@ -31,6 +29,8 @@ import {
 } from 'graphql/types.generated';
 // eslint-disable-next-line import/extensions
 import { useFourteenMonthReportQuery } from 'pages/accountLists/[accountListId]/reports/graphql/GetReportFourteenMonth.generated';
+import Loading from 'src/components/Loading';
+import { Notification } from 'src/components/Notification/Notification';
 
 interface Props {
   className?: string;
@@ -66,42 +66,13 @@ export const SalaryReportTable: React.FC<Props> = ({
   const salaryCurrency = data?.fourteenMonthReport.salaryCurrency;
   const currencyGroups = data?.fourteenMonthReport.currencyGroups;
 
-  useEffect(() => {
+  useMemo(() => {
     if (currencyGroups) {
       setContacts(
         currencyGroups.flatMap((currencyGroup) => [...currencyGroup.contacts]),
       );
     }
   }, [currencyGroups]);
-
-  const renderLoading = () => (
-    <TableRow>
-      <TableCell colSpan={16}>
-        <Box
-          height="100%"
-          alignItems="center"
-          justifyContent="center"
-          bgcolor={colors.green[600]}
-        >
-          Loading
-        </Box>
-      </TableCell>
-    </TableRow>
-  );
-
-  const renderEmpty = () => (
-    <TableRow>
-      <TableCell colSpan={16}>No Data</TableCell>
-    </TableRow>
-  );
-
-  const renderError = () => (
-    <TableRow>
-      <TableCell colSpan={16}>
-        <Box bgcolor={colors.red[600]}>Error: {error?.toString()}</Box>
-      </TableCell>
-    </TableRow>
-  );
 
   return (
     <Box>
@@ -154,65 +125,66 @@ export const SalaryReportTable: React.FC<Props> = ({
           </Grid>
         </Grid>
       </Box>
-      <TableContainer>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>
-                <Typography variant="h6">{salaryCurrency}</Typography>
-              </TableCell>
-              {currencyGroups?.map((currencyGroup) => {
-                const allYears = currencyGroup.totals.months.map(
-                  (month) => month.month.split('-')[0],
-                );
-                const monthCount = allYears.reduce<{ [key: string]: number }>(
-                  (count, year) => ({
-                    ...count,
-                    [year]: (count[year] || 0) + 1,
-                  }),
-                  {},
-                );
+      {loading ? (
+        <Loading loading />
+      ) : error ? (
+        <Notification type="error" message={error.toString()} />
+      ) : currencyGroups?.length === 0 ? (
+        <Notification type="info" message="No Data" />
+      ) : (
+        <TableContainer>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>
+                  <Typography variant="h6">{salaryCurrency}</Typography>
+                </TableCell>
+                {currencyGroups?.map((currencyGroup) => {
+                  const allYears = currencyGroup.totals.months.map(
+                    (month) => month.month.split('-')[0],
+                  );
+                  const monthCount = allYears.reduce<{ [key: string]: number }>(
+                    (count, year) => ({
+                      ...count,
+                      [year]: (count[year] || 0) + 1,
+                    }),
+                    {},
+                  );
 
-                return Object.entries(monthCount).map(([year, count]) => (
-                  <TableCell key={year} colSpan={count} align="center">
-                    <Typography variant="h6">{year}</Typography>
-                  </TableCell>
-                ));
-              })}
-              <TableCell />
-            </TableRow>
-            <TableRow>
-              <TableCell>{t('Partner')}</TableCell>
-              {currencyGroups?.map((currencyGroup) =>
-                currencyGroup.totals.months.map((month) => (
-                  <TableCell key={month.month} align="center">
-                    {DateTime.fromISO(month.month).toFormat('LLL')}
-                  </TableCell>
-                )),
-              )}
-              <TableCell align="right">{t('Total')}</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {error && renderError()}
-            {loading
-              ? renderLoading()
-              : !(currencyGroups?.length === 0)
-              ? renderEmpty()
-              : contacts.map((contact) => (
-                  <TableRow key={contact.id} hover>
-                    <TableCell>{contact.name}</TableCell>
-                    {contact.months?.map((month) => (
-                      <TableCell key={month.month} align="center">
-                        {Math.round(month.salaryCurrencyTotal)}
-                      </TableCell>
-                    ))}
-                    <TableCell align="right">
-                      <strong>{Math.round(contact.total)}</strong>
+                  return Object.entries(monthCount).map(([year, count]) => (
+                    <TableCell key={year} colSpan={count} align="center">
+                      <Typography variant="h6">{year}</Typography>
                     </TableCell>
-                  </TableRow>
-                ))}
-            {!loading && currencyGroups && currencyGroups.length > 0 && (
+                  ));
+                })}
+                <TableCell />
+              </TableRow>
+              <TableRow>
+                <TableCell>{t('Partner')}</TableCell>
+                {currencyGroups?.map((currencyGroup) =>
+                  currencyGroup.totals.months.map((month) => (
+                    <TableCell key={month.month} align="center">
+                      {DateTime.fromISO(month.month).toFormat('LLL')}
+                    </TableCell>
+                  )),
+                )}
+                <TableCell align="right">{t('Total')}</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {contacts.map((contact) => (
+                <TableRow key={contact.id} hover>
+                  <TableCell>{contact.name}</TableCell>
+                  {contact.months?.map((month) => (
+                    <TableCell key={month.month} align="center">
+                      {Math.round(month.salaryCurrencyTotal)}
+                    </TableCell>
+                  ))}
+                  <TableCell align="right">
+                    <strong>{Math.round(contact.total)}</strong>
+                  </TableCell>
+                </TableRow>
+              ))}
               <TableRow>
                 <TableCell>{t('Totals')}</TableCell>
                 {currencyGroups?.map((currencyGroup) =>
@@ -224,10 +196,10 @@ export const SalaryReportTable: React.FC<Props> = ({
                 )}
                 <TableCell align="right" />
               </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </TableContainer>
+            </TableBody>
+          </Table>
+        </TableContainer>
+      )}
     </Box>
   );
 };
