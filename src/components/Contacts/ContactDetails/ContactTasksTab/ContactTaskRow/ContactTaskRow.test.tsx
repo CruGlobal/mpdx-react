@@ -1,5 +1,6 @@
 import { MuiThemeProvider } from '@material-ui/core';
 import { render } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import React from 'react';
 import {
   ActivityTypeEnum,
@@ -10,6 +11,8 @@ import {
   GqlMockedProvider,
 } from '../../../../../../__tests__/util/graphqlMocking';
 import theme from '../../../../../theme';
+import { useApp } from '../../../../App';
+import { TaskDrawerTabsEnum } from '../../../../Task/Drawer/Drawer';
 import { ContactTaskRow } from './ContactTaskRow';
 import {
   ContactTaskRowFragment,
@@ -18,6 +21,18 @@ import {
 
 const accountListId = 'abc';
 const startAt = '2021-04-12';
+
+jest.mock('../../../../App', () => ({
+  useApp: jest.fn(),
+}));
+
+const openTaskDrawer = jest.fn();
+
+beforeEach(() => {
+  (useApp as jest.Mock).mockReturnValue({
+    openTaskDrawer,
+  });
+});
 
 describe('ContactTaskRow', () => {
   it('should render loading', () => {
@@ -53,6 +68,56 @@ describe('ContactTaskRow', () => {
     expect(await findByText(task.contacts.nodes[0].name)).toBeVisible();
 
     expect(queryByTestId('loadingRow')).toBeNull();
+  });
+
+  describe('task interactions', () => {
+    it('handles complete button click', async () => {
+      const task = gqlMock<ContactTaskRowFragment>(ContactTaskRowFragmentDoc, {
+        mocks: {
+          startAt,
+          result: ResultEnum.None,
+        },
+      });
+
+      const { findByText, getByRole } = render(
+        <GqlMockedProvider>
+          <MuiThemeProvider theme={theme}>
+            <ContactTaskRow accountListId={accountListId} task={task} />
+          </MuiThemeProvider>
+        </GqlMockedProvider>,
+      );
+
+      expect(await findByText(task.subject)).toBeVisible();
+      userEvent.click(getByRole('img', { name: 'Check Icon' }));
+      expect(openTaskDrawer).toHaveBeenCalledWith({
+        taskId: task.id,
+        showCompleteForm: true,
+      });
+    });
+
+    it('handle comment button click', async () => {
+      const task = gqlMock<ContactTaskRowFragment>(ContactTaskRowFragmentDoc, {
+        mocks: {
+          startAt,
+          result: ResultEnum.None,
+        },
+      });
+
+      const { findByText, getByRole } = render(
+        <GqlMockedProvider>
+          <MuiThemeProvider theme={theme}>
+            <ContactTaskRow accountListId={accountListId} task={task} />
+          </MuiThemeProvider>
+        </GqlMockedProvider>,
+      );
+
+      expect(await findByText(task.subject)).toBeVisible();
+      userEvent.click(getByRole('img', { name: 'Comment Icon' }));
+      expect(openTaskDrawer).toHaveBeenCalledWith({
+        taskId: task.id,
+        specificTab: TaskDrawerTabsEnum.comments,
+      });
+    });
   });
 
   describe('activity type', () => {
