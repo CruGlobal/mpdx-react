@@ -10,9 +10,7 @@ module.exports = ({ config }) => {
   });
 
   config.resolve.extensions.push('.ts', '.tsx');
-  config.resolve.modules.push(
-    path.resolve(__dirname, '..') // allows to import components url starting from 'src' for storybook
-  );
+  config.resolve.modules.push(path.resolve(__dirname, '..')); // allows to import components url starting from 'src' for storybook
 
   return config;
 };
