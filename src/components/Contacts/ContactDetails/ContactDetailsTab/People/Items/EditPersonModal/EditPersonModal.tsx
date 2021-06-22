@@ -3,7 +3,6 @@ import {
   Box,
   Button,
   IconButton,
-  Divider,
   styled,
   Typography,
   TextField,
@@ -61,7 +60,7 @@ const ContactEditContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
   width: '100%',
   flexDirection: 'column',
-  margin: theme.spacing(4, 0),
+  margin: theme.spacing(1, 0),
 }));
 
 const ContactInputWrapper = styled(Box)(({ theme }) => ({
@@ -117,20 +116,18 @@ const ShowExtraText = styled(Typography)(() => ({
 }));
 
 interface EditPersonModalProps {
-  contact: ContactDetailsTabQuery['contact'];
+  person: ContactDetailsTabQuery['contact']['people']['nodes'][0];
   isOpen: boolean;
   handleOpenModal: (open: boolean) => void;
 }
 export const EditPersonModal: React.FC<EditPersonModalProps> = ({
-  contact,
+  person,
   isOpen,
   handleOpenModal,
 }): ReactElement<EditPersonModalProps> => {
   const { t } = useTranslation();
   const classes = useStyles();
-  const [personEditShowMore, setPersonEditShowMore] = useState<Array<string>>(
-    [],
-  );
+  const [personEditShowMore, setPersonEditShowMore] = useState(false);
 
   const handleDateChange = (date: DateTime) => {
     console.log(date.month);
@@ -229,410 +226,341 @@ export const EditPersonModal: React.FC<EditPersonModalProps> = ({
   return (
     <Modal
       isOpen={isOpen}
-      title={'Edit People'}
+      title={'Edit Person'}
       content={
-        <>
-          <ContactEditContainer>
+        <ContactEditContainer>
+          <ContactPersonContaner>
             <ContactInputWrapper>
-              <ContactInputField
-                label={t('Contact')}
-                value={contact.name}
-                fullWidth
+              <ContactAvatar
+                alt={`${person.firstName} ${person.lastName}`}
+                src={person.lastName ?? ''}
               />
+              <Typography>
+                <Box fontWeight="fontWeightBold">{`${person.firstName} ${person.lastName}`}</Box>
+              </Typography>
+              <ContactEditDeleteIconButton>
+                <DeleteIcon />
+              </ContactEditDeleteIconButton>
             </ContactInputWrapper>
             <ContactInputWrapper>
-              <BookmarkIcon className={classes.leftIcon} />
-
-              <FormControl fullWidth={true}>
-                <ContactPrimaryPersonSelectLabel id="primary-person-select-label">
-                  {t('Primary')}
-                </ContactPrimaryPersonSelectLabel>
-                <Select
-                  labelId="primary-person-select-label"
-                  value={contact.primaryPerson?.id}
-                  fullWidth={true}
-                >
-                  {contact.people.nodes.map((person) => {
-                    return (
-                      <MenuItem
-                        key={person.id}
-                        value={person.id}
-                      >{`${person.firstName} ${person.lastName}`}</MenuItem>
-                    );
-                  })}
-                </Select>
-              </FormControl>
+              <Grid container spacing={3}>
+                <Grid item xs={6}>
+                  <ContactInputField
+                    label={t('First Name')}
+                    value={person.firstName}
+                    fullWidth
+                  />
+                </Grid>
+                <Grid item xs={6}>
+                  <ContactInputField
+                    label={t('Last Name')}
+                    value={person.lastName}
+                    fullWidth
+                  />
+                </Grid>
+              </Grid>
+              <Grid container spacing={3}>
+                <Grid item xs={6}>
+                  <ContactInputField
+                    placeholder={t('Title')}
+                    value={person.title}
+                    fullWidth
+                  />
+                </Grid>
+                <Grid item xs={6}>
+                  <ContactInputField
+                    placeholder={t('Suffix')}
+                    value={person.suffix}
+                    fullWidth
+                  />
+                </Grid>
+              </Grid>
             </ContactInputWrapper>
-          </ContactEditContainer>
-          <Divider />
-          <ContactEditContainer>
-            {contact.people.nodes.map((person) => {
-              return (
+            {/* Phone Number Section */}
+            <ContactInputWrapper>
+              {person.primaryPhoneNumber?.number ? (
                 <>
-                  <ContactPersonContaner>
-                    <ContactInputWrapper>
-                      <ContactAvatar
-                        alt={`${person.firstName} ${person.lastName}`}
-                        src={person.lastName ?? ''}
-                      />
-                      <Typography>
-                        <Box fontWeight="fontWeightBold">{`${person.firstName} ${person.lastName}`}</Box>
-                      </Typography>
+                  <BookmarkIcon className={classes.leftIcon} />
+                  <FormControl fullWidth={true}>
+                    <ContactPrimaryPersonSelectLabel id="primary-phone-number-label">
+                      {t('Primary Phone')}
+                    </ContactPrimaryPersonSelectLabel>
+                    <Select
+                      id="primary-phone-number-label"
+                      value={person.primaryPhoneNumber?.number}
+                    >
+                      {person.phoneNumbers.nodes.map((phoneNumber) => (
+                        <MenuItem
+                          key={phoneNumber.id}
+                          value={phoneNumber.number}
+                        >
+                          {phoneNumber.number}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </>
+              ) : null}
+            </ContactInputWrapper>
+            {person.phoneNumbers.nodes.length > 0
+              ? person.phoneNumbers.nodes.map((phoneNumber) => (
+                  <ContactInputWrapper key={phoneNumber.id}>
+                    <Grid container spacing={3}>
+                      <Grid item xs={6}>
+                        <ContactInputField
+                          value={phoneNumber.number}
+                          fullWidth
+                        />
+                      </Grid>
+                      <Grid item xs={6}>
+                        <Select value={'Mobile'} fullWidth>
+                          <MenuItem value="Mobile">{t('Mobile')}</MenuItem>
+                        </Select>
+                      </Grid>
                       <ContactEditDeleteIconButton>
                         <DeleteIcon />
                       </ContactEditDeleteIconButton>
-                    </ContactInputWrapper>
-                    <ContactInputWrapper>
-                      <Grid container spacing={3}>
-                        <Grid item xs={6}>
-                          <ContactInputField
-                            label={t('First Name')}
-                            value={person.firstName}
-                            fullWidth
-                          />
-                        </Grid>
-                        <Grid item xs={6}>
-                          <ContactInputField
-                            label={t('Last Name')}
-                            value={person.lastName}
-                            fullWidth
-                          />
-                        </Grid>
-                      </Grid>
-                      <Grid container spacing={3}>
-                        <Grid item xs={6}>
-                          <ContactInputField
-                            placeholder={t('Title')}
-                            value={person.title}
-                            fullWidth
-                          />
-                        </Grid>
-                        <Grid item xs={6}>
-                          <ContactInputField
-                            placeholder={t('Suffix')}
-                            value={person.suffix}
-                            fullWidth
-                          />
-                        </Grid>
-                      </Grid>
-                    </ContactInputWrapper>
-                    {/* Phone Number Section */}
-                    <ContactInputWrapper>
-                      {person.primaryPhoneNumber?.number ? (
-                        <>
-                          <BookmarkIcon className={classes.leftIcon} />
-                          <FormControl fullWidth={true}>
-                            <ContactPrimaryPersonSelectLabel id="primary-phone-number-label">
-                              {t('Primary Phone')}
-                            </ContactPrimaryPersonSelectLabel>
-                            <Select
-                              id="primary-phone-number-label"
-                              value={person.primaryPhoneNumber?.number}
-                            >
-                              {person.phoneNumbers.nodes.map((phoneNumber) => (
-                                <MenuItem
-                                  key={phoneNumber.id}
-                                  value={phoneNumber.number}
-                                >
-                                  {phoneNumber.number}
-                                </MenuItem>
-                              ))}
-                            </Select>
-                          </FormControl>
-                        </>
-                      ) : null}
-                    </ContactInputWrapper>
-                    {person.phoneNumbers.nodes.length > 0
-                      ? person.phoneNumbers.nodes.map((phoneNumber) => (
-                          <ContactInputWrapper key={phoneNumber.id}>
-                            <Grid container spacing={3}>
-                              <Grid item xs={6}>
-                                <ContactInputField
-                                  value={phoneNumber.number}
-                                  fullWidth
-                                />
-                              </Grid>
-                              <Grid item xs={6}>
-                                <Select value={'Mobile'} fullWidth>
-                                  <MenuItem value="Mobile">
-                                    {t('Mobile')}
-                                  </MenuItem>
-                                </Select>
-                              </Grid>
-                              <ContactEditDeleteIconButton>
-                                <DeleteIcon />
-                              </ContactEditDeleteIconButton>
-                            </Grid>
-                          </ContactInputWrapper>
-                        ))
-                      : null}
-                    <ContactInputWrapper>
-                      <Grid container alignItems="center">
-                        <ContactAddIcon />
-                        <ContactAddText variant="subtitle1">
-                          {t('Add Phone')}
-                        </ContactAddText>
-                      </Grid>
-                    </ContactInputWrapper>
-                    {/* Email Section */}
-                    <ContactInputWrapper>
-                      {person.primaryEmailAddress?.email ? (
-                        <>
-                          <BookmarkIcon className={classes.leftIcon} />
-                          <FormControl fullWidth={true}>
-                            <ContactPrimaryPersonSelectLabel id="primary-email-label">
-                              {t('Primary Email')}
-                            </ContactPrimaryPersonSelectLabel>
-                            <Select
-                              id="primary-email-label"
-                              value={person.primaryEmailAddress.email}
-                            >
-                              {person.emailAddresses.nodes.map(
-                                (emailAddress) => (
-                                  <MenuItem
-                                    key={emailAddress.id}
-                                    value={emailAddress.email}
-                                  >
-                                    {emailAddress.email}
-                                  </MenuItem>
-                                ),
-                              )}
-                            </Select>
-                          </FormControl>
-                        </>
-                      ) : null}
-                    </ContactInputWrapper>
-                    {person.emailAddresses.nodes.length > 0
-                      ? person.emailAddresses.nodes.map((emailAddress) => (
-                          <>
-                            <ContactInputWrapper>
-                              <Grid container spacing={3}>
-                                <Grid item xs={6}>
-                                  <ContactInputField
-                                    value={emailAddress.email}
-                                    fullWidth
-                                  />
-                                </Grid>
-                                <Grid item xs={6}>
-                                  <Select value={'Mobile'} fullWidth>
-                                    <MenuItem value="Mobile">
-                                      {t('Mobile')}
-                                    </MenuItem>
-                                  </Select>
-                                </Grid>
-                                <ContactEditDeleteIconButton>
-                                  <DeleteIcon />
-                                </ContactEditDeleteIconButton>
-                              </Grid>
-                            </ContactInputWrapper>
-                          </>
-                        ))
-                      : null}
-                    <ContactInputWrapper>
-                      <Grid container alignItems="center">
-                        <Grid container alignItems="center" item xs={6}>
-                          <ContactAddIcon />
-                          <ContactAddText variant="subtitle1">
-                            {t('Add Email')}
-                          </ContactAddText>
-                        </Grid>
-                        <Grid container item xs={6} alignItems="center">
-                          <Checkbox checked={person.optoutEnewsletter} />
-                          <Typography variant="subtitle1">
-                            {t('Opt-out of Email Newsletter')}
-                          </Typography>
-                        </Grid>
-                      </Grid>
-                    </ContactInputWrapper>
-                    {/* Birthday Section */}
-                    <ContactInputWrapper>
-                      <CakeIcon className={classes.leftIcon} />
-                      <DatePicker
-                        onChange={(date) =>
-                          !date ? null : handleDateChange(date)
-                        }
-                        value={
-                          person?.birthdayMonth && person?.birthdayDay
-                            ? new Date(
-                                person.birthdayYear ?? 1900,
-                                person.birthdayMonth - 1,
-                                person.birthdayDay,
-                              )
-                            : null
-                        }
-                        format="MM/dd/yyyy"
-                        clearable
-                        label={t('Birthday')}
-                        fullWidth
-                        helperText="mm/dd/yyyy"
-                      />
-                    </ContactInputWrapper>
-                    {/* Show More Section */}
-                    {personEditShowMore.indexOf(person.id) === -1 && (
-                      <ShowExtraContainer>
-                        <ShowExtraText
-                          variant="subtitle1"
-                          onClick={() =>
-                            setPersonEditShowMore([
-                              ...personEditShowMore,
-                              person.id,
-                            ])
-                          }
+                    </Grid>
+                  </ContactInputWrapper>
+                ))
+              : null}
+            <ContactInputWrapper>
+              <Grid container alignItems="center">
+                <ContactAddIcon />
+                <ContactAddText variant="subtitle1">
+                  {t('Add Phone')}
+                </ContactAddText>
+              </Grid>
+            </ContactInputWrapper>
+            {/* Email Section */}
+            <ContactInputWrapper>
+              {person.primaryEmailAddress?.email ? (
+                <>
+                  <BookmarkIcon className={classes.leftIcon} />
+                  <FormControl fullWidth={true}>
+                    <ContactPrimaryPersonSelectLabel id="primary-email-label">
+                      {t('Primary Email')}
+                    </ContactPrimaryPersonSelectLabel>
+                    <Select
+                      id="primary-email-label"
+                      value={person.primaryEmailAddress.email}
+                    >
+                      {person.emailAddresses.nodes.map((emailAddress) => (
+                        <MenuItem
+                          key={emailAddress.id}
+                          value={emailAddress.email}
                         >
-                          {t('Show More')}
-                        </ShowExtraText>
-                      </ShowExtraContainer>
-                    )}
-                    {/* Start Show More Content */}
-                    {personEditShowMore.indexOf(person.id) >= 0 ? (
-                      <>
-                        {/* Relationship Section */}
-                        <ContactInputWrapper>
-                          <Grid container spacing={3}>
-                            <Grid item xs={6}>
-                              <FormControl fullWidth>
-                                <InputLabel id="relationship-status-label">
-                                  {t('Relationship Status')}
-                                </InputLabel>
-                                <Select
-                                  labelId="relationship-status-label"
-                                  value={person.maritalStatus}
-                                  fullWidth
-                                >
-                                  <MenuItem value="single">
-                                    {t('Single')}
-                                  </MenuItem>
-                                </Select>
-                              </FormControl>
-                            </Grid>
-                            <Grid item xs={6}>
-                              <FormControl fullWidth>
-                                <InputLabel id="gender-label">
-                                  {t('Gender')}
-                                </InputLabel>
-                                <Select
-                                  labelId="gender-label"
-                                  value={person.gender}
-                                  fullWidth
-                                >
-                                  <MenuItem value="male">{t('Male')}</MenuItem>
-                                  <MenuItem value="female">
-                                    {t('Female')}
-                                  </MenuItem>
-                                </Select>
-                              </FormControl>
-                            </Grid>
-                          </Grid>
-                        </ContactInputWrapper>
-                        {/* Anniversary Section */}
-                        <ContactInputWrapper>
-                          <RingIcon className={classes.leftIcon} />
-                          <DatePicker
-                            onChange={(date) =>
-                              !date ? null : handleDateChange(date)
-                            }
-                            value={
-                              person?.anniversaryMonth && person?.anniversaryDay
-                                ? new Date(
-                                    person.anniversaryYear ?? 1900,
-                                    person.anniversaryMonth - 1,
-                                    person.anniversaryDay,
-                                  )
-                                : null
-                            }
-                            format="MM/dd/yyyy"
-                            clearable
-                            label={t('Anniversary')}
-                            fullWidth
-                            helperText="mm/dd/yyyy"
-                          />
-                        </ContactInputWrapper>
-                        {/* Alma Mater Section */}
-                        <ContactInputWrapper>
-                          <SchoolIcon className={classes.leftIcon} />
-                          <TextField
-                            label={t('Alma Mater')}
-                            value={person.almaMater}
-                            fullWidth
-                          />
-                        </ContactInputWrapper>
-                        {/* Job Section */}
-                        <ContactInputWrapper>
-                          <BusinessIcon className={classes.leftIcon} />
-                          <Grid container spacing={3}>
-                            <Grid item xs={6}>
-                              <TextField
-                                label={t('Employer')}
-                                value={person.employer}
-                                fullWidth
-                              />
-                            </Grid>
-                            <Grid item xs={6}>
-                              <TextField
-                                label={t('Occupation')}
-                                value={person.occupation}
-                                fullWidth
-                              />
-                            </Grid>
-                          </Grid>
-                        </ContactInputWrapper>
-                        {/* Socials Section */}
-                        {renderSocialsSection(person)}
-                        <ContactInputWrapper>
-                          <Grid container alignItems="center">
-                            <ContactAddIcon />
-                            <ContactAddText variant="subtitle1">
-                              {t('Add Social')}
-                            </ContactAddText>
-                          </Grid>
-                        </ContactInputWrapper>
-
-                        {/* Legal First Name & Decased Section */}
-                        <ContactInputWrapper>
-                          <TextField
-                            label={t('Legal First Name')}
-                            value={person?.legalFirstName}
-                            fullWidth
-                          />
-                        </ContactInputWrapper>
-                        <ContactInputWrapper>
-                          <Grid container alignItems="center">
-                            <Grid container item xs={6} alignItems="center">
-                              <Checkbox checked={person.deceased} />
-                              <Typography variant="subtitle1">
-                                {t('Deceased')}
-                              </Typography>
-                            </Grid>
-                          </Grid>
-                        </ContactInputWrapper>
-                      </>
-                    ) : null}
-                    {/* End Show More Content */}
-
-                    {/* Show Less Section */}
-                    {personEditShowMore.indexOf(person.id) >= 0 && (
-                      <ShowExtraContainer>
-                        <ShowExtraText
-                          variant="subtitle1"
-                          onClick={() =>
-                            setPersonEditShowMore([
-                              ...personEditShowMore.filter(
-                                (id) => id !== person.id,
-                              ),
-                            ])
-                          }
-                        >
-                          {t('Show Less')}
-                        </ShowExtraText>
-                      </ShowExtraContainer>
-                    )}
-                  </ContactPersonContaner>
-                  <Divider />
+                          {emailAddress.email}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
                 </>
-              );
-            })}
-          </ContactEditContainer>
-        </>
+              ) : null}
+            </ContactInputWrapper>
+            {person.emailAddresses.nodes.length > 0
+              ? person.emailAddresses.nodes.map((emailAddress) => (
+                  <>
+                    <ContactInputWrapper>
+                      <Grid container spacing={3}>
+                        <Grid item xs={6}>
+                          <ContactInputField
+                            value={emailAddress.email}
+                            fullWidth
+                          />
+                        </Grid>
+                        <Grid item xs={6}>
+                          <Select value={'Mobile'} fullWidth>
+                            <MenuItem value="Mobile">{t('Mobile')}</MenuItem>
+                          </Select>
+                        </Grid>
+                        <ContactEditDeleteIconButton>
+                          <DeleteIcon />
+                        </ContactEditDeleteIconButton>
+                      </Grid>
+                    </ContactInputWrapper>
+                  </>
+                ))
+              : null}
+            <ContactInputWrapper>
+              <Grid container alignItems="center">
+                <Grid container alignItems="center" item xs={6}>
+                  <ContactAddIcon />
+                  <ContactAddText variant="subtitle1">
+                    {t('Add Email')}
+                  </ContactAddText>
+                </Grid>
+                <Grid container item xs={6} alignItems="center">
+                  <Checkbox checked={person.optoutEnewsletter} />
+                  <Typography variant="subtitle1">
+                    {t('Opt-out of Email Newsletter')}
+                  </Typography>
+                </Grid>
+              </Grid>
+            </ContactInputWrapper>
+            {/* Birthday Section */}
+            <ContactInputWrapper>
+              <CakeIcon className={classes.leftIcon} />
+              <DatePicker
+                onChange={(date) => (!date ? null : handleDateChange(date))}
+                value={
+                  person?.birthdayMonth && person?.birthdayDay
+                    ? new Date(
+                        person.birthdayYear ?? 1900,
+                        person.birthdayMonth - 1,
+                        person.birthdayDay,
+                      )
+                    : null
+                }
+                format="MM/dd/yyyy"
+                clearable
+                label={t('Birthday')}
+                fullWidth
+                helperText="mm/dd/yyyy"
+              />
+            </ContactInputWrapper>
+            {/* Show More Section */}
+            {!personEditShowMore && (
+              <ShowExtraContainer>
+                <ShowExtraText
+                  variant="subtitle1"
+                  onClick={() => setPersonEditShowMore(true)}
+                >
+                  {t('Show More')}
+                </ShowExtraText>
+              </ShowExtraContainer>
+            )}
+            {/* Start Show More Content */}
+            {personEditShowMore ? (
+              <>
+                {/* Relationship Section */}
+                <ContactInputWrapper>
+                  <Grid container spacing={3}>
+                    <Grid item xs={6}>
+                      <FormControl fullWidth>
+                        <InputLabel id="relationship-status-label">
+                          {t('Relationship Status')}
+                        </InputLabel>
+                        <Select
+                          labelId="relationship-status-label"
+                          value={person.maritalStatus}
+                          fullWidth
+                        >
+                          <MenuItem value="single">{t('Single')}</MenuItem>
+                        </Select>
+                      </FormControl>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <FormControl fullWidth>
+                        <InputLabel id="gender-label">{t('Gender')}</InputLabel>
+                        <Select
+                          labelId="gender-label"
+                          value={person.gender}
+                          fullWidth
+                        >
+                          <MenuItem value="male">{t('Male')}</MenuItem>
+                          <MenuItem value="female">{t('Female')}</MenuItem>
+                        </Select>
+                      </FormControl>
+                    </Grid>
+                  </Grid>
+                </ContactInputWrapper>
+                {/* Anniversary Section */}
+                <ContactInputWrapper>
+                  <RingIcon className={classes.leftIcon} />
+                  <DatePicker
+                    onChange={(date) => (!date ? null : handleDateChange(date))}
+                    value={
+                      person?.anniversaryMonth && person?.anniversaryDay
+                        ? new Date(
+                            person.anniversaryYear ?? 1900,
+                            person.anniversaryMonth - 1,
+                            person.anniversaryDay,
+                          )
+                        : null
+                    }
+                    format="MM/dd/yyyy"
+                    clearable
+                    label={t('Anniversary')}
+                    fullWidth
+                    helperText="mm/dd/yyyy"
+                  />
+                </ContactInputWrapper>
+                {/* Alma Mater Section */}
+                <ContactInputWrapper>
+                  <SchoolIcon className={classes.leftIcon} />
+                  <TextField
+                    label={t('Alma Mater')}
+                    value={person.almaMater}
+                    fullWidth
+                  />
+                </ContactInputWrapper>
+                {/* Job Section */}
+                <ContactInputWrapper>
+                  <BusinessIcon className={classes.leftIcon} />
+                  <Grid container spacing={3}>
+                    <Grid item xs={6}>
+                      <TextField
+                        label={t('Employer')}
+                        value={person.employer}
+                        fullWidth
+                      />
+                    </Grid>
+                    <Grid item xs={6}>
+                      <TextField
+                        label={t('Occupation')}
+                        value={person.occupation}
+                        fullWidth
+                      />
+                    </Grid>
+                  </Grid>
+                </ContactInputWrapper>
+                {/* Socials Section */}
+                {renderSocialsSection(person)}
+                <ContactInputWrapper>
+                  <Grid container alignItems="center">
+                    <ContactAddIcon />
+                    <ContactAddText variant="subtitle1">
+                      {t('Add Social')}
+                    </ContactAddText>
+                  </Grid>
+                </ContactInputWrapper>
+
+                {/* Legal First Name & Decased Section */}
+                <ContactInputWrapper>
+                  <TextField
+                    label={t('Legal First Name')}
+                    value={person?.legalFirstName}
+                    fullWidth
+                  />
+                </ContactInputWrapper>
+                <ContactInputWrapper>
+                  <Grid container alignItems="center">
+                    <Grid container item xs={6} alignItems="center">
+                      <Checkbox checked={person.deceased} />
+                      <Typography variant="subtitle1">
+                        {t('Deceased')}
+                      </Typography>
+                    </Grid>
+                  </Grid>
+                </ContactInputWrapper>
+              </>
+            ) : null}
+            {/* End Show More Content */}
+
+            {/* Show Less Section */}
+            {personEditShowMore && (
+              <ShowExtraContainer>
+                <ShowExtraText
+                  variant="subtitle1"
+                  onClick={() => setPersonEditShowMore(false)}
+                >
+                  {t('Show Less')}
+                </ShowExtraText>
+              </ShowExtraContainer>
+            )}
+          </ContactPersonContaner>
+        </ContactEditContainer>
       }
       customActionSection={
         <>

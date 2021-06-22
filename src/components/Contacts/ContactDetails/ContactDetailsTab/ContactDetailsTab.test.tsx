@@ -131,7 +131,7 @@ describe('ContactDetailTab', () => {
     );
   });
 
-  it('should open edit contact modal', async () => {
+  it('should open edit contact details modal', async () => {
     const { queryByText, getAllByRole } = render(
       <SnackbarProvider>
         <TestRouter router={router}>
@@ -150,7 +150,9 @@ describe('ContactDetailTab', () => {
     );
     await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());
     userEvent.click(getAllByRole('img', { name: 'Edit Icon' })[0]);
-    await waitFor(() => expect(queryByText('Edit People')).toBeInTheDocument());
+    await waitFor(() =>
+      expect(queryByText('Edit Contact Details')).toBeInTheDocument(),
+    );
   });
 
   it('handles deleting contact', async () => {

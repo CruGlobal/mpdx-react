@@ -7,26 +7,32 @@ import {
   ContactPeopleFragmentDoc,
 } from '../../ContactPeople.generated';
 import theme from '../../../../../../../theme';
-import { EditPersonModal } from './EditPersonModal';
+import { EditContactDetailsModal } from './EditContactDetailsModal';
 
 export default {
-  title: 'Contacts/Tab/ContactDetailsTab/People/Items/EditPersonModal',
-  component: EditPersonModal,
+  title: 'Contacts/Tab/ContactDetailsTab/People/Items/EditContactDetailsModal',
+  component: EditContactDetailsModal,
 };
 
 export const Default = (): ReactElement => {
   const mock = gqlMock<ContactPeopleFragment>(ContactPeopleFragmentDoc);
 
   const [modalOpen, setModalOpen] = useState(false);
+  const contactId = '123';
 
-  const mockPerson: ContactDetailsTabQuery['contact']['people']['nodes'][0] =
-    mock.people.nodes[0];
+  const mockContact: ContactDetailsTabQuery['contact'] = {
+    name: 'test person',
+    id: contactId,
+    tagList: [],
+    people: mock.people,
+    primaryPerson: mock.primaryPerson,
+  };
 
   return (
     <MuiThemeProvider theme={theme}>
       <Box m={2}>
-        <EditPersonModal
-          person={mockPerson}
+        <EditContactDetailsModal
+          contact={mockContact}
           isOpen={modalOpen}
           handleOpenModal={setModalOpen}
         />

@@ -27,7 +27,7 @@ import { ContactDetailsTabMailing } from './Mailing/ContactDetailsTabMailing';
 import { ContactDetailsOther } from './Other/ContactDetailsOther';
 import { ContactDetailsTabPeople } from './People/ContactDetailsTabPeople';
 import { ContactTags } from './Tags/ContactTags';
-import { EditPersonModal } from './People/Items/EditPersonModal/EditPersonModal';
+import { EditContactDetailsModal } from './People/Items/EditContactDetailsModal/EditContactDetailsModal';
 
 const ContactDetailsTabContainer = styled(Box)(() => ({
   width: '100%',
@@ -292,7 +292,7 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
       </ContactDetailsTabContainer>
       {renderDeleteContactModal()}
       {loading || !data ? null : (
-        <EditPersonModal
+        <EditContactDetailsModal
           contact={data.contact}
           isOpen={editModalOpen}
           handleOpenModal={setEditModalOpen}
