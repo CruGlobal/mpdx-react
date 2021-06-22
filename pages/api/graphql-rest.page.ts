@@ -18,7 +18,10 @@ import {
 import schema from './Schema';
 import { getTaskAnalytics } from './Schema/TaskAnalytics/dataHandler';
 import { getContactFilters } from './Schema/ContactFilters/datahandler';
-import { getCoachingAnswerSets } from './Schema/CoachingAnswerSets/dataHandler';
+import {
+  CoachingAnswerSetResponse,
+  getCoachingAnswerSets,
+} from './Schema/CoachingAnswerSets/dataHandler';
 import {
   FourteenMonthReportResponse,
   mapFourteenMonthReport,
@@ -121,7 +124,7 @@ class MpdxRestApi extends RESTDataSource {
   }
 
   async getCoachingAnswerSets(accountListId: string) {
-    const { data } = await this.get(
+    const { data }: { data: CoachingAnswerSetResponse[] } = await this.get(
       `coaching/answer_sets?filter[account_list_id]=${accountListId}`,
     );
 

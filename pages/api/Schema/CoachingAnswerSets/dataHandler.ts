@@ -131,7 +131,6 @@ const createCoachingAnswersList = (
     };
   }[],
 ): CoachingAnswer[] => {
-  debugger;
   const answers: CoachingAnswer[] = [];
 
   data.forEach(({ id, attributes: { created_at, response, updated_at } }) => {
