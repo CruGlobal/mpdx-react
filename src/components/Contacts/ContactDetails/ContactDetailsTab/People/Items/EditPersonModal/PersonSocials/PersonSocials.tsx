@@ -4,12 +4,10 @@ import {
   FormControl,
   Grid,
   InputLabel,
-  makeStyles,
   MenuItem,
   Select,
   styled,
   TextField,
-  Theme,
   Typography,
 } from '@material-ui/core';
 import SocialIcon from '@material-ui/icons/Language';
@@ -17,16 +15,7 @@ import AddIcon from '@material-ui/icons/Add';
 import { ContactDetailsTabQuery } from '../../../../ContactDetailsTab.generated';
 import { ModalSectionContainer } from '../ModalSectionContainer/ModalSectionContainer';
 import { ModalSectionDeleteIcon } from '../ModalSectionDeleteIcon/ModalSectionDeleteIcon';
-
-const useStyles = makeStyles((theme: Theme) => ({
-  leftIcon: {
-    position: 'absolute',
-    top: '50%',
-    left: 8,
-    transform: 'translateY(-50%)',
-    color: theme.palette.cruGrayMedium.main,
-  },
-}));
+import { ModalSectionIcon } from '../ModalSectionIcon/ModalSectionIcon';
 
 const ContactAddIcon = styled(AddIcon)(() => ({
   color: '#2196F3',
@@ -44,7 +33,6 @@ interface PersonSocialProps {
 
 export const PersonSocial: React.FC<PersonSocialProps> = ({ person }) => {
   const { t } = useTranslation();
-  const classes = useStyles();
 
   const socialAccounts = [
     ...person.facebookAccounts.nodes.map((account) => ({
@@ -77,7 +65,7 @@ export const PersonSocial: React.FC<PersonSocialProps> = ({ person }) => {
             <>
               <ModalSectionContainer>
                 {index === 0 ? (
-                  <SocialIcon className={classes.leftIcon} />
+                  <ModalSectionIcon icon={<SocialIcon />} />
                 ) : null}
                 <Grid container spacing={3}>
                   <Grid item xs={6}>
@@ -110,7 +98,7 @@ export const PersonSocial: React.FC<PersonSocialProps> = ({ person }) => {
         </>
       ) : (
         <ModalSectionContainer>
-          <SocialIcon className={classes.leftIcon} />
+          <ModalSectionIcon icon={<SocialIcon />} />
           <Grid container spacing={3}>
             <Grid item xs={6}>
               <TextField label={t('Username/URL')} value={null} fullWidth />

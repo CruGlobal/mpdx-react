@@ -3,19 +3,9 @@ import { DatePicker } from '@material-ui/pickers';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import CakeIcon from '@material-ui/icons/Cake';
-import { makeStyles, Theme } from '@material-ui/core';
 import { ContactDetailsTabQuery } from '../../../../ContactDetailsTab.generated';
 import { ModalSectionContainer } from '../ModalSectionContainer/ModalSectionContainer';
-
-const useStyles = makeStyles((theme: Theme) => ({
-  leftIcon: {
-    position: 'absolute',
-    top: '50%',
-    left: 8,
-    transform: 'translateY(-50%)',
-    color: theme.palette.cruGrayMedium.main,
-  },
-}));
+import { ModalSectionIcon } from '../ModalSectionIcon/ModalSectionIcon';
 
 interface PersonBirthdayProps {
   person: ContactDetailsTabQuery['contact']['people']['nodes'][0];
@@ -23,7 +13,6 @@ interface PersonBirthdayProps {
 
 export const PersonBirthday: React.FC<PersonBirthdayProps> = ({ person }) => {
   const { t } = useTranslation();
-  const classes = useStyles();
 
   const handleDateChange = (date: DateTime) => {
     console.log(date.month);
@@ -33,7 +22,7 @@ export const PersonBirthday: React.FC<PersonBirthdayProps> = ({ person }) => {
 
   return (
     <ModalSectionContainer>
-      <CakeIcon className={classes.leftIcon} />
+      <ModalSectionIcon icon={<CakeIcon />} />
       <DatePicker
         onChange={(date) => (!date ? null : handleDateChange(date))}
         value={

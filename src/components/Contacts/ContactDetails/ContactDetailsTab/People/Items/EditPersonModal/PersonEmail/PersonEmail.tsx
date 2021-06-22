@@ -3,12 +3,10 @@ import {
   FormControl,
   Grid,
   InputLabel,
-  makeStyles,
   MenuItem,
   Select,
   styled,
   TextField,
-  Theme,
   Typography,
 } from '@material-ui/core';
 import React from 'react';
@@ -19,16 +17,7 @@ import { useTranslation } from 'react-i18next';
 import { ContactDetailsTabQuery } from '../../../../ContactDetailsTab.generated';
 import { ModalSectionContainer } from '../ModalSectionContainer/ModalSectionContainer';
 import { ModalSectionDeleteIcon } from '../ModalSectionDeleteIcon/ModalSectionDeleteIcon';
-
-const useStyles = makeStyles((theme: Theme) => ({
-  leftIcon: {
-    position: 'absolute',
-    top: '50%',
-    left: 8,
-    transform: 'translateY(-50%)',
-    color: theme.palette.cruGrayMedium.main,
-  },
-}));
+import { ModalSectionIcon } from '../ModalSectionIcon/ModalSectionIcon';
 
 const ContactPrimaryPersonSelectLabel = styled(InputLabel)(() => ({
   textTransform: 'uppercase',
@@ -56,13 +45,14 @@ interface PersonEmailProps {
 
 export const PersonEmail: React.FC<PersonEmailProps> = ({ person }) => {
   const { t } = useTranslation();
-  const classes = useStyles();
+
   return (
     <>
       {person.emailAddresses.nodes.length > 0 ? (
         <>
           <ModalSectionContainer>
-            <BookmarkIcon className={classes.leftIcon} />
+            <ModalSectionIcon icon={<BookmarkIcon />} />
+
             <FormControl fullWidth={true}>
               <ContactPrimaryPersonSelectLabel id="primary-email-label">
                 {t('Primary Email')}

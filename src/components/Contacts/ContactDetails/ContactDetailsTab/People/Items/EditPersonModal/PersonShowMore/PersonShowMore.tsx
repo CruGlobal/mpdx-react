@@ -4,33 +4,21 @@ import {
   FormControl,
   Grid,
   InputLabel,
-  makeStyles,
   MenuItem,
   Select,
   TextField,
-  Theme,
   Typography,
 } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { DatePicker } from '@material-ui/pickers';
 import { DateTime } from 'luxon';
-
 import SchoolIcon from '@material-ui/icons/School';
 import BusinessIcon from '@material-ui/icons/Business';
 import { ContactDetailsTabQuery } from '../../../../ContactDetailsTab.generated';
 import { ModalSectionContainer } from '../ModalSectionContainer/ModalSectionContainer';
 import { RingIcon } from '../../../../../../RingIcon';
 import { PersonSocial } from '../PersonSocials/PersonSocials';
-
-const useStyles = makeStyles((theme: Theme) => ({
-  leftIcon: {
-    position: 'absolute',
-    top: '50%',
-    left: 8,
-    transform: 'translateY(-50%)',
-    color: theme.palette.cruGrayMedium.main,
-  },
-}));
+import { ModalSectionIcon } from '../ModalSectionIcon/ModalSectionIcon';
 
 interface PersonShowMoreProps {
   person: ContactDetailsTabQuery['contact']['people']['nodes'][0];
@@ -38,7 +26,6 @@ interface PersonShowMoreProps {
 
 export const PersonShowMore: React.FC<PersonShowMoreProps> = ({ person }) => {
   const { t } = useTranslation();
-  const classes = useStyles();
 
   const handleDateChange = (date: DateTime) => {
     console.log(date.month);
@@ -77,7 +64,7 @@ export const PersonShowMore: React.FC<PersonShowMoreProps> = ({ person }) => {
       </ModalSectionContainer>
       {/* Anniversary Section */}
       <ModalSectionContainer>
-        <RingIcon className={classes.leftIcon} />
+        <ModalSectionIcon icon={<RingIcon />} />
         <DatePicker
           onChange={(date) => (!date ? null : handleDateChange(date))}
           value={
@@ -98,12 +85,12 @@ export const PersonShowMore: React.FC<PersonShowMoreProps> = ({ person }) => {
       </ModalSectionContainer>
       {/* Alma Mater Section */}
       <ModalSectionContainer>
-        <SchoolIcon className={classes.leftIcon} />
+        <ModalSectionIcon icon={<SchoolIcon />} />
         <TextField label={t('Alma Mater')} value={person.almaMater} fullWidth />
       </ModalSectionContainer>
       {/* Job Section */}
       <ModalSectionContainer>
-        <BusinessIcon className={classes.leftIcon} />
+        <ModalSectionIcon icon={<BusinessIcon />} />
         <Grid container spacing={3}>
           <Grid item xs={6}>
             <TextField
