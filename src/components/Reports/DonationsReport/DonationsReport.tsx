@@ -1,6 +1,8 @@
 import React from 'react';
-import { Container, Grid, Box } from '@material-ui/core';
+import { Container, Grid, Box, Link } from '@material-ui/core';
 import { motion } from 'framer-motion';
+
+import { Object } from 'lodash';
 import { GetDashboardQuery } from '../../../../pages/accountLists/GetDashboard.generated';
 import { MonthlyActivitySection } from './MonthlyActivitySection';
 import { DonationsReportTable } from './DonationsReportTable';
@@ -28,11 +30,12 @@ export const DonationsReport: React.FC<Props> = ({ data, accountListId }) => {
   function createData(
     date: string,
     partnerId: string,
-    partner: string,
+    partner: [],
     amount: string,
     foreignAmount: string,
     designation: string,
     method: string,
+    id: string,
   ) {
     return {
       date,
@@ -42,63 +45,70 @@ export const DonationsReport: React.FC<Props> = ({ data, accountListId }) => {
       foreignAmount,
       designation,
       method,
+      id,
     };
   }
 
   const rows = [
     createData(
-      '06/07/2021',
+      '05/07/2011',
       'Bob',
-      'Bob',
+      [<Link>Bob</Link>],
       '100 CAD',
       '100 CAD',
-      'Blank',
+      'You',
       'bank_trans',
+      '1',
+    ),
+    createData(
+      '01/27/2021',
+      'Bob',
+      'Joe',
+      '34 CAD',
+      '34 CAD',
+      'You',
+      'bank_trans',
+      '2,',
+    ),
+    createData(
+      '02/09/2021',
+      'Bob',
+      'Larry',
+      '2 CAD',
+      '2 CAD',
+      'You',
+      'bank_trans',
+      '3',
     ),
     createData(
       '06/07/2021',
       'Bob',
-      'Bob',
-      '100 CAD',
-      '100 CAD',
-      'Blank',
+      'Carl',
+      '234 CAD',
+      '234 CAD',
+      'You',
       'bank_trans',
+      '4',
     ),
     createData(
       '06/07/2021',
       'Bob',
-      'Bob',
-      '100 CAD',
-      '100 CAD',
-      'Blank',
+      'Jared',
+      '55 CAD',
+      '55 CAD',
+      'You',
       'bank_trans',
+      '5',
     ),
     createData(
       '06/07/2021',
       'Bob',
-      'Bob',
-      '100 CAD',
-      '100 CAD',
-      'Blank',
+      'Luke',
+      '354 CAD',
+      '354 CAD',
+      'You',
       'bank_trans',
-    ),
-    createData(
-      '06/07/2021',
-      'Bob',
-      'Bob',
-      '100 CAD',
-      '100 CAD',
-      'Blank',
-      'bank_trans',
-    ),
-    createData(
-      '06/07/2021',
-      'Bob',
-      'Bob',
-      '100 CAD',
-      '100 CAD',
-      'Blank',
-      'bank_trans',
+      '6',
     ),
   ];
   return (
