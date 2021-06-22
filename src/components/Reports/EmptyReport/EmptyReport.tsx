@@ -1,6 +1,7 @@
 import React from 'react';
 import { Box, Typography, styled, Button } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
+import LocalAtmIcon from '@material-ui/icons/LocalAtm';
 import HandoffLink from 'src/components/HandoffLink';
 
 interface Props {
@@ -30,7 +31,9 @@ export const EmptyReport: React.FC<Props> = ({ title, subTitle }) => {
 
   return (
     <BoxWrapper boxShadow={3}>
-      <img src="bill.jpg" alt="bill" style={{ padding: 4 }}></img>
+      <Box mb={2}>
+        <LocalAtmIcon fontSize="large" color="disabled" />
+      </Box>
       <Typography variant="h5">{t(title)}</Typography>
       {subTitle && <Typography>{t(subTitle)}</Typography>}
       <Box style={{ padding: 4 }}>
