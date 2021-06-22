@@ -17,7 +17,7 @@ import NextLink from 'next/link';
 import { useTranslation } from 'react-i18next';
 import { useApp } from '../../../../../App';
 import HandoffLink from '../../../../../HandoffLink';
-import { ReportNavItems } from '../../../../../Reports/ReportLayout/NavReportsList/ReportNavItems';
+import { ReportNavItems } from 'src/components/Reports/ReportLayout/NavReportsList/ReportNavItems';
 
 const useStyles = makeStyles((theme: Theme) => ({
   navListItem: {
@@ -133,7 +133,8 @@ const NavMenu = (): ReactElement => {
                         {ReportNavItems.map((reportItem) => (
                           <NextLink
                             key={reportItem.id}
-                            href={`/accountLists/${state.accountListId}/reports/${reportItem.id}`}
+                            href={`/accountLists/[accountListId]/reports/${reportItem.id}`}
+                            as={`/accountLists/${state.accountListId}/reports/${reportItem.id}`}
                             scroll={false}
                           >
                             <MenuItem onClick={handleReportsMenuClose}>
