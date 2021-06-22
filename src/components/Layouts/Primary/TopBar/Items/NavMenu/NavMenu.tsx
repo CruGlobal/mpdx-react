@@ -141,7 +141,7 @@ const NavMenu = (): ReactElement => {
                                 primary={t(
                                   `${reportItem.title}${
                                     reportItem.subTitle
-                                      ? ' (' + reportItem.subTitle + ')'
+                                      ? ` (${reportItem.subTitle})`
                                       : ''
                                   }`,
                                 )}
