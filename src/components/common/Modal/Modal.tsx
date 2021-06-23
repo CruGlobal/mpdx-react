@@ -1,9 +1,6 @@
-import React, { ReactElement } from 'react';
+import React, { ReactElement, ReactNode } from 'react';
 import {
-  Button,
   Dialog,
-  DialogActions,
-  DialogContent,
   DialogProps,
   DialogTitle,
   Grid,
@@ -34,25 +31,19 @@ interface Props {
   size?: DialogProps['maxWidth'];
   /** title to be rendered in modal header */
   title: string;
-  /** content to be rendered in modal body */
-  content: ReactElement;
   /** function to be fired when close button is pressed */
   handleClose: () => void;
-  /** determines whether to render dividers between modal sections, default is true */
-  dividers?: boolean;
-  /** action section to be rendered in modal footer */
-  customActionSection?: ReactElement;
+  /** content to be rendered inside of modal */
+  children: ReactNode;
 }
 
 const Modal = ({
   isOpen,
   title,
-  content,
-  customActionSection,
   handleClose,
   size = 'sm',
   fullWidth = true,
-  dividers = true,
+  children,
 }: Props): ReactElement<Props> => {
   const { t } = useTranslation();
   return (
@@ -67,20 +58,7 @@ const Modal = ({
           </CloseButton>
         </Grid>
       </Grid>
-      <DialogContent dividers={dividers}>{content}</DialogContent>
-      <DialogActions>
-        {customActionSection ? (
-          customActionSection
-        ) : (
-          <Button
-            onClick={() => handleClose()}
-            variant="contained"
-            color="primary"
-          >
-            {t('Ok')}
-          </Button>
-        )}
-      </DialogActions>
+      {children}
     </Dialog>
   );
 };
