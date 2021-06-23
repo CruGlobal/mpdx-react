@@ -34,14 +34,14 @@ export const EmptyReport: React.FC<Props> = ({ title, subTitle }) => {
       <Box mb={2}>
         <LocalAtmIcon fontSize="large" color="disabled" />
       </Box>
-      <Typography variant="h5">{t(title)}</Typography>
-      {subTitle && <Typography>{t(subTitle)}</Typography>}
+      <Typography variant="h5">{title}</Typography>
+      {subTitle && <Typography>{subTitle}</Typography>}
       <Box style={{ padding: 4 }}>
         <HandoffLink path="/preferences/integrations">
-          <Button variant="contained">Connect Services</Button>
+          <Button variant="contained">{t('Connect Services')}</Button>
         </HandoffLink>
         <Button variant="contained" color="primary" onClick={addNewDonation}>
-          Add New Donation
+          {t('Add New Donation')}
         </Button>
       </Box>
     </BoxWrapper>
