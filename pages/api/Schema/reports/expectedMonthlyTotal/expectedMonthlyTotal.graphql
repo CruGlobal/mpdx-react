@@ -1,0 +1,27 @@
+extend type Query {
+  expectedMonthlyTotalReport(accountListId: ID!): ExpectedMonthlyTotalReport!
+}
+
+type ExpectedMonthlyTotalReport {
+  received: [ExpectedMonthlyTotalDonation!]!
+  likely: [ExpectedMonthlyTotalDonation!]!
+  unlikely: [ExpectedMonthlyTotalDonation!]!
+  currency: String
+  currencySymbol: String
+}
+
+type ExpectedMonthlyTotalDonation {
+  contactId: String
+  contactName: String
+  contactStatus: String
+  convertedAmount: Float
+  convertedCurrency: String
+  convertedCurrencySymbol: String
+  donationAmount: Float
+  donationCurrency: String
+  donationCurrencySymbol: String
+  pledgeAmount: Float
+  pledgeCurrency: String
+  pledgeCurrencySymbol: String
+  pledgeFrequency: String
+}
