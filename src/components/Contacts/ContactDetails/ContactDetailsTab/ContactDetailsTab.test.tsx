@@ -4,6 +4,8 @@ import { ThemeProvider } from '@material-ui/core';
 import { SnackbarProvider } from 'notistack';
 import userEvent from '@testing-library/user-event';
 import { InMemoryCache } from '@apollo/client';
+import { MuiPickersUtilsProvider } from '@material-ui/pickers';
+import LuxonUtils from '@date-io/luxon';
 import TestRouter from '../../../../../__tests__/util/TestRouter';
 import theme from '../../../../theme';
 import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
@@ -129,8 +131,32 @@ describe('ContactDetailTab', () => {
     );
   });
 
+  it('should open edit contact details modal', async () => {
+    const { queryByText, getAllByRole } = render(
+      <SnackbarProvider>
+        <TestRouter router={router}>
+          <MuiPickersUtilsProvider utils={LuxonUtils}>
+            <ThemeProvider theme={theme}>
+              <GqlMockedProvider<ContactDetailsTabQuery>>
+                <ContactDetailsTab
+                  accountListId={accountListId}
+                  contactId={contactId}
+                />
+              </GqlMockedProvider>
+            </ThemeProvider>
+          </MuiPickersUtilsProvider>
+        </TestRouter>
+      </SnackbarProvider>,
+    );
+    await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());
+    userEvent.click(getAllByRole('img', { name: 'Edit Icon' })[0]);
+    await waitFor(() =>
+      expect(queryByText('Edit Contact Details')).toBeInTheDocument(),
+    );
+  });
+
   it('handles deleting contact', async () => {
-    const cache = new InMemoryCache({ addTypename: false });
+    const cache = new InMemoryCache();
     jest.spyOn(cache, 'writeQuery');
     const mocks = {
       ContactDetailsTab: {
@@ -197,7 +223,6 @@ describe('ContactDetailTab', () => {
           <ThemeProvider theme={theme}>
             <GqlMockedProvider<ContactDetailsTabQuery>
               mocks={mocks}
-              addTypename={false}
               cache={cache}
             >
               <ContactDetailsTab
