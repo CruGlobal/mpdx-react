@@ -45,5 +45,9 @@ export const ContactHeaderEmailSection = ({
     );
   }
 
-  return <ContactHeaderSection icon={<EmailIcon />} />;
+  return (
+    <ContactHeaderSection icon={<EmailIcon />}>
+      <Typography variant="subtitle1">{'N/A'}</Typography>
+    </ContactHeaderSection>
+  );
 };
