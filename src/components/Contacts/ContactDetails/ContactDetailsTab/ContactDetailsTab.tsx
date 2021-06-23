@@ -291,9 +291,10 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
       {renderDeleteContactModal()}
       {loading || !data ? null : (
         <EditContactDetailsModal
+          accountListId={accountListId}
           contact={data.contact}
           isOpen={editModalOpen}
-          handleOpenModal={setEditModalOpen}
+          handleClose={() => setEditModalOpen(false)}
         />
       )}
     </>

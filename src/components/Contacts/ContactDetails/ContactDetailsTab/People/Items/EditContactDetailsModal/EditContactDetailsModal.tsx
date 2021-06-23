@@ -10,14 +10,17 @@ import {
   InputLabel,
   DialogActions,
   DialogContent,
+  CircularProgress,
 } from '@material-ui/core';
-
 import BookmarkIcon from '@material-ui/icons/Bookmark';
-
 import { useTranslation } from 'react-i18next';
-
+import * as yup from 'yup';
+import { useSnackbar } from 'notistack';
+import { Formik } from 'formik';
 import { ContactDetailsTabQuery } from '../../../ContactDetailsTab.generated';
 import Modal from '../../../../../../common/Modal/Modal';
+import { ContactUpdateInput } from '../../../../../../../../graphql/types.generated';
+import { useUpdateContactDetailsMutation } from './EditContactDetails.generated';
 
 const ContactEditModalFooterButton = styled(Button)(() => ({
   color: '#2196F3',
@@ -55,72 +58,141 @@ const PrimaryContactIcon = styled(BookmarkIcon)(({ theme }) => ({
   color: theme.palette.cruGrayMedium.main,
 }));
 
+const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
+  margin: theme.spacing(0, 1, 0, 0),
+}));
+
 interface EditContactDetailsModalProps {
   contact: ContactDetailsTabQuery['contact'];
+  accountListId: string;
   isOpen: boolean;
-  handleOpenModal: (open: boolean) => void;
+  handleClose: () => void;
 }
+
 export const EditContactDetailsModal: React.FC<EditContactDetailsModalProps> = ({
+  accountListId,
   contact,
   isOpen,
-  handleOpenModal,
+  handleClose,
 }): ReactElement<EditContactDetailsModalProps> => {
   const { t } = useTranslation();
+  const { enqueueSnackbar } = useSnackbar();
+  const [
+    updateContact,
+    { loading: updating },
+  ] = useUpdateContactDetailsMutation();
+
+  const contactSchema: yup.SchemaOf<
+    Pick<ContactUpdateInput, 'name' | 'id'>
+  > = yup.object({
+    name: yup.string().required(),
+    id: yup.string().required(),
+  });
+
+  // TODO Add logic to update primary person when it comes available in mutation
+  const onSubmit = async (attributes: ContactUpdateInput) => {
+    try {
+      await updateContact({
+        variables: {
+          accountListId,
+          attributes: {
+            name: attributes.name,
+            id: attributes.id,
+          },
+        },
+      });
+      enqueueSnackbar(t('Contact updated successfully'), {
+        variant: 'success',
+      });
+    } catch (error) {
+      enqueueSnackbar(error.message, { variant: 'error' });
+      throw error;
+    }
+  };
 
   return (
     <Modal
       isOpen={isOpen}
       title={t('Edit Contact Details')}
-      handleClose={() => handleOpenModal(false)}
+      handleClose={handleClose}
     >
-      <DialogContent dividers>
-        <ContactEditContainer>
-          <ContactInputWrapper>
-            <ContactInputField
-              label={t('Contact')}
-              value={contact.name}
-              fullWidth
-            />
-          </ContactInputWrapper>
-          <ContactInputWrapper>
-            <PrimaryContactIcon />
+      <Formik
+        initialValues={{ name: contact.name, id: contact.id }}
+        validationSchema={contactSchema}
+        onSubmit={onSubmit}
+      >
+        {({
+          values: { name },
+          handleChange,
+          handleSubmit,
+          isSubmitting,
+          isValid,
+          errors,
+          touched,
+        }): ReactElement => (
+          <form onSubmit={handleSubmit} noValidate>
+            <DialogContent dividers>
+              <ContactEditContainer>
+                <ContactInputWrapper>
+                  <ContactInputField
+                    label={t('Contact')}
+                    value={name}
+                    onChange={handleChange('name')}
+                    inputProps={{ 'aria-label': t('Contact') }}
+                    error={!!errors.name && touched.name}
+                    helperText={
+                      errors.name &&
+                      touched.name &&
+                      t('Contact name is required')
+                    }
+                    fullWidth
+                  />
+                </ContactInputWrapper>
+                <ContactInputWrapper>
+                  <PrimaryContactIcon />
 
-            <FormControl fullWidth={true}>
-              <ContactPrimaryPersonSelectLabel id="primary-person-select-label">
-                {t('Primary')}
-              </ContactPrimaryPersonSelectLabel>
-              <Select
-                labelId="primary-person-select-label"
-                value={contact.primaryPerson?.id}
-                fullWidth={true}
+                  <FormControl fullWidth={true}>
+                    <ContactPrimaryPersonSelectLabel id="primary-person-select-label">
+                      {t('Primary')}
+                    </ContactPrimaryPersonSelectLabel>
+                    <Select
+                      labelId="primary-person-select-label"
+                      value={contact.primaryPerson?.id}
+                      fullWidth={true}
+                    >
+                      {contact.people.nodes.map((person) => {
+                        return (
+                          <MenuItem
+                            key={person.id}
+                            value={person.id}
+                          >{`${person.firstName} ${person.lastName}`}</MenuItem>
+                        );
+                      })}
+                    </Select>
+                  </FormControl>
+                </ContactInputWrapper>
+              </ContactEditContainer>
+            </DialogContent>
+            <DialogActions>
+              <ContactEditModalFooterButton
+                onClick={handleClose}
+                disabled={isSubmitting}
+                variant="text"
               >
-                {contact.people.nodes.map((person) => {
-                  return (
-                    <MenuItem
-                      key={person.id}
-                      value={person.id}
-                    >{`${person.firstName} ${person.lastName}`}</MenuItem>
-                  );
-                })}
-              </Select>
-            </FormControl>
-          </ContactInputWrapper>
-        </ContactEditContainer>
-      </DialogContent>
-      <DialogActions>
-        <ContactEditModalFooterButton
-          onClick={() => handleOpenModal(false)}
-          variant="text"
-        >
-          {t('Cancel')}
-        </ContactEditModalFooterButton>
-        <ContactEditModalFooterButton
-          onClick={() => handleOpenModal(false)}
-          variant="text"
-        >
-          {t('Save')}
-        </ContactEditModalFooterButton>
-      </DialogActions>
+                {t('Cancel')}
+              </ContactEditModalFooterButton>
+              <ContactEditModalFooterButton
+                type="submit"
+                variant="text"
+                disabled={!isValid || isSubmitting}
+              >
+                {updating && <LoadingIndicator color="primary" size={20} />}
+                {t('Save')}
+              </ContactEditModalFooterButton>
+            </DialogActions>
+          </form>
+        )}
+      </Formik>
     </Modal>
   );
 };
