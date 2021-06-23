@@ -22,6 +22,10 @@ import {
   FourteenMonthReportResponse,
   mapFourteenMonthReport,
 } from './Schema/reports/fourteenMonth/datahandler';
+import {
+  ExpectedMonthlyTotalResponse,
+  mapExpectedMonthlyTotalReport,
+} from './Schema/reports/expectedMonthlyTotal/datahandler';
 
 class MpdxRestApi extends RESTDataSource {
   constructor() {
@@ -136,6 +140,13 @@ class MpdxRestApi extends RESTDataSource {
         .replace('/', '...')}`,
     );
     return mapFourteenMonthReport(data, currencyType);
+  }
+
+  async getExpectedMonthlyTotalReport(accountListId: string) {
+    const { data }: { data: ExpectedMonthlyTotalResponse } = await this.get(
+      `reports/expected_monthly_totals?filter[account_list_id]=${accountListId}`,
+    );
+    return mapExpectedMonthlyTotalReport(data);
   }
 }
 
