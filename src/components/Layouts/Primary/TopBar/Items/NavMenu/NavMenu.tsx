@@ -101,6 +101,7 @@ const NavMenu = (): ReactElement => {
               aria-controls={reportsMenuOpen ? 'menu-list-grow' : undefined}
               aria-haspopup="true"
               onClick={handleReportsMenuToggle}
+              data-testid="ReportMenuToggle"
             >
               <ListItemText primary={t('Reports')} />
               <ArrowDropDownIcon
