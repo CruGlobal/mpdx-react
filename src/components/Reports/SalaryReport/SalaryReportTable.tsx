@@ -61,7 +61,9 @@ export const SalaryReportTable: React.FC<Props> = ({
 }) => {
   const classes = useStyles();
   const { t } = useTranslation();
-  const [contacts, setContacts] = useState<FourteenMonthReportContact[]>([]);
+  const [contacts, setContacts] = useState<
+    FourteenMonthReportQuery['fourteenMonthReport']['currencyGroups'][0]['contacts'][]
+  >([]);
 
   const { data, loading, error } = useFourteenMonthReportQuery({
     variables: {
