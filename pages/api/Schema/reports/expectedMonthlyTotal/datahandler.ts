@@ -56,16 +56,33 @@ const mapDonation = (
 
 export const mapExpectedMonthlyTotalReport = (
   data: ExpectedMonthlyTotalResponse,
-): ExpectedMonthlyTotalReport => ({
-  received: data.attributes.expected_donations
+): ExpectedMonthlyTotalReport => {
+  const received = data.attributes.expected_donations
     .filter(({ type }) => type === 'received')
-    .map(mapDonation),
-  likely: data.attributes.expected_donations
+    .map(mapDonation);
+  const likely = data.attributes.expected_donations
     .filter(({ type }) => type === 'likely')
-    .map(mapDonation),
-  unlikely: data.attributes.expected_donations
+    .map(mapDonation);
+  const unlikely = data.attributes.expected_donations
     .filter(({ type }) => type === 'unlikely')
-    .map(mapDonation),
-  currency: data.attributes.total_currency,
-  currencySymbol: data.attributes.total_currency_symbol,
-});
+    .map(mapDonation);
+  return {
+    received,
+    likely,
+    unlikely,
+    receivedTotal: received.reduce(
+      (total, donation) => total + donation.convertedAmount,
+      0,
+    ),
+    likelyTotal: likely.reduce(
+      (total, donation) => total + donation.convertedAmount,
+      0,
+    ),
+    unlikelyTotal: unlikely.reduce(
+      (total, donation) => total + donation.convertedAmount,
+      0,
+    ),
+    currency: data.attributes.total_currency,
+    currencySymbol: data.attributes.total_currency_symbol,
+  };
+};

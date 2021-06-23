@@ -6,6 +6,9 @@ type ExpectedMonthlyTotalReport {
   received: [ExpectedMonthlyTotalDonation!]!
   likely: [ExpectedMonthlyTotalDonation!]!
   unlikely: [ExpectedMonthlyTotalDonation!]!
+  receivedTotal: Float!
+  likelyTotal: Float!
+  unlikelyTotal: Float!
   currency: String
   currencySymbol: String
 }
