@@ -1,5 +1,5 @@
 /* eslint-disable import/no-unresolved */
-import React, { useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import clsx from 'clsx';
 import {
   Box,
@@ -24,7 +24,6 @@ import { CSVLink } from 'react-csv';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import {
-  FourteenMonthReportContact,
   FourteenMonthReportCurrencyType,
   // eslint-disable-next-line import/extensions
 } from 'graphql/types.generated';
@@ -42,10 +41,6 @@ interface Props {
 
 const useStyles = makeStyles(() => ({
   root: {},
-  downloadCsv: {
-    color: 'inherit',
-    textDecoration: 'none',
-  },
 }));
 
 const DownloadCsvLink = styled(CSVLink)(({}) => ({
@@ -61,9 +56,6 @@ export const SalaryReportTable: React.FC<Props> = ({
 }) => {
   const classes = useStyles();
   const { t } = useTranslation();
-  const [contacts, setContacts] = useState<
-    FourteenMonthReportQuery['fourteenMonthReport']['currencyGroups'][0]['contacts'][]
-  >([]);
 
   const { data, loading, error } = useFourteenMonthReportQuery({
     variables: {
@@ -75,13 +67,11 @@ export const SalaryReportTable: React.FC<Props> = ({
   const salaryCurrency = data?.fourteenMonthReport.salaryCurrency;
   const currencyGroups = data?.fourteenMonthReport.currencyGroups;
 
-  useMemo(() => {
-    if (currencyGroups) {
-      setContacts(
-        currencyGroups.flatMap((currencyGroup) => [...currencyGroup.contacts]),
-      );
-    }
-  }, [currencyGroups]);
+  const contacts = useMemo(() => {
+    return currencyGroups?.flatMap((currencyGroup) => [
+      ...currencyGroup?.contacts,
+    ]);
+  }, []);
 
   return (
     <Box>
@@ -114,7 +104,7 @@ export const SalaryReportTable: React.FC<Props> = ({
                 }
               >
                 <DownloadCsvLink
-                  data={contacts}
+                  data={contacts ? contacts : []}
                   filename={`mpdx-salary-contributions-export-${DateTime.now().toISODate()}.csv`}
                 >
                   {t('Export')}
@@ -139,8 +129,12 @@ export const SalaryReportTable: React.FC<Props> = ({
         <Notification type="error" message={error.toString()} />
       ) : currencyGroups?.length === 0 ? (
         <EmptyReport
-          title="You have received no donations in the last thirteen months"
-          subTitle="You can setup an organization account to import them or add a new donation."
+          title={t(
+            'You have received no donations in the last thirteen months',
+          )}
+          subTitle={t(
+            'You can setup an organization account to import them or add a new donation.',
+          )}
         />
       ) : (
         <TableContainer>
@@ -183,7 +177,7 @@ export const SalaryReportTable: React.FC<Props> = ({
               </TableRow>
             </TableHead>
             <TableBody>
-              {contacts.map((contact) => (
+              {contacts?.map((contact) => (
                 <TableRow key={contact.id} hover>
                   <TableCell>{contact.name}</TableCell>
                   {contact.months?.map((month) => (
