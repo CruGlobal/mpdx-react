@@ -4,6 +4,7 @@ import {
   Button,
   CircularProgress,
   DialogContentText,
+  IconButton,
   Divider,
   styled,
   Typography,
@@ -26,6 +27,7 @@ import { ContactDetailsTabMailing } from './Mailing/ContactDetailsTabMailing';
 import { ContactDetailsOther } from './Other/ContactDetailsOther';
 import { ContactDetailsTabPeople } from './People/ContactDetailsTabPeople';
 import { ContactTags } from './Tags/ContactTags';
+import { EditContactDetailsModal } from './People/Items/EditContactDetailsModal/EditContactDetailsModal';
 
 const ContactDetailsTabContainer = styled(Box)(() => ({
   width: '100%',
@@ -41,10 +43,10 @@ const ContactDetailSectionContainer = styled(Box)(({ theme }) => ({
 
 const ContactDetailHeadingContainer = styled(Box)(() => ({
   display: 'flex',
-  alignContent: 'center',
+  alignItems: 'center',
 }));
 
-const ContactDetailHeadingIcon = styled(CreateIcon)(({ theme }) => ({
+const ContactDetailEditIcon = styled(CreateIcon)(({ theme }) => ({
   width: '18px',
   height: '18px',
   margin: theme.spacing(0),
@@ -53,13 +55,8 @@ const ContactDetailHeadingIcon = styled(CreateIcon)(({ theme }) => ({
 
 const ContactDeleteButton = styled(Button)(({ theme }) => ({
   display: 'flex',
-  padding: theme.spacing(1, 2),
   margin: theme.spacing(5, 'auto'),
-  backgroundColor: theme.palette.error.main,
-  color: theme.palette.common.white,
-  '&:hover': {
-    backgroundColor: theme.palette.error.dark,
-  },
+  color: theme.palette.cruGrayMedium.main,
 }));
 
 const DialogDeleteButton = styled(Button)(({ theme }) => ({
@@ -72,6 +69,7 @@ const DialogDeleteButton = styled(Button)(({ theme }) => ({
 
 const ContactDetailHeadingText = styled(Typography)(() => ({
   flexGrow: 5,
+  fontWeight: 'bold',
 }));
 
 const ContactDetailLoadingPlaceHolder = styled(Skeleton)(({ theme }) => ({
@@ -101,7 +99,8 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
   const { enqueueSnackbar } = useSnackbar();
   const { push, query } = useRouter();
   const [deleteContact, { loading: deleting }] = useDeleteContactMutation();
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false);
 
   const { contactId: _, searchTerm, ...queryWithoutContactId } = query;
 
@@ -152,10 +151,10 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
     }
   };
 
-  const renderDeleteContactDialog = () => {
+  const renderDeleteContactModal = () => {
     return (
       <Modal
-        isOpen={deleteDialogOpen}
+        isOpen={deleteModalOpen}
         title={t('Delete Contact')}
         content={
           <DialogContentText>
@@ -168,7 +167,7 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
           <>
             <Button
               disabled={deleting}
-              onClick={() => setDeleteDialogOpen(false)}
+              onClick={() => setDeleteModalOpen(false)}
             >
               {t('Cancel')}
             </Button>
@@ -183,7 +182,7 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
             </DialogDeleteButton>
           </>
         }
-        handleClose={() => setDeleteDialogOpen(false)}
+        handleClose={() => setDeleteModalOpen(false)}
       />
     );
   };
@@ -214,7 +213,11 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
             <ContactDetailHeadingText variant="h6">
               {loading || !data ? t('Loading') : data.contact.name}
             </ContactDetailHeadingText>
-            <ContactDetailHeadingIcon />
+            {loading || !data ? null : (
+              <IconButton onClick={() => setEditModalOpen(true)}>
+                <ContactDetailEditIcon titleAccess={t('Edit Icon')} />
+              </IconButton>
+            )}
           </ContactDetailHeadingContainer>
           {loading || !data ? (
             <>
@@ -235,7 +238,11 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
             <ContactDetailHeadingText variant="h6">
               {t('Mailing')}
             </ContactDetailHeadingText>
-            <ContactDetailHeadingIcon />
+            {loading || !data ? null : (
+              <IconButton onClick={() => setEditModalOpen(true)}>
+                <ContactDetailEditIcon titleAccess={t('Edit Icon')} />
+              </IconButton>
+            )}
           </ContactDetailHeadingContainer>
           {loading || !data ? (
             <>
@@ -256,7 +263,11 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
             <ContactDetailHeadingText variant="h6">
               {t('Other')}
             </ContactDetailHeadingText>
-            <ContactDetailHeadingIcon />
+            {loading || !data ? null : (
+              <IconButton onClick={() => setEditModalOpen(true)}>
+                <ContactDetailEditIcon titleAccess={t('Edit Icon')} />
+              </IconButton>
+            )}
           </ContactDetailHeadingContainer>
           {loading || !data ? (
             <>
@@ -269,15 +280,24 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
           )}
         </ContactDetailSectionContainer>
         <Divider />
-        <ContactDeleteButton
-          variant="contained"
-          size="large"
-          onClick={() => setDeleteDialogOpen(true)}
-        >
-          {t('delete contact')}
-        </ContactDeleteButton>
+        {loading || !data ? null : (
+          <ContactDeleteButton
+            variant="outlined"
+            size="large"
+            onClick={() => setDeleteModalOpen(true)}
+          >
+            {t('delete contact')}
+          </ContactDeleteButton>
+        )}
       </ContactDetailsTabContainer>
-      {renderDeleteContactDialog()}
+      {renderDeleteContactModal()}
+      {loading || !data ? null : (
+        <EditContactDetailsModal
+          contact={data.contact}
+          isOpen={editModalOpen}
+          handleOpenModal={setEditModalOpen}
+        />
+      )}
     </>
   );
 };

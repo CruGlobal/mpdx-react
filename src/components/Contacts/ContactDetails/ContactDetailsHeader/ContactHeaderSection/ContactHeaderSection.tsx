@@ -24,7 +24,7 @@ export const ContactHeaderSection = ({
   children,
 }: Props): ReactElement => {
   return (
-    <Box display="flex">
+    <Box display="flex" alignItems="center">
       <IconWrap>{icon}</IconWrap>
       <DetailWrap>{children}</DetailWrap>
     </Box>
