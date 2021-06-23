@@ -8,6 +8,8 @@ import {
   MenuItem,
   FormControl,
   InputLabel,
+  DialogActions,
+  DialogContent,
 } from '@material-ui/core';
 
 import BookmarkIcon from '@material-ui/icons/Bookmark';
@@ -69,59 +71,56 @@ export const EditContactDetailsModal: React.FC<EditContactDetailsModalProps> = (
     <Modal
       isOpen={isOpen}
       title={t('Edit Contact Details')}
-      content={
-        <>
-          <ContactEditContainer>
-            <ContactInputWrapper>
-              <ContactInputField
-                label={t('Contact')}
-                value={contact.name}
-                fullWidth
-              />
-            </ContactInputWrapper>
-            <ContactInputWrapper>
-              <PrimaryContactIcon />
-
-              <FormControl fullWidth={true}>
-                <ContactPrimaryPersonSelectLabel id="primary-person-select-label">
-                  {t('Primary')}
-                </ContactPrimaryPersonSelectLabel>
-                <Select
-                  labelId="primary-person-select-label"
-                  value={contact.primaryPerson?.id}
-                  fullWidth={true}
-                >
-                  {contact.people.nodes.map((person) => {
-                    return (
-                      <MenuItem
-                        key={person.id}
-                        value={person.id}
-                      >{`${person.firstName} ${person.lastName}`}</MenuItem>
-                    );
-                  })}
-                </Select>
-              </FormControl>
-            </ContactInputWrapper>
-          </ContactEditContainer>
-        </>
-      }
-      customActionSection={
-        <>
-          <ContactEditModalFooterButton
-            onClick={() => handleOpenModal(false)}
-            variant="text"
-          >
-            {t('Cancel')}
-          </ContactEditModalFooterButton>
-          <ContactEditModalFooterButton
-            onClick={() => handleOpenModal(false)}
-            variant="text"
-          >
-            {t('Save')}
-          </ContactEditModalFooterButton>
-        </>
-      }
       handleClose={() => handleOpenModal(false)}
-    />
+    >
+      <DialogContent dividers>
+        <ContactEditContainer>
+          <ContactInputWrapper>
+            <ContactInputField
+              label={t('Contact')}
+              value={contact.name}
+              fullWidth
+            />
+          </ContactInputWrapper>
+          <ContactInputWrapper>
+            <PrimaryContactIcon />
+
+            <FormControl fullWidth={true}>
+              <ContactPrimaryPersonSelectLabel id="primary-person-select-label">
+                {t('Primary')}
+              </ContactPrimaryPersonSelectLabel>
+              <Select
+                labelId="primary-person-select-label"
+                value={contact.primaryPerson?.id}
+                fullWidth={true}
+              >
+                {contact.people.nodes.map((person) => {
+                  return (
+                    <MenuItem
+                      key={person.id}
+                      value={person.id}
+                    >{`${person.firstName} ${person.lastName}`}</MenuItem>
+                  );
+                })}
+              </Select>
+            </FormControl>
+          </ContactInputWrapper>
+        </ContactEditContainer>
+      </DialogContent>
+      <DialogActions>
+        <ContactEditModalFooterButton
+          onClick={() => handleOpenModal(false)}
+          variant="text"
+        >
+          {t('Cancel')}
+        </ContactEditModalFooterButton>
+        <ContactEditModalFooterButton
+          onClick={() => handleOpenModal(false)}
+          variant="text"
+        >
+          {t('Save')}
+        </ContactEditModalFooterButton>
+      </DialogActions>
+    </Modal>
   );
 };
