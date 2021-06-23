@@ -1,5 +1,12 @@
 import React, { ReactElement, useState } from 'react';
-import { Box, Button, styled, Typography } from '@material-ui/core';
+import {
+  Box,
+  Button,
+  DialogActions,
+  DialogContent,
+  styled,
+  Typography,
+} from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { ContactDetailsTabQuery } from '../../../ContactDetailsTab.generated';
 import Modal from '../../../../../../common/Modal/Modal';
@@ -55,7 +62,9 @@ export const EditPersonModal: React.FC<EditPersonModalProps> = ({
     <Modal
       isOpen={isOpen}
       title={'Edit Person'}
-      content={
+      handleClose={() => handleOpenModal(false)}
+    >
+      <DialogContent dividers>
         <ContactEditContainer>
           <ContactPersonContainer>
             {/* Name Section */}
@@ -94,24 +103,21 @@ export const EditPersonModal: React.FC<EditPersonModalProps> = ({
             )}
           </ContactPersonContainer>
         </ContactEditContainer>
-      }
-      customActionSection={
-        <>
-          <ContactEditModalFooterButton
-            onClick={() => handleOpenModal(false)}
-            variant="text"
-          >
-            {t('Cancel')}
-          </ContactEditModalFooterButton>
-          <ContactEditModalFooterButton
-            onClick={() => handleOpenModal(false)}
-            variant="text"
-          >
-            {t('Save')}
-          </ContactEditModalFooterButton>
-        </>
-      }
-      handleClose={() => handleOpenModal(false)}
-    />
+      </DialogContent>
+      <DialogActions>
+        <ContactEditModalFooterButton
+          onClick={() => handleOpenModal(false)}
+          variant="text"
+        >
+          {t('Cancel')}
+        </ContactEditModalFooterButton>
+        <ContactEditModalFooterButton
+          onClick={() => handleOpenModal(false)}
+          variant="text"
+        >
+          {t('Save')}
+        </ContactEditModalFooterButton>
+      </DialogActions>
+    </Modal>
   );
 };
