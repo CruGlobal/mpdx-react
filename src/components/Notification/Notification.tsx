@@ -19,18 +19,24 @@ export const Notification: React.FC<Props> = ({
   const color = type === 'error' ? 'error' : undefined;
 
   return (
-    <Box display="flex" alignItems="center" p={padding}>
-      {type === 'error' ? (
-        <ErrorIcon color="error" fontSize={size} />
-      ) : (
-        <InfoIcon fontSize={size} />
-      )}
+    <div data-testid="Notification">
+      <Box display="flex" alignItems="center" p={padding}>
+        {type === 'error' ? (
+          <ErrorIcon
+            data-testid="NotificationErrorIcon"
+            color="error"
+            fontSize={size}
+          />
+        ) : (
+          <InfoIcon data-testid="NotificationInfoIcon" fontSize={size} />
+        )}
 
-      <Box ml={2}>
-        <Typography variant="body1" color={color}>
-          {message}
-        </Typography>
+        <Box ml={2}>
+          <Typography variant="body1" color={color}>
+            {message}
+          </Typography>
+        </Box>
       </Box>
-    </Box>
+    </div>
   );
 };

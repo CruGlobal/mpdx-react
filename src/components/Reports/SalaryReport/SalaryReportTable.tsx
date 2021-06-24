@@ -138,8 +138,8 @@ export const SalaryReportTable: React.FC<Props> = ({
         />
       ) : (
         <TableContainer>
-          <Table>
-            <TableHead>
+          <Table data-testid="SalaryReportTable">
+            <TableHead data-testid="SalaryReportTableHead">
               <TableRow>
                 <TableCell>
                   <Typography variant="h6">{salaryCurrency}</Typography>
