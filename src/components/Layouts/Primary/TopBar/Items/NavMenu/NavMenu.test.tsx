@@ -18,7 +18,12 @@ describe('NavMenu', () => {
     expect(getByRole('menuitem', { name: 'Coaches' })).toBeInTheDocument();
     userEvent.click(getByTestId('ReportMenuToggle'));
     expect(getByRole('menuitem', { name: 'Donations' })).toBeInTheDocument();
-    expect(getByRole('menuitem', { name: 'Month Report' })).toBeInTheDocument();
+    expect(
+      getByRole('menuitem', { name: 'Month Report (Partner Currency)' }),
+    ).toBeInTheDocument();
+    expect(
+      getByRole('menuitem', { name: 'Month Report (Salary Currency)' }),
+    ).toBeInTheDocument();
     expect(
       getByRole('menuitem', { name: 'Designation Accounts' }),
     ).toBeInTheDocument();
