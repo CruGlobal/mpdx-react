@@ -18,6 +18,7 @@ describe('NavMenu', () => {
     expect(getByRole('menuitem', { name: 'Coaches' })).toBeInTheDocument();
     expect(getByRole('menuitem', { name: 'Donations' })).toBeInTheDocument();
     expect(getByRole('menuitem', { name: 'Month Report' })).toBeInTheDocument();
+    userEvent.click(getByTestId('ReportMenuToggle'));
     expect(
       getByRole('menuitem', { name: 'Designation Accounts' }),
     ).toBeInTheDocument();
@@ -31,7 +32,6 @@ describe('NavMenu', () => {
       getByRole('menuitem', { name: 'Partner Giving Analysis' }),
     ).toBeInTheDocument();
     expect(getByRole('menuitem', { name: 'Coaching' })).toBeInTheDocument();
-    userEvent.click(getByTestId('ReportMenuToggle'));
   });
 
   it('hidden', () => {
