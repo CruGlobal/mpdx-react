@@ -8,7 +8,7 @@ import {
   makeStyles,
 } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
-import NavReportListItem from './NavReportListItem';
+import { Item } from './Item/Item';
 import { ReportNavItems } from './ReportNavItems';
 
 interface Props {
@@ -51,11 +51,7 @@ export const NavReportsList: React.FC<Props & BoxProps> = ({
         </FilterHeader>
         <FilterList dense>
           {ReportNavItems.map((item) => (
-            <NavReportListItem
-              key={item.id}
-              item={item}
-              isSelected={item.id === selected}
-            />
+            <Item key={item.id} item={item} isSelected={item.id === selected} />
           ))}
         </FilterList>
       </div>
