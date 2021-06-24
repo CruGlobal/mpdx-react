@@ -3,7 +3,7 @@ import { render } from '@testing-library/react';
 import { ReportLayout } from './ReportLayout';
 
 describe('ReportLayout', () => {
-  it('has correct defaults', () => {
+  it('default', () => {
     const { getByTestId } = render(
       <ReportLayout selectedId="test">
         <div data-testid="children"></div>
