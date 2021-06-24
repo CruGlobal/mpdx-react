@@ -16,9 +16,9 @@ describe('NavMenu', () => {
     expect(getByRole('menuitem', { name: 'Reports' })).toBeInTheDocument();
     expect(getByRole('menuitem', { name: 'Tools' })).toBeInTheDocument();
     expect(getByRole('menuitem', { name: 'Coaches' })).toBeInTheDocument();
+    userEvent.click(getByTestId('ReportMenuToggle'));
     expect(getByRole('menuitem', { name: 'Donations' })).toBeInTheDocument();
     expect(getByRole('menuitem', { name: 'Month Report' })).toBeInTheDocument();
-    userEvent.click(getByTestId('ReportMenuToggle'));
     expect(
       getByRole('menuitem', { name: 'Designation Accounts' }),
     ).toBeInTheDocument();
