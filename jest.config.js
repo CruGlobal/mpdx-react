@@ -10,4 +10,5 @@ module.exports = {
   },
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
   clearMocks: true,
+  moduleDirectories: ['<rootDir>'], // allows to import modules from baseUrl
 };
