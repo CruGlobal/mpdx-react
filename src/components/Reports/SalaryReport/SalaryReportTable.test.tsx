@@ -36,10 +36,10 @@ describe('SalaryReportTable', () => {
     );
 
     await waitFor(() => {
-      expect(queryByTestId('Loading')).not.toBeInTheDocument();
+      expect(queryByTestId('LoadingSalaryReport')).not.toBeInTheDocument();
     });
 
-    expect(getByText('title')).toBeInTheDocument();
+    expect(getByText('test title')).toBeInTheDocument();
     const table = getByTestId('SalaryReportTable');
     expect(table).toBeInTheDocument();
     const tableHead = getByTestId('SalaryReportTableHead');
@@ -68,7 +68,7 @@ describe('SalaryReportTable', () => {
       expect(queryByTestId('Loading')).not.toBeInTheDocument();
     });
 
-    expect(getByText('title')).toBeInTheDocument();
+    expect(getByText('test title')).toBeInTheDocument();
     expect(queryByTestId('Notification')).toBeInTheDocument();
   });
 });
