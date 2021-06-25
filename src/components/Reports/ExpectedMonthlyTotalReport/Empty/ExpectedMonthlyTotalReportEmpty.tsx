@@ -21,11 +21,11 @@ export const ExpectedMonthlyTotalReportEmpty: React.FC = () => {
   const { t } = useTranslation();
 
   const connectServices = () => {
-    return;
+    //TODO: Open screen to connect services
   };
 
   const addNewDonation = () => {
-    return;
+    //TODO: open modal for creating donation
   };
 
   return (
