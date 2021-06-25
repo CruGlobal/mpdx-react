@@ -23,10 +23,7 @@ import PrintIcon from '@material-ui/icons/Print';
 import { CSVLink } from 'react-csv';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
-import {
-  FourteenMonthReportCurrencyType,
-  // eslint-disable-next-line import/extensions
-} from 'graphql/types.generated';
+import { FourteenMonthReportCurrencyType } from '../../../../graphql/types.generated';
 // eslint-disable-next-line import/extensions
 import { useFourteenMonthReportQuery } from 'pages/accountLists/[accountListId]/reports/graphql/GetReportFourteenMonth.generated';
 import Loading from 'src/components/Loading';
