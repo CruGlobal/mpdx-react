@@ -24,8 +24,7 @@ describe('NavReportsList', () => {
     );
 
     expect(getByText('Donations')).toBeInTheDocument();
-    expect(getByText('Month Report (Partner Currency)')).toBeInTheDocument();
-    expect(getByText('Month Report (Salary Currency)')).toBeInTheDocument();
+    expect(getByText('Month Report')).toBeInTheDocument();
     expect(getByText('Designation counts')).toBeInTheDocument();
     expect(getByText('Responsibility nters')).toBeInTheDocument();
     expect(getByText('Expected Monthly Total')).toBeInTheDocument();
