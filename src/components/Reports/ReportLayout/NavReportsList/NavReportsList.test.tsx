@@ -15,7 +15,7 @@ const router = {
 
 describe('NavReportsList', () => {
   it('default', async () => {
-    const { getByText } = render(
+    const { getByText, queryAllByText } = render(
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
           <NavReportsList selected={selected} />
@@ -24,7 +24,7 @@ describe('NavReportsList', () => {
     );
 
     expect(getByText('Donations')).toBeInTheDocument();
-    expect(getByText('Month Report')).toBeInTheDocument();
+    expect(queryAllByText('Month Report')[0]).toBeInTheDocument();
     expect(getByText('Designation counts')).toBeInTheDocument();
     expect(getByText('Responsibility nters')).toBeInTheDocument();
     expect(getByText('Expected Monthly Total')).toBeInTheDocument();
