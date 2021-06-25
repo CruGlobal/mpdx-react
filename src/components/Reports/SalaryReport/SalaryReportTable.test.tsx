@@ -22,6 +22,7 @@ describe('SalaryReportTable', () => {
     );
 
     expect(getByText('title')).toBeInTheDocument();
+    expect(queryByTestId('LoadingSalaryReport')).toBeInTheDocument();
     expect(queryByTestId('Notification')).toBeNull();
   });
 

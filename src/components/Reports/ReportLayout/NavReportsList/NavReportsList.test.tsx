@@ -23,11 +23,6 @@ describe('NavReportsList', () => {
       </ThemeProvider>,
     );
 
-    expect(getByText('Dashboard')).toBeInTheDocument();
-    expect(getByText('Contacts')).toBeInTheDocument();
-    expect(getByText('Reports')).toBeInTheDocument();
-    expect(getByText('Tools')).toBeInTheDocument();
-    expect(getByText('Coaches')).toBeInTheDocument();
     expect(getByText('Donations')).toBeInTheDocument();
     expect(getByText('Month Report (Partner Currency)')).toBeInTheDocument();
     expect(getByText('Month Report (Salary Currency)')).toBeInTheDocument();
