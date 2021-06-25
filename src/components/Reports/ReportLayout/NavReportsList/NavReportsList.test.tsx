@@ -2,15 +2,24 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import { ThemeProvider } from '@material-ui/core';
 import { NavReportsList } from './NavReportsList';
+import TestRouter from '__tests__/util/TestRouter';
 import theme from 'src/theme';
 
+const accountListId = 'account-list-1';
 const selected = 'salaryCurrency';
+
+const router = {
+  query: { accountListId },
+  isReady: true,
+};
 
 describe('NavReportsList', () => {
   it('default', async () => {
     const { getByText } = render(
       <ThemeProvider theme={theme}>
-        <NavReportsList selected={selected} />
+        <TestRouter router={router}>
+          <NavReportsList selected={selected} />
+        </TestRouter>
       </ThemeProvider>,
     );
 
