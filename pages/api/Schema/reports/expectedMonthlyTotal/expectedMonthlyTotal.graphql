@@ -3,14 +3,16 @@ extend type Query {
 }
 
 type ExpectedMonthlyTotalReport {
-  received: [ExpectedMonthlyTotalDonation!]!
-  likely: [ExpectedMonthlyTotalDonation!]!
-  unlikely: [ExpectedMonthlyTotalDonation!]!
-  receivedTotal: Float!
-  likelyTotal: Float!
-  unlikelyTotal: Float!
+  received: ExpectedMonthlyTotalGroup!
+  likely: ExpectedMonthlyTotalGroup!
+  unlikely: ExpectedMonthlyTotalGroup!
   currency: String
   currencySymbol: String
+}
+
+type ExpectedMonthlyTotalGroup {
+  donations: [ExpectedMonthlyTotalDonation!]!
+  total: Float!
 }
 
 type ExpectedMonthlyTotalDonation {

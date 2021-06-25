@@ -54,35 +54,28 @@ const mapDonation = (
   pledgeFrequency: donation.pledge_frequency,
 });
 
-export const mapExpectedMonthlyTotalReport = (
-  data: ExpectedMonthlyTotalResponse,
-): ExpectedMonthlyTotalReport => {
-  const received = data.attributes.expected_donations
-    .filter(({ type }) => type === 'received')
-    .map(mapDonation);
-  const likely = data.attributes.expected_donations
-    .filter(({ type }) => type === 'likely')
-    .map(mapDonation);
-  const unlikely = data.attributes.expected_donations
-    .filter(({ type }) => type === 'unlikely')
+const createDonationGroup = (
+  allDonations: ExpectedMonthlyTotalResponse['attributes']['expected_donations'],
+  expectedType: ExpectedMonthlyTotalResponse['attributes']['expected_donations'][0]['type'],
+) => {
+  const donations = allDonations
+    .filter(({ type }) => type === expectedType)
     .map(mapDonation);
   return {
-    received,
-    likely,
-    unlikely,
-    receivedTotal: received.reduce(
+    donations,
+    total: donations.reduce(
       (total, donation) => total + donation.convertedAmount,
       0,
     ),
-    likelyTotal: likely.reduce(
-      (total, donation) => total + donation.convertedAmount,
-      0,
-    ),
-    unlikelyTotal: unlikely.reduce(
-      (total, donation) => total + donation.convertedAmount,
-      0,
-    ),
-    currency: data.attributes.total_currency,
-    currencySymbol: data.attributes.total_currency_symbol,
   };
 };
+
+export const mapExpectedMonthlyTotalReport = (
+  data: ExpectedMonthlyTotalResponse,
+): ExpectedMonthlyTotalReport => ({
+  received: createDonationGroup(data.attributes.expected_donations, 'received'),
+  likely: createDonationGroup(data.attributes.expected_donations, 'likely'),
+  unlikely: createDonationGroup(data.attributes.expected_donations, 'unlikely'),
+  currency: data.attributes.total_currency,
+  currencySymbol: data.attributes.total_currency_symbol,
+});
