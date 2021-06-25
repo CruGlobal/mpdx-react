@@ -5,6 +5,7 @@ import {
   Box,
   Button,
   ButtonGroup,
+  CircularProgress,
   Grid,
   styled,
   SvgIcon,
@@ -26,7 +27,6 @@ import { useTranslation } from 'react-i18next';
 import { FourteenMonthReportCurrencyType } from '../../../../graphql/types.generated';
 // eslint-disable-next-line import/extensions
 import { useFourteenMonthReportQuery } from 'pages/accountLists/[accountListId]/reports/graphql/GetReportFourteenMonth.generated';
-import Loading from 'src/components/Loading';
 import { Notification } from 'src/components/Notification/Notification';
 import { EmptyReport } from 'src/components/Reports/EmptyReport/EmptyReport';
 
@@ -43,6 +43,14 @@ const useStyles = makeStyles(() => ({
 const DownloadCsvLink = styled(CSVLink)(({}) => ({
   color: 'inherit',
   textDecoration: 'none',
+}));
+
+const YearTableCell = styled(TableCell)(({}) => ({
+  paddingLeft: 0,
+}));
+
+const YearTypography = styled(Typography)(({ theme }) => ({
+  borderLeft: `1px solid ${theme.palette.cruGrayLight.main}`,
 }));
 
 export const SalaryReportTable: React.FC<Props> = ({
@@ -68,7 +76,7 @@ export const SalaryReportTable: React.FC<Props> = ({
     return currencyGroups?.flatMap((currencyGroup) => [
       ...currencyGroup?.contacts,
     ]);
-  }, []);
+  }, [currencyGroups]);
 
   return (
     <Box>
@@ -121,7 +129,7 @@ export const SalaryReportTable: React.FC<Props> = ({
         </Grid>
       </Box>
       {loading ? (
-        <Loading loading />
+        <CircularProgress data-testid="LoadingSalaryReport" />
       ) : error ? (
         <Notification type="error" message={error.toString()} />
       ) : currencyGroups?.length === 0 ? (
@@ -145,7 +153,9 @@ export const SalaryReportTable: React.FC<Props> = ({
                   const allYears = currencyGroup.totals.months.map(
                     (month) => month.month.split('-')[0],
                   );
-                  const monthCount = allYears.reduce<{ [key: string]: number }>(
+                  const monthCount = allYears.reduce<{
+                    [key: string]: number;
+                  }>(
                     (count, year) => ({
                       ...count,
                       [year]: (count[year] || 0) + 1,
@@ -154,9 +164,9 @@ export const SalaryReportTable: React.FC<Props> = ({
                   );
 
                   return Object.entries(monthCount).map(([year, count]) => (
-                    <TableCell key={year} colSpan={count} align="center">
-                      <Typography variant="h6">{year}</Typography>
-                    </TableCell>
+                    <YearTableCell key={year} colSpan={count} align="center">
+                      <YearTypography variant="h6">{year}</YearTypography>
+                    </YearTableCell>
                   ));
                 })}
                 <TableCell />
@@ -188,11 +198,13 @@ export const SalaryReportTable: React.FC<Props> = ({
                 </TableRow>
               ))}
               <TableRow>
-                <TableCell>{t('Totals')}</TableCell>
+                <TableCell>
+                  <strong>{t('Totals')}</strong>
+                </TableCell>
                 {currencyGroups?.map((currencyGroup) =>
                   currencyGroup.totals.months.map((month) => (
                     <TableCell key={month.month} align="center">
-                      {Math.round(month.total)}
+                      <strong>{Math.round(month.total)}</strong>
                     </TableCell>
                   )),
                 )}
