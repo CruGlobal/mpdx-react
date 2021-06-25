@@ -83,7 +83,7 @@ describe('SalaryReportTable', () => {
       },
     };
 
-    const { getByTestId, queryByTestId, getByText } = render(
+    const { queryByTestId, getByText } = render(
       <ThemeProvider theme={theme}>
         <GqlMockedProvider<FourteenMonthReportQuery> mocks={mocks}>
           <SalaryReportTable accountListId={accountListId} title={title} />
@@ -96,11 +96,6 @@ describe('SalaryReportTable', () => {
     });
 
     expect(getByText('test title')).toBeInTheDocument();
-    const table = getByTestId('SalaryReportTable');
-    expect(table).toBeInTheDocument();
-    const tableHead = getByTestId('SalaryReportTableHead');
-    expect(tableHead).toBeInTheDocument();
-    expect(tableHead.parentElement?.tagName).toEqual('table');
   });
 
   it('empty', async () => {
