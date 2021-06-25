@@ -28,7 +28,7 @@ describe('SalaryReportTable', () => {
 
   it('salary report loaded', async () => {
     const mocks = {
-      data: {
+      FourteenMonthReport: {
         fourteenMonthReport: {
           currencyGroups: [
             {
