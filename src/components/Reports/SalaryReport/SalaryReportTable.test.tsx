@@ -21,15 +21,71 @@ describe('SalaryReportTable', () => {
       </ThemeProvider>,
     );
 
-    expect(getByText('title')).toBeInTheDocument();
+    expect(getByText('test title')).toBeInTheDocument();
     expect(queryByTestId('LoadingSalaryReport')).toBeInTheDocument();
     expect(queryByTestId('Notification')).toBeNull();
   });
 
   it('salary report loaded', async () => {
+    const mocks = {
+      data: {
+        fourteenMonthReport: {
+          currencyGroups: [
+            {
+              contacts: [
+                {
+                  id: 'contact-1',
+                  months: [
+                    {
+                      month: '2020-10-01',
+                      total: 35,
+                    },
+                    {
+                      month: '2020-11-01',
+                      total: 35,
+                    },
+                    {
+                      month: '2020-12-01',
+                      total: 35,
+                    },
+                    {
+                      month: '2021-1-01',
+                      total: 35,
+                    },
+                  ],
+                  name: 'test name',
+                },
+              ],
+              currency: 'cad',
+              totals: {
+                months: [
+                  {
+                    month: '2020-10-01',
+                    total: 1836.32,
+                  },
+                  {
+                    month: '2020-11-01',
+                    total: 1836.32,
+                  },
+                  {
+                    month: '2020-12-01',
+                    total: 1836.32,
+                  },
+                  {
+                    month: '2021-1-01',
+                    total: 1836.32,
+                  },
+                ],
+              },
+            },
+          ],
+        },
+      },
+    };
+
     const { getByTestId, queryByTestId, getByText } = render(
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider<FourteenMonthReportQuery>>
+        <GqlMockedProvider<FourteenMonthReportQuery> mocks={mocks}>
           <SalaryReportTable accountListId={accountListId} title={title} />
         </GqlMockedProvider>
       </ThemeProvider>,
@@ -65,7 +121,7 @@ describe('SalaryReportTable', () => {
     );
 
     await waitFor(() => {
-      expect(queryByTestId('Loading')).not.toBeInTheDocument();
+      expect(queryByTestId('LoadingSalaryReport')).not.toBeInTheDocument();
     });
 
     expect(getByText('test title')).toBeInTheDocument();
