@@ -14,7 +14,7 @@ import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import { useTranslation } from 'react-i18next';
 import { DataGrid, GridColDef, GridCellParams } from '@material-ui/data-grid';
 import { DateTime } from 'luxon';
-import { ExpectedMonthlyTotalReportEmpty } from '../ExpectedMonthlyTotalReport/Empty/ExpectedMonthlyTotalReportEmpty';
+import { EmptyDonationsTable } from '../../common/EmptyDonationsTable/EmptyDonationsTable';
 
 interface Donation {
   date: Date;
@@ -115,6 +115,7 @@ export const DonationsReportTable: React.FC<Props> = ({
       renderCell: button,
     },
   ];
+  const isEmpty = data.length === 0;
 
   const [time, setTime] = useState(DateTime.now().startOf('month'));
 
@@ -154,7 +155,7 @@ export const DonationsReportTable: React.FC<Props> = ({
         </Button>
       </Box>
       <Divider style={{ margin: 12 }} variant="middle"></Divider>
-      {data.length > 0 ? (
+      {!isEmpty ? (
         <Box
           display="flex"
           flexDirection="column"
@@ -181,7 +182,9 @@ export const DonationsReportTable: React.FC<Props> = ({
           </Typography>
         </Box>
       ) : (
-        <ExpectedMonthlyTotalReportEmpty />
+        <EmptyDonationsTable
+          title={'You have no donations in ' + time.monthLong + ' ' + time.year}
+        />
       )}
     </>
   );
