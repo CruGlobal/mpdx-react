@@ -9,6 +9,8 @@ import { TaskAnalyticsResolvers } from './TaskAnalytics/resolvers';
 import TaskAnalyticsTypeDefs from './TaskAnalytics/taskAnalytics.graphql';
 import FourteenMonthReportTypeDefs from './reports/fourteenMonth/fourteenMonth.graphql';
 import { FourteenMonthReportResolvers } from './reports/fourteenMonth/resolvers';
+import ExpectedMonthlyTotalReportTypeDefs from './reports/expectedMonthlyTotal/expectedMonthlyTotal.graphql';
+import { ExpectedMonthlyTotalReportResolvers } from './reports/expectedMonthlyTotal/resolvers';
 
 const schema = buildFederatedSchema([
   { typeDefs: ScalarTypeDefs, resolvers: ScalarResolvers },
@@ -18,6 +20,10 @@ const schema = buildFederatedSchema([
   {
     typeDefs: FourteenMonthReportTypeDefs,
     resolvers: FourteenMonthReportResolvers,
+  },
+  {
+    typeDefs: ExpectedMonthlyTotalReportTypeDefs,
+    resolvers: ExpectedMonthlyTotalReportResolvers,
   },
 ]);
 
