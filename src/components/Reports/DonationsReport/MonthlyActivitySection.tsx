@@ -6,7 +6,11 @@ interface Props {
   data: GetDashboardQuery;
 }
 
-export const MonthlyActivitySection: React.FC<Props> = ({ data }) => {
+export const MonthlyActivitySection: React.FC<Props> = (
+  {
+    /*data*/
+  },
+) => {
   return (
     <DonationHistories
     /*goal={data.accountList.monthlyGoal ?? undefined}

@@ -5,7 +5,10 @@ import {
   Button,
   Link,
   Divider,
-  makeStyles,
+  styled,
+  Table,
+  TableCell,
+  TableRow,
 } from '@material-ui/core';
 import IconButton from '@material-ui/core/IconButton';
 import EditIcon from '@material-ui/icons/Edit';
@@ -14,6 +17,7 @@ import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import { useTranslation } from 'react-i18next';
 import { DataGrid, GridColDef, GridCellParams } from '@material-ui/data-grid';
 import { DateTime } from 'luxon';
+
 import { EmptyDonationsTable } from '../../common/EmptyDonationsTable/EmptyDonationsTable';
 
 interface Donation {
@@ -34,23 +38,22 @@ interface Props {
   accountListId: string;
 }
 
+const Data = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  flexDirection: 'column',
+  '& .MuiDataGrid-row.Mui-even:not(:hover)': {
+    backgroundColor:
+      theme.palette.type === 'light'
+        ? theme.palette.common.white
+        : theme.palette.cruGrayLight.main,
+  },
+}));
 export const DonationsReportTable: React.FC<Props> = ({
   data,
-  accountListId,
+  /*accountListId,*/
 }) => {
   const { t } = useTranslation();
-
-  const useStyles = makeStyles((theme) => ({
-    root: {
-      '& .MuiDataGrid-row.Mui-even:not(:hover)': {
-        backgroundColor:
-          theme.palette.type === 'light'
-            ? theme.palette.common.white
-            : theme.palette.cruGrayLight.main,
-      },
-    },
-  }));
-  const classes = useStyles();
+  const accountCurrency = data[0].currency;
   const link = (params: GridCellParams) => (
     <Typography>
       <Link href="contact.html">{params.value}</Link>
@@ -63,9 +66,10 @@ export const DonationsReportTable: React.FC<Props> = ({
   };
   const foreignAmount = (params: GridCellParams) => {
     const row = params.row as Donation;
-
-    return (
+    return row.foreignCurrency !== row.currency ? (
       <Typography>{row.foreignAmount + ' ' + row.foreignCurrency}</Typography>
+    ) : (
+      <></>
     );
   };
   const button = () => (
@@ -131,6 +135,33 @@ export const DonationsReportTable: React.FC<Props> = ({
     setTime(time.plus({ months: 1 }));
   };
 
+  const totalDonations = data.reduce((total, current) => {
+    return total + current.convertedAmount;
+  }, 0);
+
+  const calculateForeignTotals = () => {
+    const foreignTotals: {
+      [name: string]: { convertedTotal: number; foreignTotal: number };
+    } = {};
+    data.forEach((donation) => {
+      if (foreignTotals[donation.foreignCurrency] !== undefined) {
+        foreignTotals[donation.foreignCurrency].foreignTotal +=
+          donation.foreignAmount;
+        foreignTotals[donation.foreignCurrency].convertedTotal +=
+          donation.convertedAmount;
+      } else {
+        foreignTotals[donation.foreignCurrency] = {
+          convertedTotal: donation.convertedAmount,
+          foreignTotal: donation.foreignAmount,
+        };
+      }
+    });
+
+    return foreignTotals;
+  };
+
+  const foreignTotals = calculateForeignTotals();
+
   return (
     <>
       <Box style={{ display: 'flex', margin: 8 }}>
@@ -156,11 +187,7 @@ export const DonationsReportTable: React.FC<Props> = ({
       </Box>
       <Divider style={{ margin: 12 }} variant="middle"></Divider>
       {!isEmpty ? (
-        <Box
-          display="flex"
-          flexDirection="column"
-          classes={{ root: classes.root }}
-        >
+        <Data>
           <DataGrid
             rows={data}
             columns={columns}
@@ -169,21 +196,45 @@ export const DonationsReportTable: React.FC<Props> = ({
             disableSelectionOnClick
             hideFooter
           />
-          <Typography
-            style={{ fontWeight: 'bold', marginLeft: 230, padding: 8 }}
-          >
-            Total CAD Donations:
-          </Typography>
-          <Divider variant="middle"></Divider>
-          <Typography
-            style={{ fontWeight: 'bold', marginLeft: 230, padding: 8 }}
-          >
-            Total Donations:
-          </Typography>
-        </Box>
+          <Table>
+            {Object.entries(foreignTotals).map(([currency, total]) => (
+              <TableRow key={currency}>
+                <TableCell style={{ width: 375 }}>
+                  <Typography style={{ float: 'right', fontWeight: 'bold' }}>
+                    {t('Total ' + currency + ' Donations:')}
+                  </Typography>
+                </TableCell>
+                <TableCell style={{ width: 160 }}>
+                  <Typography style={{ float: 'left', fontWeight: 'bold' }}>
+                    {' ' + total.convertedTotal + ' ' + accountCurrency}
+                  </Typography>
+                </TableCell>
+                <TableCell style={{}}>
+                  <Typography style={{ float: 'left', fontWeight: 'bold' }}>
+                    {' ' + total.foreignTotal + ' ' + currency}
+                  </Typography>
+                </TableCell>
+              </TableRow>
+            ))}
+            <TableRow>
+              <TableCell>
+                <Typography style={{ float: 'right', fontWeight: 'bold' }}>
+                  {t('Total Donations: ')}
+                </Typography>
+              </TableCell>
+              <TableCell>
+                <Typography style={{ float: 'left', fontWeight: 'bold' }}>
+                  {totalDonations}
+                </Typography>
+              </TableCell>
+
+              <TableCell />
+            </TableRow>
+          </Table>
+        </Data>
       ) : (
         <EmptyDonationsTable
-          title={'You have no donations in ' + time.monthLong + ' ' + time.year}
+          title={'No donations received in ' + time.monthLong + ' ' + time.year}
         />
       )}
     </>
