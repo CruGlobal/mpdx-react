@@ -11,13 +11,9 @@ import {
   ExportLabelTypeEnum,
   ExportSortEnum,
 } from '../../graphql/types.generated';
-import {
-  ContactFilterOption,
-  FourteenMonthReportCurrencyType,
-} from './graphql-rest.page.generated';
+import { FourteenMonthReportCurrencyType } from './graphql-rest.page.generated';
 import schema from './Schema';
 import { getTaskAnalytics } from './Schema/TaskAnalytics/dataHandler';
-import { getContactFilters } from './Schema/ContactFilters/datahandler';
 import {
   FourteenMonthReportResponse,
   mapFourteenMonthReport,
@@ -84,31 +80,6 @@ class MpdxRestApi extends RESTDataSource {
     });
 
     return `${process.env.REST_API_URL}contacts/exports${pathAddition}/${data.id}.${format}`;
-  }
-
-  async getContactFilters(accountListId: string) {
-    const {
-      data,
-    }: {
-      data: {
-        id: string;
-        type: string;
-        attributes: {
-          type: string;
-          default_selection: string | boolean;
-          featured: boolean;
-          multiple: boolean;
-          name: string;
-          options: ContactFilterOption[];
-          parent: string;
-          title: string;
-        };
-      }[];
-    } = await this.get(
-      `contacts/filters?filter[account_list_id]=${accountListId}`,
-    );
-
-    return getContactFilters(data);
   }
 
   async getTaskAnalytics(accountListId: string) {
