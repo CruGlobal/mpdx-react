@@ -12,10 +12,11 @@ import React from 'react';
 import BookmarkIcon from '@material-ui/icons/Bookmark';
 import AddIcon from '@material-ui/icons/Add';
 import { useTranslation } from 'react-i18next';
-import { ContactDetailsTabQuery } from '../../../../ContactDetailsTab.generated';
+import { FormikProps, FieldArray, getIn } from 'formik';
 import { ModalSectionContainer } from '../ModalSectionContainer/ModalSectionContainer';
 import { ModalSectionDeleteIcon } from '../ModalSectionDeleteIcon/ModalSectionDeleteIcon';
 import { ModalSectionIcon } from '../ModalSectionIcon/ModalSectionIcon';
+import { PersonUpdateInput } from '../../../../../../../../../graphql/types.generated';
 
 const ContactPrimaryPersonSelectLabel = styled(InputLabel)(() => ({
   textTransform: 'uppercase',
@@ -38,17 +39,38 @@ const ContactAddText = styled(Typography)(() => ({
 }));
 
 interface PersonPhoneNumberProps {
-  person: ContactDetailsTabQuery['contact']['people']['nodes'][0];
+  formikProps: FormikProps<PersonUpdateInput>;
 }
 
 export const PersonPhoneNumber: React.FC<PersonPhoneNumberProps> = ({
-  person,
+  formikProps,
 }) => {
   const { t } = useTranslation();
 
+  const {
+    values: { phoneNumbers },
+    setFieldValue,
+    errors,
+  } = formikProps;
+
+  const primaryPhoneNumber = phoneNumbers?.filter(
+    (phoneNumber) => phoneNumber.primary,
+  )[0];
+
+  const handleChangePrimary = (numberId: string) => {
+    const index = phoneNumbers?.findIndex(
+      (phoneNumber) => phoneNumber.id === numberId,
+    );
+    const primaryIndex = phoneNumbers?.findIndex(
+      (phoneNumber) => phoneNumber.id === primaryPhoneNumber?.id,
+    );
+    setFieldValue(`phoneNumbers.${index}.primary`, true);
+    setFieldValue(`phoneNumbers.${primaryIndex}.primary`, false);
+  };
+
   return (
     <>
-      {person.phoneNumbers.nodes.length > 0 ? (
+      {phoneNumbers && phoneNumbers.length > 0 ? (
         <>
           <ModalSectionContainer>
             <ModalSectionIcon icon={<BookmarkIcon />} />
@@ -59,31 +81,77 @@ export const PersonPhoneNumber: React.FC<PersonPhoneNumberProps> = ({
               </ContactPrimaryPersonSelectLabel>
               <Select
                 id="primary-phone-number-label"
-                value={person.primaryPhoneNumber?.number}
+                value={primaryPhoneNumber?.id}
+                onChange={(event) =>
+                  handleChangePrimary(event.target.value as string)
+                }
               >
-                {person.phoneNumbers.nodes.map((phoneNumber) => (
-                  <MenuItem key={phoneNumber.id} value={phoneNumber.number}>
-                    {phoneNumber.number}
-                  </MenuItem>
-                ))}
+                {phoneNumbers.map(
+                  (phoneNumber) =>
+                    phoneNumber.id && (
+                      <MenuItem key={phoneNumber.id} value={phoneNumber.id}>
+                        {phoneNumber.number}
+                      </MenuItem>
+                    ),
+                )}
               </Select>
             </FormControl>
           </ModalSectionContainer>
-          {person.phoneNumbers.nodes.map((phoneNumber) => (
-            <ModalSectionContainer key={phoneNumber.id}>
-              <Grid container spacing={3}>
-                <Grid item xs={6}>
-                  <ContactInputField value={phoneNumber.number} fullWidth />
-                </Grid>
-                <Grid item xs={6}>
-                  <Select value={'Mobile'} fullWidth>
-                    <MenuItem value="Mobile">{t('Mobile')}</MenuItem>
-                  </Select>
-                </Grid>
-                <ModalSectionDeleteIcon />
-              </Grid>
-            </ModalSectionContainer>
-          ))}
+          <FieldArray
+            name="phoneNumbers"
+            render={() => (
+              <>
+                {phoneNumbers?.map((phoneNumber, index) => (
+                  <>
+                    <ModalSectionContainer key={index}>
+                      <Grid container spacing={3}>
+                        <Grid item xs={6}>
+                          <ContactInputField
+                            value={phoneNumber.number}
+                            onChange={(event) =>
+                              setFieldValue(
+                                `phoneNumbers.${index}.number`,
+                                event.target.value,
+                              )
+                            }
+                            error={getIn(errors, `phoneNumbers.${index}`)}
+                            helperText={
+                              getIn(errors, `phoneNumbers.${index}`) &&
+                              t('Field is required')
+                            }
+                            fullWidth
+                          />
+                        </Grid>
+                        <Grid item xs={6}>
+                          <Select
+                            value={phoneNumber.location ?? ''}
+                            onChange={(event) =>
+                              setFieldValue(
+                                `phoneNumbers.${index}.location`,
+                                event.target.value,
+                              )
+                            }
+                            fullWidth
+                          >
+                            <MenuItem value="Mobile">{t('Mobile')}</MenuItem>
+                            <MenuItem value="Work">{t('Work')}</MenuItem>
+                          </Select>
+                        </Grid>
+                        <ModalSectionDeleteIcon
+                          handleClick={() =>
+                            setFieldValue(
+                              `phoneNumbers.${index}.destroy`,
+                              !phoneNumber.destroy,
+                            )
+                          }
+                        />
+                      </Grid>
+                    </ModalSectionContainer>
+                  </>
+                ))}
+              </>
+            )}
+          />
         </>
       ) : null}
       <ModalSectionContainer>

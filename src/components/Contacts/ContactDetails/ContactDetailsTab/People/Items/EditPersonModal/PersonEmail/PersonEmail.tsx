@@ -14,10 +14,11 @@ import React from 'react';
 import BookmarkIcon from '@material-ui/icons/Bookmark';
 import AddIcon from '@material-ui/icons/Add';
 import { useTranslation } from 'react-i18next';
-import { ContactDetailsTabQuery } from '../../../../ContactDetailsTab.generated';
+import { FieldArray, FormikProps, getIn } from 'formik';
 import { ModalSectionContainer } from '../ModalSectionContainer/ModalSectionContainer';
 import { ModalSectionDeleteIcon } from '../ModalSectionDeleteIcon/ModalSectionDeleteIcon';
 import { ModalSectionIcon } from '../ModalSectionIcon/ModalSectionIcon';
+import { PersonUpdateInput } from '../../../../../../../../../graphql/types.generated';
 
 const ContactPrimaryPersonSelectLabel = styled(InputLabel)(() => ({
   textTransform: 'uppercase',
@@ -40,15 +41,33 @@ const ContactAddText = styled(Typography)(() => ({
 }));
 
 interface PersonEmailProps {
-  person: ContactDetailsTabQuery['contact']['people']['nodes'][0];
+  formikProps: FormikProps<PersonUpdateInput>;
 }
 
-export const PersonEmail: React.FC<PersonEmailProps> = ({ person }) => {
+export const PersonEmail: React.FC<PersonEmailProps> = ({ formikProps }) => {
   const { t } = useTranslation();
+
+  const {
+    values: { emailAddresses, optoutEnewsletter },
+    setFieldValue,
+    errors,
+  } = formikProps;
+  const primaryEmail = emailAddresses?.filter(
+    (emailAddress) => emailAddress.primary,
+  )[0];
+
+  const handleChangePrimary = (emailId: string) => {
+    const index = emailAddresses?.findIndex((email) => email.id === emailId);
+    const primaryIndex = emailAddresses?.findIndex(
+      (email) => email.id === primaryEmail?.id,
+    );
+    setFieldValue(`emailAddresses.${index}.primary`, true);
+    setFieldValue(`emailAddresses.${primaryIndex}.primary`, false);
+  };
 
   return (
     <>
-      {person.emailAddresses.nodes.length > 0 ? (
+      {emailAddresses && emailAddresses.length > 0 ? (
         <>
           <ModalSectionContainer>
             <ModalSectionIcon icon={<BookmarkIcon />} />
@@ -59,33 +78,77 @@ export const PersonEmail: React.FC<PersonEmailProps> = ({ person }) => {
               </ContactPrimaryPersonSelectLabel>
               <Select
                 id="primary-email-label"
-                value={person.primaryEmailAddress?.email}
+                value={primaryEmail?.id}
+                onChange={(event) =>
+                  handleChangePrimary(event.target.value as string)
+                }
               >
-                {person.emailAddresses.nodes.map((emailAddress) => (
-                  <MenuItem key={emailAddress.id} value={emailAddress.email}>
-                    {emailAddress.email}
-                  </MenuItem>
-                ))}
+                {emailAddresses.map(
+                  (emailAddress) =>
+                    emailAddress.id && (
+                      <MenuItem key={emailAddress.id} value={emailAddress.id}>
+                        {emailAddress.email}
+                      </MenuItem>
+                    ),
+                )}
               </Select>
             </FormControl>
           </ModalSectionContainer>
-          {person.emailAddresses.nodes.map((emailAddress) => (
-            <>
-              <ModalSectionContainer>
-                <Grid container spacing={3}>
-                  <Grid item xs={6}>
-                    <ContactInputField value={emailAddress.email} fullWidth />
-                  </Grid>
-                  <Grid item xs={6}>
-                    <Select value={'Mobile'} fullWidth>
-                      <MenuItem value="Mobile">{t('Mobile')}</MenuItem>
-                    </Select>
-                  </Grid>
-                  <ModalSectionDeleteIcon />
-                </Grid>
-              </ModalSectionContainer>
-            </>
-          ))}
+          <FieldArray
+            name="emailAddresses"
+            render={() => (
+              <>
+                {emailAddresses?.map((emailAddress, index) => (
+                  <>
+                    <ModalSectionContainer key={index}>
+                      <Grid container spacing={3}>
+                        <Grid item xs={6}>
+                          <ContactInputField
+                            value={emailAddress.email}
+                            onChange={(event) =>
+                              setFieldValue(
+                                `emailAddresses.${index}.email`,
+                                event.target.value,
+                              )
+                            }
+                            error={getIn(errors, `emailAddresses.${index}`)}
+                            helperText={
+                              getIn(errors, `emailAddresses.${index}`) &&
+                              t('Field is required')
+                            }
+                            fullWidth
+                          />
+                        </Grid>
+                        <Grid item xs={6}>
+                          <Select
+                            value={emailAddress.location ?? ''}
+                            onChange={(event) =>
+                              setFieldValue(
+                                `emailAddresses.${index}.location`,
+                                event.target.value,
+                              )
+                            }
+                            fullWidth
+                          >
+                            <MenuItem value="Mobile">{t('Mobile')}</MenuItem>
+                            <MenuItem value="Work">{t('Work')}</MenuItem>
+                          </Select>
+                        </Grid>
+                        <ModalSectionDeleteIcon
+                          handleClick={() =>
+                            setFieldValue(
+                              `emailAddresses.${index}.destroy`,
+                              !emailAddress.destroy,
+                            )
+                          }
+                        />
+                      </Grid>
+                    </ModalSectionContainer>
+                  </>
+                ))}
+              </>
+            )}
+          />
         </>
       ) : null}
       <ModalSectionContainer>
@@ -97,7 +160,12 @@ export const PersonEmail: React.FC<PersonEmailProps> = ({ person }) => {
             </ContactAddText>
           </Grid>
           <Grid container item xs={6} alignItems="center">
-            <Checkbox checked={person.optoutEnewsletter} />
+            <Checkbox
+              checked={!!optoutEnewsletter}
+              onChange={() =>
+                setFieldValue('optoutEnewsletter', !optoutEnewsletter)
+              }
+            />
             <Typography variant="subtitle1">
               {t('Opt-out of Email Newsletter')}
             </Typography>

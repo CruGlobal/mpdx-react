@@ -4,32 +4,54 @@ import { ThemeProvider } from '@material-ui/core';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import LuxonUtils from '@date-io/luxon';
 import userEvent from '@testing-library/user-event';
+import { SnackbarProvider } from 'notistack';
 import {
   ContactPeopleFragment,
   ContactPeopleFragmentDoc,
 } from '../../ContactPeople.generated';
-import { gqlMock } from '../../../../../../../../__tests__/util/graphqlMocking';
+import {
+  gqlMock,
+  GqlMockedProvider,
+} from '../../../../../../../../__tests__/util/graphqlMocking';
 import theme from '../../../../../../../theme';
 import { EditPersonModal } from './EditPersonModal';
+import { UpdatePersonMutation } from './EditPersonModal.generated';
 
-const handleOpenModal = jest.fn();
+const handleClose = jest.fn();
+const accountListId = '123';
 const mock = gqlMock<ContactPeopleFragment>(ContactPeopleFragmentDoc);
 
 const mockPerson = mock.people.nodes[0];
 
+const mockEnqueue = jest.fn();
+
+jest.mock('notistack', () => ({
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  ...jest.requireActual('notistack'),
+  useSnackbar: () => {
+    return {
+      enqueueSnackbar: mockEnqueue,
+    };
+  },
+}));
+
 describe('EditPersonModal', () => {
   it('should render edit person modal', () => {
     const { getByText } = render(
-      <MuiPickersUtilsProvider utils={LuxonUtils}>
-        <ThemeProvider theme={theme}>
-          <EditPersonModal
-            isOpen={true}
-            handleOpenModal={handleOpenModal}
-            person={mockPerson}
-          />
-        </ThemeProvider>
-        ,
-      </MuiPickersUtilsProvider>,
+      <SnackbarProvider>
+        <MuiPickersUtilsProvider utils={LuxonUtils}>
+          <ThemeProvider theme={theme}>
+            <GqlMockedProvider<UpdatePersonMutation>>
+              <EditPersonModal
+                accountListId={accountListId}
+                handleClose={handleClose}
+                person={mockPerson}
+              />
+            </GqlMockedProvider>
+          </ThemeProvider>
+        </MuiPickersUtilsProvider>
+      </SnackbarProvider>,
     );
 
     expect(getByText('Edit Person')).toBeInTheDocument();
@@ -37,70 +59,88 @@ describe('EditPersonModal', () => {
 
   it('should close edit contact modal', () => {
     const { getByRole, getByText } = render(
-      <MuiPickersUtilsProvider utils={LuxonUtils}>
-        <ThemeProvider theme={theme}>
-          <EditPersonModal
-            isOpen={true}
-            handleOpenModal={handleOpenModal}
-            person={mockPerson}
-          />
-        </ThemeProvider>
-        ,
-      </MuiPickersUtilsProvider>,
+      <SnackbarProvider>
+        <MuiPickersUtilsProvider utils={LuxonUtils}>
+          <ThemeProvider theme={theme}>
+            <GqlMockedProvider<UpdatePersonMutation>>
+              <EditPersonModal
+                accountListId={accountListId}
+                handleClose={handleClose}
+                person={mockPerson}
+              />
+            </GqlMockedProvider>
+          </ThemeProvider>
+        </MuiPickersUtilsProvider>
+      </SnackbarProvider>,
     );
     expect(getByText('Edit Person')).toBeInTheDocument();
     userEvent.click(getByRole('button', { name: 'Close' }));
-    expect(handleOpenModal).toHaveBeenLastCalledWith(false);
+    expect(handleClose).toHaveBeenCalled();
   });
 
   it('should handle cancel click', () => {
     const { getByText } = render(
-      <MuiPickersUtilsProvider utils={LuxonUtils}>
-        <ThemeProvider theme={theme}>
-          <EditPersonModal
-            isOpen={true}
-            handleOpenModal={handleOpenModal}
-            person={mockPerson}
-          />
-        </ThemeProvider>
-        ,
-      </MuiPickersUtilsProvider>,
+      <SnackbarProvider>
+        <MuiPickersUtilsProvider utils={LuxonUtils}>
+          <ThemeProvider theme={theme}>
+            <GqlMockedProvider<UpdatePersonMutation>>
+              <EditPersonModal
+                accountListId={accountListId}
+                handleClose={handleClose}
+                person={mockPerson}
+              />
+            </GqlMockedProvider>
+          </ThemeProvider>
+        </MuiPickersUtilsProvider>
+      </SnackbarProvider>,
     );
     expect(getByText('Edit Person')).toBeInTheDocument();
     userEvent.click(getByText('Cancel'));
-    expect(handleOpenModal).toHaveBeenLastCalledWith(false);
+    expect(handleClose).toHaveBeenCalled();
   });
 
-  it('should handle save click', () => {
+  it('should handle save click', async () => {
+    const mutationSpy = jest.fn();
     const { getByText } = render(
-      <MuiPickersUtilsProvider utils={LuxonUtils}>
-        <ThemeProvider theme={theme}>
-          <EditPersonModal
-            isOpen={true}
-            handleOpenModal={handleOpenModal}
-            person={mockPerson}
-          />
-        </ThemeProvider>
-        ,
-      </MuiPickersUtilsProvider>,
+      <SnackbarProvider>
+        <MuiPickersUtilsProvider utils={LuxonUtils}>
+          <ThemeProvider theme={theme}>
+            <GqlMockedProvider<UpdatePersonMutation> onCall={mutationSpy}>
+              <EditPersonModal
+                accountListId={accountListId}
+                handleClose={handleClose}
+                person={mockPerson}
+              />
+            </GqlMockedProvider>
+          </ThemeProvider>
+        </MuiPickersUtilsProvider>
+      </SnackbarProvider>,
     );
     expect(getByText('Edit Person')).toBeInTheDocument();
     userEvent.click(getByText('Save'));
-    expect(handleOpenModal).toHaveBeenLastCalledWith(false);
+    await waitFor(() => expect(handleClose).toHaveBeenCalled());
+    const { operation } = mutationSpy.mock.calls[0][0];
+    expect(operation.variables.accountListId).toEqual(accountListId);
+    expect(mockEnqueue).toHaveBeenCalledWith('Person updated successfully', {
+      variant: 'success',
+    });
   });
 
   it('should handle Show More click', async () => {
     const { queryAllByText, getByText } = render(
-      <MuiPickersUtilsProvider utils={LuxonUtils}>
-        <ThemeProvider theme={theme}>
-          <EditPersonModal
-            isOpen={true}
-            handleOpenModal={handleOpenModal}
-            person={mockPerson}
-          />
-        </ThemeProvider>
-        ,
-      </MuiPickersUtilsProvider>,
+      <SnackbarProvider>
+        <MuiPickersUtilsProvider utils={LuxonUtils}>
+          <ThemeProvider theme={theme}>
+            <GqlMockedProvider<UpdatePersonMutation>>
+              <EditPersonModal
+                accountListId={accountListId}
+                handleClose={handleClose}
+                person={mockPerson}
+              />
+            </GqlMockedProvider>
+          </ThemeProvider>
+        </MuiPickersUtilsProvider>
+      </SnackbarProvider>,
     );
     expect(getByText('Edit Person')).toBeInTheDocument();
     userEvent.click(queryAllByText('Show More')[0]);
@@ -109,16 +149,19 @@ describe('EditPersonModal', () => {
 
   it('should handle Show Less click', async () => {
     const { queryAllByText, getByText, queryByText } = render(
-      <MuiPickersUtilsProvider utils={LuxonUtils}>
-        <ThemeProvider theme={theme}>
-          <EditPersonModal
-            isOpen={true}
-            handleOpenModal={handleOpenModal}
-            person={mockPerson}
-          />
-        </ThemeProvider>
-        ,
-      </MuiPickersUtilsProvider>,
+      <SnackbarProvider>
+        <MuiPickersUtilsProvider utils={LuxonUtils}>
+          <ThemeProvider theme={theme}>
+            <GqlMockedProvider<UpdatePersonMutation>>
+              <EditPersonModal
+                accountListId={accountListId}
+                handleClose={handleClose}
+                person={mockPerson}
+              />
+            </GqlMockedProvider>
+          </ThemeProvider>
+        </MuiPickersUtilsProvider>
+      </SnackbarProvider>,
     );
     expect(getByText('Edit Person')).toBeInTheDocument();
     userEvent.click(queryAllByText('Show More')[0]);

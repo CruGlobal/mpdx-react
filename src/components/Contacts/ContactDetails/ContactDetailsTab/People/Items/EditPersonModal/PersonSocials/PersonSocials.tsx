@@ -12,10 +12,11 @@ import {
 } from '@material-ui/core';
 import SocialIcon from '@material-ui/icons/Language';
 import AddIcon from '@material-ui/icons/Add';
-import { ContactDetailsTabQuery } from '../../../../ContactDetailsTab.generated';
+import { FormikProps, FieldArray, getIn } from 'formik';
 import { ModalSectionContainer } from '../ModalSectionContainer/ModalSectionContainer';
 import { ModalSectionDeleteIcon } from '../ModalSectionDeleteIcon/ModalSectionDeleteIcon';
 import { ModalSectionIcon } from '../ModalSectionIcon/ModalSectionIcon';
+import { PersonUpdateInput } from '../../../../../../../../../graphql/types.generated';
 
 const ContactAddIcon = styled(AddIcon)(() => ({
   color: '#2196F3',
@@ -27,51 +28,59 @@ const ContactAddText = styled(Typography)(() => ({
   fontWeight: 'bold',
 }));
 
+const SocialsTextField = styled(TextField)(
+  ({ destroyed }: { destroyed: boolean }) => ({
+    textDecoration: destroyed ? 'line-through' : 'none',
+  }),
+);
+
+const SocialSelect = styled(Select)(
+  ({ destroyed }: { destroyed: boolean }) => ({
+    textDecoration: destroyed ? 'line-through' : 'none',
+  }),
+);
+
 interface PersonSocialProps {
-  person: ContactDetailsTabQuery['contact']['people']['nodes'][0];
+  formikProps: FormikProps<PersonUpdateInput>;
 }
 
-export const PersonSocial: React.FC<PersonSocialProps> = ({ person }) => {
+export const PersonSocial: React.FC<PersonSocialProps> = ({ formikProps }) => {
   const { t } = useTranslation();
 
-  const socialAccounts = [
-    ...person.facebookAccounts.nodes.map((account) => ({
-      ...account,
-      type: 'facebook',
-      name: t('Facebook'),
-    })),
-    ...person.twitterAccounts.nodes.map((account) => ({
-      ...account,
-      type: 'twitter',
-      name: t('Twitter'),
-    })),
-    ...person.linkedinAccounts.nodes.map((account) => ({
-      ...account,
-      type: 'linkedin',
-      name: t('LinkedIn'),
-    })),
-    ...person.websites.nodes.map((account) => ({
-      ...account,
-      type: 'website',
-      name: t('Website'),
-    })),
-  ];
+  const {
+    values: { facebookAccounts, twitterAccounts, linkedinAccounts, websites },
+    setFieldValue,
+    errors,
+  } = formikProps;
 
   return (
     <>
-      {socialAccounts.length > 0 ? (
-        <>
-          {socialAccounts.map((account, index) => (
-            <>
-              <ModalSectionContainer>
+      <FieldArray
+        name="facebookAccounts"
+        render={() => (
+          <>
+            {facebookAccounts?.map((account, index) => (
+              <ModalSectionContainer key={index}>
                 {index === 0 ? (
                   <ModalSectionIcon icon={<SocialIcon />} />
                 ) : null}
                 <Grid container spacing={3}>
                   <Grid item xs={6}>
-                    <TextField
+                    <SocialsTextField
+                      destroyed={account.destroy ?? false}
                       label={t('Username/URL')}
-                      value={account.value}
+                      value={account.username}
+                      onChange={(event) =>
+                        setFieldValue(
+                          `facebookAccounts.${index}.username`,
+                          event.target.value,
+                        )
+                      }
+                      error={getIn(errors, `facebookAccounts.${index}`)}
+                      helperText={
+                        getIn(errors, `facebookAccounts.${index}`) &&
+                        t('Field is required')
+                      }
                       fullWidth
                     />
                   </Grid>
@@ -80,44 +89,211 @@ export const PersonSocial: React.FC<PersonSocialProps> = ({ person }) => {
                       <InputLabel id="social-type-label">
                         {t('Type')}
                       </InputLabel>
-                      <Select
-                        labelId="socail-type-label"
-                        value={account.type}
+                      <SocialSelect
+                        destroyed={account.destroy ?? false}
+                        labelId="social-type-label"
+                        value={'facebook'}
                         fullWidth
                         readOnly
                       >
-                        <MenuItem value={account.type}>{account.name}</MenuItem>
-                      </Select>
+                        <MenuItem value={'facebook'}>{t('Facebook')}</MenuItem>
+                      </SocialSelect>
                     </FormControl>
-                    <ModalSectionDeleteIcon />
+                    <ModalSectionDeleteIcon
+                      handleClick={() =>
+                        setFieldValue(
+                          `facebookAccounts.${index}.destroy`,
+                          !account.destroy,
+                        )
+                      }
+                    />
                   </Grid>
                 </Grid>
               </ModalSectionContainer>
-            </>
-          ))}
-        </>
-      ) : (
-        <ModalSectionContainer>
-          <ModalSectionIcon icon={<SocialIcon />} />
-          <Grid container spacing={3}>
-            <Grid item xs={6}>
-              <TextField label={t('Username/URL')} value={null} fullWidth />
-            </Grid>
-            <Grid item xs={6}>
-              <FormControl fullWidth>
-                <InputLabel id="social-type-label">{t('Type')}</InputLabel>
-                <Select labelId="socail-type-label" value={null} fullWidth>
-                  <MenuItem value={'facebook'}>{t('Facebook')}</MenuItem>
-                  <MenuItem value={'twitterk'}>{t('Twitter')}</MenuItem>
-                  <MenuItem value={'linkedin'}>{t('LinkedIn')}</MenuItem>
-                  <MenuItem value={'website'}>{t('Website')}</MenuItem>
-                </Select>
-              </FormControl>
-              <ModalSectionDeleteIcon />
-            </Grid>
-          </Grid>
-        </ModalSectionContainer>
-      )}
+            ))}
+          </>
+        )}
+      />
+      <FieldArray
+        name="twitterAccounts"
+        render={() => (
+          <>
+            {twitterAccounts?.map((account, index) => (
+              <ModalSectionContainer key={index}>
+                {index === 0 ? (
+                  <ModalSectionIcon icon={<SocialIcon />} />
+                ) : null}
+                <Grid container spacing={3}>
+                  <Grid item xs={6}>
+                    <SocialsTextField
+                      destroyed={account.destroy ?? false}
+                      label={t('Username/URL')}
+                      value={account.screenName}
+                      onChange={(event) =>
+                        setFieldValue(
+                          `twitterAccounts.${index}.screenName`,
+                          event.target.value,
+                        )
+                      }
+                      error={getIn(errors, `twitterAccounts.${index}`)}
+                      helperText={
+                        getIn(errors, `twitterAccounts.${index}`) &&
+                        t('Field is required')
+                      }
+                      fullWidth
+                    />
+                  </Grid>
+                  <Grid item xs={6}>
+                    <FormControl fullWidth>
+                      <InputLabel id="social-type-label">
+                        {t('Type')}
+                      </InputLabel>
+                      <SocialSelect
+                        destroyed={account.destroy ?? false}
+                        labelId="social-type-label"
+                        value={'twitter'}
+                        fullWidth
+                        readOnly
+                      >
+                        <MenuItem value={'twitter'}>{t('Twitter')}</MenuItem>
+                      </SocialSelect>
+                    </FormControl>
+                    <ModalSectionDeleteIcon
+                      handleClick={() =>
+                        setFieldValue(
+                          `twitterAccounts.${index}.destroy`,
+                          !account.destroy,
+                        )
+                      }
+                    />
+                  </Grid>
+                </Grid>
+              </ModalSectionContainer>
+            ))}
+          </>
+        )}
+      />
+      <FieldArray
+        name="linkedinAccounts"
+        render={() => (
+          <>
+            {linkedinAccounts?.map((account, index) => (
+              <ModalSectionContainer key={index}>
+                {index === 0 ? (
+                  <ModalSectionIcon icon={<SocialIcon />} />
+                ) : null}
+                <Grid container spacing={3}>
+                  <Grid item xs={6}>
+                    <SocialsTextField
+                      destroyed={account.destroy ?? false}
+                      label={t('Username/URL')}
+                      value={account.publicUrl}
+                      onChange={(event) =>
+                        setFieldValue(
+                          `linkedinAccounts.${index}.publicUrl`,
+                          event.target.value,
+                        )
+                      }
+                      error={getIn(errors, `linkedinAccounts.${index}`)}
+                      helperText={
+                        getIn(errors, `linkedinAccounts.${index}`) &&
+                        t('Field is required')
+                      }
+                      fullWidth
+                    />
+                  </Grid>
+                  <Grid item xs={6}>
+                    <FormControl fullWidth>
+                      <InputLabel id="social-type-label">
+                        {t('Type')}
+                      </InputLabel>
+                      <SocialSelect
+                        destroyed={account.destroy ?? false}
+                        labelId="social-type-label"
+                        value={'linkedin'}
+                        fullWidth
+                        readOnly
+                      >
+                        <MenuItem value={'linkedin'}>{t('LinkedIn')}</MenuItem>
+                      </SocialSelect>
+                    </FormControl>
+                    <ModalSectionDeleteIcon
+                      handleClick={() =>
+                        setFieldValue(
+                          `linkedinAccounts.${index}.destroy`,
+                          !account.destroy,
+                        )
+                      }
+                    />
+                  </Grid>
+                </Grid>
+              </ModalSectionContainer>
+            ))}
+          </>
+        )}
+      />
+      <FieldArray
+        name="websites"
+        render={() => (
+          <>
+            {websites?.map((account, index) => (
+              <>
+                {account.destroy ? <ModalSectionDeleteIcon /> : null}
+                <ModalSectionContainer key={index}>
+                  {index === 0 ? (
+                    <ModalSectionIcon icon={<SocialIcon />} />
+                  ) : null}
+                  <Grid container spacing={3}>
+                    <Grid item xs={6}>
+                      <SocialsTextField
+                        destroyed={account.destroy ?? false}
+                        label={t('Username/URL')}
+                        value={account.url}
+                        onChange={(event) =>
+                          setFieldValue(
+                            `websites.${index}.url`,
+                            event.target.value,
+                          )
+                        }
+                        error={getIn(errors, `websites.${index}`)}
+                        helperText={
+                          getIn(errors, `websites.${index}`) &&
+                          t('Field is required')
+                        }
+                        fullWidth
+                      />
+                    </Grid>
+                    <Grid item xs={6}>
+                      <FormControl fullWidth>
+                        <InputLabel id="social-type-label">
+                          {t('Type')}
+                        </InputLabel>
+                        <SocialSelect
+                          destroyed={account.destroy ?? false}
+                          labelId="social-type-label"
+                          value={'website'}
+                          fullWidth
+                          readOnly
+                        >
+                          <MenuItem value={'website'}>{t('Website')}</MenuItem>
+                        </SocialSelect>
+                      </FormControl>
+                      <ModalSectionDeleteIcon
+                        handleClick={() =>
+                          setFieldValue(
+                            `websites.${index}.destroy`,
+                            !account.destroy,
+                          )
+                        }
+                      />
+                    </Grid>
+                  </Grid>
+                </ModalSectionContainer>
+              </>
+            ))}
+          </>
+        )}
+      />
       <ModalSectionContainer>
         <Grid container alignItems="center">
           <ContactAddIcon />
