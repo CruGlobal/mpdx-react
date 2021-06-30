@@ -18255,6 +18255,7 @@ fsevents@~2.3.1:
     react-debounce-input: ^3.2.3
     react-dom: 17.0.1
     react-i18next: ^11.8.11
+    react-to-print: ^2.12.6
     recharts: ^2.0.6
     regenerator-runtime: ^0.13.7
     storybook-addon-designs: alpha
@@ -21241,6 +21242,18 @@ fsevents@~2.3.1:
   peerDependencies:
     react: ^16.8.0 || ^17.0.0
   checksum: c60b553a8ab343e5dc40a32fdda59a558a55f3c46ab392728f7dfde17c68e2293189557ba0669cee57b21f1956f83eb77a36f85c2970c8920feaf01712e1bd69
+  languageName: node
+  linkType: hard
+
+"react-to-print@npm:^2.12.6":
+  version: 2.12.6
+  resolution: "react-to-print@npm:2.12.6"
+  dependencies:
+    prop-types: ^15.7.2
+  peerDependencies:
+    react: ^15.0.0 || ^16.0.0 || ^17.0.0
+    react-dom: ^15.0.0 || ^16.0.0 || ^17.0.0
+  checksum: af2432fb1d4cab6fbe898198f14222f33ddae80933168aec14dc46faa4f1e216d2e1b701ee4ae2f736be5e6a99efb756397912d995ef483c7a0345ae7ad6d9d4
   languageName: node
   linkType: hard
 
