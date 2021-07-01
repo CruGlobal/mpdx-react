@@ -100,9 +100,9 @@ interface SidePanelsLayoutProps {
   leftWidth: string;
   leftOpen: boolean;
   mainContent: ReactElement;
-  rightPanel: ReactElement;
-  rightWidth: string;
-  rightOpen: boolean;
+  rightPanel?: ReactElement;
+  rightWidth?: string;
+  rightOpen?: boolean;
 }
 
 export const SidePanelsLayout: FC<SidePanelsLayoutProps> = ({
@@ -115,7 +115,7 @@ export const SidePanelsLayout: FC<SidePanelsLayoutProps> = ({
   rightOpen,
 }) => (
   <CollapsibleWrapper justifyContent="flex-start">
-    <ExpandingContent open={rightOpen}>
+    <ExpandingContent open={rightOpen ? rightOpen : false}>
       <CollapsibleWrapper justifyContent="flex-end">
         <LeftPanelWrapper
           open={leftOpen}
@@ -131,7 +131,7 @@ export const SidePanelsLayout: FC<SidePanelsLayoutProps> = ({
       </CollapsibleWrapper>
     </ExpandingContent>
     <RightPanelWrapper
-      open={rightOpen}
+      open={rightOpen ? rightOpen : false}
       width={rightWidth}
       flexBasis={rightWidth}
       breakpoint="md"
