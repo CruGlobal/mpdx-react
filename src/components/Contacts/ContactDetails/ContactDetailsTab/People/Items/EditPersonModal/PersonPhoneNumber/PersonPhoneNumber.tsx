@@ -117,7 +117,7 @@ export const PersonPhoneNumber: React.FC<PersonPhoneNumberProps> = ({
                             error={getIn(errors, `phoneNumbers.${index}`)}
                             helperText={
                               getIn(errors, `phoneNumbers.${index}`) &&
-                              t('Field is required')
+                              t(getIn(errors, `phoneNumbers.${index}`).number)
                             }
                             fullWidth
                           />

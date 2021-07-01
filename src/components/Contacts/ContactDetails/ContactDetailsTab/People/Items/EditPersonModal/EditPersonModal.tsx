@@ -54,6 +54,8 @@ const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
   margin: theme.spacing(0, 1, 0, 0),
 }));
 
+const phoneRegex = RegExp(/^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/);
+
 const personSchema: yup.SchemaOf<
   Omit<PersonUpdateInput, 'familyRelationships' | 'id'>
 > = yup.object({
@@ -64,7 +66,10 @@ const personSchema: yup.SchemaOf<
   phoneNumbers: yup.array().of(
     yup.object({
       id: yup.string().nullable(),
-      number: yup.string().required(),
+      number: yup
+        .string()
+        .matches(phoneRegex, 'Invalid phone number')
+        .required('This field is required'),
       destroy: yup.boolean().default(false),
       primary: yup.boolean().default(false),
     }),
@@ -72,7 +77,10 @@ const personSchema: yup.SchemaOf<
   emailAddresses: yup.array().of(
     yup.object({
       id: yup.string().nullable(),
-      email: yup.string().required(),
+      email: yup
+        .string()
+        .email('Invalid email address')
+        .required('This field is required'),
       destroy: yup.boolean().default(false),
       primary: yup.boolean().default(false),
     }),
@@ -136,7 +144,7 @@ export const EditPersonModal: React.FC<EditPersonModalProps> = ({
   const { enqueueSnackbar } = useSnackbar();
   const [personEditShowMore, setPersonEditShowMore] = useState(false);
   const [updatePerson, { loading: updating }] = useUpdatePersonMutation();
-
+  debugger;
   const personPhoneNumbers = person.phoneNumbers.nodes.map((phoneNumber) => {
     return {
       id: phoneNumber.id,

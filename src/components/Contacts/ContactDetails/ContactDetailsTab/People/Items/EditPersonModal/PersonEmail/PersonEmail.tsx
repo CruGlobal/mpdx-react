@@ -114,7 +114,7 @@ export const PersonEmail: React.FC<PersonEmailProps> = ({ formikProps }) => {
                             error={getIn(errors, `emailAddresses.${index}`)}
                             helperText={
                               getIn(errors, `emailAddresses.${index}`) &&
-                              t('Field is required')
+                              t(getIn(errors, `emailAddresses.${index}`).email)
                             }
                             fullWidth
                           />

@@ -19,7 +19,30 @@ import { UpdatePersonMutation } from './EditPersonModal.generated';
 
 const handleClose = jest.fn();
 const accountListId = '123';
-const mock = gqlMock<ContactPeopleFragment>(ContactPeopleFragmentDoc);
+const mock = gqlMock<ContactPeopleFragment>(ContactPeopleFragmentDoc, {
+  mocks: {
+    people: {
+      nodes: [
+        {
+          emailAddresses: {
+            nodes: [
+              {
+                email: 'test1234@test.com',
+              },
+            ],
+          },
+          phoneNumbers: {
+            nodes: [
+              {
+                number: '777-777-7777',
+              },
+            ],
+          },
+        },
+      ],
+    },
+  },
+});
 
 const mockPerson = mock.people.nodes[0];
 
