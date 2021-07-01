@@ -40,7 +40,12 @@ export const EmptyReport: React.FC<Props> = ({ title, subTitle }) => {
         <HandoffLink path="/preferences/integrations">
           <Button variant="contained">{t('Connect Services')}</Button>
         </HandoffLink>
-        <Button variant="contained" color="primary" onClick={addNewDonation}>
+        <Button
+          variant="contained"
+          color="primary"
+          style={{ marginLeft: 2 }}
+          onClick={addNewDonation}
+        >
           {t('Add New Donation')}
         </Button>
       </Box>
