@@ -1,31 +1,53 @@
-import React, { ReactElement } from 'react';
+import React, { useState } from 'react';
 import Head from 'next/head';
-import { GetServerSideProps } from 'next';
-import { getSession } from 'next-auth/client';
 import { useTranslation } from 'react-i18next';
-import { SalaryReportTable } from 'src/components/Reports/SalaryReport/SalaryReportTable';
+import { Box, styled } from '@material-ui/core';
+import { SalaryReportTable } from 'src/components/Reports/FourteenMonthReports/SalaryReport/SalaryReportTable';
 import Loading from 'src/components/Loading';
+import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import { useAccountListId } from 'src/hooks/useAccountListId';
-import { ReportLayout } from 'src/components/Reports/ReportLayout/ReportLayout';
+import { NavReportsList } from 'src/components/Reports/NavReportsList/NavReportsList';
 
-const SalaryReportPage = (): ReactElement => {
+const SalaryCurrencyReportPageWrapper = styled(Box)(({ theme }) => ({
+  backgroundColor: theme.palette.common.white,
+}));
+
+const SalaryCurrencyReportPage: React.FC = () => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
+  const [isNavListOpen, setNavListOpen] = useState<boolean>(false);
+
+  const handleNavListToggle = () => {
+    setNavListOpen(!isNavListOpen);
+  };
 
   return (
     <>
       <Head>
-        <title>
-          MPDX | {t('Reports')} | {t('14 Month Report (Salary)')}
-        </title>
+        <title>MPDX | {t('MPDX | Reports - Salary')}</title>
       </Head>
       {accountListId ? (
-        <ReportLayout selectedId="salaryCurrency">
-          <SalaryReportTable
-            accountListId={accountListId}
-            title={t('Contributions by Salary Currency')}
+        <SalaryCurrencyReportPageWrapper>
+          <SidePanelsLayout
+            leftPanel={
+              <NavReportsList
+                isOpen={isNavListOpen}
+                selectedId="salaryCurrency"
+                onClose={handleNavListToggle}
+              />
+            }
+            leftOpen={isNavListOpen}
+            leftWidth="290px"
+            mainContent={
+              <SalaryReportTable
+                accountListId={accountListId}
+                isNavListOpen={isNavListOpen}
+                onNavListToggle={handleNavListToggle}
+                title={t('Contributions by Salary Currency')}
+              />
+            }
           />
-        </ReportLayout>
+        </SalaryCurrencyReportPageWrapper>
       ) : (
         <Loading loading />
       )}
@@ -33,18 +55,4 @@ const SalaryReportPage = (): ReactElement => {
   );
 };
 
-export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
-  const session = await getSession({ req });
-
-  if (!session?.user['token']) {
-    res.writeHead(302, { Location: '/' });
-    res.end();
-    return { props: {} };
-  }
-
-  return {
-    props: {},
-  };
-};
-
-export default SalaryReportPage;
+export default SalaryCurrencyReportPage;
