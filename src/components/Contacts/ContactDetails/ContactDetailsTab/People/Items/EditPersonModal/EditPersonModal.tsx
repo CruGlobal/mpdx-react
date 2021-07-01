@@ -144,7 +144,7 @@ export const EditPersonModal: React.FC<EditPersonModalProps> = ({
   const { enqueueSnackbar } = useSnackbar();
   const [personEditShowMore, setPersonEditShowMore] = useState(false);
   const [updatePerson, { loading: updating }] = useUpdatePersonMutation();
-  debugger;
+
   const personPhoneNumbers = person.phoneNumbers.nodes.map((phoneNumber) => {
     return {
       id: phoneNumber.id,
