@@ -1,6 +1,14 @@
 import { ListItem, ListItemText } from '@material-ui/core';
 import React from 'react';
-import { Filter } from './Filter';
+import {
+  Filter,
+  CheckboxFilter,
+  DaterangeFilter,
+  MultiselectFilter,
+  NumericRangeFilter,
+  RadioFilter,
+  TextFilter,
+} from '../../../../graphql/types.generated';
 import { FilterListItemCheckbox } from './FilterListItemCheckbox';
 import { FilterListItemDateRange } from './FilterListItemDateRange';
 import { FilterListItemMultiselect } from './FilterListItemMultiselect';
@@ -18,40 +26,42 @@ export const FilterListItem: React.FC<Props> = ({
   value,
   onUpdate,
 }: Props) => {
-  return filter.type === 'text' ? (
+  return (filter as TextFilter) ? (
     <FilterListItemTextField
       filter={filter}
       value={value?.toString()}
       onUpdate={(value) => onUpdate(value)}
     />
-  ) : filter.type === 'radio' ? (
+  ) : (filter as RadioFilter) ? (
     <FilterListItemSelect
       filter={filter}
       value={value?.toString()}
       onUpdate={onUpdate}
     />
-  ) : filter.type === 'multiselect' ? (
+  ) : (filter as MultiselectFilter) ? (
     <FilterListItemMultiselect
       filter={filter}
       selected={Array.isArray(value) ? value : undefined}
       onUpdate={onUpdate}
     />
-  ) : filter.type === 'daterange' ? (
+  ) : (filter as DaterangeFilter) ? (
     <FilterListItemDateRange
       filter={filter}
       value={value?.toString()}
       onUpdate={onUpdate}
     />
-  ) : filter.type === 'single_checkbox' ? (
+  ) : (filter as CheckboxFilter) ? (
     <FilterListItemCheckbox
       filter={filter}
       value={!!value}
       onUpdate={onUpdate}
     />
+  ) : (filter as NumericRangeFilter) ? (
+    <></>
   ) : (
     <ListItem>
       <ListItemText
-        primary={`Unsupported Filter: ${filter.title} (${filter.type})`}
+        primary={`Unsupported Filter: ${filter.title} (${filter.filterKey})`}
         primaryTypographyProps={{ variant: 'subtitle1', color: 'error' }}
       />
     </ListItem>
