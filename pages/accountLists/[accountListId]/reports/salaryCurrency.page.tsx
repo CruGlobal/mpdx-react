@@ -29,6 +29,7 @@ const SalaryCurrencyReportPage: React.FC = () => {
       {accountListId ? (
         <SalaryCurrencyReportPageWrapper>
           <SidePanelsLayout
+            isScrollBox={false}
             leftPanel={
               <NavReportsList
                 isOpen={isNavListOpen}

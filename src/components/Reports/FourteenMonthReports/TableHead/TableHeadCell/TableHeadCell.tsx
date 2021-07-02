@@ -40,7 +40,7 @@ export const TableHeadCell: React.FC<FourteenMonthReportTableCellProps> = ({
   onClick,
 }) => {
   return (
-    <TableCell align={align} sortDirection={sortDirection}>
+    <TableCell align={align} sortDirection={sortDirection} style={{ top: 65 }}>
       <TableSortLabel active={isActive} direction={direction} onClick={onClick}>
         {children}
         {isActive && (
