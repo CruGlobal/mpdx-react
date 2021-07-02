@@ -26,6 +26,8 @@ export const EmptyReport: React.FC<Props> = ({ title, subTitle }) => {
   const { t } = useTranslation();
 
   const addNewDonation = () => {
+    // To be implemented by https://jira.cru.org/browse/MPDX-7053
+
     return;
   };
 
