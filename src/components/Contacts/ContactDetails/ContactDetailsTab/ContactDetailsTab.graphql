@@ -13,25 +13,6 @@ query ContactDetailsTab($accountListId: ID!, $contactId: ID!) {
     envelopeGreeting
     preferredContactMethod
     timezone
-    people {
-      nodes {
-        id
-        firstName
-        lastName
-        primaryPhoneNumber {
-          number
-        }
-        primaryEmailAddress {
-          email
-        }
-        anniversaryDay
-        anniversaryMonth
-        anniversaryYear
-        birthdayDay
-        birthdayMonth
-        birthdayYear
-      }
-    }
     user {
       firstName
       lastName

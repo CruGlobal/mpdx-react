@@ -22,9 +22,13 @@ const BoxWrapper = styled(Box)(({ theme }) => ({
 export const EmptyDonationsTable: React.FC<Props> = ({ title }) => {
   const { t } = useTranslation();
 
-  const connectServices = () => {};
+  const connectServices = () => {
+    //TODO: Open screen to connect services
+  };
 
-  const addNewDonation = () => {};
+  const addNewDonation = () => {
+    //TODO: open modal for creating donation
+  };
 
   return (
     <BoxWrapper boxShadow={3}>
