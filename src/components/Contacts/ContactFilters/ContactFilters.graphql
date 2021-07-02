@@ -1,6 +1,7 @@
 query ContactFilters($accountListId: ID!) {
   accountList(id: $accountListId) {
     contactFilterGroups {
+      name
       filters {
         featured
         filterKey

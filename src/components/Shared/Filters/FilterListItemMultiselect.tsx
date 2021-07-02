@@ -5,10 +5,10 @@ import {
   ListItemText,
 } from '@material-ui/core';
 import React from 'react';
-import { Filter } from './Filter';
+import { MultiselectFilter } from '../../../../graphql/types.generated';
 
 interface Props {
-  filter: Filter;
+  filter: MultiselectFilter;
   selected?: Array<string>;
   onUpdate: (value?: Array<string>) => void;
 }
@@ -37,14 +37,14 @@ export const FilterListItemMultiselect: React.FC<Props> = ({
           primaryTypographyProps={{ variant: 'subtitle1' }}
         />
       </ListItem>
-      {filter.options.map(({ id, name }) => (
-        <ListItem key={id} button onClick={() => toggleValue(id)}>
+      {filter.options?.map(({ value, name }) => (
+        <ListItem key={value} button onClick={() => toggleValue(value)}>
           <ListItemIcon>
             <Checkbox
               size="small"
               edge="start"
               color="primary"
-              checked={isChecked(id)}
+              checked={isChecked(value)}
               disableRipple
             />
           </ListItemIcon>

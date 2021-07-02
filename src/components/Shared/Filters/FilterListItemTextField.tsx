@@ -1,9 +1,9 @@
 import { ListItem, TextField } from '@material-ui/core';
 import React from 'react';
-import { Filter } from './Filter';
+import { TextFilter } from '../../../../graphql/types.generated';
 
 interface Props {
-  filter: Filter;
+  filter: TextFilter;
   value?: string;
   onUpdate: (value: string) => void;
 }
