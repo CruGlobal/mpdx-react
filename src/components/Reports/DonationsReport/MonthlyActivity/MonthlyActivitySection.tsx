@@ -1,6 +1,6 @@
 import React from 'react';
-import DonationHistories from '../../Dashboard/DonationHistories';
-import { GetDashboardQuery } from '../../../../pages/accountLists/GetDashboard.generated';
+import DonationHistories from '../../../Dashboard/DonationHistories';
+import { GetDashboardQuery } from '../../../../../pages/accountLists/GetDashboard.generated';
 
 interface Props {
   data: GetDashboardQuery;

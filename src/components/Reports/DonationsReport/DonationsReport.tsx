@@ -2,8 +2,8 @@ import React from 'react';
 import { Container, Box } from '@material-ui/core';
 import { motion } from 'framer-motion';
 import { GetDashboardQuery } from '../../../../pages/accountLists/GetDashboard.generated';
-import { MonthlyActivitySection } from './MonthlyActivitySection';
-import { DonationsReportTable } from './DonationsReportTable';
+import { MonthlyActivitySection } from './MonthlyActivity/MonthlyActivitySection';
+import { DonationsReportTable } from './Table/DonationsReportTable';
 
 interface Props {
   data: GetDashboardQuery;
@@ -54,7 +54,7 @@ export const DonationsReport: React.FC<Props> = ({ data, accountListId }) => {
   const rows = [
     createData(
       new Date(2018, 0, 0o5, 17, 23, 42, 11),
-      'Bob',
+      '00687849-5b74-43dd-86de-e841c6f30fc0',
       'Bob',
       'CAD',
       'USD',

@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react';
+import React from 'react';
 import Head from 'next/head';
 import { useTranslation } from 'react-i18next';
 import { Box } from '@material-ui/core';
@@ -12,7 +12,7 @@ import { GetDashboardQuery } from '../../GetDashboard.generated';
 interface Props {
   data: GetDashboardQuery;
 }
-const DonationsReportPage = ({ data }: Props): ReactElement => {
+const DonationsReportPage: React.FC<Props> = ({ data }) => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
 

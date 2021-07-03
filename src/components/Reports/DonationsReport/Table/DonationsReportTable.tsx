@@ -17,8 +17,7 @@ import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import { useTranslation } from 'react-i18next';
 import { DataGrid, GridColDef, GridCellParams } from '@material-ui/data-grid';
 import { DateTime } from 'luxon';
-
-import { EmptyDonationsTable } from '../../common/EmptyDonationsTable/EmptyDonationsTable';
+import { EmptyDonationsTable } from '../../../common/EmptyDonationsTable/EmptyDonationsTable';
 
 interface Donation {
   date: Date;
@@ -38,7 +37,7 @@ interface Props {
   accountListId: string;
 }
 
-const Data = styled(Box)(({ theme }) => ({
+const DataTable = styled(Box)(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
   '& .MuiDataGrid-row.Mui-even:not(:hover)': {
@@ -50,26 +49,35 @@ const Data = styled(Box)(({ theme }) => ({
 }));
 export const DonationsReportTable: React.FC<Props> = ({
   data,
-  /*accountListId,*/
+  accountListId,
 }) => {
   const { t } = useTranslation();
   const accountCurrency = data[0].currency;
-  const link = (params: GridCellParams) => (
-    <Typography>
-      <Link href="contact.html">{params.value}</Link>
-    </Typography>
-  );
+  const link = (params: GridCellParams) => {
+    const row = params.row as Donation;
+    return (
+      <Typography>
+        <Link href={`../../${accountListId}/contacts/${row.partnerId}`}>
+          {params.value}
+        </Link>
+      </Typography>
+    );
+  };
   const amount = (params: GridCellParams) => {
     const row = params.row as Donation;
 
-    return <Typography>{row.convertedAmount + ' ' + row.currency}</Typography>;
+    return (
+      <Typography>
+        {row.convertedAmount} {row.currency}
+      </Typography>
+    );
   };
   const foreignAmount = (params: GridCellParams) => {
     const row = params.row as Donation;
-    return row.foreignCurrency !== row.currency ? (
-      <Typography>{row.foreignAmount + ' ' + row.foreignCurrency}</Typography>
-    ) : (
-      <></>
+    return (
+      <Typography>
+        {row.foreignAmount} {row.foreignCurrency}
+      </Typography>
     );
   };
   const button = () => (
@@ -123,7 +131,7 @@ export const DonationsReportTable: React.FC<Props> = ({
 
   const [time, setTime] = useState(DateTime.now().startOf('month'));
 
-  const title = time.monthLong + ' ' + time.year;
+  const title = `${time.monthLong} ${time.year}`;
 
   const hasNext = time.hasSame(DateTime.now().startOf('month'), 'month');
 
@@ -173,7 +181,7 @@ export const DonationsReportTable: React.FC<Props> = ({
           size="small"
           onClick={() => setPrevMonth()}
         >
-          Previous Month
+          {t('Previous Month')}
         </Button>
         <Button
           variant="contained"
@@ -182,12 +190,12 @@ export const DonationsReportTable: React.FC<Props> = ({
           onClick={() => setNextMonth()}
           disabled={hasNext}
         >
-          Next Month
+          {t('Next Month')}
         </Button>
       </Box>
       <Divider style={{ margin: 12 }} variant="middle"></Divider>
       {!isEmpty ? (
-        <Data>
+        <DataTable>
           <DataGrid
             rows={data}
             columns={columns}
@@ -201,17 +209,17 @@ export const DonationsReportTable: React.FC<Props> = ({
               <TableRow key={currency}>
                 <TableCell style={{ width: 375 }}>
                   <Typography style={{ float: 'right', fontWeight: 'bold' }}>
-                    {t('Total ' + currency + ' Donations:')}
+                    {t('Total {{currency}} Donations:', { currency })}
                   </Typography>
                 </TableCell>
                 <TableCell style={{ width: 160 }}>
                   <Typography style={{ float: 'left', fontWeight: 'bold' }}>
-                    {' ' + total.convertedTotal + ' ' + accountCurrency}
+                    {total.convertedTotal} {accountCurrency}
                   </Typography>
                 </TableCell>
                 <TableCell style={{}}>
                   <Typography style={{ float: 'left', fontWeight: 'bold' }}>
-                    {' ' + total.foreignTotal + ' ' + currency}
+                    {total.foreignTotal} {currency}
                   </Typography>
                 </TableCell>
               </TableRow>
@@ -231,10 +239,13 @@ export const DonationsReportTable: React.FC<Props> = ({
               <TableCell />
             </TableRow>
           </Table>
-        </Data>
+        </DataTable>
       ) : (
         <EmptyDonationsTable
-          title={'No donations received in ' + time.monthLong + ' ' + time.year}
+          title={t('No donations received in {{month}} {{year}}', {
+            month: time.monthLong,
+            year: time.year,
+          })}
         />
       )}
     </>
