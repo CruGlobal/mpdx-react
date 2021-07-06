@@ -12,6 +12,7 @@ import {
 import { FilterListItemCheckbox } from './FilterListItemCheckbox';
 import { FilterListItemDateRange } from './FilterListItemDateRange';
 import { FilterListItemMultiselect } from './FilterListItemMultiselect';
+import { FilterListItemNumericRange } from './FilterListItemNumericRange';
 import { FilterListItemSelect } from './FilterListItemSelect';
 import { FilterListItemTextField } from './FilterListItemTextField';
 
@@ -26,38 +27,42 @@ export const FilterListItem: React.FC<Props> = ({
   value,
   onUpdate,
 }: Props) => {
-  return (filter as TextFilter) ? (
+  return (filter as TextFilter).__typename === 'TextFilter' ? (
     <FilterListItemTextField
       filter={filter}
       value={value?.toString()}
       onUpdate={(value) => onUpdate(value)}
     />
-  ) : (filter as RadioFilter) ? (
+  ) : (filter as RadioFilter).__typename === 'RadioFilter' ? (
     <FilterListItemSelect
       filter={filter}
       value={value?.toString()}
       onUpdate={onUpdate}
     />
-  ) : (filter as MultiselectFilter) ? (
+  ) : (filter as MultiselectFilter).__typename === 'MultiselectFilter' ? (
     <FilterListItemMultiselect
       filter={filter}
       selected={Array.isArray(value) ? value : undefined}
       onUpdate={onUpdate}
     />
-  ) : (filter as DaterangeFilter) ? (
+  ) : (filter as DaterangeFilter).__typename === 'DaterangeFilter' ? (
     <FilterListItemDateRange
       filter={filter}
       value={value?.toString()}
       onUpdate={onUpdate}
     />
-  ) : (filter as CheckboxFilter) ? (
+  ) : (filter as CheckboxFilter).__typename === 'CheckboxFilter' ? (
     <FilterListItemCheckbox
       filter={filter}
       value={!!value}
       onUpdate={onUpdate}
     />
-  ) : (filter as NumericRangeFilter) ? (
-    <></>
+  ) : (filter as NumericRangeFilter).__typename === 'NumericRangeFilter' ? (
+    <FilterListItemNumericRange
+      filter={filter}
+      value={value?.toString()}
+      onUpdate={onUpdate}
+    />
   ) : (
     <ListItem>
       <ListItemText
