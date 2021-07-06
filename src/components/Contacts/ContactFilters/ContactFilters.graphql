@@ -29,6 +29,7 @@ query ContactFilters($accountListId: ID!) {
           minLabel
           max
           maxLabel
+          title
         }
         ... on RadioFilter {
           __typename
