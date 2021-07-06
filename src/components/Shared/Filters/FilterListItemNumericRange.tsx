@@ -15,7 +15,7 @@ export const FilterListItemNumericRange: React.FC<Props> = ({
   onUpdate,
 }: Props) => {
   const { t } = useTranslation();
-  debugger;
+
   const range = value?.split('..');
 
   const createRange = (start: string, end: string) => start + '..' + end;
