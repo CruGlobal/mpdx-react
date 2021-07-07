@@ -54,81 +54,6 @@ const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
   margin: theme.spacing(0, 1, 0, 0),
 }));
 
-const phoneRegex = RegExp(/^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/);
-
-const personSchema: yup.SchemaOf<
-  Omit<PersonUpdateInput, 'familyRelationships' | 'id'>
-> = yup.object({
-  firstName: yup.string().required(),
-  lastName: yup.string().required(),
-  title: yup.string().nullable(),
-  suffix: yup.string().nullable(),
-  phoneNumbers: yup.array().of(
-    yup.object({
-      id: yup.string().nullable(),
-      number: yup
-        .string()
-        .matches(phoneRegex, 'Invalid phone number')
-        .required('This field is required'),
-      destroy: yup.boolean().default(false),
-      primary: yup.boolean().default(false),
-    }),
-  ),
-  emailAddresses: yup.array().of(
-    yup.object({
-      id: yup.string().nullable(),
-      email: yup
-        .string()
-        .email('Invalid email address')
-        .required('This field is required'),
-      destroy: yup.boolean().default(false),
-      primary: yup.boolean().default(false),
-    }),
-  ),
-  facebookAccounts: yup.array().of(
-    yup.object({
-      id: yup.string().nullable(),
-      destroy: yup.boolean().default(false),
-      username: yup.string().required(),
-    }),
-  ),
-  linkedinAccounts: yup.array().of(
-    yup.object({
-      id: yup.string().nullable(),
-      destroy: yup.boolean().default(false),
-      publicUrl: yup.string().required(),
-    }),
-  ),
-  twitterAccounts: yup.array().of(
-    yup.object({
-      id: yup.string().nullable(),
-      destroy: yup.boolean().default(false),
-      screenName: yup.string().required(),
-    }),
-  ),
-  websites: yup.array().of(
-    yup.object({
-      id: yup.string().nullable(),
-      destroy: yup.boolean().default(false),
-      url: yup.string().required(),
-    }),
-  ),
-  optoutEnewsletter: yup.boolean().default(false),
-  birthdayDay: yup.number().nullable(),
-  birthdayMonth: yup.number().nullable(),
-  birthdayYear: yup.number().nullable(),
-  maritalStatus: yup.string().nullable(),
-  gender: yup.string().nullable(),
-  anniversaryDay: yup.number().nullable(),
-  anniversaryMonth: yup.number().nullable(),
-  anniversaryYear: yup.number().nullable(),
-  almaMater: yup.string().nullable(),
-  employer: yup.string().nullable(),
-  occupation: yup.string().nullable(),
-  legalFirstName: yup.string().nullable(),
-  deceased: yup.boolean().default(false),
-});
-
 interface EditPersonModalProps {
   person: ContactDetailsTabQuery['contact']['people']['nodes'][0];
   accountListId: string;
@@ -144,6 +69,84 @@ export const EditPersonModal: React.FC<EditPersonModalProps> = ({
   const { enqueueSnackbar } = useSnackbar();
   const [personEditShowMore, setPersonEditShowMore] = useState(false);
   const [updatePerson, { loading: updating }] = useUpdatePersonMutation();
+
+  // grabbed from https://stackoverflow.com/a/62039270
+  const phoneRegex = RegExp(
+    /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/,
+  );
+
+  const personSchema: yup.SchemaOf<
+    Omit<PersonUpdateInput, 'familyRelationships' | 'id'>
+  > = yup.object({
+    firstName: yup.string().required(),
+    lastName: yup.string().required(),
+    title: yup.string().nullable(),
+    suffix: yup.string().nullable(),
+    phoneNumbers: yup.array().of(
+      yup.object({
+        id: yup.string().nullable(),
+        number: yup
+          .string()
+          .matches(phoneRegex, t('Invalid phone number'))
+          .required(t('This field is required')),
+        destroy: yup.boolean().default(false),
+        primary: yup.boolean().default(false),
+      }),
+    ),
+    emailAddresses: yup.array().of(
+      yup.object({
+        id: yup.string().nullable(),
+        email: yup
+          .string()
+          .email(t('Invalid email address'))
+          .required(t('This field is required')),
+        destroy: yup.boolean().default(false),
+        primary: yup.boolean().default(false),
+      }),
+    ),
+    facebookAccounts: yup.array().of(
+      yup.object({
+        id: yup.string().nullable(),
+        destroy: yup.boolean().default(false),
+        username: yup.string().required(),
+      }),
+    ),
+    linkedinAccounts: yup.array().of(
+      yup.object({
+        id: yup.string().nullable(),
+        destroy: yup.boolean().default(false),
+        publicUrl: yup.string().required(),
+      }),
+    ),
+    twitterAccounts: yup.array().of(
+      yup.object({
+        id: yup.string().nullable(),
+        destroy: yup.boolean().default(false),
+        screenName: yup.string().required(),
+      }),
+    ),
+    websites: yup.array().of(
+      yup.object({
+        id: yup.string().nullable(),
+        destroy: yup.boolean().default(false),
+        url: yup.string().required(),
+      }),
+    ),
+    optoutEnewsletter: yup.boolean().default(false),
+    birthdayDay: yup.number().nullable(),
+    birthdayMonth: yup.number().nullable(),
+    birthdayYear: yup.number().nullable(),
+    maritalStatus: yup.string().nullable(),
+    gender: yup.string().nullable(),
+    anniversaryDay: yup.number().nullable(),
+    anniversaryMonth: yup.number().nullable(),
+    anniversaryYear: yup.number().nullable(),
+    almaMater: yup.string().nullable(),
+    employer: yup.string().nullable(),
+    occupation: yup.string().nullable(),
+    legalFirstName: yup.string().nullable(),
+    deceased: yup.boolean().default(false),
+  });
 
   const personPhoneNumbers = person.phoneNumbers.nodes.map((phoneNumber) => {
     return {

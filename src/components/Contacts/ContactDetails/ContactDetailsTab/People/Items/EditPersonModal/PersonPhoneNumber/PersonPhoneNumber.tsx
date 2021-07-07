@@ -22,11 +22,20 @@ const ContactPrimaryPersonSelectLabel = styled(InputLabel)(() => ({
   textTransform: 'uppercase',
 }));
 
-const ContactInputField = styled(TextField)(() => ({
-  '&& > label': {
-    textTransform: 'uppercase',
-  },
-}));
+const ContactInputField = styled(TextField)(
+  ({ destroyed }: { destroyed: boolean }) => ({
+    '&& > label': {
+      textTransform: 'uppercase',
+    },
+    textDecoration: destroyed ? 'line-through' : 'none',
+  }),
+);
+
+const PhoneNumberSelect = styled(Select)(
+  ({ destroyed }: { destroyed: boolean }) => ({
+    textDecoration: destroyed ? 'line-through' : 'none',
+  }),
+);
 
 const ContactAddIcon = styled(AddIcon)(() => ({
   color: '#2196F3',
@@ -107,6 +116,7 @@ export const PersonPhoneNumber: React.FC<PersonPhoneNumberProps> = ({
                       <Grid container spacing={3}>
                         <Grid item xs={6}>
                           <ContactInputField
+                            destroyed={phoneNumber.destroy ?? false}
                             value={phoneNumber.number}
                             onChange={(event) =>
                               setFieldValue(
@@ -114,16 +124,19 @@ export const PersonPhoneNumber: React.FC<PersonPhoneNumberProps> = ({
                                 event.target.value,
                               )
                             }
+                            disabled={!!phoneNumber.destroy}
+                            inputProps={{ 'aria-label': t('Phone Number') }}
                             error={getIn(errors, `phoneNumbers.${index}`)}
                             helperText={
                               getIn(errors, `phoneNumbers.${index}`) &&
-                              t(getIn(errors, `phoneNumbers.${index}`).number)
+                              getIn(errors, `phoneNumbers.${index}`).number
                             }
                             fullWidth
                           />
                         </Grid>
                         <Grid item xs={6}>
-                          <Select
+                          <PhoneNumberSelect
+                            destroyed={phoneNumber.destroy ?? false}
                             value={phoneNumber.location ?? ''}
                             onChange={(event) =>
                               setFieldValue(
@@ -131,11 +144,15 @@ export const PersonPhoneNumber: React.FC<PersonPhoneNumberProps> = ({
                                 event.target.value,
                               )
                             }
+                            disabled={!!phoneNumber.destroy}
+                            inputProps={{
+                              'aria-label': t('Phone Number Type'),
+                            }}
                             fullWidth
                           >
                             <MenuItem value="Mobile">{t('Mobile')}</MenuItem>
                             <MenuItem value="Work">{t('Work')}</MenuItem>
-                          </Select>
+                          </PhoneNumberSelect>
                         </Grid>
                         <ModalSectionDeleteIcon
                           handleClick={() =>

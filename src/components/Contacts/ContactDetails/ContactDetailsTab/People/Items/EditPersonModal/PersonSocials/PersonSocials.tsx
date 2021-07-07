@@ -76,6 +76,8 @@ export const PersonSocial: React.FC<PersonSocialProps> = ({ formikProps }) => {
                           event.target.value,
                         )
                       }
+                      inputProps={{ 'aria-label': t('Facebook Account') }}
+                      disabled={!!account.destroy}
                       error={getIn(errors, `facebookAccounts.${index}`)}
                       helperText={
                         getIn(errors, `facebookAccounts.${index}`) &&
@@ -93,6 +95,7 @@ export const PersonSocial: React.FC<PersonSocialProps> = ({ formikProps }) => {
                         destroyed={account.destroy ?? false}
                         labelId="social-type-label"
                         value={'facebook'}
+                        disabled={!!account.destroy}
                         fullWidth
                         readOnly
                       >
@@ -135,6 +138,8 @@ export const PersonSocial: React.FC<PersonSocialProps> = ({ formikProps }) => {
                           event.target.value,
                         )
                       }
+                      inputProps={{ 'aria-label': t('Twitter Account') }}
+                      disabled={!!account.destroy}
                       error={getIn(errors, `twitterAccounts.${index}`)}
                       helperText={
                         getIn(errors, `twitterAccounts.${index}`) &&
@@ -152,6 +157,7 @@ export const PersonSocial: React.FC<PersonSocialProps> = ({ formikProps }) => {
                         destroyed={account.destroy ?? false}
                         labelId="social-type-label"
                         value={'twitter'}
+                        disabled={!!account.destroy}
                         fullWidth
                         readOnly
                       >
@@ -194,6 +200,8 @@ export const PersonSocial: React.FC<PersonSocialProps> = ({ formikProps }) => {
                           event.target.value,
                         )
                       }
+                      inputProps={{ 'aria-label': t('LinkedIn Account') }}
+                      disabled={!!account.destroy}
                       error={getIn(errors, `linkedinAccounts.${index}`)}
                       helperText={
                         getIn(errors, `linkedinAccounts.${index}`) &&
@@ -211,6 +219,7 @@ export const PersonSocial: React.FC<PersonSocialProps> = ({ formikProps }) => {
                         destroyed={account.destroy ?? false}
                         labelId="social-type-label"
                         value={'linkedin'}
+                        disabled={!!account.destroy}
                         fullWidth
                         readOnly
                       >
@@ -255,11 +264,13 @@ export const PersonSocial: React.FC<PersonSocialProps> = ({ formikProps }) => {
                             event.target.value,
                           )
                         }
+                        inputProps={{ 'aria-label': t('Website') }}
                         error={getIn(errors, `websites.${index}`)}
                         helperText={
                           getIn(errors, `websites.${index}`) &&
                           t('Field is required')
                         }
+                        disabled={!!account.destroy}
                         fullWidth
                       />
                     </Grid>
@@ -272,6 +283,7 @@ export const PersonSocial: React.FC<PersonSocialProps> = ({ formikProps }) => {
                           destroyed={account.destroy ?? false}
                           labelId="social-type-label"
                           value={'website'}
+                          disabled={!!account.destroy}
                           fullWidth
                           readOnly
                         >

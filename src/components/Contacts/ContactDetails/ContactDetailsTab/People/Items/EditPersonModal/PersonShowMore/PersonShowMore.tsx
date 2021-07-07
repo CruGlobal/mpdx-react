@@ -2,12 +2,13 @@ import React from 'react';
 import {
   Checkbox,
   FormControl,
+  FormControlLabel,
   Grid,
   InputLabel,
   MenuItem,
   Select,
+  styled,
   TextField,
-  Typography,
 } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { DatePicker } from '@material-ui/pickers';
@@ -20,6 +21,10 @@ import { RingIcon } from '../../../../../../RingIcon';
 import { PersonSocial } from '../PersonSocials/PersonSocials';
 import { ModalSectionIcon } from '../ModalSectionIcon/ModalSectionIcon';
 import { PersonUpdateInput } from '../../../../../../../../../graphql/types.generated';
+
+const DeceasedLabel = styled(FormControlLabel)(() => ({
+  margin: 'none',
+}));
 
 interface PersonShowMoreProps {
   formikProps: FormikProps<PersonUpdateInput>;
@@ -110,6 +115,7 @@ export const PersonShowMore: React.FC<PersonShowMoreProps> = ({
           format="MM/dd/yyyy"
           clearable
           label={t('Anniversary')}
+          inputProps={{ 'aria-label': t('Anniversary') }}
           fullWidth
           helperText="mm/dd/yyyy"
         />
@@ -121,6 +127,7 @@ export const PersonShowMore: React.FC<PersonShowMoreProps> = ({
           label={t('Alma Mater')}
           value={almaMater}
           onChange={handleChange('almaMater')}
+          inputProps={{ 'aria-label': t('Alma Mater') }}
           fullWidth
         />
       </ModalSectionContainer>
@@ -133,6 +140,7 @@ export const PersonShowMore: React.FC<PersonShowMoreProps> = ({
               label={t('Employer')}
               value={employer}
               onChange={handleChange('employer')}
+              inputProps={{ 'aria-label': t('Employer') }}
               fullWidth
             />
           </Grid>
@@ -141,6 +149,7 @@ export const PersonShowMore: React.FC<PersonShowMoreProps> = ({
               label={t('Occupation')}
               value={occupation}
               onChange={handleChange('occupation')}
+              inputProps={{ 'aria-label': t('Occupation') }}
               fullWidth
             />
           </Grid>
@@ -154,17 +163,22 @@ export const PersonShowMore: React.FC<PersonShowMoreProps> = ({
           label={t('Legal First Name')}
           value={legalFirstName}
           onChange={handleChange('legalFirstName')}
+          inputProps={{ 'aria-label': t('Legal First Name') }}
           fullWidth
         />
       </ModalSectionContainer>
       <ModalSectionContainer>
         <Grid container alignItems="center">
           <Grid container item xs={6} alignItems="center">
-            <Checkbox
-              checked={!!deceased}
-              onChange={() => setFieldValue('deceased', !deceased)}
+            <DeceasedLabel
+              control={
+                <Checkbox
+                  checked={!!deceased}
+                  onChange={() => setFieldValue('deceased', !deceased)}
+                />
+              }
+              label={t('Deceased')}
             />
-            <Typography variant="subtitle1">{t('Deceased')}</Typography>
           </Grid>
         </Grid>
       </ModalSectionContainer>

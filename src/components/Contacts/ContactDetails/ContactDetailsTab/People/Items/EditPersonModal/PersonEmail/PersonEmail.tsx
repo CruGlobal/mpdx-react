@@ -1,6 +1,7 @@
 import {
   Checkbox,
   FormControl,
+  FormControlLabel,
   Grid,
   InputLabel,
   MenuItem,
@@ -24,10 +25,17 @@ const ContactPrimaryPersonSelectLabel = styled(InputLabel)(() => ({
   textTransform: 'uppercase',
 }));
 
-const ContactInputField = styled(TextField)(() => ({
-  '&& > label': {
-    textTransform: 'uppercase',
-  },
+const ContactInputField = styled(TextField)(
+  ({ destroyed }: { destroyed: boolean }) => ({
+    '&& > label': {
+      textTransform: 'uppercase',
+    },
+    textDecoration: destroyed ? 'line-through' : 'none',
+  }),
+);
+
+const EmailSelect = styled(Select)(({ destroyed }: { destroyed: boolean }) => ({
+  textDecoration: destroyed ? 'line-through' : 'none',
 }));
 
 const ContactAddIcon = styled(AddIcon)(() => ({
@@ -38,6 +46,10 @@ const ContactAddText = styled(Typography)(() => ({
   color: '#2196F3',
   textTransform: 'uppercase',
   fontWeight: 'bold',
+}));
+
+const OptOutENewsletterLabel = styled(FormControlLabel)(() => ({
+  margin: 'none',
 }));
 
 interface PersonEmailProps {
@@ -104,6 +116,7 @@ export const PersonEmail: React.FC<PersonEmailProps> = ({ formikProps }) => {
                       <Grid container spacing={3}>
                         <Grid item xs={6}>
                           <ContactInputField
+                            destroyed={emailAddress.destroy ?? false}
                             value={emailAddress.email}
                             onChange={(event) =>
                               setFieldValue(
@@ -111,16 +124,19 @@ export const PersonEmail: React.FC<PersonEmailProps> = ({ formikProps }) => {
                                 event.target.value,
                               )
                             }
+                            disabled={!!emailAddress.destroy}
+                            inputProps={{ 'aria-label': t('Email Address') }}
                             error={getIn(errors, `emailAddresses.${index}`)}
                             helperText={
                               getIn(errors, `emailAddresses.${index}`) &&
-                              t(getIn(errors, `emailAddresses.${index}`).email)
+                              getIn(errors, `emailAddresses.${index}`).email
                             }
                             fullWidth
                           />
                         </Grid>
                         <Grid item xs={6}>
-                          <Select
+                          <EmailSelect
+                            destroyed={emailAddress.destroy ?? false}
                             value={emailAddress.location ?? ''}
                             onChange={(event) =>
                               setFieldValue(
@@ -128,11 +144,15 @@ export const PersonEmail: React.FC<PersonEmailProps> = ({ formikProps }) => {
                                 event.target.value,
                               )
                             }
+                            disabled={!!emailAddress.destroy}
+                            inputProps={{
+                              'aria-label': t('Email Address Type'),
+                            }}
                             fullWidth
                           >
                             <MenuItem value="Mobile">{t('Mobile')}</MenuItem>
                             <MenuItem value="Work">{t('Work')}</MenuItem>
-                          </Select>
+                          </EmailSelect>
                         </Grid>
                         <ModalSectionDeleteIcon
                           handleClick={() =>
@@ -160,15 +180,17 @@ export const PersonEmail: React.FC<PersonEmailProps> = ({ formikProps }) => {
             </ContactAddText>
           </Grid>
           <Grid container item xs={6} alignItems="center">
-            <Checkbox
-              checked={!!optoutEnewsletter}
-              onChange={() =>
-                setFieldValue('optoutEnewsletter', !optoutEnewsletter)
+            <OptOutENewsletterLabel
+              control={
+                <Checkbox
+                  checked={!!optoutEnewsletter}
+                  onChange={() =>
+                    setFieldValue('optoutEnewsletter', !optoutEnewsletter)
+                  }
+                />
               }
+              label={t('Opt-out of Email Newsletter')}
             />
-            <Typography variant="subtitle1">
-              {t('Opt-out of Email Newsletter')}
-            </Typography>
           </Grid>
         </Grid>
       </ModalSectionContainer>
