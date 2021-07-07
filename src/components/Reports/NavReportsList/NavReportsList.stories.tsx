@@ -8,5 +8,7 @@ export default {
 };
 
 export const Default = (): ReactElement => {
-  return <NavReportsList selected={selected} />;
+  return (
+    <NavReportsList selectedId={selected} isOpen={true} onClose={() => {}} />
+  );
 };

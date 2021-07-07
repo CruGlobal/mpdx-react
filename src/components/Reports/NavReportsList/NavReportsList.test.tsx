@@ -18,7 +18,11 @@ describe('NavReportsList', () => {
     const { getByText, queryAllByText } = render(
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
-          <NavReportsList selected={selected} />
+          <NavReportsList
+            selectedId={selected}
+            isOpen={true}
+            onClose={() => {}}
+          />
         </TestRouter>
       </ThemeProvider>,
     );
