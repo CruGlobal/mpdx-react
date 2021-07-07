@@ -52,6 +52,46 @@ const mock = gqlMock<ContactPeopleFragment>(ContactPeopleFragmentDoc, {
               },
             ],
           },
+          facebookAccounts: {
+            nodes: [
+              {
+                username: 'test guy',
+              },
+              {
+                username: 'test guy 2',
+              },
+            ],
+          },
+          twitterAccounts: {
+            nodes: [
+              {
+                screenName: '@testguy',
+              },
+              {
+                screenName: '@testguy2',
+              },
+            ],
+          },
+          linkedinAccounts: {
+            nodes: [
+              {
+                publicUrl: 'Test Guy',
+              },
+              {
+                publicUrl: 'Test Guy 2',
+              },
+            ],
+          },
+          websites: {
+            nodes: [
+              {
+                url: 'testguy.com',
+              },
+              {
+                url: 'testguy2.com',
+              },
+            ],
+          },
           optoutEnewsletter: false,
           anniversaryDay: 1,
           anniversaryMonth: 1,
@@ -330,6 +370,41 @@ describe('EditPersonModal', () => {
     );
   });
 
+  it('handles deleting a phone number', async () => {
+    const mutationSpy = jest.fn();
+    const { getByText, getAllByRole } = render(
+      <SnackbarProvider>
+        <MuiPickersUtilsProvider utils={LuxonUtils}>
+          <ThemeProvider theme={theme}>
+            <GqlMockedProvider<UpdatePersonMutation> onCall={mutationSpy}>
+              <EditPersonModal
+                accountListId={accountListId}
+                handleClose={handleClose}
+                person={mockPerson}
+              />
+            </GqlMockedProvider>
+          </ThemeProvider>
+        </MuiPickersUtilsProvider>
+      </SnackbarProvider>,
+    );
+    expect(getByText('Edit Person')).toBeInTheDocument();
+    userEvent.click(
+      getAllByRole('img', { name: 'Modal Section Delete Icon' })[2],
+    );
+    userEvent.click(getByText('Save'));
+    await waitFor(() =>
+      expect(mockEnqueue).toHaveBeenCalledWith('Person updated successfully', {
+        variant: 'success',
+      }),
+    );
+    const { operation } = mutationSpy.mock.calls[0][0];
+    expect(operation.variables.accountListId).toEqual(accountListId);
+
+    expect(operation.variables.attributes.phoneNumbers[1].destroy).toEqual(
+      true,
+    );
+  });
+
   it('should handle editing person email section', async () => {
     const mutationSpy = jest.fn();
     const newPersonEmailAddress = 'testguy@fake.com';
@@ -388,6 +463,41 @@ describe('EditPersonModal', () => {
       true,
     );
     expect(operation.variables.attributes.optoutEnewsletter).toEqual(true);
+  });
+
+  it('handles deleting an email address', async () => {
+    const mutationSpy = jest.fn();
+    const { getByText, getAllByRole } = render(
+      <SnackbarProvider>
+        <MuiPickersUtilsProvider utils={LuxonUtils}>
+          <ThemeProvider theme={theme}>
+            <GqlMockedProvider<UpdatePersonMutation> onCall={mutationSpy}>
+              <EditPersonModal
+                accountListId={accountListId}
+                handleClose={handleClose}
+                person={mockPerson}
+              />
+            </GqlMockedProvider>
+          </ThemeProvider>
+        </MuiPickersUtilsProvider>
+      </SnackbarProvider>,
+    );
+    expect(getByText('Edit Person')).toBeInTheDocument();
+    userEvent.click(
+      getAllByRole('img', { name: 'Modal Section Delete Icon' })[4],
+    );
+    userEvent.click(getByText('Save'));
+    await waitFor(() =>
+      expect(mockEnqueue).toHaveBeenCalledWith('Person updated successfully', {
+        variant: 'success',
+      }),
+    );
+    const { operation } = mutationSpy.mock.calls[0][0];
+    expect(operation.variables.accountListId).toEqual(accountListId);
+
+    expect(operation.variables.attributes.emailAddresses[1].destroy).toEqual(
+      true,
+    );
   });
 
   it('should handle editing show more section', async () => {
@@ -601,5 +711,57 @@ describe('EditPersonModal', () => {
     expect(operation.variables.attributes.websites[0].url).toEqual(
       newPersonWebsite,
     );
+  });
+
+  it('should handle deleting socials', async () => {
+    const mutationSpy = jest.fn();
+    const { getByText, getAllByRole } = render(
+      <SnackbarProvider>
+        <MuiPickersUtilsProvider utils={LuxonUtils}>
+          <ThemeProvider theme={theme}>
+            <GqlMockedProvider<UpdatePersonMutation> onCall={mutationSpy}>
+              <EditPersonModal
+                accountListId={accountListId}
+                handleClose={handleClose}
+                person={mockPerson}
+              />
+            </GqlMockedProvider>
+          </ThemeProvider>
+        </MuiPickersUtilsProvider>
+      </SnackbarProvider>,
+    );
+    expect(getByText('Edit Person')).toBeInTheDocument();
+    userEvent.click(getByText('Show More'));
+    userEvent.click(
+      getAllByRole('img', { name: 'Modal Section Delete Icon' })[6],
+    );
+    userEvent.click(
+      getAllByRole('img', { name: 'Modal Section Delete Icon' })[8],
+    );
+    userEvent.click(
+      getAllByRole('img', { name: 'Modal Section Delete Icon' })[10],
+    );
+    userEvent.click(
+      getAllByRole('img', { name: 'Modal Section Delete Icon' })[12],
+    );
+
+    userEvent.click(getByText('Save'));
+    await waitFor(() =>
+      expect(mockEnqueue).toHaveBeenCalledWith('Person updated successfully', {
+        variant: 'success',
+      }),
+    );
+    const { operation } = mutationSpy.mock.calls[0][0];
+    expect(operation.variables.accountListId).toEqual(accountListId);
+    expect(operation.variables.attributes.facebookAccounts[1].destroy).toEqual(
+      true,
+    );
+    expect(operation.variables.attributes.twitterAccounts[1].destroy).toEqual(
+      true,
+    );
+    expect(operation.variables.attributes.linkedinAccounts[1].destroy).toEqual(
+      true,
+    );
+    expect(operation.variables.attributes.websites[1].destroy).toEqual(true);
   });
 });
