@@ -12,7 +12,13 @@ import {
 import { FourteenMonthReportQuery } from '../GetFourteenMonthReport.generated';
 import { TableHeadCell } from './TableHeadCell/TableHeadCell';
 
+export type Unarray<T> = T extends Array<infer U> ? U : T;
+export type Contacts = FourteenMonthReportQuery['fourteenMonthReport']['currencyGroups'][0]['contacts'];
+export type Contact = Contacts[number];
+export type Months = Contact['months'];
+export type Month = Unarray<Months>;
 export type Order = 'asc' | 'desc';
+export type OrderBy = keyof Contact | keyof Unarray<Months>;
 
 interface FourteenMonthReportTableHeadProps {
   totals:
@@ -23,7 +29,7 @@ interface FourteenMonthReportTableHeadProps {
     | undefined;
   onRequestSort: (
     event: React.MouseEvent<unknown>,
-    property: string | number,
+    property: OrderBy | number,
   ) => void;
   order: Order;
   orderBy: string | number | null;
@@ -46,7 +52,7 @@ export const FourteenMonthReportTableHead: React.FC<FourteenMonthReportTableHead
 }) => {
   const { t } = useTranslation();
 
-  const createSortHandler = (property: string | number) => (
+  const createSortHandler = (property: OrderBy | number) => (
     event: React.MouseEvent<unknown>,
   ) => {
     onRequestSort(event, property);

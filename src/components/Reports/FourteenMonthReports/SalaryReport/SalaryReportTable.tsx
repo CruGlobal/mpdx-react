@@ -26,12 +26,10 @@ import { CSVLink } from 'react-csv';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { useReactToPrint } from 'react-to-print';
+import { FourteenMonthReportTableHead } from '../TableHead/TableHead';
+import type { Contact, Month, Order, OrderBy } from '../TableHead/TableHead';
 // eslint-disable-next-line import/extensions
-import { FourteenMonthReportTableHead, Order } from '../TableHead/TableHead';
-import {
-  FourteenMonthReportQuery,
-  useFourteenMonthReportQuery,
-} from '../GetFourteenMonthReport.generated';
+import { useFourteenMonthReportQuery } from '../GetFourteenMonthReport.generated';
 import { Notification } from 'src/components/Notification/Notification';
 import { EmptyReport } from 'src/components/Reports/EmptyReport/EmptyReport';
 
@@ -81,52 +79,64 @@ const NavListIcon = styled(FilterList)(({ theme }) => ({
   color: theme.palette.primary.dark,
 }));
 
+const PrintableContainer = styled(TableContainer)(() => ({
+  // First style set size as landscape
+  // ['@media print']: {
+  //   ['@page']: { size: 'landscape' },
+  // },
+  height: 'calc(100vh - 160px)',
+}));
+
 const StickyTable = styled(Table)(({}) => ({
   height: 'calc(100vh - 96px)',
 }));
 
-function descendingComparator<T>(a: T, b: T, orderBy: keyof T | number) {
-  if (orderBy === 'total' || orderBy === 'name') {
-    if (b[orderBy] < a[orderBy]) {
-      return -1;
-    }
-    if (b[orderBy] > a[orderBy]) {
-      return 1;
-    }
-  } else {
-    const monthIdx = orderBy;
-    if (b.months[monthIdx]['total'] < a.months[monthIdx]['total']) {
-      return -1;
-    }
-    if (b.months[monthIdx]['total'] > a.months[monthIdx]['total']) {
-      return 1;
-    }
-  }
+// function descendingComparator(
+//   a: Contact,
+//   b: Contact,
+//   orderBy: OrderBy | number,
+// ) {
+//   if (orderBy === 'total' || orderBy === 'name') {
+//     return a[orderBy].localeCompare(b[orderBy]);
+//   } else {
+//     const monthIdx = orderBy;
 
-  return 0;
-}
+//     if (a.months && b.months) {
+//       if (b.months[monthIdx]['total'] < a.months[monthIdx]['total']) {
+//         return -1;
+//       }
+//       if (b.months[monthIdx]['total'] > a.months[monthIdx]['total']) {
+//         return 1;
+//       }
+//     }
+//   }
 
-function getComparator<Key extends keyof Record<string, unknown> | number>(
-  order: Order,
-  orderBy: Key,
-): (
-  a: { [key in Key]: number | string },
-  b: { [key in Key]: number | string },
-) => number {
-  return order === 'desc'
-    ? (a, b) => descendingComparator(a, b, orderBy)
-    : (a, b) => -descendingComparator(a, b, orderBy);
-}
+//   return 0;
+// }
 
-function stableSort<T>(array: T[], comparator: (a: T, b: T) => number) {
-  const stabilizedThis = array.map((el, index) => [el, index] as [T, number]);
-  stabilizedThis.sort((a, b) => {
-    const order = comparator(a[0], b[0]);
-    if (order !== 0) return order;
-    return a[1] - b[1];
-  });
-  return stabilizedThis.map((el) => el[0]);
-}
+// function getComparator(
+//   order: Order,
+//   orderBy: OrderBy | number,
+// ): (a: Contact, b: Contact) => number {
+//   return order === 'desc'
+//     ? (a, b) => descendingComparator(a, b, orderBy)
+//     : (a, b) => -descendingComparator(a, b, orderBy);
+// }
+
+// function stableSort(
+//   array: Contact[],
+//   comparator: (a: Contact, b: Contact) => number,
+// ) {
+//   const stabilizedThis = array.map(
+//     (el, index) => [el, index] as [Contact, number],
+//   );
+//   stabilizedThis.sort((a, b) => {
+//     const order = comparator(a[0], b[0]);
+//     if (order !== 0) return order;
+//     return a[1] - b[1];
+//   });
+//   return stabilizedThis.map((el) => el[0]);
+// }
 
 export const SalaryReportTable: React.FC<Props> = ({
   accountListId,
@@ -137,7 +147,7 @@ export const SalaryReportTable: React.FC<Props> = ({
 }) => {
   const [isExpanded, setExpanded] = useState<boolean>(false);
   const [order, setOrder] = useState<Order>('asc');
-  const [orderBy, setOrderBy] = useState<string | number | null>(null);
+  const [orderBy, setOrderBy] = useState<OrderBy | number | null>(null);
   const reportTableRef = useRef(null);
   const { t } = useTranslation();
 
@@ -161,18 +171,92 @@ export const SalaryReportTable: React.FC<Props> = ({
     );
   }, [data?.fourteenMonthReport.currencyGroups]);
 
+  console.log(contacts);
+  const orderedContacts = useMemo(() => {
+    if (contacts && orderBy) {
+      return contacts.sort((a: Contact, b: Contact) => {
+        if (orderBy === 'name' || orderBy === 'total') {
+          if (order === 'asc') {
+            return a[orderBy]
+              .toString()
+              .localeCompare(b[orderBy].toString(), undefined, {
+                numeric: true,
+              });
+          } else {
+            return b[orderBy]
+              .toString()
+              .localeCompare(a[orderBy].toString(), undefined, {
+                numeric: true,
+              });
+          }
+        } else {
+          if (typeof orderBy === 'number' && a.months && b.months) {
+            if (order === 'asc') {
+              return a['months'][orderBy]['total']
+                .toString()
+                .localeCompare(
+                  b['months'][orderBy]['total'].toString(),
+                  undefined,
+                  {
+                    numeric: true,
+                  },
+                );
+            } else {
+              return b['months'][orderBy]['total']
+                .toString()
+                .localeCompare(
+                  a['months'][orderBy]['total'].toString(),
+                  undefined,
+                  {
+                    numeric: true,
+                  },
+                );
+            }
+          }
+        }
+      });
+      // return stableSort(contacts, getComparator(order, orderBy));
+    } else {
+      return contacts;
+    }
+  }, [contacts, order, orderBy]);
+
   const handleExpandToggle = (): void => {
     setExpanded((prevExpanded) => !prevExpanded);
   };
 
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,
-    property: string | number,
+    property: OrderBy | number,
   ) => {
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
     setOrderBy(property);
   };
+
+  const CsvData = useMemo(() => {
+    if (!contacts) return [];
+
+    const monthsTitleArray = (type: 'month' | 'total') => {
+      if (data) {
+        return data.fourteenMonthReport.currencyGroups[0].totals.months.map(
+          (month) => month[type],
+        );
+      } else {
+        return [];
+      }
+    };
+    return [
+      [t('Currency'), data?.fourteenMonthReport.salaryCurrency],
+      [t('Partner'), ...monthsTitleArray('month'), t('Total')],
+      ...contacts.map((contact) => [
+        contact.name,
+        contact?.months?.map((month) => month.total) || [],
+        contact.total,
+      ]),
+      [t('Totals'), monthsTitleArray('total')],
+    ];
+  }, [contacts]);
 
   return (
     <Box>
@@ -204,11 +288,8 @@ export const SalaryReportTable: React.FC<Props> = ({
                 }
                 onClick={handleExpandToggle}
               >
-                {t(
-                  `${isExpanded ? 'Hide' : 'Expand'}${
-                    isMobile ? '' : ' Partner Info'
-                  }`,
-                )}
+                {isExpanded ? t('Hide') : t('Expand')}
+                {isMobile ? '' : t(' Partner Info')}
               </Button>
               <Button
                 startIcon={
@@ -218,7 +299,7 @@ export const SalaryReportTable: React.FC<Props> = ({
                 }
               >
                 <DownloadCsvLink
-                  data={contacts ? contacts : []}
+                  data={CsvData}
                   filename={`mpdx-salary-contributions-export-${DateTime.now().toISODate()}.csv`}
                 >
                   {t('Export')}
@@ -259,8 +340,12 @@ export const SalaryReportTable: React.FC<Props> = ({
           )}
         />
       ) : (
-        <TableContainer innerRef={reportTableRef}>
-          <StickyTable stickyHeader={true} data-testid="SalaryReportTable">
+        <PrintableContainer innerRef={reportTableRef}>
+          <StickyTable
+            stickyHeader={true}
+            aria-label="salary report table"
+            data-testid="SalaryReportTable"
+          >
             <FourteenMonthReportTableHead
               salaryCurrency={data?.fourteenMonthReport.salaryCurrency}
               totals={data?.fourteenMonthReport.currencyGroups[0].totals}
@@ -269,44 +354,37 @@ export const SalaryReportTable: React.FC<Props> = ({
               onRequestSort={handleRequestSort}
             />
             <TableBody>
-              {contacts &&
-                (orderBy
-                  ? stableSort(contacts, getComparator(order, orderBy))
-                  : contacts
-                ).map((contact) => (
-                  <TableRow key={contact.id} hover>
-                    <TableCell>
-                      <Box display="flex" flexDirection="column">
-                        <Box display="flex" alignItems="center">
-                          {!isExpanded && <InfoIcon fontSize="small" />}
-                          <NameTypography
-                            variant="body1"
-                            expanded={isExpanded ? 1 : 0}
-                          >
-                            {contact.name}
-                          </NameTypography>
-                        </Box>
-                        {isExpanded && (
-                          <Typography variant="body2" color="textSecondary">
-                            {contact.accountNumbers.join(', ')}
-                          </Typography>
-                        )}
+              {orderedContacts?.map((contact) => (
+                <TableRow key={contact.id} hover>
+                  <TableCell>
+                    <Box display="flex" flexDirection="column">
+                      <Box display="flex" alignItems="center">
+                        {!isExpanded && <InfoIcon fontSize="small" />}
+                        <NameTypography
+                          variant="body1"
+                          expanded={isExpanded ? 1 : 0}
+                        >
+                          {contact.name}
+                        </NameTypography>
                       </Box>
+                      {isExpanded && (
+                        <Typography variant="body2" color="textSecondary">
+                          {contact.accountNumbers.join(', ')}
+                        </Typography>
+                      )}
+                    </Box>
+                  </TableCell>
+                  {contact.months?.map((month: Month) => (
+                    <TableCell key={month?.month} align="center">
+                      {month?.salaryCurrencyTotal &&
+                        Math.round(month?.salaryCurrencyTotal)}
                     </TableCell>
-                    {contact.months?.map(
-                      (
-                        month: FourteenMonthReportQuery['fourteenMonthReport']['currencyGroups'][0]['contacts'][0]['months'][0],
-                      ) => (
-                        <TableCell key={month.month} align="center">
-                          {Math.round(month.salaryCurrencyTotal)}
-                        </TableCell>
-                      ),
-                    )}
-                    <TableCell align="right">
-                      <strong>{Math.round(contact.total)}</strong>
-                    </TableCell>
-                  </TableRow>
-                ))}
+                  ))}
+                  <TableCell align="right">
+                    <strong>{Math.round(contact.total)}</strong>
+                  </TableCell>
+                </TableRow>
+              ))}
               <TableRow>
                 <TableCell>
                   <strong>{t('Totals')}</strong>
@@ -323,7 +401,7 @@ export const SalaryReportTable: React.FC<Props> = ({
               </TableRow>
             </TableBody>
           </StickyTable>
-        </TableContainer>
+        </PrintableContainer>
       )}
     </Box>
   );
