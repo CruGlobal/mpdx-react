@@ -26,10 +26,7 @@ import { CSVLink } from 'react-csv';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { useReactToPrint } from 'react-to-print';
-import {
-  FourteenMonthReportCurrencyType,
-  // eslint-disable-next-line import/extensions
-} from 'graphql/types.generated';
+import { FourteenMonthReportCurrencyType } from '../../../../../graphql/types.generated';
 import { useFourteenMonthReportQuery } from '../GetFourteenMonthReport.generated';
 import { FourteenMonthReportTableHead } from '../TableHead/TableHead';
 import type { Contact, Month, Order, OrderBy } from '../TableHead/TableHead';
