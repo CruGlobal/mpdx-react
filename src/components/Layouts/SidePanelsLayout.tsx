@@ -118,10 +118,10 @@ export const SidePanelsLayout: FC<SidePanelsLayoutProps> = ({
   mainContent,
   rightPanel,
   rightWidth,
-  rightOpen,
+  rightOpen = false,
 }) => (
   <CollapsibleWrapper justifyContent="flex-start">
-    <ExpandingContent open={rightOpen ? rightOpen : false}>
+    <ExpandingContent open={rightOpen}>
       <CollapsibleWrapper justifyContent="flex-end">
         <LeftPanelWrapper
           open={leftOpen}
@@ -137,7 +137,7 @@ export const SidePanelsLayout: FC<SidePanelsLayoutProps> = ({
       </CollapsibleWrapper>
     </ExpandingContent>
     <RightPanelWrapper
-      open={rightOpen ? rightOpen : false}
+      open={rightOpen}
       width={rightWidth}
       flexBasis={rightWidth}
       breakpoint="md"
