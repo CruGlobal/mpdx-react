@@ -26,10 +26,14 @@ import { CSVLink } from 'react-csv';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { useReactToPrint } from 'react-to-print';
+import {
+  FourteenMonthReportCurrencyType,
+  // eslint-disable-next-line import/extensions
+} from 'graphql/types.generated';
+import { useFourteenMonthReportQuery } from '../GetFourteenMonthReport.generated';
 import { FourteenMonthReportTableHead } from '../TableHead/TableHead';
 import type { Contact, Month, Order, OrderBy } from '../TableHead/TableHead';
 // eslint-disable-next-line import/extensions
-import { useFourteenMonthReportQuery } from '../GetFourteenMonthReport.generated';
 import { Notification } from 'src/components/Notification/Notification';
 import { EmptyReport } from 'src/components/Reports/EmptyReport/EmptyReport';
 
@@ -91,53 +95,6 @@ const StickyTable = styled(Table)(({}) => ({
   height: 'calc(100vh - 96px)',
 }));
 
-// function descendingComparator(
-//   a: Contact,
-//   b: Contact,
-//   orderBy: OrderBy | number,
-// ) {
-//   if (orderBy === 'total' || orderBy === 'name') {
-//     return a[orderBy].localeCompare(b[orderBy]);
-//   } else {
-//     const monthIdx = orderBy;
-
-//     if (a.months && b.months) {
-//       if (b.months[monthIdx]['total'] < a.months[monthIdx]['total']) {
-//         return -1;
-//       }
-//       if (b.months[monthIdx]['total'] > a.months[monthIdx]['total']) {
-//         return 1;
-//       }
-//     }
-//   }
-
-//   return 0;
-// }
-
-// function getComparator(
-//   order: Order,
-//   orderBy: OrderBy | number,
-// ): (a: Contact, b: Contact) => number {
-//   return order === 'desc'
-//     ? (a, b) => descendingComparator(a, b, orderBy)
-//     : (a, b) => -descendingComparator(a, b, orderBy);
-// }
-
-// function stableSort(
-//   array: Contact[],
-//   comparator: (a: Contact, b: Contact) => number,
-// ) {
-//   const stabilizedThis = array.map(
-//     (el, index) => [el, index] as [Contact, number],
-//   );
-//   stabilizedThis.sort((a, b) => {
-//     const order = comparator(a[0], b[0]);
-//     if (order !== 0) return order;
-//     return a[1] - b[1];
-//   });
-//   return stabilizedThis.map((el) => el[0]);
-// }
-
 export const SalaryReportTable: React.FC<Props> = ({
   accountListId,
   isNavListOpen,
@@ -158,6 +115,7 @@ export const SalaryReportTable: React.FC<Props> = ({
   const { data, loading, error } = useFourteenMonthReportQuery({
     variables: {
       accountListId,
+      currencyType: FourteenMonthReportCurrencyType.Salary,
     },
   });
 
@@ -215,7 +173,6 @@ export const SalaryReportTable: React.FC<Props> = ({
           }
         }
       });
-      // return stableSort(contacts, getComparator(order, orderBy));
     } else {
       return contacts;
     }
