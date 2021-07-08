@@ -31,8 +31,9 @@ const HeaderTitle = styled(Typography)(({}) => ({
   lineHeight: 1.1,
 }));
 
-const NavListButton = styled(IconButton)(
-  ({ theme, panelopen }: { theme: Theme; panelopen: 1 | 0 }) => ({
+const NavListButton = styled(({ panelOpen: _panelOpen, ...props }) => (
+  <IconButton {...props} />
+))(({ theme, panelOpen }: { theme: Theme; panelOpen: boolean }) => ({
     display: 'inline-block',
     width: 48,
     height: 48,
