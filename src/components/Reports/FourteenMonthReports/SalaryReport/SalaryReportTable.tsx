@@ -129,46 +129,21 @@ export const SalaryReportTable: React.FC<Props> = ({
   console.log(contacts);
   const orderedContacts = useMemo(() => {
     if (contacts && orderBy) {
-      return contacts.sort((a: Contact, b: Contact) => {
-        if (orderBy === 'name' || orderBy === 'total') {
-          if (order === 'asc') {
-            return a[orderBy]
-              .toString()
-              .localeCompare(b[orderBy].toString(), undefined, {
-                numeric: true,
-              });
-          } else {
-            return b[orderBy]
-              .toString()
-              .localeCompare(a[orderBy].toString(), undefined, {
-                numeric: true,
-              });
-          }
-        } else {
-          if (typeof orderBy === 'number' && a.months && b.months) {
-            if (order === 'asc') {
-              return a['months'][orderBy]['total']
-                .toString()
-                .localeCompare(
-                  b['months'][orderBy]['total'].toString(),
-                  undefined,
-                  {
-                    numeric: true,
-                  },
-                );
-            } else {
-              return b['months'][orderBy]['total']
-                .toString()
-                .localeCompare(
-                  a['months'][orderBy]['total'].toString(),
-                  undefined,
-                  {
-                    numeric: true,
-                  },
-                );
-            }
-          }
-        }
+      const getSortValue = (contact: Contact) =>
+        (typeof orderBy === 'number'
+          ? contact['months']?.[orderBy]['total'].toString()
+          : contact[orderBy]) ?? contact.name;
+
+      return contacts.sort((a, b) => {
+        const compare = getSortValue(a).localeCompare(
+          getSortValue(b),
+          undefined,
+          {
+            numeric: true,
+          },
+        );
+
+        return order === 'asc' ? compare : -compare;
       });
     } else {
       return contacts;
