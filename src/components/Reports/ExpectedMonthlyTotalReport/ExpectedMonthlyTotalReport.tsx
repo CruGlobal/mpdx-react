@@ -1,12 +1,12 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Box } from '@material-ui/core';
+import { EmptyDonationsTable } from '../../common/EmptyDonationsTable/EmptyDonationsTable';
 import { ExpectedMonthlyTotalReportHeader } from './Header/ExpectedMonthlyTotalReportHeader';
 import {
   ExpectedMonthlyTotalReportTable,
   Contact,
 } from './Table/ExpectedMonthlyTotalReportTable';
-import { ExpectedMonthlyTotalReportEmpty } from './Empty/ExpectedMonthlyTotalReportEmpty';
 
 interface Props {
   accountListId: string;
@@ -40,7 +40,7 @@ export const ExpectedMonthlyTotalReport: React.FC<Props> = ({ data }) => {
           />
         </>
       ) : (
-        <ExpectedMonthlyTotalReportEmpty />
+        <EmptyDonationsTable title="You have no expected donations this month" />
       )}
     </Box>
   );

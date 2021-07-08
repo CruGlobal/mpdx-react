@@ -1,14 +1,18 @@
-import React, { ReactElement } from 'react';
+import React from 'react';
 import Head from 'next/head';
 import { useTranslation } from 'react-i18next';
 import { Box } from '@material-ui/core';
 import PageHeading from '../../../../src/components/PageHeading';
-import { MonthlyActivitySection } from '../../../../src/components/Reports/DonationsReport/MonthlyActivitySection';
-import { DonationsReportTable } from '../../../../src/components/Reports/DonationsReport/DonationsReportTable';
+import { DonationsReport } from '../../../../src/components/Reports/DonationsReport/DonationsReport';
+
 import Loading from '../../../../src/components/Loading';
 import { useAccountListId } from '../../../../src/hooks/useAccountListId';
+import { GetDashboardQuery } from '../../GetDashboard.generated';
 
-const DonationsReportPage = (): ReactElement => {
+interface Props {
+  data: GetDashboardQuery;
+}
+const DonationsReportPage: React.FC<Props> = ({ data }) => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
 
@@ -22,8 +26,7 @@ const DonationsReportPage = (): ReactElement => {
       {accountListId ? (
         <Box>
           <PageHeading heading={t('Donations')} />
-          <MonthlyActivitySection accountListId={accountListId} />
-          <DonationsReportTable accountListId={accountListId} />
+          <DonationsReport data={data} accountListId={accountListId} />
         </Box>
       ) : (
         <Loading loading />

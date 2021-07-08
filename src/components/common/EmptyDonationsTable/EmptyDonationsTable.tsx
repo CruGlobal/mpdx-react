@@ -2,7 +2,9 @@ import React from 'react';
 import { Box, Typography, styled, Button } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 
-/*interface Props {}*/
+interface Props {
+  title: string;
+}
 
 const BoxWrapper = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.cruGrayLight.main,
@@ -17,7 +19,7 @@ const BoxWrapper = styled(Box)(({ theme }) => ({
   alignItems: 'center',
 }));
 
-export const ExpectedMonthlyTotalReportEmpty: React.FC = () => {
+export const EmptyDonationsTable: React.FC<Props> = ({ title }) => {
   const { t } = useTranslation();
 
   const connectServices = () => {
@@ -31,9 +33,7 @@ export const ExpectedMonthlyTotalReportEmpty: React.FC = () => {
   return (
     <BoxWrapper boxShadow={3}>
       <img src="bill.jpg" alt="bill" style={{ padding: 4 }}></img>
-      <Typography variant="h5">
-        {t('You have no expected donations this month')}
-      </Typography>
+      <Typography variant="h5">{t(title)}</Typography>
       <Typography>
         {t(
           'You can setup an organization account to import historic donations or add a new donation.',
