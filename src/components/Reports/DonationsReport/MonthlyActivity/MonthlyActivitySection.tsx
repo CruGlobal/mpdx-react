@@ -5,7 +5,7 @@ import { GetDashboardQuery } from '../../../../../pages/accountLists/GetDashboar
 interface Props {
   data: GetDashboardQuery;
 }
-
+//TODO: Query for actual data and load into DonationHistories
 export const MonthlyActivitySection: React.FC<Props> = (
   {
     /*data*/

@@ -47,12 +47,15 @@ const DataTable = styled(Box)(({ theme }) => ({
         : theme.palette.cruGrayLight.main,
   },
 }));
+
 export const DonationsReportTable: React.FC<Props> = ({
   data,
   accountListId,
 }) => {
   const { t } = useTranslation();
+
   const accountCurrency = data[0].currency;
+
   const link = (params: GridCellParams) => {
     const row = params.row as Donation;
     return (
@@ -63,6 +66,7 @@ export const DonationsReportTable: React.FC<Props> = ({
       </Typography>
     );
   };
+
   const amount = (params: GridCellParams) => {
     const row = params.row as Donation;
 
@@ -72,6 +76,7 @@ export const DonationsReportTable: React.FC<Props> = ({
       </Typography>
     );
   };
+
   const foreignAmount = (params: GridCellParams) => {
     const row = params.row as Donation;
     return (
@@ -80,11 +85,13 @@ export const DonationsReportTable: React.FC<Props> = ({
       </Typography>
     );
   };
+
   const button = () => (
     <IconButton color="primary">
       <EditIcon />
     </IconButton>
   );
+
   const columns: GridColDef[] = [
     {
       field: 'date',
@@ -127,6 +134,7 @@ export const DonationsReportTable: React.FC<Props> = ({
       renderCell: button,
     },
   ];
+
   const isEmpty = data.length === 0;
 
   const [time, setTime] = useState(DateTime.now().startOf('month'));
@@ -234,7 +242,6 @@ export const DonationsReportTable: React.FC<Props> = ({
                   {totalDonations}
                 </Typography>
               </TableCell>
-
               <TableCell />
             </TableRow>
           </Table>
