@@ -147,28 +147,27 @@ export const DonationsReportTable: React.FC<Props> = ({
     return total + current.convertedAmount;
   }, 0);
 
-  const calculateForeignTotals = () => {
-    const foreignTotals: {
-      [name: string]: { convertedTotal: number; foreignTotal: number };
-    } = {};
-    data.forEach((donation) => {
-      if (foreignTotals[donation.foreignCurrency] !== undefined) {
-        foreignTotals[donation.foreignCurrency].foreignTotal +=
-          donation.foreignAmount;
-        foreignTotals[donation.foreignCurrency].convertedTotal +=
-          donation.convertedAmount;
+  const totals = data.reduce(
+    (
+      acc: {
+        [key: string]: { convertedTotal: number; foreignTotal: number };
+      },
+      donation,
+    ) => {
+      const { foreignCurrency, foreignAmount, convertedAmount } = donation;
+      if (acc[foreignCurrency] !== undefined) {
+        acc[foreignCurrency].foreignTotal += foreignAmount;
+        acc[foreignCurrency].convertedTotal += convertedAmount;
       } else {
-        foreignTotals[donation.foreignCurrency] = {
+        acc[foreignCurrency] = {
           convertedTotal: donation.convertedAmount,
           foreignTotal: donation.foreignAmount,
         };
       }
-    });
-
-    return foreignTotals;
-  };
-
-  const foreignTotals = calculateForeignTotals();
+      return acc;
+    },
+    {},
+  );
 
   return (
     <>
@@ -205,8 +204,8 @@ export const DonationsReportTable: React.FC<Props> = ({
             hideFooter
           />
           <Table>
-            {Object.entries(foreignTotals).map(([currency, total]) => (
-              <TableRow key={currency}>
+            {Object.entries(totals).map(([currency, total]) => (
+              <TableRow data-testid="donationRow" key={currency}>
                 <TableCell style={{ width: 375 }}>
                   <Typography style={{ float: 'right', fontWeight: 'bold' }}>
                     {t('Total {{currency}} Donations:', { currency })}
