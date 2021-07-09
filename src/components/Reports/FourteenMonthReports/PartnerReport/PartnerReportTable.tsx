@@ -1,4 +1,3 @@
-/* eslint-disable import/no-unresolved */
 import React from 'react';
 import {
   Box,
@@ -34,15 +33,13 @@ const HeaderTitle = styled(Typography)(({}) => ({
 const NavListButton = styled(({ panelOpen: _panelOpen, ...props }) => (
   <IconButton {...props} />
 ))(({ theme, panelOpen }: { theme: Theme; panelOpen: boolean }) => ({
-    display: 'inline-block',
-    width: 48,
-    height: 48,
-    borderradius: 24,
-    margin: theme.spacing(1),
-    backgroundColor:
-      panelopen === 1 ? theme.palette.secondary.dark : 'transparent',
-  }),
-);
+  display: 'inline-block',
+  width: 48,
+  height: 48,
+  borderradius: 24,
+  margin: theme.spacing(1),
+  backgroundColor: panelOpen ? theme.palette.secondary.dark : 'transparent',
+}));
 
 const NavListIcon = styled(FilterList)(({ theme }) => ({
   width: 24,
@@ -75,7 +72,7 @@ export const PartnerReportTable: React.FC<Props> = ({
           <Grid item>
             <Box display="flex" alignItems="center">
               <NavListButton
-                panelopen={isNavListOpen ? 1 : 0}
+                panelOpen={isNavListOpen}
                 onClick={onNavListToggle}
               >
                 <NavListIcon titleAccess={t('Toggle Filter Panel')} />
