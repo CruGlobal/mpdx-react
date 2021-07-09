@@ -1,4 +1,3 @@
-/* eslint-disable import/no-unresolved */
 import React, { useMemo, useRef, useState } from 'react';
 import {
   Box,
