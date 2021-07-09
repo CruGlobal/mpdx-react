@@ -4,7 +4,7 @@ import { Box, CircularProgress, styled } from '@material-ui/core';
 import { useGetExpectedMonthlyTotalsQuery } from '../../../../pages/accountLists/[accountListId]/reports/GetExpectedMonthlyTotals.generated';
 import { ExpectedMonthlyTotalReportHeader } from './Header/ExpectedMonthlyTotalReportHeader';
 import { ExpectedMonthlyTotalReportTable } from './Table/ExpectedMonthlyTotalReportTable';
-import { ExpectedMonthlyTotalReportEmpty } from './Empty/ExpectedMonthlyTotalReportEmpty';
+import { EmptyDonationsTable } from 'src/components/common/EmptyDonationsTable/EmptyDonationsTable';
 
 interface Props {
   accountListId: string;
@@ -89,7 +89,7 @@ export const ExpectedMonthlyTotalReport: React.FC<Props> = ({
           />
         </>
       ) : (
-        <ExpectedMonthlyTotalReportEmpty />
+        <EmptyDonationsTable title="You have no expected donations this month" />
       )}
     </Box>
   );
