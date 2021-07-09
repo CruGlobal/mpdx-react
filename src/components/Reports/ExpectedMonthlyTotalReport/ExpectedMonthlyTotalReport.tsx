@@ -20,14 +20,13 @@ export const ExpectedMonthlyTotalReport: React.FC<Props> = ({
     variables: { accountListId },
   });
 
-  const receivedDonations =
-    data?.expectedMonthlyTotalReport.received.donations || [];
+  const { received, likely, unlikely, currency } =
+    data?.expectedMonthlyTotalReport || {};
+  const receivedDonations = received?.donations || [];
 
-  const likelyDonations =
-    data?.expectedMonthlyTotalReport.likely.donations || [];
+  const likelyDonations = likely?.donations || [];
 
-  const unlikelyDonations =
-    data?.expectedMonthlyTotalReport.unlikely.donations || [];
+  const unlikelyDonations = unlikely?.donations || [];
 
   const receivedCount = receivedDonations.length;
 
@@ -37,27 +36,53 @@ export const ExpectedMonthlyTotalReport: React.FC<Props> = ({
 
   const isEmpty = receivedCount + likelyCount + unlikelyCount === 0;
 
+  const totalDonations = received?.total || 0;
+
+  const totalLikely = likely?.total || 0;
+
+  const totalUnlikely = unlikely?.total || 0;
+
+  const totalAmount = totalDonations + totalLikely + totalUnlikely;
+
+  const totalCurrency = currency || 'USD';
+
   return (
     <Box>
-      <ExpectedMonthlyTotalReportHeader empty={isEmpty} />
+      <ExpectedMonthlyTotalReportHeader
+        empty={isEmpty}
+        totalDonations={totalDonations}
+        totalLikely={totalLikely}
+        totalUnlikely={totalUnlikely}
+        total={totalAmount}
+        currency={totalCurrency}
+      />
       {loading ? (
         <Loading loading />
       ) : !isEmpty ? (
         <>
           <ExpectedMonthlyTotalReportTable
+            accountListId={accountListId}
             title={t('Donations So Far This Month')}
             data={receivedDonations}
             donations={true}
+            total={totalDonations}
+            currency={totalCurrency}
           />
           <ExpectedMonthlyTotalReportTable
+            accountListId={accountListId}
             title={t('Likely Partners This Month')}
             data={likelyDonations}
             donations={false}
+            total={totalLikely}
+            currency={totalCurrency}
           />
           <ExpectedMonthlyTotalReportTable
+            accountListId={accountListId}
             title={t('Possible Partners This Month')}
             data={unlikelyDonations}
             donations={false}
+            total={totalUnlikely}
+            currency={totalCurrency}
           />
         </>
       ) : (

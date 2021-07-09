@@ -17,47 +17,40 @@ import {
 import { ExpandMore } from '@material-ui/icons';
 import { useTranslation } from 'react-i18next';
 import theme from '../../../../theme';
-
-export interface Contact {
-  name: string;
-  contactId: string;
-  status: string;
-  commitment: string;
-  frequency: string;
-  converted: string;
-  currency: string;
-  donation?: string;
-}
+import { ExpectedDonationRowFragment } from 'pages/accountLists/[accountListId]/reports/GetExpectedMonthlyTotals.generated';
 
 interface Props {
+  accountListId: string;
   title: string;
-  data: Contact[];
+  data: ExpectedDonationRowFragment[];
   donations: boolean;
+  total: number;
+  currency: string;
 }
 
 export const ExpectedMonthlyTotalReportTable: React.FC<Props> = ({
+  accountListId,
   title,
   data,
   donations,
+  total,
+  currency,
 }) => {
   const { t } = useTranslation();
 
-  const totalPartners = () => {
-    return 6;
-  };
-
   const [visible, setVisible] = useState(true);
-
-  const total = () => {
-    return 3920;
-  };
 
   const showTotalPartners = () => {
     if (visible) {
-      return t(' Show ' + totalPartners() + ' Partners');
+      return t(
+        ' Show ' + data.length + ` Partner${data.length > 1 ? 's' : ''}`,
+      );
     }
   };
-  return (
+
+  const isEmpty = data.length === 0;
+
+  return !isEmpty ? (
     <Box
       style={{
         maxWidth: '98%',
@@ -65,22 +58,20 @@ export const ExpectedMonthlyTotalReportTable: React.FC<Props> = ({
         margin: 'auto',
       }}
     >
-      <Accordion
-        style={{ marginLeft: 0 }}
-        onClick={() => setVisible((v) => !v)}
-      >
+      <Accordion style={{ marginLeft: 0 }}>
         <AccordionSummary
           expandIcon={<ExpandMore />}
           style={{
             backgroundColor: theme.palette.cruGrayLight.main,
           }}
+          onClick={() => setVisible((v) => !v)}
         >
           <Typography>{t(title)}</Typography>
           <Typography style={{ fontSize: 12, margin: 4 }}>
             {showTotalPartners()}
           </Typography>
           <Typography style={{ marginLeft: 'auto' }}>
-            {total() + ' CAD'}
+            {Math.round(total) + ' ' + currency}
           </Typography>
         </AccordionSummary>
         <AccordionDetails>
@@ -110,20 +101,28 @@ export const ExpectedMonthlyTotalReportTable: React.FC<Props> = ({
                     }}
                   >
                     <TableCell align="left">
-                      <Link href="../../../pages/accountLists/[accountListId]/contacts/[[...contactId]].page.tsx">
-                        {row.name}
+                      <Link
+                        href={`../../${accountListId}/contacts/${row.contactId}`}
+                      >
+                        {row.contactName}
                       </Link>
                     </TableCell>
-                    <TableCell align="left">{t(row.status)}</TableCell>
+                    <TableCell align="left">{row.contactStatus}</TableCell>
                     <TableCell align="right">
-                      {row.commitment + ' ' + row.currency}
+                      {row.pledgeAmount + ' ' + row.pledgeCurrency}
                     </TableCell>
-                    <TableCell align="right">{t(row.frequency)}</TableCell>
+                    <TableCell align="right">{row.pledgeFrequency}</TableCell>
                     {donations ? (
-                      <TableCell align="right">{row.donation}</TableCell>
+                      <TableCell align="right">
+                        {Math.round(row.donationAmount || 0) +
+                          ' ' +
+                          row.donationCurrency}
+                      </TableCell>
                     ) : null}
                     <TableCell align="right">
-                      {row.converted + ' ' + row.currency}
+                      {Math.round(row.convertedAmount || 0) +
+                        ' ' +
+                        row.convertedCurrency}
                     </TableCell>
                   </TableRow>
                 ))}
@@ -133,5 +132,5 @@ export const ExpectedMonthlyTotalReportTable: React.FC<Props> = ({
         </AccordionDetails>
       </Accordion>
     </Box>
-  );
+  ) : null;
 };

@@ -24,7 +24,14 @@ const ExpectedMonthlyTotalReportPage = (): ReactElement => {
         ></ExpectedMonthlyTotalReport>
       ) : (
         <Box>
-          <ExpectedMonthlyTotalReportHeader empty={true} />
+          <ExpectedMonthlyTotalReportHeader
+            empty={true}
+            totalDonations={0}
+            totalLikely={0}
+            totalUnlikely={0}
+            total={0}
+            currency={''}
+          />
           <Loading loading />
         </Box>
       )}

@@ -2,40 +2,36 @@ query GetExpectedMonthlyTotals($accountListId: ID!) {
   expectedMonthlyTotalReport(accountListId: $accountListId) {
     received {
       donations {
-        contactId
-        contactName
-        contactStatus
-        convertedAmount
-        donationAmount
-        donationCurrency
+        ...ExpectedDonationRow
       }
       total
     }
     likely {
       donations {
-        contactId
-        contactName
-        contactStatus
-        convertedAmount
-        pledgeAmount
-        pledgeCurrency
-        pledgeFrequency
+        ...ExpectedDonationRow
       }
       total
     }
     unlikely {
       donations {
-        contactId
-        contactName
-        contactStatus
-        convertedAmount
-        pledgeAmount
-        pledgeCurrency
-        pledgeFrequency
+        ...ExpectedDonationRow
       }
       total
     }
     currency
     currencySymbol
   }
+}
+
+fragment ExpectedDonationRow on ExpectedMonthlyTotalDonation {
+  contactId
+  contactName
+  contactStatus
+  convertedAmount
+  convertedCurrency
+  donationAmount
+  donationCurrency
+  pledgeAmount
+  pledgeCurrency
+  pledgeFrequency
 }
