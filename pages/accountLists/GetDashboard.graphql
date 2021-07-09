@@ -29,3 +29,21 @@ query GetDashboard($accountListId: ID!) {
     }
   }
 }
+
+query GetQuestions($accountListId: ID!) {
+  coachingAnswerSets(accountListId: $accountListId) {
+    id
+    answers {
+      id
+      response
+    }
+    completedAt
+    questions {
+      id
+      position
+      prompt
+      required
+      responseOptions
+    }
+  }
+}
