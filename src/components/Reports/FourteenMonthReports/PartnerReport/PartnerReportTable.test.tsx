@@ -25,6 +25,6 @@ describe('PartnerReportTable', () => {
       </ThemeProvider>,
     );
 
-    expect(getByText('test title')).toBeInTheDocument();
+    expect(getByText(title)).toBeInTheDocument();
   });
 });

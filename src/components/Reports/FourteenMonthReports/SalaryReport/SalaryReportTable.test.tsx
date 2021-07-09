@@ -27,7 +27,7 @@ describe('SalaryReportTable', () => {
       </ThemeProvider>,
     );
 
-    expect(getByText('test title')).toBeInTheDocument();
+    expect(getByText(title)).toBeInTheDocument();
     expect(queryByTestId('LoadingSalaryReport')).toBeInTheDocument();
     expect(queryByTestId('Notification')).toBeNull();
   });
@@ -106,7 +106,7 @@ describe('SalaryReportTable', () => {
       expect(queryByTestId('LoadingSalaryReport')).not.toBeInTheDocument();
     });
 
-    expect(getByText('test title')).toBeInTheDocument();
+    expect(getByText(title)).toBeInTheDocument();
   });
 
   it('empty', async () => {
@@ -135,7 +135,7 @@ describe('SalaryReportTable', () => {
       expect(queryByTestId('LoadingSalaryReport')).not.toBeInTheDocument();
     });
 
-    expect(getByText('test title')).toBeInTheDocument();
+    expect(getByText(title)).toBeInTheDocument();
     expect(queryByTestId('Notification')).toBeInTheDocument();
   });
 });
