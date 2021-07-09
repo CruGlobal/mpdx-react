@@ -25,6 +25,7 @@ import AnimatedCard from '../../../AnimatedCard';
 import { numberFormat } from '../../../../lib/intlFormat';
 import HandoffLink from '../../../HandoffLink';
 import { useGetWeeklyActivityQuery } from './GetWeeklyActivity.generated';
+import { useGetQuestionsQuery } from 'pages/accountLists/GetDashboard.generated';
 
 const useStyles = makeStyles((theme: Theme) => ({
   div: {
@@ -88,6 +89,16 @@ const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
       enqueueSnackbar(error.message, { variant: 'error' });
     },
   });
+
+  const {
+    data: questionsData,
+    loading: questionsLoading,
+    error: questionsError,
+  } = useGetQuestionsQuery({
+    variables: { accountListId },
+  });
+
+  debugger;
 
   const addWeek = (): void =>
     setInterval((interval) =>
