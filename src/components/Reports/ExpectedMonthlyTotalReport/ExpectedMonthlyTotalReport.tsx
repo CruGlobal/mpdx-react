@@ -1,15 +1,18 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Box } from '@material-ui/core';
+import { Box, CircularProgress, styled } from '@material-ui/core';
+import { useGetExpectedMonthlyTotalsQuery } from '../../../../pages/accountLists/[accountListId]/reports/GetExpectedMonthlyTotals.generated';
 import { ExpectedMonthlyTotalReportHeader } from './Header/ExpectedMonthlyTotalReportHeader';
 import { ExpectedMonthlyTotalReportTable } from './Table/ExpectedMonthlyTotalReportTable';
 import { ExpectedMonthlyTotalReportEmpty } from './Empty/ExpectedMonthlyTotalReportEmpty';
-import { useGetExpectedMonthlyTotalsQuery } from 'pages/accountLists/[accountListId]/reports/GetExpectedMonthlyTotals.generated';
-import Loading from 'src/components/Loading';
 
 interface Props {
   accountListId: string;
 }
+
+const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
+  margin: theme.spacing(0, 1, 0, 0),
+}));
 
 export const ExpectedMonthlyTotalReport: React.FC<Props> = ({
   accountListId,
@@ -57,7 +60,7 @@ export const ExpectedMonthlyTotalReport: React.FC<Props> = ({
         currency={totalCurrency}
       />
       {loading ? (
-        <Loading loading />
+        <LoadingIndicator color="primary" size={20} />
       ) : !isEmpty ? (
         <>
           <ExpectedMonthlyTotalReportTable

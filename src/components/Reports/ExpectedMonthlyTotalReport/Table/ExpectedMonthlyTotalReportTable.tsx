@@ -92,6 +92,7 @@ export const ExpectedMonthlyTotalReportTable: React.FC<Props> = ({
               <TableBody>
                 {data.map((row, index) => (
                   <TableRow
+                    data-testid="donationRow"
                     key={row.contactId}
                     style={{
                       backgroundColor:
