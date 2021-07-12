@@ -2,9 +2,9 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Box, CircularProgress, styled } from '@material-ui/core';
 import { useGetExpectedMonthlyTotalsQuery } from '../../../../pages/accountLists/[accountListId]/reports/GetExpectedMonthlyTotals.generated';
+import { EmptyDonationsTable } from '../../../../src/components/common/EmptyDonationsTable/EmptyDonationsTable';
 import { ExpectedMonthlyTotalReportHeader } from './Header/ExpectedMonthlyTotalReportHeader';
 import { ExpectedMonthlyTotalReportTable } from './Table/ExpectedMonthlyTotalReportTable';
-import { EmptyDonationsTable } from 'src/components/common/EmptyDonationsTable/EmptyDonationsTable';
 
 interface Props {
   accountListId: string;
@@ -25,6 +25,7 @@ export const ExpectedMonthlyTotalReport: React.FC<Props> = ({
 
   const { received, likely, unlikely, currency } =
     data?.expectedMonthlyTotalReport || {};
+
   const receivedDonations = received?.donations || [];
 
   const likelyDonations = likely?.donations || [];

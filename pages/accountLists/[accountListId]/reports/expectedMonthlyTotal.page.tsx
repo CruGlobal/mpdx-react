@@ -2,10 +2,10 @@ import React, { ReactElement } from 'react';
 import Head from 'next/head';
 import { useTranslation } from 'react-i18next';
 import { Box } from '@material-ui/core';
-import { ExpectedMonthlyTotalReport } from '../../../../src/components/Reports/ExpectedMonthlyTotalReport/ExpectedMonthlyTotalReport';
 import { ExpectedMonthlyTotalReportHeader } from '../../../../src/components/Reports/ExpectedMonthlyTotalReport/Header/ExpectedMonthlyTotalReportHeader';
 import Loading from '../../../../src/components/Loading';
 import { useAccountListId } from '../../../../src/hooks/useAccountListId';
+import { ExpectedMonthlyTotalReport } from 'src/components/Reports/ExpectedMonthlyTotalReport/ExpectedMonthlyTotalReport';
 
 const ExpectedMonthlyTotalReportPage = (): ReactElement => {
   const { t } = useTranslation();

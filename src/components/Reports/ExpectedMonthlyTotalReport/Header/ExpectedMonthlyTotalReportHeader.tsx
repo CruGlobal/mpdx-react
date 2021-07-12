@@ -55,7 +55,7 @@ export const ExpectedMonthlyTotalReportHeader: React.FC<Props> = ({
       <HeaderWrapper>
         <Typography variant="h4">{t('Expected Monthly Total')}</Typography>
         {!empty ? (
-          <ProgressBarWrapper>
+          <ProgressBarWrapper data-testid="progressBarWrapper">
             <Tooltip
               title={
                 <Typography>
