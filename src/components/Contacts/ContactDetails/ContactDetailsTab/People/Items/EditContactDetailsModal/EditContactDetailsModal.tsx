@@ -87,9 +87,9 @@ export const EditContactDetailsModal: React.FC<EditContactDetailsModalProps> = (
   > = yup.object({
     name: yup.string().required(),
     id: yup.string().required(),
+    primaryPersonId: yup.string().required(),
   });
 
-  // TODO Add logic to update primary person when it comes available in mutation
   const onSubmit = async (attributes: ContactUpdateInput) => {
     try {
       await updateContact({
@@ -98,6 +98,7 @@ export const EditContactDetailsModal: React.FC<EditContactDetailsModalProps> = (
           attributes: {
             name: attributes.name,
             id: attributes.id,
+            primaryPersonId: attributes.primaryPersonId,
           },
         },
       });
@@ -117,12 +118,16 @@ export const EditContactDetailsModal: React.FC<EditContactDetailsModalProps> = (
       handleClose={handleClose}
     >
       <Formik
-        initialValues={{ name: contact.name, id: contact.id }}
+        initialValues={{
+          name: contact.name,
+          id: contact.id,
+          primaryPersonId: contact?.primaryPerson?.id ?? '',
+        }}
         validationSchema={contactSchema}
         onSubmit={onSubmit}
       >
         {({
-          values: { name },
+          values: { name, primaryPersonId },
           handleChange,
           handleSubmit,
           isSubmitting,
@@ -157,7 +162,8 @@ export const EditContactDetailsModal: React.FC<EditContactDetailsModalProps> = (
                     </ContactPrimaryPersonSelectLabel>
                     <Select
                       labelId="primary-person-select-label"
-                      value={contact.primaryPerson?.id}
+                      value={primaryPersonId}
+                      onChange={handleChange('primaryPersonId')}
                       fullWidth={true}
                     >
                       {contact.people.nodes.map((person) => {

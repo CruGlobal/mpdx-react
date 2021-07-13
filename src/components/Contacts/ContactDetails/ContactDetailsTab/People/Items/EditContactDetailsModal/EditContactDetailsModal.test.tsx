@@ -22,7 +22,7 @@ import { UpdateContactDetailsMutation } from './EditContactDetails.generated';
 const handleClose = jest.fn();
 const mock = gqlMock<ContactPeopleFragment>(ContactPeopleFragmentDoc);
 const contactId = '123';
-const accountListEd = 'abc';
+const accountListId = 'abc';
 
 const mockEnqueue = jest.fn();
 
@@ -41,7 +41,18 @@ const mockContact: ContactDetailsTabQuery['contact'] = {
   name: 'test person',
   id: contactId,
   tagList: [],
-  people: mock.people,
+
+  people: {
+    nodes: [
+      {
+        ...mock.people.nodes[0],
+        firstName: 'test',
+        lastName: 'guy',
+        id: mock.primaryPerson?.id ?? '',
+      },
+      ...mock.people.nodes,
+    ],
+  },
   primaryPerson: mock.primaryPerson,
 };
 
@@ -53,7 +64,7 @@ describe('EditContactDetailsModal', () => {
           <ThemeProvider theme={theme}>
             <GqlMockedProvider<UpdateContactDetailsMutation>>
               <EditContactDetailsModal
-                accountListId={accountListEd}
+                accountListId={accountListId}
                 isOpen={true}
                 handleClose={handleClose}
                 contact={mockContact}
@@ -74,7 +85,7 @@ describe('EditContactDetailsModal', () => {
           <ThemeProvider theme={theme}>
             <GqlMockedProvider<UpdateContactDetailsMutation>>
               <EditContactDetailsModal
-                accountListId={accountListEd}
+                accountListId={accountListId}
                 isOpen={true}
                 handleClose={handleClose}
                 contact={mockContact}
@@ -96,7 +107,7 @@ describe('EditContactDetailsModal', () => {
           <ThemeProvider theme={theme}>
             <GqlMockedProvider<UpdateContactDetailsMutation>>
               <EditContactDetailsModal
-                accountListId={accountListEd}
+                accountListId={accountListId}
                 isOpen={true}
                 handleClose={handleClose}
                 contact={mockContact}
@@ -112,14 +123,18 @@ describe('EditContactDetailsModal', () => {
   });
 
   it('should edit contact details', async () => {
+    const mutationSpy = jest.fn();
     const newContactName = 'Guy, Cool and Neat';
+    const newPrimaryContactName = `${mockContact.people.nodes[1].firstName} ${mockContact.people.nodes[1].lastName}`;
     const { getByText, getByRole } = render(
       <SnackbarProvider>
         <MuiPickersUtilsProvider utils={LuxonUtils}>
           <ThemeProvider theme={theme}>
-            <GqlMockedProvider<UpdateContactDetailsMutation>>
+            <GqlMockedProvider<UpdateContactDetailsMutation>
+              onCall={mutationSpy}
+            >
               <EditContactDetailsModal
-                accountListId={accountListEd}
+                accountListId={accountListId}
                 isOpen={true}
                 handleClose={handleClose}
                 contact={mockContact}
@@ -131,11 +146,19 @@ describe('EditContactDetailsModal', () => {
     );
     expect(getByText('Edit Contact Details')).toBeInTheDocument();
     userEvent.type(getByRole('textbox', { name: 'Contact' }), newContactName);
+    userEvent.click(getByRole('button', { name: 'Primary' }));
+    userEvent.click(getByRole('option', { name: newPrimaryContactName }));
     userEvent.click(getByText('Save'));
     await waitFor(() =>
       expect(mockEnqueue).toHaveBeenCalledWith('Contact updated successfully', {
         variant: 'success',
       }),
+    );
+
+    const { operation } = mutationSpy.mock.calls[0][0];
+    expect(operation.variables.accountListId).toEqual(accountListId);
+    expect(operation.variables.attributes.primaryPersonId).toEqual(
+      mockContact.people.nodes[1].id,
     );
   });
 
@@ -157,7 +180,7 @@ describe('EditContactDetailsModal', () => {
               }}
             >
               <EditContactDetailsModal
-                accountListId={accountListEd}
+                accountListId={accountListId}
                 isOpen={true}
                 handleClose={handleClose}
                 contact={mockContact}
