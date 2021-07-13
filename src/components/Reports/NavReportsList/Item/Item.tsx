@@ -4,7 +4,7 @@ import { ArrowForwardIos } from '@material-ui/icons';
 import NextLink from 'next/link';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 
-export interface ReportOption {
+interface ReportOption {
   id: string;
   title: string;
   subTitle?: string;
@@ -15,7 +15,7 @@ interface Props {
   isSelected: boolean;
 }
 
-const NavReportListItem: React.FC<Props> = ({ item, isSelected, ...rest }) => {
+export const Item: React.FC<Props> = ({ item, isSelected, ...rest }) => {
   const accountListId = useAccountListId();
 
   return (
@@ -37,5 +37,3 @@ const NavReportListItem: React.FC<Props> = ({ item, isSelected, ...rest }) => {
     </NextLink>
   );
 };
-
-export default NavReportListItem;
