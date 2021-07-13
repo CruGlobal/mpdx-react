@@ -1,6 +1,7 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import { ThemeProvider } from '@material-ui/core';
+import userEvent from '@testing-library/user-event';
 import { FourteenMonthReportQuery } from '../GetFourteenMonthReport.generated';
 import { SalaryReportTable } from './SalaryReportTable';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
@@ -89,7 +90,7 @@ describe('SalaryReportTable', () => {
       },
     };
 
-    const { queryByTestId, getByText } = render(
+    const { queryByTestId, getByTestId, getByText } = render(
       <ThemeProvider theme={theme}>
         <GqlMockedProvider<FourteenMonthReportQuery> mocks={mocks}>
           <SalaryReportTable
@@ -107,6 +108,8 @@ describe('SalaryReportTable', () => {
     });
 
     expect(getByText(title)).toBeInTheDocument();
+    userEvent.click(getByTestId('ExpandUserInfoButton'));
+    userEvent.click(getByTestId('PrintButton'));
   });
 
   it('empty', async () => {

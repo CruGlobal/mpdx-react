@@ -50,11 +50,11 @@ const HeaderTitle = styled(Typography)(({}) => ({
   lineHeight: 1.1,
 }));
 
-const NameTypography = styled(Typography)(
-  ({ theme, expanded }: { theme: Theme; expanded: 1 | 0 }) => ({
-    marginLeft: expanded === 1 ? 0 : theme.spacing(1),
-  }),
-);
+const NameTypography = styled(({ expanded: _expanded, ...props }) => (
+  <Typography {...props} />
+))(({ theme, expanded }: { theme: Theme; expanded: boolean }) => ({
+  marginLeft: expanded ? 0 : theme.spacing(1),
+}));
 
 const DownloadCsvLink = styled(CSVLink)(({}) => ({
   color: 'inherit',
@@ -207,6 +207,7 @@ export const SalaryReportTable: React.FC<Props> = ({
           <Grid item>
             <ButtonGroup aria-label="report header button group">
               <Button
+                data-testid="ExpandUserInfoButton"
                 startIcon={
                   <SvgIcon fontSize="small">
                     <CodeIcon />
@@ -232,6 +233,7 @@ export const SalaryReportTable: React.FC<Props> = ({
                 </DownloadCsvLink>
               </Button>
               <Button
+                data-testid="PrintButton"
                 startIcon={
                   <SvgIcon fontSize="small">
                     <PrintIcon />
@@ -286,10 +288,7 @@ export const SalaryReportTable: React.FC<Props> = ({
                     <Box display="flex" flexDirection="column">
                       <Box display="flex" alignItems="center">
                         {!isExpanded && <InfoIcon fontSize="small" />}
-                        <NameTypography
-                          variant="body1"
-                          expanded={isExpanded ? 1 : 0}
-                        >
+                        <NameTypography variant="body1" expanded={isExpanded}>
                           {contact.name}
                         </NameTypography>
                       </Box>
