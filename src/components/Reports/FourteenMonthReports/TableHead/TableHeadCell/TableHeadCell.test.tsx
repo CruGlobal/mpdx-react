@@ -10,7 +10,7 @@ const children = 'Jul';
 
 describe('FourteenMonthReportTableHead', () => {
   it('default', async () => {
-    const { queryByTestId } = render(
+    const { getByText } = render(
       <ThemeProvider theme={theme}>
         <TableHeadCell
           isActive={false}
@@ -23,6 +23,6 @@ describe('FourteenMonthReportTableHead', () => {
       </ThemeProvider>,
     );
 
-    expect(queryByTestId('SalaryReportTableHead')).toBeInTheDocument();
+    expect(getByText(children)).toBeInTheDocument();
   });
 });
