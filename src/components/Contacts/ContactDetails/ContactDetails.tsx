@@ -122,7 +122,10 @@ export const ContactDetails: React.FC<Props> = ({
           />
         </TabPanel>
         <TabPanel value={TabKey.Notes}>
-          <ContactNotesTab />
+          <ContactNotesTab
+            accountListId={accountListId}
+            contactId={contactId}
+          />
         </TabPanel>
       </TabContext>
     </ContactDetailsWrapper>
