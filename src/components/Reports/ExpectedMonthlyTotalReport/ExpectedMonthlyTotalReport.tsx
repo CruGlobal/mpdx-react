@@ -19,7 +19,7 @@ export const ExpectedMonthlyTotalReport: React.FC<Props> = ({
 }) => {
   const { t } = useTranslation();
 
-  const { data, loading, error } = useGetExpectedMonthlyTotalsQuery({
+  const { data, loading } = useGetExpectedMonthlyTotalsQuery({
     variables: { accountListId },
   });
 
