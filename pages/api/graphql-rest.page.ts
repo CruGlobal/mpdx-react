@@ -127,11 +127,12 @@ class MpdxRestApi extends RESTDataSource {
     return getTaskAnalytics(data);
   }
 
-  async getCoachingAnswerSets(accountListId: string) {
+  async getCoachingAnswerSets(accountListId: string, completed?: boolean) {
+    debugger;
     const { data }: { data: CoachingAnswerSetResponse[] } = await this.get(
-      `coaching/answer_sets?filter[account_list_id]=${accountListId}`,
+      `coaching/answer_sets?filter[account_list_id]=${accountListId}&filter[completed]=${completed}&fields[coaching_answer_sets]=completed_at,questions,answers&fields[answers]=response&include=questions,answers&sort=-completed_at`,
     );
-
+    debugger;
     return getCoachingAnswerSets(data);
   }
 

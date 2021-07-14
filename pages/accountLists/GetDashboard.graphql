@@ -30,8 +30,8 @@ query GetDashboard($accountListId: ID!) {
   }
 }
 
-query GetQuestions($accountListId: ID!) {
-  coachingAnswerSets(accountListId: $accountListId) {
+query GetQuestions($accountListId: ID!, $completed: Boolean = false) {
+  coachingAnswerSets(accountListId: $accountListId, completed: $completed) {
     id
     answers {
       id
