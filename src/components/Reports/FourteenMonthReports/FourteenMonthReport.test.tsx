@@ -2,24 +2,26 @@ import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import { ThemeProvider } from '@material-ui/core';
 import userEvent from '@testing-library/user-event';
-import { FourteenMonthReportQuery } from '../GetFourteenMonthReport.generated';
-import { SalaryReportTable } from './SalaryReportTable';
+import { FourteenMonthReport } from './FourteenMonthReport';
+import { FourteenMonthReportQuery } from './GetFourteenMonthReport.generated';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
 
 const accountListId = '111';
 const title = 'test title';
+const currencyType = 'salary';
 const onNavListToggle = jest.fn();
 
 //TODO: Need test coverage for error state
 
-describe('SalaryReportTable', () => {
+describe('FourteenMonthReport', () => {
   it('loading', async () => {
     const { queryByTestId, getByText } = render(
       <ThemeProvider theme={theme}>
         <GqlMockedProvider<FourteenMonthReportQuery>>
-          <SalaryReportTable
+          <FourteenMonthReport
             accountListId={accountListId}
+            currencyType={currencyType}
             isNavListOpen={true}
             title={title}
             onNavListToggle={onNavListToggle}
@@ -90,11 +92,12 @@ describe('SalaryReportTable', () => {
       },
     };
 
-    const { queryByTestId, getByTestId, getByText } = render(
+    const { queryByTestId, getByRole, getByText } = render(
       <ThemeProvider theme={theme}>
         <GqlMockedProvider<FourteenMonthReportQuery> mocks={mocks}>
-          <SalaryReportTable
+          <FourteenMonthReport
             accountListId={accountListId}
+            currencyType={currencyType}
             isNavListOpen={true}
             title={title}
             onNavListToggle={onNavListToggle}
@@ -108,8 +111,9 @@ describe('SalaryReportTable', () => {
     });
 
     expect(getByText(title)).toBeInTheDocument();
-    userEvent.click(getByTestId('ExpandUserInfoButton'));
-    userEvent.click(getByTestId('PrintButton'));
+    userEvent.click(getByRole('img', { name: 'Expand User Info Icon' }));
+    userEvent.click(getByRole('img', { name: 'Print Icon' }));
+    userEvent.click(getByRole('img', { name: 'Print Icon' }));
   });
 
   it('empty', async () => {
@@ -124,8 +128,9 @@ describe('SalaryReportTable', () => {
     const { queryByTestId, getByText } = render(
       <ThemeProvider theme={theme}>
         <GqlMockedProvider<FourteenMonthReportQuery> mocks={mocks}>
-          <SalaryReportTable
+          <FourteenMonthReport
             accountListId={accountListId}
+            currencyType={currencyType}
             isNavListOpen={true}
             title={title}
             onNavListToggle={onNavListToggle}

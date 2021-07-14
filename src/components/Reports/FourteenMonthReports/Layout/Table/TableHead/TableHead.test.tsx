@@ -34,6 +34,7 @@ describe('FourteenMonthReportTableHead', () => {
     const { queryByTestId } = render(
       <ThemeProvider theme={theme}>
         <FourteenMonthReportTableHead
+          isExpanded={true}
           totals={totals}
           salaryCurrency={salaryCurrency}
           order={order}

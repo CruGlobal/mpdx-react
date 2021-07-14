@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { FC, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DateTime } from 'luxon';
 import {
@@ -9,18 +9,19 @@ import {
   Typography,
 } from '@material-ui/core';
 // eslint-disable-next-line import/extensions
-import { FourteenMonthReportQuery } from '../GetFourteenMonthReport.generated';
+import { FourteenMonthReportQuery } from '../../../GetFourteenMonthReport.generated';
 import { TableHeadCell } from './TableHeadCell/TableHeadCell';
 
 export type Unarray<T> = T extends Array<infer U> ? U : T;
 export type Contacts = FourteenMonthReportQuery['fourteenMonthReport']['currencyGroups'][0]['contacts'];
-export type Contact = Contacts[number];
+export type Contact = Contacts[0];
 export type Months = Contact['months'];
 export type Month = Unarray<Months>;
 export type Order = 'asc' | 'desc';
 export type OrderBy = keyof Contact | keyof Unarray<Months>;
 
-interface FourteenMonthReportTableHeadProps {
+export interface FourteenMonthReportTableHeadProps {
+  isExpanded: boolean;
   totals:
     | FourteenMonthReportQuery['fourteenMonthReport']['currencyGroups'][0]['totals']
     | undefined;
@@ -43,7 +44,8 @@ const YearTypography = styled(Typography)(({ theme }) => ({
   borderLeft: `1px solid ${theme.palette.cruGrayLight.main}`,
 }));
 
-export const FourteenMonthReportTableHead: React.FC<FourteenMonthReportTableHeadProps> = ({
+export const FourteenMonthReportTableHead: FC<FourteenMonthReportTableHeadProps> = ({
+  isExpanded,
   totals,
   salaryCurrency,
   order,
@@ -97,6 +99,42 @@ export const FourteenMonthReportTableHead: React.FC<FourteenMonthReportTableHead
         >
           {t('Partner')}
         </TableHeadCell>
+        {isExpanded && (
+          <React.Fragment>
+            <TableHeadCell
+              isActive={orderBy === 'status'}
+              sortDirection={orderBy === 'status' ? order : false}
+              direction={orderBy === 'status' ? order : 'asc'}
+              onClick={createSortHandler('status')}
+            >
+              {t('Status')}
+            </TableHeadCell>
+            <TableHeadCell
+              isActive={orderBy === 'pledgeAmount'}
+              sortDirection={orderBy === 'pledgeAmount' ? order : false}
+              direction={orderBy === 'pledgeAmount' ? order : 'asc'}
+              onClick={createSortHandler('pledgeAmount')}
+            >
+              {t('Commitment')}
+            </TableHeadCell>
+            <TableHeadCell
+              isActive={orderBy === 'average'}
+              sortDirection={orderBy === 'average' ? order : false}
+              direction={orderBy === 'average' ? order : 'asc'}
+              onClick={createSortHandler('average')}
+            >
+              {t('Avg')}
+            </TableHeadCell>
+            <TableHeadCell
+              isActive={orderBy === 'minimum'}
+              sortDirection={orderBy === 'minimum' ? order : false}
+              direction={orderBy === 'minimum' ? order : 'asc'}
+              onClick={createSortHandler('minimum')}
+            >
+              {t('Min')}
+            </TableHeadCell>
+          </React.Fragment>
+        )}
         {totals?.months.map((month, i: number) => (
           <TableHeadCell
             key={i}
@@ -109,7 +147,6 @@ export const FourteenMonthReportTableHead: React.FC<FourteenMonthReportTableHead
             {DateTime.fromISO(month.month).toFormat('LLL')}
           </TableHeadCell>
         ))}
-
         <TableHeadCell
           align="right"
           isActive={orderBy === 'total'}

@@ -31,6 +31,7 @@ module.exports = {
     ],
     'react/prop-types': 'off',
     'react/react-in-jsx-scope': 'off',
+    'react/display-name': 'off',
   },
   settings: {
     react: {
