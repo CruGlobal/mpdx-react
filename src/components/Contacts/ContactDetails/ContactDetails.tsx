@@ -8,6 +8,7 @@ import { ContactTasksTab } from './ContactTasksTab/ContactTasksTab';
 import { ContactDetailsTab } from './ContactDetailsTab/ContactDetailsTab';
 import { ContactDonationsTab } from './ContactDontationsTab/ContactDonationsTab';
 import { ContactReferralTab } from './ContactReferralTab/ContactReferralTab';
+import { ContactNotesTab } from './ContactNotesTab/ContactNotesTab';
 
 interface Props {
   accountListId: string;
@@ -120,7 +121,12 @@ export const ContactDetails: React.FC<Props> = ({
             contactId={contactId}
           />
         </TabPanel>
-        <TabPanel value={TabKey.Notes}>{t('Notes')}</TabPanel>
+        <TabPanel value={TabKey.Notes}>
+          <ContactNotesTab
+            accountListId={accountListId}
+            contactId={contactId}
+          />
+        </TabPanel>
       </TabContext>
     </ContactDetailsWrapper>
   );
