@@ -2,11 +2,11 @@ import React from 'react';
 import { TextField } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { DateTime } from 'luxon';
+import { DebounceInput } from 'react-debounce-input';
 import {
   useGetContactNotesQuery,
   useUpdateContactNotesMutation,
 } from './ContactNotesTab.generated';
-import { DebounceInput } from 'react-debounce-input';
 
 interface Props {
   accountListId: string;
