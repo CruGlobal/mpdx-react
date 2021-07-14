@@ -1,0 +1,18 @@
+query GetDonationGraph($accountListId: ID!) {
+  accountList(id: $accountListId) {
+    currency
+    monthlyGoal
+    totalPledges
+  }
+  reportsDonationHistories(accountListId: $accountListId) {
+    averageIgnoreCurrent
+    periods {
+      startDate
+      convertedTotal
+      totals {
+        currency
+        convertedAmount
+      }
+    }
+  }
+}

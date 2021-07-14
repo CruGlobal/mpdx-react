@@ -18,6 +18,7 @@ import { useTranslation } from 'react-i18next';
 import { DataGrid, GridColDef, GridCellParams } from '@material-ui/data-grid';
 import { DateTime } from 'luxon';
 import { EmptyDonationsTable } from '../../../common/EmptyDonationsTable/EmptyDonationsTable';
+import { useGetDonationsTableQuery } from '../GetDonationsTable.generated';
 
 interface Donation {
   date: Date;
@@ -33,7 +34,6 @@ interface Donation {
 }
 
 interface Props {
-  data: Donation[];
   accountListId: string;
 }
 
@@ -48,13 +48,14 @@ const DataTable = styled(Box)(({ theme }) => ({
   },
 }));
 
-export const DonationsReportTable: React.FC<Props> = ({
-  data,
-  accountListId,
-}) => {
+export const DonationsReportTable: React.FC<Props> = ({ accountListId }) => {
   const { t } = useTranslation();
 
-  const accountCurrency = data[0].currency;
+  const { data } = useGetDonationsTableQuery({
+    variables: { accountListId },
+  });
+
+  const accountCurrency = data?.donations.nodes[0].amount.currency;
 
   const link = (params: GridCellParams) => {
     const row = params.row as Donation;

@@ -1,0 +1,32 @@
+query GetDonationsTable(
+  $accountListId: ID!
+  $startDate: ISO8601Date
+  $endDate: ISO8601Date
+) {
+  donations(
+    accountListId: $accountListId
+    donationDate: { max: $endDate, min: $startDate }
+  ) {
+    nodes {
+      amount {
+        amount
+        convertedAmount
+        convertedCurrency
+        currency
+      }
+      appeal {
+        amount
+        amountCurrency
+        createdAt
+        id
+        name
+      }
+      donationDate
+      donorAccount {
+        displayName
+        id
+      }
+      paymentMethod
+    }
+  }
+}
