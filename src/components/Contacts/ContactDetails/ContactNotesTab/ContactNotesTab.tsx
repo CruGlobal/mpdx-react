@@ -1,6 +1,7 @@
 import React from 'react';
 import { TextField } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
+import { DateTime } from 'luxon';
 import {
   useGetContactNotesQuery,
   useUpdateContactNotesMutation,
@@ -27,19 +28,26 @@ export const ContactNotesTab: React.FC<Props> = ({
   const [updateNotes] = useUpdateContactNotesMutation();
 
   return (
-    <TextField
-      fullWidth
-      multiline
-      placeholder={t('Add contact notes')}
-      rows="10"
-      variant="outlined"
-      value={data?.contact.notes}
-      disabled={loading}
-      onChange={(event) =>
-        updateNotes({
-          variables: { contactId, accountListId, notes: event.target.value },
-        })
-      }
-    />
+    <>
+      <TextField
+        fullWidth
+        multiline
+        placeholder={t('Add contact notes')}
+        rows="10"
+        variant="outlined"
+        value={data?.contact.notes}
+        disabled={loading}
+        onChange={(event) =>
+          updateNotes({
+            variables: { contactId, accountListId, notes: event.target.value },
+          })
+        }
+      />
+      <p style={{ textAlign: 'right' }}>
+        Last updated{' '}
+        {data?.contact.notesSavedAt &&
+          DateTime.fromISO(data.contact.notesSavedAt).toRelative()}
+      </p>
+    </>
   );
 };

@@ -2,6 +2,7 @@ query GetContactNotes($contactId: ID!, $accountListId: ID!) {
   contact(id: $contactId, accountListId: $accountListId) {
     id
     notes
+    notesSavedAt
   }
 }
 
