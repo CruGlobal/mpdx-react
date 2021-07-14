@@ -9,6 +9,7 @@ import {
   Table,
   TableCell,
   TableRow,
+  CircularProgress,
 } from '@material-ui/core';
 import IconButton from '@material-ui/core/IconButton';
 import EditIcon from '@material-ui/icons/Edit';
@@ -18,20 +19,10 @@ import { useTranslation } from 'react-i18next';
 import { DataGrid, GridColDef, GridCellParams } from '@material-ui/data-grid';
 import { DateTime } from 'luxon';
 import { EmptyDonationsTable } from '../../../common/EmptyDonationsTable/EmptyDonationsTable';
-import { useGetDonationsTableQuery } from '../GetDonationsTable.generated';
-
-interface Donation {
-  date: Date;
-  partnerId: string;
-  partner: string;
-  currency: string;
-  foreignCurrency: string;
-  convertedAmount: number;
-  foreignAmount: number;
-  designation: string;
-  method: string;
-  id: string;
-}
+import {
+  useGetDonationsTableQuery,
+  ExpectedDonationDataFragment,
+} from '../GetDonationsTable.generated';
 
 interface Props {
   accountListId: string;
@@ -48,41 +39,97 @@ const DataTable = styled(Box)(({ theme }) => ({
   },
 }));
 
+const LoadingBox = styled(Box)(({ theme }) => ({
+  backgroundColor: theme.palette.cruGrayLight.main,
+  height: 300,
+  minWidth: 700,
+  margin: 'auto',
+  padding: 4,
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+}));
+
+const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
+  margin: theme.spacing(0, 1, 0, 0),
+}));
+
+interface Donation {
+  date: Date;
+  partnerId: string;
+  partner: string;
+  currency: string;
+  foreignCurrency: string;
+  convertedAmount: number;
+  foreignAmount: number;
+  designation: string;
+  method: string | null;
+  id: string;
+}
+
 export const DonationsReportTable: React.FC<Props> = ({ accountListId }) => {
   const { t } = useTranslation();
 
-  const { data } = useGetDonationsTableQuery({
-    variables: { accountListId },
+  const [time, setTime] = useState(DateTime.now().startOf('month'));
+
+  const startDate = time.toString();
+
+  const endDate = time.plus({ months: 1 }).toString();
+
+  const { data, loading } = useGetDonationsTableQuery({
+    variables: { accountListId, startDate, endDate },
   });
 
-  const accountCurrency = data?.donations.nodes[0].amount.currency;
+  const nodes = data?.donations.nodes || [];
+
+  const accountCurrency = nodes[0]?.amount?.currency || 'USD';
+
+  function createData(data: ExpectedDonationDataFragment): Donation {
+    return {
+      date: new Date(data.donationDate),
+      partnerId: data.donorAccount.id,
+      partner: data.donorAccount.displayName,
+      currency: data.amount.convertedCurrency,
+      foreignCurrency: data.amount.currency,
+      convertedAmount: data.amount.convertedAmount,
+      foreignAmount: data.amount.amount,
+      designation: '', //Designation not currently in the Donation endpoint in GraphQL
+      method: data.paymentMethod || null,
+      id: data.id,
+    };
+  }
+
+  const donations = nodes.map(createData);
 
   const link = (params: GridCellParams) => {
-    const row = params.row as Donation;
+    const donation = params.row as Donation;
+
     return (
       <Typography>
-        <Link href={`../../${accountListId}/contacts/${row.partnerId}`}>
-          {params.value}
+        <Link href={`../../${accountListId}/contacts/${donation.partnerId}`}>
+          {donation.partner}
         </Link>
       </Typography>
     );
   };
 
   const amount = (params: GridCellParams) => {
-    const row = params.row as Donation;
+    const donation = params.row as Donation;
 
     return (
       <Typography>
-        {row.convertedAmount} {row.currency}
+        {Math.round(donation.convertedAmount * 100) / 100} {donation.currency}
       </Typography>
     );
   };
 
   const foreignAmount = (params: GridCellParams) => {
-    const row = params.row as Donation;
+    const donation = params.row as Donation;
+
     return (
       <Typography>
-        {row.foreignAmount} {row.foreignCurrency}
+        {Math.round(donation.foreignAmount * 100) / 100}{' '}
+        {donation.foreignCurrency}
       </Typography>
     );
   };
@@ -98,18 +145,18 @@ export const DonationsReportTable: React.FC<Props> = ({ accountListId }) => {
       field: 'date',
       headerName: t('Date'),
       type: 'date',
-      width: 160,
+      width: 140,
     },
     {
       field: 'partner',
       headerName: t('Partner'),
-      width: 220,
+      width: 260,
       renderCell: link,
     },
     {
       field: 'convertedAmount',
       headerName: t('Amount'),
-      width: 160,
+      width: 150,
       renderCell: amount,
     },
     {
@@ -126,19 +173,17 @@ export const DonationsReportTable: React.FC<Props> = ({ accountListId }) => {
     {
       field: 'method',
       headerName: t('Method'),
-      width: 160,
+      width: 155,
     },
     {
       field: 'appeal',
       headerName: t('Appeal'),
-      width: 130,
+      width: 125,
       renderCell: button,
     },
   ];
 
-  const isEmpty = data.length === 0;
-
-  const [time, setTime] = useState(DateTime.now().startOf('month'));
+  const isEmpty = nodes?.length === 0;
 
   const title = `${time.monthLong} ${time.year}`;
 
@@ -152,11 +197,11 @@ export const DonationsReportTable: React.FC<Props> = ({ accountListId }) => {
     setTime(time.plus({ months: 1 }));
   };
 
-  const totalDonations = data.reduce((total, current) => {
+  const totalDonations = donations.reduce((total, current) => {
     return total + current.convertedAmount;
   }, 0);
 
-  const totals = data.reduce(
+  const totalForeignDonations = donations.reduce(
     (
       acc: {
         [key: string]: { convertedTotal: number; foreignTotal: number };
@@ -169,8 +214,8 @@ export const DonationsReportTable: React.FC<Props> = ({ accountListId }) => {
         acc[foreignCurrency].convertedTotal += convertedAmount;
       } else {
         acc[foreignCurrency] = {
-          convertedTotal: donation.convertedAmount,
-          foreignTotal: donation.foreignAmount,
+          convertedTotal: convertedAmount,
+          foreignTotal: foreignAmount,
         };
       }
       return acc;
@@ -183,7 +228,7 @@ export const DonationsReportTable: React.FC<Props> = ({ accountListId }) => {
       <Box style={{ display: 'flex', margin: 8 }}>
         <Typography variant="h6">{title}</Typography>
         <Button
-          style={{ marginLeft: 'auto' }}
+          style={{ marginLeft: 'auto', maxHeight: 35 }}
           variant="contained"
           startIcon={<ChevronLeftIcon />}
           size="small"
@@ -192,6 +237,7 @@ export const DonationsReportTable: React.FC<Props> = ({ accountListId }) => {
           {t('Previous Month')}
         </Button>
         <Button
+          style={{ maxHeight: 35 }}
           variant="contained"
           endIcon={<ChevronRightIcon />}
           size="small"
@@ -205,7 +251,7 @@ export const DonationsReportTable: React.FC<Props> = ({ accountListId }) => {
       {!isEmpty ? (
         <DataTable>
           <DataGrid
-            rows={data}
+            rows={donations}
             columns={columns}
             autoPageSize
             autoHeight
@@ -213,21 +259,22 @@ export const DonationsReportTable: React.FC<Props> = ({ accountListId }) => {
             hideFooter
           />
           <Table>
-            {Object.entries(totals).map(([currency, total]) => (
+            {Object.entries(totalForeignDonations).map(([currency, total]) => (
               <TableRow data-testid="donationRow" key={currency}>
-                <TableCell style={{ width: 375 }}>
+                <TableCell style={{ width: 395 }}>
                   <Typography style={{ float: 'right', fontWeight: 'bold' }}>
                     {t('Total {{currency}} Donations:', { currency })}
                   </Typography>
                 </TableCell>
-                <TableCell style={{ width: 160 }}>
+                <TableCell style={{ width: 150 }}>
                   <Typography style={{ float: 'left', fontWeight: 'bold' }}>
-                    {total.convertedTotal} {accountCurrency}
+                    {Math.round(total.convertedTotal * 100) / 100}{' '}
+                    {accountCurrency}
                   </Typography>
                 </TableCell>
                 <TableCell style={{}}>
                   <Typography style={{ float: 'left', fontWeight: 'bold' }}>
-                    {total.foreignTotal} {currency}
+                    {Math.round(total.foreignTotal * 100) / 100} {currency}
                   </Typography>
                 </TableCell>
               </TableRow>
@@ -240,13 +287,17 @@ export const DonationsReportTable: React.FC<Props> = ({ accountListId }) => {
               </TableCell>
               <TableCell>
                 <Typography style={{ float: 'left', fontWeight: 'bold' }}>
-                  {totalDonations}
+                  {Math.round(totalDonations * 100) / 100}
                 </Typography>
               </TableCell>
               <TableCell />
             </TableRow>
           </Table>
         </DataTable>
+      ) : loading ? (
+        <LoadingBox>
+          <LoadingIndicator color="primary" size={50} />
+        </LoadingBox>
       ) : (
         <EmptyDonationsTable
           title={t('No donations received in {{month}} {{year}}', {

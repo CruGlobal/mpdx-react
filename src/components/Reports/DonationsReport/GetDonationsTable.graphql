@@ -8,25 +8,30 @@ query GetDonationsTable(
     donationDate: { max: $endDate, min: $startDate }
   ) {
     nodes {
-      amount {
-        amount
-        convertedAmount
-        convertedCurrency
-        currency
-      }
-      appeal {
-        amount
-        amountCurrency
-        createdAt
-        id
-        name
-      }
-      donationDate
-      donorAccount {
-        displayName
-        id
-      }
-      paymentMethod
+      ...ExpectedDonationData
     }
   }
+}
+
+fragment ExpectedDonationData on Donation {
+  amount {
+    amount
+    convertedAmount
+    convertedCurrency
+    currency
+  }
+  appeal {
+    amount
+    amountCurrency
+    createdAt
+    id
+    name
+  }
+  donationDate
+  donorAccount {
+    displayName
+    id
+  }
+  id
+  paymentMethod
 }
