@@ -81,16 +81,25 @@ const createCoachingAnswersList = (
 ): CoachingAnswer[] => {
   const answers: CoachingAnswer[] = [];
   debugger;
-  data.forEach(({ id, attributes: { created_at, response, updated_at } }) => {
-    const answer: CoachingAnswer = {
+  data.forEach(
+    ({
       id,
-      createdAt: created_at,
-      response,
-      updatedAt: updated_at,
-    };
+      attributes: {
+        //created_at,
+        response,
+        //updated_at
+      },
+    }) => {
+      const answer: CoachingAnswer = {
+        id,
+        createdAt: '',
+        response,
+        updatedAt: '',
+      };
 
-    answers.push(answer);
-  });
+      answers.push(answer);
+    },
+  );
 
   return answers;
 };
@@ -103,23 +112,23 @@ const createCoachingQuestionsList = (
   data.forEach(
     ({
       id,
-      attributes: {
+      /*attributes: {
         created_at,
         position,
         prompt,
         required,
         response_options,
         updated_at,
-      },
+      }*/
     }) => {
       const question: CoachingQuestion = {
         id,
-        createdAt: created_at,
-        position,
-        prompt,
-        required,
-        responseOptions: response_options,
-        updatedAt: updated_at,
+        createdAt: '',
+        position: 0,
+        prompt: '',
+        required: false,
+        responseOptions: null,
+        updatedAt: '',
       };
 
       questions.push(question);

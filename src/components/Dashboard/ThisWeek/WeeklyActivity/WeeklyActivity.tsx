@@ -95,11 +95,9 @@ const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
     loading: questionsLoading,
     error: questionsError,
   } = useGetQuestionsQuery({
-    variables: { accountListId },
+    variables: { accountListId, completed: true },
   });
-
   debugger;
-
   const addWeek = (): void =>
     setInterval((interval) =>
       interval.mapEndpoints((endpoint) => endpoint.plus({ week: 1 })),

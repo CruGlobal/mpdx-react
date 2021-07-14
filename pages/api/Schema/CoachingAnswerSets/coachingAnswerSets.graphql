@@ -1,13 +1,16 @@
 extend type Query {
-  coachingAnswerSets(accountListId: ID!): [CoachingAnswerSet!]!
+  coachingAnswerSets(
+    accountListId: ID!
+    completed: Boolean
+  ): [CoachingAnswerSet!]!
 }
 
 type CoachingAnswerSet {
   id: ID!
-  answers: [CoachingAnswer!]!
+  answers: [CoachingAnswer!]
   completedAt: ISO8601DateTime
   createdAt: ISO8601DateTime!
-  questions: [CoachingQuestion!]!
+  questions: [CoachingQuestion!]
   updatedAt: ISO8601DateTime!
 }
 
