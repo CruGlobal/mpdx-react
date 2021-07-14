@@ -6,6 +6,7 @@ import {
   useGetContactNotesQuery,
   useUpdateContactNotesMutation,
 } from './ContactNotesTab.generated';
+import { DebounceInput } from 'react-debounce-input';
 
 interface Props {
   accountListId: string;
@@ -29,19 +30,25 @@ export const ContactNotesTab: React.FC<Props> = ({
 
   return (
     <>
-      <TextField
+      <DebounceInput
+        debounceTimeout={500}
+        value={data?.contact.notes ?? ''}
+        onChange={(event) =>
+          updateNotes({
+            variables: {
+              contactId,
+              accountListId,
+              notes: event.target.value,
+            },
+          })
+        }
+        element={TextField}
         fullWidth
         multiline
         placeholder={t('Add contact notes')}
         rows="10"
         variant="outlined"
-        value={data?.contact.notes}
         disabled={loading}
-        onChange={(event) =>
-          updateNotes({
-            variables: { contactId, accountListId, notes: event.target.value },
-          })
-        }
       />
       <p style={{ textAlign: 'right' }}>
         Last updated{' '}
