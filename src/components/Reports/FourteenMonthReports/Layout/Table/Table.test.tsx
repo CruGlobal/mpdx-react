@@ -1,11 +1,10 @@
-import React, { useRef } from 'react';
+import React from 'react';
 import { render } from '@testing-library/react';
 import { ThemeProvider } from '@material-ui/core';
 import { FourteenMonthReportTable } from './Table';
 import theme from 'src/theme';
 
 const onRequestSort = jest.fn();
-const ref = useRef(null);
 
 //TODO: Need test coverage for error state
 
@@ -129,7 +128,7 @@ describe('FourteenMonthReportTable', () => {
               .currency
           }
           onRequestSort={onRequestSort}
-          ref={ref}
+          ref={null}
           totals={
             mocks.FourteenMonthReport.fourteenMonthReport.currencyGroups[0]
               .totals
