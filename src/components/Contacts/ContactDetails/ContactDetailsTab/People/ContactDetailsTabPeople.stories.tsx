@@ -14,9 +14,10 @@ export default {
 
 export const Default = (): ReactElement => {
   const mock = gqlMock<ContactPeopleFragment>(ContactPeopleFragmentDoc);
+  const accountListId = '123';
   return (
     <Box m={2}>
-      <ContactDetailsTabPeople data={mock} />
+      <ContactDetailsTabPeople accountListId={accountListId} data={mock} />
     </Box>
   );
 };
