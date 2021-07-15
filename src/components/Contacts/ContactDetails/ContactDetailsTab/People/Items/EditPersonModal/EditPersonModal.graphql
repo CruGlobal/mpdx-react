@@ -1,0 +1,79 @@
+mutation UpdatePerson($accountListId: ID!, $attributes: PersonUpdateInput!) {
+  updatePerson(
+    input: { accountListId: $accountListId, attributes: $attributes }
+  ) {
+    person {
+      id
+      almaMater
+      anniversaryDay
+      anniversaryMonth
+      anniversaryYear
+      birthdayDay
+      birthdayMonth
+      birthdayYear
+      deceased
+      emailAddresses {
+        nodes {
+          id
+          email
+          primary
+          location
+        }
+      }
+      employer
+      facebookAccounts {
+        nodes {
+          id
+          username
+        }
+      }
+      firstName
+      gender
+      lastName
+      legalFirstName
+      linkedinAccounts {
+        nodes {
+          id
+          publicUrl
+        }
+      }
+      maritalStatus
+      occupation
+      optoutEnewsletter
+      phoneNumbers {
+        nodes {
+          id
+          number
+          primary
+          location
+        }
+      }
+      primaryEmailAddress {
+        id
+        email
+        primary
+        location
+      }
+      primaryPhoneNumber {
+        id
+        number
+        primary
+        location
+      }
+      suffix
+      title
+      twitterAccounts {
+        nodes {
+          id
+          screenName
+        }
+      }
+      websites {
+        nodes {
+          id
+          url
+        }
+      }
+    }
+  }
+}
