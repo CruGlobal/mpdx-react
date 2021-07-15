@@ -224,7 +224,10 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
               <ContactDetailLoadingPlaceHolder variant="rect" />
             </>
           ) : (
-            <ContactDetailsTabPeople data={data?.contact} />
+            <ContactDetailsTabPeople
+              data={data?.contact}
+              accountListId={accountListId}
+            />
           )}
         </ContactDetailSectionContainer>
         <Divider />
@@ -291,9 +294,10 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
       {renderDeleteContactModal()}
       {loading || !data ? null : (
         <EditContactDetailsModal
+          accountListId={accountListId}
           contact={data.contact}
           isOpen={editModalOpen}
-          handleOpenModal={setEditModalOpen}
+          handleClose={() => setEditModalOpen(false)}
         />
       )}
     </>

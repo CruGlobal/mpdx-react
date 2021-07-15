@@ -19,6 +19,7 @@ fragment ContactPerson on Person {
       email
       id
       primary
+      location
     }
   }
   phoneNumbers {
@@ -26,38 +27,42 @@ fragment ContactPerson on Person {
       id
       number
       primary
+      location
     }
   }
   facebookAccounts {
     nodes {
       id
-      value: username
+      username
     }
   }
   linkedinAccounts {
     nodes {
       id
-      value: publicUrl
+      publicUrl
     }
   }
   twitterAccounts {
     nodes {
       id
-      value: screenName
+      screenName
     }
   }
   websites {
     nodes {
       id
-      value: url
+      url
     }
   }
   primaryPhoneNumber {
+    id
     number
     location
   }
   primaryEmailAddress {
+    id
     email
+    location
   }
   almaMater
   anniversaryDay
