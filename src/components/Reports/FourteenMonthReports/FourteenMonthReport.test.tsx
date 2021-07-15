@@ -1,7 +1,6 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import { ThemeProvider } from '@material-ui/core';
-import userEvent from '@testing-library/user-event';
 import { FourteenMonthReport } from './FourteenMonthReport';
 import { FourteenMonthReportQuery } from './GetFourteenMonthReport.generated';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
@@ -31,7 +30,7 @@ describe('FourteenMonthReport', () => {
     );
 
     expect(getByText(title)).toBeInTheDocument();
-    expect(queryByTestId('LoadingSalaryReport')).toBeInTheDocument();
+    expect(queryByTestId('LoadingFourteenMonthReport')).toBeInTheDocument();
     expect(queryByTestId('Notification')).toBeNull();
   });
 
@@ -92,7 +91,7 @@ describe('FourteenMonthReport', () => {
       },
     };
 
-    const { queryByTestId, getByRole, getByText } = render(
+    const { queryByTestId, getByText } = render(
       <ThemeProvider theme={theme}>
         <GqlMockedProvider<FourteenMonthReportQuery> mocks={mocks}>
           <FourteenMonthReport
@@ -107,13 +106,12 @@ describe('FourteenMonthReport', () => {
     );
 
     await waitFor(() => {
-      expect(queryByTestId('LoadingSalaryReport')).not.toBeInTheDocument();
+      expect(
+        queryByTestId('LoadingFourteenMonthReport'),
+      ).not.toBeInTheDocument();
     });
 
     expect(getByText(title)).toBeInTheDocument();
-    userEvent.click(getByRole('img', { name: 'Expand User Info Icon' }));
-    userEvent.click(getByRole('img', { name: 'Print Icon' }));
-    userEvent.click(getByRole('img', { name: 'Print Icon' }));
   });
 
   it('empty', async () => {
@@ -140,7 +138,9 @@ describe('FourteenMonthReport', () => {
     );
 
     await waitFor(() => {
-      expect(queryByTestId('LoadingSalaryReport')).not.toBeInTheDocument();
+      expect(
+        queryByTestId('LoadingFourteenMonthReport'),
+      ).not.toBeInTheDocument();
     });
 
     expect(getByText(title)).toBeInTheDocument();
