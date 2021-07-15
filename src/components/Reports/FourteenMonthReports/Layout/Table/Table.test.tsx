@@ -1,19 +1,16 @@
 import React, { useRef } from 'react';
 import { render } from '@testing-library/react';
 import { ThemeProvider } from '@material-ui/core';
-import userEvent from '@testing-library/user-event';
 import { FourteenMonthReportTable } from './Table';
 import theme from 'src/theme';
 
-const title = 'test title';
 const onRequestSort = jest.fn();
+const ref = useRef(null);
 
 //TODO: Need test coverage for error state
 
 describe('FourteenMonthReportTable', () => {
   it('default', async () => {
-    const ref = useRef(null);
-
     const mocks = {
       FourteenMonthReport: {
         fourteenMonthReport: {
@@ -117,7 +114,7 @@ describe('FourteenMonthReportTable', () => {
       },
     };
 
-    const { getByRole, getByText } = render(
+    const { queryByTestId } = render(
       <ThemeProvider theme={theme}>
         <FourteenMonthReportTable
           isExpanded={true}
@@ -141,9 +138,6 @@ describe('FourteenMonthReportTable', () => {
       </ThemeProvider>,
     );
 
-    expect(getByText(title)).toBeInTheDocument();
-    userEvent.click(getByRole('img', { name: 'Expand User Info Icon' }));
-    userEvent.click(getByRole('img', { name: 'Print Icon' }));
-    userEvent.click(getByRole('img', { name: 'Print Icon' }));
+    expect(queryByTestId('FourteenMonthReport')).toBeInTheDocument();
   });
 });
