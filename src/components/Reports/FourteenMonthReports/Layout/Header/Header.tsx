@@ -65,7 +65,7 @@ export const FourteenMonthReportHeader: FC<FourteenMonthReportHeaderProps> = ({
   const { t } = useTranslation();
 
   return (
-    <StickyHeader p={2} test-dataid="FourteenMonthReportHeader">
+    <StickyHeader p={2} data-testid="FourteenMonthReportHeader">
       <Grid
         container
         justify={isMobile ? 'center' : 'space-between'}

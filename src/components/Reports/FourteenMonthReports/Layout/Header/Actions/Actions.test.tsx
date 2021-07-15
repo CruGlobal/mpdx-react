@@ -11,7 +11,29 @@ const onPrint = jest.fn();
 
 describe('FourteenMonthReportActions', () => {
   it('default', async () => {
-    const { getByRole, getByText } = render(
+    const { getByRole } = render(
+      <ThemeProvider theme={theme}>
+        <FourteenMonthReportActions
+          csvData={[]}
+          currencyType={currencyType}
+          isExpanded={false}
+          isMobile={true}
+          onExpandToggle={onExpandToggle}
+          onPrint={onPrint}
+        />
+      </ThemeProvider>,
+    );
+
+    expect(
+      getByRole('group', { name: 'report header button group' }),
+    ).toBeInTheDocument();
+    userEvent.click(getByRole('button', { name: 'Expand' }));
+    userEvent.click(getByRole('button', { name: 'Print' }));
+    userEvent.click(getByRole('button', { name: 'Export' }));
+  });
+
+  it('expanded', async () => {
+    const { getByRole } = render(
       <ThemeProvider theme={theme}>
         <FourteenMonthReportActions
           csvData={[]}
@@ -24,9 +46,11 @@ describe('FourteenMonthReportActions', () => {
       </ThemeProvider>,
     );
 
-    expect(getByText('Print')).toBeInTheDocument();
-    userEvent.click(getByRole('img', { name: 'Expand User Info Icon' }));
-    userEvent.click(getByRole('img', { name: 'Print Icon' }));
-    userEvent.click(getByRole('img', { name: 'Print Icon' }));
+    expect(
+      getByRole('group', { name: 'report header button group' }),
+    ).toBeInTheDocument();
+    userEvent.click(getByRole('button', { name: 'Hide' }));
+    userEvent.click(getByRole('button', { name: 'Print' }));
+    userEvent.click(getByRole('button', { name: 'Export' }));
   });
 });
