@@ -7,7 +7,6 @@ const CoachingAnswerSetsResolvers: Resolvers = {
       { accountListId, completed },
       { dataSources },
     ) => {
-      debugger;
       return dataSources.mpdxRestApi.getCoachingAnswerSets(
         accountListId,
         completed,
