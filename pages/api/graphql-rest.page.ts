@@ -26,6 +26,10 @@ import {
   ExpectedMonthlyTotalResponse,
   mapExpectedMonthlyTotalReport,
 } from './Schema/reports/expectedMonthlyTotal/datahandler';
+import {
+  DesignationAccountsResponse,
+  mapDesignationAccounts,
+} from './Schema/reports/designationAccounts/datahandler';
 
 class MpdxRestApi extends RESTDataSource {
   constructor() {
@@ -147,6 +151,13 @@ class MpdxRestApi extends RESTDataSource {
       `reports/expected_monthly_totals?filter[account_list_id]=${accountListId}`,
     );
     return mapExpectedMonthlyTotalReport(data);
+  }
+
+  async getDesignationAccounts(accountListId: string) {
+    const { data }: { data: DesignationAccountsResponse } = await this.get(
+      `account_lists/${accountListId}/designation_accounts?include=organization&per_page=10000`,
+    );
+    return mapDesignationAccounts(data);
   }
 }
 
