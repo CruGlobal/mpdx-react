@@ -45,7 +45,7 @@ const getCoachingAnswerSets = (
   data: CoachingAnswerSetResponse[],
 ): CoachingAnswerSet[] => {
   const response: CoachingAnswerSet[] = [];
-  debugger;
+
   data.forEach(
     ({
       id,
@@ -108,7 +108,7 @@ const createCoachingQuestionsList = (
   data: CoachingQuestionResponse[],
 ): CoachingQuestion[] => {
   const questions: CoachingQuestion[] = [];
-  debugger;
+
   data.forEach(
     ({
       id,
