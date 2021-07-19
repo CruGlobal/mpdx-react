@@ -1,0 +1,90 @@
+import React, { ReactElement } from 'react';
+import { DateTime } from 'luxon';
+import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
+import { DonationsReport } from './DonationsReport';
+import { GetDonationsGraphQuery } from 'src/components/Contacts/ContactDetails/ContactDontationsTab/DonationsGraph/DonationsGraph.generated';
+
+export default {
+  title: 'Reports/DonationsReport',
+};
+
+export const Default = (): ReactElement => {
+  return (
+    <GqlMockedProvider<GetDonationsGraphQuery>
+      mocks={{
+        GetDonationGraph: {
+          accountList: {
+            currency: 'CAD',
+            monthlyGoal: 100,
+            totalPledges: 10,
+          },
+          reportsDonationHistories: {
+            averageIgnoreCurrent: 10,
+            periods: [
+              {
+                startDate: DateTime.now().minus({ months: 12 }).toISO(),
+                convertedTotal: 10,
+                totals: [
+                  {
+                    currency: 'CAD',
+                    convertedAmount: 70,
+                  },
+                ],
+              },
+              {
+                startDate: DateTime.now().minus({ months: 11 }).toISO(),
+                convertedTotal: 10,
+                totals: [
+                  {
+                    currency: 'USD',
+                    convertedAmount: 50,
+                  },
+                ],
+              },
+            ],
+          },
+        },
+      }}
+    >
+      <DonationsReport accountListId={'abc'} />
+    </GqlMockedProvider>
+  );
+};
+
+export const Empty = (): ReactElement => {
+  return (
+    <GqlMockedProvider<GetDonationsGraphQuery>
+      mocks={{
+        GetDonationGraph: {
+          reportsDonationHistories: {
+            averageIgnoreCurrent: 0,
+            periods: [
+              {
+                startDate: DateTime.now().minus({ months: 12 }).toISO(),
+                convertedTotal: 0,
+                totals: [
+                  {
+                    currency: 'CAD',
+                    convertedAmount: 0,
+                  },
+                ],
+              },
+              {
+                startDate: DateTime.now().minus({ months: 11 }).toISO(),
+                convertedTotal: 0,
+                totals: [
+                  {
+                    currency: 'CAD',
+                    convertedAmount: 0,
+                  },
+                ],
+              },
+            ],
+          },
+        },
+      }}
+    >
+      <DonationsReport accountListId={'abc'} />
+    </GqlMockedProvider>
+  );
+};
