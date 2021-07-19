@@ -45,5 +45,5 @@ export const mapDesignationAccounts = (
     active: account.attributes.active,
     currency: account.attributes.currency,
     name: account.attributes.name,
-    converted_balance: account.attributes.converted_balance,
+    convertedBalance: account.attributes.converted_balance,
   }));
