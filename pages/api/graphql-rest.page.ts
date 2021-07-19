@@ -130,7 +130,7 @@ class MpdxRestApi extends RESTDataSource {
   async getCoachingAnswerSets(accountListId: string, completed?: boolean) {
     debugger;
     const { data }: { data: CoachingAnswerSetResponse[] } = await this.get(
-      `coaching/answer_sets?filter[account_list_id]=${accountListId}&filter[completed]=${completed}&fields[coaching_answers]=created_at,response,updated_at&fields[coaching_questions]=created_at,position,prompt,required,response_options,updated_at&include=questions,answers&sort=-completed_at`,
+      `coaching/answer_sets?filter[account_list_id]=${accountListId}&filter[completed]=${completed}&include=answers,answers.response&sort=-completed_at`,
     );
     debugger;
     return getCoachingAnswerSets(data);

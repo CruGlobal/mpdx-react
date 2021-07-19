@@ -86,14 +86,14 @@ const createCoachingAnswersList = (
       id,
       attributes: {
         //created_at,
-        response,
+        //response,
         //updated_at
       },
     }) => {
       const answer: CoachingAnswer = {
         id,
         createdAt: '',
-        response,
+        response: '',
         updatedAt: '',
       };
 
