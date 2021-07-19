@@ -4,7 +4,7 @@ extend type Query {
 
 type DesignationAccount {
   active: Boolean!
-  converted_balance: Float!
+  convertedBalance: Float!
   currency: String!
   name: String!
 }

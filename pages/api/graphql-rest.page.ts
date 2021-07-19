@@ -155,7 +155,7 @@ class MpdxRestApi extends RESTDataSource {
 
   async getDesignationAccounts(accountListId: string) {
     const { data }: { data: DesignationAccountsResponse[] } = await this.get(
-      `account_lists/${accountListId}/designation_accounts?include=organization&per_page=10000`,
+      `account_lists/${accountListId}/designation_accounts?per_page=10000`,
     );
     return mapDesignationAccounts(data);
   }
