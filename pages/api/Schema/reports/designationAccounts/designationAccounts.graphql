@@ -1,8 +1,8 @@
 extend type Query {
-  designationAccounts(accountListId: ID!): DesignationAccounts!
+  designationAccounts(accountListId: ID!): [DesignationAccount!]!
 }
 
-type DesignationAccounts[] {
+type DesignationAccount {
   active: Boolean!
   converted_balance: Float!
   currency: String!

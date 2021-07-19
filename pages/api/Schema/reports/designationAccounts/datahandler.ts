@@ -1,4 +1,4 @@
-import { DesignationAccounts } from '../../../graphql-rest.page.generated';
+import { DesignationAccount } from '../../../graphql-rest.page.generated';
 
 export interface DesignationAccountsResponse {
   id: string;
@@ -40,7 +40,7 @@ export interface DesignationAccountsResponse {
 
 export const mapDesignationAccounts = (
   data: DesignationAccountsResponse[],
-): DesignationAccounts =>
+): DesignationAccount[] =>
   data.map((account) => ({
     active: account.attributes.active,
     currency: account.attributes.currency,
