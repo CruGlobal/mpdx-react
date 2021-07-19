@@ -1,7 +1,6 @@
 import React from 'react';
 import { Container, Box } from '@material-ui/core';
 import { motion } from 'framer-motion';
-
 import { MonthlyActivitySection } from './MonthlyActivity/MonthlyActivitySection';
 import { DonationsReportTable } from './Table/DonationsReportTable';
 
