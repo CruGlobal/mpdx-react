@@ -39,10 +39,11 @@ export interface DesignationAccountsResponse {
 }
 
 export const mapDesignationAccounts = (
-  data: DesignationAccountsResponse,
-): DesignationAccounts => ({
-  active: data.attributes.active,
-  currency: data.attributes.currency,
-  name: data.attributes.name,
-  converted_balance: data.attributes.converted_balance,
-});
+  data: DesignationAccountsResponse[],
+): DesignationAccounts =>
+  data.map((account) => ({
+    active: account.attributes.active,
+    currency: account.attributes.currency,
+    name: account.attributes.name,
+    converted_balance: account.attributes.converted_balance,
+  }));

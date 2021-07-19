@@ -2,7 +2,7 @@ extend type Query {
   designationAccounts(accountListId: ID!): DesignationAccounts!
 }
 
-type DesignationAccounts {
+type DesignationAccounts[] {
   active: Boolean!
   converted_balance: Float!
   currency: String!
