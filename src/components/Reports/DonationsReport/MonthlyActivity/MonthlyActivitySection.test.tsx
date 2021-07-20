@@ -61,6 +61,11 @@ it('renders with data', async () => {
 it('renders empty', async () => {
   const mocks = {
     GetDonationGraph: {
+      accountList: {
+        currency: 'CAD',
+        monthlyGoal: 0,
+        totalPledges: 0,
+      },
       reportsDonationHistories: {
         averageIgnoreCurrent: 0,
         periods: [

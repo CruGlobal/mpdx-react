@@ -84,7 +84,7 @@ export const DonationsReportTable: React.FC<Props> = ({ accountListId }) => {
 
   const accountCurrency = nodes[0]?.amount?.currency || 'USD';
 
-  function createData(data: ExpectedDonationDataFragment): Donation {
+  const createData = (data: ExpectedDonationDataFragment): Donation => {
     return {
       date: new Date(data.donationDate),
       partnerId: data.donorAccount.id,
@@ -97,7 +97,7 @@ export const DonationsReportTable: React.FC<Props> = ({ accountListId }) => {
       method: data.paymentMethod || null,
       id: data.id,
     };
-  }
+  };
 
   const donations = nodes.map(createData);
 
@@ -118,7 +118,9 @@ export const DonationsReportTable: React.FC<Props> = ({ accountListId }) => {
 
     return (
       <Typography>
-        {Math.round(donation.convertedAmount * 100) / 100} {donation.currency}
+        {`${Math.round(donation.convertedAmount * 100) / 100} ${
+          donation.currency
+        }`}
       </Typography>
     );
   };
@@ -128,8 +130,9 @@ export const DonationsReportTable: React.FC<Props> = ({ accountListId }) => {
 
     return (
       <Typography>
-        {Math.round(donation.foreignAmount * 100) / 100}{' '}
-        {donation.foreignCurrency}
+        {`${Math.round(donation.foreignAmount * 100) / 100} ${
+          donation.foreignCurrency
+        }`}
       </Typography>
     );
   };

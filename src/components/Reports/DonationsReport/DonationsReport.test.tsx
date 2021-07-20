@@ -11,7 +11,7 @@ import { GetDonationsTableQuery } from './GetDonationsTable.generated';
 it('renders', async () => {
   const { getByTestId, queryByRole, queryAllByRole, queryByTestId } = render(
     <ThemeProvider theme={theme}>
-      <GqlMockedProvider<GetDonationGraphQuery>>
+      <GqlMockedProvider>
         <DonationsReport accountListId={'abc'} />
       </GqlMockedProvider>
     </ThemeProvider>,
@@ -26,7 +26,7 @@ it('renders', async () => {
 });
 
 it('renders with data', async () => {
-  const graphMocks = {
+  const mocks = {
     GetDonationGraph: {
       accountList: {
         currency: 'CAD',
@@ -59,9 +59,6 @@ it('renders with data', async () => {
         ],
       },
     },
-  };
-
-  const tableMocks = {
     GetDonationsTable: {
       donations: {
         nodes: [
@@ -94,10 +91,7 @@ it('renders with data', async () => {
 
   const { getByTestId, queryByRole, queryByTestId } = render(
     <ThemeProvider theme={theme}>
-      <GqlMockedProvider<GetDonationGraphQuery> mocks={graphMocks}>
-        <DonationsReport accountListId={'abc'} />
-      </GqlMockedProvider>
-      <GqlMockedProvider<GetDonationsTableQuery> mocks={tableMocks}>
+      <GqlMockedProvider mocks={mocks}>
         <DonationsReport accountListId={'abc'} />
       </GqlMockedProvider>
     </ThemeProvider>,
