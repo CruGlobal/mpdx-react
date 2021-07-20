@@ -3,29 +3,21 @@ import { DatePicker } from '@material-ui/pickers';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import CakeIcon from '@material-ui/icons/Cake';
-import { FormikProps } from 'formik';
+import { ContactDetailsTabQuery } from '../../../../ContactDetailsTab.generated';
 import { ModalSectionContainer } from '../ModalSectionContainer/ModalSectionContainer';
 import { ModalSectionIcon } from '../ModalSectionIcon/ModalSectionIcon';
-import { PersonUpdateInput } from '../../../../../../../../../graphql/types.generated';
 
 interface PersonBirthdayProps {
-  formikProps: FormikProps<PersonUpdateInput>;
+  person: ContactDetailsTabQuery['contact']['people']['nodes'][0];
 }
 
-export const PersonBirthday: React.FC<PersonBirthdayProps> = ({
-  formikProps,
-}) => {
+export const PersonBirthday: React.FC<PersonBirthdayProps> = ({ person }) => {
   const { t } = useTranslation();
 
-  const {
-    values: { birthdayDay, birthdayMonth, birthdayYear },
-    setFieldValue,
-  } = formikProps;
-
   const handleDateChange = (date: DateTime) => {
-    setFieldValue('birthdayDay', date.day);
-    setFieldValue('birthdayMonth', date.month);
-    setFieldValue('birthdayYear', date.year);
+    console.log(date.month);
+    console.log(date.day);
+    console.log(date.year);
   };
 
   return (
@@ -34,14 +26,17 @@ export const PersonBirthday: React.FC<PersonBirthdayProps> = ({
       <DatePicker
         onChange={(date) => (!date ? null : handleDateChange(date))}
         value={
-          birthdayMonth && birthdayDay
-            ? new Date(birthdayYear ?? 1900, birthdayMonth - 1, birthdayDay)
+          person?.birthdayMonth && person?.birthdayDay
+            ? new Date(
+                person.birthdayYear ?? 1900,
+                person.birthdayMonth - 1,
+                person.birthdayDay,
+              )
             : null
         }
         format="MM/dd/yyyy"
         clearable
         label={t('Birthday')}
-        inputProps={{ 'aria-label': t('Birthday') }}
         fullWidth
         helperText="mm/dd/yyyy"
       />

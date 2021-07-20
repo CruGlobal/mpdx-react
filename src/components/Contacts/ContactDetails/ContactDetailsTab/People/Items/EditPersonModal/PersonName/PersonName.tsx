@@ -6,11 +6,9 @@ import {
   TextField,
   Typography,
 } from '@material-ui/core';
-import { FormikProps } from 'formik';
 import React from 'react';
 
 import { useTranslation } from 'react-i18next';
-import { PersonUpdateInput } from '../../../../../../../../../graphql/types.generated';
 import { ContactDetailsTabQuery } from '../../../../ContactDetailsTab.generated';
 import { ModalSectionContainer } from '../ModalSectionContainer/ModalSectionContainer';
 import { ModalSectionDeleteIcon } from '../ModalSectionDeleteIcon/ModalSectionDeleteIcon';
@@ -32,19 +30,10 @@ const ContactInputField = styled(TextField)(() => ({
 
 interface PersonNameProps {
   person: ContactDetailsTabQuery['contact']['people']['nodes'][0];
-  formikProps: FormikProps<PersonUpdateInput>;
 }
 
-export const PersonName: React.FC<PersonNameProps> = ({
-  person,
-  formikProps,
-}) => {
+export const PersonName: React.FC<PersonNameProps> = ({ person }) => {
   const { t } = useTranslation();
-  const {
-    values: { firstName, lastName, title, suffix },
-    handleChange,
-    errors,
-  } = formikProps;
   return (
     <>
       <ModalSectionContainer>
@@ -62,25 +51,15 @@ export const PersonName: React.FC<PersonNameProps> = ({
           <Grid item xs={6}>
             <ContactInputField
               label={t('First Name')}
-              value={firstName}
-              onChange={handleChange('firstName')}
-              inputProps={{ 'aria-label': t('First Name') }}
-              error={!!errors.firstName}
-              helperText={errors.firstName && t('First Name is required')}
+              value={person.firstName}
               fullWidth
-              required
             />
           </Grid>
           <Grid item xs={6}>
             <ContactInputField
               label={t('Last Name')}
-              value={lastName}
-              onChange={handleChange('lastName')}
-              inputProps={{ 'aria-label': t('Last Name') }}
-              error={!!errors.lastName}
-              helperText={errors.lastName && t('Last Name is required')}
+              value={person.lastName}
               fullWidth
-              required
             />
           </Grid>
         </Grid>
@@ -88,18 +67,14 @@ export const PersonName: React.FC<PersonNameProps> = ({
           <Grid item xs={6}>
             <ContactInputField
               placeholder={t('Title')}
-              value={title}
-              onChange={handleChange('title')}
-              inputProps={{ 'aria-label': t('Title') }}
+              value={person.title}
               fullWidth
             />
           </Grid>
           <Grid item xs={6}>
             <ContactInputField
               placeholder={t('Suffix')}
-              value={suffix}
-              onChange={handleChange('suffix')}
-              inputProps={{ 'aria-label': t('Suffix') }}
+              value={person.suffix}
               fullWidth
             />
           </Grid>

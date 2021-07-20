@@ -29,7 +29,7 @@ it('renders empty', async () => {
   expect(queryByRole('button')).not.toBeInTheDocument();
 });
 
-it('renders donation table', async () => {
+it('renders with data', async () => {
   const data = gqlMock<
     GetExpectedMonthlyTotalsQuery,
     GetExpectedMonthlyTotalsQueryVariables
@@ -50,29 +50,5 @@ it('renders donation table', async () => {
 
   expect(queryAllByRole('button')[0]).toBeInTheDocument();
 
-  expect(getAllByTestId('donationColumn')[0]).toBeInTheDocument();
-});
-
-it('renders non-donation table', async () => {
-  const data = gqlMock<
-    GetExpectedMonthlyTotalsQuery,
-    GetExpectedMonthlyTotalsQueryVariables
-  >(GetExpectedMonthlyTotalsDocument, { variables: { accountListId: 'abc' } });
-
-  const { queryAllByRole, queryByTestId } = render(
-    <ThemeProvider theme={theme}>
-      <ExpectedMonthlyTotalReportTable
-        accountListId={'abc'}
-        title={'Likely Partners This Month'}
-        data={data.expectedMonthlyTotalReport.likely.donations}
-        donations={false}
-        total={0}
-        currency={'USD'}
-      />
-    </ThemeProvider>,
-  );
-
-  expect(queryAllByRole('button')[0]).toBeInTheDocument();
-
-  expect(queryByTestId('donationColumn')).not.toBeInTheDocument();
+  expect(getAllByTestId('donationRow')[0]).toBeInTheDocument();
 });

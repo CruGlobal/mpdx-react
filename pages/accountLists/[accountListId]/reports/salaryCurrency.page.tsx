@@ -1,54 +1,29 @@
-import React, { useState } from 'react';
+import React, { ReactElement } from 'react';
 import Head from 'next/head';
 import { useTranslation } from 'react-i18next';
-import { Box, styled } from '@material-ui/core';
-import { SalaryReportTable } from 'src/components/Reports/FourteenMonthReports/SalaryReport/SalaryReportTable';
+import { SalaryReportTable } from 'src/components/Reports/SalaryReport/SalaryReportTable';
 import Loading from 'src/components/Loading';
-import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import { useAccountListId } from 'src/hooks/useAccountListId';
-import { NavReportsList } from 'src/components/Reports/NavReportsList/NavReportsList';
+import { ReportLayout } from 'src/components/Reports/ReportLayout/ReportLayout';
 
-const SalaryCurrencyReportPageWrapper = styled(Box)(({ theme }) => ({
-  backgroundColor: theme.palette.common.white,
-}));
-
-const SalaryCurrencyReportPage: React.FC = () => {
+const SalaryReportPage = (): ReactElement => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
-  const [isNavListOpen, setNavListOpen] = useState<boolean>(false);
-
-  const handleNavListToggle = () => {
-    setNavListOpen(!isNavListOpen);
-  };
 
   return (
     <>
       <Head>
-        <title>MPDX | {t('MPDX | Reports - Salary')}</title>
+        <title>
+          MPDX | {t('Reports')} | {t('14 Month Report (Salary)')}
+        </title>
       </Head>
       {accountListId ? (
-        <SalaryCurrencyReportPageWrapper>
-          <SidePanelsLayout
-            isScrollBox={false}
-            leftPanel={
-              <NavReportsList
-                isOpen={isNavListOpen}
-                selectedId="salaryCurrency"
-                onClose={handleNavListToggle}
-              />
-            }
-            leftOpen={isNavListOpen}
-            leftWidth="290px"
-            mainContent={
-              <SalaryReportTable
-                accountListId={accountListId}
-                isNavListOpen={isNavListOpen}
-                onNavListToggle={handleNavListToggle}
-                title={t('Contributions by Salary Currency')}
-              />
-            }
-          />
-        </SalaryCurrencyReportPageWrapper>
+        <ReportLayout
+          selectedId="salaryCurrency"
+          title="Contributions by Salary Currency"
+        >
+          <SalaryReportTable accountListId={accountListId} />
+        </ReportLayout>
       ) : (
         <Loading loading />
       )}
@@ -56,4 +31,4 @@ const SalaryCurrencyReportPage: React.FC = () => {
   );
 };
 
-export default SalaryCurrencyReportPage;
+export default SalaryReportPage;

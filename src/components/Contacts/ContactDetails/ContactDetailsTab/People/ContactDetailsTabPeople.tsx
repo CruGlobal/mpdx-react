@@ -79,15 +79,13 @@ const ContactEditIconContainer = styled(IconButton)(({ theme }) => ({
 
 interface ContactDetailsPeopleProp {
   data: ContactPeopleFragment;
-  accountListId: string;
 }
 
 export const ContactDetailsTabPeople: React.FC<ContactDetailsPeopleProp> = ({
   data,
-  accountListId,
 }) => {
   const { t } = useTranslation();
-  const [editPersonModalOpen, setEditPersonModalOpen] = useState<string>();
+  const [editPersonModalOpen, setEditPersonModalOpen] = useState(false);
 
   const { primaryPerson, people } = data;
 
@@ -111,7 +109,7 @@ export const ContactDetailsTabPeople: React.FC<ContactDetailsPeopleProp> = ({
               </ContactPersonPrimaryText>
             ) : null}
             <ContactEditIconContainer
-              onClick={() => setEditPersonModalOpen(person.id)}
+              onClick={() => setEditPersonModalOpen(true)}
             >
               <ContactDetailEditIcon titleAccess={t('Edit Icon')} />
             </ContactEditIconContainer>
@@ -172,13 +170,11 @@ export const ContactDetailsTabPeople: React.FC<ContactDetailsPeopleProp> = ({
             </ContactPersonRowContainer>
           ) : null}
         </ContactPersonTextContainer>
-        {editPersonModalOpen === person.id ? (
-          <EditPersonModal
-            person={person}
-            accountListId={accountListId}
-            handleClose={() => setEditPersonModalOpen(undefined)}
-          />
-        ) : null}
+        <EditPersonModal
+          person={person}
+          isOpen={editPersonModalOpen}
+          handleOpenModal={setEditPersonModalOpen}
+        />
       </ContactPersonContainer>
     );
   };

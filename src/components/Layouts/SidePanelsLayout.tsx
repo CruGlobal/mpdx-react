@@ -2,10 +2,6 @@ import { FC, ReactElement } from 'react';
 import { Box, styled, Theme } from '@material-ui/core';
 import { Breakpoint } from '@material-ui/core/styles/createBreakpoints';
 
-type ScrollBoxProps = {
-  isscroll?: 1 | 0;
-};
-
 const FullHeightBox = styled(Box)(({ theme }) => ({
   height: `calc(100vh - ${theme.mixins.toolbar.minHeight}px)`,
   ['@media (min-width:0px) and (orientation: landscape)']: {
@@ -24,9 +20,9 @@ const FullHeightBox = styled(Box)(({ theme }) => ({
   },
 }));
 
-const ScrollBox = styled(FullHeightBox)(({ isscroll }: ScrollBoxProps) => ({
-  overflowY: isscroll === 1 ? 'auto' : 'hidden',
-}));
+const ScrollBox = styled(FullHeightBox)({
+  overflowY: 'auto',
+});
 
 const CollapsibleWrapper = styled(Box)({
   display: 'flex',
@@ -100,25 +96,23 @@ const RightPanelWrapper = styled(PanelWrapper)(
 );
 
 interface SidePanelsLayoutProps {
-  isScrollBox?: boolean;
   leftPanel: ReactElement;
   leftWidth: string;
   leftOpen: boolean;
   mainContent: ReactElement;
-  rightPanel?: ReactElement;
-  rightWidth?: string;
-  rightOpen?: boolean;
+  rightPanel: ReactElement;
+  rightWidth: string;
+  rightOpen: boolean;
 }
 
 export const SidePanelsLayout: FC<SidePanelsLayoutProps> = ({
-  isScrollBox = true,
   leftPanel,
   leftWidth,
   leftOpen,
   mainContent,
   rightPanel,
   rightWidth,
-  rightOpen = false,
+  rightOpen,
 }) => (
   <CollapsibleWrapper justifyContent="flex-start">
     <ExpandingContent open={rightOpen}>
@@ -132,7 +126,7 @@ export const SidePanelsLayout: FC<SidePanelsLayoutProps> = ({
           {leftPanel}
         </LeftPanelWrapper>
         <ExpandingContent open={leftOpen}>
-          <ScrollBox isscroll={isScrollBox ? 1 : 0}>{mainContent}</ScrollBox>
+          <ScrollBox>{mainContent}</ScrollBox>
         </ExpandingContent>
       </CollapsibleWrapper>
     </ExpandingContent>

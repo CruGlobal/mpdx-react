@@ -42,9 +42,9 @@ export const ExpectedMonthlyTotalReportTable: React.FC<Props> = ({
 
   const showTotalPartners = () => {
     if (visible) {
-      return data.length > 1
-        ? t('Show {{partnerCount}} Partners', { partnerCount: data.length })
-        : t('Show 1 Partner');
+      return t(
+        ' Show ' + data.length + ` Partner${data.length > 1 ? 's' : ''}`,
+      );
     }
   };
 
@@ -92,6 +92,7 @@ export const ExpectedMonthlyTotalReportTable: React.FC<Props> = ({
               <TableBody>
                 {data.map((row, index) => (
                   <TableRow
+                    data-testid="donationRow"
                     key={row.contactId}
                     style={{
                       backgroundColor:
@@ -113,7 +114,7 @@ export const ExpectedMonthlyTotalReportTable: React.FC<Props> = ({
                     </TableCell>
                     <TableCell align="right">{row.pledgeFrequency}</TableCell>
                     {donations ? (
-                      <TableCell data-testid="donationColumn" align="right">
+                      <TableCell align="right">
                         {Math.round(row.donationAmount || 0) +
                           ' ' +
                           row.donationCurrency}

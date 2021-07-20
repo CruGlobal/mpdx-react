@@ -21,7 +21,7 @@ it('renders with data', async () => {
 
   expect(queryAllByRole('button')[0]).toBeInTheDocument();
 
-  expect(getAllByTestId('donationColumn')[0]).toBeInTheDocument();
+  expect(getAllByTestId('donationRow')[0]).toBeInTheDocument();
 });
 
 it('renders empty', async () => {

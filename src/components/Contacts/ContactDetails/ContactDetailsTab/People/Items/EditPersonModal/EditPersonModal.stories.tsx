@@ -16,7 +16,7 @@ export default {
 
 export const Default = (): ReactElement => {
   const mock = gqlMock<ContactPeopleFragment>(ContactPeopleFragmentDoc);
-  const accountListId = '123';
+
   const [modalOpen, setModalOpen] = useState(false);
 
   const mockPerson: ContactDetailsTabQuery['contact']['people']['nodes'][0] =
@@ -25,13 +25,11 @@ export const Default = (): ReactElement => {
   return (
     <MuiThemeProvider theme={theme}>
       <Box m={2}>
-        {modalOpen ? (
-          <EditPersonModal
-            person={mockPerson}
-            accountListId={accountListId}
-            handleClose={() => setModalOpen(false)}
-          />
-        ) : null}
+        <EditPersonModal
+          person={mockPerson}
+          isOpen={modalOpen}
+          handleOpenModal={setModalOpen}
+        />
         <Button color="primary" onClick={() => setModalOpen(true)}>
           Open Modal
         </Button>

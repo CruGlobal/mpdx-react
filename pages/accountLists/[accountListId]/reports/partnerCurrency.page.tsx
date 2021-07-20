@@ -1,54 +1,29 @@
-import React, { useState } from 'react';
+import React, { ReactElement } from 'react';
 import Head from 'next/head';
 import { useTranslation } from 'react-i18next';
-import { Box, styled } from '@material-ui/core';
-import { PartnerReportTable } from 'src/components/Reports/FourteenMonthReports/PartnerReport/PartnerReportTable';
+import { PartnerReportTable } from 'src/components/Reports/PartnerReport/PartnerReportTable';
 import Loading from 'src/components/Loading';
-import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import { useAccountListId } from 'src/hooks/useAccountListId';
-import { NavReportsList } from 'src/components/Reports/NavReportsList/NavReportsList';
+import { ReportLayout } from 'src/components/Reports/ReportLayout/ReportLayout';
 
-const PartnerCurrencyReportPageWrapper = styled(Box)(({ theme }) => ({
-  backgroundColor: theme.palette.common.white,
-}));
-
-const PartnerCurrencyReportPage: React.FC = () => {
+const PartnerReportPage = (): ReactElement => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
-  const [isNavListOpen, setNavListOpen] = useState<boolean>(false);
-
-  const handleNavListToggle = () => {
-    setNavListOpen(!isNavListOpen);
-  };
 
   return (
     <>
       <Head>
-        <title>MPDX | {t('MPDX | Reports - Partner')}</title>
+        <title>
+          MPDX | {t('Reports')} | {t('14-Month Report (Partner)')}
+        </title>
       </Head>
       {accountListId ? (
-        <PartnerCurrencyReportPageWrapper>
-          <SidePanelsLayout
-            isScrollBox={false}
-            leftPanel={
-              <NavReportsList
-                isOpen={isNavListOpen}
-                selectedId="partnerCurrency"
-                onClose={handleNavListToggle}
-              />
-            }
-            leftOpen={isNavListOpen}
-            leftWidth="290px"
-            mainContent={
-              <PartnerReportTable
-                accountListId={accountListId}
-                isNavListOpen={isNavListOpen}
-                onNavListToggle={handleNavListToggle}
-                title={t('Contributions by Partner Currency')}
-              />
-            }
-          />
-        </PartnerCurrencyReportPageWrapper>
+        <ReportLayout
+          selectedId="partnerCurrency"
+          title="Contributions by Partner Currency"
+        >
+          <PartnerReportTable accountListId={accountListId} />
+        </ReportLayout>
       ) : (
         <Loading loading />
       )}
@@ -56,4 +31,4 @@ const PartnerCurrencyReportPage: React.FC = () => {
   );
 };
 
-export default PartnerCurrencyReportPage;
+export default PartnerReportPage;
