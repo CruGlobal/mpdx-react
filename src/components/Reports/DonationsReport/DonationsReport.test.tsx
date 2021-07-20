@@ -4,9 +4,7 @@ import { ThemeProvider } from '@material-ui/core';
 import { DateTime } from 'luxon';
 import theme from '../../../theme';
 import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
-import { GetDonationGraphQuery } from './GetDonationGraph.generated';
 import { DonationsReport } from './DonationsReport';
-import { GetDonationsTableQuery } from './GetDonationsTable.generated';
 
 it('renders', async () => {
   const { getByTestId, queryByRole, queryAllByRole, queryByTestId } = render(
