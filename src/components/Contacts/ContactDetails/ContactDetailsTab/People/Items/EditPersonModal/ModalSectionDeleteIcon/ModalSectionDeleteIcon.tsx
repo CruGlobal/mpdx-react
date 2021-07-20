@@ -1,6 +1,7 @@
 import React from 'react';
 import { IconButton, styled } from '@material-ui/core';
 import DeleteIcon from '@material-ui/icons/Delete';
+import { useTranslation } from 'react-i18next';
 
 const ContactEditDeleteIconButton = styled(IconButton)(({ theme }) => ({
   position: 'absolute',
@@ -17,9 +18,10 @@ interface ModalSectionDeleteIconProps {
 export const ModalSectionDeleteIcon: React.FC<ModalSectionDeleteIconProps> = ({
   handleClick,
 }) => {
+  const { t } = useTranslation();
   return (
     <ContactEditDeleteIconButton onClick={handleClick}>
-      <DeleteIcon />
+      <DeleteIcon titleAccess={t('Modal Section Delete Icon')} />
     </ContactEditDeleteIconButton>
   );
 };

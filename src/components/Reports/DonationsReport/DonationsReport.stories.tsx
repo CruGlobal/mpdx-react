@@ -83,11 +83,6 @@ export const Empty = (): ReactElement => {
     <GqlMockedProvider
       mocks={{
         GetDonationGraph: {
-          accountList: {
-            currency: 'CAD',
-            monthlyGoal: 100,
-            totalPledges: 10,
-          },
           reportsDonationHistories: {
             averageIgnoreCurrent: 0,
             periods: [
