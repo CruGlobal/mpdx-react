@@ -38,7 +38,7 @@ module.exports = {
     },
     'import/resolver': {
       node: {
-        paths: ['.'],
+        paths: ['.'], // Allows to import url starting from 'src'
       },
     },
   },

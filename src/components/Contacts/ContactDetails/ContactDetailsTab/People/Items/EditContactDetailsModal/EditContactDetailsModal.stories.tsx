@@ -19,6 +19,7 @@ export const Default = (): ReactElement => {
 
   const [modalOpen, setModalOpen] = useState(false);
   const contactId = '123';
+  const accountListId = 'abc';
 
   const mockContact: ContactDetailsTabQuery['contact'] = {
     name: 'test person',
@@ -32,9 +33,10 @@ export const Default = (): ReactElement => {
     <MuiThemeProvider theme={theme}>
       <Box m={2}>
         <EditContactDetailsModal
+          accountListId={accountListId}
           contact={mockContact}
           isOpen={modalOpen}
-          handleOpenModal={setModalOpen}
+          handleClose={() => setModalOpen(false)}
         />
         <Button color="primary" onClick={() => setModalOpen(true)}>
           Open Modal
