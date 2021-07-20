@@ -1,6 +1,7 @@
 import React from 'react';
 import { Box, styled, Typography } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
+import { PreferredContactMethodEnum } from '../../../../../../graphql/types.generated';
 import { ContactOtherFragment } from './ContactOther.generated';
 
 const ContactOtherContainer = styled(Box)(({ theme }) => ({
@@ -33,6 +34,28 @@ export const ContactDetailsOther: React.FC<ContactDetailsOtherProp> = ({
     churchName,
     website,
   } = contact;
+
+  const localizedContactMethod = (method?: string | null) => {
+    switch (method) {
+      case PreferredContactMethodEnum.Sms:
+        return t('SMS');
+      case PreferredContactMethodEnum.PhoneCall:
+        return t('Phone Call');
+      case PreferredContactMethodEnum.Email:
+        return t('Email');
+      case PreferredContactMethodEnum.Facebook:
+        return t('Facebook');
+      case PreferredContactMethodEnum.Instagram:
+        return t('Instagram');
+      case PreferredContactMethodEnum.WeChat:
+        return t('WeChat');
+      case PreferredContactMethodEnum.WhatsApp:
+        return t('WhatsApp');
+      default:
+        return t('N/A');
+    }
+  };
+
   return (
     <Box>
       <ContactOtherContainer>
@@ -46,7 +69,9 @@ export const ContactDetailsOther: React.FC<ContactDetailsOtherProp> = ({
           <ContactOtherTextLabel variant="subtitle1">
             {t('Preferred Contact Method')}
           </ContactOtherTextLabel>
-          <Typography variant="subtitle1">{preferredContactMethod}</Typography>
+          <Typography variant="subtitle1">
+            {localizedContactMethod(preferredContactMethod)}
+          </Typography>
         </ContactOtherTextContainer>
         <ContactOtherTextContainer>
           <ContactOtherTextLabel variant="subtitle1">
