@@ -7,12 +7,8 @@ import { DonationsReport } from '../../../../src/components/Reports/DonationsRep
 
 import Loading from '../../../../src/components/Loading';
 import { useAccountListId } from '../../../../src/hooks/useAccountListId';
-import { GetDashboardQuery } from '../../GetDashboard.generated';
 
-interface Props {
-  data: GetDashboardQuery;
-}
-const DonationsReportPage: React.FC<Props> = ({ data }) => {
+const DonationsReportPage: React.FC = () => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
 
@@ -26,7 +22,7 @@ const DonationsReportPage: React.FC<Props> = ({ data }) => {
       {accountListId ? (
         <Box>
           <PageHeading heading={t('Donations')} />
-          <DonationsReport data={data} accountListId={accountListId} />
+          <DonationsReport accountListId={accountListId} />
         </Box>
       ) : (
         <Loading loading />
