@@ -1,48 +1,110 @@
 import React from 'react';
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import { ThemeProvider } from '@material-ui/core';
+import { DateTime } from 'luxon';
 import theme from '../../../../theme';
+import { GetDonationGraphQuery } from '../GetDonationGraph.generated';
+import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
 import { MonthlyActivitySection } from './MonthlyActivitySection';
-import { GetDashboardQuery } from 'pages/accountLists/GetDashboard.generated';
 
-const data: GetDashboardQuery = {
-  user: {
-    firstName: 'Roger',
-  },
-  accountList: {
-    name: 'My Account List',
-    monthlyGoal: 1000,
-    receivedPledges: 400,
-    totalPledges: 700,
-    currency: 'NZD',
-    balance: 1000,
-  },
-  contacts: {
-    totalCount: 15,
-  },
-  reportsDonationHistories: {
-    periods: [
-      {
-        convertedTotal: 200,
-        startDate: '2011-12-1',
-        totals: [
+it('renders with data', async () => {
+  const mocks = {
+    GetDonationGraph: {
+      accountList: {
+        currency: 'CAD',
+        monthlyGoal: 100,
+        totalPledges: 10,
+      },
+      reportsDonationHistories: {
+        averageIgnoreCurrent: 10,
+        periods: [
           {
-            currency: 'USD',
-            convertedAmount: 350,
+            startDate: DateTime.now().minus({ months: 12 }).toISO(),
+            convertedTotal: 10,
+            totals: [
+              {
+                currency: 'CAD',
+                convertedAmount: 10,
+              },
+            ],
+          },
+          {
+            startDate: DateTime.now().minus({ months: 11 }).toISO(),
+            convertedTotal: 10,
+            totals: [
+              {
+                currency: 'CAD',
+                convertedAmount: 10,
+              },
+            ],
           },
         ],
       },
-    ],
-    averageIgnoreCurrent: 750,
-  },
-};
+    },
+  };
 
-it('renders', () => {
-  const { getByText } = render(
+  const { getByTestId, queryByRole, queryByTestId } = render(
     <ThemeProvider theme={theme}>
-      <MonthlyActivitySection data={data} />
+      <GqlMockedProvider<GetDonationGraphQuery> mocks={mocks}>
+        <MonthlyActivitySection accountListId={'abc'} />
+      </GqlMockedProvider>
     </ThemeProvider>,
   );
 
-  expect(getByText('Monthly Activity')).toBeInTheDocument();
+  await waitFor(() =>
+    expect(queryByRole('progressbar')).not.toBeInTheDocument(),
+  );
+  expect(getByTestId('DonationHistoriesTypographyAverage')).toBeInTheDocument();
+  expect(queryByTestId('DonationHistoriesGridLoading')).not.toBeInTheDocument();
+});
+
+it('renders empty', async () => {
+  const mocks = {
+    GetDonationGraph: {
+      accountList: {
+        currency: 'CAD',
+        monthlyGoal: 0,
+        totalPledges: 0,
+      },
+      reportsDonationHistories: {
+        averageIgnoreCurrent: 0,
+        periods: [
+          {
+            startDate: DateTime.now().minus({ months: 12 }).toISO(),
+            convertedTotal: 0,
+            totals: [
+              {
+                currency: 'CAD',
+                convertedAmount: 0,
+              },
+            ],
+          },
+          {
+            startDate: DateTime.now().minus({ months: 11 }).toISO(),
+            convertedTotal: 0,
+            totals: [
+              {
+                currency: 'CAD',
+                convertedAmount: 0,
+              },
+            ],
+          },
+        ],
+      },
+    },
+  };
+
+  const { queryByText, queryByRole, getByTestId } = render(
+    <ThemeProvider theme={theme}>
+      <GqlMockedProvider<GetDonationGraphQuery> mocks={mocks}>
+        <MonthlyActivitySection accountListId={'abc'} />
+      </GqlMockedProvider>
+    </ThemeProvider>,
+  );
+
+  await waitFor(() =>
+    expect(queryByRole('progressbar')).not.toBeInTheDocument(),
+  );
+  expect(getByTestId('DonationHistoriesBoxEmpty')).toBeInTheDocument();
+  expect(queryByText('Average')).not.toBeInTheDocument();
 });
