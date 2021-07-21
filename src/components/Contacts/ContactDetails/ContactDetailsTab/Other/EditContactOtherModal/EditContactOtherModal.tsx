@@ -176,9 +176,6 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
                       labelId="preferred-contact-method-select-label"
                       value={preferredContactMethod}
                       onChange={handleChange('preferredContactMethod')}
-                      inputProps={{
-                        'aria-label': t('Preferred Contact Method'),
-                      }}
                       fullWidth={true}
                     >
                       {Object.values(PreferredContactMethodEnum).map(
@@ -202,9 +199,6 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
                           labelId="language-select-label"
                           value={locale}
                           onChange={handleChange('locale')}
-                          inputProps={{
-                            'aria-label': t('Language'),
-                          }}
                           fullWidth={true}
                           MenuProps={{
                             PaperProps: {
@@ -235,9 +229,6 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
                           labelId="timezone-select-label"
                           value={timezone}
                           onChange={handleChange('timezone')}
-                          inputProps={{
-                            'aria-label': t('Timezone'),
-                          }}
                           fullWidth={true}
                           MenuProps={{
                             PaperProps: {
