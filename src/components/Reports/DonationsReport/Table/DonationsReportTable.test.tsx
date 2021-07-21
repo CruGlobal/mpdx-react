@@ -1,30 +1,105 @@
 import React from 'react';
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import { ThemeProvider } from '@material-ui/core';
+import { DateTime } from 'luxon';
 import theme from '../../../../theme';
+import { GetDonationsTableQuery } from '../GetDonationsTable.generated';
+import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
 import { DonationsReportTable } from './DonationsReportTable';
 
-const data = [
-  {
-    date: new Date(2018, 0, 0o5, 17, 23, 42, 11),
-    partnerId: '00687849-5b74-43dd-86de-e841c6f30fc0',
-    partner: 'Bob',
-    currency: 'CAD',
-    foreignCurrency: 'USD',
-    convertedAmount: 123.02,
-    foreignAmount: 100,
-    designation: 'You',
-    method: 'bank_trans',
-    id: '1',
-  },
-];
+it('renders with data', async () => {
+  const mocks = {
+    GetDonationsTable: {
+      donations: {
+        nodes: [
+          {
+            amount: {
+              amount: 10,
+              convertedAmount: 10,
+              convertedCurrency: 'CAD',
+              currency: 'CAD',
+            },
+            appeal: {
+              amount: 10,
+              amountCurrency: 'CAD',
+              createdAt: DateTime.now().minus({ month: 3 }).toISO(),
+              id: 'abc',
+              name: 'John',
+            },
+            donationDate: DateTime.now().minus({ minutes: 4 }).toISO(),
+            donorAccount: {
+              displayName: 'John',
+              id: 'abc',
+            },
+            id: 'abc',
+            paymentMethod: 'pay',
+          },
+          {
+            amount: {
+              amount: 10,
+              convertedAmount: 10,
+              convertedCurrency: 'CAD',
+              currency: 'CAD',
+            },
+            appeal: {
+              amount: 10,
+              amountCurrency: 'CAD',
+              createdAt: DateTime.now().minus({ month: 3 }).toISO(),
+              id: 'abc',
+              name: 'John',
+            },
+            donationDate: DateTime.now().minus({ minutes: 5 }).toISO(),
+            donorAccount: {
+              displayName: 'John',
+              id: 'abc',
+            },
+            id: 'abc',
+            paymentMethod: 'pay',
+          },
+        ],
+      },
+    },
+  };
 
-it('renders', () => {
-  const { getByTestId } = render(
+  const { getAllByTestId, queryAllByRole, queryByRole } = render(
     <ThemeProvider theme={theme}>
-      <DonationsReportTable data={data} accountListId="abc" />
+      <GqlMockedProvider<GetDonationsTableQuery> mocks={mocks}>
+        <DonationsReportTable accountListId={'abc'} />
+      </GqlMockedProvider>
     </ThemeProvider>,
   );
 
-  expect(getByTestId('donationRow')).toBeInTheDocument();
+  await waitFor(() =>
+    expect(queryByRole('progressbar')).not.toBeInTheDocument(),
+  );
+
+  expect(queryAllByRole('button')[1]).toBeInTheDocument();
+
+  expect(getAllByTestId('donationRow')[0]).toBeInTheDocument();
+});
+
+it('renders empty', async () => {
+  const mocks = {
+    GetDonationsTable: {
+      donations: {
+        nodes: [],
+      },
+    },
+  };
+
+  const { queryByTestId, queryAllByRole, queryByRole } = render(
+    <ThemeProvider theme={theme}>
+      <GqlMockedProvider<GetDonationsTableQuery> mocks={mocks}>
+        <DonationsReportTable accountListId={'abc'} />
+      </GqlMockedProvider>
+    </ThemeProvider>,
+  );
+
+  await waitFor(() =>
+    expect(queryByRole('progressbar')).not.toBeInTheDocument(),
+  );
+
+  expect(queryAllByRole('button')[1]).toBeInTheDocument();
+
+  expect(queryByTestId('donationRow')).not.toBeInTheDocument();
 });
