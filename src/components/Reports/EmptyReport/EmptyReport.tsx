@@ -32,7 +32,7 @@ export const EmptyReport: React.FC<Props> = ({ title, subTitle }) => {
   };
 
   return (
-    <BoxWrapper boxShadow={3}>
+    <BoxWrapper boxShadow={3} data-testid="EmptyReport">
       <Box mb={2}>
         <LocalAtmIcon fontSize="large" color="disabled" />
       </Box>

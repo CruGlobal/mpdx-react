@@ -112,6 +112,7 @@ describe('FourteenMonthReport', () => {
     });
 
     expect(getByText(title)).toBeInTheDocument();
+    expect(queryByTestId('FourteenMonthReport')).toBeInTheDocument();
   });
 
   it('empty', async () => {
@@ -145,5 +146,6 @@ describe('FourteenMonthReport', () => {
 
     expect(getByText(title)).toBeInTheDocument();
     expect(queryByTestId('Notification')).toBeInTheDocument();
+    expect(queryByTestId('EmptyReport')).toBeInTheDocument();
   });
 });
