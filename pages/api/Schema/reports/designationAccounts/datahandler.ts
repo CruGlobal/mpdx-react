@@ -1,4 +1,7 @@
-import { DesignationAccount } from '../../../graphql-rest.page.generated';
+import {
+  DesignationAccount,
+  DesignationAccountsGroup,
+} from '../../../graphql-rest.page.generated';
 
 export interface DesignationAccountsResponse {
   id: string;
@@ -38,12 +41,49 @@ export interface DesignationAccountsResponse {
   };
 }
 
-export const mapDesignationAccounts = (
+const createDesignationAccount = (
+  account: DesignationAccountsResponse,
+): DesignationAccount => ({
+  active: account.attributes.active,
+  currency: account.attributes.currency,
+  id: account.id,
+  name: account.attributes.name,
+  convertedBalance: account.attributes.converted_balance,
+});
+
+export const createDesignationAccountsGroup = (
   data: DesignationAccountsResponse[],
-): DesignationAccount[] =>
-  data.map((account) => ({
-    active: account.attributes.active,
-    currency: account.attributes.currency,
-    name: account.attributes.name,
-    convertedBalance: account.attributes.converted_balance,
-  }));
+): DesignationAccountsGroup => {
+  return data.reduce((r, a) => {
+    r[a.relationships.organization.data.id] =
+      r[a.relationships.organization.data.id] || [];
+    r[a.attributes.organization_name].push(createDesignationAccount(a));
+    return r;
+  }, Object.create({}));
+};
+
+// export const mapDesignationAccounts = (
+//   data: DesignationAccountsResponse[],
+// ): DesignationAccountsGroup => {
+//   const organizationGroups = createOrganizationGroup(data);
+
+//   return Object.entries(organizationGroups).map(([organization, accounts]): [
+//     organization: string,
+//     accounts: DesignationAccountsResponse[],
+//   ] =>
+//     accounts.map((account) => ({
+//       active: account.attributes.active,
+//       currency: account.attributes.currency,
+//       id: account.id,
+//       name: account.attributes.name,
+//       convertedBalance: account.attributes.converted_balance,
+//     })),
+//   );
+// };
+
+export const activeDesignationAccount = (
+  data: DesignationAccountsResponse,
+): DesignationAccount => ({
+  active: data.attributes.active,
+  id: data.id,
+});

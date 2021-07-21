@@ -5,5 +5,15 @@ export const DesignationAccountsResolvers: Resolvers = {
     designationAccounts: (_source, { accountListId }, { dataSources }) => {
       return dataSources.mpdxRestApi.getDesignationAccounts(accountListId);
     },
+    activeDesignationAccount: (
+      _source,
+      { accountListId, designationAccountId },
+      { dataSources },
+    ) => {
+      return dataSources.mpdxRestApi.setDesignationAccountActive(
+        accountListId,
+        designationAccountId,
+      );
+    },
   },
 };

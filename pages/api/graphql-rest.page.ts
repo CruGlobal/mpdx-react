@@ -28,7 +28,7 @@ import {
 } from './Schema/reports/expectedMonthlyTotal/datahandler';
 import {
   DesignationAccountsResponse,
-  mapDesignationAccounts,
+  createDesignationAccountsGroup,
 } from './Schema/reports/designationAccounts/datahandler';
 
 class MpdxRestApi extends RESTDataSource {
@@ -157,7 +157,17 @@ class MpdxRestApi extends RESTDataSource {
     const { data }: { data: DesignationAccountsResponse[] } = await this.get(
       `account_lists/${accountListId}/designation_accounts?per_page=10000`,
     );
-    return mapDesignationAccounts(data);
+    return createDesignationAccountsGroup(data);
+  }
+
+  async setDesignationAccountActive(
+    accountListId: string,
+    designationAccountId: string,
+  ) {
+    const { data }: { data: DesignationAccountsResponse } = await this.put(
+      `account_lists/${accountListId}/designation_accounts/${designationAccountId}`,
+    );
+    return data;
   }
 }
 
