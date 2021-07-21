@@ -36,6 +36,11 @@ jest.mock('notistack', () => ({
   },
 }));
 
+jest.mock('i18next', () => ({
+  // this mock makes sure any components using the translate hook can use it without a warning being shown
+  t: (str: string) => str,
+}));
+
 const mockContact: ContactDetailsTabQuery['contact'] = {
   name: 'test person',
   id: contactId,

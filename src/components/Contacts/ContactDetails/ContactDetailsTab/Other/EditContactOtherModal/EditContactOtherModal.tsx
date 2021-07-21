@@ -25,6 +25,7 @@ import Modal from '../../../../../common/Modal/Modal';
 import { ContactDetailsTabQuery } from '../../ContactDetailsTab.generated';
 import { useApiConstants } from '../../../../../Constants/UseApiConstants';
 import { useGetTimezones } from '../../../../../../hooks/useGetTimezones';
+import { localizedContactMethod } from '../ContactDetailsOther';
 import { useUpdateContactOtherMutation } from './EditContactOther.generated';
 
 const ContactEditContainer = styled(Box)(({ theme }) => ({
@@ -111,25 +112,6 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
     } catch (error) {
       enqueueSnackbar(error.message, { variant: 'error' });
       throw error;
-    }
-  };
-
-  const localizedContactMethod = (method: string) => {
-    switch (method) {
-      case PreferredContactMethodEnum.Sms:
-        return t('SMS');
-      case PreferredContactMethodEnum.PhoneCall:
-        return t('Phone Call');
-      case PreferredContactMethodEnum.Email:
-        return t('Email');
-      case PreferredContactMethodEnum.Facebook:
-        return t('Facebook');
-      case PreferredContactMethodEnum.Instagram:
-        return t('Instagram');
-      case PreferredContactMethodEnum.WeChat:
-        return t('WeChat');
-      case PreferredContactMethodEnum.WhatsApp:
-        return t('WhatsApp');
     }
   };
 
