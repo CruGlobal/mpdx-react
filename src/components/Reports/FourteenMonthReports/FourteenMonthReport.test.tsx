@@ -87,6 +87,7 @@ describe('FourteenMonthReport', () => {
               },
             },
           ],
+          salaryCurrency: 'cad',
         },
       },
     };
@@ -117,7 +118,7 @@ describe('FourteenMonthReport', () => {
 
   it('empty', async () => {
     const mocks = {
-      data: {
+      FourteenMonthReport: {
         fourteenMonthReport: {
           currencyGroups: [],
         },
