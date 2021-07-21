@@ -30,7 +30,7 @@ import { ContactDetailsOther } from './Other/ContactDetailsOther';
 import { ContactDetailsTabPeople } from './People/ContactDetailsTabPeople';
 import { ContactTags } from './Tags/ContactTags';
 import { EditContactDetailsModal } from './People/Items/EditContactDetailsModal/EditContactDetailsModal';
-import { EditContactOtherModal } from './People/Items/EditContactOtherModal/EditContactOtherModal';
+import { EditContactOtherModal } from './Other/EditContactOtherModal/EditContactOtherModal';
 
 const ContactDetailsTabContainer = styled(Box)(() => ({
   width: '100%',

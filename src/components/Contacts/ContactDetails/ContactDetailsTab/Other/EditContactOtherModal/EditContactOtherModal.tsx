@@ -20,11 +20,11 @@ import {
 import {
   ContactUpdateInput,
   PreferredContactMethodEnum,
-} from '../../../../../../../../graphql/types.generated';
-import Modal from '../../../../../../common/Modal/Modal';
-import { ContactDetailsTabQuery } from '../../../ContactDetailsTab.generated';
-import { useApiConstants } from '../../../../../../Constants/UseApiConstants';
-import { useGetTimezones } from '../../../../../../../hooks/useGetTimezones';
+} from '../../../../../../../graphql/types.generated';
+import Modal from '../../../../../common/Modal/Modal';
+import { ContactDetailsTabQuery } from '../../ContactDetailsTab.generated';
+import { useApiConstants } from '../../../../../Constants/UseApiConstants';
+import { useGetTimezones } from '../../../../../../hooks/useGetTimezones';
 import { useUpdateContactOtherMutation } from './EditContactOther.generated';
 
 const ContactEditContainer = styled(Box)(({ theme }) => ({

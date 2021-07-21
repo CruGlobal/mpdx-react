@@ -4,17 +4,17 @@ import { SnackbarProvider } from 'notistack';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { GraphQLError } from 'graphql';
-import { PreferredContactMethodEnum } from '../../../../../../../../graphql/types.generated';
+import { PreferredContactMethodEnum } from '../../../../../../../graphql/types.generated';
 import {
   gqlMock,
   GqlMockedProvider,
-} from '../../../../../../../../__tests__/util/graphqlMocking';
-import theme from '../../../../../../../theme';
-import { ContactDetailsTabQuery } from '../../../ContactDetailsTab.generated';
+} from '../../../../../../../__tests__/util/graphqlMocking';
+import theme from '../../../../../../theme';
+import { ContactDetailsTabQuery } from '../../ContactDetailsTab.generated';
 import {
   ContactPeopleFragment,
   ContactPeopleFragmentDoc,
-} from '../../ContactPeople.generated';
+} from '../../People/ContactPeople.generated';
 import { UpdateContactOtherMutation } from './EditContactOther.generated';
 import { EditContactOtherModal } from './EditContactOtherModal';
 
