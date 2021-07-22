@@ -36,61 +36,63 @@ describe('FourteenMonthReport', () => {
 
   it('salary report loaded', async () => {
     const mocks = {
-      fourteenMonthReport: {
-        currencyGroups: [
-          {
-            contacts: [
-              {
-                id: 'contact-1',
+      FourteenMonthReport: {
+        fourteenMonthReport: {
+          currencyGroups: [
+            {
+              contacts: [
+                {
+                  id: 'contact-1',
+                  months: [
+                    {
+                      month: '2020-10-01',
+                      total: 35,
+                    },
+                    {
+                      month: '2020-11-01',
+                      total: 35,
+                    },
+                    {
+                      month: '2020-12-01',
+                      total: 35,
+                    },
+                    {
+                      month: '2021-1-01',
+                      total: 35,
+                    },
+                  ],
+                  name: 'test name',
+                },
+              ],
+              currency: 'cad',
+              totals: {
                 months: [
                   {
                     month: '2020-10-01',
-                    total: 35,
+                    total: 1836.32,
                   },
                   {
                     month: '2020-11-01',
-                    total: 35,
+                    total: 1836.32,
                   },
                   {
                     month: '2020-12-01',
-                    total: 35,
+                    total: 1836.32,
                   },
                   {
                     month: '2021-1-01',
-                    total: 35,
+                    total: 1836.32,
                   },
                 ],
-                name: 'test name',
               },
-            ],
-            currency: 'cad',
-            totals: {
-              months: [
-                {
-                  month: '2020-10-01',
-                  total: 1836.32,
-                },
-                {
-                  month: '2020-11-01',
-                  total: 1836.32,
-                },
-                {
-                  month: '2020-12-01',
-                  total: 1836.32,
-                },
-                {
-                  month: '2021-1-01',
-                  total: 1836.32,
-                },
-              ],
             },
-          },
-        ],
-        salaryCurrency: 'cad',
+          ],
+          salaryCurrency: 'CAD',
+        },
       },
     };
 
-    const { queryByTestId, getByText } = render(
+    const { queryByTestId, getByText, queryByText } = render(
       <ThemeProvider theme={theme}>
         <GqlMockedProvider<FourteenMonthReportQuery> mocks={mocks}>
           <FourteenMonthReport
@@ -111,17 +113,20 @@ describe('FourteenMonthReport', () => {
     });
 
     expect(getByText(title)).toBeInTheDocument();
-    expect(queryByTestId('FourteenMonthReport')).toBeInTheDocument();
+    expect(queryByText('test name')).toBeInTheDocument();
+    expect(queryByText('CAD')).toBeInTheDocument();
   });
 
   it('empty', async () => {
     const mocks = {
-      fourteenMonthReport: {
-        currencyGroups: [],
+      FourteenMonthReport: {
+        fourteenMonthReport: {
+          currencyGroups: [],
+        },
       },
     };
 
-    const { queryByTestId, getByText } = render(
+    const { queryByTestId, getByText, queryByText } = render(
       <ThemeProvider theme={theme}>
         <GqlMockedProvider<FourteenMonthReportQuery> mocks={mocks}>
           <FourteenMonthReport
@@ -143,5 +148,8 @@ describe('FourteenMonthReport', () => {
 
     expect(getByText(title)).toBeInTheDocument();
     expect(queryByTestId('Notification')).toBeInTheDocument();
+    expect(
+      queryByText('You have received no donations in the last thirteen months'),
+    ).toBeInTheDocument();
   });
 });
