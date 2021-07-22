@@ -2,7 +2,7 @@ extend type Query {
   designationAccounts(accountListId: ID!): [DesignationAccountsGroup!]!
 }
 
-extend type Query {
+extend type Mutation {
   setActiveDesignationAccount(
     accountListId: ID!
     designationAccountId: ID!
