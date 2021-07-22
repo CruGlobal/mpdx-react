@@ -31,6 +31,7 @@ describe('FourteenMonthReport', () => {
 
     expect(getByText(title)).toBeInTheDocument();
     expect(queryByTestId('LoadingFourteenMonthReport')).toBeInTheDocument();
+    expect(queryByTestId('FourteenMonthReportHeader')).toBeInTheDocument();
     expect(queryByTestId('Notification')).toBeNull();
   });
 
@@ -113,6 +114,7 @@ describe('FourteenMonthReport', () => {
     });
 
     expect(getByText(title)).toBeInTheDocument();
+    expect(queryByTestId('FourteenMonthReportHeader')).toBeInTheDocument();
     expect(queryByTestId('FourteenMonthReport')).toBeInTheDocument();
   });
 
@@ -147,6 +149,7 @@ describe('FourteenMonthReport', () => {
 
     expect(getByText(title)).toBeInTheDocument();
     expect(queryByTestId('Notification')).toBeInTheDocument();
+    expect(queryByTestId('FourteenMonthReportHeader')).toBeInTheDocument();
     expect(queryByTestId('EmptyReport')).toBeInTheDocument();
   });
 });
