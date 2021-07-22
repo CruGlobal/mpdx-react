@@ -21,7 +21,7 @@ type DesignationAccount {
 
 type SetActiveDesignationAccountResponse {
   active: Boolean!
-  id: String!
+  id: ID!
 }
 
 type DesignationAccountsGroup {
