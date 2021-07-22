@@ -1,6 +1,7 @@
 import {
   DesignationAccount,
   DesignationAccountsGroup,
+  SetActiveDesignationAccountResponse,
 } from '../../../graphql-rest.page.generated';
 
 export interface DesignationAccountsResponse {
@@ -9,7 +10,7 @@ export interface DesignationAccountsResponse {
   attributes: {
     active: true;
     balance: string;
-    balance_updated_at: null;
+    balance_updated_at: string;
     converted_balance: number;
     created_at: string;
     currency: string;
@@ -41,11 +42,17 @@ export interface DesignationAccountsResponse {
   };
 }
 
+type PreDesignationAccountsGroup = {
+  [organizationId: string]: DesignationAccount[];
+};
+
 const createDesignationAccount = (
   account: DesignationAccountsResponse,
 ): DesignationAccount => ({
   active: account.attributes.active,
+  balanceUpdatedAt: account.attributes.balance_updated_at,
   currency: account.attributes.currency,
+  designationNumber: account.attributes.designation_number,
   id: account.id,
   name: account.attributes.name,
   convertedBalance: account.attributes.converted_balance,
@@ -53,13 +60,27 @@ const createDesignationAccount = (
 
 export const createDesignationAccountsGroup = (
   data: DesignationAccountsResponse[],
-): DesignationAccountsGroup => {
-  return data.reduce((r, a) => {
-    r[a.relationships.organization.data.id] =
-      r[a.relationships.organization.data.id] || [];
-    r[a.attributes.organization_name].push(createDesignationAccount(a));
-    return r;
-  }, Object.create({}));
+): DesignationAccountsGroup[] => {
+  const preDesignationAccountsGroup = data.reduce(
+    (obj: PreDesignationAccountsGroup, item) => {
+      obj[item.relationships.organization.data.id] =
+        obj[item.relationships.organization.data.id] || [];
+      obj[item.relationships.organization.data.id].push(
+        createDesignationAccount(item),
+      );
+      return obj;
+    },
+    {},
+  );
+
+  const designationAccountsGroup = Object.entries(
+    preDesignationAccountsGroup,
+  ).map(([organizationName, designationAccounts]) => ({
+    organizationName,
+    designationAccounts,
+  }));
+
+  return designationAccountsGroup;
 };
 
 // export const mapDesignationAccounts = (
@@ -83,7 +104,7 @@ export const createDesignationAccountsGroup = (
 
 export const activeDesignationAccount = (
   data: DesignationAccountsResponse,
-): DesignationAccount => ({
+): SetActiveDesignationAccountResponse => ({
   active: data.attributes.active,
   id: data.id,
 });

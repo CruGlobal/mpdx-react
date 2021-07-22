@@ -1,5 +1,5 @@
 extend type Query {
-  designationAccounts(accountListId: ID!): DesignationAccountsGroup!
+  designationAccounts(accountListId: ID!): [DesignationAccountsGroup!]!
 }
 
 type DesignationAccount {
@@ -12,6 +12,12 @@ type DesignationAccount {
   name: String!
 }
 
+type SetActiveDesignationAccountResponse {
+  active: Boolean!
+  id: String!
+}
+
 type DesignationAccountsGroup {
-  [organizationName: String]: [DesignationAccount!]!
+  organizationName: String!
+  designationAccounts: [DesignationAccount!]!
 }
