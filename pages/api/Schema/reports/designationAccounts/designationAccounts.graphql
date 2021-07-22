@@ -2,6 +2,13 @@ extend type Query {
   designationAccounts(accountListId: ID!): [DesignationAccountsGroup!]!
 }
 
+extend type Query {
+  activeDesignationAccount(
+    accountListId: ID!
+    designationAccountId: ID!
+  ): SetActiveDesignationAccountResponse!
+}
+
 type DesignationAccount {
   active: Boolean!
   balanceUpdatedAt: ISO8601Date!

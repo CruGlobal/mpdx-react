@@ -29,6 +29,7 @@ import {
 import {
   DesignationAccountsResponse,
   createDesignationAccountsGroup,
+  setActiveDesignationAccount,
 } from './Schema/reports/designationAccounts/datahandler';
 
 class MpdxRestApi extends RESTDataSource {
@@ -167,7 +168,7 @@ class MpdxRestApi extends RESTDataSource {
     const { data }: { data: DesignationAccountsResponse } = await this.put(
       `account_lists/${accountListId}/designation_accounts/${designationAccountId}`,
     );
-    return data;
+    return setActiveDesignationAccount(data);
   }
 }
 

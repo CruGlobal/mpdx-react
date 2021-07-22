@@ -102,7 +102,7 @@ export const createDesignationAccountsGroup = (
 //   );
 // };
 
-export const activeDesignationAccount = (
+export const setActiveDesignationAccount = (
   data: DesignationAccountsResponse,
 ): SetActiveDesignationAccountResponse => ({
   active: data.attributes.active,
