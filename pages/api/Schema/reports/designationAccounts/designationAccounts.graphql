@@ -3,7 +3,7 @@ extend type Query {
 }
 
 extend type Query {
-  activeDesignationAccount(
+  setActiveDesignationAccount(
     accountListId: ID!
     designationAccountId: ID!
     active: Boolean!
