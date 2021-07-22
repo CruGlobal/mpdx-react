@@ -84,25 +84,6 @@ export const createDesignationAccountsGroup = (
   return designationAccountsGroup;
 };
 
-// export const mapDesignationAccounts = (
-//   data: DesignationAccountsResponse[],
-// ): DesignationAccountsGroup => {
-//   const organizationGroups = createOrganizationGroup(data);
-
-//   return Object.entries(organizationGroups).map(([organization, accounts]): [
-//     organization: string,
-//     accounts: DesignationAccountsResponse[],
-//   ] =>
-//     accounts.map((account) => ({
-//       active: account.attributes.active,
-//       currency: account.attributes.currency,
-//       id: account.id,
-//       name: account.attributes.name,
-//       convertedBalance: account.attributes.converted_balance,
-//     })),
-//   );
-// };
-
 export const setActiveDesignationAccount = (
   data: DesignationAccountsResponse,
 ): SetActiveDesignationAccountResponse => ({
