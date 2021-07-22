@@ -1,0 +1,207 @@
+import React from 'react';
+import { ThemeProvider } from '@material-ui/core';
+import { render, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { SnackbarProvider } from 'notistack';
+import { GraphQLError } from 'graphql';
+import { SendNewsletterEnum } from '../../../../../../../graphql/types.generated';
+import {
+  gqlMock,
+  GqlMockedProvider,
+} from '../../../../../../../__tests__/util/graphqlMocking';
+import theme from '../../../../../../theme';
+import { ContactDetailsTabQuery } from '../../ContactDetailsTab.generated';
+import {
+  ContactPeopleFragment,
+  ContactPeopleFragmentDoc,
+} from '../../People/ContactPeople.generated';
+import { EditContactMailingModal } from './EditContactMailingModal';
+import { UpdateContactMailingMutation } from './EditContactMailingModal.generated';
+
+const handleClose = jest.fn();
+const mock = gqlMock<ContactPeopleFragment>(ContactPeopleFragmentDoc);
+const contactId = '123';
+const accountListId = 'abc';
+
+const mockEnqueue = jest.fn();
+
+jest.mock('notistack', () => ({
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  ...jest.requireActual('notistack'),
+  useSnackbar: () => {
+    return {
+      enqueueSnackbar: mockEnqueue,
+    };
+  },
+}));
+
+const mockContact: ContactDetailsTabQuery['contact'] = {
+  name: 'test person',
+  id: contactId,
+  tagList: [],
+  greeting: 'Hello test',
+  envelopeGreeting: 'Dear Test',
+  sendNewsletter: SendNewsletterEnum.Email,
+  people: {
+    nodes: [
+      {
+        ...mock.people.nodes[0],
+        firstName: 'test',
+        lastName: 'guy',
+        id: mock.primaryPerson?.id ?? '',
+      },
+      ...mock.people.nodes,
+    ],
+  },
+  primaryPerson: mock.primaryPerson,
+};
+
+describe('EditContactMailingModal', () => {
+  it('should render edit contact mailing modal', () => {
+    const { getByText } = render(
+      <SnackbarProvider>
+        <ThemeProvider theme={theme}>
+          <GqlMockedProvider<UpdateContactMailingMutation>>
+            <EditContactMailingModal
+              accountListId={accountListId}
+              isOpen={true}
+              handleClose={handleClose}
+              contact={mockContact}
+            />
+          </GqlMockedProvider>
+        </ThemeProvider>
+      </SnackbarProvider>,
+    );
+
+    expect(getByText('Edit Contact Mailing Details')).toBeInTheDocument();
+  });
+
+  it('should close edit contact mailing modal', () => {
+    const { getByText, getByRole } = render(
+      <SnackbarProvider>
+        <ThemeProvider theme={theme}>
+          <GqlMockedProvider<UpdateContactMailingMutation>>
+            <EditContactMailingModal
+              accountListId={accountListId}
+              isOpen={true}
+              handleClose={handleClose}
+              contact={mockContact}
+            />
+          </GqlMockedProvider>
+        </ThemeProvider>
+      </SnackbarProvider>,
+    );
+
+    expect(getByText('Edit Contact Mailing Details')).toBeInTheDocument();
+    userEvent.click(getByRole('button', { name: 'Close' }));
+    expect(handleClose).toHaveBeenCalled();
+  });
+
+  it('should handle cancel click', () => {
+    const { getByText } = render(
+      <SnackbarProvider>
+        <ThemeProvider theme={theme}>
+          <GqlMockedProvider<UpdateContactMailingMutation>>
+            <EditContactMailingModal
+              accountListId={accountListId}
+              isOpen={true}
+              handleClose={handleClose}
+              contact={mockContact}
+            />
+          </GqlMockedProvider>
+        </ThemeProvider>
+      </SnackbarProvider>,
+    );
+
+    expect(getByText('Edit Contact Mailing Details')).toBeInTheDocument();
+    userEvent.click(getByText('Cancel'));
+    expect(handleClose).toHaveBeenCalled();
+  });
+
+  it('should edit contact mailing details', async () => {
+    const mutationSpy = jest.fn();
+    const newGreeting = 'New greeting';
+    const newEnvelopeGreeting = 'New Envelope Greeting';
+
+    const { getByText, getByRole } = render(
+      <SnackbarProvider>
+        <ThemeProvider theme={theme}>
+          <GqlMockedProvider<UpdateContactMailingMutation> onCall={mutationSpy}>
+            <EditContactMailingModal
+              accountListId={accountListId}
+              isOpen={true}
+              handleClose={handleClose}
+              contact={mockContact}
+            />
+          </GqlMockedProvider>
+        </ThemeProvider>
+      </SnackbarProvider>,
+    );
+    userEvent.clear(getByRole('textbox', { name: 'Greeting' }));
+    userEvent.clear(getByRole('textbox', { name: 'Envelope Name Line' }));
+    userEvent.click(getByRole('button', { name: 'Newsletter' }));
+    userEvent.click(getByRole('option', { name: SendNewsletterEnum.Both }));
+    userEvent.type(getByRole('textbox', { name: 'Greeting' }), newGreeting);
+    userEvent.type(
+      getByRole('textbox', { name: 'Envelope Name Line' }),
+      newEnvelopeGreeting,
+    );
+    userEvent.click(getByText('Save'));
+    await waitFor(() =>
+      expect(mockEnqueue).toHaveBeenCalledWith('Contact updated successfully', {
+        variant: 'success',
+      }),
+    );
+    const { operation } = mutationSpy.mock.calls[0][0];
+
+    expect(operation.variables.accountListId).toEqual(accountListId);
+    expect(operation.variables.attributes.sendNewsletter).toEqual(
+      SendNewsletterEnum.Both,
+    );
+    expect(operation.variables.attributes.greeting).toEqual(newGreeting);
+    expect(operation.variables.attributes.envelopeGreeting).toEqual(
+      newEnvelopeGreeting,
+    );
+  });
+
+  it('should handle errors when editing contact mailing details', async () => {
+    const newGreeting = 'New greeting';
+
+    const { getByText, getByRole } = render(
+      <SnackbarProvider>
+        <ThemeProvider theme={theme}>
+          <GqlMockedProvider<UpdateContactMailingMutation>
+            mocks={{
+              UpdateContactMailing: {
+                updateContact: {
+                  contact: new GraphQLError(
+                    'GraphQL Error #42: Error updating contact.',
+                  ),
+                },
+              },
+            }}
+          >
+            <EditContactMailingModal
+              accountListId={accountListId}
+              isOpen={true}
+              handleClose={handleClose}
+              contact={mockContact}
+            />
+          </GqlMockedProvider>
+        </ThemeProvider>
+      </SnackbarProvider>,
+    );
+    userEvent.clear(getByRole('textbox', { name: 'Greeting' }));
+    userEvent.type(getByRole('textbox', { name: 'Greeting' }), newGreeting);
+    userEvent.click(getByText('Save'));
+    await waitFor(() =>
+      expect(mockEnqueue).toHaveBeenCalledWith(
+        'GraphQL Error #42: Error updating contact.',
+        {
+          variant: 'error',
+        },
+      ),
+    );
+  });
+});
