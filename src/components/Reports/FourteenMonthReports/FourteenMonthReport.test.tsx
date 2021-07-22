@@ -36,7 +36,7 @@ describe('FourteenMonthReport', () => {
 
   it('salary report loaded', async () => {
     const mocks = {
-      FourteenMonthReport: {
+      data: {
         fourteenMonthReport: {
           currencyGroups: [
             {
@@ -118,7 +118,7 @@ describe('FourteenMonthReport', () => {
 
   it('empty', async () => {
     const mocks = {
-      FourteenMonthReport: {
+      data: {
         fourteenMonthReport: {
           currencyGroups: [],
         },
