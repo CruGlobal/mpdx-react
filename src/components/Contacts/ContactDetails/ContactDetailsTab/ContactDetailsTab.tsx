@@ -30,6 +30,7 @@ import { ContactDetailsOther } from './Other/ContactDetailsOther';
 import { ContactDetailsTabPeople } from './People/ContactDetailsTabPeople';
 import { ContactTags } from './Tags/ContactTags';
 import { EditContactDetailsModal } from './People/Items/EditContactDetailsModal/EditContactDetailsModal';
+import { EditContactOtherModal } from './Other/EditContactOtherModal/EditContactOtherModal';
 
 const ContactDetailsTabContainer = styled(Box)(() => ({
   width: '100%',
@@ -103,6 +104,7 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
   const [deleteContact, { loading: deleting }] = useDeleteContactMutation();
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
+  const [editOtherModalOpen, setEditOtherModalOpen] = useState(false);
 
   const { contactId: _, searchTerm, ...queryWithoutContactId } = query;
 
@@ -265,7 +267,7 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
               {t('Other')}
             </ContactDetailHeadingText>
             {loading || !data ? null : (
-              <IconButton onClick={() => setEditModalOpen(true)}>
+              <IconButton onClick={() => setEditOtherModalOpen(true)}>
                 <ContactDetailEditIcon titleAccess={t('Edit Icon')} />
               </IconButton>
             )}
@@ -293,12 +295,20 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
       </ContactDetailsTabContainer>
       {renderDeleteContactModal()}
       {loading || !data ? null : (
-        <EditContactDetailsModal
-          accountListId={accountListId}
-          contact={data.contact}
-          isOpen={editModalOpen}
-          handleClose={() => setEditModalOpen(false)}
-        />
+        <>
+          <EditContactDetailsModal
+            accountListId={accountListId}
+            contact={data.contact}
+            isOpen={editModalOpen}
+            handleClose={() => setEditModalOpen(false)}
+          />
+          <EditContactOtherModal
+            accountListId={accountListId}
+            contact={data.contact}
+            isOpen={editOtherModalOpen}
+            handleClose={() => setEditOtherModalOpen(false)}
+          />
+        </>
       )}
     </>
   );

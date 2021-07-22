@@ -155,6 +155,86 @@ describe('ContactDetailTab', () => {
     );
   });
 
+  it('should close edit contact details modal', async () => {
+    const { queryByText, getAllByRole, getByRole } = render(
+      <SnackbarProvider>
+        <TestRouter router={router}>
+          <MuiPickersUtilsProvider utils={LuxonUtils}>
+            <ThemeProvider theme={theme}>
+              <GqlMockedProvider<ContactDetailsTabQuery>>
+                <ContactDetailsTab
+                  accountListId={accountListId}
+                  contactId={contactId}
+                />
+              </GqlMockedProvider>
+            </ThemeProvider>
+          </MuiPickersUtilsProvider>
+        </TestRouter>
+      </SnackbarProvider>,
+    );
+    await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());
+    userEvent.click(getAllByRole('img', { name: 'Edit Icon' })[0]);
+    await waitFor(() =>
+      expect(queryByText('Edit Contact Details')).toBeInTheDocument(),
+    );
+    userEvent.click(getByRole('button', { name: 'Close' }));
+    await waitFor(() =>
+      expect(queryByText('Edit Contact Details')).not.toBeInTheDocument(),
+    );
+  });
+
+  it('should open edit contact other details modal', async () => {
+    const { queryByText, getAllByRole } = render(
+      <SnackbarProvider>
+        <TestRouter router={router}>
+          <MuiPickersUtilsProvider utils={LuxonUtils}>
+            <ThemeProvider theme={theme}>
+              <GqlMockedProvider<ContactDetailsTabQuery>>
+                <ContactDetailsTab
+                  accountListId={accountListId}
+                  contactId={contactId}
+                />
+              </GqlMockedProvider>
+            </ThemeProvider>
+          </MuiPickersUtilsProvider>
+        </TestRouter>
+      </SnackbarProvider>,
+    );
+    await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());
+    userEvent.click(getAllByRole('img', { name: 'Edit Icon' })[5]);
+    await waitFor(() =>
+      expect(queryByText('Edit Contact Other Details')).toBeInTheDocument(),
+    );
+  });
+
+  it('should close edit contact other details modal', async () => {
+    const { queryByText, getAllByRole, getByRole } = render(
+      <SnackbarProvider>
+        <TestRouter router={router}>
+          <MuiPickersUtilsProvider utils={LuxonUtils}>
+            <ThemeProvider theme={theme}>
+              <GqlMockedProvider<ContactDetailsTabQuery>>
+                <ContactDetailsTab
+                  accountListId={accountListId}
+                  contactId={contactId}
+                />
+              </GqlMockedProvider>
+            </ThemeProvider>
+          </MuiPickersUtilsProvider>
+        </TestRouter>
+      </SnackbarProvider>,
+    );
+    await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());
+    userEvent.click(getAllByRole('img', { name: 'Edit Icon' })[5]);
+    await waitFor(() =>
+      expect(queryByText('Edit Contact Other Details')).toBeInTheDocument(),
+    );
+    userEvent.click(getByRole('button', { name: 'Close' }));
+    await waitFor(() =>
+      expect(queryByText('Edit Contact Other Details')).not.toBeInTheDocument(),
+    );
+  });
+
   it('handles deleting contact', async () => {
     const cache = new InMemoryCache();
     jest.spyOn(cache, 'writeQuery');
