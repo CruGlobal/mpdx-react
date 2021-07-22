@@ -6,6 +6,7 @@ extend type Query {
   activeDesignationAccount(
     accountListId: ID!
     designationAccountId: ID!
+    active: Boolean!
   ): SetActiveDesignationAccountResponse!
 }
 
