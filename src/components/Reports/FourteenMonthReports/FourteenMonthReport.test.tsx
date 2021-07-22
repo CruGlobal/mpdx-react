@@ -36,59 +36,57 @@ describe('FourteenMonthReport', () => {
 
   it('salary report loaded', async () => {
     const mocks = {
-      data: {
-        fourteenMonthReport: {
-          currencyGroups: [
-            {
-              contacts: [
-                {
-                  id: 'contact-1',
-                  months: [
-                    {
-                      month: '2020-10-01',
-                      total: 35,
-                    },
-                    {
-                      month: '2020-11-01',
-                      total: 35,
-                    },
-                    {
-                      month: '2020-12-01',
-                      total: 35,
-                    },
-                    {
-                      month: '2021-1-01',
-                      total: 35,
-                    },
-                  ],
-                  name: 'test name',
-                },
-              ],
-              currency: 'cad',
-              totals: {
+      fourteenMonthReport: {
+        currencyGroups: [
+          {
+            contacts: [
+              {
+                id: 'contact-1',
                 months: [
                   {
                     month: '2020-10-01',
-                    total: 1836.32,
+                    total: 35,
                   },
                   {
                     month: '2020-11-01',
-                    total: 1836.32,
+                    total: 35,
                   },
                   {
                     month: '2020-12-01',
-                    total: 1836.32,
+                    total: 35,
                   },
                   {
                     month: '2021-1-01',
-                    total: 1836.32,
+                    total: 35,
                   },
                 ],
+                name: 'test name',
               },
+            ],
+            currency: 'cad',
+            totals: {
+              months: [
+                {
+                  month: '2020-10-01',
+                  total: 1836.32,
+                },
+                {
+                  month: '2020-11-01',
+                  total: 1836.32,
+                },
+                {
+                  month: '2020-12-01',
+                  total: 1836.32,
+                },
+                {
+                  month: '2021-1-01',
+                  total: 1836.32,
+                },
+              ],
             },
-          ],
-          salaryCurrency: 'cad',
-        },
+          },
+        ],
+        salaryCurrency: 'cad',
       },
     };
 
@@ -118,10 +116,8 @@ describe('FourteenMonthReport', () => {
 
   it('empty', async () => {
     const mocks = {
-      data: {
-        fourteenMonthReport: {
-          currencyGroups: [],
-        },
+      fourteenMonthReport: {
+        currencyGroups: [],
       },
     };
 
