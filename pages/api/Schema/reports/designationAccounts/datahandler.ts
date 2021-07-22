@@ -61,8 +61,8 @@ const createDesignationAccount = (
 export const createDesignationAccountsGroup = (
   data: DesignationAccountsResponse[],
 ): DesignationAccountsGroup[] => {
-  const preDesignationAccountsGroup = data.reduce(
-    (obj: PreDesignationAccountsGroup, item) => {
+  const preDesignationAccountsGroup = data.reduce<PreDesignationAccountsGroup>(
+    (obj, item) => {
       return {
         ...obj,
         [item.relationships.organization.data.id]: [
