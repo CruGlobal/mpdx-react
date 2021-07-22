@@ -163,10 +163,21 @@ class MpdxRestApi extends RESTDataSource {
 
   async setDesignationAccountActive(
     accountListId: string,
+    active: boolean,
     designationAccountId: string,
   ) {
     const { data }: { data: DesignationAccountsResponse } = await this.put(
       `account_lists/${accountListId}/designation_accounts/${designationAccountId}`,
+      {
+        data: {
+          attributes: {
+            active,
+            overwrite: true,
+          },
+          id: designationAccountId,
+          type: 'designation_accounts',
+        },
+      },
     );
     return setActiveDesignationAccount(data);
   }

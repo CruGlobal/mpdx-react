@@ -5,8 +5,8 @@ extend type Query {
 extend type Mutation {
   setActiveDesignationAccount(
     accountListId: ID!
-    designationAccountId: ID!
     active: Boolean!
+    designationAccountId: ID!
   ): SetActiveDesignationAccountResponse!
 }
 

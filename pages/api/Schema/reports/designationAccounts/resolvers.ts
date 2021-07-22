@@ -5,13 +5,16 @@ export const DesignationAccountsResolvers: Resolvers = {
     designationAccounts: (_source, { accountListId }, { dataSources }) => {
       return dataSources.mpdxRestApi.getDesignationAccounts(accountListId);
     },
-    activeDesignationAccount: (
+  },
+  Mutation: {
+    setActiveDesignationAccount: (
       _source,
-      { accountListId, designationAccountId },
+      { accountListId, active, designationAccountId },
       { dataSources },
     ) => {
       return dataSources.mpdxRestApi.setDesignationAccountActive(
         accountListId,
+        active,
         designationAccountId,
       );
     },
