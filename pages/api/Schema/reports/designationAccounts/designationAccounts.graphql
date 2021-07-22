@@ -16,7 +16,7 @@ type DesignationAccount {
   convertedBalance: Float!
   currency: String!
   designationNumber: String!
-  id: String!
+  id: ID!
   name: String!
 }
 
