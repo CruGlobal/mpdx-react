@@ -1,0 +1,18 @@
+mutation UpdateContactOther(
+  $accountListId: ID!
+  $attributes: ContactUpdateInput!
+) {
+  updateContact(
+    input: { accountListId: $accountListId, attributes: $attributes }
+  ) {
+    contact {
+      id
+      name
+      churchName
+      locale
+      preferredContactMethod
+      timezone
+      website
+    }
+  }
+}

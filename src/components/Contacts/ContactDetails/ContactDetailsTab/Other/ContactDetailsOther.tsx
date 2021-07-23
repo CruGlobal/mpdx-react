@@ -1,6 +1,8 @@
 import React from 'react';
 import { Box, styled, Typography } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
+import i18n from 'i18next';
+import { PreferredContactMethodEnum } from '../../../../../../graphql/types.generated';
 import { ContactOtherFragment } from './ContactOther.generated';
 
 const ContactOtherContainer = styled(Box)(({ theme }) => ({
@@ -21,6 +23,27 @@ interface ContactDetailsOtherProp {
   contact: ContactOtherFragment;
 }
 
+export const localizedContactMethod = (method?: string | null): string => {
+  switch (method) {
+    case PreferredContactMethodEnum.Sms:
+      return i18n.t('SMS');
+    case PreferredContactMethodEnum.PhoneCall:
+      return i18n.t('Phone Call');
+    case PreferredContactMethodEnum.Email:
+      return i18n.t('Email');
+    case PreferredContactMethodEnum.Facebook:
+      return i18n.t('Facebook');
+    case PreferredContactMethodEnum.Instagram:
+      return i18n.t('Instagram');
+    case PreferredContactMethodEnum.WeChat:
+      return i18n.t('WeChat');
+    case PreferredContactMethodEnum.WhatsApp:
+      return i18n.t('WhatsApp');
+    default:
+      return i18n.t('N/A');
+  }
+};
+
 export const ContactDetailsOther: React.FC<ContactDetailsOtherProp> = ({
   contact,
 }) => {
@@ -33,6 +56,7 @@ export const ContactDetailsOther: React.FC<ContactDetailsOtherProp> = ({
     churchName,
     website,
   } = contact;
+
   return (
     <Box>
       <ContactOtherContainer>
@@ -46,7 +70,9 @@ export const ContactDetailsOther: React.FC<ContactDetailsOtherProp> = ({
           <ContactOtherTextLabel variant="subtitle1">
             {t('Preferred Contact Method')}
           </ContactOtherTextLabel>
-          <Typography variant="subtitle1">{preferredContactMethod}</Typography>
+          <Typography variant="subtitle1">
+            {localizedContactMethod(preferredContactMethod)}
+          </Typography>
         </ContactOtherTextContainer>
         <ContactOtherTextContainer>
           <ContactOtherTextLabel variant="subtitle1">
