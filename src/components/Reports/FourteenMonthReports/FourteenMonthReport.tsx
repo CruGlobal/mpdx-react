@@ -51,7 +51,7 @@ export const FourteenMonthReport: React.FC<Props> = ({
   });
 
   const contacts = useMemo(() => {
-    return data?.fourteenMonthReport.currencyGroups?.flatMap(
+    return data?.fourteenMonthReport?.currencyGroups?.flatMap(
       (currencyGroup) => [...currencyGroup?.contacts],
     );
   }, [data?.fourteenMonthReport.currencyGroups]);
@@ -101,7 +101,7 @@ export const FourteenMonthReport: React.FC<Props> = ({
 
     const monthsTitleArray = (type: 'month' | 'total') => {
       if (data) {
-        return data.fourteenMonthReport.currencyGroups[0].totals.months.map(
+        return data.fourteenMonthReport.currencyGroups[0]?.totals.months.map(
           (month) => month[type],
         );
       } else {
@@ -144,16 +144,7 @@ export const FourteenMonthReport: React.FC<Props> = ({
         </Box>
       ) : error ? (
         <Notification type="error" message={error.toString()} />
-      ) : data?.fourteenMonthReport.currencyGroups?.length === 0 ? (
-        <EmptyReport
-          title={t(
-            'You have received no donations in the last thirteen months',
-          )}
-          subTitle={t(
-            'You can setup an organization account to import them or add a new donation.',
-          )}
-        />
-      ) : (
+      ) : data?.fourteenMonthReport.currencyGroups?.length !== 0 ? (
         <Table
           isExpanded={isExpanded}
           onRequestSort={handleRequestSort}
@@ -163,6 +154,15 @@ export const FourteenMonthReport: React.FC<Props> = ({
           ref={reportTableRef}
           salaryCurrency={data?.fourteenMonthReport.salaryCurrency}
           totals={data?.fourteenMonthReport.currencyGroups[0].totals}
+        />
+      ) : (
+        <EmptyReport
+          title={t(
+            'You have received no donations in the last thirteen months',
+          )}
+          subTitle={t(
+            'You can setup an organization account to import them or add a new donation.',
+          )}
         />
       )}
     </Box>

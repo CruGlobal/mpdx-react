@@ -113,15 +113,13 @@ describe('FourteenMonthReport', () => {
     });
 
     expect(queryByText(title)).toBeInTheDocument();
+    expect(queryByText('test name')).toBeInTheDocument();
+    expect(queryByText('CAD')).toBeInTheDocument();
   });
 
   it('empty', async () => {
     const mocks = {
-      FourteenMonthReport: {
-        fourteenMonthReport: {
-          currencyGroups: [],
-        },
-      },
+      FourteenMonthReport: {},
     };
 
     const { queryByTestId, queryByText } = render(
@@ -146,8 +144,6 @@ describe('FourteenMonthReport', () => {
 
     expect(queryByText(title)).toBeInTheDocument();
     expect(queryByTestId('Notification')).toBeInTheDocument();
-    expect(
-      queryByText('You have received no donations in the last thirteen months'),
-    ).toBeInTheDocument();
+    expect(queryByTestId('EmptyReport')).toBeInTheDocument();
   });
 });
