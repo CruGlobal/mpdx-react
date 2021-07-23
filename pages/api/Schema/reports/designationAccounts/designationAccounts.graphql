@@ -1,0 +1,31 @@
+extend type Query {
+  designationAccounts(accountListId: ID!): [DesignationAccountsGroup!]!
+}
+
+extend type Mutation {
+  setActiveDesignationAccount(
+    accountListId: ID!
+    active: Boolean!
+    designationAccountId: ID!
+  ): SetActiveDesignationAccountResponse!
+}
+
+type DesignationAccount {
+  active: Boolean!
+  balanceUpdatedAt: ISO8601Date!
+  convertedBalance: Float!
+  currency: String!
+  designationNumber: String!
+  id: ID!
+  name: String!
+}
+
+type SetActiveDesignationAccountResponse {
+  active: Boolean!
+  id: ID!
+}
+
+type DesignationAccountsGroup {
+  organizationName: String!
+  designationAccounts: [DesignationAccount!]!
+}
