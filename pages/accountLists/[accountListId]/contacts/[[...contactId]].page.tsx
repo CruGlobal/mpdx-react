@@ -2,36 +2,42 @@ import React, { useEffect, useState } from 'react';
 import Head from 'next/head';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'next/router';
-import { Box } from '@material-ui/core';
+import { Box, styled } from '@material-ui/core';
 import { ContactFilters } from '../../../../src/components/Contacts/ContactFilters/ContactFilters';
 import { ContactsTable } from '../../../../src/components/Contacts/ContactsTable/ContactsTable';
 import { ContactDetails } from '../../../../src/components/Contacts/ContactDetails/ContactDetails';
 import Loading from '../../../../src/components/Loading';
+import { SidePanelsLayout } from '../../../../src/components/Layouts/SidePanelsLayout';
+import { useAccountListId } from '../../../../src/hooks/useAccountListId';
+
+const ContactsPageWrapper = styled(Box)(({ theme }) => ({
+  backgroundColor: theme.palette.common.white,
+}));
 
 const ContactsPage: React.FC = () => {
   const { t } = useTranslation();
+  const accountListId = useAccountListId();
   const { query, push, replace, isReady, pathname } = useRouter();
 
+  const [contactDetailsOpen, setContactDetailsOpen] = useState(false);
   const [contactDetailsId, setContactDetailsId] = useState<string>();
 
-  const { accountListId, contactId } = query;
+  const { contactId } = query;
 
-  if (Array.isArray(accountListId)) {
-    throw new Error('accountListId should not be an array');
-  }
   if (contactId !== undefined && !Array.isArray(contactId)) {
     throw new Error('contactId should be an array or undefined');
   }
 
   useEffect(() => {
-    if (isReady) {
-      setContactDetailsId(contactId ? contactId[0] : undefined);
+    if (isReady && contactId) {
+      setContactDetailsId(contactId[0]);
+      setContactDetailsOpen(true);
     }
   }, [isReady, query]);
 
+  const [filterPanelOpen, setFilterPanelOpen] = useState<boolean>(false);
   //TODO: Connect these to ContactFilters, and use actual filter data for activeFilters
-  const [filterPanelOpen, setFilterPanelOpen] = useState<boolean>(true);
-  const [activeFilters] = useState<boolean>(true);
+  const [activeFilters] = useState<boolean>(false);
 
   const toggleFilterPanel = () => {
     setFilterPanelOpen(!filterPanelOpen);
@@ -50,7 +56,8 @@ const ContactsPage: React.FC = () => {
             query: queryWithoutContactId,
           },
     );
-    setContactDetailsId(id);
+    id && setContactDetailsId(id);
+    setContactDetailsOpen(!!id);
   };
 
   const setSearchTerm = (searchTerm?: string) => {
@@ -68,29 +75,42 @@ const ContactsPage: React.FC = () => {
       <Head>
         <title>MPDX | {t('Contacts')}</title>
       </Head>
-      {isReady && accountListId ? (
-        <Box height="100vh" display="flex" overflow-y="scroll">
-          <ContactFilters accountListId={accountListId} width="290px" />
-          <Box flex={1}>
-            <ContactsTable
-              accountListId={accountListId}
-              onContactSelected={setContactFocus}
-              onSearchTermChange={setSearchTerm}
-              activeFilters={activeFilters}
-              filterPanelOpen={filterPanelOpen}
-              toggleFilterPanel={toggleFilterPanel}
-            />
-          </Box>
-          {contactDetailsId ? (
-            <Box flex={1}>
-              <ContactDetails
+      {accountListId ? (
+        <ContactsPageWrapper>
+          <SidePanelsLayout
+            leftPanel={
+              <ContactFilters
                 accountListId={accountListId}
-                contactId={contactDetailsId}
-                onClose={() => setContactFocus(undefined)}
+                onClose={toggleFilterPanel}
               />
-            </Box>
-          ) : null}
-        </Box>
+            }
+            leftOpen={filterPanelOpen}
+            leftWidth="290px"
+            mainContent={
+              <ContactsTable
+                accountListId={accountListId}
+                onContactSelected={setContactFocus}
+                onSearchTermChange={setSearchTerm}
+                activeFilters={activeFilters}
+                filterPanelOpen={filterPanelOpen}
+                toggleFilterPanel={toggleFilterPanel}
+              />
+            }
+            rightPanel={
+              contactDetailsId ? (
+                <ContactDetails
+                  accountListId={accountListId}
+                  contactId={contactDetailsId}
+                  onClose={() => setContactFocus(undefined)}
+                />
+              ) : (
+                <></>
+              )
+            }
+            rightOpen={contactDetailsOpen}
+            rightWidth="45%"
+          />
+        </ContactsPageWrapper>
       ) : (
         <Loading loading />
       )}

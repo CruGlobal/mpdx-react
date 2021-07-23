@@ -4,6 +4,10 @@ query LoadConstants {
       id
       value
     }
+    languages {
+      id
+      value
+    }
     likelyToGiveOptions {
       id
       value

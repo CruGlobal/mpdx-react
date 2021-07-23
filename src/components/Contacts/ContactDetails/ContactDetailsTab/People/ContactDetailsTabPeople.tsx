@@ -1,12 +1,22 @@
-import { Avatar, Box, styled, Typography } from '@material-ui/core';
+import React, { useState } from 'react';
+import {
+  Avatar,
+  Box,
+  Grid,
+  IconButton,
+  styled,
+  Typography,
+} from '@material-ui/core';
+import AddIcon from '@material-ui/icons/Add';
 import { Cake, Email, Phone } from '@material-ui/icons';
-import React from 'react';
+import CreateIcon from '@material-ui/icons/Create';
 import { useTranslation } from 'react-i18next';
 import { RingIcon } from '../../../RingIcon';
 import {
   ContactPeopleFragment,
   ContactPersonFragment,
 } from './ContactPeople.generated';
+import { EditPersonModal } from './Items/EditPersonModal/EditPersonModal';
 
 const ContactPersonAvatar = styled(Avatar)(({ theme }) => ({
   margin: theme.spacing(1),
@@ -31,6 +41,10 @@ const ContactPersonRowContainer = styled(Box)(({ theme }) => ({
   alignItems: 'center',
 }));
 
+const ContactPersonNameText = styled(Typography)(() => ({
+  fontWeight: 'bold',
+}));
+
 const ContactPersonPrimaryText = styled(Typography)(({ theme }) => ({
   margin: theme.spacing(0, 1),
   color: theme.palette.text.hint,
@@ -42,14 +56,38 @@ const ContactPersonIconContainer = styled(Box)(() => ({
   marginRight: '35px',
 }));
 
+const ContactDetailEditIcon = styled(CreateIcon)(({ theme }) => ({
+  width: '18px',
+  height: '18px',
+  margin: theme.spacing(0),
+  color: theme.palette.cruGrayMedium.main,
+}));
+
+const ContactAddIcon = styled(AddIcon)(() => ({
+  color: '#2196F3',
+}));
+
+const ContactAddText = styled(Typography)(() => ({
+  color: '#2196F3',
+  textTransform: 'uppercase',
+  fontWeight: 'bold',
+}));
+
+const ContactEditIconContainer = styled(IconButton)(({ theme }) => ({
+  margin: theme.spacing(0, 1),
+}));
+
 interface ContactDetailsPeopleProp {
   data: ContactPeopleFragment;
+  accountListId: string;
 }
 
 export const ContactDetailsTabPeople: React.FC<ContactDetailsPeopleProp> = ({
   data,
+  accountListId,
 }) => {
   const { t } = useTranslation();
+  const [editPersonModalOpen, setEditPersonModalOpen] = useState<string>();
 
   const { primaryPerson, people } = data;
 
@@ -64,14 +102,19 @@ export const ContactDetailsTabPeople: React.FC<ContactDetailsPeopleProp> = ({
         <ContactPersonTextContainer>
           {/* Heading Section */}
           <ContactPersonRowContainer>
-            <Typography variant="h6">
+            <ContactPersonNameText variant="h6">
               {`${person.firstName} ${person.lastName}`}
-            </Typography>
+            </ContactPersonNameText>
             {primaryPerson?.id === person.id ? (
               <ContactPersonPrimaryText variant="subtitle1">
                 {`- ${t('Primary')}`}
               </ContactPersonPrimaryText>
             ) : null}
+            <ContactEditIconContainer
+              onClick={() => setEditPersonModalOpen(person.id)}
+            >
+              <ContactDetailEditIcon titleAccess={t('Edit Icon')} />
+            </ContactEditIconContainer>
           </ContactPersonRowContainer>
           {/* Phone Number */}
           {person.primaryPhoneNumber !== null ? (
@@ -129,6 +172,13 @@ export const ContactDetailsTabPeople: React.FC<ContactDetailsPeopleProp> = ({
             </ContactPersonRowContainer>
           ) : null}
         </ContactPersonTextContainer>
+        {editPersonModalOpen === person.id ? (
+          <EditPersonModal
+            person={person}
+            accountListId={accountListId}
+            handleClose={() => setEditPersonModalOpen(undefined)}
+          />
+        ) : null}
       </ContactPersonContainer>
     );
   };
@@ -139,6 +189,12 @@ export const ContactDetailsTabPeople: React.FC<ContactDetailsPeopleProp> = ({
       {people.nodes.map((person) =>
         person.id !== primaryPerson?.id ? personView(person) : null,
       )}
+      <Box m={2}>
+        <Grid container alignItems="center">
+          <ContactAddIcon />
+          <ContactAddText variant="subtitle1">{t('Add Person')}</ContactAddText>
+        </Grid>
+      </Box>
     </>
   );
 };

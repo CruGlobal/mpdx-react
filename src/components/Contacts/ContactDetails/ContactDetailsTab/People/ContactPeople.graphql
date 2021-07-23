@@ -14,19 +14,72 @@ fragment ContactPerson on Person {
   id
   firstName
   lastName
+  emailAddresses {
+    nodes {
+      email
+      id
+      primary
+      location
+    }
+  }
+  phoneNumbers {
+    nodes {
+      id
+      number
+      primary
+      location
+    }
+  }
+  facebookAccounts {
+    nodes {
+      id
+      username
+    }
+  }
+  linkedinAccounts {
+    nodes {
+      id
+      publicUrl
+    }
+  }
+  twitterAccounts {
+    nodes {
+      id
+      screenName
+    }
+  }
+  websites {
+    nodes {
+      id
+      url
+    }
+  }
   primaryPhoneNumber {
+    id
     number
     location
   }
   primaryEmailAddress {
+    id
     email
+    location
   }
+  almaMater
   anniversaryDay
   anniversaryMonth
   anniversaryYear
   birthdayDay
   birthdayMonth
   birthdayYear
+  deceased
+  employer
+  gender
+  legalFirstName
+  maritalStatus
+  occupation
+  optoutEnewsletter
+  suffix
+  title
   # TODO add Mising Below
   # avatar
 }

@@ -59,15 +59,23 @@ export interface TaskDrawerProps {
   taskId?: string;
   onClose?: () => void;
   showCompleteForm?: boolean;
+  specificTab?: TaskDrawerTabsEnum;
   defaultValues?: Partial<Task>;
   filter?: TaskFilter;
   rowsPerPage?: number;
+}
+
+export enum TaskDrawerTabsEnum {
+  details = '1',
+  contacts = '2',
+  comments = '3',
 }
 
 const TaskDrawer = ({
   taskId,
   onClose,
   showCompleteForm,
+  specificTab = TaskDrawerTabsEnum.details,
   defaultValues,
   filter,
   rowsPerPage,
@@ -76,7 +84,7 @@ const TaskDrawer = ({
   const classes = useStyles();
   const [open, setOpen] = useState(!taskId);
   const { t } = useTranslation();
-  const [tab, setTab] = useState('1');
+  const [tab, setTab] = useState(specificTab);
   const { data, loading } = useGetTaskForTaskDrawerQuery({
     variables: {
       accountListId: state.accountListId ?? '',
@@ -88,7 +96,7 @@ const TaskDrawer = ({
 
   const handleTabChange = (
     _: React.ChangeEvent<Record<string, unknown>>,
-    tab: string,
+    tab: TaskDrawerTabsEnum,
   ): void => {
     setTab(tab);
   };
@@ -153,12 +161,8 @@ const TaskDrawer = ({
                   </Typography>
                 </Grid>
                 <Grid item>
-                  <IconButton
-                    size="small"
-                    onClick={onDrawerClose}
-                    aria-label="Close"
-                  >
-                    <CloseIcon />
+                  <IconButton size="small" onClick={onDrawerClose}>
+                    <CloseIcon titleAccess={t('Close')} />
                   </IconButton>
                 </Grid>
               </Grid>
@@ -179,7 +183,11 @@ const TaskDrawer = ({
           </Box>
           <Box className={classes.content}>
             <AnimatePresence initial={false}>
-              <TabPanel key="1" value="1" className={classes.tabPanel}>
+              <TabPanel
+                key="1"
+                value={TaskDrawerTabsEnum.details}
+                className={classes.tabPanel}
+              >
                 <motion.div
                   initial={{ x: 300, opacity: 0 }}
                   animate={{ x: 0, opacity: 1 }}
@@ -211,7 +219,11 @@ const TaskDrawer = ({
               </TabPanel>
               {task && state.accountListId && (
                 <>
-                  <TabPanel key="2" value="2" className={classes.tabPanel}>
+                  <TabPanel
+                    key="2"
+                    value={TaskDrawerTabsEnum.contacts}
+                    className={classes.tabPanel}
+                  >
                     <motion.div
                       initial={{ x: 300, opacity: 0 }}
                       animate={{ x: 0, opacity: 1 }}
@@ -223,7 +235,11 @@ const TaskDrawer = ({
                       />
                     </motion.div>
                   </TabPanel>
-                  <TabPanel key="3" value="3" className={classes.tabPanel}>
+                  <TabPanel
+                    key="3"
+                    value={TaskDrawerTabsEnum.comments}
+                    className={classes.tabPanel}
+                  >
                     <motion.div
                       initial={{ x: 300, opacity: 0 }}
                       animate={{ x: 0, opacity: 1 }}

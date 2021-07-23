@@ -65,5 +65,9 @@ export const ContactHeaderAddressSection = ({
     }
   }
 
-  return <ContactHeaderSection icon={<LocationIcon />} />;
+  return (
+    <ContactHeaderSection icon={<LocationIcon />}>
+      <Typography variant="subtitle1">{'N/A'}</Typography>
+    </ContactHeaderSection>
+  );
 };

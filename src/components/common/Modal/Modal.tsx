@@ -1,9 +1,6 @@
-import React, { ReactElement } from 'react';
+import React, { ReactElement, ReactNode } from 'react';
 import {
-  Button,
   Dialog,
-  DialogActions,
-  DialogContent,
   DialogProps,
   DialogTitle,
   Grid,
@@ -26,33 +23,27 @@ const CloseButton = styled(IconButton)(({ theme }) => ({
 }));
 
 interface Props {
+  /** determines whether the modal is currently open or not */
   isOpen: boolean;
+  /** determines whether the modal should occupy the full width, dependent on the size prop, default is true  */
   fullWidth?: boolean;
+  /** determines the size of the modal, default is 'sm' */
   size?: DialogProps['maxWidth'];
+  /** title to be rendered in modal header */
   title: string;
-  content: ReactElement;
+  /** function to be fired when close button is pressed */
   handleClose: () => void;
-  handleConfirm: () => void;
-  confirmText?: string;
-  cancelText?: string;
-  dividers?: boolean;
-  customActionSection?: ReactElement;
-  disableActionButtons?: boolean;
+  /** content to be rendered inside of modal */
+  children: ReactNode;
 }
 
 const Modal = ({
   isOpen,
   title,
-  content,
-  customActionSection,
   handleClose,
-  handleConfirm,
-  confirmText,
-  cancelText,
   size = 'sm',
   fullWidth = true,
-  dividers = true,
-  disableActionButtons = false,
+  children,
 }: Props): ReactElement<Props> => {
   const { t } = useTranslation();
   return (
@@ -67,29 +58,7 @@ const Modal = ({
           </CloseButton>
         </Grid>
       </Grid>
-      <DialogContent dividers={dividers}>{content}</DialogContent>
-      <DialogActions>
-        {customActionSection ? (
-          customActionSection
-        ) : (
-          <>
-            <Button
-              disabled={disableActionButtons}
-              onClick={() => handleClose()}
-            >
-              {cancelText ? cancelText : t('Cancel')}
-            </Button>
-            <Button
-              disabled={disableActionButtons}
-              variant="contained"
-              color="primary"
-              onClick={() => handleConfirm()}
-            >
-              {confirmText ? confirmText : t('Save')}
-            </Button>
-          </>
-        )}
-      </DialogActions>
+      {children}
     </Dialog>
   );
 };

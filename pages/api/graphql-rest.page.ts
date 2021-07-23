@@ -5,15 +5,32 @@ import {
   Response,
   RESTDataSource,
 } from 'apollo-datasource-rest';
+import { DateTime, Duration, Interval } from 'luxon';
 import {
   ExportFormatEnum,
   ExportLabelTypeEnum,
   ExportSortEnum,
 } from '../../graphql/types.generated';
-import { ContactFilterOption } from './graphql-rest.page.generated';
+import {
+  ContactFilterOption,
+  FourteenMonthReportCurrencyType,
+} from './graphql-rest.page.generated';
 import schema from './Schema';
 import { getTaskAnalytics } from './Schema/TaskAnalytics/dataHandler';
 import { getContactFilters } from './Schema/ContactFilters/datahandler';
+import {
+  FourteenMonthReportResponse,
+  mapFourteenMonthReport,
+} from './Schema/reports/fourteenMonth/datahandler';
+import {
+  ExpectedMonthlyTotalResponse,
+  mapExpectedMonthlyTotalReport,
+} from './Schema/reports/expectedMonthlyTotal/datahandler';
+import {
+  DesignationAccountsResponse,
+  createDesignationAccountsGroup,
+  setActiveDesignationAccount,
+} from './Schema/reports/designationAccounts/datahandler';
 
 class MpdxRestApi extends RESTDataSource {
   constructor() {
@@ -109,6 +126,60 @@ class MpdxRestApi extends RESTDataSource {
     );
 
     return getTaskAnalytics(data);
+  }
+
+  async getFourteenMonthReport(
+    accountListId: string,
+    currencyType: FourteenMonthReportCurrencyType,
+  ) {
+    const { data }: { data: FourteenMonthReportResponse } = await this.get(
+      `reports/${
+        currencyType === 'salary'
+          ? 'salary_currency_donations'
+          : 'donor_currency_donations'
+      }?filter[account_list_id]=${accountListId}&filter[month_range]=${Interval.before(
+        DateTime.now().endOf('month'),
+        Duration.fromObject({ months: 14 }).minus({ day: 1 }),
+      )
+        .toISODate()
+        .replace('/', '...')}`,
+    );
+    return mapFourteenMonthReport(data, currencyType);
+  }
+
+  async getExpectedMonthlyTotalReport(accountListId: string) {
+    const { data }: { data: ExpectedMonthlyTotalResponse } = await this.get(
+      `reports/expected_monthly_totals?filter[account_list_id]=${accountListId}`,
+    );
+    return mapExpectedMonthlyTotalReport(data);
+  }
+
+  async getDesignationAccounts(accountListId: string) {
+    const { data }: { data: DesignationAccountsResponse[] } = await this.get(
+      `account_lists/${accountListId}/designation_accounts?per_page=10000`,
+    );
+    return createDesignationAccountsGroup(data);
+  }
+
+  async setDesignationAccountActive(
+    accountListId: string,
+    active: boolean,
+    designationAccountId: string,
+  ) {
+    const { data }: { data: DesignationAccountsResponse } = await this.put(
+      `account_lists/${accountListId}/designation_accounts/${designationAccountId}`,
+      {
+        data: {
+          attributes: {
+            active,
+            overwrite: true,
+          },
+          id: designationAccountId,
+          type: 'designation_accounts',
+        },
+      },
+    );
+    return setActiveDesignationAccount(data);
   }
 }
 

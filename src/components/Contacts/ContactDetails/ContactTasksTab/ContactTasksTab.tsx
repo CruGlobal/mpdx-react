@@ -1,10 +1,12 @@
+import React, { useState } from 'react';
 import { Box, Button, Divider, styled, Typography } from '@material-ui/core';
 import { Add, CheckCircleOutline } from '@material-ui/icons';
-import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { DateTime } from 'luxon';
 import { StarredItemIcon } from '../../../common/StarredItemIcon/StarredItemIcon';
 import { SearchBox } from '../../../common/SearchBox/SearchBox';
 import { ContactCheckBox } from '../../ContactCheckBox/ContactCheckBox';
+import { useApp } from '../../../App';
 import { ContactTaskRow } from './ContactTaskRow/ContactTaskRow';
 import { useContactTasksTabQuery } from './ContactTasksTab.generated';
 
@@ -63,6 +65,7 @@ const TaskButtonText = styled(Typography)(({ theme }) => ({
   fontWeight: 600,
   letterSpacing: 1.25,
   color: theme.palette.info.main,
+  textTransform: 'uppercase',
 }));
 
 const PlaceholderActionBar = styled(Box)(({ theme }) => ({
@@ -91,6 +94,8 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
     variables: { accountListId, contactId, searchTerm },
   });
 
+  const { openTaskDrawer } = useApp();
+
   const { t } = useTranslation();
 
   return (
@@ -99,17 +104,19 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
         <HeaderRow>
           <TasksTitle>{t('Tasks')}</TasksTitle>
           <HeaderItemsWrap>
-            <TaskButton>
+            <TaskButton onClick={() => openTaskDrawer({})}>
               <AddTaskButtonIcon />
-              <TaskButtonText>
-                {t('add task').toLocaleUpperCase()}
-              </TaskButtonText>
+              <TaskButtonText>{t('add task')}</TaskButtonText>
             </TaskButton>
-            <TaskButton>
+            <TaskButton
+              onClick={() =>
+                openTaskDrawer({
+                  defaultValues: { completedAt: DateTime.local().toISO() },
+                })
+              }
+            >
               <LogTaskButtonIcon />
-              <TaskButtonText>
-                {t('log task').toLocaleUpperCase()}
-              </TaskButtonText>
+              <TaskButtonText>{t('log task')}</TaskButtonText>
             </TaskButton>
           </HeaderItemsWrap>
         </HeaderRow>
