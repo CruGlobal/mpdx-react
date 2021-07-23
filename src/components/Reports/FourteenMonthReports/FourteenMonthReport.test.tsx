@@ -113,8 +113,6 @@ describe('FourteenMonthReport', () => {
     });
 
     expect(queryByText(title)).toBeInTheDocument();
-    expect(queryByText('test name')).toBeInTheDocument();
-    expect(queryByText('CAD')).toBeInTheDocument();
   });
 
   it('empty', async () => {
