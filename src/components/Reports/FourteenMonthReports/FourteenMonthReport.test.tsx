@@ -15,7 +15,7 @@ const onNavListToggle = jest.fn();
 
 describe('FourteenMonthReport', () => {
   it('loading', async () => {
-    const { queryByTestId, getByText } = render(
+    const { queryByTestId, queryByText } = render(
       <ThemeProvider theme={theme}>
         <GqlMockedProvider<FourteenMonthReportQuery>>
           <FourteenMonthReport
@@ -29,7 +29,7 @@ describe('FourteenMonthReport', () => {
       </ThemeProvider>,
     );
 
-    expect(getByText(title)).toBeInTheDocument();
+    expect(queryByText(title)).toBeInTheDocument();
     expect(queryByTestId('LoadingFourteenMonthReport')).toBeInTheDocument();
     expect(queryByTestId('Notification')).toBeNull();
   });
@@ -92,7 +92,7 @@ describe('FourteenMonthReport', () => {
       },
     };
 
-    const { queryByTestId, getByText, queryByText } = render(
+    const { queryByTestId, queryByText } = render(
       <ThemeProvider theme={theme}>
         <GqlMockedProvider<FourteenMonthReportQuery> mocks={mocks}>
           <FourteenMonthReport
@@ -112,7 +112,7 @@ describe('FourteenMonthReport', () => {
       ).not.toBeInTheDocument();
     });
 
-    expect(getByText(title)).toBeInTheDocument();
+    expect(queryByText(title)).toBeInTheDocument();
     expect(queryByText('test name')).toBeInTheDocument();
     expect(queryByText('CAD')).toBeInTheDocument();
   });
@@ -126,7 +126,7 @@ describe('FourteenMonthReport', () => {
       },
     };
 
-    const { queryByTestId, getByText, queryByText } = render(
+    const { queryByTestId, queryByText } = render(
       <ThemeProvider theme={theme}>
         <GqlMockedProvider<FourteenMonthReportQuery> mocks={mocks}>
           <FourteenMonthReport
@@ -146,7 +146,7 @@ describe('FourteenMonthReport', () => {
       ).not.toBeInTheDocument();
     });
 
-    expect(getByText(title)).toBeInTheDocument();
+    expect(queryByText(title)).toBeInTheDocument();
     expect(queryByTestId('Notification')).toBeInTheDocument();
     expect(
       queryByText('You have received no donations in the last thirteen months'),
