@@ -144,7 +144,7 @@ export const FourteenMonthReport: React.FC<Props> = ({
         </Box>
       ) : error ? (
         <Notification type="error" message={error.toString()} />
-      ) : data?.fourteenMonthReport.currencyGroups?.length !== 0 ? (
+      ) : contacts && contacts.length > 0 ? (
         <Table
           isExpanded={isExpanded}
           onRequestSort={handleRequestSort}

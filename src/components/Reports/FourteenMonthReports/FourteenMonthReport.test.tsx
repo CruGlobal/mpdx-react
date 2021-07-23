@@ -42,26 +42,72 @@ describe('FourteenMonthReport', () => {
             {
               contacts: [
                 {
+                  accountNumbers: ['10182'],
+                  average: 86,
                   id: 'contact-1',
+                  lateBy30Days: false,
+                  lateBy60Days: false,
+                  minimum: 85,
                   months: [
                     {
+                      donations: [
+                        {
+                          amount: 85,
+                          currency: 'CAD',
+                          date: '2020-07-15',
+                          paymentMethod: 'BANK_TRANS',
+                        },
+                      ],
                       month: '2020-10-01',
+                      salaryCurrencyTotal: 85,
                       total: 35,
                     },
                     {
+                      donations: [
+                        {
+                          amount: 85,
+                          currency: 'CAD',
+                          date: '2020-11-15',
+                          paymentMethod: 'BANK_TRANS',
+                        },
+                      ],
                       month: '2020-11-01',
+                      salaryCurrencyTotal: 85,
                       total: 35,
                     },
                     {
+                      donations: [
+                        {
+                          amount: 85,
+                          currency: 'CAD',
+                          date: '2020-12-15',
+                          paymentMethod: 'BANK_TRANS',
+                        },
+                      ],
                       month: '2020-12-01',
+                      salaryCurrencyTotal: 85,
                       total: 35,
                     },
                     {
+                      donations: [
+                        {
+                          amount: 85,
+                          currency: 'CAD',
+                          date: '2021-1-15',
+                          paymentMethod: 'BANK_TRANS',
+                        },
+                      ],
                       month: '2021-1-01',
+                      salaryCurrencyTotal: 85,
                       total: 35,
                     },
                   ],
                   name: 'test name',
+                  pledgeAmount: null,
+                  pledgeCurrency: 'CAD',
+                  pledgeFrequency: null,
+                  status: null,
+                  total: 1290,
                 },
               ],
               currency: 'cad',
@@ -92,7 +138,7 @@ describe('FourteenMonthReport', () => {
       },
     };
 
-    const { queryByTestId, queryByText } = render(
+    const { getByTestId, queryByTestId, queryByText } = render(
       <ThemeProvider theme={theme}>
         <GqlMockedProvider<FourteenMonthReportQuery> mocks={mocks}>
           <FourteenMonthReport
@@ -113,16 +159,45 @@ describe('FourteenMonthReport', () => {
     });
 
     expect(queryByText(title)).toBeInTheDocument();
-    expect(queryByText('test name')).toBeInTheDocument();
-    expect(queryByText('CAD')).toBeInTheDocument();
+    expect(getByTestId('FourteenMonthReport')).toBeInTheDocument();
   });
 
-  it('empty', async () => {
+  it('error', async () => {
     const mocks = {
-      FourteenMonthReport: {},
+      FourteenMonthReport: {
+        currencyGroups: [
+          {
+            currency: 'cad',
+            totals: {
+              year: 0,
+              average: 0,
+              minimum: 0,
+              months: [
+                {
+                  month: '2020-10-01',
+                  total: 0,
+                },
+                {
+                  month: '2020-11-01',
+                  total: 0,
+                },
+                {
+                  month: '2020-12-01',
+                  total: 0,
+                },
+                {
+                  month: '2021-1-01',
+                  total: 0,
+                },
+              ],
+            },
+          },
+        ],
+        salaryCurrency: 'CAD',
+      },
     };
 
-    const { queryByTestId, queryByText } = render(
+    const { queryByTestId, getByTestId, queryByText } = render(
       <ThemeProvider theme={theme}>
         <GqlMockedProvider<FourteenMonthReportQuery> mocks={mocks}>
           <FourteenMonthReport
@@ -143,7 +218,6 @@ describe('FourteenMonthReport', () => {
     });
 
     expect(queryByText(title)).toBeInTheDocument();
-    expect(queryByTestId('Notification')).toBeInTheDocument();
-    expect(queryByTestId('EmptyReport')).toBeInTheDocument();
+    expect(getByTestId('Notification')).toBeInTheDocument();
   });
 });
