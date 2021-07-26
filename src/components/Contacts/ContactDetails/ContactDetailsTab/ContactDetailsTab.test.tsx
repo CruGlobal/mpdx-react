@@ -61,12 +61,17 @@ describe('ContactDetailTab', () => {
         contact: {
           id: contactId,
           name: 'Person, Test',
-          primaryAddress: {
-            street: '123 Sesame Street',
-            city: 'New York',
-            state: 'NY',
-            postalCode: '10001',
-            country: 'USA',
+          addresses: {
+            nodes: [
+              {
+                street: '123 Sesame Street',
+                city: 'New York',
+                state: 'NY',
+                postalCode: '10001',
+                country: 'USA',
+                primaryMailingAddress: true,
+              },
+            ],
           },
           tagList: ['tag1', 'tag2', 'tag3'],
           people: {
@@ -201,7 +206,7 @@ describe('ContactDetailTab', () => {
       </SnackbarProvider>,
     );
     await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());
-    userEvent.click(getAllByRole('img', { name: 'Edit Icon' })[5]);
+    userEvent.click(getAllByRole('img', { name: 'Edit Icon' })[8]);
     await waitFor(() =>
       expect(queryByText('Edit Contact Other Details')).toBeInTheDocument(),
     );
@@ -225,7 +230,7 @@ describe('ContactDetailTab', () => {
       </SnackbarProvider>,
     );
     await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());
-    userEvent.click(getAllByRole('img', { name: 'Edit Icon' })[5]);
+    userEvent.click(getAllByRole('img', { name: 'Edit Icon' })[8]);
     await waitFor(() =>
       expect(queryByText('Edit Contact Other Details')).toBeInTheDocument(),
     );
@@ -243,12 +248,17 @@ describe('ContactDetailTab', () => {
         contact: {
           id: contactId,
           name: 'Person, Test',
-          primaryAddress: {
-            street: '123 Sesame Street',
-            city: 'New York',
-            state: 'NY',
-            postalCode: '10001',
-            country: 'USA',
+          addresses: {
+            nodes: [
+              {
+                street: '123 Sesame Street',
+                city: 'New York',
+                state: 'NY',
+                postalCode: '10001',
+                country: 'USA',
+                primaryMailingAddress: true,
+              },
+            ],
           },
           tagList: ['tag1', 'tag2', 'tag3'],
           people: {

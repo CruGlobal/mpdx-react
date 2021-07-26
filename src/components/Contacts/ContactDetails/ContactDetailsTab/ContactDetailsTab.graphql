@@ -2,13 +2,6 @@ query ContactDetailsTab($accountListId: ID!, $contactId: ID!) {
   contact(accountListId: $accountListId, id: $contactId) {
     id
     name
-    primaryAddress {
-      street
-      city
-      state
-      postalCode
-      country
-    }
     tagList
     envelopeGreeting
     preferredContactMethod
