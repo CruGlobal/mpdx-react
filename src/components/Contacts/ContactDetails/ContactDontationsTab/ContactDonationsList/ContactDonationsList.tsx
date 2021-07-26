@@ -52,7 +52,7 @@ export const ContactDonationsList: React.FC<ContactDonationsListProp> = ({
 
   return (
     <Box>
-      {loading || networkStatus === 3 ? (
+      {loading ? (
         <>
           <DonationLoadingPlaceHolder />
           <DonationLoadingPlaceHolder />
