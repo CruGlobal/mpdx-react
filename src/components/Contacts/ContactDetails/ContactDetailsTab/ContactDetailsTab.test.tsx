@@ -23,6 +23,52 @@ const router = {
   push: jest.fn(),
 };
 
+const mocks = {
+  ContactDetailsTab: {
+    contact: {
+      id: contactId,
+      name: 'Person, Test',
+      addresses: {
+        nodes: [
+          {
+            id: '123',
+            street: '123 Sesame Street',
+            city: 'New York',
+            state: 'NY',
+            postalCode: '10001',
+            country: 'USA',
+            primaryMailingAddress: true,
+          },
+          {
+            id: '321',
+            street: '4321 Sesame Street',
+            city: 'Florida',
+            state: 'FL',
+            postalCode: '10001',
+            country: 'USA',
+            primaryMailingAddress: false,
+          },
+        ],
+      },
+      tagList: ['tag1', 'tag2', 'tag3'],
+      people: {
+        nodes: [
+          {
+            id: contactId,
+            firstName: 'Test',
+            lastName: 'Person',
+            primaryPhoneNumber: { number: '555-555-5555' },
+            primaryEmailAddress: {
+              email: 'testperson@fake.com',
+            },
+          },
+        ],
+      },
+      website: 'testperson.com',
+    },
+  },
+};
+
 const mockEnqueue = jest.fn();
 
 jest.mock('notistack', () => ({
@@ -56,41 +102,6 @@ describe('ContactDetailTab', () => {
   });
 
   it('should render contact details', async () => {
-    const mocks = {
-      ContactDetailsTab: {
-        contact: {
-          id: contactId,
-          name: 'Person, Test',
-          addresses: {
-            nodes: [
-              {
-                street: '123 Sesame Street',
-                city: 'New York',
-                state: 'NY',
-                postalCode: '10001',
-                country: 'USA',
-                primaryMailingAddress: true,
-              },
-            ],
-          },
-          tagList: ['tag1', 'tag2', 'tag3'],
-          people: {
-            nodes: [
-              {
-                id: contactId,
-                firstName: 'Test',
-                lastName: 'Person',
-                primaryPhoneNumber: { number: '555-555-5555' },
-                primaryEmailAddress: {
-                  email: 'testperson@fake.com',
-                },
-              },
-            ],
-          },
-          website: 'testperson.com',
-        },
-      },
-    };
     const { queryAllByText, queryByText } = render(
       <SnackbarProvider>
         <TestRouter router={router}>
@@ -237,6 +248,86 @@ describe('ContactDetailTab', () => {
     userEvent.click(getByRole('button', { name: 'Close' }));
     await waitFor(() =>
       expect(queryByText('Edit Address')).not.toBeInTheDocument(),
+    );
+  });
+
+  it('should open show more section | Addresses', async () => {
+    const { queryByText, getByText } = render(
+      <SnackbarProvider>
+        <TestRouter router={router}>
+          <MuiPickersUtilsProvider utils={LuxonUtils}>
+            <ThemeProvider theme={theme}>
+              <GqlMockedProvider<ContactDetailsTabQuery> mocks={mocks}>
+                <ContactDetailsTab
+                  accountListId={accountListId}
+                  contactId={contactId}
+                />
+              </GqlMockedProvider>
+            </ThemeProvider>
+          </MuiPickersUtilsProvider>
+        </TestRouter>
+      </SnackbarProvider>,
+    );
+    await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());
+    userEvent.click(getByText('Show More'));
+    await waitFor(() =>
+      expect(getByText('4321 Sesame Street')).toBeInTheDocument(),
+    );
+  });
+
+  it('should close show more section | Addresses', async () => {
+    const { queryByText, getByText } = render(
+      <SnackbarProvider>
+        <TestRouter router={router}>
+          <MuiPickersUtilsProvider utils={LuxonUtils}>
+            <ThemeProvider theme={theme}>
+              <GqlMockedProvider<ContactDetailsTabQuery> mocks={mocks}>
+                <ContactDetailsTab
+                  accountListId={accountListId}
+                  contactId={contactId}
+                />
+              </GqlMockedProvider>
+            </ThemeProvider>
+          </MuiPickersUtilsProvider>
+        </TestRouter>
+      </SnackbarProvider>,
+    );
+    await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());
+    userEvent.click(getByText('Show More'));
+    await waitFor(() =>
+      expect(getByText('4321 Sesame Street')).toBeInTheDocument(),
+    );
+    userEvent.click(getByText('Show Less'));
+    await waitFor(() =>
+      expect(queryByText('4321 Sesame Street')).not.toBeInTheDocument(),
+    );
+  });
+
+  it('should open edit contact addresses from show more section | Addresses', async () => {
+    const { queryByText, getByText, getAllByRole } = render(
+      <SnackbarProvider>
+        <TestRouter router={router}>
+          <MuiPickersUtilsProvider utils={LuxonUtils}>
+            <ThemeProvider theme={theme}>
+              <GqlMockedProvider<ContactDetailsTabQuery> mocks={mocks}>
+                <ContactDetailsTab
+                  accountListId={accountListId}
+                  contactId={contactId}
+                />
+              </GqlMockedProvider>
+            </ThemeProvider>
+          </MuiPickersUtilsProvider>
+        </TestRouter>
+      </SnackbarProvider>,
+    );
+    await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());
+    userEvent.click(getByText('Show More'));
+    await waitFor(() =>
+      expect(getByText('4321 Sesame Street')).toBeInTheDocument(),
+    );
+    userEvent.click(getAllByRole('img', { name: 'Edit Icon' })[5]);
+    await waitFor(() =>
+      expect(queryByText('Edit Address')).toBeInTheDocument(),
     );
   });
 
