@@ -12,6 +12,7 @@ import LocationOn from '@material-ui/icons/LocationOn';
 import CreateIcon from '@material-ui/icons/Create';
 import AddIcon from '@material-ui/icons/Add';
 import { ContactMailingFragment } from './ContactMailing.generated';
+import { EditContactAddressModal } from './EditContactAddressModal/EditContactAddressModal';
 
 const ContactDetailsMailingMainContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -73,12 +74,17 @@ const AddressAddIcon = styled(AddIcon)(() => ({
 }));
 
 interface MailingProp {
+  accountListId: string;
   data: ContactMailingFragment;
 }
 
-export const ContactDetailsTabMailing: React.FC<MailingProp> = ({ data }) => {
+export const ContactDetailsTabMailing: React.FC<MailingProp> = ({
+  data,
+  accountListId,
+}) => {
   const { t } = useTranslation();
   const { addresses, greeting, sendNewsletter } = data;
+  const [editingAddressId, setEditingAddressId] = useState<string>();
   const primaryAddress = addresses.nodes.filter(
     (address) => address.primaryMailingAddress === true,
   )[0];
@@ -86,118 +92,135 @@ export const ContactDetailsTabMailing: React.FC<MailingProp> = ({ data }) => {
     (address) => address.primaryMailingAddress !== true,
   );
 
+  const selectedAddress =
+    editingAddressId &&
+    addresses.nodes.filter((address) => address.id === editingAddressId)[0];
+
   const [showMoreOpen, setShowMoreOpen] = useState(false);
   return (
-    <Box>
-      <ContactDetailsMailingMainContainer>
-        <ContactDetailsMailingIcon />
-        <ContactDetailsMailingTextContainer>
-          {/* Address Section */}
-          {primaryAddress && (
-            <>
-              <ContactAddressRowContainer>
-                <Typography variant="subtitle1">
-                  <Box fontWeight="fontWeightBold">{primaryAddress.street}</Box>
-                </Typography>
-                <ContactAddressPrimaryText variant="subtitle1">
-                  {`- ${t('Primary')}`}
-                </ContactAddressPrimaryText>
-                <AddressEditIconContainer
-                  onClick={() => {
-                    console.log('hi');
-                  }}
-                >
-                  <AddressEditIcon titleAccess={t('Edit Icon')} />
-                </AddressEditIconContainer>
-              </ContactAddressRowContainer>
+    <>
+      <Box>
+        <ContactDetailsMailingMainContainer>
+          <ContactDetailsMailingIcon />
+          <ContactDetailsMailingTextContainer>
+            {/* Address Section */}
+            {primaryAddress && (
+              <>
+                <ContactAddressRowContainer>
+                  <Typography variant="subtitle1">
+                    <Box fontWeight="fontWeightBold">
+                      {primaryAddress.street}
+                    </Box>
+                  </Typography>
+                  <ContactAddressPrimaryText variant="subtitle1">
+                    {`- ${t('Primary')}`}
+                  </ContactAddressPrimaryText>
+                  <AddressEditIconContainer
+                    onClick={() => {
+                      setEditingAddressId(primaryAddress.id);
+                    }}
+                  >
+                    <AddressEditIcon titleAccess={t('Edit Icon')} />
+                  </AddressEditIconContainer>
+                </ContactAddressRowContainer>
 
-              <ContactAddressRowContainer>
-                <Typography variant="subtitle1">
-                  {`${primaryAddress.city}, ${primaryAddress.state} ${primaryAddress.postalCode}`}
-                </Typography>
-              </ContactAddressRowContainer>
-              <ContactAddressRowContainer>
-                <Typography variant="subtitle1">
-                  {primaryAddress.country}
-                </Typography>
-              </ContactAddressRowContainer>
-              <ContactAddressRowContainer>
-                <Typography variant="subtitle1">
-                  {t(`Source: ${primaryAddress.source}`)}
-                </Typography>
-              </ContactAddressRowContainer>
-            </>
-          )}
-          {/* Show More Section */}
-          {nonPrimaryAddresses.length > 0 ? (
-            <ContactDetailsMailingLabelTextContainer>
-              <Link href="#">
-                <ContactMailingShowMoreLabel
-                  variant="subtitle1"
-                  onClick={() => setShowMoreOpen(!showMoreOpen)}
-                >
-                  {showMoreOpen ? t('Show Less') : t('Show More')}
-                </ContactMailingShowMoreLabel>
-              </Link>
-            </ContactDetailsMailingLabelTextContainer>
-          ) : null}
-          {showMoreOpen
-            ? nonPrimaryAddresses.map((address) => (
-                <ContactDetailsMailingTextContainer key={address.id}>
-                  <ContactAddressRowContainer>
+                <ContactAddressRowContainer>
+                  <Typography variant="subtitle1">
+                    {`${primaryAddress.city}, ${primaryAddress.state} ${primaryAddress.postalCode}`}
+                  </Typography>
+                </ContactAddressRowContainer>
+                <ContactAddressRowContainer>
+                  <Typography variant="subtitle1">
+                    {primaryAddress.country}
+                  </Typography>
+                </ContactAddressRowContainer>
+                <ContactAddressRowContainer>
+                  <Typography variant="subtitle1">
+                    {t(`Source: ${primaryAddress.source}`)}
+                  </Typography>
+                </ContactAddressRowContainer>
+              </>
+            )}
+            {/* Show More Section */}
+            {nonPrimaryAddresses.length > 0 ? (
+              <ContactDetailsMailingLabelTextContainer>
+                <Link href="#">
+                  <ContactMailingShowMoreLabel
+                    variant="subtitle1"
+                    onClick={() => setShowMoreOpen(!showMoreOpen)}
+                  >
+                    {showMoreOpen ? t('Show Less') : t('Show More')}
+                  </ContactMailingShowMoreLabel>
+                </Link>
+              </ContactDetailsMailingLabelTextContainer>
+            ) : null}
+            {showMoreOpen
+              ? nonPrimaryAddresses.map((address) => (
+                  <ContactDetailsMailingTextContainer key={address.id}>
+                    <ContactAddressRowContainer>
+                      <Typography variant="subtitle1">
+                        <Box fontWeight="fontWeightBold">{address.street}</Box>
+                      </Typography>
+                      <AddressEditIconContainer
+                        onClick={() => {
+                          setEditingAddressId(address.id);
+                        }}
+                      >
+                        <AddressEditIcon titleAccess={t('Edit Icon')} />
+                      </AddressEditIconContainer>
+                    </ContactAddressRowContainer>
                     <Typography variant="subtitle1">
-                      <Box fontWeight="fontWeightBold">{address.street}</Box>
+                      {`${address.city}, ${address.state} ${address.postalCode}`}
                     </Typography>
-                    <AddressEditIconContainer
-                      onClick={() => {
-                        console.log('hi');
-                      }}
-                    >
-                      <AddressEditIcon titleAccess={t('Edit Icon')} />
-                    </AddressEditIconContainer>
-                  </ContactAddressRowContainer>
-                  <Typography variant="subtitle1">
-                    {`${address.city}, ${address.state} ${address.postalCode}`}
-                  </Typography>
-                  <Typography variant="subtitle1">{address.country}</Typography>
-                  <Typography variant="subtitle1">
-                    {t(`Source: ${address.source}`)}
-                  </Typography>
-                </ContactDetailsMailingTextContainer>
-              ))
-            : null}
-          {/* Greeting Section */}
-          <ContactDetailsMailingLabelTextContainer>
-            <ContactDetailsMailingLabel variant="subtitle1">
-              {t('Greeting')}
-            </ContactDetailsMailingLabel>
-            <Typography variant="subtitle1">{greeting}</Typography>
-          </ContactDetailsMailingLabelTextContainer>
-          {/* Newsletter Section */}
-          <ContactDetailsMailingLabelTextContainer>
-            <ContactDetailsMailingLabel variant="subtitle1">
-              {t('Newsletter')}
-            </ContactDetailsMailingLabel>
-            <Typography variant="subtitle1">{sendNewsletter}</Typography>
-          </ContactDetailsMailingLabelTextContainer>
-          {/* Magazine Section */}
-          <ContactDetailsMailingLabelTextContainer>
-            <ContactDetailsMailingLabel variant="subtitle1">
-              {t('Magazine')}
-            </ContactDetailsMailingLabel>
-            <Typography variant="subtitle1">Not Implemented</Typography>
-          </ContactDetailsMailingLabelTextContainer>
-        </ContactDetailsMailingTextContainer>
-      </ContactDetailsMailingMainContainer>
-      <Box m={2}>
-        <Grid container alignItems="center">
-          <AddressAddIcon />
+                    <Typography variant="subtitle1">
+                      {address.country}
+                    </Typography>
+                    <Typography variant="subtitle1">
+                      {t(`Source: ${address.source}`)}
+                    </Typography>
+                  </ContactDetailsMailingTextContainer>
+                ))
+              : null}
+            {/* Greeting Section */}
+            <ContactDetailsMailingLabelTextContainer>
+              <ContactDetailsMailingLabel variant="subtitle1">
+                {t('Greeting')}
+              </ContactDetailsMailingLabel>
+              <Typography variant="subtitle1">{greeting}</Typography>
+            </ContactDetailsMailingLabelTextContainer>
+            {/* Newsletter Section */}
+            <ContactDetailsMailingLabelTextContainer>
+              <ContactDetailsMailingLabel variant="subtitle1">
+                {t('Newsletter')}
+              </ContactDetailsMailingLabel>
+              <Typography variant="subtitle1">{sendNewsletter}</Typography>
+            </ContactDetailsMailingLabelTextContainer>
+            {/* Magazine Section */}
+            <ContactDetailsMailingLabelTextContainer>
+              <ContactDetailsMailingLabel variant="subtitle1">
+                {t('Magazine')}
+              </ContactDetailsMailingLabel>
+              <Typography variant="subtitle1">Not Implemented</Typography>
+            </ContactDetailsMailingLabelTextContainer>
+          </ContactDetailsMailingTextContainer>
+        </ContactDetailsMailingMainContainer>
+        <Box m={2}>
+          <Grid container alignItems="center">
+            <AddressAddIcon />
 
-          <AddressAddText variant="subtitle1">
-            {t('Add Address')}
-          </AddressAddText>
-        </Grid>
+            <AddressAddText variant="subtitle1">
+              {t('Add Address')}
+            </AddressAddText>
+          </Grid>
+        </Box>
       </Box>
-    </Box>
+      {selectedAddress ? (
+        <EditContactAddressModal
+          accountListId={accountListId}
+          address={selectedAddress}
+          handleClose={() => setEditingAddressId(undefined)}
+        />
+      ) : null}
+    </>
   );
 };

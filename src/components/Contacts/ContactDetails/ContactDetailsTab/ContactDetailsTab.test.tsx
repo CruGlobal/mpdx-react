@@ -188,6 +188,58 @@ describe('ContactDetailTab', () => {
     );
   });
 
+  it('should open edit contact address modal', async () => {
+    const { queryByText, getAllByRole } = render(
+      <SnackbarProvider>
+        <TestRouter router={router}>
+          <MuiPickersUtilsProvider utils={LuxonUtils}>
+            <ThemeProvider theme={theme}>
+              <GqlMockedProvider<ContactDetailsTabQuery>>
+                <ContactDetailsTab
+                  accountListId={accountListId}
+                  contactId={contactId}
+                />
+              </GqlMockedProvider>
+            </ThemeProvider>
+          </MuiPickersUtilsProvider>
+        </TestRouter>
+      </SnackbarProvider>,
+    );
+    await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());
+    userEvent.click(getAllByRole('img', { name: 'Edit Icon' })[7]);
+    await waitFor(() =>
+      expect(queryByText('Edit Address')).toBeInTheDocument(),
+    );
+  });
+
+  it('should close edit contact address modal', async () => {
+    const { queryByText, getAllByRole, getByRole } = render(
+      <SnackbarProvider>
+        <TestRouter router={router}>
+          <MuiPickersUtilsProvider utils={LuxonUtils}>
+            <ThemeProvider theme={theme}>
+              <GqlMockedProvider<ContactDetailsTabQuery>>
+                <ContactDetailsTab
+                  accountListId={accountListId}
+                  contactId={contactId}
+                />
+              </GqlMockedProvider>
+            </ThemeProvider>
+          </MuiPickersUtilsProvider>
+        </TestRouter>
+      </SnackbarProvider>,
+    );
+    await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());
+    userEvent.click(getAllByRole('img', { name: 'Edit Icon' })[7]);
+    await waitFor(() =>
+      expect(queryByText('Edit Address')).toBeInTheDocument(),
+    );
+    userEvent.click(getByRole('button', { name: 'Close' }));
+    await waitFor(() =>
+      expect(queryByText('Edit Address')).not.toBeInTheDocument(),
+    );
+  });
+
   it('should open edit contact other details modal', async () => {
     const { queryByText, getAllByRole } = render(
       <SnackbarProvider>
