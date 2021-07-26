@@ -166,7 +166,6 @@ describe('FourteenMonthReport', () => {
     expect(queryByText(title)).toBeInTheDocument();
     expect(queryByTestId('LoadingFourteenMonthReport')).toBeInTheDocument();
     expect(queryByTestId('Notification')).toBeNull();
-    expect(queryByTestId('ReportNavList')).toBeInTheDocument();
   });
 
   it('salary report loaded', async () => {
@@ -192,7 +191,6 @@ describe('FourteenMonthReport', () => {
 
     expect(queryByText(title)).toBeInTheDocument();
     expect(getByTestId('FourteenMonthReport')).toBeInTheDocument();
-    expect(queryByTestId('ReportNavList')).toBeInTheDocument();
   });
 
   it('partner report loading', async () => {
@@ -213,7 +211,6 @@ describe('FourteenMonthReport', () => {
     expect(queryByText(title)).toBeInTheDocument();
     expect(queryByTestId('LoadingFourteenMonthReport')).toBeInTheDocument();
     expect(queryByTestId('Notification')).toBeNull();
-    expect(queryByTestId('ReportNavList')).toBeInTheDocument();
   });
 
   it('partner report loaded', async () => {
@@ -239,7 +236,6 @@ describe('FourteenMonthReport', () => {
 
     expect(queryByText(title)).toBeInTheDocument();
     expect(getByTestId('FourteenMonthReport')).toBeInTheDocument();
-    expect(getByTestId('ReportNavList')).toBeVisible();
   });
 
   it('salary report error', async () => {
@@ -265,7 +261,6 @@ describe('FourteenMonthReport', () => {
 
     expect(queryByText(title)).toBeInTheDocument();
     expect(getByTestId('Notification')).toBeInTheDocument();
-    expect(getByTestId('ReportNavList')).toBeVisible();
   });
 
   it('partner report error', async () => {
@@ -291,7 +286,6 @@ describe('FourteenMonthReport', () => {
 
     expect(queryByText(title)).toBeInTheDocument();
     expect(getByTestId('Notification')).toBeInTheDocument();
-    expect(getByTestId('ReportNavList')).toBeVisible();
   });
 
   it('nav list closed', async () => {
@@ -317,6 +311,6 @@ describe('FourteenMonthReport', () => {
 
     expect(queryByText(title)).toBeInTheDocument();
     expect(getByTestId('FourteenMonthReport')).toBeInTheDocument();
-    expect(getByTestId('ReportNavList')).toBeNull();
+    expect(queryByTestId('ReportNavList')).toBeNull();
   });
 });
