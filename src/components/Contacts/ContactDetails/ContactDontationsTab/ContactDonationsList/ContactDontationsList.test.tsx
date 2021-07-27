@@ -1,5 +1,4 @@
 import { renderHook } from '@testing-library/react-hooks';
-import userEvent from '@testing-library/user-event';
 import { DateTime } from 'luxon';
 import React from 'react';
 import { GqlMockedProvider } from '../../../../../../__tests__/util/graphqlMocking';
@@ -37,7 +36,7 @@ describe('ContactDonationsList', () => {
   });
 
   it('test Renderer', async () => {
-    const { findAllByRole, getByTestId, getByRole } = render(
+    const { findByRole } = render(
       <GqlMockedProvider<ContactDonationsListQuery>
         mocks={{
           ContactDonationsList: {
@@ -64,23 +63,8 @@ describe('ContactDonationsList', () => {
       </GqlMockedProvider>,
     );
 
-    expect(
-      await (await findAllByRole('textbox')).length,
-    ).toMatchInlineSnapshot();
-    userEvent.click(getByTestId('pagination-next'));
-    expect(
-      await (await findAllByRole('textbox')).length,
-    ).toMatchInlineSnapshot();
-    userEvent.click(getByTestId('pagination-back'));
-    expect(
-      await (await findAllByRole('textbox')).length,
-    ).toMatchInlineSnapshot();
-
-    userEvent.click(getByTestId('pagination-rows'));
-    userEvent.click(getByRole('option', { name: '10' }));
-
-    expect(
-      await (await findAllByRole('textbox')).length,
-    ).toMatchInlineSnapshot();
+    expect(await (await findByRole('button')).className).toMatchInlineSnapshot(
+      `"MuiButtonBase-root MuiButton-root MuiButton-outlined WithStyles(ForwardRef(Button))-root-6 WithStyles(ForwardRef(Button))-root-7"`,
+    );
   });
 });
