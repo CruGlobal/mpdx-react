@@ -43,7 +43,6 @@ describe('ContactDonationsList', () => {
           ContactDonationsList: {
             contact: {
               donations: {
-                totalCount: 125,
                 nodes: [...Array(25)].map((x, i) => {
                   return {
                     donationDate: DateTime.local().minus({ month: i }).toISO(),
@@ -65,23 +64,23 @@ describe('ContactDonationsList', () => {
       </GqlMockedProvider>,
     );
 
-    expect(await (await findAllByRole('textbox')).length).toMatchInlineSnapshot(
-      `25`,
-    );
+    expect(
+      await (await findAllByRole('textbox')).length,
+    ).toMatchInlineSnapshot();
     userEvent.click(getByTestId('pagination-next'));
-    expect(await (await findAllByRole('textbox')).length).toMatchInlineSnapshot(
-      `25`,
-    );
+    expect(
+      await (await findAllByRole('textbox')).length,
+    ).toMatchInlineSnapshot();
     userEvent.click(getByTestId('pagination-back'));
-    expect(await (await findAllByRole('textbox')).length).toMatchInlineSnapshot(
-      `25`,
-    );
+    expect(
+      await (await findAllByRole('textbox')).length,
+    ).toMatchInlineSnapshot();
 
     userEvent.click(getByTestId('pagination-rows'));
     userEvent.click(getByRole('option', { name: '10' }));
 
-    expect(await (await findAllByRole('textbox')).length).toMatchInlineSnapshot(
-      `25`,
-    );
+    expect(
+      await (await findAllByRole('textbox')).length,
+    ).toMatchInlineSnapshot();
   });
 });

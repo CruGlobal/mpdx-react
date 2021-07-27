@@ -30,8 +30,7 @@ fragment DonationsContact on DonationConnection {
     hasPreviousPage
     startCursor
   }
-  totalCount
-  totalPageCount
+
   nodes {
     ...ContactDonation
   }

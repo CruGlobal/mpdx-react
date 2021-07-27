@@ -9,7 +9,7 @@ import {
 } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
 import { DateTime } from 'luxon';
-import React, { useState } from 'react';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { currencyFormat } from '../../../../../lib/intlFormat/intlFormat';
 import { useContactDonationsListQuery } from './ContactDonationsList.generated';
@@ -33,14 +33,11 @@ export const ContactDonationsList: React.FC<ContactDonationsListProp> = ({
   accountListId,
   contactId,
 }) => {
-  const [range, setRange] = useState(10);
-
   const { data, loading, fetchMore } = useContactDonationsListQuery({
     variables: {
       accountListId: accountListId,
       contactId: contactId,
     },
-    notifyOnNetworkStatusChange: true,
   });
 
   const { t } = useTranslation();
@@ -115,8 +112,6 @@ export const ContactDonationsList: React.FC<ContactDonationsListProp> = ({
                       },
                     };
                   },
-                }).finally(() => {
-                  setRange(range + 1);
                 });
               }}
             >
