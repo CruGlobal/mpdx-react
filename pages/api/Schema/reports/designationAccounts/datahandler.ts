@@ -65,8 +65,8 @@ export const createDesignationAccountsGroup = (
     (obj, item) => {
       return {
         ...obj,
-        [item.relationships.organization.data.id]: [
-          ...(obj[item.relationships.organization.data.id] || []),
+        [item.attributes.organization_name]: [
+          ...(obj[item.attributes.organization_name] || []),
           createDesignationAccount(item),
         ],
       };
