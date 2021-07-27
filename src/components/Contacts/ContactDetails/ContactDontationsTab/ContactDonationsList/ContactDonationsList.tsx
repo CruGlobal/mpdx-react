@@ -35,12 +35,7 @@ export const ContactDonationsList: React.FC<ContactDonationsListProp> = ({
 }) => {
   const [range, setRange] = useState(10);
 
-  const {
-    data,
-    loading,
-    fetchMore,
-    networkStatus,
-  } = useContactDonationsListQuery({
+  const { data, loading, fetchMore } = useContactDonationsListQuery({
     variables: {
       accountListId: accountListId,
       contactId: contactId,
