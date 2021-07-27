@@ -1,4 +1,5 @@
 fragment ContactMailing on Contact {
+  id
   name
   addresses {
     nodes {
@@ -17,5 +18,6 @@ fragment ContactMailing on Contact {
     }
   }
   greeting
+  envelopeGreeting
   sendNewsletter
 }

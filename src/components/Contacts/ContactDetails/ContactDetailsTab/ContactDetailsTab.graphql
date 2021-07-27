@@ -3,14 +3,10 @@ query ContactDetailsTab($accountListId: ID!, $contactId: ID!) {
     id
     name
     tagList
-    envelopeGreeting
-    preferredContactMethod
-    timezone
     user {
       firstName
       lastName
     }
-    website
     #TODO add Magazine
     ...ContactPeople
     ...ContactOther
