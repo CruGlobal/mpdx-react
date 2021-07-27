@@ -124,7 +124,13 @@ export const ContactDetailsTabMailing: React.FC<MailingProp> = ({
                   </AddressEditIconContainer>
                 </ContactAddressRowContainer>
 
-                <ContactAddressRowContainer>
+                <ContactAddressRowContainer
+                  style={{
+                    textDecoration: primaryAddress.historic
+                      ? 'line-through'
+                      : 'none',
+                  }}
+                >
                   <Typography variant="subtitle1">
                     {`${primaryAddress.city}, ${primaryAddress.state} ${primaryAddress.postalCode}`}
                   </Typography>
@@ -156,7 +162,14 @@ export const ContactDetailsTabMailing: React.FC<MailingProp> = ({
             ) : null}
             {showMoreOpen
               ? nonPrimaryAddresses.map((address) => (
-                  <ContactDetailsMailingTextContainer key={address.id}>
+                  <ContactDetailsMailingTextContainer
+                    key={address.id}
+                    style={{
+                      textDecoration: address.historic
+                        ? 'line-through'
+                        : 'none',
+                    }}
+                  >
                     <ContactAddressRowContainer>
                       <Typography variant="subtitle1">
                         <Box fontWeight="fontWeightBold">{address.street}</Box>
