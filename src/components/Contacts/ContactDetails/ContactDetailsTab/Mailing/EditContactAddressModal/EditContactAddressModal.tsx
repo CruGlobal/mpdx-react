@@ -69,7 +69,7 @@ export const EditContactAddressModal: React.FC<EditContactAddressModalProps> = (
     { loading: updating },
   ] = useUpdateContactAddressMutation();
 
-  // TODO Let Spencer know of contactId bug
+  // TODO Remove Omit once https://jira.cru.org/browse/MPDX-7090 is complete
   const contactAddressSchema: yup.SchemaOf<
     Omit<AddressUpdateInput, 'contactId'>
   > = yup.object({
