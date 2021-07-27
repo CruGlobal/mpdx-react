@@ -1,10 +1,20 @@
 fragment ContactMailing on Contact {
   name
-  primaryAddress {
-    street
-    city
-    state
-    postalCode
+  addresses {
+    nodes {
+      city
+      country
+      historic
+      id
+      location
+      metroArea
+      postalCode
+      primaryMailingAddress
+      region
+      source
+      state
+      street
+    }
   }
   greeting
   sendNewsletter
