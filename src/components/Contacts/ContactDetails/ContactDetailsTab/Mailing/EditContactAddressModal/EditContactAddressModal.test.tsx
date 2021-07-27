@@ -34,6 +34,7 @@ jest.mock('notistack', () => ({
 }));
 
 const mockContact: ContactMailingFragment = {
+  id: '123',
   name: mock.name,
   addresses: {
     nodes: [
