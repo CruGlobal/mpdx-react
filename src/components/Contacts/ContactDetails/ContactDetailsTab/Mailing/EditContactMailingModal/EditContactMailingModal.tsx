@@ -17,12 +17,12 @@ import {
 } from '@material-ui/core';
 import { useSnackbar } from 'notistack';
 import { Formik } from 'formik';
-import { ContactDetailsTabQuery } from '../../ContactDetailsTab.generated';
 import {
   ContactUpdateInput,
   SendNewsletterEnum,
 } from '../../../../../../../graphql/types.generated';
 import Modal from '../../../../../common/Modal/Modal';
+import { ContactMailingFragment } from '../ContactMailing.generated';
 import { useUpdateContactMailingMutation } from './EditContactMailingModal.generated';
 
 const ContactEditContainer = styled(Box)(({ theme }) => ({
@@ -43,7 +43,7 @@ const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
 
 interface EditContactMailingModalProps {
   accountListId: string;
-  contact: ContactDetailsTabQuery['contact'];
+  contact: ContactMailingFragment;
   handleClose: () => void;
   isOpen: boolean;
 }

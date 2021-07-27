@@ -391,7 +391,7 @@ describe('ContactDetailTab', () => {
         <TestRouter router={router}>
           <MuiPickersUtilsProvider utils={LuxonUtils}>
             <ThemeProvider theme={theme}>
-              <GqlMockedProvider<ContactDetailsTabQuery>>
+              <GqlMockedProvider<ContactDetailsTabQuery> mocks={mocks}>
                 <ContactDetailsTab
                   accountListId={accountListId}
                   contactId={contactId}
@@ -403,7 +403,7 @@ describe('ContactDetailTab', () => {
       </SnackbarProvider>,
     );
     await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());
-    userEvent.click(getAllByRole('img', { name: 'Edit Icon' })[6]);
+    userEvent.click(getAllByRole('img', { name: 'Edit Icon' })[5]);
     await waitFor(() =>
       expect(queryByText('Edit Contact Other Details')).toBeInTheDocument(),
     );
@@ -415,7 +415,7 @@ describe('ContactDetailTab', () => {
         <TestRouter router={router}>
           <MuiPickersUtilsProvider utils={LuxonUtils}>
             <ThemeProvider theme={theme}>
-              <GqlMockedProvider<ContactDetailsTabQuery>>
+              <GqlMockedProvider<ContactDetailsTabQuery> mocks={mocks}>
                 <ContactDetailsTab
                   accountListId={accountListId}
                   contactId={contactId}
@@ -427,7 +427,7 @@ describe('ContactDetailTab', () => {
       </SnackbarProvider>,
     );
     await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());
-    userEvent.click(getAllByRole('img', { name: 'Edit Icon' })[6]);
+    userEvent.click(getAllByRole('img', { name: 'Edit Icon' })[5]);
     await waitFor(() =>
       expect(queryByText('Edit Contact Other Details')).toBeInTheDocument(),
     );

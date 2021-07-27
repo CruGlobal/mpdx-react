@@ -1,4 +1,5 @@
 fragment ContactMailing on Contact {
+  id
   name
   addresses {
     nodes {

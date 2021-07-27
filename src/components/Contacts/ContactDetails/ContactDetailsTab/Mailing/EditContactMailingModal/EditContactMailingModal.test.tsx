@@ -10,16 +10,15 @@ import {
   GqlMockedProvider,
 } from '../../../../../../../__tests__/util/graphqlMocking';
 import theme from '../../../../../../theme';
-import { ContactDetailsTabQuery } from '../../ContactDetailsTab.generated';
 import {
-  ContactPeopleFragment,
-  ContactPeopleFragmentDoc,
-} from '../../People/ContactPeople.generated';
+  ContactMailingFragment,
+  ContactMailingFragmentDoc,
+} from '../ContactMailing.generated';
 import { EditContactMailingModal } from './EditContactMailingModal';
 import { UpdateContactMailingMutation } from './EditContactMailingModal.generated';
 
 const handleClose = jest.fn();
-const mock = gqlMock<ContactPeopleFragment>(ContactPeopleFragmentDoc);
+const mock = gqlMock<ContactMailingFragment>(ContactMailingFragmentDoc);
 const contactId = '123';
 const accountListId = 'abc';
 
@@ -36,25 +35,22 @@ jest.mock('notistack', () => ({
   },
 }));
 
-const mockContact: ContactDetailsTabQuery['contact'] = {
+const mockContact: ContactMailingFragment = {
   name: 'test person',
   id: contactId,
-  tagList: [],
   greeting: 'Hello test',
   envelopeGreeting: 'Dear Test',
   sendNewsletter: SendNewsletterEnum.Email,
-  people: {
+  addresses: {
     nodes: [
       {
-        ...mock.people.nodes[0],
-        firstName: 'test',
-        lastName: 'guy',
-        id: mock.primaryPerson?.id ?? '',
+        ...mock.addresses.nodes[0],
+        location: 'Home',
+        historic: true,
+        street: '123 Cool Street',
       },
-      ...mock.people.nodes,
     ],
   },
-  primaryPerson: mock.primaryPerson,
 };
 
 describe('EditContactMailingModal', () => {
