@@ -10,7 +10,6 @@ import {
   ContactPeopleFragment,
   ContactPeopleFragmentDoc,
 } from '../../ContactPeople.generated';
-import { ContactDetailsTabQuery } from '../../../ContactDetailsTab.generated';
 import {
   gqlMock,
   GqlMockedProvider,
@@ -37,11 +36,9 @@ jest.mock('notistack', () => ({
   },
 }));
 
-const mockContact: ContactDetailsTabQuery['contact'] = {
+const mockContact: ContactPeopleFragment = {
   name: 'test person',
   id: contactId,
-  tagList: [],
-
   people: {
     nodes: [
       {
