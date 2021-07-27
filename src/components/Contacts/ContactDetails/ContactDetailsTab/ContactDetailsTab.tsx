@@ -254,7 +254,10 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
               <ContactDetailLoadingPlaceHolder variant="rect" />
             </>
           ) : (
-            <ContactDetailsTabMailing data={data.contact} />
+            <ContactDetailsTabMailing
+              accountListId={accountListId}
+              data={data.contact}
+            />
           )}
         </ContactDetailSectionContainer>
         <Divider />
