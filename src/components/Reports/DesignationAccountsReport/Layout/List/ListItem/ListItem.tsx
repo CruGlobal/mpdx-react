@@ -15,7 +15,10 @@ import { currencyFormat } from 'src/lib/intlFormat';
 
 export interface DesignationAccountListItemProps {
   designationAccount: DesignationAccountsQuery['designationAccounts'][0]['designationAccounts'][0];
-  onCheckToggle: (event: React.MouseEvent<unknown>, checked: boolean) => void;
+  onCheckToggle: (
+    event: React.ChangeEvent<HTMLInputElement>,
+    designationAccountId: string,
+  ) => void;
 }
 
 export const DesignationAccountListItem: FC<DesignationAccountListItemProps> = ({
@@ -57,9 +60,8 @@ export const DesignationAccountListItem: FC<DesignationAccountListItemProps> = (
         <ListItemSecondaryAction>
           <Checkbox
             edge="end"
-            onChange={onCheckToggle}
+            onChange={(event) => onCheckToggle(event, designationAccount.id)}
             checked={designationAccount.active}
-            inputProps={{ 'aria-labelledby': 'list-1' }}
           />
         </ListItemSecondaryAction>
       </ListItem>

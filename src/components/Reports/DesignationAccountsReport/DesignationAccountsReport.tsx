@@ -2,6 +2,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Box, CircularProgress } from '@material-ui/core';
 import { useDesignationAccountsQuery } from './GetDesignationAccounts.generated';
+import { useSetActiveDesignationAccountMutation } from './SetActiveDesignationAccount.generated';
 import { DesignationAccountsHeader as Header } from './Layout/Header/Header';
 import { DesignationAccountsList as List } from './Layout/List/List';
 import { Notification } from 'src/components/Notification/Notification';
@@ -22,15 +23,32 @@ export const DesignationAccountsReport: React.FC<Props> = ({
 }) => {
   const { t } = useTranslation();
 
-  const { data, loading, error } = useDesignationAccountsQuery({
+  const { data, loading, error, refetch } = useDesignationAccountsQuery({
     variables: {
       accountListId,
     },
   });
 
-  console.log('designation accounts', data);
+  const [
+    setActiveDesignationAccount,
+  ] = useSetActiveDesignationAccountMutation();
 
-  const handleCheckToggle = () => {};
+  const handleCheckToggle = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+    designationAccountId: string,
+  ) => {
+    await setActiveDesignationAccount({
+      variables: {
+        input: {
+          accountListId,
+          active: event.target.checked,
+          designationAccountId,
+        },
+      },
+    });
+
+    return refetch();
+  };
 
   return (
     <Box>
@@ -46,7 +64,7 @@ export const DesignationAccountsReport: React.FC<Props> = ({
           alignItems="center"
           height="100%"
         >
-          <CircularProgress data-testid="LoadingSalaryReport" />
+          <CircularProgress data-testid="LoadingDesignationAccounts" />
         </Box>
       ) : error ? (
         <Notification type="error" message={error.toString()} />

@@ -6,7 +6,10 @@ import { DesignationAccountListItem as ListItem } from './ListItem/ListItem';
 
 export interface DesignationAccountsListProps {
   designationAccountsGroup: DesignationAccountsQuery['designationAccounts'][0];
-  onCheckToggle: (event: React.MouseEvent<unknown>, checked: boolean) => void;
+  onCheckToggle: (
+    event: React.ChangeEvent<HTMLInputElement>,
+    designationAccountId: string,
+  ) => void;
 }
 
 export const DesignationAccountsList: FC<DesignationAccountsListProps> = ({
