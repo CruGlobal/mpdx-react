@@ -52,7 +52,7 @@ export const ContactDonationsList: React.FC<ContactDonationsListProp> = ({
         </>
       ) : (
         <>
-          <Table>
+          <Table role="table">
             <TableHead>
               <TableCell>{t('Date')}</TableCell>
               <TableCell>{t('Amount')}</TableCell>
