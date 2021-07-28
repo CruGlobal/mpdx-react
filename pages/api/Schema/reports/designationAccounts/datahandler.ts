@@ -43,7 +43,7 @@ export interface DesignationAccountsResponse {
 }
 
 type PreDesignationAccountsGroup = {
-  [organizationId: string]: DesignationAccount[];
+  [organizationName: string]: DesignationAccount[];
 };
 
 const createDesignationAccount = (
@@ -78,10 +78,18 @@ export const createDesignationAccountsGroup = (
     preDesignationAccountsGroup,
   ).map(([organizationName, designationAccounts]) => ({
     organizationName,
+    balance: getGroupBalance(designationAccounts),
     designationAccounts,
   }));
 
   return designationAccountsGroup;
+};
+
+const getGroupBalance = (designationAccounts: DesignationAccount[]) => {
+  return designationAccounts.reduce(
+    (total, designationAccount) => total + designationAccount.convertedBalance,
+    0,
+  );
 };
 
 export const setActiveDesignationAccount = (
