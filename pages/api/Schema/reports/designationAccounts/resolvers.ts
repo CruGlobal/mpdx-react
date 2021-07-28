@@ -9,7 +9,7 @@ export const DesignationAccountsResolvers: Resolvers = {
   Mutation: {
     setActiveDesignationAccount: (
       _source,
-      { accountListId, active, designationAccountId },
+      { input: { accountListId, active, designationAccountId } },
       { dataSources },
     ) => {
       return dataSources.mpdxRestApi.setDesignationAccountActive(

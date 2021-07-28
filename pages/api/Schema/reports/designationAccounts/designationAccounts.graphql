@@ -4,9 +4,7 @@ extend type Query {
 
 extend type Mutation {
   setActiveDesignationAccount(
-    accountListId: ID!
-    active: Boolean!
-    designationAccountId: ID!
+    input: SetActiveDesignationAccountInput!
   ): SetActiveDesignationAccountResponse!
 }
 
@@ -28,4 +26,10 @@ type SetActiveDesignationAccountResponse {
 type DesignationAccountsGroup {
   organizationName: String!
   designationAccounts: [DesignationAccount!]!
+}
+
+input SetActiveDesignationAccountInput {
+  accountListId: ID!
+  active: Boolean!
+  designationAccountId: ID!
 }
