@@ -1,4 +1,5 @@
 import { renderHook } from '@testing-library/react-hooks';
+import userEvent from '@testing-library/user-event';
 import { DateTime } from 'luxon';
 import React from 'react';
 import { GqlMockedProvider } from '../../../../../../__tests__/util/graphqlMocking';
@@ -36,15 +37,18 @@ describe('ContactDonationsList', () => {
   });
 
   it('test Renderer', async () => {
-    const { findByRole } = render(
+    const { findByRole, getByRole } = render(
       <GqlMockedProvider<ContactDonationsListQuery>
         mocks={{
           ContactDonationsList: {
             contact: {
               donations: {
-                nodes: [...Array(25)].map((x, i) => {
+                nodes: [...Array(13)].map((x, i) => {
                   return {
-                    donationDate: DateTime.local().minus({ month: i }).toISO(),
+                    donationDate: DateTime.local()
+                      .minus({ month: i })
+                      .toISO()
+                      .toString(),
                     amount: {
                       currency: 'USD',
                       convertedCurrency: 'EUR',
@@ -66,5 +70,12 @@ describe('ContactDonationsList', () => {
     expect(await (await findByRole('button')).className).toMatchInlineSnapshot(
       `"MuiButtonBase-root MuiButton-root MuiButton-outlined WithStyles(ForwardRef(Button))-root-6 WithStyles(ForwardRef(Button))-root-7"`,
     );
+    expect(
+      await (await findByRole('table')).childElementCount,
+    ).toMatchInlineSnapshot(`14`);
+    userEvent.click(getByRole('button'));
+    expect(
+      await (await findByRole('table')).childElementCount,
+    ).toMatchInlineSnapshot(`27`);
   });
 });
