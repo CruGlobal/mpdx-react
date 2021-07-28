@@ -6,12 +6,17 @@ import {
   ListSubheader,
   Tooltip,
   Typography,
+  styled,
 } from '@material-ui/core';
 import HelpIcon from '@material-ui/icons/Help';
 
 export interface DesignationAccountListSubheaderProps {
   organizationName: string;
 }
+
+const StickySubheader = styled(ListSubheader)(({ theme }) => ({
+  backgroundColor: theme.palette.common.white,
+}));
 
 export const DesignationAccountListSubheader: FC<DesignationAccountListSubheaderProps> = ({
   organizationName,
@@ -20,7 +25,7 @@ export const DesignationAccountListSubheader: FC<DesignationAccountListSubheader
 
   return (
     <React.Fragment>
-      <ListSubheader>
+      <StickySubheader>
         <Box
           display="flex"
           justifyContent="space-between"
@@ -35,21 +40,23 @@ export const DesignationAccountListSubheader: FC<DesignationAccountListSubheader
               <strong>{t('Balances')}</strong>
             </Typography>
           </Box>
-          <Tooltip
-            title={
-              <Box textAlign="center" maxWidth={120}>
-                {t(
-                  'If checked, converted balence will be added to account overall balance',
-                )}
-              </Box>
-            }
-            arrow
-            placement="left"
-          >
-            <HelpIcon fontSize="small" />
-          </Tooltip>
+          <Box display="flex" justifyContent="flex-end" width={30}>
+            <Tooltip
+              title={
+                <Box textAlign="center" maxWidth={120}>
+                  {t(
+                    'If checked, converted balence will be added to account overall balance',
+                  )}
+                </Box>
+              }
+              arrow
+              placement="left"
+            >
+              <HelpIcon fontSize="small" />
+            </Tooltip>
+          </Box>
         </Box>
-      </ListSubheader>
+      </StickySubheader>
       <Divider />
     </React.Fragment>
   );
