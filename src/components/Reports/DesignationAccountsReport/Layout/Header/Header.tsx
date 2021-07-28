@@ -7,7 +7,14 @@ interface DesignationAccountsReportHeaderProps {
   isNavListOpen: boolean;
   onNavListToggle: () => void;
   title: string;
+  totalBalance: string | undefined;
 }
+
+const StickyHeader = styled(Box)(({}) => ({
+  position: 'sticky',
+  top: 0,
+  height: 96,
+}));
 
 const HeaderTitle = styled(Typography)(({}) => ({
   lineHeight: 1.1,
@@ -34,15 +41,25 @@ export const DesignationAccountsHeader: FC<DesignationAccountsReportHeaderProps>
   title,
   isNavListOpen,
   onNavListToggle,
+  totalBalance,
 }) => {
   const { t } = useTranslation();
 
   return (
-    <Box display="flex" alignItems="center">
-      <NavListButton panelOpen={isNavListOpen} onClick={onNavListToggle}>
-        <NavListIcon titleAccess={t('Toggle Filter Panel')} />
-      </NavListButton>
-      <HeaderTitle variant="h5">{title}</HeaderTitle>
-    </Box>
+    <StickyHeader p={2} test-dataid="DesignationAccountsReportHeader">
+      <Box display="flex" justifyContent="space-between" alignItems="center">
+        <Box display="flex" alignItems="center">
+          <NavListButton panelOpen={isNavListOpen} onClick={onNavListToggle}>
+            <NavListIcon titleAccess={t('Toggle Filter Panel')} />
+          </NavListButton>
+          <HeaderTitle variant="h5">{title}</HeaderTitle>
+        </Box>
+        {totalBalance && (
+          <HeaderTitle variant="h6">{`${t(
+            'Balance',
+          )}: ${totalBalance}`}</HeaderTitle>
+        )}
+      </Box>
+    </StickyHeader>
   );
 };

@@ -29,6 +29,7 @@ const DesignationAccountsReportPage: React.FC = () => {
       {accountListId ? (
         <DesignationAccountsReportPageWrapper>
           <SidePanelsLayout
+            isScrollBox={false}
             leftPanel={
               <NavReportsList
                 isOpen={isNavListOpen}

@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { Divider, List } from '@material-ui/core';
+import { List, styled } from '@material-ui/core';
 import { DesignationAccountsQuery } from '../../GetDesignationAccounts.generated';
 import { DesignationAccountListSubheader as ListSubheader } from './ListSubheader/ListSubheader';
 import { DesignationAccountListItem as ListItem } from './ListItem/ListItem';
@@ -12,13 +12,17 @@ export interface DesignationAccountsListProps {
   ) => void;
 }
 
+const DesignationAccountsGroupList = styled(List)(({}) => ({
+  paddingTop: 0,
+  paddingBottom: 0,
+}));
+
 export const DesignationAccountsList: FC<DesignationAccountsListProps> = ({
   designationAccountsGroup,
   onCheckToggle,
 }) => {
   return (
-    <List>
-      <Divider />
+    <DesignationAccountsGroupList>
       <ListSubheader
         organizationName={designationAccountsGroup.organizationName}
       />
@@ -31,6 +35,6 @@ export const DesignationAccountsList: FC<DesignationAccountsListProps> = ({
           />
         ),
       )}
-    </List>
+    </DesignationAccountsGroupList>
   );
 };
