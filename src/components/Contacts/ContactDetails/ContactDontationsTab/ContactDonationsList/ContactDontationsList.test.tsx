@@ -1,4 +1,5 @@
 import { renderHook } from '@testing-library/react-hooks';
+import userEvent from '@testing-library/user-event';
 import { DateTime } from 'luxon';
 import React from 'react';
 import { GqlMockedProvider } from '../../../../../../__tests__/util/graphqlMocking';
@@ -36,7 +37,7 @@ describe('ContactDonationsList', () => {
   });
 
   it('test Renderer', async () => {
-    const { findByRole } = render(
+    const { findByRole, getByRole } = render(
       <GqlMockedProvider<ContactDonationsListQuery>
         mocks={{
           ContactDonationsList: {
@@ -72,5 +73,9 @@ describe('ContactDonationsList', () => {
     expect(
       await (await findByRole('table')).childElementCount,
     ).toMatchInlineSnapshot(`14`);
+    userEvent.click(getByRole('button'));
+    expect(
+      await (await findByRole('table')).childElementCount,
+    ).toMatchInlineSnapshot(`27`);
   });
 });
