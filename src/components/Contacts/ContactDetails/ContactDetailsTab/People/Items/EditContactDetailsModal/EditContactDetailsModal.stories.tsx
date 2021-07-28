@@ -1,7 +1,6 @@
 import React, { ReactElement, useState } from 'react';
 import { Box, Button, MuiThemeProvider } from '@material-ui/core';
 import { gqlMock } from '../../../../../../../../__tests__/util/graphqlMocking';
-import { ContactDetailsTabQuery } from '../../../ContactDetailsTab.generated';
 import {
   ContactPeopleFragment,
   ContactPeopleFragmentDoc,
@@ -21,10 +20,9 @@ export const Default = (): ReactElement => {
   const contactId = '123';
   const accountListId = 'abc';
 
-  const mockContact: ContactDetailsTabQuery['contact'] = {
+  const mockContact: ContactPeopleFragment = {
     name: 'test person',
     id: contactId,
-    tagList: [],
     people: mock.people,
     primaryPerson: mock.primaryPerson,
   };

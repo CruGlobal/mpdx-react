@@ -10,16 +10,15 @@ import {
   GqlMockedProvider,
 } from '../../../../../../../__tests__/util/graphqlMocking';
 import theme from '../../../../../../theme';
-import { ContactDetailsTabQuery } from '../../ContactDetailsTab.generated';
 import {
-  ContactPeopleFragment,
-  ContactPeopleFragmentDoc,
-} from '../../People/ContactPeople.generated';
+  ContactOtherFragment,
+  ContactOtherFragmentDoc,
+} from '../ContactOther.generated';
 import { UpdateContactOtherMutation } from './EditContactOther.generated';
 import { EditContactOtherModal } from './EditContactOtherModal';
 
 const handleClose = jest.fn();
-const mock = gqlMock<ContactPeopleFragment>(ContactPeopleFragmentDoc);
+const mock = gqlMock<ContactOtherFragment>(ContactOtherFragmentDoc);
 const contactId = '123';
 const accountListId = 'abc';
 
@@ -41,27 +40,14 @@ jest.mock('i18next', () => ({
   t: (str: string) => str,
 }));
 
-const mockContact: ContactDetailsTabQuery['contact'] = {
-  name: 'test person',
+const mockContact: ContactOtherFragment = {
+  name: mock.name,
   id: contactId,
-  tagList: [],
   timezone: '(GMT-05:00) Eastern Time (US & Canada)',
   locale: 'English',
   preferredContactMethod: PreferredContactMethodEnum.PhoneCall,
-  churchName: 'A Great Church',
-  website: 'coolwebsite.com',
-  people: {
-    nodes: [
-      {
-        ...mock.people.nodes[0],
-        firstName: 'test',
-        lastName: 'guy',
-        id: mock.primaryPerson?.id ?? '',
-      },
-      ...mock.people.nodes,
-    ],
-  },
-  primaryPerson: mock.primaryPerson,
+  churchName: mock.churchName,
+  website: mock.website,
 };
 
 describe('EditContactOtherModal', () => {
