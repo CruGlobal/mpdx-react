@@ -1,5 +1,6 @@
 fragment ContactPeople on Contact {
   id
+  name
   primaryPerson {
     ...ContactPerson
   }

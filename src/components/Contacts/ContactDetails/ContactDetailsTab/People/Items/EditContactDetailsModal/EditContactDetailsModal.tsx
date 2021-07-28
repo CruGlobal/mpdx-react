@@ -17,9 +17,9 @@ import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { useSnackbar } from 'notistack';
 import { Formik } from 'formik';
-import { ContactDetailsTabQuery } from '../../../ContactDetailsTab.generated';
 import Modal from '../../../../../../common/Modal/Modal';
 import { ContactUpdateInput } from '../../../../../../../../graphql/types.generated';
+import { ContactPeopleFragment } from '../../ContactPeople.generated';
 import { useUpdateContactDetailsMutation } from './EditContactDetails.generated';
 
 const ContactEditModalFooterButton = styled(Button)(() => ({
@@ -63,7 +63,7 @@ const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
 }));
 
 interface EditContactDetailsModalProps {
-  contact: ContactDetailsTabQuery['contact'];
+  contact: ContactPeopleFragment;
   accountListId: string;
   isOpen: boolean;
   handleClose: () => void;

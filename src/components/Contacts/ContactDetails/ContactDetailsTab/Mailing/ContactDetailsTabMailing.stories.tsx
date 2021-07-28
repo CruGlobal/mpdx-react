@@ -15,7 +15,7 @@ export const Default = (): ReactElement => {
   const mock = gqlMock<ContactMailingFragment>(ContactMailingFragmentDoc);
   return (
     <Box m={2}>
-      <ContactDetailsTabMailing data={mock} />
+      <ContactDetailsTabMailing accountListId={'123'} data={mock} />
     </Box>
   );
 };

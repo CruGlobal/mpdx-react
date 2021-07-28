@@ -31,6 +31,7 @@ import { ContactDetailsTabPeople } from './People/ContactDetailsTabPeople';
 import { ContactTags } from './Tags/ContactTags';
 import { EditContactDetailsModal } from './People/Items/EditContactDetailsModal/EditContactDetailsModal';
 import { EditContactOtherModal } from './Other/EditContactOtherModal/EditContactOtherModal';
+import { EditContactMailingModal } from './Mailing/EditContactMailingModal/EditContactMailingModal';
 
 const ContactDetailsTabContainer = styled(Box)(() => ({
   width: '100%',
@@ -105,6 +106,7 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [editOtherModalOpen, setEditOtherModalOpen] = useState(false);
+  const [editMailingModalOpen, setEditMailingModalOpen] = useState(false);
 
   const { contactId: _, searchTerm, ...queryWithoutContactId } = query;
 
@@ -242,7 +244,7 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
               {t('Mailing')}
             </ContactDetailHeadingText>
             {loading || !data ? null : (
-              <IconButton onClick={() => setEditModalOpen(true)}>
+              <IconButton onClick={() => setEditMailingModalOpen(true)}>
                 <ContactDetailEditIcon titleAccess={t('Edit Icon')} />
               </IconButton>
             )}
@@ -254,7 +256,10 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
               <ContactDetailLoadingPlaceHolder variant="rect" />
             </>
           ) : (
-            <ContactDetailsTabMailing data={data.contact} />
+            <ContactDetailsTabMailing
+              accountListId={accountListId}
+              data={data.contact}
+            />
           )}
         </ContactDetailSectionContainer>
         <Divider />
@@ -307,6 +312,12 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
             contact={data.contact}
             isOpen={editOtherModalOpen}
             handleClose={() => setEditOtherModalOpen(false)}
+          />
+          <EditContactMailingModal
+            accountListId={accountListId}
+            contact={data.contact}
+            isOpen={editMailingModalOpen}
+            handleClose={() => setEditMailingModalOpen(false)}
           />
         </>
       )}

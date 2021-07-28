@@ -1,4 +1,5 @@
 fragment ContactOther on Contact {
+  id
   name
   preferredContactMethod
   locale
