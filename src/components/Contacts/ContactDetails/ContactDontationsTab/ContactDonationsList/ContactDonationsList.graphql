@@ -1,0 +1,11 @@
+query ContactDonationsList(
+  $accountListId: ID!
+  $contactId: ID!
+  $after: String
+) {
+  contact(accountListId: $accountListId, id: $contactId) {
+    donations(first: 13, after: $after) {
+      ...DonationsContact
+    }
+  }
+}

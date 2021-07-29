@@ -55,6 +55,11 @@ export const ssrClient = (
     cache: new InMemoryCache({
       possibleTypes: generatedIntrospection.possibleTypes,
     }),
+    defaultOptions: {
+      watchQuery: {
+        notifyOnNetworkStatusChange: true,
+      },
+    },
   });
 };
 
