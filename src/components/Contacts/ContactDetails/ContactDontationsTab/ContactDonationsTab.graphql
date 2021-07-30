@@ -11,9 +11,7 @@ query GetContactDonations($accountListId: ID!, $contactId: ID!) {
     lastDonation {
       ...ContactDonation
     }
-    donations {
-      ...DonationsContact
-    }
+
     contactDonorAccounts {
       nodes {
         id
@@ -26,6 +24,13 @@ query GetContactDonations($accountListId: ID!, $contactId: ID!) {
 }
 
 fragment DonationsContact on DonationConnection {
+  pageInfo {
+    endCursor
+    hasNextPage
+    hasPreviousPage
+    startCursor
+  }
+
   nodes {
     ...ContactDonation
   }
@@ -65,6 +70,7 @@ fragment ContactDonorAccounts on Contact {
 
 fragment ContactDonation on Donation {
   id
+  donationDate
   amount {
     ...DonationMoney
   }
