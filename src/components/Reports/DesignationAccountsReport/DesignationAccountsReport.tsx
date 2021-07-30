@@ -1,7 +1,11 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Box, CircularProgress, Divider, styled } from '@material-ui/core';
-import { useDesignationAccountsQuery } from './GetDesignationAccounts.generated';
+import {
+  DesignationAccountsDocument,
+  DesignationAccountsQuery,
+  useDesignationAccountsQuery,
+} from './GetDesignationAccounts.generated';
 import { useSetActiveDesignationAccountMutation } from './SetActiveDesignationAccount.generated';
 import { DesignationAccountsHeader as Header } from './Layout/Header/Header';
 import { DesignationAccountsList as List } from './Layout/List/List';
@@ -29,7 +33,7 @@ export const DesignationAccountsReport: React.FC<Props> = ({
 }) => {
   const { t } = useTranslation();
 
-  const { data, loading, error, refetch } = useDesignationAccountsQuery({
+  const { data, loading, error } = useDesignationAccountsQuery({
     variables: {
       accountListId,
     },
@@ -39,11 +43,12 @@ export const DesignationAccountsReport: React.FC<Props> = ({
     setActiveDesignationAccount,
   ] = useSetActiveDesignationAccountMutation();
 
-  const handleCheckToggle = async (
+  const handleCheckToggle = (
     event: React.ChangeEvent<HTMLInputElement>,
     designationAccountId: string,
   ) => {
-    await setActiveDesignationAccount({
+    const optimisticResponse = true;
+    setActiveDesignationAccount({
       variables: {
         input: {
           accountListId,
@@ -51,9 +56,47 @@ export const DesignationAccountsReport: React.FC<Props> = ({
           designationAccountId,
         },
       },
-    });
+      optimisticResponse: {
+        setActiveDesignationAccount: {
+          id: designationAccountId,
+          __typename: 'SetActiveDesignationAccountResponse',
+          active: event.target.checked,
+        },
+      },
+      update: (cache) => {
+        if (!optimisticResponse) return;
 
-    return refetch();
+        const query = {
+          query: DesignationAccountsDocument,
+          variables: {
+            accountListId,
+          },
+        };
+
+        const dataFromCache = cache.readQuery<DesignationAccountsQuery>(query);
+
+        const data = {
+          designationAccounts: dataFromCache?.designationAccounts.map(
+            (designationAccountsGroup) => ({
+              ...designationAccountsGroup,
+              designationAccounts: designationAccountsGroup.designationAccounts.map(
+                (designationAccount) => {
+                  return designationAccount.id === designationAccountId
+                    ? {
+                        ...designationAccount,
+                        id: designationAccountId,
+                        active: event.target.checked,
+                      }
+                    : designationAccount;
+                },
+              ),
+            }),
+          ),
+        };
+
+        cache.writeQuery({ ...query, data });
+      },
+    });
   };
 
   return (
@@ -83,6 +126,7 @@ export const DesignationAccountsReport: React.FC<Props> = ({
         <Notification type="error" message={error.toString()} />
       ) : data?.designationAccounts.length === 0 ? (
         <EmptyReport
+          hasAddNewDonation={false}
           title={t('You have no designation accounts')}
           subTitle={t(
             'You can setup an organization account to import your designation accounts.',
