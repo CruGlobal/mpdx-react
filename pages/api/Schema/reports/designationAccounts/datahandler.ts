@@ -1,7 +1,6 @@
 import {
   DesignationAccount,
   DesignationAccountsGroup,
-  SetActiveDesignationAccountResponse,
 } from '../../../graphql-rest.page.generated';
 
 export interface DesignationAccountsResponse {
@@ -94,7 +93,4 @@ const getGroupBalance = (designationAccounts: DesignationAccount[]) => {
 
 export const setActiveDesignationAccount = (
   data: DesignationAccountsResponse,
-): SetActiveDesignationAccountResponse => ({
-  active: data.attributes.active,
-  id: data.id,
-});
+): DesignationAccount => createDesignationAccount(data);
