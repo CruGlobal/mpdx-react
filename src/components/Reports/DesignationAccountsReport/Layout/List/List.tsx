@@ -8,7 +8,7 @@ export interface DesignationAccountsListProps {
   designationAccountsGroup: DesignationAccountsQuery['designationAccounts'][0];
   onCheckToggle: (
     event: React.ChangeEvent<HTMLInputElement>,
-    designationAccountId: string,
+    designationAccount: DesignationAccountsQuery['designationAccounts'][0]['designationAccounts'][0],
   ) => void;
 }
 
@@ -22,7 +22,7 @@ export const DesignationAccountsList: FC<DesignationAccountsListProps> = ({
   onCheckToggle,
 }) => {
   return (
-    <DesignationAccountsGroupList>
+    <DesignationAccountsGroupList data-testid="DesignationAccountsGroupList">
       <ListSubheader
         organizationName={designationAccountsGroup.organizationName}
       />

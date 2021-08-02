@@ -2,7 +2,6 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Box, CircularProgress, Divider, styled } from '@material-ui/core';
 import {
-  DesignationAccountsDocument,
   DesignationAccountsQuery,
   useDesignationAccountsQuery,
 } from './GetDesignationAccounts.generated';
@@ -45,56 +44,21 @@ export const DesignationAccountsReport: React.FC<Props> = ({
 
   const handleCheckToggle = (
     event: React.ChangeEvent<HTMLInputElement>,
-    designationAccountId: string,
+    designationAccount: DesignationAccountsQuery['designationAccounts'][0]['designationAccounts'][0],
   ) => {
-    const optimisticResponse = true;
     setActiveDesignationAccount({
       variables: {
         input: {
           accountListId,
           active: event.target.checked,
-          designationAccountId,
+          designationAccountId: designationAccount.id,
         },
       },
       optimisticResponse: {
         setActiveDesignationAccount: {
-          id: designationAccountId,
-          __typename: 'SetActiveDesignationAccountResponse',
+          ...designationAccount,
           active: event.target.checked,
         },
-      },
-      update: (cache) => {
-        if (!optimisticResponse) return;
-
-        const query = {
-          query: DesignationAccountsDocument,
-          variables: {
-            accountListId,
-          },
-        };
-
-        const dataFromCache = cache.readQuery<DesignationAccountsQuery>(query);
-
-        const data = {
-          designationAccounts: dataFromCache?.designationAccounts.map(
-            (designationAccountsGroup) => ({
-              ...designationAccountsGroup,
-              designationAccounts: designationAccountsGroup.designationAccounts.map(
-                (designationAccount) => {
-                  return designationAccount.id === designationAccountId
-                    ? {
-                        ...designationAccount,
-                        id: designationAccountId,
-                        active: event.target.checked,
-                      }
-                    : designationAccount;
-                },
-              ),
-            }),
-          ),
-        };
-
-        cache.writeQuery({ ...query, data });
       },
     });
   };

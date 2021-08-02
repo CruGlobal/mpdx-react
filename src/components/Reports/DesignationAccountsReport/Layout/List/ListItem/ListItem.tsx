@@ -17,7 +17,7 @@ export interface DesignationAccountListItemProps {
   designationAccount: DesignationAccountsQuery['designationAccounts'][0]['designationAccounts'][0];
   onCheckToggle: (
     event: React.ChangeEvent<HTMLInputElement>,
-    designationAccountId: string,
+    designationAccount: DesignationAccountsQuery['designationAccounts'][0]['designationAccounts'][0],
   ) => void;
 }
 
@@ -60,7 +60,7 @@ export const DesignationAccountListItem: FC<DesignationAccountListItemProps> = (
         <ListItemSecondaryAction>
           <Checkbox
             edge="end"
-            onChange={(event) => onCheckToggle(event, designationAccount.id)}
+            onChange={(event) => onCheckToggle(event, designationAccount)}
             checked={designationAccount.active}
           />
         </ListItemSecondaryAction>
