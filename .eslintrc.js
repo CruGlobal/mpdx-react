@@ -31,7 +31,7 @@ module.exports = {
     ],
     'react/prop-types': 'off',
     'react/react-in-jsx-scope': 'off',
-    'react/display-name': 'off',
+    'react/display-name': 'off', // Disable to write display name for forwardRef
   },
   settings: {
     react: {
