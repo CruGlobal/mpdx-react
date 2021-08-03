@@ -22,10 +22,10 @@ import {
   PreferredContactMethodEnum,
 } from '../../../../../../../graphql/types.generated';
 import Modal from '../../../../../common/Modal/Modal';
-import { ContactDetailsTabQuery } from '../../ContactDetailsTab.generated';
 import { useApiConstants } from '../../../../../Constants/UseApiConstants';
 import { useGetTimezones } from '../../../../../../hooks/useGetTimezones';
 import { localizedContactMethod } from '../ContactDetailsOther';
+import { ContactOtherFragment } from '../ContactOther.generated';
 import { useUpdateContactOtherMutation } from './EditContactOther.generated';
 
 const ContactEditContainer = styled(Box)(({ theme }) => ({
@@ -46,7 +46,7 @@ const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
 }));
 
 interface EditContactOtherModalProps {
-  contact: ContactDetailsTabQuery['contact'];
+  contact: ContactOtherFragment;
   accountListId: string;
   isOpen: boolean;
   handleClose: () => void;
