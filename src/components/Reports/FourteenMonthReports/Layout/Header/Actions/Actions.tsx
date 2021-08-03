@@ -2,7 +2,8 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, ButtonGroup, styled, SvgIcon } from '@material-ui/core';
 import GetAppIcon from '@material-ui/icons/GetApp';
-import CodeIcon from '@material-ui/icons/Code';
+import FullscreenIcon from '@material-ui/icons/Fullscreen';
+import FullscreenExitIcon from '@material-ui/icons/FullscreenExit';
 import PrintIcon from '@material-ui/icons/Print';
 import { CSVLink } from 'react-csv';
 import { DateTime } from 'luxon';
@@ -38,7 +39,11 @@ export const FourteenMonthReportActions: React.FC<FourteenMonthReportActionsProp
       <Button
         startIcon={
           <SvgIcon fontSize="small">
-            <CodeIcon titleAccess={t('Expand User Info Icon')} />
+            {isExpanded ? (
+              <FullscreenExitIcon titleAccess={t('Expand User Info Icon')} />
+            ) : (
+              <FullscreenIcon titleAccess={t('Unexpand User Info Icon')} />
+            )}
           </SvgIcon>
         }
         onClick={onExpandToggle}
