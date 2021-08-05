@@ -23,7 +23,7 @@ describe('DesignationAccountsReportHeader', () => {
     );
 
     expect(getByText(title)).toBeInTheDocument();
-    expect(getByText(totalBalance)).toBeInTheDocument();
+    expect(getByText(`Balance: ${totalBalance}`)).toBeInTheDocument();
     userEvent.click(getByRole('button', { name: 'Toggle Filter Panel' }));
   });
 });
