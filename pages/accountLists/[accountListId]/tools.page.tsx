@@ -2,7 +2,6 @@ import React, { ReactElement, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
-import { makeStyles } from '@material-ui/core';
 import { useApp } from '../../../src/components/App';
 import ToolHome from 'src/components/Tool/Home/Home';
 
