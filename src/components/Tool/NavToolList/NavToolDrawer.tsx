@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactElement } from 'react';
 import { makeStyles, Theme, Drawer } from '@material-ui/core';
 import NavToolDrawerHandle from './NavToolDrawerHandle';
 import NavToolList from './NavToolList';
@@ -51,7 +51,7 @@ const NavToolDrawer = ({ open, toggle }: Props): ReactElement => {
         variant="persistent"
         className={classes.drawer}
       >
-        <NavToolList open={open} toggle={toggle} />
+        <NavToolList />
       </Drawer>
       <NavToolDrawerHandle open={open} toggle={toggle} />
     </>

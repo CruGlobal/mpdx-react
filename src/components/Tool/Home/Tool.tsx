@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { ReactElement } from 'react';
 import {
   Typography,
   CardContent,
   CardActionArea,
   makeStyles,
   Box,
+  Theme,
 } from '@material-ui/core';
 import Icon from '@mdi/react';
 import { useTranslation } from 'react-i18next';

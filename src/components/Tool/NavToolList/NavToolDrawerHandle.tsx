@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactElement } from 'react';
 import { makeStyles, Box, Theme, IconButton } from '@material-ui/core';
 import DoubleArrowIcon from '@material-ui/icons/DoubleArrow';
 import theme from 'src/theme';

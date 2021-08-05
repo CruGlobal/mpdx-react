@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactElement } from 'react';
 import {
   makeStyles,
   Box,
@@ -35,11 +35,6 @@ const useStyles = makeStyles((theme: Theme) => ({
       backgroundColor: theme.palette.mpdxBlue.main,
     },
   },
-  liButton: {
-    '&:hover': {
-      backgroundColor: theme.palette.cruGrayLight.main,
-    },
-  },
   li: {
     borderTop: '1px solid',
     borderBottom: '1px solid',
@@ -61,7 +56,7 @@ const NavToolList = (): ReactElement => {
           <ListItemText primary={t('Tools')} />
         </ListItem>
         {ToolNavItems.slice(0, 1).map((tool) => (
-          <Item key={tool.id} item={tool} className={classes.liButton} />
+          <Item key={tool.id} id={tool.id} title={tool.title} />
         ))}
         <ListItem className={classes.li}>
           <ListItemIcon>
@@ -70,7 +65,7 @@ const NavToolList = (): ReactElement => {
           <ListItemText primary={t('Contacts')} />
         </ListItem>
         {ToolNavItems.slice(1, 5).map((tool) => (
-          <Item key={tool.id} item={tool} className={classes.liButton} />
+          <Item key={tool.id} id={tool.id} title={tool.title} />
         ))}
         <ListItem className={classes.li}>
           <ListItemIcon>
@@ -79,7 +74,7 @@ const NavToolList = (): ReactElement => {
           <ListItemText primary={t('People')} />
         </ListItem>
         {ToolNavItems.slice(5, 8).map((tool) => (
-          <Item key={tool.id} item={tool} className={classes.liButton} />
+          <Item key={tool.id} id={tool.id} title={tool.title} />
         ))}
         <ListItem className={classes.li}>
           <ListItemIcon>
@@ -88,7 +83,7 @@ const NavToolList = (): ReactElement => {
           <ListItemText primary={t('Imports')} />
         </ListItem>
         {ToolNavItems.slice(8).map((tool) => (
-          <Item key={tool.id} item={tool} className={classes.liButton} />
+          <Item key={tool.id} id={tool.id} title={tool.title} />
         ))}
       </List>
     </Box>
