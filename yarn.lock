@@ -6557,6 +6557,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/react-virtualized@npm:^9.21.12":
+  version: 9.21.12
+  resolution: "@types/react-virtualized@npm:9.21.12"
+  dependencies:
+    "@types/prop-types": "*"
+    "@types/react": "*"
+  checksum: 208907d89741c196fc7e9a9b10c5c527585cfbee07aa407e32fb519dbf75935b9d1e5963b833c46f8a30dade93294c798c697d15b83795011abb64a73cc01df8
+  languageName: node
+  linkType: hard
+
 "@types/react@npm:*":
   version: 16.9.49
   resolution: "@types/react@npm:16.9.49"
@@ -18267,6 +18277,7 @@ fsevents@~2.3.1:
     "@types/query-string": ^6.3.0
     "@types/react": ^17.0.1
     "@types/react-csv": ^1.1.1
+    "@types/react-virtualized": ^9.21.12
     "@types/testing-library__jest-dom": ^5.9.5
     "@types/uuid": ^8.3.0
     "@types/yup": ^0.29.11
@@ -18335,6 +18346,7 @@ fsevents@~2.3.1:
     react-dom: 17.0.1
     react-i18next: ^11.8.11
     react-to-print: ^2.12.6
+    react-virtualized: ^9.22.3
     recharts: ^2.0.6
     regenerator-runtime: ^0.13.7
     storybook-addon-designs: alpha
@@ -21385,7 +21397,7 @@ fsevents@~2.3.1:
   languageName: node
   linkType: hard
 
-"react-virtualized@npm:^9.21.2":
+"react-virtualized@npm:^9.21.2, react-virtualized@npm:^9.22.3":
   version: 9.22.3
   resolution: "react-virtualized@npm:9.22.3"
   dependencies:

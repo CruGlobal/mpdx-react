@@ -1,5 +1,5 @@
-import { render } from '@testing-library/react';
-import React from 'react';
+import React, { ReactElement } from 'react';
+import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ThemeProvider } from '@material-ui/core';
 import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
@@ -17,6 +17,24 @@ const router = {
 
 const contact = { id: '1', name: 'Test Person' };
 
+jest.mock('react-virtualized', () => {
+  const ReactVirtualized = jest.requireActual('react-virtualized');
+  return {
+    ...ReactVirtualized,
+    AutoSizer: ({
+      children,
+    }: {
+      children: ({
+        height,
+        width,
+      }: {
+        height: number;
+        width: number;
+      }) => ReactElement;
+    }) => children({ height: 1000, width: 1000 }),
+  };
+});
+
 it('should show loading state', () => {
   const { getByText } = render(
     <ThemeProvider theme={theme}>
@@ -31,13 +49,16 @@ it('should show loading state', () => {
 });
 
 it('should render list of people', async () => {
-  const { findByTestId } = render(
+  const { findByTestId, getByText } = render(
     <ThemeProvider theme={theme}>
       <TestRouter router={router}>
         <GqlMockedProvider<ContactsQuery>
           mocks={{
             Contacts: {
-              contacts: { nodes: [contact] },
+              contacts: {
+                nodes: [contact],
+                pageInfo: { endCursor: 'Mg', hasNextPage: false },
+              },
             },
           }}
         >
@@ -46,17 +67,21 @@ it('should render list of people', async () => {
       </TestRouter>
     </ThemeProvider>,
   );
+  await waitFor(() => expect(getByText('Test Person')).toBeInTheDocument());
   expect(await findByTestId('rowButton')).toHaveTextContent(contact.name);
 });
 
 it('should render contact detail panel', async () => {
-  const { findByTestId, findAllByRole } = render(
+  const { findByTestId, findAllByRole, getByText } = render(
     <ThemeProvider theme={theme}>
       <TestRouter router={router}>
         <GqlMockedProvider<ContactsQuery>
           mocks={{
             Contacts: {
-              contacts: { nodes: [contact] },
+              contacts: {
+                nodes: [contact],
+                pageInfo: { endCursor: 'Mg', hasNextPage: false },
+              },
             },
           }}
         >
@@ -65,7 +90,7 @@ it('should render contact detail panel', async () => {
       </TestRouter>
     </ThemeProvider>,
   );
-
+  await waitFor(() => expect(getByText('Test Person')).toBeInTheDocument());
   const row = await findByTestId('rowButton');
 
   userEvent.click(row);

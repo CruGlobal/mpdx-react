@@ -7,6 +7,7 @@ import {
   TableBody,
   TableContainer,
 } from '@material-ui/core';
+import { AutoSizer, InfiniteLoader, List } from 'react-virtualized';
 import { ContactRow } from '../ContactRow/ContactRow';
 import { ContactsHeader } from '../ContactsHeader/ContactsHeader';
 import { useContactsQuery } from '../../../../pages/accountLists/[accountListId]/contacts/Contacts.generated';
@@ -30,13 +31,12 @@ export const ContactsTable: React.FC<Props> = ({
 }: Props) => {
   const [searchTerm, setSearchTerm] = useState<string>();
 
-  const { data, loading, error } = useContactsQuery({
+  const { data, loading, error, fetchMore } = useContactsQuery({
     variables: { accountListId, searchTerm },
   });
 
   const renderLoading = () => (
     <Box
-      height="100%"
       alignItems="center"
       justifyContent="center"
       bgcolor={colors.green[600]}
@@ -64,6 +64,37 @@ export const ContactsTable: React.FC<Props> = ({
     onSearchTermChange(searchTerm);
   };
 
+  const renderRow = ({
+    index,
+    key,
+    style,
+  }: {
+    index: number;
+    key: string;
+    style: React.CSSProperties;
+  }) => {
+    const contact = data?.contacts.nodes[index];
+
+    if (!contact) {
+      return (
+        <div key={key} style={style}>
+          {renderLoading()}
+        </div>
+      );
+    }
+
+    return (
+      <div key={key} style={style}>
+        <ContactRow
+          accountListId={accountListId}
+          key={contact.id}
+          contact={contact}
+          onContactSelected={handleOnContactSelected}
+        />
+      </div>
+    );
+  };
+
   return (
     <TableContainer>
       <Table stickyHeader aria-label="sticky table">
@@ -83,15 +114,65 @@ export const ContactsTable: React.FC<Props> = ({
           ) : !(data && data.contacts.nodes.length > 0) ? (
             renderEmpty()
           ) : (
-            <div data-testid="ContactRows">
-              {data.contacts.nodes?.map((contact) => (
-                <ContactRow
-                  accountListId={accountListId}
-                  key={contact.id}
-                  contact={contact}
-                  onContactSelected={handleOnContactSelected}
-                />
-              ))}
+            <div
+              data-testid="ContactRows"
+              style={{ height: 'calc(100vh - 72px)' }}
+            >
+              <InfiniteLoader
+                isRowLoaded={({ index }) =>
+                  !data.contacts.pageInfo.hasNextPage ||
+                  index < data.contacts.nodes.length
+                }
+                rowCount={
+                  data?.contacts.pageInfo.hasNextPage
+                    ? data.contacts.nodes.length + 1
+                    : data?.contacts.nodes.length
+                }
+                loadMoreRows={() =>
+                  fetchMore({
+                    variables: { after: data.contacts.pageInfo.endCursor },
+                    updateQuery: (prev, { fetchMoreResult }) => {
+                      if (!fetchMoreResult) {
+                        return prev;
+                      }
+                      return {
+                        ...prev,
+                        ...fetchMoreResult,
+                        contacts: {
+                          ...prev.contacts,
+                          ...fetchMoreResult.contacts,
+                          pageInfo: fetchMoreResult.contacts.pageInfo,
+                          nodes: [
+                            ...prev.contacts.nodes,
+                            ...fetchMoreResult.contacts.nodes,
+                          ],
+                        },
+                      };
+                    },
+                  })
+                }
+              >
+                {({ onRowsRendered, registerChild }) => (
+                  <AutoSizer>
+                    {({ width, height }) => (
+                      <List
+                        ref={registerChild}
+                        rowCount={
+                          data?.contacts.pageInfo.hasNextPage
+                            ? data.contacts.nodes.length + 1
+                            : data?.contacts.nodes.length
+                        }
+                        rowHeight={80}
+                        overscanRowCount={3}
+                        height={height}
+                        width={width}
+                        onRowsRendered={onRowsRendered}
+                        rowRenderer={renderRow}
+                      />
+                    )}
+                  </AutoSizer>
+                )}
+              </InfiniteLoader>
             </div>
           )}
         </TableBody>

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactElement } from 'react';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ThemeProvider } from '@material-ui/core';
@@ -12,6 +12,23 @@ const contactId = 'contact-1';
 const onContactSelected = jest.fn();
 const onSearchTermChanged = jest.fn();
 
+jest.mock('react-virtualized', () => {
+  const ReactVirtualized = jest.requireActual('react-virtualized');
+  return {
+    ...ReactVirtualized,
+    AutoSizer: ({
+      children,
+    }: {
+      children: ({
+        height,
+        width,
+      }: {
+        height: number;
+        width: number;
+      }) => ReactElement;
+    }) => children({ height: 1000, width: 1000 }),
+  };
+});
 //TODO: Need test coverage for error state
 
 describe('ContactFilters', () => {
@@ -38,9 +55,17 @@ describe('ContactFilters', () => {
   });
 
   it('contacts loaded', async () => {
+    const mocks = {
+      Contacts: {
+        contacts: {
+          nodes: [{ id: contactId, name: 'Test Guy ' }],
+          pageInfo: { endCursor: 'Mg', hasNextPage: false },
+        },
+      },
+    };
     const { getByTestId, queryByText } = render(
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider<ContactsQuery>>
+        <GqlMockedProvider<ContactsQuery> mocks={mocks}>
           <ContactsTable
             accountListId={accountListId}
             onContactSelected={onContactSelected}
@@ -58,7 +83,14 @@ describe('ContactFilters', () => {
     expect(queryByText('Loading')).toBeNull();
     expect(queryByText('No Data')).toBeNull();
     expect(queryByText('Error:')).toBeNull();
-    expect(getByTestId('ContactRows').childNodes.length).toEqual(3);
+
+    expect(
+      getByTestId('ContactRows').children[0].children[0].children[0]
+        .textContent,
+    ).toContain('Test Guy');
+    expect(
+      getByTestId('ContactRows').children[0].children[0].childNodes.length,
+    ).toEqual(1);
   });
 
   it('empty', async () => {
@@ -66,6 +98,7 @@ describe('ContactFilters', () => {
       Contacts: {
         contacts: {
           nodes: [],
+          pageInfo: { endCursor: 'Mg', hasNextPage: false },
         },
       },
     };
@@ -97,7 +130,8 @@ describe('ContactFilters', () => {
     const mocks = {
       Contacts: {
         contacts: {
-          nodes: [{ id: contactId }],
+          nodes: [{ id: contactId, name: 'Test Guy ' }],
+          pageInfo: { endCursor: 'Mg', hasNextPage: false },
         },
       },
     };
@@ -127,11 +161,19 @@ describe('ContactFilters', () => {
   });
 
   it('simulate row click with searchTerm', async () => {
+    const mocks = {
+      Contacts: {
+        contacts: {
+          nodes: [{ id: contactId, name: 'Test Guy ' }],
+          pageInfo: { endCursor: 'Mg', hasNextPage: false },
+        },
+      },
+    };
     const querySpy = jest.fn();
     const searchTerm = 'test';
     const { findByTestId, queryByText, getByRole } = render(
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider<ContactsQuery> onCall={querySpy}>
+        <GqlMockedProvider<ContactsQuery> mocks={mocks} onCall={querySpy}>
           <ContactsTable
             accountListId={accountListId}
             onContactSelected={onContactSelected}
@@ -150,6 +192,7 @@ describe('ContactFilters', () => {
     const row = await findByTestId('rowButton');
 
     userEvent.click(row);
+    await waitFor(() => expect(queryByText('Test Guy')).toBeInTheDocument());
     const { operation, response } = querySpy.mock.calls[1][0];
 
     expect(operation.variables.accountListId).toEqual(accountListId);
