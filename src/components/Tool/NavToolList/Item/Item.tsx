@@ -1,5 +1,5 @@
 import React, { ReactElement } from 'react';
-import { ListItem, ListItemText, makeStyles } from '@material-ui/core';
+import { ListItem, ListItemText, makeStyles, Theme } from '@material-ui/core';
 import { ArrowForwardIos } from '@material-ui/icons';
 import NextLink from 'next/link';
 import { useTranslation } from 'react-i18next';
