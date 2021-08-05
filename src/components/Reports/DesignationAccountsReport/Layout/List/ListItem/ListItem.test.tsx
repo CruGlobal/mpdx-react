@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, waitFor } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import { ThemeProvider } from '@material-ui/core';
 import userEvent from '@testing-library/user-event';
 import { DesignationAccountListItem as ListItem } from './ListItem';
@@ -44,6 +44,5 @@ describe('DesignationAccountItem', () => {
 
     userEvent.click(getByRole('checkbox'));
     expect(onCheckToggle).toHaveBeenCalled();
-    await waitFor(() => expect(getByRole('checkbox')).toBeChecked());
   });
 });
