@@ -1,0 +1,14 @@
+query GetPrimaryAppeal($id: ID!) {
+  accountList(id: $id) {
+    primaryAppeal {
+      amount
+      amountCurrency
+      id
+      name
+      pledgesAmountNotReceivedNotProcessed
+      pledgesAmountProcessed
+      pledgesAmountReceivedNotProcessed
+      pledgesAmountTotal
+    }
+  }
+}
