@@ -31,7 +31,11 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-const NavToolList = (): ReactElement => {
+export interface Props {
+  selectedId?: string;
+}
+
+const NavToolList = ({ selectedId }: Props): ReactElement => {
   const classes = useStyles();
   const { t } = useTranslation();
 
@@ -45,7 +49,12 @@ const NavToolList = (): ReactElement => {
           <ListItemText primary={t('Tools')} />
         </ListItem>
         {ToolNavItems.slice(0, 1).map((tool) => (
-          <Item key={tool.id} id={tool.id} title={tool.title} />
+          <Item
+            key={tool.id}
+            id={tool.id}
+            title={tool.title}
+            isSelected={selectedId === tool.id}
+          />
         ))}
         <ListItem className={classes.li}>
           <ListItemIcon>
@@ -54,7 +63,12 @@ const NavToolList = (): ReactElement => {
           <ListItemText primary={t('Contacts')} />
         </ListItem>
         {ToolNavItems.slice(1, 5).map((tool) => (
-          <Item key={tool.id} id={tool.id} title={tool.title} />
+          <Item
+            key={tool.id}
+            id={tool.id}
+            title={tool.title}
+            isSelected={selectedId === tool.id}
+          />
         ))}
         <ListItem className={classes.li}>
           <ListItemIcon>
@@ -63,7 +77,12 @@ const NavToolList = (): ReactElement => {
           <ListItemText primary={t('People')} />
         </ListItem>
         {ToolNavItems.slice(5, 8).map((tool) => (
-          <Item key={tool.id} id={tool.id} title={tool.title} />
+          <Item
+            key={tool.id}
+            id={tool.id}
+            title={tool.title}
+            isSelected={selectedId === tool.id}
+          />
         ))}
         <ListItem className={classes.li}>
           <ListItemIcon>
@@ -72,7 +91,12 @@ const NavToolList = (): ReactElement => {
           <ListItemText primary={t('Imports')} />
         </ListItem>
         {ToolNavItems.slice(8).map((tool) => (
-          <Item key={tool.id} id={tool.id} title={tool.title} />
+          <Item
+            key={tool.id}
+            id={tool.id}
+            title={tool.title}
+            isSelected={selectedId === tool.id}
+          />
         ))}
       </List>
     </Box>

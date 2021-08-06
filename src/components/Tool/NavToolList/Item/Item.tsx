@@ -11,15 +11,19 @@ const useStyles = makeStyles((theme: Theme) => ({
       backgroundColor: theme.palette.cruGrayLight.main,
     },
   },
+  liSelected: {
+    backgroundColor: theme.palette.cruGrayLight.main,
+  },
 }));
 
 interface Props {
   key: string;
   id: string;
   title: string;
+  isSelected: boolean;
 }
 
-export const Item = ({ id, title }: Props): ReactElement => {
+export const Item = ({ id, title, isSelected }: Props): ReactElement => {
   const accountListId = useAccountListId();
   const { t } = useTranslation();
   const classes = useStyles();
@@ -29,7 +33,11 @@ export const Item = ({ id, title }: Props): ReactElement => {
       href={`/accountLists/${accountListId}/tools/${id}`}
       scroll={false}
     >
-      <ListItem button className={classes.liButton}>
+      <ListItem
+        button
+        selected={isSelected}
+        className={isSelected ? classes.liSelected : classes.liButton}
+      >
         <ListItemText
           primaryTypographyProps={{
             variant: 'subtitle1',
