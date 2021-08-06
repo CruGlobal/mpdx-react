@@ -9,7 +9,8 @@ import {
 } from '@material-ui/core';
 import Icon from '@mdi/react';
 import { useTranslation } from 'react-i18next';
-
+import NextLink from 'next/link';
+import { useAccountListId } from '../../../../src/hooks/useAccountListId';
 import AnimatedCard from 'src/components/AnimatedCard';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -48,14 +49,19 @@ export interface Props {
   tool: string;
   desc: string;
   icon: string;
+  id: string;
 }
 
-const Tool = ({ tool, desc, icon }: Props): ReactElement => {
+const Tool = ({ tool, desc, icon, id }: Props): ReactElement => {
   const { t } = useTranslation();
   const classes = useStyles();
+  const accountListId = useAccountListId();
 
   return (
-    <>
+    <NextLink
+      href={`/accountLists/${accountListId}/tools/${id}`}
+      scroll={false}
+    >
       <AnimatedCard className={classes.cardContainer}>
         <CardActionArea>
           <CardContent className={classes.cardContent}>
@@ -72,7 +78,7 @@ const Tool = ({ tool, desc, icon }: Props): ReactElement => {
           </CardContent>
         </CardActionArea>
       </AnimatedCard>
-    </>
+    </NextLink>
   );
 };
 

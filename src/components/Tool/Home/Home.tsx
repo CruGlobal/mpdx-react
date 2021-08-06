@@ -76,7 +76,12 @@ const ToolHome = (): ReactElement => {
             {ToolsList.map((tool) => {
               return (
                 <Grid item xs={12} sm={6} md={4} lg={4} key={tool.tool}>
-                  <Tool tool={tool.tool} desc={tool.desc} icon={tool.icon} />
+                  <Tool
+                    tool={tool.tool}
+                    desc={tool.desc}
+                    icon={tool.icon}
+                    id={tool.id}
+                  />
                 </Grid>
               );
             })}

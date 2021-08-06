@@ -19,7 +19,6 @@ import { Item } from './Item/Item';
 const useStyles = makeStyles((theme: Theme) => ({
   list: {
     width: '290px',
-    zIndex: '1 !important',
     transform: 'translateY(55px)',
     [theme.breakpoints.down('xs')]: {
       transform: 'translateY(45px)',
