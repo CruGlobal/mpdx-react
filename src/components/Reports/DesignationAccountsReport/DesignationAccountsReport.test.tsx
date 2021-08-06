@@ -10,28 +10,6 @@ const accountListId = '111';
 const title = 'test title';
 const onNavListToggle = jest.fn();
 
-const mocks = {
-  DesignationAccountsReport: {
-    designationAccounts: [
-      {
-        organizationName: 'test org 01',
-        balance: 3255,
-        designationAccounts: [
-          {
-            active: false,
-            id: 'test-id-111',
-            balanceUpdatedAt: '2/2/2021',
-            convertedBalance: 3500,
-            currency: 'CAD',
-            designationNumber: '33221',
-            name: 'Test Account',
-          },
-        ],
-      },
-    ],
-  },
-};
-
 describe('DesignationAccounts', () => {
   it('loading', async () => {
     const { queryByTestId, getByText } = render(
@@ -53,7 +31,29 @@ describe('DesignationAccounts', () => {
   });
 
   it('designation accounts loaded', async () => {
-    const { queryByTestId, getByText } = render(
+    const mocks = {
+      DesignationAccountsReport: {
+        designationAccounts: [
+          {
+            organizationName: 'test org 01',
+            balance: 3255,
+            designationAccounts: [
+              {
+                active: false,
+                id: 'test-id-111',
+                balanceUpdatedAt: '2/2/2021',
+                convertedBalance: 3500,
+                currency: 'CAD',
+                designationNumber: '33221',
+                name: 'Test Account',
+              },
+            ],
+          },
+        ],
+      },
+    };
+
+    const { queryByTestId, getByTestId, getByText } = render(
       <ThemeProvider theme={theme}>
         <GqlMockedProvider<DesignationAccountsQuery> mocks={mocks}>
           <DesignationAccountsReport
@@ -73,6 +73,8 @@ describe('DesignationAccounts', () => {
     });
 
     expect(getByText(title)).toBeInTheDocument();
+    expect(getByTestId('DesignationAccountsGroupList')).toBeInTheDocument();
+    expect(getByTestId('DesignationAccountsScrollBox')).toBeInTheDocument();
   });
 
   it('empty', async () => {
@@ -102,6 +104,6 @@ describe('DesignationAccounts', () => {
     });
 
     expect(getByText(title)).toBeInTheDocument();
-    expect(queryByTestId('Notification')).toBeInTheDocument();
+    expect(queryByTestId('EmptyReport')).toBeInTheDocument();
   });
 });

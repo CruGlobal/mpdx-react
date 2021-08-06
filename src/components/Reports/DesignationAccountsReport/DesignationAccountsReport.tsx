@@ -97,7 +97,7 @@ export const DesignationAccountsReport: React.FC<Props> = ({
           )}
         />
       ) : (
-        <ScrollBox>
+        <ScrollBox data-testid="DesignationAccountsScrollBox">
           <Divider />
           {data?.designationAccounts.map((designationAccountGroup) => (
             <List
