@@ -15,9 +15,9 @@ import clsx from 'clsx';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import NextLink from 'next/link';
 import { useTranslation } from 'react-i18next';
-import { useApp } from '../../../../../App';
 import HandoffLink from '../../../../../HandoffLink';
 import { ReportNavItems } from '../../../../../Reports/NavReportsList/ReportNavItems';
+import { useAccountListId } from '../../../../../../hooks/useAccountListId';
 
 const useStyles = makeStyles((theme: Theme) => ({
   navListItem: {
@@ -39,9 +39,9 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 const NavMenu = (): ReactElement => {
-  const classes = useStyles();
-  const { state } = useApp();
   const { t } = useTranslation();
+  const classes = useStyles();
+  const accountListId = useAccountListId();
 
   const [reportsMenuOpen, setReportsMenuOpen] = useState(false);
   const anchorRef = React.useRef<HTMLLIElement>(null);
@@ -60,12 +60,12 @@ const NavMenu = (): ReactElement => {
 
   return (
     <>
-      {state.accountListId ? (
+      {accountListId ? (
         <Grid container item alignItems="center" xs="auto" md={6}>
           <Grid item className={classes.navListItem}>
             <NextLink
               href="/accountLists/[accountListId]"
-              as={`/accountLists/${state.accountListId}`}
+              as={`/accountLists/${accountListId}`}
               scroll={false}
             >
               <MenuItem>
@@ -76,7 +76,7 @@ const NavMenu = (): ReactElement => {
           <Grid item className={classes.navListItem}>
             <NextLink
               href="/accountLists/[accountListId]/contacts"
-              as={`/accountLists/${state.accountListId}/contacts`}
+              as={`/accountLists/${accountListId}/contacts`}
               scroll={false}
             >
               <MenuItem>
@@ -87,7 +87,7 @@ const NavMenu = (): ReactElement => {
           <Grid item className={classes.navListItem}>
             <NextLink
               href="/accountLists/[accountListId]/tasks"
-              as={`/accountLists/${state.accountListId}/tasks`}
+              as={`/accountLists/${accountListId}/tasks`}
               scroll={false}
             >
               <MenuItem>
@@ -135,7 +135,7 @@ const NavMenu = (): ReactElement => {
                           <NextLink
                             key={reportItem.id}
                             href={`/accountLists/[accountListId]/reports/${reportItem.id}`}
-                            as={`/accountLists/${state.accountListId}/reports/${reportItem.id}`}
+                            as={`/accountLists/${accountListId}/reports/${reportItem.id}`}
                             scroll={false}
                           >
                             <MenuItem onClick={handleReportsMenuClose}>
