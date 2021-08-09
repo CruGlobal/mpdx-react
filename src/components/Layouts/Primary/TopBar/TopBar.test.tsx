@@ -3,28 +3,22 @@ import { render } from '@testing-library/react';
 import { MockedProvider } from '@apollo/client/testing';
 import userEvent from '@testing-library/user-event';
 import { ThemeProvider } from '@material-ui/core';
-import { AppState } from '../../../App/rootReducer';
-import { useApp } from '../../../App';
+import * as nextRouter from 'next/router';
 import theme from '../../../../theme';
 import { getNotificationsMocks } from './Items/NotificationMenu/NotificationMenu.mock';
 import { getTopBarMultipleMock } from './TopBar.mock';
 import TopBar from './TopBar';
 
-let state: AppState;
-const dispatch = jest.fn();
-
-jest.mock('../../../App', () => ({
-  useApp: jest.fn(),
-}));
-
 describe('TopBar', () => {
+  const useRouter = jest.spyOn(nextRouter, 'useRouter');
   const mocks = [getTopBarMultipleMock(), ...getNotificationsMocks()];
   beforeEach(() => {
-    state = { accountListId: 'accountListId-1', breadcrumb: '' };
-    (useApp as jest.Mock).mockReturnValue({
-      state,
-      dispatch,
-    });
+    (useRouter as jest.SpyInstance<
+      Pick<nextRouter.NextRouter, 'query' | 'isReady'>
+    >).mockImplementation(() => ({
+      query: { accountListId: 'accountListId' },
+      isReady: true,
+    }));
   });
 
   it('has correct defaults', () => {
