@@ -54,7 +54,7 @@ const AppealsPage = (): ReactElement => {
   const classes = useStyles();
   const accountListId = useAccountListId();
   const { data, loading } = useGetPrimaryAppealQuery({
-    variables: { id: accountListId },
+    variables: { id: accountListId || '' },
   });
 
   const handleNavListToggle = () => {
@@ -129,8 +129,8 @@ const AppealsPage = (): ReactElement => {
                       <>
                         {console.log(data)}
                         <Appeal
-                          name={data.accountList.primaryAppeal.name}
-                          amount={data.accountList.primaryAppeal.amount}
+                          name={data.accountList.primaryAppeal.name || ''}
+                          amount={data.accountList.primaryAppeal.amount || 0}
                           amountCurrency={
                             data.accountList.primaryAppeal.amountCurrency
                           }
