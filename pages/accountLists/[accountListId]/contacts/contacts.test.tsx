@@ -17,23 +17,20 @@ const router = {
 
 const contact = { id: '1', name: 'Test Person' };
 
-jest.mock('react-virtualized', () => {
-  const ReactVirtualized = jest.requireActual('react-virtualized');
-  return {
-    ...ReactVirtualized,
-    AutoSizer: ({
-      children,
+jest.mock(
+  'react-virtualized-auto-sizer',
+  () => ({
+    children,
+  }: {
+    children: ({
+      height,
+      width,
     }: {
-      children: ({
-        height,
-        width,
-      }: {
-        height: number;
-        width: number;
-      }) => ReactElement;
-    }) => children({ height: 1000, width: 1000 }),
-  };
-});
+      height: number;
+      width: number;
+    }) => ReactElement;
+  }) => children({ height: 600, width: 600 }),
+);
 
 it('should show loading state', () => {
   const { getByText } = render(

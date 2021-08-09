@@ -7,7 +7,9 @@ import {
   TableBody,
   TableContainer,
 } from '@material-ui/core';
-import { AutoSizer, InfiniteLoader, List } from 'react-virtualized';
+import { FixedSizeList as List } from 'react-window';
+import InfiniteLoader from 'react-window-infinite-loader';
+import AutoSizer from 'react-virtualized-auto-sizer';
 import { ContactRow } from '../ContactRow/ContactRow';
 import { ContactsHeader } from '../ContactsHeader/ContactsHeader';
 import { useContactsQuery } from '../../../../pages/accountLists/[accountListId]/contacts/Contacts.generated';
@@ -66,25 +68,19 @@ export const ContactsTable: React.FC<Props> = ({
 
   const renderRow = ({
     index,
-    key,
     style,
   }: {
     index: number;
-    key: string;
     style: React.CSSProperties;
   }) => {
     const contact = data?.contacts.nodes[index];
 
     if (!contact) {
-      return (
-        <div key={key} style={style}>
-          {renderLoading()}
-        </div>
-      );
+      return <div style={style}>{renderLoading()}</div>;
     }
 
     return (
-      <div key={key} style={style}>
+      <div style={style}>
         <ContactRow
           accountListId={accountListId}
           key={contact.id}
@@ -119,16 +115,13 @@ export const ContactsTable: React.FC<Props> = ({
               style={{ height: 'calc(100vh - 72px)' }}
             >
               <InfiniteLoader
-                isRowLoaded={({ index }) =>
-                  !data.contacts.pageInfo.hasNextPage ||
-                  index < data.contacts.nodes.length
-                }
-                rowCount={
+                isItemLoaded={(index) => !!data.contacts.nodes[index]}
+                itemCount={
                   data?.contacts.pageInfo.hasNextPage
                     ? data.contacts.nodes.length + 1
                     : data?.contacts.nodes.length
                 }
-                loadMoreRows={() =>
+                loadMoreItems={() =>
                   fetchMore({
                     variables: { after: data.contacts.pageInfo.endCursor },
                     updateQuery: (prev, { fetchMoreResult }) => {
@@ -152,23 +145,23 @@ export const ContactsTable: React.FC<Props> = ({
                   })
                 }
               >
-                {({ onRowsRendered, registerChild }) => (
+                {({ onItemsRendered, ref }) => (
                   <AutoSizer>
                     {({ width, height }) => (
                       <List
-                        ref={registerChild}
-                        rowCount={
+                        ref={ref}
+                        itemCount={
                           data?.contacts.pageInfo.hasNextPage
                             ? data.contacts.nodes.length + 1
                             : data?.contacts.nodes.length
                         }
-                        rowHeight={80}
-                        overscanRowCount={3}
+                        itemSize={80}
                         height={height}
                         width={width}
-                        onRowsRendered={onRowsRendered}
-                        rowRenderer={renderRow}
-                      />
+                        onItemsRendered={onItemsRendered}
+                      >
+                        {renderRow}
+                      </List>
                     )}
                   </AutoSizer>
                 )}
