@@ -5,6 +5,7 @@ import { ThemeProvider } from '@material-ui/core';
 import { DesignationAccountsReport } from './DesignationAccountsReport';
 import {
   designationAccountsEmptyMock,
+  designationAccountsErrorMock,
   designationAccountsLoadingMock,
   designationAccountsMock,
 } from './DesignationAccountsReport.mock';
@@ -39,6 +40,7 @@ describe('DesignationAccounts', () => {
     });
 
     expect(getByText(title)).toBeInTheDocument();
+    expect(getByText('CA$3,500')).toBeInTheDocument();
     expect(queryByTestId('Notification')).not.toBeInTheDocument();
     expect(getByTestId('DesignationAccountsGroupList')).toBeInTheDocument();
     expect(getByTestId('DesignationAccountsScrollBox')).toBeInTheDocument();
@@ -91,5 +93,31 @@ describe('DesignationAccounts', () => {
 
     expect(getByText(title)).toBeInTheDocument();
     expect(queryByTestId('EmptyReport')).toBeInTheDocument();
+  });
+
+  it('error', async () => {
+    const { queryByTestId } = render(
+      <ThemeProvider theme={theme}>
+        <MockedProvider
+          mocks={[designationAccountsErrorMock(accountListId)]}
+          addTypename={false}
+        >
+          <DesignationAccountsReport
+            accountListId={accountListId}
+            isNavListOpen={true}
+            title={title}
+            onNavListToggle={onNavListToggle}
+          />
+        </MockedProvider>
+      </ThemeProvider>,
+    );
+
+    await waitFor(() => {
+      expect(
+        queryByTestId('LoadingDesignationAccounts'),
+      ).not.toBeInTheDocument();
+    });
+
+    expect(queryByTestId('Notification')).toBeInTheDocument();
   });
 });
