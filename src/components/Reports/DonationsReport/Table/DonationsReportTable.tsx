@@ -303,6 +303,7 @@ export const DonationsReportTable: React.FC<Props> = ({ accountListId }) => {
         </LoadingBox>
       ) : (
         <EmptyDonationsTable
+          accountListId={accountListId}
           title={t('No donations received in {{month}} {{year}}', {
             month: time.monthLong,
             year: time.year,

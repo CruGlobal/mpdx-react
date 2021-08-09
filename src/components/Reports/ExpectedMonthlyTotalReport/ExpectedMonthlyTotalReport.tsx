@@ -90,7 +90,10 @@ export const ExpectedMonthlyTotalReport: React.FC<Props> = ({
           />
         </>
       ) : (
-        <EmptyDonationsTable title="You have no expected donations this month" />
+        <EmptyDonationsTable
+          accountListId={accountListId}
+          title="You have no expected donations this month"
+        />
       )}
     </Box>
   );
