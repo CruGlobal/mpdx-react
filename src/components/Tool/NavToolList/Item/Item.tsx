@@ -2,7 +2,6 @@ import React, { ReactElement } from 'react';
 import { ListItem, ListItemText, makeStyles, Theme } from '@material-ui/core';
 import { ArrowForwardIos } from '@material-ui/icons';
 import NextLink from 'next/link';
-import { useTranslation } from 'react-i18next';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -21,7 +20,6 @@ interface Props {
 
 export const Item = ({ id, title }: Props): ReactElement => {
   const accountListId = useAccountListId();
-  const { t } = useTranslation();
   const classes = useStyles();
 
   return (
@@ -35,7 +33,7 @@ export const Item = ({ id, title }: Props): ReactElement => {
             variant: 'subtitle1',
             color: 'textPrimary',
           }}
-          primary={t(title)}
+          primary={title}
         />
         <ArrowForwardIos fontSize="small" color="disabled" />
       </ListItem>
