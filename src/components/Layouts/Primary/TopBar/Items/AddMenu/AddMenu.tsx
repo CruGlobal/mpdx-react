@@ -18,6 +18,7 @@ import { useTranslation } from 'react-i18next';
 import useTaskDrawer from '../../../../../../hooks/useTaskDrawer';
 import { useAccountListId } from '../../../../../../hooks/useAccountListId';
 import CreateContact from './Items/CreateContact/CreateContact';
+import CreateDonationModal from './Items/CreateDonation/CreateDonationModal';
 
 const HoverAddIcon = styled(AddIcon)(({ theme }) => ({
   textTransform: 'none',
@@ -81,6 +82,13 @@ const AddMenu = (): ReactElement => {
               handleClose={handleDialogClose}
             />
           );
+        case 2:
+          return (
+            <CreateDonationModal
+              accountListId={accountListId ?? ''}
+              handleClose={handleDialogClose}
+            />
+          );
       }
     };
     return (
@@ -113,7 +121,11 @@ const AddMenu = (): ReactElement => {
     {
       text: 'Add Donation',
       icon: <CardGiftcardIcon />,
-      onClick: () => console.log('add donation'),
+      onClick: () => {
+        changeSelectedMenuItem(2);
+        changeDialogOpen(true);
+        setAnchorEl(undefined);
+      },
     },
     {
       text: 'Add Task',
