@@ -1,9 +1,28 @@
 import React, { ReactElement, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Head from 'next/head';
-import { makeStyles, Theme, Grid, Container, Box } from '@material-ui/core';
+import {
+  makeStyles,
+  Theme,
+  Grid,
+  Container,
+  Box,
+  Typography,
+  Divider,
+  CircularProgress,
+  styled,
+} from '@material-ui/core';
 import { motion } from 'framer-motion';
 import NavToolDrawer from '../../../../src/components/Tool/NavToolList/NavToolDrawer';
+import Appeal from '../../../../src/components/Tool/Appeal/Appeal';
+import { useGetPrimaryAppealQuery } from '../../../../pages/accountLists/[accountListId]/tools/GetPrimaryAppeal.generated';
+import { useAccountListId } from '../../../../src/hooks/useAccountListId';
+import NoAppeals from '../../../../src/components/Tool/Appeal/NoAppeals';
+import AddAppealForm from '../../../../src/components/Tool/Appeal/AddAppealForm';
+
+const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
+  margin: theme.spacing(0, 1, 0, 0),
+}));
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
@@ -33,6 +52,10 @@ const AppealsPage = (): ReactElement => {
   const { t } = useTranslation();
   const [isNavListOpen, setNavListOpen] = useState<boolean>(true);
   const classes = useStyles();
+  const accountListId = useAccountListId();
+  const { data, loading } = useGetPrimaryAppealQuery({
+    variables: { id: accountListId },
+  });
 
   const handleNavListToggle = () => {
     setNavListOpen(!isNavListOpen);
@@ -71,31 +94,76 @@ const AppealsPage = (): ReactElement => {
           <Container
             className={classes.container}
             style={{
-              //width: isNavListOpen ? 'calc(97.5vw - 290px)' : '97.5vw',
               minWidth: isNavListOpen ? 'calc(97.5vw - 290px)' : '97.5vw',
-              transition: 'width 0.15s linear, min-width 0.15s linear',
+              transition: 'min-width 0.15s linear',
             }}
           >
             <Grid container spacing={3}>
-              <Grid
-                item
-                sm={12}
-                md={6}
-                style={{
-                  border: '1px solid red',
-                }}
-              >
-                <Box
-                  style={{
-                    border: '1px solid blue',
-                  }}
-                >
-                  <h2>test1</h2>
+              <Grid item xs={12}>
+                <Box m={1}>
+                  <Typography variant="h4">Appeals</Typography>
+                </Box>
+                <Divider />
+                <Box m={1}>
+                  <Typography variant="body2">
+                    You can track recurring support goals or special need
+                    support goals through our appeals wizard. Track the
+                    recurring support you raise for an increase ask for example,
+                    or special gifts you raise for a summer mission trip or your
+                    new staff special gift goal.
+                  </Typography>
                 </Box>
               </Grid>
-              <Grid item sm={12} md={6}>
+
+              <Grid item xs={12} sm={12} md={6}>
                 <Box>
-                  <h2>test2</h2>
+                  <Box m={1}>
+                    <Typography variant="h6">Primary Appeal</Typography>
+                  </Box>
+                  <Divider />
+                  {loading ? (
+                    <LoadingIndicator color="primary" size={20} />
+                  ) : (
+                    data &&
+                    data.accountList.primaryAppeal && (
+                      <>
+                        {console.log(data)}
+                        <Appeal
+                          name={data.accountList.primaryAppeal.name}
+                          amount={data.accountList.primaryAppeal.amount}
+                          amountCurrency={
+                            data.accountList.primaryAppeal.amountCurrency
+                          }
+                          given={
+                            data.accountList.primaryAppeal
+                              .pledgesAmountNotReceivedNotProcessed
+                          }
+                          received={
+                            data.accountList.primaryAppeal
+                              .pledgesAmountReceivedNotProcessed
+                          }
+                          commited={
+                            data.accountList.primaryAppeal
+                              .pledgesAmountProcessed
+                          }
+                          total={
+                            data.accountList.primaryAppeal.pledgesAmountTotal
+                          }
+                        />
+                      </>
+                    )
+                  )}
+                </Box>
+                <Divider />
+                <Box m={1}>
+                  <Typography variant="h6">Appeals</Typography>
+                </Box>
+                <Divider />
+                <NoAppeals />
+              </Grid>
+              <Grid item xs={12} sm={12} md={6}>
+                <Box>
+                  <AddAppealForm />
                 </Box>
               </Grid>
             </Grid>
