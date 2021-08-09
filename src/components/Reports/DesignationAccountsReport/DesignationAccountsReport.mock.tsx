@@ -79,3 +79,28 @@ export const designationAccountsErrorMock = (
     error: { name: 'error', message: 'Error loading data.  Try again.' },
   };
 };
+
+export const setActiveDesignationAccountsMock = (
+  accountListId: string,
+): MockedResponse => {
+  const data: DesignationAccountsQuery['designationAccounts'][0]['designationAccounts'][0] = {
+    active: true,
+    id: 'test-id-111',
+    balanceUpdatedAt: '2/2/2021',
+    convertedBalance: 3500,
+    currency: 'CAD',
+    designationNumber: '33221',
+    name: 'Test Account',
+  };
+  return {
+    request: {
+      query: DesignationAccountsDocument,
+      variables: {
+        accountListId,
+      },
+    },
+    result: {
+      data,
+    },
+  };
+};
