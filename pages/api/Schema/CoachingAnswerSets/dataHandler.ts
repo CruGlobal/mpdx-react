@@ -61,10 +61,8 @@ interface CoachingQuestionResponse {
 const getCoachingAnswerSets = (
   data: CoachingAnswerSetData,
   included: CoachingAnswerSetIncluded,
-): CoachingAnswerSet[] => {
-  const response: CoachingAnswerSet[] = [];
-
-  data.forEach((answerSetData) => {
+): CoachingAnswerSet[] =>
+  data.map((answerSetData) => {
     const {
       id,
       attributes: { completed_at, created_at, updated_at },
@@ -75,7 +73,7 @@ const getCoachingAnswerSets = (
     //create questions
     const questions = createCoachingQuestionsList(answerSetData, included);
 
-    const answerSet: CoachingAnswerSet = {
+    return {
       id,
       answers,
       completedAt: completed_at,
@@ -83,12 +81,7 @@ const getCoachingAnswerSets = (
       questions,
       updatedAt: updated_at,
     };
-
-    response.push(answerSet);
   });
-
-  return response;
-};
 
 const createCoachingAnswersList = (
   answerSetData: CoachingAnswerSetResponseData,
@@ -102,10 +95,10 @@ const createCoachingAnswersList = (
 
   ids.forEach((id) => {
     const answerItem = includedItems.find(
-      (item) => item.id === id,
-    ) as CoachingAnswerResponse;
+      (item) => item.id === id && item.type === 'coaching_answers',
+    ) as CoachingAnswerResponse | undefined;
 
-    if (answerItem && answerItem.type === 'coaching_answers') {
+    if (answerItem) {
       const {
         attributes: { created_at, response, updated_at },
       } = answerItem;
@@ -136,10 +129,10 @@ const createCoachingQuestionsList = (
 
   ids.forEach((id) => {
     const questionItem = includedItems.find(
-      (item) => item.id === id,
-    ) as CoachingQuestionResponse;
+      (item) => item.id === id && item.type === 'coaching_questions',
+    ) as CoachingQuestionResponse | undefined;
 
-    if (questionItem && questionItem.type === 'coaching_questions') {
+    if (questionItem) {
       const {
         attributes: {
           created_at,
