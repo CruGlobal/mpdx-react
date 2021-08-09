@@ -8,27 +8,27 @@ import { ToolsList } from './ToolList';
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
-    padding: 20,
-    marginRight: 17,
+    padding: theme.spacing(3),
+    marginRight: theme.spacing(2),
     display: 'flex',
     [theme.breakpoints.down('lg')]: {
-      paddingLeft: 30,
-      marginRight: 20,
+      paddingLeft: theme.spacing(5),
+      marginRight: theme.spacing(2),
     },
     [theme.breakpoints.down('md')]: {
-      paddingLeft: 40,
-      marginRight: 15,
+      paddingLeft: theme.spacing(5),
+      marginRight: theme.spacing(2),
     },
     [theme.breakpoints.down('sm')]: {
-      paddingLeft: 45,
+      paddingLeft: theme.spacing(6),
     },
   },
   toolIcon: {
-    height: '40px',
-    width: '40px',
+    height: theme.spacing(5),
+    width: theme.spacing(5),
     color: theme.palette.cruGrayDark.main,
   },
-  outter: {
+  outer: {
     display: 'flex',
     flexDirection: 'row',
     minWidth: '100vw',
@@ -51,6 +51,7 @@ const variants = {
 const ToolHome = (): ReactElement => {
   const classes = useStyles();
   const [isNavListOpen, setNavListOpen] = useState<boolean>(false);
+  const toolsListFlattened = ToolsList.flatMap((tool) => tool.items);
 
   const handleNavListToggle = () => {
     setNavListOpen(!isNavListOpen);
@@ -63,7 +64,7 @@ const ToolHome = (): ReactElement => {
       exit="exit"
       variants={variants}
     >
-      <Box className={classes.outter}>
+      <Box className={classes.outer}>
         <NavToolDrawer open={isNavListOpen} toggle={handleNavListToggle} />
         <Container
           className={classes.container}
@@ -73,7 +74,7 @@ const ToolHome = (): ReactElement => {
           }}
         >
           <Grid container spacing={3}>
-            {ToolsList.map((tool) => {
+            {toolsListFlattened.map((tool) => {
               return (
                 <Grid item xs={12} sm={6} md={4} lg={4} key={tool.tool}>
                   <Tool
