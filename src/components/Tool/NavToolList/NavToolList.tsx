@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react';
+import React, { ReactElement, Fragment } from 'react';
 import {
   makeStyles,
   Box,
@@ -34,7 +34,7 @@ const NavToolList = (): ReactElement => {
     <Box component="div" className={classes.list}>
       <List>
         {ToolsList.map((group) => (
-          <>
+          <Fragment key={group.groupName}>
             <ListItem className={classes.li}>
               <ListItemIcon>
                 <Icon path={group.groupIcon} size={1} />
@@ -44,7 +44,7 @@ const NavToolList = (): ReactElement => {
             {group.items.map((tool) => (
               <Item key={tool.id} id={tool.id} title={tool.tool} />
             ))}
-          </>
+          </Fragment>
         ))}
       </List>
     </Box>
