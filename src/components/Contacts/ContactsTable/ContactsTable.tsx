@@ -100,7 +100,6 @@ export const ContactsTable: React.FC<Props> = ({
                         contacts: {
                           ...prev.contacts,
                           ...fetchMoreResult.contacts,
-                          pageInfo: fetchMoreResult.contacts.pageInfo,
                           nodes: [
                             ...prev.contacts.nodes,
                             ...fetchMoreResult.contacts.nodes,
@@ -110,10 +109,10 @@ export const ContactsTable: React.FC<Props> = ({
                     },
                   })
                 }
-                itemContent={(_index, contact) => (
+                itemContent={(index, contact) => (
                   <ContactRow
                     accountListId={accountListId}
-                    key={contact.id}
+                    key={index}
                     contact={contact}
                     onContactSelected={handleOnContactSelected}
                   />
