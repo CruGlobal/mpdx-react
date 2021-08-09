@@ -11,7 +11,6 @@ export const designationAccountsMock = (
     designationAccounts: [
       {
         organizationName: 'test org 01',
-        balance: 3255,
         designationAccounts: [
           {
             active: false,

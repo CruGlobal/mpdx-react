@@ -20,7 +20,6 @@ type DesignationAccount {
 
 type DesignationAccountsGroup {
   organizationName: String!
-  balance: Float!
   designationAccounts: [DesignationAccount!]!
 }
 

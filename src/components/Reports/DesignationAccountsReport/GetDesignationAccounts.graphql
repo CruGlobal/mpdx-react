@@ -1,7 +1,6 @@
 query DesignationAccounts($accountListId: ID!) {
   designationAccounts(accountListId: $accountListId) {
     organizationName
-    balance
     designationAccounts {
       active
       balanceUpdatedAt
