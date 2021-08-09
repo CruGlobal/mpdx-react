@@ -1,0 +1,21 @@
+extend type Query {
+  appeals(accountListId: ID!): [AppealsGroup]!
+}
+
+type AppealsGroup {
+  id: ID!
+  appeals: [Appeal!]!
+}
+
+type Appeal {
+  id: ID!
+  name: String!
+  amount: Float!
+  description: String!
+  pledgesAmountNotReceivedNotProcessed: Float!
+  pledgesAmountProcessed: Float!
+  pledgesAmountReceivedNotProcessed: Float!
+  pledgesAmountTotal: Float!
+  totalCurrency: String!
+  currencies: [String!]
+}
