@@ -160,6 +160,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["react-i18next", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:11.8.11"],
             ["react-to-print", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:2.12.6"],
             ["react-virtualized-auto-sizer", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:1.0.5"],
+            ["react-virtuoso", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:1.10.4"],
             ["react-window", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:1.8.6"],
             ["react-window-infinite-loader", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:1.0.7"],
             ["recharts", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:2.0.6"],
@@ -11737,6 +11738,38 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/node", "npm:14.11.1"],
             ["ts-node", "virtual:7de2b9c13afed9f68beb0bc06fa1e22f909ba37a3d98c81fc036dde37b55d2bd1663b6c05bef1e2d4c1d85407f1550c14ae71795db323f4aab334fa9520df5bc#npm:8.9.1"],
             ["typescript", "patch:typescript@npm%3A3.9.3#builtin<compat/typescript>::version=3.9.3&hash=a45b0e"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
+      ["@virtuoso.dev/react-urx", [
+        ["npm:0.2.6", {
+          "packageLocation": "./.yarn/cache/@virtuoso.dev-react-urx-npm-0.2.6-f4d6f4a51b-6c1901bf34.zip/node_modules/@virtuoso.dev/react-urx/",
+          "packageDependencies": [
+            ["@virtuoso.dev/react-urx", "npm:0.2.6"]
+          ],
+          "linkType": "SOFT",
+        }],
+        ["virtual:52f14964a691ae3e53954065109bf8ca1b25208e6dcc7f49543e2c73708f35f5403917cb2e91d7be94459e81be5cd6d3b84e729951a4883879c90516bece079f#npm:0.2.6", {
+          "packageLocation": "./.yarn/$$virtual/@virtuoso.dev-react-urx-virtual-26ae7a9b5d/0/cache/@virtuoso.dev-react-urx-npm-0.2.6-f4d6f4a51b-6c1901bf34.zip/node_modules/@virtuoso.dev/react-urx/",
+          "packageDependencies": [
+            ["@virtuoso.dev/react-urx", "virtual:52f14964a691ae3e53954065109bf8ca1b25208e6dcc7f49543e2c73708f35f5403917cb2e91d7be94459e81be5cd6d3b84e729951a4883879c90516bece079f#npm:0.2.6"],
+            ["@types/react", "npm:17.0.1"],
+            ["@virtuoso.dev/urx", "npm:0.2.6"],
+            ["react", "npm:17.0.1"]
+          ],
+          "packagePeers": [
+            "@types/react",
+            "react"
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
+      ["@virtuoso.dev/urx", [
+        ["npm:0.2.6", {
+          "packageLocation": "./.yarn/cache/@virtuoso.dev-urx-npm-0.2.6-4652969557-23875af5ec.zip/node_modules/@virtuoso.dev/urx/",
+          "packageDependencies": [
+            ["@virtuoso.dev/urx", "npm:0.2.6"]
           ],
           "linkType": "HARD",
         }]
@@ -25047,6 +25080,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["react-i18next", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:11.8.11"],
             ["react-to-print", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:2.12.6"],
             ["react-virtualized-auto-sizer", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:1.0.5"],
+            ["react-virtuoso", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:1.10.4"],
             ["react-window", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:1.8.6"],
             ["react-window-infinite-loader", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:1.0.7"],
             ["recharts", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:2.0.6"],
@@ -29046,6 +29080,31 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             "@types/react-dom",
             "@types/react",
             "react-dom",
+            "react"
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
+      ["react-virtuoso", [
+        ["npm:1.10.4", {
+          "packageLocation": "./.yarn/cache/react-virtuoso-npm-1.10.4-2f86fd05c1-5f3cec9060.zip/node_modules/react-virtuoso/",
+          "packageDependencies": [
+            ["react-virtuoso", "npm:1.10.4"]
+          ],
+          "linkType": "SOFT",
+        }],
+        ["virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:1.10.4", {
+          "packageLocation": "./.yarn/$$virtual/react-virtuoso-virtual-52f14964a6/0/cache/react-virtuoso-npm-1.10.4-2f86fd05c1-5f3cec9060.zip/node_modules/react-virtuoso/",
+          "packageDependencies": [
+            ["react-virtuoso", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:1.10.4"],
+            ["@types/react", "npm:17.0.1"],
+            ["@virtuoso.dev/react-urx", "virtual:52f14964a691ae3e53954065109bf8ca1b25208e6dcc7f49543e2c73708f35f5403917cb2e91d7be94459e81be5cd6d3b84e729951a4883879c90516bece079f#npm:0.2.6"],
+            ["@virtuoso.dev/urx", "npm:0.2.6"],
+            ["react", "npm:17.0.1"],
+            ["resize-observer-polyfill", "npm:1.5.1"]
+          ],
+          "packagePeers": [
+            "@types/react",
             "react"
           ],
           "linkType": "HARD",

@@ -7,9 +7,7 @@ import {
   TableBody,
   TableContainer,
 } from '@material-ui/core';
-import { FixedSizeList as List } from 'react-window';
-import InfiniteLoader from 'react-window-infinite-loader';
-import AutoSizer from 'react-virtualized-auto-sizer';
+import { Virtuoso } from 'react-virtuoso';
 import { ContactRow } from '../ContactRow/ContactRow';
 import { ContactsHeader } from '../ContactsHeader/ContactsHeader';
 import { useContactsQuery } from '../../../../pages/accountLists/[accountListId]/contacts/Contacts.generated';
@@ -66,31 +64,6 @@ export const ContactsTable: React.FC<Props> = ({
     onSearchTermChange(searchTerm);
   };
 
-  const renderRow = ({
-    index,
-    style,
-  }: {
-    index: number;
-    style: React.CSSProperties;
-  }) => {
-    const contact = data?.contacts.nodes[index];
-
-    if (!contact) {
-      return <div style={style}>{renderLoading()}</div>;
-    }
-
-    return (
-      <div style={style}>
-        <ContactRow
-          accountListId={accountListId}
-          key={contact.id}
-          contact={contact}
-          onContactSelected={handleOnContactSelected}
-        />
-      </div>
-    );
-  };
-
   return (
     <TableContainer>
       <Table stickyHeader aria-label="sticky table">
@@ -110,18 +83,11 @@ export const ContactsTable: React.FC<Props> = ({
           ) : !(data && data.contacts.nodes.length > 0) ? (
             renderEmpty()
           ) : (
-            <div
-              data-testid="ContactRows"
-              style={{ height: 'calc(100vh - 72px)' }}
-            >
-              <InfiniteLoader
-                isItemLoaded={(index) => !!data.contacts.nodes[index]}
-                itemCount={
-                  data?.contacts.pageInfo.hasNextPage
-                    ? data.contacts.nodes.length + 1
-                    : data?.contacts.nodes.length
-                }
-                loadMoreItems={() =>
+            <div data-testid="ContactRows">
+              <Virtuoso
+                data={data.contacts.nodes}
+                style={{ height: 'calc(100vh - 160px)' }}
+                endReached={() =>
                   fetchMore({
                     variables: { after: data.contacts.pageInfo.endCursor },
                     updateQuery: (prev, { fetchMoreResult }) => {
@@ -144,28 +110,16 @@ export const ContactsTable: React.FC<Props> = ({
                     },
                   })
                 }
-              >
-                {({ onItemsRendered, ref }) => (
-                  <AutoSizer>
-                    {({ width, height }) => (
-                      <List
-                        ref={ref}
-                        itemCount={
-                          data?.contacts.pageInfo.hasNextPage
-                            ? data.contacts.nodes.length + 1
-                            : data?.contacts.nodes.length
-                        }
-                        itemSize={80}
-                        height={height}
-                        width={width}
-                        onItemsRendered={onItemsRendered}
-                      >
-                        {renderRow}
-                      </List>
-                    )}
-                  </AutoSizer>
+                itemContent={(_index, contact) => (
+                  <ContactRow
+                    accountListId={accountListId}
+                    key={contact.id}
+                    contact={contact}
+                    onContactSelected={handleOnContactSelected}
+                  />
                 )}
-              </InfiniteLoader>
+                components={{ Footer: () => renderLoading() }}
+              />
             </div>
           )}
         </TableBody>

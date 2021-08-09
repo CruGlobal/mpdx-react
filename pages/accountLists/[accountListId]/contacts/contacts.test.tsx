@@ -1,7 +1,8 @@
-import React, { ReactElement } from 'react';
+import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ThemeProvider } from '@material-ui/core';
+import { ItemContent } from 'react-virtuoso';
 import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
 import TestRouter from '../../../../__tests__/util/TestRouter';
 import theme from '../../../../src/theme';
@@ -17,20 +18,20 @@ const router = {
 
 const contact = { id: '1', name: 'Test Person' };
 
-jest.mock(
-  'react-virtualized-auto-sizer',
-  () => ({
-    children,
+jest.mock('react-virtuoso', () => ({
+  // eslint-disable-next-line react/display-name
+  Virtuoso: ({
+    data,
+    itemContent,
   }: {
-    children: ({
-      height,
-      width,
-    }: {
-      height: number;
-      width: number;
-    }) => ReactElement;
-  }) => children({ height: 600, width: 600 }),
-);
+    data: ContactsQuery['contacts']['nodes'];
+    itemContent: ItemContent<ContactsQuery['contacts']['nodes'][0]>;
+  }) => {
+    return (
+      <div>{data.map((contact, index) => itemContent(index, contact))}</div>
+    );
+  },
+}));
 
 it('should show loading state', () => {
   const { getByText } = render(

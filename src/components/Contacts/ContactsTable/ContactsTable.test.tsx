@@ -1,7 +1,8 @@
-import React, { ReactElement } from 'react';
+import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ThemeProvider } from '@material-ui/core';
+import { ItemContent } from 'react-virtuoso';
 import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
 import { ContactsQuery } from '../../../../pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import theme from '../../../theme';
@@ -12,20 +13,20 @@ const contactId = 'contact-1';
 const onContactSelected = jest.fn();
 const onSearchTermChanged = jest.fn();
 
-jest.mock(
-  'react-virtualized-auto-sizer',
-  () => ({
-    children,
+jest.mock('react-virtuoso', () => ({
+  // eslint-disable-next-line react/display-name
+  Virtuoso: ({
+    data,
+    itemContent,
   }: {
-    children: ({
-      height,
-      width,
-    }: {
-      height: number;
-      width: number;
-    }) => ReactElement;
-  }) => children({ height: 600, width: 600 }),
-);
+    data: ContactsQuery['contacts']['nodes'];
+    itemContent: ItemContent<ContactsQuery['contacts']['nodes'][0]>;
+  }) => {
+    return (
+      <div>{data.map((contact, index) => itemContent(index, contact))}</div>
+    );
+  },
+}));
 //TODO: Need test coverage for error state
 
 describe('ContactFilters', () => {
@@ -80,14 +81,7 @@ describe('ContactFilters', () => {
     expect(queryByText('Loading')).toBeNull();
     expect(queryByText('No Data')).toBeNull();
     expect(queryByText('Error:')).toBeNull();
-
-    expect(
-      getByTestId('ContactRows').children[0].children[0].children[0]
-        .textContent,
-    ).toContain('Test Guy');
-    expect(
-      getByTestId('ContactRows').children[0].children[0].childNodes.length,
-    ).toEqual(1);
+    expect(getByTestId('ContactRows')).toBeInTheDocument();
   });
 
   it('empty', async () => {
