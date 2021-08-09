@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Box, CircularProgress, Divider, styled } from '@material-ui/core';
 import {
@@ -63,6 +63,16 @@ export const DesignationAccountsReport: React.FC<Props> = ({
     });
   };
 
+  const totalBalance = useMemo(() => {
+    return data?.designationAccounts[0]?.designationAccounts
+      .filter((designationAccount) => designationAccount.active)
+      .reduce(
+        (total, designationAccount) =>
+          total + designationAccount.convertedBalance,
+        0,
+      );
+  }, [data?.designationAccounts]);
+
   return (
     <Box>
       <Header
@@ -70,11 +80,12 @@ export const DesignationAccountsReport: React.FC<Props> = ({
         onNavListToggle={onNavListToggle}
         title={title}
         totalBalance={
-          data &&
-          currencyFormat(
-            data.designationAccounts[0].balance ?? 0,
-            data.designationAccounts[0].designationAccounts[0].currency,
-          )
+          totalBalance && totalBalance > 0
+            ? currencyFormat(
+                totalBalance,
+                data?.designationAccounts[0].designationAccounts[0].currency,
+              )
+            : undefined
         }
       />
       {loading ? (
