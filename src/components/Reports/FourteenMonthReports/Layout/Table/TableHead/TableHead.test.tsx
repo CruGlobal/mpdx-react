@@ -1,6 +1,7 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import { ThemeProvider } from '@material-ui/core';
+import userEvent from '@testing-library/user-event';
 import { FourteenMonthReportTableHead } from './TableHead';
 import theme from 'src/theme';
 
@@ -45,5 +46,23 @@ describe('FourteenMonthReportTableHead', () => {
     );
 
     expect(queryByTestId('SalaryReportTableHead')).toBeInTheDocument();
+  });
+
+  it('sort event', async () => {
+    const { getByText } = render(
+      <ThemeProvider theme={theme}>
+        <FourteenMonthReportTableHead
+          isExpanded={true}
+          totals={totals}
+          salaryCurrency={salaryCurrency}
+          order={order}
+          orderBy={orderBy}
+          onRequestSort={onRequestSort}
+        />
+      </ThemeProvider>,
+    );
+
+    userEvent.click(getByText('Total'));
+    expect(onRequestSort).toHaveBeenCalled();
   });
 });

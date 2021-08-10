@@ -32,7 +32,7 @@ describe('FourteenMonthReportActions', () => {
     userEvent.click(getByRole('button', { name: 'Export' }));
   });
 
-  it('expanded', async () => {
+  it('expand toggle event', async () => {
     const { getByRole } = render(
       <ThemeProvider theme={theme}>
         <FourteenMonthReportActions
@@ -46,11 +46,25 @@ describe('FourteenMonthReportActions', () => {
       </ThemeProvider>,
     );
 
-    expect(
-      getByRole('group', { name: 'report header button group' }),
-    ).toBeInTheDocument();
     userEvent.click(getByRole('button', { name: 'Hide' }));
+    expect(onExpandToggle).toHaveBeenCalled();
+  });
+
+  it('print event', async () => {
+    const { getByRole } = render(
+      <ThemeProvider theme={theme}>
+        <FourteenMonthReportActions
+          csvData={[]}
+          currencyType={FourteenMonthReportCurrencyType.Salary}
+          isExpanded={true}
+          isMobile={true}
+          onExpandToggle={onExpandToggle}
+          onPrint={onPrint}
+        />
+      </ThemeProvider>,
+    );
+
     userEvent.click(getByRole('button', { name: 'Print' }));
-    userEvent.click(getByRole('button', { name: 'Export' }));
+    expect(onPrint).toHaveBeenCalled();
   });
 });
