@@ -26,22 +26,22 @@ const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
-    padding: 20,
-    marginRight: 17,
+    padding: theme.spacing(3),
+    marginRight: theme.spacing(2),
     display: 'flex',
     [theme.breakpoints.down('lg')]: {
-      paddingLeft: 30,
-      marginRight: 20,
+      paddingLeft: theme.spacing(4),
+      marginRight: theme.spacing(3),
     },
     [theme.breakpoints.down('md')]: {
-      paddingLeft: 40,
-      marginRight: 15,
+      paddingLeft: theme.spacing(5),
+      marginRight: theme.spacing(2),
     },
     [theme.breakpoints.down('sm')]: {
-      paddingLeft: 45,
+      paddingLeft: theme.spacing(6),
     },
   },
-  outter: {
+  outer: {
     display: 'flex',
     flexDirection: 'row',
     minWidth: '100vw',
@@ -85,7 +85,7 @@ const AppealsPage = (): ReactElement => {
         exit="exit"
         variants={variants}
       >
-        <Box className={classes.outter}>
+        <Box className={classes.outer}>
           <NavToolDrawer
             open={isNavListOpen}
             toggle={handleNavListToggle}
@@ -136,7 +136,7 @@ const AppealsPage = (): ReactElement => {
                           }
                           given={
                             data.accountList.primaryAppeal
-                              .pledgesAmountNotReceivedNotProcessed
+                              .pledgesAmountProcessed
                           }
                           received={
                             data.accountList.primaryAppeal
@@ -144,7 +144,7 @@ const AppealsPage = (): ReactElement => {
                           }
                           commited={
                             data.accountList.primaryAppeal
-                              .pledgesAmountProcessed
+                              .pledgesAmountNotReceivedNotProcessed
                           }
                           total={
                             data.accountList.primaryAppeal.pledgesAmountTotal
