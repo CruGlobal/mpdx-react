@@ -19,11 +19,6 @@ import schema from './Schema';
 import { getTaskAnalytics } from './Schema/TaskAnalytics/dataHandler';
 import { getContactFilters } from './Schema/ContactFilters/datahandler';
 import {
-  CoachingAnswerSetData,
-  CoachingAnswerSetIncluded,
-  getCoachingAnswerSets,
-} from './Schema/CoachingAnswerSets/dataHandler';
-import {
   FourteenMonthReportResponse,
   mapFourteenMonthReport,
 } from './Schema/reports/fourteenMonth/datahandler';
@@ -36,6 +31,7 @@ import {
   createDesignationAccountsGroup,
   setActiveDesignationAccount,
 } from './Schema/reports/designationAccounts/datahandler';
+import { getAppeals, AppealsResponse } from './Schema/Appeals/datahandler';
 
 class MpdxRestApi extends RESTDataSource {
   constructor() {
@@ -133,25 +129,6 @@ class MpdxRestApi extends RESTDataSource {
     return getTaskAnalytics(data);
   }
 
-  async getCoachingAnswerSets(
-    accountListId: string,
-    completed?: boolean | null,
-  ) {
-    const {
-      data,
-      included,
-    }: {
-      data: CoachingAnswerSetData;
-      included: CoachingAnswerSetIncluded;
-    } = await this.get(
-      `coaching/answer_sets?filter[account_list_id]=${accountListId}&filter[completed]=${
-        completed || false
-      }&include=answers,questions&sort=-completed_at`,
-    );
-
-    return getCoachingAnswerSets(data, included);
-  }
-
   async getFourteenMonthReport(
     accountListId: string,
     currencyType: FourteenMonthReportCurrencyType,
@@ -204,6 +181,13 @@ class MpdxRestApi extends RESTDataSource {
       },
     );
     return setActiveDesignationAccount(data);
+  }
+
+  async getAppeals(accountListId: string) {
+    const { data }: { data: AppealsResponse[] } = await this.get(
+      `appeals?account_list_id=${accountListId}`,
+    );
+    return getAppeals(data);
   }
 }
 
