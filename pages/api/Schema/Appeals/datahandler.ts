@@ -1,3 +1,4 @@
+import { Contact } from '../../../../graphql/types.generated';
 import { Appeal } from '../../graphql-rest.page.generated';
 
 export interface AppealsResponse {
@@ -26,7 +27,7 @@ export interface AppealsResponse {
       };
     };
     contacts: {
-      data: string[];
+      data: Contact[];
     };
     donations: {
       data: [
