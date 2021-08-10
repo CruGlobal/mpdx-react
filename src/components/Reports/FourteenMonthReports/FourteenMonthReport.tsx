@@ -4,7 +4,6 @@ import { useTranslation } from 'react-i18next';
 import { useReactToPrint } from 'react-to-print';
 import { FourteenMonthReportCurrencyType } from '../../../../graphql/types.generated';
 import { FourteenMonthReportHeader as Header } from './Layout/Header/Header';
-import type { CurrencyType } from './Layout/Header/Actions/Actions';
 import { useFourteenMonthReportQuery } from './GetFourteenMonthReport.generated';
 import type {
   Contact,
@@ -20,7 +19,7 @@ interface Props {
   isNavListOpen: boolean;
   onNavListToggle: () => void;
   title: string;
-  currencyType: CurrencyType;
+  currencyType: FourteenMonthReportCurrencyType;
 }
 
 export const FourteenMonthReport: React.FC<Props> = ({
@@ -43,10 +42,7 @@ export const FourteenMonthReport: React.FC<Props> = ({
   const { data, loading, error } = useFourteenMonthReportQuery({
     variables: {
       accountListId,
-      currencyType:
-        currencyType === 'salary'
-          ? FourteenMonthReportCurrencyType.Salary
-          : FourteenMonthReportCurrencyType.Donor,
+      currencyType,
     },
   });
 

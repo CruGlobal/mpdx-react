@@ -1,8 +1,9 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import { ThemeProvider } from '@material-ui/core';
-import { FourteenMonthReport } from './FourteenMonthReport';
+import { FourteenMonthReportCurrencyType } from '../../../../graphql/types.generated';
 import { FourteenMonthReportQuery } from './GetFourteenMonthReport.generated';
+import { FourteenMonthReport } from './FourteenMonthReport';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
 
@@ -154,7 +155,7 @@ describe('FourteenMonthReport', () => {
         <GqlMockedProvider<FourteenMonthReportQuery>>
           <FourteenMonthReport
             accountListId={accountListId}
-            currencyType="salary"
+            currencyType={FourteenMonthReportCurrencyType.Salary}
             isNavListOpen={true}
             title={title}
             onNavListToggle={onNavListToggle}
@@ -169,12 +170,12 @@ describe('FourteenMonthReport', () => {
   });
 
   it('salary report loaded', async () => {
-    const { getByTestId, queryByTestId, queryByText } = render(
+    const { getByTestId, queryByTestId, getByRole } = render(
       <ThemeProvider theme={theme}>
         <GqlMockedProvider<FourteenMonthReportQuery> mocks={mocks}>
           <FourteenMonthReport
             accountListId={accountListId}
-            currencyType="salary"
+            currencyType={FourteenMonthReportCurrencyType.Salary}
             isNavListOpen={true}
             title={title}
             onNavListToggle={onNavListToggle}
@@ -189,7 +190,7 @@ describe('FourteenMonthReport', () => {
       ).not.toBeInTheDocument();
     });
 
-    expect(queryByText(title)).toBeInTheDocument();
+    expect(getByRole('table')).toHaveLength(1);
     expect(getByTestId('FourteenMonthReport')).toBeInTheDocument();
   });
 
@@ -199,7 +200,7 @@ describe('FourteenMonthReport', () => {
         <GqlMockedProvider<FourteenMonthReportQuery>>
           <FourteenMonthReport
             accountListId={accountListId}
-            currencyType="donor"
+            currencyType={FourteenMonthReportCurrencyType.Donor}
             isNavListOpen={true}
             title={title}
             onNavListToggle={onNavListToggle}
@@ -219,7 +220,7 @@ describe('FourteenMonthReport', () => {
         <GqlMockedProvider<FourteenMonthReportQuery> mocks={mocks}>
           <FourteenMonthReport
             accountListId={accountListId}
-            currencyType="donor"
+            currencyType={FourteenMonthReportCurrencyType.Donor}
             isNavListOpen={true}
             title={title}
             onNavListToggle={onNavListToggle}
@@ -244,7 +245,7 @@ describe('FourteenMonthReport', () => {
         <GqlMockedProvider<FourteenMonthReportQuery> mocks={errorMocks}>
           <FourteenMonthReport
             accountListId={accountListId}
-            currencyType="salary"
+            currencyType={FourteenMonthReportCurrencyType.Salary}
             isNavListOpen={true}
             title={title}
             onNavListToggle={onNavListToggle}
@@ -269,7 +270,7 @@ describe('FourteenMonthReport', () => {
         <GqlMockedProvider<FourteenMonthReportQuery> mocks={errorMocks}>
           <FourteenMonthReport
             accountListId={accountListId}
-            currencyType="donor"
+            currencyType={FourteenMonthReportCurrencyType.Donor}
             isNavListOpen={true}
             title={title}
             onNavListToggle={onNavListToggle}
@@ -294,7 +295,7 @@ describe('FourteenMonthReport', () => {
         <GqlMockedProvider<FourteenMonthReportQuery> mocks={mocks}>
           <FourteenMonthReport
             accountListId={accountListId}
-            currencyType="donor"
+            currencyType={FourteenMonthReportCurrencyType.Donor}
             isNavListOpen={false}
             title={title}
             onNavListToggle={onNavListToggle}

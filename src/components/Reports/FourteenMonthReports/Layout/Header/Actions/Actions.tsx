@@ -7,12 +7,11 @@ import FullscreenExitIcon from '@material-ui/icons/FullscreenExit';
 import PrintIcon from '@material-ui/icons/Print';
 import { CSVLink } from 'react-csv';
 import { DateTime } from 'luxon';
-
-export type CurrencyType = 'salary' | 'donor';
+import { FourteenMonthReportCurrencyType } from '../../../../../../../graphql/types.generated';
 
 interface FourteenMonthReportActionsProps {
   csvData: ((string | undefined)[] | (string | number)[])[];
-  currencyType: CurrencyType;
+  currencyType: FourteenMonthReportCurrencyType;
   isExpanded: boolean;
   isMobile: boolean;
   onExpandToggle: () => void;

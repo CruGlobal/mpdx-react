@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Head from 'next/head';
 import { useTranslation } from 'react-i18next';
 import { Box, styled } from '@material-ui/core';
+import { FourteenMonthReportCurrencyType } from '../../../../graphql/types.generated';
 import { FourteenMonthReport } from 'src/components/Reports/FourteenMonthReports/FourteenMonthReport';
 import Loading from 'src/components/Loading';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
@@ -45,7 +46,7 @@ const SalaryCurrencyReportPage: React.FC = () => {
                 isNavListOpen={isNavListOpen}
                 onNavListToggle={handleNavListToggle}
                 title={t('Contributions by Salary Currency')}
-                currencyType="salary"
+                currencyType={FourteenMonthReportCurrencyType.Salary}
               />
             }
           />
