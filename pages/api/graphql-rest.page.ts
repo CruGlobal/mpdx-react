@@ -31,6 +31,7 @@ import {
   createDesignationAccountsGroup,
   setActiveDesignationAccount,
 } from './Schema/reports/designationAccounts/datahandler';
+import { getAppeals, AppealsResponse } from './Schema/Appeals/datahandler';
 
 class MpdxRestApi extends RESTDataSource {
   constructor() {
@@ -180,6 +181,13 @@ class MpdxRestApi extends RESTDataSource {
       },
     );
     return setActiveDesignationAccount(data);
+  }
+
+  async getAppeals(accountListId: string) {
+    const { data }: { data: AppealsResponse[] } = await this.get(
+      `appeals?account_list_id=${accountListId}`,
+    );
+    return getAppeals(data);
   }
 }
 
