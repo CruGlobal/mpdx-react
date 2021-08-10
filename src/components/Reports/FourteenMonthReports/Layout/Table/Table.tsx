@@ -42,6 +42,7 @@ const StickyTable = styled(Table)(({}) => ({
   height: 'calc(100vh - 96px)',
 }));
 
+// eslint-disable-next-line react/display-name
 export const FourteenMonthReportTable: FC<FourteenMonthReportTableProps> = forwardRef(
   (
     {
