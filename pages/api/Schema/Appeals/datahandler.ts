@@ -54,7 +54,6 @@ const getAppeals = (data: AppealsResponse[]): Appeal[] => {
       pledgesAmountTotal: item.attributes.pledges_amount_total,
       amountCurrency: item.attributes.total_currency,
       updatedAt: item.attributes.updated_at,
-      description: item.attributes.description || '',
       createdAt: item.attributes.created_at,
     };
 
