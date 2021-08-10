@@ -88,6 +88,7 @@ export const ContactsTable: React.FC<Props> = ({
                 data={data.contacts.nodes}
                 style={{ height: 'calc(100vh - 160px)' }}
                 endReached={() =>
+                  data.contacts.pageInfo.hasNextPage &&
                   fetchMore({
                     variables: { after: data.contacts.pageInfo.endCursor },
                     updateQuery: (prev, { fetchMoreResult }) => {
@@ -117,7 +118,10 @@ export const ContactsTable: React.FC<Props> = ({
                     onContactSelected={handleOnContactSelected}
                   />
                 )}
-                components={{ Footer: () => renderLoading() }}
+                components={{
+                  Footer: () =>
+                    data.contacts.pageInfo.hasNextPage ? renderLoading() : null,
+                }}
               />
             </div>
           )}
