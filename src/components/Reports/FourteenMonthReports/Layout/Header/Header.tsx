@@ -9,11 +9,12 @@ import {
   Typography,
 } from '@material-ui/core';
 import { FilterList } from '@material-ui/icons';
-import { CurrencyType, FourteenMonthReportActions } from './Actions/Actions';
+import { FourteenMonthReportCurrencyType } from '../../../../../../graphql/types.generated';
+import { FourteenMonthReportActions } from './Actions/Actions';
 
 interface FourteenMonthReportHeaderProps {
   csvData: ((string | undefined)[] | (string | number)[])[];
-  currencyType: CurrencyType;
+  currencyType: FourteenMonthReportCurrencyType;
   isExpanded: boolean;
   isMobile: boolean;
   isNavListOpen: boolean;
