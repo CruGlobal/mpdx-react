@@ -2,10 +2,10 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import { ThemeProvider } from '@material-ui/core';
 import userEvent from '@testing-library/user-event';
+import { FourteenMonthReportCurrencyType } from '../../../../../../../graphql/types.generated';
 import { FourteenMonthReportActions } from './Actions';
 import theme from 'src/theme';
 
-const currencyType = 'salary';
 const onExpandToggle = jest.fn();
 const onPrint = jest.fn();
 
@@ -15,7 +15,7 @@ describe('FourteenMonthReportActions', () => {
       <ThemeProvider theme={theme}>
         <FourteenMonthReportActions
           csvData={[]}
-          currencyType={currencyType}
+          currencyType={FourteenMonthReportCurrencyType.Salary}
           isExpanded={false}
           isMobile={true}
           onExpandToggle={onExpandToggle}
@@ -37,7 +37,7 @@ describe('FourteenMonthReportActions', () => {
       <ThemeProvider theme={theme}>
         <FourteenMonthReportActions
           csvData={[]}
-          currencyType={currencyType}
+          currencyType={FourteenMonthReportCurrencyType.Salary}
           isExpanded={true}
           isMobile={true}
           onExpandToggle={onExpandToggle}

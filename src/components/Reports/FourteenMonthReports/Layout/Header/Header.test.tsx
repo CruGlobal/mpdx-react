@@ -1,10 +1,10 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import { ThemeProvider } from '@material-ui/core';
+import { FourteenMonthReportCurrencyType } from '../../../../../../graphql/types.generated';
 import { FourteenMonthReportHeader } from './Header';
 import theme from 'src/theme';
 
-const currencyType = 'salary';
 const title = 'test title';
 const onExpandToggle = jest.fn();
 const onNavListToggle = jest.fn();
@@ -16,7 +16,7 @@ describe('FourteenMonthReportHeader', () => {
       <ThemeProvider theme={theme}>
         <FourteenMonthReportHeader
           csvData={[]}
-          currencyType={currencyType}
+          currencyType={FourteenMonthReportCurrencyType.Salary}
           isExpanded={true}
           isMobile={true}
           isNavListOpen={true}
