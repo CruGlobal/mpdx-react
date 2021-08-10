@@ -75,7 +75,11 @@ export const FourteenMonthReportTable: FC<FourteenMonthReportTableProps> = forwa
           />
           <TableBody>
             {orderedContacts?.map((contact) => (
-              <TableRow key={contact.id} hover>
+              <TableRow
+                key={contact.id}
+                hover
+                data-testid="FourteenMonthReportTableRow"
+              >
                 <TableCell>
                   <Box display="flex" flexDirection="column">
                     <Box display="flex" alignItems="center">

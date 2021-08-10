@@ -85,6 +85,74 @@ const mocks = {
               status: null,
               total: 1290,
             },
+            {
+              accountNumbers: ['10182'],
+              average: 86,
+              id: 'contact-2',
+              lateBy30Days: false,
+              lateBy60Days: false,
+              minimum: 85,
+              months: [
+                {
+                  donations: [
+                    {
+                      amount: 85,
+                      currency: 'CAD',
+                      date: '2020-07-15',
+                      paymentMethod: 'BANK_TRANS',
+                    },
+                  ],
+                  month: '2020-10-01',
+                  salaryCurrencyTotal: 85,
+                  total: 35,
+                },
+                {
+                  donations: [
+                    {
+                      amount: 85,
+                      currency: 'CAD',
+                      date: '2020-11-15',
+                      paymentMethod: 'BANK_TRANS',
+                    },
+                  ],
+                  month: '2020-11-01',
+                  salaryCurrencyTotal: 85,
+                  total: 35,
+                },
+                {
+                  donations: [
+                    {
+                      amount: 85,
+                      currency: 'CAD',
+                      date: '2020-12-15',
+                      paymentMethod: 'BANK_TRANS',
+                    },
+                  ],
+                  month: '2020-12-01',
+                  salaryCurrencyTotal: 85,
+                  total: 35,
+                },
+                {
+                  donations: [
+                    {
+                      amount: 85,
+                      currency: 'CAD',
+                      date: '2021-1-15',
+                      paymentMethod: 'BANK_TRANS',
+                    },
+                  ],
+                  month: '2021-1-01',
+                  salaryCurrencyTotal: 85,
+                  total: 35,
+                },
+              ],
+              name: 'test name',
+              pledgeAmount: null,
+              pledgeCurrency: 'CAD',
+              pledgeFrequency: null,
+              status: null,
+              total: 1290,
+            },
           ],
           currency: 'cad',
           totals: {
@@ -115,37 +183,8 @@ const mocks = {
 };
 
 const errorMocks = {
-  FourteenMonthReport: {
-    currencyGroups: [
-      {
-        currency: 'cad',
-        totals: {
-          year: 0,
-          average: 0,
-          minimum: 0,
-          months: [
-            {
-              month: '2020-10-01',
-              total: 0,
-            },
-            {
-              month: '2020-11-01',
-              total: 0,
-            },
-            {
-              month: '2020-12-01',
-              total: 0,
-            },
-            {
-              month: '2021-1-01',
-              total: 0,
-            },
-          ],
-        },
-      },
-    ],
-    salaryCurrency: 'CAD',
-  },
+  FourteenMonthReport: {},
+  error: { name: 'error', message: 'Error loading data.  Try again.' },
 };
 
 describe('FourteenMonthReport', () => {
@@ -170,7 +209,7 @@ describe('FourteenMonthReport', () => {
   });
 
   it('salary report loaded', async () => {
-    const { getByTestId, queryByTestId, getByRole } = render(
+    const { getAllByTestId, getByTestId, queryByTestId, getByRole } = render(
       <ThemeProvider theme={theme}>
         <GqlMockedProvider<FourteenMonthReportQuery> mocks={mocks}>
           <FourteenMonthReport
@@ -190,7 +229,8 @@ describe('FourteenMonthReport', () => {
       ).not.toBeInTheDocument();
     });
 
-    expect(getByRole('table')).toHaveLength(1);
+    expect(getByRole('table')).toBeInTheDocument();
+    expect(getAllByTestId('FourteenMonthReportTableRow').length).toBe(2);
     expect(getByTestId('FourteenMonthReport')).toBeInTheDocument();
   });
 
