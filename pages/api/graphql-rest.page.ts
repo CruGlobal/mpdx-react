@@ -19,6 +19,11 @@ import schema from './Schema';
 import { getTaskAnalytics } from './Schema/TaskAnalytics/dataHandler';
 import { getContactFilters } from './Schema/ContactFilters/datahandler';
 import {
+  CoachingAnswerSetData,
+  CoachingAnswerSetIncluded,
+  getCoachingAnswerSets,
+} from './Schema/CoachingAnswerSets/dataHandler';
+import {
   FourteenMonthReportResponse,
   mapFourteenMonthReport,
 } from './Schema/reports/fourteenMonth/datahandler';
@@ -127,6 +132,25 @@ class MpdxRestApi extends RESTDataSource {
     );
 
     return getTaskAnalytics(data);
+  }
+
+  async getCoachingAnswerSets(
+    accountListId: string,
+    completed?: boolean | null,
+  ) {
+    const {
+      data,
+      included,
+    }: {
+      data: CoachingAnswerSetData;
+      included: CoachingAnswerSetIncluded;
+    } = await this.get(
+      `coaching/answer_sets?filter[account_list_id]=${accountListId}&filter[completed]=${
+        completed || false
+      }&include=answers,questions&sort=-completed_at`,
+    );
+
+    return getCoachingAnswerSets(data, included);
   }
 
   async getFourteenMonthReport(
