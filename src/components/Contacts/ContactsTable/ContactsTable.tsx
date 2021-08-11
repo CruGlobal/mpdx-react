@@ -6,6 +6,8 @@ import {
   TableHead,
   TableBody,
   TableContainer,
+  CircularProgress,
+  Typography,
 } from '@material-ui/core';
 import { Virtuoso } from 'react-virtuoso';
 import { ContactRow } from '../ContactRow/ContactRow';
@@ -36,12 +38,11 @@ export const ContactsTable: React.FC<Props> = ({
   });
 
   const renderLoading = () => (
-    <Box
-      alignItems="center"
-      justifyContent="center"
-      bgcolor={colors.green[600]}
-    >
-      Loading
+    <Box display="flex" alignItems="center" justifyContent="center">
+      <Box padding={2}>
+        <Typography variant="h6">Loading...</Typography>
+      </Box>
+      <CircularProgress size={24} />
     </Box>
   );
 

@@ -46,7 +46,7 @@ describe('ContactFilters', () => {
       </ThemeProvider>,
     );
 
-    expect(queryByText('Loading')).toBeVisible();
+    expect(queryByText('Loading...')).toBeVisible();
     expect(queryByText('No Data')).toBeNull();
     expect(queryByText('Error:')).toBeNull();
     expect(queryByTestId('ContactRows')).toBeNull();
@@ -76,9 +76,11 @@ describe('ContactFilters', () => {
       </ThemeProvider>,
     );
 
-    await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());
+    await waitFor(() =>
+      expect(queryByText('Loading...')).not.toBeInTheDocument(),
+    );
 
-    expect(queryByText('Loading')).toBeNull();
+    expect(queryByText('Loading...')).toBeNull();
     expect(queryByText('No Data')).toBeNull();
     expect(queryByText('Error:')).toBeNull();
     expect(getByTestId('ContactRows')).toBeInTheDocument();
@@ -109,9 +111,11 @@ describe('ContactFilters', () => {
       </ThemeProvider>,
     );
 
-    await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());
+    await waitFor(() =>
+      expect(queryByText('Loading...')).not.toBeInTheDocument(),
+    );
 
-    expect(queryByText('Loading')).toBeNull();
+    expect(queryByText('Loading...')).toBeNull();
     expect(queryByText('No Data')).toBeVisible();
     expect(queryByText('Error:')).toBeNull();
     expect(queryByTestId('ContactRows')).toBeNull();
@@ -142,7 +146,9 @@ describe('ContactFilters', () => {
       </ThemeProvider>,
     );
 
-    await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());
+    await waitFor(() =>
+      expect(queryByText('Loading...')).not.toBeInTheDocument(),
+    );
 
     const row = await findByTestId('rowButton');
 
@@ -177,7 +183,9 @@ describe('ContactFilters', () => {
       </ThemeProvider>,
     );
 
-    await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());
+    await waitFor(() =>
+      expect(queryByText('Loading...')).not.toBeInTheDocument(),
+    );
     userEvent.type(getByRole('textbox'), searchTerm);
     await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());
     const row = await findByTestId('rowButton');

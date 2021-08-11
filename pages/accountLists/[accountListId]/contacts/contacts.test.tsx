@@ -43,7 +43,7 @@ it('should show loading state', () => {
       </TestRouter>
     </ThemeProvider>,
   );
-  expect(getByText('Loading')).toBeInTheDocument();
+  expect(getByText('Loading...')).toBeInTheDocument();
 });
 
 it('should render list of people', async () => {
