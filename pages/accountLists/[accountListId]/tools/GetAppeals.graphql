@@ -1,0 +1,12 @@
+query GetAppeals($accountListId: ID!) {
+  appeals(accountListId: $accountListId) {
+    id
+    name
+    amount
+    amountCurrency
+    pledgesAmountNotReceivedNotProcessed
+    pledgesAmountReceivedNotProcessed
+    pledgesAmountProcessed
+    pledgesAmountTotal
+  }
+}
