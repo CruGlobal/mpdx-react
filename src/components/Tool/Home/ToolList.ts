@@ -16,7 +16,7 @@ import i18n from 'i18next';
 
 export const ToolsList = [
   {
-    groupName: 'Appeals',
+    groupName: i18n.t('Appeals'),
     groupIcon: mdiWrench,
     items: [
       {
@@ -30,7 +30,7 @@ export const ToolsList = [
     ],
   },
   {
-    groupName: 'Contacts',
+    groupName: i18n.t('Contacts'),
     groupIcon: mdiHome,
     items: [
       {
@@ -64,7 +64,7 @@ export const ToolsList = [
     ],
   },
   {
-    groupName: 'People',
+    groupName: i18n.t('People'),
     groupIcon: mdiAccountGroup,
     items: [
       {
@@ -88,7 +88,7 @@ export const ToolsList = [
     ],
   },
   {
-    groupName: 'Imports',
+    groupName: i18n.t('Imports'),
     groupIcon: mdiCloudUpload,
     items: [
       {
