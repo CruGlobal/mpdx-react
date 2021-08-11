@@ -9,11 +9,15 @@ import {
   Box,
   Typography,
   Divider,
+  CircularProgress,
+  styled,
 } from '@material-ui/core';
 import { motion } from 'framer-motion';
 import NavToolDrawer from '../../../../src/components/Tool/NavToolList/NavToolDrawer';
 import PrimaryAppeal from '../../../../src/components/Tool/Appeal/PrimaryAppeal';
 import Appeals from '../../../../src/components/Tool/Appeal/Appeals';
+import { useGetPrimaryAppealQuery } from '../../../../pages/accountLists/[accountListId]/tools/GetPrimaryAppeal.generated';
+import { useAccountListId } from '../../../../src/hooks/useAccountListId';
 
 import AddAppealForm from '../../../../src/components/Tool/Appeal/AddAppealForm';
 
@@ -41,10 +45,18 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
+const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
+  margin: theme.spacing(0, 1, 0, 0),
+}));
+
 const AppealsPage = (): ReactElement => {
   const { t } = useTranslation();
   const [isNavListOpen, setNavListOpen] = useState<boolean>(true);
   const classes = useStyles();
+  const accountListId = useAccountListId();
+  const { data, loading } = useGetPrimaryAppealQuery({
+    variables: { id: accountListId || '' },
+  });
 
   const handleNavListToggle = () => {
     setNavListOpen(!isNavListOpen);
@@ -105,9 +117,18 @@ const AppealsPage = (): ReactElement => {
               </Grid>
 
               <Grid item xs={12} sm={12} md={6}>
-                <PrimaryAppeal />
-                <Divider />
-                <Appeals />
+                {loading ? (
+                  <LoadingIndicator color="primary" size={20} />
+                ) : (
+                  data && (
+                    <>
+                      <PrimaryAppeal appeal={data.accountList.primaryAppeal} />
+
+                      <Divider />
+                      <Appeals primaryId={data.accountList.primaryAppeal.id} />
+                    </>
+                  )
+                )}
               </Grid>
               <Grid item xs={12} sm={12} md={6}>
                 <Box>
