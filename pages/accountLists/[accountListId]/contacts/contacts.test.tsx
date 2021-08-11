@@ -1,7 +1,8 @@
-import { render } from '@testing-library/react';
 import React from 'react';
+import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ThemeProvider } from '@material-ui/core';
+import { ItemContent } from 'react-virtuoso';
 import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
 import TestRouter from '../../../../__tests__/util/TestRouter';
 import theme from '../../../../src/theme';
@@ -17,6 +18,21 @@ const router = {
 
 const contact = { id: '1', name: 'Test Person' };
 
+jest.mock('react-virtuoso', () => ({
+  // eslint-disable-next-line react/display-name
+  Virtuoso: ({
+    data,
+    itemContent,
+  }: {
+    data: ContactsQuery['contacts']['nodes'];
+    itemContent: ItemContent<ContactsQuery['contacts']['nodes'][0]>;
+  }) => {
+    return (
+      <div>{data.map((contact, index) => itemContent(index, contact))}</div>
+    );
+  },
+}));
+
 it('should show loading state', () => {
   const { getByText } = render(
     <ThemeProvider theme={theme}>
@@ -27,17 +43,20 @@ it('should show loading state', () => {
       </TestRouter>
     </ThemeProvider>,
   );
-  expect(getByText('Loading')).toBeInTheDocument();
+  expect(getByText('Loading...')).toBeInTheDocument();
 });
 
 it('should render list of people', async () => {
-  const { findByTestId } = render(
+  const { findByTestId, getByText } = render(
     <ThemeProvider theme={theme}>
       <TestRouter router={router}>
         <GqlMockedProvider<ContactsQuery>
           mocks={{
             Contacts: {
-              contacts: { nodes: [contact] },
+              contacts: {
+                nodes: [contact],
+                pageInfo: { endCursor: 'Mg', hasNextPage: false },
+              },
             },
           }}
         >
@@ -46,17 +65,21 @@ it('should render list of people', async () => {
       </TestRouter>
     </ThemeProvider>,
   );
+  await waitFor(() => expect(getByText('Test Person')).toBeInTheDocument());
   expect(await findByTestId('rowButton')).toHaveTextContent(contact.name);
 });
 
 it('should render contact detail panel', async () => {
-  const { findByTestId, findAllByRole } = render(
+  const { findByTestId, findAllByRole, getByText } = render(
     <ThemeProvider theme={theme}>
       <TestRouter router={router}>
         <GqlMockedProvider<ContactsQuery>
           mocks={{
             Contacts: {
-              contacts: { nodes: [contact] },
+              contacts: {
+                nodes: [contact],
+                pageInfo: { endCursor: 'Mg', hasNextPage: false },
+              },
             },
           }}
         >
@@ -65,7 +88,7 @@ it('should render contact detail panel', async () => {
       </TestRouter>
     </ThemeProvider>,
   );
-
+  await waitFor(() => expect(getByText('Test Person')).toBeInTheDocument());
   const row = await findByTestId('rowButton');
 
   userEvent.click(row);
