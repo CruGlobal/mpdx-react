@@ -51,7 +51,7 @@ export const NavReportsList: React.FC<Props & BoxProps> = ({
   const { t } = useTranslation();
 
   return (
-    <Box {...BoxProps}>
+    <Box data-testid="ReportNavList" {...BoxProps}>
       <div className={classes.root}>
         <Slide in={isOpen} direction="right" mountOnEnter unmountOnExit>
           <Box>

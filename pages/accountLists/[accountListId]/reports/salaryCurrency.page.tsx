@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import Head from 'next/head';
 import { useTranslation } from 'react-i18next';
 import { Box, styled } from '@material-ui/core';
-import { SalaryReportTable } from 'src/components/Reports/FourteenMonthReports/SalaryReport/SalaryReportTable';
+import { FourteenMonthReportCurrencyType } from '../../../../graphql/types.generated';
+import { FourteenMonthReport } from 'src/components/Reports/FourteenMonthReports/FourteenMonthReport';
 import Loading from 'src/components/Loading';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import { useAccountListId } from 'src/hooks/useAccountListId';
@@ -24,7 +25,7 @@ const SalaryCurrencyReportPage: React.FC = () => {
   return (
     <>
       <Head>
-        <title>MPDX | {t('MPDX | Reports - Salary')}</title>
+        <title>MPDX | {t('Reports - Salary')}</title>
       </Head>
       {accountListId ? (
         <SalaryCurrencyReportPageWrapper>
@@ -40,11 +41,12 @@ const SalaryCurrencyReportPage: React.FC = () => {
             leftOpen={isNavListOpen}
             leftWidth="290px"
             mainContent={
-              <SalaryReportTable
+              <FourteenMonthReport
                 accountListId={accountListId}
                 isNavListOpen={isNavListOpen}
                 onNavListToggle={handleNavListToggle}
                 title={t('Contributions by Salary Currency')}
+                currencyType={FourteenMonthReportCurrencyType.Salary}
               />
             }
           />
