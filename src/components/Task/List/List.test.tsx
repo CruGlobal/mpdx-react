@@ -42,7 +42,7 @@ jest.mock('../../App', () => ({
 beforeEach(() => {
   (useApp as jest.Mock).mockReturnValue({
     openTaskDrawer,
-    state: { accountListId, breadcrumb: 'Tasks' },
+    state: { accountListId },
   });
 });
 

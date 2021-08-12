@@ -18,7 +18,7 @@ const dispatch = jest.fn();
 describe('ProfileMenu', () => {
   it('default', async () => {
     beforeEach(() => {
-      state = { accountListId: '1', breadcrumb: 'Dashboard' };
+      state = { accountListId: '1' };
       (useApp as jest.Mock).mockReturnValue({
         state,
         dispatch,
