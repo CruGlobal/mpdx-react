@@ -1,4 +1,11 @@
-import { Box, CardContent, Typography, Tooltip } from '@material-ui/core';
+import {
+  Box,
+  CardContent,
+  Typography,
+  Tooltip,
+  makeStyles,
+  Theme,
+} from '@material-ui/core';
 import React, { ReactElement } from 'react';
 import StarIcon from '@material-ui/icons/Star';
 import StarOutlineIcon from '@material-ui/icons/StarOutline';
@@ -16,6 +23,42 @@ export interface Props {
   total: number;
 }
 
+const useStyles = makeStyles((theme: Theme) => ({
+  cardContent: {
+    marginTop: -theme.spacing(2),
+  },
+  starPrimary: {
+    color: theme.palette.mpdxBlue.main,
+    transform: `translateY(${theme.spacing(0.5)}px)`,
+    '&:hover': {
+      cursor: 'pointer',
+      color: theme.palette.progressBarYellow.main,
+    },
+  },
+  colorYellow: {
+    color: theme.palette.progressBarYellow.main,
+  },
+  colorOrange: {
+    color: theme.palette.progressBarOrange.main,
+  },
+  colorLightGray: {
+    color: theme.palette.progressBarGray.main,
+  },
+  progressBarOuter: {
+    backgroundColor: theme.palette.cruGrayDark.main,
+    width: '100%',
+    height: '30px',
+    borderRadius: 10,
+    padding: 3,
+  },
+  progressBarInner: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 8,
+    overflowX: 'hidden',
+  },
+}));
+
 const Appeal = ({
   name,
   primary,
@@ -25,14 +68,12 @@ const Appeal = ({
   received,
   commited,
 }: Props): ReactElement => {
+  const classes = useStyles();
+
   return (
     <Box m={1}>
       <AnimatedCard>
-        <CardContent
-          style={{
-            marginTop: -theme.spacing(2),
-          }}
-        >
+        <CardContent className={classes.cardContent}>
           <Box display="flex" justifyContent="space-between">
             <Typography variant="h6" display="inline">
               {name}
@@ -42,19 +83,9 @@ const Appeal = ({
                 {given.toFixed(2)} / {amount.toFixed(2)}
               </Typography>
               {primary ? (
-                <StarIcon
-                  style={{
-                    color: theme.palette.mpdxBlue.main,
-                    transform: `translateY(${theme.spacing(0.5)}px)`,
-                  }}
-                />
+                <StarIcon className={classes.starPrimary} />
               ) : (
-                <StarOutlineIcon
-                  style={{
-                    color: theme.palette.mpdxBlue.main,
-                    transform: `translateY(${theme.spacing(0.5)}px)`,
-                  }}
-                />
+                <StarOutlineIcon className={classes.starPrimary} />
               )}
             </Box>
           </Box>
@@ -63,7 +94,7 @@ const Appeal = ({
               <Typography
                 variant="body2"
                 display="inline"
-                style={{ color: theme.palette.progressBarYellow.main }}
+                className={classes.colorYellow}
               >
                 {given} {amountCurrency} (
                 {`${((given / (amount || 1)) * 100).toFixed(0)}%`})
@@ -82,7 +113,7 @@ const Appeal = ({
               <Typography
                 variant="body2"
                 display="inline"
-                style={{ color: theme.palette.progressBarOrange.main }}
+                className={classes.colorOrange}
               >
                 {received + given} {amountCurrency} (
                 {`${(((received + given) / (amount || 1)) * 100).toFixed(0)}%`})
@@ -101,7 +132,7 @@ const Appeal = ({
               <Typography
                 variant="body2"
                 display="inline"
-                style={{ color: theme.palette.progressBarGray.main }}
+                className={classes.colorLightGray}
               >
                 {commited + received + given} {amountCurrency} (
                 {`${(
@@ -112,24 +143,11 @@ const Appeal = ({
               </Typography>
             </Tooltip>
           </Box>
-          <Box
-            style={{
-              backgroundColor: theme.palette.cruGrayDark.main,
-              width: '100%',
-              height: '30px',
-              borderRadius: 10,
-              padding: 3,
-            }}
-          >
+          <Box className={classes.progressBarOuter}>
             <Box
               display="flex"
               justifyContent="flex-start"
-              style={{
-                width: '100%',
-                height: '100%',
-                borderRadius: 8,
-                overflowX: 'hidden',
-              }}
+              className={classes.progressBarInner}
             >
               <Tooltip title="Given" placement="top-start" arrow>
                 <Box
