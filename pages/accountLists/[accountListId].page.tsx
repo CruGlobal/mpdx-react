@@ -2,7 +2,6 @@ import React, { ReactElement, useEffect } from 'react';
 import Head from 'next/head';
 import { GetServerSideProps } from 'next';
 import { getSession } from 'next-auth/client';
-import { useTranslation } from 'react-i18next';
 import Dashboard from '../../src/components/Dashboard';
 import { ssrClient } from '../../src/lib/client';
 import { useApp } from '../../src/components/App';
@@ -19,10 +18,8 @@ interface Props {
 
 const AccountListIdPage = ({ data, accountListId }: Props): ReactElement => {
   const { dispatch } = useApp();
-  const { t } = useTranslation();
 
   useEffect(() => {
-    dispatch({ type: 'updateBreadcrumb', breadcrumb: t('Dashboard') });
     dispatch({ type: 'updateAccountListId', accountListId });
   }, []);
 

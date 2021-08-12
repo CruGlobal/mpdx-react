@@ -13,10 +13,7 @@ import NotificationMenu from './NotificationMenu';
 export default {
   title: 'Layouts/Primary/TopBar/Items/NotificationMenu',
   decorators: [
-    withDispatch(
-      { type: 'updateAccountListId', accountListId: '1' },
-      { type: 'updateBreadcrumb', breadcrumb: 'Dashboard' },
-    ),
+    withDispatch({ type: 'updateAccountListId', accountListId: '1' }),
   ],
 };
 

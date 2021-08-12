@@ -8,10 +8,7 @@ import ProfileMenu from './ProfileMenu';
 export default {
   title: 'Layouts/Primary/TopBar/Items/ProfileMenu',
   decorators: [
-    withDispatch(
-      { type: 'updateBreadcrumb', breadcrumb: 'Dashboard' },
-      { type: 'updateAccountListId', accountListId: '1' },
-    ),
+    withDispatch({ type: 'updateAccountListId', accountListId: '1' }),
   ],
 };
 

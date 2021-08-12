@@ -9,10 +9,7 @@ import TopBar from './TopBar';
 export default {
   title: 'Layouts/Primary/TopBar',
   decorators: [
-    withDispatch(
-      { type: 'updateAccountListId', accountListId: '1' },
-      { type: 'updateBreadcrumb', breadcrumb: 'Dashboard' },
-    ),
+    withDispatch({ type: 'updateAccountListId', accountListId: '1' }),
   ],
 };
 
