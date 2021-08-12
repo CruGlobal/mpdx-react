@@ -1,4 +1,6 @@
 import { buildFederatedSchema } from '@apollo/federation';
+import { CoachingAnswerSetsResolvers } from './CoachingAnswerSets/resolvers';
+import CoachingAnswerSetsTypeDefs from './CoachingAnswerSets/coachingAnswerSets.graphql';
 import ScalarTypeDefs from './scalars.graphql';
 import { ScalarResolvers } from './scalarResolvers';
 import { ContactFiltersResolvers } from './ContactFilters/resolvers';
@@ -17,6 +19,10 @@ import AppealsTypeDefs from './Appeals/appeal.graphql';
 import { AppealsResolvers } from './Appeals/resolver';
 
 const schema = buildFederatedSchema([
+  {
+    typeDefs: CoachingAnswerSetsTypeDefs,
+    resolvers: CoachingAnswerSetsResolvers,
+  },
   { typeDefs: ScalarTypeDefs, resolvers: ScalarResolvers },
   { typeDefs: ContactFiltersTypeDefs, resolvers: ContactFiltersResolvers },
   { typeDefs: TaskAnalyticsTypeDefs, resolvers: TaskAnalyticsResolvers },
