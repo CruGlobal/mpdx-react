@@ -9,10 +9,7 @@ import Primary from '.';
 export default {
   title: 'Layouts/Primary',
   decorators: [
-    withDispatch(
-      { type: 'updateAccountListId', accountListId: '1' },
-      { type: 'updateBreadcrumb', breadcrumb: 'Dashboard' },
-    ),
+    withDispatch({ type: 'updateAccountListId', accountListId: '1' }),
   ],
 };
 

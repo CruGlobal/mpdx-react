@@ -74,7 +74,6 @@ const TasksPage = (): ReactElement => {
   const router = useRouter();
 
   useEffect(() => {
-    dispatch({ type: 'updateBreadcrumb', breadcrumb: t('Tasks') });
     dispatch({
       type: 'updateAccountListId',
       accountListId: router.query.accountListId?.toString() ?? '',
