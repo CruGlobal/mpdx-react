@@ -131,9 +131,7 @@ export const SidePanelsLayout: FC<SidePanelsLayoutProps> = ({
         >
           {leftPanel}
         </LeftPanelWrapper>
-        <ExpandingContent open={leftOpen}>
-          <ScrollBox isscroll={isScrollBox ? 1 : 0}>{mainContent}</ScrollBox>
-        </ExpandingContent>
+        <ExpandingContent open={leftOpen}>{mainContent}</ExpandingContent>
       </CollapsibleWrapper>
     </ExpandingContent>
     <RightPanelWrapper
