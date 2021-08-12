@@ -26,10 +26,7 @@ describe('Primary', () => {
   it('has correct defaults', () => {
     const { getByTestId, getByRole } = render(
       <ThemeProvider theme={theme}>
-        <TestWrapper
-          mocks={mocks}
-          initialState={{ accountListId: '1', breadcrumb: 'Dashboard' }}
-        >
+        <TestWrapper mocks={mocks} initialState={{ accountListId: '1' }}>
           <Primary>
             <div data-testid="PrimaryTestChildren"></div>
           </Primary>

@@ -4,7 +4,6 @@ import rootReducer, { Action, AppState } from './rootReducer';
 describe('rootReducer', () => {
   const state: AppState = {
     accountListId: undefined,
-    breadcrumb: undefined,
   };
 
   describe('updateAccountListId', () => {
@@ -14,13 +13,6 @@ describe('rootReducer', () => {
         accountListId: 'abc',
       };
       expect(rootReducer(state, action).accountListId).toEqual('abc');
-    });
-  });
-
-  describe('updateBreadcrumb', () => {
-    it('updates breadcrumb state', () => {
-      const action: Action = { type: 'updateBreadcrumb', breadcrumb: 'abc' };
-      expect(rootReducer(state, action).breadcrumb).toEqual('abc');
     });
   });
 

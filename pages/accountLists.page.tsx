@@ -1,4 +1,4 @@
-import React, { ReactElement, useEffect } from 'react';
+import React, { ReactElement } from 'react';
 import Head from 'next/head';
 import { GetServerSideProps, GetServerSidePropsResult } from 'next';
 import { getSession } from 'next-auth/client';
@@ -6,7 +6,6 @@ import { useTranslation } from 'react-i18next';
 import AccountLists from '../src/components/AccountLists';
 import { ssrClient } from '../src/lib/client';
 import BaseLayout from '../src/components/Layouts/Primary';
-import { useApp } from '../src/components/App';
 import {
   GetAccountListsDocument,
   GetAccountListsQuery,
@@ -18,12 +17,7 @@ interface Props {
 }
 
 const AccountListsPage = ({ data }: Props): ReactElement => {
-  const { dispatch } = useApp();
   const { t } = useTranslation();
-
-  useEffect(() => {
-    dispatch({ type: 'updateBreadcrumb', breadcrumb: t('Dashboard') });
-  }, []);
 
   return (
     <>
