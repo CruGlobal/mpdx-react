@@ -5,20 +5,18 @@ import {
   render,
   fireEvent,
 } from '../../../../../__tests__/util/testingLibraryReactMock';
-import { useApp } from '../../../App';
 import { GetThisWeekQuery } from '../GetThisWeek.generated';
 import { ActivityTypeEnum } from '../../../../../graphql/types.generated';
 import theme from '../../../../theme';
+import useTaskDrawer from '../../../../hooks/useTaskDrawer';
 import PartnerCare from './PartnerCare';
 
-jest.mock('../../../App', () => ({
-  useApp: jest.fn(),
-}));
+jest.mock('../../../../hooks/useTaskDrawer');
 
 const openTaskDrawer = jest.fn();
 
 beforeEach(() => {
-  (useApp as jest.Mock).mockReturnValue({
+  (useTaskDrawer as jest.Mock).mockReturnValue({
     openTaskDrawer,
   });
 });

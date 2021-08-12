@@ -9,17 +9,15 @@ import {
   getDataForTaskDrawerMock,
   createTaskMutationMock,
 } from '../../../Task/Drawer/Form/Form.mock';
-import { useApp } from '../../../App';
+import useTaskDrawer from '../../../../hooks/useTaskDrawer';
 import AddFab from '.';
 
-jest.mock('../../../App', () => ({
-  useApp: jest.fn(),
-}));
+jest.mock('../../../../hooks/useTaskDrawer');
 
 const openTaskDrawer = jest.fn();
 
 beforeEach(() => {
-  (useApp as jest.Mock).mockReturnValue({
+  (useTaskDrawer as jest.Mock).mockReturnValue({
     openTaskDrawer,
   });
 });

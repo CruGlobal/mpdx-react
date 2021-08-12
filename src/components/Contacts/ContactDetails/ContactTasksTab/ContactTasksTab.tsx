@@ -6,7 +6,7 @@ import { DateTime } from 'luxon';
 import { StarredItemIcon } from '../../../common/StarredItemIcon/StarredItemIcon';
 import { SearchBox } from '../../../common/SearchBox/SearchBox';
 import { ContactCheckBox } from '../../ContactCheckBox/ContactCheckBox';
-import { useApp } from '../../../App';
+import useTaskDrawer from '../../../../hooks/useTaskDrawer';
 import { ContactTaskRow } from './ContactTaskRow/ContactTaskRow';
 import { useContactTasksTabQuery } from './ContactTasksTab.generated';
 
@@ -94,7 +94,7 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
     variables: { accountListId, contactId, searchTerm },
   });
 
-  const { openTaskDrawer } = useApp();
+  const { openTaskDrawer } = useTaskDrawer();
 
   const { t } = useTranslation();
 

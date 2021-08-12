@@ -3,8 +3,8 @@ import { render, waitFor } from '@testing-library/react';
 import { MockedProvider } from '@apollo/client/testing';
 import { SnackbarProvider } from 'notistack';
 import { ThemeProvider } from '@material-ui/core';
-import { AppProviderContext } from '../../App/Provider';
 import theme from '../../../theme';
+import useTaskDrawer from '../../../hooks/useTaskDrawer';
 import {
   GetThisWeekEmptyMocks,
   GetThisWeekLoadingMocks,
@@ -12,11 +12,13 @@ import {
 } from './ThisWeek.mock';
 import ThisWeek from '.';
 
-jest.mock('../../App', () => ({
-  useApp: (): Partial<AppProviderContext> => ({
+jest.mock('../../../hooks/useTaskDrawer');
+
+beforeEach(() => {
+  (useTaskDrawer as jest.Mock).mockReturnValue({
     openTaskDrawer: jest.fn(),
-  }),
-}));
+  });
+});
 
 describe('ThisWeek', () => {
   it('default', async () => {

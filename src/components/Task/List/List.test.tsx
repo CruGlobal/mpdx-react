@@ -10,6 +10,7 @@ import {
 import { useApp } from '../../App';
 import { ActivityTypeEnum } from '../../../../graphql/types.generated';
 import theme from '../../../theme';
+import useTaskDrawer from '../../../hooks/useTaskDrawer';
 import {
   getTasksForTaskListMock,
   getFilteredTasksForTaskListMock,
@@ -35,14 +36,17 @@ jest.mock('notistack', () => ({
   },
 }));
 
+jest.mock('../../../hooks/useTaskDrawer');
 jest.mock('../../App', () => ({
   useApp: jest.fn(),
 }));
 
 beforeEach(() => {
   (useApp as jest.Mock).mockReturnValue({
-    openTaskDrawer,
     state: { accountListId, breadcrumb: 'Tasks' },
+  });
+  (useTaskDrawer as jest.Mock).mockReturnValue({
+    openTaskDrawer,
   });
 });
 

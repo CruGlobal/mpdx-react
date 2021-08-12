@@ -8,8 +8,8 @@ import {
   ActivityTypeEnum,
   ResultEnum,
 } from '../../../../../../graphql/types.generated';
+import useTaskDrawer from '../../../../../hooks/useTaskDrawer';
 import theme from '../../../../../theme';
-import { useApp } from '../../../../App';
 import { StarredItemIcon } from '../../../../common/StarredItemIcon/StarredItemIcon';
 import { TaskDrawerTabsEnum } from '../../../../Task/Drawer/Drawer';
 import { ContactCheckBox } from '../../../ContactCheckBox/ContactCheckBox';
@@ -135,7 +135,7 @@ export const ContactTaskRow: React.FC<ContactTaskRowProps> = ({
 }) => {
   const { t } = useTranslation();
 
-  const { openTaskDrawer } = useApp();
+  const { openTaskDrawer } = useTaskDrawer();
 
   const handleContactCheckPressed = () => {
     //select contact for actions

@@ -22,7 +22,6 @@ import * as yup from 'yup';
 import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
 import { dateFormat } from '../../../../lib/intlFormat/intlFormat';
-import { useApp } from '../../../App';
 import {
   ActivityTypeEnum,
   ContactConnection,
@@ -33,6 +32,7 @@ import {
 import { GetTaskForTaskDrawerQuery } from '../TaskDrawerTask.generated';
 import { useGetDataForTaskDrawerQuery } from '../Form/TaskDrawer.generated';
 import { GetThisWeekDocument } from '../../../Dashboard/ThisWeek/GetThisWeek.generated';
+import useTaskDrawer from '../../../../hooks/useTaskDrawer';
 import { useCompleteTaskMutation } from './CompleteTask.generated';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -88,7 +88,7 @@ const TaskDrawerCompleteForm = ({
   const classes = useStyles();
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
-  const { openTaskDrawer } = useApp();
+  const { openTaskDrawer } = useTaskDrawer();
   const { data } = useGetDataForTaskDrawerQuery({
     variables: { accountListId },
   });
