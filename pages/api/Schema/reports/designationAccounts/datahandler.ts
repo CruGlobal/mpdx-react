@@ -1,7 +1,6 @@
 import {
   DesignationAccount,
   DesignationAccountsGroup,
-  SetActiveDesignationAccountResponse,
 } from '../../../graphql-rest.page.generated';
 
 export interface DesignationAccountsResponse {
@@ -43,7 +42,7 @@ export interface DesignationAccountsResponse {
 }
 
 type PreDesignationAccountsGroup = {
-  [organizationId: string]: DesignationAccount[];
+  [organizationName: string]: DesignationAccount[];
 };
 
 const createDesignationAccount = (
@@ -65,8 +64,8 @@ export const createDesignationAccountsGroup = (
     (obj, item) => {
       return {
         ...obj,
-        [item.relationships.organization.data.id]: [
-          ...(obj[item.relationships.organization.data.id] || []),
+        [item.attributes.organization_name]: [
+          ...(obj[item.attributes.organization_name] || []),
           createDesignationAccount(item),
         ],
       };
@@ -86,7 +85,4 @@ export const createDesignationAccountsGroup = (
 
 export const setActiveDesignationAccount = (
   data: DesignationAccountsResponse,
-): SetActiveDesignationAccountResponse => ({
-  active: data.attributes.active,
-  id: data.id,
-});
+): DesignationAccount => createDesignationAccount(data);

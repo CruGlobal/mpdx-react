@@ -8,7 +8,6 @@ import {
   Theme,
 } from '@material-ui/core';
 import Icon from '@mdi/react';
-import { useTranslation } from 'react-i18next';
 import NextLink from 'next/link';
 import { useAccountListId } from '../../../../src/hooks/useAccountListId';
 import AnimatedCard from 'src/components/AnimatedCard';
@@ -53,7 +52,6 @@ export interface Props {
 }
 
 const Tool = ({ tool, desc, icon, id }: Props): ReactElement => {
-  const { t } = useTranslation();
   const classes = useStyles();
   const accountListId = useAccountListId();
 
@@ -73,8 +71,8 @@ const Tool = ({ tool, desc, icon, id }: Props): ReactElement => {
             >
               <Icon path={icon} size={1.5} />
             </Box>
-            <Typography variant="h6">{t(tool)}</Typography>
-            <Typography variant="body2">{t(desc)}</Typography>
+            <Typography variant="h6">{tool}</Typography>
+            <Typography variant="body2">{desc}</Typography>
           </CardContent>
         </CardActionArea>
       </AnimatedCard>

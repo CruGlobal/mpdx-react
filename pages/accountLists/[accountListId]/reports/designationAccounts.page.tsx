@@ -1,28 +1,54 @@
-import React, { ReactElement } from 'react';
+import React, { useState } from 'react';
 import Head from 'next/head';
 import { useTranslation } from 'react-i18next';
-import { Box } from '@material-ui/core';
-import PageHeading from '../../../../src/components/PageHeading';
-import { DesignationAccountsReportTable } from '../../../../src/components/Reports/DesignationAccountsReport/DesignationAccountsReportTable';
-import Loading from '../../../../src/components/Loading';
-import { useAccountListId } from '../../../../src/hooks/useAccountListId';
+import { Box, styled } from '@material-ui/core';
+import { DesignationAccountsReport } from 'src/components/Reports/DesignationAccountsReport/DesignationAccountsReport';
+import Loading from 'src/components/Loading';
+import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
+import { useAccountListId } from 'src/hooks/useAccountListId';
+import { NavReportsList } from 'src/components/Reports/NavReportsList/NavReportsList';
 
-const DesignationAccountsReportPage = (): ReactElement => {
+const DesignationAccountsReportPageWrapper = styled(Box)(({ theme }) => ({
+  backgroundColor: theme.palette.common.white,
+}));
+
+const DesignationAccountsReportPage: React.FC = () => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
+  const [isNavListOpen, setNavListOpen] = useState<boolean>(false);
+
+  const handleNavListToggle = () => {
+    setNavListOpen(!isNavListOpen);
+  };
 
   return (
     <>
       <Head>
-        <title>
-          MPDX | {t('Reports')} | {t('Designation Accounts')}
-        </title>
+        <title>MPDX | {t('Reports - Designation Accounts')}</title>
       </Head>
       {accountListId ? (
-        <Box>
-          <PageHeading heading={t('Designation Accounts')} />
-          <DesignationAccountsReportTable accountListId={accountListId} />
-        </Box>
+        <DesignationAccountsReportPageWrapper>
+          <SidePanelsLayout
+            isScrollBox={false}
+            leftPanel={
+              <NavReportsList
+                isOpen={isNavListOpen}
+                selectedId="designationAccounts"
+                onClose={handleNavListToggle}
+              />
+            }
+            leftOpen={isNavListOpen}
+            leftWidth="290px"
+            mainContent={
+              <DesignationAccountsReport
+                accountListId={accountListId}
+                isNavListOpen={isNavListOpen}
+                onNavListToggle={handleNavListToggle}
+                title={t('Designation Accounts')}
+              />
+            }
+          />
+        </DesignationAccountsReportPageWrapper>
       ) : (
         <Loading loading />
       )}

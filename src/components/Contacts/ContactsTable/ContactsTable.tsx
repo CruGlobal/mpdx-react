@@ -6,7 +6,10 @@ import {
   TableHead,
   TableBody,
   TableContainer,
+  CircularProgress,
+  Typography,
 } from '@material-ui/core';
+import { Virtuoso } from 'react-virtuoso';
 import { ContactRow } from '../ContactRow/ContactRow';
 import { ContactsHeader } from '../ContactsHeader/ContactsHeader';
 import { useContactsQuery } from '../../../../pages/accountLists/[accountListId]/contacts/Contacts.generated';
@@ -30,18 +33,16 @@ export const ContactsTable: React.FC<Props> = ({
 }: Props) => {
   const [searchTerm, setSearchTerm] = useState<string>();
 
-  const { data, loading, error } = useContactsQuery({
+  const { data, loading, error, fetchMore } = useContactsQuery({
     variables: { accountListId, searchTerm },
   });
 
   const renderLoading = () => (
-    <Box
-      height="100%"
-      alignItems="center"
-      justifyContent="center"
-      bgcolor={colors.green[600]}
-    >
-      Loading
+    <Box display="flex" alignItems="center" justifyContent="center">
+      <Box padding={2}>
+        <Typography variant="h6">Loading...</Typography>
+      </Box>
+      <CircularProgress size={24} />
     </Box>
   );
 
@@ -84,14 +85,45 @@ export const ContactsTable: React.FC<Props> = ({
             renderEmpty()
           ) : (
             <div data-testid="ContactRows">
-              {data.contacts.nodes?.map((contact) => (
-                <ContactRow
-                  accountListId={accountListId}
-                  key={contact.id}
-                  contact={contact}
-                  onContactSelected={handleOnContactSelected}
-                />
-              ))}
+              <Virtuoso
+                data={data.contacts.nodes}
+                style={{ height: 'calc(100vh - 160px)' }}
+                endReached={() =>
+                  data.contacts.pageInfo.hasNextPage &&
+                  fetchMore({
+                    variables: { after: data.contacts.pageInfo.endCursor },
+                    updateQuery: (prev, { fetchMoreResult }) => {
+                      if (!fetchMoreResult) {
+                        return prev;
+                      }
+                      return {
+                        ...prev,
+                        ...fetchMoreResult,
+                        contacts: {
+                          ...prev.contacts,
+                          ...fetchMoreResult.contacts,
+                          nodes: [
+                            ...prev.contacts.nodes,
+                            ...fetchMoreResult.contacts.nodes,
+                          ],
+                        },
+                      };
+                    },
+                  })
+                }
+                itemContent={(index, contact) => (
+                  <ContactRow
+                    accountListId={accountListId}
+                    key={index}
+                    contact={contact}
+                    onContactSelected={handleOnContactSelected}
+                  />
+                )}
+                components={{
+                  Footer: () =>
+                    data.contacts.pageInfo.hasNextPage ? renderLoading() : null,
+                }}
+              />
             </div>
           )}
         </TableBody>

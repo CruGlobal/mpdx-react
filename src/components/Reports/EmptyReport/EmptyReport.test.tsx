@@ -20,4 +20,22 @@ describe('EmptyReport', () => {
     expect(queryByText('test subTitle')).toBeInTheDocument();
     userEvent.click(getByText('Add New Donation'));
   });
+
+  it('should not render add new donation button', () => {
+    const { queryByText } = render(
+      <ThemeProvider theme={theme}>
+        <TestWrapper initialState={{}}>
+          <EmptyReport
+            title="test title"
+            subTitle="test subTitle"
+            hasAddNewDonation={false}
+          />
+        </TestWrapper>
+      </ThemeProvider>,
+    );
+
+    expect(queryByText('test title')).toBeInTheDocument();
+    expect(queryByText('test subTitle')).toBeInTheDocument();
+    expect(queryByText('Add New Donation')).not.toBeInTheDocument();
+  });
 });

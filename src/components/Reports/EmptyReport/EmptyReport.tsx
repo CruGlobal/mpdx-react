@@ -5,6 +5,7 @@ import LocalAtmIcon from '@material-ui/icons/LocalAtm';
 import HandoffLink from 'src/components/HandoffLink';
 
 interface Props {
+  hasAddNewDonation?: boolean;
   title: string;
   subTitle?: string;
 }
@@ -22,7 +23,11 @@ const BoxWrapper = styled(Box)(({ theme }) => ({
   alignItems: 'center',
 }));
 
-export const EmptyReport: React.FC<Props> = ({ title, subTitle }) => {
+export const EmptyReport: React.FC<Props> = ({
+  hasAddNewDonation = true,
+  title,
+  subTitle,
+}) => {
   const { t } = useTranslation();
 
   const addNewDonation = () => {
@@ -32,7 +37,7 @@ export const EmptyReport: React.FC<Props> = ({ title, subTitle }) => {
   };
 
   return (
-    <BoxWrapper boxShadow={3}>
+    <BoxWrapper boxShadow={3} data-testid="EmptyReport">
       <Box mb={2}>
         <LocalAtmIcon fontSize="large" color="disabled" />
       </Box>
@@ -42,14 +47,16 @@ export const EmptyReport: React.FC<Props> = ({ title, subTitle }) => {
         <HandoffLink path="/preferences/integrations">
           <Button variant="contained">{t('Connect Services')}</Button>
         </HandoffLink>
-        <Button
-          variant="contained"
-          color="primary"
-          style={{ marginLeft: 2 }}
-          onClick={addNewDonation}
-        >
-          {t('Add New Donation')}
-        </Button>
+        {hasAddNewDonation && (
+          <Button
+            variant="contained"
+            color="primary"
+            style={{ marginLeft: 2 }}
+            onClick={addNewDonation}
+          >
+            {t('Add New Donation')}
+          </Button>
+        )}
       </Box>
     </BoxWrapper>
   );

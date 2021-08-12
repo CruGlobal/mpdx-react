@@ -493,6 +493,7 @@ describe('ContactDetailTab', () => {
             },
           },
         ],
+        pageInfo: { endCursor: 'Mg', hasNextPage: false },
       },
     };
     cache.writeQuery({
@@ -531,10 +532,12 @@ describe('ContactDetailTab', () => {
         variables: {
           accountListId,
           searchTerm: undefined,
+          after: undefined,
         },
         data: {
           contacts: {
             nodes: [],
+            pageInfo: { endCursor: 'Mg', hasNextPage: false },
           },
         },
       }),

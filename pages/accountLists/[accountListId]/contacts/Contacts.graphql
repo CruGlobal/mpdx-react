@@ -1,8 +1,16 @@
-query Contacts($accountListId: ID!, $searchTerm: String) {
-  contacts(accountListId: $accountListId, wildcardSearch: $searchTerm) {
+query Contacts($accountListId: ID!, $searchTerm: String, $after: String) {
+  contacts(
+    accountListId: $accountListId
+    wildcardSearch: $searchTerm
+    after: $after
+  ) {
     nodes {
       id
       ...ContactRow
+    }
+    pageInfo {
+      endCursor
+      hasNextPage
     }
   }
 }

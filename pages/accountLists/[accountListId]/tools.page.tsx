@@ -1,22 +1,10 @@
-import React, { ReactElement, useEffect } from 'react';
+import React, { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useRouter } from 'next/router';
 import Head from 'next/head';
-import { useApp } from '../../../src/components/App';
 import ToolHome from 'src/components/Tool/Home/Home';
 
 const ToolsPage = (): ReactElement => {
-  const { dispatch } = useApp();
   const { t } = useTranslation();
-  const router = useRouter();
-
-  useEffect(() => {
-    dispatch({ type: 'updateBreadcrumb', breadcrumb: t('Tools') });
-    dispatch({
-      type: 'updateAccountListId',
-      accountListId: router.query.accountListId?.toString() ?? '',
-    });
-  }, []);
 
   return (
     <>
