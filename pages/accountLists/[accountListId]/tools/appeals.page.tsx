@@ -120,12 +120,33 @@ const AppealsPage = (): ReactElement => {
                 {loading ? (
                   <LoadingIndicator color="primary" size={20} />
                 ) : (
-                  data && (
+                  data &&
+                  data.accountList.primaryAppeal && (
                     <>
-                      <PrimaryAppeal appeal={data.accountList.primaryAppeal} />
-
+                      <PrimaryAppeal
+                        appeal={{
+                          amount: data.accountList.primaryAppeal.amount || 0,
+                          amountCurrency:
+                            data.accountList.primaryAppeal.amountCurrency,
+                          id: data.accountList.primaryAppeal.id,
+                          name: data.accountList.primaryAppeal.name || '',
+                          pledgesAmountNotReceivedNotProcessed:
+                            data.accountList.primaryAppeal
+                              .pledgesAmountNotReceivedNotProcessed,
+                          pledgesAmountProcessed:
+                            data.accountList.primaryAppeal
+                              .pledgesAmountProcessed,
+                          pledgesAmountReceivedNotProcessed:
+                            data.accountList.primaryAppeal
+                              .pledgesAmountReceivedNotProcessed,
+                          pledgesAmountTotal:
+                            data.accountList.primaryAppeal.pledgesAmountTotal,
+                        }}
+                      />
                       <Divider />
-                      <Appeals primaryId={data.accountList.primaryAppeal.id} />
+                      <Appeals
+                        primaryId={data.accountList.primaryAppeal.id || ''}
+                      />
                     </>
                   )
                 )}

@@ -10,11 +10,10 @@ export interface Props {
 }
 
 export interface Appeal {
-  __typename?: string;
-  amount?: number;
+  amount: number;
   amountCurrency: string;
   id: string;
-  name?: string;
+  name: string;
   pledgesAmountNotReceivedNotProcessed: number;
   pledgesAmountProcessed: number;
   pledgesAmountReceivedNotProcessed: number;
