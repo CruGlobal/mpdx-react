@@ -10,7 +10,6 @@ import {
   Typography,
   Divider,
   CircularProgress,
-  styled,
 } from '@material-ui/core';
 import { motion } from 'framer-motion';
 import NavToolDrawer from '../../../../src/components/Tool/NavToolList/NavToolDrawer';
@@ -43,10 +42,9 @@ const useStyles = makeStyles((theme: Theme) => ({
     flexDirection: 'row',
     minWidth: '100vw',
   },
-}));
-
-const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
-  margin: theme.spacing(0, 1, 0, 0),
+  loadingIndicator: {
+    margin: theme.spacing(0, 1, 0, 0),
+  },
 }));
 
 const AppealsPage = (): ReactElement => {
@@ -118,7 +116,11 @@ const AppealsPage = (): ReactElement => {
 
               <Grid item xs={12} sm={12} md={6}>
                 {loading ? (
-                  <LoadingIndicator color="primary" size={20} />
+                  <CircularProgress
+                    color="primary"
+                    size={20}
+                    className={classes.loadingIndicator}
+                  />
                 ) : (
                   data &&
                   data.accountList.primaryAppeal && (
