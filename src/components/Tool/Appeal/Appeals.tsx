@@ -35,7 +35,7 @@ const Appeals = ({ primaryId }: Props): ReactElement => {
       <Divider />
       {loading ? (
         <Box display="flex" justifyContent="center" mt={10}>
-          <LoadingIndicator color="primary" size={20} />
+          <LoadingIndicator color="primary" size={40} />
         </Box>
       ) : data && data.appeals ? (
         <>
