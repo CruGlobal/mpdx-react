@@ -28,6 +28,7 @@ import TaskStatus from '../Status';
 import illustration15 from '../../../images/drawkit/grape/drawkit-grape-pack-illustration-15.svg';
 import { ActivityTypeEnum } from '../../../../graphql/types.generated';
 import { useGetDataForTaskDrawerQuery } from '../Drawer/Form/TaskDrawer.generated';
+import useTaskDrawer from '../../../hooks/useTaskDrawer';
 import {
   useGetTasksForTaskListQuery,
   GetTasksForTaskListQueryVariables,
@@ -87,8 +88,9 @@ const TaskList = ({ initialFilter }: Props): ReactElement => {
 
   const {
     state: { accountListId },
-    openTaskDrawer,
   } = useApp();
+
+  const { openTaskDrawer } = useTaskDrawer();
 
   const { data: filterData } = useGetDataForTaskDrawerQuery({
     variables: { accountListId: accountListId ?? '' },

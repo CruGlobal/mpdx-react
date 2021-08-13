@@ -19,10 +19,10 @@ import { useTranslation } from 'react-i18next';
 import Link from 'next/link';
 import { DateTime } from 'luxon';
 import AnimatedCard from '../../../AnimatedCard';
-import { useApp } from '../../../App';
 import TaskStatus from '../../../Task/Status';
 import illustration8 from '../../../../images/drawkit/grape/drawkit-grape-pack-illustration-8.svg';
 import { GetThisWeekQuery } from '../GetThisWeek.generated';
+import useTaskDrawer from '../../../../hooks/useTaskDrawer';
 
 const useStyles = makeStyles((theme: Theme) => ({
   div: {
@@ -71,7 +71,7 @@ const TasksDueThisWeek = ({
 }: Props): ReactElement => {
   const classes = useStyles();
   const { t } = useTranslation();
-  const { openTaskDrawer } = useApp();
+  const { openTaskDrawer } = useTaskDrawer();
 
   const handleClick = ({
     id: taskId,

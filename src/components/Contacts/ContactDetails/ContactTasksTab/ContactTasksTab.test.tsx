@@ -3,19 +3,17 @@ import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { DateTime } from 'luxon';
 import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
+import useTaskDrawer from '../../../../hooks/useTaskDrawer';
 import theme from '../../../../theme';
-import { useApp } from '../../../App';
 import { ContactTasksTab } from './ContactTasksTab';
 import { ContactTasksTabQuery } from './ContactTasksTab.generated';
 
-jest.mock('../../../App', () => ({
-  useApp: jest.fn(),
-}));
+jest.mock('../../../../hooks/useTaskDrawer');
 
 const openTaskDrawer = jest.fn();
 
 beforeEach(() => {
-  (useApp as jest.Mock).mockReturnValue({
+  (useTaskDrawer as jest.Mock).mockReturnValue({
     openTaskDrawer,
   });
 });

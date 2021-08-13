@@ -4,17 +4,19 @@ import { MockedProvider } from '@apollo/client/testing';
 import { SnackbarProvider } from 'notistack';
 import { ThemeProvider } from '@material-ui/core';
 import matchMediaMock from '../../../__tests__/util/matchMediaMock';
-import { AppProviderContext } from '../App/Provider';
 import { GetDashboardQuery } from '../../../pages/accountLists/GetDashboard.generated';
 import theme from '../../theme';
+import useTaskDrawer from '../../hooks/useTaskDrawer';
 import { GetThisWeekDefaultMocks } from './ThisWeek/ThisWeek.mock';
 import Dashboard from '.';
 
-jest.mock('../App', () => ({
-  useApp: (): Partial<AppProviderContext> => ({
+jest.mock('../../hooks/useTaskDrawer');
+
+beforeEach(() => {
+  (useTaskDrawer as jest.Mock).mockReturnValue({
     openTaskDrawer: jest.fn(),
-  }),
-}));
+  });
+});
 
 const data: GetDashboardQuery = {
   user: {
