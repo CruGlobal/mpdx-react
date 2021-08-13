@@ -13,12 +13,13 @@ import {
 } from '@material-ui/core';
 import { motion } from 'framer-motion';
 import NavToolDrawer from '../../../../src/components/Tool/NavToolList/NavToolDrawer';
-import PrimaryAppeal from '../../../../src/components/Tool/Appeal/PrimaryAppeal';
+import Appeal from '../../../../src/components/Tool/Appeal/Appeal';
 import Appeals from '../../../../src/components/Tool/Appeal/Appeals';
 import { useGetPrimaryAppealQuery } from '../../../../pages/accountLists/[accountListId]/tools/GetPrimaryAppeal.generated';
 import { useAccountListId } from '../../../../src/hooks/useAccountListId';
 
 import AddAppealForm from '../../../../src/components/Tool/Appeal/AddAppealForm';
+import NoAppeals from 'src/components/Tool/Appeal/NoAppeals';
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
@@ -105,49 +106,70 @@ const AppealsPage = (): ReactElement => {
                 <Divider />
                 <Box m={1}>
                   <Typography variant="body2">
-                    You can track recurring support goals or special need
-                    support goals through our appeals wizard. Track the
-                    recurring support you raise for an increase ask for example,
-                    or special gifts you raise for a summer mission trip or your
-                    new staff special gift goal.
+                    {t(
+                      'You can track recurring support goals or special need ' +
+                        'support goals through our appeals wizard. Track the ' +
+                        'recurring support you raise for an increase ask for example, ' +
+                        'or special gifts you raise for a summer mission trip or your ' +
+                        'new staff special gift goal.',
+                    )}
                   </Typography>
                 </Box>
               </Grid>
 
               <Grid item xs={12} sm={12} md={6}>
                 {loading ? (
-                  <CircularProgress
-                    color="primary"
-                    size={20}
-                    className={classes.loadingIndicator}
-                  />
+                  <Box display="flex" justifyContent="center" mt={10}>
+                    <CircularProgress
+                      color="primary"
+                      size={40}
+                      className={classes.loadingIndicator}
+                    />
+                  </Box>
                 ) : (
-                  data &&
-                  data.accountList.primaryAppeal && (
+                  data && (
                     <>
-                      <PrimaryAppeal
-                        appeal={{
-                          amount: data.accountList.primaryAppeal.amount || 0,
-                          amountCurrency:
-                            data.accountList.primaryAppeal.amountCurrency,
-                          id: data.accountList.primaryAppeal.id,
-                          name: data.accountList.primaryAppeal.name || '',
-                          pledgesAmountNotReceivedNotProcessed:
+                      <Box m={1}>
+                        <Typography variant="h6">
+                          {t('Primary Appeal')}
+                        </Typography>
+                      </Box>
+                      <Divider />
+                      {data.accountList.primaryAppeal ? (
+                        <Appeal
+                          name={data.accountList.primaryAppeal.name || ''}
+                          primary
+                          amount={data.accountList.primaryAppeal.amount || 0}
+                          amountCurrency={
+                            data.accountList.primaryAppeal.amountCurrency
+                          }
+                          given={
                             data.accountList.primaryAppeal
-                              .pledgesAmountNotReceivedNotProcessed,
-                          pledgesAmountProcessed:
+                              .pledgesAmountProcessed || 0
+                          }
+                          received={
                             data.accountList.primaryAppeal
-                              .pledgesAmountProcessed,
-                          pledgesAmountReceivedNotProcessed:
+                              .pledgesAmountReceivedNotProcessed || 0
+                          }
+                          commited={
                             data.accountList.primaryAppeal
-                              .pledgesAmountReceivedNotProcessed,
-                          pledgesAmountTotal:
-                            data.accountList.primaryAppeal.pledgesAmountTotal,
-                        }}
-                      />
+                              .pledgesAmountNotReceivedNotProcessed || 0
+                          }
+                          total={
+                            data.accountList.primaryAppeal.pledgesAmountTotal ||
+                            0
+                          }
+                        />
+                      ) : (
+                        <NoAppeals primary />
+                      )}
                       <Divider />
                       <Appeals
-                        primaryId={data.accountList.primaryAppeal.id || ''}
+                        primaryId={
+                          data.accountList.primaryAppeal
+                            ? data.accountList.primaryAppeal.id
+                            : ''
+                        }
                       />
                     </>
                   )
