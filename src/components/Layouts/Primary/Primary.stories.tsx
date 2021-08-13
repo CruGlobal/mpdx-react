@@ -1,16 +1,12 @@
 import React, { ReactElement } from 'react';
 import { MockedProvider } from '@apollo/client/testing';
 import { Container, Box } from '@material-ui/core';
-import withDispatch from '../../../decorators/withDispatch';
 import { getNotificationsMocks } from './TopBar/Items/NotificationMenu/NotificationMenu.mock';
 import { getTopBarMock } from './TopBar/TopBar.mock';
 import Primary from '.';
 
 export default {
   title: 'Layouts/Primary',
-  decorators: [
-    withDispatch({ type: 'updateAccountListId', accountListId: '1' }),
-  ],
 };
 
 export const Default = (): ReactElement => {

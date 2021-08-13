@@ -2,6 +2,15 @@ import React from 'react';
 import { render } from '../../../../../__tests__/util/testingLibraryReactMock';
 import LateCommitments from './LateCommitments';
 
+jest.mock('next/router', () => ({
+  useRouter: () => {
+    return {
+      query: { accountListId: 'abc' },
+      isReady: true,
+    };
+  },
+}));
+
 describe('LateCommitments', () => {
   it('default', () => {
     const { getByTestId, queryByTestId } = render(<LateCommitments />);

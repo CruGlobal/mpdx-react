@@ -2,6 +2,15 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import Balance from '.';
 
+jest.mock('next/router', () => ({
+  useRouter: () => {
+    return {
+      query: { accountListId: 'abc' },
+      isReady: true,
+    };
+  },
+}));
+
 describe('Balance', () => {
   it('default', () => {
     const { getByTestId, getByRole } = render(<Balance balance={1000.99} />);

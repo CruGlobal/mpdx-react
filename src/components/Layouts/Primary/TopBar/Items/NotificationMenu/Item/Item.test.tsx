@@ -15,6 +15,15 @@ import {
 import acknowledgeUserNotificationMutationMock from './Item.mock';
 import NotificationMenuItem from '.';
 
+jest.mock('next/router', () => ({
+  useRouter: () => {
+    return {
+      query: { accountListId: 'abc' },
+      isReady: true,
+    };
+  },
+}));
+
 describe('NotificationMenuItem', () => {
   const id = 'd1b7a8c1-9b2e-4234-b2d6-e52c151bbc7b';
   const itemWithoutDonation = (
@@ -445,7 +454,7 @@ describe('NotificationMenuItem', () => {
       cache.writeQuery({
         query: GetNotificationsDocument,
         variables: {
-          accountListId: '1',
+          accountListId: 'abc',
           after: null,
         },
         data,
@@ -454,7 +463,6 @@ describe('NotificationMenuItem', () => {
       const { getByRole } = render(
         <TestWrapper
           mocks={[acknowledgeUserNotificationMutationMock(id)]}
-          initialState={{ accountListId: '1' }}
           cache={cache}
         >
           <NotificationMenuItem
@@ -470,7 +478,7 @@ describe('NotificationMenuItem', () => {
       expect(cache.writeQuery).toHaveBeenCalledWith({
         query: GetNotificationsDocument,
         variables: {
-          accountListId: '1',
+          accountListId: 'abc',
           after: null,
         },
         data: {

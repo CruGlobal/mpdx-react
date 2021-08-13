@@ -17,13 +17,13 @@ import {
   dateFormat,
   monthYearFormat,
 } from '../../../../../../../lib/intlFormat/intlFormat';
-import { useApp } from '../../../../../../App';
 import HandoffLink from '../../../../../../HandoffLink';
 import { NotificationTypeTypeEnum } from '../../../../../../../../graphql/types.generated';
 import {
   GetNotificationsDocument,
   GetNotificationsQuery,
 } from '../GetNotificationsQuery.generated';
+import { useAccountListId } from '../../../../../../../hooks/useAccountListId';
 import { useAcknowledgeUserNotificationMutation } from './AcknowledgeUserNotification.generated';
 
 interface Props {
@@ -40,7 +40,7 @@ const NotificationMenuItem = ({
   onClick,
 }: Props): ReactElement => {
   const { t } = useTranslation();
-  const { state } = useApp();
+  const accountListId = useAccountListId();
 
   if (!item) {
     return (
@@ -82,7 +82,7 @@ const NotificationMenuItem = ({
           const query = {
             query: GetNotificationsDocument,
             variables: {
-              accountListId: state.accountListId,
+              accountListId: accountListId,
               after: null,
             },
           };
