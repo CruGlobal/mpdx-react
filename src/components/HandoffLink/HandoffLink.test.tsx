@@ -1,18 +1,27 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import * as nextRouter from 'next/router';
 import TestWrapper from '../../../__tests__/util/TestWrapper';
 import { User } from '../../../graphql/types.generated';
+
 import HandoffLink from '.';
 
 describe('HandoffLink', () => {
   let open: jest.Mock;
   let originalOpen: Window['open'];
+  const useRouter = jest.spyOn(nextRouter, 'useRouter');
 
   beforeEach(() => {
     open = jest.fn();
     originalOpen = window.open;
     window.open = open;
+    (useRouter as jest.SpyInstance<
+      Pick<nextRouter.NextRouter, 'query' | 'isReady'>
+    >).mockImplementation(() => ({
+      query: { accountListId: 'accountListId' },
+      isReady: true,
+    }));
   });
 
   afterEach(() => {
@@ -23,7 +32,6 @@ describe('HandoffLink', () => {
     const { getByRole } = render(
       <TestWrapper
         initialState={{
-          accountListId: 'accountListId',
           user: { id: 'userId', firstName: 'Bob', lastName: 'Jones' } as User,
         }}
       >

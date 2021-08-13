@@ -2,19 +2,7 @@ import { User } from '../../../graphql/types.generated';
 import rootReducer, { Action, AppState } from './rootReducer';
 
 describe('rootReducer', () => {
-  const state: AppState = {
-    accountListId: undefined,
-  };
-
-  describe('updateAccountListId', () => {
-    it('updates accountListId state', () => {
-      const action: Action = {
-        type: 'updateAccountListId',
-        accountListId: 'abc',
-      };
-      expect(rootReducer(state, action).accountListId).toEqual('abc');
-    });
-  });
+  const state: AppState = {};
 
   describe('updateUser', () => {
     it('updates user state', () => {

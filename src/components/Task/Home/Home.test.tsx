@@ -13,6 +13,15 @@ import TaskHome from '.';
 
 const accountListId = 'abc';
 
+jest.mock('next/router', () => ({
+  useRouter: () => {
+    return {
+      query: { accountListId },
+      isReady: true,
+    };
+  },
+}));
+
 describe('TaskHome', () => {
   it('has correct defaults', async () => {
     const mocks = [

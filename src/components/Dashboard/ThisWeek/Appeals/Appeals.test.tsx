@@ -2,6 +2,15 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import Appeals from '.';
 
+jest.mock('next/router', () => ({
+  useRouter: () => {
+    return {
+      query: { accountListId: 'abc' },
+      isReady: true,
+    };
+  },
+}));
+
 describe('Appeals', () => {
   it('default', () => {
     const { getByTestId } = render(<Appeals />);

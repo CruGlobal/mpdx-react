@@ -19,7 +19,7 @@ interface Props {
 const TestWrapper = ({
   mocks = [],
   children,
-  initialState = { accountListId: 'abc' },
+  initialState = {},
   disableAppProvider = false,
   cache = new InMemoryCache({ addTypename: false }),
 }: Props): ReactElement => {

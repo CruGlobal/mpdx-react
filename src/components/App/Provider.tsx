@@ -14,7 +14,6 @@ interface Props {
 
 const AppProvider = ({ initialState, children }: Props): ReactElement => {
   const [state, dispatch] = useReducer<typeof rootReducer>(rootReducer, {
-    accountListId: undefined,
     ...initialState,
   });
 

@@ -11,6 +11,14 @@ import { GetThisWeekDefaultMocks } from './ThisWeek/ThisWeek.mock';
 import Dashboard from '.';
 
 jest.mock('../../hooks/useTaskDrawer');
+jest.mock('next/router', () => ({
+  useRouter: () => {
+    return {
+      query: { accountListId: 'abc' },
+      isReady: true,
+    };
+  },
+}));
 
 beforeEach(() => {
   (useTaskDrawer as jest.Mock).mockReturnValue({

@@ -18,7 +18,6 @@ const dispatch = jest.fn();
 describe('ProfileMenu', () => {
   it('default', async () => {
     beforeEach(() => {
-      state = { accountListId: '1' };
       (useApp as jest.Mock).mockReturnValue({
         state,
         dispatch,
@@ -27,10 +26,7 @@ describe('ProfileMenu', () => {
 
     const { getByTestId, queryByText, getByText } = render(
       <ThemeProvider theme={theme}>
-        <TestWrapper
-          initialState={{ accountListId: '1' }}
-          mocks={[getTopBarMock()]}
-        >
+        <TestWrapper mocks={[getTopBarMock()]}>
           <ProfileMenu />
         </TestWrapper>
       </ThemeProvider>,
