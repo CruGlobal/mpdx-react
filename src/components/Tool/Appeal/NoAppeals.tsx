@@ -4,7 +4,11 @@ import Icon from '@mdi/react';
 import { mdiAlertCircleOutline } from '@mdi/js';
 import AnimatedCard from '../../../../src/components/AnimatedCard';
 
-const NoAppeals = (): ReactElement => {
+export interface Props {
+  primary?: boolean;
+}
+
+const NoAppeals = ({ primary }: Props): ReactElement => {
   return (
     <Box m={1}>
       <AnimatedCard>
@@ -17,7 +21,11 @@ const NoAppeals = (): ReactElement => {
             alignItems="center"
           >
             <Icon path={mdiAlertCircleOutline} size={3} />
-            <Typography variant="h6">You do not have any appeals.</Typography>
+            <Typography variant="h6">
+              {primary
+                ? 'You do not have a primary appeal.'
+                : 'You do not have any appeals.'}
+            </Typography>
           </Box>
         </CardContent>
       </AnimatedCard>
