@@ -24,6 +24,20 @@ const accountListId = 'abc';
 const taskId = 'task-1';
 const contactIds = ['contact-1', 'contact-2'];
 
+jest.mock('next/router', () => ({
+  useRouter: () => {
+    return {
+      query: { accountListId },
+      isReady: true,
+      events: {
+        on: (): void => undefined,
+        off: (): void => undefined,
+        emit: (): void => undefined,
+      },
+    };
+  },
+}));
+
 describe('TaskDrawer', () => {
   it('default', async () => {
     const onClose = jest.fn();

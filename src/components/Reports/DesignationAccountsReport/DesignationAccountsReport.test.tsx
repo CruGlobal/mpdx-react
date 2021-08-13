@@ -15,6 +15,15 @@ const accountListId = '111';
 const title = 'test title';
 const onNavListToggle = jest.fn();
 
+jest.mock('next/router', () => ({
+  useRouter: () => {
+    return {
+      query: { accountListId },
+      isReady: true,
+    };
+  },
+}));
+
 describe('DesignationAccounts', () => {
   it('default', async () => {
     const { queryByTestId, getByTestId, getByText } = render(

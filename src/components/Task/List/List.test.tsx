@@ -7,7 +7,6 @@ import {
   render,
   waitFor,
 } from '../../../../__tests__/util/testingLibraryReactMock';
-import { useApp } from '../../App';
 import { ActivityTypeEnum } from '../../../../graphql/types.generated';
 import theme from '../../../theme';
 import useTaskDrawer from '../../../hooks/useTaskDrawer';
@@ -37,14 +36,8 @@ jest.mock('notistack', () => ({
 }));
 
 jest.mock('../../../hooks/useTaskDrawer');
-jest.mock('../../App', () => ({
-  useApp: jest.fn(),
-}));
 
 beforeEach(() => {
-  (useApp as jest.Mock).mockReturnValue({
-    state: { accountListId },
-  });
   (useTaskDrawer as jest.Mock).mockReturnValue({
     openTaskDrawer,
   });
@@ -53,6 +46,15 @@ beforeEach(() => {
 jest.mock('lodash/fp/debounce', () =>
   jest.fn().mockImplementation((_time, fn) => fn),
 );
+
+jest.mock('next/router', () => ({
+  useRouter: () => {
+    return {
+      query: { accountListId },
+      isReady: true,
+    };
+  },
+}));
 
 describe('TaskList', () => {
   it('has correct defaults', async () => {

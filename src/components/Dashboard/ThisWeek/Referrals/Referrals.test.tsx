@@ -5,6 +5,15 @@ import {
 } from '../../../../../__tests__/util/testingLibraryReactMock';
 import Referrals from '.';
 
+jest.mock('next/router', () => ({
+  useRouter: () => {
+    return {
+      query: { accountListId: 'abc' },
+      isReady: true,
+    };
+  },
+}));
+
 describe('Referrals', () => {
   it('default', () => {
     const { getByTestId, queryByTestId } = render(

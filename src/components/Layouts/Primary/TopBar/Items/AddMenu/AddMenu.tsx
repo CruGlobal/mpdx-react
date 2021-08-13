@@ -14,8 +14,9 @@ import CardGiftcardIcon from '@material-ui/icons/CardGiftcard';
 import ListIcon from '@material-ui/icons/FormatListBulleted';
 import EditIcon from '@material-ui/icons/Edit';
 import { useTranslation } from 'react-i18next';
-import { useApp } from '../../../../../App';
+
 import useTaskDrawer from '../../../../../../hooks/useTaskDrawer';
+import { useAccountListId } from '../../../../../../hooks/useAccountListId';
 import CreateContact from './Items/CreateContact/CreateContact';
 
 const HoverAddIcon = styled(AddIcon)(({ theme }) => ({
@@ -61,9 +62,8 @@ const MenuItemText = styled(ListItemText)(({ theme }) => ({
 
 const AddMenu = (): ReactElement => {
   const { t } = useTranslation();
-  const { state } = useApp();
+  const accountListId = useAccountListId();
   const { openTaskDrawer } = useTaskDrawer();
-  const { accountListId } = state;
   const [selectedMenuItem, changeSelectedMenuItem] = useState(-1);
   const [dialogOpen, changeDialogOpen] = useState(false);
 
