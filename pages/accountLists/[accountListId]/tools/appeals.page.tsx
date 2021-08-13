@@ -101,7 +101,7 @@ const AppealsPage = (): ReactElement => {
             <Grid container spacing={3}>
               <Grid item xs={12}>
                 <Box m={1}>
-                  <Typography variant="h4">Appeals</Typography>
+                  <Typography variant="h4">{t('Appeals')}</Typography>
                 </Box>
                 <Divider />
                 <Box m={1}>
