@@ -3,7 +3,7 @@ import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
 import { SpeedDial, SpeedDialIcon, SpeedDialAction } from '@material-ui/lab';
 import AssignmentIcon from '@material-ui/icons/Assignment';
 import { useTranslation } from 'react-i18next';
-import { useApp } from '../../../App';
+import useTaskDrawer from '../../../../hooks/useTaskDrawer';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -19,7 +19,7 @@ const AddFab = (): ReactElement => {
   const classes = useStyles();
   const [open, setOpen] = useState(false);
   const { t } = useTranslation();
-  const { openTaskDrawer } = useApp();
+  const { openTaskDrawer } = useTaskDrawer();
 
   const handleClose = (): void => {
     setOpen(false);

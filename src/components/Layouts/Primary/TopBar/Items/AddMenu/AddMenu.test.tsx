@@ -8,6 +8,7 @@ import { AppState } from '../../../../../App/rootReducer';
 import { useApp } from '../../../../../App';
 import TestRouter from '../../../../../../../__tests__/util/TestRouter';
 import { GqlMockedProvider } from '../../../../../../../__tests__/util/graphqlMocking';
+import useTaskDrawer from '../../../../../../hooks/useTaskDrawer';
 import AddMenu from './AddMenu';
 
 const openTaskDrawer = jest.fn();
@@ -18,6 +19,7 @@ const dispatch = jest.fn();
 jest.mock('../../../../../App', () => ({
   useApp: jest.fn(),
 }));
+jest.mock('../../../../../../hooks/useTaskDrawer');
 
 const router = {
   push: jest.fn(),
@@ -29,6 +31,8 @@ describe('AddMenu', () => {
     (useApp as jest.Mock).mockReturnValue({
       state,
       dispatch,
+    });
+    (useTaskDrawer as jest.Mock).mockReturnValue({
       openTaskDrawer,
     });
   });

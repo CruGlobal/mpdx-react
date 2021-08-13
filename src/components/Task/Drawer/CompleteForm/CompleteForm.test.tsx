@@ -5,7 +5,6 @@ import { DateTime } from 'luxon';
 import { getDataForTaskDrawerMock } from '../Form/Form.mock';
 import TestWrapper from '../../../../../__tests__/util/TestWrapper';
 import { dateFormat } from '../../../../lib/intlFormat/intlFormat';
-import { useApp } from '../../../App';
 import {
   ActivityTypeEnum,
   NotificationTimeUnitEnum,
@@ -13,20 +12,19 @@ import {
   ResultEnum,
 } from '../../../../../graphql/types.generated';
 import { GetThisWeekDefaultMocks } from '../../../Dashboard/ThisWeek/ThisWeek.mock';
+import useTaskDrawer from '../../../../hooks/useTaskDrawer';
 import {
   completeTaskMutationMock,
   completeSimpleTaskMutationMock,
 } from './CompleteForm.mock';
 import TaskDrawerCompleteForm from '.';
 
-jest.mock('../../../App', () => ({
-  useApp: jest.fn(),
-}));
+jest.mock('../../../../hooks/useTaskDrawer');
 
 const openTaskDrawer = jest.fn();
 
 beforeEach(() => {
-  (useApp as jest.Mock).mockReturnValue({
+  (useTaskDrawer as jest.Mock).mockReturnValue({
     openTaskDrawer,
   });
 });

@@ -28,10 +28,10 @@ import DoneIcon from '@material-ui/icons/Done';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import { dayMonthFormat } from '../../../../lib/intlFormat';
 import AnimatedCard from '../../../AnimatedCard';
-import { useApp } from '../../../App';
 import illustration4 from '../../../../images/drawkit/grape/drawkit-grape-pack-illustration-4.svg';
 import illustration7 from '../../../../images/drawkit/grape/drawkit-grape-pack-illustration-7.svg';
 import { GetThisWeekQuery } from '../GetThisWeek.generated';
+import useTaskDrawer from '../../../../hooks/useTaskDrawer';
 
 const CardContainer = styled(AnimatedCard)(({ theme }) => ({
   flex: 'flex',
@@ -139,7 +139,7 @@ const PartnerCare = ({
 }: Props): ReactElement => {
   const { t } = useTranslation();
   const [value, setValue] = useState(0);
-  const { openTaskDrawer } = useApp();
+  const { openTaskDrawer } = useTaskDrawer();
 
   const handleClick = ({
     id: taskId,
