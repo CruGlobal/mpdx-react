@@ -71,8 +71,12 @@ const Tool = ({ tool, desc, icon, id }: Props): ReactElement => {
             >
               <Icon path={icon} size={1.5} />
             </Box>
-            <Typography variant="h6">{tool}</Typography>
-            <Typography variant="body2">{desc}</Typography>
+            <Typography variant="h6" data-testid="ToolNameTypography">
+              {tool}
+            </Typography>
+            <Typography variant="body2" data-testid="ToolDescriptionTypography">
+              {desc}
+            </Typography>
           </CardContent>
         </CardActionArea>
       </AnimatedCard>
