@@ -13,7 +13,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 interface Props {
-  key: string;
+  key?: string;
   id: string;
   title: string;
 }
