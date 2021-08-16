@@ -5,7 +5,7 @@ extend type Query {
 extend type Mutation {
   setActiveDesignationAccount(
     input: SetActiveDesignationAccountInput!
-  ): DesignationAccount!
+  ): SetActiveDesignationAccountResponse!
 }
 
 type DesignationAccount {
@@ -27,4 +27,9 @@ input SetActiveDesignationAccountInput {
   accountListId: ID!
   active: Boolean!
   designationAccountId: ID!
+}
+
+type SetActiveDesignationAccountResponse {
+  active: Boolean!
+  id: ID!
 }

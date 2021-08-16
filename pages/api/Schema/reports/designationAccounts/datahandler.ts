@@ -1,6 +1,7 @@
 import {
   DesignationAccount,
   DesignationAccountsGroup,
+  SetActiveDesignationAccountResponse,
 } from '../../../graphql-rest.page.generated';
 
 export interface DesignationAccountsResponse {
@@ -85,4 +86,7 @@ export const createDesignationAccountsGroup = (
 
 export const setActiveDesignationAccount = (
   data: DesignationAccountsResponse,
-): DesignationAccount => createDesignationAccount(data);
+): SetActiveDesignationAccountResponse => ({
+  active: data.attributes.active,
+  id: data.id,
+});

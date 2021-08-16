@@ -2,37 +2,28 @@ import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import { MockedProvider } from '@apollo/client/testing';
 import { ThemeProvider } from '@material-ui/core';
-import { DesignationAccountsReport } from './DesignationAccountsReport';
+import { ResponsibilityCentersReport } from './ResponsibilityCentersReport';
 import {
-  designationAccountsEmptyMock,
-  designationAccountsErrorMock,
-  designationAccountsLoadingMock,
-  designationAccountsMock,
-} from './DesignationAccountsReport.mock';
+  financialAccountsEmptyMock,
+  financialAccountsErrorMock,
+  financialAccountsLoadingMock,
+  financialAccountsMock,
+} from './ResponsibilityCentersReport.mock';
 import theme from 'src/theme';
 
 const accountListId = '111';
 const title = 'test title';
 const onNavListToggle = jest.fn();
 
-jest.mock('next/router', () => ({
-  useRouter: () => {
-    return {
-      query: { accountListId },
-      isReady: true,
-    };
-  },
-}));
-
-describe('DesignationAccounts', () => {
+describe('FinancialAccounts', () => {
   it('default', async () => {
     const { queryByTestId, getByTestId, getByText } = render(
       <ThemeProvider theme={theme}>
         <MockedProvider
-          mocks={[designationAccountsMock(accountListId)]}
+          mocks={[financialAccountsMock(accountListId)]}
           addTypename={false}
         >
-          <DesignationAccountsReport
+          <ResponsibilityCentersReport
             accountListId={accountListId}
             isNavListOpen={true}
             title={title}
@@ -43,26 +34,24 @@ describe('DesignationAccounts', () => {
     );
 
     await waitFor(() => {
-      expect(
-        queryByTestId('LoadingDesignationAccounts'),
-      ).not.toBeInTheDocument();
+      expect(queryByTestId('LoadingFinancialAccounts')).not.toBeInTheDocument();
     });
 
     expect(getByText(title)).toBeInTheDocument();
     expect(getByText('CA$3,500')).toBeInTheDocument();
     expect(queryByTestId('Notification')).not.toBeInTheDocument();
     expect(getByTestId('AccountsGroupList')).toBeInTheDocument();
-    expect(getByTestId('DesignationAccountsScrollBox')).toBeInTheDocument();
+    expect(getByTestId('ResponsibilityCentersScrollBox')).toBeInTheDocument();
   });
 
   it('loading', async () => {
     const { queryByTestId, getByText } = render(
       <ThemeProvider theme={theme}>
         <MockedProvider
-          mocks={[designationAccountsLoadingMock(accountListId)]}
+          mocks={[financialAccountsLoadingMock(accountListId)]}
           addTypename={false}
         >
-          <DesignationAccountsReport
+          <ResponsibilityCentersReport
             accountListId={accountListId}
             isNavListOpen={true}
             title={title}
@@ -73,7 +62,7 @@ describe('DesignationAccounts', () => {
     );
 
     expect(getByText(title)).toBeInTheDocument();
-    expect(queryByTestId('LoadingDesignationAccounts')).toBeInTheDocument();
+    expect(queryByTestId('LoadingResponsibilityCenters')).toBeInTheDocument();
     expect(queryByTestId('Notification')).not.toBeInTheDocument();
   });
 
@@ -81,10 +70,10 @@ describe('DesignationAccounts', () => {
     const { queryByTestId, getByText } = render(
       <ThemeProvider theme={theme}>
         <MockedProvider
-          mocks={[designationAccountsEmptyMock(accountListId)]}
+          mocks={[financialAccountsEmptyMock(accountListId)]}
           addTypename={false}
         >
-          <DesignationAccountsReport
+          <ResponsibilityCentersReport
             accountListId={accountListId}
             isNavListOpen={true}
             title={title}
@@ -96,7 +85,7 @@ describe('DesignationAccounts', () => {
 
     await waitFor(() => {
       expect(
-        queryByTestId('LoadingDesignationAccounts'),
+        queryByTestId('LoadingResponsibilityCenters'),
       ).not.toBeInTheDocument();
     });
 
@@ -108,10 +97,10 @@ describe('DesignationAccounts', () => {
     const { queryByTestId } = render(
       <ThemeProvider theme={theme}>
         <MockedProvider
-          mocks={[designationAccountsErrorMock(accountListId)]}
+          mocks={[financialAccountsErrorMock(accountListId)]}
           addTypename={false}
         >
-          <DesignationAccountsReport
+          <ResponsibilityCentersReport
             accountListId={accountListId}
             isNavListOpen={true}
             title={title}
@@ -123,7 +112,7 @@ describe('DesignationAccounts', () => {
 
     await waitFor(() => {
       expect(
-        queryByTestId('LoadingDesignationAccounts'),
+        queryByTestId('LoadingResponsibilityCenters'),
       ).not.toBeInTheDocument();
     });
 
