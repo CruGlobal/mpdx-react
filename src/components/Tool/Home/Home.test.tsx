@@ -3,7 +3,7 @@ import { render } from '@testing-library/react';
 import { ThemeProvider } from '@material-ui/core';
 import TestRouter from '../../../../__tests__/util/TestRouter';
 import theme from '../../../theme';
-import NavToolList from './NavToolList';
+import Home from './Home';
 
 const accountListId = 'account-list-1';
 
@@ -12,16 +12,16 @@ const router = {
   isReady: true,
 };
 
-describe('NavToolList', () => {
+describe('ToolHome', () => {
   it('default', () => {
     const { getByTestId } = render(
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
-          <NavToolList />
+          <Home />
         </TestRouter>
       </ThemeProvider>,
     );
 
-    expect(getByTestId('ToolNavList')).toBeInTheDocument();
+    expect(getByTestId('Home')).toBeInTheDocument();
   });
 });
