@@ -5,14 +5,14 @@ import {
   CardActionArea,
   makeStyles,
   Box,
-  Theme,
 } from '@material-ui/core';
 import Icon from '@mdi/react';
 import NextLink from 'next/link';
 import { useAccountListId } from '../../../../src/hooks/useAccountListId';
+import theme from '../../../theme';
 import AnimatedCard from 'src/components/AnimatedCard';
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles(() => ({
   cardContainer: {
     display: 'flex',
     justifyContent: 'center',

@@ -1,10 +1,11 @@
 import React, { ReactElement } from 'react';
-import { ListItem, ListItemText, makeStyles, Theme } from '@material-ui/core';
+import { ListItem, ListItemText, makeStyles } from '@material-ui/core';
 import { ArrowForwardIos } from '@material-ui/icons';
 import NextLink from 'next/link';
+import theme from '../../../../theme';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles(() => ({
   liButton: {
     '&:hover': {
       backgroundColor: theme.palette.cruGrayLight.main,

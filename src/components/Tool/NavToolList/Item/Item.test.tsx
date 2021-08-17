@@ -8,7 +8,7 @@ const item = {
   title: 'test title',
 };
 
-describe('Item', () => {
+describe('ToolItem', () => {
   it('default', () => {
     const { queryByText } = render(
       <TestWrapper initialState={{}}>
