@@ -3,6 +3,7 @@ import {
   render,
   fireEvent,
 } from '../../../../../__tests__/util/testingLibraryReactMock';
+import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
 import Referrals from '.';
 
 jest.mock('next/router', () => ({
@@ -100,11 +101,13 @@ describe('Referrals', () => {
       totalCount: 5678,
     };
     const { getByTestId, queryByTestId, getByRole } = render(
-      <Referrals
-        loading={false}
-        recentReferrals={recentReferrals}
-        onHandReferrals={onHandReferrals}
-      />,
+      <GqlMockedProvider>
+        <Referrals
+          loading={false}
+          recentReferrals={recentReferrals}
+          onHandReferrals={onHandReferrals}
+        />
+      </GqlMockedProvider>,
     );
     expect(
       queryByTestId('ReferralsTabRecentCardContentEmpty'),

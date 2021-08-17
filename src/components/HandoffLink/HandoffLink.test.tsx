@@ -2,9 +2,8 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import * as nextRouter from 'next/router';
-import TestWrapper from '../../../__tests__/util/TestWrapper';
-import { User } from '../../../graphql/types.generated';
-
+import { GqlMockedProvider } from '../../../__tests__/util/graphqlMocking';
+import { GetUserQuery } from '../User/GetUser.generated';
 import HandoffLink from '.';
 
 describe('HandoffLink', () => {
@@ -30,15 +29,11 @@ describe('HandoffLink', () => {
 
   it('default', async () => {
     const { getByRole } = render(
-      <TestWrapper
-        initialState={{
-          user: { id: 'userId', firstName: 'Bob', lastName: 'Jones' } as User,
-        }}
-      >
+      <GqlMockedProvider<GetUserQuery>>
         <HandoffLink path="/contacts">
           <a>Link</a>
         </HandoffLink>
-      </TestWrapper>,
+      </GqlMockedProvider>,
     );
     const linkElement = getByRole('link', { name: 'Link' });
     expect(linkElement).toHaveAttribute(
@@ -54,9 +49,11 @@ describe('HandoffLink', () => {
 
   it('default auth', async () => {
     const { getByRole } = render(
-      <HandoffLink path="/contacts" auth>
-        <a>Link</a>
-      </HandoffLink>,
+      <GqlMockedProvider>
+        <HandoffLink path="/contacts" auth>
+          <a>Link</a>
+        </HandoffLink>
+      </GqlMockedProvider>,
     );
     const linkElement = getByRole('link', { name: 'Link' });
     expect(linkElement).toHaveAttribute(
@@ -73,9 +70,11 @@ describe('HandoffLink', () => {
   it('onClick defaultPrevented', async () => {
     const handleClick = jest.fn((e) => e.preventDefault());
     const { getByRole } = render(
-      <HandoffLink path="/contacts">
-        <a onClick={handleClick}>Link</a>
-      </HandoffLink>,
+      <GqlMockedProvider>
+        <HandoffLink path="/contacts">
+          <a onClick={handleClick}>Link</a>
+        </HandoffLink>
+      </GqlMockedProvider>,
     );
     const linkElement = getByRole('link', { name: 'Link' });
     expect(linkElement).toHaveAttribute(
@@ -90,10 +89,12 @@ describe('HandoffLink', () => {
   it('enforces single child', async () => {
     expect(() =>
       render(
-        <HandoffLink path="/contacts">
-          <a>Link</a>
-          <a>Link</a>
-        </HandoffLink>,
+        <GqlMockedProvider>
+          <HandoffLink path="/contacts">
+            <a>Link</a>
+            <a>Link</a>
+          </HandoffLink>
+        </GqlMockedProvider>,
       ),
     ).toThrowError();
   });
@@ -112,9 +113,11 @@ describe('HandoffLink', () => {
 
     it('changes base URL', () => {
       const { getByRole } = render(
-        <HandoffLink path="/contacts">
-          <a>Link</a>
-        </HandoffLink>,
+        <GqlMockedProvider>
+          <HandoffLink path="/contacts">
+            <a>Link</a>
+          </HandoffLink>
+        </GqlMockedProvider>,
       );
       expect(getByRole('link', { name: 'Link' })).toHaveAttribute(
         'href',
@@ -124,9 +127,11 @@ describe('HandoffLink', () => {
 
     it('default auth', async () => {
       const { getByRole } = render(
-        <HandoffLink path="/contacts" auth>
-          <a>Link</a>
-        </HandoffLink>,
+        <GqlMockedProvider>
+          <HandoffLink path="/contacts" auth>
+            <a>Link</a>
+          </HandoffLink>
+        </GqlMockedProvider>,
       );
       expect(getByRole('link', { name: 'Link' })).toHaveAttribute(
         'href',
