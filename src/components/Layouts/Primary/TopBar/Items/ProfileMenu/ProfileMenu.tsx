@@ -1,4 +1,4 @@
-import React, { useState, useEffect, ReactElement } from 'react';
+import React, { useState, ReactElement } from 'react';
 import {
   Avatar,
   makeStyles,
@@ -15,10 +15,8 @@ import {
 import { useTranslation } from 'react-i18next';
 import { signout } from 'next-auth/client';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
-import { useApp } from '../../../../../App';
 import HandoffLink from '../../../../../HandoffLink';
 import { useGetTopBarQuery } from '../../GetTopBar.generated';
-import { User } from '../../../../../../../graphql/types.generated';
 
 const useStyles = makeStyles((theme: Theme) => ({
   accountName: {
@@ -49,7 +47,6 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 const ProfileMenu = (): ReactElement => {
   const classes = useStyles();
-  const { dispatch, state } = useApp();
   const { t } = useTranslation();
   const { data } = useGetTopBarQuery();
   const [
@@ -67,12 +64,6 @@ const ProfileMenu = (): ReactElement => {
     setProfileMenuAnchorEl(undefined);
   };
 
-  useEffect(() => {
-    data?.user &&
-      state.user?.id !== data.user.id &&
-      // TODO: Use fragments to ensure all required fields are loaded
-      dispatch({ type: 'updateUser', user: data.user as User });
-  }, [data?.user]);
   return (
     <>
       <IconButton

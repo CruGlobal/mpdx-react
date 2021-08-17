@@ -21,7 +21,7 @@ export const Default = (): ReactElement => {
 
 export const Hidden = (): ReactElement => {
   return (
-    <TestWrapper initialState={undefined}>
+    <TestWrapper>
       <AppBar>
         <Box>
           <NavMenu />

@@ -60,7 +60,6 @@ describe('TaskDrawerCompleteForm', () => {
           completeTaskMutationMock(accountListId, taskId),
           GetThisWeekDefaultMocks()[0],
         ]}
-        disableAppProvider
       >
         <TaskDrawerCompleteForm
           accountListId={accountListId}
@@ -86,7 +85,6 @@ describe('TaskDrawerCompleteForm', () => {
           completeSimpleTaskMutationMock(accountListId, taskId),
           GetThisWeekDefaultMocks()[0],
         ]}
-        disableAppProvider
       >
         <TaskDrawerCompleteForm
           accountListId={accountListId}
@@ -113,7 +111,6 @@ describe('TaskDrawerCompleteForm', () => {
           completeTaskMutationMock(accountListId, taskId),
           GetThisWeekDefaultMocks()[0],
         ]}
-        disableAppProvider
       >
         <TaskDrawerCompleteForm
           accountListId={accountListId}
@@ -164,10 +161,7 @@ describe('TaskDrawerCompleteForm', () => {
     activityType?: ActivityTypeEnum,
   ): { results: ResultEnum[]; nextActions: ActivityTypeEnum[] } => {
     const { getByRole, queryByRole } = render(
-      <TestWrapper
-        mocks={[getDataForTaskDrawerMock(accountListId)]}
-        disableAppProvider
-      >
+      <TestWrapper mocks={[getDataForTaskDrawerMock(accountListId)]}>
         <TaskDrawerCompleteForm
           accountListId={accountListId}
           onClose={jest.fn()}

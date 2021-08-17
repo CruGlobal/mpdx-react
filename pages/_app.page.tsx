@@ -16,7 +16,6 @@ import client from '../src/lib/client';
 import PrimaryLayout from '../src/components/Layouts/Primary';
 import Loading from '../src/components/Loading';
 import i18n from '../src/lib/i18n';
-import { AppProvider } from '../src/components/App';
 import TaskDrawerProvider from '../src/components/Task/Drawer/TaskDrawerProvider';
 
 const handleExitComplete = (): void => {
@@ -91,13 +90,11 @@ const App = ({ Component, pageProps, router }: AppProps): ReactElement => {
                     exitBeforeEnter
                     onExitComplete={handleExitComplete}
                   >
-                    <AppProvider>
-                      <TaskDrawerProvider>
-                        <Layout>
-                          <Component {...pageProps} key={router.route} />
-                        </Layout>
-                      </TaskDrawerProvider>
-                    </AppProvider>
+                    <TaskDrawerProvider>
+                      <Layout>
+                        <Component {...pageProps} key={router.route} />
+                      </Layout>
+                    </TaskDrawerProvider>
                   </AnimatePresence>
                   <Loading />
                 </SnackbarProvider>
