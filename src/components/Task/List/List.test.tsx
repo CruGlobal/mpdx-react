@@ -124,7 +124,7 @@ describe('TaskList', () => {
     ];
     const { findByText, getByRole, getAllByRole } = render(
       <ThemeProvider theme={theme}>
-        <TestWrapper mocks={mocks} disableAppProvider>
+        <TestWrapper mocks={mocks}>
           <TaskList />
         </TestWrapper>
       </ThemeProvider>,
@@ -194,7 +194,6 @@ describe('TaskList', () => {
             getFilteredTasksForTaskListMock(accountListId, filter),
             getDataForTaskDrawerMock(accountListId),
           ]}
-          disableAppProvider
         >
           <TaskList initialFilter={filter} />
         </TestWrapper>
@@ -224,7 +223,7 @@ describe('TaskList', () => {
     ];
     const { getAllByRole } = render(
       <ThemeProvider theme={theme}>
-        <TestWrapper mocks={mocks} disableAppProvider>
+        <TestWrapper mocks={mocks}>
           <TaskList
             initialFilter={{
               userIds: ['user-1'],
@@ -245,7 +244,6 @@ describe('TaskList', () => {
             getEmptyTasksForTaskListMock(accountListId),
             getDataForTaskDrawerMock(accountListId),
           ]}
-          disableAppProvider
         >
           <TaskList />
         </TestWrapper>
@@ -264,7 +262,6 @@ describe('TaskList', () => {
             getTasksForTaskListErrorMock(accountListId),
             getDataForTaskDrawerMock(accountListId),
           ]}
-          disableAppProvider
         >
           <TaskList />
         </TestWrapper>

@@ -1,4 +1,5 @@
 import React from 'react';
+import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
 import { render } from '../../../../../__tests__/util/testingLibraryReactMock';
 import LateCommitments from './LateCommitments';
 
@@ -64,7 +65,9 @@ describe('LateCommitments', () => {
       totalCount: 1595,
     };
     const { getByTestId, queryByTestId } = render(
-      <LateCommitments latePledgeContacts={latePledgeContacts} />,
+      <GqlMockedProvider>
+        <LateCommitments latePledgeContacts={latePledgeContacts} />
+      </GqlMockedProvider>,
     );
     expect(
       queryByTestId('LateCommitmentsCardContentEmpty'),
