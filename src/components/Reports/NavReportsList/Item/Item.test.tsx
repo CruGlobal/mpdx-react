@@ -12,7 +12,7 @@ const item = {
 describe('Item', () => {
   it('default', () => {
     const { queryByText } = render(
-      <TestWrapper initialState={{}}>
+      <TestWrapper>
         <Item item={item} isSelected={false} />
       </TestWrapper>,
     );

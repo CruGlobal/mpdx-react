@@ -4,7 +4,6 @@ import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { InMemoryCache } from '@apollo/client';
 import { DateTime } from 'luxon';
-import { AppProvider } from '../../../../App';
 import { GetCommentsForTaskDrawerCommentListDocument } from '../TaskListComments.generated';
 import { createTaskCommentMutationMock } from './Form.mock';
 import TaskDrawerCommentListForm from '.';
@@ -42,9 +41,7 @@ describe('TaskDrawerCommentListForm', () => {
         cache={cache}
         addTypename={false}
       >
-        <AppProvider>
-          <TaskDrawerCommentListForm accountListId="abc" taskId="task-1" />
-        </AppProvider>
+        <TaskDrawerCommentListForm accountListId="abc" taskId="task-1" />
       </MockedProvider>,
     );
     userEvent.type(getByRole('textbox'), 'c{backspace}');
