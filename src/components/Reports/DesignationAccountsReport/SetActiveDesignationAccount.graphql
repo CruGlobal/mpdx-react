@@ -3,11 +3,6 @@ mutation SetActiveDesignationAccount(
 ) {
   setActiveDesignationAccount(input: $input) {
     active
-    balanceUpdatedAt
-    convertedBalance
-    currency
-    designationNumber
     id
-    name
   }
 }
