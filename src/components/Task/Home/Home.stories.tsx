@@ -1,6 +1,5 @@
 import React, { ReactElement } from 'react';
 import { MockedProvider } from '@apollo/client/testing';
-import withDispatch from '../../../decorators/withDispatch';
 import {
   getTasksForTaskListMock,
   getFilteredTasksForTaskListMock,
@@ -13,9 +12,6 @@ const accountListId = 'abc';
 
 export default {
   title: 'Task/Home',
-  decorators: [
-    withDispatch({ type: 'updateAccountListId', accountListId: 'abc' }),
-  ],
 };
 
 export const Default = (): ReactElement => (

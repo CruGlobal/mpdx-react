@@ -22,6 +22,7 @@ const router = {
   query: { searchTerm: undefined, accountListId },
   push: jest.fn(),
 };
+const onClose = jest.fn();
 
 const mocks = {
   ContactDetailsTab: {
@@ -92,6 +93,7 @@ describe('ContactDetailTab', () => {
               <ContactDetailsTab
                 accountListId={accountListId}
                 contactId={contactId}
+                onClose={onClose}
               />
             </GqlMockedProvider>
           </ThemeProvider>
@@ -110,6 +112,7 @@ describe('ContactDetailTab', () => {
               <ContactDetailsTab
                 accountListId={accountListId}
                 contactId={contactId}
+                onClose={onClose}
               />
             </GqlMockedProvider>
           </ThemeProvider>
@@ -133,6 +136,7 @@ describe('ContactDetailTab', () => {
               <ContactDetailsTab
                 accountListId={accountListId}
                 contactId={contactId}
+                onClose={onClose}
               />
             </GqlMockedProvider>
           </ThemeProvider>
@@ -157,6 +161,7 @@ describe('ContactDetailTab', () => {
                 <ContactDetailsTab
                   accountListId={accountListId}
                   contactId={contactId}
+                  onClose={onClose}
                 />
               </GqlMockedProvider>
             </ThemeProvider>
@@ -181,6 +186,7 @@ describe('ContactDetailTab', () => {
                 <ContactDetailsTab
                   accountListId={accountListId}
                   contactId={contactId}
+                  onClose={onClose}
                 />
               </GqlMockedProvider>
             </ThemeProvider>
@@ -209,6 +215,7 @@ describe('ContactDetailTab', () => {
                 <ContactDetailsTab
                   accountListId={accountListId}
                   contactId={contactId}
+                  onClose={onClose}
                 />
               </GqlMockedProvider>
             </ThemeProvider>
@@ -233,6 +240,7 @@ describe('ContactDetailTab', () => {
                 <ContactDetailsTab
                   accountListId={accountListId}
                   contactId={contactId}
+                  onClose={onClose}
                 />
               </GqlMockedProvider>
             </ThemeProvider>
@@ -263,6 +271,7 @@ describe('ContactDetailTab', () => {
                 <ContactDetailsTab
                   accountListId={accountListId}
                   contactId={contactId}
+                  onClose={onClose}
                 />
               </GqlMockedProvider>
             </ThemeProvider>
@@ -287,6 +296,7 @@ describe('ContactDetailTab', () => {
                 <ContactDetailsTab
                   accountListId={accountListId}
                   contactId={contactId}
+                  onClose={onClose}
                 />
               </GqlMockedProvider>
             </ThemeProvider>
@@ -315,6 +325,7 @@ describe('ContactDetailTab', () => {
                 <ContactDetailsTab
                   accountListId={accountListId}
                   contactId={contactId}
+                  onClose={onClose}
                 />
               </GqlMockedProvider>
             </ThemeProvider>
@@ -339,6 +350,7 @@ describe('ContactDetailTab', () => {
                 <ContactDetailsTab
                   accountListId={accountListId}
                   contactId={contactId}
+                  onClose={onClose}
                 />
               </GqlMockedProvider>
             </ThemeProvider>
@@ -367,6 +379,7 @@ describe('ContactDetailTab', () => {
                 <ContactDetailsTab
                   accountListId={accountListId}
                   contactId={contactId}
+                  onClose={onClose}
                 />
               </GqlMockedProvider>
             </ThemeProvider>
@@ -395,6 +408,7 @@ describe('ContactDetailTab', () => {
                 <ContactDetailsTab
                   accountListId={accountListId}
                   contactId={contactId}
+                  onClose={onClose}
                 />
               </GqlMockedProvider>
             </ThemeProvider>
@@ -419,6 +433,7 @@ describe('ContactDetailTab', () => {
                 <ContactDetailsTab
                   accountListId={accountListId}
                   contactId={contactId}
+                  onClose={onClose}
                 />
               </GqlMockedProvider>
             </ThemeProvider>
@@ -516,6 +531,7 @@ describe('ContactDetailTab', () => {
               <ContactDetailsTab
                 accountListId={accountListId}
                 contactId={contactId}
+                onClose={onClose}
               />
             </GqlMockedProvider>
           </ThemeProvider>
@@ -542,6 +558,7 @@ describe('ContactDetailTab', () => {
         },
       }),
     );
+    expect(onClose).toHaveBeenCalled();
     await waitFor(() =>
       expect(router.push).toHaveBeenCalledWith({
         pathname: '/accountLists/[accountListId]/contacts',

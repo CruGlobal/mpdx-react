@@ -10,7 +10,7 @@ describe('EmptyReport', () => {
   it('default', () => {
     const { getByText, queryByText } = render(
       <ThemeProvider theme={theme}>
-        <TestWrapper initialState={{}}>
+        <TestWrapper>
           <EmptyReport title="test title" subTitle="test subTitle" />
         </TestWrapper>
       </ThemeProvider>,
@@ -24,7 +24,7 @@ describe('EmptyReport', () => {
   it('should not render add new donation button', () => {
     const { queryByText } = render(
       <ThemeProvider theme={theme}>
-        <TestWrapper initialState={{}}>
+        <TestWrapper>
           <EmptyReport
             title="test title"
             subTitle="test subTitle"

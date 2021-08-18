@@ -2,18 +2,16 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ThemeProvider } from '@material-ui/core';
-import { useApp } from '../../App';
 import theme from '../../../theme';
+import useTaskDrawer from '../../../hooks/useTaskDrawer';
 import TaskStatus from '.';
 
-jest.mock('../../App', () => ({
-  useApp: jest.fn(),
-}));
+jest.mock('../../../hooks/useTaskDrawer');
 
 const openTaskDrawer = jest.fn();
 
 beforeEach(() => {
-  (useApp as jest.Mock).mockReturnValue({
+  (useTaskDrawer as jest.Mock).mockReturnValue({
     openTaskDrawer,
   });
 });

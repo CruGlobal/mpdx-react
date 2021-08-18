@@ -1,39 +1,24 @@
-import React, {
-  ReactNode,
-  ReactElement,
-  useState,
-  useReducer,
-  Dispatch,
-} from 'react';
+import { ReactElement, ReactNode, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import TaskDrawer, { TaskDrawerProps } from '../Task/Drawer/Drawer';
-import theme from '../../theme';
-import rootReducer, { Action, AppState } from './rootReducer';
-import { AppContext } from '.';
-
-export interface AppProviderContext {
-  openTaskDrawer: (props: TaskDrawerProps) => void;
-  state: AppState;
-  dispatch: Dispatch<Action>;
-}
+import theme from '../../../theme';
+import TaskDrawer, { TaskDrawerProps } from './Drawer';
+import TaskDrawerContext from './TaskDrawerContext';
 
 interface Props {
   children: ReactNode;
-  initialState?: Partial<AppState>;
+}
+
+export interface TaskDrawerProviderContext {
+  openTaskDrawer: (props: TaskDrawerProps) => void;
+  taskDrawers: TaskDrawerPropsWithId[];
 }
 
 interface TaskDrawerPropsWithId extends TaskDrawerProps {
   id: string;
 }
 
-const AppProvider = ({ initialState, children }: Props): ReactElement => {
+const TaskDrawerProvider = ({ children }: Props): ReactElement => {
   const [taskDrawers, setTaskDrawers] = useState<TaskDrawerPropsWithId[]>([]);
-  const [state, dispatch] = useReducer<typeof rootReducer>(rootReducer, {
-    accountListId: undefined,
-    breadcrumb: undefined,
-    ...initialState,
-  });
-
   const openTaskDrawer = (taskDrawerProps: TaskDrawerProps): void => {
     const id = uuidv4();
     if (
@@ -63,23 +48,21 @@ const AppProvider = ({ initialState, children }: Props): ReactElement => {
       ]);
     }
   };
-
-  const value: AppProviderContext = {
+  const value: TaskDrawerProviderContext = {
     openTaskDrawer,
-    state,
-    dispatch,
+    taskDrawers,
   };
 
   return (
-    <AppContext.Provider value={value}>
+    <TaskDrawerContext.Provider value={value}>
       {children}
       {taskDrawers.map((props: TaskDrawerPropsWithId) => {
         const { id, ...taskDrawerProps } = props;
 
         return <TaskDrawer key={id} {...taskDrawerProps} />;
       })}
-    </AppContext.Provider>
+    </TaskDrawerContext.Provider>
   );
 };
 
-export default AppProvider;
+export default TaskDrawerProvider;

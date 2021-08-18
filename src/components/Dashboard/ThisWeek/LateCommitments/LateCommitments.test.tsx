@@ -1,6 +1,16 @@
 import React from 'react';
+import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
 import { render } from '../../../../../__tests__/util/testingLibraryReactMock';
 import LateCommitments from './LateCommitments';
+
+jest.mock('next/router', () => ({
+  useRouter: () => {
+    return {
+      query: { accountListId: 'abc' },
+      isReady: true,
+    };
+  },
+}));
 
 describe('LateCommitments', () => {
   it('default', () => {
@@ -55,7 +65,9 @@ describe('LateCommitments', () => {
       totalCount: 1595,
     };
     const { getByTestId, queryByTestId } = render(
-      <LateCommitments latePledgeContacts={latePledgeContacts} />,
+      <GqlMockedProvider>
+        <LateCommitments latePledgeContacts={latePledgeContacts} />
+      </GqlMockedProvider>,
     );
     expect(
       queryByTestId('LateCommitmentsCardContentEmpty'),

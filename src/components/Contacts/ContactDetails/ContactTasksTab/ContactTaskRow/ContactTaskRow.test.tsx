@@ -10,8 +10,8 @@ import {
   gqlMock,
   GqlMockedProvider,
 } from '../../../../../../__tests__/util/graphqlMocking';
+import useTaskDrawer from '../../../../../hooks/useTaskDrawer';
 import theme from '../../../../../theme';
-import { useApp } from '../../../../App';
 import { TaskDrawerTabsEnum } from '../../../../Task/Drawer/Drawer';
 import { ContactTaskRow } from './ContactTaskRow';
 import {
@@ -22,14 +22,12 @@ import {
 const accountListId = 'abc';
 const startAt = '2021-04-12';
 
-jest.mock('../../../../App', () => ({
-  useApp: jest.fn(),
-}));
+jest.mock('../../../../../hooks/useTaskDrawer');
 
 const openTaskDrawer = jest.fn();
 
 beforeEach(() => {
-  (useApp as jest.Mock).mockReturnValue({
+  (useTaskDrawer as jest.Mock).mockReturnValue({
     openTaskDrawer,
   });
 });

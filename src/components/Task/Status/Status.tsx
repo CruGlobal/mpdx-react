@@ -6,7 +6,7 @@ import AssignmentIcon from '@material-ui/icons/Assignment';
 import AssignmentTurnedInIcon from '@material-ui/icons/AssignmentTurnedIn';
 import { useTranslation } from 'react-i18next';
 import DoneIcon from '@material-ui/icons/Done';
-import { useApp } from '../../App';
+import useTaskDrawer from '../../../hooks/useTaskDrawer';
 
 const useStyles = makeStyles((theme: Theme) => ({
   buttonGreen: {
@@ -94,7 +94,8 @@ const TaskStatus = ({
 }: Props): ReactElement => {
   const classes = useStyles();
   const { t } = useTranslation();
-  const { openTaskDrawer } = useApp();
+  const { openTaskDrawer } = useTaskDrawer();
+
   const handleClick = (
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
   ): void => {
