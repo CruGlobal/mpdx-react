@@ -5,25 +5,13 @@ import {
   render,
   waitFor,
 } from '../../../../../../../__tests__/util/testingLibraryReactMock';
-import { AppState } from '../../../../../App/rootReducer';
-import { useApp } from '../../../../../App';
 import { getTopBarMock } from '../../TopBar.mock';
 import TestWrapper from '../../../../../../../__tests__/util/TestWrapper';
 import theme from '../../../../../../theme';
 import ProfileMenu from './ProfileMenu';
 
-let state: AppState;
-const dispatch = jest.fn();
-
 describe('ProfileMenu', () => {
   it('default', async () => {
-    beforeEach(() => {
-      (useApp as jest.Mock).mockReturnValue({
-        state,
-        dispatch,
-      });
-    });
-
     const { getByTestId, queryByText, getByText } = render(
       <ThemeProvider theme={theme}>
         <TestWrapper mocks={[getTopBarMock()]}>

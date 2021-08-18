@@ -5,10 +5,10 @@ extend type Query {
 extend type Mutation {
   setActiveDesignationAccount(
     input: SetActiveDesignationAccountInput!
-  ): SetActiveDesignationAccountResponse!
+  ): DesignationAccountRest!
 }
 
-type DesignationAccount {
+type DesignationAccountRest {
   active: Boolean!
   balanceUpdatedAt: ISO8601Date!
   convertedBalance: Float!
@@ -20,16 +20,11 @@ type DesignationAccount {
 
 type DesignationAccountsGroup {
   organizationName: String!
-  designationAccounts: [DesignationAccount!]!
+  designationAccounts: [DesignationAccountRest!]!
 }
 
 input SetActiveDesignationAccountInput {
   accountListId: ID!
   active: Boolean!
   designationAccountId: ID!
-}
-
-type SetActiveDesignationAccountResponse {
-  active: Boolean!
-  id: ID!
 }

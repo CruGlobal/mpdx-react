@@ -25,6 +25,7 @@ export const Default = (): ReactElement => {
         <ContactDetailsTab
           accountListId={accountListId}
           contactId={contactId}
+          onClose={() => {}}
         />
       </GqlMockedProvider>
     </MuiThemeProvider>
@@ -48,7 +49,11 @@ export const Loading = (): ReactElement => {
         },
       ]}
     >
-      <ContactDetailsTab accountListId={accountListId} contactId={contactId} />
+      <ContactDetailsTab
+        accountListId={accountListId}
+        contactId={contactId}
+        onClose={() => {}}
+      />
     </MockedProvider>
   );
 };

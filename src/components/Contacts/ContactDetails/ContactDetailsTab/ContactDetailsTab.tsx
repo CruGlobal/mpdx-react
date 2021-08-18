@@ -89,11 +89,13 @@ const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
 interface ContactDetailTabProps {
   accountListId: string;
   contactId: string;
+  onClose: () => void;
 }
 
 export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
   accountListId,
   contactId,
+  onClose,
 }) => {
   const { data, loading } = useContactDetailsTabQuery({
     variables: { accountListId, contactId },
@@ -151,6 +153,8 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
           }
         },
       });
+      setDeleteModalOpen(false);
+      onClose();
     } catch (error) {
       enqueueSnackbar(error.message, { variant: 'error' });
       throw error;
