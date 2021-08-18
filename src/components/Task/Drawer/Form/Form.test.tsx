@@ -49,7 +49,7 @@ describe('TaskDrawerForm', () => {
 
   it('default', async () => {
     const onClose = jest.fn();
-    const { getByText, getByRole, findByText, queryByText } = render(
+    const { getByText, findByText, queryByText, getByLabelText } = render(
       <MuiPickersUtilsProvider utils={LuxonUtils}>
         <SnackbarProvider>
           <MockedProvider
@@ -75,10 +75,10 @@ describe('TaskDrawerForm', () => {
     userEvent.click(getByText('Save'));
     expect(await findByText('Field is required')).toBeInTheDocument();
     expect(await queryByText('Remove')).not.toBeInTheDocument();
-    userEvent.type(getByRole('textbox', { name: 'Subject' }), accountListId);
-    userEvent.click(getByRole('checkbox', { name: 'Notification' }));
-    userEvent.type(getByRole('spinbutton', { name: 'Period' }), '20');
-    userEvent.click(getByRole('checkbox', { name: 'Notification' }));
+    userEvent.type(getByLabelText('Subject'), accountListId);
+    userEvent.click(getByLabelText('Notification'));
+    userEvent.type(getByLabelText('Period'), '20');
+    userEvent.click(getByLabelText('Notification'));
     await waitFor(() => expect(getByText('Save')).not.toBeDisabled());
     userEvent.click(getByText('Save'));
     await waitFor(() => expect(onClose).toHaveBeenCalled());
@@ -86,7 +86,7 @@ describe('TaskDrawerForm', () => {
 
   it('persisted', async () => {
     const onClose = jest.fn();
-    const { getByText, getByRole, getAllByRole } = render(
+    const { getByText, getByRole, getAllByRole, getByLabelText } = render(
       <MuiPickersUtilsProvider utils={LuxonUtils}>
         <SnackbarProvider>
           <MockedProvider
@@ -112,19 +112,19 @@ describe('TaskDrawerForm', () => {
         (item) => (item as HTMLInputElement).value === 'Jan 5, 2016',
       ),
     ).toBeInTheDocument();
-    userEvent.click(getByRole('button', { name: 'Type' }));
+    userEvent.click(getByLabelText('Type'));
     userEvent.click(
-      within(getByRole('listbox', { name: 'Type' })).getByText(
+      within(getByRole('listbox', { hidden: true, name: 'Type' })).getByText(
         ActivityTypeEnum.NewsletterEmail,
       ),
     );
 
     userEvent.type(
-      getByRole('textbox', { name: 'Subject' }),
+      getByLabelText('Subject'),
       'On the Journey with the Johnson Family',
     );
 
-    const tagsElement = getByRole('textbox', { name: 'Tags' });
+    const tagsElement = getByLabelText('Tags');
     userEvent.click(tagsElement);
 
     await new Promise((resolve) => setTimeout(resolve, 0));
@@ -134,13 +134,19 @@ describe('TaskDrawerForm', () => {
     userEvent.click(tagsElement);
     userEvent.click(within(getByRole('presentation')).getByText('tag-2'));
 
-    const assigneeElement = getByRole('textbox', { name: 'Assignee' });
+    const assigneeElement = getByRole('textbox', {
+      hidden: true,
+      name: 'Assignee',
+    });
     userEvent.click(assigneeElement);
     userEvent.click(
       await within(getByRole('presentation')).findByText('Robert Anderson'),
     );
 
-    const contactsElement = getByRole('textbox', { name: 'Contacts' });
+    const contactsElement = getByRole('textbox', {
+      hidden: true,
+      name: 'Contacts',
+    });
     userEvent.click(contactsElement);
     userEvent.click(
       await within(getByRole('presentation')).findByText('Anderson, Robert'),
@@ -148,15 +154,19 @@ describe('TaskDrawerForm', () => {
     userEvent.click(contactsElement);
     userEvent.click(within(getByRole('presentation')).getByText('Smith, John'));
 
-    userEvent.click(getByRole('checkbox', { name: 'Notification' }));
-    userEvent.type(getByRole('spinbutton', { name: 'Period' }), '20');
-    userEvent.click(getByRole('button', { name: 'Unit' }));
+    userEvent.click(getByLabelText('Notification'));
+    userEvent.type(getByLabelText('Period'), '20');
+    userEvent.click(getByLabelText('Unit'));
     userEvent.click(
-      within(getByRole('listbox', { name: 'Unit' })).getByText('HOURS'),
+      within(getByRole('listbox', { hidden: true, name: 'Unit' })).getByText(
+        'HOURS',
+      ),
     );
-    userEvent.click(getByRole('button', { name: 'Platform' }));
+    userEvent.click(getByLabelText('Platform'));
     userEvent.click(
-      within(getByRole('listbox', { name: 'Platform' })).getByText('BOTH'),
+      within(
+        getByRole('listbox', { hidden: true, name: 'Platform' }),
+      ).getByText('BOTH'),
     );
 
     userEvent.click(getByText('Save'));
@@ -204,11 +214,11 @@ describe('TaskDrawerForm', () => {
         </SnackbarProvider>
       </MuiPickersUtilsProvider>,
     );
-    userEvent.click(getByRole('button', { name: 'Remove' }));
+    userEvent.click(getByRole('button', { hidden: true, name: 'Remove' }));
     expect(
       getByText('Are you sure you wish to delete the selected task?'),
     ).toBeInTheDocument();
 
-    userEvent.click(getByRole('button', { name: 'Yes' }));
+    userEvent.click(getByRole('button', { hidden: true, name: 'Yes' }));
   });
 });

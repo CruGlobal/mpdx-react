@@ -53,9 +53,9 @@ describe('TaskDrawer', () => {
       </ThemeProvider>,
     );
     expect(
-      getByRole('tab', { name: 'Contacts ({{ contactCount }})' }),
+      getByRole('tab', { hidden: true, name: 'Contacts ({{ contactCount }})' }),
     ).toBeDisabled();
-    expect(getByRole('tab', { name: 'Comments' })).toBeDisabled();
+    expect(getByRole('tab', { hidden: true, name: 'Comments' })).toBeDisabled();
     expect(getByTestId('TaskDrawerTitle')).toHaveTextContent('Add Task');
     userEvent.click(getByText('Save'));
     await waitFor(() => expect(onClose).toHaveBeenCalled());

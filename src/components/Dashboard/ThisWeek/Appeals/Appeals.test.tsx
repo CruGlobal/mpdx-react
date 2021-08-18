@@ -46,10 +46,9 @@ describe('Appeals', () => {
     expect(
       getByTestId('AppealsTypographyPledgesAmountTotal').children[0].className,
     ).toContain('MuiSkeleton-root');
-    expect(getByRole('link', { name: 'View All' })).toHaveAttribute(
-      'href',
-      'https://stage.mpdx.org/tools/appeals',
-    );
+    expect(
+      getByRole('link', { hidden: true, name: 'View All' }),
+    ).toHaveAttribute('href', 'https://stage.mpdx.org/tools/appeals');
   });
 
   it('props', () => {

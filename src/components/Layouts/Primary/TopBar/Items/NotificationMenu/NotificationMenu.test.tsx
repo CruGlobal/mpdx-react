@@ -41,7 +41,9 @@ describe('NotificationMenu', () => {
     );
     userEvent.click(getByRole('button'));
     await waitFor(() =>
-      expect(getByRole('button', { name: 'Load More' })).toBeInTheDocument(),
+      expect(
+        getByRole('button', { hidden: true, name: 'Load More' }),
+      ).toBeInTheDocument(),
     );
     expect(
       getByRole('button', {
@@ -53,13 +55,15 @@ describe('NotificationMenu', () => {
         name: 'R Robertson, Tara May 26, 2020 — Upcoming birthday',
       }),
     ).toBeInTheDocument();
-    userEvent.click(getByRole('button', { name: 'Load More' }));
+    userEvent.click(getByRole('button', { hidden: true, name: 'Load More' }));
     await waitFor(() =>
       expect(
-        queryByRole('button', { name: 'Load More' }),
+        queryByRole('button', { hidden: true, name: 'Load More' }),
       ).not.toBeInTheDocument(),
     );
-    userEvent.click(getByRole('button', { name: 'Mark all as read' }));
+    userEvent.click(
+      getByRole('button', { hidden: true, name: 'Mark all as read' }),
+    );
     await waitFor(() =>
       expect(cache.writeQuery).toHaveBeenCalledWith({
         query: GetNotificationsDocument,
@@ -112,7 +116,7 @@ describe('NotificationMenu', () => {
       }),
     );
     expect(
-      queryByRole('button', { name: 'Mark all as read' }),
+      queryByRole('button', { hidden: true, name: 'Mark all as read' }),
     ).not.toBeInTheDocument();
   });
 
