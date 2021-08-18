@@ -129,7 +129,7 @@ export const SidePanelsLayout: FC<SidePanelsLayoutProps> = ({
           flexBasis={leftWidth}
           breakpoint="sm"
         >
-          {leftPanel}
+          <ScrollBox isscroll={isScrollBox ? 1 : 0}>{leftPanel}</ScrollBox>
         </LeftPanelWrapper>
         <ExpandingContent open={leftOpen}>{mainContent}</ExpandingContent>
       </CollapsibleWrapper>
