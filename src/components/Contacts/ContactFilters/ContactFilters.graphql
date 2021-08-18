@@ -1,16 +1,52 @@
 query ContactFilters($accountListId: ID!) {
-  contactFilters(accountListId: $accountListId) {
-    id
-    title
-    alwaysVisible
-    filters {
-      id
-      type
+  accountList(id: $accountListId) {
+    contactFilterGroups {
       name
-      title
-      options {
-        id
-        name
+      filters {
+        featured
+        filterKey
+        title
+        ... on DaterangeFilter {
+          __typename
+          options {
+            name
+            rangeEnd
+            rangeStart
+          }
+        }
+        ... on MultiselectFilter {
+          __typename
+          defaultSelection
+          options {
+            name
+            placeholder
+            value
+          }
+        }
+        ... on NumericRangeFilter {
+          __typename
+          min
+          minLabel
+          maxLabel
+          title
+        }
+        ... on RadioFilter {
+          __typename
+          defaultSelection
+          options {
+            name
+            placeholder
+            value
+          }
+        }
+        ... on TextFilter {
+          __typename
+          options {
+            name
+            placeholder
+            value
+          }
+        }
       }
     }
   }
