@@ -16,9 +16,9 @@ import {
 import { ArrowBackIos, ArrowForwardIos, Close } from '@material-ui/icons';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FilterGroup } from '../../Shared/Filters/Filter';
 import { FilterListItem } from '../../Shared/Filters/FilterListItem';
 import { FilterListItemShowAll } from '../../Shared/Filters/FilterListItemShowAll';
+import { FilterGroup } from '../../../../graphql/types.generated';
 import { useContactFiltersQuery } from './ContactFilters.generated';
 
 const FilterHeader = styled(Box)(({ theme }) => ({
@@ -81,9 +81,9 @@ export const ContactFilters: React.FC<Props & BoxProps> = ({
   };
 
   const getSelectedFilters = (group: FilterGroup) =>
-    group.filters.filter((value) => selectedFilters[value.name]);
+    group.filters.filter((value) => selectedFilters[value.filterKey]);
   const isGroupVisible = (group: FilterGroup) =>
-    group.alwaysVisible || getSelectedFilters(group).length > 0;
+    getSelectedFilters(group).length > 0;
 
   return (
     <Box {...boxProps}>
@@ -142,7 +142,7 @@ export const ContactFilters: React.FC<Props & BoxProps> = ({
                 <ListItem data-testid="LoadingState">
                   <CircularProgress />
                 </ListItem>
-              ) : data?.contactFilters?.length === 0 ? (
+              ) : data?.accountList.contactFilterGroups.length === 0 ? (
                 <ListItem data-testid="NoFiltersState">
                   <ListItemText
                     primary={t('No Contact Filters Found')}
@@ -151,22 +151,24 @@ export const ContactFilters: React.FC<Props & BoxProps> = ({
                 </ListItem>
               ) : (
                 <>
-                  {data?.contactFilters?.map((group) => (
+                  {data?.accountList.contactFilterGroups.map((group) => (
                     <Collapse
-                      key={group.id}
+                      key={group.name}
                       in={showAll || isGroupVisible(group)}
                       data-testid="FilterGroup"
                     >
                       <ListItem button onClick={() => showGroup(group)}>
                         <ListItemText
-                          primary={group.title}
+                          primary={group.name}
                           primaryTypographyProps={{ variant: 'subtitle1' }}
                         />
                         <ArrowForwardIos fontSize="small" color="disabled" />
                       </ListItem>
                     </Collapse>
                   ))}
-                  {data?.contactFilters?.some((g) => !isGroupVisible(g)) ? (
+                  {data?.accountList.contactFilterGroups.some(
+                    (g) => !isGroupVisible(g),
+                  ) ? (
                     <FilterListItemShowAll
                       showAll={showAll}
                       onToggle={() => setShowAll(!showAll)}
@@ -193,16 +195,18 @@ export const ContactFilters: React.FC<Props & BoxProps> = ({
                 component="span"
                 style={{ verticalAlign: 'middle' }}
               >
-                {selectedGroup?.title}
+                {selectedGroup?.name}
               </Typography>
             </FilterHeader>
             <FilterList dense>
               {selectedGroup?.filters?.map((filter) => (
                 <FilterListItem
-                  key={filter.id}
+                  key={filter.filterKey}
                   filter={filter}
-                  value={selectedFilters[filter.name]}
-                  onUpdate={(value) => updateSelectedFilter(filter.name, value)}
+                  value={selectedFilters[filter.filterKey]}
+                  onUpdate={(value) =>
+                    updateSelectedFilter(filter.filterKey, value)
+                  }
                 />
               ))}
             </FilterList>

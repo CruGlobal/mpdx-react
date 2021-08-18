@@ -5,10 +5,10 @@ import {
   ListItemText,
 } from '@material-ui/core';
 import React from 'react';
-import { Filter } from './Filter';
+import { CheckboxFilter } from '../../../../graphql/types.generated';
 
 interface Props {
-  filter: Filter;
+  filter: CheckboxFilter;
   value?: boolean;
   onUpdate: (value: boolean) => void;
 }
