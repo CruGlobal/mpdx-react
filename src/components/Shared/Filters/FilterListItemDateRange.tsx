@@ -3,10 +3,10 @@ import { DatePicker } from '@material-ui/pickers';
 import React from 'react';
 import { DateTime, Interval } from 'luxon';
 import { useTranslation } from 'react-i18next';
-import { Filter } from './Filter';
+import { DaterangeFilter } from '../../../../graphql/types.generated';
 
 interface Props {
-  filter: Filter;
+  filter: DaterangeFilter;
   value?: string;
   onUpdate: (value?: string) => void;
 }
