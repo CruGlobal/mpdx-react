@@ -22,32 +22,52 @@ describe('NavMenu', () => {
         <NavMenu />
       </TestWrapper>,
     );
-    expect(getByRole('menuitem', { name: 'Dashboard' })).toBeInTheDocument();
-    expect(getByRole('menuitem', { name: 'Contacts' })).toBeInTheDocument();
-    expect(getByRole('menuitem', { name: 'Reports' })).toBeInTheDocument();
-    expect(getByRole('menuitem', { name: 'Tools' })).toBeInTheDocument();
-    expect(getByRole('menuitem', { name: 'Coaches' })).toBeInTheDocument();
+    expect(
+      getByRole('menuitem', { hidden: true, name: 'Dashboard' }),
+    ).toBeInTheDocument();
+    expect(
+      getByRole('menuitem', { hidden: true, name: 'Contacts' }),
+    ).toBeInTheDocument();
+    expect(
+      getByRole('menuitem', { hidden: true, name: 'Reports' }),
+    ).toBeInTheDocument();
+    expect(
+      getByRole('menuitem', { hidden: true, name: 'Tools' }),
+    ).toBeInTheDocument();
+    expect(
+      getByRole('menuitem', { hidden: true, name: 'Coaches' }),
+    ).toBeInTheDocument();
     userEvent.click(getByTestId('ReportMenuToggle'));
-    expect(getByRole('menuitem', { name: 'Donations' })).toBeInTheDocument();
     expect(
-      getByRole('menuitem', { name: 'Month Report (Partner Currency)' }),
+      getByRole('menuitem', { hidden: true, name: 'Donations' }),
     ).toBeInTheDocument();
     expect(
-      getByRole('menuitem', { name: 'Month Report (Salary Currency)' }),
+      getByRole('menuitem', {
+        hidden: true,
+        name: 'Month Report (Partner Currency)',
+      }),
     ).toBeInTheDocument();
     expect(
-      getByRole('menuitem', { name: 'Designation Accounts' }),
+      getByRole('menuitem', {
+        hidden: true,
+        name: 'Month Report (Salary Currency)',
+      }),
     ).toBeInTheDocument();
     expect(
-      getByRole('menuitem', { name: 'Responsibility Centers' }),
+      getByRole('menuitem', { hidden: true, name: 'Designation Accounts' }),
     ).toBeInTheDocument();
     expect(
-      getByRole('menuitem', { name: 'Expected Monthly Total' }),
+      getByRole('menuitem', { hidden: true, name: 'Responsibility Centers' }),
     ).toBeInTheDocument();
     expect(
-      getByRole('menuitem', { name: 'Partner Giving Analysis' }),
+      getByRole('menuitem', { hidden: true, name: 'Expected Monthly Total' }),
     ).toBeInTheDocument();
-    expect(getByRole('menuitem', { name: 'Coaching' })).toBeInTheDocument();
+    expect(
+      getByRole('menuitem', { hidden: true, name: 'Partner Giving Analysis' }),
+    ).toBeInTheDocument();
+    expect(
+      getByRole('menuitem', { hidden: true, name: 'Coaching' }),
+    ).toBeInTheDocument();
   });
 
   it('hidden', () => {

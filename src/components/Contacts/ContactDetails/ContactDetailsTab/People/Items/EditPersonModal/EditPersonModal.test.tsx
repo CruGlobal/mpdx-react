@@ -161,7 +161,7 @@ describe('EditPersonModal', () => {
       </SnackbarProvider>,
     );
     expect(getByText('Edit Person')).toBeInTheDocument();
-    userEvent.click(getByRole('button', { name: 'Close' }));
+    userEvent.click(getByRole('button', { hidden: true, name: 'Close' }));
     expect(handleClose).toHaveBeenCalled();
   });
 
@@ -283,21 +283,27 @@ describe('EditPersonModal', () => {
     );
     expect(getByText('Edit Person')).toBeInTheDocument();
 
-    userEvent.clear(getByRole('textbox', { name: 'First Name' }));
-    userEvent.clear(getByRole('textbox', { name: 'Last Name' }));
-    userEvent.clear(getByRole('textbox', { name: 'Title' }));
-    userEvent.clear(getByRole('textbox', { name: 'Suffix' }));
+    userEvent.clear(getByRole('textbox', { hidden: true, name: 'First Name' }));
+    userEvent.clear(getByRole('textbox', { hidden: true, name: 'Last Name' }));
+    userEvent.clear(getByRole('textbox', { hidden: true, name: 'Title' }));
+    userEvent.clear(getByRole('textbox', { hidden: true, name: 'Suffix' }));
 
     userEvent.type(
-      getByRole('textbox', { name: 'First Name' }),
+      getByRole('textbox', { hidden: true, name: 'First Name' }),
       newPersonFirstName,
     );
     userEvent.type(
-      getByRole('textbox', { name: 'Last Name' }),
+      getByRole('textbox', { hidden: true, name: 'Last Name' }),
       newPersonLastName,
     );
-    userEvent.type(getByRole('textbox', { name: 'Title' }), newPersonTitle);
-    userEvent.type(getByRole('textbox', { name: 'Suffix' }), newPersonSuffix);
+    userEvent.type(
+      getByRole('textbox', { hidden: true, name: 'Title' }),
+      newPersonTitle,
+    );
+    userEvent.type(
+      getByRole('textbox', { hidden: true, name: 'Suffix' }),
+      newPersonSuffix,
+    );
 
     userEvent.click(getByText('Save'));
 
@@ -335,16 +341,25 @@ describe('EditPersonModal', () => {
       </SnackbarProvider>,
     );
     expect(getByText('Edit Person')).toBeInTheDocument();
-    userEvent.clear(getAllByRole('textbox', { name: 'Phone Number' })[0]);
+    userEvent.clear(
+      getAllByRole('textbox', { hidden: true, name: 'Phone Number' })[0],
+    );
     userEvent.type(
-      getAllByRole('textbox', { name: 'Phone Number' })[0],
+      getAllByRole('textbox', { hidden: true, name: 'Phone Number' })[0],
       newPersonPhoneNumber,
     );
-    userEvent.click(getAllByRole('button', { name: 'Phone Number Type' })[0]);
-    userEvent.click(getByRole('option', { name: 'Work' }));
-    userEvent.click(getByRole('button', { name: 'Primary Phone' }));
     userEvent.click(
-      getByRole('option', { name: mockPerson.phoneNumbers.nodes[1].number }),
+      getAllByRole('button', { hidden: true, name: 'Phone Number Type' })[0],
+    );
+    userEvent.click(getByRole('option', { hidden: true, name: 'Work' }));
+    userEvent.click(
+      getByRole('button', { hidden: true, name: 'Primary Phone' }),
+    );
+    userEvent.click(
+      getByRole('option', {
+        hidden: true,
+        name: mockPerson.phoneNumbers.nodes[1].number,
+      }),
     );
     userEvent.click(getByText('Save'));
 
@@ -389,7 +404,10 @@ describe('EditPersonModal', () => {
     );
     expect(getByText('Edit Person')).toBeInTheDocument();
     userEvent.click(
-      getAllByRole('img', { name: 'Modal Section Delete Icon' })[2],
+      getAllByRole('img', {
+        hidden: true,
+        name: 'Modal Section Delete Icon',
+      })[2],
     );
     userEvent.click(getByText('Save'));
     await waitFor(() =>
@@ -423,21 +441,33 @@ describe('EditPersonModal', () => {
         </MuiPickersUtilsProvider>
       </SnackbarProvider>,
     );
-    userEvent.clear(getAllByRole('textbox', { name: 'Email Address' })[0]);
+    userEvent.clear(
+      getAllByRole('textbox', { hidden: true, name: 'Email Address' })[0],
+    );
     expect(getByText('Edit Person')).toBeInTheDocument();
 
     userEvent.type(
-      getAllByRole('textbox', { name: 'Email Address' })[0],
+      getAllByRole('textbox', { hidden: true, name: 'Email Address' })[0],
       newPersonEmailAddress,
     );
-    userEvent.click(getAllByRole('button', { name: 'Email Address Type' })[0]);
-    userEvent.click(getByRole('option', { name: 'Mobile' }));
-    userEvent.click(getByRole('button', { name: 'Primary Email' }));
     userEvent.click(
-      getByRole('option', { name: mockPerson.emailAddresses.nodes[1].email }),
+      getAllByRole('button', { hidden: true, name: 'Email Address Type' })[0],
+    );
+    userEvent.click(getByRole('option', { hidden: true, name: 'Mobile' }));
+    userEvent.click(
+      getByRole('button', { hidden: true, name: 'Primary Email' }),
     );
     userEvent.click(
-      getByRole('checkbox', { name: 'Opt-out of Email Newsletter' }),
+      getByRole('option', {
+        hidden: true,
+        name: mockPerson.emailAddresses.nodes[1].email,
+      }),
+    );
+    userEvent.click(
+      getByRole('checkbox', {
+        hidden: true,
+        name: 'Opt-out of Email Newsletter',
+      }),
     );
 
     userEvent.click(getByText('Save'));
@@ -484,7 +514,10 @@ describe('EditPersonModal', () => {
     );
     expect(getByText('Edit Person')).toBeInTheDocument();
     userEvent.click(
-      getAllByRole('img', { name: 'Modal Section Delete Icon' })[4],
+      getAllByRole('img', {
+        hidden: true,
+        name: 'Modal Section Delete Icon',
+      })[4],
     );
     userEvent.click(getByText('Save'));
     await waitFor(() =>
@@ -524,32 +557,36 @@ describe('EditPersonModal', () => {
     expect(getByText('Edit Person')).toBeInTheDocument();
     userEvent.click(getByText('Show More'));
 
-    userEvent.clear(getByRole('textbox', { name: 'Alma Mater' }));
-    userEvent.clear(getByRole('textbox', { name: 'Employer' }));
-    userEvent.clear(getByRole('textbox', { name: 'Occupation' }));
-    userEvent.clear(getByRole('textbox', { name: 'Legal First Name' }));
+    userEvent.clear(getByRole('textbox', { hidden: true, name: 'Alma Mater' }));
+    userEvent.clear(getByRole('textbox', { hidden: true, name: 'Employer' }));
+    userEvent.clear(getByRole('textbox', { hidden: true, name: 'Occupation' }));
+    userEvent.clear(
+      getByRole('textbox', { hidden: true, name: 'Legal First Name' }),
+    );
 
-    userEvent.click(getByRole('button', { name: 'Relationship Status' }));
-    userEvent.click(getByRole('option', { name: 'Married' }));
-    userEvent.click(getByRole('button', { name: 'Gender' }));
-    userEvent.click(getByRole('option', { name: 'Female' }));
+    userEvent.click(
+      getByRole('button', { hidden: true, name: 'Relationship Status' }),
+    );
+    userEvent.click(getByRole('option', { hidden: true, name: 'Married' }));
+    userEvent.click(getByRole('button', { hidden: true, name: 'Gender' }));
+    userEvent.click(getByRole('option', { hidden: true, name: 'Female' }));
     userEvent.type(
-      getByRole('textbox', { name: 'Alma Mater' }),
+      getByRole('textbox', { hidden: true, name: 'Alma Mater' }),
       newPersonAlmaMater,
     );
     userEvent.type(
-      getByRole('textbox', { name: 'Employer' }),
+      getByRole('textbox', { hidden: true, name: 'Employer' }),
       newPersonEmployer,
     );
     userEvent.type(
-      getByRole('textbox', { name: 'Occupation' }),
+      getByRole('textbox', { hidden: true, name: 'Occupation' }),
       newPersonOccupation,
     );
     userEvent.type(
-      getByRole('textbox', { name: 'Legal First Name' }),
+      getByRole('textbox', { hidden: true, name: 'Legal First Name' }),
       newPersonLegalFirstName,
     );
-    userEvent.click(getByRole('checkbox', { name: 'Deceased' }));
+    userEvent.click(getByRole('checkbox', { hidden: true, name: 'Deceased' }));
     userEvent.click(getByText('Show Less'));
     userEvent.click(getByText('Save'));
 
@@ -594,7 +631,9 @@ describe('EditPersonModal', () => {
     );
     expect(getByText('Edit Person')).toBeInTheDocument();
     userEvent.click(getByText('Show More'));
-    userEvent.click(getByRole('textbox', { name: 'Anniversary' }));
+    userEvent.click(
+      getByRole('textbox', { hidden: true, name: 'Anniversary' }),
+    );
     userEvent.click(getByText('30'));
     const AnniversaryOkayButton = await waitFor(() => getByText('OK'));
     userEvent.click(AnniversaryOkayButton);
@@ -629,7 +668,7 @@ describe('EditPersonModal', () => {
     );
     expect(getByText('Edit Person')).toBeInTheDocument();
     userEvent.click(getByText('Show More'));
-    userEvent.click(getByRole('textbox', { name: 'Birthday' }));
+    userEvent.click(getByRole('textbox', { hidden: true, name: 'Birthday' }));
     userEvent.click(getByText('30'));
     const birthdayOkayButton = await waitFor(() => getByText('OK'));
     userEvent.click(birthdayOkayButton);
@@ -669,25 +708,33 @@ describe('EditPersonModal', () => {
     expect(getByText('Edit Person')).toBeInTheDocument();
     userEvent.click(getByText('Show More'));
 
-    userEvent.clear(getAllByRole('textbox', { name: 'Facebook Account' })[0]);
-    userEvent.clear(getAllByRole('textbox', { name: 'Twitter Account' })[0]);
-    userEvent.clear(getAllByRole('textbox', { name: 'LinkedIn Account' })[0]);
-    userEvent.clear(getAllByRole('textbox', { name: 'Website' })[0]);
+    userEvent.clear(
+      getAllByRole('textbox', { hidden: true, name: 'Facebook Account' })[0],
+    );
+    userEvent.clear(
+      getAllByRole('textbox', { hidden: true, name: 'Twitter Account' })[0],
+    );
+    userEvent.clear(
+      getAllByRole('textbox', { hidden: true, name: 'LinkedIn Account' })[0],
+    );
+    userEvent.clear(
+      getAllByRole('textbox', { hidden: true, name: 'Website' })[0],
+    );
 
     userEvent.type(
-      getAllByRole('textbox', { name: 'Facebook Account' })[0],
+      getAllByRole('textbox', { hidden: true, name: 'Facebook Account' })[0],
       newPersonFacebookAccount,
     );
     userEvent.type(
-      getAllByRole('textbox', { name: 'Twitter Account' })[0],
+      getAllByRole('textbox', { hidden: true, name: 'Twitter Account' })[0],
       newPersonTwitterAccount,
     );
     userEvent.type(
-      getAllByRole('textbox', { name: 'LinkedIn Account' })[0],
+      getAllByRole('textbox', { hidden: true, name: 'LinkedIn Account' })[0],
       newPersonLinkedInAccount,
     );
     userEvent.type(
-      getAllByRole('textbox', { name: 'Website' })[0],
+      getAllByRole('textbox', { hidden: true, name: 'Website' })[0],
       newPersonWebsite,
     );
     userEvent.click(getByText('Show Less'));
@@ -733,16 +780,28 @@ describe('EditPersonModal', () => {
     expect(getByText('Edit Person')).toBeInTheDocument();
     userEvent.click(getByText('Show More'));
     userEvent.click(
-      getAllByRole('img', { name: 'Modal Section Delete Icon' })[6],
+      getAllByRole('img', {
+        hidden: true,
+        name: 'Modal Section Delete Icon',
+      })[6],
     );
     userEvent.click(
-      getAllByRole('img', { name: 'Modal Section Delete Icon' })[8],
+      getAllByRole('img', {
+        hidden: true,
+        name: 'Modal Section Delete Icon',
+      })[8],
     );
     userEvent.click(
-      getAllByRole('img', { name: 'Modal Section Delete Icon' })[10],
+      getAllByRole('img', {
+        hidden: true,
+        name: 'Modal Section Delete Icon',
+      })[10],
     );
     userEvent.click(
-      getAllByRole('img', { name: 'Modal Section Delete Icon' })[12],
+      getAllByRole('img', {
+        hidden: true,
+        name: 'Modal Section Delete Icon',
+      })[12],
     );
 
     userEvent.click(getByText('Save'));

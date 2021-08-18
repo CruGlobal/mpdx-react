@@ -49,7 +49,7 @@ describe('LogNewsletter', () => {
         </SnackbarProvider>
       </MuiPickersUtilsProvider>,
     );
-    userEvent.click(getByRole('button', { name: 'Close' }));
+    userEvent.click(getByRole('button', { hidden: true, name: 'Close' }));
     expect(handleClose).toHaveBeenCalled();
   });
 
@@ -72,7 +72,10 @@ describe('LogNewsletter', () => {
       userEvent.click(getByText('Save'));
       expect(await findByText('Field is required')).toBeInTheDocument();
 
-      userEvent.type(getByRole('textbox', { name: 'Subject' }), accountListId);
+      userEvent.type(
+        getByRole('textbox', { hidden: true, name: 'Subject' }),
+        accountListId,
+      );
       await waitFor(() => expect(getByText('Save')).not.toBeDisabled());
       userEvent.click(getByText('Save'));
       await waitFor(() => expect(handleClose).toHaveBeenCalled());
@@ -96,9 +99,14 @@ describe('LogNewsletter', () => {
       userEvent.click(getByText('Save'));
       expect(await findByText('Field is required')).toBeInTheDocument();
 
-      userEvent.type(getByRole('textbox', { name: 'Subject' }), accountListId);
+      userEvent.type(
+        getByRole('textbox', { hidden: true, name: 'Subject' }),
+        accountListId,
+      );
       await waitFor(() => expect(getByText('Save')).not.toBeDisabled());
-      userEvent.click(getByRole('radio', { name: 'Newsletter - Email' }));
+      userEvent.click(
+        getByRole('radio', { hidden: true, name: 'Newsletter - Email' }),
+      );
       userEvent.click(getByText('Save'));
       await waitFor(() => expect(handleClose).toHaveBeenCalled());
     });
@@ -121,7 +129,10 @@ describe('LogNewsletter', () => {
       userEvent.click(getByText('Save'));
       expect(await findByText('Field is required')).toBeInTheDocument();
 
-      userEvent.type(getByRole('textbox', { name: 'Subject' }), accountListId);
+      userEvent.type(
+        getByRole('textbox', { hidden: true, name: 'Subject' }),
+        accountListId,
+      );
       await waitFor(() => expect(getByText('Save')).not.toBeDisabled());
       userEvent.click(getByTestId('completedDate'));
       const dateOkButton = await waitFor(() => getByText('OK'));
@@ -152,10 +163,16 @@ describe('LogNewsletter', () => {
       userEvent.click(getByText('Save'));
       expect(await findByText('Field is required')).toBeInTheDocument();
 
-      userEvent.type(getByRole('textbox', { name: 'Subject' }), accountListId);
+      userEvent.type(
+        getByRole('textbox', { hidden: true, name: 'Subject' }),
+        accountListId,
+      );
       await waitFor(() => expect(getByText('Save')).not.toBeDisabled());
 
-      userEvent.type(getByRole('textbox', { name: 'Comment' }), 'comment');
+      userEvent.type(
+        getByRole('textbox', { hidden: true, name: 'Comment' }),
+        'comment',
+      );
 
       userEvent.click(getByText('Save'));
 

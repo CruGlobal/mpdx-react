@@ -56,7 +56,7 @@ describe('ExportPhysical', () => {
         />
       </GqlMockedProvider>,
     );
-    userEvent.click(getByRole('button', { name: 'Close' }));
+    userEvent.click(getByRole('button', { hidden: true, name: 'Close' }));
     expect(handleClose).toHaveBeenCalled();
   });
 

@@ -20,10 +20,9 @@ describe('Balance', () => {
       </GqlMockedProvider>,
     );
     expect(getByTestId('BalanceTypography').textContent).toEqual('$1,001');
-    expect(getByRole('link', { name: 'View Gifts' })).toHaveAttribute(
-      'href',
-      'https://stage.mpdx.org/reports/donations',
-    );
+    expect(
+      getByRole('link', { hidden: true, name: 'View Gifts' }),
+    ).toHaveAttribute('href', 'https://stage.mpdx.org/reports/donations');
   });
 
   it('custom props', () => {

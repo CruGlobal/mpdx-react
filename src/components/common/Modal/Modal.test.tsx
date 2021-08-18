@@ -41,6 +41,6 @@ it('fires onClose | Close Button', () => {
       </Modal>
     </MuiThemeProvider>,
   );
-  userEvent.click(getByRole('button', { name: 'Close' }));
+  userEvent.click(getByRole('button', { hidden: true, name: 'Close' }));
   expect(handleClose).toHaveBeenCalled();
 });

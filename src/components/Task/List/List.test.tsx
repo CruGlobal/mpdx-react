@@ -144,7 +144,9 @@ describe('TaskList', () => {
       },
       rowsPerPage: 100,
     });
-    userEvent.click(getByRole('button', { name: 'Filter Table' }));
+    userEvent.click(
+      getByRole('button', { hidden: true, name: 'Filter Table' }),
+    );
     const buttons = getAllByRole('button').filter((element) => element.id);
     const buttonWithIdThatEndsWith = (value: string): HTMLElement => {
       const button = buttons.find((element) => element.id.endsWith(value));
@@ -154,26 +156,34 @@ describe('TaskList', () => {
       return button;
     };
     userEvent.click(buttonWithIdThatEndsWith('completedAt'));
-    userEvent.click(getByRole('option', { name: 'Incomplete' }));
+    userEvent.click(getByRole('option', { hidden: true, name: 'Incomplete' }));
     userEvent.click(buttonWithIdThatEndsWith('activityType'));
-    userEvent.click(getByRole('option', { name: 'Appointment' }));
+    userEvent.click(getByRole('option', { hidden: true, name: 'Appointment' }));
     userEvent.tab();
     userEvent.click(buttonWithIdThatEndsWith('contacts'));
-    userEvent.click(getByRole('option', { name: 'Anderson, Robert' }));
+    userEvent.click(
+      getByRole('option', { hidden: true, name: 'Anderson, Robert' }),
+    );
     userEvent.tab();
     userEvent.click(buttonWithIdThatEndsWith('tagList'));
-    userEvent.click(getByRole('option', { name: 'tag-1' }));
+    userEvent.click(getByRole('option', { hidden: true, name: 'tag-1' }));
     userEvent.tab();
     userEvent.click(buttonWithIdThatEndsWith('user'));
-    userEvent.click(getByRole('option', { name: 'Robert Anderson' }));
+    userEvent.click(
+      getByRole('option', { hidden: true, name: 'Robert Anderson' }),
+    );
     userEvent.tab();
-    userEvent.click(getByRole('button', { name: 'Close' }));
-    userEvent.click(getByRole('button', { name: 'Search' }));
-    userEvent.type(getByRole('textbox', { name: 'Search' }), 'a');
-    userEvent.click(getByRole('button', { name: 'Rows per page: 100' }));
-    userEvent.click(getByRole('option', { name: '250' }));
-    userEvent.click(getByRole('button', { name: 'Next Page' }));
-    userEvent.click(getByRole('button', { name: 'Previous Page' }));
+    userEvent.click(getByRole('button', { hidden: true, name: 'Close' }));
+    userEvent.click(getByRole('button', { hidden: true, name: 'Search' }));
+    userEvent.type(getByRole('textbox', { hidden: true, name: 'Search' }), 'a');
+    userEvent.click(
+      getByRole('button', { hidden: true, name: 'Rows per page: 100' }),
+    );
+    userEvent.click(getByRole('option', { hidden: true, name: '250' }));
+    userEvent.click(getByRole('button', { hidden: true, name: 'Next Page' }));
+    userEvent.click(
+      getByRole('button', { hidden: true, name: 'Previous Page' }),
+    );
   });
 
   it('has correct overrides', async () => {
@@ -233,7 +243,9 @@ describe('TaskList', () => {
         </TestWrapper>
       </ThemeProvider>,
     );
-    expect(getAllByRole('button', { name: 'Loading' }).length).toEqual(2);
+    expect(
+      getAllByRole('button', { hidden: true, name: 'Loading' }).length,
+    ).toEqual(2);
   });
 
   it('has empty state', () => {

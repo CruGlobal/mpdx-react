@@ -12,8 +12,14 @@ describe('StarTaskIconButton', () => {
       </MuiThemeProvider>,
     );
 
-    const starFilledIcon = queryByRole('img', { name: 'Filled Star Icon' });
-    const starOutlineIcon = queryByRole('img', { name: 'Outline Star Icon' });
+    const starFilledIcon = queryByRole('img', {
+      hidden: true,
+      name: 'Filled Star Icon',
+    });
+    const starOutlineIcon = queryByRole('img', {
+      hidden: true,
+      name: 'Outline Star Icon',
+    });
 
     expect(starFilledIcon).not.toBeInTheDocument();
     expect(starOutlineIcon).toBeInTheDocument();
@@ -26,8 +32,14 @@ describe('StarTaskIconButton', () => {
       </MuiThemeProvider>,
     );
 
-    const starFilledIcon = queryByRole('img', { name: 'Filled Star Icon' });
-    const starOutlineIcon = queryByRole('img', { name: 'Outline Star Icon' });
+    const starFilledIcon = queryByRole('img', {
+      hidden: true,
+      name: 'Filled Star Icon',
+    });
+    const starOutlineIcon = queryByRole('img', {
+      hidden: true,
+      name: 'Outline Star Icon',
+    });
 
     expect(starFilledIcon).toBeInTheDocument();
     expect(starOutlineIcon).not.toBeInTheDocument();

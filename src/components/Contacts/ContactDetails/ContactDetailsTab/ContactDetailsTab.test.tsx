@@ -145,7 +145,7 @@ describe('ContactDetailTab', () => {
     );
     await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());
     userEvent.click(queryAllByText('delete contact')[0]);
-    userEvent.click(getByRole('button', { name: 'Close' }));
+    userEvent.click(getByRole('button', { hidden: true, name: 'Close' }));
     await waitFor(() =>
       expect(queryByText('Delete Contact')).not.toBeInTheDocument(),
     );
@@ -170,7 +170,9 @@ describe('ContactDetailTab', () => {
       </SnackbarProvider>,
     );
     await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());
-    userEvent.click(getAllByRole('img', { name: 'Edit Icon' })[0]);
+    userEvent.click(
+      getAllByRole('img', { hidden: true, name: 'Edit Icon' })[0],
+    );
     await waitFor(() =>
       expect(queryByText('Edit Contact Details')).toBeInTheDocument(),
     );
@@ -195,11 +197,13 @@ describe('ContactDetailTab', () => {
       </SnackbarProvider>,
     );
     await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());
-    userEvent.click(getAllByRole('img', { name: 'Edit Icon' })[0]);
+    userEvent.click(
+      getAllByRole('img', { hidden: true, name: 'Edit Icon' })[0],
+    );
     await waitFor(() =>
       expect(queryByText('Edit Contact Details')).toBeInTheDocument(),
     );
-    userEvent.click(getByRole('button', { name: 'Close' }));
+    userEvent.click(getByRole('button', { hidden: true, name: 'Close' }));
     await waitFor(() =>
       expect(queryByText('Edit Contact Details')).not.toBeInTheDocument(),
     );
@@ -224,7 +228,9 @@ describe('ContactDetailTab', () => {
       </SnackbarProvider>,
     );
     await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());
-    userEvent.click(getAllByRole('img', { name: 'Edit Icon' })[3]);
+    userEvent.click(
+      getAllByRole('img', { hidden: true, name: 'Edit Icon' })[3],
+    );
     await waitFor(() =>
       expect(queryByText('Edit Contact Mailing Details')).toBeInTheDocument(),
     );
@@ -249,11 +255,13 @@ describe('ContactDetailTab', () => {
       </SnackbarProvider>,
     );
     await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());
-    userEvent.click(getAllByRole('img', { name: 'Edit Icon' })[3]);
+    userEvent.click(
+      getAllByRole('img', { hidden: true, name: 'Edit Icon' })[3],
+    );
     await waitFor(() =>
       expect(queryByText('Edit Contact Mailing Details')).toBeInTheDocument(),
     );
-    userEvent.click(getByRole('button', { name: 'Close' }));
+    userEvent.click(getByRole('button', { hidden: true, name: 'Close' }));
     await waitFor(() =>
       expect(
         queryByText('Edit Contact Mailing Details'),
@@ -280,7 +288,9 @@ describe('ContactDetailTab', () => {
       </SnackbarProvider>,
     );
     await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());
-    userEvent.click(getAllByRole('img', { name: 'Edit Icon' })[4]);
+    userEvent.click(
+      getAllByRole('img', { hidden: true, name: 'Edit Icon' })[4],
+    );
     await waitFor(() =>
       expect(queryByText('Edit Address')).toBeInTheDocument(),
     );
@@ -305,11 +315,13 @@ describe('ContactDetailTab', () => {
       </SnackbarProvider>,
     );
     await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());
-    userEvent.click(getAllByRole('img', { name: 'Edit Icon' })[4]);
+    userEvent.click(
+      getAllByRole('img', { hidden: true, name: 'Edit Icon' })[4],
+    );
     await waitFor(() =>
       expect(queryByText('Edit Address')).toBeInTheDocument(),
     );
-    userEvent.click(getByRole('button', { name: 'Close' }));
+    userEvent.click(getByRole('button', { hidden: true, name: 'Close' }));
     await waitFor(() =>
       expect(queryByText('Edit Address')).not.toBeInTheDocument(),
     );
@@ -392,7 +404,9 @@ describe('ContactDetailTab', () => {
     await waitFor(() =>
       expect(getByText('4321 Sesame Street')).toBeInTheDocument(),
     );
-    userEvent.click(getAllByRole('img', { name: 'Edit Icon' })[5]);
+    userEvent.click(
+      getAllByRole('img', { hidden: true, name: 'Edit Icon' })[5],
+    );
     await waitFor(() =>
       expect(queryByText('Edit Address')).toBeInTheDocument(),
     );
@@ -417,7 +431,9 @@ describe('ContactDetailTab', () => {
       </SnackbarProvider>,
     );
     await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());
-    userEvent.click(getAllByRole('img', { name: 'Edit Icon' })[5]);
+    userEvent.click(
+      getAllByRole('img', { hidden: true, name: 'Edit Icon' })[5],
+    );
     await waitFor(() =>
       expect(queryByText('Edit Contact Other Details')).toBeInTheDocument(),
     );
@@ -442,11 +458,13 @@ describe('ContactDetailTab', () => {
       </SnackbarProvider>,
     );
     await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());
-    userEvent.click(getAllByRole('img', { name: 'Edit Icon' })[5]);
+    userEvent.click(
+      getAllByRole('img', { hidden: true, name: 'Edit Icon' })[5],
+    );
     await waitFor(() =>
       expect(queryByText('Edit Contact Other Details')).toBeInTheDocument(),
     );
-    userEvent.click(getByRole('button', { name: 'Close' }));
+    userEvent.click(getByRole('button', { hidden: true, name: 'Close' }));
     await waitFor(() =>
       expect(queryByText('Edit Contact Other Details')).not.toBeInTheDocument(),
     );

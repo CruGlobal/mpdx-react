@@ -87,7 +87,7 @@ describe('EditContactOtherModal', () => {
     );
 
     expect(getByText('Edit Contact Other Details')).toBeInTheDocument();
-    userEvent.click(getByRole('button', { name: 'Close' }));
+    userEvent.click(getByRole('button', { hidden: true, name: 'Close' }));
     expect(handleClose).toHaveBeenCalled();
   });
 
@@ -157,17 +157,27 @@ describe('EditContactOtherModal', () => {
       </SnackbarProvider>,
     );
 
-    userEvent.clear(getByRole('textbox', { name: 'Church' }));
-    userEvent.clear(getByRole('textbox', { name: 'Website' }));
+    userEvent.clear(getByRole('textbox', { hidden: true, name: 'Church' }));
+    userEvent.clear(getByRole('textbox', { hidden: true, name: 'Website' }));
 
-    userEvent.click(getByRole('button', { name: 'Preferred Contact Method' }));
-    userEvent.click(getByRole('option', { name: 'WhatsApp' }));
-    // userEvent.click(getByRole('button', { name: 'Language' }));
-    // userEvent.click(getByRole('option', { name: 'Australian English' }));
-    userEvent.click(getByRole('button', { name: 'Timezone' }));
-    userEvent.click(getByRole('option', { name: '(GMT-09:00) Alaska' }));
-    userEvent.type(getByRole('textbox', { name: 'Church' }), newChurchName);
-    userEvent.type(getByRole('textbox', { name: 'Website' }), newWebsite);
+    userEvent.click(
+      getByRole('button', { hidden: true, name: 'Preferred Contact Method' }),
+    );
+    userEvent.click(getByRole('option', { hidden: true, name: 'WhatsApp' }));
+    // userEvent.click(getByRole('button', { hidden: true, name: 'Language' }));
+    // userEvent.click(getByRole('option', { hidden: true, name: 'Australian English' }));
+    userEvent.click(getByRole('button', { hidden: true, name: 'Timezone' }));
+    userEvent.click(
+      getByRole('option', { hidden: true, name: '(GMT-09:00) Alaska' }),
+    );
+    userEvent.type(
+      getByRole('textbox', { hidden: true, name: 'Church' }),
+      newChurchName,
+    );
+    userEvent.type(
+      getByRole('textbox', { hidden: true, name: 'Website' }),
+      newWebsite,
+    );
     userEvent.click(getByText('Save'));
     await waitFor(() =>
       expect(mockEnqueue).toHaveBeenCalledWith('Contact updated successfully', {
@@ -216,8 +226,11 @@ describe('EditContactOtherModal', () => {
       </SnackbarProvider>,
     );
 
-    userEvent.clear(getByRole('textbox', { name: 'Church' }));
-    userEvent.type(getByRole('textbox', { name: 'Church' }), newChurchName);
+    userEvent.clear(getByRole('textbox', { hidden: true, name: 'Church' }));
+    userEvent.type(
+      getByRole('textbox', { hidden: true, name: 'Church' }),
+      newChurchName,
+    );
     userEvent.click(getByText('Save'));
     await waitFor(() =>
       expect(mockEnqueue).toHaveBeenCalledWith(

@@ -24,7 +24,9 @@ describe('DesignationAccountsReportHeader', () => {
 
     expect(getByText(title)).toBeInTheDocument();
     expect(getByText(`Balance: ${totalBalance}`)).toBeInTheDocument();
-    userEvent.click(getByRole('button', { name: 'Toggle Filter Panel' }));
+    userEvent.click(
+      getByRole('button', { hidden: true, name: 'Toggle Filter Panel' }),
+    );
   });
 
   it('should not render total balance if undefined', async () => {

@@ -119,9 +119,8 @@ describe('WeeklyActivity', () => {
     expect(
       getByTestId('WeeklyActivityTableCellCompletedCalls').textContent,
     ).toEqual('1,234');
-    expect(getByRole('link', { name: 'View Activity Detail' })).toHaveAttribute(
-      'href',
-      'https://stage.mpdx.org/reports/coaching',
-    );
+    expect(
+      getByRole('link', { hidden: true, name: 'View Activity Detail' }),
+    ).toHaveAttribute('href', 'https://stage.mpdx.org/reports/coaching');
   });
 });
