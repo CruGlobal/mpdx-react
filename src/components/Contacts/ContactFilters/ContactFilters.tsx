@@ -92,7 +92,7 @@ export const ContactFilters: React.FC<Props & BoxProps> = ({
   };
 
   const getSelectedFilters = (group: FilterGroup) =>
-    group.filters.filter((value) => selectedFilters[value.title]);
+    group.filters.filter((value) => selectedFilters[value.filterKey]);
   const isGroupVisible = (group: FilterGroup) =>
     getSelectedFilters(group).length > 0;
 
@@ -214,9 +214,9 @@ export const ContactFilters: React.FC<Props & BoxProps> = ({
                 <FilterListItem
                   key={filter.filterKey}
                   filter={filter}
-                  value={selectedFilters[filter.title]}
+                  value={selectedFilters[filter.filterKey]}
                   onUpdate={(value) =>
-                    updateSelectedFilter(filter.title, value)
+                    updateSelectedFilter(filter.filterKey, value)
                   }
                 />
               ))}
