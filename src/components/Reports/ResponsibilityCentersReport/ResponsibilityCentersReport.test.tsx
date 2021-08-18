@@ -1,8 +1,8 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import { ThemeProvider } from '@material-ui/core';
-import { DesignationAccountsQuery } from './GetDesignationAccounts.generated';
-import { DesignationAccountsReport } from './DesignationAccountsReport';
+import { FinancialAccountsQuery } from './GetFinancialAccounts.generated';
+import { ResponsibilityCentersReport } from './ResponsibilityCentersReport';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
 
@@ -20,43 +20,51 @@ const title = 'test title';
 const onNavListToggle = jest.fn();
 
 const mocks = {
-  DesignationAccounts: {
-    designationAccounts: [
-      {
-        organizationName: 'test org 01',
-        designationAccounts: [
-          {
+  FinancialAccounts: {
+    financialAccounts: {
+      edges: [
+        {
+          node: {
             active: false,
+            balance: {
+              conversionDate: '2/2/2021',
+              convertedAmount: 3500,
+              convertedCurrency: 'CAD',
+            },
+            code: '13212',
             id: 'test-id-111',
-            balanceUpdatedAt: '2/2/2021',
-            convertedBalance: 3500,
-            currency: 'CAD',
-            designationNumber: '33221',
             name: 'Test Account',
+            organization: {
+              id: '111-2222-3333',
+              name: 'test org 01',
+            },
+            updatedAt: '2/2/2021',
           },
-        ],
-      },
-    ],
+        },
+      ],
+    },
   },
 };
 
 const errorMocks = {
-  DesignationAccounts: {},
+  FinancialAccounts: {},
   error: { name: 'error', message: 'Error loading data.  Try again.' },
 };
 
 const emptyMocks = {
-  DesignationAccounts: {
-    designationAccounts: [],
+  FinancialAccounts: {
+    financialAccounts: {
+      edges: [],
+    },
   },
 };
 
-describe('DesignationAccountsReport', () => {
+describe('ResponsibilityCentersReport', () => {
   it('default', async () => {
     const { getByText, getByTestId, queryByTestId } = render(
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider<DesignationAccountsQuery> mocks={mocks}>
-          <DesignationAccountsReport
+        <GqlMockedProvider<FinancialAccountsQuery> mocks={mocks}>
+          <ResponsibilityCentersReport
             accountListId={accountListId}
             isNavListOpen={true}
             title={title}
@@ -68,7 +76,7 @@ describe('DesignationAccountsReport', () => {
 
     await waitFor(() => {
       expect(
-        queryByTestId('LoadingDesignationAccounts'),
+        queryByTestId('LoadingResponsibilityCenters'),
       ).not.toBeInTheDocument();
     });
 
@@ -76,14 +84,14 @@ describe('DesignationAccountsReport', () => {
     expect(getByText('CA$3,500')).toBeInTheDocument();
     expect(queryByTestId('Notification')).not.toBeInTheDocument();
     expect(getByTestId('AccountsGroupList')).toBeInTheDocument();
-    expect(getByTestId('DesignationAccountsScrollBox')).toBeInTheDocument();
+    expect(getByTestId('ResponsibilityCentersScrollBox')).toBeInTheDocument();
   });
 
   it('loading', async () => {
     const { queryByTestId, getByText } = render(
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider<DesignationAccountsQuery>>
-          <DesignationAccountsReport
+        <GqlMockedProvider<FinancialAccountsQuery>>
+          <ResponsibilityCentersReport
             accountListId={accountListId}
             isNavListOpen={true}
             title={title}
@@ -94,15 +102,15 @@ describe('DesignationAccountsReport', () => {
     );
 
     expect(getByText(title)).toBeInTheDocument();
-    expect(queryByTestId('LoadingDesignationAccounts')).toBeInTheDocument();
+    expect(queryByTestId('LoadingResponsibilityCenters')).toBeInTheDocument();
     expect(queryByTestId('Notification')).not.toBeInTheDocument();
   });
 
   it('error', async () => {
     const { queryByTestId } = render(
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider<DesignationAccountsQuery> mocks={errorMocks}>
-          <DesignationAccountsReport
+        <GqlMockedProvider<FinancialAccountsQuery> mocks={errorMocks}>
+          <ResponsibilityCentersReport
             accountListId={accountListId}
             isNavListOpen={true}
             title={title}
@@ -114,7 +122,7 @@ describe('DesignationAccountsReport', () => {
 
     await waitFor(() => {
       expect(
-        queryByTestId('LoadingDesignationAccounts'),
+        queryByTestId('LoadingResponsibilityCenters'),
       ).not.toBeInTheDocument();
     });
 
@@ -124,8 +132,8 @@ describe('DesignationAccountsReport', () => {
   it('empty', async () => {
     const { queryByTestId, getByText } = render(
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider<DesignationAccountsQuery> mocks={emptyMocks}>
-          <DesignationAccountsReport
+        <GqlMockedProvider<FinancialAccountsQuery> mocks={emptyMocks}>
+          <ResponsibilityCentersReport
             accountListId={accountListId}
             isNavListOpen={true}
             title={title}
@@ -137,7 +145,7 @@ describe('DesignationAccountsReport', () => {
 
     await waitFor(() => {
       expect(
-        queryByTestId('LoadingDesignationAccounts'),
+        queryByTestId('LoadingResponsibilityCenters'),
       ).not.toBeInTheDocument();
     });
 

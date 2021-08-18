@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Box, IconButton, styled, Theme, Typography } from '@material-ui/core';
 import { FilterList } from '@material-ui/icons';
 
-interface DesignationAccountsReportHeaderProps {
+interface AccountsListHeaderProps {
   isNavListOpen: boolean;
   onNavListToggle: () => void;
   title: string;
@@ -37,7 +37,7 @@ const NavListIcon = styled(FilterList)(({ theme }) => ({
   color: theme.palette.primary.dark,
 }));
 
-export const DesignationAccountsHeader: FC<DesignationAccountsReportHeaderProps> = ({
+export const AccountsListHeader: FC<AccountsListHeaderProps> = ({
   title,
   isNavListOpen,
   onNavListToggle,
@@ -46,7 +46,7 @@ export const DesignationAccountsHeader: FC<DesignationAccountsReportHeaderProps>
   const { t } = useTranslation();
 
   return (
-    <StickyHeader p={2} test-dataid="DesignationAccountsReportHeader">
+    <StickyHeader p={2} test-dataid="AccountsListHeader">
       <Box display="flex" justifyContent="space-between" alignItems="center">
         <Box display="flex" alignItems="center">
           <NavListButton panelOpen={isNavListOpen} onClick={onNavListToggle}>
