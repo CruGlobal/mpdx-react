@@ -5,6 +5,7 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+  workflow_dispatch:
 
 env:
   # Use production API for codegen to make sure production is compatible with the code to be merged
@@ -42,6 +43,9 @@ jobs:
         chunk: ${{ fromJson(needs.split-tests.outputs['test-chunk-ids']) }}
     steps:
       - uses: actions/checkout@v2
+        with:
+          # Help Codecov detect commit SHA
+          fetch-depth: 2
       - uses: actions/setup-node@v2
         with:
           node-version: 15

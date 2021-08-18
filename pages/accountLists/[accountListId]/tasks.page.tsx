@@ -1,11 +1,10 @@
-import React, { ReactElement, useEffect } from 'react';
+import React, { ReactElement } from 'react';
 import Head from 'next/head';
 import { GetServerSideProps } from 'next';
 import { getSession } from 'next-auth/client';
 import { useTranslation } from 'react-i18next';
 import { parse } from 'query-string';
 import { useRouter } from 'next/router';
-import { useApp } from '../../../src/components/App';
 import TaskHome from '../../../src/components/Task/Home';
 import { TaskFilter } from '../../../src/components/Task/List/List';
 
@@ -69,17 +68,8 @@ export const initialFilterFromPath = (path: string): TaskFilter => {
 };
 
 const TasksPage = (): ReactElement => {
-  const { dispatch } = useApp();
   const { t } = useTranslation();
   const router = useRouter();
-
-  useEffect(() => {
-    dispatch({ type: 'updateBreadcrumb', breadcrumb: t('Tasks') });
-    dispatch({
-      type: 'updateAccountListId',
-      accountListId: router.query.accountListId?.toString() ?? '',
-    });
-  }, []);
 
   const initialFilter = initialFilterFromPath(router.asPath);
 

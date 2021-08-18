@@ -1,6 +1,5 @@
 import React, { ReactElement } from 'react';
 import { MockedProvider } from '@apollo/client/testing';
-import withDispatch from '../../../decorators/withDispatch';
 import {
   getDataForTaskDrawerMock,
   updateTaskMutationMock,
@@ -18,7 +17,6 @@ const taskId = 'task-1';
 
 export default {
   title: 'Task/Drawer',
-  decorators: [withDispatch({ type: 'updateAccountListId', accountListId })],
 };
 
 export const Default = (): ReactElement => {

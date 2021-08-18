@@ -15,11 +15,11 @@ import CloseIcon from '@material-ui/icons/Close';
 import { useTranslation } from 'react-i18next';
 import { TabContext, TabList, TabPanel } from '@material-ui/lab';
 import { AnimatePresence, motion } from 'framer-motion';
-import { useApp } from '../../App';
 import Loading from '../../Loading';
 import TaskStatus from '../Status';
 import { Task } from '../../../../graphql/types.generated';
 import { TaskFilter } from '../List/List';
+import { useAccountListId } from '../../../hooks/useAccountListId';
 import TaskDrawerForm from './Form';
 import TaskDrawerContactList from './ContactList';
 import TaskDrawerCommentList from './CommentList';
@@ -80,14 +80,14 @@ const TaskDrawer = ({
   filter,
   rowsPerPage,
 }: TaskDrawerProps): ReactElement => {
-  const { state } = useApp();
+  const accountListId = useAccountListId();
   const classes = useStyles();
   const [open, setOpen] = useState(!taskId);
   const { t } = useTranslation();
   const [tab, setTab] = useState(specificTab);
   const { data, loading } = useGetTaskForTaskDrawerQuery({
     variables: {
-      accountListId: state.accountListId ?? '',
+      accountListId: accountListId ?? '',
       taskId: taskId ?? '',
     },
     skip: !taskId,
@@ -193,19 +193,19 @@ const TaskDrawer = ({
                   animate={{ x: 0, opacity: 1 }}
                   exit={{ x: -300, opacity: 0 }}
                 >
-                  {!loading && state.accountListId && (
+                  {!loading && accountListId && (
                     <>
                       {showCompleteForm ? (
                         task && (
                           <TaskDrawerCompleteForm
-                            accountListId={state.accountListId}
+                            accountListId={accountListId}
                             task={task}
                             onClose={onDrawerClose}
                           />
                         )
                       ) : (
                         <TaskDrawerForm
-                          accountListId={state.accountListId}
+                          accountListId={accountListId}
                           task={task} // TODO: Use fragments to ensure all required fields are loaded
                           onClose={onDrawerClose}
                           defaultValues={defaultValues}
@@ -217,7 +217,7 @@ const TaskDrawer = ({
                   )}
                 </motion.div>
               </TabPanel>
-              {task && state.accountListId && (
+              {task && accountListId && (
                 <>
                   <TabPanel
                     key="2"
@@ -230,7 +230,7 @@ const TaskDrawer = ({
                       exit={{ x: -300, opacity: 0 }}
                     >
                       <TaskDrawerContactList
-                        accountListId={state.accountListId}
+                        accountListId={accountListId}
                         contactIds={task.contacts.nodes.map(({ id }) => id)}
                       />
                     </motion.div>
@@ -246,7 +246,7 @@ const TaskDrawer = ({
                       exit={{ x: -300, opacity: 0 }}
                     >
                       <TaskDrawerCommentList
-                        accountListId={state.accountListId}
+                        accountListId={accountListId}
                         taskId={task.id}
                       />
                     </motion.div>

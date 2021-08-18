@@ -15,13 +15,21 @@ import {
 import { GetNotificationsDocument } from './GetNotificationsQuery.generated';
 import NotificationMenu from './NotificationMenu';
 
+jest.mock('next/router', () => ({
+  useRouter: () => {
+    return {
+      query: { accountListId: '1' },
+      isReady: true,
+    };
+  },
+}));
+
 describe('NotificationMenu', () => {
   it('default', async () => {
     const cache = new InMemoryCache({ addTypename: false });
     jest.spyOn(cache, 'writeQuery');
     const { getByRole, queryByRole } = render(
       <TestWrapper
-        initialState={{ accountListId: '1' }}
         mocks={[
           ...getNotificationsMocks(),
           acknowledgeAllUserNotificationsMutationMock(),
@@ -110,10 +118,7 @@ describe('NotificationMenu', () => {
 
   it('loading', async () => {
     const { getByRole, getByTestId } = render(
-      <TestWrapper
-        initialState={{ accountListId: '1' }}
-        mocks={[getNotificationsLoadingMock()]}
-      >
+      <TestWrapper mocks={[getNotificationsLoadingMock()]}>
         <NotificationMenu />
       </TestWrapper>,
     );
@@ -125,10 +130,7 @@ describe('NotificationMenu', () => {
 
   it('empty', async () => {
     const { getByRole, getByText } = render(
-      <TestWrapper
-        initialState={{ accountListId: '1' }}
-        mocks={[getNotificationsEmptyMock()]}
-      >
+      <TestWrapper mocks={[getNotificationsEmptyMock()]}>
         <NotificationMenu />
       </TestWrapper>,
     );

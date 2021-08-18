@@ -10,7 +10,7 @@ import {
   Hidden,
 } from '@material-ui/core';
 import logo from '../../../../images/logo.svg';
-import { useApp } from '../../../App';
+import { useAccountListId } from '../../../../hooks/useAccountListId';
 import NotificationMenu from './Items/NotificationMenu/NotificationMenu';
 import AddMenu from './Items/AddMenu/AddMenu';
 import SearchMenu from './Items/SearchMenu/SearchMenu';
@@ -59,7 +59,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 const TopBar = (): ReactElement => {
   const classes = useStyles();
-  const { state } = useApp();
+  const accountListId = useAccountListId();
   const trigger = useScrollTrigger({
     disableHysteresis: true,
     threshold: 0,
@@ -87,7 +87,7 @@ const TopBar = (): ReactElement => {
             <Grid
               item
               xs={12}
-              md={state.accountListId ? 5 : 11}
+              md={accountListId ? 5 : 11}
               container
               alignItems="center"
               justify="flex-end"

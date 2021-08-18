@@ -1,0 +1,18 @@
+query GetUser {
+  user {
+    id
+    firstName
+    lastName
+    admin
+    developer
+    keyAccounts {
+      id
+      email
+    }
+    administrativeOrganizations {
+      nodes {
+        id
+      }
+    }
+  }
+}

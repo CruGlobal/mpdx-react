@@ -1,9 +1,12 @@
-/* eslint-disable eqeqeq */
 import { Box, styled, Tab } from '@material-ui/core';
 import { Skeleton, TabContext, TabList, TabPanel } from '@material-ui/lab';
 import React from 'react';
 import { useTranslation } from 'react-i18next/';
-import { useGetContactDonationsQuery } from './ContactDonationsTab.generated';
+import { ContactDonationsList } from './ContactDonationsList/ContactDonationsList';
+import {
+  GetContactDonationsQueryVariables,
+  useGetContactDonationsQuery,
+} from './ContactDonationsTab.generated';
 import { DonationsGraph } from './DonationsGraph/DonationsGraph';
 import { PartnershipInfo } from './PartnershipInfo/PartnershipInfo';
 
@@ -45,6 +48,11 @@ interface ContactDontationsProp {
   contactId: string;
 }
 
+export type ContactDonationsFilter = Omit<
+  GetContactDonationsQueryVariables,
+  'accountListId'
+>;
+
 enum DonationTabKey {
   Donations = 'Donations',
   PartnershipInfo = 'Partnership Info',
@@ -55,8 +63,12 @@ export const ContactDonationsTab: React.FC<ContactDontationsProp> = ({
   contactId,
 }) => {
   const { data, loading } = useGetContactDonationsQuery({
-    variables: { accountListId: accountListId, contactId: contactId },
+    variables: {
+      accountListId: accountListId,
+      contactId: contactId,
+    },
   });
+
   const { t } = useTranslation();
 
   const [selectedDonationTabKey, setSelectedDonationTabKey] = React.useState(
@@ -116,7 +128,10 @@ export const ContactDonationsTab: React.FC<ContactDontationsProp> = ({
               <ContactDonationsLoadingPlaceHolder />
             </>
           ) : (
-            `The list of all ${data?.contact.donations.nodes.length} Donations goes here`
+            <ContactDonationsList
+              accountListId={accountListId}
+              contactId={contactId}
+            />
           )}
         </TabPanel>
         <TabPanel value={DonationTabKey.PartnershipInfo}>

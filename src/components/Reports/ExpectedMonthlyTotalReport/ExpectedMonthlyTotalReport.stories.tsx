@@ -1,99 +1,40 @@
 import React, { ReactElement } from 'react';
-
+import { GetExpectedMonthlyTotalsQuery } from '../../../../pages/accountLists/[accountListId]/reports/GetExpectedMonthlyTotals.generated';
+import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
 import { ExpectedMonthlyTotalReport } from './ExpectedMonthlyTotalReport';
 
 export default {
   title: 'Reports/ExpectedMonthlyTotal',
 };
 
-function createData(
-  name: string,
-  contactId: string,
-  status: string,
-  commitment: string,
-  frequency: string,
-  converted: string,
-  currency: string,
-  donation: string,
-) {
-  return {
-    name,
-    contactId,
-    status,
-    commitment,
-    frequency,
-    converted,
-    currency,
-    donation,
-  };
-}
-
-const rows = [
-  createData(
-    'Adriano, Selinda',
-    'abc',
-    'Partner - Financial',
-    '50',
-    'Monthly',
-    '50',
-    'CAD',
-    '50',
-  ),
-  createData(
-    'Adriano, Selinda',
-    'abc',
-    'Partner - Financial',
-    '50',
-    'Monthly',
-    '50',
-    'CAD',
-    '50',
-  ),
-  createData(
-    'Adriano, Selinda',
-    'abc',
-    'Partner - Financial',
-    '50',
-    'Monthly',
-    '50',
-    'CAD',
-    '50',
-  ),
-  createData(
-    'Adriano, Selinda',
-    'abc',
-    'Partner - Financial',
-    '50',
-    'Monthly',
-    '50',
-    'CAD',
-    '50',
-  ),
-  createData(
-    'Adriano, Selinda',
-    'abc',
-    'Partner - Financial',
-    '50',
-    'Monthly',
-    '50',
-    'CAD',
-    '50',
-  ),
-  createData(
-    'Adriano, Selinda',
-    'abc',
-    'Partner - Financial',
-    '50',
-    'Monthly',
-    '50',
-    'CAD',
-    '50',
-  ),
-];
 export const Default = (): ReactElement => {
-  return <ExpectedMonthlyTotalReport accountListId={'abc'} data={rows} />;
+  return (
+    <GqlMockedProvider<GetExpectedMonthlyTotalsQuery>>
+      <ExpectedMonthlyTotalReport accountListId={'abc'} />
+    </GqlMockedProvider>
+  );
 };
 
 export const Empty = (): ReactElement => {
-  return <ExpectedMonthlyTotalReport accountListId={'abc'} data={[]} />;
+  const mocks = {
+    GetExpectedMonthlyTotals: {
+      expectedMonthlyTotalReport: {
+        received: {
+          donations: [],
+        },
+        likely: {
+          donations: [],
+        },
+        unlikely: {
+          donations: [],
+        },
+      },
+    },
+  };
+
+  return (
+    <GqlMockedProvider<GetExpectedMonthlyTotalsQuery> mocks={mocks}>
+      <ExpectedMonthlyTotalReport accountListId={'abc'} />
+    </GqlMockedProvider>
+  );
 };

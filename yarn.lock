@@ -4310,6 +4310,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@material-ui/data-grid@npm:^4.0.0-alpha.33":
+  version: 4.0.0-alpha.33
+  resolution: "@material-ui/data-grid@npm:4.0.0-alpha.33"
+  dependencies:
+    "@material-ui/utils": ^5.0.0-alpha.14
+    clsx: ^1.0.4
+    prop-types: ^15.7.2
+    reselect: ^4.0.0
+  peerDependencies:
+    "@material-ui/core": ^4.9.12 || ^5.0.0-alpha.34
+    react: ^17.0.0
+  checksum: 680f766b4d03c8d7ec0ee64b3d7aee44d5254bf12dbed968645a1ccdd16250af4a48daaaac19a7230cda2660acf3612a6158ffb2a66fe0ab1e17558fc92ae416
+  languageName: node
+  linkType: hard
+
 "@material-ui/icons@npm:^4.11.2":
   version: 4.11.2
   resolution: "@material-ui/icons@npm:4.11.2"
@@ -4399,6 +4414,37 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@material-ui/styles@npm:^4.11.4":
+  version: 4.11.4
+  resolution: "@material-ui/styles@npm:4.11.4"
+  dependencies:
+    "@babel/runtime": ^7.4.4
+    "@emotion/hash": ^0.8.0
+    "@material-ui/types": 5.1.0
+    "@material-ui/utils": ^4.11.2
+    clsx: ^1.0.4
+    csstype: ^2.5.2
+    hoist-non-react-statics: ^3.3.2
+    jss: ^10.5.1
+    jss-plugin-camel-case: ^10.5.1
+    jss-plugin-default-unit: ^10.5.1
+    jss-plugin-global: ^10.5.1
+    jss-plugin-nested: ^10.5.1
+    jss-plugin-props-sort: ^10.5.1
+    jss-plugin-rule-value-function: ^10.5.1
+    jss-plugin-vendor-prefixer: ^10.5.1
+    prop-types: ^15.7.2
+  peerDependencies:
+    "@types/react": ^16.8.6 || ^17.0.0
+    react: ^16.8.0 || ^17.0.0
+    react-dom: ^16.8.0 || ^17.0.0
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+  checksum: bbca7a43f95b3fae876b656ba163759cd6c26e55ce6c23da8392cbab4ac22cfb32c8c753c8a8e124e3d96cce7d60cb4db188cf2b1437ef6dc53d1c0d28b2fd86
+  languageName: node
+  linkType: hard
+
 "@material-ui/system@npm:^4.11.3":
   version: 4.11.3
   resolution: "@material-ui/system@npm:4.11.3"
@@ -4418,7 +4464,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@material-ui/types@npm:^5.1.0":
+"@material-ui/types@npm:5.1.0, @material-ui/types@npm:^5.1.0":
   version: 5.1.0
   resolution: "@material-ui/types@npm:5.1.0"
   peerDependencies:
@@ -4441,6 +4487,21 @@ __metadata:
     react: ^16.8.0 || ^17.0.0
     react-dom: ^16.8.0 || ^17.0.0
   checksum: 5bb7e1a27cd0a09ff9d2d2f1b8b5c9004519b635a4cbe546810172f7d32870c26cc1e846f4bcd9e8cb40202721871b55f6355ba7a6b3e9897d1553d8deac734c
+  languageName: node
+  linkType: hard
+
+"@material-ui/utils@npm:^5.0.0-alpha.14":
+  version: 5.0.0-beta.0
+  resolution: "@material-ui/utils@npm:5.0.0-beta.0"
+  dependencies:
+    "@babel/runtime": ^7.4.4
+    "@types/prop-types": ^15.7.3
+    "@types/react-is": ^16.7.1 || ^17.0.0
+    prop-types: ^15.7.2
+    react-is: ^17.0.0
+  peerDependencies:
+    react: ^17.0.0
+  checksum: ac3619895b4bc2bbae7634beb0f0eb1abbbee12e26f680025f55b0e5e1c5e98dea380c9545f9eba6c55079562d49b65fd384501cb822deb07a3a8dcf2eaad295
   languageName: node
   linkType: hard
 
@@ -6367,6 +6428,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/prop-types@npm:^15.7.3":
+  version: 15.7.4
+  resolution: "@types/prop-types@npm:15.7.4"
+  checksum: ef15c425a944f6b13824a87854cccf238e1b4cd0350b3124f4938406fe758fbdd6fadb2480d1388a00daeab61ce9888be5ca2b73da275f5dbc977143ff98e1eb
+  languageName: node
+  linkType: hard
+
 "@types/q@npm:^1.5.1":
   version: 1.5.4
   resolution: "@types/q@npm:1.5.4"
@@ -6426,12 +6494,30 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/react-csv@npm:^1.1.1":
+  version: 1.1.1
+  resolution: "@types/react-csv@npm:1.1.1"
+  dependencies:
+    "@types/react": "*"
+  checksum: e7d568e36abfb77b81052fabbec7a5282d15ca72f735f3327fb2bb77e30f2b7ff506640b22a6abc87ed4ee795d775e49bbee390da6306dbb5dfb720ca1227e21
+  languageName: node
+  linkType: hard
+
 "@types/react-dom@npm:>=16.9.0":
   version: 17.0.3
   resolution: "@types/react-dom@npm:17.0.3"
   dependencies:
     "@types/react": "*"
   checksum: 9314c91a985f153591e1e74aef3d63d8b22e098069773f32745bf0733740a49802731761a46da8788a7d3dd2c21346036f12c2c24627630e5a6210b120a650e6
+  languageName: node
+  linkType: hard
+
+"@types/react-is@npm:^16.7.1 || ^17.0.0":
+  version: 17.0.1
+  resolution: "@types/react-is@npm:17.0.1"
+  dependencies:
+    "@types/react": "*"
+  checksum: d0ea951ddcde54bcaf6ea227595b7345085c316f2791277a4acfdbbe63cc0de098264269c5463050d7e1308042303556980f9dda32eb2f619eace2efd4e9bdd4
   languageName: node
   linkType: hard
 
@@ -6888,6 +6974,24 @@ __metadata:
     ts-node: 8.9.1
     typescript: 3.9.3
   checksum: 926b764bed6de9a8ae5d25853fc9a943cf8d71bdbaca6aa7e619d9da6d3186ce8a3cb39f0c8c963399f626f62b2b3f9bd2d8e56bf5fe446a8aef7c4d986b6028
+  languageName: node
+  linkType: hard
+
+"@virtuoso.dev/react-urx@npm:^0.2.5":
+  version: 0.2.6
+  resolution: "@virtuoso.dev/react-urx@npm:0.2.6"
+  dependencies:
+    "@virtuoso.dev/urx": ^0.2.6
+  peerDependencies:
+    react: ">=16"
+  checksum: 6c1901bf34f022315d8a7b1df23c8419ad244aedfc9d10491ecf48ee7574aff667950381cf4ce2471badee9a54e4115fad7dc9460d261702e176c3d9ca4732ca
+  languageName: node
+  linkType: hard
+
+"@virtuoso.dev/urx@npm:^0.2.5, @virtuoso.dev/urx@npm:^0.2.6":
+  version: 0.2.6
+  resolution: "@virtuoso.dev/urx@npm:0.2.6"
+  checksum: 23875af5ec7ea1f5ccb65437d3c31fff10d79326977b2c1372d48a850c8c20cab83c79cf20b7c68673fda5ab792ccaa4ccb935141ba07c7892399887b3bbd8de
   languageName: node
   linkType: hard
 
@@ -18149,9 +18253,11 @@ fsevents@~2.3.1:
     "@graphql-codegen/typescript-resolvers": ^1.18.2
     "@graphql-tools/merge": ^6.2.10
     "@material-ui/core": ^4.11.3
+    "@material-ui/data-grid": ^4.0.0-alpha.33
     "@material-ui/icons": ^4.11.2
     "@material-ui/lab": ^4.0.0-alpha.57
     "@material-ui/pickers": ^3.2.10
+    "@material-ui/styles": ^4.11.4
     "@mdi/js": ^5.9.55
     "@mdi/react": ^1.5.0
     "@next/bundle-analyzer": ^10.0.6
@@ -18178,6 +18284,7 @@ fsevents@~2.3.1:
     "@types/node": ^14.14.26
     "@types/query-string": ^6.3.0
     "@types/react": ^17.0.1
+    "@types/react-csv": ^1.1.1
     "@types/testing-library__jest-dom": ^5.9.5
     "@types/uuid": ^8.3.0
     "@types/yup": ^0.29.11
@@ -18241,9 +18348,12 @@ fsevents@~2.3.1:
     prop-types: ^15.7.2
     query-string: ^6.14.0
     react: 17.0.1
+    react-csv: ^2.0.3
     react-debounce-input: ^3.2.3
     react-dom: 17.0.1
     react-i18next: ^11.8.11
+    react-to-print: ^2.12.6
+    react-virtuoso: ^1.10.4
     recharts: ^2.0.6
     regenerator-runtime: ^0.13.7
     storybook-addon-designs: alpha
@@ -20710,6 +20820,13 @@ fsevents@~2.3.1:
   languageName: node
   linkType: hard
 
+"react-csv@npm:^2.0.3":
+  version: 2.0.3
+  resolution: "react-csv@npm:2.0.3"
+  checksum: 19335bb439a8c79179e8ccc75a6c5b24397cdc4f91f4d489e55ec26cf31ff1c615b713554880481b434e3453b63962c6e8d8ee396e2c433568f9cfbb40900763
+  languageName: node
+  linkType: hard
+
 "react-debounce-input@npm:^3.2.3":
   version: 3.2.3
   resolution: "react-debounce-input@npm:3.2.3"
@@ -21017,6 +21134,13 @@ fsevents@~2.3.1:
   languageName: node
   linkType: hard
 
+"react-is@npm:^17.0.0":
+  version: 17.0.2
+  resolution: "react-is@npm:17.0.2"
+  checksum: 3eff23f410d40ab9bc5177f147a92c7f42c356a21ecea340e0554566956d67e5e1ba56f26cc7fa22339ac3c7151744177bd6305eaa26d3cbf15f354358c9d9b6
+  languageName: node
+  linkType: hard
+
 "react-lifecycles-compat@npm:^3.0.4":
   version: 3.0.4
   resolution: "react-lifecycles-compat@npm:3.0.4"
@@ -21226,6 +21350,18 @@ fsevents@~2.3.1:
   languageName: node
   linkType: hard
 
+"react-to-print@npm:^2.12.6":
+  version: 2.12.6
+  resolution: "react-to-print@npm:2.12.6"
+  dependencies:
+    prop-types: ^15.7.2
+  peerDependencies:
+    react: ^15.0.0 || ^16.0.0 || ^17.0.0
+    react-dom: ^15.0.0 || ^16.0.0 || ^17.0.0
+  checksum: af2432fb1d4cab6fbe898198f14222f33ddae80933168aec14dc46faa4f1e216d2e1b701ee4ae2f736be5e6a99efb756397912d995ef483c7a0345ae7ad6d9d4
+  languageName: node
+  linkType: hard
+
 "react-to-print@npm:^2.8.0":
   version: 2.12.2
   resolution: "react-to-print@npm:2.12.2"
@@ -21282,6 +21418,19 @@ fsevents@~2.3.1:
     react: ^15.3.0 || ^16.0.0-alpha
     react-dom: ^15.3.0 || ^16.0.0-alpha
   checksum: 1e54556ab99409bb172842ddeea3ade467ff9aed6331e80376f969d1c61ff0dc9dfb07986080066aaa327fd977060e7f50c19ae0cbeb8d53e5bd258c7d83e6a2
+  languageName: node
+  linkType: hard
+
+"react-virtuoso@npm:^1.10.4":
+  version: 1.10.4
+  resolution: "react-virtuoso@npm:1.10.4"
+  dependencies:
+    "@virtuoso.dev/react-urx": ^0.2.5
+    "@virtuoso.dev/urx": ^0.2.5
+    resize-observer-polyfill: ^1.5.1
+  peerDependencies:
+    react: ">=16"
+  checksum: 5f3cec9060153bac040f149e2a80adf2555db4e9930f99d53def544ff87a99efa3528abc6343a9eeb0df312b31daefaaff41e081fa9251f8822ba356ca3a1edb
   languageName: node
   linkType: hard
 
@@ -21870,6 +22019,13 @@ fsevents@~2.3.1:
   version: 1.0.0
   resolution: "requires-port@npm:1.0.0"
   checksum: 0db25fb2ac9b4f2345a350846b7ba99d1f25a6686b1728246d14f05450c8f2fc066bdfae4561b4be2627c184a030a27e17268cfefdf46836e271db13734bc49e
+  languageName: node
+  linkType: hard
+
+"reselect@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "reselect@npm:4.0.0"
+  checksum: 3480930929f673f12962cdde140dce48ea8ba171cd428bb2c7639672e41770bd6b64e935bc0400f47cfa960f617c7ac068c4309527373825d11e27262f08c0a3
   languageName: node
   linkType: hard
 

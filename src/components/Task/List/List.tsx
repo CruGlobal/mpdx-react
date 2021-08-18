@@ -22,12 +22,13 @@ import debounce from 'lodash/fp/debounce';
 import { Skeleton } from '@material-ui/lab';
 import { DatePicker } from '@material-ui/pickers';
 import { useSnackbar } from 'notistack';
-import { useApp } from '../../App';
 import { dateFormat, dayMonthFormat } from '../../../lib/intlFormat/intlFormat';
 import TaskStatus from '../Status';
 import illustration15 from '../../../images/drawkit/grape/drawkit-grape-pack-illustration-15.svg';
 import { ActivityTypeEnum } from '../../../../graphql/types.generated';
 import { useGetDataForTaskDrawerQuery } from '../Drawer/Form/TaskDrawer.generated';
+import useTaskDrawer from '../../../hooks/useTaskDrawer';
+import { useAccountListId } from '../../../hooks/useAccountListId';
 import {
   useGetTasksForTaskListQuery,
   GetTasksForTaskListQueryVariables,
@@ -85,10 +86,9 @@ const TaskList = ({ initialFilter }: Props): ReactElement => {
   const [currentPage, setCurrentPage] = useState(0);
   const { enqueueSnackbar } = useSnackbar();
 
-  const {
-    state: { accountListId },
-    openTaskDrawer,
-  } = useApp();
+  const accountListId = useAccountListId();
+
+  const { openTaskDrawer } = useTaskDrawer();
 
   const { data: filterData } = useGetDataForTaskDrawerQuery({
     variables: { accountListId: accountListId ?? '' },

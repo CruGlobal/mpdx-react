@@ -1,14 +1,14 @@
-import React, { ReactElement } from 'react';
+import React from 'react';
 import Head from 'next/head';
 import { useTranslation } from 'react-i18next';
 import { Box } from '@material-ui/core';
 import PageHeading from '../../../../src/components/PageHeading';
-import { MonthlyActivitySection } from '../../../../src/components/Reports/DonationsReport/MonthlyActivitySection';
-import { DonationsReportTable } from '../../../../src/components/Reports/DonationsReport/DonationsReportTable';
+import { DonationsReport } from '../../../../src/components/Reports/DonationsReport/DonationsReport';
+
 import Loading from '../../../../src/components/Loading';
 import { useAccountListId } from '../../../../src/hooks/useAccountListId';
 
-const DonationsReportPage = (): ReactElement => {
+const DonationsReportPage: React.FC = () => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
 
@@ -22,8 +22,7 @@ const DonationsReportPage = (): ReactElement => {
       {accountListId ? (
         <Box>
           <PageHeading heading={t('Donations')} />
-          <MonthlyActivitySection accountListId={accountListId} />
-          <DonationsReportTable accountListId={accountListId} />
+          <DonationsReport accountListId={accountListId} />
         </Box>
       ) : (
         <Loading loading />

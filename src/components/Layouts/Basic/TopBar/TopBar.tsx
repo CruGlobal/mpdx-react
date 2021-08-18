@@ -44,11 +44,6 @@ const TopBar = ({ children }: Props): ReactElement => {
           </Grid>
         </Toolbar>
       </AppBar>
-      <AppBar position="static" className={classes.appBar} elevation={0}>
-        <Toolbar className={classes.toolbar}>
-          <Grid className={classes.container} />
-        </Toolbar>
-      </AppBar>
     </>
   );
 };

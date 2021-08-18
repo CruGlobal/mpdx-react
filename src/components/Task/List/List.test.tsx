@@ -7,9 +7,9 @@ import {
   render,
   waitFor,
 } from '../../../../__tests__/util/testingLibraryReactMock';
-import { useApp } from '../../App';
 import { ActivityTypeEnum } from '../../../../graphql/types.generated';
 import theme from '../../../theme';
+import useTaskDrawer from '../../../hooks/useTaskDrawer';
 import {
   getTasksForTaskListMock,
   getFilteredTasksForTaskListMock,
@@ -35,20 +35,26 @@ jest.mock('notistack', () => ({
   },
 }));
 
-jest.mock('../../App', () => ({
-  useApp: jest.fn(),
-}));
+jest.mock('../../../hooks/useTaskDrawer');
 
 beforeEach(() => {
-  (useApp as jest.Mock).mockReturnValue({
+  (useTaskDrawer as jest.Mock).mockReturnValue({
     openTaskDrawer,
-    state: { accountListId, breadcrumb: 'Tasks' },
   });
 });
 
 jest.mock('lodash/fp/debounce', () =>
   jest.fn().mockImplementation((_time, fn) => fn),
 );
+
+jest.mock('next/router', () => ({
+  useRouter: () => {
+    return {
+      query: { accountListId },
+      isReady: true,
+    };
+  },
+}));
 
 describe('TaskList', () => {
   it('has correct defaults', async () => {
@@ -118,7 +124,7 @@ describe('TaskList', () => {
     ];
     const { findByText, getByRole, getAllByRole } = render(
       <ThemeProvider theme={theme}>
-        <TestWrapper mocks={mocks} disableAppProvider>
+        <TestWrapper mocks={mocks}>
           <TaskList />
         </TestWrapper>
       </ThemeProvider>,
@@ -188,7 +194,6 @@ describe('TaskList', () => {
             getFilteredTasksForTaskListMock(accountListId, filter),
             getDataForTaskDrawerMock(accountListId),
           ]}
-          disableAppProvider
         >
           <TaskList initialFilter={filter} />
         </TestWrapper>
@@ -218,7 +223,7 @@ describe('TaskList', () => {
     ];
     const { getAllByRole } = render(
       <ThemeProvider theme={theme}>
-        <TestWrapper mocks={mocks} disableAppProvider>
+        <TestWrapper mocks={mocks}>
           <TaskList
             initialFilter={{
               userIds: ['user-1'],
@@ -239,7 +244,6 @@ describe('TaskList', () => {
             getEmptyTasksForTaskListMock(accountListId),
             getDataForTaskDrawerMock(accountListId),
           ]}
-          disableAppProvider
         >
           <TaskList />
         </TestWrapper>
@@ -258,7 +262,6 @@ describe('TaskList', () => {
             getTasksForTaskListErrorMock(accountListId),
             getDataForTaskDrawerMock(accountListId),
           ]}
-          disableAppProvider
         >
           <TaskList />
         </TestWrapper>

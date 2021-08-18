@@ -15,9 +15,24 @@ import { FourteenMonthReportCurrencyType } from './graphql-rest.page.generated';
 import schema from './Schema';
 import { getTaskAnalytics } from './Schema/TaskAnalytics/dataHandler';
 import {
+  CoachingAnswerSetData,
+  CoachingAnswerSetIncluded,
+  getCoachingAnswerSets,
+} from './Schema/CoachingAnswerSets/dataHandler';
+import {
   FourteenMonthReportResponse,
   mapFourteenMonthReport,
 } from './Schema/reports/fourteenMonth/datahandler';
+import {
+  ExpectedMonthlyTotalResponse,
+  mapExpectedMonthlyTotalReport,
+} from './Schema/reports/expectedMonthlyTotal/datahandler';
+import {
+  DesignationAccountsResponse,
+  createDesignationAccountsGroup,
+  setActiveDesignationAccount,
+} from './Schema/reports/designationAccounts/datahandler';
+import { getAppeals, AppealsResponse } from './Schema/Appeals/datahandler';
 
 class MpdxRestApi extends RESTDataSource {
   constructor() {
@@ -90,6 +105,25 @@ class MpdxRestApi extends RESTDataSource {
     return getTaskAnalytics(data);
   }
 
+  async getCoachingAnswerSets(
+    accountListId: string,
+    completed?: boolean | null,
+  ) {
+    const {
+      data,
+      included,
+    }: {
+      data: CoachingAnswerSetData;
+      included: CoachingAnswerSetIncluded;
+    } = await this.get(
+      `coaching/answer_sets?filter[account_list_id]=${accountListId}&filter[completed]=${
+        completed || false
+      }&include=answers,questions&sort=-completed_at`,
+    );
+
+    return getCoachingAnswerSets(data, included);
+  }
+
   async getFourteenMonthReport(
     accountListId: string,
     currencyType: FourteenMonthReportCurrencyType,
@@ -107,6 +141,48 @@ class MpdxRestApi extends RESTDataSource {
         .replace('/', '...')}`,
     );
     return mapFourteenMonthReport(data, currencyType);
+  }
+
+  async getExpectedMonthlyTotalReport(accountListId: string) {
+    const { data }: { data: ExpectedMonthlyTotalResponse } = await this.get(
+      `reports/expected_monthly_totals?filter[account_list_id]=${accountListId}`,
+    );
+    return mapExpectedMonthlyTotalReport(data);
+  }
+
+  async getDesignationAccounts(accountListId: string) {
+    const { data }: { data: DesignationAccountsResponse[] } = await this.get(
+      `account_lists/${accountListId}/designation_accounts?per_page=10000`,
+    );
+    return createDesignationAccountsGroup(data);
+  }
+
+  async setDesignationAccountActive(
+    accountListId: string,
+    active: boolean,
+    designationAccountId: string,
+  ) {
+    const { data }: { data: DesignationAccountsResponse } = await this.put(
+      `account_lists/${accountListId}/designation_accounts/${designationAccountId}`,
+      {
+        data: {
+          attributes: {
+            active,
+            overwrite: true,
+          },
+          id: designationAccountId,
+          type: 'designation_accounts',
+        },
+      },
+    );
+    return setActiveDesignationAccount(data);
+  }
+
+  async getAppeals(accountListId: string) {
+    const { data }: { data: AppealsResponse[] } = await this.get(
+      `appeals?account_list_id=${accountListId}`,
+    );
+    return getAppeals(data);
   }
 }
 

@@ -1,7 +1,6 @@
 import React, { ReactElement } from 'react';
 import { MockedProvider } from '@apollo/client/testing';
 import { AppBar, Box } from '@material-ui/core';
-import withDispatch from '../../../../../../decorators/withDispatch';
 import {
   getNotificationsMocks,
   getNotificationsEmptyMock,
@@ -12,12 +11,6 @@ import NotificationMenu from './NotificationMenu';
 
 export default {
   title: 'Layouts/Primary/TopBar/Items/NotificationMenu',
-  decorators: [
-    withDispatch(
-      { type: 'updateAccountListId', accountListId: '1' },
-      { type: 'updateBreadcrumb', breadcrumb: 'Dashboard' },
-    ),
-  ],
 };
 
 export const Default = (): ReactElement => {
