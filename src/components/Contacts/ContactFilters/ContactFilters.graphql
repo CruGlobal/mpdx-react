@@ -27,7 +27,6 @@ query ContactFilters($accountListId: ID!) {
           __typename
           min
           minLabel
-          max
           maxLabel
           title
         }
