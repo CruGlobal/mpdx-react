@@ -20,7 +20,6 @@ import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
 import { Skeleton } from '@material-ui/lab';
 import { useTranslation } from 'react-i18next';
-import { useSnackbar } from 'notistack';
 import AnimatedCard from '../../../AnimatedCard';
 import { numberFormat } from '../../../../lib/intlFormat';
 import HandoffLink from '../../../HandoffLink';
@@ -76,16 +75,11 @@ const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
     ),
   );
 
-  const { enqueueSnackbar } = useSnackbar();
-
   const { data, loading, refetch } = useGetWeeklyActivityQuery({
     variables: {
       accountListId,
       startOfWeek: interval.start.toISO(),
       endOfWeek: interval.end.toISO(),
-    },
-    onError: (error) => {
-      enqueueSnackbar(error.message, { variant: 'error' });
     },
   });
 

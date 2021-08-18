@@ -99,7 +99,6 @@ export const EditContactAddressModal: React.FC<EditContactAddressModalProps> = (
         variant: 'success',
       });
     } catch (error) {
-      enqueueSnackbar(error.message, { variant: 'error' });
       throw error;
     }
   };

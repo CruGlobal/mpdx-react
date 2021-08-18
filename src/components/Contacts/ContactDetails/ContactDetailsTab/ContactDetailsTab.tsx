@@ -152,7 +152,6 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
         },
       });
     } catch (error) {
-      enqueueSnackbar(error.message, { variant: 'error' });
       throw error;
     }
   };

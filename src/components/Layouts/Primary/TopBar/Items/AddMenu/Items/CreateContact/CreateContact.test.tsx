@@ -2,7 +2,6 @@ import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import { SnackbarProvider } from 'notistack';
 import userEvent from '@testing-library/user-event';
-import { GraphQLError } from 'graphql';
 import { GqlMockedProvider } from '../../../../../../../../../__tests__/util/graphqlMocking';
 import TestRouter from '../../../../../../../../../__tests__/util/TestRouter';
 import { CreateContactMutation } from './CreateContact.generated';
@@ -14,19 +13,6 @@ const handleClose = jest.fn();
 const router = {
   push: jest.fn(),
 };
-
-const mockEnqueue = jest.fn();
-
-jest.mock('notistack', () => ({
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  ...jest.requireActual('notistack'),
-  useSnackbar: () => {
-    return {
-      enqueueSnackbar: mockEnqueue,
-    };
-  },
-}));
 
 describe('CreateContact', () => {
   it('default', () => {
@@ -97,44 +83,6 @@ describe('CreateContact', () => {
           contactId: response.data.createContact.contact.id,
         },
       });
-    });
-
-    it('handles errors', async () => {
-      const { getByText, findByText, getByRole } = render(
-        <SnackbarProvider>
-          <TestRouter router={router}>
-            <GqlMockedProvider<CreateContactMutation>
-              mocks={{
-                CreateContact: {
-                  createContact: {
-                    contact: new GraphQLError(
-                      'GraphQL Error #42: Error creating contact.',
-                    ),
-                  },
-                },
-              }}
-            >
-              <CreateContact
-                accountListId={accountListId}
-                handleClose={handleClose}
-              />
-            </GqlMockedProvider>
-          </TestRouter>
-        </SnackbarProvider>,
-      );
-
-      userEvent.click(getByText('Save'));
-      expect(await findByText('Field is required')).toBeInTheDocument();
-      userEvent.type(getByRole('textbox', { name: 'Name' }), name);
-      await waitFor(() => expect(getByText('Save')).not.toBeDisabled());
-      userEvent.click(getByText('Save'));
-      await waitFor(() => expect(handleClose).not.toHaveBeenCalled());
-      expect(mockEnqueue).toHaveBeenCalledWith(
-        'GraphQL Error #42: Error creating contact.',
-        {
-          variant: 'error',
-        },
-      );
     });
   });
 });

@@ -234,7 +234,6 @@ export const EditPersonModal: React.FC<EditPersonModalProps> = ({
       });
       handleClose();
     } catch (error) {
-      enqueueSnackbar(error.message, { variant: 'error' });
       throw error;
     }
   };

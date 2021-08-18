@@ -105,7 +105,6 @@ const CreateContact = ({
       });
       handleClose();
     } catch (error) {
-      enqueueSnackbar(error.message, { variant: 'error' });
       throw error;
     }
   };

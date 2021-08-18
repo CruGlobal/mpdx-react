@@ -110,7 +110,6 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
         variant: 'success',
       });
     } catch (error) {
-      enqueueSnackbar(error.message, { variant: 'error' });
       throw error;
     }
   };

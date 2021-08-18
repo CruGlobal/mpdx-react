@@ -182,7 +182,6 @@ const TaskDrawerForm = ({
       enqueueSnackbar(t('Task saved successfully'), { variant: 'success' });
       onClose();
     } catch (error) {
-      enqueueSnackbar(error.message, { variant: 'error' });
       throw error;
     }
   };
@@ -218,7 +217,6 @@ const TaskDrawerForm = ({
         onClose();
       }
     } catch (error) {
-      enqueueSnackbar(error.message, { variant: 'error' });
       throw error;
     }
   };

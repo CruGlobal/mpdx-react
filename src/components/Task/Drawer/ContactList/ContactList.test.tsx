@@ -5,7 +5,6 @@ import {
   getContactsForTaskDrawerContactListMock,
   getContactsForTaskDrawerContactListEmptyMock,
   getContactsForTaskDrawerContactListLoadingMock,
-  getContactsForTaskDrawerContactListErrorMock,
 } from './ContactList.mock';
 import TaskDrawerContactList from '.';
 
@@ -101,33 +100,5 @@ describe('TaskDrawerContactList', () => {
       ).not.toBeInTheDocument(),
     );
     expect(getByTestId('TaskDrawerContactListEmpty')).toBeInTheDocument();
-  });
-
-  it('error', async () => {
-    render(
-      <MockedProvider
-        mocks={[
-          getContactsForTaskDrawerContactListErrorMock(
-            accountListId,
-            contactIds,
-          ),
-        ]}
-        addTypename={false}
-      >
-        <TaskDrawerContactList
-          accountListId={accountListId}
-          contactIds={contactIds}
-        />
-      </MockedProvider>,
-    );
-
-    await waitFor(() =>
-      expect(mockEnqueue).toHaveBeenCalledWith(
-        'Error loading data.  Try again.',
-        {
-          variant: 'error',
-        },
-      ),
-    );
   });
 });

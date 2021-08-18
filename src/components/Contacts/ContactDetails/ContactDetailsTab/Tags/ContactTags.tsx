@@ -103,7 +103,6 @@ export const ContactTags: React.FC<ContactTagsProps> = ({
           });
         }
       } catch (error) {
-        enqueueSnackbar(error.message, { variant: 'error' });
         throw error;
       }
     }
@@ -140,7 +139,6 @@ export const ContactTags: React.FC<ContactTagsProps> = ({
         });
       }
     } catch (error) {
-      enqueueSnackbar(error.message, { variant: 'error' });
       throw error;
     }
   };

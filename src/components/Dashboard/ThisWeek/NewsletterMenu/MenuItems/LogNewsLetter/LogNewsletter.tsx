@@ -150,7 +150,6 @@ const LogNewsletter = ({
                 },
               });
             } catch (error) {
-              enqueueSnackbar(error.message, { variant: 'error' });
               throw error;
             }
           }
@@ -159,7 +158,6 @@ const LogNewsletter = ({
       enqueueSnackbar(t('Task saved successfully'), { variant: 'success' });
       handleClose();
     } catch (error) {
-      enqueueSnackbar(error.message, { variant: 'error' });
       throw error;
     }
   };
