@@ -71,7 +71,7 @@ describe('EditContactOtherModal', () => {
   });
 
   it('should close edit contact other modal', () => {
-    const { getByText, getByRole } = render(
+    const { getByText, getByLabelText } = render(
       <SnackbarProvider>
         <ThemeProvider theme={theme}>
           <GqlMockedProvider<UpdateContactOtherMutation>>
@@ -87,7 +87,7 @@ describe('EditContactOtherModal', () => {
     );
 
     expect(getByText('Edit Contact Other Details')).toBeInTheDocument();
-    userEvent.click(getByRole('button', { hidden: true, name: 'Close' }));
+    userEvent.click(getByLabelText('Close'));
     expect(handleClose).toHaveBeenCalled();
   });
 
@@ -116,7 +116,7 @@ describe('EditContactOtherModal', () => {
     const mutationSpy = jest.fn();
     const newChurchName = 'Great Cool Church II';
     const newWebsite = 'coolwebsite2.com';
-    const { getByText, getByRole } = render(
+    const { getByText, getByLabelText } = render(
       <SnackbarProvider>
         <ThemeProvider theme={theme}>
           <GqlMockedProvider<UpdateContactOtherMutation>
@@ -157,27 +157,17 @@ describe('EditContactOtherModal', () => {
       </SnackbarProvider>,
     );
 
-    userEvent.clear(getByRole('textbox', { hidden: true, name: 'Church' }));
-    userEvent.clear(getByRole('textbox', { hidden: true, name: 'Website' }));
+    userEvent.clear(getByLabelText('Church'));
+    userEvent.clear(getByLabelText('Website'));
 
-    userEvent.click(
-      getByRole('button', { hidden: true, name: 'Preferred Contact Method' }),
-    );
-    userEvent.click(getByRole('option', { hidden: true, name: 'WhatsApp' }));
-    // userEvent.click(getByRole('button', { hidden: true, name: 'Language' }));
-    // userEvent.click(getByRole('option', { hidden: true, name: 'Australian English' }));
-    userEvent.click(getByRole('button', { hidden: true, name: 'Timezone' }));
-    userEvent.click(
-      getByRole('option', { hidden: true, name: '(GMT-09:00) Alaska' }),
-    );
-    userEvent.type(
-      getByRole('textbox', { hidden: true, name: 'Church' }),
-      newChurchName,
-    );
-    userEvent.type(
-      getByRole('textbox', { hidden: true, name: 'Website' }),
-      newWebsite,
-    );
+    userEvent.click(getByLabelText('Preferred Contact Method'));
+    userEvent.click(getByLabelText('WhatsApp'));
+    // userEvent.click(getByLabelText('Language'));
+    // userEvent.click(getByLabelText('Australian English'));
+    userEvent.click(getByLabelText('Timezone'));
+    userEvent.click(getByText('(GMT-09:00) Alaska'));
+    userEvent.type(getByLabelText('Church'), newChurchName);
+    userEvent.type(getByLabelText('Website'), newWebsite);
     userEvent.click(getByText('Save'));
     await waitFor(() =>
       expect(mockEnqueue).toHaveBeenCalledWith('Contact updated successfully', {
@@ -201,7 +191,7 @@ describe('EditContactOtherModal', () => {
 
   it('should handle errors with editing contact other details', async () => {
     const newChurchName = 'Great Cool Church II';
-    const { getByText, getByRole } = render(
+    const { getByText, getByLabelText } = render(
       <SnackbarProvider>
         <ThemeProvider theme={theme}>
           <GqlMockedProvider<UpdateContactOtherMutation>
@@ -226,11 +216,8 @@ describe('EditContactOtherModal', () => {
       </SnackbarProvider>,
     );
 
-    userEvent.clear(getByRole('textbox', { hidden: true, name: 'Church' }));
-    userEvent.type(
-      getByRole('textbox', { hidden: true, name: 'Church' }),
-      newChurchName,
-    );
+    userEvent.clear(getByLabelText('Church'));
+    userEvent.type(getByLabelText('Church'), newChurchName);
     userEvent.click(getByText('Save'));
     await waitFor(() =>
       expect(mockEnqueue).toHaveBeenCalledWith(

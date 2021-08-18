@@ -68,7 +68,7 @@ describe('EditContactAddressModal', () => {
   });
 
   it('should close edit contact other modal', () => {
-    const { getByText, getByRole } = render(
+    const { getByText, getByLabelText } = render(
       <SnackbarProvider>
         <ThemeProvider theme={theme}>
           <GqlMockedProvider<UpdateContactAddressMutation>>
@@ -83,7 +83,7 @@ describe('EditContactAddressModal', () => {
     );
 
     expect(getByText('Edit Address')).toBeInTheDocument();
-    userEvent.click(getByRole('button', { hidden: true, name: 'Close' }));
+    userEvent.click(getByLabelText('Close'));
     expect(handleClose).toHaveBeenCalled();
   });
 
@@ -116,7 +116,7 @@ describe('EditContactAddressModal', () => {
     const newCountry = 'United States';
     const newRegion = 'New Region';
     const newMetroArea = 'New Metro';
-    const { getByText, getByRole } = render(
+    const { getByText, getByLabelText } = render(
       <SnackbarProvider>
         <ThemeProvider theme={theme}>
           <GqlMockedProvider<UpdateContactAddressMutation> onCall={mutationSpy}>
@@ -130,46 +130,23 @@ describe('EditContactAddressModal', () => {
       </SnackbarProvider>,
     );
 
-    userEvent.clear(getByRole('textbox', { hidden: true, name: 'Street' }));
-    userEvent.clear(getByRole('textbox', { hidden: true, name: 'City' }));
-    userEvent.clear(getByRole('textbox', { hidden: true, name: 'State' }));
-    userEvent.clear(getByRole('textbox', { hidden: true, name: 'Zip' }));
-    userEvent.clear(getByRole('textbox', { hidden: true, name: 'Country' }));
-    userEvent.clear(getByRole('textbox', { hidden: true, name: 'Region' }));
-    userEvent.clear(getByRole('textbox', { hidden: true, name: 'Metro' }));
-    userEvent.click(getByRole('button', { hidden: true, name: 'Location' }));
-    userEvent.click(getByRole('option', { hidden: true, name: 'Mailing' }));
-    userEvent.type(
-      getByRole('textbox', { hidden: true, name: 'Street' }),
-      newStreet,
-    );
-    userEvent.type(
-      getByRole('textbox', { hidden: true, name: 'City' }),
-      newCity,
-    );
-    userEvent.type(
-      getByRole('textbox', { hidden: true, name: 'State' }),
-      newState,
-    );
-    userEvent.type(
-      getByRole('textbox', { hidden: true, name: 'Zip' }),
-      newPostalCode,
-    );
-    userEvent.type(
-      getByRole('textbox', { hidden: true, name: 'Country' }),
-      newCountry,
-    );
-    userEvent.type(
-      getByRole('textbox', { hidden: true, name: 'Region' }),
-      newRegion,
-    );
-    userEvent.type(
-      getByRole('textbox', { hidden: true, name: 'Metro' }),
-      newMetroArea,
-    );
-    userEvent.click(
-      getByRole('checkbox', { hidden: true, name: 'Address no longer valid' }),
-    );
+    userEvent.clear(getByLabelText('Street'));
+    userEvent.clear(getByLabelText('City'));
+    userEvent.clear(getByLabelText('State'));
+    userEvent.clear(getByLabelText('Zip'));
+    userEvent.clear(getByLabelText('Country'));
+    userEvent.clear(getByLabelText('Region'));
+    userEvent.clear(getByLabelText('Metro'));
+    userEvent.click(getByLabelText('Location'));
+    userEvent.click(getByLabelText('Mailing'));
+    userEvent.type(getByLabelText('Street'), newStreet);
+    userEvent.type(getByLabelText('City'), newCity);
+    userEvent.type(getByLabelText('State'), newState);
+    userEvent.type(getByLabelText('Zip'), newPostalCode);
+    userEvent.type(getByLabelText('Country'), newCountry);
+    userEvent.type(getByLabelText('Region'), newRegion);
+    userEvent.type(getByLabelText('Metro'), newMetroArea);
+    userEvent.click(getByLabelText('Address no longer valid'));
     userEvent.click(getByText('Save'));
     await waitFor(() =>
       expect(mockEnqueue).toHaveBeenCalledWith('Address updated successfully', {
@@ -193,7 +170,7 @@ describe('EditContactAddressModal', () => {
 
   it('should handle errors with editing contact other details', async () => {
     const newStreet = '4321 New Street';
-    const { getByText, getByRole } = render(
+    const { getByText, getByLabelText } = render(
       <SnackbarProvider>
         <ThemeProvider theme={theme}>
           <GqlMockedProvider<UpdateContactAddressMutation>
@@ -217,11 +194,8 @@ describe('EditContactAddressModal', () => {
       </SnackbarProvider>,
     );
 
-    userEvent.clear(getByRole('textbox', { hidden: true, name: 'Street' }));
-    userEvent.type(
-      getByRole('textbox', { hidden: true, name: 'Street' }),
-      newStreet,
-    );
+    userEvent.clear(getByLabelText('Street'));
+    userEvent.type(getByLabelText('Street'), newStreet);
     userEvent.click(getByText('Save'));
     await waitFor(() =>
       expect(mockEnqueue).toHaveBeenCalledWith(
