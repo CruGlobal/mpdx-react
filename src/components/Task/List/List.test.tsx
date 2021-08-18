@@ -122,7 +122,13 @@ describe('TaskList', () => {
         before: 'A',
       }),
     ];
-    const { findByText, getByRole, getAllByRole } = render(
+    const {
+      findByText,
+      getByLabelText,
+      getAllByRole,
+      getByRole,
+      getByText,
+    } = render(
       <ThemeProvider theme={theme}>
         <TestWrapper mocks={mocks}>
           <TaskList />
@@ -144,7 +150,7 @@ describe('TaskList', () => {
       },
       rowsPerPage: 100,
     });
-    userEvent.click(getByRole('button', { name: 'Filter Table' }));
+    userEvent.click(getByLabelText('Filter Table'));
     const buttons = getAllByRole('button').filter((element) => element.id);
     const buttonWithIdThatEndsWith = (value: string): HTMLElement => {
       const button = buttons.find((element) => element.id.endsWith(value));
@@ -154,26 +160,26 @@ describe('TaskList', () => {
       return button;
     };
     userEvent.click(buttonWithIdThatEndsWith('completedAt'));
-    userEvent.click(getByRole('option', { name: 'Incomplete' }));
+    userEvent.click(getByText('Incomplete'));
     userEvent.click(buttonWithIdThatEndsWith('activityType'));
-    userEvent.click(getByRole('option', { name: 'Appointment' }));
+    userEvent.click(getByText('Appointment'));
     userEvent.tab();
     userEvent.click(buttonWithIdThatEndsWith('contacts'));
-    userEvent.click(getByRole('option', { name: 'Anderson, Robert' }));
+    userEvent.click(getByText('Anderson, Robert'));
     userEvent.tab();
     userEvent.click(buttonWithIdThatEndsWith('tagList'));
-    userEvent.click(getByRole('option', { name: 'tag-1' }));
+    userEvent.click(getByText('tag-1'));
     userEvent.tab();
     userEvent.click(buttonWithIdThatEndsWith('user'));
-    userEvent.click(getByRole('option', { name: 'Robert Anderson' }));
+    userEvent.click(getByText('Robert Anderson'));
     userEvent.tab();
-    userEvent.click(getByRole('button', { name: 'Close' }));
-    userEvent.click(getByRole('button', { name: 'Search' }));
-    userEvent.type(getByRole('textbox', { name: 'Search' }), 'a');
-    userEvent.click(getByRole('button', { name: 'Rows per page: 100' }));
-    userEvent.click(getByRole('option', { name: '250' }));
-    userEvent.click(getByRole('button', { name: 'Next Page' }));
-    userEvent.click(getByRole('button', { name: 'Previous Page' }));
+    userEvent.click(getByLabelText('Close'));
+    userEvent.click(getByLabelText('Search'));
+    userEvent.type(getByRole('textbox', { hidden: true, name: 'Search' }), 'a');
+    userEvent.click(getByLabelText('Rows per page: 100'));
+    userEvent.click(getByText('250'));
+    userEvent.click(getByLabelText('Next Page'));
+    userEvent.click(getByLabelText('Previous Page'));
   });
 
   it('has correct overrides', async () => {
@@ -187,7 +193,7 @@ describe('TaskList', () => {
       wildcardSearch: 'journey',
       startAt: { min: '2020-10-10', max: '2020-12-10' },
     };
-    const { getByRole, getByText, findByText } = render(
+    const { getByText, findByText, getByRole } = render(
       <ThemeProvider theme={theme}>
         <TestWrapper
           mocks={[
@@ -233,7 +239,9 @@ describe('TaskList', () => {
         </TestWrapper>
       </ThemeProvider>,
     );
-    expect(getAllByRole('button', { name: 'Loading' }).length).toEqual(2);
+    expect(
+      getAllByRole('button', { hidden: true, name: 'Loading' }).length,
+    ).toEqual(2);
   });
 
   it('has empty state', () => {

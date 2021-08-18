@@ -128,7 +128,7 @@ describe('ContactDetailTab', () => {
   });
 
   it('should close delete modal', async () => {
-    const { queryByText, queryAllByText, getByRole } = render(
+    const { queryByText, queryAllByText, getByLabelText } = render(
       <SnackbarProvider>
         <TestRouter router={router}>
           <ThemeProvider theme={theme}>
@@ -145,14 +145,14 @@ describe('ContactDetailTab', () => {
     );
     await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());
     userEvent.click(queryAllByText('delete contact')[0]);
-    userEvent.click(getByRole('button', { name: 'Close' }));
+    userEvent.click(getByLabelText('Close'));
     await waitFor(() =>
       expect(queryByText('Delete Contact')).not.toBeInTheDocument(),
     );
   });
 
   it('should open edit contact details modal', async () => {
-    const { queryByText, getAllByRole } = render(
+    const { queryByText, getAllByLabelText } = render(
       <SnackbarProvider>
         <TestRouter router={router}>
           <MuiPickersUtilsProvider utils={LuxonUtils}>
@@ -170,14 +170,14 @@ describe('ContactDetailTab', () => {
       </SnackbarProvider>,
     );
     await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());
-    userEvent.click(getAllByRole('img', { name: 'Edit Icon' })[0]);
+    userEvent.click(getAllByLabelText('Edit Icon')[0]);
     await waitFor(() =>
       expect(queryByText('Edit Contact Details')).toBeInTheDocument(),
     );
   });
 
   it('should close edit contact details modal', async () => {
-    const { queryByText, getAllByRole, getByRole } = render(
+    const { queryByText, getAllByLabelText, getByLabelText } = render(
       <SnackbarProvider>
         <TestRouter router={router}>
           <MuiPickersUtilsProvider utils={LuxonUtils}>
@@ -195,18 +195,18 @@ describe('ContactDetailTab', () => {
       </SnackbarProvider>,
     );
     await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());
-    userEvent.click(getAllByRole('img', { name: 'Edit Icon' })[0]);
+    userEvent.click(getAllByLabelText('Edit Icon')[0]);
     await waitFor(() =>
       expect(queryByText('Edit Contact Details')).toBeInTheDocument(),
     );
-    userEvent.click(getByRole('button', { name: 'Close' }));
+    userEvent.click(getByLabelText('Close'));
     await waitFor(() =>
       expect(queryByText('Edit Contact Details')).not.toBeInTheDocument(),
     );
   });
 
   it('should open edit contact mailing modal', async () => {
-    const { queryByText, getAllByRole } = render(
+    const { queryByText, getAllByLabelText } = render(
       <SnackbarProvider>
         <TestRouter router={router}>
           <MuiPickersUtilsProvider utils={LuxonUtils}>
@@ -224,14 +224,14 @@ describe('ContactDetailTab', () => {
       </SnackbarProvider>,
     );
     await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());
-    userEvent.click(getAllByRole('img', { name: 'Edit Icon' })[3]);
+    userEvent.click(getAllByLabelText('Edit Icon')[3]);
     await waitFor(() =>
       expect(queryByText('Edit Contact Mailing Details')).toBeInTheDocument(),
     );
   });
 
   it('should close edit contact mailing modal', async () => {
-    const { queryByText, getAllByRole, getByRole } = render(
+    const { queryByText, getAllByLabelText, getByLabelText } = render(
       <SnackbarProvider>
         <TestRouter router={router}>
           <MuiPickersUtilsProvider utils={LuxonUtils}>
@@ -249,11 +249,11 @@ describe('ContactDetailTab', () => {
       </SnackbarProvider>,
     );
     await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());
-    userEvent.click(getAllByRole('img', { name: 'Edit Icon' })[3]);
+    userEvent.click(getAllByLabelText('Edit Icon')[3]);
     await waitFor(() =>
       expect(queryByText('Edit Contact Mailing Details')).toBeInTheDocument(),
     );
-    userEvent.click(getByRole('button', { name: 'Close' }));
+    userEvent.click(getByLabelText('Close'));
     await waitFor(() =>
       expect(
         queryByText('Edit Contact Mailing Details'),
@@ -262,7 +262,7 @@ describe('ContactDetailTab', () => {
   });
 
   it('should open edit contact address modal', async () => {
-    const { queryByText, getAllByRole } = render(
+    const { queryByText, getAllByLabelText } = render(
       <SnackbarProvider>
         <TestRouter router={router}>
           <MuiPickersUtilsProvider utils={LuxonUtils}>
@@ -280,14 +280,14 @@ describe('ContactDetailTab', () => {
       </SnackbarProvider>,
     );
     await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());
-    userEvent.click(getAllByRole('img', { name: 'Edit Icon' })[4]);
+    userEvent.click(getAllByLabelText('Edit Icon')[4]);
     await waitFor(() =>
       expect(queryByText('Edit Address')).toBeInTheDocument(),
     );
   });
 
   it('should close edit contact address modal', async () => {
-    const { queryByText, getAllByRole, getByRole } = render(
+    const { queryByText, getAllByLabelText, getByLabelText } = render(
       <SnackbarProvider>
         <TestRouter router={router}>
           <MuiPickersUtilsProvider utils={LuxonUtils}>
@@ -305,11 +305,11 @@ describe('ContactDetailTab', () => {
       </SnackbarProvider>,
     );
     await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());
-    userEvent.click(getAllByRole('img', { name: 'Edit Icon' })[4]);
+    userEvent.click(getAllByLabelText('Edit Icon')[4]);
     await waitFor(() =>
       expect(queryByText('Edit Address')).toBeInTheDocument(),
     );
-    userEvent.click(getByRole('button', { name: 'Close' }));
+    userEvent.click(getByLabelText('Close'));
     await waitFor(() =>
       expect(queryByText('Edit Address')).not.toBeInTheDocument(),
     );
@@ -370,7 +370,7 @@ describe('ContactDetailTab', () => {
   });
 
   it('should open edit contact addresses from show more section | Addresses', async () => {
-    const { queryByText, getByText, getAllByRole } = render(
+    const { queryByText, getByText, getAllByLabelText } = render(
       <SnackbarProvider>
         <TestRouter router={router}>
           <MuiPickersUtilsProvider utils={LuxonUtils}>
@@ -392,14 +392,14 @@ describe('ContactDetailTab', () => {
     await waitFor(() =>
       expect(getByText('4321 Sesame Street')).toBeInTheDocument(),
     );
-    userEvent.click(getAllByRole('img', { name: 'Edit Icon' })[5]);
+    userEvent.click(getAllByLabelText('Edit Icon')[5]);
     await waitFor(() =>
       expect(queryByText('Edit Address')).toBeInTheDocument(),
     );
   });
 
   it('should open edit contact other details modal', async () => {
-    const { queryByText, getAllByRole } = render(
+    const { queryByText, getAllByLabelText } = render(
       <SnackbarProvider>
         <TestRouter router={router}>
           <MuiPickersUtilsProvider utils={LuxonUtils}>
@@ -417,14 +417,14 @@ describe('ContactDetailTab', () => {
       </SnackbarProvider>,
     );
     await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());
-    userEvent.click(getAllByRole('img', { name: 'Edit Icon' })[5]);
+    userEvent.click(getAllByLabelText('Edit Icon')[5]);
     await waitFor(() =>
       expect(queryByText('Edit Contact Other Details')).toBeInTheDocument(),
     );
   });
 
   it('should close edit contact other details modal', async () => {
-    const { queryByText, getAllByRole, getByRole } = render(
+    const { queryByText, getAllByLabelText, getByLabelText } = render(
       <SnackbarProvider>
         <TestRouter router={router}>
           <MuiPickersUtilsProvider utils={LuxonUtils}>
@@ -442,11 +442,11 @@ describe('ContactDetailTab', () => {
       </SnackbarProvider>,
     );
     await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());
-    userEvent.click(getAllByRole('img', { name: 'Edit Icon' })[5]);
+    userEvent.click(getAllByLabelText('Edit Icon')[5]);
     await waitFor(() =>
       expect(queryByText('Edit Contact Other Details')).toBeInTheDocument(),
     );
-    userEvent.click(getByRole('button', { name: 'Close' }));
+    userEvent.click(getByLabelText('Close'));
     await waitFor(() =>
       expect(queryByText('Edit Contact Other Details')).not.toBeInTheDocument(),
     );

@@ -34,7 +34,7 @@ describe('AddFab', () => {
         </MuiPickersUtilsProvider>
       </MockedProvider>,
     );
-    userEvent.click(getByRole('button', { name: 'Add' }));
+    userEvent.click(getByRole('button', { hidden: true, name: 'Add' }));
     userEvent.click(getByRole('menuitem'));
     expect(openTaskDrawer).toHaveBeenCalledWith({});
   });

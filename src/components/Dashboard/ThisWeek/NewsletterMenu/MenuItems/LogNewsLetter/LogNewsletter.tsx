@@ -184,8 +184,8 @@ const LogNewsletter = ({
         <form onSubmit={handleSubmit} noValidate>
           <LogNewsletterTitle>
             {t('Log Newsletter')}
-            <CloseButton onClick={handleClose}>
-              <CloseIcon titleAccess={t('Close')} />
+            <CloseButton onClick={handleClose} aria-label={t('Close')}>
+              <CloseIcon />
             </CloseButton>
           </LogNewsletterTitle>
           <DialogContent dividers>

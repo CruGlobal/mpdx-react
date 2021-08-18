@@ -132,7 +132,9 @@ describe('Referrals', () => {
       'href',
       'https://stage.mpdx.org/contacts/contact_2',
     );
-    expect(getByRole('link', { name: 'View All (1,234)' })).toHaveAttribute(
+    expect(
+      getByRole('link', { hidden: true, name: 'View All (1,234)' }),
+    ).toHaveAttribute(
       'href',
       'https://stage.mpdx.org/contacts?filters=%7B%22created_at%22%3A%222019-12-18..2020-01-01%22%2C%22referrer%22%3A%22any%22%7D',
     );
@@ -159,7 +161,9 @@ describe('Referrals', () => {
       'href',
       'https://stage.mpdx.org/contacts/contact_4',
     );
-    expect(getByRole('link', { name: 'View All (5,678)' })).toHaveAttribute(
+    expect(
+      getByRole('link', { hidden: true, name: 'View All (5,678)' }),
+    ).toHaveAttribute(
       'href',
       'https://stage.mpdx.org/contacts?filters=%7B%22referrer%22%3A%22any%22%2C%22status%22%3A%22Never%20Contacted%2CAsk%20in%20Future%2CCultivate%20Relationship%2CContact%20for%20Appointment%22%7D',
     );

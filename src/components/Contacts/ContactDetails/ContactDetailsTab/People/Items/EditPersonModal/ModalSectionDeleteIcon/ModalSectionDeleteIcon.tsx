@@ -20,8 +20,11 @@ export const ModalSectionDeleteIcon: React.FC<ModalSectionDeleteIconProps> = ({
 }) => {
   const { t } = useTranslation();
   return (
-    <ContactEditDeleteIconButton onClick={handleClick}>
-      <DeleteIcon titleAccess={t('Modal Section Delete Icon')} />
+    <ContactEditDeleteIconButton
+      onClick={handleClick}
+      aria-label={t('Modal Section Delete Icon')}
+    >
+      <DeleteIcon />
     </ContactEditDeleteIconButton>
   );
 };
