@@ -60,7 +60,7 @@ export const DesignationAccountsReport: React.FC<Props> = ({
         setActiveDesignationAccount: {
           id: accountId,
           active: event.target.checked,
-          __typename: 'SetActiveDesignationAccountResponse',
+          __typename: 'DesignationAccountRest',
         },
       },
       update: (cache) => {
