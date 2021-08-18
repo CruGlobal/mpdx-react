@@ -4,11 +4,7 @@ import { Box, CircularProgress, Divider, styled } from '@material-ui/core';
 import { AccountsList as List } from '../AccountsListLayout/List/List';
 import { AccountsListHeader as Header } from '../AccountsListLayout/Header/Header';
 import type { Account } from '../AccountsListLayout/List/ListItem/ListItem';
-import {
-  DesignationAccountsDocument,
-  DesignationAccountsQuery,
-  useDesignationAccountsQuery,
-} from './GetDesignationAccounts.generated';
+import { useDesignationAccountsQuery } from './GetDesignationAccounts.generated';
 import { useSetActiveDesignationAccountMutation } from './SetActiveDesignationAccount.generated';
 import { Notification } from 'src/components/Notification/Notification';
 import { EmptyReport } from 'src/components/Reports/EmptyReport/EmptyReport';
@@ -62,36 +58,6 @@ export const DesignationAccountsReport: React.FC<Props> = ({
           active: event.target.checked,
           __typename: 'DesignationAccountRest',
         },
-      },
-      update: (cache) => {
-        const query = {
-          query: DesignationAccountsDocument,
-          variables: {
-            accountListId,
-          },
-        };
-
-        const dataFromCache = cache.readQuery<DesignationAccountsQuery>(query);
-
-        const data = {
-          designationAccounts: dataFromCache?.designationAccounts.map(
-            (designationAccountsGroup) => ({
-              ...designationAccountsGroup,
-              designationAccounts: designationAccountsGroup.designationAccounts.map(
-                (designationAccount) => {
-                  return designationAccount.id === accountId
-                    ? {
-                        ...designationAccount,
-                        active: event.target.checked,
-                      }
-                    : designationAccount;
-                },
-              ),
-            }),
-          ),
-        };
-
-        cache.writeQuery({ ...query, data });
       },
     });
   };
