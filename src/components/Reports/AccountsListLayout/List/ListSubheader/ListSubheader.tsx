@@ -10,7 +10,7 @@ import {
 } from '@material-ui/core';
 import HelpIcon from '@material-ui/icons/Help';
 
-export interface DesignationAccountListSubheaderProps {
+export interface AccountListSubheaderProps {
   organizationName: string;
 }
 
@@ -18,7 +18,7 @@ const StickySubheader = styled(ListSubheader)(({ theme }) => ({
   backgroundColor: theme.palette.common.white,
 }));
 
-export const DesignationAccountListSubheader: FC<DesignationAccountListSubheaderProps> = ({
+export const AccountListSubheader: FC<AccountListSubheaderProps> = ({
   organizationName,
 }) => {
   const { t } = useTranslation();
