@@ -150,8 +150,12 @@ export const PersonPhoneNumber: React.FC<PersonPhoneNumberProps> = ({
                             }}
                             fullWidth
                           >
-                            <MenuItem value="Mobile">{t('Mobile')}</MenuItem>
-                            <MenuItem value="Work">{t('Work')}</MenuItem>
+                            <MenuItem value="Mobile" aria-label={t('Mobile')}>
+                              {t('Mobile')}
+                            </MenuItem>
+                            <MenuItem value="Work" aria-label={t('Work')}>
+                              {t('Work')}
+                            </MenuItem>
                           </PhoneNumberSelect>
                         </Grid>
                         <ModalSectionDeleteIcon

@@ -34,13 +34,13 @@ it('does not render when isOpen is false', () => {
 });
 
 it('fires onClose | Close Button', () => {
-  const { getByRole } = render(
+  const { getByLabelText } = render(
     <MuiThemeProvider theme={theme}>
       <Modal isOpen={true} title={modalTitle} handleClose={handleClose}>
         <>{modalTextContent}</>
       </Modal>
     </MuiThemeProvider>,
   );
-  userEvent.click(getByRole('button', { hidden: true, name: 'Close' }));
+  userEvent.click(getByLabelText('Close'));
   expect(handleClose).toHaveBeenCalled();
 });

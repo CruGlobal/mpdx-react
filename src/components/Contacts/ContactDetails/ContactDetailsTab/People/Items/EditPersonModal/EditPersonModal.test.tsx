@@ -145,7 +145,7 @@ describe('EditPersonModal', () => {
   });
 
   it('should close edit contact modal', () => {
-    const { getByRole, getByText } = render(
+    const { getByLabelText, getByText } = render(
       <SnackbarProvider>
         <MuiPickersUtilsProvider utils={LuxonUtils}>
           <ThemeProvider theme={theme}>
@@ -161,7 +161,7 @@ describe('EditPersonModal', () => {
       </SnackbarProvider>,
     );
     expect(getByText('Edit Person')).toBeInTheDocument();
-    userEvent.click(getByRole('button', { hidden: true, name: 'Close' }));
+    userEvent.click(getByLabelText('Close'));
     expect(handleClose).toHaveBeenCalled();
   });
 
@@ -266,7 +266,7 @@ describe('EditPersonModal', () => {
     const newPersonTitle = 'Mr.';
     const newPersonSuffix = 'VI';
 
-    const { getByText, getByRole } = render(
+    const { getByText, getByLabelText } = render(
       <SnackbarProvider>
         <MuiPickersUtilsProvider utils={LuxonUtils}>
           <ThemeProvider theme={theme}>
@@ -283,27 +283,15 @@ describe('EditPersonModal', () => {
     );
     expect(getByText('Edit Person')).toBeInTheDocument();
 
-    userEvent.clear(getByRole('textbox', { hidden: true, name: 'First Name' }));
-    userEvent.clear(getByRole('textbox', { hidden: true, name: 'Last Name' }));
-    userEvent.clear(getByRole('textbox', { hidden: true, name: 'Title' }));
-    userEvent.clear(getByRole('textbox', { hidden: true, name: 'Suffix' }));
+    userEvent.clear(getByLabelText('First Name'));
+    userEvent.clear(getByLabelText('Last Name'));
+    userEvent.clear(getByLabelText('Title'));
+    userEvent.clear(getByLabelText('Suffix'));
 
-    userEvent.type(
-      getByRole('textbox', { hidden: true, name: 'First Name' }),
-      newPersonFirstName,
-    );
-    userEvent.type(
-      getByRole('textbox', { hidden: true, name: 'Last Name' }),
-      newPersonLastName,
-    );
-    userEvent.type(
-      getByRole('textbox', { hidden: true, name: 'Title' }),
-      newPersonTitle,
-    );
-    userEvent.type(
-      getByRole('textbox', { hidden: true, name: 'Suffix' }),
-      newPersonSuffix,
-    );
+    userEvent.type(getByLabelText('First Name'), newPersonFirstName);
+    userEvent.type(getByLabelText('Last Name'), newPersonLastName);
+    userEvent.type(getByLabelText('Title'), newPersonTitle);
+    userEvent.type(getByLabelText('Suffix'), newPersonSuffix);
 
     userEvent.click(getByText('Save'));
 
@@ -325,7 +313,7 @@ describe('EditPersonModal', () => {
   it('should handle editing person phone number section', async () => {
     const mutationSpy = jest.fn();
     const newPersonPhoneNumber = '888-888-8888';
-    const { getByText, getByRole, getAllByRole } = render(
+    const { getByText, getByLabelText, getAllByLabelText } = render(
       <SnackbarProvider>
         <MuiPickersUtilsProvider utils={LuxonUtils}>
           <ThemeProvider theme={theme}>
@@ -341,26 +329,12 @@ describe('EditPersonModal', () => {
       </SnackbarProvider>,
     );
     expect(getByText('Edit Person')).toBeInTheDocument();
-    userEvent.clear(
-      getAllByRole('textbox', { hidden: true, name: 'Phone Number' })[0],
-    );
-    userEvent.type(
-      getAllByRole('textbox', { hidden: true, name: 'Phone Number' })[0],
-      newPersonPhoneNumber,
-    );
-    userEvent.click(
-      getAllByRole('button', { hidden: true, name: 'Phone Number Type' })[0],
-    );
-    userEvent.click(getByRole('option', { hidden: true, name: 'Work' }));
-    userEvent.click(
-      getByRole('button', { hidden: true, name: 'Primary Phone' }),
-    );
-    userEvent.click(
-      getByRole('option', {
-        hidden: true,
-        name: mockPerson.phoneNumbers.nodes[1].number,
-      }),
-    );
+    userEvent.clear(getAllByLabelText('Phone Number')[0]);
+    userEvent.type(getAllByLabelText('Phone Number')[0], newPersonPhoneNumber);
+    userEvent.click(getAllByLabelText('Phone Number Type')[0]);
+    userEvent.click(getByLabelText('Work'));
+    userEvent.click(getByLabelText('Primary Phone'));
+    userEvent.click(getByText(mockPerson.phoneNumbers.nodes[1].number));
     userEvent.click(getByText('Save'));
 
     await waitFor(() =>
@@ -387,7 +361,7 @@ describe('EditPersonModal', () => {
 
   it('handles deleting a phone number', async () => {
     const mutationSpy = jest.fn();
-    const { getByText, getAllByRole } = render(
+    const { getByText, getAllByLabelText } = render(
       <SnackbarProvider>
         <MuiPickersUtilsProvider utils={LuxonUtils}>
           <ThemeProvider theme={theme}>
@@ -403,12 +377,7 @@ describe('EditPersonModal', () => {
       </SnackbarProvider>,
     );
     expect(getByText('Edit Person')).toBeInTheDocument();
-    userEvent.click(
-      getAllByRole('img', {
-        hidden: true,
-        name: 'Modal Section Delete Icon',
-      })[2],
-    );
+    userEvent.click(getAllByLabelText('Modal Section Delete Icon')[2]);
     userEvent.click(getByText('Save'));
     await waitFor(() =>
       expect(mockEnqueue).toHaveBeenCalledWith('Person updated successfully', {
@@ -426,7 +395,7 @@ describe('EditPersonModal', () => {
   it('should handle editing person email section', async () => {
     const mutationSpy = jest.fn();
     const newPersonEmailAddress = 'testguy@fake.com';
-    const { getByText, getByRole, getAllByRole } = render(
+    const { getByText, getByLabelText, getAllByLabelText } = render(
       <SnackbarProvider>
         <MuiPickersUtilsProvider utils={LuxonUtils}>
           <ThemeProvider theme={theme}>
@@ -441,34 +410,18 @@ describe('EditPersonModal', () => {
         </MuiPickersUtilsProvider>
       </SnackbarProvider>,
     );
-    userEvent.clear(
-      getAllByRole('textbox', { hidden: true, name: 'Email Address' })[0],
-    );
+    userEvent.clear(getAllByLabelText('Email Address')[0]);
     expect(getByText('Edit Person')).toBeInTheDocument();
 
     userEvent.type(
-      getAllByRole('textbox', { hidden: true, name: 'Email Address' })[0],
+      getAllByLabelText('Email Address')[0],
       newPersonEmailAddress,
     );
-    userEvent.click(
-      getAllByRole('button', { hidden: true, name: 'Email Address Type' })[0],
-    );
-    userEvent.click(getByRole('option', { hidden: true, name: 'Mobile' }));
-    userEvent.click(
-      getByRole('button', { hidden: true, name: 'Primary Email' }),
-    );
-    userEvent.click(
-      getByRole('option', {
-        hidden: true,
-        name: mockPerson.emailAddresses.nodes[1].email,
-      }),
-    );
-    userEvent.click(
-      getByRole('checkbox', {
-        hidden: true,
-        name: 'Opt-out of Email Newsletter',
-      }),
-    );
+    userEvent.click(getAllByLabelText('Email Address Type')[0]);
+    userEvent.click(getByLabelText('Mobile'));
+    userEvent.click(getByLabelText('Primary Email'));
+    userEvent.click(getByText(mockPerson.emailAddresses.nodes[1].email));
+    userEvent.click(getByLabelText('Opt-out of Email Newsletter'));
 
     userEvent.click(getByText('Save'));
 
@@ -497,7 +450,7 @@ describe('EditPersonModal', () => {
 
   it('handles deleting an email address', async () => {
     const mutationSpy = jest.fn();
-    const { getByText, getAllByRole } = render(
+    const { getByText, getAllByLabelText } = render(
       <SnackbarProvider>
         <MuiPickersUtilsProvider utils={LuxonUtils}>
           <ThemeProvider theme={theme}>
@@ -513,12 +466,7 @@ describe('EditPersonModal', () => {
       </SnackbarProvider>,
     );
     expect(getByText('Edit Person')).toBeInTheDocument();
-    userEvent.click(
-      getAllByRole('img', {
-        hidden: true,
-        name: 'Modal Section Delete Icon',
-      })[4],
-    );
+    userEvent.click(getAllByLabelText('Modal Section Delete Icon')[4]);
     userEvent.click(getByText('Save'));
     await waitFor(() =>
       expect(mockEnqueue).toHaveBeenCalledWith('Person updated successfully', {
@@ -539,7 +487,7 @@ describe('EditPersonModal', () => {
     const newPersonEmployer = 'Cru';
     const newPersonOccupation = 'Dev';
     const newPersonLegalFirstName = 'Jim';
-    const { getByText, getByRole } = render(
+    const { getByText, getByLabelText } = render(
       <SnackbarProvider>
         <MuiPickersUtilsProvider utils={LuxonUtils}>
           <ThemeProvider theme={theme}>
@@ -557,36 +505,20 @@ describe('EditPersonModal', () => {
     expect(getByText('Edit Person')).toBeInTheDocument();
     userEvent.click(getByText('Show More'));
 
-    userEvent.clear(getByRole('textbox', { hidden: true, name: 'Alma Mater' }));
-    userEvent.clear(getByRole('textbox', { hidden: true, name: 'Employer' }));
-    userEvent.clear(getByRole('textbox', { hidden: true, name: 'Occupation' }));
-    userEvent.clear(
-      getByRole('textbox', { hidden: true, name: 'Legal First Name' }),
-    );
+    userEvent.clear(getByLabelText('Alma Mater'));
+    userEvent.clear(getByLabelText('Employer'));
+    userEvent.clear(getByLabelText('Occupation'));
+    userEvent.clear(getByLabelText('Legal First Name'));
 
-    userEvent.click(
-      getByRole('button', { hidden: true, name: 'Relationship Status' }),
-    );
-    userEvent.click(getByRole('option', { hidden: true, name: 'Married' }));
-    userEvent.click(getByRole('button', { hidden: true, name: 'Gender' }));
-    userEvent.click(getByRole('option', { hidden: true, name: 'Female' }));
-    userEvent.type(
-      getByRole('textbox', { hidden: true, name: 'Alma Mater' }),
-      newPersonAlmaMater,
-    );
-    userEvent.type(
-      getByRole('textbox', { hidden: true, name: 'Employer' }),
-      newPersonEmployer,
-    );
-    userEvent.type(
-      getByRole('textbox', { hidden: true, name: 'Occupation' }),
-      newPersonOccupation,
-    );
-    userEvent.type(
-      getByRole('textbox', { hidden: true, name: 'Legal First Name' }),
-      newPersonLegalFirstName,
-    );
-    userEvent.click(getByRole('checkbox', { hidden: true, name: 'Deceased' }));
+    userEvent.click(getByLabelText('Relationship Status'));
+    userEvent.click(getByLabelText('Married'));
+    userEvent.click(getByLabelText('Gender'));
+    userEvent.click(getByLabelText('Female'));
+    userEvent.type(getByLabelText('Alma Mater'), newPersonAlmaMater);
+    userEvent.type(getByLabelText('Employer'), newPersonEmployer);
+    userEvent.type(getByLabelText('Occupation'), newPersonOccupation);
+    userEvent.type(getByLabelText('Legal First Name'), newPersonLegalFirstName);
+    userEvent.click(getByLabelText('Deceased'));
     userEvent.click(getByText('Show Less'));
     userEvent.click(getByText('Save'));
 
@@ -614,7 +546,7 @@ describe('EditPersonModal', () => {
 
   it('should handle editing anniversary', async () => {
     const mutationSpy = jest.fn();
-    const { getByText, getByRole } = render(
+    const { getByText, getByLabelText } = render(
       <SnackbarProvider>
         <MuiPickersUtilsProvider utils={LuxonUtils}>
           <ThemeProvider theme={theme}>
@@ -631,9 +563,7 @@ describe('EditPersonModal', () => {
     );
     expect(getByText('Edit Person')).toBeInTheDocument();
     userEvent.click(getByText('Show More'));
-    userEvent.click(
-      getByRole('textbox', { hidden: true, name: 'Anniversary' }),
-    );
+    userEvent.click(getByLabelText('Anniversary'));
     userEvent.click(getByText('30'));
     const AnniversaryOkayButton = await waitFor(() => getByText('OK'));
     userEvent.click(AnniversaryOkayButton);
@@ -651,7 +581,7 @@ describe('EditPersonModal', () => {
 
   it('should handle editing birthday', async () => {
     const mutationSpy = jest.fn();
-    const { getByText, getByRole } = render(
+    const { getByText, getByLabelText } = render(
       <SnackbarProvider>
         <MuiPickersUtilsProvider utils={LuxonUtils}>
           <ThemeProvider theme={theme}>
@@ -668,7 +598,7 @@ describe('EditPersonModal', () => {
     );
     expect(getByText('Edit Person')).toBeInTheDocument();
     userEvent.click(getByText('Show More'));
-    userEvent.click(getByRole('textbox', { hidden: true, name: 'Birthday' }));
+    userEvent.click(getByLabelText('Birthday'));
     userEvent.click(getByText('30'));
     const birthdayOkayButton = await waitFor(() => getByText('OK'));
     userEvent.click(birthdayOkayButton);
@@ -690,7 +620,7 @@ describe('EditPersonModal', () => {
     const newPersonTwitterAccount = '@testguy';
     const newPersonLinkedInAccount = 'Professional Test Guy';
     const newPersonWebsite = 'testguy.com';
-    const { getByText, getAllByRole } = render(
+    const { getByText, getAllByLabelText } = render(
       <SnackbarProvider>
         <MuiPickersUtilsProvider utils={LuxonUtils}>
           <ThemeProvider theme={theme}>
@@ -708,35 +638,24 @@ describe('EditPersonModal', () => {
     expect(getByText('Edit Person')).toBeInTheDocument();
     userEvent.click(getByText('Show More'));
 
-    userEvent.clear(
-      getAllByRole('textbox', { hidden: true, name: 'Facebook Account' })[0],
-    );
-    userEvent.clear(
-      getAllByRole('textbox', { hidden: true, name: 'Twitter Account' })[0],
-    );
-    userEvent.clear(
-      getAllByRole('textbox', { hidden: true, name: 'LinkedIn Account' })[0],
-    );
-    userEvent.clear(
-      getAllByRole('textbox', { hidden: true, name: 'Website' })[0],
-    );
+    userEvent.clear(getAllByLabelText('Facebook Account')[0]);
+    userEvent.clear(getAllByLabelText('Twitter Account')[0]);
+    userEvent.clear(getAllByLabelText('LinkedIn Account')[0]);
+    userEvent.clear(getAllByLabelText('Website')[0]);
 
     userEvent.type(
-      getAllByRole('textbox', { hidden: true, name: 'Facebook Account' })[0],
+      getAllByLabelText('Facebook Account')[0],
       newPersonFacebookAccount,
     );
     userEvent.type(
-      getAllByRole('textbox', { hidden: true, name: 'Twitter Account' })[0],
+      getAllByLabelText('Twitter Account')[0],
       newPersonTwitterAccount,
     );
     userEvent.type(
-      getAllByRole('textbox', { hidden: true, name: 'LinkedIn Account' })[0],
+      getAllByLabelText('LinkedIn Account')[0],
       newPersonLinkedInAccount,
     );
-    userEvent.type(
-      getAllByRole('textbox', { hidden: true, name: 'Website' })[0],
-      newPersonWebsite,
-    );
+    userEvent.type(getAllByLabelText('Website')[0], newPersonWebsite);
     userEvent.click(getByText('Show Less'));
     userEvent.click(getByText('Save'));
     await waitFor(() =>
@@ -762,7 +681,7 @@ describe('EditPersonModal', () => {
 
   it('should handle deleting socials', async () => {
     const mutationSpy = jest.fn();
-    const { getByText, getAllByRole } = render(
+    const { getByText, getAllByLabelText } = render(
       <SnackbarProvider>
         <MuiPickersUtilsProvider utils={LuxonUtils}>
           <ThemeProvider theme={theme}>
@@ -779,30 +698,10 @@ describe('EditPersonModal', () => {
     );
     expect(getByText('Edit Person')).toBeInTheDocument();
     userEvent.click(getByText('Show More'));
-    userEvent.click(
-      getAllByRole('img', {
-        hidden: true,
-        name: 'Modal Section Delete Icon',
-      })[6],
-    );
-    userEvent.click(
-      getAllByRole('img', {
-        hidden: true,
-        name: 'Modal Section Delete Icon',
-      })[8],
-    );
-    userEvent.click(
-      getAllByRole('img', {
-        hidden: true,
-        name: 'Modal Section Delete Icon',
-      })[10],
-    );
-    userEvent.click(
-      getAllByRole('img', {
-        hidden: true,
-        name: 'Modal Section Delete Icon',
-      })[12],
-    );
+    userEvent.click(getAllByLabelText('Modal Section Delete Icon')[6]);
+    userEvent.click(getAllByLabelText('Modal Section Delete Icon')[8]);
+    userEvent.click(getAllByLabelText('Modal Section Delete Icon')[10]);
+    userEvent.click(getAllByLabelText('Modal Section Delete Icon')[12]);
 
     userEvent.click(getByText('Save'));
     await waitFor(() =>
