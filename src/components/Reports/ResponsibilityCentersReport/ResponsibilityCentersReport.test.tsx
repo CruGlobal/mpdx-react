@@ -6,6 +6,15 @@ import { ResponsibilityCentersReport } from './ResponsibilityCentersReport';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
 
+jest.mock('next/router', () => ({
+  useRouter: () => {
+    return {
+      query: { accountListId: 'abc' },
+      isReady: true,
+    };
+  },
+}));
+
 const accountListId = '111';
 const title = 'test title';
 const onNavListToggle = jest.fn();
@@ -75,7 +84,7 @@ describe('ResponsibilityCentersReport', () => {
     expect(getByText('CA$3,500')).toBeInTheDocument();
     expect(queryByTestId('Notification')).not.toBeInTheDocument();
     expect(getByTestId('AccountsGroupList')).toBeInTheDocument();
-    expect(getByTestId('DesignationAccountsScrollBox')).toBeInTheDocument();
+    expect(getByTestId('ResponsibilityCentersScrollBox')).toBeInTheDocument();
   });
 
   it('loading', async () => {
