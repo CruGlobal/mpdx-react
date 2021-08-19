@@ -4310,18 +4310,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@material-ui/data-grid@npm:^4.0.0-alpha.33":
-  version: 4.0.0-alpha.33
-  resolution: "@material-ui/data-grid@npm:4.0.0-alpha.33"
+"@material-ui/data-grid@npm:^4.0.0-alpha.37":
+  version: 4.0.0-alpha.37
+  resolution: "@material-ui/data-grid@npm:4.0.0-alpha.37"
   dependencies:
     "@material-ui/utils": ^5.0.0-alpha.14
     clsx: ^1.0.4
     prop-types: ^15.7.2
     reselect: ^4.0.0
   peerDependencies:
-    "@material-ui/core": ^4.9.12 || ^5.0.0-alpha.34
+    "@material-ui/core": ^4.12.0 || ^5.0.0-beta.0
+    "@material-ui/styles": ^4.11.4 || ^5.0.0-beta.0
     react: ^17.0.0
-  checksum: 680f766b4d03c8d7ec0ee64b3d7aee44d5254bf12dbed968645a1ccdd16250af4a48daaaac19a7230cda2660acf3612a6158ffb2a66fe0ab1e17558fc92ae416
+  checksum: 76da2c46cbdc0a129afe4f8fdd43f9d5857467f927daa04747175d257e2470b8c5c97eec0a854484c81958ea4659232457534ffaaa626423f8283d9853fbccb5
   languageName: node
   linkType: hard
 
@@ -18253,7 +18254,7 @@ fsevents@~2.3.1:
     "@graphql-codegen/typescript-resolvers": ^1.18.2
     "@graphql-tools/merge": ^6.2.10
     "@material-ui/core": ^4.11.3
-    "@material-ui/data-grid": ^4.0.0-alpha.33
+    "@material-ui/data-grid": ^4.0.0-alpha.37
     "@material-ui/icons": ^4.11.2
     "@material-ui/lab": ^4.0.0-alpha.57
     "@material-ui/pickers": ^3.2.10
