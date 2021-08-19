@@ -36,6 +36,10 @@ import {
   createDesignationAccountsGroup,
   setActiveDesignationAccount,
 } from './Schema/reports/designationAccounts/datahandler';
+import {
+  FinancialAccountResponse,
+  setActiveFinancialAccount,
+} from './Schema/reports/financialAccounts/datahandler';
 
 class MpdxRestApi extends RESTDataSource {
   constructor() {
@@ -204,6 +208,27 @@ class MpdxRestApi extends RESTDataSource {
       },
     );
     return setActiveDesignationAccount(data);
+  }
+
+  async setActiveFinancialAccount(
+    accountListId: string,
+    active: boolean,
+    financialAccountId: string,
+  ) {
+    const { data }: { data: FinancialAccountResponse } = await this.put(
+      `account_lists/${accountListId}/financial_accounts/${financialAccountId}`,
+      {
+        data: {
+          attributes: {
+            active,
+            overwrite: true,
+          },
+          id: financialAccountId,
+          type: 'financial_accounts',
+        },
+      },
+    );
+    return setActiveFinancialAccount(data);
   }
 }
 
