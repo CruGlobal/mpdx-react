@@ -109,7 +109,7 @@ query GetThisWeek(
   recentReferrals: contacts(
     accountListId: $accountListId
     first: 3
-    referrer: ANY
+    referrer: ["any"]
     createdAt: { min: $twoWeeksAgo }
   ) {
     nodes {
@@ -127,7 +127,7 @@ query GetThisWeek(
       CULTIVATE_RELATIONSHIP
       CONTACT_FOR_APPOINTMENT
     ]
-    referrer: ANY
+    referrer: ["any"]
   ) {
     nodes {
       id
