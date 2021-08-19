@@ -14,7 +14,7 @@ import {
   useTheme,
 } from '@material-ui/core';
 import { ArrowBackIos, ArrowForwardIos, Close } from '@material-ui/icons';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FilterListItem } from '../../Shared/Filters/FilterListItem';
 import { FilterListItemShowAll } from '../../Shared/Filters/FilterListItemShowAll';
@@ -41,14 +41,20 @@ const LinkButton = styled(Button)(() => ({
   textTransform: 'none',
 }));
 
+export type SelectedContactFilters = {
+  [name: string]: boolean | string | Array<string>;
+};
+
 interface Props {
   accountListId: string;
   onClose: () => void;
+  onSelectedFiltersChanged: (selectedFilters: SelectedContactFilters) => void;
 }
 
 export const ContactFilters: React.FC<Props & BoxProps> = ({
   accountListId,
   onClose,
+  onSelectedFiltersChanged,
   ...boxProps
 }) => {
   const theme = useTheme();
@@ -59,10 +65,15 @@ export const ContactFilters: React.FC<Props & BoxProps> = ({
   });
 
   const [selectedGroup, showGroup] = useState<FilterGroup>();
-  const [selectedFilters, setSelectedFilters] = useState<{
-    [name: string]: boolean | string | Array<string>;
-  }>({});
+  const [
+    selectedFilters,
+    setSelectedFilters,
+  ] = useState<SelectedContactFilters>({});
   const [showAll, setShowAll] = useState(false);
+
+  useEffect(() => {
+    onSelectedFiltersChanged(selectedFilters);
+  }, [selectedFilters]);
 
   const updateSelectedFilter = (
     name: string,
