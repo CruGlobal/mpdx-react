@@ -1,0 +1,16 @@
+extend type Mutation {
+  setActiveFinancialAccount(
+    input: SetActiveFinancialAccountInput!
+  ): SetActiveFinancialAccountRest!
+}
+
+input SetActiveFinancialAccountInput {
+  accountListId: ID!
+  active: Boolean!
+  financialAccountId: ID!
+}
+
+type SetActiveFinancialAccountRest {
+  active: Boolean!
+  id: ID!
+}
