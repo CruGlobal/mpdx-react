@@ -1,0 +1,12 @@
+mutation CreateDonation(
+  $accountListId: ID!
+  $attributes: DonationCreateInput!
+) {
+  createDonation(
+    input: { accountListId: $accountListId, attributes: $attributes }
+  ) {
+    donation {
+      id
+    }
+  }
+}
