@@ -5,13 +5,16 @@ import {
   CheckboxFilter,
   DaterangeFilter,
   MultiselectFilter,
+  NumericRangeFilter,
   RadioFilter,
   TextFilter,
   DateRangeInput,
+  NumericRangeInput,
 } from '../../../../graphql/types.generated';
 import { FilterListItemCheckbox } from './FilterListItemCheckbox';
 import { FilterListItemDateRange } from './FilterListItemDateRange';
 import { FilterListItemMultiselect } from './FilterListItemMultiselect';
+import { FilterListItemNumericRange } from './FilterListItemNumericRange';
 import { FilterListItemSelect } from './FilterListItemSelect';
 import { FilterListItemTextField } from './FilterListItemTextField';
 
@@ -54,6 +57,12 @@ export const FilterListItem: React.FC<Props> = ({
     <FilterListItemCheckbox
       filter={filter as CheckboxFilter}
       value={!!value}
+      onUpdate={onUpdate}
+    />
+  ) : (filter as NumericRangeFilter).__typename === 'NumericRangeFilter' ? (
+    <FilterListItemNumericRange
+      filter={filter as NumericRangeFilter}
+      value={value as NumericRangeInput}
       onUpdate={onUpdate}
     />
   ) : (
