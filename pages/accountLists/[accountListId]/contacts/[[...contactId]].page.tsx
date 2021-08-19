@@ -3,7 +3,10 @@ import Head from 'next/head';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'next/router';
 import { Box, styled } from '@material-ui/core';
-import { ContactFilters } from '../../../../src/components/Contacts/ContactFilters/ContactFilters';
+import {
+  ContactFilters,
+  SelectedContactFilters,
+} from '../../../../src/components/Contacts/ContactFilters/ContactFilters';
 import { ContactsTable } from '../../../../src/components/Contacts/ContactsTable/ContactsTable';
 import { ContactDetails } from '../../../../src/components/Contacts/ContactDetails/ContactDetails';
 import Loading from '../../../../src/components/Loading';
@@ -41,6 +44,10 @@ const ContactsPage: React.FC = () => {
 
   const toggleFilterPanel = () => {
     setFilterPanelOpen(!filterPanelOpen);
+  };
+
+  const updateSelectedFilters = (filters: SelectedContactFilters) => {
+    //TODO: Respond to Changes to ContactFilters
   };
 
   const setContactFocus = (id?: string) => {
@@ -82,6 +89,7 @@ const ContactsPage: React.FC = () => {
               <ContactFilters
                 accountListId={accountListId}
                 onClose={toggleFilterPanel}
+                onSelectedFiltersChanged={updateSelectedFilters}
               />
             }
             leftOpen={filterPanelOpen}
