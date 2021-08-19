@@ -19,7 +19,7 @@ import { useGetPrimaryAppealQuery } from '../../../../pages/accountLists/[accoun
 import { useAccountListId } from '../../../../src/hooks/useAccountListId';
 
 import AddAppealForm from '../../../../src/components/Tool/Appeal/AddAppealForm';
-import NoAppeals from 'src/components/Tool/Appeal/NoAppeals';
+import NoAppeals from '../../../../src/components/Tool/Appeal/NoAppeals';
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
