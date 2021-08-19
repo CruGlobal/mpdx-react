@@ -35,7 +35,7 @@ describe('HandoffLink', () => {
         </HandoffLink>
       </GqlMockedProvider>,
     );
-    const linkElement = getByRole('link', { name: 'Link' });
+    const linkElement = getByRole('link', { hidden: true, name: 'Link' });
     expect(linkElement).toHaveAttribute(
       'href',
       'https://stage.mpdx.org/contacts',
@@ -56,7 +56,7 @@ describe('HandoffLink', () => {
         </HandoffLink>
       </GqlMockedProvider>,
     );
-    const linkElement = getByRole('link', { name: 'Link' });
+    const linkElement = getByRole('link', { hidden: true, name: 'Link' });
     expect(linkElement).toHaveAttribute(
       'href',
       'https://auth.stage.mpdx.org/contacts',
@@ -77,7 +77,7 @@ describe('HandoffLink', () => {
         </HandoffLink>
       </GqlMockedProvider>,
     );
-    const linkElement = getByRole('link', { name: 'Link' });
+    const linkElement = getByRole('link', { hidden: true, name: 'Link' });
     expect(linkElement).toHaveAttribute(
       'href',
       'https://stage.mpdx.org/contacts',
@@ -120,7 +120,7 @@ describe('HandoffLink', () => {
           </HandoffLink>
         </GqlMockedProvider>,
       );
-      expect(getByRole('link', { name: 'Link' })).toHaveAttribute(
+      expect(getByRole('link', { hidden: true, name: 'Link' })).toHaveAttribute(
         'href',
         'https://mpdx.org/contacts',
       );
@@ -134,7 +134,7 @@ describe('HandoffLink', () => {
           </HandoffLink>
         </GqlMockedProvider>,
       );
-      expect(getByRole('link', { name: 'Link' })).toHaveAttribute(
+      expect(getByRole('link', { hidden: true, name: 'Link' })).toHaveAttribute(
         'href',
         'https://auth.mpdx.org/contacts',
       );

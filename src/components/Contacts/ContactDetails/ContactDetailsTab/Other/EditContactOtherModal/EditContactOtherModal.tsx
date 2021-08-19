@@ -160,11 +160,18 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
                       fullWidth={true}
                     >
                       {Object.values(PreferredContactMethodEnum).map(
-                        (value) => (
-                          <MenuItem key={value} value={value}>
-                            {localizedContactMethod(value)}
-                          </MenuItem>
-                        ),
+                        (value) => {
+                          const contactMethod = localizedContactMethod(value);
+                          return (
+                            <MenuItem
+                              key={value}
+                              value={value}
+                              aria-label={contactMethod}
+                            >
+                              {contactMethod}
+                            </MenuItem>
+                          );
+                        },
                       )}
                     </Select>
                   </FormControl>

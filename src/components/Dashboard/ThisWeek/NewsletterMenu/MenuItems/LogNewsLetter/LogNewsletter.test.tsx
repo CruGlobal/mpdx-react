@@ -37,7 +37,7 @@ describe('LogNewsletter', () => {
   });
 
   it('closes menu', () => {
-    const { getByRole } = render(
+    const { getByLabelText } = render(
       <MuiPickersUtilsProvider utils={LuxonUtils}>
         <SnackbarProvider>
           <GqlMockedProvider<CreateTaskMutation>>
@@ -49,13 +49,13 @@ describe('LogNewsletter', () => {
         </SnackbarProvider>
       </MuiPickersUtilsProvider>,
     );
-    userEvent.click(getByRole('button', { name: 'Close' }));
+    userEvent.click(getByLabelText('Close'));
     expect(handleClose).toHaveBeenCalled();
   });
 
   describe('Logging Newsletter', () => {
     it('Logs Physical Newsletter', async () => {
-      const { getByRole, getByText, findByText } = render(
+      const { getByLabelText, getByText, findByText } = render(
         <MuiPickersUtilsProvider utils={LuxonUtils}>
           <SnackbarProvider>
             <GqlMockedProvider<CreateTaskMutation>>
@@ -72,14 +72,14 @@ describe('LogNewsletter', () => {
       userEvent.click(getByText('Save'));
       expect(await findByText('Field is required')).toBeInTheDocument();
 
-      userEvent.type(getByRole('textbox', { name: 'Subject' }), accountListId);
+      userEvent.type(getByLabelText('Subject'), accountListId);
       await waitFor(() => expect(getByText('Save')).not.toBeDisabled());
       userEvent.click(getByText('Save'));
       await waitFor(() => expect(handleClose).toHaveBeenCalled());
     });
 
     it('Logs Email Newsletter', async () => {
-      const { getByRole, getByText, findByText } = render(
+      const { getByLabelText, getByText, findByText } = render(
         <MuiPickersUtilsProvider utils={LuxonUtils}>
           <SnackbarProvider>
             <GqlMockedProvider<CreateTaskMutation>>
@@ -96,15 +96,15 @@ describe('LogNewsletter', () => {
       userEvent.click(getByText('Save'));
       expect(await findByText('Field is required')).toBeInTheDocument();
 
-      userEvent.type(getByRole('textbox', { name: 'Subject' }), accountListId);
+      userEvent.type(getByLabelText('Subject'), accountListId);
       await waitFor(() => expect(getByText('Save')).not.toBeDisabled());
-      userEvent.click(getByRole('radio', { name: 'Newsletter - Email' }));
+      userEvent.click(getByLabelText('Newsletter - Email'));
       userEvent.click(getByText('Save'));
       await waitFor(() => expect(handleClose).toHaveBeenCalled());
     });
 
     it('Logs Newsletter with completedAt date', async () => {
-      const { getByRole, getByText, findByText, getByTestId } = render(
+      const { getByLabelText, getByText, findByText, getByTestId } = render(
         <MuiPickersUtilsProvider utils={LuxonUtils}>
           <SnackbarProvider>
             <GqlMockedProvider<CreateTaskMutation>>
@@ -121,7 +121,7 @@ describe('LogNewsletter', () => {
       userEvent.click(getByText('Save'));
       expect(await findByText('Field is required')).toBeInTheDocument();
 
-      userEvent.type(getByRole('textbox', { name: 'Subject' }), accountListId);
+      userEvent.type(getByLabelText('Subject'), accountListId);
       await waitFor(() => expect(getByText('Save')).not.toBeDisabled());
       userEvent.click(getByTestId('completedDate'));
       const dateOkButton = await waitFor(() => getByText('OK'));
@@ -134,7 +134,7 @@ describe('LogNewsletter', () => {
     });
 
     it('Logs Newsletter with Comment', async () => {
-      const { getByRole, getByText, findByText } = render(
+      const { getByLabelText, getByText, findByText } = render(
         <TestWrapper
           mocks={[
             createNewsletterTaskMutationMock(),
@@ -152,10 +152,10 @@ describe('LogNewsletter', () => {
       userEvent.click(getByText('Save'));
       expect(await findByText('Field is required')).toBeInTheDocument();
 
-      userEvent.type(getByRole('textbox', { name: 'Subject' }), accountListId);
+      userEvent.type(getByLabelText('Subject'), accountListId);
       await waitFor(() => expect(getByText('Save')).not.toBeDisabled());
 
-      userEvent.type(getByRole('textbox', { name: 'Comment' }), 'comment');
+      userEvent.type(getByLabelText('Comment'), 'comment');
 
       userEvent.click(getByText('Save'));
 

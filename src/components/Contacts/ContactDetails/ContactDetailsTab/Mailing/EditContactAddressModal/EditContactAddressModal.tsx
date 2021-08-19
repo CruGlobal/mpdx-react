@@ -165,7 +165,11 @@ export const EditContactAddressModal: React.FC<EditContactAddressModalProps> = (
                           fullWidth
                         >
                           {Object.values(AddressLocationEnum).map((value) => (
-                            <MenuItem key={value} value={value}>
+                            <MenuItem
+                              key={value}
+                              value={value}
+                              aria-label={t(value)}
+                            >
                               {t(value)}
                             </MenuItem>
                           ))}

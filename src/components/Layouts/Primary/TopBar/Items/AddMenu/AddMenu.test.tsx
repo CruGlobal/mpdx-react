@@ -38,7 +38,7 @@ describe('AddMenu', () => {
         </TestRouter>
       </SnackbarProvider>,
     );
-    userEvent.click(getByRole('button', { name: 'Add Button' }));
+    userEvent.click(getByRole('button', { hidden: true, name: 'Add Button' }));
     await waitFor(() => expect(getByText('Add Contact')).toBeInTheDocument());
   });
 
@@ -54,7 +54,7 @@ describe('AddMenu', () => {
         </TestRouter>
       </SnackbarProvider>,
     );
-    userEvent.click(getByRole('button', { name: 'Add Button' }));
+    userEvent.click(getByRole('button', { hidden: true, name: 'Add Button' }));
     await waitFor(() => expect(getByText('Add Contact')).toBeInTheDocument());
     userEvent.click(getByText('Add Contact'));
     await waitFor(() => expect(getByText('New Contact')).toBeInTheDocument());
@@ -72,7 +72,7 @@ describe('AddMenu', () => {
         </TestRouter>
       </SnackbarProvider>,
     );
-    userEvent.click(getByRole('button', { name: 'Add Button' }));
+    userEvent.click(getByRole('button', { hidden: true, name: 'Add Button' }));
     await waitFor(() => expect(getByText('Add Task')).toBeInTheDocument());
     userEvent.click(getByText('Add Task'));
     await waitFor(() => expect(openTaskDrawer).toHaveBeenCalledWith({}));

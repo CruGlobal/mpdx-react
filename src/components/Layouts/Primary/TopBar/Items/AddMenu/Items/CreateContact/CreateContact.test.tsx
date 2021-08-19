@@ -45,7 +45,7 @@ describe('CreateContact', () => {
       </SnackbarProvider>,
     );
 
-    userEvent.click(getByRole('button', { name: 'Close' }));
+    userEvent.click(getByRole('button', { hidden: true, name: 'Close' }));
     expect(handleClose).toHaveBeenCalled();
   });
 
@@ -68,7 +68,10 @@ describe('CreateContact', () => {
 
       userEvent.click(getByText('Save'));
       expect(await findByText('Field is required')).toBeInTheDocument();
-      userEvent.type(getByRole('textbox', { name: 'Name' }), name);
+      userEvent.type(
+        getByRole('textbox', { hidden: true, name: 'Name' }),
+        name,
+      );
       await waitFor(() => expect(getByText('Save')).not.toBeDisabled());
       userEvent.click(getByText('Save'));
       await waitFor(() => expect(handleClose).toHaveBeenCalled());

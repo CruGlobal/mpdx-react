@@ -89,11 +89,13 @@ const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
 interface ContactDetailTabProps {
   accountListId: string;
   contactId: string;
+  onClose: () => void;
 }
 
 export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
   accountListId,
   contactId,
+  onClose,
 }) => {
   const { data, loading } = useContactDetailsTabQuery({
     variables: { accountListId, contactId },
@@ -151,6 +153,8 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
           }
         },
       });
+      setDeleteModalOpen(false);
+      onClose();
     } catch (error) {
       throw error;
     }
@@ -215,8 +219,11 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
               {loading || !data ? t('Loading') : data.contact.name}
             </ContactDetailHeadingText>
             {loading || !data ? null : (
-              <IconButton onClick={() => setEditModalOpen(true)}>
-                <ContactDetailEditIcon titleAccess={t('Edit Icon')} />
+              <IconButton
+                onClick={() => setEditModalOpen(true)}
+                aria-label={t('Edit Icon')}
+              >
+                <ContactDetailEditIcon />
               </IconButton>
             )}
           </ContactDetailHeadingContainer>
@@ -243,8 +250,11 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
               {t('Mailing')}
             </ContactDetailHeadingText>
             {loading || !data ? null : (
-              <IconButton onClick={() => setEditMailingModalOpen(true)}>
-                <ContactDetailEditIcon titleAccess={t('Edit Icon')} />
+              <IconButton
+                onClick={() => setEditMailingModalOpen(true)}
+                aria-label={t('Edit Icon')}
+              >
+                <ContactDetailEditIcon />
               </IconButton>
             )}
           </ContactDetailHeadingContainer>
@@ -271,8 +281,11 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
               {t('Other')}
             </ContactDetailHeadingText>
             {loading || !data ? null : (
-              <IconButton onClick={() => setEditOtherModalOpen(true)}>
-                <ContactDetailEditIcon titleAccess={t('Edit Icon')} />
+              <IconButton
+                onClick={() => setEditOtherModalOpen(true)}
+                aria-label={t('Edit Icon')}
+              >
+                <ContactDetailEditIcon />
               </IconButton>
             )}
           </ContactDetailHeadingContainer>

@@ -50,7 +50,7 @@ describe('FourteenMonthReportHeader', () => {
       </ThemeProvider>,
     );
 
-    userEvent.click(getByRole('button', { name: 'Hide' }));
+    userEvent.click(getByRole('button', { hidden: true, name: 'Hide' }));
     expect(onExpandToggle).toHaveBeenCalled();
   });
 
@@ -71,7 +71,9 @@ describe('FourteenMonthReportHeader', () => {
       </ThemeProvider>,
     );
 
-    userEvent.click(getByRole('button', { name: 'Toggle Filter Panel' }));
+    userEvent.click(
+      getByRole('button', { hidden: true, name: 'Toggle Filter Panel' }),
+    );
     expect(onNavListToggle).toHaveBeenCalled();
   });
 });

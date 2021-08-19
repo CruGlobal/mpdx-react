@@ -92,7 +92,7 @@ describe('EditContactDetailsModal', () => {
       </SnackbarProvider>,
     );
     expect(getByText('Edit Contact Details')).toBeInTheDocument();
-    userEvent.click(getByRole('button', { name: 'Close' }));
+    userEvent.click(getByRole('button', { hidden: true, name: 'Close' }));
     expect(handleClose).toHaveBeenCalled();
   });
 
@@ -141,9 +141,14 @@ describe('EditContactDetailsModal', () => {
       </SnackbarProvider>,
     );
     expect(getByText('Edit Contact Details')).toBeInTheDocument();
-    userEvent.type(getByRole('textbox', { name: 'Contact' }), newContactName);
-    userEvent.click(getByRole('button', { name: 'Primary' }));
-    userEvent.click(getByRole('option', { name: newPrimaryContactName }));
+    userEvent.type(
+      getByRole('textbox', { hidden: true, name: 'Contact' }),
+      newContactName,
+    );
+    userEvent.click(getByRole('button', { hidden: true, name: 'Primary' }));
+    userEvent.click(
+      getByRole('option', { hidden: true, name: newPrimaryContactName }),
+    );
     userEvent.click(getByText('Save'));
     await waitFor(() =>
       expect(mockEnqueue).toHaveBeenCalledWith('Contact updated successfully', {
