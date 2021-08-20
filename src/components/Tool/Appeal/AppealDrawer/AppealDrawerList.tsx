@@ -69,6 +69,12 @@ const AppealDrawerList = (): ReactElement => {
           isSelected={appealState.subDisplay === 'received'}
         />
         <AppealDrawerItem
+          id="commited"
+          title="Commited"
+          value={0}
+          isSelected={appealState.subDisplay === 'commited'}
+        />
+        <AppealDrawerItem
           id="asked"
           title="Asked"
           value={75}
