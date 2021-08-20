@@ -1,15 +1,26 @@
-# Write your query or mutation here
 query GetAppeals($accountListId: ID!) {
-  appeals(accountListId: $accountListId, primary: false) {
+  primaryAppeal: appeals(
+    accountListId: $accountListId
+    primary: true
+    first: 1
+  ) {
     nodes {
-      id
-      name
-      amount
-      amountCurrency
-      pledgesAmountNotReceivedNotProcessed
-      pledgesAmountReceivedNotProcessed
-      pledgesAmountProcessed
-      pledgesAmountTotal
+      ...AppealFields
     }
   }
+  regularAppeals: appeals(accountListId: $accountListId, primary: false) {
+    nodes {
+      ...AppealFields
+    }
+  }
+}
+fragment AppealFields on Appeal {
+  id
+  name
+  amount
+  amountCurrency
+  pledgesAmountNotReceivedNotProcessed
+  pledgesAmountReceivedNotProcessed
+  pledgesAmountProcessed
+  pledgesAmountTotal
 }
