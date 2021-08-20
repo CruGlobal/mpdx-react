@@ -88,23 +88,19 @@ export const ContactTags: React.FC<ContactTagsProps> = ({
     if (index > -1) {
       const tagList = [...contactTags];
       tagList.splice(index, 1);
-      try {
-        const { data } = await updateContactTags({
-          variables: {
-            accountListId,
-            contactId,
-            tagList,
-          },
-        });
 
-        if (data?.updateContact?.contact.tagList) {
-          enqueueSnackbar(t('Tag successfully removed'), {
-            variant: 'success',
-          });
-        }
-      } catch (error) {
-        enqueueSnackbar(error.message, { variant: 'error' });
-        throw error;
+      const { data } = await updateContactTags({
+        variables: {
+          accountListId,
+          contactId,
+          tagList,
+        },
+      });
+
+      if (data?.updateContact?.contact.tagList) {
+        enqueueSnackbar(t('Tag successfully removed'), {
+          variant: 'success',
+        });
       }
     }
   };
@@ -115,33 +111,29 @@ export const ContactTags: React.FC<ContactTagsProps> = ({
   ): Promise<void> => {
     resetForm();
     if (tagList.length === 0) return;
-    try {
-      const { data } = await updateContactTags({
-        variables: {
-          accountListId,
-          contactId,
-          tagList: [...contactTags, ...tagList],
-        },
-        optimisticResponse: {
-          updateContact: {
-            __typename: 'ContactUpdateMutationPayload',
-            contact: {
-              __typename: 'Contact',
-              id: contactId,
-              tagList: [...contactTags, ...tagList],
-            },
+
+    const { data } = await updateContactTags({
+      variables: {
+        accountListId,
+        contactId,
+        tagList: [...contactTags, ...tagList],
+      },
+      optimisticResponse: {
+        updateContact: {
+          __typename: 'ContactUpdateMutationPayload',
+          contact: {
+            __typename: 'Contact',
+            id: contactId,
+            tagList: [...contactTags, ...tagList],
           },
         },
-      });
+      },
+    });
 
-      if (data?.updateContact?.contact.tagList) {
-        enqueueSnackbar(t('Tag successfully added'), {
-          variant: 'success',
-        });
-      }
-    } catch (error) {
-      enqueueSnackbar(error.message, { variant: 'error' });
-      throw error;
+    if (data?.updateContact?.contact.tagList) {
+      enqueueSnackbar(t('Tag successfully added'), {
+        variant: 'success',
+      });
     }
   };
 
