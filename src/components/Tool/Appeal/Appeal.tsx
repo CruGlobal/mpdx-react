@@ -4,7 +4,6 @@ import {
   Typography,
   Tooltip,
   makeStyles,
-  Theme,
 } from '@material-ui/core';
 import React, { ReactElement } from 'react';
 import StarIcon from '@material-ui/icons/Star';
@@ -27,7 +26,7 @@ export interface Props {
   total: number;
 }
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles(() => ({
   cardContent: {
     marginTop: -theme.spacing(2),
   },
