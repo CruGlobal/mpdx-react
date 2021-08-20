@@ -14,19 +14,8 @@ const router = {
   isReady: true,
 };
 
-const testAppealPrimary = {
-  id: '1',
-  name: 'Test Primary',
-  amount: 100,
-  amountCurrency: 'CAD',
-  pledgesAmountNotReceivedNotProcessed: 10,
-  pledgesAmountReceivedNotProcessed: 20,
-  pledgesAmountProcessed: 30,
-  pledgesAmountTotal: 40,
-};
-
 const testAppeal = {
-  id: '2',
+  id: '1',
   name: 'Test Appeal',
   amount: 200,
   amountCurrency: 'CAD',
@@ -57,11 +46,6 @@ describe('AppealsTest', () => {
         <TestRouter router={router}>
           <GqlMockedProvider<GetAppealsQuery>
             mocks={{
-              GetPrimaryAppeal: {
-                appeals: {
-                  nodes: [testAppealPrimary],
-                },
-              },
               GetAppeals: {
                 appeals: {
                   nodes: [testAppeal],
@@ -74,8 +58,10 @@ describe('AppealsTest', () => {
         </TestRouter>
       </ThemeProvider>,
     );
-    await waitFor(() => expect(getByText('Test Primary')).toBeInTheDocument());
-    await waitFor(() => expect(getByText('Test Appeal')).toBeInTheDocument());
+    await waitFor(() =>
+      expect(getByText('Primary Appeal')).toBeInTheDocument(),
+    );
+    await waitFor(() => expect(getByText('Appeals')).toBeInTheDocument());
     await waitFor(() =>
       expect(getByTestId('TypographyShowing').textContent).toEqual(
         'Showing 2 of 2',
