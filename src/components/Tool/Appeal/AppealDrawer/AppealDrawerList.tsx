@@ -11,6 +11,7 @@ import {
 } from '@material-ui/core';
 import Icon from '@mdi/react';
 import { mdiTrophy } from '@mdi/js';
+import { useAppealContext } from '../AppealContextProvider/AppealContextProvider';
 import { AppealDrawerItem } from './Item/AppealDrawerItem';
 import { AppealDrawerItemButton } from './Item/AppealDrawerItemButton';
 
@@ -34,13 +35,10 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-export interface Props {
-  selectedId?: string;
-}
-
-const AppealDrawerList = ({ selectedId }: Props): ReactElement => {
+const AppealDrawerList = (): ReactElement => {
   const { t } = useTranslation();
   const classes = useStyles();
+  const { appealState } = useAppealContext();
 
   const testFunc = (): void => {
     console.log('Test success!');
@@ -62,35 +60,35 @@ const AppealDrawerList = ({ selectedId }: Props): ReactElement => {
           id="given"
           title="Given"
           value={0}
-          isSelected={selectedId === 'given'}
+          isSelected={appealState.subDisplay === 'given'}
         />
         <AppealDrawerItem
           id="received"
           title="Received"
           value={2}
-          isSelected={selectedId === 'received'}
+          isSelected={appealState.subDisplay === 'received'}
         />
         <AppealDrawerItem
           id="asked"
           title="Asked"
           value={75}
-          isSelected={selectedId === 'asked'}
+          isSelected={appealState.subDisplay === 'asked'}
         />
         <AppealDrawerItem
           id="excluded"
           title="Excluded"
           value={1000}
-          isSelected={selectedId === 'excluded'}
+          isSelected={appealState.subDisplay === 'excluded'}
         />
         <AppealDrawerItemButton
           title="Export to CSV"
           func={testFunc}
-          buttonText={`Export ${0} Selected`}
+          buttonText={`Export ${appealState.selected.length} Selected`}
         />
         <AppealDrawerItemButton
           title="Export Emails"
           func={testFunc}
-          buttonText={`Export ${0} Selected`}
+          buttonText={`Export ${appealState.selected.length} Selected`}
         />
         <AppealDrawerItemButton
           title="Add Contact to Appeal"
