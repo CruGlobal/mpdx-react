@@ -96,7 +96,7 @@ const Appeals = (): ReactElement => {
       )}
       {!primaryAppealResponse.loading && !regularAppealsResponse.loading && (
         <Box display="flex" justifyContent="center">
-          <Typography variant="h6">
+          <Typography variant="h6" data-testid="TypographyShowing">
             Showing{' '}
             <strong>
               {(primaryAppealResponse.data
