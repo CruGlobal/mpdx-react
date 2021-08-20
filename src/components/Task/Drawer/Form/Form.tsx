@@ -169,57 +169,47 @@ const TaskDrawerForm = ({
       attributes: TaskCreateInput | TaskUpdateInput,
     ): attributes is TaskUpdateInput => !!task;
 
-    try {
-      if (isUpdate(attributes)) {
-        await updateTask({
-          variables: { accountListId, attributes },
-        });
-      } else {
-        await createTask({
-          variables: { accountListId, attributes },
-        });
-      }
-      enqueueSnackbar(t('Task saved successfully'), { variant: 'success' });
-      onClose();
-    } catch (error) {
-      enqueueSnackbar(error.message, { variant: 'error' });
-      throw error;
+    if (isUpdate(attributes)) {
+      await updateTask({
+        variables: { accountListId, attributes },
+      });
+    } else {
+      await createTask({
+        variables: { accountListId, attributes },
+      });
     }
+    enqueueSnackbar(t('Task saved successfully'), { variant: 'success' });
+    onClose();
   };
 
   const onDeleteTask = async (): Promise<void> => {
-    try {
-      if (task) {
-        const endOfDay = DateTime.local().endOf('day');
-        await deleteTask({
-          variables: {
-            accountListId,
-            id: task.id,
+    if (task) {
+      const endOfDay = DateTime.local().endOf('day');
+      await deleteTask({
+        variables: {
+          accountListId,
+          id: task.id,
+        },
+        refetchQueries: [
+          {
+            query: GetTasksForTaskListDocument,
+            variables: { accountListId, first: rowsPerPage, ...filter },
           },
-          refetchQueries: [
-            {
-              query: GetTasksForTaskListDocument,
-              variables: { accountListId, first: rowsPerPage, ...filter },
+          {
+            query: GetThisWeekDocument,
+            variables: {
+              accountListId,
+              endOfDay: endOfDay.toISO(),
+              today: endOfDay.toISODate(),
+              twoWeeksFromNow: endOfDay.plus({ weeks: 2 }).toISODate(),
+              twoWeeksAgo: endOfDay.minus({ weeks: 2 }).toISODate(),
             },
-            {
-              query: GetThisWeekDocument,
-              variables: {
-                accountListId,
-                endOfDay: endOfDay.toISO(),
-                today: endOfDay.toISODate(),
-                twoWeeksFromNow: endOfDay.plus({ weeks: 2 }).toISODate(),
-                twoWeeksAgo: endOfDay.minus({ weeks: 2 }).toISODate(),
-              },
-            },
-          ],
-        });
-        enqueueSnackbar(t('Task deleted successfully'), { variant: 'success' });
-        handleRemoveDialog(false);
-        onClose();
-      }
-    } catch (error) {
-      enqueueSnackbar(error.message, { variant: 'error' });
-      throw error;
+          },
+        ],
+      });
+      enqueueSnackbar(t('Task deleted successfully'), { variant: 'success' });
+      handleRemoveDialog(false);
+      onClose();
     }
   };
 

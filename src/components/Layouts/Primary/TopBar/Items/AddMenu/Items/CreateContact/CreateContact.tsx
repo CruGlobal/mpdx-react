@@ -85,29 +85,24 @@ const CreateContact = ({
   const [createContact, { loading: creating }] = useCreateContactMutation();
 
   const onSubmit = async (attributes: ContactCreateInput) => {
-    try {
-      const { data } = await createContact({
-        variables: {
-          accountListId,
-          attributes,
-        },
-      });
+    const { data } = await createContact({
+      variables: {
+        accountListId,
+        attributes,
+      },
+    });
 
-      const contactId = data?.createContact?.contact.id;
-      if (contactId) {
-        push({
-          pathname: '/accountLists/[accountListId]/contacts/[contactId]',
-          query: { accountListId, contactId },
-        });
-      }
-      enqueueSnackbar(t('Contact successfully created'), {
-        variant: 'success',
+    const contactId = data?.createContact?.contact.id;
+    if (contactId) {
+      push({
+        pathname: '/accountLists/[accountListId]/contacts/[contactId]',
+        query: { accountListId, contactId },
       });
-      handleClose();
-    } catch (error) {
-      enqueueSnackbar(error.message, { variant: 'error' });
-      throw error;
     }
+    enqueueSnackbar(t('Contact successfully created'), {
+      variant: 'success',
+    });
+    handleClose();
   };
   // TODO: Have component search through possible existing contacts while user types contact name
   return (

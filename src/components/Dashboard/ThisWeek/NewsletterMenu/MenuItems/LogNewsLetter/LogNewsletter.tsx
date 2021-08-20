@@ -132,36 +132,28 @@ const LogNewsletter = ({
 
   const onSubmit = async (attributes: TaskCreateInput) => {
     const body = commentBody.trim();
-    try {
-      await createTask({
-        variables: {
-          accountListId,
-          attributes,
-        },
-        update: (_cache, { data }) => {
-          if (data?.createTask?.task.id && body !== '') {
-            const id = uuidv4();
-            try {
-              createTaskComment({
-                variables: {
-                  accountListId,
-                  taskId: data.createTask.task.id,
-                  attributes: { id, body },
-                },
-              });
-            } catch (error) {
-              enqueueSnackbar(error.message, { variant: 'error' });
-              throw error;
-            }
-          }
-        },
-      });
-      enqueueSnackbar(t('Task saved successfully'), { variant: 'success' });
-      handleClose();
-    } catch (error) {
-      enqueueSnackbar(error.message, { variant: 'error' });
-      throw error;
-    }
+
+    await createTask({
+      variables: {
+        accountListId,
+        attributes,
+      },
+      update: (_cache, { data }) => {
+        if (data?.createTask?.task.id && body !== '') {
+          const id = uuidv4();
+
+          createTaskComment({
+            variables: {
+              accountListId,
+              taskId: data.createTask.task.id,
+              attributes: { id, body },
+            },
+          });
+        }
+      },
+    });
+    enqueueSnackbar(t('Task saved successfully'), { variant: 'success' });
+    handleClose();
   };
 
   const { enqueueSnackbar } = useSnackbar();
