@@ -53,8 +53,8 @@ const Modal = ({
           <ModalTitle>{title}</ModalTitle>
         </Grid>
         <Grid item xs>
-          <CloseButton onClick={() => handleClose()}>
-            <CloseIcon titleAccess={t('Close')} />
+          <CloseButton onClick={() => handleClose()} aria-label={t('Close')}>
+            <CloseIcon />
           </CloseButton>
         </Grid>
       </Grid>

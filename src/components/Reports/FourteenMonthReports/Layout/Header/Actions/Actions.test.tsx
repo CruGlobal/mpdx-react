@@ -25,11 +25,11 @@ describe('FourteenMonthReportActions', () => {
     );
 
     expect(
-      getByRole('group', { name: 'report header button group' }),
+      getByRole('group', { hidden: true, name: 'report header button group' }),
     ).toBeInTheDocument();
-    userEvent.click(getByRole('button', { name: 'Expand' }));
-    userEvent.click(getByRole('button', { name: 'Print' }));
-    userEvent.click(getByRole('button', { name: 'Export' }));
+    userEvent.click(getByRole('button', { hidden: true, name: 'Expand' }));
+    userEvent.click(getByRole('button', { hidden: true, name: 'Print' }));
+    userEvent.click(getByRole('button', { hidden: true, name: 'Export' }));
   });
 
   it('expand toggle event', async () => {
@@ -46,7 +46,7 @@ describe('FourteenMonthReportActions', () => {
       </ThemeProvider>,
     );
 
-    userEvent.click(getByRole('button', { name: 'Hide' }));
+    userEvent.click(getByRole('button', { hidden: true, name: 'Hide' }));
     expect(onExpandToggle).toHaveBeenCalled();
   });
 
@@ -64,7 +64,7 @@ describe('FourteenMonthReportActions', () => {
       </ThemeProvider>,
     );
 
-    userEvent.click(getByRole('button', { name: 'Print' }));
+    userEvent.click(getByRole('button', { hidden: true, name: 'Print' }));
     expect(onPrint).toHaveBeenCalled();
   });
 });

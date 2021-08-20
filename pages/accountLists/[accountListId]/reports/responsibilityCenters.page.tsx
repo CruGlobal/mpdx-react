@@ -1,28 +1,54 @@
-import React, { ReactElement } from 'react';
+import React, { useState } from 'react';
 import Head from 'next/head';
 import { useTranslation } from 'react-i18next';
-import { Box } from '@material-ui/core';
-import PageHeading from '../../../../src/components/PageHeading';
-import { ResponsibilityCentersReportTable } from '../../../../src/components/Reports/ResponsibilityCentersReport/ResponsibilityCentersReportTable';
-import Loading from '../../../../src/components/Loading';
-import { useAccountListId } from '../../../../src/hooks/useAccountListId';
+import { Box, styled } from '@material-ui/core';
+import { ResponsibilityCentersReport } from 'src/components/Reports/ResponsibilityCentersReport/ResponsibilityCentersReport';
+import Loading from 'src/components/Loading';
+import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
+import { useAccountListId } from 'src/hooks/useAccountListId';
+import { NavReportsList } from 'src/components/Reports/NavReportsList/NavReportsList';
 
-const FinancialAccountsReportPage = (): ReactElement => {
+const ResponsibilityCentersReportPageWrapper = styled(Box)(({ theme }) => ({
+  backgroundColor: theme.palette.common.white,
+}));
+
+const ResponsibilityCentersReportPage: React.FC = () => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
+  const [isNavListOpen, setNavListOpen] = useState<boolean>(false);
+
+  const handleNavListToggle = () => {
+    setNavListOpen(!isNavListOpen);
+  };
 
   return (
     <>
       <Head>
-        <title>
-          MPDX | {t('Reports')} | {t('Responsibility Centers')}
-        </title>
+        <title>MPDX | {t('Reports - Responsibility Centers')}</title>
       </Head>
       {accountListId ? (
-        <Box>
-          <PageHeading heading={t('Responsibility Centers')} />
-          <ResponsibilityCentersReportTable accountListId={accountListId} />
-        </Box>
+        <ResponsibilityCentersReportPageWrapper>
+          <SidePanelsLayout
+            isScrollBox={false}
+            leftPanel={
+              <NavReportsList
+                isOpen={isNavListOpen}
+                selectedId="responsibilityCenters"
+                onClose={handleNavListToggle}
+              />
+            }
+            leftOpen={isNavListOpen}
+            leftWidth="290px"
+            mainContent={
+              <ResponsibilityCentersReport
+                accountListId={accountListId}
+                isNavListOpen={isNavListOpen}
+                onNavListToggle={handleNavListToggle}
+                title={t('Responsibility Centers')}
+              />
+            }
+          />
+        </ResponsibilityCentersReportPageWrapper>
       ) : (
         <Loading loading />
       )}
@@ -30,4 +56,4 @@ const FinancialAccountsReportPage = (): ReactElement => {
   );
 };
 
-export default FinancialAccountsReportPage;
+export default ResponsibilityCentersReportPage;

@@ -15,12 +15,12 @@ import SendIcon from '@material-ui/icons/Send';
 import { motion } from 'framer-motion';
 import reject from 'lodash/fp/reject';
 import { v4 as uuidv4 } from 'uuid';
-import { useApp } from '../../../../App';
 import { TaskCommentCreateInput } from '../../../../../../graphql/types.generated';
 import {
   GetCommentsForTaskDrawerCommentListDocument,
   GetCommentsForTaskDrawerCommentListQuery,
 } from '../TaskListComments.generated';
+import { useUser } from '../../../../User/useUser';
 import { useCreateTaskCommentMutation } from './CreateTaskComment.generated';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -55,9 +55,7 @@ interface Props {
 const Form = ({ accountListId, taskId }: Props): ReactElement => {
   const classes = useStyles();
   const [createTaskComment] = useCreateTaskCommentMutation();
-  const {
-    state: { user },
-  } = useApp();
+  const user = useUser();
   const onSubmit = async (
     values: TaskCommentCreateInput,
     { resetForm }: FormikHelpers<TaskCommentCreateInput>,

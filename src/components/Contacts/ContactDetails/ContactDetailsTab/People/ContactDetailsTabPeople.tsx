@@ -112,8 +112,9 @@ export const ContactDetailsTabPeople: React.FC<ContactDetailsPeopleProp> = ({
             ) : null}
             <ContactEditIconContainer
               onClick={() => setEditPersonModalOpen(person.id)}
+              aria-label={t('Edit Icon')}
             >
-              <ContactDetailEditIcon titleAccess={t('Edit Icon')} />
+              <ContactDetailEditIcon />
             </ContactEditIconContainer>
           </ContactPersonRowContainer>
           {/* Phone Number */}

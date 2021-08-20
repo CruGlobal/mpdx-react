@@ -4,9 +4,7 @@ import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { InMemoryCache } from '@apollo/client';
 import { DateTime } from 'luxon';
-import { AppProvider } from '../../../../App';
 import { GetCommentsForTaskDrawerCommentListDocument } from '../TaskListComments.generated';
-import { User } from '../../../../../../graphql/types.generated';
 import { createTaskCommentMutationMock } from './Form.mock';
 import TaskDrawerCommentListForm from '.';
 
@@ -25,6 +23,11 @@ describe('TaskDrawerCommentListForm', () => {
         taskId: 'task-1',
       },
       data: {
+        user: {
+          id: 'user-1',
+          firstName: 'John',
+          lastName: 'Smith',
+        },
         task: {
           id: 'task-1',
           comments: [],
@@ -38,17 +41,7 @@ describe('TaskDrawerCommentListForm', () => {
         cache={cache}
         addTypename={false}
       >
-        <AppProvider
-          initialState={{
-            user: {
-              id: 'user-1',
-              firstName: 'John',
-              lastName: 'Smith',
-            } as User,
-          }}
-        >
-          <TaskDrawerCommentListForm accountListId="abc" taskId="task-1" />
-        </AppProvider>
+        <TaskDrawerCommentListForm accountListId="abc" taskId="task-1" />
       </MockedProvider>,
     );
     userEvent.type(getByRole('textbox'), 'c{backspace}');
