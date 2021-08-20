@@ -35,7 +35,7 @@ const NavToolList = ({ selectedId }: Props): ReactElement => {
   const classes = useStyles();
 
   return (
-    <Box component="div" className={classes.list}>
+    <Box component="div" className={classes.list} data-testid="ToolNavList">
       <List>
         {ToolsList.map((group) => (
           <Fragment key={group.groupName}>

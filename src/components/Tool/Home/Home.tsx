@@ -64,7 +64,7 @@ const ToolHome = (): ReactElement => {
       exit="exit"
       variants={variants}
     >
-      <Box className={classes.outer}>
+      <Box className={classes.outer} data-testid="Home">
         <NavToolDrawer open={isNavListOpen} toggle={handleNavListToggle} />
         <Container
           className={classes.container}
