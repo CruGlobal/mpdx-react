@@ -3,6 +3,7 @@ import { ListItem, ListItemText, makeStyles, Box } from '@material-ui/core';
 import { ArrowForwardIos } from '@material-ui/icons';
 import clsx from 'clsx';
 import theme from '../../../../../theme';
+import { useAppealContext } from '../../AppealContextProvider/AppealContextProvider';
 
 const useStyles = makeStyles(() => ({
   li: {
@@ -28,6 +29,7 @@ const useStyles = makeStyles(() => ({
   },
   gray: {
     backgroundColor: theme.palette.cruGrayMedium.main,
+    border: '1px solid white',
   },
   valueText: {
     color: 'white',
@@ -50,11 +52,17 @@ export const AppealDrawerItem = ({
   value,
 }: Props): ReactElement => {
   const classes = useStyles();
+  const { appealState, setAppealState } = useAppealContext();
+
+  const changeSubDisplay = (props: string): void => {
+    setAppealState({ ...appealState, subDisplay: props });
+  };
 
   return (
     <ListItem
       button
       selected={isSelected}
+      onClick={() => changeSubDisplay(id)}
       className={clsx(
         classes.li,
         isSelected ? classes.liSelected : classes.liButton,
