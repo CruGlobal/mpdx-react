@@ -2,20 +2,18 @@ import React from 'react';
 import userEvent from '@testing-library/user-event';
 import { ThemeProvider } from '@material-ui/core';
 import { render } from '../../../../../__tests__/util/testingLibraryReactMock';
-import { useApp } from '../../../App';
 import { GetThisWeekQuery } from '../GetThisWeek.generated';
 import { ActivityTypeEnum } from '../../../../../graphql/types.generated';
 import theme from '../../../../theme';
+import useTaskDrawer from '../../../../hooks/useTaskDrawer';
 import TasksDueThisWeek from '.';
 
-jest.mock('../../../App', () => ({
-  useApp: jest.fn(),
-}));
+jest.mock('../../../../hooks/useTaskDrawer');
 
 const openTaskDrawer = jest.fn();
 
 beforeEach(() => {
-  (useApp as jest.Mock).mockReturnValue({
+  (useTaskDrawer as jest.Mock).mockReturnValue({
     openTaskDrawer,
   });
 });
@@ -72,7 +70,7 @@ describe('TasksDueThisWeek', () => {
             id: 'task_1',
             subject: 'the quick brown fox jumps over the lazy dog',
             activityType: ActivityTypeEnum.PrayerRequest,
-            contacts: { nodes: [{ name: 'Smith, Roger' }] },
+            contacts: { nodes: [{ hidden: true, name: 'Smith, Roger' }] },
             startAt: null,
             completedAt: null,
           },
@@ -80,7 +78,7 @@ describe('TasksDueThisWeek', () => {
             id: 'task_2',
             subject: 'the quick brown fox jumps over the lazy dog',
             activityType: ActivityTypeEnum.Appointment,
-            contacts: { nodes: [{ name: 'Smith, Sarah' }] },
+            contacts: { nodes: [{ hidden: true, name: 'Smith, Sarah' }] },
             startAt: null,
             completedAt: null,
           },

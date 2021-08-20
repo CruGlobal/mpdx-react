@@ -26,10 +26,7 @@ describe('Primary', () => {
   it('has correct defaults', () => {
     const { getByTestId, getByRole } = render(
       <ThemeProvider theme={theme}>
-        <TestWrapper
-          mocks={mocks}
-          initialState={{ accountListId: '1', breadcrumb: 'Dashboard' }}
-        >
+        <TestWrapper mocks={mocks}>
           <Primary>
             <div data-testid="PrimaryTestChildren"></div>
           </Primary>
@@ -37,10 +34,20 @@ describe('Primary', () => {
       </ThemeProvider>,
     );
     expect(getByTestId('PrimaryTestChildren')).toBeInTheDocument();
-    expect(getByRole('menuitem', { name: 'Dashboard' })).toBeVisible();
-    expect(getByRole('menuitem', { name: 'Contacts' })).toBeVisible();
-    expect(getByRole('menuitem', { name: 'Reports' })).toBeVisible();
-    expect(getByRole('menuitem', { name: 'Tools' })).toBeVisible();
-    expect(getByRole('menuitem', { name: 'Coaches' })).toBeVisible();
+    expect(
+      getByRole('menuitem', { hidden: true, name: 'Dashboard' }),
+    ).toBeVisible();
+    expect(
+      getByRole('menuitem', { hidden: true, name: 'Contacts' }),
+    ).toBeVisible();
+    expect(
+      getByRole('menuitem', { hidden: true, name: 'Reports' }),
+    ).toBeVisible();
+    expect(
+      getByRole('menuitem', { hidden: true, name: 'Tools' }),
+    ).toBeVisible();
+    expect(
+      getByRole('menuitem', { hidden: true, name: 'Coaches' }),
+    ).toBeVisible();
   });
 });

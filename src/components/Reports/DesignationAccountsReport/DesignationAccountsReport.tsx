@@ -1,13 +1,11 @@
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Box, CircularProgress, Divider, styled } from '@material-ui/core';
-import {
-  DesignationAccountsQuery,
-  useDesignationAccountsQuery,
-} from './GetDesignationAccounts.generated';
+import { AccountsList as List } from '../AccountsListLayout/List/List';
+import { AccountsListHeader as Header } from '../AccountsListLayout/Header/Header';
+import type { Account } from '../AccountsListLayout/List/ListItem/ListItem';
+import { useDesignationAccountsQuery } from './GetDesignationAccounts.generated';
 import { useSetActiveDesignationAccountMutation } from './SetActiveDesignationAccount.generated';
-import { DesignationAccountsHeader as Header } from './Layout/Header/Header';
-import { DesignationAccountsList as List } from './Layout/List/List';
 import { Notification } from 'src/components/Notification/Notification';
 import { EmptyReport } from 'src/components/Reports/EmptyReport/EmptyReport';
 import { currencyFormat } from 'src/lib/intlFormat';
@@ -44,20 +42,21 @@ export const DesignationAccountsReport: React.FC<Props> = ({
 
   const handleCheckToggle = (
     event: React.ChangeEvent<HTMLInputElement>,
-    designationAccount: DesignationAccountsQuery['designationAccounts'][0]['designationAccounts'][0],
+    accountId: string,
   ) => {
     setActiveDesignationAccount({
       variables: {
         input: {
           accountListId,
           active: event.target.checked,
-          designationAccountId: designationAccount.id,
+          designationAccountId: accountId,
         },
       },
       optimisticResponse: {
         setActiveDesignationAccount: {
-          ...designationAccount,
+          id: accountId,
           active: event.target.checked,
+          __typename: 'DesignationAccountRest',
         },
       },
     });
@@ -110,13 +109,28 @@ export const DesignationAccountsReport: React.FC<Props> = ({
       ) : (
         <ScrollBox data-testid="DesignationAccountsScrollBox">
           <Divider />
-          {data?.designationAccounts.map((designationAccountGroup) => (
-            <List
-              key={designationAccountGroup.organizationName}
-              designationAccountsGroup={designationAccountGroup}
-              onCheckToggle={handleCheckToggle}
-            />
-          ))}
+          {data?.designationAccounts.map((designationAccountGroup) => {
+            const accounts: Account[] = designationAccountGroup.designationAccounts.map(
+              (account) => ({
+                active: account.active,
+                balance: account.convertedBalance,
+                code: account.designationNumber,
+                currency: account.currency,
+                id: account.id,
+                lastSyncDate: account.balanceUpdatedAt,
+                name: account.name,
+              }),
+            );
+
+            return (
+              <List
+                key={designationAccountGroup.organizationName}
+                accounts={accounts}
+                organizationName={designationAccountGroup.organizationName}
+                onCheckToggle={handleCheckToggle}
+              />
+            );
+          })}
         </ScrollBox>
       )}
     </Box>

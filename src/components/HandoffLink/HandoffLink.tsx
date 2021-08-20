@@ -1,5 +1,6 @@
 import { ReactElement, ReactNode, Children, cloneElement } from 'react';
-import { useApp } from '../App';
+import { useAccountListId } from '../../hooks/useAccountListId';
+import { useUser } from '../User/useUser';
 
 interface Props {
   path: string;
@@ -8,7 +9,8 @@ interface Props {
 }
 
 const HandoffLink = ({ path, auth, children }: Props): ReactElement => {
-  const app = useApp();
+  const user = useUser();
+  const accountListId = useAccountListId();
 
   const url = new URL(
     `${process.env.SITE_URL || window.location.origin}/api/handoff`,
@@ -17,8 +19,8 @@ const HandoffLink = ({ path, auth, children }: Props): ReactElement => {
   if (auth) {
     url.searchParams.append('auth', 'true');
   } else {
-    url.searchParams.append('accountListId', app?.state?.accountListId ?? '');
-    url.searchParams.append('userId', app?.state?.user?.id ?? '');
+    url.searchParams.append('accountListId', accountListId ?? '');
+    url.searchParams.append('userId', user?.id ?? '');
   }
   url.searchParams.append('path', path);
 

@@ -2,14 +2,14 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import { ThemeProvider } from '@material-ui/core';
 import userEvent from '@testing-library/user-event';
-import { DesignationAccountsHeader as Header } from './Header';
+import { AccountsListHeader as Header } from './Header';
 import theme from 'src/theme';
 
 const totalBalance = 'CA111';
 const title = 'test title';
 const onNavListToggle = jest.fn();
 
-describe('DesignationAccountsReportHeader', () => {
+describe('AccountsListHeader', () => {
   it('default', async () => {
     const { getByRole, getByText } = render(
       <ThemeProvider theme={theme}>
@@ -24,7 +24,9 @@ describe('DesignationAccountsReportHeader', () => {
 
     expect(getByText(title)).toBeInTheDocument();
     expect(getByText(`Balance: ${totalBalance}`)).toBeInTheDocument();
-    userEvent.click(getByRole('button', { name: 'Toggle Filter Panel' }));
+    userEvent.click(
+      getByRole('button', { hidden: true, name: 'Toggle Filter Panel' }),
+    );
   });
 
   it('should not render total balance if undefined', async () => {

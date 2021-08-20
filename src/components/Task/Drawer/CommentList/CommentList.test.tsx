@@ -3,7 +3,6 @@ import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ThemeProvider } from '@material-ui/core';
 import TestWrapper from '../../../../../__tests__/util/TestWrapper';
-import { User } from '../../../../../graphql/types.generated';
 import theme from '../../../../theme';
 import {
   getCommentsForTaskDrawerCommentListMock,
@@ -39,13 +38,6 @@ describe('TaskDrawerCommentList', () => {
     const { queryByTestId, getAllByTestId, getByRole } = render(
       <ThemeProvider theme={theme}>
         <TestWrapper
-          initialState={{
-            user: {
-              id: 'user-1',
-              firstName: 'John',
-              lastName: 'Smith',
-            } as User,
-          }}
           mocks={[
             getCommentsForTaskDrawerCommentListMock(accountListId, taskId),
             createTaskCommentMutationMock(),
@@ -84,13 +76,6 @@ describe('TaskDrawerCommentList', () => {
     const { getByTestId } = render(
       <ThemeProvider theme={theme}>
         <TestWrapper
-          initialState={{
-            user: {
-              id: 'user-1',
-              firstName: 'John',
-              lastName: 'Smith',
-            } as User,
-          }}
           mocks={[
             getCommentsForTaskDrawerCommentListLoadingMock(
               accountListId,
@@ -112,13 +97,6 @@ describe('TaskDrawerCommentList', () => {
     const { queryByTestId, getByTestId } = render(
       <ThemeProvider theme={theme}>
         <TestWrapper
-          initialState={{
-            user: {
-              id: 'user-1',
-              firstName: 'John',
-              lastName: 'Smith',
-            } as User,
-          }}
           mocks={[
             getCommentsForTaskDrawerCommentListEmptyMock(accountListId, taskId),
           ]}
@@ -142,13 +120,6 @@ describe('TaskDrawerCommentList', () => {
     render(
       <ThemeProvider theme={theme}>
         <TestWrapper
-          initialState={{
-            user: {
-              id: 'user-1',
-              firstName: 'John',
-              lastName: 'Smith',
-            } as User,
-          }}
           mocks={[
             getCommentsForTaskDrawerCommentListErrorMock(accountListId, taskId),
           ]}

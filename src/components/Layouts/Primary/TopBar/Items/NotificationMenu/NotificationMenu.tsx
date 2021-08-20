@@ -13,8 +13,8 @@ import React, { ReactElement, useState } from 'react';
 import NotificationsNoneIcon from '@material-ui/icons/NotificationsNone';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import { useTranslation } from 'react-i18next';
-import { useApp } from '../../../../../App';
 import illustration13 from '../../../../../../images/drawkit/grape/drawkit-grape-pack-illustration-13.svg';
+import { useAccountListId } from '../../../../../../hooks/useAccountListId';
 import NotificationMenuItem from './Item';
 import {
   GetNotificationsDocument,
@@ -63,15 +63,15 @@ const useStyles = makeStyles((theme: Theme) => ({
 const NotificationMenu = (): ReactElement => {
   const classes = useStyles();
   const { t } = useTranslation();
-  const { state } = useApp();
+  const accountListId = useAccountListId();
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>();
 
   const { data, loading, fetchMore } = useGetNotificationsQuery({
     variables: {
-      accountListId: state.accountListId ?? '',
+      accountListId: accountListId ?? '',
       after: null,
     },
-    skip: !state.accountListId,
+    skip: !accountListId,
     notifyOnNetworkStatusChange: true,
   });
 
@@ -82,7 +82,7 @@ const NotificationMenu = (): ReactElement => {
   const handleAcknowledgeAllClick = () => {
     const optimisticResponse = true;
     acknoweldgeAllUserNotifications({
-      variables: { accountListId: state.accountListId ?? '' },
+      variables: { accountListId: accountListId ?? '' },
       optimisticResponse: {
         acknowledgeAllUserNotifications: {
           notificationIds: [],
@@ -94,7 +94,7 @@ const NotificationMenu = (): ReactElement => {
         const query = {
           query: GetNotificationsDocument,
           variables: {
-            accountListId: state.accountListId,
+            accountListId: accountListId,
             after: null,
           },
         };

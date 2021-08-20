@@ -1,6 +1,5 @@
 import React, { ReactElement } from 'react';
 import { MockedProvider } from '@apollo/client/testing';
-import withDispatch from '../../../decorators/withDispatch';
 import withMargin from '../../../decorators/withMargin';
 import { GetWeeklyActivityQueryLoadingMocks } from './WeeklyActivity/WeeklyActivity.mock';
 import {
@@ -11,10 +10,7 @@ import ThisWeek from '.';
 
 export default {
   title: 'Dashboard/ThisWeek',
-  decorators: [
-    withDispatch({ type: 'updateAccountListId', accountListId: 'abc' }),
-    withMargin,
-  ],
+  decorators: [withMargin],
 };
 
 export const Default = (): ReactElement => {

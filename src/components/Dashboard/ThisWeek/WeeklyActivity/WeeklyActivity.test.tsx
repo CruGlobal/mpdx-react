@@ -8,6 +8,15 @@ import {
 } from './WeeklyActivity.mock';
 import WeeklyActivity from '.';
 
+jest.mock('next/router', () => ({
+  useRouter: () => {
+    return {
+      query: { accountListId: 'abc' },
+      isReady: true,
+    };
+  },
+}));
+
 describe('WeeklyActivity', () => {
   it('loading', () => {
     const { getByTestId } = render(
@@ -20,6 +29,7 @@ describe('WeeklyActivity', () => {
         </MockedProvider>
       </SnackbarProvider>,
     );
+
     expect(
       getByTestId('WeeklyActivityTableCellCompletedCalls').children[0]
         .className,
@@ -109,9 +119,8 @@ describe('WeeklyActivity', () => {
     expect(
       getByTestId('WeeklyActivityTableCellCompletedCalls').textContent,
     ).toEqual('1,234');
-    expect(getByRole('link', { name: 'View Activity Detail' })).toHaveAttribute(
-      'href',
-      'https://stage.mpdx.org/reports/coaching',
-    );
+    expect(
+      getByRole('link', { hidden: true, name: 'View Activity Detail' }),
+    ).toHaveAttribute('href', 'https://stage.mpdx.org/reports/coaching');
   });
 });

@@ -24,6 +24,20 @@ const accountListId = 'abc';
 const taskId = 'task-1';
 const contactIds = ['contact-1', 'contact-2'];
 
+jest.mock('next/router', () => ({
+  useRouter: () => {
+    return {
+      query: { accountListId },
+      isReady: true,
+      events: {
+        on: (): void => undefined,
+        off: (): void => undefined,
+        emit: (): void => undefined,
+      },
+    };
+  },
+}));
+
 describe('TaskDrawer', () => {
   it('default', async () => {
     const onClose = jest.fn();
@@ -39,9 +53,9 @@ describe('TaskDrawer', () => {
       </ThemeProvider>,
     );
     expect(
-      getByRole('tab', { name: 'Contacts ({{ contactCount }})' }),
+      getByRole('tab', { hidden: true, name: 'Contacts ({{ contactCount }})' }),
     ).toBeDisabled();
-    expect(getByRole('tab', { name: 'Comments' })).toBeDisabled();
+    expect(getByRole('tab', { hidden: true, name: 'Comments' })).toBeDisabled();
     expect(getByTestId('TaskDrawerTitle')).toHaveTextContent('Add Task');
     userEvent.click(getByText('Save'));
     await waitFor(() => expect(onClose).toHaveBeenCalled());

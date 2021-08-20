@@ -28,6 +28,6 @@ it('should display ring', () => {
   });
   const { getByRole } = render(<CelebrationIcons contact={mock} />);
 
-  expect(getByRole('img', { name: 'Cake' })).toBeVisible();
-  expect(getByRole('img', { name: 'Ring' })).toBeVisible();
+  expect(getByRole('img', { hidden: true, name: 'Cake' })).toBeVisible();
+  expect(getByRole('img', { hidden: true, name: 'Ring' })).toBeVisible();
 });

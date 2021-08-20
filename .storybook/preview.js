@@ -8,7 +8,6 @@ import { Settings } from 'luxon';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import LuxonUtils from '@date-io/luxon';
 import { SnackbarProvider } from 'notistack';
-import { AppProvider } from '../src/components/App';
 import { MockedProvider } from '@apollo/client/testing';
 import TestRouter from '../__tests__/util/TestRouter';
 import theme from '../src/theme';
@@ -33,9 +32,7 @@ addDecorator((StoryFn) => (
       <MuiPickersUtilsProvider utils={LuxonUtils}>
         <SnackbarProvider maxSnack={3}>
           <TestRouter>
-            <AppProvider>
-              <StoryFn />
-            </AppProvider>
+            <StoryFn />
           </TestRouter>
         </SnackbarProvider>
       </MuiPickersUtilsProvider>

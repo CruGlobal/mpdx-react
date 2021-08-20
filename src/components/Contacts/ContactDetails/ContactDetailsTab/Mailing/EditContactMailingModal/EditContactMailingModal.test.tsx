@@ -90,7 +90,7 @@ describe('EditContactMailingModal', () => {
     );
 
     expect(getByText('Edit Contact Mailing Details')).toBeInTheDocument();
-    userEvent.click(getByRole('button', { name: 'Close' }));
+    userEvent.click(getByRole('button', { hidden: true, name: 'Close' }));
     expect(handleClose).toHaveBeenCalled();
   });
 
@@ -134,13 +134,20 @@ describe('EditContactMailingModal', () => {
         </ThemeProvider>
       </SnackbarProvider>,
     );
-    userEvent.clear(getByRole('textbox', { name: 'Greeting' }));
-    userEvent.clear(getByRole('textbox', { name: 'Envelope Name Line' }));
-    userEvent.click(getByRole('button', { name: 'Newsletter' }));
-    userEvent.click(getByRole('option', { name: SendNewsletterEnum.Both }));
-    userEvent.type(getByRole('textbox', { name: 'Greeting' }), newGreeting);
+    userEvent.clear(getByRole('textbox', { hidden: true, name: 'Greeting' }));
+    userEvent.clear(
+      getByRole('textbox', { hidden: true, name: 'Envelope Name Line' }),
+    );
+    userEvent.click(getByRole('button', { hidden: true, name: 'Newsletter' }));
+    userEvent.click(
+      getByRole('option', { hidden: true, name: SendNewsletterEnum.Both }),
+    );
     userEvent.type(
-      getByRole('textbox', { name: 'Envelope Name Line' }),
+      getByRole('textbox', { hidden: true, name: 'Greeting' }),
+      newGreeting,
+    );
+    userEvent.type(
+      getByRole('textbox', { hidden: true, name: 'Envelope Name Line' }),
       newEnvelopeGreeting,
     );
     userEvent.click(getByText('Save'));
@@ -188,8 +195,11 @@ describe('EditContactMailingModal', () => {
         </ThemeProvider>
       </SnackbarProvider>,
     );
-    userEvent.clear(getByRole('textbox', { name: 'Greeting' }));
-    userEvent.type(getByRole('textbox', { name: 'Greeting' }), newGreeting);
+    userEvent.clear(getByRole('textbox', { hidden: true, name: 'Greeting' }));
+    userEvent.type(
+      getByRole('textbox', { hidden: true, name: 'Greeting' }),
+      newGreeting,
+    );
     userEvent.click(getByText('Save'));
     await waitFor(() =>
       expect(mockEnqueue).toHaveBeenCalledWith(

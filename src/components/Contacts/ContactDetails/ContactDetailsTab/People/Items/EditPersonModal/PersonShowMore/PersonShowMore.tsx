@@ -73,12 +73,24 @@ export const PersonShowMore: React.FC<PersonShowMoreProps> = ({
                 onChange={handleChange('maritalStatus')}
                 fullWidth
               >
-                <MenuItem value="Single">{t('Single')}</MenuItem>
-                <MenuItem value="Engaged">{t('Engaged')}</MenuItem>
-                <MenuItem value="Married">{t('Married')}</MenuItem>
-                <MenuItem value="Separated">{t('Separated')}</MenuItem>
-                <MenuItem value="Divorced">{t('Divorced')}</MenuItem>
-                <MenuItem value="Widowed">{t('Widowed')}</MenuItem>
+                <MenuItem value="Single" aria-label={t('Single')}>
+                  {t('Single')}
+                </MenuItem>
+                <MenuItem value="Engaged" aria-label={t('Engaged')}>
+                  {t('Engaged')}
+                </MenuItem>
+                <MenuItem value="Married" aria-label={t('Married')}>
+                  {t('Married')}
+                </MenuItem>
+                <MenuItem value="Separated" aria-label={t('Separated')}>
+                  {t('Separated')}
+                </MenuItem>
+                <MenuItem value="Divorced" aria-label={t('Divorced')}>
+                  {t('Divorced')}
+                </MenuItem>
+                <MenuItem value="Widowed" aria-label={t('Widowed')}>
+                  {t('Widowed')}
+                </MenuItem>
               </Select>
             </FormControl>
           </Grid>
@@ -91,8 +103,12 @@ export const PersonShowMore: React.FC<PersonShowMoreProps> = ({
                 onChange={handleChange('gender')}
                 fullWidth
               >
-                <MenuItem value="Male">{t('Male')}</MenuItem>
-                <MenuItem value="Female">{t('Female')}</MenuItem>
+                <MenuItem value="Male" aria-label={t('Male')}>
+                  {t('Male')}
+                </MenuItem>
+                <MenuItem value="Female" aria-label={t('Female')}>
+                  {t('Female')}
+                </MenuItem>
               </Select>
             </FormControl>
           </Grid>

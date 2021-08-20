@@ -1,6 +1,16 @@
 import React from 'react';
 import { render } from '@testing-library/react';
+import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
 import Appeals from '.';
+
+jest.mock('next/router', () => ({
+  useRouter: () => {
+    return {
+      query: { accountListId: 'abc' },
+      isReady: true,
+    };
+  },
+}));
 
 describe('Appeals', () => {
   it('default', () => {
@@ -9,7 +19,12 @@ describe('Appeals', () => {
   });
 
   it('loading', () => {
-    const { getByTestId, getByRole } = render(<Appeals loading />);
+    const { getByTestId, getByRole } = render(
+      <GqlMockedProvider>
+        <Appeals loading />
+      </GqlMockedProvider>,
+    );
+
     expect(getByTestId('AppealsBoxName').children[0].className).toContain(
       'MuiSkeleton-root',
     );
@@ -31,10 +46,9 @@ describe('Appeals', () => {
     expect(
       getByTestId('AppealsTypographyPledgesAmountTotal').children[0].className,
     ).toContain('MuiSkeleton-root');
-    expect(getByRole('link', { name: 'View All' })).toHaveAttribute(
-      'href',
-      'https://stage.mpdx.org/tools/appeals',
-    );
+    expect(
+      getByRole('link', { hidden: true, name: 'View All' }),
+    ).toHaveAttribute('href', 'https://stage.mpdx.org/tools/appeals');
   });
 
   it('props', () => {
@@ -46,7 +60,11 @@ describe('Appeals', () => {
       pledgesAmountProcessed: 999.99,
       amountCurrency: 'EUR',
     };
-    const { getByTestId } = render(<Appeals appeal={appeal} />);
+    const { getByTestId } = render(
+      <GqlMockedProvider>
+        <Appeals appeal={appeal} />
+      </GqlMockedProvider>,
+    );
 
     expect(getByTestId('AppealsBoxName').textContent).toEqual('My Appeal');
     expect(getByTestId('AppealsBoxAmount').textContent).toEqual('€5,000');

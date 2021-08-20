@@ -5,7 +5,6 @@ import { DateTime } from 'luxon';
 import { getDataForTaskDrawerMock } from '../Form/Form.mock';
 import TestWrapper from '../../../../../__tests__/util/TestWrapper';
 import { dateFormat } from '../../../../lib/intlFormat/intlFormat';
-import { useApp } from '../../../App';
 import {
   ActivityTypeEnum,
   NotificationTimeUnitEnum,
@@ -13,20 +12,19 @@ import {
   ResultEnum,
 } from '../../../../../graphql/types.generated';
 import { GetThisWeekDefaultMocks } from '../../../Dashboard/ThisWeek/ThisWeek.mock';
+import useTaskDrawer from '../../../../hooks/useTaskDrawer';
 import {
   completeTaskMutationMock,
   completeSimpleTaskMutationMock,
 } from './CompleteForm.mock';
 import TaskDrawerCompleteForm from '.';
 
-jest.mock('../../../App', () => ({
-  useApp: jest.fn(),
-}));
+jest.mock('../../../../hooks/useTaskDrawer');
 
 const openTaskDrawer = jest.fn();
 
 beforeEach(() => {
-  (useApp as jest.Mock).mockReturnValue({
+  (useTaskDrawer as jest.Mock).mockReturnValue({
     openTaskDrawer,
   });
 });
@@ -62,7 +60,6 @@ describe('TaskDrawerCompleteForm', () => {
           completeTaskMutationMock(accountListId, taskId),
           GetThisWeekDefaultMocks()[0],
         ]}
-        disableAppProvider
       >
         <TaskDrawerCompleteForm
           accountListId={accountListId}
@@ -88,7 +85,6 @@ describe('TaskDrawerCompleteForm', () => {
           completeSimpleTaskMutationMock(accountListId, taskId),
           GetThisWeekDefaultMocks()[0],
         ]}
-        disableAppProvider
       >
         <TaskDrawerCompleteForm
           accountListId={accountListId}
@@ -115,7 +111,6 @@ describe('TaskDrawerCompleteForm', () => {
           completeTaskMutationMock(accountListId, taskId),
           GetThisWeekDefaultMocks()[0],
         ]}
-        disableAppProvider
       >
         <TaskDrawerCompleteForm
           accountListId={accountListId}
@@ -129,17 +124,19 @@ describe('TaskDrawerCompleteForm', () => {
         />
       </TestWrapper>,
     );
-    userEvent.click(getByRole('button', { name: 'Result' }));
+    userEvent.click(getByRole('button', { hidden: true, name: 'Result' }));
     userEvent.click(
-      within(getByRole('listbox', { name: 'Result' })).getByText('COMPLETED'),
-    );
-    userEvent.click(getByRole('button', { name: 'Next Action' }));
-    userEvent.click(
-      within(getByRole('listbox', { name: 'Next Action' })).getByText(
-        'APPOINTMENT',
+      within(getByRole('listbox', { hidden: true, name: 'Result' })).getByText(
+        'COMPLETED',
       ),
     );
-    const tagsElement = getByRole('textbox', { name: 'Tags' });
+    userEvent.click(getByRole('button', { hidden: true, name: 'Next Action' }));
+    userEvent.click(
+      within(
+        getByRole('listbox', { hidden: true, name: 'Next Action' }),
+      ).getByText('APPOINTMENT'),
+    );
+    const tagsElement = getByRole('textbox', { hidden: true, name: 'Tags' });
     userEvent.click(tagsElement);
     userEvent.click(
       await within(getByRole('presentation')).findByText('tag-1'),
@@ -166,10 +163,7 @@ describe('TaskDrawerCompleteForm', () => {
     activityType?: ActivityTypeEnum,
   ): { results: ResultEnum[]; nextActions: ActivityTypeEnum[] } => {
     const { getByRole, queryByRole } = render(
-      <TestWrapper
-        mocks={[getDataForTaskDrawerMock(accountListId)]}
-        disableAppProvider
-      >
+      <TestWrapper mocks={[getDataForTaskDrawerMock(accountListId)]}>
         <TaskDrawerCompleteForm
           accountListId={accountListId}
           onClose={jest.fn()}
@@ -181,18 +175,22 @@ describe('TaskDrawerCompleteForm', () => {
       </TestWrapper>,
     );
     let results: ResultEnum[] = [];
-    if (queryByRole('button', { name: 'Result' })) {
-      userEvent.click(getByRole('button', { name: 'Result' }));
-      results = within(getByRole('listbox', { name: 'Result' }))
+    if (queryByRole('button', { hidden: true, name: 'Result' })) {
+      userEvent.click(getByRole('button', { hidden: true, name: 'Result' }));
+      results = within(getByRole('listbox', { hidden: true, name: 'Result' }))
         .getAllByRole('option')
         .map((option) => option.textContent)
         .filter(Boolean) as ResultEnum[];
-      userEvent.click(getByRole('option', { name: 'NONE' }));
+      userEvent.click(getByRole('option', { hidden: true, name: 'NONE' }));
     }
     let nextActions: ActivityTypeEnum[] = [];
-    if (queryByRole('button', { name: 'Next Action' })) {
-      userEvent.click(getByRole('button', { name: 'Next Action' }));
-      nextActions = within(getByRole('listbox', { name: 'Next Action' }))
+    if (queryByRole('button', { hidden: true, name: 'Next Action' })) {
+      userEvent.click(
+        getByRole('button', { hidden: true, name: 'Next Action' }),
+      );
+      nextActions = within(
+        getByRole('listbox', { hidden: true, name: 'Next Action' }),
+      )
         .getAllByRole('option')
         .map((option) => option.textContent)
         .filter(Boolean) as ActivityTypeEnum[];
