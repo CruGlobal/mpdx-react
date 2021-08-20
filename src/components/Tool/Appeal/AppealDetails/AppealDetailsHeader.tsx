@@ -33,6 +33,10 @@ const useStyles = makeStyles(() => ({
   resize: {
     fontSize: 24,
   },
+  selectedButton: {
+    backgroundColor: theme.palette.cruGrayLight.main,
+    boxShadow: '0 0 1px lightgray',
+  },
 }));
 
 const AppealDetailsHeader = (): ReactElement => {
@@ -57,10 +61,25 @@ const AppealDetailsHeader = (): ReactElement => {
         <Box marginRight={2}>
           {' '}
           <ButtonGroup>
-            <Button onClick={() => console.log(appealState)}>
+            <Button
+              className={
+                appealState.display === 'default' && classes.selectedButton
+              }
+              disabled={appealState.display === 'default'}
+              onClick={() =>
+                setAppealState({
+                  display: 'default',
+                  selected: appealState.selected,
+                })
+              }
+            >
               <List />
             </Button>
             <Button
+              className={
+                appealState.display === 'flow' && classes.selectedButton
+              }
+              disabled={appealState.display === 'flow'}
               onClick={() =>
                 setAppealState({
                   display: 'flow',
