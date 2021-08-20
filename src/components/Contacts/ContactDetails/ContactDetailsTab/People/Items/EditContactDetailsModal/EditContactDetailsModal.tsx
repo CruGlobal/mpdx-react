@@ -91,23 +91,19 @@ export const EditContactDetailsModal: React.FC<EditContactDetailsModalProps> = (
   });
 
   const onSubmit = async (attributes: ContactUpdateInput) => {
-    try {
-      await updateContact({
-        variables: {
-          accountListId,
-          attributes: {
-            name: attributes.name,
-            id: attributes.id,
-            primaryPersonId: attributes.primaryPersonId,
-          },
+    await updateContact({
+      variables: {
+        accountListId,
+        attributes: {
+          name: attributes.name,
+          id: attributes.id,
+          primaryPersonId: attributes.primaryPersonId,
         },
-      });
-      enqueueSnackbar(t('Contact updated successfully'), {
-        variant: 'success',
-      });
-    } catch (error) {
-      throw error;
-    }
+      },
+    });
+    enqueueSnackbar(t('Contact updated successfully'), {
+      variant: 'success',
+    });
   };
 
   return (

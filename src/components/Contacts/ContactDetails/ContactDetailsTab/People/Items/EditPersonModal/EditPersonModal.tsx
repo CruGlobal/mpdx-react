@@ -222,20 +222,16 @@ export const EditPersonModal: React.FC<EditPersonModalProps> = ({
   };
 
   const onSubmit = async (attributes: PersonUpdateInput): Promise<void> => {
-    try {
-      await updatePerson({
-        variables: {
-          accountListId,
-          attributes,
-        },
-      });
-      enqueueSnackbar(t('Person updated successfully'), {
-        variant: 'success',
-      });
-      handleClose();
-    } catch (error) {
-      throw error;
-    }
+    await updatePerson({
+      variables: {
+        accountListId,
+        attributes,
+      },
+    });
+    enqueueSnackbar(t('Person updated successfully'), {
+      variant: 'success',
+    });
+    handleClose();
   };
 
   return (

@@ -113,51 +113,47 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
   const { contactId: _, searchTerm, ...queryWithoutContactId } = query;
 
   const handleDeleteContact = () => {
-    try {
-      deleteContact({
-        variables: {
-          accountListId,
-          contactId,
-        },
-        update: (cache, { data: deletedContactData }) => {
-          const deletedContactId = deletedContactData?.deleteContact?.id;
-          const query = {
-            query: ContactsDocument,
-            variables: {
-              accountListId,
-              searchTerm,
+    deleteContact({
+      variables: {
+        accountListId,
+        contactId,
+      },
+      update: (cache, { data: deletedContactData }) => {
+        const deletedContactId = deletedContactData?.deleteContact?.id;
+        const query = {
+          query: ContactsDocument,
+          variables: {
+            accountListId,
+            searchTerm,
+          },
+        };
+
+        const dataFromCache = cache.readQuery<ContactsQuery>(query);
+
+        if (dataFromCache) {
+          const data = {
+            ...dataFromCache,
+            contacts: {
+              ...dataFromCache.contacts,
+              nodes: dataFromCache.contacts.nodes.filter(
+                (contact) => contact.id !== deletedContactId,
+              ),
             },
           };
+          cache.writeQuery({ ...query, data });
 
-          const dataFromCache = cache.readQuery<ContactsQuery>(query);
-
-          if (dataFromCache) {
-            const data = {
-              ...dataFromCache,
-              contacts: {
-                ...dataFromCache.contacts,
-                nodes: dataFromCache.contacts.nodes.filter(
-                  (contact) => contact.id !== deletedContactId,
-                ),
-              },
-            };
-            cache.writeQuery({ ...query, data });
-
-            push({
-              pathname: '/accountLists/[accountListId]/contacts',
-              query: { searchTerm, ...queryWithoutContactId },
-            });
-            enqueueSnackbar(t('Contact successfully deleted'), {
-              variant: 'success',
-            });
-          }
-        },
-      });
-      setDeleteModalOpen(false);
-      onClose();
-    } catch (error) {
-      throw error;
-    }
+          push({
+            pathname: '/accountLists/[accountListId]/contacts',
+            query: { searchTerm, ...queryWithoutContactId },
+          });
+          enqueueSnackbar(t('Contact successfully deleted'), {
+            variant: 'success',
+          });
+        }
+      },
+    });
+    setDeleteModalOpen(false);
+    onClose();
   };
 
   const renderDeleteContactModal = () => {

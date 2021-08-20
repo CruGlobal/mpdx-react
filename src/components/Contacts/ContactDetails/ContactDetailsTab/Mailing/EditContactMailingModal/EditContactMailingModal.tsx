@@ -83,24 +83,20 @@ export const EditContactMailingModal: React.FC<EditContactMailingModalProps> = (
       'id' | 'greeting' | 'envelopeGreeting' | 'sendNewsletter'
     >,
   ) => {
-    try {
-      await updatContactMailing({
-        variables: {
-          accountListId,
-          attributes: {
-            id: attributes.id,
-            greeting: attributes.greeting,
-            envelopeGreeting: attributes.envelopeGreeting,
-            sendNewsletter: attributes.sendNewsletter,
-          },
+    await updatContactMailing({
+      variables: {
+        accountListId,
+        attributes: {
+          id: attributes.id,
+          greeting: attributes.greeting,
+          envelopeGreeting: attributes.envelopeGreeting,
+          sendNewsletter: attributes.sendNewsletter,
         },
-      });
-      enqueueSnackbar(t('Contact updated successfully'), {
-        variant: 'success',
-      });
-    } catch (error) {
-      throw error;
-    }
+      },
+    });
+    enqueueSnackbar(t('Contact updated successfully'), {
+      variant: 'success',
+    });
   };
   return (
     <Modal
