@@ -15,7 +15,7 @@ const useStyles = makeStyles(() => ({
     },
   },
   liSelected: {
-    backgroundColor: theme.palette.cruGrayMedium.main + ' !important',
+    backgroundColor: theme.palette.cruGrayMedium.main + ' !important', //TODO: Get around this so we don't need the !important
   },
   red: {
     backgroundColor: 'red',
@@ -34,6 +34,7 @@ const useStyles = makeStyles(() => ({
   valueText: {
     color: 'white',
     borderRadius: 5,
+    fontWeight: 600,
     padding: '2px 8px 2px 8px',
   },
 }));
