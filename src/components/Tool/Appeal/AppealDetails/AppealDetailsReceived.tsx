@@ -1,8 +1,9 @@
 import React, { ReactElement } from 'react';
 import { Box, IconButton, makeStyles } from '@material-ui/core';
-import { DataGrid } from '@material-ui/data-grid';
+import { DataGrid, GridSelectionModel } from '@material-ui/data-grid';
 import Icon from '@mdi/react';
 import { mdiSquareEditOutline, mdiDelete } from '@mdi/js';
+import { useAppealContext } from '../AppealContextProvider/AppealContextProvider';
 
 import theme from '../../../../theme';
 
@@ -106,6 +107,15 @@ const rows = [
 
 const AppealDetailsReceived = (): ReactElement => {
   const classes = useStyles();
+  const { appealState, setAppealState } = useAppealContext();
+
+  const updateSelected = (e: GridSelectionModel): void => {
+    const temp: string[] = [];
+    for (const x of e) {
+      temp.push(rows[parseInt(x.toString()) - 1].contact);
+    }
+    setAppealState({ ...appealState, selected: [...temp] });
+  };
 
   return (
     <Box component="div" className={classes.container}>
@@ -116,6 +126,7 @@ const AppealDetailsReceived = (): ReactElement => {
         pageSize={25}
         rowsPerPageOptions={[10, 25, 50, 100]}
         disableSelectionOnClick
+        onSelectionModelChange={updateSelected}
       />
     </Box>
   );
