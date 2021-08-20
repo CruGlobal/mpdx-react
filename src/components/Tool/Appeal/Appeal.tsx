@@ -10,6 +10,7 @@ import React, { ReactElement } from 'react';
 import StarIcon from '@material-ui/icons/Star';
 import StarOutlineIcon from '@material-ui/icons/StarOutline';
 import NextLink from 'next/link';
+import { useTranslation } from 'react-i18next';
 import theme from '../../../../src/theme';
 import AnimatedCard from '../../../../src/components/AnimatedCard';
 import { useAccountListId } from '../../../../src/hooks/useAccountListId';
@@ -83,6 +84,7 @@ const Appeal = ({
 }: Props): ReactElement => {
   const classes = useStyles();
   const accountListId = useAccountListId();
+  const { t } = useTranslation();
 
   return (
     <Box m={1}>
@@ -113,7 +115,7 @@ const Appeal = ({
             </Box>
           </Box>
           <Box display="flex" justifyContent="end">
-            <Tooltip title="Given" placement="top" arrow>
+            <Tooltip title={t('Given').toString()} placement="top" arrow>
               <Typography
                 variant="body2"
                 display="inline"
@@ -132,7 +134,7 @@ const Appeal = ({
             >
               /
             </Typography>
-            <Tooltip title="Received" placement="top" arrow>
+            <Tooltip title={t('Received').toString()} placement="top" arrow>
               <Typography
                 variant="body2"
                 display="inline"
@@ -151,7 +153,7 @@ const Appeal = ({
             >
               /
             </Typography>
-            <Tooltip title="Commited" placement="top" arrow>
+            <Tooltip title={t('Commited').toString()} placement="top" arrow>
               <Typography
                 variant="body2"
                 display="inline"
@@ -172,7 +174,11 @@ const Appeal = ({
               justifyContent="flex-start"
               className={classes.progressBarInner}
             >
-              <Tooltip title="Given" placement="top-start" arrow>
+              <Tooltip
+                title={t('Given').toString()}
+                placement="top-start"
+                arrow
+              >
                 <Box
                   style={{
                     minWidth: `min(${(given / (amount || 1)) * 100}%,100%)`,
@@ -185,7 +191,11 @@ const Appeal = ({
                   }}
                 />
               </Tooltip>
-              <Tooltip title="Received" placement="top-start" arrow>
+              <Tooltip
+                title={t('Received').toString()}
+                placement="top-start"
+                arrow
+              >
                 <Box
                   style={{
                     minWidth: `${(received / (amount || 1)) * 100}%`,
@@ -198,7 +208,11 @@ const Appeal = ({
                   }}
                 />
               </Tooltip>
-              <Tooltip title="Commited" placement="top-start" arrow>
+              <Tooltip
+                title={t('Commited').toString()}
+                placement="top-start"
+                arrow
+              >
                 <Box
                   style={{
                     minWidth: `${(commited / (amount || 1)) * 100}%`,
