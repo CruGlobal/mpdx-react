@@ -34,25 +34,22 @@ const Appeals = (): ReactElement => {
           <LoadingIndicator color="primary" size={40} />
         </Box>
       ) : data && data.primaryAppeal ? (
-        <>
-          <Appeal
-            name={data.primaryAppeal.nodes[0].name || ''}
-            id={data.primaryAppeal.nodes[0].id || ''}
-            primary
-            amount={data.primaryAppeal.nodes[0].amount || 0}
-            amountCurrency={data.primaryAppeal.nodes[0].amountCurrency}
-            given={data.primaryAppeal.nodes[0].pledgesAmountProcessed || 0}
-            received={
-              data.primaryAppeal.nodes[0].pledgesAmountReceivedNotProcessed || 0
-            }
-            commited={
-              data.primaryAppeal.nodes[0]
-                .pledgesAmountNotReceivedNotProcessed || 0
-            }
-            total={data.primaryAppeal.nodes[0].pledgesAmountTotal || 0}
-          />
-          {console.log(data)}
-        </>
+        <Appeal
+          name={data.primaryAppeal.nodes[0].name || ''}
+          id={data.primaryAppeal.nodes[0].id || ''}
+          primary
+          amount={data.primaryAppeal.nodes[0].amount || 0}
+          amountCurrency={data.primaryAppeal.nodes[0].amountCurrency}
+          given={data.primaryAppeal.nodes[0].pledgesAmountProcessed || 0}
+          received={
+            data.primaryAppeal.nodes[0].pledgesAmountReceivedNotProcessed || 0
+          }
+          commited={
+            data.primaryAppeal.nodes[0].pledgesAmountNotReceivedNotProcessed ||
+            0
+          }
+          total={data.primaryAppeal.nodes[0].pledgesAmountTotal || 0}
+        />
       ) : (
         <NoAppeals primary />
       )}
