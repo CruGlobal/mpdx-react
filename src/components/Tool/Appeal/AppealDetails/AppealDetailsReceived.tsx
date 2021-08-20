@@ -3,6 +3,7 @@ import { Box, IconButton, makeStyles } from '@material-ui/core';
 import { DataGrid, GridSelectionModel } from '@material-ui/data-grid';
 import Icon from '@mdi/react';
 import { mdiSquareEditOutline, mdiDelete } from '@mdi/js';
+import i18n from 'i18next';
 import { useAppealContext } from '../AppealContextProvider/AppealContextProvider';
 
 import theme from '../../../../theme';
@@ -58,22 +59,22 @@ const useStyles = makeStyles(() => ({
 const columns = [
   {
     field: 'contact',
-    headerName: 'Contact',
+    headerName: i18n.t('Contact'),
     flex: 1,
   },
   {
     field: 'amount',
-    headerName: 'Amount Received',
+    headerName: i18n.t('Amount Received'),
     flex: 1,
   },
   {
     field: 'date',
-    headerName: 'Date Received',
+    headerName: i18n.t('Date Received'),
     flex: 1,
   },
   {
     field: 'actions',
-    headerName: 'Actions',
+    headerName: i18n.t('Actions'),
     flex: 0.3,
     sortable: false,
     renderCell: function renderActions() {
