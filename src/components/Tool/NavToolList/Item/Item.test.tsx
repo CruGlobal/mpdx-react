@@ -11,7 +11,7 @@ const item = {
 describe('ToolItem', () => {
   it('default', () => {
     const { queryByText } = render(
-      <TestWrapper initialState={{}}>
+      <TestWrapper>
         <Item id={item.id} title={item.title} />
       </TestWrapper>,
     );
