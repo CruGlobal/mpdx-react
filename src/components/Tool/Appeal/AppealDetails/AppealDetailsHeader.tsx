@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { ReactElement } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Button,
   ButtonGroup,
@@ -41,6 +42,7 @@ const useStyles = makeStyles(() => ({
 
 const AppealDetailsHeader = (): ReactElement => {
   const classes = useStyles();
+  const { t } = useTranslation();
   const accountListId = useAccountListId();
   const { appealState, setAppealState } = useAppealContext();
 
@@ -54,7 +56,7 @@ const AppealDetailsHeader = (): ReactElement => {
           >
             <Button variant="outlined">
               <ArrowBackIos fontSize="small" />
-              Appeals
+              {t('Appeals')}
             </Button>
           </NextLink>
         </Box>
