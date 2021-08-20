@@ -9,16 +9,18 @@ import React, {
 
 const initialState: StateType = {
   display: 'default',
+  subDisplay: 'received',
   selected: [],
 };
 
 export const AppealContext = createContext<AppealProviderContext>({
-  appealState: { display: '', selected: [] },
+  appealState: { display: '', subDisplay: '', selected: [] },
   setAppealState: () => undefined,
 });
 
 export interface StateType {
   display: string;
+  subDisplay: string;
   selected: string[];
 }
 
