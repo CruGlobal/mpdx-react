@@ -28,7 +28,7 @@ const useStyles = makeStyles(() => ({
     border: '1px solid',
     borderColor: theme.palette.cruGrayMedium.main,
     borderRadius: 10,
-    backgroundColor: 'rgba(82, 168, 236, 0.1)',
+    backgroundColor: theme.palette.cruGrayLight.main,
   },
   resize: {
     fontSize: 24,
@@ -63,13 +63,13 @@ const AppealDetailsHeader = (): ReactElement => {
           <ButtonGroup>
             <Button
               className={
-                appealState.display === 'default' && classes.selectedButton
+                appealState.display === 'default' ? classes.selectedButton : ''
               }
               disabled={appealState.display === 'default'}
               onClick={() =>
                 setAppealState({
+                  ...appealState,
                   display: 'default',
-                  selected: appealState.selected,
                 })
               }
             >
@@ -77,13 +77,13 @@ const AppealDetailsHeader = (): ReactElement => {
             </Button>
             <Button
               className={
-                appealState.display === 'flow' && classes.selectedButton
+                appealState.display === 'flow' ? classes.selectedButton : ''
               }
               disabled={appealState.display === 'flow'}
               onClick={() =>
                 setAppealState({
+                  ...appealState,
                   display: 'flow',
-                  selected: appealState.selected,
                 })
               }
             >
@@ -96,7 +96,7 @@ const AppealDetailsHeader = (): ReactElement => {
             variant="outlined"
             onClick={() =>
               setAppealState({
-                display: appealState.display,
+                ...appealState,
                 selected: [...appealState.selected, 'aaa'],
               })
             }
