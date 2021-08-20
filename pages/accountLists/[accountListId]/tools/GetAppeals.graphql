@@ -1,12 +1,15 @@
+# Write your query or mutation here
 query GetAppeals($accountListId: ID!) {
-  appeals(accountListId: $accountListId) {
-    id
-    name
-    amount
-    amountCurrency
-    pledgesAmountNotReceivedNotProcessed
-    pledgesAmountReceivedNotProcessed
-    pledgesAmountProcessed
-    pledgesAmountTotal
+  appeals(accountListId: $accountListId, primary: false) {
+    nodes {
+      id
+      name
+      amount
+      amountCurrency
+      pledgesAmountNotReceivedNotProcessed
+      pledgesAmountReceivedNotProcessed
+      pledgesAmountProcessed
+      pledgesAmountTotal
+    }
   }
 }

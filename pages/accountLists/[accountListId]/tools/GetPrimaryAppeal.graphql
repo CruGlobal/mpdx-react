@@ -1,13 +1,14 @@
-query GetPrimaryAppeal($id: ID!) {
-  accountList(id: $id) {
-    primaryAppeal {
-      amount
-      amountCurrency
+# Write your query or mutation here
+query GetPrimaryAppeal($accountListId: ID!) {
+  appeals(accountListId: $accountListId, primary: true) {
+    nodes {
       id
       name
+      amount
+      amountCurrency
       pledgesAmountNotReceivedNotProcessed
-      pledgesAmountProcessed
       pledgesAmountReceivedNotProcessed
+      pledgesAmountProcessed
       pledgesAmountTotal
     }
   }
