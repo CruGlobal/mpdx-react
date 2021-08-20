@@ -1,9 +1,7 @@
 import React, { ReactElement } from 'react';
 import { ListItem, ListItemText, makeStyles, Box } from '@material-ui/core';
 import { ArrowForwardIos } from '@material-ui/icons';
-import NextLink from 'next/link';
 import clsx from 'clsx';
-import { useAccountListId } from '../../../../../hooks/useAccountListId';
 import theme from '../../../../../theme';
 
 const useStyles = makeStyles(() => ({
@@ -16,7 +14,7 @@ const useStyles = makeStyles(() => ({
     },
   },
   liSelected: {
-    backgroundColor: theme.palette.cruGrayLight.main,
+    backgroundColor: theme.palette.cruGrayMedium.main + ' !important',
   },
   red: {
     backgroundColor: 'red',
@@ -51,45 +49,39 @@ export const AppealDrawerItem = ({
   isSelected,
   value,
 }: Props): ReactElement => {
-  const accountListId = useAccountListId();
   const classes = useStyles();
 
   return (
-    <NextLink
-      href={`/accountLists/${accountListId}/tools/${id}`}
-      scroll={false}
+    <ListItem
+      button
+      selected={isSelected}
+      className={clsx(
+        classes.li,
+        isSelected ? classes.liSelected : classes.liButton,
+      )}
     >
-      <ListItem
-        button
-        selected={isSelected}
+      <ListItemText
+        primaryTypographyProps={{
+          variant: 'subtitle1',
+          color: 'textPrimary',
+        }}
+        primary={title}
+      />
+      <Box
         className={clsx(
-          classes.li,
-          isSelected ? classes.liSelected : classes.liButton,
+          classes.valueText,
+          id === 'excluded'
+            ? classes.red
+            : id === 'asked'
+            ? classes.gray
+            : value > 0
+            ? classes.gold
+            : classes.green,
         )}
       >
-        <ListItemText
-          primaryTypographyProps={{
-            variant: 'subtitle1',
-            color: 'textPrimary',
-          }}
-          primary={title}
-        />
-        <Box
-          className={clsx(
-            classes.valueText,
-            id === 'excluded'
-              ? classes.red
-              : id === 'asked'
-              ? classes.gray
-              : value > 0
-              ? classes.gold
-              : classes.green,
-          )}
-        >
-          {value}
-        </Box>
-        <ArrowForwardIos fontSize="small" color="disabled" />
-      </ListItem>
-    </NextLink>
+        {value}
+      </Box>
+      <ArrowForwardIos fontSize="small" color="disabled" />
+    </ListItem>
   );
 };
