@@ -159,11 +159,15 @@ const NavMenu = (): ReactElement => {
             </Popper>
           </Grid>
           <Grid item className={classes.navListItem}>
-            <HandoffLink path="/tools">
+            <NextLink
+              href="/accountLists/[accountListId]/tools"
+              as={`/accountLists/${accountListId}/tools`}
+              scroll={false}
+            >
               <MenuItem component="a">
                 <ListItemText primary={t('Tools')} />
               </MenuItem>
-            </HandoffLink>
+            </NextLink>
           </Grid>
           <Grid item className={classes.navListItem}>
             <HandoffLink path="/coaches">
