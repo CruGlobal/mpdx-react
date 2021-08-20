@@ -7,7 +7,6 @@ import {
   styled,
 } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
-import { useGetPrimaryAppealQuery } from '../../../../pages/accountLists/[accountListId]/tools/GetPrimaryAppeal.generated';
 import { useGetAppealsQuery } from '../../../../pages/accountLists/[accountListId]/tools/GetAppeals.generated';
 import { useAccountListId } from '../../../../src/hooks/useAccountListId';
 import Appeal from '../../../../src/components/Tool/Appeal/Appeal';
@@ -20,10 +19,7 @@ const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
 const Appeals = (): ReactElement => {
   const accountListId = useAccountListId();
   const { t } = useTranslation();
-  const primaryAppealResponse = useGetPrimaryAppealQuery({
-    variables: { accountListId: accountListId || '' },
-  });
-  const regularAppealsResponse = useGetAppealsQuery({
+  const { data, loading } = useGetAppealsQuery({
     variables: { accountListId: accountListId || '' },
   });
 
@@ -33,35 +29,30 @@ const Appeals = (): ReactElement => {
         <Typography variant="h6">{t('Primary Appeal')}</Typography>
       </Box>
       <Divider />
-      {primaryAppealResponse.loading ? (
+      {loading ? (
         <Box display="flex" justifyContent="center" mt={10}>
           <LoadingIndicator color="primary" size={40} />
         </Box>
-      ) : primaryAppealResponse.data && primaryAppealResponse.data.appeals ? (
-        <Appeal
-          name={primaryAppealResponse.data.appeals.nodes[0].name || ''}
-          id={primaryAppealResponse.data.appeals.nodes[0].id || ''}
-          primary
-          amount={primaryAppealResponse.data.appeals.nodes[0].amount || 0}
-          amountCurrency={
-            primaryAppealResponse.data.appeals.nodes[0].amountCurrency
-          }
-          given={
-            primaryAppealResponse.data.appeals.nodes[0]
-              .pledgesAmountProcessed || 0
-          }
-          received={
-            primaryAppealResponse.data.appeals.nodes[0]
-              .pledgesAmountReceivedNotProcessed || 0
-          }
-          commited={
-            primaryAppealResponse.data.appeals.nodes[0]
-              .pledgesAmountNotReceivedNotProcessed || 0
-          }
-          total={
-            primaryAppealResponse.data.appeals.nodes[0].pledgesAmountTotal || 0
-          }
-        />
+      ) : data && data.primaryAppeal ? (
+        <>
+          <Appeal
+            name={data.primaryAppeal.nodes[0].name || ''}
+            id={data.primaryAppeal.nodes[0].id || ''}
+            primary
+            amount={data.primaryAppeal.nodes[0].amount || 0}
+            amountCurrency={data.primaryAppeal.nodes[0].amountCurrency}
+            given={data.primaryAppeal.nodes[0].pledgesAmountProcessed || 0}
+            received={
+              data.primaryAppeal.nodes[0].pledgesAmountReceivedNotProcessed || 0
+            }
+            commited={
+              data.primaryAppeal.nodes[0]
+                .pledgesAmountNotReceivedNotProcessed || 0
+            }
+            total={data.primaryAppeal.nodes[0].pledgesAmountTotal || 0}
+          />
+          {console.log(data)}
+        </>
       ) : (
         <NoAppeals primary />
       )}
@@ -69,13 +60,13 @@ const Appeals = (): ReactElement => {
         <Typography variant="h6">{t('Appeals')}</Typography>
       </Box>
       <Divider />
-      {regularAppealsResponse.loading ? (
+      {loading ? (
         <Box display="flex" justifyContent="center" mt={10}>
           <LoadingIndicator color="primary" size={40} />
         </Box>
-      ) : regularAppealsResponse.data && regularAppealsResponse.data.appeals ? (
+      ) : data && data.regularAppeals ? (
         <>
-          {regularAppealsResponse.data.appeals.nodes.map((appeal) => (
+          {data.regularAppeals.nodes.map((appeal) => (
             <Box key={appeal.name} mb={3}>
               <Appeal
                 name={appeal.name || ''}
@@ -94,26 +85,18 @@ const Appeals = (): ReactElement => {
       ) : (
         <NoAppeals />
       )}
-      {!primaryAppealResponse.loading && !regularAppealsResponse.loading && (
+      {!loading && (
         <Box display="flex" justifyContent="center">
           <Typography variant="h6" data-testid="TypographyShowing">
             Showing{' '}
             <strong>
-              {(primaryAppealResponse.data
-                ? primaryAppealResponse.data.appeals.nodes.length
-                : 0) +
-                (regularAppealsResponse.data
-                  ? regularAppealsResponse.data.appeals.nodes.length
-                  : 0)}
+              {(data?.primaryAppeal ? data.primaryAppeal.nodes.length : 0) +
+                (data?.regularAppeals ? data.regularAppeals.nodes.length : 0)}
             </strong>{' '}
             of{' '}
             <strong>
-              {(primaryAppealResponse.data
-                ? primaryAppealResponse.data.appeals.nodes.length
-                : 0) +
-                (regularAppealsResponse.data
-                  ? regularAppealsResponse.data.appeals.nodes.length
-                  : 0)}
+              {(data?.primaryAppeal ? data.primaryAppeal.nodes.length : 0) +
+                (data?.regularAppeals ? data.regularAppeals.nodes.length : 0)}
             </strong>
           </Typography>
         </Box>
