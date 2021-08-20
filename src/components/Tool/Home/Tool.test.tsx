@@ -15,7 +15,7 @@ const router = {
 
 describe('Tool', () => {
   it('props', () => {
-    const { getByTestId } = render(
+    const { getByText } = render(
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
           <Tool
@@ -28,9 +28,7 @@ describe('Tool', () => {
         </TestRouter>
       </ThemeProvider>,
     );
-    expect(getByTestId('ToolNameTypography').textContent).toEqual('Test');
-    expect(getByTestId('ToolDescriptionTypography').textContent).toEqual(
-      'Test description!!!',
-    );
+    expect(getByText('Test')).toBeInTheDocument();
+    expect(getByText('Test description!!!')).toBeInTheDocument();
   });
 });
