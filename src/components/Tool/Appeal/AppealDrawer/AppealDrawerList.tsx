@@ -58,53 +58,53 @@ const AppealDrawerList = (): ReactElement => {
         </ListItem>
         <AppealDrawerItem
           id="given"
-          title="Given"
+          title={t('Given')}
           value={0}
           isSelected={appealState.subDisplay === 'given'}
         />
         <AppealDrawerItem
           id="received"
-          title="Received"
+          title={t('Received')}
           value={2}
           isSelected={appealState.subDisplay === 'received'}
         />
         <AppealDrawerItem
           id="commited"
-          title="Commited"
+          title={t('Commited')}
           value={0}
           isSelected={appealState.subDisplay === 'commited'}
         />
         <AppealDrawerItem
           id="asked"
-          title="Asked"
+          title={t('Asked')}
           value={75}
           isSelected={appealState.subDisplay === 'asked'}
         />
         <AppealDrawerItem
           id="excluded"
-          title="Excluded"
+          title={t('Excluded')}
           value={1000}
           isSelected={appealState.subDisplay === 'excluded'}
         />
         <AppealDrawerItemButton
-          title="Export to CSV"
+          title={t('Export to CSV')}
+          func={testFunc}
+          buttonText={`Export ${appealState.selected.length} Selected`} //TODO: Check how to translate dynamic strings
+        />
+        <AppealDrawerItemButton
+          title={t('Export Emails')}
           func={testFunc}
           buttonText={`Export ${appealState.selected.length} Selected`}
         />
         <AppealDrawerItemButton
-          title="Export Emails"
+          title={t('Add Contact to Appeal')}
           func={testFunc}
-          buttonText={`Export ${appealState.selected.length} Selected`}
+          buttonText={t('Select Contact')}
         />
         <AppealDrawerItemButton
-          title="Add Contact to Appeal"
+          title={t('Delete Appeal')}
           func={testFunc}
-          buttonText={`Select Contact`}
-        />
-        <AppealDrawerItemButton
-          title="Delete Appeal"
-          func={testFunc}
-          buttonText={`Permanently Delete Appeal`}
+          buttonText={t('Permanently Delete Appeal')}
         />
       </List>
     </Box>
