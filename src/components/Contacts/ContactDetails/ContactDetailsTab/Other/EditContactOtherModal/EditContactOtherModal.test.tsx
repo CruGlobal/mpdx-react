@@ -3,7 +3,6 @@ import { ThemeProvider } from '@material-ui/core';
 import { SnackbarProvider } from 'notistack';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { GraphQLError } from 'graphql';
 import { PreferredContactMethodEnum } from '../../../../../../../graphql/types.generated';
 import {
   gqlMock,
@@ -187,45 +186,5 @@ describe('EditContactOtherModal', () => {
     );
     expect(operation.variables.attributes.churchName).toEqual(newChurchName);
     expect(operation.variables.attributes.website).toEqual(newWebsite);
-  });
-
-  it('should handle errors with editing contact other details', async () => {
-    const newChurchName = 'Great Cool Church II';
-    const { getByText, getByLabelText } = render(
-      <SnackbarProvider>
-        <ThemeProvider theme={theme}>
-          <GqlMockedProvider<UpdateContactOtherMutation>
-            mocks={{
-              UpdateContactOther: {
-                updateContact: {
-                  contact: new GraphQLError(
-                    'GraphQL Error #42: Error updating contact.',
-                  ),
-                },
-              },
-            }}
-          >
-            <EditContactOtherModal
-              accountListId={accountListId}
-              isOpen={true}
-              handleClose={handleClose}
-              contact={mockContact}
-            />
-          </GqlMockedProvider>
-        </ThemeProvider>
-      </SnackbarProvider>,
-    );
-
-    userEvent.clear(getByLabelText('Church'));
-    userEvent.type(getByLabelText('Church'), newChurchName);
-    userEvent.click(getByText('Save'));
-    await waitFor(() =>
-      expect(mockEnqueue).toHaveBeenCalledWith(
-        'GraphQL Error #42: Error updating contact.',
-        {
-          variant: 'error',
-        },
-      ),
-    );
   });
 });

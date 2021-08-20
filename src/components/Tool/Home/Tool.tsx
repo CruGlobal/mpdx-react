@@ -56,11 +56,11 @@ const Tool = ({ tool, desc, icon, id }: Props): ReactElement => {
   const accountListId = useAccountListId();
 
   return (
-    <NextLink
-      href={`/accountLists/${accountListId}/tools/${id}`}
-      scroll={false}
-    >
-      <AnimatedCard className={classes.cardContainer}>
+    <AnimatedCard className={classes.cardContainer}>
+      <NextLink
+        href={`/accountLists/${accountListId}/tools/${id}`}
+        scroll={false}
+      >
         <CardActionArea>
           <CardContent className={classes.cardContent}>
             <Box
@@ -75,8 +75,8 @@ const Tool = ({ tool, desc, icon, id }: Props): ReactElement => {
             <Typography variant="body2">{desc}</Typography>
           </CardContent>
         </CardActionArea>
-      </AnimatedCard>
-    </NextLink>
+      </NextLink>
+    </AnimatedCard>
   );
 };
 

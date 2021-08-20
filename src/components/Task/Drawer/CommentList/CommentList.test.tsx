@@ -8,26 +8,12 @@ import {
   getCommentsForTaskDrawerCommentListMock,
   getCommentsForTaskDrawerCommentListEmptyMock,
   getCommentsForTaskDrawerCommentListLoadingMock,
-  getCommentsForTaskDrawerCommentListErrorMock,
 } from './CommentList.mock';
 import { createTaskCommentMutationMock } from './Form/Form.mock';
 import TaskDrawerCommentList from '.';
 
 const accountListId = 'abc';
 const taskId = 'task-1';
-
-const mockEnqueue = jest.fn();
-
-jest.mock('notistack', () => ({
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  ...jest.requireActual('notistack'),
-  useSnackbar: () => {
-    return {
-      enqueueSnackbar: mockEnqueue,
-    };
-  },
-}));
 
 jest.mock('uuid', () => ({
   v4: (): string => 'comment-0',
@@ -114,31 +100,5 @@ describe('TaskDrawerCommentList', () => {
       ).not.toBeInTheDocument(),
     );
     expect(getByTestId('TaskDrawerCommentListEmpty')).toBeInTheDocument();
-  });
-
-  it('error', async () => {
-    render(
-      <ThemeProvider theme={theme}>
-        <TestWrapper
-          mocks={[
-            getCommentsForTaskDrawerCommentListErrorMock(accountListId, taskId),
-          ]}
-        >
-          <TaskDrawerCommentList
-            accountListId={accountListId}
-            taskId={taskId}
-          />
-        </TestWrapper>
-      </ThemeProvider>,
-    );
-
-    await waitFor(() =>
-      expect(mockEnqueue).toHaveBeenCalledWith(
-        'Error loading data.  Try again.',
-        {
-          variant: 'error',
-        },
-      ),
-    );
   });
 });
