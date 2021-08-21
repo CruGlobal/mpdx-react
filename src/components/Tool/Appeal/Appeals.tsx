@@ -33,7 +33,7 @@ const Appeals = (): ReactElement => {
         <Box display="flex" justifyContent="center" mt={10}>
           <LoadingIndicator color="primary" size={40} />
         </Box>
-      ) : data && data.primaryAppeal ? (
+      ) : data?.primaryAppeal ? (
         <Appeal
           name={data.primaryAppeal.nodes[0].name || ''}
           id={data.primaryAppeal.nodes[0].id || ''}
