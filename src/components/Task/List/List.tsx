@@ -21,7 +21,6 @@ import reduce from 'lodash/fp/reduce';
 import debounce from 'lodash/fp/debounce';
 import { Skeleton } from '@material-ui/lab';
 import { DatePicker } from '@material-ui/pickers';
-import { useSnackbar } from 'notistack';
 import { dateFormat, dayMonthFormat } from '../../../lib/intlFormat/intlFormat';
 import TaskStatus from '../Status';
 import illustration15 from '../../../images/drawkit/grape/drawkit-grape-pack-illustration-15.svg';
@@ -84,7 +83,6 @@ const TaskList = ({ initialFilter }: Props): ReactElement => {
   const { t } = useTranslation();
   const [rowsPerPage, setRowsPerPage] = useState(100);
   const [currentPage, setCurrentPage] = useState(0);
-  const { enqueueSnackbar } = useSnackbar();
 
   const accountListId = useAccountListId();
 
@@ -99,9 +97,6 @@ const TaskList = ({ initialFilter }: Props): ReactElement => {
       accountListId: accountListId ?? '',
       first: rowsPerPage,
       ...filter,
-    },
-    onError: (error) => {
-      enqueueSnackbar(error.message, { variant: 'error' });
     },
   });
 

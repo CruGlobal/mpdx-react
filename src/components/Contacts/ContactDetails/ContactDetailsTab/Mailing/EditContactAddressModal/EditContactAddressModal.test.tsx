@@ -3,7 +3,6 @@ import { ThemeProvider } from '@material-ui/core';
 import { SnackbarProvider } from 'notistack';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { GraphQLError } from 'graphql';
 import {
   gqlMock,
   GqlMockedProvider,
@@ -166,44 +165,5 @@ describe('EditContactAddressModal', () => {
     expect(operation.variables.attributes.region).toEqual(newRegion);
     expect(operation.variables.attributes.metroArea).toEqual(newMetroArea);
     expect(operation.variables.attributes.historic).toEqual(false);
-  });
-
-  it('should handle errors with editing contact other details', async () => {
-    const newStreet = '4321 New Street';
-    const { getByText, getByLabelText } = render(
-      <SnackbarProvider>
-        <ThemeProvider theme={theme}>
-          <GqlMockedProvider<UpdateContactAddressMutation>
-            mocks={{
-              UpdateContactAddress: {
-                updateAddress: {
-                  address: new GraphQLError(
-                    'GraphQL Error #42: Error updating contact.',
-                  ),
-                },
-              },
-            }}
-          >
-            <EditContactAddressModal
-              accountListId={accountListId}
-              handleClose={handleClose}
-              address={mockContact.addresses.nodes[0]}
-            />
-          </GqlMockedProvider>
-        </ThemeProvider>
-      </SnackbarProvider>,
-    );
-
-    userEvent.clear(getByLabelText('Street'));
-    userEvent.type(getByLabelText('Street'), newStreet);
-    userEvent.click(getByText('Save'));
-    await waitFor(() =>
-      expect(mockEnqueue).toHaveBeenCalledWith(
-        'GraphQL Error #42: Error updating contact.',
-        {
-          variant: 'error',
-        },
-      ),
-    );
   });
 });
