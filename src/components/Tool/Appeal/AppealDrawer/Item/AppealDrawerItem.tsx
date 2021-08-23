@@ -83,9 +83,9 @@ export const AppealDrawerItem = ({
             ? classes.red
             : id === 'asked'
             ? classes.gray
-            : value > 0
-            ? classes.gold
-            : classes.green,
+            : id === 'given'
+            ? classes.green
+            : classes.gold,
         )}
       >
         {value}
