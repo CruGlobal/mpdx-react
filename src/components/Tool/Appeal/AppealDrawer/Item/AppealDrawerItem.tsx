@@ -56,7 +56,7 @@ export const AppealDrawerItem = ({
   const { appealState, setAppealState } = useAppealContext();
 
   const changeSubDisplay = (props: string): void => {
-    setAppealState({ ...appealState, subDisplay: props });
+    setAppealState({ ...appealState, subDisplay: props, selected: [] });
   };
 
   return (
