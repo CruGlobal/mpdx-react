@@ -10,7 +10,10 @@ import { FormikProps } from 'formik';
 import React from 'react';
 
 import { useTranslation } from 'react-i18next';
-import { PersonUpdateInput } from '../../../../../../../../../graphql/types.generated';
+import {
+  PersonCreateInput,
+  PersonUpdateInput,
+} from '../../../../../../../../../graphql/types.generated';
 import { ContactDetailsTabQuery } from '../../../../ContactDetailsTab.generated';
 import { ModalSectionContainer } from '../ModalSectionContainer/ModalSectionContainer';
 import { ModalSectionDeleteIcon } from '../ModalSectionDeleteIcon/ModalSectionDeleteIcon';
@@ -31,8 +34,8 @@ const ContactInputField = styled(TextField)(() => ({
 }));
 
 interface PersonNameProps {
-  person: ContactDetailsTabQuery['contact']['people']['nodes'][0];
-  formikProps: FormikProps<PersonUpdateInput>;
+  person?: ContactDetailsTabQuery['contact']['people']['nodes'][0];
+  formikProps: FormikProps<PersonUpdateInput | PersonCreateInput>;
 }
 
 export const PersonName: React.FC<PersonNameProps> = ({
@@ -48,14 +51,18 @@ export const PersonName: React.FC<PersonNameProps> = ({
   return (
     <>
       <ModalSectionContainer>
-        <ContactAvatar
-          alt={`${person.firstName} ${person.lastName}`}
-          src={person.lastName ?? ''}
-        />
-        <Typography>
-          <Box fontWeight="fontWeightBold">{`${person.firstName} ${person.lastName}`}</Box>
-        </Typography>
-        <ModalSectionDeleteIcon />
+        {person ? (
+          <>
+            <ContactAvatar
+              alt={`${person.firstName} ${person.lastName}`}
+              src={person?.lastName ?? ''}
+            />
+            <Typography>
+              <Box fontWeight="fontWeightBold">{`${person.firstName} ${person.lastName}`}</Box>
+            </Typography>
+            <ModalSectionDeleteIcon />
+          </>
+        ) : null}
       </ModalSectionContainer>
       <ModalSectionContainer>
         <Grid container spacing={3}>

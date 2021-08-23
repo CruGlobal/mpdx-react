@@ -19,7 +19,10 @@ import { FieldArray, FormikProps, getIn } from 'formik';
 import { ModalSectionContainer } from '../ModalSectionContainer/ModalSectionContainer';
 import { ModalSectionDeleteIcon } from '../ModalSectionDeleteIcon/ModalSectionDeleteIcon';
 import { ModalSectionIcon } from '../ModalSectionIcon/ModalSectionIcon';
-import { PersonUpdateInput } from '../../../../../../../../../graphql/types.generated';
+import {
+  PersonCreateInput,
+  PersonUpdateInput,
+} from '../../../../../../../../../graphql/types.generated';
 
 const ContactPrimaryPersonSelectLabel = styled(InputLabel)(() => ({
   textTransform: 'uppercase',
@@ -53,7 +56,7 @@ const OptOutENewsletterLabel = styled(FormControlLabel)(() => ({
 }));
 
 interface PersonEmailProps {
-  formikProps: FormikProps<PersonUpdateInput>;
+  formikProps: FormikProps<PersonUpdateInput | PersonCreateInput>;
 }
 
 export const PersonEmail: React.FC<PersonEmailProps> = ({ formikProps }) => {
@@ -150,6 +153,7 @@ export const PersonEmail: React.FC<PersonEmailProps> = ({ formikProps }) => {
                             }}
                             fullWidth
                           >
+                            <MenuItem selected value=""></MenuItem>
                             <MenuItem value="Mobile" aria-label={t('Mobile')}>
                               {t('Mobile')}
                             </MenuItem>

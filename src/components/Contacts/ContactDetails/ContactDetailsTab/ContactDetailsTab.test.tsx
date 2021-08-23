@@ -504,7 +504,17 @@ describe('ContactDetailTab', () => {
             name: 'Person, Test',
             starred: false,
             people: {
-              nodes: [],
+              nodes: [
+                {
+                  id: contactId,
+                  firstName: 'Test',
+                  lastName: 'Person',
+                  primaryPhoneNumber: { number: '555-555-5555' },
+                  primaryEmailAddress: {
+                    email: 'testperson@fake.com',
+                  },
+                },
+              ],
             },
           },
         ],

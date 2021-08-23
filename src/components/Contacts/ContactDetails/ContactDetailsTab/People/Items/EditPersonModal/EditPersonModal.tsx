@@ -12,15 +12,24 @@ import { useTranslation } from 'react-i18next';
 import { Formik } from 'formik';
 import * as yup from 'yup';
 import { useSnackbar } from 'notistack';
-import { ContactDetailsTabQuery } from '../../../ContactDetailsTab.generated';
+import {
+  ContactDetailsTabDocument,
+  ContactDetailsTabQuery,
+} from '../../../ContactDetailsTab.generated';
 import Modal from '../../../../../../common/Modal/Modal';
-import { PersonUpdateInput } from '../../../../../../../../graphql/types.generated';
+import {
+  PersonCreateInput,
+  PersonUpdateInput,
+} from '../../../../../../../../graphql/types.generated';
 import { PersonName } from './PersonName/PersonName';
 import { PersonPhoneNumber } from './PersonPhoneNumber/PersonPhoneNumber';
 import { PersonEmail } from './PersonEmail/PersonEmail';
 import { PersonBirthday } from './PersonBirthday/PersonBirthday';
 import { PersonShowMore } from './PersonShowMore/PersonShowMore';
-import { useUpdatePersonMutation } from './EditPersonModal.generated';
+import {
+  useCreatePersonMutation,
+  useUpdatePersonMutation,
+} from './EditPersonModal.generated';
 
 const ContactPersonContainer = styled(Box)(({ theme }) => ({
   margin: theme.spacing(2, 0),
@@ -55,13 +64,15 @@ const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
 }));
 
 interface EditPersonModalProps {
-  person: ContactDetailsTabQuery['contact']['people']['nodes'][0];
+  person?: ContactDetailsTabQuery['contact']['people']['nodes'][0];
+  contactId: string;
   accountListId: string;
   handleClose: () => void;
 }
 
 export const EditPersonModal: React.FC<EditPersonModalProps> = ({
   person,
+  contactId,
   accountListId,
   handleClose,
 }): ReactElement<EditPersonModalProps> => {
@@ -69,6 +80,7 @@ export const EditPersonModal: React.FC<EditPersonModalProps> = ({
   const { enqueueSnackbar } = useSnackbar();
   const [personEditShowMore, setPersonEditShowMore] = useState(false);
   const [updatePerson, { loading: updating }] = useUpdatePersonMutation();
+  const [createPerson, { loading: creating }] = useCreatePersonMutation();
 
   // grabbed from https://stackoverflow.com/a/62039270
   const phoneRegex = RegExp(
@@ -79,7 +91,7 @@ export const EditPersonModal: React.FC<EditPersonModalProps> = ({
     Omit<PersonUpdateInput, 'familyRelationships' | 'id'>
   > = yup.object({
     firstName: yup.string().required(),
-    lastName: yup.string().required(),
+    lastName: yup.string().nullable(),
     title: yup.string().nullable(),
     suffix: yup.string().nullable(),
     phoneNumbers: yup.array().of(
@@ -148,7 +160,7 @@ export const EditPersonModal: React.FC<EditPersonModalProps> = ({
     deceased: yup.boolean().default(false),
   });
 
-  const personPhoneNumbers = person.phoneNumbers.nodes.map((phoneNumber) => {
+  const personPhoneNumbers = person?.phoneNumbers.nodes.map((phoneNumber) => {
     return {
       id: phoneNumber.id,
       primary: phoneNumber.primary,
@@ -158,7 +170,7 @@ export const EditPersonModal: React.FC<EditPersonModalProps> = ({
     };
   });
 
-  const personEmails = person.emailAddresses.nodes.map((emailAddress) => {
+  const personEmails = person?.emailAddresses.nodes.map((emailAddress) => {
     return {
       id: emailAddress.id,
       primary: emailAddress.primary,
@@ -168,70 +180,150 @@ export const EditPersonModal: React.FC<EditPersonModalProps> = ({
     };
   });
 
-  const personFacebookAccounts = person.facebookAccounts.nodes.map(
+  const personFacebookAccounts = person?.facebookAccounts.nodes.map(
     (account) => ({
       id: account.id,
       username: account.username,
       destroy: false,
     }),
   );
-  const personTwitterAccounts = person.twitterAccounts.nodes.map((account) => ({
-    id: account.id,
-    screenName: account.screenName,
-    destroy: false,
-  }));
-  const personLinkedinAccounts = person.linkedinAccounts.nodes.map(
+
+  const personTwitterAccounts = person?.twitterAccounts.nodes.map(
+    (account) => ({
+      id: account.id,
+      screenName: account.screenName,
+      destroy: false,
+    }),
+  );
+
+  const personLinkedinAccounts = person?.linkedinAccounts.nodes.map(
     (account) => ({
       id: account.id,
       publicUrl: account.publicUrl,
       destroy: false,
     }),
   );
-  const personWebsites = person.websites.nodes.map((account) => ({
+
+  const personWebsites = person?.websites.nodes.map((account) => ({
     id: account.id,
     url: account.url,
     destroy: false,
   }));
 
-  const initialPerson: PersonUpdateInput = {
-    id: person.id,
-    firstName: person.firstName,
-    lastName: person.lastName,
-    title: person.title,
-    suffix: person.suffix,
-    phoneNumbers: personPhoneNumbers,
-    emailAddresses: personEmails,
-    optoutEnewsletter: person.optoutEnewsletter,
-    birthdayDay: person.birthdayDay,
-    birthdayMonth: person.birthdayMonth,
-    birthdayYear: person.birthdayYear,
-    maritalStatus: person.maritalStatus,
-    gender: person.gender,
-    anniversaryDay: person.anniversaryDay,
-    anniversaryMonth: person.anniversaryMonth,
-    anniversaryYear: person.anniversaryYear,
-    almaMater: person.almaMater,
-    employer: person.employer,
-    occupation: person.occupation,
-    facebookAccounts: personFacebookAccounts,
-    twitterAccounts: personTwitterAccounts,
-    linkedinAccounts: personLinkedinAccounts,
-    websites: personWebsites,
-    legalFirstName: person.legalFirstName,
-    deceased: person.deceased,
-  };
+  const initialPerson: PersonCreateInput | PersonUpdateInput = person
+    ? {
+        id: person.id,
+        firstName: person.firstName,
+        lastName: person.lastName,
+        title: person.title,
+        suffix: person.suffix,
+        phoneNumbers: personPhoneNumbers,
+        emailAddresses: personEmails,
+        optoutEnewsletter: person.optoutEnewsletter,
+        birthdayDay: person.birthdayDay,
+        birthdayMonth: person.birthdayMonth,
+        birthdayYear: person.birthdayYear,
+        maritalStatus: person.maritalStatus,
+        gender: person.gender,
+        anniversaryDay: person.anniversaryDay,
+        anniversaryMonth: person.anniversaryMonth,
+        anniversaryYear: person.anniversaryYear,
+        almaMater: person.almaMater,
+        employer: person.employer,
+        occupation: person.occupation,
+        facebookAccounts: personFacebookAccounts,
+        twitterAccounts: personTwitterAccounts,
+        linkedinAccounts: personLinkedinAccounts,
+        websites: personWebsites,
+        legalFirstName: person.legalFirstName,
+        deceased: person.deceased,
+      }
+    : {
+        contactId,
+        id: null,
+        firstName: '',
+        lastName: null,
+        title: null,
+        suffix: null,
+        phoneNumbers: [],
+        emailAddresses: [],
+        optoutEnewsletter: false,
+        birthdayDay: null,
+        birthdayMonth: null,
+        birthdayYear: null,
+        maritalStatus: null,
+        gender: 'Male',
+        anniversaryDay: null,
+        anniversaryMonth: null,
+        anniversaryYear: null,
+        almaMater: null,
+        employer: null,
+        occupation: null,
+        facebookAccounts: [],
+        twitterAccounts: [],
+        linkedinAccounts: [],
+        websites: [],
+        legalFirstName: null,
+        deceased: false,
+      };
 
-  const onSubmit = async (attributes: PersonUpdateInput): Promise<void> => {
+  const onSubmit = async (
+    attributes: PersonCreateInput | PersonUpdateInput,
+  ): Promise<void> => {
+    const isUpdate = (
+      attributes: PersonCreateInput | PersonUpdateInput,
+    ): attributes is PersonUpdateInput => !!person;
     try {
-      await updatePerson({
-        variables: {
-          accountListId,
-          attributes,
-        },
-      });
-      enqueueSnackbar(t('Person updated successfully'), {
-        variant: 'success',
-      });
+      if (isUpdate(attributes)) {
+        await updatePerson({
+          variables: {
+            accountListId,
+            attributes,
+          },
+        });
+        enqueueSnackbar(t('Person updated successfully'), {
+          variant: 'success',
+        });
+      } else {
+        await createPerson({
+          variables: {
+            accountListId,
+            attributes,
+          },
+          update: (cache, { data: createdContactData }) => {
+            const query = {
+              query: ContactDetailsTabDocument,
+              variables: {
+                accountListId,
+                contactId,
+              },
+            };
+            const dataFromCache = cache.readQuery<ContactDetailsTabQuery>(
+              query,
+            );
+
+            if (dataFromCache) {
+              const data = {
+                ...dataFromCache,
+                contact: {
+                  ...dataFromCache.contact,
+                  people: {
+                    ...dataFromCache.contact.people,
+                    nodes: [
+                      ...dataFromCache.contact.people.nodes,
+                      { ...createdContactData?.createPerson?.person },
+                    ],
+                  },
+                },
+              };
+              cache.writeQuery({ ...query, data });
+            }
+            enqueueSnackbar(t('Person created successfully'), {
+              variant: 'success',
+            });
+          },
+        });
+      }
       handleClose();
     } catch (error) {
       enqueueSnackbar(error.message, { variant: 'error' });
@@ -240,7 +332,11 @@ export const EditPersonModal: React.FC<EditPersonModalProps> = ({
   };
 
   return (
-    <Modal isOpen={true} title={'Edit Person'} handleClose={handleClose}>
+    <Modal
+      isOpen={true}
+      title={person ? t('Edit Person') : t('Create Person')}
+      handleClose={handleClose}
+    >
       <Formik
         initialValues={initialPerson}
         validationSchema={personSchema}
@@ -302,7 +398,9 @@ export const EditPersonModal: React.FC<EditPersonModalProps> = ({
                 disabled={!formikProps.isValid || formikProps.isSubmitting}
                 variant="text"
               >
-                {updating && <LoadingIndicator color="primary" size={20} />}
+                {(updating || creating) && (
+                  <LoadingIndicator color="primary" size={20} />
+                )}
                 {t('Save')}
               </ContactEditModalFooterButton>
             </DialogActions>

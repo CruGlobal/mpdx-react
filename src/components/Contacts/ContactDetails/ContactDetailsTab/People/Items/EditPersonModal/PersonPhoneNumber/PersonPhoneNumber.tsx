@@ -16,7 +16,10 @@ import { FormikProps, FieldArray, getIn } from 'formik';
 import { ModalSectionContainer } from '../ModalSectionContainer/ModalSectionContainer';
 import { ModalSectionDeleteIcon } from '../ModalSectionDeleteIcon/ModalSectionDeleteIcon';
 import { ModalSectionIcon } from '../ModalSectionIcon/ModalSectionIcon';
-import { PersonUpdateInput } from '../../../../../../../../../graphql/types.generated';
+import {
+  PersonCreateInput,
+  PersonUpdateInput,
+} from '../../../../../../../../../graphql/types.generated';
 
 const ContactPrimaryPersonSelectLabel = styled(InputLabel)(() => ({
   textTransform: 'uppercase',
@@ -48,7 +51,7 @@ const ContactAddText = styled(Typography)(() => ({
 }));
 
 interface PersonPhoneNumberProps {
-  formikProps: FormikProps<PersonUpdateInput>;
+  formikProps: FormikProps<PersonUpdateInput | PersonCreateInput>;
 }
 
 export const PersonPhoneNumber: React.FC<PersonPhoneNumberProps> = ({
@@ -150,6 +153,7 @@ export const PersonPhoneNumber: React.FC<PersonPhoneNumberProps> = ({
                             }}
                             fullWidth
                           >
+                            <MenuItem selected value=""></MenuItem>
                             <MenuItem value="Mobile" aria-label={t('Mobile')}>
                               {t('Mobile')}
                             </MenuItem>

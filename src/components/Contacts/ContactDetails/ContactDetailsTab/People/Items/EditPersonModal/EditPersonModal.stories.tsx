@@ -17,6 +17,7 @@ export default {
 export const Default = (): ReactElement => {
   const mock = gqlMock<ContactPeopleFragment>(ContactPeopleFragmentDoc);
   const accountListId = '123';
+  const contactId = '321';
   const [modalOpen, setModalOpen] = useState(false);
 
   const mockPerson: ContactDetailsTabQuery['contact']['people']['nodes'][0] =
@@ -28,6 +29,7 @@ export const Default = (): ReactElement => {
         {modalOpen ? (
           <EditPersonModal
             person={mockPerson}
+            contactId={contactId}
             accountListId={accountListId}
             handleClose={() => setModalOpen(false)}
           />
