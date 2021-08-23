@@ -12,6 +12,7 @@ import {
 import Icon from '@mdi/react';
 import { mdiTrophy } from '@mdi/js';
 import { useAppealContext } from '../AppealContextProvider/AppealContextProvider';
+import { TestAppeal } from '../../../../../pages/accountLists/[accountListId]/tools/appeals/testAppeal';
 import { AppealDrawerItem } from './Item/AppealDrawerItem';
 import { AppealDrawerItemButton } from './Item/AppealDrawerItemButton';
 
@@ -35,13 +36,17 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-const AppealDrawerList = (): ReactElement => {
+interface Props {
+  appeal: TestAppeal;
+}
+
+const AppealDrawerList = ({ appeal }: Props): ReactElement => {
   const { t } = useTranslation();
   const classes = useStyles();
   const { appealState } = useAppealContext();
 
   const testFunc = (): void => {
-    console.log('Test success!');
+    console.log(appealState);
   };
 
   return (
@@ -59,31 +64,31 @@ const AppealDrawerList = (): ReactElement => {
         <AppealDrawerItem
           id="given"
           title={t('Given')}
-          value={0}
+          value={appeal.given.length}
           isSelected={appealState.subDisplay === 'given'}
         />
         <AppealDrawerItem
           id="received"
           title={t('Received')}
-          value={2}
+          value={appeal.received.length}
           isSelected={appealState.subDisplay === 'received'}
         />
         <AppealDrawerItem
           id="commited"
           title={t('Commited')}
-          value={0}
+          value={appeal.committed.length}
           isSelected={appealState.subDisplay === 'commited'}
         />
         <AppealDrawerItem
           id="asked"
           title={t('Asked')}
-          value={75}
+          value={appeal.asked.length}
           isSelected={appealState.subDisplay === 'asked'}
         />
         <AppealDrawerItem
           id="excluded"
           title={t('Excluded')}
-          value={1000}
+          value={appeal.excluded.length}
           isSelected={appealState.subDisplay === 'excluded'}
         />
         <AppealDrawerItemButton
