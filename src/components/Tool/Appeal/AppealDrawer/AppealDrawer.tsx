@@ -2,6 +2,7 @@ import React, { ReactElement } from 'react';
 import { makeStyles, Drawer } from '@material-ui/core';
 import theme from '../../../../theme';
 import NavToolDrawerHandle from '../../NavToolList/NavToolDrawerHandle';
+import { TestAppeal } from '../../../../../pages/accountLists/[accountListId]/tools/appeals/testAppeal';
 import AppealDrawerList from './AppealDrawerList';
 //import { useAppealId } from '../../../../src/hooks/useAppealId';
 
@@ -33,9 +34,10 @@ export interface Props {
   open: boolean;
   toggle: () => void;
   selectedId?: string;
+  appeal: TestAppeal;
 }
 
-const AppealDrawer = ({ open, toggle, selectedId }: Props): ReactElement => {
+const AppealDrawer = ({ open, toggle, appeal }: Props): ReactElement => {
   const classes = useStyles();
   //const appealId = useAppealId();
 
@@ -48,7 +50,7 @@ const AppealDrawer = ({ open, toggle, selectedId }: Props): ReactElement => {
         variant="persistent"
         className={classes.drawer}
       >
-        <AppealDrawerList selectedId={selectedId || ''} />
+        <AppealDrawerList appeal={appeal} />
       </Drawer>
       <NavToolDrawerHandle open={open} toggle={toggle} />
     </>
