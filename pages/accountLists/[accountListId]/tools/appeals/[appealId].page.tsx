@@ -1,11 +1,12 @@
 import React, { ReactElement, useState } from 'react';
 import Head from 'next/head';
 import { useTranslation } from 'react-i18next';
-import { makeStyles, Theme, Container, Box } from '@material-ui/core';
+import { makeStyles, Theme, Box, Container } from '@material-ui/core';
 import AppealDrawer from '../../../../../src/components/Tool/Appeal/AppealDrawer/AppealDrawer';
-import AppealDetailsHeader from '../../../../../src/components/Tool/Appeal/AppealDetails/AppealDetailsHeader';
-import AppealDetailsReceived from '../../../../../src/components/Tool/Appeal/AppealDetails/AppealDetailsReceived';
 import { AppealProvider } from '../../../../../src/components/Tool/Appeal/AppealContextProvider/AppealContextProvider';
+
+import AppealDetailsMain from '../../../../../src/components/Tool/Appeal/AppealDetails/AppealDetailsMain';
+import { testAppeal2 } from './testAppeal';
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
@@ -50,7 +51,11 @@ const AppealIdPage = (): ReactElement => {
       </Head>
       <AppealProvider>
         <Box className={classes.outer}>
-          <AppealDrawer open={isNavListOpen} toggle={handleNavListToggle} />
+          <AppealDrawer
+            open={isNavListOpen}
+            toggle={handleNavListToggle}
+            appeal={testAppeal2}
+          />
           <Container
             className={classes.container}
             style={{
@@ -59,8 +64,7 @@ const AppealIdPage = (): ReactElement => {
             }}
           >
             <Box style={{ width: '100%' }}>
-              <AppealDetailsHeader />
-              <AppealDetailsReceived />
+              <AppealDetailsMain appeal={testAppeal2} />
             </Box>
           </Container>
         </Box>
