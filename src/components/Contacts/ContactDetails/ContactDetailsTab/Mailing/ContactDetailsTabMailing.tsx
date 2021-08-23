@@ -119,8 +119,9 @@ export const ContactDetailsTabMailing: React.FC<MailingProp> = ({
                     onClick={() => {
                       setEditingAddressId(primaryAddress.id);
                     }}
+                    aria-label={t('Edit Icon')}
                   >
-                    <AddressEditIcon titleAccess={t('Edit Icon')} />
+                    <AddressEditIcon />
                   </AddressEditIconContainer>
                 </ContactAddressRowContainer>
 
@@ -178,8 +179,9 @@ export const ContactDetailsTabMailing: React.FC<MailingProp> = ({
                         onClick={() => {
                           setEditingAddressId(address.id);
                         }}
+                        aria-label={t('Edit Icon')}
                       >
-                        <AddressEditIcon titleAccess={t('Edit Icon')} />
+                        <AddressEditIcon />
                       </AddressEditIconContainer>
                     </ContactAddressRowContainer>
                     <Typography variant="subtitle1">

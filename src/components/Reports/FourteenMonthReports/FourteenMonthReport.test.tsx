@@ -184,7 +184,11 @@ const mocks = {
 
 const errorMocks = {
   FourteenMonthReport: {},
-  error: { name: 'error', message: 'Error loading data.  Try again.' },
+  error: {
+    hidden: true,
+    name: 'error',
+    message: 'Error loading data.  Try again.',
+  },
 };
 
 describe('FourteenMonthReport', () => {

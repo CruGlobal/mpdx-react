@@ -88,20 +88,15 @@ export const EditContactAddressModal: React.FC<EditContactAddressModalProps> = (
   const onSubmit = async (
     attributes: Omit<AddressUpdateInput, 'contactId'>,
   ) => {
-    try {
-      await updateContactAddress({
-        variables: {
-          accountListId,
-          attributes,
-        },
-      });
-      enqueueSnackbar(t('Address updated successfully'), {
-        variant: 'success',
-      });
-    } catch (error) {
-      enqueueSnackbar(error.message, { variant: 'error' });
-      throw error;
-    }
+    await updateContactAddress({
+      variables: {
+        accountListId,
+        attributes,
+      },
+    });
+    enqueueSnackbar(t('Address updated successfully'), {
+      variant: 'success',
+    });
   };
 
   return (
@@ -166,7 +161,11 @@ export const EditContactAddressModal: React.FC<EditContactAddressModalProps> = (
                           fullWidth
                         >
                           {Object.values(AddressLocationEnum).map((value) => (
-                            <MenuItem key={value} value={value}>
+                            <MenuItem
+                              key={value}
+                              value={value}
+                              aria-label={t(value)}
+                            >
                               {t(value)}
                             </MenuItem>
                           ))}

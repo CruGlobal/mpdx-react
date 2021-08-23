@@ -3,7 +3,6 @@ import { ThemeProvider } from '@material-ui/core';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
-import { GraphQLError } from 'graphql';
 import { SendNewsletterEnum } from '../../../../../../../graphql/types.generated';
 import {
   gqlMock,
@@ -90,7 +89,7 @@ describe('EditContactMailingModal', () => {
     );
 
     expect(getByText('Edit Contact Mailing Details')).toBeInTheDocument();
-    userEvent.click(getByRole('button', { name: 'Close' }));
+    userEvent.click(getByRole('button', { hidden: true, name: 'Close' }));
     expect(handleClose).toHaveBeenCalled();
   });
 
@@ -134,13 +133,20 @@ describe('EditContactMailingModal', () => {
         </ThemeProvider>
       </SnackbarProvider>,
     );
-    userEvent.clear(getByRole('textbox', { name: 'Greeting' }));
-    userEvent.clear(getByRole('textbox', { name: 'Envelope Name Line' }));
-    userEvent.click(getByRole('button', { name: 'Newsletter' }));
-    userEvent.click(getByRole('option', { name: SendNewsletterEnum.Both }));
-    userEvent.type(getByRole('textbox', { name: 'Greeting' }), newGreeting);
+    userEvent.clear(getByRole('textbox', { hidden: true, name: 'Greeting' }));
+    userEvent.clear(
+      getByRole('textbox', { hidden: true, name: 'Envelope Name Line' }),
+    );
+    userEvent.click(getByRole('button', { hidden: true, name: 'Newsletter' }));
+    userEvent.click(
+      getByRole('option', { hidden: true, name: SendNewsletterEnum.Both }),
+    );
     userEvent.type(
-      getByRole('textbox', { name: 'Envelope Name Line' }),
+      getByRole('textbox', { hidden: true, name: 'Greeting' }),
+      newGreeting,
+    );
+    userEvent.type(
+      getByRole('textbox', { hidden: true, name: 'Envelope Name Line' }),
       newEnvelopeGreeting,
     );
     userEvent.click(getByText('Save'));
@@ -158,46 +164,6 @@ describe('EditContactMailingModal', () => {
     expect(operation.variables.attributes.greeting).toEqual(newGreeting);
     expect(operation.variables.attributes.envelopeGreeting).toEqual(
       newEnvelopeGreeting,
-    );
-  });
-
-  it('should handle errors when editing contact mailing details', async () => {
-    const newGreeting = 'New greeting';
-
-    const { getByText, getByRole } = render(
-      <SnackbarProvider>
-        <ThemeProvider theme={theme}>
-          <GqlMockedProvider<UpdateContactMailingMutation>
-            mocks={{
-              UpdateContactMailing: {
-                updateContact: {
-                  contact: new GraphQLError(
-                    'GraphQL Error #42: Error updating contact.',
-                  ),
-                },
-              },
-            }}
-          >
-            <EditContactMailingModal
-              accountListId={accountListId}
-              isOpen={true}
-              handleClose={handleClose}
-              contact={mockContact}
-            />
-          </GqlMockedProvider>
-        </ThemeProvider>
-      </SnackbarProvider>,
-    );
-    userEvent.clear(getByRole('textbox', { name: 'Greeting' }));
-    userEvent.type(getByRole('textbox', { name: 'Greeting' }), newGreeting);
-    userEvent.click(getByText('Save'));
-    await waitFor(() =>
-      expect(mockEnqueue).toHaveBeenCalledWith(
-        'GraphQL Error #42: Error updating contact.',
-        {
-          variant: 'error',
-        },
-      ),
     );
   });
 });

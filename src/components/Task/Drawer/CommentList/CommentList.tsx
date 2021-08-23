@@ -1,7 +1,6 @@
 import React, { ReactElement, useRef, useEffect } from 'react';
 import { makeStyles, Theme, Box, Card, CardContent } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
-import { useSnackbar } from 'notistack';
 import illustration4 from '../../../../images/drawkit/grape/drawkit-grape-pack-illustration-4.svg';
 import TaskDrawerCommentListItem from './Item';
 import TaskDrawerCommentListForm from './Form';
@@ -37,15 +36,11 @@ const TaskDrawerCommentList = ({
 }: Props): ReactElement => {
   const classes = useStyles();
   const { t } = useTranslation();
-  const { enqueueSnackbar } = useSnackbar();
 
   const { data, loading } = useGetCommentsForTaskDrawerCommentListQuery({
     variables: {
       accountListId,
       taskId,
-    },
-    onError: (error) => {
-      enqueueSnackbar(error.message, { variant: 'error' });
     },
   });
 

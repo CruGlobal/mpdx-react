@@ -17,6 +17,7 @@ import PrimaryLayout from '../src/components/Layouts/Primary';
 import Loading from '../src/components/Loading';
 import i18n from '../src/lib/i18n';
 import TaskDrawerProvider from '../src/components/Task/Drawer/TaskDrawerProvider';
+import { SnackbarUtilsConfigurator } from '../src/components/Snackbar/Snackbar';
 
 const handleExitComplete = (): void => {
   if (typeof window !== 'undefined') {
@@ -92,6 +93,7 @@ const App = ({ Component, pageProps, router }: AppProps): ReactElement => {
                   >
                     <TaskDrawerProvider>
                       <Layout>
+                        <SnackbarUtilsConfigurator />
                         <Component {...pageProps} key={router.route} />
                       </Layout>
                     </TaskDrawerProvider>

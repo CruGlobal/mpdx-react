@@ -86,7 +86,7 @@ describe('ContactTaskRow', () => {
       );
 
       expect(await findByText(task.subject)).toBeVisible();
-      userEvent.click(getByRole('img', { name: 'Check Icon' }));
+      userEvent.click(getByRole('img', { hidden: true, name: 'Check Icon' }));
       expect(openTaskDrawer).toHaveBeenCalledWith({
         taskId: task.id,
         showCompleteForm: true,
@@ -110,7 +110,7 @@ describe('ContactTaskRow', () => {
       );
 
       expect(await findByText(task.subject)).toBeVisible();
-      userEvent.click(getByRole('img', { name: 'Comment Icon' }));
+      userEvent.click(getByRole('img', { hidden: true, name: 'Comment Icon' }));
       expect(openTaskDrawer).toHaveBeenCalledWith({
         taskId: task.id,
         specificTab: TaskDrawerTabsEnum.comments,

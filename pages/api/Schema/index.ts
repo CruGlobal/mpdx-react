@@ -15,8 +15,8 @@ import ExpectedMonthlyTotalReportTypeDefs from './reports/expectedMonthlyTotal/e
 import { ExpectedMonthlyTotalReportResolvers } from './reports/expectedMonthlyTotal/resolvers';
 import DesignationAccountsTypeDefs from './reports/designationAccounts/designationAccounts.graphql';
 import { DesignationAccountsResolvers } from './reports/designationAccounts/resolvers';
-import AppealsTypeDefs from './Appeals/appeal.graphql';
-import { AppealsResolvers } from './Appeals/resolver';
+import FinancialAccountsTypeDefs from './reports/financialAccounts/financialAccounts.graphql';
+import { FinancialAccountsResolvers } from './reports/financialAccounts/resolvers';
 
 const schema = buildFederatedSchema([
   {
@@ -40,8 +40,8 @@ const schema = buildFederatedSchema([
     resolvers: DesignationAccountsResolvers,
   },
   {
-    typeDefs: AppealsTypeDefs,
-    resolvers: AppealsResolvers,
+    typeDefs: FinancialAccountsTypeDefs,
+    resolvers: FinancialAccountsResolvers,
   },
 ]);
 

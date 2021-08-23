@@ -124,17 +124,19 @@ describe('TaskDrawerCompleteForm', () => {
         />
       </TestWrapper>,
     );
-    userEvent.click(getByRole('button', { name: 'Result' }));
+    userEvent.click(getByRole('button', { hidden: true, name: 'Result' }));
     userEvent.click(
-      within(getByRole('listbox', { name: 'Result' })).getByText('COMPLETED'),
-    );
-    userEvent.click(getByRole('button', { name: 'Next Action' }));
-    userEvent.click(
-      within(getByRole('listbox', { name: 'Next Action' })).getByText(
-        'APPOINTMENT',
+      within(getByRole('listbox', { hidden: true, name: 'Result' })).getByText(
+        'COMPLETED',
       ),
     );
-    const tagsElement = getByRole('textbox', { name: 'Tags' });
+    userEvent.click(getByRole('button', { hidden: true, name: 'Next Action' }));
+    userEvent.click(
+      within(
+        getByRole('listbox', { hidden: true, name: 'Next Action' }),
+      ).getByText('APPOINTMENT'),
+    );
+    const tagsElement = getByRole('textbox', { hidden: true, name: 'Tags' });
     userEvent.click(tagsElement);
     userEvent.click(
       await within(getByRole('presentation')).findByText('tag-1'),
@@ -173,18 +175,22 @@ describe('TaskDrawerCompleteForm', () => {
       </TestWrapper>,
     );
     let results: ResultEnum[] = [];
-    if (queryByRole('button', { name: 'Result' })) {
-      userEvent.click(getByRole('button', { name: 'Result' }));
-      results = within(getByRole('listbox', { name: 'Result' }))
+    if (queryByRole('button', { hidden: true, name: 'Result' })) {
+      userEvent.click(getByRole('button', { hidden: true, name: 'Result' }));
+      results = within(getByRole('listbox', { hidden: true, name: 'Result' }))
         .getAllByRole('option')
         .map((option) => option.textContent)
         .filter(Boolean) as ResultEnum[];
-      userEvent.click(getByRole('option', { name: 'NONE' }));
+      userEvent.click(getByRole('option', { hidden: true, name: 'NONE' }));
     }
     let nextActions: ActivityTypeEnum[] = [];
-    if (queryByRole('button', { name: 'Next Action' })) {
-      userEvent.click(getByRole('button', { name: 'Next Action' }));
-      nextActions = within(getByRole('listbox', { name: 'Next Action' }))
+    if (queryByRole('button', { hidden: true, name: 'Next Action' })) {
+      userEvent.click(
+        getByRole('button', { hidden: true, name: 'Next Action' }),
+      );
+      nextActions = within(
+        getByRole('listbox', { hidden: true, name: 'Next Action' }),
+      )
         .getAllByRole('option')
         .map((option) => option.textContent)
         .filter(Boolean) as ActivityTypeEnum[];

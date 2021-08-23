@@ -2,12 +2,15 @@ import { Box, CardContent, Typography, makeStyles } from '@material-ui/core';
 import React, { ReactElement } from 'react';
 import StarIcon from '@material-ui/icons/Star';
 import StarOutlineIcon from '@material-ui/icons/StarOutline';
+import NextLink from 'next/link';
+import { useAccountListId } from '../../../../src/hooks/useAccountListId';
 import theme from '../../../../src/theme';
 import AnimatedCard from '../../../../src/components/AnimatedCard';
 import AppealProgressBar from './AppealProgressBar';
 
 export interface Props {
   name: string;
+  id: string;
   primary: boolean;
   amount: number;
   amountCurrency: string;
@@ -51,10 +54,20 @@ const useStyles = makeStyles(() => ({
     borderRadius: 8,
     overflowX: 'hidden',
   },
+  nameLink: {
+    '& a': {
+      textDecoration: 'none',
+      color: theme.palette.mpdxBlue.main,
+      '&:hover': {
+        textDecoration: 'underline',
+      },
+    },
+  },
 }));
 
 const Appeal = ({
   name,
+  id,
   primary,
   amount,
   amountCurrency,
@@ -63,14 +76,24 @@ const Appeal = ({
   commited,
 }: Props): ReactElement => {
   const classes = useStyles();
+  const accountListId = useAccountListId();
 
   return (
     <Box m={1}>
       <AnimatedCard>
         <CardContent className={classes.cardContent}>
           <Box display="flex" justifyContent="space-between">
-            <Typography variant="h6" display="inline">
-              {name}
+            <Typography
+              variant="h6"
+              display="inline"
+              className={classes.nameLink}
+            >
+              <NextLink
+                href={`/accountLists/${accountListId}/tools/appeals/${id}`}
+                scroll={false}
+              >
+                {name}
+              </NextLink>
             </Typography>
             <Box>
               <Typography variant="h6" display="inline">

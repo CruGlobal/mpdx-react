@@ -27,7 +27,10 @@ const prayerRequestTasks: GetThisWeekQuery['prayerRequestTasks'] = {
       subject: 'the quick brown fox jumps over the lazy dog',
       activityType: ActivityTypeEnum.PrayerRequest,
       contacts: {
-        nodes: [{ name: 'Roger Smith' }, { name: 'Sarah Smith' }],
+        nodes: [
+          { hidden: true, name: 'Roger Smith' },
+          { hidden: true, name: 'Sarah Smith' },
+        ],
       },
       startAt: null,
       completedAt: null,
@@ -37,7 +40,10 @@ const prayerRequestTasks: GetThisWeekQuery['prayerRequestTasks'] = {
       subject: 'on the boat to see uncle johnny',
       activityType: ActivityTypeEnum.PrayerRequest,
       contacts: {
-        nodes: [{ name: 'Roger Parker' }, { name: 'Sarah Parker' }],
+        nodes: [
+          { hidden: true, name: 'Roger Parker' },
+          { hidden: true, name: 'Sarah Parker' },
+        ],
       },
       startAt: null,
       completedAt: null,
@@ -231,7 +237,9 @@ describe('PartnerCare', () => {
     expect(getByTestId('PartnerCareTabPrayer').textContent).toEqual(
       'Prayer (2,560)',
     );
-    userEvent.click(queryAllByRole('button', { name: 'Complete Button' })[0]);
+    userEvent.click(
+      queryAllByRole('button', { hidden: true, name: 'Complete Button' })[0],
+    );
     expect(openTaskDrawer).toHaveBeenCalledWith({
       taskId: 'task_1',
       showCompleteForm: true,
@@ -258,7 +266,9 @@ describe('PartnerCare', () => {
     expect(
       getByTestId('PartnerCareBirthdayListItem-person_2').textContent,
     ).toEqual('John DoeJan 1');
-    userEvent.click(queryAllByRole('button', { name: 'Complete Button' })[0]);
+    userEvent.click(
+      queryAllByRole('button', { hidden: true, name: 'Complete Button' })[0],
+    );
     expect(openTaskDrawer).toHaveBeenCalledWith({
       defaultValues: {
         subject: "John Doe's Birthday",
@@ -286,7 +296,9 @@ describe('PartnerCare', () => {
     expect(
       queryByTestId('PartnerCareAnniversaryListItem-person_4'),
     ).not.toBeInTheDocument();
-    userEvent.click(queryAllByRole('button', { name: 'Complete Button' })[2]);
+    userEvent.click(
+      queryAllByRole('button', { hidden: true, name: 'Complete Button' })[2],
+    );
     expect(openTaskDrawer).toHaveBeenCalledWith({
       defaultValues: {
         subject: "John and Sarah, Doe's Anniversary",

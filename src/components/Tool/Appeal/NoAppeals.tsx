@@ -2,6 +2,7 @@ import { Box, CardContent, Typography } from '@material-ui/core';
 import React, { ReactElement } from 'react';
 import Icon from '@mdi/react';
 import { mdiAlertCircleOutline } from '@mdi/js';
+import { useTranslation } from 'react-i18next';
 import AnimatedCard from '../../../../src/components/AnimatedCard';
 
 export interface Props {
@@ -9,6 +10,8 @@ export interface Props {
 }
 
 const NoAppeals = ({ primary }: Props): ReactElement => {
+  const { t } = useTranslation();
+
   return (
     <Box m={1}>
       <AnimatedCard>
@@ -23,8 +26,8 @@ const NoAppeals = ({ primary }: Props): ReactElement => {
             <Icon path={mdiAlertCircleOutline} size={3} />
             <Typography variant="h6">
               {primary
-                ? 'You do not have a primary appeal.'
-                : 'You do not have any appeals.'}
+                ? t('You do not have a primary appeal.')
+                : t('You do not have any appeals.')}
             </Typography>
           </Box>
         </CardContent>

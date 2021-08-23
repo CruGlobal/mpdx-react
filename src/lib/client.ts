@@ -5,9 +5,11 @@ import {
   NormalizedCacheObject,
 } from '@apollo/client';
 import { relayStylePagination } from '@apollo/client/utilities';
+import { onError } from '@apollo/client/link/error';
 import { persistCache, LocalStorageWrapper } from 'apollo3-cache-persist';
 import fetch from 'isomorphic-fetch';
 import generatedIntrospection from '../../graphql/possibleTypes.generated';
+import snackNotifications from '../components/Snackbar/Snackbar';
 
 export const cache = new InMemoryCache({
   possibleTypes: generatedIntrospection.possibleTypes,
@@ -25,6 +27,14 @@ const httpLink = createHttpLink({
   fetch,
 });
 
+const errorLink = onError(({ graphQLErrors, networkError }) => {
+  if (graphQLErrors) {
+    graphQLErrors.map(({ message }) => snackNotifications.error(message));
+  }
+
+  if (networkError) snackNotifications.error(networkError.message);
+});
+
 if (process.browser && process.env.NODE_ENV === 'production') {
   persistCache({
     cache,
@@ -33,7 +43,7 @@ if (process.browser && process.env.NODE_ENV === 'production') {
 }
 
 const client = new ApolloClient({
-  link: httpLink,
+  link: errorLink.concat(httpLink),
   cache,
 });
 
@@ -50,7 +60,7 @@ export const ssrClient = (
   });
 
   return new ApolloClient({
-    link: httpLink,
+    link: errorLink.concat(httpLink),
     ssrMode: true,
     cache: new InMemoryCache({
       possibleTypes: generatedIntrospection.possibleTypes,

@@ -2,43 +2,37 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import { ThemeProvider } from '@material-ui/core';
 import userEvent from '@testing-library/user-event';
-import { DesignationAccountListItem as ListItem } from './ListItem';
+import { AccountListItem as ListItem } from './ListItem';
 import theme from 'src/theme';
 
 const onCheckToggle = jest.fn();
 
-const designationAccount = {
+const account = {
   active: false,
   id: 'test-id-111',
-  balanceUpdatedAt: '2/2/2021',
-  convertedBalance: 3500,
+  balance: 3500,
+  code: '32111',
   currency: 'CAD',
-  designationNumber: '10139',
+  lastSyncDate: '2/2/2021',
   name: 'Test Account',
 };
 
-describe('DesignationAccountItem', () => {
+describe('AccountItem', () => {
   it('default', async () => {
     const { getByRole, getByText } = render(
       <ThemeProvider theme={theme}>
-        <ListItem
-          designationAccount={designationAccount}
-          onCheckToggle={onCheckToggle}
-        />
+        <ListItem account={account} onCheckToggle={onCheckToggle} />
       </ThemeProvider>,
     );
 
     expect(getByRole('checkbox')).not.toBeChecked();
-    expect(getByText(designationAccount.name)).toBeInTheDocument();
+    expect(getByText(account.name)).toBeInTheDocument();
   });
 
   it('should be check event called', async () => {
     const { getByRole } = render(
       <ThemeProvider theme={theme}>
-        <ListItem
-          designationAccount={designationAccount}
-          onCheckToggle={onCheckToggle}
-        />
+        <ListItem account={account} onCheckToggle={onCheckToggle} />
       </ThemeProvider>,
     );
 

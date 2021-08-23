@@ -9,17 +9,12 @@ import {
   Box,
   Typography,
   Divider,
-  CircularProgress,
 } from '@material-ui/core';
 import { motion } from 'framer-motion';
 import NavToolDrawer from '../../../../src/components/Tool/NavToolList/NavToolDrawer';
-import Appeal from '../../../../src/components/Tool/Appeal/Appeal';
 import Appeals from '../../../../src/components/Tool/Appeal/Appeals';
-import { useGetPrimaryAppealQuery } from '../../../../pages/accountLists/[accountListId]/tools/GetPrimaryAppeal.generated';
-import { useAccountListId } from '../../../../src/hooks/useAccountListId';
 
 import AddAppealForm from '../../../../src/components/Tool/Appeal/AddAppealForm';
-import NoAppeals from '../../../../src/components/Tool/Appeal/NoAppeals';
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
@@ -52,10 +47,6 @@ const AppealsPage = (): ReactElement => {
   const { t } = useTranslation();
   const [isNavListOpen, setNavListOpen] = useState<boolean>(true);
   const classes = useStyles();
-  const accountListId = useAccountListId();
-  const { data, loading } = useGetPrimaryAppealQuery({
-    variables: { id: accountListId || '' },
-  });
 
   const handleNavListToggle = () => {
     setNavListOpen(!isNavListOpen);
@@ -118,62 +109,7 @@ const AppealsPage = (): ReactElement => {
               </Grid>
 
               <Grid item xs={12} sm={12} md={6}>
-                {loading ? (
-                  <Box display="flex" justifyContent="center" mt={10}>
-                    <CircularProgress
-                      color="primary"
-                      size={40}
-                      className={classes.loadingIndicator}
-                    />
-                  </Box>
-                ) : (
-                  data && (
-                    <>
-                      <Box m={1}>
-                        <Typography variant="h6">
-                          {t('Primary Appeal')}
-                        </Typography>
-                      </Box>
-                      <Divider />
-                      {data.accountList.primaryAppeal ? (
-                        <Appeal
-                          name={data.accountList.primaryAppeal.name || ''}
-                          primary
-                          amount={data.accountList.primaryAppeal.amount || 0}
-                          amountCurrency={
-                            data.accountList.primaryAppeal.amountCurrency
-                          }
-                          given={
-                            data.accountList.primaryAppeal
-                              .pledgesAmountProcessed || 0
-                          }
-                          received={
-                            data.accountList.primaryAppeal
-                              .pledgesAmountReceivedNotProcessed || 0
-                          }
-                          commited={
-                            data.accountList.primaryAppeal
-                              .pledgesAmountNotReceivedNotProcessed || 0
-                          }
-                          total={
-                            data.accountList.primaryAppeal.pledgesAmountTotal ||
-                            0
-                          }
-                        />
-                      ) : (
-                        <NoAppeals primary />
-                      )}
-                      <Divider />
-                      <Appeals
-                        primaryId={
-                          data.accountList.primaryAppeal
-                            ? data.accountList.primaryAppeal.id
-                            : ''
-                        }
-                      />
-                    </>
-                  )
-                )}
+                <Appeals />
               </Grid>
               <Grid item xs={12} sm={12} md={6}>
                 <Box>
