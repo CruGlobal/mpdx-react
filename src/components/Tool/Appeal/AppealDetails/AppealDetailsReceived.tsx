@@ -5,8 +5,9 @@ import Icon from '@mdi/react';
 import { mdiSquareEditOutline, mdiDelete } from '@mdi/js';
 import i18n from 'i18next';
 import { useAppealContext } from '../AppealContextProvider/AppealContextProvider';
-
 import theme from '../../../../theme';
+import { TestAppeal } from '../../../../../pages/accountLists/[accountListId]/tools/appeals/testAppeal';
+import AppealDetailsNoData from './AppealDetailsNoData';
 
 const useStyles = makeStyles(() => ({
   container: {
@@ -93,43 +94,46 @@ const columns = [
   },
 ];
 
-const rows = [
-  {
-    id: 1,
-    contact: 'Test 123',
-    amount: '500.00 CAD',
-    date: '06/14/2021',
-  },
-  { id: 2, contact: 'vvvv', amount: '5000.00 CAD', date: '06/22/2020' },
-  { id: 3, contact: 'asdasd', amount: '212.00 CAD', date: '06/13/2021' },
-  { id: 4, contact: 'test 1234', amount: '1.00 CAD', date: '03/14/2021' },
-  { id: 5, contact: 'true', amount: '500.34 CAD', date: '02/14/1999' },
-];
+export interface Props {
+  appeal: TestAppeal;
+}
 
-const AppealDetailsReceived = (): ReactElement => {
+const AppealDetailsReceived = ({ appeal }: Props): ReactElement => {
   const classes = useStyles();
   const { appealState, setAppealState } = useAppealContext();
+
+  const rows = appeal.received.map((donation, index) => ({
+    id: index,
+    contact: donation.name,
+    amount: `${donation.amount.toFixed(2)} ${donation.currency}`,
+    date: donation.date,
+  }));
 
   const updateSelected = (e: GridSelectionModel): void => {
     const temp: string[] = [];
     for (const x of e) {
-      temp.push(rows[parseInt(x.toString()) - 1].contact);
+      temp.push(rows[parseInt(x.toString())].contact);
     }
     setAppealState({ ...appealState, selected: [...temp] });
   };
-
   return (
-    <Box component="div" className={classes.container}>
-      <DataGrid
-        rows={rows}
-        columns={columns}
-        checkboxSelection
-        pageSize={25}
-        rowsPerPageOptions={[10, 25, 50, 100]}
-        disableSelectionOnClick
-        onSelectionModelChange={updateSelected}
-      />
-    </Box>
+    <>
+      {appeal.received.length > 0 ? (
+        <Box component="div" className={classes.container}>
+          <DataGrid
+            rows={rows}
+            columns={columns}
+            checkboxSelection
+            pageSize={25}
+            rowsPerPageOptions={[10, 25, 50, 100]}
+            disableSelectionOnClick
+            onSelectionModelChange={updateSelected}
+          />
+        </Box>
+      ) : (
+        <AppealDetailsNoData />
+      )}
+    </>
   );
 };
 
