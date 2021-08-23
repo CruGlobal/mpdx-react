@@ -29,7 +29,7 @@ import { PersonShowMore } from './PersonShowMore/PersonShowMore';
 import {
   useCreatePersonMutation,
   useUpdatePersonMutation,
-} from './EditPersonModal.generated';
+} from './PersonModal.generated';
 
 const ContactPersonContainer = styled(Box)(({ theme }) => ({
   margin: theme.spacing(2, 0),
@@ -63,19 +63,19 @@ const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
   margin: theme.spacing(0, 1, 0, 0),
 }));
 
-interface EditPersonModalProps {
+interface PersonModalProps {
   person?: ContactDetailsTabQuery['contact']['people']['nodes'][0];
   contactId: string;
   accountListId: string;
   handleClose: () => void;
 }
 
-export const EditPersonModal: React.FC<EditPersonModalProps> = ({
+export const PersonModal: React.FC<PersonModalProps> = ({
   person,
   contactId,
   accountListId,
   handleClose,
-}): ReactElement<EditPersonModalProps> => {
+}): ReactElement<PersonModalProps> => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
   const [personEditShowMore, setPersonEditShowMore] = useState(false);

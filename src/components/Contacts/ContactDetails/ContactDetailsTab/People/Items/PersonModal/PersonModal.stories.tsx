@@ -7,11 +7,11 @@ import {
   ContactPeopleFragmentDoc,
 } from '../../ContactPeople.generated';
 import theme from '../../../../../../../theme';
-import { EditPersonModal } from './EditPersonModal';
+import { PersonModal } from './PersonModal';
 
 export default {
-  title: 'Contacts/Tab/ContactDetailsTab/People/Items/EditPersonModal',
-  component: EditPersonModal,
+  title: 'Contacts/Tab/ContactDetailsTab/People/Items/PersonModal',
+  component: PersonModal,
 };
 
 export const Default = (): ReactElement => {
@@ -27,7 +27,7 @@ export const Default = (): ReactElement => {
     <MuiThemeProvider theme={theme}>
       <Box m={2}>
         {modalOpen ? (
-          <EditPersonModal
+          <PersonModal
             person={mockPerson}
             contactId={contactId}
             accountListId={accountListId}

@@ -16,7 +16,7 @@ import {
   ContactPeopleFragment,
   ContactPersonFragment,
 } from './ContactPeople.generated';
-import { EditPersonModal } from './Items/EditPersonModal/EditPersonModal';
+import { PersonModal } from './Items/PersonModal/PersonModal';
 
 const ContactPersonAvatar = styled(Avatar)(({ theme }) => ({
   margin: theme.spacing(1),
@@ -175,7 +175,7 @@ export const ContactDetailsTabPeople: React.FC<ContactDetailsPeopleProp> = ({
           ) : null}
         </ContactPersonTextContainer>
         {editPersonModalOpen === person.id ? (
-          <EditPersonModal
+          <PersonModal
             person={person}
             contactId={id}
             accountListId={accountListId}
@@ -199,7 +199,7 @@ export const ContactDetailsTabPeople: React.FC<ContactDetailsPeopleProp> = ({
         </Grid>
       </Box>
       {createPersonModalOpen ? (
-        <EditPersonModal
+        <PersonModal
           person={undefined}
           contactId={id}
           accountListId={accountListId}
