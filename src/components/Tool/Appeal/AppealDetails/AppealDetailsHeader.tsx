@@ -16,6 +16,7 @@ import { useAccountListId } from '../../../../../src/hooks/useAccountListId';
 import theme from '../../../../theme';
 import AppealProgressBar from '../AppealProgressBar';
 import { useAppealContext } from '../AppealContextProvider/AppealContextProvider';
+import { TestAppeal } from '../../../../../pages/accountLists/[accountListId]/tools/appeals/testAppeal';
 
 const useStyles = makeStyles(() => ({
   container: {
@@ -40,7 +41,11 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const AppealDetailsHeader = (): ReactElement => {
+export interface Props {
+  appeal: TestAppeal;
+}
+
+const AppealDetailsHeader = ({ appeal }: Props): ReactElement => {
   const classes = useStyles();
   const { t } = useTranslation();
   const accountListId = useAccountListId();
@@ -93,19 +98,6 @@ const AppealDetailsHeader = (): ReactElement => {
             </Button>
           </ButtonGroup>
         </Box>
-        <Box>
-          <Button
-            variant="outlined"
-            onClick={() =>
-              setAppealState({
-                ...appealState,
-                selected: [...appealState.selected, 'aaa'],
-              })
-            }
-          >
-            Select All
-          </Button>
-        </Box>
       </Box>
       <Box
         display="flex"
@@ -117,7 +109,7 @@ const AppealDetailsHeader = (): ReactElement => {
             <Box ml={2} mr={2}>
               <TextField
                 label="Name"
-                defaultValue="Test Appeal 123"
+                defaultValue={appeal.name}
                 style={{ width: '100%' }}
                 InputProps={{
                   classes: {
@@ -131,7 +123,7 @@ const AppealDetailsHeader = (): ReactElement => {
             <Box ml={2} mr={2}>
               <TextField
                 label="Goal"
-                defaultValue="4613.18"
+                defaultValue={appeal.goal.toFixed(2)}
                 style={{ width: '100%' }}
                 InputProps={{
                   classes: {
@@ -144,11 +136,11 @@ const AppealDetailsHeader = (): ReactElement => {
           <Grid item xs={12} md={4}>
             <Box ml={2} mr={2}>
               <AppealProgressBar
-                given={0}
-                received={500}
-                commited={0}
-                amount={4613.18}
-                amountCurrency={'CAD'}
+                given={appeal.givenTotal}
+                received={appeal.receivedTotal}
+                commited={appeal.committedTotal}
+                amount={appeal.goal}
+                amountCurrency={appeal.currency}
               />
             </Box>
           </Grid>
