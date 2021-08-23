@@ -4,11 +4,16 @@ import { Box, CircularProgress, Divider, styled } from '@material-ui/core';
 import { AccountsListHeader as Header } from '../AccountsListLayout/Header/Header';
 import { AccountsList as List } from '../AccountsListLayout/List/List';
 import type { Account } from '../AccountsListLayout/List/ListItem/ListItem';
-import { useFinancialAccountsQuery } from './GetFinancialAccounts.generated';
+import {
+  FinancialAccountsDocument,
+  FinancialAccountsQuery,
+  useFinancialAccountsQuery,
+} from './GetFinancialAccounts.generated';
 import type {
   FinancialAccountsGroup,
   PreFinancialAccountsGroup,
 } from './ResponsibilityCentersReport.type';
+import { useSetActiveFinancialAccountMutation } from './SetActiveFinancialAccount.generated';
 import { Notification } from 'src/components/Notification/Notification';
 import { EmptyReport } from 'src/components/Reports/EmptyReport/EmptyReport';
 import { currencyFormat } from 'src/lib/intlFormat';
@@ -41,13 +46,13 @@ export const ResponsibilityCentersReport: React.FC<Props> = ({
 
   const financialAccountsGroups = useMemo(() => {
     if (data) {
-      const preFinancialAccountsGroup = data.financialAccounts.edges.reduce<PreFinancialAccountsGroup>(
+      const preFinancialAccountsGroup = data.financialAccounts.nodes.reduce<PreFinancialAccountsGroup>(
         (obj, item) => {
           return {
             ...obj,
-            [item.node?.organization?.name ?? '']: [
-              ...(obj[item.node?.organization?.name ?? ''] || []),
-              item.node,
+            [item?.organization?.name ?? '']: [
+              ...(obj[item?.organization?.name ?? ''] || []),
+              item,
             ],
           };
         },
@@ -64,8 +69,55 @@ export const ResponsibilityCentersReport: React.FC<Props> = ({
     }
   }, [data]);
 
-  const handleCheckToggle = () => {
-    return;
+  const [setActiveFinancialAccount] = useSetActiveFinancialAccountMutation();
+
+  const handleCheckToggle = (
+    event: React.ChangeEvent<HTMLInputElement>,
+    accountId: string,
+  ) => {
+    setActiveFinancialAccount({
+      variables: {
+        input: {
+          accountListId,
+          active: event.target.checked,
+          financialAccountId: accountId,
+        },
+      },
+      optimisticResponse: {
+        setActiveFinancialAccount: {
+          id: accountId,
+          active: event.target.checked,
+          __typename: 'SetActiveFinancialAccountRest',
+        },
+      },
+      update: (cache) => {
+        const query = {
+          query: FinancialAccountsDocument,
+          variables: {
+            accountListId,
+          },
+        };
+
+        const dataFromCache = cache.readQuery<FinancialAccountsQuery>(query);
+
+        const data = {
+          financialAccounts: {
+            ...dataFromCache?.financialAccounts,
+            nodes: dataFromCache?.financialAccounts.nodes.map(
+              (financialAccount) => ({
+                ...financialAccount,
+                active:
+                  financialAccount.id === accountId
+                    ? event.target.checked
+                    : financialAccount.active,
+              }),
+            ),
+          },
+        };
+
+        cache.writeQuery({ ...query, data });
+      },
+    });
   };
 
   const totalBalance = useMemo(() => {
@@ -108,7 +160,7 @@ export const ResponsibilityCentersReport: React.FC<Props> = ({
         </Box>
       ) : error ? (
         <Notification type="error" message={error.toString()} />
-      ) : data?.financialAccounts.edges.length === 0 ? (
+      ) : data?.financialAccounts.nodes.length === 0 ? (
         <EmptyReport
           hasAddNewDonation={false}
           title={t('You have no financial accounts')}
