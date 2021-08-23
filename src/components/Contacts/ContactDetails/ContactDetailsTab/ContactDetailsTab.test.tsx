@@ -205,6 +205,56 @@ describe('ContactDetailTab', () => {
     );
   });
 
+  it('should open edit person modal', async () => {
+    const { queryByText, getAllByLabelText } = render(
+      <SnackbarProvider>
+        <TestRouter router={router}>
+          <MuiPickersUtilsProvider utils={LuxonUtils}>
+            <ThemeProvider theme={theme}>
+              <GqlMockedProvider<ContactDetailsTabQuery>>
+                <ContactDetailsTab
+                  accountListId={accountListId}
+                  contactId={contactId}
+                  onClose={onClose}
+                />
+              </GqlMockedProvider>
+            </ThemeProvider>
+          </MuiPickersUtilsProvider>
+        </TestRouter>
+      </SnackbarProvider>,
+    );
+    await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());
+    userEvent.click(getAllByLabelText('Edit Icon')[1]);
+    await waitFor(() => expect(queryByText('Edit Person')).toBeInTheDocument());
+  });
+
+  it('should close edit person modal', async () => {
+    const { queryByText, getAllByLabelText, getByLabelText } = render(
+      <SnackbarProvider>
+        <TestRouter router={router}>
+          <MuiPickersUtilsProvider utils={LuxonUtils}>
+            <ThemeProvider theme={theme}>
+              <GqlMockedProvider<ContactDetailsTabQuery>>
+                <ContactDetailsTab
+                  accountListId={accountListId}
+                  contactId={contactId}
+                  onClose={onClose}
+                />
+              </GqlMockedProvider>
+            </ThemeProvider>
+          </MuiPickersUtilsProvider>
+        </TestRouter>
+      </SnackbarProvider>,
+    );
+    await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());
+    userEvent.click(getAllByLabelText('Edit Icon')[1]);
+    await waitFor(() => expect(queryByText('Edit Person')).toBeInTheDocument());
+    userEvent.click(getByLabelText('Close'));
+    await waitFor(() =>
+      expect(queryByText('Edit Person')).not.toBeInTheDocument(),
+    );
+  });
+
   it('should open create person modal', async () => {
     const { queryByText, getByText } = render(
       <SnackbarProvider>

@@ -273,62 +273,56 @@ export const PersonModal: React.FC<PersonModalProps> = ({
     const isUpdate = (
       attributes: PersonCreateInput | PersonUpdateInput,
     ): attributes is PersonUpdateInput => !!person;
-    try {
-      if (isUpdate(attributes)) {
-        await updatePerson({
-          variables: {
-            accountListId,
-            attributes,
-          },
-        });
-        enqueueSnackbar(t('Person updated successfully'), {
-          variant: 'success',
-        });
-      } else {
-        await createPerson({
-          variables: {
-            accountListId,
-            attributes,
-          },
-          update: (cache, { data: createdContactData }) => {
-            const query = {
-              query: ContactDetailsTabDocument,
-              variables: {
-                accountListId,
-                contactId,
+
+    if (isUpdate(attributes)) {
+      await updatePerson({
+        variables: {
+          accountListId,
+          attributes,
+        },
+      });
+      enqueueSnackbar(t('Person updated successfully'), {
+        variant: 'success',
+      });
+    } else {
+      await createPerson({
+        variables: {
+          accountListId,
+          attributes,
+        },
+        update: (cache, { data: createdContactData }) => {
+          const query = {
+            query: ContactDetailsTabDocument,
+            variables: {
+              accountListId,
+              contactId,
+            },
+          };
+          const dataFromCache = cache.readQuery<ContactDetailsTabQuery>(query);
+
+          if (dataFromCache) {
+            const data = {
+              ...dataFromCache,
+              contact: {
+                ...dataFromCache.contact,
+                people: {
+                  ...dataFromCache.contact.people,
+                  nodes: [
+                    ...dataFromCache.contact.people.nodes,
+                    { ...createdContactData?.createPerson?.person },
+                  ],
+                },
               },
             };
-            const dataFromCache = cache.readQuery<ContactDetailsTabQuery>(
-              query,
-            );
-
-            if (dataFromCache) {
-              const data = {
-                ...dataFromCache,
-                contact: {
-                  ...dataFromCache.contact,
-                  people: {
-                    ...dataFromCache.contact.people,
-                    nodes: [
-                      ...dataFromCache.contact.people.nodes,
-                      { ...createdContactData?.createPerson?.person },
-                    ],
-                  },
-                },
-              };
-              cache.writeQuery({ ...query, data });
-            }
-            enqueueSnackbar(t('Person created successfully'), {
-              variant: 'success',
-            });
-          },
-        });
-      }
-      handleClose();
-    } catch (error) {
-      enqueueSnackbar(error.message, { variant: 'error' });
-      throw error;
+            cache.writeQuery({ ...query, data });
+          }
+          enqueueSnackbar(t('Person created successfully'), {
+            variant: 'success',
+          });
+        },
+      });
     }
+    handleClose();
   };
 
   return (
