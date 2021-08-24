@@ -64,7 +64,7 @@ const columns = [
   },
   {
     field: 'reason',
-    headerName: i18n.t('Regular Giving'),
+    headerName: i18n.t('Reason'),
     flex: 1,
   },
   {
