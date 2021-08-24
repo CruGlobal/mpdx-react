@@ -2,7 +2,10 @@ query GetContactsForTaskDrawerContactList(
   $accountListId: ID!
   $contactIds: [ID!]
 ) {
-  contacts(accountListId: $accountListId, ids: $contactIds) {
+  contacts(
+    accountListId: $accountListId
+    contactsFilter: { ids: $contactIds }
+  ) {
     nodes {
       id
       name
