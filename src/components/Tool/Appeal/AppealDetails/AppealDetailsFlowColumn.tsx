@@ -58,7 +58,7 @@ const AppealsDetailFlowColumn = ({
               <Grid container>
                 <Grid item xs={2}>
                   <Box
-                    p={2}
+                    p={1}
                     display="flex"
                     justifyContent="center"
                     alignItems="center"
@@ -67,12 +67,20 @@ const AppealsDetailFlowColumn = ({
                   </Box>
                 </Grid>
                 <Grid item xs={10}>
-                  <Box display="flex" flexDirection="column" p={2}>
+                  <Box
+                    display="flex"
+                    flexDirection="column"
+                    style={{ padding: '8px 8px 8px 0px' }}
+                  >
                     <Typography>{entry.name}</Typography>
                   </Box>
                 </Grid>
                 <Grid item xs={12}>
-                  <Box display="flex" justifyContent="space-between" p={1}>
+                  <Box
+                    display="flex"
+                    justifyContent="space-between"
+                    style={{ padding: '0px 8px 8px 8px' }}
+                  >
                     <Typography>
                       {entry.amount.toFixed(2)} {entry.currency}
                     </Typography>
@@ -99,7 +107,11 @@ const AppealsDetailFlowColumn = ({
                   </Box>
                 </Grid>
                 <Grid item xs={10}>
-                  <Box display="flex" flexDirection="column" p={2}>
+                  <Box
+                    display="flex"
+                    flexDirection="column"
+                    style={{ padding: '16px 8px 16px 0px' }}
+                  >
                     <Typography>{entry.name}</Typography>
                   </Box>
                 </Grid>
@@ -119,7 +131,11 @@ const AppealsDetailFlowColumn = ({
                   </Box>
                 </Grid>
                 <Grid item xs={10}>
-                  <Box display="flex" flexDirection="column" p={2}>
+                  <Box
+                    display="flex"
+                    flexDirection="column"
+                    style={{ padding: '8px 8px 8px 0px' }}
+                  >
                     <Typography>{entry.name}</Typography>
                     {entry.reason.map((reason) => (
                       <Typography variant="body2" key={reason}>
