@@ -1,0 +1,17 @@
+extend type Query {
+  entryHistories(
+    accountListId: ID!
+    financialAccountIds: [ID!]!
+  ): [EntryHistoriesGroup!]
+}
+
+type EntryHistoriesGroup {
+  financialAccountId: ID!
+  entryHistories: [EntryHistoryRest!]
+}
+
+type EntryHistoryRest {
+  closingBalance: Float!
+  endDate: String!
+  id: String!
+}
