@@ -61,21 +61,25 @@ const columns = [
   {
     field: 'contact',
     headerName: i18n.t('Contact'),
+    minWidth: 200,
     flex: 1,
   },
   {
     field: 'donation',
     headerName: i18n.t('Donation(s)'),
+    minWidth: 200,
     flex: 1,
   },
   {
     field: 'date',
     headerName: i18n.t('Date'),
+    minWidth: 200,
     flex: 1,
   },
   {
     field: 'actions',
     headerName: i18n.t('Actions'),
+    minWidth: 100,
     flex: 0.3,
     sortable: false,
     renderCell: function renderActions() {
