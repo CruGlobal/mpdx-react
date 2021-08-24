@@ -59,9 +59,11 @@ query GetThisWeek(
   latePledgeContacts: contacts(
     accountListId: $accountListId
     first: 3
-    lateAt: { max: $today }
-    status: PARTNER_FINANCIAL
-    pledgeReceived: true
+    contactsFilter: {
+      lateAt: { max: $today }
+      status: PARTNER_FINANCIAL
+      pledgeReceived: true
+    }
   ) {
     nodes {
       id
@@ -109,8 +111,7 @@ query GetThisWeek(
   recentReferrals: contacts(
     accountListId: $accountListId
     first: 3
-    referrer: ["any"]
-    createdAt: { min: $twoWeeksAgo }
+    contactsFilter: { referrer: ["any"], createdAt: { min: $twoWeeksAgo } }
   ) {
     nodes {
       id
@@ -121,13 +122,15 @@ query GetThisWeek(
   onHandReferrals: contacts(
     accountListId: $accountListId
     first: 3
-    status: [
-      NEVER_CONTACTED
-      ASK_IN_FUTURE
-      CULTIVATE_RELATIONSHIP
-      CONTACT_FOR_APPOINTMENT
-    ]
-    referrer: ["any"]
+    contactsFilter: {
+      status: [
+        NEVER_CONTACTED
+        ASK_IN_FUTURE
+        CULTIVATE_RELATIONSHIP
+        CONTACT_FOR_APPOINTMENT
+      ]
+      referrer: ["any"]
+    }
   ) {
     nodes {
       id
