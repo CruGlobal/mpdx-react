@@ -25,7 +25,7 @@ export const ToolsList = [
           'Set goals, create asks, and track progress for one-time needs',
         ),
         icon: mdiTrophy,
-        id: 'appeal',
+        id: 'appeals',
       },
     ],
   },
