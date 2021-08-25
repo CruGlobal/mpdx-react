@@ -18,7 +18,7 @@ import { contactTags } from './InputOptions/ContactTags';
 import { frequencies } from './InputOptions/Frequencies';
 
 const useStyles = makeStyles(() => ({
-  test: {
+  right: {
     display: 'flex',
     justifyContent: 'flex-start',
     alignItems: 'center',
@@ -28,7 +28,7 @@ const useStyles = makeStyles(() => ({
       borderRight: `1px solid ${theme.palette.cruGrayMedium.main}`,
     },
   },
-  test2: {
+  left: {
     height: '100%',
     [theme.breakpoints.up('md')]: {
       borderTop: `1px solid ${theme.palette.cruGrayMedium.main}`,
@@ -109,8 +109,13 @@ const Contact = ({
   //TODO: Add button functionality
   //TODO: Show donation history
 
-  const handleChange = (event, props): void => {
-    setValues((prevState) => ({ ...prevState, [props]: event.value }));
+  const handleChange = (
+    event:
+      | React.ChangeEvent<HTMLSelectElement>
+      | React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
+    props: string,
+  ): void => {
+    setValues((prevState) => ({ ...prevState, [props]: event.target.value }));
   };
 
   return (
@@ -121,7 +126,7 @@ const Contact = ({
             display="flex"
             p={2}
             alignItems="center"
-            className={classes.test2}
+            className={classes.left}
           >
             <Avatar
               src=""
@@ -138,7 +143,7 @@ const Contact = ({
             </Box>
           </Box>
         </Grid>
-        <Grid item xs={12} md={5} className={classes.test}>
+        <Grid item xs={12} md={5} className={classes.right}>
           <Grid container style={{ paddingRight: theme.spacing(1) }}>
             <Grid item xs={12}>
               <Box className={classes.boxTop}>
