@@ -109,7 +109,7 @@ const AppealDetailsGiven = ({ appeal }: Props): ReactElement => {
   const rows = appeal.given.map((donation, index) => ({
     id: index,
     contact: donation.name,
-    donation: `${donation.amount.toFixed(2)} ${donation.currency}`,
+    donation: `${donation.amount?.toFixed(2)} ${donation.currency}`,
     date: donation.date,
   }));
 

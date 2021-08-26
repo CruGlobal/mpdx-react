@@ -105,7 +105,7 @@ const AppealDetailsExcluded = ({ appeal }: Props): ReactElement => {
     id: index,
     contact: contact.name,
     reason: contact.reason,
-    regularGiving: `${contact.regularGiving.toFixed(2)} ${contact.currency} ${
+    regularGiving: `${contact.regularGiving?.toFixed(2)} ${contact.currency} ${
       contact.frequency ? contact.frequency : ''
     }`,
   }));
