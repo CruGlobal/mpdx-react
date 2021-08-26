@@ -103,7 +103,7 @@ const AppealDetailsAsked = ({ appeal }: Props): ReactElement => {
   const rows = appeal.asked.map((contact, index) => ({
     id: index,
     contact: contact.name,
-    regularGiving: `${contact.regularGiving.toFixed(2)} ${contact.currency} ${
+    regularGiving: `${contact.regularGiving?.toFixed(2)} ${contact.currency} ${
       contact.frequency ? contact.frequency : ''
     }`,
   }));
