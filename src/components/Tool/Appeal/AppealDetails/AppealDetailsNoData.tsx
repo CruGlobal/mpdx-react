@@ -31,6 +31,8 @@ const renderCase = (dataType: string): string => {
       return 'No contacts have been asked for this appeal';
     case 'excluded':
       return 'No contacts have been excluded from this appeal';
+    default:
+      return '';
   }
 };
 
