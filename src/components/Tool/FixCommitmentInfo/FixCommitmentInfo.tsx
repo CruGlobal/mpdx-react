@@ -80,7 +80,11 @@ const FixCommitmentInfo = (): ReactElement => {
   return (
     <>
       <Box className={classes.outer} data-testid="Home">
-        <NavToolDrawer open={isNavListOpen} toggle={handleNavListToggle} />
+        <NavToolDrawer
+          open={isNavListOpen}
+          toggle={handleNavListToggle}
+          selectedId="fixCommitmentInfo"
+        />
         <Container
           className={classes.container}
           style={{
