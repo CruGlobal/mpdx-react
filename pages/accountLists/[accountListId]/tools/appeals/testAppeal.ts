@@ -1,18 +1,13 @@
 // Structure is not correct but it should not be hard to convert either this to the proper one or the actual response to this format
 
-export interface TestContactDonation {
-  name: string;
-  amount: number;
-  currency: string;
-  date: string;
-}
-
 export interface TestContact {
   name: string;
-  regularGiving: number;
+  regularGiving?: number;
+  amount?: number;
   currency: string;
   frequency?: string;
   reason?: string[];
+  date?: string;
 }
 
 export interface TestAppeal {
@@ -22,9 +17,9 @@ export interface TestAppeal {
   givenTotal: number;
   receivedTotal: number;
   committedTotal: number;
-  given: TestContactDonation[];
-  received: TestContactDonation[];
-  committed: TestContactDonation[];
+  given: TestContact[];
+  received: TestContact[];
+  committed: TestContact[];
   asked: TestContact[];
   excluded: TestContact[];
 }
