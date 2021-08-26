@@ -4,13 +4,10 @@ import { mdiSquareEditOutline, mdiDelete, mdiDotsVertical } from '@mdi/js';
 import Icon from '@mdi/react';
 import StarOutlineIcon from '@material-ui/icons/StarOutline';
 import theme from '../../../../theme';
-import {
-  TestContactDonation,
-  TestContact,
-} from '../../../../../pages/accountLists/[accountListId]/tools/appeals/testAppeal';
+import { TestContact } from '../../../../../pages/accountLists/[accountListId]/tools/appeals/testAppeal';
 
 interface Props {
-  data: TestContactDonation[] | TestContact[];
+  data: TestContact[];
   borderColor: string;
   type: string;
   title: string;
@@ -51,7 +48,7 @@ const AppealsDetailFlowColumn = ({
           <Icon path={mdiDotsVertical} size={1} />
         </Box>
       </Box>
-      {data.map((entry) => (
+      {data.map((entry: TestContact) => (
         <>
           {type === 'default' ? (
             <Box key={entry.name} borderBottom="1px solid gray">
@@ -82,7 +79,7 @@ const AppealsDetailFlowColumn = ({
                     style={{ padding: '0px 8px 8px 8px' }}
                   >
                     <Typography>
-                      {entry.amount.toFixed(2)} {entry.currency}
+                      {entry.amount?.toFixed(2)} {entry.currency}
                     </Typography>
                     <Box display="flex">
                       <Typography>{entry.date}</Typography>
@@ -137,7 +134,7 @@ const AppealsDetailFlowColumn = ({
                     style={{ padding: '8px 8px 8px 0px' }}
                   >
                     <Typography>{entry.name}</Typography>
-                    {entry.reason.map((reason) => (
+                    {entry.reason?.map((reason) => (
                       <Typography variant="body2" key={reason}>
                         - {reason}
                       </Typography>
