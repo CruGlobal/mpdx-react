@@ -13,12 +13,13 @@ import { Virtuoso } from 'react-virtuoso';
 import { ContactRow } from '../ContactRow/ContactRow';
 import { ContactsHeader } from '../ContactsHeader/ContactsHeader';
 import { useContactsQuery } from '../../../../pages/accountLists/[accountListId]/contacts/Contacts.generated';
+import { ContactFilterSetInput } from '../../../../graphql/types.generated';
 
 interface Props {
   accountListId: string;
   onContactSelected: (contactId: string) => void;
   onSearchTermChange: (searchTerm?: string) => void;
-  activeFilters: boolean;
+  activeFilters?: ContactFilterSetInput;
   filterPanelOpen: boolean;
   toggleFilterPanel: () => void;
 }
@@ -34,7 +35,10 @@ export const ContactsTable: React.FC<Props> = ({
   const [searchTerm, setSearchTerm] = useState<string>();
 
   const { data, loading, error, fetchMore } = useContactsQuery({
-    variables: { accountListId, searchTerm },
+    variables: {
+      accountListId,
+      contactsFilters: { ...activeFilters, wildcardSearch: searchTerm },
+    },
   });
 
   const renderLoading = () => (
@@ -70,7 +74,7 @@ export const ContactsTable: React.FC<Props> = ({
       <Table stickyHeader aria-label="sticky table">
         <TableHead>
           <ContactsHeader
-            activeFilters={activeFilters}
+            activeFilters={!!activeFilters}
             filterPanelOpen={filterPanelOpen}
             toggleFilterPanel={toggleFilterPanel}
             onSearchTermChanged={handleSetSearchTerm}
