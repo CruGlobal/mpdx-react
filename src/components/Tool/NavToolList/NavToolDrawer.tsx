@@ -19,9 +19,10 @@ const useStyles = makeStyles((theme: Theme) => ({
 export interface Props {
   open: boolean;
   toggle: () => void;
+  selectedId?: string;
 }
 
-const NavToolDrawer = ({ open, toggle }: Props): ReactElement => {
+const NavToolDrawer = ({ open, toggle, selectedId }: Props): ReactElement => {
   const classes = useStyles();
 
   return (
@@ -33,7 +34,7 @@ const NavToolDrawer = ({ open, toggle }: Props): ReactElement => {
         variant="persistent"
         className={classes.drawer}
       >
-        <NavToolList />
+        <NavToolList selectedId={selectedId || ''} />
       </Drawer>
       <NavToolDrawerHandle open={open} toggle={toggle} />
     </>
