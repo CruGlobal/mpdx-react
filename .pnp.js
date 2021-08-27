@@ -120,7 +120,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["graphql", "npm:15.5.0"],
             ["graphql-ergonomock", "npm:1.1.1"],
             ["graphql-tag", "virtual:8dd833585c3e21e7fb33d71ab5204c33de111366fb70037ab886f8f6c7e734646246952ef81c200c94556e62ec221566bdc184edcc60ced6ec106b77d461446e#npm:2.12.0"],
-            ["husky", "npm:5.0.9"],
+            ["husky", "npm:7.0.2"],
             ["i18next", "npm:20.1.0"],
             ["i18next-browser-languagedetector", "npm:6.1.0"],
             ["i18next-http-backend", "npm:1.2.1"],
@@ -20970,10 +20970,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]
       ]],
       ["husky", [
-        ["npm:5.0.9", {
-          "packageLocation": "./.yarn/cache/husky-npm-5.0.9-911a42768b-135129469a.zip/node_modules/husky/",
+        ["npm:7.0.2", {
+          "packageLocation": "./.yarn/cache/husky-npm-7.0.2-f2a671a0c6-3d1573d9ee.zip/node_modules/husky/",
           "packageDependencies": [
-            ["husky", "npm:5.0.9"]
+            ["husky", "npm:7.0.2"]
           ],
           "linkType": "HARD",
         }]
@@ -24996,7 +24996,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["graphql", "npm:15.5.0"],
             ["graphql-ergonomock", "npm:1.1.1"],
             ["graphql-tag", "virtual:8dd833585c3e21e7fb33d71ab5204c33de111366fb70037ab886f8f6c7e734646246952ef81c200c94556e62ec221566bdc184edcc60ced6ec106b77d461446e#npm:2.12.0"],
-            ["husky", "npm:5.0.9"],
+            ["husky", "npm:7.0.2"],
             ["i18next", "npm:20.1.0"],
             ["i18next-browser-languagedetector", "npm:6.1.0"],
             ["i18next-http-backend", "npm:1.2.1"],
