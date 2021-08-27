@@ -14,6 +14,7 @@ import type {
   PreFinancialAccountsGroup,
 } from './ResponsibilityCentersReport.type';
 import { useSetActiveFinancialAccountMutation } from './SetActiveFinancialAccount.generated';
+import { useEntryHistoriesQuery } from './GetEntryHistories.generated';
 import { Notification } from 'src/components/Notification/Notification';
 import { EmptyReport } from 'src/components/Reports/EmptyReport/EmptyReport';
 import { currencyFormat } from 'src/lib/intlFormat';
@@ -128,10 +129,25 @@ export const ResponsibilityCentersReport: React.FC<Props> = ({
       .filter((financialAccount) => financialAccount?.active)
       .reduce(
         (total, financialAccount) =>
-          total + (financialAccount?.balance?.convertedAmount ?? 0),
+          total + -(financialAccount?.balance?.convertedAmount ?? 0),
         0,
       );
   }, [financialAccountsGroups]);
+
+  const activeFinancialAccountIds: Array<string> = useMemo(() => {
+    return (
+      data?.financialAccounts.nodes
+        .filter((financialAccount) => financialAccount.active)
+        .map((activeFinancialAccount) => activeFinancialAccount.id) ?? []
+    );
+  }, [data]);
+
+  const entryHistoriesResponse = useEntryHistoriesQuery({
+    variables: {
+      accountListId,
+      financialAccountIds: activeFinancialAccountIds,
+    },
+  });
 
   return (
     <Box>
@@ -175,12 +191,16 @@ export const ResponsibilityCentersReport: React.FC<Props> = ({
             const accounts: Account[] = financialAccountGroup.financialAccounts.map(
               (account) => ({
                 active: account?.active,
-                balance: account?.balance.convertedAmount,
+                balance: -(account?.balance.convertedAmount ?? 0),
                 code: account?.code,
-                currency: account?.balance.convertedCurrency,
+                currency: account?.balance.convertedCurrency ?? '',
                 id: account?.id,
                 lastSyncDate: account?.balance.conversionDate,
                 name: account?.name,
+                entryHistories: entryHistoriesResponse?.data?.entryHistories?.find(
+                  (entryHistoriesGroup) =>
+                    entryHistoriesGroup.financialAccountId === account?.id,
+                )?.entryHistories,
               }),
             );
 
