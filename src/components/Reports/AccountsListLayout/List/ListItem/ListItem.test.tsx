@@ -39,4 +39,39 @@ describe('AccountItem', () => {
     userEvent.click(getByRole('checkbox'));
     expect(onCheckToggle).toHaveBeenCalled();
   });
+
+  it('should not render chart', async () => {
+    const { queryByTestId } = render(
+      <ThemeProvider theme={theme}>
+        <ListItem account={account} onCheckToggle={onCheckToggle} />
+      </ThemeProvider>,
+    );
+
+    expect(queryByTestId('AccountItemChart')).not.toBeInTheDocument();
+  });
+
+  it('should render chart', async () => {
+    const entryHistoriesMock = [
+      {
+        closingBalance: 123,
+        endDate: '2021-08-29',
+        id: 'test-id-1',
+      },
+    ];
+
+    const { queryByTestId } = render(
+      <ThemeProvider theme={theme}>
+        <ListItem
+          account={{
+            ...account,
+            active: true,
+            entryHistories: entryHistoriesMock,
+          }}
+          onCheckToggle={onCheckToggle}
+        />
+      </ThemeProvider>,
+    );
+
+    expect(queryByTestId('AccountItemChart')).toBeInTheDocument();
+  });
 });

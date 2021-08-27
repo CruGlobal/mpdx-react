@@ -18,7 +18,7 @@ import { EntryHistoriesQuery } from 'src/components/Reports/ResponsibilityCenter
 import { Unarray } from 'src/components/Reports/FourteenMonthReports/Layout/Table/TableHead/TableHead';
 
 type EntryHistoriesGroup = Unarray<EntryHistoriesQuery['entryHistories']>;
-type EntryHistory = Unarray<EntryHistoriesGroup['entryHistories']>[0];
+type EntryHistory = Unarray<NonNullable<EntryHistoriesGroup>['entryHistories']>;
 
 export type Account = {
   active: boolean | undefined;
@@ -28,7 +28,7 @@ export type Account = {
   id: string | undefined;
   lastSyncDate: string | undefined;
   name: Maybe<string>;
-  entryHistories: EntryHistory[];
+  entryHistories?: EntryHistory[] | null | undefined;
 };
 
 export interface AccountListItemProps {
@@ -46,24 +46,30 @@ export const AccountListItem: FC<AccountListItemProps> = ({
   onCheckToggle,
 }) => {
   const { t } = useTranslation();
-  console.log('account entryhistories---', account.entryHistories);
 
   const average = useMemo(() => {
-    return (
-      account?.entryHistories?.reduce(
-        (total, entryHistory) => total + -entryHistory.closingBalance,
-        0,
-      ) / account?.entryHistories?.length
-    );
-  }, [account]);
+    if (account?.entryHistories) {
+      return (
+        account?.entryHistories?.reduce(
+          (total, entryHistory) => total + -(entryHistory?.closingBalance ?? 0),
+          0,
+        ) / account?.entryHistories?.length
+      );
+    }
+  }, [account.entryHistories]);
 
   const entryHistories = useMemo(() => {
-    return account?.entryHistories?.map((entryHistory: EntryHistory) => ({
-      [account.currency]: -entryHistory.closingBalance,
-      startDate: DateTime.fromISO(entryHistory.endDate).toFormat('MMM yy'),
-      total: -entryHistory.closingBalance,
-    }));
-  }, [account]);
+    if (account.entryHistories) {
+      return account.entryHistories.map((entryHistory: EntryHistory) => ({
+        [account.currency]: -(entryHistory?.closingBalance ?? 0),
+        startDate:
+          (entryHistory?.endDate &&
+            DateTime.fromISO(entryHistory.endDate).toFormat('MMM yy')) ??
+          '',
+        total: -(entryHistory?.closingBalance ?? 0),
+      }));
+    }
+  }, [account.entryHistories]);
 
   return (
     <React.Fragment>
@@ -125,7 +131,7 @@ export const AccountListItem: FC<AccountListItemProps> = ({
         </Box>
         {account.active && account.entryHistories && (
           <Chart
-            average={average}
+            average={average ?? 0}
             currencyCode={account.currency}
             data={entryHistories}
           />

@@ -42,7 +42,7 @@ const LegendIdentifier = styled(({ color: _color, ...props }) => (
 export interface AccountListItemChartProps {
   average: number;
   currencyCode: string;
-  data: EntryHistory[];
+  data: EntryHistory[] | undefined;
 }
 
 export const AccountListItemChart: FC<AccountListItemChartProps> = ({
@@ -55,7 +55,7 @@ export const AccountListItemChart: FC<AccountListItemChartProps> = ({
   const currencies = [{ dataKey: currencyCode, fill: fills.pop() ?? '' }];
 
   return (
-    <Box width="100%">
+    <Box width="100%" data-testid="AccountItemChart">
       <AnimatedCard>
         <Box display={{ xs: 'none', sm: 'block' }}>
           <CardHeader
