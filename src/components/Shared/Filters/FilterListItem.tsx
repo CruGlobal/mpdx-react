@@ -8,6 +8,7 @@ import {
   NumericRangeFilter,
   RadioFilter,
   TextFilter,
+  ContactFilterSetInput,
 } from '../../../../graphql/types.generated';
 import { FilterListItemCheckbox } from './FilterListItemCheckbox';
 import { FilterListItemDateRange } from './FilterListItemDateRange';
@@ -18,7 +19,7 @@ import { FilterListItemTextField } from './FilterListItemTextField';
 
 interface Props {
   filter: Filter;
-  value?: boolean | string | Array<string>;
+  value?: ContactFilterSetInput[keyof ContactFilterSetInput];
   onUpdate: (value?: boolean | string | Array<string>) => void;
 }
 

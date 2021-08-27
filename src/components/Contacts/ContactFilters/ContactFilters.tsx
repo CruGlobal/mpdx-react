@@ -18,7 +18,10 @@ import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FilterListItem } from '../../Shared/Filters/FilterListItem';
 import { FilterListItemShowAll } from '../../Shared/Filters/FilterListItemShowAll';
-import { FilterGroup } from '../../../../graphql/types.generated';
+import {
+  ContactFilterSetInput,
+  FilterGroup,
+} from '../../../../graphql/types.generated';
 import { useContactFiltersQuery } from './ContactFilters.generated';
 
 const FilterHeader = styled(Box)(({ theme }) => ({
@@ -41,14 +44,10 @@ const LinkButton = styled(Button)(() => ({
   textTransform: 'none',
 }));
 
-export type SelectedContactFilters = {
-  [name: string]: boolean | string | Array<string>;
-};
-
 interface Props {
   accountListId: string;
   onClose: () => void;
-  onSelectedFiltersChanged: (selectedFilters: SelectedContactFilters) => void;
+  onSelectedFiltersChanged: (selectedFilters: ContactFilterSetInput) => void;
 }
 
 export const ContactFilters: React.FC<Props & BoxProps> = ({
@@ -65,10 +64,9 @@ export const ContactFilters: React.FC<Props & BoxProps> = ({
   });
 
   const [selectedGroup, showGroup] = useState<FilterGroup>();
-  const [
-    selectedFilters,
-    setSelectedFilters,
-  ] = useState<SelectedContactFilters>({});
+  const [selectedFilters, setSelectedFilters] = useState<ContactFilterSetInput>(
+    {},
+  );
   const [showAll, setShowAll] = useState(false);
 
   useEffect(() => {
@@ -76,7 +74,7 @@ export const ContactFilters: React.FC<Props & BoxProps> = ({
   }, [selectedFilters]);
 
   const updateSelectedFilter = (
-    name: string,
+    name: keyof ContactFilterSetInput,
     value?: boolean | string | Array<string>,
   ) => {
     if (value)

@@ -3,19 +3,13 @@ import Head from 'next/head';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'next/router';
 import { Box, styled } from '@material-ui/core';
-import {
-  ContactFilters,
-  SelectedContactFilters,
-} from '../../../../src/components/Contacts/ContactFilters/ContactFilters';
+import { ContactFilters } from '../../../../src/components/Contacts/ContactFilters/ContactFilters';
 import { ContactsTable } from '../../../../src/components/Contacts/ContactsTable/ContactsTable';
 import { ContactDetails } from '../../../../src/components/Contacts/ContactDetails/ContactDetails';
 import Loading from '../../../../src/components/Loading';
 import { SidePanelsLayout } from '../../../../src/components/Layouts/SidePanelsLayout';
 import { useAccountListId } from '../../../../src/hooks/useAccountListId';
-import {
-  ContactFilterSetInput,
-  DateRangeInput,
-} from '../../../../graphql/types.generated';
+import { ContactFilterSetInput } from '../../../../graphql/types.generated';
 
 const ContactsPageWrapper = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.common.white,
@@ -48,47 +42,6 @@ const ContactsPage: React.FC = () => {
 
   const toggleFilterPanel = () => {
     setFilterPanelOpen(!filterPanelOpen);
-  };
-
-  const updateSelectedFilters = (filters: SelectedContactFilters) => {
-    const filterSet: ContactFilterSetInput = {
-      addressHistoric: filters['address_historic'] as boolean,
-      almaMater: filters['alma_mater'] as string[],
-      anniversary: filters['anniversary'] as DateRangeInput,
-      appeal: filters['appeal'],
-      birthday: filters['birthday'],
-      church: filters['church'],
-      city: filters['city'],
-      contactInfoAddr: filters['contact_info_addr'],
-      contactInfoEmail: filters['contact_info_email'],
-      contactInfoFacebook: filters['contact_info_facebook'],
-      contactInfoMobile: filters['contact_info_mobile'],
-      contactInfoPhone: filters['contact_info_phone'],
-      contactInfoWorkPhone: filters['contact_info_work_phone'],
-      contactType: filters['contact_type'],
-      country: filters['country'],
-      createdAt: filters['created_at'],
-      donation: filters['donation'],
-      donationAmountRange: filters['donation_amount_range'],
-      donationDate: filters['donation_date'],
-      likely: filters['likely'],
-      locale: filters['locale'],
-      metroArea: filters['metro_area'],
-      newsletter: filters['newsletter'],
-      nextAsk: filters['next_ask'],
-      notes: filters['notes'],
-      optOut: filters['opt_out'],
-      pledgeAmount: filters['pledge_amount'],
-      pledgeCurrency: filters['pledge_currency'],
-      pledgeFrequency: filters['frequency'],
-      pledgeLateBy: filters['pledge_late_by'],
-      pledgeReceived: filters['pledge_received'],
-      primaryAddress: filters['primary_address'],
-      referrer: filters['referrer'],
-      region: filters['region'],
-    };
-
-    setActiveFilters(filterSet);
   };
 
   const setContactFocus = (id?: string) => {
@@ -130,7 +83,7 @@ const ContactsPage: React.FC = () => {
               <ContactFilters
                 accountListId={accountListId}
                 onClose={toggleFilterPanel}
-                onSelectedFiltersChanged={updateSelectedFilters}
+                onSelectedFiltersChanged={setActiveFilters}
               />
             }
             leftOpen={filterPanelOpen}
