@@ -54,6 +54,8 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
+// Temporary date for desting, structure most likely isn't accurate
+// but making adjustments should be easy in the future
 const testData = [
   {
     title: 'Test Contact and Friends',
@@ -127,7 +129,7 @@ const FixSendNewsletter = (): ReactElement => {
       | React.ChangeEvent<HTMLInputElement>,
     props: string,
   ): void => {
-    const tempAddress = modalState.address;
+    const tempAddress = modalState.address; // Error prevention, can remove later
     setModalState((prevState) => ({
       ...prevState,
       address: {
