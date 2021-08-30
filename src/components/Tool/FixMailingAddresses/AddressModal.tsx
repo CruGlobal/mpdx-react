@@ -364,6 +364,7 @@ const AddressModal = ({
                 size="small"
                 className={clsx(classes.blue, classes.actionButtons)}
               >
+                {/*TODO: make "new" field in address false so it says "edit" instead of "add" */}
                 Save
               </Button>
             </CardActions>
