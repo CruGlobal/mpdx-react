@@ -1,7 +1,7 @@
 import { FinancialAccountsQuery } from './GetFinancialAccounts.generated';
 
 export type FinancialAccount =
-  | FinancialAccountsQuery['financialAccounts']['edges'][0]['node']
+  | FinancialAccountsQuery['financialAccounts']['nodes'][0]
   | undefined;
 
 export type PreFinancialAccountsGroup = {
