@@ -1,0 +1,13 @@
+query EntryHistories($accountListId: ID!, $financialAccountIds: [ID!]!) {
+  entryHistories(
+    accountListId: $accountListId
+    financialAccountIds: $financialAccountIds
+  ) {
+    financialAccountId
+    entryHistories {
+      closingBalance
+      endDate
+      id
+    }
+  }
+}
