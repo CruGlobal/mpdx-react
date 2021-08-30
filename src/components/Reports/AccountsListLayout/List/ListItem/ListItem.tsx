@@ -51,7 +51,7 @@ export const AccountListItem: FC<AccountListItemProps> = ({
     if (account?.entryHistories) {
       return (
         account?.entryHistories?.reduce(
-          (total, entryHistory) => total + -(entryHistory?.closingBalance ?? 0),
+          (total, entryHistory) => total - (entryHistory?.closingBalance ?? 0),
           0,
         ) / account?.entryHistories?.length
       );
