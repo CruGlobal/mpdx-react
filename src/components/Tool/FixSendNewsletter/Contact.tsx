@@ -8,6 +8,7 @@ import {
   makeStyles,
   NativeSelect,
 } from '@material-ui/core';
+import { useTranslation } from 'react-i18next';
 import { Icon } from '@mdi/react';
 import { mdiCheckboxMarkedCircle } from '@mdi/js';
 import theme from '../../../theme';
@@ -104,6 +105,7 @@ const Contact = ({
   newsletterType,
   email,
 }: Props): ReactElement => {
+  const { t } = useTranslation();
   const [newsletter, setNewsletter] = useState(newsletterType);
   const classes = useStyles();
 
@@ -164,16 +166,16 @@ const Contact = ({
                       value="physical"
                       selected={newsletter === 'physical'}
                     >
-                      Physical
+                      {t('Physical')}
                     </option>
                     <option value="email" selected={newsletter === 'email'}>
-                      Email
+                      {t('Email')}
                     </option>
                     <option value="both" selected={newsletter === 'both'}>
-                      Both
+                      {t('Both')}
                     </option>
                     <option value="none" selected={newsletter === 'none'}>
-                      None
+                      {t('None')}
                     </option>
                   </NativeSelect>
                 </Box>
