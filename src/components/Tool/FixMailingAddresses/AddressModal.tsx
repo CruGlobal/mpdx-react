@@ -43,6 +43,29 @@ const useStyles = makeStyles(() => ({
     color: 'white',
     backgroundColor: theme.palette.mpdxBlue.main,
   },
+  iconButton: {
+    position: 'absolute',
+    top: -theme.spacing(2),
+    right: -theme.spacing(2),
+  },
+  headerBox: {
+    padding: 0,
+    position: 'relative',
+  },
+  mapBox: {
+    marginTop: theme.spacing(1),
+    height: 200,
+    width: '100%',
+    backgroundColor: theme.palette.cruGrayDark.main,
+  },
+  widthFull: {
+    width: '100%',
+  },
+  cardContent: {
+    padding: theme.spacing(1),
+    paddingTop: theme.spacing(2),
+    paddingBottom: 0,
+  },
 }));
 
 interface Props {
@@ -76,7 +99,7 @@ const AddressModal = ({
                   display="flex"
                   flexDirection="column"
                   alignItems="center"
-                  style={{ padding: 0, position: 'relative' }}
+                  className={classes.headerBox}
                 >
                   <Typography
                     variant="h5"
@@ -88,11 +111,7 @@ const AddressModal = ({
                   </Typography>
                   <IconButton
                     onClick={handleClose}
-                    style={{
-                      position: 'absolute',
-                      top: -theme.spacing(2),
-                      right: -theme.spacing(2),
-                    }}
+                    className={classes.iconButton}
                   >
                     <Icon path={mdiCloseThick} size={1} />
                   </IconButton>
@@ -100,25 +119,14 @@ const AddressModal = ({
                     display="flex"
                     justifyContent="center"
                     alignItems="center"
-                    style={{
-                      marginTop: theme.spacing(1),
-                      height: 200,
-                      width: '100%',
-                      backgroundColor: theme.palette.cruGrayDark.main,
-                    }}
+                    className={classes.mapBox}
                   >
                     <Icon path={mdiMap} size={4} style={{ color: 'white' }} />
                   </Box>
                 </Box>
               }
             />
-            <CardContent
-              style={{
-                padding: theme.spacing(1),
-                paddingTop: theme.spacing(2),
-                paddingBottom: 0,
-              }}
-            >
+            <CardContent className={classes.cardContent}>
               <Grid container>
                 <Grid
                   item
@@ -131,7 +139,7 @@ const AddressModal = ({
                     variant="outlined"
                     value={modalState.address?.street}
                     size="small"
-                    style={{ width: '100%' }}
+                    className={classes.widthFull}
                   />
                 </Grid>
                 <Grid
@@ -144,7 +152,7 @@ const AddressModal = ({
                     value={modalState.address?.locationType || ''}
                     input={<StyledInput />}
                     onChange={(event) => handleChange(event, 'locationType')}
-                    style={{ width: '100%' }}
+                    className={classes.widthFull}
                   >
                     <option value="" disabled>
                       Type
@@ -169,7 +177,7 @@ const AddressModal = ({
                     variant="outlined"
                     value={modalState.address?.city}
                     size="small"
-                    style={{ width: '100%' }}
+                    className={classes.widthFull}
                   />
                 </Grid>
                 <Grid
@@ -183,7 +191,7 @@ const AddressModal = ({
                     variant="outlined"
                     value={modalState.address?.state || ''}
                     size="small"
-                    style={{ width: '100%' }}
+                    className={classes.widthFull}
                   />
                 </Grid>
                 <Grid
@@ -197,7 +205,7 @@ const AddressModal = ({
                     variant="outlined"
                     value={modalState.address?.zip || ''}
                     size="small"
-                    style={{ width: '100%' }}
+                    className={classes.widthFull}
                   />
                 </Grid>
                 <Grid
@@ -211,7 +219,7 @@ const AddressModal = ({
                     variant="outlined"
                     value={modalState.address?.country}
                     size="small"
-                    style={{ width: '100%' }}
+                    className={classes.widthFull}
                   />
                 </Grid>
                 <Grid
@@ -225,7 +233,7 @@ const AddressModal = ({
                     variant="outlined"
                     value={modalState.address?.region || ''}
                     size="small"
-                    style={{ width: '100%' }}
+                    className={classes.widthFull}
                   />
                 </Grid>
                 <Grid
@@ -239,7 +247,7 @@ const AddressModal = ({
                     variant="outlined"
                     value={modalState.address?.metro || ''}
                     size="small"
-                    style={{ width: '100%' }}
+                    className={classes.widthFull}
                   />
                 </Grid>
                 <Grid item xs={12} className={clsx(classes.paddingX)}>

@@ -75,6 +75,9 @@ const useStyles = makeStyles(() => ({
     paddingTop: theme.spacing(2),
     paddingBottom: theme.spacing(2),
   },
+  paddingB2: {
+    paddingBottom: theme.spacing(2),
+  },
   address: {
     borderBottom: '1px solid gray',
     width: '100%',
@@ -84,6 +87,10 @@ const useStyles = makeStyles(() => ({
     '&:hover': {
       color: theme.palette.mpdxBlue.main,
     },
+  },
+  avatar: {
+    width: theme.spacing(7),
+    height: theme.spacing(7),
   },
 }));
 
@@ -133,13 +140,7 @@ const Contact = ({
                   style={{ height: '100%' }}
                   p={2}
                 >
-                  <Avatar
-                    src=""
-                    style={{
-                      width: theme.spacing(7),
-                      height: theme.spacing(7),
-                    }}
-                  />
+                  <Avatar src="" className={classes.avatar} />
                   <Box display="flex" flexDirection="column" ml={2}>
                     <Typography variant="h6">{title}</Typography>
                     <Typography>{tag}</Typography>
@@ -178,21 +179,11 @@ const Contact = ({
                   </Hidden>
                   {addresses.map((address) => (
                     <Fragment key={address.street}>
-                      <Grid
-                        item
-                        xs={12}
-                        sm={6}
-                        style={{
-                          paddingBottom: theme.spacing(2),
-                        }}
-                      >
+                      <Grid item xs={12} sm={6} className={classes.paddingB2}>
                         <Box
                           display="flex"
                           justifyContent="space-between"
-                          style={{
-                            paddingLeft: theme.spacing(2),
-                            paddingRight: theme.spacing(2),
-                          }}
+                          className={classes.paddingX}
                         >
                           <Box>
                             <Hidden smUp>
@@ -215,14 +206,7 @@ const Contact = ({
                           </Typography>
                         </Box>
                       </Grid>
-                      <Grid
-                        item
-                        xs={12}
-                        sm={6}
-                        style={{
-                          paddingBottom: theme.spacing(2),
-                        }}
-                      >
+                      <Grid item xs={12} sm={6} className={classes.paddingB2}>
                         <Box
                           display="flex"
                           justifyContent="flex-start"
@@ -253,21 +237,11 @@ const Contact = ({
                       </Grid>
                     </Fragment>
                   ))}
-                  <Grid
-                    item
-                    xs={12}
-                    sm={6}
-                    style={{
-                      paddingBottom: theme.spacing(2),
-                    }}
-                  >
+                  <Grid item xs={12} sm={6} className={classes.paddingB2}>
                     <Box
                       display="flex"
                       justifyContent="space-between"
-                      style={{
-                        paddingLeft: theme.spacing(2),
-                        paddingRight: theme.spacing(2),
-                      }}
+                      className={classes.paddingX}
                     >
                       <Box>
                         <Hidden smUp>
@@ -279,14 +253,7 @@ const Contact = ({
                       </Box>
                     </Box>
                   </Grid>
-                  <Grid
-                    item
-                    xs={12}
-                    sm={6}
-                    style={{
-                      paddingBottom: theme.spacing(2),
-                    }}
-                  >
+                  <Grid item xs={12} sm={6} className={classes.paddingB2}>
                     <Box
                       display="flex"
                       justifyContent="flex-start"
