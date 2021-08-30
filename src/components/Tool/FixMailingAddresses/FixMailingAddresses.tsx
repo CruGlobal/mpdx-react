@@ -83,12 +83,25 @@ const testData = [
         primary: false,
         valid: true,
       },
+      {
+        street: '456 Mpdx Blvd',
+        city: 'Somewhere',
+        state: 'AA',
+        country: 'Everywhere',
+        zip: '10001',
+        locationType: 'business',
+        source: 'MPDX (01/01/2021)',
+        metro: 'AB',
+        region: '00',
+        primary: false,
+        valid: true,
+      },
     ],
   },
 ];
 
 export const emptyAddress: address = {
-  source: '',
+  source: 'MPDX',
   street: '',
   locationType: '',
   city: '',
