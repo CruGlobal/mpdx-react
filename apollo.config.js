@@ -1,8 +1,10 @@
 module.exports = {
   client: {
+    // Apollo CLI throws errors about duplicate operations if it finds the output of GraphQL Code Generator
+    excludes: ['**/*.generated.ts'],
     service: {
       name: 'MPDX',
-      url: 'https://api.stage.mpdx.org/graphql',
+      localSchemaFile: './graphql/schema.graphql',
     },
   },
 };
