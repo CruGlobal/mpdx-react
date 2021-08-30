@@ -99,7 +99,7 @@ const FixSendNewsletter = (): ReactElement => {
     test.length > 0 ? setTest([]) : setTest(testData);
   };
 
-  const handleOpen = (address: address): void => {
+  const handleOpen = (address: address | null): void => {
     setModalState({ open: true, address: address });
   };
 
@@ -116,7 +116,7 @@ const FixSendNewsletter = (): ReactElement => {
     setModalState((prevState) => ({
       ...prevState,
       address: {
-        ...prevState.address,
+        ...modalState.address,
         [props]:
           event.target.name === 'checkbox'
             ? !event.target.checked

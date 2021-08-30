@@ -72,14 +72,14 @@ const useStyles = makeStyles(() => ({
 interface Props {
   modalState: {
     open: boolean;
-    address: address;
+    address: address | null;
   };
   handleClose: () => void;
   handleChange: (
     event:
       | React.ChangeEvent<HTMLInputElement & HTMLSelectElement>
       | React.ChangeEvent<HTMLInputElement>,
-    props,
+    props: string,
   ) => void;
 }
 
