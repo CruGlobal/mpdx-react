@@ -15,16 +15,6 @@ import theme from '../../../theme';
 import { StyledInput } from './StyledInput';
 
 const useStyles = makeStyles(() => ({
-  right: {
-    display: 'flex',
-    justifyContent: 'flex-start',
-    alignItems: 'center',
-    [theme.breakpoints.up('md')]: {
-      borderTop: `1px solid ${theme.palette.cruGrayMedium.main}`,
-      borderBottom: `16px solid ${theme.palette.cruGrayMedium.main}`,
-      borderRight: `1px solid ${theme.palette.cruGrayMedium.main}`,
-    },
-  },
   left: {
     [theme.breakpoints.up('md')]: {
       border: `1px solid ${theme.palette.cruGrayMedium.main}`,
@@ -36,15 +26,6 @@ const useStyles = makeStyles(() => ({
     marginBottom: theme.spacing(2),
     [theme.breakpoints.down('sm')]: {
       border: `1px solid ${theme.palette.cruGrayMedium.main}`,
-    },
-  },
-  boxTop: {
-    marginRight: theme.spacing(1),
-    marginBottom: theme.spacing(2),
-    marginLeft: theme.spacing(1),
-    [theme.breakpoints.down('sm')]: {
-      marginLeft: theme.spacing(2),
-      marginTop: theme.spacing(0),
     },
   },
   boxBottom: {

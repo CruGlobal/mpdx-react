@@ -31,11 +31,6 @@ const useStyles = makeStyles(() => ({
       paddingLeft: theme.spacing(6),
     },
   },
-  toolIcon: {
-    height: theme.spacing(5),
-    width: theme.spacing(5),
-    color: theme.palette.cruGrayDark.main,
-  },
   outer: {
     display: 'flex',
     flexDirection: 'row',
