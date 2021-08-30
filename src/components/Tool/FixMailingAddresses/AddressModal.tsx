@@ -16,6 +16,7 @@ import {
   Checkbox,
   IconButton,
 } from '@material-ui/core';
+import { useTranslation } from 'react-i18next';
 
 import { mdiMap, mdiCloseThick } from '@mdi/js';
 import Icon from '@mdi/react';
@@ -88,6 +89,7 @@ const AddressModal = ({
   handleChange,
 }: Props): ReactElement => {
   const classes = useStyles();
+  const { t } = useTranslation();
 
   return (
     <Modal
@@ -166,13 +168,13 @@ const AddressModal = ({
                     <option value="" disabled>
                       Type
                     </option>
-                    <option value="home">Home</option>
-                    <option value="business">Business</option>
-                    <option value="mailing">Mailing</option>
-                    <option value="seasonal">Seasonal</option>
-                    <option value="other">Other</option>
-                    <option value="temporary">Temporary</option>
-                    <option value="repAddress">Rep Address</option>
+                    <option value="home">{t('Home')}</option>
+                    <option value="business">{t('Business')}</option>
+                    <option value="mailing">{t('Mailing')}</option>
+                    <option value="seasonal">{t('Seasonal')}</option>
+                    <option value="other">{t('Other')}</option>
+                    <option value="temporary">{t('Temporary')}</option>
+                    <option value="repAddress">{t('Rep Address')}</option>
                   </NativeSelect>
                 </Grid>
                 <Grid
