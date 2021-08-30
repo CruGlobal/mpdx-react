@@ -6,8 +6,10 @@ import {
   CardContent,
   Grid,
   Typography,
+  useTheme,
   styled,
 } from '@material-ui/core';
+import type { Theme } from '@material-ui/core/styles/createMuiTheme';
 import {
   ReferenceLine,
   BarChart,
@@ -51,8 +53,7 @@ export const AccountListItemChart: FC<AccountListItemChartProps> = ({
   data,
 }) => {
   const { t } = useTranslation();
-  const fills = ['#FFCF07', '#30F2F2', '#1FC0D2', '#007398'];
-  const currencies = [{ dataKey: currencyCode, fill: fills.pop() ?? '' }];
+  const theme = useTheme<Theme>();
 
   return (
     <Box width="100%" data-testid="AccountItemChart">
@@ -63,7 +64,7 @@ export const AccountListItemChart: FC<AccountListItemChartProps> = ({
               <Box display={{ xs: 'none', sm: 'block' }}>
                 <Grid container spacing={2} justify="center">
                   <Grid item>
-                    <LegendIdentifier color="#9C9FA1" />
+                    <LegendIdentifier color={theme.palette.secondary.dark} />
                     <Typography variant="body1" component="span">
                       <strong>{t('Monthly Average')}</strong>{' '}
                       {currencyFormat(average, currencyCode)}
@@ -89,7 +90,11 @@ export const AccountListItemChart: FC<AccountListItemChartProps> = ({
               >
                 <Legend />
                 <CartesianGrid vertical={false} />
-                <ReferenceLine y={average} stroke="#9C9FA1" strokeWidth={3} />
+                <ReferenceLine
+                  y={average}
+                  stroke={theme.palette.secondary.dark}
+                  strokeWidth={3}
+                />
                 <XAxis tickLine={false} dataKey="startDate" />
                 <YAxis
                   label={
@@ -103,15 +108,12 @@ export const AccountListItemChart: FC<AccountListItemChartProps> = ({
                   }
                 />
                 <Tooltip />
-                {currencies.map((currency) => (
-                  <Bar
-                    key={currency.dataKey}
-                    dataKey={currency.dataKey}
-                    stackId="a"
-                    fill={currency.fill}
-                    barSize={30}
-                  />
-                ))}
+                <Bar
+                  dataKey={currencyCode}
+                  stackId="a"
+                  fill={theme.palette.primary.main}
+                  barSize={30}
+                />
               </BarChart>
             </ResponsiveContainer>
           </Box>
@@ -123,7 +125,11 @@ export const AccountListItemChart: FC<AccountListItemChartProps> = ({
               <BarChart data={data}>
                 <XAxis tickLine={false} dataKey="startDate" />
                 <Tooltip />
-                <Bar dataKey="total" fill="#007398" barSize={10} />
+                <Bar
+                  dataKey="total"
+                  fill={theme.palette.primary.main}
+                  barSize={10}
+                />
               </BarChart>
             </ResponsiveContainer>
           </Box>
