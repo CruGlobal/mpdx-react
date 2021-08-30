@@ -15,6 +15,7 @@ import { mdiCheckboxMarkedCircle, mdiLock, mdiPlus, mdiPencil } from '@mdi/js';
 import StarIcon from '@material-ui/icons/Star';
 import StarOutlineIcon from '@material-ui/icons/StarOutline';
 import theme from '../../../theme';
+import { emptyAddress } from './FixMailingAddresses';
 
 const useStyles = makeStyles(() => ({
   left: {
@@ -264,7 +265,7 @@ const Contact = ({
                       )}
                     >
                       <Box
-                        onClick={() => openFunction(null)}
+                        onClick={() => openFunction(emptyAddress)}
                         className={classes.address}
                       />
                       <Icon path={mdiPlus} size={1} />

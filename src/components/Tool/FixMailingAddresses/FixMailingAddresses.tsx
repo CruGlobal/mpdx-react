@@ -85,10 +85,24 @@ const testData = [
   },
 ];
 
+export const emptyAddress: address = {
+  source: '',
+  street: '',
+  locationType: '',
+  city: '',
+  zip: '',
+  country: '',
+  primary: false,
+  valid: false,
+};
+
 const FixSendNewsletter = (): ReactElement => {
   const classes = useStyles();
   const [isNavListOpen, setNavListOpen] = useState<boolean>(true);
-  const [modalState, setModalState] = useState({ open: false, address: null });
+  const [modalState, setModalState] = useState({
+    open: false,
+    address: emptyAddress,
+  });
   const [test, setTest] = useState(testData);
   const { t } = useTranslation();
   const handleNavListToggle = () => {
@@ -99,12 +113,12 @@ const FixSendNewsletter = (): ReactElement => {
     test.length > 0 ? setTest([]) : setTest(testData);
   };
 
-  const handleOpen = (address: address | null): void => {
+  const handleOpen = (address: address): void => {
     setModalState({ open: true, address: address });
   };
 
   const handleClose = (): void => {
-    setModalState({ open: false, address: null });
+    setModalState({ open: false, address: emptyAddress });
   };
 
   const handleChange = (
@@ -113,10 +127,11 @@ const FixSendNewsletter = (): ReactElement => {
       | React.ChangeEvent<HTMLInputElement>,
     props: string,
   ): void => {
+    const tempAddress = modalState.address;
     setModalState((prevState) => ({
       ...prevState,
       address: {
-        ...modalState.address,
+        ...tempAddress,
         [props]:
           event.target.name === 'checkbox'
             ? !event.target.checked
