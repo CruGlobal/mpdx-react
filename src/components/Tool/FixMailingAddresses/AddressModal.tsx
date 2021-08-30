@@ -18,7 +18,7 @@ import {
 } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 
-import { mdiMap, mdiCloseThick } from '@mdi/js';
+import { mdiMap, mdiCloseThick, mdiInformation } from '@mdi/js';
 import Icon from '@mdi/react';
 import theme from '../../../theme';
 import { StyledInput } from './StyledInput';
@@ -29,6 +29,7 @@ const useStyles = makeStyles(() => ({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
+    overflow: 'auto',
   },
   paddingX: {
     paddingLeft: theme.spacing(1),
@@ -63,16 +64,33 @@ const useStyles = makeStyles(() => ({
     width: '100%',
   },
   cardContent: {
-    padding: theme.spacing(1),
-    paddingTop: theme.spacing(2),
+    paddingLeft: theme.spacing(1),
+    paddingRight: theme.spacing(1),
+    paddingTop: 0,
     paddingBottom: 0,
+    border: 'none',
+    outline: 'none',
+  },
+  infoBox: {
+    border: `1px solid ${theme.palette.mpdxBlue.main}`,
+    backgroundColor: theme.palette.cruGrayLight.main,
+    color: theme.palette.mpdxBlue.main,
+    marginLeft: theme.spacing(1),
+    marginRight: theme.spacing(1),
+    marginBottom: theme.spacing(2),
+    padding: theme.spacing(2),
+  },
+  infoMain: {
+    display: 'flex',
+    fontWeight: 600,
+    marginBottom: theme.spacing(1),
   },
 }));
 
 interface Props {
   modalState: {
     open: boolean;
-    address: address | null;
+    address: address;
   };
   handleClose: () => void;
   handleChange: (
@@ -91,16 +109,19 @@ const AddressModal = ({
   const classes = useStyles();
   const { t } = useTranslation();
 
+  const disableAll = !modalState.address.source.includes('MPDX');
+
   return (
     <Modal
       open={modalState.open}
       onClose={handleClose}
       className={classes.modal}
     >
-      <Grid item xs={8} md={6} lg={4}>
+      <Grid item xs={10} md={6} lg={4}>
         <Box>
           <Card>
             <CardHeader
+              style={{ border: 'none' }}
               title={
                 <Box
                   display="flex"
@@ -112,9 +133,7 @@ const AddressModal = ({
                     variant="h5"
                     style={{ marginTop: -theme.spacing(1) }}
                   >
-                    {modalState.address !== null
-                      ? 'Edit Address'
-                      : 'Add Address'}
+                    {modalState.address.new ? 'Add Address' : 'Edit Address'}
                   </Typography>
                   <IconButton
                     onClick={handleClose}
@@ -134,6 +153,24 @@ const AddressModal = ({
               }
             />
             <CardContent className={classes.cardContent}>
+              {disableAll && (
+                <Box className={classes.infoBox}>
+                  <Typography className={classes.infoMain}>
+                    <Icon
+                      path={mdiInformation}
+                      size={1}
+                      style={{ marginRight: theme.spacing(1) }}
+                    />
+                    This address is provided by your organization.
+                  </Typography>
+                  <Typography>
+                    The address that syncs with your organization’s donations
+                    cannot be edited here. Please email your donation department
+                    with the updated address, or you can create a new address
+                    and select it as your primary mailing address.
+                  </Typography>
+                </Box>
+              )}
               <Grid container>
                 <Grid
                   item
@@ -147,17 +184,22 @@ const AddressModal = ({
                     value={modalState.address?.street}
                     size="small"
                     className={classes.widthFull}
+                    onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
+                      handleChange(event, 'street')
+                    }
+                    disabled={disableAll}
                   />
                 </Grid>
                 <Grid
                   item
-                  xs={12}
+                  xs={6}
                   sm={3}
                   className={clsx(classes.paddingX, classes.paddingY)}
                 >
                   <NativeSelect
                     value={modalState.address?.locationType || ''}
                     input={<StyledInput />}
+                    disabled={disableAll}
                     onChange={(
                       event: React.ChangeEvent<
                         HTMLSelectElement & HTMLInputElement
@@ -179,44 +221,56 @@ const AddressModal = ({
                 </Grid>
                 <Grid
                   item
-                  xs={12}
+                  xs={6}
                   sm={6}
                   className={clsx(classes.paddingX, classes.paddingY)}
                 >
                   <TextField
                     label="City"
+                    disabled={disableAll}
                     variant="outlined"
                     value={modalState.address?.city}
                     size="small"
                     className={classes.widthFull}
+                    onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
+                      handleChange(event, 'city')
+                    }
                   />
                 </Grid>
                 <Grid
                   item
-                  xs={12}
+                  xs={6}
                   sm={3}
                   className={clsx(classes.paddingX, classes.paddingY)}
                 >
                   <TextField
                     label="State"
+                    disabled={disableAll}
                     variant="outlined"
                     value={modalState.address?.state || ''}
                     size="small"
                     className={classes.widthFull}
+                    onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
+                      handleChange(event, 'state')
+                    }
                   />
                 </Grid>
                 <Grid
                   item
-                  xs={12}
+                  xs={6}
                   sm={3}
                   className={clsx(classes.paddingX, classes.paddingY)}
                 >
                   <TextField
                     label="Zip"
+                    disabled={disableAll}
                     variant="outlined"
                     value={modalState.address?.zip || ''}
                     size="small"
                     className={classes.widthFull}
+                    onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
+                      handleChange(event, 'zip')
+                    }
                   />
                 </Grid>
                 <Grid
@@ -227,38 +281,50 @@ const AddressModal = ({
                 >
                   <TextField
                     label="Country"
+                    disabled={disableAll}
                     variant="outlined"
                     value={modalState.address?.country}
                     size="small"
                     className={classes.widthFull}
+                    onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
+                      handleChange(event, 'country')
+                    }
                   />
                 </Grid>
                 <Grid
                   item
-                  xs={12}
+                  xs={6}
                   sm={3}
                   className={clsx(classes.paddingX, classes.paddingY)}
                 >
                   <TextField
                     label="Region"
+                    disabled={disableAll}
                     variant="outlined"
                     value={modalState.address?.region || ''}
                     size="small"
                     className={classes.widthFull}
+                    onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
+                      handleChange(event, 'region')
+                    }
                   />
                 </Grid>
                 <Grid
                   item
-                  xs={12}
+                  xs={6}
                   sm={3}
                   className={clsx(classes.paddingX, classes.paddingY)}
                 >
                   <TextField
                     label="Metro"
                     variant="outlined"
+                    disabled={disableAll}
                     value={modalState.address?.metro || ''}
                     size="small"
                     className={classes.widthFull}
+                    onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
+                      handleChange(event, 'metro')
+                    }
                   />
                 </Grid>
                 <Grid item xs={12} className={clsx(classes.paddingX)}>
@@ -283,7 +349,7 @@ const AddressModal = ({
                 </Grid>
               </Grid>
             </CardContent>
-            <CardActions>
+            <CardActions style={{ padding: theme.spacing(2) }}>
               <Button
                 variant="contained"
                 size="small"
@@ -294,6 +360,7 @@ const AddressModal = ({
               </Button>
               <Button
                 variant="contained"
+                disabled={disableAll}
                 size="small"
                 className={clsx(classes.blue, classes.actionButtons)}
               >
