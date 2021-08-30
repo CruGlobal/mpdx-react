@@ -1,6 +1,6 @@
 import React, { ReactElement } from 'react';
 import { Box, Typography, styled } from '@material-ui/core';
-import { mdiCurrencyUsd } from '@mdi/js';
+import { mdiNewspaperVariantOutline } from '@mdi/js';
 import { useTranslation } from 'react-i18next';
 import Icon from '@mdi/react';
 
@@ -15,13 +15,14 @@ const StyledBox = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.cruGrayLight.main,
   paddingTop: theme.spacing(7),
   paddingBottom: theme.spacing(7),
+  boxShadow: `0px 0px 5px ${theme.palette.cruGrayMedium.main} inset`,
 }));
 
 const NoContacts = (): ReactElement => {
   const { t } = useTranslation();
   return (
     <StyledBox>
-      <Icon path={mdiCurrencyUsd} size={1.5} />
+      <Icon path={mdiNewspaperVariantOutline} size={1.5} />
       <Typography variant="h5">
         {t('No Contacts with an empty newsletter status need attention')}
       </Typography>

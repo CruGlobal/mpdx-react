@@ -5,10 +5,11 @@ import {
   Button,
   Typography,
   Avatar,
-  IconButton,
   makeStyles,
   NativeSelect,
 } from '@material-ui/core';
+import { Icon } from '@mdi/react';
+import { mdiCheckboxMarkedCircle } from '@mdi/js';
 import theme from '../../../theme';
 import { StyledInput } from './StyledInput';
 
@@ -24,18 +25,14 @@ const useStyles = makeStyles(() => ({
     },
   },
   left: {
-    height: '100%',
     [theme.breakpoints.up('md')]: {
-      borderTop: `1px solid ${theme.palette.cruGrayMedium.main}`,
-      borderBottom: `16px solid ${theme.palette.cruGrayMedium.main}`,
-      borderLeft: `1px solid ${theme.palette.cruGrayMedium.main}`,
-      borderRight: `1px solid ${theme.palette.cruGrayMedium.main}`,
+      border: `1px solid ${theme.palette.cruGrayMedium.main}`,
     },
   },
   container: {
     display: 'flex',
     alignItems: 'center',
-    height: '100%',
+    marginBottom: theme.spacing(2),
     [theme.breakpoints.down('sm')]: {
       border: `1px solid ${theme.palette.cruGrayMedium.main}`,
     },
@@ -50,35 +47,30 @@ const useStyles = makeStyles(() => ({
     },
   },
   boxBottom: {
-    marginLeft: theme.spacing(1),
-    marginRight: theme.spacing(1),
-    [theme.breakpoints.down('sm')]: {
-      marginBottom: theme.spacing(2),
-      marginLeft: theme.spacing(2),
-    },
+    backgroundColor: theme.palette.cruGrayLight.main,
+    width: '100%',
   },
   buttonTop: {
     margin: theme.spacing(1),
     [theme.breakpoints.down('sm')]: {
       marginRight: theme.spacing(2),
+      marginTop: theme.spacing(2),
+      marginBottom: theme.spacing(2),
     },
     '& .MuiButton-root': {
       backgroundColor: theme.palette.mpdxBlue.main,
       color: 'white',
     },
   },
-  buttonBottom: {
-    margin: theme.spacing(1),
-    [theme.breakpoints.down('sm')]: {
-      marginRight: theme.spacing(1),
-    },
+  buttonIcon: {
+    marginRight: theme.spacing(1),
   },
   rowChangeResponsive: {
     flexDirection: 'column',
     [theme.breakpoints.down('xs')]: {
-      marginTop: theme.spacing(2),
+      marginTop: -20,
       flexDirection: 'row',
-      justifyContent: 'space-around',
+      justifyContent: 'space-between',
       alignItems: 'center',
     },
   },
@@ -100,6 +92,7 @@ interface Props {
   };
   source?: string;
   newsletterType: string;
+  email?: string;
 }
 
 const Contact = ({
@@ -109,12 +102,13 @@ const Contact = ({
   address,
   source,
   newsletterType,
+  email,
 }: Props): ReactElement => {
   const [newsletter, setNewsletter] = useState(newsletterType);
   const classes = useStyles();
 
   //TODO: Add button functionality
-  //TODO: Show donation history
+  //TODO: Mkae contact title a link to contact page
 
   const handleChange = (
     event:
@@ -128,18 +122,14 @@ const Contact = ({
     <Grid container className={classes.container}>
       <Grid container>
         <Grid item md={10} xs={12}>
-          <Box
-            display="flex"
-            p={2}
-            alignItems="center"
-            className={classes.left}
-          >
+          <Box display="flex" alignItems="center" className={classes.left}>
             <Grid container>
-              <Grid item xs={12} sm={9}>
+              <Grid item xs={12} sm={8} md={9}>
                 <Box
                   display="flex"
                   alignItems="center"
                   style={{ height: '100%' }}
+                  p={2}
                 >
                   <Avatar
                     src=""
@@ -154,11 +144,12 @@ const Contact = ({
                   </Box>
                 </Box>
               </Grid>
-              <Grid item xs={12} sm={3}>
+              <Grid item xs={12} sm={4} md={3}>
                 <Box
                   display="flex"
                   alignItems="start"
                   className={classes.rowChangeResponsive}
+                  p={2}
                 >
                   <Typography variant="body1">
                     <strong>Send newsletter?</strong>
@@ -187,6 +178,46 @@ const Contact = ({
                   </NativeSelect>
                 </Box>
               </Grid>
+              {name && (
+                <>
+                  <Grid item xs={12} sm={6} className={classes.boxBottom}>
+                    <Box
+                      display="flex"
+                      alignItems="center"
+                      style={{ height: '100%' }}
+                      p={2}
+                    >
+                      <Avatar
+                        src=""
+                        style={{
+                          width: theme.spacing(7),
+                          height: theme.spacing(7),
+                        }}
+                      />
+                      <Box display="flex" flexDirection="column" ml={2}>
+                        <Typography variant="h6">{name || ''}</Typography>
+                        <Typography>{email || ''}</Typography>
+                      </Box>
+                    </Box>
+                  </Grid>
+                  <Grid item xs={12} sm={6} className={classes.boxBottom}>
+                    <Box
+                      display="flex"
+                      alignItems="start"
+                      flexDirection="column"
+                      p={2}
+                    >
+                      <Typography variant="body1">
+                        {address?.street || ''}
+                      </Typography>
+                      <Typography variant="body1">
+                        {address?.city || ''}
+                      </Typography>
+                      <Typography variant="body1">{source}</Typography>
+                    </Box>
+                  </Grid>
+                </>
+              )}
             </Grid>
           </Box>
         </Grid>
@@ -198,6 +229,11 @@ const Contact = ({
           >
             <Box className={classes.buttonTop}>
               <Button variant="contained" style={{ width: '100%' }}>
+                <Icon
+                  path={mdiCheckboxMarkedCircle}
+                  size={0.8}
+                  className={classes.buttonIcon}
+                />
                 Confirm
               </Button>
             </Box>
