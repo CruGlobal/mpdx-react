@@ -107,6 +107,7 @@ export interface address {
   metro?: string;
   primary: boolean;
   valid: boolean;
+  new?: boolean;
 }
 
 interface Props {
@@ -124,7 +125,7 @@ const Contact = ({
 }: Props): ReactElement => {
   const { t } = useTranslation();
   const classes = useStyles();
-
+  const newAddress: address = { ...emptyAddress, new: true };
   //TODO: Add button functionality
   //TODO: Mkae contact title a link to contact page
 
@@ -265,7 +266,7 @@ const Contact = ({
                       )}
                     >
                       <Box
-                        onClick={() => openFunction(emptyAddress)}
+                        onClick={() => openFunction(newAddress)}
                         className={classes.address}
                       />
                       <Icon path={mdiPlus} size={1} />
