@@ -16,7 +16,7 @@ const dataMock = [
 
 describe('AccountItemChart', () => {
   it('default', async () => {
-    const { getByTestId } = render(
+    const { getByTestId, getByText } = render(
       <ThemeProvider theme={theme}>
         <Chart
           average={averageMock}
@@ -27,5 +27,6 @@ describe('AccountItemChart', () => {
     );
 
     expect(getByTestId('AccountItemChart')).toBeInTheDocument();
+    expect(getByText('CA$123')).toBeInTheDocument();
   });
 });
