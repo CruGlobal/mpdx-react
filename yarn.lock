@@ -14717,12 +14717,12 @@ fsevents@~2.3.1:
   languageName: node
   linkType: hard
 
-"husky@npm:^5.0.9":
-  version: 5.0.9
-  resolution: "husky@npm:5.0.9"
+"husky@npm:^7.0.2":
+  version: 7.0.2
+  resolution: "husky@npm:7.0.2"
   bin:
     husky: lib/bin.js
-  checksum: 135129469a7225bf34a8542e1575a3fbe32656f813234093f0ff43084c34e4384eb4c496923422d59aea7fb8187d26a2c8c7a43cd33647a5d02eb59c2161877a
+  checksum: 3d1573d9ee5406e864e8170912bfadffde211535277c49f7f5da1b543a7b8e6c8ac8bae9f9cdd6b5be21ef39bb2929ca62001a7c50841d93c36454659bd3e017
   languageName: node
   linkType: hard
 
@@ -18318,7 +18318,7 @@ fsevents@~2.3.1:
     graphql: ^15.5.0
     graphql-ergonomock: ^1.1.1
     graphql-tag: ^2.12.0
-    husky: ^5.0.9
+    husky: ^7.0.2
     i18next: ^20.1.0
     i18next-browser-languagedetector: ^6.1.0
     i18next-http-backend: ^1.2.1
