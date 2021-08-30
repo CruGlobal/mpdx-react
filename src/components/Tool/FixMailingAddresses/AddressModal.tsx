@@ -74,7 +74,12 @@ interface Props {
     address: address;
   };
   handleClose: () => void;
-  handleChange: (event, props) => void;
+  handleChange: (
+    event:
+      | React.ChangeEvent<HTMLInputElement & HTMLSelectElement>
+      | React.ChangeEvent<HTMLInputElement>,
+    props,
+  ) => void;
 }
 
 const AddressModal = ({
@@ -151,7 +156,11 @@ const AddressModal = ({
                   <NativeSelect
                     value={modalState.address?.locationType || ''}
                     input={<StyledInput />}
-                    onChange={(event) => handleChange(event, 'locationType')}
+                    onChange={(
+                      event: React.ChangeEvent<
+                        HTMLSelectElement & HTMLInputElement
+                      >,
+                    ) => handleChange(event, 'locationType')}
                     className={classes.widthFull}
                   >
                     <option value="" disabled>
@@ -261,7 +270,9 @@ const AddressModal = ({
                         modalState.address ? !modalState.address?.valid : false
                       }
                       name="checkbox"
-                      onChange={(event) => handleChange(event, 'valid')}
+                      onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
+                        handleChange(event, 'valid')
+                      }
                     />
                     <Typography style={{ marginLeft: theme.spacing(1) }}>
                       Address no longer valid

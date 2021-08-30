@@ -112,7 +112,7 @@ interface Props {
   title: string;
   tag: string;
   addresses: address[];
-  openFunction: (address) => void;
+  openFunction: (address: address) => void;
 }
 
 const Contact = ({

@@ -13,7 +13,7 @@ import { useTranslation } from 'react-i18next';
 
 import NavToolDrawer from '../NavToolList/NavToolDrawer';
 import theme from '../../../theme';
-import Contact from './Contact';
+import Contact, { address } from './Contact';
 import NoContacts from './NoContacts';
 
 import AddressModal from './AddressModal';
@@ -99,7 +99,7 @@ const FixSendNewsletter = (): ReactElement => {
     test.length > 0 ? setTest([]) : setTest(testData);
   };
 
-  const handleOpen = (address): void => {
+  const handleOpen = (address: address): void => {
     setModalState({ open: true, address: address });
   };
 
@@ -107,7 +107,12 @@ const FixSendNewsletter = (): ReactElement => {
     setModalState({ open: false, address: null });
   };
 
-  const handleChange = (event, props): void => {
+  const handleChange = (
+    event:
+      | React.ChangeEvent<HTMLInputElement & HTMLSelectElement>
+      | React.ChangeEvent<HTMLInputElement>,
+    props: string,
+  ): void => {
     setModalState((prevState) => ({
       ...prevState,
       address: {
