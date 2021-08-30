@@ -106,7 +106,7 @@ const FixSendNewsletter = (): ReactElement => {
         >
           <Grid container>
             <Grid item xs={12}>
-              <Typography variant="h4">{t('Fix Commitment Info')}</Typography>
+              <Typography variant="h4">{t('Fix Send Newsletter')}</Typography>
               <Divider className={classes.divider} />
               <Box className={classes.descriptionBox}>
                 {test.length > 0 && (
