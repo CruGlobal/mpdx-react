@@ -93,7 +93,7 @@ export const emptyAddress: address = {
   zip: '',
   country: '',
   primary: false,
-  valid: false,
+  valid: true,
 };
 
 const FixSendNewsletter = (): ReactElement => {
