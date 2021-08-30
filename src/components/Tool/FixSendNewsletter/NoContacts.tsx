@@ -15,6 +15,9 @@ const StyledBox = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.cruGrayLight.main,
   paddingTop: theme.spacing(7),
   paddingBottom: theme.spacing(7),
+  paddingLeft: theme.spacing(3),
+  paddingRight: theme.spacing(3),
+  textAlign: 'center',
   boxShadow: `0px 0px 5px ${theme.palette.cruGrayMedium.main} inset`,
 }));
 
