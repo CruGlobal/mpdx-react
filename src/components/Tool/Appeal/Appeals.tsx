@@ -33,7 +33,7 @@ const Appeals = (): ReactElement => {
         <Box display="flex" justifyContent="center" mt={10}>
           <LoadingIndicator color="primary" size={40} />
         </Box>
-      ) : data?.primaryAppeal ? (
+      ) : data?.primaryAppeal && data.primaryAppeal.nodes.length > 0 ? (
         <Appeal
           name={data.primaryAppeal.nodes[0].name || ''}
           id={data.primaryAppeal.nodes[0].id || ''}
@@ -61,7 +61,7 @@ const Appeals = (): ReactElement => {
         <Box display="flex" justifyContent="center" mt={10}>
           <LoadingIndicator color="primary" size={40} />
         </Box>
-      ) : data?.regularAppeals ? (
+      ) : data?.regularAppeals && data.regularAppeals.nodes.length > 0 ? (
         <>
           {data.regularAppeals.nodes.map((appeal) => (
             <Box key={appeal.name} mb={3}>
