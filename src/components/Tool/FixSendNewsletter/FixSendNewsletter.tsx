@@ -109,16 +109,20 @@ const FixSendNewsletter = (): ReactElement => {
               <Typography variant="h4">{t('Fix Commitment Info')}</Typography>
               <Divider className={classes.divider} />
               <Box className={classes.descriptionBox}>
-                <Typography>
-                  <strong>
-                    You have {testData.length} newsletter status to confirm.
-                  </strong>
-                </Typography>
-                <Typography>
-                  {t(
-                    'Contacts that appear here have an empty Newsletter Status and Partner Status set to Financial, Special, or Pray. Choose a newsletter status for contacts below.',
-                  )}
-                </Typography>
+                {test.length > 0 && (
+                  <>
+                    <Typography>
+                      <strong>
+                        You have {testData.length} newsletter status to confirm.
+                      </strong>
+                    </Typography>
+                    <Typography>
+                      {t(
+                        'Contacts that appear here have an empty Newsletter Status and Partner Status set to Financial, Special, or Pray. Choose a newsletter status for contacts below.',
+                      )}
+                    </Typography>
+                  </>
+                )}
                 <Button size="small" variant="outlined" onClick={toggleData}>
                   Change Test
                 </Button>
