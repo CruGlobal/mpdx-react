@@ -10,6 +10,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import NavToolDrawer from '../NavToolList/NavToolDrawer';
 import theme from '../../../theme';
+import Contact from './Contact';
 
 const useStyles = makeStyles(() => ({
   container: {
@@ -73,7 +74,7 @@ const FixSendNewsletter = (): ReactElement => {
     },
   ];
 
-  //TODO: Make navbar selectId = "fixCommitmentInfo" when other branch gets merged
+  //TODO: Make navbar selectId = "fixSendNewsletter" when other branch gets merged
 
   return (
     <>
@@ -97,16 +98,12 @@ const FixSendNewsletter = (): ReactElement => {
               <Box className={classes.descriptionBox}>
                 <Typography>
                   <strong>
-                    You have {testData.length} partner statuses to confirm.
+                    You have {testData.length} newsletter status to confirm.
                   </strong>
                 </Typography>
                 <Typography>
                   {t(
-                    'MPDX has assigned partnership statuses and giving frequencies ' +
-                      'based on your partner’s giving history. MPDX has made its best ' +
-                      'attempt at matching the appropriate statuses for you. However, ' +
-                      'you will need to confirm them to be sure MPDX’s matching was ' +
-                      'accurate.',
+                    'Contacts that appear here have an empty Newsletter Status and Partner Status set to Financial, Special, or Pray. Choose a newsletter status for contacts below.',
                   )}
                 </Typography>
               </Box>
@@ -114,9 +111,12 @@ const FixSendNewsletter = (): ReactElement => {
             {testData.length > 0 ? (
               <>
                 <Grid item xs={12}>
-                  {testData.map((contact) => (
-                    <p key={contact.name}>sadsad</p>
-                  ))}
+                  <Contact
+                    title={'Test User'}
+                    source={'Donor Hub (12/12/2021)'}
+                    newsletterType={'Physical'}
+                    tag={'Partner - Financial'}
+                  />
                 </Grid>
                 <Grid item xs={12}>
                   <Box className={classes.footer}>
@@ -128,7 +128,11 @@ const FixSendNewsletter = (): ReactElement => {
                 </Grid>
               </>
             ) : (
-              <p>asdsada</p>
+              <Contact
+                title={'Test User'}
+                source={'Donor Hub (12/12/2021)'}
+                newsletterType={'Physical'}
+              />
             )}
           </Grid>
         </Container>
