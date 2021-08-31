@@ -1,7 +1,7 @@
 import { Box, CardContent, Typography } from '@material-ui/core';
 import React, { ReactElement } from 'react';
 import Icon from '@mdi/react';
-import { mdiAlertCircleOutline } from '@mdi/js';
+import { mdiTrophy } from '@mdi/js';
 import { useTranslation } from 'react-i18next';
 import AnimatedCard from '../../../../src/components/AnimatedCard';
 
@@ -23,11 +23,11 @@ const NoAppeals = ({ primary }: Props): ReactElement => {
             flexDirection="column"
             alignItems="center"
           >
-            <Icon path={mdiAlertCircleOutline} size={3} />
+            <Icon path={mdiTrophy} size={3} />
             <Typography variant="h6">
               {primary
-                ? t('You do not have a primary appeal.')
-                : t('You do not have any appeals.')}
+                ? t('No Primary Appeal has been selected.')
+                : t('No Appeals have been setup yet.')}
             </Typography>
           </Box>
         </CardContent>

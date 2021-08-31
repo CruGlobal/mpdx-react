@@ -1,18 +1,12 @@
-import {
-  Box,
-  CardContent,
-  Typography,
-  Tooltip,
-  makeStyles,
-} from '@material-ui/core';
+import { Box, CardContent, Typography, makeStyles } from '@material-ui/core';
 import React, { ReactElement } from 'react';
 import StarIcon from '@material-ui/icons/Star';
 import StarOutlineIcon from '@material-ui/icons/StarOutline';
 import NextLink from 'next/link';
-import { useTranslation } from 'react-i18next';
+import { useAccountListId } from '../../../../src/hooks/useAccountListId';
 import theme from '../../../../src/theme';
 import AnimatedCard from '../../../../src/components/AnimatedCard';
-import { useAccountListId } from '../../../../src/hooks/useAccountListId';
+import AppealProgressBar from './AppealProgressBar';
 
 export interface Props {
   name: string;
@@ -83,7 +77,6 @@ const Appeal = ({
 }: Props): ReactElement => {
   const classes = useStyles();
   const accountListId = useAccountListId();
-  const { t } = useTranslation();
 
   return (
     <Box m={1}>
@@ -113,119 +106,13 @@ const Appeal = ({
               )}
             </Box>
           </Box>
-          <Box display="flex" justifyContent="end">
-            <Tooltip title={t('Given').toString()} placement="top" arrow>
-              <Typography
-                variant="body2"
-                display="inline"
-                className={classes.colorYellow}
-              >
-                {given} {amountCurrency} (
-                {`${((given / (amount || 1)) * 100).toFixed(0)}%`})
-              </Typography>
-            </Tooltip>
-            <Typography
-              variant="body2"
-              display="inline"
-              style={{
-                padding: '0 3px 0 3px',
-              }}
-            >
-              /
-            </Typography>
-            <Tooltip title={t('Received').toString()} placement="top" arrow>
-              <Typography
-                variant="body2"
-                display="inline"
-                className={classes.colorOrange}
-              >
-                {received + given} {amountCurrency} (
-                {`${(((received + given) / (amount || 1)) * 100).toFixed(0)}%`})
-              </Typography>
-            </Tooltip>
-            <Typography
-              variant="body2"
-              display="inline"
-              style={{
-                padding: '0 3px 0 3px',
-              }}
-            >
-              /
-            </Typography>
-            <Tooltip title={t('Commited').toString()} placement="top" arrow>
-              <Typography
-                variant="body2"
-                display="inline"
-                className={classes.colorLightGray}
-              >
-                {commited + received + given} {amountCurrency} (
-                {`${(
-                  ((commited + received + given) / (amount || 1)) *
-                  100
-                ).toFixed(0)}%`}
-                )
-              </Typography>
-            </Tooltip>
-          </Box>
-          <Box className={classes.progressBarOuter}>
-            <Box
-              display="flex"
-              justifyContent="flex-start"
-              className={classes.progressBarInner}
-            >
-              <Tooltip
-                title={t('Given').toString()}
-                placement="top-start"
-                arrow
-              >
-                <Box
-                  style={{
-                    minWidth: `min(${(given / (amount || 1)) * 100}%,100%)`,
-                    height: '100%',
-                    backgroundColor: theme.palette.progressBarYellow.main,
-                    borderTopLeftRadius: 8,
-                    borderBottomLeftRadius: 8,
-                    borderTopRightRadius: !received && !commited ? 8 : 0,
-                    borderBottomRightRadius: !received && !commited ? 8 : 0,
-                  }}
-                />
-              </Tooltip>
-              <Tooltip
-                title={t('Received').toString()}
-                placement="top-start"
-                arrow
-              >
-                <Box
-                  style={{
-                    minWidth: `${(received / (amount || 1)) * 100}%`,
-                    height: '100%',
-                    backgroundColor: theme.palette.progressBarOrange.main,
-                    borderTopLeftRadius: !given ? 8 : 0,
-                    borderBottomLeftRadius: !given ? 8 : 0,
-                    borderTopRightRadius: !commited ? 8 : 0,
-                    borderBottomRightRadius: !commited ? 8 : 0,
-                  }}
-                />
-              </Tooltip>
-              <Tooltip
-                title={t('Commited').toString()}
-                placement="top-start"
-                arrow
-              >
-                <Box
-                  style={{
-                    minWidth: `${(commited / (amount || 1)) * 100}%`,
-                    height: '100%',
-                    backgroundColor: theme.palette.progressBarGray.main,
-                    borderTopLeftRadius: !given && !received ? 8 : 0,
-                    borderBottomLeftRadius: !given && !received ? 8 : 0,
-                    borderTopRightRadius: 8,
-                    borderBottomRightRadius: 8,
-                  }}
-                ></Box>
-              </Tooltip>
-            </Box>
-          </Box>
+          <AppealProgressBar
+            given={given}
+            commited={commited}
+            received={received}
+            amount={amount}
+            amountCurrency={amountCurrency}
+          />
         </CardContent>
       </AnimatedCard>
     </Box>
