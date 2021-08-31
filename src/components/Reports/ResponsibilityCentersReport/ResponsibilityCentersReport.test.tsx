@@ -22,24 +22,22 @@ const onNavListToggle = jest.fn();
 const mocks = {
   FinancialAccounts: {
     financialAccounts: {
-      edges: [
+      nodes: [
         {
-          node: {
-            active: false,
-            balance: {
-              conversionDate: '2/2/2021',
-              convertedAmount: 3500,
-              convertedCurrency: 'CAD',
-            },
-            code: '13212',
-            id: 'test-id-111',
-            name: 'Test Account',
-            organization: {
-              id: '111-2222-3333',
-              name: 'test org 01',
-            },
-            updatedAt: '2/2/2021',
+          active: false,
+          balance: {
+            conversionDate: '2/2/2021',
+            convertedAmount: 3500,
+            convertedCurrency: 'CAD',
           },
+          code: '13212',
+          id: 'test-id-111',
+          name: 'Test Account',
+          organization: {
+            id: '111-2222-3333',
+            name: 'test org 01',
+          },
+          updatedAt: '2/2/2021',
         },
       ],
     },
@@ -54,7 +52,7 @@ const errorMocks = {
 const emptyMocks = {
   FinancialAccounts: {
     financialAccounts: {
-      edges: [],
+      nodes: [],
     },
   },
 };
@@ -81,7 +79,7 @@ describe('ResponsibilityCentersReport', () => {
     });
 
     expect(getByText(title)).toBeInTheDocument();
-    expect(getByText('CA$3,500')).toBeInTheDocument();
+    expect(getByText('-CA$3,500')).toBeInTheDocument();
     expect(queryByTestId('Notification')).not.toBeInTheDocument();
     expect(getByTestId('AccountsGroupList')).toBeInTheDocument();
     expect(getByTestId('ResponsibilityCentersScrollBox')).toBeInTheDocument();
