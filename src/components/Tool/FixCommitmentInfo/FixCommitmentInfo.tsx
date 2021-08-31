@@ -1,4 +1,4 @@
-import React, { ReactElement, useState } from 'react';
+import React, { useState } from 'react';
 import {
   makeStyles,
   Theme,
@@ -55,7 +55,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-const FixCommitmentInfo = (): ReactElement => {
+const FixCommitmentInfo: React.FC = () => {
   const classes = useStyles();
   const [isNavListOpen, setNavListOpen] = useState<boolean>(true);
   const { t } = useTranslation();

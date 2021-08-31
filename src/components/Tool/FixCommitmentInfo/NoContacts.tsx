@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react';
+import React from 'react';
 import { Box, Typography, styled } from '@material-ui/core';
 import { mdiCurrencyUsd } from '@mdi/js';
 import { useTranslation } from 'react-i18next';
@@ -21,7 +21,7 @@ const StyledBox = styled(Box)(({ theme }) => ({
   boxShadow: `0px 0px 5px ${theme.palette.cruGrayMedium.main} inset`,
 }));
 
-const NoContacts = (): ReactElement => {
+const NoContacts: React.FC = () => {
   const { t } = useTranslation();
   return (
     <StyledBox>

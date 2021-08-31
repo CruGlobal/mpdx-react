@@ -1,4 +1,4 @@
-import React, { ReactElement, useState } from 'react';
+import React, { useState } from 'react';
 import {
   Box,
   Grid,
@@ -90,7 +90,7 @@ interface Props {
   frequencyValue: string;
 }
 
-const Contact = ({
+const Contact: React.FC<Props> = ({
   name,
   tagTitle,
   tagValue,
@@ -98,7 +98,7 @@ const Contact = ({
   amountCurrency,
   frequencyTitle,
   frequencyValue,
-}: Props): ReactElement => {
+}) => {
   const [values, setValues] = useState({
     tagValue: tagValue,
     amountCurrency: amountCurrency,
