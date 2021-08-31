@@ -1,4 +1,4 @@
-import React, { Fragment, ReactElement } from 'react';
+import React, { Fragment } from 'react';
 import {
   Box,
   Grid,
@@ -117,17 +117,12 @@ interface Props {
   openFunction: (address: address) => void;
 }
 
-const Contact = ({
-  title,
-  tag,
-  addresses,
-  openFunction,
-}: Props): ReactElement => {
+const Contact: React.FC<Props> = ({ title, tag, addresses, openFunction }) => {
   const { t } = useTranslation();
   const classes = useStyles();
   const newAddress: address = { ...emptyAddress, newAddress: true };
   //TODO: Add button functionality
-  //TODO: Mkae contact title a link to contact page
+  //TODO: Make contact title a link to contact page
 
   return (
     <Grid container className={classes.container}>

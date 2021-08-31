@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react';
+import React from 'react';
 import clsx from 'clsx';
 import {
   makeStyles,
@@ -101,11 +101,11 @@ interface Props {
   ) => void;
 }
 
-const AddressModal = ({
+const AddressModal: React.FC<Props> = ({
   modalState,
   handleClose,
   handleChange,
-}: Props): ReactElement => {
+}) => {
   const classes = useStyles();
   const { t } = useTranslation();
 
