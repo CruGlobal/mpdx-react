@@ -1,7 +1,7 @@
 import { Box, CardContent, Typography } from '@material-ui/core';
 import React, { ReactElement } from 'react';
 import Icon from '@mdi/react';
-import { mdiAlertCircleOutline, mdiTrophy } from '@mdi/js';
+import { mdiTrophy } from '@mdi/js';
 import { useTranslation } from 'react-i18next';
 import AnimatedCard from '../../../../src/components/AnimatedCard';
 
