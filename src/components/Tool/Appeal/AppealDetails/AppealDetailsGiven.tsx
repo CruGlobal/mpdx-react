@@ -114,10 +114,9 @@ const AppealDetailsGiven = ({ appeal }: Props): ReactElement => {
   }));
 
   const updateSelected = (e: GridSelectionModel): void => {
-    const temp: string[] = [];
-    for (const x of e) {
-      temp.push(rows[parseInt(x.toString())].contact);
-    }
+    const temp: string[] = e.map(
+      (index) => rows[parseInt(index.toString())].contact,
+    );
     setAppealState({ ...appealState, selected: [...temp] });
   };
   return (
