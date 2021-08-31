@@ -1,4 +1,4 @@
-import React, { ReactElement, useState } from 'react';
+import React, { useState } from 'react';
 import {
   makeStyles,
   Container,
@@ -9,7 +9,7 @@ import {
   Button,
 } from '@material-ui/core';
 
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 
 import NavToolDrawer from '../NavToolList/NavToolDrawer';
 import theme from '../../../theme';
@@ -111,7 +111,7 @@ export const emptyAddress: address = {
   valid: true,
 };
 
-const FixSendNewsletter = (): ReactElement => {
+const FixSendNewsletter: React.FC = () => {
   const classes = useStyles();
   const [isNavListOpen, setNavListOpen] = useState<boolean>(true);
   const [modalState, setModalState] = useState({
@@ -181,7 +181,10 @@ const FixSendNewsletter = (): ReactElement => {
                   <>
                     <Typography>
                       <strong>
-                        You have {test.length} mailing addresses to confirm.
+                        {t(
+                          'You have {{amount}} mailing addresses to confirm.',
+                          { amount: test.length },
+                        )}
                       </strong>
                     </Typography>
                     <Typography>
@@ -212,8 +215,11 @@ const FixSendNewsletter = (): ReactElement => {
                 <Grid item xs={12}>
                   <Box className={classes.footer}>
                     <Typography>
-                      Showing <strong>{test.length}</strong> of{' '}
-                      <strong>{test.length}</strong>
+                      <Trans
+                        defaults="Showing <bold>{{value}}</bold> of <bold>{{value}}</bold>"
+                        values={{ value: test.length }}
+                        components={{ bold: <strong /> }}
+                      />
                     </Typography>
                   </Box>
                 </Grid>
