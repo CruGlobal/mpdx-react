@@ -133,7 +133,9 @@ const AddressModal = ({
                     variant="h5"
                     style={{ marginTop: -theme.spacing(1) }}
                   >
-                    {modalState.address.new ? 'Add Address' : 'Edit Address'}
+                    {modalState.address.newAddress
+                      ? 'Add Address'
+                      : 'Edit Address'}
                   </Typography>
                   <IconButton
                     onClick={handleClose}
@@ -364,7 +366,7 @@ const AddressModal = ({
                 size="small"
                 className={clsx(classes.blue, classes.actionButtons)}
               >
-                {/*TODO: make "new" field in address false so it says "edit" instead of "add" */}
+                {/*TODO: make "newAddress" field in address false so it says "edit" instead of "add" */}
                 Save
               </Button>
             </CardActions>
