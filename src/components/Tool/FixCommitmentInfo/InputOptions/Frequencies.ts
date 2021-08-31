@@ -27,7 +27,7 @@ export const frequencies = [
   },
   {
     title: i18n.t('Every 6 Months'),
-    value: 'eveyr-6-months',
+    value: 'every-6-months',
   },
   {
     title: i18n.t('Annually'),
