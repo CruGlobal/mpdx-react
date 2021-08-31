@@ -99,7 +99,9 @@ const FixCommitmentInfo = (): ReactElement => {
               <Box className={classes.descriptionBox}>
                 <Typography>
                   <strong>
-                    You have {testData.length} partner statuses to confirm.
+                    {t('You have {{amount}} partner statuses to confirm.', {
+                      amount: testData.length,
+                    })}
                   </strong>
                 </Typography>
                 <Typography>

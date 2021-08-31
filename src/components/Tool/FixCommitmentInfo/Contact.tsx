@@ -10,6 +10,7 @@ import {
   makeStyles,
   NativeSelect,
 } from '@material-ui/core';
+import { useTranslation } from 'react-i18next';
 import SearchIcon from '@material-ui/icons/Search';
 import VisibilityOffIcon from '@material-ui/icons/VisibilityOff';
 import theme from '../../../theme';
@@ -105,7 +106,7 @@ const Contact = ({
     frequencyValue: frequencyValue,
   });
   const classes = useStyles();
-
+  const { t } = useTranslation();
   //TODO: Add button functionality
   //TODO: Show donation history
 
@@ -222,7 +223,7 @@ const Contact = ({
           >
             <Box className={classes.buttonTop}>
               <Button variant="contained" style={{ width: '100%' }}>
-                Confirm
+                {t('Confirm')}
               </Button>
             </Box>
             <Box className={classes.buttonBottom}>
