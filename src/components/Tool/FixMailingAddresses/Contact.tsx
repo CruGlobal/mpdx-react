@@ -107,7 +107,7 @@ export interface address {
   metro?: string;
   primary: boolean;
   valid: boolean;
-  new?: boolean;
+  newAddress?: boolean;
 }
 
 interface Props {
@@ -125,7 +125,7 @@ const Contact = ({
 }: Props): ReactElement => {
   const { t } = useTranslation();
   const classes = useStyles();
-  const newAddress: address = { ...emptyAddress, new: true };
+  const newAddress: address = { ...emptyAddress, newAddress: true };
   //TODO: Add button functionality
   //TODO: Mkae contact title a link to contact page
 
@@ -290,7 +290,7 @@ const Contact = ({
                   size={0.8}
                   className={classes.buttonIcon}
                 />
-                Confirm
+                {t('Confirm')}
               </Button>
             </Box>
           </Box>
