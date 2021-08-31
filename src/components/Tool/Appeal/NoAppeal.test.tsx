@@ -10,9 +10,9 @@ describe('NoAppeals', () => {
         <NoAppeals />
       </TestWrapper>,
     );
-    expect(queryByText('You do not have any appeals.')).toBeInTheDocument();
+    expect(queryByText('No Appeals have been setup yet.')).toBeInTheDocument();
     expect(
-      queryByText('You do not have a primary appeal.'),
+      queryByText('No Primary Appeal has been selected.'),
     ).not.toBeInTheDocument();
   });
 
@@ -22,9 +22,11 @@ describe('NoAppeals', () => {
         <NoAppeals primary />
       </TestWrapper>,
     );
-    expect(queryByText('You do not have any appeals.')).not.toBeInTheDocument();
     expect(
-      queryByText('You do not have a primary appeal.'),
+      queryByText('No Appeals have been setup yet.'),
+    ).not.toBeInTheDocument();
+    expect(
+      queryByText('No Primary Appeal has been selected.'),
     ).toBeInTheDocument();
   });
 });
