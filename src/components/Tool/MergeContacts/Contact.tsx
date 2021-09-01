@@ -141,7 +141,7 @@ const Contact: React.FC<Props> = ({ contact1, contact2, update }) => {
                   >
                     {selected === 'left' && (
                       <Typography variant="body2" className={classes.selected}>
-                        Use this one
+                        {t('Use this one')}
                       </Typography>
                     )}
                     <Typography variant="h6">{contact1.title}</Typography>
