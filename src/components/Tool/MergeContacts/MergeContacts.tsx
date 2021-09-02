@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import {
   makeStyles,
-  Container,
   Box,
   Typography,
   Grid,
@@ -19,24 +18,17 @@ import NoContacts from './NoContacts';
 const useStyles = makeStyles(() => ({
   container: {
     padding: theme.spacing(3),
-    marginRight: theme.spacing(1),
+    overflow: 'auto',
     display: 'flex',
-    [theme.breakpoints.down('lg')]: {
-      paddingLeft: theme.spacing(5),
-      marginRight: theme.spacing(2),
-    },
     [theme.breakpoints.down('md')]: {
-      paddingLeft: theme.spacing(5),
-      marginRight: theme.spacing(2),
-    },
-    [theme.breakpoints.down('sm')]: {
-      paddingLeft: theme.spacing(6),
+      width: 'calc(100% - 30px) !important',
     },
   },
-  outer: {
+  outter: {
     display: 'flex',
     flexDirection: 'row',
-    minWidth: '100vw',
+    justifyContent: 'end',
+    width: '100%',
   },
   divider: {
     marginTop: theme.spacing(2),
@@ -139,17 +131,24 @@ const MergeContacts: React.FC = () => {
 
   return (
     <>
-      <Box className={classes.outer} data-testid="Home">
+      <Box
+        className={classes.outter}
+        display="flex"
+        flexDirection="column"
+        data-testid="Home"
+      >
         <NavToolDrawer
           open={isNavListOpen}
           toggle={handleNavListToggle}
           selectedId="mergeContacts"
         />
-        <Container
+        <Box
           className={classes.container}
           style={{
-            minWidth: isNavListOpen ? 'calc(97.5vw - 290px)' : '97.5vw',
-            transition: 'min-width 0.15s linear',
+            width: isNavListOpen
+              ? 'calc(100% - 30px - 290px)'
+              : 'calc(100% - 30px)',
+            transition: 'width 0.15s linear',
           }}
         >
           <Grid container>
@@ -234,7 +233,7 @@ const MergeContacts: React.FC = () => {
               <NoContacts />
             )}
           </Grid>
-        </Container>
+        </Box>
       </Box>
     </>
   );
