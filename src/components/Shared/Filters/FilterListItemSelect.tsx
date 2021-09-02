@@ -6,10 +6,10 @@ import {
   Select,
 } from '@material-ui/core';
 import React from 'react';
-import { Filter } from './Filter';
+import { RadioFilter } from '../../../../graphql/types.generated';
 
 interface Props {
-  filter: Filter;
+  filter: RadioFilter;
   value?: string;
   onUpdate: (value?: string) => void;
 }
@@ -27,8 +27,8 @@ export const FilterListItemSelect: React.FC<Props> = ({
           value={value}
           onChange={(e) => onUpdate(e.target.value as string)}
         >
-          {filter.options.map(({ id, name }) => (
-            <MenuItem key={id} value={id?.toString()}>
+          {filter.options?.map(({ value, name }) => (
+            <MenuItem key={value} value={value}>
               {name}
             </MenuItem>
           ))}

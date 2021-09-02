@@ -1,6 +1,14 @@
 import { ListItem, ListItemText } from '@material-ui/core';
 import React from 'react';
-import { Filter } from './Filter';
+import {
+  Filter,
+  CheckboxFilter,
+  DaterangeFilter,
+  MultiselectFilter,
+  RadioFilter,
+  TextFilter,
+  DateRangeInput,
+} from '../../../../graphql/types.generated';
 import { FilterListItemCheckbox } from './FilterListItemCheckbox';
 import { FilterListItemDateRange } from './FilterListItemDateRange';
 import { FilterListItemMultiselect } from './FilterListItemMultiselect';
@@ -10,7 +18,7 @@ import { FilterListItemTextField } from './FilterListItemTextField';
 interface Props {
   filter: Filter;
   value?: boolean | string | Array<string>;
-  onUpdate: (value?: boolean | string | Array<string>) => void;
+  onUpdate: (value?: boolean | string | Array<string> | DateRangeInput) => void;
 }
 
 export const FilterListItem: React.FC<Props> = ({
@@ -18,40 +26,40 @@ export const FilterListItem: React.FC<Props> = ({
   value,
   onUpdate,
 }: Props) => {
-  return filter.type === 'text' ? (
+  return (filter as TextFilter).__typename === 'TextFilter' ? (
     <FilterListItemTextField
-      filter={filter}
+      filter={filter as TextFilter}
       value={value?.toString()}
       onUpdate={(value) => onUpdate(value)}
     />
-  ) : filter.type === 'radio' ? (
+  ) : (filter as RadioFilter).__typename === 'RadioFilter' ? (
     <FilterListItemSelect
-      filter={filter}
+      filter={filter as RadioFilter}
       value={value?.toString()}
       onUpdate={onUpdate}
     />
-  ) : filter.type === 'multiselect' ? (
+  ) : (filter as MultiselectFilter).__typename === 'MultiselectFilter' ? (
     <FilterListItemMultiselect
-      filter={filter}
+      filter={filter as MultiselectFilter}
       selected={Array.isArray(value) ? value : undefined}
       onUpdate={onUpdate}
     />
-  ) : filter.type === 'daterange' ? (
+  ) : (filter as DaterangeFilter).__typename === 'DaterangeFilter' ? (
     <FilterListItemDateRange
-      filter={filter}
-      value={value?.toString()}
+      filter={filter as DaterangeFilter}
+      value={value as DateRangeInput}
       onUpdate={onUpdate}
     />
-  ) : filter.type === 'single_checkbox' ? (
+  ) : (filter as CheckboxFilter).__typename === 'CheckboxFilter' ? (
     <FilterListItemCheckbox
-      filter={filter}
+      filter={filter as CheckboxFilter}
       value={!!value}
       onUpdate={onUpdate}
     />
   ) : (
     <ListItem>
       <ListItemText
-        primary={`Unsupported Filter: ${filter.title} (${filter.type})`}
+        primary={`Unsupported Filter: ${filter.title} (${filter.filterKey})`}
         primaryTypographyProps={{ variant: 'subtitle1', color: 'error' }}
       />
     </ListItem>
