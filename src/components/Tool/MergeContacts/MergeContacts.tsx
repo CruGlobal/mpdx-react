@@ -164,6 +164,9 @@ const MergeContacts: React.FC = () => {
                         { amount: test.length },
                       )}
                     </Typography>
+                    <Typography>
+                      <strong>{t('This cannot be undone.')}</strong>
+                    </Typography>
                   </>
                 )}
                 <Button size="small" variant="outlined" onClick={toggleData}>
