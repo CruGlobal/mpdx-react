@@ -41,21 +41,29 @@ const useStyles = makeStyles(() => ({
   },
   contactBasic: {
     height: '100%',
+    width: '45%',
+    position: 'relative',
     '&:hover': {
       cursor: 'pointer',
     },
     [theme.breakpoints.down('sm')]: {
       backgroundColor: 'white',
+      width: '100%',
     },
   },
   selected: {
     position: 'absolute',
-    top: -theme.spacing(2),
-    right: -theme.spacing(2),
+    top: 0,
+    right: 0,
     color: 'white',
     backgroundColor: theme.palette.mpdxGreen.main,
     paddingRight: theme.spacing(1),
     paddingLeft: theme.spacing(1),
+  },
+  contactInfo: {
+    width: '100%',
+    overflow: 'auto',
+    scrollbarWidth: 'thin',
   },
 }));
 
@@ -121,7 +129,6 @@ const Contact: React.FC<Props> = ({ contact1, contact2, update }) => {
                 <Box
                   display="flex"
                   alignItems="center"
-                  flexGrow={10}
                   className={classes.contactBasic}
                   onClick={() => updateState('left')}
                   p={2}
@@ -137,14 +144,21 @@ const Contact: React.FC<Props> = ({ contact1, contact2, update }) => {
                     display="flex"
                     flexDirection="column"
                     ml={2}
-                    style={{ position: 'relative', width: '100%' }}
+                    className={classes.contactInfo}
                   >
                     {selected === 'left' && (
                       <Typography variant="body2" className={classes.selected}>
                         {t('Use this one')}
                       </Typography>
                     )}
-                    <Typography variant="h6">{contact1.title}</Typography>
+                    <Box
+                      style={{
+                        width: '100%',
+                      }}
+                    >
+                      <Typography variant="h6">{contact1.title}</Typography>
+                    </Box>
+
                     <Typography>{t('Status:')}</Typography>
                     <Typography>{contact1.address.street}</Typography>
                     <Typography>{`${contact1.address.city}, ${contact1.address.state} ${contact1.address.zip}`}</Typography>
@@ -162,8 +176,7 @@ const Contact: React.FC<Props> = ({ contact1, contact2, update }) => {
                     flexDirection="column"
                     alignItems="center"
                     justifyContent="center"
-                    flexGrow={1}
-                    style={{ height: '100%' }}
+                    style={{ height: '100%', width: '10%' }}
                   >
                     <IconButton
                       onClick={() => updateState('left')}
@@ -205,7 +218,6 @@ const Contact: React.FC<Props> = ({ contact1, contact2, update }) => {
                     display="flex"
                     alignItems="center"
                     justifyContent="center"
-                    flexGrow={1}
                     style={{ height: '100%' }}
                   >
                     <IconButton
@@ -247,7 +259,6 @@ const Contact: React.FC<Props> = ({ contact1, contact2, update }) => {
                 <Box
                   display="flex"
                   alignItems="center"
-                  flexGrow={10}
                   className={classes.contactBasic}
                   onClick={() => updateState('right')}
                   p={2}
@@ -263,7 +274,7 @@ const Contact: React.FC<Props> = ({ contact1, contact2, update }) => {
                     display="flex"
                     flexDirection="column"
                     ml={2}
-                    style={{ position: 'relative', width: '100%' }}
+                    style={{ width: '100%' }}
                   >
                     {selected === 'right' && (
                       <Typography variant="body2" className={classes.selected}>
