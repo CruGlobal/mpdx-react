@@ -1,5 +1,6 @@
 import { ListItem, ListItemText } from '@material-ui/core';
 import React from 'react';
+import { ContactFilterValue } from '../../Contacts/ContactFilters/ContactFilters';
 import {
   Filter,
   CheckboxFilter,
@@ -20,7 +21,7 @@ import { FilterListItemTextField } from './FilterListItemTextField';
 
 interface Props {
   filter: Filter;
-  value?: boolean | string | Array<string>;
+  value?: ContactFilterValue;
   onUpdate: (value?: boolean | string | Array<string> | DateRangeInput) => void;
 }
 
