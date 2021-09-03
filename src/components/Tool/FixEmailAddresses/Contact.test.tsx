@@ -51,10 +51,10 @@ describe('FixEmailAddresses', () => {
 
     expect(getByText(testData.name)).toBeInTheDocument();
     expect(getByText('DonorHub (06/21/2021)')).toBeInTheDocument();
-    expect(getByTestId('textfield-0')).toBeInTheDocument();
+    expect(getByTestId('textfield-0-0')).toBeInTheDocument();
     expect(getByDisplayValue('test1@test1.com')).toBeInTheDocument();
     expect(getByText('MPDX (06/22/2021)')).toBeInTheDocument();
-    expect(getByTestId('textfield-1')).toBeInTheDocument();
+    expect(getByTestId('textfield-0-1')).toBeInTheDocument();
     expect(getByDisplayValue('test2@test1.com')).toBeInTheDocument();
   });
 
