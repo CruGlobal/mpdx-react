@@ -302,9 +302,15 @@ const Contact: React.FC<Props> = ({
                         onChange={(
                           event: React.ChangeEvent<HTMLInputElement>,
                         ) => updateNewEmailAddress(event)}
+                        inputProps={{
+                          'data-testid': 'addNewEmailInput',
+                        }}
                         value={newEmailAddress}
                       />
-                      <Box onClick={() => addNewEmailAddress()}>
+                      <Box
+                        onClick={() => addNewEmailAddress()}
+                        data-testid="addButton"
+                      >
                         <Icon
                           path={mdiPlus}
                           size={1}
