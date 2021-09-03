@@ -1,4 +1,4 @@
-import React, { ReactElement, useState } from 'react';
+import React, { Fragment, ReactElement, useState } from 'react';
 import {
   makeStyles,
   Grid,
@@ -15,9 +15,13 @@ import clsx from 'clsx';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import NextLink from 'next/link';
 import { useTranslation } from 'react-i18next';
+import Icon from '@mdi/react';
 import HandoffLink from '../../../../../HandoffLink';
 import { ReportNavItems } from '../../../../../Reports/NavReportsList/ReportNavItems';
+import { ToolsList } from '../../../../../Tool/Home/ToolList';
 import { useAccountListId } from '../../../../../../hooks/useAccountListId';
+import { useCurrentToolId } from '../../../../../../hooks/useCurrentToolId';
+import theme from 'src/theme';
 
 const useStyles = makeStyles((theme: Theme) => ({
   navListItem: {
@@ -36,12 +40,25 @@ const useStyles = makeStyles((theme: Theme) => ({
   expandOpen: {
     transform: 'rotate(180deg)',
   },
+  subMenu: {
+    backgroundColor: theme.palette.cruGrayDark.main,
+  },
+  menuItem: {
+    color: 'white',
+    '&:hover': {
+      backgroundColor: theme.palette.cruGrayMedium.main,
+    },
+  },
+  menuItemSelected: {
+    backgroundColor: theme.palette.cruGrayMedium.main,
+  },
 }));
 
 const NavMenu = (): ReactElement => {
   const { t } = useTranslation();
   const classes = useStyles();
   const accountListId = useAccountListId();
+  const currentToolId = useCurrentToolId();
 
   const [reportsMenuOpen, setReportsMenuOpen] = useState(false);
   const [toolsMenuOpen, setToolsMenuOpen] = useState(false);
@@ -204,31 +221,44 @@ const NavMenu = (): ReactElement => {
                       placement === 'bottom' ? 'center top' : 'center bottom',
                   }}
                 >
-                  <Paper>
+                  <Paper className={classes.subMenu}>
                     <ClickAwayListener onClickAway={handleToolsMenuClose}>
                       <MenuList
                         autoFocusItem={toolsMenuOpen}
                         id="menu-list-grow"
                       >
-                        {ReportNavItems.map((reportItem) => (
-                          <NextLink
-                            key={reportItem.id}
-                            href={`/accountLists/[accountListId]/reports/${reportItem.id}`}
-                            as={`/accountLists/${accountListId}/reports/${reportItem.id}`}
-                            scroll={false}
-                          >
-                            <MenuItem onClick={handleToolsMenuClose}>
-                              <ListItemText
-                                primary={t(
-                                  `${reportItem.title}${
-                                    reportItem.subTitle
-                                      ? ` (${reportItem.subTitle})`
-                                      : ''
-                                  }`,
-                                )}
-                              />
-                            </MenuItem>
-                          </NextLink>
+                        {ToolsList.map((toolsGroup) => (
+                          <Fragment key={toolsGroup.groupName}>
+                            {toolsGroup.items.map((tool) => (
+                              <NextLink
+                                key={tool.id}
+                                href={`/accountLists/[accountListId]/tools/${tool.id}`}
+                                as={`/accountLists/${accountListId}/tools/${tool.id}`}
+                                scroll={false}
+                              >
+                                <MenuItem
+                                  onClick={handleToolsMenuClose}
+                                  className={clsx(
+                                    classes.menuItem,
+                                    currentToolId === tool.id &&
+                                      classes.menuItemSelected,
+                                  )}
+                                >
+                                  <Icon
+                                    path={tool.icon}
+                                    size={1}
+                                    style={{ marginRight: theme.spacing(1) }}
+                                  />
+                                  <ListItemText
+                                    primary={t(
+                                      `${tool.tool}
+                                      `,
+                                    )}
+                                  />
+                                </MenuItem>
+                              </NextLink>
+                            ))}
+                          </Fragment>
                         ))}
                       </MenuList>
                     </ClickAwayListener>
@@ -244,7 +274,7 @@ const NavMenu = (): ReactElement => {
               scroll={false}
             >
               <MenuItem component="a">
-                <ListItemText primary={t('Tools')} />
+                <ListItemText primary={currentToolId} />
               </MenuItem>
             </NextLink>
           </Grid>
