@@ -10,7 +10,6 @@ import {
   MenuList,
   Paper,
   Box,
-  Theme,
 } from '@material-ui/core';
 import clsx from 'clsx';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
@@ -21,8 +20,10 @@ import HandoffLink from '../../../../../HandoffLink';
 import { ReportNavItems } from '../../../../../Reports/NavReportsList/ReportNavItems';
 import { ToolsList } from '../../../../../Tool/Home/ToolList';
 import { useAccountListId } from '../../../../../../hooks/useAccountListId';
+import { useCurrentToolId } from '../../../../../../hooks/useCurrentToolId';
+import theme from '../../../../../../theme';
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles(() => ({
   navListItem: {
     order: 2,
     [theme.breakpoints.down('sm')]: {
@@ -39,6 +40,18 @@ const useStyles = makeStyles((theme: Theme) => ({
   expandOpen: {
     transform: 'rotate(180deg)',
   },
+  subMenu: {
+    backgroundColor: theme.palette.cruGrayDark.main,
+  },
+  menuItem: {
+    color: 'white',
+    '&:hover': {
+      backgroundColor: theme.palette.cruGrayMedium.main,
+    },
+  },
+  menuItemSelected: {
+    backgroundColor: theme.palette.cruGrayMedium.main,
+  },
   menuIcon: {
     marginRight: theme.spacing(1),
   },
@@ -48,6 +61,7 @@ const NavMenu = (): ReactElement => {
   const { t } = useTranslation();
   const classes = useStyles();
   const accountListId = useAccountListId();
+  const currentToolId = useCurrentToolId();
 
   const [reportsMenuOpen, setReportsMenuOpen] = useState(false);
   const [toolsMenuOpen, setToolsMenuOpen] = useState(false);
@@ -210,7 +224,7 @@ const NavMenu = (): ReactElement => {
                       placement === 'bottom' ? 'center top' : 'center bottom',
                   }}
                 >
-                  <Paper>
+                  <Paper className={classes.subMenu}>
                     <ClickAwayListener onClickAway={handleToolsMenuClose}>
                       <MenuList
                         autoFocusItem={toolsMenuOpen}
@@ -225,7 +239,14 @@ const NavMenu = (): ReactElement => {
                                 as={`/accountLists/${accountListId}/tools/${tool.id}`}
                                 scroll={false}
                               >
-                                <MenuItem onClick={handleToolsMenuClose}>
+                                <MenuItem
+                                  onClick={handleToolsMenuClose}
+                                  className={clsx(
+                                    classes.menuItem,
+                                    currentToolId === tool.id &&
+                                      classes.menuItemSelected,
+                                  )}
+                                >
                                   <Icon
                                     path={tool.icon}
                                     size={1}
