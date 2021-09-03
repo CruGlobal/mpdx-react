@@ -20,7 +20,7 @@ export const ToolsList = [
     groupIcon: mdiWrench,
     items: [
       {
-        tool: i18n.t('Appeal'),
+        tool: i18n.t('Appeals'),
         desc: i18n.t(
           'Set goals, create asks, and track progress for one-time needs',
         ),
