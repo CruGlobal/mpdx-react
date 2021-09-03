@@ -44,10 +44,13 @@ const NavMenu = (): ReactElement => {
   const accountListId = useAccountListId();
 
   const [reportsMenuOpen, setReportsMenuOpen] = useState(false);
+  const [toolsMenuOpen, setToolsMenuOpen] = useState(false);
   const anchorRef = React.useRef<HTMLLIElement>(null);
+  const anchorRefTools = React.useRef<HTMLLIElement>(null);
 
   const handleReportsMenuToggle = () => {
     setReportsMenuOpen((prevOpen) => !prevOpen);
+    setToolsMenuOpen(false);
   };
 
   const handleReportsMenuClose = (event: React.MouseEvent<EventTarget>) => {
@@ -56,6 +59,19 @@ const NavMenu = (): ReactElement => {
     }
 
     setReportsMenuOpen(false);
+  };
+
+  const handleToolsMenuToggle = () => {
+    setToolsMenuOpen((prevOpen) => !prevOpen);
+    setReportsMenuOpen(false);
+  };
+
+  const handleToolsMenuClose = (event: React.MouseEvent<EventTarget>) => {
+    if (anchorRefTools.current?.contains(event.target as HTMLElement)) {
+      return;
+    }
+
+    setToolsMenuOpen(false);
   };
 
   return (
@@ -139,6 +155,69 @@ const NavMenu = (): ReactElement => {
                             scroll={false}
                           >
                             <MenuItem onClick={handleReportsMenuClose}>
+                              <ListItemText
+                                primary={t(
+                                  `${reportItem.title}${
+                                    reportItem.subTitle
+                                      ? ` (${reportItem.subTitle})`
+                                      : ''
+                                  }`,
+                                )}
+                              />
+                            </MenuItem>
+                          </NextLink>
+                        ))}
+                      </MenuList>
+                    </ClickAwayListener>
+                  </Paper>
+                </Grow>
+              )}
+            </Popper>
+          </Grid>
+          <Grid item className={classes.navListItem}>
+            <MenuItem
+              ref={anchorRefTools}
+              aria-controls={toolsMenuOpen ? 'menu-list-grow' : undefined}
+              aria-haspopup="true"
+              onClick={handleToolsMenuToggle}
+              data-testid="ToolsMenuToggle"
+            >
+              <ListItemText primary={t('Tools')} />
+              <ArrowDropDownIcon
+                className={clsx(classes.expand, {
+                  [classes.expandOpen]: toolsMenuOpen,
+                })}
+              />
+            </MenuItem>
+            <Popper
+              open={toolsMenuOpen}
+              anchorEl={anchorRefTools.current}
+              role={undefined}
+              transition
+              disablePortal
+            >
+              {({ TransitionProps, placement }) => (
+                <Grow
+                  {...TransitionProps}
+                  style={{
+                    transformOrigin:
+                      placement === 'bottom' ? 'center top' : 'center bottom',
+                  }}
+                >
+                  <Paper>
+                    <ClickAwayListener onClickAway={handleToolsMenuClose}>
+                      <MenuList
+                        autoFocusItem={toolsMenuOpen}
+                        id="menu-list-grow"
+                      >
+                        {ReportNavItems.map((reportItem) => (
+                          <NextLink
+                            key={reportItem.id}
+                            href={`/accountLists/[accountListId]/reports/${reportItem.id}`}
+                            as={`/accountLists/${accountListId}/reports/${reportItem.id}`}
+                            scroll={false}
+                          >
+                            <MenuItem onClick={handleToolsMenuClose}>
                               <ListItemText
                                 primary={t(
                                   `${reportItem.title}${
