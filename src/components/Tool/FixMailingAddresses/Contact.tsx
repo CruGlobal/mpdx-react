@@ -19,7 +19,7 @@ import { emptyAddress } from './FixMailingAddresses';
 
 const useStyles = makeStyles(() => ({
   left: {
-    [theme.breakpoints.up('md')]: {
+    [theme.breakpoints.up('lg')]: {
       border: `1px solid ${theme.palette.cruGrayMedium.main}`,
     },
   },
@@ -27,27 +27,34 @@ const useStyles = makeStyles(() => ({
     display: 'flex',
     alignItems: 'center',
     marginBottom: theme.spacing(2),
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down('md')]: {
       border: `1px solid ${theme.palette.cruGrayMedium.main}`,
     },
   },
   boxBottom: {
     backgroundColor: theme.palette.cruGrayLight.main,
     width: '100%',
-    [theme.breakpoints.down('xs')]: {
+    [theme.breakpoints.down('sm')]: {
       paddingTop: theme.spacing(2),
     },
   },
   buttonTop: {
-    margin: theme.spacing(1),
-    [theme.breakpoints.down('sm')]: {
-      marginRight: theme.spacing(2),
-      marginTop: theme.spacing(2),
-      marginBottom: theme.spacing(2),
+    padding: theme.spacing(1),
+    [theme.breakpoints.down('md')]: {
+      display: 'flex',
+      justifyContent: 'center',
+      padding: theme.spacing(2),
     },
     '& .MuiButton-root': {
       backgroundColor: theme.palette.mpdxBlue.main,
+      width: '100%',
       color: 'white',
+      [theme.breakpoints.down('md')]: {
+        width: '50%',
+      },
+      [theme.breakpoints.down('xs')]: {
+        width: '100%',
+      },
     },
   },
   buttonIcon: {
@@ -55,7 +62,7 @@ const useStyles = makeStyles(() => ({
   },
   rowChangeResponsive: {
     flexDirection: 'column',
-    [theme.breakpoints.down('xs')]: {
+    [theme.breakpoints.down('sm')]: {
       marginTop: -20,
       flexDirection: 'row',
       justifyContent: 'space-between',
@@ -63,7 +70,7 @@ const useStyles = makeStyles(() => ({
     },
   },
   responsiveBorder: {
-    [theme.breakpoints.down('xs')]: {
+    [theme.breakpoints.down('sm')]: {
       paddingBottom: theme.spacing(2),
       borderBottom: `1px solid ${theme.palette.cruGrayMedium.main}`,
     },
@@ -127,7 +134,7 @@ const Contact: React.FC<Props> = ({ title, tag, addresses, openFunction }) => {
   return (
     <Grid container className={classes.container}>
       <Grid container>
-        <Grid item md={10} xs={12}>
+        <Grid item lg={10} xs={12}>
           <Box display="flex" alignItems="center" className={classes.left}>
             <Grid container>
               <Grid item xs={12}>
@@ -147,8 +154,8 @@ const Contact: React.FC<Props> = ({ title, tag, addresses, openFunction }) => {
 
               <Grid item xs={12} className={classes.boxBottom}>
                 <Grid container>
-                  <Hidden xsDown>
-                    <Grid item xs={12} sm={6} className={classes.paddingY}>
+                  <Hidden smDown>
+                    <Grid item xs={12} md={6} className={classes.paddingY}>
                       <Box
                         display="flex"
                         justifyContent="space-between"
@@ -162,7 +169,7 @@ const Contact: React.FC<Props> = ({ title, tag, addresses, openFunction }) => {
                         </Typography>
                       </Box>
                     </Grid>
-                    <Grid item xs={12} sm={6} className={classes.paddingY}>
+                    <Grid item xs={12} md={6} className={classes.paddingY}>
                       <Box
                         display="flex"
                         justifyContent="flex-start"
@@ -176,14 +183,14 @@ const Contact: React.FC<Props> = ({ title, tag, addresses, openFunction }) => {
                   </Hidden>
                   {addresses.map((address) => (
                     <Fragment key={address.street}>
-                      <Grid item xs={12} sm={6} className={classes.paddingB2}>
+                      <Grid item xs={12} md={6} className={classes.paddingB2}>
                         <Box
                           display="flex"
                           justifyContent="space-between"
                           className={classes.paddingX}
                         >
                           <Box>
-                            <Hidden smUp>
+                            <Hidden mdUp>
                               <Typography display="inline">
                                 <strong>{t('Source')}: </strong>
                               </Typography>
@@ -203,7 +210,7 @@ const Contact: React.FC<Props> = ({ title, tag, addresses, openFunction }) => {
                           </Typography>
                         </Box>
                       </Grid>
-                      <Grid item xs={12} sm={6} className={classes.paddingB2}>
+                      <Grid item xs={12} md={6} className={classes.paddingB2}>
                         <Box
                           display="flex"
                           justifyContent="flex-start"
@@ -234,14 +241,14 @@ const Contact: React.FC<Props> = ({ title, tag, addresses, openFunction }) => {
                       </Grid>
                     </Fragment>
                   ))}
-                  <Grid item xs={12} sm={6} className={classes.paddingB2}>
+                  <Grid item xs={12} md={6} className={classes.paddingB2}>
                     <Box
                       display="flex"
                       justifyContent="space-between"
                       className={classes.paddingX}
                     >
                       <Box>
-                        <Hidden smUp>
+                        <Hidden mdUp>
                           <Typography display="inline">
                             <strong>{t('Source')}: </strong>
                           </Typography>
@@ -250,7 +257,7 @@ const Contact: React.FC<Props> = ({ title, tag, addresses, openFunction }) => {
                       </Box>
                     </Box>
                   </Grid>
-                  <Grid item xs={12} sm={6} className={classes.paddingB2}>
+                  <Grid item xs={12} md={6} className={classes.paddingB2}>
                     <Box
                       display="flex"
                       justifyContent="flex-start"
@@ -272,14 +279,14 @@ const Contact: React.FC<Props> = ({ title, tag, addresses, openFunction }) => {
             </Grid>
           </Box>
         </Grid>
-        <Grid item xs={12} md={2}>
+        <Grid item xs={12} lg={2}>
           <Box
             display="flex"
             flexDirection="column"
             style={{ paddingLeft: theme.spacing(1) }}
           >
             <Box className={classes.buttonTop}>
-              <Button variant="contained" style={{ width: '100%' }}>
+              <Button variant="contained">
                 <Icon
                   path={mdiCheckboxMarkedCircle}
                   size={0.8}
