@@ -62,7 +62,7 @@ const textFieldFilter: TextFilter = {
   title: 'Text Field Filter',
 };
 
-export const CheckboxBlank = (): ReactElement => {
+export const CheckboxFilterBlank = (): ReactElement => {
   return (
     <FilterListItem
       filter={checkboxFilter}
@@ -72,13 +72,13 @@ export const CheckboxBlank = (): ReactElement => {
   );
 };
 
-export const CheckboxFilled = (): ReactElement => {
+export const CheckboxFilterFilled = (): ReactElement => {
   return (
     <FilterListItem filter={checkboxFilter} value={true} onUpdate={() => {}} />
   );
 };
 
-export const DateRangeBlank = (): ReactElement => {
+export const DateRangeFilterBlank = (): ReactElement => {
   return (
     <FilterListItem
       filter={daterangeFilter}
@@ -88,7 +88,7 @@ export const DateRangeBlank = (): ReactElement => {
   );
 };
 
-export const DateRangeFilled = (): ReactElement => {
+export const DateRangeFilterFilled = (): ReactElement => {
   const dateRange: DateRangeInput = { min: '2021-08-01', max: '2021-08-30' };
 
   return (
@@ -100,7 +100,7 @@ export const DateRangeFilled = (): ReactElement => {
   );
 };
 
-export const DateRangeOptions = (): ReactElement => {
+export const DateRangeFilterOptions = (): ReactElement => {
   const dateRangeOptions: DateRangeOption[] = [
     { name: '1', rangeStart: '2021-06-01', rangeEnd: '2021-06-31' },
     { name: '1', rangeStart: '2021-07-01', rangeEnd: '2021-07-31' },
@@ -121,7 +121,7 @@ export const DateRangeOptions = (): ReactElement => {
   );
 };
 
-export const MultiselectBlank = (): ReactElement => {
+export const MultiselectFilterBlank = (): ReactElement => {
   return (
     <FilterListItem
       filter={multiselectFilter}
@@ -131,7 +131,7 @@ export const MultiselectBlank = (): ReactElement => {
   );
 };
 
-export const MultiselectFilled = (): ReactElement => {
+export const MultiselectFilterFilled = (): ReactElement => {
   return (
     <FilterListItem
       filter={multiselectFilter}
@@ -141,7 +141,7 @@ export const MultiselectFilled = (): ReactElement => {
   );
 };
 
-export const NumericRangeBlank = (): ReactElement => {
+export const NumericRangeFilterBlank = (): ReactElement => {
   return (
     <FilterListItem
       filter={numericRangeFilter}
@@ -151,7 +151,7 @@ export const NumericRangeBlank = (): ReactElement => {
   );
 };
 
-export const NumericRangeFilled = (): ReactElement => {
+export const NumericRangeFilterFilled = (): ReactElement => {
   const numericRange: NumericRangeInput = { min: 0.0, max: 1.0 };
 
   return (
@@ -163,7 +163,7 @@ export const NumericRangeFilled = (): ReactElement => {
   );
 };
 
-export const TextFieldBlank = (): ReactElement => {
+export const TextFieldFilterBlank = (): ReactElement => {
   return (
     <FilterListItem
       filter={textFieldFilter}
@@ -173,7 +173,7 @@ export const TextFieldBlank = (): ReactElement => {
   );
 };
 
-export const TextFieldFilled = (): ReactElement => {
+export const TextFieldFilterFilled = (): ReactElement => {
   return (
     <FilterListItem
       filter={textFieldFilter}

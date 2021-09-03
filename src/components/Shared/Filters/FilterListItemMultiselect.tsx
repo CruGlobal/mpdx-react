@@ -39,8 +39,9 @@ export const FilterListItemMultiselect: React.FC<Props> = ({
       </ListItem>
       {filter.options?.map(({ value, name }) => (
         <ListItem key={value} button onClick={() => toggleValue(value)}>
-          <ListItemIcon>
+          <ListItemIcon data-testid="MultiSelectOption">
             <Checkbox
+              data-testid="CheckboxIcon"
               size="small"
               edge="start"
               color="primary"
