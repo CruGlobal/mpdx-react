@@ -279,7 +279,12 @@ const FixEmailAddresses: React.FC = () => {
                   </Box>
                 </>
               )}
-              <Button size="small" variant="outlined" onClick={toggleData}>
+              <Button
+                size="small"
+                variant="outlined"
+                data-testid="changeTestData"
+                onClick={toggleData}
+              >
                 Change Test
               </Button>
               <Typography>
