@@ -6,11 +6,15 @@ import {
   Grid,
   Divider,
   Button,
+  NativeSelect,
 } from '@material-ui/core';
 
 import { Trans, useTranslation } from 'react-i18next';
 
+import Icon from '@mdi/react';
+import { mdiCheckboxMarkedCircle } from '@mdi/js';
 import theme from '../../../theme';
+import { StyledInput } from '../FixCommitmentInfo/StyledInput';
 import Contact from './Contact';
 import NoContacts from './NoContacts';
 import DeleteModal from './DeleteModal';
@@ -43,6 +47,41 @@ const useStyles = makeStyles(() => ({
     width: '100%',
     display: 'flex',
     justifyContent: 'center',
+  },
+  buttonBlue: {
+    backgroundColor: theme.palette.mpdxBlue.main,
+    paddingRight: theme.spacing(1.5),
+    color: 'white',
+    [theme.breakpoints.down('xs')]: {
+      marginTop: theme.spacing(1),
+      marginBottom: theme.spacing(2),
+    },
+  },
+  buttonIcon: {
+    marginRight: theme.spacing(1),
+  },
+  defaultBox: {
+    display: 'flex',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    flexWrap: 'wrap',
+    marginTop: theme.spacing(1),
+    [theme.breakpoints.down('xs')]: {
+      flexDirection: 'column',
+      alignItems: 'start',
+    },
+  },
+  nativeSelect: {
+    minWidth: theme.spacing(20),
+    width: '10%',
+    marginLeft: theme.spacing(2),
+    marginRight: theme.spacing(2),
+    [theme.breakpoints.down('xs')]: {
+      marginLeft: theme.spacing(0),
+      marginRight: theme.spacing(0),
+      marginTop: theme.spacing(1),
+      marginBottom: theme.spacing(1),
+    },
   },
 }));
 
@@ -110,6 +149,7 @@ const defaultDeleteModalState = {
 const FixEmailAddresses: React.FC = () => {
   const classes = useStyles();
   const [test, setTest] = useState(testData);
+  const [defaultSource, setDefaultSource] = useState('MPDX');
   const [deleteModalState, setDeleteModalState] = useState<ModalState>(
     defaultDeleteModalState,
   );
@@ -159,6 +199,7 @@ const FixEmailAddresses: React.FC = () => {
 
   const handleAdd = (contactIndex: number, address: string): void => {
     const temp = [...test];
+
     temp[contactIndex].emails.push({
       source: 'MPDX',
       date: new Date().toLocaleDateString('en-US'),
@@ -180,6 +221,12 @@ const FixEmailAddresses: React.FC = () => {
       }),
     );
     setTest(temp);
+  };
+
+  const handleSourceChange = (
+    event: React.ChangeEvent<HTMLSelectElement>,
+  ): void => {
+    setDefaultSource(event.target.value);
   };
 
   return (
@@ -204,6 +251,32 @@ const FixEmailAddresses: React.FC = () => {
                       'Choose below which email address will be set as primary.',
                     )}
                   </Typography>
+                  <Box className={classes.defaultBox}>
+                    <Typography>{t('Default Primary Source:')}</Typography>
+
+                    <NativeSelect
+                      input={<StyledInput />}
+                      className={classes.nativeSelect}
+                      value={defaultSource}
+                      onChange={(event: React.ChangeEvent<HTMLSelectElement>) =>
+                        handleSourceChange(event)
+                      }
+                    >
+                      <option value="MPDX">MPDX</option>
+                      <option value="DataServer">DataServer</option>
+                    </NativeSelect>
+                    <Button className={classes.buttonBlue}>
+                      <Icon
+                        path={mdiCheckboxMarkedCircle}
+                        size={0.8}
+                        className={classes.buttonIcon}
+                      />
+                      {t('Confirm {{amount}} as {{source}}', {
+                        amount: test.length,
+                        source: defaultSource,
+                      })}
+                    </Button>
+                  </Box>
                 </>
               )}
               <Button size="small" variant="outlined" onClick={toggleData}>
