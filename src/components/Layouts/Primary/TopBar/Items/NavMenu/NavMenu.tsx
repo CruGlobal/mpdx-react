@@ -10,6 +10,7 @@ import {
   ClickAwayListener,
   MenuList,
   Paper,
+  Box,
 } from '@material-ui/core';
 import clsx from 'clsx';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
@@ -228,7 +229,7 @@ const NavMenu = (): ReactElement => {
                         id="menu-list-grow"
                       >
                         {ToolsList.map((toolsGroup) => (
-                          <Fragment key={toolsGroup.groupName}>
+                          <Box key={toolsGroup.groupName}>
                             {toolsGroup.items.map((tool) => (
                               <NextLink
                                 key={tool.id}
@@ -250,15 +251,14 @@ const NavMenu = (): ReactElement => {
                                     style={{ marginRight: theme.spacing(1) }}
                                   />
                                   <ListItemText
-                                    primary={t(
-                                      `${tool.tool}
-                                      `,
-                                    )}
+                                    primary={t('{{toolname}}', {
+                                      toolname: tool.tool,
+                                    })}
                                   />
                                 </MenuItem>
                               </NextLink>
                             ))}
-                          </Fragment>
+                          </Box>
                         ))}
                       </MenuList>
                     </ClickAwayListener>
