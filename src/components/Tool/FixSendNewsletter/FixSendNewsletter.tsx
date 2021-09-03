@@ -7,7 +7,7 @@ import {
   Divider,
   Button,
 } from '@material-ui/core';
-import { useTranslation } from 'react-i18next';
+import { useTranslation, Trans } from 'react-i18next';
 import theme from '../../../theme';
 import Contact from './Contact';
 import NoContacts from './NoContacts';
@@ -83,7 +83,12 @@ const FixSendNewsletter = (): ReactElement => {
                 <>
                   <Typography>
                     <strong>
-                      You have {testData.length} newsletter status to confirm.
+                      {t(
+                        'You have {{amount}} newsletter statuses to confirm.',
+                        {
+                          amount: test.length,
+                        },
+                      )}
                     </strong>
                   </Typography>
                   <Typography>
@@ -94,7 +99,7 @@ const FixSendNewsletter = (): ReactElement => {
                 </>
               )}
               <Button size="small" variant="outlined" onClick={toggleData}>
-                Change Test
+                {t('Change Test')}
               </Button>
             </Box>
           </Grid>
@@ -116,8 +121,11 @@ const FixSendNewsletter = (): ReactElement => {
               <Grid item xs={12}>
                 <Box className={classes.footer}>
                   <Typography>
-                    Showing <strong>{test.length}</strong> of{' '}
-                    <strong>{test.length}</strong>
+                    <Trans
+                      defaults="Showing <bold>{{value}}</bold> of <bold>{{value}}</bold>"
+                      values={{ value: test.length }}
+                      components={{ bold: <strong /> }}
+                    />
                   </Typography>
                 </Box>
               </Grid>

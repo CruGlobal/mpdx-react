@@ -169,11 +169,12 @@ const FixSendNewsletter: React.FC = () => {
                 </>
               )}
               <Button size="small" variant="outlined" onClick={toggleData}>
-                Change Test
+                {t('Change Test')}
               </Button>
               <Typography>
-                * Below is test data used for testing the UI. It is not linked
-                to any account ID
+                {t(
+                  '* Below is test data used for testing the UI. It is not linked to any account ID',
+                )}
               </Typography>
             </Box>
           </Grid>
