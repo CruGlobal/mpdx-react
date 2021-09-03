@@ -25,7 +25,7 @@ const testData = {
   ],
 };
 
-describe('FixEmailAddresses', () => {
+describe('FixEmailAddresses-Contact', () => {
   it('default', () => {
     const handleChangeMock = jest.fn();
     const handleDeleteModalOpenMock = jest.fn();
@@ -81,8 +81,8 @@ describe('FixEmailAddresses', () => {
       </ThemeProvider>,
     );
 
-    const addInput = getByTestId('addNewEmailInput') as HTMLInputElement;
-    const addButton = getByTestId('addButton');
+    const addInput = getByTestId('addNewEmailInput-0') as HTMLInputElement;
+    const addButton = getByTestId('addButton-0');
 
     userEvent.type(addInput, 'new@new.com');
     expect(addInput.value).toBe('new@new.com');

@@ -123,4 +123,25 @@ describe('FixEmailAddresses-Home', () => {
     expect(queryByTestId('starIcon-1-1')).not.toBeInTheDocument();
     expect(getByTestId('starIcon-1-0')).toBeInTheDocument();
   });
+
+  it('add an email address to first person', () => {
+    const { getByTestId, getByDisplayValue } = render(
+      <ThemeProvider theme={theme}>
+        <TestWrapper>
+          <FixEmailAddresses />
+        </TestWrapper>
+      </ThemeProvider>,
+    );
+    expect(getByTestId('starIcon-1-0')).toBeInTheDocument();
+    expect(getByTestId('textfield-1-0')).toBeInTheDocument();
+
+    const textfieldNew1 = getByTestId('addNewEmailInput-1') as HTMLInputElement;
+    userEvent.type(textfieldNew1, 'a@a.com');
+    const addButton1 = getByTestId('addButton-1');
+    userEvent.click(addButton1);
+
+    expect(textfieldNew1.value).toBe('');
+    expect(getByTestId('textfield-1-1')).toBeInTheDocument();
+    expect(getByDisplayValue('a@a.com')).toBeInTheDocument();
+  });
 });
