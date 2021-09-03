@@ -22,7 +22,6 @@ import { ReportNavItems } from '../../../../../Reports/NavReportsList/ReportNavI
 import { ToolsList } from '../../../../../Tool/Home/ToolList';
 import { useAccountListId } from '../../../../../../hooks/useAccountListId';
 import { useCurrentToolId } from '../../../../../../hooks/useCurrentToolId';
-import theme from 'src/theme';
 
 const useStyles = makeStyles((theme: Theme) => ({
   navListItem: {
@@ -52,6 +51,9 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   menuItemSelected: {
     backgroundColor: theme.palette.cruGrayMedium.main,
+  },
+  menuIcon: {
+    marginRight: theme.spacing(1),
   },
 }));
 
@@ -248,7 +250,7 @@ const NavMenu = (): ReactElement => {
                                   <Icon
                                     path={tool.icon}
                                     size={1}
-                                    style={{ marginRight: theme.spacing(1) }}
+                                    className={classes.menuIcon}
                                   />
                                   <ListItemText
                                     primary={t('{{toolname}}', {
