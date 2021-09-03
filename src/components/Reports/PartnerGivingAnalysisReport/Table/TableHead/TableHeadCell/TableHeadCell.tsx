@@ -1,5 +1,6 @@
 import React, { ReactNode } from 'react';
 import { styled, TableCell, TableSortLabel } from '@material-ui/core';
+import { Contact } from '../../../PartnerGivingAnalysisReport';
 
 type Align = 'center' | 'inherit' | 'justify' | 'left' | 'right';
 
@@ -13,7 +14,7 @@ interface PartnerGivingAnalysisReportTableCellProps {
   children: ReactNode;
   direction: Direction;
   sortDirection: Sort;
-  onClick: (event: React.MouseEvent<unknown>, property?: string) => void;
+  onClick: (event: React.MouseEvent<unknown>, property?: keyof Contact) => void;
 }
 
 const HeadCellSpan = styled('span')(() => ({
