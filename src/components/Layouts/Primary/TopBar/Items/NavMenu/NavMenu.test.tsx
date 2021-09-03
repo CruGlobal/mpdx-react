@@ -1,9 +1,11 @@
 import React from 'react';
 import userEvent from '@testing-library/user-event';
 import * as nextRouter from 'next/router';
+import { ThemeProvider } from '@material-ui/styles';
 import { render } from '../../../../../../../__tests__/util/testingLibraryReactMock';
 import TestWrapper from '../../../../../../../__tests__/util/TestWrapper';
 import NavMenu from './NavMenu';
+import theme from 'src/theme';
 
 describe('NavMenu', () => {
   const useRouter = jest.spyOn(nextRouter, 'useRouter');
@@ -18,9 +20,12 @@ describe('NavMenu', () => {
   });
   it('default', () => {
     const { getByRole, getByTestId } = render(
-      <TestWrapper>
-        <NavMenu />
-      </TestWrapper>,
+      <ThemeProvider theme={theme}>
+        <TestWrapper>
+          <NavMenu />
+        </TestWrapper>
+        ,
+      </ThemeProvider>,
     );
     expect(
       getByRole('menuitem', { hidden: true, name: 'Dashboard' }),
@@ -79,9 +84,12 @@ describe('NavMenu', () => {
     }));
 
     const { queryByRole } = render(
-      <TestWrapper>
-        <NavMenu />
-      </TestWrapper>,
+      <ThemeProvider theme={theme}>
+        <TestWrapper>
+          <NavMenu />
+        </TestWrapper>
+        ,
+      </ThemeProvider>,
     );
     expect(queryByRole('menuitem')).toBeNull();
   });

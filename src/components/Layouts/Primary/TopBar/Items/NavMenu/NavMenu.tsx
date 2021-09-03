@@ -4,7 +4,6 @@ import {
   Grid,
   MenuItem,
   ListItemText,
-  Theme,
   Popper,
   Grow,
   ClickAwayListener,
@@ -22,8 +21,9 @@ import { ReportNavItems } from '../../../../../Reports/NavReportsList/ReportNavI
 import { ToolsList } from '../../../../../Tool/Home/ToolList';
 import { useAccountListId } from '../../../../../../hooks/useAccountListId';
 import { useCurrentToolId } from '../../../../../../hooks/useCurrentToolId';
+import theme from '../../../../../../theme';
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles(() => ({
   navListItem: {
     order: 2,
     [theme.breakpoints.down('sm')]: {
