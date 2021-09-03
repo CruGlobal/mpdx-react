@@ -111,6 +111,7 @@ const DeleteModal: React.FC<Props> = ({
             variant="contained"
             size="small"
             className={clsx(classes.blue, classes.actionButtons)}
+            data-testid="emailAddressDeleteButton"
             onClick={handleDelete}
           >
             {/*TODO: make "newAddress" field in address false so it says "edit" instead of "add" */}

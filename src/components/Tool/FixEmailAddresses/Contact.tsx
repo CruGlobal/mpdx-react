@@ -216,9 +216,13 @@ const Contact: React.FC<Props> = ({
                           </Box>
                           <Typography>
                             {email.primary ? (
-                              <StarIcon className={classes.hoverHighlight} />
+                              <StarIcon
+                                data-testid={`starIcon-${contactIndex}-${index}`}
+                                className={classes.hoverHighlight}
+                              />
                             ) : (
                               <StarOutlineIcon
+                                data-testid={`starOutlineIcon-${contactIndex}-${index}`}
                                 className={classes.hoverHighlight}
                                 onClick={() =>
                                   handleChangePrimary(contactIndex, index)
@@ -240,7 +244,7 @@ const Contact: React.FC<Props> = ({
                           <TextField
                             style={{ width: '100%' }}
                             inputProps={{
-                              'data-testid': `textfield-${index}`,
+                              'data-testid': `textfield-${contactIndex}-${index}`,
                             }}
                             onChange={(
                               event: React.ChangeEvent<HTMLInputElement>,
@@ -251,6 +255,7 @@ const Contact: React.FC<Props> = ({
 
                           {email.source === 'MPDX' ? (
                             <Box
+                              data-testid={`delete-${contactIndex}-${index}`}
                               onClick={() => handleDelete(contactIndex, index)}
                             >
                               <Icon
@@ -331,11 +336,7 @@ const Contact: React.FC<Props> = ({
             style={{ paddingLeft: theme.spacing(1) }}
           >
             <Box className={classes.buttonTop}>
-              <Button
-                variant="contained"
-                style={{ width: '100%' }}
-                onClick={() => console.log(emails)}
-              >
+              <Button variant="contained" style={{ width: '100%' }}>
                 <Icon
                   path={mdiCheckboxMarkedCircle}
                   size={0.8}
