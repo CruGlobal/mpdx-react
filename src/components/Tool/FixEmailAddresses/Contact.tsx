@@ -243,9 +243,7 @@ const Contact: React.FC<Props> = ({
                         >
                           <TextField
                             style={{ width: '100%' }}
-                            inputProps={{
-                              'data-testid': `textfield-${contactIndex}-${index}`,
-                            }}
+                            data-testid={`textfield-${contactIndex}-${index}`}
                             onChange={(
                               event: React.ChangeEvent<HTMLInputElement>,
                             ) => handleChange(contactIndex, index, event)}

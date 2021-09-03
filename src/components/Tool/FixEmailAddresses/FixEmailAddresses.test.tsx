@@ -83,4 +83,44 @@ describe('FixEmailAddresses-Home', () => {
 
     expect(queryByTestId('textfield-0-2')).not.toBeInTheDocument();
   });
+
+  it('change third email from first person', () => {
+    const { getByDisplayValue } = render(
+      <ThemeProvider theme={theme}>
+        <TestWrapper>
+          <FixEmailAddresses />
+        </TestWrapper>
+      </ThemeProvider>,
+    );
+
+    expect(getByDisplayValue('test2@test1.com')).toBeInTheDocument();
+    const textfield11 = getByDisplayValue(
+      'test2@test1.com',
+    ) as HTMLInputElement;
+    userEvent.type(textfield11, 'a');
+
+    expect(textfield11.value).toBe('test2@test1.coma');
+  });
+
+  it('change second email for second person to primary then delete it', () => {
+    const { getByTestId, queryByTestId } = render(
+      <ThemeProvider theme={theme}>
+        <TestWrapper>
+          <FixEmailAddresses />
+        </TestWrapper>
+      </ThemeProvider>,
+    );
+
+    const star11 = getByTestId('starOutlineIcon-1-1');
+    userEvent.click(star11);
+
+    const delete11 = getByTestId('delete-1-1');
+    userEvent.click(delete11);
+
+    const deleteButton = getByTestId('emailAddressDeleteButton');
+    userEvent.click(deleteButton);
+
+    expect(queryByTestId('starIcon-1-1')).not.toBeInTheDocument();
+    expect(getByTestId('starIcon-1-0')).toBeInTheDocument();
+  });
 });
