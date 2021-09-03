@@ -66,12 +66,8 @@ const AddAppealForm = (): ReactElement => {
               <Typography variant="h6">Name</Typography>
               <TextField
                 variant="outlined"
+                size="small"
                 className={classes.input}
-                inputProps={{
-                  style: {
-                    padding: 10,
-                  },
-                }}
               />
             </Box>
             <Box mt={1} mb={1}>
@@ -82,8 +78,9 @@ const AddAppealForm = (): ReactElement => {
                     flexDirection="column"
                     justifyContent="start"
                   >
-                    <Typography variant="h6">Initial Goal</Typography>
+                    <Typography>Initial Goal</Typography>
                     <TextField
+                      size="small"
                       variant="outlined"
                       className={classes.input}
                       inputProps={{
@@ -112,8 +109,9 @@ const AddAppealForm = (): ReactElement => {
                     flexDirection="column"
                     justifyContent="start"
                   >
-                    <Typography variant="h6">Letter Cost</Typography>
+                    <Typography>Letter Cost</Typography>
                     <TextField
+                      size="small"
                       variant="outlined"
                       className={classes.input}
                       inputProps={{
@@ -142,9 +140,10 @@ const AddAppealForm = (): ReactElement => {
                     flexDirection="column"
                     justifyContent="start"
                   >
-                    <Typography variant="h6">Admin %</Typography>
+                    <Typography>Admin %</Typography>
                     <TextField
                       variant="outlined"
+                      size="small"
                       className={classes.input}
                       inputProps={{
                         style: {
@@ -172,10 +171,11 @@ const AddAppealForm = (): ReactElement => {
                     flexDirection="column"
                     justifyContent="start"
                   >
-                    <Typography variant="h6">Goal</Typography>
+                    <Typography>Goal</Typography>
                     <TextField
                       variant="outlined"
                       className={classes.input}
+                      size="small"
                       inputProps={{
                         style: {
                           padding: 10,

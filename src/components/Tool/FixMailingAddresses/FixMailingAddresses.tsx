@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import {
   makeStyles,
-  Container,
   Box,
   Typography,
   Grid,
@@ -11,7 +10,6 @@ import {
 
 import { Trans, useTranslation } from 'react-i18next';
 
-import NavToolDrawer from '../NavToolList/NavToolDrawer';
 import theme from '../../../theme';
 import Contact, { address } from './Contact';
 import NoContacts from './NoContacts';
@@ -21,24 +19,17 @@ import AddressModal from './AddressModal';
 const useStyles = makeStyles(() => ({
   container: {
     padding: theme.spacing(3),
-    marginRight: theme.spacing(1),
+    width: '70%',
     display: 'flex',
-    [theme.breakpoints.down('lg')]: {
-      paddingLeft: theme.spacing(5),
-      marginRight: theme.spacing(2),
-    },
-    [theme.breakpoints.down('md')]: {
-      paddingLeft: theme.spacing(5),
-      marginRight: theme.spacing(2),
-    },
     [theme.breakpoints.down('sm')]: {
-      paddingLeft: theme.spacing(6),
+      width: '100%',
     },
   },
   outer: {
     display: 'flex',
     flexDirection: 'row',
-    minWidth: '100vw',
+    justifyContent: 'center',
+    width: '100%',
   },
   divider: {
     marginTop: theme.spacing(2),
@@ -113,16 +104,12 @@ export const emptyAddress: address = {
 
 const FixSendNewsletter: React.FC = () => {
   const classes = useStyles();
-  const [isNavListOpen, setNavListOpen] = useState<boolean>(true);
   const [modalState, setModalState] = useState({
     open: false,
     address: emptyAddress,
   });
   const [test, setTest] = useState(testData);
   const { t } = useTranslation();
-  const handleNavListToggle = () => {
-    setNavListOpen(!isNavListOpen);
-  };
 
   const toggleData = (): void => {
     test.length > 0 ? setTest([]) : setTest(testData);
@@ -160,80 +147,71 @@ const FixSendNewsletter: React.FC = () => {
   return (
     <>
       <Box className={classes.outer} data-testid="Home">
-        <NavToolDrawer
-          open={isNavListOpen}
-          toggle={handleNavListToggle}
-          selectedId="fixMailingAddresses"
-        />
-        <Container
-          className={classes.container}
-          style={{
-            minWidth: isNavListOpen ? 'calc(97.5vw - 290px)' : '97.5vw',
-            transition: 'min-width 0.15s linear',
-          }}
-        >
-          <Grid container>
-            <Grid item xs={12}>
-              <Typography variant="h4">{t('Fix Mailing Addresses')}</Typography>
-              <Divider className={classes.divider} />
-              <Box className={classes.descriptionBox}>
-                {test.length > 0 && (
-                  <>
-                    <Typography>
-                      <strong>
-                        {t(
-                          'You have {{amount}} mailing addresses to confirm.',
-                          { amount: test.length },
-                        )}
-                      </strong>
-                    </Typography>
-                    <Typography>
-                      {t(
-                        'Choose below which mailing address will be set as primary. Primary mailing addresses will be used for Newsletter exports.',
-                      )}
-                    </Typography>
-                  </>
+        <Grid container className={classes.container}>
+          <Grid item xs={12}>
+            <Typography variant="h4">{t('Fix Mailing Addresses')}</Typography>
+            <Divider className={classes.divider} />
+            <Box className={classes.descriptionBox}>
+              {test.length > 0 && (
+                <>
+                  <Typography>
+                    <strong>
+                      {t('You have {{amount}} mailing addresses to confirm.', {
+                        amount: test.length,
+                      })}
+                    </strong>
+                  </Typography>
+                  <Typography>
+                    {t(
+                      'Choose below which mailing address will be set as primary. Primary mailing addresses will be used for Newsletter exports.',
+                    )}
+                  </Typography>
+                </>
+              )}
+              <Button size="small" variant="outlined" onClick={toggleData}>
+                {t('Change Test')}
+              </Button>
+              <Typography>
+                {t(
+                  '* Below is test data used for testing the UI. It is not linked to any account ID',
                 )}
-                <Button size="small" variant="outlined" onClick={toggleData}>
-                  Change Test
-                </Button>
-              </Box>
-            </Grid>
-            {test.length > 0 ? (
-              <>
-                <Grid item xs={12}>
-                  {test.map((contact) => (
-                    <Contact
-                      title={contact.title}
-                      tag={contact.tag}
-                      key={contact.title}
-                      addresses={contact.addresses}
-                      openFunction={handleOpen}
-                    />
-                  ))}
-                </Grid>
-                <Grid item xs={12}>
-                  <Box className={classes.footer}>
-                    <Typography>
-                      <Trans
-                        defaults="Showing <bold>{{value}}</bold> of <bold>{{value}}</bold>"
-                        values={{ value: test.length }}
-                        components={{ bold: <strong /> }}
-                      />
-                    </Typography>
-                  </Box>
-                </Grid>
-              </>
-            ) : (
-              <NoContacts />
-            )}
+              </Typography>
+            </Box>
           </Grid>
-          <AddressModal
-            modalState={modalState}
-            handleClose={handleClose}
-            handleChange={handleChange}
-          />
-        </Container>
+          {test.length > 0 ? (
+            <>
+              <Grid item xs={12}>
+                {test.map((contact) => (
+                  <Contact
+                    title={contact.title}
+                    tag={contact.tag}
+                    key={contact.title}
+                    addresses={contact.addresses}
+                    openFunction={handleOpen}
+                  />
+                ))}
+              </Grid>
+              <Grid item xs={12}>
+                <Box className={classes.footer}>
+                  <Typography>
+                    <Trans
+                      defaults="Showing <bold>{{value}}</bold> of <bold>{{value}}</bold>"
+                      values={{ value: test.length }}
+                      components={{ bold: <strong /> }}
+                    />
+                  </Typography>
+                </Box>
+              </Grid>
+            </>
+          ) : (
+            <NoContacts />
+          )}
+        </Grid>
+        <AddressModal
+          modalState={modalState}
+          handleClose={handleClose}
+          handleChange={handleChange}
+        />
       </Box>
     </>
   );

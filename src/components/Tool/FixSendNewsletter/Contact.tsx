@@ -16,7 +16,7 @@ import { StyledInput } from './StyledInput';
 
 const useStyles = makeStyles(() => ({
   left: {
-    [theme.breakpoints.up('md')]: {
+    [theme.breakpoints.up('lg')]: {
       border: `1px solid ${theme.palette.cruGrayMedium.main}`,
     },
   },
@@ -24,7 +24,7 @@ const useStyles = makeStyles(() => ({
     display: 'flex',
     alignItems: 'center',
     marginBottom: theme.spacing(2),
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down('md')]: {
       border: `1px solid ${theme.palette.cruGrayMedium.main}`,
     },
   },
@@ -33,15 +33,22 @@ const useStyles = makeStyles(() => ({
     width: '100%',
   },
   buttonTop: {
-    margin: theme.spacing(1),
-    [theme.breakpoints.down('sm')]: {
-      marginRight: theme.spacing(2),
-      marginTop: theme.spacing(2),
-      marginBottom: theme.spacing(2),
+    padding: theme.spacing(1),
+    [theme.breakpoints.down('md')]: {
+      display: 'flex',
+      justifyContent: 'center',
+      padding: theme.spacing(2),
     },
     '& .MuiButton-root': {
       backgroundColor: theme.palette.mpdxBlue.main,
+      width: '100%',
       color: 'white',
+      [theme.breakpoints.down('md')]: {
+        width: '50%',
+      },
+      [theme.breakpoints.down('xs')]: {
+        width: '100%',
+      },
     },
   },
   buttonIcon: {
@@ -57,7 +64,7 @@ const useStyles = makeStyles(() => ({
     },
   },
   newsletterInput: {
-    width: '75%',
+    width: '100%',
     [theme.breakpoints.down('xs')]: {
       width: '50%',
     },
@@ -104,7 +111,7 @@ const Contact = ({
   return (
     <Grid container className={classes.container}>
       <Grid container>
-        <Grid item md={10} xs={12}>
+        <Grid item lg={10} xs={12}>
           <Box display="flex" alignItems="center" className={classes.left}>
             <Grid container>
               <Grid item xs={12} sm={8} md={9}>
@@ -204,14 +211,14 @@ const Contact = ({
             </Grid>
           </Box>
         </Grid>
-        <Grid item xs={12} md={2}>
+        <Grid item xs={12} lg={2}>
           <Box
             display="flex"
             flexDirection="column"
             style={{ paddingLeft: theme.spacing(1) }}
           >
             <Box className={classes.buttonTop}>
-              <Button variant="contained" style={{ width: '100%' }}>
+              <Button variant="contained">
                 <Icon
                   path={mdiCheckboxMarkedCircle}
                   size={0.8}
