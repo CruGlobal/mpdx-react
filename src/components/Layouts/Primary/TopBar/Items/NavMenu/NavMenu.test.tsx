@@ -42,6 +42,9 @@ describe('NavMenu', () => {
       getByRole('menuitem', { hidden: true, name: 'Donations' }),
     ).toBeInTheDocument();
     expect(
+      getByRole('menuitem', { hidden: true, name: 'Donations' }),
+    ).toBeVisible();
+    expect(
       getByRole('menuitem', {
         hidden: true,
         name: 'Month Report (Partner Currency)',
@@ -102,6 +105,39 @@ describe('NavMenu', () => {
     expect(
       getByRole('menuitem', { hidden: true, name: 'Import from CSV' }),
     ).toBeInTheDocument();
+    expect(
+      getByRole('menuitem', { hidden: true, name: 'Donations' }),
+    ).not.toBeVisible();
+    expect(
+      getByRole('menuitem', {
+        hidden: true,
+        name: 'Month Report (Partner Currency)',
+      }),
+    ).not.toBeVisible();
+    expect(
+      getByRole('menuitem', {
+        hidden: true,
+        name: 'Month Report (Salary Currency)',
+      }),
+    ).not.toBeVisible();
+    expect(
+      getByRole('menuitem', { hidden: true, name: 'Designation Accounts' }),
+    ).not.toBeVisible();
+    expect(
+      getByRole('menuitem', { hidden: true, name: 'Responsibility Centers' }),
+    ).not.toBeVisible();
+    expect(
+      getByRole('menuitem', { hidden: true, name: 'Expected Monthly Total' }),
+    ).not.toBeVisible();
+    expect(
+      getByRole('menuitem', { hidden: true, name: 'Partner Giving Analysis' }),
+    ).not.toBeVisible();
+    expect(
+      getByRole('menuitem', { hidden: true, name: 'Coaching' }),
+    ).not.toBeVisible();
+    expect(getByTestId('appeals-false')).toBeInTheDocument();
+    userEvent.click(getByTestId('appeals-false'));
+    expect(getByTestId('appeals-true')).toBeInTheDocument();
   });
 
   it('hidden', () => {

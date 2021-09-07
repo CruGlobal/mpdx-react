@@ -89,7 +89,6 @@ const NavMenu = (): ReactElement => {
     if (anchorRefTools.current?.contains(event.target as HTMLElement)) {
       return;
     }
-
     setToolsMenuOpen(false);
   };
 
@@ -240,6 +239,9 @@ const NavMenu = (): ReactElement => {
                               >
                                 <MenuItem
                                   onClick={handleToolsMenuClose}
+                                  data-testid={`${tool.id}-${
+                                    currentToolId === tool.id
+                                  }`}
                                   className={clsx(
                                     classes.menuItem,
                                     currentToolId === tool.id &&
