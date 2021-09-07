@@ -42,6 +42,9 @@ describe('NavMenu', () => {
       getByRole('menuitem', { hidden: true, name: 'Donations' }),
     ).toBeInTheDocument();
     expect(
+      getByRole('menuitem', { hidden: true, name: 'Donations' }),
+    ).toBeVisible();
+    expect(
       getByRole('menuitem', {
         hidden: true,
         name: 'Month Report (Partner Currency)',
@@ -68,6 +71,71 @@ describe('NavMenu', () => {
     expect(
       getByRole('menuitem', { hidden: true, name: 'Coaching' }),
     ).toBeInTheDocument();
+    userEvent.click(getByTestId('ToolsMenuToggle'));
+    expect(
+      getByRole('menuitem', { hidden: true, name: 'Appeal' }),
+    ).toBeInTheDocument();
+    expect(
+      getByRole('menuitem', { hidden: true, name: 'Fix Commitment Info' }),
+    ).toBeInTheDocument();
+    expect(
+      getByRole('menuitem', { hidden: true, name: 'Fix Mailing Addresses' }),
+    ).toBeInTheDocument();
+    expect(
+      getByRole('menuitem', { hidden: true, name: 'Fix Send Newsletter' }),
+    ).toBeInTheDocument();
+    expect(
+      getByRole('menuitem', { hidden: true, name: 'Merge Contacts' }),
+    ).toBeInTheDocument();
+    expect(
+      getByRole('menuitem', { hidden: true, name: 'Fix Email Addresses' }),
+    ).toBeInTheDocument();
+    expect(
+      getByRole('menuitem', { hidden: true, name: 'Fix Phone Numbers' }),
+    ).toBeInTheDocument();
+    expect(
+      getByRole('menuitem', { hidden: true, name: 'Merge People' }),
+    ).toBeInTheDocument();
+    expect(
+      getByRole('menuitem', { hidden: true, name: 'Import from Google' }),
+    ).toBeInTheDocument();
+    expect(
+      getByRole('menuitem', { hidden: true, name: 'Import from TntConnect' }),
+    ).toBeInTheDocument();
+    expect(
+      getByRole('menuitem', { hidden: true, name: 'Import from CSV' }),
+    ).toBeInTheDocument();
+    expect(
+      getByRole('menuitem', { hidden: true, name: 'Donations' }),
+    ).not.toBeVisible();
+    expect(
+      getByRole('menuitem', {
+        hidden: true,
+        name: 'Month Report (Partner Currency)',
+      }),
+    ).not.toBeVisible();
+    expect(
+      getByRole('menuitem', {
+        hidden: true,
+        name: 'Month Report (Salary Currency)',
+      }),
+    ).not.toBeVisible();
+    expect(
+      getByRole('menuitem', { hidden: true, name: 'Designation Accounts' }),
+    ).not.toBeVisible();
+    expect(
+      getByRole('menuitem', { hidden: true, name: 'Responsibility Centers' }),
+    ).not.toBeVisible();
+    expect(
+      getByRole('menuitem', { hidden: true, name: 'Expected Monthly Total' }),
+    ).not.toBeVisible();
+    expect(
+      getByRole('menuitem', { hidden: true, name: 'Partner Giving Analysis' }),
+    ).not.toBeVisible();
+    expect(
+      getByRole('menuitem', { hidden: true, name: 'Coaching' }),
+    ).not.toBeVisible();
+    expect(getByTestId('appeals-false')).toBeInTheDocument();
   });
 
   it('hidden', () => {
@@ -84,5 +152,21 @@ describe('NavMenu', () => {
       </TestWrapper>,
     );
     expect(queryByRole('menuitem')).toBeNull();
+  });
+
+  it('test current tool id hook', () => {
+    (useRouter as jest.SpyInstance).mockImplementation(() => ({
+      query: { accountListId: 'test' },
+      isReady: true,
+      pathname: '/accountLists/test/tools/appeals',
+    }));
+
+    const { getByTestId } = render(
+      <TestWrapper>
+        <NavMenu />
+      </TestWrapper>,
+    );
+    userEvent.click(getByTestId('ToolsMenuToggle'));
+    expect(getByTestId('appeals-true')).toBeInTheDocument();
   });
 });
