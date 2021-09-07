@@ -9,6 +9,7 @@ import { ContactDetails } from '../../../../src/components/Contacts/ContactDetai
 import Loading from '../../../../src/components/Loading';
 import { SidePanelsLayout } from '../../../../src/components/Layouts/SidePanelsLayout';
 import { useAccountListId } from '../../../../src/hooks/useAccountListId';
+import { ContactFilterSetInput } from '../../../../graphql/types.generated';
 
 const ContactsPageWrapper = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.common.white,
@@ -36,8 +37,7 @@ const ContactsPage: React.FC = () => {
   }, [isReady, query]);
 
   const [filterPanelOpen, setFilterPanelOpen] = useState<boolean>(false);
-  //TODO: Connect these to ContactFilters, and use actual filter data for activeFilters
-  const [activeFilters] = useState<boolean>(false);
+  const [activeFilters, setActiveFilters] = useState<ContactFilterSetInput>({});
 
   const toggleFilterPanel = () => {
     setFilterPanelOpen(!filterPanelOpen);
@@ -82,6 +82,7 @@ const ContactsPage: React.FC = () => {
               <ContactFilters
                 accountListId={accountListId}
                 onClose={toggleFilterPanel}
+                onSelectedFiltersChanged={setActiveFilters}
               />
             }
             leftOpen={filterPanelOpen}

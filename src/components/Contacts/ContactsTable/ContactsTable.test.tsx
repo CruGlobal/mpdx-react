@@ -3,9 +3,11 @@ import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ThemeProvider } from '@material-ui/core';
 import { ItemContent } from 'react-virtuoso';
+import { ContactFilterSetInput } from '../../../../graphql/types.generated';
 import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
 import { ContactsQuery } from '../../../../pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import theme from '../../../theme';
+
 import { ContactsTable } from './ContactsTable';
 
 const accountListId = '111';
@@ -38,7 +40,7 @@ describe('ContactFilters', () => {
             accountListId={accountListId}
             onContactSelected={onContactSelected}
             onSearchTermChange={onSearchTermChanged}
-            activeFilters={false}
+            activeFilters={{}}
             filterPanelOpen={false}
             toggleFilterPanel={() => {}}
           />
@@ -68,7 +70,7 @@ describe('ContactFilters', () => {
             accountListId={accountListId}
             onContactSelected={onContactSelected}
             onSearchTermChange={onSearchTermChanged}
-            activeFilters={false}
+            activeFilters={{}}
             filterPanelOpen={false}
             toggleFilterPanel={() => {}}
           />
@@ -103,7 +105,7 @@ describe('ContactFilters', () => {
             accountListId={accountListId}
             onContactSelected={onContactSelected}
             onSearchTermChange={onSearchTermChanged}
-            activeFilters={false}
+            activeFilters={{}}
             filterPanelOpen={false}
             toggleFilterPanel={() => {}}
           />
@@ -138,7 +140,7 @@ describe('ContactFilters', () => {
             accountListId={accountListId}
             onContactSelected={onContactSelected}
             onSearchTermChange={onSearchTermChanged}
-            activeFilters={false}
+            activeFilters={{}}
             filterPanelOpen={false}
             toggleFilterPanel={() => {}}
           />
@@ -175,7 +177,7 @@ describe('ContactFilters', () => {
             accountListId={accountListId}
             onContactSelected={onContactSelected}
             onSearchTermChange={onSearchTermChanged}
-            activeFilters={false}
+            activeFilters={{}}
             filterPanelOpen={false}
             toggleFilterPanel={() => {}}
           />
@@ -195,7 +197,63 @@ describe('ContactFilters', () => {
     const { operation } = querySpy.mock.calls[1][0];
 
     expect(operation.variables.accountListId).toEqual(accountListId);
-    expect(operation.variables.searchTerm).toEqual(searchTerm);
+    expect(operation.variables.contactsFilters.wildcardSearch).toEqual(
+      searchTerm,
+    );
+    // TODO Figure out why onContactSelected isn't called in this test
+    // expect(onContactSelected).toHaveBeenCalledWith(
+    //   response.data.contacts.nodes[0].id,
+    // );
+    expect(onSearchTermChanged).toHaveBeenCalledWith(searchTerm);
+  });
+
+  it('apply active filters', async () => {
+    const mocks = {
+      Contacts: {
+        contacts: {
+          nodes: [{ id: contactId, name: 'Test Guy ' }],
+          pageInfo: { endCursor: 'Mg', hasNextPage: false },
+        },
+      },
+    };
+    const querySpy = jest.fn();
+    const searchTerm = 'test';
+    const activeFilters: ContactFilterSetInput = {
+      city: ['Orlando'],
+      designationAccountId: ['111', '222'],
+    };
+
+    const { findByTestId, queryByText, getByRole } = render(
+      <ThemeProvider theme={theme}>
+        <GqlMockedProvider<ContactsQuery> mocks={mocks} onCall={querySpy}>
+          <ContactsTable
+            accountListId={accountListId}
+            onContactSelected={onContactSelected}
+            onSearchTermChange={onSearchTermChanged}
+            activeFilters={activeFilters}
+            filterPanelOpen={false}
+            toggleFilterPanel={() => {}}
+          />
+        </GqlMockedProvider>
+      </ThemeProvider>,
+    );
+
+    await waitFor(() =>
+      expect(queryByText('Loading...')).not.toBeInTheDocument(),
+    );
+    userEvent.type(getByRole('textbox'), searchTerm);
+    await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());
+    const row = await findByTestId('rowButton');
+
+    userEvent.click(row);
+    await waitFor(() => expect(queryByText('Test Guy')).toBeInTheDocument());
+    const { operation } = querySpy.mock.calls[1][0];
+
+    expect(operation.variables.accountListId).toEqual(accountListId);
+    expect(operation.variables.contactsFilters).toEqual({
+      ...activeFilters,
+      wildcardSearch: searchTerm,
+    });
     // TODO Figure out why onContactSelected isn't called in this test
     // expect(onContactSelected).toHaveBeenCalledWith(
     //   response.data.contacts.nodes[0].id,
