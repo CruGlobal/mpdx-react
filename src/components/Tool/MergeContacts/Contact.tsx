@@ -34,7 +34,7 @@ const useStyles = makeStyles(() => ({
     width: theme.spacing(7),
     height: theme.spacing(7),
   },
-  outter: {
+  outer: {
     [theme.breakpoints.down('sm')]: {
       flexDirection: 'column',
     },
@@ -124,7 +124,7 @@ const Contact: React.FC<Props> = ({ contact1, contact2, update }) => {
               <Box
                 display="flex"
                 style={{ width: '100%' }}
-                className={classes.outter}
+                className={classes.outer}
               >
                 <Box
                   display="flex"
@@ -278,7 +278,7 @@ const Contact: React.FC<Props> = ({ contact1, contact2, update }) => {
                   >
                     {selected === 'right' && (
                       <Typography variant="body2" className={classes.selected}>
-                        Use this one
+                        {t('Use this one')}
                       </Typography>
                     )}
                     <Typography variant="h6">{contact2.title}</Typography>
