@@ -135,6 +135,7 @@ describe('NavMenu', () => {
     expect(
       getByRole('menuitem', { hidden: true, name: 'Coaching' }),
     ).not.toBeVisible();
+    expect(getByTestId('appeals-false')).toBeInTheDocument();
   });
 
   it('hidden', () => {
