@@ -70,7 +70,7 @@ const NavMenu = (): ReactElement => {
 
   const handleReportsMenuToggle = () => {
     setReportsMenuOpen((prevOpen) => !prevOpen);
-    setToolsMenuOpen(false);
+    handleToolsMenuClose();
   };
 
   const handleReportsMenuClose = () => {
@@ -79,7 +79,7 @@ const NavMenu = (): ReactElement => {
 
   const handleToolsMenuToggle = () => {
     setToolsMenuOpen((prevOpen) => !prevOpen);
-    setReportsMenuOpen(false);
+    handleReportsMenuClose();
   };
 
   const handleToolsMenuClose = () => {
