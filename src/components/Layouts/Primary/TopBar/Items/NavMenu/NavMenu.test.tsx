@@ -153,4 +153,20 @@ describe('NavMenu', () => {
     );
     expect(queryByRole('menuitem')).toBeNull();
   });
+
+  it('test current tool id hook', () => {
+    (useRouter as jest.SpyInstance).mockImplementation(() => ({
+      query: { accountListId: 'test' },
+      isReady: true,
+      pathname: '/accountLists/test/tools/appeals',
+    }));
+
+    const { getByTestId } = render(
+      <TestWrapper>
+        <NavMenu />
+      </TestWrapper>,
+    );
+    userEvent.click(getByTestId('ToolsMenuToggle'));
+    expect(getByTestId('appeals-true')).toBeInTheDocument();
+  });
 });
