@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useState } from 'react';
 import {
   Box,
   Grid,
@@ -7,19 +7,20 @@ import {
   Avatar,
   makeStyles,
   Hidden,
+  TextField,
+  Theme,
 } from '@material-ui/core';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { Icon } from '@mdi/react';
-import { mdiCheckboxMarkedCircle, mdiLock, mdiPlus, mdiPencil } from '@mdi/js';
+import { mdiCheckboxMarkedCircle, mdiLock, mdiPlus, mdiDelete } from '@mdi/js';
 import StarIcon from '@material-ui/icons/Star';
 import StarOutlineIcon from '@material-ui/icons/StarOutline';
 import theme from '../../../theme';
-import { emptyAddress } from './FixMailingAddresses';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme: Theme) => ({
   left: {
-    [theme.breakpoints.up('lg')]: {
+    [theme.breakpoints.up('md')]: {
       border: `1px solid ${theme.palette.cruGrayMedium.main}`,
     },
   },
@@ -27,34 +28,28 @@ const useStyles = makeStyles(() => ({
     display: 'flex',
     alignItems: 'center',
     marginBottom: theme.spacing(2),
-    [theme.breakpoints.down('md')]: {
+    [theme.breakpoints.down('sm')]: {
       border: `1px solid ${theme.palette.cruGrayMedium.main}`,
     },
   },
   boxBottom: {
     backgroundColor: theme.palette.cruGrayLight.main,
     width: '100%',
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down('xs')]: {
       paddingTop: theme.spacing(2),
     },
   },
   buttonTop: {
-    padding: theme.spacing(1),
-    [theme.breakpoints.down('md')]: {
-      display: 'flex',
-      justifyContent: 'center',
-      padding: theme.spacing(2),
+    marginLeft: theme.spacing(2),
+    [theme.breakpoints.down('sm')]: {
+      marginLeft: theme.spacing(1),
+      marginRight: theme.spacing(2),
+      marginTop: theme.spacing(2),
+      marginBottom: theme.spacing(2),
     },
     '& .MuiButton-root': {
       backgroundColor: theme.palette.mpdxBlue.main,
-      width: '100%',
       color: 'white',
-      [theme.breakpoints.down('md')]: {
-        width: '50%',
-      },
-      [theme.breakpoints.down('xs')]: {
-        width: '100%',
-      },
     },
   },
   buttonIcon: {
@@ -62,7 +57,7 @@ const useStyles = makeStyles(() => ({
   },
   rowChangeResponsive: {
     flexDirection: 'column',
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down('xs')]: {
       marginTop: -20,
       flexDirection: 'row',
       justifyContent: 'space-between',
@@ -70,7 +65,7 @@ const useStyles = makeStyles(() => ({
     },
   },
   responsiveBorder: {
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down('xs')]: {
       paddingBottom: theme.spacing(2),
       borderBottom: `1px solid ${theme.palette.cruGrayMedium.main}`,
     },
@@ -94,6 +89,7 @@ const useStyles = makeStyles(() => ({
   hoverHighlight: {
     '&:hover': {
       color: theme.palette.mpdxBlue.main,
+      cursor: 'pointer',
     },
   },
   avatar: {
@@ -102,39 +98,59 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-export interface address {
+export interface email {
   source: string;
-  street: string;
-  locationType: string;
-  city: string;
-  state?: string;
-  zip: string;
-  country: string;
-  region?: string;
-  metro?: string;
+  date: string;
+  address: string;
   primary: boolean;
-  valid: boolean;
-  newAddress?: boolean;
 }
 
 interface Props {
-  title: string;
-  tag: string;
-  addresses: address[];
-  openFunction: (address: address) => void;
+  name: string;
+  emails: email[];
+  contactIndex: number;
+  handleChange: (
+    contactIndex: number,
+    emailIndex: number,
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => void;
+  handleDelete: (contactIndex: number, emailIndex: number) => void;
+  handleAdd: (contactIndex: number, address: string) => void;
+  handleChangePrimary: (contactIndex: number, emailIndex: number) => void;
 }
 
-const Contact: React.FC<Props> = ({ title, tag, addresses, openFunction }) => {
+const Contact: React.FC<Props> = ({
+  name,
+  emails,
+  contactIndex,
+  handleChange,
+  handleDelete,
+  handleAdd,
+  handleChangePrimary,
+}) => {
   const { t } = useTranslation();
   const classes = useStyles();
-  const newAddress: address = { ...emptyAddress, newAddress: true };
+  const [newEmailAddress, setNewEmailAddress] = useState<string>('');
   //TODO: Add button functionality
-  //TODO: Make contact title a link to contact page
+  //TODO: Make name pop up a modal to edit the person info
+
+  const updateNewEmailAddress = (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ): void => {
+    setNewEmailAddress(event.target.value);
+  };
+
+  const addNewEmailAddress = (): void => {
+    if (newEmailAddress) {
+      handleAdd(contactIndex, newEmailAddress);
+      setNewEmailAddress('');
+    }
+  };
 
   return (
     <Grid container className={classes.container}>
       <Grid container>
-        <Grid item lg={10} xs={12}>
+        <Grid item md={10} xs={12}>
           <Box display="flex" alignItems="center" className={classes.left}>
             <Grid container>
               <Grid item xs={12}>
@@ -146,16 +162,15 @@ const Contact: React.FC<Props> = ({ title, tag, addresses, openFunction }) => {
                 >
                   <Avatar src="" className={classes.avatar} />
                   <Box display="flex" flexDirection="column" ml={2}>
-                    <Typography variant="h6">{title}</Typography>
-                    <Typography>{tag}</Typography>
+                    <Typography variant="h6">{name}</Typography>
                   </Box>
                 </Box>
               </Grid>
 
               <Grid item xs={12} className={classes.boxBottom}>
                 <Grid container>
-                  <Hidden smDown>
-                    <Grid item xs={12} md={6} className={classes.paddingY}>
+                  <Hidden xsDown>
+                    <Grid item xs={12} sm={6} className={classes.paddingY}>
                       <Box
                         display="flex"
                         justifyContent="space-between"
@@ -169,7 +184,7 @@ const Contact: React.FC<Props> = ({ title, tag, addresses, openFunction }) => {
                         </Typography>
                       </Box>
                     </Grid>
-                    <Grid item xs={12} md={6} className={classes.paddingY}>
+                    <Grid item xs={12} sm={6} className={classes.paddingY}>
                       <Box
                         display="flex"
                         justifyContent="flex-start"
@@ -181,74 +196,93 @@ const Contact: React.FC<Props> = ({ title, tag, addresses, openFunction }) => {
                       </Box>
                     </Grid>
                   </Hidden>
-                  {addresses.map((address) => (
-                    <Fragment key={address.street}>
-                      <Grid item xs={12} md={6} className={classes.paddingB2}>
+                  {emails.map((email, index) => (
+                    <Fragment key={index}>
+                      <Grid item xs={12} sm={6} className={classes.paddingB2}>
                         <Box
                           display="flex"
                           justifyContent="space-between"
                           className={classes.paddingX}
                         >
                           <Box>
-                            <Hidden mdUp>
+                            <Hidden smUp>
                               <Typography display="inline">
                                 <strong>{t('Source')}: </strong>
                               </Typography>
                             </Hidden>
                             <Typography display="inline">
-                              {address.source}
+                              {`${email.source} (${email.date})`}
                             </Typography>
                           </Box>
                           <Typography>
-                            {address.primary ? (
-                              <StarIcon className={classes.hoverHighlight} />
+                            {email.primary ? (
+                              <StarIcon
+                                data-testid={`starIcon-${contactIndex}-${index}`}
+                                className={classes.hoverHighlight}
+                              />
                             ) : (
                               <StarOutlineIcon
+                                data-testid={`starOutlineIcon-${contactIndex}-${index}`}
                                 className={classes.hoverHighlight}
+                                onClick={() =>
+                                  handleChangePrimary(contactIndex, index)
+                                }
                               />
                             )}
                           </Typography>
                         </Box>
                       </Grid>
-                      <Grid item xs={12} md={6} className={classes.paddingB2}>
+                      <Grid item xs={12} sm={6} className={classes.paddingB2}>
                         <Box
                           display="flex"
                           justifyContent="flex-start"
                           className={clsx(
                             classes.responsiveBorder,
                             classes.paddingX,
-                            classes.hoverHighlight,
                           )}
                         >
-                          <Box
-                            onClick={() => openFunction(address)}
-                            className={classes.address}
-                          >
-                            <Typography>
-                              {`${address.street}, ${address.city} ${
-                                address.state ? address.state : ''
-                              }. ${address.zip}`}
-                            </Typography>
-                          </Box>
-
-                          <Icon
-                            path={
-                              address.source === 'MPDX' ? mdiPencil : mdiLock
-                            }
-                            size={1}
+                          <TextField
+                            style={{ width: '100%' }}
+                            data-testid={`textfield-${contactIndex}-${index}`}
+                            onChange={(
+                              event: React.ChangeEvent<HTMLInputElement>,
+                            ) => handleChange(contactIndex, index, event)}
+                            value={email.address}
+                            disabled={email.source !== 'MPDX'}
                           />
+
+                          {email.source === 'MPDX' ? (
+                            <Box
+                              data-testid={`delete-${contactIndex}-${index}`}
+                              onClick={() => handleDelete(contactIndex, index)}
+                            >
+                              <Icon
+                                path={mdiDelete}
+                                size={1}
+                                className={classes.hoverHighlight}
+                              />
+                            </Box>
+                          ) : (
+                            <Icon
+                              path={mdiLock}
+                              size={1}
+                              style={{
+                                color: theme.palette.cruGrayMedium.main,
+                              }}
+                            />
+                          )}
                         </Box>
                       </Grid>
                     </Fragment>
                   ))}
-                  <Grid item xs={12} md={6} className={classes.paddingB2}>
+                  <Grid item xs={12} sm={6} className={classes.paddingB2}>
                     <Box
                       display="flex"
                       justifyContent="space-between"
                       className={classes.paddingX}
                     >
                       <Box>
-                        <Hidden mdUp>
+                        <Hidden smUp>
                           <Typography display="inline">
                             <strong>{t('Source')}: </strong>
                           </Typography>
@@ -257,21 +291,35 @@ const Contact: React.FC<Props> = ({ title, tag, addresses, openFunction }) => {
                       </Box>
                     </Box>
                   </Grid>
-                  <Grid item xs={12} md={6} className={classes.paddingB2}>
+                  <Grid item xs={12} sm={6} className={classes.paddingB2}>
                     <Box
                       display="flex"
                       justifyContent="flex-start"
                       className={clsx(
                         classes.responsiveBorder,
                         classes.paddingX,
-                        classes.hoverHighlight,
                       )}
                     >
-                      <Box
-                        onClick={() => openFunction(newAddress)}
-                        className={classes.address}
+                      <TextField
+                        style={{ width: '100%' }}
+                        onChange={(
+                          event: React.ChangeEvent<HTMLInputElement>,
+                        ) => updateNewEmailAddress(event)}
+                        inputProps={{
+                          'data-testid': `addNewEmailInput-${contactIndex}`,
+                        }}
+                        value={newEmailAddress}
                       />
-                      <Icon path={mdiPlus} size={1} />
+                      <Box
+                        onClick={() => addNewEmailAddress()}
+                        data-testid={`addButton-${contactIndex}`}
+                      >
+                        <Icon
+                          path={mdiPlus}
+                          size={1}
+                          className={classes.hoverHighlight}
+                        />
+                      </Box>
                     </Box>
                   </Grid>
                 </Grid>
@@ -279,14 +327,14 @@ const Contact: React.FC<Props> = ({ title, tag, addresses, openFunction }) => {
             </Grid>
           </Box>
         </Grid>
-        <Grid item xs={12} lg={2}>
+        <Grid item xs={12} md={2}>
           <Box
             display="flex"
             flexDirection="column"
             style={{ paddingLeft: theme.spacing(1) }}
           >
             <Box className={classes.buttonTop}>
-              <Button variant="contained">
+              <Button variant="contained" style={{ width: '100%' }}>
                 <Icon
                   path={mdiCheckboxMarkedCircle}
                   size={0.8}
