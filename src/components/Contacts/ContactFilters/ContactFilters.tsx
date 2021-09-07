@@ -30,20 +30,13 @@ export type ContactFilterValue = ContactFilterSetInput[ContactFilterKey];
 export const snakeToCamel = (inputKey: string): string => {
   const stringParts = inputKey.split('_');
 
-  let outputKey = '';
-
-  stringParts.map((part, index) => {
+  return stringParts.reduce((outputKey, part, index) => {
     if (index === 0) {
-      outputKey += part;
-      return;
+      return part;
     }
 
-    const capitalizedPart = part.charAt(0).toUpperCase() + part.slice(1);
-
-    outputKey += capitalizedPart;
-  });
-
-  return outputKey;
+    return `${outputKey}${part.charAt(0).toUpperCase()}${part.slice(1)}`;
+  }, '');
 };
 
 const FilterHeader = styled(Box)(({ theme }) => ({
