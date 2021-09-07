@@ -2,7 +2,6 @@ import { ListItem, ListItemText } from '@material-ui/core';
 import React from 'react';
 import { ContactFilterValue } from '../../Contacts/ContactFilters/ContactFilters';
 import {
-  Filter,
   CheckboxFilter,
   DaterangeFilter,
   MultiselectFilter,
@@ -19,10 +18,18 @@ import { FilterListItemNumericRange } from './FilterListItemNumericRange';
 import { FilterListItemSelect } from './FilterListItemSelect';
 import { FilterListItemTextField } from './FilterListItemTextField';
 
+type FilterItem =
+  | CheckboxFilter
+  | DaterangeFilter
+  | MultiselectFilter
+  | NumericRangeFilter
+  | RadioFilter
+  | TextFilter;
+
 interface Props {
-  filter: Filter;
+  filter: FilterItem;
   value?: ContactFilterValue;
-  onUpdate: (value?: boolean | string | Array<string> | DateRangeInput) => void;
+  onUpdate: (value?: ContactFilterValue) => void;
 }
 
 export const FilterListItem: React.FC<Props> = ({
@@ -30,37 +37,37 @@ export const FilterListItem: React.FC<Props> = ({
   value,
   onUpdate,
 }: Props) => {
-  return (filter as TextFilter).__typename === 'TextFilter' ? (
+  return filter.__typename === 'TextFilter' ? (
     <FilterListItemTextField
       filter={filter as TextFilter}
       value={value?.toString()}
       onUpdate={(value) => onUpdate(value)}
     />
-  ) : (filter as RadioFilter).__typename === 'RadioFilter' ? (
+  ) : filter.__typename === 'RadioFilter' ? (
     <FilterListItemSelect
       filter={filter as RadioFilter}
       value={value?.toString()}
       onUpdate={onUpdate}
     />
-  ) : (filter as MultiselectFilter).__typename === 'MultiselectFilter' ? (
+  ) : filter.__typename === 'MultiselectFilter' ? (
     <FilterListItemMultiselect
       filter={filter as MultiselectFilter}
       selected={Array.isArray(value) ? value : undefined}
       onUpdate={onUpdate}
     />
-  ) : (filter as DaterangeFilter).__typename === 'DaterangeFilter' ? (
+  ) : filter.__typename === 'DaterangeFilter' ? (
     <FilterListItemDateRange
       filter={filter as DaterangeFilter}
       value={value as DateRangeInput}
       onUpdate={onUpdate}
     />
-  ) : (filter as CheckboxFilter).__typename === 'CheckboxFilter' ? (
+  ) : filter.__typename === 'CheckboxFilter' ? (
     <FilterListItemCheckbox
       filter={filter as CheckboxFilter}
       value={!!value}
       onUpdate={onUpdate}
     />
-  ) : (filter as NumericRangeFilter).__typename === 'NumericRangeFilter' ? (
+  ) : filter.__typename === 'NumericRangeFilter' ? (
     <FilterListItemNumericRange
       filter={filter as NumericRangeFilter}
       value={value as NumericRangeInput}

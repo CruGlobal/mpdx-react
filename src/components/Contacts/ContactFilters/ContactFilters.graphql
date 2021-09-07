@@ -3,11 +3,11 @@ query ContactFilters($accountListId: ID!) {
     contactFilterGroups {
       name
       filters {
+        __typename
         featured
         filterKey
         title
         ... on DaterangeFilter {
-          __typename
           options {
             name
             rangeEnd
@@ -15,7 +15,6 @@ query ContactFilters($accountListId: ID!) {
           }
         }
         ... on MultiselectFilter {
-          __typename
           defaultSelection
           options {
             name
@@ -24,14 +23,12 @@ query ContactFilters($accountListId: ID!) {
           }
         }
         ... on NumericRangeFilter {
-          __typename
           min
           minLabel
           maxLabel
           title
         }
         ... on RadioFilter {
-          __typename
           defaultSelection
           options {
             name
@@ -40,7 +37,6 @@ query ContactFilters($accountListId: ID!) {
           }
         }
         ... on TextFilter {
-          __typename
           options {
             name
             placeholder
