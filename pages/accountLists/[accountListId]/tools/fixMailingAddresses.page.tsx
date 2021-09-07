@@ -9,7 +9,7 @@ const fixMailingAddresses = (): ReactElement => {
   return (
     <>
       <Head>
-        <title>MPDX | {t('MPDX | Fix Send Newsletter')}</title>
+        <title>MPDX | {t('MPDX | Fix Mailing Addresses')}</title>
       </Head>
       <FixMailingAddresses />
     </>
