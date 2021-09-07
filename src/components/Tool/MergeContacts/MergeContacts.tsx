@@ -10,7 +10,6 @@ import {
 
 import { Trans, useTranslation } from 'react-i18next';
 
-import NavToolDrawer from '../NavToolList/NavToolDrawer';
 import theme from '../../../theme';
 import Contact from './Contact';
 import NoContacts from './NoContacts';
@@ -18,16 +17,19 @@ import NoContacts from './NoContacts';
 const useStyles = makeStyles(() => ({
   container: {
     padding: theme.spacing(3),
-    overflow: 'auto',
+    width: '70%',
     display: 'flex',
     [theme.breakpoints.down('md')]: {
-      width: 'calc(100% - 30px) !important',
+      width: '80%',
+    },
+    [theme.breakpoints.down('sm')]: {
+      width: '100%',
     },
   },
-  outter: {
+  outer: {
     display: 'flex',
     flexDirection: 'row',
-    justifyContent: 'end',
+    justifyContent: 'center',
     width: '100%',
   },
   divider: {
@@ -86,14 +88,9 @@ interface actionsType {
 
 const MergeContacts: React.FC = () => {
   const classes = useStyles();
-  const [isNavListOpen, setNavListOpen] = useState<boolean>(true);
   const [actions, setActions] = useState<actionsType>({});
   const [test, setTest] = useState(testData);
   const { t } = useTranslation();
-  const handleNavListToggle = () => {
-    setNavListOpen(!isNavListOpen);
-  };
-
   const toggleData = (): void => {
     test.length > 0 ? setTest([]) : setTest(testData);
   };
@@ -132,111 +129,96 @@ const MergeContacts: React.FC = () => {
   return (
     <>
       <Box
-        className={classes.outter}
+        className={classes.outer}
         display="flex"
         flexDirection="column"
         data-testid="Home"
       >
-        <NavToolDrawer
-          open={isNavListOpen}
-          toggle={handleNavListToggle}
-          selectedId="mergeContacts"
-        />
-        <Box
-          className={classes.container}
-          style={{
-            width: isNavListOpen
-              ? 'calc(100% - 30px - 290px)'
-              : 'calc(100% - 30px)',
-            transition: 'width 0.15s linear',
-          }}
-        >
-          <Grid container>
-            <Grid item xs={12}>
-              <Typography variant="h4">{t('Merge Contacts')}</Typography>
-              <Divider className={classes.divider} />
-              <Box className={classes.descriptionBox}>
-                {test.length > 0 && (
-                  <>
-                    <Typography>
-                      {t(
-                        ' You have {{amount}} possible duplicate contacts. This is sometimes caused when you imported data into MPDX. We recommend reconciling these as soon as possible. Please select the duplicate that should win the merge. No data will be lost. ',
-                        { amount: test.length },
-                      )}
-                    </Typography>
-                    <Typography>
-                      <strong>{t('This cannot be undone.')}</strong>
-                    </Typography>
-                  </>
-                )}
-                <Button size="small" variant="outlined" onClick={toggleData}>
-                  Change Test
-                </Button>
-              </Box>
-            </Grid>
-            {test.length > 0 ? (
-              <>
-                <Grid item xs={12}>
-                  {test.map((contact) => (
-                    <Contact
-                      key={contact.contact1.id}
-                      contact1={contact.contact1}
-                      contact2={contact.contact2}
-                      update={updateActions}
-                    />
-                  ))}
-                </Grid>
-                <Grid item xs={12}>
-                  <Box
-                    display="flex"
-                    justifyContent="center"
-                    alignItems="center"
-                    style={{ width: '100%' }}
-                    p={2}
-                  >
-                    <Button
-                      variant="contained"
-                      onClick={() => testFnc()}
-                      style={{
-                        backgroundColor: theme.palette.mpdxBlue.main,
-                        color: 'white',
-                      }}
-                    >
-                      {t('Confirm and Continue')}
-                    </Button>
-                    <Box ml={2} mr={2}>
-                      <Typography>
-                        <strong>{t('OR')}</strong>
-                      </Typography>
-                    </Box>
-                    <Button
-                      variant="contained"
-                      style={{
-                        backgroundColor: theme.palette.mpdxBlue.main,
-                        color: 'white',
-                      }}
-                    >
-                      {t('Confirm and Leave')}
-                    </Button>
-                  </Box>
-                </Grid>
-                <Grid item xs={12}>
-                  <Box className={classes.footer}>
-                    <Typography>
-                      <Trans
-                        defaults="Showing <bold>{{value}}</bold> of <bold>{{value}}</bold>"
-                        values={{ value: test.length }}
-                        components={{ bold: <strong /> }}
-                      />
-                    </Typography>
-                  </Box>
-                </Grid>
-              </>
-            ) : (
-              <NoContacts />
-            )}
+        <Grid container className={classes.container}>
+          <Grid item xs={12}>
+            <Typography variant="h4">{t('Merge Contacts')}</Typography>
+            <Divider className={classes.divider} />
+            <Box className={classes.descriptionBox}>
+              {test.length > 0 && (
+                <>
+                  <Typography>
+                    {t(
+                      ' You have {{amount}} possible duplicate contacts. This is sometimes caused when you imported data into MPDX. We recommend reconciling these as soon as possible. Please select the duplicate that should win the merge. No data will be lost. ',
+                      { amount: test.length },
+                    )}
+                  </Typography>
+                  <Typography>
+                    <strong>{t('This cannot be undone.')}</strong>
+                  </Typography>
+                </>
+              )}
+              <Button size="small" variant="outlined" onClick={toggleData}>
+                {t('Change Test')}
+              </Button>
+            </Box>
           </Grid>
-        </Box>
+          {test.length > 0 ? (
+            <>
+              <Grid item xs={12}>
+                {test.map((contact) => (
+                  <Contact
+                    key={contact.contact1.id}
+                    contact1={contact.contact1}
+                    contact2={contact.contact2}
+                    update={updateActions}
+                  />
+                ))}
+              </Grid>
+              <Grid item xs={12}>
+                <Box
+                  display="flex"
+                  justifyContent="center"
+                  alignItems="center"
+                  style={{ width: '100%' }}
+                  p={2}
+                >
+                  <Button
+                    variant="contained"
+                    onClick={() => testFnc()}
+                    style={{
+                      backgroundColor: theme.palette.mpdxBlue.main,
+                      color: 'white',
+                    }}
+                  >
+                    {t('Confirm and Continue')}
+                  </Button>
+                  <Box ml={2} mr={2}>
+                    <Typography>
+                      <strong>{t('OR')}</strong>
+                    </Typography>
+                  </Box>
+                  <Button
+                    variant="contained"
+                    style={{
+                      backgroundColor: theme.palette.mpdxBlue.main,
+                      color: 'white',
+                    }}
+                  >
+                    {t('Confirm and Leave')}
+                  </Button>
+                </Box>
+              </Grid>
+              <Grid item xs={12}>
+                <Box className={classes.footer}>
+                  <Typography>
+                    <Trans
+                      defaults="Showing <bold>{{value}}</bold> of <bold>{{value}}</bold>"
+                      values={{ value: test.length }}
+                      components={{ bold: <strong /> }}
+                    />
+                  </Typography>
+                </Box>
+              </Grid>
+            </>
+          ) : (
+            <NoContacts />
+          )}
+        </Grid>
       </Box>
     </>
   );
