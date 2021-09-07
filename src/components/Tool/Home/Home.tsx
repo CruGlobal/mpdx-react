@@ -2,6 +2,7 @@ import React, { ReactElement } from 'react';
 import { makeStyles, Theme, Grid, Box } from '@material-ui/core';
 import { motion } from 'framer-motion';
 
+import { useTranslation } from 'react-i18next';
 import Tool from './Tool';
 import { ToolsList } from './ToolList';
 
@@ -43,6 +44,7 @@ const variants = {
 const ToolHome = (): ReactElement => {
   const classes = useStyles();
   const toolsListFlattened = ToolsList.flatMap((tool) => tool.items);
+  const { t } = useTranslation();
 
   return (
     <motion.div
@@ -57,8 +59,8 @@ const ToolHome = (): ReactElement => {
             return (
               <Grid item xs={12} sm={6} lg={4} key={tool.tool}>
                 <Tool
-                  tool={tool.tool}
-                  desc={tool.desc}
+                  tool={t('{{toolname}}', { toolname: tool.tool })}
+                  desc={t('{{tooldesc}}', { tooldesc: tool.desc })}
                   icon={tool.icon}
                   id={tool.id}
                 />
