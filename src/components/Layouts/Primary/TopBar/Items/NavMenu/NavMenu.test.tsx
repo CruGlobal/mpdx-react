@@ -68,6 +68,40 @@ describe('NavMenu', () => {
     expect(
       getByRole('menuitem', { hidden: true, name: 'Coaching' }),
     ).toBeInTheDocument();
+    userEvent.click(getByTestId('ToolsMenuToggle'));
+    expect(
+      getByRole('menuitem', { hidden: true, name: 'Appeal' }),
+    ).toBeInTheDocument();
+    expect(
+      getByRole('menuitem', { hidden: true, name: 'Fix Commitment Info' }),
+    ).toBeInTheDocument();
+    expect(
+      getByRole('menuitem', { hidden: true, name: 'Fix Mailing Addresses' }),
+    ).toBeInTheDocument();
+    expect(
+      getByRole('menuitem', { hidden: true, name: 'Fix Send Newsletter' }),
+    ).toBeInTheDocument();
+    expect(
+      getByRole('menuitem', { hidden: true, name: 'Merge Contacts' }),
+    ).toBeInTheDocument();
+    expect(
+      getByRole('menuitem', { hidden: true, name: 'Fix Email Addresses' }),
+    ).toBeInTheDocument();
+    expect(
+      getByRole('menuitem', { hidden: true, name: 'Fix Phone Numbers' }),
+    ).toBeInTheDocument();
+    expect(
+      getByRole('menuitem', { hidden: true, name: 'Merge People' }),
+    ).toBeInTheDocument();
+    expect(
+      getByRole('menuitem', { hidden: true, name: 'Import from Google' }),
+    ).toBeInTheDocument();
+    expect(
+      getByRole('menuitem', { hidden: true, name: 'Import from TntConnect' }),
+    ).toBeInTheDocument();
+    expect(
+      getByRole('menuitem', { hidden: true, name: 'Import from CSV' }),
+    ).toBeInTheDocument();
   });
 
   it('hidden', () => {

@@ -77,7 +77,6 @@ const NavMenu = (): ReactElement => {
     if (anchorRef.current?.contains(event.target as HTMLElement)) {
       return;
     }
-
     setReportsMenuOpen(false);
   };
 
