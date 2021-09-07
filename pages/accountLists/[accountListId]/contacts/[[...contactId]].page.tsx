@@ -37,15 +37,10 @@ const ContactsPage: React.FC = () => {
   }, [isReady, query]);
 
   const [filterPanelOpen, setFilterPanelOpen] = useState<boolean>(false);
-  //TODO: Connect these to ContactFilters, and use actual filter data for activeFilters
   const [activeFilters, setActiveFilters] = useState<ContactFilterSetInput>({});
 
   const toggleFilterPanel = () => {
     setFilterPanelOpen(!filterPanelOpen);
-  };
-
-  const updateSelectedFilters = (filters: ContactFilterSetInput) => {
-    setActiveFilters(filters);
   };
 
   const setContactFocus = (id?: string) => {
@@ -87,7 +82,7 @@ const ContactsPage: React.FC = () => {
               <ContactFilters
                 accountListId={accountListId}
                 onClose={toggleFilterPanel}
-                onSelectedFiltersChanged={updateSelectedFilters}
+                onSelectedFiltersChanged={setActiveFilters}
               />
             }
             leftOpen={filterPanelOpen}
