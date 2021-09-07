@@ -106,9 +106,11 @@ export const ContactFilters: React.FC<Props & BoxProps> = ({
   };
 
   const getSelectedFilters = (group: FilterGroup) =>
-    group.filters.filter(
-      (value) => selectedFilters[value.filterKey as ContactFilterKey],
-    );
+    group.filters.filter((value) => {
+      const key = snakeToCamel(value.filterKey) as ContactFilterKey;
+
+      selectedFilters[key];
+    });
   const isGroupVisible = (group: FilterGroup) =>
     getSelectedFilters(group).length > 0;
 
