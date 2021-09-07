@@ -73,10 +73,7 @@ const NavMenu = (): ReactElement => {
     setToolsMenuOpen(false);
   };
 
-  const handleReportsMenuClose = (event: React.MouseEvent<EventTarget>) => {
-    if (anchorRef.current?.contains(event.target as HTMLElement)) {
-      return;
-    }
+  const handleReportsMenuClose = () => {
     setReportsMenuOpen(false);
   };
 
@@ -85,10 +82,7 @@ const NavMenu = (): ReactElement => {
     setReportsMenuOpen(false);
   };
 
-  const handleToolsMenuClose = (event: React.MouseEvent<EventTarget>) => {
-    if (anchorRefTools.current?.contains(event.target as HTMLElement)) {
-      return;
-    }
+  const handleToolsMenuClose = () => {
     setToolsMenuOpen(false);
   };
 
