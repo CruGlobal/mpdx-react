@@ -14,7 +14,7 @@ import {
   useTheme,
 } from '@material-ui/core';
 import { ArrowBackIos, ArrowForwardIos, Close } from '@material-ui/icons';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FilterListItem } from '../../Shared/Filters/FilterListItem';
 import { FilterListItemShowAll } from '../../Shared/Filters/FilterListItemShowAll';
@@ -84,24 +84,25 @@ export const ContactFilters: React.FC<Props & BoxProps> = ({
   );
   const [showAll, setShowAll] = useState(false);
 
-  useEffect(() => {
-    onSelectedFiltersChanged(selectedFilters);
-  }, [selectedFilters]);
-
   const updateSelectedFilter = (
     name: ContactFilterKey,
     value?: ContactFilterValue,
   ) => {
-    if (value)
-      setSelectedFilters((prev) => {
-        return { ...prev, [name]: value };
-      });
-    else
-      setSelectedFilters((prev) => {
-        const updated = { ...prev };
-        delete updated[name];
-        return updated;
-      });
+    if (value) {
+      const newFilters: ContactFilterSetInput = {
+        ...selectedFilters,
+        [name]: value,
+      };
+
+      setSelectedFilters(newFilters);
+      onSelectedFiltersChanged(newFilters);
+    } else {
+      const newFilters: ContactFilterSetInput = { ...selectedFilters };
+      delete newFilters[name];
+
+      setSelectedFilters(newFilters);
+      onSelectedFiltersChanged(newFilters);
+    }
   };
 
   const getSelectedFilters = (group: FilterGroup) =>
