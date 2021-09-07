@@ -27,6 +27,7 @@ const StorybookContactFilters = (): ReactElement => (
       accountListId={accountListId}
       width={number('Width', 290)}
       onClose={() => {}}
+      onSelectedFiltersChanged={() => {}}
     />
   </Box>
 );

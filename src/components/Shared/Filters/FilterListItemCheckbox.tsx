@@ -5,10 +5,10 @@ import {
   ListItemText,
 } from '@material-ui/core';
 import React from 'react';
-import { Filter } from './Filter';
+import { CheckboxFilter } from '../../../../graphql/types.generated';
 
 interface Props {
-  filter: Filter;
+  filter: CheckboxFilter;
   value?: boolean;
   onUpdate: (value: boolean) => void;
 }
@@ -21,6 +21,7 @@ export const FilterListItemCheckbox: React.FC<Props> = ({
   <ListItem button onClick={() => onUpdate(!value)}>
     <ListItemIcon>
       <Checkbox
+        data-testid="CheckboxIcon"
         size="small"
         edge="start"
         value="true"
@@ -30,6 +31,7 @@ export const FilterListItemCheckbox: React.FC<Props> = ({
       />
     </ListItemIcon>
     <ListItemText
+      data-testid="FilterLabel"
       primary={filter.title}
       primaryTypographyProps={{ variant: 'subtitle1' }}
     />
