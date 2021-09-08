@@ -16,7 +16,10 @@ import { FormikProps, FieldArray, getIn } from 'formik';
 import { ModalSectionContainer } from '../ModalSectionContainer/ModalSectionContainer';
 import { ModalSectionDeleteIcon } from '../ModalSectionDeleteIcon/ModalSectionDeleteIcon';
 import { ModalSectionIcon } from '../ModalSectionIcon/ModalSectionIcon';
-import { PersonUpdateInput } from '../../../../../../../../../graphql/types.generated';
+import {
+  PersonCreateInput,
+  PersonUpdateInput,
+} from '../../../../../../../../../graphql/types.generated';
 
 const ContactAddIcon = styled(AddIcon)(() => ({
   color: '#2196F3',
@@ -41,7 +44,7 @@ const SocialSelect = styled(Select)(
 );
 
 interface PersonSocialProps {
-  formikProps: FormikProps<PersonUpdateInput>;
+  formikProps: FormikProps<PersonUpdateInput | PersonCreateInput>;
 }
 
 export const PersonSocial: React.FC<PersonSocialProps> = ({ formikProps }) => {

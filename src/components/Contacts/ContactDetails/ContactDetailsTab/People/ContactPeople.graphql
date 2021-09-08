@@ -13,16 +13,42 @@ fragment ContactPeople on Contact {
 
 fragment ContactPerson on Person {
   id
-  firstName
-  lastName
+  almaMater
+  anniversaryDay
+  anniversaryMonth
+  anniversaryYear
+  birthdayDay
+  birthdayMonth
+  birthdayYear
+  deceased
   emailAddresses {
     nodes {
-      email
       id
+      email
       primary
       location
     }
   }
+  employer
+  facebookAccounts {
+    nodes {
+      id
+      username
+    }
+  }
+  firstName
+  gender
+  lastName
+  legalFirstName
+  linkedinAccounts {
+    nodes {
+      id
+      publicUrl
+    }
+  }
+  maritalStatus
+  occupation
+  optoutEnewsletter
   phoneNumbers {
     nodes {
       id
@@ -31,18 +57,20 @@ fragment ContactPerson on Person {
       location
     }
   }
-  facebookAccounts {
-    nodes {
-      id
-      username
-    }
+  primaryEmailAddress {
+    id
+    email
+    primary
+    location
   }
-  linkedinAccounts {
-    nodes {
-      id
-      publicUrl
-    }
+  primaryPhoneNumber {
+    id
+    number
+    primary
+    location
   }
+  suffix
+  title
   twitterAccounts {
     nodes {
       id
@@ -55,32 +83,6 @@ fragment ContactPerson on Person {
       url
     }
   }
-  primaryPhoneNumber {
-    id
-    number
-    location
-  }
-  primaryEmailAddress {
-    id
-    email
-    location
-  }
-  almaMater
-  anniversaryDay
-  anniversaryMonth
-  anniversaryYear
-  birthdayDay
-  birthdayMonth
-  birthdayYear
-  deceased
-  employer
-  gender
-  legalFirstName
-  maritalStatus
-  occupation
-  optoutEnewsletter
-  suffix
-  title
   # TODO add Mising Below
   # avatar
 }

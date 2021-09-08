@@ -16,7 +16,7 @@ import {
   ContactPeopleFragment,
   ContactPersonFragment,
 } from './ContactPeople.generated';
-import { EditPersonModal } from './Items/EditPersonModal/EditPersonModal';
+import { PersonModal } from './Items/PersonModal/PersonModal';
 
 const ContactPersonAvatar = styled(Avatar)(({ theme }) => ({
   margin: theme.spacing(1),
@@ -88,8 +88,9 @@ export const ContactDetailsTabPeople: React.FC<ContactDetailsPeopleProp> = ({
 }) => {
   const { t } = useTranslation();
   const [editPersonModalOpen, setEditPersonModalOpen] = useState<string>();
+  const [createPersonModalOpen, setCreatePersonModalOpen] = useState(false);
 
-  const { primaryPerson, people } = data;
+  const { primaryPerson, people, id } = data;
 
   const personView = (person: ContactPersonFragment) => {
     return (
@@ -174,8 +175,9 @@ export const ContactDetailsTabPeople: React.FC<ContactDetailsPeopleProp> = ({
           ) : null}
         </ContactPersonTextContainer>
         {editPersonModalOpen === person.id ? (
-          <EditPersonModal
+          <PersonModal
             person={person}
+            contactId={id}
             accountListId={accountListId}
             handleClose={() => setEditPersonModalOpen(undefined)}
           />
@@ -190,12 +192,20 @@ export const ContactDetailsTabPeople: React.FC<ContactDetailsPeopleProp> = ({
       {people.nodes.map((person) =>
         person.id !== primaryPerson?.id ? personView(person) : null,
       )}
-      <Box m={2}>
+      <Box m={2} onClick={() => setCreatePersonModalOpen(true)}>
         <Grid container alignItems="center">
           <ContactAddIcon />
           <ContactAddText variant="subtitle1">{t('Add Person')}</ContactAddText>
         </Grid>
       </Box>
+      {createPersonModalOpen ? (
+        <PersonModal
+          person={undefined}
+          contactId={id}
+          accountListId={accountListId}
+          handleClose={() => setCreatePersonModalOpen(false)}
+        />
+      ) : null}
     </>
   );
 };

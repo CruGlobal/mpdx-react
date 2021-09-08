@@ -6,10 +6,13 @@ import CakeIcon from '@material-ui/icons/Cake';
 import { FormikProps } from 'formik';
 import { ModalSectionContainer } from '../ModalSectionContainer/ModalSectionContainer';
 import { ModalSectionIcon } from '../ModalSectionIcon/ModalSectionIcon';
-import { PersonUpdateInput } from '../../../../../../../../../graphql/types.generated';
+import {
+  PersonCreateInput,
+  PersonUpdateInput,
+} from '../../../../../../../../../graphql/types.generated';
 
 interface PersonBirthdayProps {
-  formikProps: FormikProps<PersonUpdateInput>;
+  formikProps: FormikProps<PersonUpdateInput | PersonCreateInput>;
 }
 
 export const PersonBirthday: React.FC<PersonBirthdayProps> = ({
