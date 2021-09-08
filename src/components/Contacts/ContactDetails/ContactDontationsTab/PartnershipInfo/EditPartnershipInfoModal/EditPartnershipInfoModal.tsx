@@ -122,7 +122,6 @@ export const EditPartnershipInfoModal: React.FC<EditPartnershipInfoModalProps> =
       | 'noAppeals'
     >,
   ) => {
-    console.log(attributes.nextAsk);
     await updateContactPartnership({
       variables: {
         accountListId: accountListId ?? '',
@@ -369,7 +368,7 @@ export const EditPartnershipInfoModal: React.FC<EditPartnershipInfoModalProps> =
                 <CheckboxLabel
                   control={
                     <Checkbox
-                      checked={!!!noAppeals}
+                      checked={!noAppeals}
                       onChange={() => setFieldValue('noAppeals', !noAppeals)}
                     />
                   }
