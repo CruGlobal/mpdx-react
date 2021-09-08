@@ -27,7 +27,7 @@ const useStyles = makeStyles(() => ({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  outter: {
+  outer: {
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'end',
@@ -232,7 +232,7 @@ const FixEmailAddresses: React.FC = () => {
   return (
     <>
       <Box className={classes.container}>
-        <Grid container className={classes.outter}>
+        <Grid container className={classes.outer}>
           <Grid item xs={12}>
             <Typography variant="h4">{t('Fix Email Addresses')}</Typography>
             <Divider className={classes.divider} />
