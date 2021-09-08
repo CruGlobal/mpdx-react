@@ -75,7 +75,7 @@ export const PersonModal: React.FC<PersonModalProps> = ({
   contactId,
   accountListId,
   handleClose,
-}): ReactElement<PersonModalProps> => {
+}) => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
   const [personEditShowMore, setPersonEditShowMore] = useState(false);
