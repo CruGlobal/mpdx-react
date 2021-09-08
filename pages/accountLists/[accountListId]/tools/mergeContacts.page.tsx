@@ -9,7 +9,7 @@ const MergeContacts: React.FC = () => {
   return (
     <>
       <Head>
-        <title>MPDX | {t('MPDX | Merge Contacts')}</title>
+        <title>MPDX | {t('Merge Contacts')}</title>
       </Head>
       <MergeContacts />
     </>
