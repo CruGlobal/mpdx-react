@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import Head from 'next/head';
 import MergeContacts from '../../../../src/components/Tool/MergeContacts/MergeContacts';
 
-const MergeContacts: React.FC = () => {
+const MergeContactsPage: React.FC = () => {
   const { t } = useTranslation();
 
   return (
@@ -16,4 +16,4 @@ const MergeContacts: React.FC = () => {
   );
 };
 
-export default mergeContacts;
+export default MergeContactsPage;
