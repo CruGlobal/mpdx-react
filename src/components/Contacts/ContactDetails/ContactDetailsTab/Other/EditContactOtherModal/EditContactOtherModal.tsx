@@ -185,6 +185,15 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
                           onChange={handleChange('locale')}
                           fullWidth={true}
                           MenuProps={{
+                            anchorOrigin: {
+                              vertical: 'bottom',
+                              horizontal: 'left',
+                            },
+                            transformOrigin: {
+                              vertical: 'top',
+                              horizontal: 'left',
+                            },
+                            getContentAnchorEl: null,
                             PaperProps: {
                               style: {
                                 maxHeight: '300px',
@@ -215,6 +224,15 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
                           onChange={handleChange('timezone')}
                           fullWidth={true}
                           MenuProps={{
+                            anchorOrigin: {
+                              vertical: 'bottom',
+                              horizontal: 'left',
+                            },
+                            transformOrigin: {
+                              vertical: 'top',
+                              horizontal: 'left',
+                            },
+                            getContentAnchorEl: null,
                             PaperProps: {
                               style: {
                                 maxHeight: '300px',

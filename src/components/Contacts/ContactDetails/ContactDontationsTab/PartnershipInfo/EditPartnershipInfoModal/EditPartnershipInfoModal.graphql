@@ -1,0 +1,19 @@
+mutation UpdateContactPartnership(
+  $accountListId: ID!
+  $attributes: ContactUpdateInput!
+) {
+  updateContact(
+    input: { accountListId: $accountListId, attributes: $attributes }
+  ) {
+    contact {
+      id
+      status
+      pledgeAmount
+      pledgeFrequency
+      pledgeCurrency
+      pledgeStartDate
+      nextAsk
+      noAppeals
+    }
+  }
+}
