@@ -1,28 +1,52 @@
 import { GraphQLError } from 'graphql';
+import {
+  CheckboxFilter,
+  DaterangeFilter,
+  MultiselectFilter,
+} from '../../../../graphql/types.generated';
 
-export const ContactFiltersDefaultMock = {
-  contactFilters: [
-    {
-      title: 'Always Visible',
-      alwaysVisible: true,
-      filters: [
-        { title: 'Text Field', type: 'text' },
-        { title: 'Date Range', type: 'daterange' },
-        { title: 'Multiselect', type: 'multiselect' },
-        { title: 'Multiselect', type: 'multiselect' },
-        { title: 'Select', type: 'radio' },
-      ],
-    },
-    {
-      title: 'Hidden',
-      alwaysVisible: false,
-      filters: [{ type: 'text' }, { type: 'single_checkbox' }],
-    },
-  ],
+const mockDateRangeFilter: DaterangeFilter = {
+  __typename: 'DaterangeFilter',
+  featured: false,
+  filterKey: 'daterange',
+  title: 'Date Range',
+  options: [],
+};
+const mockMultiselectFilter: MultiselectFilter = {
+  __typename: 'MultiselectFilter',
+  featured: false,
+  filterKey: 'daterange',
+  title: 'Date Range',
+};
+const mockCheckboxFilter: CheckboxFilter = {
+  __typename: 'CheckboxFilter',
+  featured: false,
+  filterKey: 'daterange',
+  title: 'Date Range',
 };
 
-export const ContactFiltersEmptyMock = { contactFilters: [] };
+export const ContactFiltersDefaultMock = {
+  accountList: {
+    contactFilterGroups: [
+      { name: 'Group 1', filters: [mockCheckboxFilter] },
+      {
+        name: 'Group 2',
+        filters: [mockMultiselectFilter, mockDateRangeFilter],
+      },
+    ],
+  },
+};
+
+export const ContactFiltersEmptyMock = {
+  accountList: {
+    contactFilterGroups: [],
+  },
+};
 
 export const ContactFiltersErrorMock = {
-  contactFilters: new GraphQLError('GraphQL Error #42: Error loading Filters'),
+  accountList: {
+    contactFilterGroups: new GraphQLError(
+      'GraphQL Error #42: Error loading Filters',
+    ),
+  },
 };

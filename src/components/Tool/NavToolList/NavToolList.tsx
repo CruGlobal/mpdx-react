@@ -27,7 +27,11 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-const NavToolList = (): ReactElement => {
+export interface Props {
+  selectedId?: string;
+}
+
+const NavToolList = ({ selectedId }: Props): ReactElement => {
   const classes = useStyles();
 
   return (
@@ -42,7 +46,12 @@ const NavToolList = (): ReactElement => {
               <ListItemText primary={group.groupName} />
             </ListItem>
             {group.items.map((tool) => (
-              <Item key={tool.id} id={tool.id} title={tool.tool} />
+              <Item
+                key={tool.id}
+                id={tool.id}
+                title={tool.tool}
+                isSelected={selectedId === tool.id}
+              />
             ))}
           </Fragment>
         ))}

@@ -1,0 +1,26 @@
+query GetAppeals($accountListId: ID!) {
+  primaryAppeal: appeals(
+    accountListId: $accountListId
+    primary: true
+    first: 1
+  ) {
+    nodes {
+      ...AppealFields
+    }
+  }
+  regularAppeals: appeals(accountListId: $accountListId, primary: false) {
+    nodes {
+      ...AppealFields
+    }
+  }
+}
+fragment AppealFields on Appeal {
+  id
+  name
+  amount
+  amountCurrency
+  pledgesAmountNotReceivedNotProcessed
+  pledgesAmountReceivedNotProcessed
+  pledgesAmountProcessed
+  pledgesAmountTotal
+}

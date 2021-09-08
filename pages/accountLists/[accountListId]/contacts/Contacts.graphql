@@ -1,8 +1,12 @@
-query Contacts($accountListId: ID!, $searchTerm: String, $after: String) {
+query Contacts(
+  $accountListId: ID!
+  $contactsFilters: ContactFilterSetInput
+  $after: String
+) {
   contacts(
     accountListId: $accountListId
+    contactsFilter: $contactsFilters
     after: $after
-    contactsFilter: { wildcardSearch: $searchTerm }
   ) {
     nodes {
       id

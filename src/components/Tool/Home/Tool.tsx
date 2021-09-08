@@ -36,10 +36,10 @@ const useStyles = makeStyles(() => ({
     height: '200px',
   },
   iconBG: {
-    padding: '10px',
+    padding: theme.spacing(2),
     borderRadius: '50%',
-    height: '80px',
-    width: '80px',
+    height: theme.spacing(8),
+    width: theme.spacing(8),
     backgroundColor: 'white',
   },
 }));
@@ -69,7 +69,7 @@ const Tool = ({ tool, desc, icon, id }: Props): ReactElement => {
               justifyContent="center"
               alignItems="center"
             >
-              <Icon path={icon} size={1.5} />
+              <Icon path={icon} size={3} />
             </Box>
             <Typography variant="h6">{tool}</Typography>
             <Typography variant="body2">{desc}</Typography>

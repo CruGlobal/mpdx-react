@@ -11,13 +11,9 @@ import {
   ExportLabelTypeEnum,
   ExportSortEnum,
 } from '../../graphql/types.generated';
-import {
-  ContactFilterOption,
-  FourteenMonthReportCurrencyType,
-} from './graphql-rest.page.generated';
+import { FourteenMonthReportCurrencyType } from './graphql-rest.page.generated';
 import schema from './Schema';
 import { getTaskAnalytics } from './Schema/TaskAnalytics/dataHandler';
-import { getContactFilters } from './Schema/ContactFilters/datahandler';
 import {
   CoachingAnswerSetData,
   CoachingAnswerSetIncluded,
@@ -40,6 +36,10 @@ import {
   FinancialAccountResponse,
   setActiveFinancialAccount,
 } from './Schema/reports/financialAccounts/datahandler';
+import {
+  createEntryHistoriesGroup,
+  EntryHistoriesResponse,
+} from './Schema/reports/entryHistories/datahandler';
 
 class MpdxRestApi extends RESTDataSource {
   constructor() {
@@ -102,31 +102,6 @@ class MpdxRestApi extends RESTDataSource {
     });
 
     return `${process.env.REST_API_URL}contacts/exports${pathAddition}/${data.id}.${format}`;
-  }
-
-  async getContactFilters(accountListId: string) {
-    const {
-      data,
-    }: {
-      data: {
-        id: string;
-        type: string;
-        attributes: {
-          type: string;
-          default_selection: string | boolean;
-          featured: boolean;
-          multiple: boolean;
-          name: string;
-          options: ContactFilterOption[];
-          parent: string;
-          title: string;
-        };
-      }[];
-    } = await this.get(
-      `contacts/filters?filter[account_list_id]=${accountListId}`,
-    );
-
-    return getContactFilters(data);
   }
 
   async getTaskAnalytics(accountListId: string) {
@@ -229,6 +204,23 @@ class MpdxRestApi extends RESTDataSource {
       },
     );
     return setActiveFinancialAccount(data);
+  }
+
+  async getEntryHistories(
+    accountListId: string,
+    financialAccountIds: Array<string>,
+  ) {
+    return await Promise.all(
+      financialAccountIds.map((financialAccountId) =>
+        this.get(
+          `reports/entry_histories?filter[account_list_id]=${accountListId}&filter[financial_account_id]=${financialAccountId}`,
+        ),
+      ),
+    ).then((res) => {
+      return res.map(({ data }: { data: EntryHistoriesResponse[] }, idx) => {
+        return createEntryHistoriesGroup(data, financialAccountIds[idx]);
+      });
+    });
   }
 }
 
