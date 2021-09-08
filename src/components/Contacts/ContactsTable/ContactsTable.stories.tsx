@@ -16,7 +16,7 @@ export const Default = (): ReactElement => {
         accountListId={accountListId}
         onContactSelected={() => {}}
         onSearchTermChange={() => {}}
-        activeFilters={false}
+        activeFilters={{}}
         filterPanelOpen={false}
         toggleFilterPanel={() => {}}
       />
@@ -39,7 +39,7 @@ export const Loading = (): ReactElement => {
         accountListId={accountListId}
         onContactSelected={() => {}}
         onSearchTermChange={() => {}}
-        activeFilters={false}
+        activeFilters={{}}
         filterPanelOpen={false}
         toggleFilterPanel={() => {}}
       />
@@ -62,7 +62,7 @@ export const Empty = (): ReactElement => {
         accountListId={accountListId}
         onContactSelected={() => {}}
         onSearchTermChange={() => {}}
-        activeFilters={false}
+        activeFilters={{}}
         filterPanelOpen={false}
         toggleFilterPanel={() => {}}
       />
@@ -86,7 +86,7 @@ export const Error = (): ReactElement => {
         accountListId={accountListId}
         onContactSelected={() => {}}
         onSearchTermChange={() => {}}
-        activeFilters={false}
+        activeFilters={{}}
         filterPanelOpen={false}
         toggleFilterPanel={() => {}}
       />

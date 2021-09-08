@@ -3,12 +3,15 @@ import { DatePicker } from '@material-ui/pickers';
 import React from 'react';
 import { DateTime, Interval } from 'luxon';
 import { useTranslation } from 'react-i18next';
-import { Filter } from './Filter';
+import {
+  DaterangeFilter,
+  DateRangeInput,
+} from '../../../../graphql/types.generated';
 
 interface Props {
-  filter: Filter;
-  value?: string;
-  onUpdate: (value?: string) => void;
+  filter: DaterangeFilter;
+  value?: DateRangeInput;
+  onUpdate: (value?: DateRangeInput) => void;
 }
 
 export const FilterListItemDateRange: React.FC<Props> = ({
@@ -18,9 +21,13 @@ export const FilterListItemDateRange: React.FC<Props> = ({
 }) => {
   const { t } = useTranslation();
 
-  const range = value ? Interval.fromISO(value.replace('..', '/')) : undefined;
-  const createRange = (start: DateTime, end: DateTime) =>
-    start.toISODate() + '..' + end.toISODate();
+  const range = value
+    ? Interval.fromISO(value.min + '/' + value.max)
+    : undefined;
+  const createRange = (start: DateTime, end: DateTime): DateRangeInput => ({
+    min: start.toISODate(),
+    max: end.toISODate(),
+  });
 
   return (
     <>
