@@ -1,5 +1,7 @@
 import {
+  Checkbox,
   FormControl,
+  FormControlLabel,
   Grid,
   InputLabel,
   MenuItem,
@@ -9,14 +11,18 @@ import {
   Typography,
 } from '@material-ui/core';
 import React from 'react';
+
 import BookmarkIcon from '@material-ui/icons/Bookmark';
 import AddIcon from '@material-ui/icons/Add';
 import { useTranslation } from 'react-i18next';
-import { FormikProps, FieldArray, getIn } from 'formik';
+import { FieldArray, FormikProps, getIn } from 'formik';
 import { ModalSectionContainer } from '../ModalSectionContainer/ModalSectionContainer';
 import { ModalSectionDeleteIcon } from '../ModalSectionDeleteIcon/ModalSectionDeleteIcon';
 import { ModalSectionIcon } from '../ModalSectionIcon/ModalSectionIcon';
-import { PersonUpdateInput } from '../../../../../../../../../graphql/types.generated';
+import {
+  PersonCreateInput,
+  PersonUpdateInput,
+} from '../../../../../../../../../graphql/types.generated';
 
 const ContactPrimaryPersonSelectLabel = styled(InputLabel)(() => ({
   textTransform: 'uppercase',
@@ -31,11 +37,9 @@ const ContactInputField = styled(TextField)(
   }),
 );
 
-const PhoneNumberSelect = styled(Select)(
-  ({ destroyed }: { destroyed: boolean }) => ({
-    textDecoration: destroyed ? 'line-through' : 'none',
-  }),
-);
+const EmailSelect = styled(Select)(({ destroyed }: { destroyed: boolean }) => ({
+  textDecoration: destroyed ? 'line-through' : 'none',
+}));
 
 const ContactAddIcon = styled(AddIcon)(() => ({
   color: '#2196F3',
@@ -47,59 +51,58 @@ const ContactAddText = styled(Typography)(() => ({
   fontWeight: 'bold',
 }));
 
-interface PersonPhoneNumberProps {
-  formikProps: FormikProps<PersonUpdateInput>;
+const OptOutENewsletterLabel = styled(FormControlLabel)(() => ({
+  margin: 'none',
+}));
+
+interface PersonEmailProps {
+  formikProps: FormikProps<PersonUpdateInput | PersonCreateInput>;
 }
 
-export const PersonPhoneNumber: React.FC<PersonPhoneNumberProps> = ({
-  formikProps,
-}) => {
+export const PersonEmail: React.FC<PersonEmailProps> = ({ formikProps }) => {
   const { t } = useTranslation();
 
   const {
-    values: { phoneNumbers },
+    values: { emailAddresses, optoutEnewsletter },
     setFieldValue,
     errors,
   } = formikProps;
-
-  const primaryPhoneNumber = phoneNumbers?.filter(
-    (phoneNumber) => phoneNumber.primary,
+  const primaryEmail = emailAddresses?.filter(
+    (emailAddress) => emailAddress.primary,
   )[0];
 
-  const handleChangePrimary = (numberId: string) => {
-    const index = phoneNumbers?.findIndex(
-      (phoneNumber) => phoneNumber.id === numberId,
+  const handleChangePrimary = (emailId: string) => {
+    const index = emailAddresses?.findIndex((email) => email.id === emailId);
+    const primaryIndex = emailAddresses?.findIndex(
+      (email) => email.id === primaryEmail?.id,
     );
-    const primaryIndex = phoneNumbers?.findIndex(
-      (phoneNumber) => phoneNumber.id === primaryPhoneNumber?.id,
-    );
-    setFieldValue(`phoneNumbers.${index}.primary`, true);
-    setFieldValue(`phoneNumbers.${primaryIndex}.primary`, false);
+    setFieldValue(`emailAddresses.${index}.primary`, true);
+    setFieldValue(`emailAddresses.${primaryIndex}.primary`, false);
   };
 
   return (
     <>
-      {phoneNumbers && phoneNumbers.length > 0 ? (
+      {emailAddresses && emailAddresses.length > 0 ? (
         <>
           <ModalSectionContainer>
             <ModalSectionIcon icon={<BookmarkIcon />} />
 
             <FormControl fullWidth={true}>
-              <ContactPrimaryPersonSelectLabel id="primary-phone-number-label">
-                {t('Primary Phone')}
+              <ContactPrimaryPersonSelectLabel id="primary-email-label">
+                {t('Primary Email')}
               </ContactPrimaryPersonSelectLabel>
               <Select
-                id="primary-phone-number-label"
-                value={primaryPhoneNumber?.id}
+                id="primary-email-label"
+                value={primaryEmail?.id}
                 onChange={(event) =>
                   handleChangePrimary(event.target.value as string)
                 }
               >
-                {phoneNumbers.map(
-                  (phoneNumber) =>
-                    phoneNumber.id && (
-                      <MenuItem key={phoneNumber.id} value={phoneNumber.id}>
-                        {phoneNumber.number}
+                {emailAddresses.map(
+                  (emailAddress) =>
+                    emailAddress.id && (
+                      <MenuItem key={emailAddress.id} value={emailAddress.id}>
+                        {emailAddress.email}
                       </MenuItem>
                     ),
                 )}
@@ -107,62 +110,63 @@ export const PersonPhoneNumber: React.FC<PersonPhoneNumberProps> = ({
             </FormControl>
           </ModalSectionContainer>
           <FieldArray
-            name="phoneNumbers"
+            name="emailAddresses"
             render={() => (
               <>
-                {phoneNumbers?.map((phoneNumber, index) => (
+                {emailAddresses?.map((emailAddress, index) => (
                   <>
                     <ModalSectionContainer key={index}>
                       <Grid container spacing={3}>
                         <Grid item xs={6}>
                           <ContactInputField
-                            destroyed={phoneNumber.destroy ?? false}
-                            value={phoneNumber.number}
+                            destroyed={emailAddress.destroy ?? false}
+                            value={emailAddress.email}
                             onChange={(event) =>
                               setFieldValue(
-                                `phoneNumbers.${index}.number`,
+                                `emailAddresses.${index}.email`,
                                 event.target.value,
                               )
                             }
-                            disabled={!!phoneNumber.destroy}
-                            inputProps={{ 'aria-label': t('Phone Number') }}
-                            error={getIn(errors, `phoneNumbers.${index}`)}
+                            disabled={!!emailAddress.destroy}
+                            inputProps={{ 'aria-label': t('Email Address') }}
+                            error={getIn(errors, `emailAddresses.${index}`)}
                             helperText={
-                              getIn(errors, `phoneNumbers.${index}`) &&
-                              getIn(errors, `phoneNumbers.${index}`).number
+                              getIn(errors, `emailAddresses.${index}`) &&
+                              getIn(errors, `emailAddresses.${index}`).email
                             }
                             fullWidth
                           />
                         </Grid>
                         <Grid item xs={6}>
-                          <PhoneNumberSelect
-                            destroyed={phoneNumber.destroy ?? false}
-                            value={phoneNumber.location ?? ''}
+                          <EmailSelect
+                            destroyed={emailAddress.destroy ?? false}
+                            value={emailAddress.location ?? ''}
                             onChange={(event) =>
                               setFieldValue(
-                                `phoneNumbers.${index}.location`,
+                                `emailAddresses.${index}.location`,
                                 event.target.value,
                               )
                             }
-                            disabled={!!phoneNumber.destroy}
+                            disabled={!!emailAddress.destroy}
                             inputProps={{
-                              'aria-label': t('Phone Number Type'),
+                              'aria-label': t('Email Address Type'),
                             }}
                             fullWidth
                           >
+                            <MenuItem selected value=""></MenuItem>
                             <MenuItem value="Mobile" aria-label={t('Mobile')}>
                               {t('Mobile')}
                             </MenuItem>
                             <MenuItem value="Work" aria-label={t('Work')}>
                               {t('Work')}
                             </MenuItem>
-                          </PhoneNumberSelect>
+                          </EmailSelect>
                         </Grid>
                         <ModalSectionDeleteIcon
                           handleClick={() =>
                             setFieldValue(
-                              `phoneNumbers.${index}.destroy`,
-                              !phoneNumber.destroy,
+                              `emailAddresses.${index}.destroy`,
+                              !emailAddress.destroy,
                             )
                           }
                         />
@@ -177,8 +181,25 @@ export const PersonPhoneNumber: React.FC<PersonPhoneNumberProps> = ({
       ) : null}
       <ModalSectionContainer>
         <Grid container alignItems="center">
-          <ContactAddIcon />
-          <ContactAddText variant="subtitle1">{t('Add Phone')}</ContactAddText>
+          <Grid container alignItems="center" item xs={6}>
+            <ContactAddIcon />
+            <ContactAddText variant="subtitle1">
+              {t('Add Email')}
+            </ContactAddText>
+          </Grid>
+          <Grid container item xs={6} alignItems="center">
+            <OptOutENewsletterLabel
+              control={
+                <Checkbox
+                  checked={!!optoutEnewsletter}
+                  onChange={() =>
+                    setFieldValue('optoutEnewsletter', !optoutEnewsletter)
+                  }
+                />
+              }
+              label={t('Opt-out of Email Newsletter')}
+            />
+          </Grid>
         </Grid>
       </ModalSectionContainer>
     </>

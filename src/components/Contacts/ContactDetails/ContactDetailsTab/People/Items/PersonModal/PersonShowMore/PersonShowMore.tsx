@@ -20,14 +20,17 @@ import { ModalSectionContainer } from '../ModalSectionContainer/ModalSectionCont
 import { RingIcon } from '../../../../../../RingIcon';
 import { PersonSocial } from '../PersonSocials/PersonSocials';
 import { ModalSectionIcon } from '../ModalSectionIcon/ModalSectionIcon';
-import { PersonUpdateInput } from '../../../../../../../../../graphql/types.generated';
+import {
+  PersonCreateInput,
+  PersonUpdateInput,
+} from '../../../../../../../../../graphql/types.generated';
 
 const DeceasedLabel = styled(FormControlLabel)(() => ({
   margin: 'none',
 }));
 
 interface PersonShowMoreProps {
-  formikProps: FormikProps<PersonUpdateInput>;
+  formikProps: FormikProps<PersonUpdateInput | PersonCreateInput>;
 }
 
 export const PersonShowMore: React.FC<PersonShowMoreProps> = ({
@@ -69,10 +72,11 @@ export const PersonShowMore: React.FC<PersonShowMoreProps> = ({
               </InputLabel>
               <Select
                 labelId="relationship-status-label"
-                value={maritalStatus}
+                value={maritalStatus ?? ''}
                 onChange={handleChange('maritalStatus')}
                 fullWidth
               >
+                <MenuItem selected value=""></MenuItem>
                 <MenuItem value="Single" aria-label={t('Single')}>
                   {t('Single')}
                 </MenuItem>
@@ -99,10 +103,11 @@ export const PersonShowMore: React.FC<PersonShowMoreProps> = ({
               <InputLabel id="gender-label">{t('Gender')}</InputLabel>
               <Select
                 labelId="gender-label"
-                value={gender}
+                value={gender ?? ''}
                 onChange={handleChange('gender')}
                 fullWidth
               >
+                <MenuItem selected value=""></MenuItem>
                 <MenuItem value="Male" aria-label={t('Male')}>
                   {t('Male')}
                 </MenuItem>
