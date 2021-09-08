@@ -352,8 +352,8 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
     data.partnerGivingAnalysisReport,
     query,
   );
-  const sortedCustomers = applySort(filteredContacts, order, orderBy);
-  const paginatedContacts = applyPagination(sortedCustomers, page, limit);
+  const sortedContacts = applySort(filteredContacts, order, orderBy);
+  const paginatedContacts = applyPagination(sortedContacts, page, limit);
 
   return (
     <Box>
