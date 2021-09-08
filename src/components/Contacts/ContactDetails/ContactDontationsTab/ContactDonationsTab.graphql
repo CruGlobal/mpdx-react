@@ -37,6 +37,7 @@ fragment DonationsContact on DonationConnection {
 }
 
 fragment ContactDonorAccounts on Contact {
+  id
   name
   nextAsk
   pledgeReceived
@@ -49,7 +50,7 @@ fragment ContactDonorAccounts on Contact {
   status
   source
   lastDonation {
-    donationDate
+    ...ContactDonation
   }
   contactReferralsToMe {
     nodes {
@@ -71,6 +72,7 @@ fragment ContactDonorAccounts on Contact {
 fragment ContactDonation on Donation {
   id
   donationDate
+  paymentMethod
   amount {
     ...DonationMoney
   }
