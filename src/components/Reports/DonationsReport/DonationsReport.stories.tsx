@@ -73,7 +73,12 @@ export const Default = (): ReactElement => {
         },
       }}
     >
-      <DonationsReport accountListId={'abc'} />
+      <DonationsReport
+        accountListId={'abc'}
+        isNavListOpen={false}
+        onNavListToggle={(): void => {}}
+        title="Donations"
+      />
     </GqlMockedProvider>
   );
 };
@@ -116,7 +121,12 @@ export const Empty = (): ReactElement => {
         },
       }}
     >
-      <DonationsReport accountListId={'abc'} />
+      <DonationsReport
+        accountListId={'abc'}
+        isNavListOpen={false}
+        onNavListToggle={(): void => {}}
+        title="Donations"
+      />
     </GqlMockedProvider>
   );
 };

@@ -1,16 +1,25 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Head from 'next/head';
 import { useTranslation } from 'react-i18next';
-import { Box } from '@material-ui/core';
-import PageHeading from '../../../../src/components/PageHeading';
-import { DonationsReport } from '../../../../src/components/Reports/DonationsReport/DonationsReport';
+import { Box, styled } from '@material-ui/core';
+import { DonationsReport } from 'src/components/Reports/DonationsReport/DonationsReport';
+import Loading from 'src/components/Loading';
+import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
+import { useAccountListId } from 'src/hooks/useAccountListId';
+import { NavReportsList } from 'src/components/Reports/NavReportsList/NavReportsList';
 
-import Loading from '../../../../src/components/Loading';
-import { useAccountListId } from '../../../../src/hooks/useAccountListId';
+const DonationsReportPageWrapper = styled(Box)(({ theme }) => ({
+  backgroundColor: theme.palette.common.white,
+}));
 
 const DonationsReportPage: React.FC = () => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
+  const [isNavListOpen, setNavListOpen] = useState<boolean>(false);
+
+  const handleNavListToggle = () => {
+    setNavListOpen(!isNavListOpen);
+  };
 
   return (
     <>
@@ -20,10 +29,28 @@ const DonationsReportPage: React.FC = () => {
         </title>
       </Head>
       {accountListId ? (
-        <Box>
-          <PageHeading heading={t('Donations')} />
-          <DonationsReport accountListId={accountListId} />
-        </Box>
+        <DonationsReportPageWrapper>
+          <SidePanelsLayout
+            isScrollBox={false}
+            leftPanel={
+              <NavReportsList
+                isOpen={isNavListOpen}
+                selectedId="donations"
+                onClose={handleNavListToggle}
+              />
+            }
+            leftOpen={isNavListOpen}
+            leftWidth="290px"
+            mainContent={
+              <DonationsReport
+                accountListId={accountListId}
+                isNavListOpen={isNavListOpen}
+                onNavListToggle={handleNavListToggle}
+                title={t('Donations')}
+              />
+            }
+          />
+        </DonationsReportPageWrapper>
       ) : (
         <Loading loading />
       )}

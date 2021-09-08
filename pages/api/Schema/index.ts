@@ -3,8 +3,6 @@ import { CoachingAnswerSetsResolvers } from './CoachingAnswerSets/resolvers';
 import CoachingAnswerSetsTypeDefs from './CoachingAnswerSets/coachingAnswerSets.graphql';
 import ScalarTypeDefs from './scalars.graphql';
 import { ScalarResolvers } from './scalarResolvers';
-import { ContactFiltersResolvers } from './ContactFilters/resolvers';
-import ContactFiltersTypeDefs from './ContactFilters/contactFilters.graphql';
 import { ExportContactsResolvers } from './ExportContacts/resolvers';
 import ExportContactsTypeDefs from './ExportContacts/exportContacts.graphql';
 import { TaskAnalyticsResolvers } from './TaskAnalytics/resolvers';
@@ -15,6 +13,10 @@ import ExpectedMonthlyTotalReportTypeDefs from './reports/expectedMonthlyTotal/e
 import { ExpectedMonthlyTotalReportResolvers } from './reports/expectedMonthlyTotal/resolvers';
 import DesignationAccountsTypeDefs from './reports/designationAccounts/designationAccounts.graphql';
 import { DesignationAccountsResolvers } from './reports/designationAccounts/resolvers';
+import FinancialAccountsTypeDefs from './reports/financialAccounts/financialAccounts.graphql';
+import { FinancialAccountsResolvers } from './reports/financialAccounts/resolvers';
+import EntryHistoriesTypeDefs from './reports/entryHistories/entryHistories.graphql';
+import { EntryHistoriesResolvers } from './reports/entryHistories/resolvers';
 
 const schema = buildFederatedSchema([
   {
@@ -22,7 +24,6 @@ const schema = buildFederatedSchema([
     resolvers: CoachingAnswerSetsResolvers,
   },
   { typeDefs: ScalarTypeDefs, resolvers: ScalarResolvers },
-  { typeDefs: ContactFiltersTypeDefs, resolvers: ContactFiltersResolvers },
   { typeDefs: TaskAnalyticsTypeDefs, resolvers: TaskAnalyticsResolvers },
   { typeDefs: ExportContactsTypeDefs, resolvers: ExportContactsResolvers },
   {
@@ -36,6 +37,14 @@ const schema = buildFederatedSchema([
   {
     typeDefs: DesignationAccountsTypeDefs,
     resolvers: DesignationAccountsResolvers,
+  },
+  {
+    typeDefs: FinancialAccountsTypeDefs,
+    resolvers: FinancialAccountsResolvers,
+  },
+  {
+    typeDefs: EntryHistoriesTypeDefs,
+    resolvers: EntryHistoriesResolvers,
   },
 ]);
 

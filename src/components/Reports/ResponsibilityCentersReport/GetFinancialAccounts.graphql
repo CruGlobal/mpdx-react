@@ -1,22 +1,20 @@
 query FinancialAccounts($accountListId: ID!) {
   financialAccounts(accountListId: $accountListId) {
-    edges {
-      node {
-        active
-        balance {
-          conversionDate
-          convertedAmount
-          convertedCurrency
-        }
-        code
+    nodes {
+      active
+      balance {
+        conversionDate
+        convertedAmount
+        convertedCurrency
+      }
+      code
+      id
+      name
+      organization {
         id
         name
-        organization {
-          id
-          name
-        }
-        updatedAt
       }
+      updatedAt
     }
   }
 }
