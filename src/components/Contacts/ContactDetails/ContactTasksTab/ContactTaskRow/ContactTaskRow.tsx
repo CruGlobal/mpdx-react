@@ -1,4 +1,4 @@
-import { Box, styled, Typography } from '@material-ui/core';
+import { Box, Checkbox, styled, Typography } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
 import { TFunction } from 'i18next';
 import { DateTime } from 'luxon';
@@ -12,7 +12,6 @@ import useTaskDrawer from '../../../../../hooks/useTaskDrawer';
 import theme from '../../../../../theme';
 import { StarredItemIcon } from '../../../../common/StarredItemIcon/StarredItemIcon';
 import { TaskDrawerTabsEnum } from '../../../../Task/Drawer/Drawer';
-import { ContactCheckBox } from '../../../ContactCheckBox/ContactCheckBox';
 import { StarTaskIconButton } from '../StarTaskIconButton/StarTaskIconButton';
 import { ContactTaskRowFragment } from './ContactTaskRow.generated';
 import { TaskCommentsButton } from './TaskCommentsButton/TaskCommentsButton';
@@ -156,7 +155,7 @@ export const ContactTaskRow: React.FC<ContactTaskRowProps> = ({
     return (
       <TaskRowWrap data-testid="loadingRow">
         <TaskItemWrap>
-          <ContactCheckBox />
+          <Checkbox />
           <FieldLoadingState width={55} margin={theme.spacing(2)} />
           <FieldLoadingState width={200} margin={theme.spacing(0.5)} />
         </TaskItemWrap>
@@ -183,7 +182,7 @@ export const ContactTaskRow: React.FC<ContactTaskRowProps> = ({
   return (
     <TaskRowWrap>
       <TaskItemWrap>
-        <ContactCheckBox onClick={handleContactCheckPressed} />
+        <Checkbox onChange={handleContactCheckPressed} />
         <TaskCompleteButton
           isComplete={isComplete}
           onClick={handleCompleteButtonPressed}
