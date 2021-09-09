@@ -1,7 +1,12 @@
-import { Box, Hidden, styled } from '@material-ui/core';
-import { CheckBox } from '@material-ui/icons';
+import {
+  Box,
+  Checkbox,
+  Divider,
+  Hidden,
+  styled,
+  useTheme,
+} from '@material-ui/core';
 import React from 'react';
-import theme from '../../../theme';
 import { CelebrationIcons } from '../CelebrationIcons/CelebrationIcons';
 import { GiftStatus } from '../GiftStatus/GiftStatus';
 import { StarContactIconButton } from '../StarContactIconButton/StarContactIconButton';
@@ -16,21 +21,14 @@ const ContactRowButton = styled(Box)(({}) => ({
   alignItems: 'center',
   alignContent: 'center',
 }));
-const StyledCheckBox = styled(CheckBox)(({}) => ({
-  display: 'inline-block',
-  width: '24px',
-  height: '24px',
-  margin: theme.spacing(1),
-  background: theme.palette.common.black,
-}));
-const ContactTextWrap = styled(Box)(({}) => ({
+const ContactTextWrap = styled(Box)(({ theme }) => ({
   display: 'inline-block',
   flexGrow: 4,
   flexBasis: 0,
   padding: '0',
   margin: theme.spacing(4),
 }));
-const ContactText = styled('p')(({}) => ({
+const ContactText = styled('p')(({ theme }) => ({
   margin: '0px',
   fontFamily: theme.typography.fontFamily,
   color: theme.palette.text.primary,
@@ -44,17 +42,25 @@ const ContactText = styled('p')(({}) => ({
 interface Props {
   accountListId: string;
   contact: ContactRowFragment;
+  isChecked: boolean;
   onContactSelected: (contactId: string) => void;
+  onContactCheckToggle: (
+    event: React.ChangeEvent<HTMLInputElement>,
+    contactId: string,
+  ) => void;
 }
 
 export const ContactRow: React.FC<Props> = ({
   accountListId,
   contact,
+  isChecked,
   onContactSelected,
+  onContactCheckToggle,
 }) => {
   const onClick = () => {
     onContactSelected(contact.id);
   };
+  const theme = useTheme();
 
   const {
     id: contactId,
@@ -69,75 +75,80 @@ export const ContactRow: React.FC<Props> = ({
   } = contact;
 
   return (
-    <Box role="row" style={{ width: '100%' }}>
-      <ContactRowButton data-testid="rowButton" onClick={onClick}>
-        <StyledCheckBox color="secondary" />
-        <ContactTextWrap>
-          <ContactText
-            style={{
-              fontSize: '16px',
-              letterSpacing: '0.15px',
-            }}
-          >
-            {name}
-          </ContactText>
-          <ContactText>{primaryAddress?.street || ''}</ContactText>
-        </ContactTextWrap>
-
-        <Hidden smDown>
-          <Box
-            style={{
-              display: 'inline-block',
-              margin: theme.spacing(1),
-            }}
-          >
-            <CelebrationIcons contact={contact} />
-          </Box>
-        </Hidden>
-
-        <Box
-          style={{
-            display: 'inline-block',
-            flexBasis: 0,
-            margin: theme.spacing(1),
-          }}
-        >
-          <GiftStatus lateAt={lateAt ?? undefined} />
+    <Box role="row">
+      <Divider />
+      <Box display="flex" alignItems="center">
+        <Box padding="checkbox">
+          <Checkbox
+            checked={isChecked}
+            color="default"
+            onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
+              onContactCheckToggle(event, contact.id)
+            }
+            value={isChecked}
+          />
         </Box>
+        <ContactRowButton data-testid="rowButton" onClick={onClick}>
+          <ContactTextWrap>
+            <ContactText
+              style={{
+                fontSize: '16px',
+                letterSpacing: '0.15px',
+              }}
+            >
+              {name}
+            </ContactText>
+            <ContactText>{primaryAddress?.street || ''}</ContactText>
+          </ContactTextWrap>
 
-        <Hidden mdDown>
+          <Hidden smDown>
+            <Box
+              style={{
+                display: 'inline-block',
+                margin: theme.spacing(1),
+              }}
+            >
+              <CelebrationIcons contact={contact} />
+            </Box>
+          </Hidden>
+
           <Box
             style={{
               display: 'inline-block',
-              flexGrow: 4,
               flexBasis: 0,
               margin: theme.spacing(1),
             }}
           >
-            <ContactText>{status ?? ''}</ContactText>
-            <ContactText>
-              {pledgeAmount
-                ? pledgeCurrency
-                  ? `${pledgeAmount} ${pledgeCurrency}`
-                  : pledgeAmount
-                : ''}{' '}
-              {pledgeFrequency ?? ''}
-            </ContactText>
+            <GiftStatus lateAt={lateAt ?? undefined} />
           </Box>
-        </Hidden>
-        <StarContactIconButton
-          accountListId={accountListId}
-          contactId={contactId}
-          isStarred={starred || false}
-        />
-      </ContactRowButton>
-      <hr
-        style={{
-          display: 'block',
-          marginBottom: '0',
-          marginRight: '0',
-        }}
-      />
+
+          <Hidden mdDown>
+            <Box
+              style={{
+                display: 'inline-block',
+                flexGrow: 4,
+                flexBasis: 0,
+                margin: theme.spacing(1),
+              }}
+            >
+              <ContactText>{status ?? ''}</ContactText>
+              <ContactText>
+                {pledgeAmount
+                  ? pledgeCurrency
+                    ? `${pledgeAmount} ${pledgeCurrency}`
+                    : pledgeAmount
+                  : ''}{' '}
+                {pledgeFrequency ?? ''}
+              </ContactText>
+            </Box>
+          </Hidden>
+          <StarContactIconButton
+            accountListId={accountListId}
+            contactId={contactId}
+            isStarred={starred || false}
+          />
+        </ContactRowButton>
+      </Box>
     </Box>
   );
 };

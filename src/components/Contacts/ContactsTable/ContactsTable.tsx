@@ -1,17 +1,11 @@
 import React, { useState } from 'react';
-import {
-  Box,
-  Table,
-  colors,
-  TableHead,
-  TableBody,
-  TableContainer,
-  CircularProgress,
-  Typography,
-} from '@material-ui/core';
+import { Box, colors, CircularProgress, Typography } from '@material-ui/core';
 import { Virtuoso } from 'react-virtuoso';
 import { ContactRow } from '../ContactRow/ContactRow';
-import { ContactsHeader } from '../ContactsHeader/ContactsHeader';
+import {
+  ContactsHeader,
+  ContactCheckBoxState,
+} from '../ContactsHeader/ContactsHeader';
 import { useContactsQuery } from '../../../../pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import { ContactFilterSetInput } from '../../../../graphql/types.generated';
 
@@ -33,6 +27,7 @@ export const ContactsTable: React.FC<Props> = ({
   toggleFilterPanel,
 }: Props) => {
   const [searchTerm, setSearchTerm] = useState<string>();
+  const [selectedContacts, setSelectedContacts] = useState<Array<string>>([]);
 
   const { data, loading, error, fetchMore } = useContactsQuery({
     variables: {
@@ -69,69 +64,102 @@ export const ContactsTable: React.FC<Props> = ({
     onSearchTermChange(searchTerm);
   };
 
+  const handleCheckOneContact = (
+    event: React.ChangeEvent<HTMLInputElement>,
+    contactId: string,
+  ): void => {
+    if (!selectedContacts.includes(contactId)) {
+      setSelectedContacts((prevSelected) => [...prevSelected, contactId]);
+    } else {
+      setSelectedContacts((prevSelected) =>
+        prevSelected.filter((id) => id !== contactId),
+      );
+    }
+  };
+
+  const handleCheckAllContacts = (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ): void => {
+    setSelectedContacts(
+      event.target.checked
+        ? data?.contacts.nodes.map((contact) => contact.id) ?? []
+        : [],
+    );
+  };
+
+  const isSelectedSomeContacts =
+    selectedContacts.length > 0 &&
+    selectedContacts.length < (data?.contacts.nodes.length ?? 0);
+  const isSelectedAllContacts =
+    selectedContacts.length === data?.contacts.nodes.length;
+
   return (
-    <TableContainer>
-      <Table stickyHeader aria-label="sticky table">
-        <TableHead>
-          <ContactsHeader
-            activeFilters={Object.keys(activeFilters).length > 0}
-            filterPanelOpen={filterPanelOpen}
-            toggleFilterPanel={toggleFilterPanel}
-            onSearchTermChanged={handleSetSearchTerm}
-            totalContacts={data?.contacts.nodes.length}
-          />
-        </TableHead>
-        <TableBody>
-          {error && renderError()}
-          {loading ? (
-            renderLoading()
-          ) : !(data && data.contacts.nodes.length > 0) ? (
-            renderEmpty()
-          ) : (
-            <div data-testid="ContactRows">
-              <Virtuoso
-                data={data.contacts.nodes}
-                style={{ height: 'calc(100vh - 160px)' }}
-                endReached={() =>
-                  data.contacts.pageInfo.hasNextPage &&
-                  fetchMore({
-                    variables: { after: data.contacts.pageInfo.endCursor },
-                    updateQuery: (prev, { fetchMoreResult }) => {
-                      if (!fetchMoreResult) {
-                        return prev;
-                      }
-                      return {
-                        ...prev,
-                        ...fetchMoreResult,
-                        contacts: {
-                          ...prev.contacts,
-                          ...fetchMoreResult.contacts,
-                          nodes: [
-                            ...prev.contacts.nodes,
-                            ...fetchMoreResult.contacts.nodes,
-                          ],
-                        },
-                      };
+    <>
+      <ContactsHeader
+        activeFilters={Object.keys(activeFilters).length > 0}
+        filterPanelOpen={filterPanelOpen}
+        toggleFilterPanel={toggleFilterPanel}
+        onCheckAllContacts={handleCheckAllContacts}
+        onSearchTermChanged={handleSetSearchTerm}
+        totalContacts={data?.contacts.nodes.length}
+        contactCheckboxState={
+          isSelectedSomeContacts
+            ? ContactCheckBoxState.partial
+            : isSelectedAllContacts
+            ? ContactCheckBoxState.checked
+            : ContactCheckBoxState.unchecked
+        }
+      />
+      {error && renderError()}
+      {loading ? (
+        renderLoading()
+      ) : !(data && data.contacts.nodes.length > 0) ? (
+        renderEmpty()
+      ) : (
+        <div data-testid="ContactRows">
+          <Virtuoso
+            data={data.contacts.nodes}
+            style={{ height: 'calc(100vh - 160px)' }}
+            endReached={() =>
+              data.contacts.pageInfo.hasNextPage &&
+              fetchMore({
+                variables: { after: data.contacts.pageInfo.endCursor },
+                updateQuery: (prev, { fetchMoreResult }) => {
+                  if (!fetchMoreResult) {
+                    return prev;
+                  }
+                  return {
+                    ...prev,
+                    ...fetchMoreResult,
+                    contacts: {
+                      ...prev.contacts,
+                      ...fetchMoreResult.contacts,
+                      nodes: [
+                        ...prev.contacts.nodes,
+                        ...fetchMoreResult.contacts.nodes,
+                      ],
                     },
-                  })
-                }
-                itemContent={(index, contact) => (
-                  <ContactRow
-                    accountListId={accountListId}
-                    key={index}
-                    contact={contact}
-                    onContactSelected={handleOnContactSelected}
-                  />
-                )}
-                components={{
-                  Footer: () =>
-                    data.contacts.pageInfo.hasNextPage ? renderLoading() : null,
-                }}
+                  };
+                },
+              })
+            }
+            itemContent={(index, contact) => (
+              <ContactRow
+                accountListId={accountListId}
+                key={index}
+                contact={contact}
+                isChecked={selectedContacts.includes(contact.id)}
+                onContactSelected={handleOnContactSelected}
+                onContactCheckToggle={handleCheckOneContact}
               />
-            </div>
-          )}
-        </TableBody>
-      </Table>
-    </TableContainer>
+            )}
+            components={{
+              Footer: () =>
+                data.contacts.pageInfo.hasNextPage ? renderLoading() : null,
+            }}
+          />
+        </div>
+      )}
+    </>
   );
 };
