@@ -9,7 +9,6 @@ export enum ContactCheckBoxState {
 
 interface Props {
   state?: ContactCheckBoxState;
-  onClick?: () => void;
 }
 
 const StyledCheckBox = styled(Checkbox)(
@@ -22,7 +21,7 @@ const StyledCheckBox = styled(Checkbox)(
 
 export const ContactCheckBox: React.FC<Props> = ({
   state = ContactCheckBoxState.unchecked,
-  onClick,
+  ...props
 }) => {
   const checked = state !== ContactCheckBoxState.unchecked;
   const indeterminate = state === ContactCheckBoxState.partial;
@@ -32,7 +31,7 @@ export const ContactCheckBox: React.FC<Props> = ({
       color="default"
       checked={checked}
       indeterminate={indeterminate}
-      onClick={onClick}
+      {...props}
     />
   );
 };
