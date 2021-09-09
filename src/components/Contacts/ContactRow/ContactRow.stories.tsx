@@ -24,6 +24,8 @@ export const Default: Story = () => {
     <ContactRow
       accountListId={accountListId}
       contact={contact}
+      isChecked={false}
+      onContactCheckToggle={() => {}}
       onContactSelected={() => {}}
     />
   );

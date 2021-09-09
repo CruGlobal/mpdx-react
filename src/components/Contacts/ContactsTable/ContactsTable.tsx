@@ -2,10 +2,12 @@ import React, { useState } from 'react';
 import { Box, colors, CircularProgress, Typography } from '@material-ui/core';
 import { Virtuoso } from 'react-virtuoso';
 import { ContactRow } from '../ContactRow/ContactRow';
-import { ContactsHeader } from '../ContactsHeader/ContactsHeader';
+import {
+  ContactsHeader,
+  ContactCheckBoxState,
+} from '../ContactsHeader/ContactsHeader';
 import { useContactsQuery } from '../../../../pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import { ContactFilterSetInput } from '../../../../graphql/types.generated';
-import { ContactCheckBoxState } from '../ContactCheckBox/ContactCheckBox';
 
 interface Props {
   accountListId: string;
