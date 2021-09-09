@@ -1,8 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { makeStyles, Theme } from '@material-ui/core/styles';
-import Icon from '@mdi/react';
-import { mdiAccountSearch } from '@mdi/js';
 import { DebounceInput } from 'react-debounce-input';
 
 export interface SearchBoxProps {
@@ -48,13 +46,6 @@ export const SearchBox: React.FC<SearchBoxProps> = ({
     <DebounceInput
       className={classes.searchWrapper}
       debounceTimeout={300}
-      inputProps={{
-        className: classes.input,
-      }}
-      disableUnderline={true}
-      startAdornment={
-        <Icon path={mdiAccountSearch} title="Search contacts" size="24px" />
-      }
       placeholder={placeholder ?? t('Search')}
       onChange={(event) => {
         onChange(event.target.value);

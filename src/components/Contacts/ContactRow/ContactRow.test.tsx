@@ -11,6 +11,7 @@ import {
 } from './ContactRow.generated';
 
 const accountListId = 'abc';
+const onContactCheckToggle = jest.fn();
 
 it('should display contact name', () => {
   const name = 'Name';
@@ -22,6 +23,8 @@ it('should display contact name', () => {
       <ContactRow
         accountListId={accountListId}
         contact={contact}
+        isChecked={false}
+        onContactCheckToggle={onContactCheckToggle}
         onContactSelected={() => {}}
       />
     </GqlMockedProvider>,
