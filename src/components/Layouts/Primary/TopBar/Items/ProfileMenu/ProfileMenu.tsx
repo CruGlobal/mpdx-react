@@ -100,6 +100,14 @@ const ProfileMenu = (): ReactElement => {
           </MenuItem>
         )}
         <Divider />
+        <MenuItem
+          onClick={handleProfileMenuClose}
+          component="a"
+          href="/preferences/personal"
+        >
+          {/* <Link href="/preferences/personal">{t('Preferences')}</Link> */}
+          <ListItemText primary={t('Preferences')} />
+        </MenuItem>
         <HandoffLink path="/preferences/personal">
           <MenuItem onClick={handleProfileMenuClose} component="a">
             <ListItemText primary={t('Preferences')} />
