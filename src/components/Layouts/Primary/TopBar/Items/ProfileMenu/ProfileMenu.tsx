@@ -17,6 +17,7 @@ import { signout } from 'next-auth/client';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import HandoffLink from '../../../../../HandoffLink';
 import { useGetTopBarQuery } from '../../GetTopBar.generated';
+import { useAccountListId } from '../../../../../../hooks/useAccountListId';
 
 const useStyles = makeStyles((theme: Theme) => ({
   accountName: {
@@ -64,6 +65,8 @@ const ProfileMenu = (): ReactElement => {
     setProfileMenuAnchorEl(undefined);
   };
 
+  const accountListId = useAccountListId();
+
   return (
     <>
       <IconButton
@@ -103,7 +106,7 @@ const ProfileMenu = (): ReactElement => {
         <MenuItem
           onClick={handleProfileMenuClose}
           component="a"
-          href="/preferences/personal"
+          href={`/accountLists/${accountListId}/preferences/personal`}
         >
           {/* <Link href="/preferences/personal">{t('Preferences')}</Link> */}
           <ListItemText primary={t('Preferences')} />
