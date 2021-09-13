@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
 import Head from 'next/head';
 import {
@@ -40,7 +40,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-const AppealsPage = (): ReactElement => {
+const AppealsPage: React.FC = () => {
   const { t } = useTranslation();
   const classes = useStyles();
 
