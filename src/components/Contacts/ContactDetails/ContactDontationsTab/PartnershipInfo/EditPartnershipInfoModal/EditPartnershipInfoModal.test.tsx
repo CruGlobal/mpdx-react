@@ -76,7 +76,6 @@ describe('EditPartnershipInfoModal', () => {
               <EditPartnershipInfoModal
                 contact={contactMock}
                 handleClose={handleClose}
-                isOpen={true}
               />
             </GqlMockedProvider>
           </ThemeProvider>
@@ -97,7 +96,6 @@ describe('EditPartnershipInfoModal', () => {
               <EditPartnershipInfoModal
                 contact={contactMock}
                 handleClose={handleClose}
-                isOpen={true}
               />
             </GqlMockedProvider>
           </ThemeProvider>
@@ -119,7 +117,6 @@ describe('EditPartnershipInfoModal', () => {
               <EditPartnershipInfoModal
                 contact={contactMock}
                 handleClose={handleClose}
-                isOpen={true}
               />
             </GqlMockedProvider>
           </ThemeProvider>
@@ -141,7 +138,6 @@ describe('EditPartnershipInfoModal', () => {
               <EditPartnershipInfoModal
                 contact={contactMock}
                 handleClose={handleClose}
-                isOpen={true}
               />
             </GqlMockedProvider>
           </ThemeProvider>
@@ -190,7 +186,6 @@ describe('EditPartnershipInfoModal', () => {
               <EditPartnershipInfoModal
                 contact={contactMock}
                 handleClose={handleClose}
-                isOpen={true}
               />
             </GqlMockedProvider>
           </ThemeProvider>
@@ -235,7 +230,6 @@ describe('EditPartnershipInfoModal', () => {
               <EditPartnershipInfoModal
                 contact={contactMock}
                 handleClose={handleClose}
-                isOpen={true}
               />
             </GqlMockedProvider>
           </ThemeProvider>
@@ -271,7 +265,6 @@ describe('EditPartnershipInfoModal', () => {
               <EditPartnershipInfoModal
                 contact={contactMock}
                 handleClose={handleClose}
-                isOpen={true}
               />
             </GqlMockedProvider>
           </ThemeProvider>
@@ -328,13 +321,13 @@ describe('EditPartnershipInfoModal', () => {
               <EditPartnershipInfoModal
                 contact={contactMock}
                 handleClose={handleClose}
-                isOpen={true}
               />
             </GqlMockedProvider>
           </ThemeProvider>
         </MuiPickersUtilsProvider>
       </SnackbarProvider>,
     );
+    await waitFor(() => expect(getByLabelText('Currency')).toBeInTheDocument());
     const currencyInput = getByLabelText('Currency');
 
     userEvent.click(currencyInput);
@@ -381,7 +374,6 @@ describe('EditPartnershipInfoModal', () => {
               <EditPartnershipInfoModal
                 contact={contactMock}
                 handleClose={handleClose}
-                isOpen={true}
               />
             </GqlMockedProvider>
           </ThemeProvider>
@@ -437,7 +429,6 @@ describe('EditPartnershipInfoModal', () => {
               <EditPartnershipInfoModal
                 contact={contactMock}
                 handleClose={handleClose}
-                isOpen={true}
               />
             </GqlMockedProvider>
           </ThemeProvider>

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactElement, useState } from 'react';
 import {
   Box,
   Button,
@@ -25,17 +25,22 @@ import * as yup from 'yup';
 import { KeyboardDatePicker } from '@material-ui/pickers';
 import { useSnackbar } from 'notistack';
 import { DateTime } from 'luxon';
+import { Autocomplete } from '@material-ui/lab';
 import { useAccountListId } from '../../../../../../hooks/useAccountListId';
 import Modal from '../../../../../common/Modal/Modal';
 import { ContactDonorAccountsFragment } from '../../ContactDonationsTab.generated';
 import {
+  ContactReferralInput,
   ContactUpdateInput,
   PledgeFrequencyEnum,
   StatusEnum,
 } from '../../../../../../../graphql/types.generated';
 import { useApiConstants } from '../../../../../Constants/UseApiConstants';
 import { currencyFormat } from '../../../../../../lib/intlFormat';
-import { useUpdateContactPartnershipMutation } from './EditPartnershipInfoModal.generated';
+import {
+  useUpdateContactPartnershipMutation,
+  useGetDataForPartnershipInfoModalQuery,
+} from './EditPartnershipInfoModal.generated';
 
 const ContactInputWrapper = styled(Box)(({ theme }) => ({
   position: 'relative',
@@ -54,19 +59,33 @@ const CheckboxLabel = styled(FormControlLabel)({
 interface EditPartnershipInfoModalProps {
   contact: ContactDonorAccountsFragment;
   handleClose: () => void;
-  isOpen: boolean;
 }
 
 export const EditPartnershipInfoModal: React.FC<EditPartnershipInfoModalProps> = ({
   contact,
   handleClose,
-  isOpen,
 }) => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
   const constants = useApiConstants();
+  const [referredByName, setReferredByName] = useState('');
+  const referredContactIds = contact.contactReferralsToMe.nodes.map(
+    (referral) => referral.referredBy.id,
+  );
+  const [currentContactIds, setCurrentContactIds] = useState(
+    referredContactIds,
+  );
 
   const { enqueueSnackbar } = useSnackbar();
+  const { data, loading, refetch } = useGetDataForPartnershipInfoModalQuery({
+    variables: {
+      accountListId: accountListId ?? '',
+      contactsFilter: {
+        nameLike: referredByName,
+      },
+    },
+  });
+
   const [
     updateContactPartnership,
     { loading: updating },
@@ -95,6 +114,7 @@ export const EditPartnershipInfoModal: React.FC<EditPartnershipInfoModalProps> =
       | 'pledgeStartDate'
       | 'nextAsk'
       | 'noAppeals'
+      | 'contactReferralsToMe'
     >
   > = yup.object({
     id: yup.string().required(),
@@ -106,6 +126,16 @@ export const EditPartnershipInfoModal: React.FC<EditPartnershipInfoModalProps> =
     nextAsk: yup.string().nullable(),
     noAppeals: yup.boolean().default(false).nullable(),
     pledgeFrequency: yup.mixed<PledgeFrequencyEnum>().nullable(),
+    contactReferralsToMe: yup
+      .array()
+      .of(
+        yup.object({
+          destroy: yup.boolean().default(false),
+          referredById: yup.string().nullable(),
+          id: yup.string().nullable(),
+        }),
+      )
+      .default([]),
   });
 
   const onSubmit = async (
@@ -120,12 +150,29 @@ export const EditPartnershipInfoModal: React.FC<EditPartnershipInfoModalProps> =
       | 'pledgeStartDate'
       | 'nextAsk'
       | 'noAppeals'
+      | 'contactReferralsToMe'
     >,
   ) => {
+    const removedReferrals = contact.contactReferralsToMe.nodes
+      .filter(
+        (referral) => currentContactIds.indexOf(referral.referredBy.id) === -1,
+      )
+      .map((referral) => ({
+        id: referral.id,
+        referredById: referral.referredBy.id,
+        destroy: true,
+      }));
+
     await updateContactPartnership({
       variables: {
         accountListId: accountListId ?? '',
-        attributes,
+        attributes: {
+          ...attributes,
+          contactReferralsToMe: [
+            ...(attributes.contactReferralsToMe || []),
+            ...removedReferrals,
+          ],
+        },
       },
     });
 
@@ -133,6 +180,89 @@ export const EditPartnershipInfoModal: React.FC<EditPartnershipInfoModalProps> =
       variant: 'success',
     });
     handleClose();
+  };
+
+  const handleUpdateReferredBySearch = (search: string) => {
+    setReferredByName(search);
+    refetch({
+      accountListId,
+      contactsFilter: {
+        nameLike: referredByName,
+      },
+    });
+  };
+
+  const filteredContacts = data?.contacts.nodes.filter(
+    ({ id }) => id !== contact.id,
+  );
+
+  const contactReferralData = contact.contactReferralsToMe.nodes.map(
+    (referral) => ({
+      name: referral.referredBy.name,
+      id: referral.referredBy.id,
+    }),
+  );
+
+  const contactReferrals = contact.contactReferralsToMe.nodes.map(
+    (referral) => ({
+      destroy: false,
+      referredById: referral.referredBy.id,
+      id: referral.id,
+    }),
+  );
+
+  const updateCurrentContacts = (ids: string[]) => {
+    // Use the current list of contacts from the data and the current selected ids to determine if there are any new contacts
+    const newCurrentContacts =
+      data?.contacts.nodes
+        .filter(
+          (contact) =>
+            ids.indexOf(contact.id) !== -1 &&
+            currentContactIds.indexOf(contact.id) === -1,
+        )
+        .map(({ name, id }) => ({ name, id })) || [];
+
+    setCurrentContacts([
+      // filter out any current contacts that are no longer selected
+      ...currentContacts.filter((contact) => ids.indexOf(contact.id) !== -1),
+      ...newCurrentContacts,
+    ]);
+  };
+
+  // Value used to persist currently selected contact data, even as the user searches for new contacts
+  const [currentContacts, setCurrentContacts] = useState(contactReferralData);
+
+  const updateReferredBy = (
+    ids: string[],
+    setFieldValue: (name: string, value: ContactReferralInput[]) => void,
+  ) => {
+    // Set the ids currently selected
+    setCurrentContactIds(ids);
+    // Update array of current contacts based on currently selected ids
+    updateCurrentContacts(ids);
+
+    // Map through current referrals and filter out ones that are not currently selected
+    const referralsToMe = contact.contactReferralsToMe.nodes
+      .filter((referral) => ids.indexOf(referral.referredBy.id) !== -1)
+      .map((referral) => {
+        return {
+          id: referral.id,
+          referredById: referral.referredBy.id,
+          destroy: false,
+        };
+      });
+    // Map through currently selected ids, and filter out any that are already existing referral contact ids
+    const newReferralsToMe = ids
+      .filter((referredId) => referredContactIds.indexOf(referredId) === -1)
+      .map((referredById) => ({
+        destroy: false,
+        referredById,
+      }));
+
+    setFieldValue('contactReferralsToMe', [
+      ...referralsToMe,
+      ...newReferralsToMe,
+    ]);
   };
 
   const updateStatus = (
@@ -150,7 +280,7 @@ export const EditPartnershipInfoModal: React.FC<EditPartnershipInfoModalProps> =
 
   return (
     <Modal
-      isOpen={isOpen}
+      isOpen={true}
       title={t('Edit Partnership')}
       handleClose={handleClose}
     >
@@ -165,6 +295,7 @@ export const EditPartnershipInfoModal: React.FC<EditPartnershipInfoModalProps> =
           pledgeStartDate: contact.pledgeStartDate,
           nextAsk: contact.nextAsk,
           noAppeals: contact.noAppeals,
+          contactReferralsToMe: contactReferrals,
         }}
         validationSchema={contactPartnershipSchema}
         onSubmit={onSubmit}
@@ -179,6 +310,7 @@ export const EditPartnershipInfoModal: React.FC<EditPartnershipInfoModalProps> =
             pledgeStartDate,
             nextAsk,
             noAppeals,
+            contactReferralsToMe,
           },
           handleSubmit,
           handleChange,
@@ -242,38 +374,41 @@ export const EditPartnershipInfoModal: React.FC<EditPartnershipInfoModalProps> =
                   <InputLabel id="currency-select-label">
                     {t('Currency')}
                   </InputLabel>
-                  <Select
-                    labelId="currency-select-label"
-                    value={pledgeCurrency}
-                    onChange={handleChange('pledgeCurrency')}
-                    MenuProps={{
-                      anchorOrigin: {
-                        vertical: 'bottom',
-                        horizontal: 'left',
-                      },
-                      transformOrigin: {
-                        vertical: 'top',
-                        horizontal: 'left',
-                      },
-                      getContentAnchorEl: null,
-                      PaperProps: {
-                        style: {
-                          maxHeight: '300px',
-                          overflow: 'auto',
+                  {pledgeCurrencies && (
+                    <Select
+                      labelId="currency-select-label"
+                      value={pledgeCurrency ?? ''}
+                      onChange={handleChange('pledgeCurrency')}
+                      MenuProps={{
+                        anchorOrigin: {
+                          vertical: 'bottom',
+                          horizontal: 'left',
                         },
-                      },
-                    }}
-                  >
-                    {pledgeCurrencies?.map(
-                      ({ value, id }) =>
-                        value &&
-                        id && (
-                          <MenuItem key={id} value={id}>
-                            {t(value)}
-                          </MenuItem>
-                        ),
-                    )}
-                  </Select>
+                        transformOrigin: {
+                          vertical: 'top',
+                          horizontal: 'left',
+                        },
+                        getContentAnchorEl: null,
+                        PaperProps: {
+                          style: {
+                            maxHeight: '300px',
+                            overflow: 'auto',
+                          },
+                        },
+                      }}
+                    >
+                      <MenuItem value={''} disabled></MenuItem>
+                      {pledgeCurrencies?.map(
+                        ({ value, id }) =>
+                          value &&
+                          id && (
+                            <MenuItem key={id} value={id}>
+                              {t(value)}
+                            </MenuItem>
+                          ),
+                      )}
+                    </Select>
+                  )}
                 </FormControl>
               </ContactInputWrapper>
               <ContactInputWrapper>
@@ -283,7 +418,7 @@ export const EditPartnershipInfoModal: React.FC<EditPartnershipInfoModalProps> =
                   </InputLabel>
                   <Select
                     labelId="frequency-select-label"
-                    value={pledgeFrequency}
+                    value={pledgeFrequency ?? ''}
                     disabled={status !== StatusEnum.PartnerFinancial}
                     aria-readonly={status !== StatusEnum.PartnerFinancial}
                     onChange={handleChange('pledgeFrequency')}
@@ -305,6 +440,7 @@ export const EditPartnershipInfoModal: React.FC<EditPartnershipInfoModalProps> =
                       )
                     }
                   >
+                    <MenuItem value={''} disabled></MenuItem>
                     {Object.values(PledgeFrequencyEnum).map((value) => (
                       <MenuItem key={value} value={value}>
                         {t(value)}
@@ -331,6 +467,48 @@ export const EditPartnershipInfoModal: React.FC<EditPartnershipInfoModalProps> =
                   KeyboardButtonProps={{
                     'aria-label': 'change start date',
                   }}
+                />
+              </ContactInputWrapper>
+              <ContactInputWrapper>
+                <Autocomplete
+                  multiple
+                  filterSelectedOptions
+                  options={
+                    (filteredContacts &&
+                      [...currentContacts, ...filteredContacts]
+                        .sort((a, b) => a.name.localeCompare(b.name))
+                        .map(({ id }) => id)) ||
+                    []
+                  }
+                  getOptionLabel={(contactId) =>
+                    (filteredContacts &&
+                      [...currentContacts, ...filteredContacts].find(
+                        ({ id }) => id === contactId,
+                      )?.name) ??
+                    ''
+                  }
+                  loading={loading}
+                  inputValue={referredByName}
+                  renderInput={(params): ReactElement => (
+                    <TextField
+                      {...params}
+                      label={t('Referred By')}
+                      onChange={(e) =>
+                        handleUpdateReferredBySearch(e.target.value)
+                      }
+                    />
+                  )}
+                  value={
+                    contactReferralsToMe.map(
+                      (referral) => referral.referredById,
+                    ) ?? undefined
+                  }
+                  onChange={(_, contactIds): void =>
+                    updateReferredBy(contactIds, setFieldValue)
+                  }
+                  getOptionSelected={(option, value): boolean =>
+                    option === value
+                  }
                 />
               </ContactInputWrapper>
               <ContactInputWrapper>
