@@ -333,6 +333,23 @@ export const EditPartnershipInfoModal: React.FC<EditPartnershipInfoModalProps> =
                     onChange={(e) =>
                       updateStatus(e.target.value as StatusEnum, setFieldValue)
                     }
+                    MenuProps={{
+                      anchorOrigin: {
+                        vertical: 'bottom',
+                        horizontal: 'left',
+                      },
+                      transformOrigin: {
+                        vertical: 'top',
+                        horizontal: 'left',
+                      },
+                      getContentAnchorEl: null,
+                      PaperProps: {
+                        style: {
+                          maxHeight: '300px',
+                          overflow: 'auto',
+                        },
+                      },
+                    }}
                   >
                     {Object.values(StatusEnum).map((value) => (
                       <MenuItem key={value} value={value}>

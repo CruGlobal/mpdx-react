@@ -40,6 +40,17 @@ const contactMock = gqlMock<ContactDonorAccountsFragment>(
           currency: 'CAD',
         },
       },
+      contactReferralsToMe: {
+        nodes: [
+          {
+            id: 'referred-by-id-1',
+            referredBy: {
+              id: 'referred-by-contact-id',
+              name: 'Person, Cool',
+            },
+          },
+        ],
+      },
     },
   },
 );
@@ -387,6 +398,96 @@ describe('EditPartnershipInfoModal', () => {
     userEvent.click(day);
     const okayButton = await waitFor(async () => getByText('OK'));
     userEvent.click(okayButton);
+    userEvent.click(getByText('Save'));
+    await waitFor(() =>
+      expect(mockEnqueue).toHaveBeenCalledWith(
+        'Partnership information updated successfully.',
+        {
+          variant: 'success',
+        },
+      ),
+    );
+    expect(handleClose).toHaveBeenCalled();
+  });
+
+  it('should handle editing the referred by | Delete', async () => {
+    const { getByLabelText, getByText, getByRole, queryByText } = render(
+      <SnackbarProvider>
+        <MuiPickersUtilsProvider utils={LuxonUtils}>
+          <ThemeProvider theme={theme}>
+            <GqlMockedProvider<UpdateContactPartnershipMutation>>
+              <EditPartnershipInfoModal
+                contact={contactMock}
+                handleClose={handleClose}
+              />
+            </GqlMockedProvider>
+          </ThemeProvider>
+        </MuiPickersUtilsProvider>
+      </SnackbarProvider>,
+    );
+
+    const referredByInput = getByLabelText('Referred By');
+    await waitFor(() => expect(referredByInput).toBeInTheDocument());
+    expect(getByText('Person, Cool')).toBeInTheDocument();
+    const deleteIcon = getByRole('button', {
+      name: 'Person, Cool',
+    }).querySelector('.MuiChip-deleteIcon');
+
+    expect(deleteIcon).toBeInTheDocument();
+    deleteIcon && userEvent.click(deleteIcon);
+    expect(queryByText('Person, Cool')).not.toBeInTheDocument();
+    userEvent.click(getByText('Save'));
+    await waitFor(() =>
+      expect(mockEnqueue).toHaveBeenCalledWith(
+        'Partnership information updated successfully.',
+        {
+          variant: 'success',
+        },
+      ),
+    );
+    expect(handleClose).toHaveBeenCalled();
+  });
+
+  it('should handle editing the referred by | Create', async () => {
+    const { getByLabelText, getByText } = render(
+      <SnackbarProvider>
+        <MuiPickersUtilsProvider utils={LuxonUtils}>
+          <ThemeProvider theme={theme}>
+            <GqlMockedProvider<UpdateContactPartnershipMutation>
+              mocks={{
+                GetDataForPartnershipInfoModal: {
+                  contacts: {
+                    nodes: [
+                      {
+                        id: 'contact-1',
+                        name: 'Person, Cool',
+                      },
+                      {
+                        id: 'contact-2',
+                        name: 'Guy, Great',
+                      },
+                    ],
+                  },
+                },
+              }}
+            >
+              <EditPartnershipInfoModal
+                contact={contactMock}
+                handleClose={handleClose}
+              />
+            </GqlMockedProvider>
+          </ThemeProvider>
+        </MuiPickersUtilsProvider>
+      </SnackbarProvider>,
+    );
+
+    const referredByInput = getByLabelText('Referred By');
+    await waitFor(() => expect(referredByInput).toBeInTheDocument());
+    userEvent.click(referredByInput);
+    userEvent.type(referredByInput, 'G');
+    await waitFor(() => expect(getByText('Guy, Great')).toBeInTheDocument());
+    userEvent.click(getByText('Guy, Great'));
+    expect(getByText('Guy, Great')).toBeInTheDocument();
     userEvent.click(getByText('Save'));
     await waitFor(() =>
       expect(mockEnqueue).toHaveBeenCalledWith(
