@@ -148,6 +148,7 @@ const AddAppealForm = (): ReactElement => {
                         <Typography>Initial Goal</Typography>
                         <Field
                           name="initialGoal"
+                          data-testid="initialGoalInput"
                           type="number"
                           variant="outlined"
                           size="small"
@@ -234,6 +235,7 @@ const AddAppealForm = (): ReactElement => {
                       >
                         <Typography>Goal</Typography>
                         <TextField
+                          data-testid="goalInput"
                           name="goal"
                           type="number"
                           variant="outlined"
