@@ -10,6 +10,7 @@ import {
   Theme,
   CircularProgress,
   styled,
+  FormControl,
 } from '@material-ui/core';
 import { Formik, Field, Form } from 'formik';
 import React, { ReactElement } from 'react';
@@ -123,19 +124,22 @@ const AddAppealForm = (): ReactElement => {
               errors,
             }): ReactElement => (
               <Form className={classes.form} onSubmit={handleSubmit}>
-                <Box mb={1}>
-                  <Typography variant="h6">Name</Typography>
-                  <Field
-                    error={errors.name}
-                    helperText={errors.name}
-                    placeholder="Appeal Name"
-                    name="name"
-                    type="input"
-                    variant="outlined"
-                    size="small"
-                    className={classes.input}
-                    as={TextField}
-                  />
+                <Box mb={2}>
+                  <FormControl fullWidth>
+                    <Field
+                      error={errors.name}
+                      helperText={errors.name}
+                      data-testid="nameInput"
+                      label={t('Name')}
+                      placeholder="Appeal Name"
+                      name="name"
+                      type="input"
+                      variant="outlined"
+                      size="small"
+                      className={classes.input}
+                      as={TextField}
+                    />
+                  </FormControl>
                 </Box>
                 <Box mt={1} mb={1}>
                   <Grid container spacing={0}>
@@ -145,9 +149,9 @@ const AddAppealForm = (): ReactElement => {
                         flexDirection="column"
                         justifyContent="start"
                       >
-                        <Typography>Initial Goal</Typography>
                         <Field
                           name="initialGoal"
+                          label={t('Initial Goal')}
                           data-testid="initialGoalInput"
                           type="number"
                           variant="outlined"
@@ -175,11 +179,11 @@ const AddAppealForm = (): ReactElement => {
                         flexDirection="column"
                         justifyContent="start"
                       >
-                        <Typography>Letter Cost</Typography>
                         <Field
                           name="letterCost"
                           type="number"
                           variant="outlined"
+                          label={t('Letter Cost')}
                           size="small"
                           className={classes.input}
                           as={TextField}
@@ -204,11 +208,11 @@ const AddAppealForm = (): ReactElement => {
                         flexDirection="column"
                         justifyContent="start"
                       >
-                        <Typography>Admin %</Typography>
                         <Field
                           name="adminCost"
                           type="number"
                           variant="outlined"
+                          label={t('Admin %')}
                           size="small"
                           className={classes.input}
                           as={TextField}
@@ -233,11 +237,11 @@ const AddAppealForm = (): ReactElement => {
                         flexDirection="column"
                         justifyContent="start"
                       >
-                        <Typography>Goal</Typography>
                         <TextField
                           data-testid="goalInput"
                           name="goal"
                           type="number"
+                          label={t('Goal')}
                           variant="outlined"
                           size="small"
                           className={classes.input}
