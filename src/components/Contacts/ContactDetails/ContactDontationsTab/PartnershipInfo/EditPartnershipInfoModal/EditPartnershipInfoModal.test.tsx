@@ -55,6 +55,10 @@ const contactMock = gqlMock<ContactDonorAccountsFragment>(
   },
 );
 
+const contactMockNoReferrals: ContactDonorAccountsFragment = {
+  ...contactMock,
+  contactReferralsToMe: { nodes: [] },
+};
 jest.mock('next/router', () => ({
   useRouter: () => {
     return {
@@ -498,6 +502,36 @@ describe('EditPartnershipInfoModal', () => {
       ),
     );
     expect(handleClose).toHaveBeenCalled();
+  });
+
+  it('should handle editing the referred by | No Contacts or Referrals', async () => {
+    const { getByLabelText, getByText } = render(
+      <SnackbarProvider>
+        <MuiPickersUtilsProvider utils={LuxonUtils}>
+          <ThemeProvider theme={theme}>
+            <GqlMockedProvider<UpdateContactPartnershipMutation>
+              mocks={{
+                GetDataForPartnershipInfoModal: {
+                  contacts: {
+                    nodes: [],
+                  },
+                },
+              }}
+            >
+              <EditPartnershipInfoModal
+                contact={contactMockNoReferrals}
+                handleClose={handleClose}
+              />
+            </GqlMockedProvider>
+          </ThemeProvider>
+        </MuiPickersUtilsProvider>
+      </SnackbarProvider>,
+    );
+
+    const referredByInput = getByLabelText('Referred By');
+    await waitFor(() => expect(referredByInput).toBeInTheDocument());
+    userEvent.click(referredByInput);
+    expect(getByText('No options')).toBeInTheDocument();
   });
 
   it('should handle editing next ask date', async () => {
