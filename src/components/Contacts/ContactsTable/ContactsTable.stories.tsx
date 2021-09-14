@@ -1,7 +1,7 @@
 import React, { ReactElement } from 'react';
 import { ContactsQuery } from '../../../../pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
-import { ContactsTable } from './ContactsTable';
+import { InfiniteList } from './InfiniteList';
 
 export default {
   title: 'Contacts/ContactsTable',
@@ -12,7 +12,7 @@ const accountListId = '111';
 export const Default = (): ReactElement => {
   return (
     <GqlMockedProvider<ContactsQuery>>
-      <ContactsTable
+      <InfiniteList
         accountListId={accountListId}
         onContactSelected={() => {}}
         onSearchTermChange={() => {}}
@@ -35,7 +35,7 @@ export const Loading = (): ReactElement => {
 
   return (
     <GqlMockedProvider<ContactsQuery> mocks={mocks}>
-      <ContactsTable
+      <InfiniteList
         accountListId={accountListId}
         onContactSelected={() => {}}
         onSearchTermChange={() => {}}
@@ -58,7 +58,7 @@ export const Empty = (): ReactElement => {
 
   return (
     <GqlMockedProvider<ContactsQuery> mocks={mocks}>
-      <ContactsTable
+      <InfiniteList
         accountListId={accountListId}
         onContactSelected={() => {}}
         onSearchTermChange={() => {}}
@@ -82,7 +82,7 @@ export const Error = (): ReactElement => {
 
   return (
     <GqlMockedProvider<ContactsQuery> mocks={mocks}>
-      <ContactsTable
+      <InfiniteList
         accountListId={accountListId}
         onContactSelected={() => {}}
         onSearchTermChange={() => {}}

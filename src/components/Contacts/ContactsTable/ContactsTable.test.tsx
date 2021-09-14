@@ -8,7 +8,7 @@ import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
 import { ContactsQuery } from '../../../../pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import theme from '../../../theme';
 
-import { ContactsTable } from './ContactsTable';
+import { InfiniteList } from './InfiniteList';
 
 const accountListId = '111';
 const contactId = 'contact-1';
@@ -36,7 +36,7 @@ describe('ContactFilters', () => {
     const { queryByTestId, queryByText } = render(
       <ThemeProvider theme={theme}>
         <GqlMockedProvider<ContactsQuery>>
-          <ContactsTable
+          <InfiniteList
             accountListId={accountListId}
             onContactSelected={onContactSelected}
             onSearchTermChange={onSearchTermChanged}
@@ -66,7 +66,7 @@ describe('ContactFilters', () => {
     const { getByTestId, queryByText } = render(
       <ThemeProvider theme={theme}>
         <GqlMockedProvider<ContactsQuery> mocks={mocks}>
-          <ContactsTable
+          <InfiniteList
             accountListId={accountListId}
             onContactSelected={onContactSelected}
             onSearchTermChange={onSearchTermChanged}
@@ -101,7 +101,7 @@ describe('ContactFilters', () => {
     const { queryByTestId, queryByText } = render(
       <ThemeProvider theme={theme}>
         <GqlMockedProvider<ContactsQuery> mocks={mocks}>
-          <ContactsTable
+          <InfiniteList
             accountListId={accountListId}
             onContactSelected={onContactSelected}
             onSearchTermChange={onSearchTermChanged}
@@ -136,7 +136,7 @@ describe('ContactFilters', () => {
     const { findByTestId, queryByText } = render(
       <ThemeProvider theme={theme}>
         <GqlMockedProvider<ContactsQuery> mocks={mocks}>
-          <ContactsTable
+          <InfiniteList
             accountListId={accountListId}
             onContactSelected={onContactSelected}
             onSearchTermChange={onSearchTermChanged}
@@ -173,7 +173,7 @@ describe('ContactFilters', () => {
     const { findByTestId, queryByText, getByRole } = render(
       <ThemeProvider theme={theme}>
         <GqlMockedProvider<ContactsQuery> mocks={mocks} onCall={querySpy}>
-          <ContactsTable
+          <InfiniteList
             accountListId={accountListId}
             onContactSelected={onContactSelected}
             onSearchTermChange={onSearchTermChanged}
@@ -226,7 +226,7 @@ describe('ContactFilters', () => {
     const { findByTestId, queryByText, getByRole } = render(
       <ThemeProvider theme={theme}>
         <GqlMockedProvider<ContactsQuery> mocks={mocks} onCall={querySpy}>
-          <ContactsTable
+          <InfiniteList
             accountListId={accountListId}
             onContactSelected={onContactSelected}
             onSearchTermChange={onSearchTermChanged}
