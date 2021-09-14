@@ -1,8 +1,13 @@
 import React, { useState } from 'react';
 import type { FC, ReactNode } from 'react';
 import NextLink from 'next/link';
-import { Button, Collapse, Icon, ListItem, styled } from '@material-ui/core';
-import type { Theme } from '@material-ui/core/styles/createMuiTheme';
+import {
+  Button,
+  Collapse,
+  ListItem,
+  styled,
+  useTheme,
+} from '@material-ui/core';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 
@@ -29,7 +34,7 @@ const LeafListItem = styled(ListItem)(() => ({
   paddingBottom: 0,
 }));
 
-const StyledButton = styled(Button)((theme: Theme) => ({
+const StyledButton = styled(Button)(({ theme }) => ({
   color: theme.palette.common.white,
   padding: '10px 8px',
   justifyContent: 'flex-start',
@@ -38,7 +43,7 @@ const StyledButton = styled(Button)((theme: Theme) => ({
   width: '100%',
 }));
 
-const LeafButton = styled(Button)((theme: Theme) => ({
+const LeafButton = styled(Button)(({ theme }) => ({
   color: theme.palette.text.secondary,
   padding: '10px 8px',
   justifyContent: 'flex-start',
@@ -47,13 +52,7 @@ const LeafButton = styled(Button)((theme: Theme) => ({
   width: '100%',
 }));
 
-const NavItemIcon = styled(Icon)((theme: Theme) => ({
-  display: 'flex',
-  alignItems: 'center',
-  marginRight: theme.spacing(1),
-}));
-
-const Title = styled('span')((theme: Theme) => ({
+const Title = styled('span')(({ theme }) => ({
   color: theme.palette.common.white,
   fontSize: 16,
   marginRight: 'auto',
@@ -70,6 +69,7 @@ export const NavItem: FC<NavItemProps> = ({
   ...rest
 }) => {
   const [open, setOpen] = useState<boolean>(openProp ?? false);
+  const theme = useTheme();
 
   const handleToggle = (): void => {
     setOpen((prevOpen) => !prevOpen);
@@ -82,12 +82,17 @@ export const NavItem: FC<NavItemProps> = ({
   }
 
   const style = { paddingLeft, paddingTop: 11, paddingBottom: 11 };
+  const iconStyle = {
+    color: theme.palette.common.white,
+    fontSize: 16,
+    marginRight: 'auto',
+  };
 
   if (children) {
     return (
       <StyledListItem button disableGutters key={title} {...rest}>
         <StyledButton onClick={handleToggle} style={style}>
-          {Icon && <NavItemIcon size="20" />}
+          {Icon && <Icon style={iconStyle} size="20" />}
           <Title>{title}</Title>
           {open ? (
             <ExpandLessIcon fontSize="small" color="disabled" />
@@ -104,7 +109,7 @@ export const NavItem: FC<NavItemProps> = ({
     <LeafListItem button disableGutters key={title} {...rest}>
       <NextLink href={href} as={as}>
         <LeafButton style={style}>
-          {Icon && <NavItemIcon size="20" />}
+          {Icon && <Icon style={iconStyle} size="20" />}
           <Title>{title}</Title>
         </LeafButton>
       </NextLink>
