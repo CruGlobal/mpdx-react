@@ -1,0 +1,23 @@
+query LoadCoachingList {
+  coachingAccountLists {
+    nodes {
+      id
+      name
+      primaryAppeal {
+        active
+        amount
+        amountCurrency
+        id
+        name
+        pledgesAmountNotReceivedNotProcessed
+        pledgesAmountProcessed
+        pledgesAmountTotal
+      }
+      currency
+      monthlyGoal
+      balance
+      receivedPledges
+      totalPledges
+    }
+  }
+}
