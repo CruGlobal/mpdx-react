@@ -1,65 +1,40 @@
 import React, { ReactElement } from 'react';
+import NextLink from 'next/link';
 import {
   Box,
   makeStyles,
   Toolbar,
   AppBar,
+  IconButton,
+  SvgIcon,
   useScrollTrigger,
   Theme,
-  Grid,
   Hidden,
 } from '@material-ui/core';
+import MenuIcon from '@material-ui/icons/Menu';
 import logo from '../../../../images/logo.svg';
-import { useAccountListId } from '../../../../hooks/useAccountListId';
 import NotificationMenu from './Items/NotificationMenu/NotificationMenu';
 import AddMenu from './Items/AddMenu/AddMenu';
 import SearchMenu from './Items/SearchMenu/SearchMenu';
 import NavMenu from './Items/NavMenu/NavMenu';
 import ProfileMenu from './Items/ProfileMenu/ProfileMenu';
 
+interface TopBarProps {
+  onMobileNavOpen?: () => void;
+}
+
 const useStyles = makeStyles((theme: Theme) => ({
   appBar: {
-    paddingTop: `env(safe-area-inset-top)`,
-    paddingLeft: `env(safe-area-inset-left)`,
-    paddingRight: `env(safe-area-inset-right)`,
+    zIndex: theme.zIndex.drawer + 100,
     backgroundColor: theme.palette.cruGrayDark.main,
   },
   toolbar: {
-    backgroundColor: theme.palette.cruGrayDark.main,
-  },
-  logoGrid: {
-    order: 1,
-  },
-  addMenuGrid: {
-    order: 5,
-    [theme.breakpoints.down('xs')]: {
-      display: 'none',
-    },
-  },
-  searchMenuGrid: {
-    order: 4,
-    [theme.breakpoints.down('xs')]: {
-      display: 'none',
-    },
-  },
-  notificationMenuGrid: {
-    order: 6,
-  },
-  profileMenuGrid: {
-    order: 7,
-  },
-  logo: {
-    width: 90,
-    transition: theme.transitions.create('margin-right', {
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-    marginRight: theme.spacing(4),
+    minHeight: 60,
   },
 }));
 
-const TopBar = (): ReactElement => {
+const TopBar = ({ onMobileNavOpen }: TopBarProps): ReactElement => {
   const classes = useStyles();
-  const accountListId = useAccountListId();
   const trigger = useScrollTrigger({
     disableHysteresis: true,
     threshold: 0,
@@ -67,45 +42,29 @@ const TopBar = (): ReactElement => {
 
   return (
     <>
-      <AppBar
-        className={classes.appBar}
-        elevation={trigger ? 3 : 0}
-        position="sticky"
-      >
+      <AppBar className={classes.appBar} elevation={trigger ? 3 : 0}>
         <Toolbar className={classes.toolbar}>
-          <Grid container alignItems="center">
-            <Grid container item alignItems="center" xs="auto" md={1}>
-              <Grid item className={classes.logoGrid}>
-                <Hidden smDown>
-                  <Box className={classes.logo}>
-                    <img src={logo} alt="logo" />
-                  </Box>
-                </Hidden>
-              </Grid>
-            </Grid>
+          <Hidden lgUp>
+            <IconButton color="inherit" onClick={onMobileNavOpen}>
+              <SvgIcon fontSize="small">
+                <MenuIcon />
+              </SvgIcon>
+            </IconButton>
+          </Hidden>
+          <Hidden mdDown>
+            <NextLink href="/">
+              <img src={logo} alt="logo" />
+            </NextLink>
+          </Hidden>
+          <Box ml={10} flexGrow={1}>
             <NavMenu />
-            <Grid
-              item
-              xs={12}
-              md={accountListId ? 5 : 11}
-              container
-              alignItems="center"
-              justify="flex-end"
-            >
-              <Grid item className={classes.searchMenuGrid}>
-                <SearchMenu />
-              </Grid>
-              <Grid item className={classes.addMenuGrid}>
-                <AddMenu />
-              </Grid>
-              <Grid item className={classes.notificationMenuGrid}>
-                <NotificationMenu />
-              </Grid>
-              <Grid item className={classes.profileMenuGrid}>
-                <ProfileMenu />
-              </Grid>
-            </Grid>
-          </Grid>
+          </Box>
+          <SearchMenu />
+          <AddMenu />
+          <NotificationMenu />
+          <Box ml={2}>
+            <ProfileMenu />
+          </Box>
         </Toolbar>
       </AppBar>
     </>
