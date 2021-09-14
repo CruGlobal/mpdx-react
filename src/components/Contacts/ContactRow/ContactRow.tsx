@@ -1,11 +1,4 @@
-import {
-  Box,
-  Checkbox,
-  Divider,
-  Hidden,
-  styled,
-  useTheme,
-} from '@material-ui/core';
+import { Box, Checkbox, Hidden, styled, useTheme } from '@material-ui/core';
 import React from 'react';
 import { CelebrationIcons } from '../CelebrationIcons/CelebrationIcons';
 import { GiftStatus } from '../GiftStatus/GiftStatus';
@@ -13,13 +6,14 @@ import { StarContactIconButton } from '../StarContactIconButton/StarContactIconB
 import { ContactRowFragment } from './ContactRow.generated';
 
 const ContactRowButton = styled(Box)(({}) => ({
-  height: '72px',
+  height: '56px',
   width: '100%',
   display: 'flex',
   flexDirection: 'row',
   justifyContent: 'space-evenly',
   alignItems: 'center',
   alignContent: 'center',
+  cursor: 'pointer',
 }));
 const ContactTextWrap = styled(Box)(({ theme }) => ({
   display: 'inline-block',
@@ -76,7 +70,6 @@ export const ContactRow: React.FC<Props> = ({
 
   return (
     <Box role="row">
-      <Divider />
       <Box display="flex" alignItems="center">
         <Box padding="checkbox">
           <Checkbox
