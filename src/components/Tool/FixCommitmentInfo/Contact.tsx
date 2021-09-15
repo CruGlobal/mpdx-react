@@ -41,6 +41,7 @@ const useStyles = makeStyles(() => ({
     display: 'flex',
     alignItems: 'center',
     height: '100%',
+    marginBottom: theme.spacing(3),
     [theme.breakpoints.down('sm')]: {
       border: `1px solid ${theme.palette.cruGrayMedium.main}`,
     },
