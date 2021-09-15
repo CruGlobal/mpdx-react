@@ -146,21 +146,10 @@ const Contact = ({
                     value={newsletter}
                     onChange={(event) => handleChange(event)}
                   >
-                    <option
-                      value="PHYSICAL"
-                      selected={newsletter === 'PHYSICAL'}
-                    >
-                      {t('Physical')}
-                    </option>
-                    <option value="EMAIL" selected={newsletter === 'EMAIL'}>
-                      {t('Email')}
-                    </option>
-                    <option value="BOTH" selected={newsletter === 'BOTH'}>
-                      {t('Both')}
-                    </option>
-                    <option value="NONE" selected={newsletter === 'NONE'}>
-                      {t('None')}
-                    </option>
+                    <option value="PHYSICAL">{t('Physical')}</option>
+                    <option value="EMAIL">{t('Email')}</option>
+                    <option value="BOTH">{t('Both')}</option>
+                    <option value="NONE">{t('None')}</option>
                   </NativeSelect>
                 </Box>
               </Grid>
