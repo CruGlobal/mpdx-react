@@ -14,8 +14,8 @@ import { relayStylePaginationWithNodes } from './relayStylePaginationWithNodes';
 const ignoredkeyArgsForPagination = ['before', 'after', 'first', 'last'];
 const paginationFieldPolicy = relayStylePaginationWithNodes((args) =>
   args
-    ? Object.keys(args).filter((arg) =>
-        ignoredkeyArgsForPagination.includes(arg),
+    ? Object.keys(args).filter(
+        (arg) => !ignoredkeyArgsForPagination.includes(arg),
       )
     : undefined,
 );
@@ -25,7 +25,7 @@ export const cache = new InMemoryCache({
   typePolicies: {
     Query: {
       fields: {
-        // contacts: paginationFieldPolicy,
+        contacts: paginationFieldPolicy,
         userNotifications: paginationFieldPolicy,
       },
     },

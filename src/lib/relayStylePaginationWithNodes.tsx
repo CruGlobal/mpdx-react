@@ -1,8 +1,8 @@
 import { FieldPolicy, Reference } from '@apollo/client';
 import { mergeDeep } from '@apollo/client/utilities';
 import {
-  RelayFieldPolicy,
   TExistingRelay,
+  TIncomingRelay,
   TRelayEdge,
   TRelayPageInfo,
 } from '@apollo/client/utilities/policies/pagination';
@@ -13,9 +13,23 @@ import { __rest } from 'tslib';
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type KeyArgs = FieldPolicy<any>['keyArgs'];
 
+declare type TExistingRelayWithNodes<TNode> = TExistingRelay<TNode> &
+  Readonly<{
+    nodes: TNode[];
+  }>;
+declare type TIncomingRelayWithNodes<TNode> = TIncomingRelay<TNode> & {
+  nodes?: TNode[];
+};
+
+declare type RelayFieldPolicyWithNodes<TNode> = FieldPolicy<
+  TExistingRelayWithNodes<TNode>,
+  TIncomingRelayWithNodes<TNode>,
+  TIncomingRelayWithNodes<TNode>
+>;
+
 export function relayStylePaginationWithNodes<TNode = Reference>(
   keyArgs: KeyArgs = false,
-): RelayFieldPolicy<TNode> {
+): RelayFieldPolicyWithNodes<TNode> {
   return {
     keyArgs,
 
@@ -71,6 +85,8 @@ export function relayStylePaginationWithNodes<TNode = Reference>(
           })
         : [];
 
+      const incomingNodes = incoming.nodes ?? [];
+
       if (incoming.pageInfo) {
         const { pageInfo } = incoming;
         const { startCursor, endCursor } = pageInfo;
@@ -106,6 +122,8 @@ export function relayStylePaginationWithNodes<TNode = Reference>(
 
       let prefix = existing.edges;
       let suffix: typeof prefix = [];
+      let nodePrefix = existing.nodes;
+      let nodeSuffix: typeof nodePrefix = [];
 
       if (args && args.after) {
         // This comparison does not need to use readField("cursor", edge),
@@ -116,18 +134,29 @@ export function relayStylePaginationWithNodes<TNode = Reference>(
           prefix = prefix.slice(0, index + 1);
           // suffix = []; // already true
         }
+        if (args.after !== existing.pageInfo.endCursor) {
+          nodePrefix = [];
+        }
       } else if (args && args.before) {
         const index = prefix.findIndex((edge) => edge.cursor === args.before);
         suffix = index < 0 ? prefix : prefix.slice(index);
         prefix = [];
-      } else if (incoming.edges) {
+        if (args.before === existing.pageInfo.startCursor) {
+          nodeSuffix = nodePrefix;
+          nodePrefix = [];
+        } else {
+          nodePrefix = [];
+        }
+      } else if (incoming.edges || incoming.nodes) {
         // If we have neither args.after nor args.before, the incoming
         // edges cannot be spliced into the existing edges, so they must
         // replace the existing edges. See #6592 for a motivating example.
         prefix = [];
+        nodePrefix = [];
       }
 
       const edges = [...prefix, ...incomingEdges, ...suffix];
+      const nodes = [...nodePrefix, ...incomingNodes, ...nodeSuffix];
 
       const pageInfo: TRelayPageInfo = {
         // The ordering of these two ...spreads may be surprising, but it
@@ -176,6 +205,7 @@ export function relayStylePaginationWithNodes<TNode = Reference>(
         ...getExtras(existing),
         ...getExtras(incoming),
         edges,
+        nodes,
         pageInfo,
       };
     },
@@ -187,9 +217,10 @@ const getExtras = (obj: Record<string, any>) => __rest(obj, notExtras);
 const notExtras = ['edges', 'pageInfo'];
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function makeEmptyData(): TExistingRelay<any> {
+function makeEmptyData(): TExistingRelayWithNodes<any> {
   return {
     edges: [],
+    nodes: [],
     pageInfo: {
       hasPreviousPage: false,
       hasNextPage: true,
