@@ -1,14 +1,18 @@
+import React, { ReactElement } from 'react';
 import {
   Accordion,
   AccordionSummary,
   AccordionDetails,
+  Link,
+  Typography,
   styled,
 } from '@material-ui/core';
 import { ExpandMore } from '@material-ui/icons';
 import { accordionShared } from '../shared/PersPrefShared';
-import { PersPrefContact } from './PersPrefContact';
+// import PersPrefContact from './PersPrefContact';
 
 const StyledAccordion = styled(Accordion)({
+  backgroundColor: 'transparent',
   '&.Mui-expanded': {
     margin: 0,
   },
@@ -35,8 +39,37 @@ const StyledAccordionDetails = styled(AccordionDetails)({
   padding: 0,
 });
 
-export const PersPrefContacts = ({ data }) => {
-  const dataValid = data.filter((current) => current.invalid !== true);
+interface ContactData {
+  value: string;
+  type: string;
+  primary: boolean;
+  invalid: boolean;
+}
+
+interface PersPrefContactsProps {
+  contacts: ContactData[];
+}
+
+interface PersPrefContactProps {
+  contact: ContactData;
+}
+
+const PersPrefContact: React.FC<PersPrefContactProps> = ({ contact }) => {
+  const prefix = 'address' in contact ? 'mailto' : 'tel';
+  const value = contact.value;
+
+  return (
+    <Typography gutterBottom>
+      <Link href={`${prefix}:${value}`}>{value}</Link>{' '}
+      <span style={{ textTransform: 'capitalize' }}>- {contact.type} </span>
+    </Typography>
+  );
+};
+
+const PersPrefContacts = ({
+  contacts,
+}: PersPrefContactsProps): ReactElement<PersPrefContactsProps> => {
+  const dataValid = contacts.filter((current) => current.invalid !== true);
   const primaryIndex = dataValid.findIndex(
     (current) => current.primary === true,
   );
@@ -46,15 +79,15 @@ export const PersPrefContacts = ({ data }) => {
 
   return (
     <>
-      {dataValid.length === 1 && <PersPrefContact data={dataValid[0]} />}
+      {dataValid.length === 1 && <PersPrefContact contact={dataValid[0]} />}
       {dataValid.length > 1 && (
         <StyledAccordion>
           <StyledAccordionSummary expandIcon={<ExpandMore />}>
-            <PersPrefContact data={dataValid[primaryIndex]} />
+            <PersPrefContact contact={dataValid[primaryIndex]} />
           </StyledAccordionSummary>
           <StyledAccordionDetails>
             {dataSansPrimary.map((current) => {
-              return <PersPrefContact data={current} key={current.value} />;
+              return <PersPrefContact contact={current} key={current.value} />;
             })}
           </StyledAccordionDetails>
         </StyledAccordion>
@@ -62,3 +95,5 @@ export const PersPrefContacts = ({ data }) => {
     </>
   );
 };
+
+export default PersPrefContacts;
