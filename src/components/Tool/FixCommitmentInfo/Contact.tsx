@@ -82,7 +82,7 @@ const useStyles = makeStyles(() => ({
 }));
 
 interface Props {
-  id: string;
+  id?: string;
   name: string;
   tagTitle: string;
   tagValue: string;
