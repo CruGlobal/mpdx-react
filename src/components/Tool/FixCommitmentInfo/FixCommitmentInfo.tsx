@@ -58,6 +58,8 @@ const FixCommitmentInfo: React.FC = () => {
     variables: { accountListId: accountListId || '' },
   });
 
+  //TODO: Make currency field a select element
+
   return (
     <>
       <Box className={classes.outer} data-testid="Home">
