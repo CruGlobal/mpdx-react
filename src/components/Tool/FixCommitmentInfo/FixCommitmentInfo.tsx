@@ -8,7 +8,7 @@ import {
   Divider,
   CircularProgress,
 } from '@material-ui/core';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { useAccountListId } from '../../../../src/hooks/useAccountListId';
 import { useGetInvalidStatusesQuery } from './GetInvalidStatuses.generated';
 import Contact from './Contact';
@@ -112,8 +112,11 @@ const FixCommitmentInfo: React.FC = () => {
                 <Grid item xs={12}>
                   <Box className={classes.footer}>
                     <Typography>
-                      Showing <strong>{data.contacts.nodes.length}</strong> of{' '}
-                      <strong>{data.contacts.nodes.length}</strong>
+                      <Trans
+                        defaults="Showing <bold>{{value}}</bold> of <bold>{{value}}</bold>"
+                        values={{ value: data.contacts.nodes.length }}
+                        components={{ bold: <strong /> }}
+                      />
                     </Typography>
                   </Box>
                 </Grid>
