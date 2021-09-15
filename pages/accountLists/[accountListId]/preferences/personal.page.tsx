@@ -2,7 +2,7 @@ import React from 'react';
 import Head from 'next/head';
 import { useTranslation } from 'react-i18next';
 import { Box, Typography } from '@material-ui/core';
-import { PersPrefInfo } from './personal/info/PersPrefInfo';
+import PersPrefInfo from './personal/info/PersPrefInfo';
 
 const PersonalPreferences: React.FC = () => {
   const { t } = useTranslation();
