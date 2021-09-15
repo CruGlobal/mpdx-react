@@ -155,13 +155,13 @@ const Contact: React.FC<Props> = ({
                   value={values.tagValue}
                   onChange={(event) => handleChange(event, 'tagValue')}
                 >
-                  {contactTags.map((t) => (
+                  {Object.keys(contactTags).map((key) => (
                     <option
-                      value={t.value}
-                      key={t.value}
-                      selected={tagTitle === t.title}
+                      value={key}
+                      key={key}
+                      selected={tagTitle === contactTags[key]}
                     >
-                      {t.title}
+                      {contactTags[key]}
                     </option>
                   ))}
                 </NativeSelect>
@@ -202,13 +202,13 @@ const Contact: React.FC<Props> = ({
                   <option value="" disabled>
                     Frequency
                   </option>
-                  {frequencies.map((freq) => (
+                  {Object.keys(frequencies).map((freq) => (
                     <option
-                      value={freq.value}
-                      key={freq.value}
-                      selected={freq.title === frequencyTitle}
+                      value={freq}
+                      key={freq}
+                      selected={frequencies[freq] === frequencyTitle}
                     >
-                      {freq.title}
+                      {frequencies[freq]}
                     </option>
                   ))}
                 </NativeSelect>

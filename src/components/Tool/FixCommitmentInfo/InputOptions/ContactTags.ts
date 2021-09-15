@@ -1,60 +1,18 @@
 import i18n from 'i18next';
 
-export const contactTags = [
-  {
-    title: i18n.t('Never Contacted'),
-    value: 'NEVER_CONTACTED',
-  },
-  {
-    title: i18n.t('Ask In Future'),
-    value: 'ASK_IN_FUTURE',
-  },
-  {
-    title: i18n.t('Cultivate Relationship'),
-    value: 'CULTIVATE_RELATIONSHIP',
-  },
-  {
-    title: i18n.t('Contact for Appointment'),
-    value: 'CONTACT_FOR_APPOINTMENT',
-  },
-  {
-    title: i18n.t('Appointment Scheduled'),
-    value: 'APPOINTMENT_SCHEDULED',
-  },
-  {
-    title: i18n.t('Call for Decision'),
-    value: 'CALL_FOR_DECISION',
-  },
-  {
-    title: i18n.t('Partner - Financial'),
-    value: 'PARTNER_FINANCIAL',
-  },
-  {
-    title: i18n.t('Partner - Special'),
-    value: 'PARTNER_SPECIAL',
-  },
-  {
-    title: i18n.t('Partner - Pray'),
-    value: 'PARTNER_PRAY',
-  },
-  {
-    title: i18n.t('Not Interested'),
-    value: 'NOT_INTERESTED',
-  },
-  {
-    title: i18n.t('Unresponsive'),
-    value: 'UNRESPONSIVE',
-  },
-  {
-    title: i18n.t('Never Ask'),
-    value: 'NEVER_ASK',
-  },
-  {
-    title: i18n.t('Research Abandoned'),
-    value: 'research-abandoned',
-  },
-  {
-    title: i18n.t('Expired Referral'),
-    value: 'expired-referral',
-  },
-];
+export const contactTags: { [key: string]: string } = {
+  NEVER_CONTACTED: i18n.t('Never Contacted'),
+  ASK_IN_FUTURE: i18n.t('Ask In Future'),
+  CULTIVATE_RELATIONSHIP: i18n.t('Cultivate Relationship'),
+  CONTACT_FOR_APPOINTMENT: i18n.t('Contact for Appointment'),
+  APPOINTMENT_SCHEDULED: i18n.t('Appointment Scheduled'),
+  CALL_FOR_DECISION: i18n.t('Call for Decision'),
+  PARTNER_FINANCIAL: i18n.t('Partner - Financial'),
+  PARTNER_SPECIAL: i18n.t('Partner - Special'),
+  PARTNER_PRAY: i18n.t('Partner - Pray'),
+  NOT_INTERESTED: i18n.t('Not Interested'),
+  UNRESPONSIVE: i18n.t('Unresponsive'),
+  NEVER_ASK: i18n.t('Never Ask'),
+  RESEARCH_ABANDONED: i18n.t('Research Abandoned'),
+  EXPIRED_REFERRAL: i18n.t('Expired Referral'),
+};

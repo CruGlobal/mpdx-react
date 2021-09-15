@@ -13,6 +13,8 @@ import { useAccountListId } from '../../../../src/hooks/useAccountListId';
 import { useGetInvalidStatusesQuery } from './GetInvalidStatuses.generated';
 import Contact from './Contact';
 import NoContacts from './NoContacts';
+import { contactTags } from './InputOptions/ContactTags';
+import { frequencies } from './InputOptions/Frequencies';
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
@@ -91,11 +93,17 @@ const FixCommitmentInfo: React.FC = () => {
                       <Contact
                         name={contact.name}
                         key={contact.name}
-                        tagTitle={contact.status || ''}
+                        tagTitle={
+                          contact.status ? contactTags[contact.status] : ''
+                        }
                         tagValue={contact.status || ''}
                         amount={contact.pledgeAmount || 0}
                         amountCurrency={contact.pledgeCurrency || ''}
-                        frequencyTitle={contact.pledgeFrequency || ''}
+                        frequencyTitle={
+                          contact.pledgeFrequency
+                            ? frequencies[contact.pledgeFrequency]
+                            : ''
+                        }
                         frequencyValue={contact.pledgeFrequency || ''}
                       />
                     ))}
