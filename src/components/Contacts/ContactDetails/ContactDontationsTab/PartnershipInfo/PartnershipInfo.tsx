@@ -222,9 +222,8 @@ export const PartnershipInfo: React.FC<PartnershipInfoProp> = ({ contact }) => {
           {t('Add Account')}
         </AddAccountButton>
       </IconAndTextContainerCenter>
-      {contact ? (
+      {contact && editPartnershipModalOpen ? (
         <EditPartnershipInfoModal
-          isOpen={editPartnershipModalOpen}
           handleClose={() => setEditPartnershipModalOpen(false)}
           contact={contact}
         />
