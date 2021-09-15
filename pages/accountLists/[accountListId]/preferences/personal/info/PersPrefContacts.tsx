@@ -46,9 +46,7 @@ interface ContactData {
   invalid: boolean;
 }
 
-interface PersPrefContactsProps {
-  contacts: ContactData[];
-}
+// Single contact phone/email
 
 interface PersPrefContactProps {
   contact: ContactData;
@@ -65,6 +63,12 @@ const PersPrefContact: React.FC<PersPrefContactProps> = ({ contact }) => {
     </Typography>
   );
 };
+
+// List of phone/email contacts
+
+interface PersPrefContactsProps {
+  contacts: ContactData[];
+}
 
 const PersPrefContacts = ({
   contacts,
