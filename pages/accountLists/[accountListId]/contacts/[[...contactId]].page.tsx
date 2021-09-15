@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useRouter } from 'next/router';
 import { Box, Card, CardContent, styled } from '@material-ui/core';
 import { ContactFilters } from '../../../../src/components/Contacts/ContactFilters/ContactFilters';
-import { InfiniteList } from '../../../../src/components/Contacts/ContactsTable/InfiniteList';
+import { InfiniteList } from '../../../../src/components/InfiniteList/InfiniteList';
 import { ContactDetails } from '../../../../src/components/Contacts/ContactDetails/ContactDetails';
 import Loading from '../../../../src/components/Loading';
 import { SidePanelsLayout } from '../../../../src/components/Layouts/SidePanelsLayout';
@@ -157,6 +157,7 @@ const ContactsPage: React.FC = () => {
                   loading={loading}
                   data={data?.contacts.nodes}
                   totalCount={data?.contacts.totalCount}
+                  style={{ height: 'calc(100vh - 160px)' }}
                   itemContent={(index, contact) => (
                     <ContactRow
                       accountListId={accountListId}
