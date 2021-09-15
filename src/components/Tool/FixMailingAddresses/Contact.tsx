@@ -16,6 +16,7 @@ import StarIcon from '@material-ui/icons/Star';
 import StarOutlineIcon from '@material-ui/icons/StarOutline';
 import theme from '../../../theme';
 import { emptyAddress } from './FixMailingAddresses';
+import { ContactAddressFragment } from './GetInvalidAddresses.generated';
 
 const useStyles = makeStyles(() => ({
   left: {
@@ -102,34 +103,33 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-export interface address {
-  source: string;
-  street: string;
-  locationType: string;
-  city: string;
-  state?: string;
-  zip: string;
-  country: string;
-  region?: string;
-  metro?: string;
-  primary: boolean;
-  valid: boolean;
-  newAddress?: boolean;
-}
-
 interface Props {
-  title: string;
-  tag: string;
-  addresses: address[];
-  openFunction: (address: address) => void;
+  id?: string;
+  name: string;
+  status: string;
+  addresses: ContactAddressFragment[];
+  openFunction: (address: ContactAddressFragment) => void;
 }
 
-const Contact: React.FC<Props> = ({ title, tag, addresses, openFunction }) => {
+const Contact: React.FC<Props> = ({
+  name,
+  status,
+  addresses,
+  openFunction,
+}) => {
   const { t } = useTranslation();
   const classes = useStyles();
-  const newAddress: address = { ...emptyAddress, newAddress: true };
+  const newAddress = { ...emptyAddress, newAddress: true };
   //TODO: Add button functionality
-  //TODO: Make contact title a link to contact page
+  //TODO: Make contact name a link to contact page
+
+  const formatDate = (date: string): string => {
+    const temp = new Date(date);
+    const year = temp.getFullYear();
+    const month = temp.getMonth();
+    const day = temp.getDay();
+    return `(${month}/${day}/${year})`;
+  };
 
   return (
     <Grid container className={classes.container}>
@@ -146,8 +146,8 @@ const Contact: React.FC<Props> = ({ title, tag, addresses, openFunction }) => {
                 >
                   <Avatar src="" className={classes.avatar} />
                   <Box display="flex" flexDirection="column" ml={2}>
-                    <Typography variant="h6">{title}</Typography>
-                    <Typography>{tag}</Typography>
+                    <Typography variant="h6">{name}</Typography>
+                    <Typography>{status}</Typography>
                   </Box>
                 </Box>
               </Grid>
@@ -196,11 +196,14 @@ const Contact: React.FC<Props> = ({ title, tag, addresses, openFunction }) => {
                               </Typography>
                             </Hidden>
                             <Typography display="inline">
-                              {address.source}
+                              {address.source}{' '}
+                            </Typography>
+                            <Typography display="inline">
+                              {formatDate(address.createdAt)}
                             </Typography>
                           </Box>
                           <Typography>
-                            {address.primary ? (
+                            {address.primaryMailingAddress ? (
                               <StarIcon className={classes.hoverHighlight} />
                             ) : (
                               <StarOutlineIcon
@@ -227,7 +230,7 @@ const Contact: React.FC<Props> = ({ title, tag, addresses, openFunction }) => {
                             <Typography>
                               {`${address.street}, ${address.city} ${
                                 address.state ? address.state : ''
-                              }. ${address.zip}`}
+                              }. ${address.postalCode}`}
                             </Typography>
                           </Box>
 
