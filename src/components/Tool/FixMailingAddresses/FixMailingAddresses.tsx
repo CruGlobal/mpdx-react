@@ -5,7 +5,6 @@ import {
   Typography,
   Grid,
   Divider,
-  Button,
   CircularProgress,
 } from '@material-ui/core';
 
@@ -51,52 +50,6 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-// Temporary date for desting, structure most likely isn't accurate
-// but making adjustments should be easy in the future
-const testData = [
-  {
-    title: 'Test Contact and Friends',
-    tag: 'Partner - Financial',
-    addresses: [
-      {
-        street: '70 Test Ave',
-        city: 'Vancouver',
-        state: 'BC',
-        country: 'Canada',
-        zip: 'V5Z 2V7',
-        locationType: 'home',
-        source: 'DonorHub (12/16/2014)',
-        primary: true,
-        valid: true,
-      },
-      {
-        street: '123 Another St',
-        city: 'Test',
-        state: 'TS',
-        country: 'Random',
-        zip: '4321',
-        locationType: 'seasonal',
-        source: 'DonorHub (03/23/2023)',
-        primary: false,
-        valid: true,
-      },
-      {
-        street: '456 Mpdx Blvd',
-        city: 'Somewhere',
-        state: 'AA',
-        country: 'Everywhere',
-        zip: '10001',
-        locationType: 'business',
-        source: 'MPDX (01/01/2021)',
-        metro: 'AB',
-        region: '00',
-        primary: false,
-        valid: true,
-      },
-    ],
-  },
-];
-
 export const emptyAddress: ContactAddressFragment = {
   id: 'new',
   source: 'MPDX',
@@ -117,16 +70,11 @@ const FixSendNewsletter: React.FC = () => {
     open: false,
     address: emptyAddress,
   });
-  const [test, setTest] = useState(testData);
   const { t } = useTranslation();
   const accountListId = useAccountListId();
   const { data, loading } = useInvalidAddressesQuery({
     variables: { accountListId: accountListId || '' },
   });
-
-  const toggleData = (): void => {
-    test.length > 0 ? setTest([]) : setTest(testData);
-  };
 
   const handleOpen = (address: ContactAddressFragment): void => {
     setModalState({ open: true, address: address });
@@ -178,14 +126,6 @@ const FixSendNewsletter: React.FC = () => {
                     'Choose below which mailing address will be set as primary. Primary mailing addresses will be used for Newsletter exports.',
                   )}
                 </Typography>
-                <Button size="small" variant="outlined" onClick={toggleData}>
-                  {t('Change Test')}
-                </Button>
-                <Typography>
-                  {t(
-                    '* Below is test data used for testing the UI. It is not linked to any account ID',
-                  )}
-                </Typography>
               </Box>
             </Grid>
             {data.contacts?.nodes.length > 0 ? (
@@ -207,7 +147,7 @@ const FixSendNewsletter: React.FC = () => {
                     <Typography>
                       <Trans
                         defaults="Showing <bold>{{value}}</bold> of <bold>{{value}}</bold>"
-                        values={{ value: test.length }}
+                        values={{ value: data?.contacts.nodes.length }}
                         components={{ bold: <strong /> }}
                       />
                     </Typography>
