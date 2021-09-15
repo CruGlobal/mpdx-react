@@ -3,10 +3,10 @@ import { useTranslation } from 'react-i18next';
 import { Avatar, Box, Button, Typography, styled } from '@material-ui/core';
 import { Edit } from '@material-ui/icons';
 import { info } from '../DemoContent';
-import { PersPrefWork } from './PersPrefWork';
-import { PersPrefContacts } from './PersPrefContacts';
-import { PersPrefAnniversary } from './PersPrefAnniversary';
-import { PersPrefSocials } from './PersPrefSocials';
+import PersPrefWork from './PersPrefWork';
+import PersPrefContacts from './PersPrefContacts';
+import PersPrefAnniversary from './PersPrefAnniversary';
+import PersPrefSocials from './PersPrefSocials';
 // import { PersPrefModal } from "./Modals/PersPrefModal";
 
 const StyledContactWrapper = styled(Box)(({ theme }) => ({
@@ -61,7 +61,7 @@ const StyledContactEdit = styled(Box)(({ theme }) => ({
   },
 }));
 
-export const PersPrefInfo: React.FC = () => {
+const PersPrefInfo: React.FC = () => {
   const { t } = useTranslation();
 
   const [profileOpen, setProfileOpen] = useState(false);
@@ -98,8 +98,8 @@ export const PersPrefInfo: React.FC = () => {
       </StyledContactTop>
       <StyledContactBottom>
         <PersPrefWork employer={info.employer} occupation={info.occupation} />
-        <PersPrefContacts data={info.email} />
-        <PersPrefContacts data={info.phone} />
+        <PersPrefContacts contacts={info.email} />
+        <PersPrefContacts contacts={info.phone} />
         <PersPrefAnniversary
           marital_status={t(info.marital_status)}
           anniversary_month={t(months[info.anniversary_month - 1])}
@@ -121,3 +121,5 @@ export const PersPrefInfo: React.FC = () => {
     </StyledContactWrapper>
   );
 };
+
+export default PersPrefInfo;

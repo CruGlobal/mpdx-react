@@ -1,7 +1,13 @@
-import { Typography } from "@material-ui/core";
+import React from 'react';
+import { Typography } from '@material-ui/core';
 
-export const PersPrefWork = ({ employer, occupation }) => {
-  const separator = occupation && employer ? " - " : "";
+interface WorkProps {
+  employer: string;
+  occupation: string;
+}
+
+const PersPrefWork: React.FC<WorkProps> = ({ employer, occupation }) => {
+  const separator = occupation && employer ? ' - ' : '';
 
   if (occupation || employer) {
     return (
@@ -13,3 +19,5 @@ export const PersPrefWork = ({ employer, occupation }) => {
 
   return null;
 };
+
+export default PersPrefWork;
