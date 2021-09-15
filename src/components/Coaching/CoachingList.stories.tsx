@@ -1,7 +1,5 @@
 import React, { ReactElement } from 'react';
 import { MockedProvider } from '@apollo/client/testing';
-import result from 'graphql/possibleTypes.generated';
-import { delay } from 'lodash';
 import { CoachingList } from './CoachingList';
 import {
   LoadCoachingListDocument,
