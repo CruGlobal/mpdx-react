@@ -51,6 +51,7 @@ describe('InfiniteList', () => {
         <InfiniteList
           loading={false}
           data={[]}
+          initialItemCount={0}
           itemContent={(index, item) => <div>{item}</div>}
           endReached={endReached}
           EmptyPlaceholder={<div>No items</div>}
