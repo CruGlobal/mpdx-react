@@ -23,7 +23,7 @@ const useStyles = makeStyles(() => ({
     display: 'flex',
     justifyContent: 'flex-start',
     alignItems: 'center',
-    [theme.breakpoints.up('md')]: {
+    [theme.breakpoints.up('lg')]: {
       borderTop: `1px solid ${theme.palette.cruGrayMedium.main}`,
       borderBottom: `16px solid ${theme.palette.cruGrayMedium.main}`,
       borderRight: `1px solid ${theme.palette.cruGrayMedium.main}`,
@@ -31,7 +31,7 @@ const useStyles = makeStyles(() => ({
   },
   left: {
     height: '100%',
-    [theme.breakpoints.up('md')]: {
+    [theme.breakpoints.up('lg')]: {
       borderTop: `1px solid ${theme.palette.cruGrayMedium.main}`,
       borderBottom: `16px solid ${theme.palette.cruGrayMedium.main}`,
       borderLeft: `1px solid ${theme.palette.cruGrayMedium.main}`,
@@ -42,7 +42,7 @@ const useStyles = makeStyles(() => ({
     alignItems: 'center',
     height: '100%',
     marginBottom: theme.spacing(3),
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down('md')]: {
       border: `1px solid ${theme.palette.cruGrayMedium.main}`,
     },
   },
@@ -50,7 +50,7 @@ const useStyles = makeStyles(() => ({
     marginRight: theme.spacing(1),
     marginBottom: theme.spacing(2),
     marginLeft: theme.spacing(1),
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down('md')]: {
       marginLeft: theme.spacing(2),
       marginTop: theme.spacing(0),
     },
@@ -58,14 +58,14 @@ const useStyles = makeStyles(() => ({
   boxBottom: {
     marginLeft: theme.spacing(1),
     marginRight: theme.spacing(1),
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down('md')]: {
       marginBottom: theme.spacing(2),
       marginLeft: theme.spacing(2),
     },
   },
   buttonTop: {
     margin: theme.spacing(1),
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down('md')]: {
       marginRight: theme.spacing(2),
     },
     '& .MuiButton-root': {
@@ -75,7 +75,7 @@ const useStyles = makeStyles(() => ({
   },
   buttonBottom: {
     margin: theme.spacing(1),
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down('md')]: {
       marginRight: theme.spacing(1),
     },
   },
@@ -124,7 +124,7 @@ const Contact: React.FC<Props> = ({
   return (
     <Grid container className={classes.container}>
       <Grid container>
-        <Grid item md={5} xs={12}>
+        <Grid item lg={5} xs={12}>
           <Box
             display="flex"
             p={2}
@@ -146,7 +146,7 @@ const Contact: React.FC<Props> = ({
             </Box>
           </Box>
         </Grid>
-        <Grid item xs={12} md={5} className={classes.right}>
+        <Grid item xs={12} lg={5} className={classes.right}>
           <Grid container style={{ paddingRight: theme.spacing(1) }}>
             <Grid item xs={12}>
               <Box className={classes.boxTop}>
@@ -168,7 +168,7 @@ const Contact: React.FC<Props> = ({
                 </NativeSelect>
               </Box>
             </Grid>
-            <Grid item xs={12} md={4}>
+            <Grid item xs={12} lg={4}>
               <Box className={classes.boxBottom}>
                 <TextField
                   variant="outlined"
@@ -180,19 +180,20 @@ const Contact: React.FC<Props> = ({
                 />
               </Box>
             </Grid>
-            <Grid item xs={12} md={4}>
+            <Grid item xs={12} lg={4}>
               <Box className={classes.boxBottom}>
                 <TextField
                   id="standard-number"
                   type="number"
                   variant="outlined"
                   size="small"
+                  fullWidth
                   value={values.amount}
                   onChange={(event) => handleChange(event, 'amount')}
                 />
               </Box>
             </Grid>
-            <Grid item xs={12} md={4}>
+            <Grid item xs={12} lg={4}>
               <Box className={classes.boxBottom}>
                 <NativeSelect
                   input={<StyledInput />}
@@ -217,7 +218,7 @@ const Contact: React.FC<Props> = ({
             </Grid>
           </Grid>
         </Grid>
-        <Grid item xs={12} md={2}>
+        <Grid item xs={12} lg={2}>
           <Box
             display="flex"
             flexDirection="column"
