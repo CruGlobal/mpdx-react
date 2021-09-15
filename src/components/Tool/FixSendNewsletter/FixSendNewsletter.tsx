@@ -63,6 +63,13 @@ const FixSendNewsletter = (): ReactElement => {
     variables: { accountListId: accountListId || '' },
   });
 
+  const filtered = data?.contacts.nodes.filter(
+    (el) =>
+      el.status === 'PARTNER_FINANCIAL' ||
+      el.status === 'PARTNER_SPECIAL' ||
+      el.status === 'PARTNER_PRAY',
+  );
+
   //TODO: Make navbar selectId = "fixSendNewsletter" when other branch gets merged
 
   return (
@@ -74,8 +81,7 @@ const FixSendNewsletter = (): ReactElement => {
               <Typography variant="h4">{t('Fix Send Newsletter')}</Typography>
               <Divider className={classes.divider} />
             </Grid>
-            {data?.contacts.nodes.filter((el) => el.status !== null).length >
-            0 ? (
+            {filtered && filtered.length > 0 ? (
               <>
                 <Grid item xs={12}>
                   <Box className={classes.descriptionBox}>
@@ -84,9 +90,7 @@ const FixSendNewsletter = (): ReactElement => {
                         {t(
                           'You have {{amount}} newsletter statuses to confirm.',
                           {
-                            amount: data?.contacts.nodes.filter(
-                              (el) => el.status !== null,
-                            ).length,
+                            amount: filtered.length,
                           },
                         )}
                       </strong>
@@ -105,44 +109,40 @@ const FixSendNewsletter = (): ReactElement => {
                       <Trans
                         defaults="Cofirm {{value}}"
                         values={{
-                          value: data?.contacts.nodes.filter(
-                            (el) => el.status !== null,
-                          ).length,
+                          value: filtered.length,
                         }}
                       />
                     </Button>
                   </Box>
                 </Grid>
                 <Grid item xs={12}>
-                  {data.contacts.nodes
-                    .filter((el) => el.status !== null)
-                    .map((contact) => (
-                      <Contact
-                        name={contact.name}
-                        // need to fix this after changes to fix commitment info get merged
-                        status={contact.status || ''}
-                        primaryPerson={
-                          contact.primaryPerson || {
-                            firstName: '',
-                            lastName: '',
-                            primaryEmailAddress: {
-                              email: '',
-                            },
-                          }
+                  {filtered.map((contact) => (
+                    <Contact
+                      name={contact.name}
+                      // need to fix this after changes to fix commitment info get merged
+                      status={contact.status || ''}
+                      primaryPerson={
+                        contact.primaryPerson || {
+                          firstName: '',
+                          lastName: '',
+                          primaryEmailAddress: {
+                            email: '',
+                          },
                         }
-                        key={contact.id}
-                        primaryAddress={
-                          contact.primaryAddress || {
-                            street: '',
-                            city: '',
-                            state: '',
-                            postalCode: '',
-                            source: '',
-                            updatedAt: '',
-                          }
+                      }
+                      key={contact.id}
+                      primaryAddress={
+                        contact.primaryAddress || {
+                          street: '',
+                          city: '',
+                          state: '',
+                          postalCode: '',
+                          source: '',
+                          updatedAt: '',
                         }
-                      />
-                    ))}
+                      }
+                    />
+                  ))}
                 </Grid>
                 <Grid item xs={12}>
                   <Box className={classes.footer}>
@@ -150,9 +150,7 @@ const FixSendNewsletter = (): ReactElement => {
                       <Trans
                         defaults="Showing <bold>{{value}}</bold> of <bold>{{value}}</bold>"
                         values={{
-                          value: data?.contacts.nodes.filter(
-                            (el) => el.status !== null,
-                          ).length,
+                          value: filtered.length,
                         }}
                         components={{ bold: <strong /> }}
                       />
