@@ -3,51 +3,51 @@ import i18n from 'i18next';
 export const contactTags = [
   {
     title: i18n.t('Never Contacted'),
-    value: 'never-contacted',
+    value: 'NEVER_CONTACTED',
   },
   {
     title: i18n.t('Ask In Future'),
-    value: 'ask-in-future',
+    value: 'ASK_IN_FUTURE',
   },
   {
     title: i18n.t('Cultivate Relationship'),
-    value: 'cultivate-relationship',
+    value: 'CULTIVATE_RELATIONSHIP',
   },
   {
     title: i18n.t('Contact for Appointment'),
-    value: 'contact-for-appointment',
+    value: 'CONTACT_FOR_APPOINTMENT',
   },
   {
     title: i18n.t('Appointment Scheduled'),
-    value: 'appointment-scheduled',
+    value: 'APPOINTMENT_SCHEDULED',
   },
   {
     title: i18n.t('Call for Decision'),
-    value: 'call-for-decision',
+    value: 'CALL_FOR_DECISION',
   },
   {
     title: i18n.t('Partner - Financial'),
-    value: 'partner-financial',
+    value: 'PARTNER_FINANCIAL',
   },
   {
     title: i18n.t('Partner - Special'),
-    value: 'partner-special',
+    value: 'PARTNER_SPECIAL',
   },
   {
     title: i18n.t('Partner - Pray'),
-    value: 'parter-pray',
+    value: 'PARTNER_PRAY',
   },
   {
     title: i18n.t('Not Interested'),
-    value: 'not-interested',
+    value: 'NOT_INTERESTED',
   },
   {
     title: i18n.t('Unresponsive'),
-    value: 'unresponsive',
+    value: 'UNRESPONSIVE',
   },
   {
     title: i18n.t('Never Ask'),
-    value: 'never-ask',
+    value: 'NEVER_ASK',
   },
   {
     title: i18n.t('Research Abandoned'),
