@@ -48,13 +48,21 @@ interface ListItemProps {
 const ListItemLinks: React.FC<ListItemProps> = ({ accounts, type }) => {
   const { link, icon } = profileTypes[type];
 
-  return accounts.map((account) => (
-    <StyledListItem key={`${type}-${account}`} disableGutters>
-      <StyledAnchor href={`${link}${account}`} target="_blank" underline="none">
-        {icon}
-      </StyledAnchor>
-    </StyledListItem>
-  ));
+  return (
+    <>
+      {accounts.map((account) => (
+        <StyledListItem key={`${type}-${account}`} disableGutters button>
+          <StyledAnchor
+            href={`${link}${account}`}
+            target="_blank"
+            underline="none"
+          >
+            {icon}
+          </StyledAnchor>
+        </StyledListItem>
+      ))}
+    </>
+  );
 };
 
 interface SocialMediaProps {
