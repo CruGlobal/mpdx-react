@@ -1,6 +1,6 @@
 import React, { ReactElement } from 'react';
 import { styled, Theme } from '@material-ui/core';
-import { ItemProps, Virtuoso } from 'react-virtuoso';
+import { ItemProps, Virtuoso, VirtuosoProps } from 'react-virtuoso';
 import { Skeleton } from '@material-ui/lab';
 
 const height = 72;
@@ -36,53 +36,48 @@ const Item: React.ComponentType<ItemProps> = (props) => (
 );
 
 const SkeletonItem: React.FC<{ height: number }> = ({ height }) => (
-  <ItemWithBorders disableHover>
+  <ItemWithBorders disableHover test>
     <Skeleton variant="rect" height={height - padding * 2} />
   </ItemWithBorders>
 );
 
 const Loading: React.FC = () => (
-  <>
+  <div aria-busy data-testid="infinite-list-skeleton-loading">
     <SkeletonItem height={height} />
     <SkeletonItem height={height} />
     <SkeletonItem height={height} />
     <SkeletonItem height={height} />
     <SkeletonItem height={height} />
     <SkeletonItem height={height} />
-  </>
+  </div>
 );
-interface Props<ListItem> {
+interface InfiniteListProps {
   loading: boolean;
-  data?: ListItem[];
-  totalCount?: number;
-  itemContent: (index: number, item: ListItem) => ReactElement;
-  endReached: () => void;
   EmptyPlaceholder: ReactElement;
 }
 
 export const InfiniteList = <T,>({
   loading,
   data = [],
-  totalCount = 0,
-  itemContent,
-  endReached,
+  totalCount = data?.length ?? 0,
   EmptyPlaceholder,
-}: Props<T>): ReactElement => (
+  ...props
+}: InfiniteListProps & VirtuosoProps<T>): ReactElement => (
   <Virtuoso
     data={data}
     totalCount={totalCount}
-    style={{ height: 'calc(100vh - 160px)' }}
-    endReached={endReached}
-    itemContent={itemContent}
+    {...props}
     components={{
       Footer: loading ? Loading : undefined,
       EmptyPlaceholder: loading ? undefined : () => EmptyPlaceholder,
       Item,
       ScrollSeekPlaceholder: SkeletonItem,
+      ...props.components,
     }}
     scrollSeekConfiguration={{
       enter: (velocity) => Math.abs(velocity) > 50,
       exit: (velocity) => Math.abs(velocity) < 10,
+      ...props.scrollSeekConfiguration,
     }}
   />
 );
