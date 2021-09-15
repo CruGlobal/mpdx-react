@@ -3,6 +3,14 @@ query LoadCoachingList {
     nodes {
       ...Coach
     }
+    totalCount
+    totalPageCount
+    pageInfo {
+      startCursor
+      endCursor
+      hasNextPage
+      hasPreviousPage
+    }
   }
 }
 
