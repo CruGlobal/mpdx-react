@@ -1,4 +1,5 @@
 import React, { ReactElement } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Accordion,
   AccordionSummary,
@@ -53,13 +54,14 @@ interface PersPrefContactProps {
 }
 
 const PersPrefContact: React.FC<PersPrefContactProps> = ({ contact }) => {
+  const { t } = useTranslation();
   const prefix = 'address' in contact ? 'mailto' : 'tel';
   const value = contact.value;
 
   return (
     <Typography gutterBottom>
       <Link href={`${prefix}:${value}`}>{value}</Link>{' '}
-      <span style={{ textTransform: 'capitalize' }}>- {contact.type} </span>
+      <span style={{ textTransform: 'capitalize' }}>- {t(contact.type)} </span>
     </Typography>
   );
 };
