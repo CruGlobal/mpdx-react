@@ -91,6 +91,7 @@ const FixCommitmentInfo: React.FC = () => {
                   <Box>
                     {data.contacts.nodes.map((contact) => (
                       <Contact
+                        id={contact.id}
                         name={contact.name}
                         key={contact.name}
                         tagTitle={
