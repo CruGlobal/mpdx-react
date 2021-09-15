@@ -6,11 +6,15 @@ import {
   Grid,
   Divider,
   CircularProgress,
+  NativeSelect,
+  Button,
 } from '@material-ui/core';
-
+import { Icon } from '@mdi/react';
+import { mdiCheckboxMarkedCircle } from '@mdi/js';
 import { Trans, useTranslation } from 'react-i18next';
 import { useAccountListId } from '../../../../src/hooks/useAccountListId';
 import theme from '../../../theme';
+import { StyledInput } from '../FixCommitmentInfo/StyledInput';
 import {
   useInvalidAddressesQuery,
   ContactAddressFragment,
@@ -48,6 +52,41 @@ const useStyles = makeStyles(() => ({
     display: 'flex',
     justifyContent: 'center',
   },
+  buttonBlue: {
+    backgroundColor: theme.palette.mpdxBlue.main,
+    paddingRight: theme.spacing(1.5),
+    color: 'white',
+    [theme.breakpoints.down('xs')]: {
+      marginTop: theme.spacing(1),
+      marginBottom: theme.spacing(2),
+    },
+  },
+  buttonIcon: {
+    marginRight: theme.spacing(1),
+  },
+  defaultBox: {
+    display: 'flex',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    flexWrap: 'wrap',
+    marginTop: theme.spacing(1),
+    [theme.breakpoints.down('xs')]: {
+      flexDirection: 'column',
+      alignItems: 'start',
+    },
+  },
+  nativeSelect: {
+    minWidth: theme.spacing(20),
+    width: '10%',
+    marginLeft: theme.spacing(2),
+    marginRight: theme.spacing(2),
+    [theme.breakpoints.down('xs')]: {
+      marginLeft: theme.spacing(0),
+      marginRight: theme.spacing(0),
+      marginTop: theme.spacing(1),
+      marginBottom: theme.spacing(1),
+    },
+  },
 }));
 
 export const emptyAddress: ContactAddressFragment = {
@@ -72,6 +111,7 @@ const FixSendNewsletter: React.FC = () => {
   });
   const { t } = useTranslation();
   const accountListId = useAccountListId();
+  const [defaultSource, setDefaultSource] = useState('MPDX');
   const { data, loading } = useInvalidAddressesQuery({
     variables: { accountListId: accountListId || '' },
   });
@@ -103,6 +143,12 @@ const FixSendNewsletter: React.FC = () => {
     }));
   };
 
+  const handleSourceChange = (
+    event: React.ChangeEvent<HTMLSelectElement>,
+  ): void => {
+    setDefaultSource(event.target.value);
+  };
+
   //TODO: Make navbar selectId = "fixSendNewsletter" when other branch gets merged
 
   return (
@@ -113,23 +159,54 @@ const FixSendNewsletter: React.FC = () => {
             <Grid item xs={12}>
               <Typography variant="h4">{t('Fix Mailing Addresses')}</Typography>
               <Divider className={classes.divider} />
-              <Box className={classes.descriptionBox}>
-                <Typography>
-                  <strong>
-                    {t('You have {{amount}} mailing addresses to confirm.', {
-                      amount: data?.contacts.nodes.length,
-                    })}
-                  </strong>
-                </Typography>
-                <Typography>
-                  {t(
-                    'Choose below which mailing address will be set as primary. Primary mailing addresses will be used for Newsletter exports.',
-                  )}
-                </Typography>
-              </Box>
             </Grid>
             {data.contacts?.nodes.length > 0 ? (
               <>
+                <Grid item xs={12}>
+                  <Box className={classes.descriptionBox}>
+                    <Typography>
+                      <strong>
+                        {t(
+                          'You have {{amount}} mailing addresses to confirm.',
+                          {
+                            amount: data?.contacts.nodes.length,
+                          },
+                        )}
+                      </strong>
+                    </Typography>
+                    <Typography>
+                      {t(
+                        'Choose below which mailing address will be set as primary. Primary mailing addresses will be used for Newsletter exports.',
+                      )}
+                    </Typography>
+                    <Box className={classes.defaultBox}>
+                      <Typography>{t('Default Primary Source:')}</Typography>
+
+                      <NativeSelect
+                        input={<StyledInput />}
+                        className={classes.nativeSelect}
+                        value={defaultSource}
+                        onChange={(
+                          event: React.ChangeEvent<HTMLSelectElement>,
+                        ) => handleSourceChange(event)}
+                      >
+                        <option value="MPDX">MPDX</option>
+                        <option value="DataServer">DataServer</option>
+                      </NativeSelect>
+                      <Button className={classes.buttonBlue}>
+                        <Icon
+                          path={mdiCheckboxMarkedCircle}
+                          size={0.8}
+                          className={classes.buttonIcon}
+                        />
+                        {t('Confirm {{amount}} as {{source}}', {
+                          amount: data?.contacts.nodes.length,
+                          source: defaultSource,
+                        })}
+                      </Button>
+                    </Box>
+                  </Box>
+                </Grid>
                 <Grid item xs={12}>
                   {data.contacts.nodes.map((contact) => (
                     <Contact
