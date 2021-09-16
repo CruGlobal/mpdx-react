@@ -156,15 +156,17 @@ const Contact: React.FC<Props> = ({
                   value={values.tagValue}
                   onChange={(event) => handleChange(event, 'tagValue')}
                 >
-                  {Object.keys(contactTags).map((key) => (
-                    <option
-                      value={key}
-                      key={key}
-                      selected={tagTitle === contactTags[key]}
-                    >
-                      {contactTags[key]}
-                    </option>
-                  ))}
+                  {Object.entries(contactTags).map(
+                    ([statusValue, statusTranslated]) => (
+                      <option
+                        value={statusValue}
+                        key={statusValue}
+                        selected={tagTitle === statusTranslated}
+                      >
+                        {statusTranslated}
+                      </option>
+                    ),
+                  )}
                 </NativeSelect>
               </Box>
             </Grid>
@@ -204,15 +206,17 @@ const Contact: React.FC<Props> = ({
                   <option value="" disabled>
                     Frequency
                   </option>
-                  {Object.keys(frequencies).map((freq) => (
-                    <option
-                      value={freq}
-                      key={freq}
-                      selected={frequencies[freq] === frequencyTitle}
-                    >
-                      {frequencies[freq]}
-                    </option>
-                  ))}
+                  {Object.entries(frequencies).map(
+                    ([freqValue, freqTranslated]) => (
+                      <option
+                        value={freqValue}
+                        key={freqValue}
+                        selected={freqTranslated === frequencyTitle}
+                      >
+                        {freqTranslated}
+                      </option>
+                    ),
+                  )}
                 </NativeSelect>
               </Box>
             </Grid>
