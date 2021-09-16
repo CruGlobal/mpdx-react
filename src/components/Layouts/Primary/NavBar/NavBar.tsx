@@ -104,8 +104,7 @@ function reduceChildRoutes({
   item,
   depth,
 }: {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  acc: any[];
+  acc: ReactElement[];
   pathname: string;
   item: Item;
   depth: number;
