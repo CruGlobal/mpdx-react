@@ -2,14 +2,13 @@ import React, { ReactElement } from 'react';
 import NextLink from 'next/link';
 import {
   Box,
-  makeStyles,
   Toolbar,
   AppBar,
   IconButton,
   SvgIcon,
   useScrollTrigger,
-  Theme,
   Hidden,
+  styled,
 } from '@material-ui/core';
 import MenuIcon from '@material-ui/icons/Menu';
 import logo from '../../../../images/logo.svg';
@@ -20,21 +19,23 @@ import NavMenu from './Items/NavMenu/NavMenu';
 import ProfileMenu from './Items/ProfileMenu/ProfileMenu';
 
 interface TopBarProps {
+  accountListId: string | undefined;
   onMobileNavOpen?: () => void;
 }
 
-const useStyles = makeStyles((theme: Theme) => ({
-  appBar: {
-    zIndex: theme.zIndex.drawer + 100,
-    backgroundColor: theme.palette.cruGrayDark.main,
-  },
-  toolbar: {
-    minHeight: 60,
-  },
+const StyledAppBar = styled(AppBar)(({ theme }) => ({
+  zIndex: theme.zIndex.drawer + 100,
+  backgroundColor: theme.palette.cruGrayDark.main,
 }));
 
-const TopBar = ({ onMobileNavOpen }: TopBarProps): ReactElement => {
-  const classes = useStyles();
+const StyledToolbar = styled(Toolbar)(() => ({
+  minHeight: 60,
+}));
+
+const TopBar = ({
+  accountListId,
+  onMobileNavOpen,
+}: TopBarProps): ReactElement => {
   const trigger = useScrollTrigger({
     disableHysteresis: true,
     threshold: 0,
@@ -42,18 +43,20 @@ const TopBar = ({ onMobileNavOpen }: TopBarProps): ReactElement => {
 
   return (
     <>
-      <AppBar className={classes.appBar} elevation={trigger ? 3 : 0}>
-        <Toolbar className={classes.toolbar}>
-          <Hidden lgUp>
-            <IconButton color="inherit" onClick={onMobileNavOpen}>
-              <SvgIcon fontSize="small">
-                <MenuIcon />
-              </SvgIcon>
-            </IconButton>
-          </Hidden>
-          <Hidden mdDown>
+      <StyledAppBar elevation={trigger ? 3 : 0}>
+        <StyledToolbar>
+          {accountListId && (
+            <Hidden lgUp>
+              <IconButton color="inherit" onClick={onMobileNavOpen}>
+                <SvgIcon fontSize="small">
+                  <MenuIcon />
+                </SvgIcon>
+              </IconButton>
+            </Hidden>
+          )}
+          <Hidden mdDown={!!accountListId}>
             <NextLink href="/">
-              <img src={logo} alt="logo" />
+              <img src={logo} alt="logo" style={{ cursor: 'pointer' }} />
             </NextLink>
           </Hidden>
           <Box ml={10} flexGrow={1}>
@@ -65,8 +68,8 @@ const TopBar = ({ onMobileNavOpen }: TopBarProps): ReactElement => {
           <Box ml={2}>
             <ProfileMenu />
           </Box>
-        </Toolbar>
-      </AppBar>
+        </StyledToolbar>
+      </StyledAppBar>
     </>
   );
 };

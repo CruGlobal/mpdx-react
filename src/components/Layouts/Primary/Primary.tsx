@@ -1,34 +1,36 @@
 import React, { ReactElement, ReactNode, useState } from 'react';
-import { Hidden, Theme, makeStyles } from '@material-ui/core';
+import { Hidden, styled } from '@material-ui/core';
 import AddFab from './AddFab';
 import TopBar from './TopBar/TopBar';
 import BottomBar from './BottomBar';
+import { useAccountListId } from 'src/hooks/useAccountListId';
 import { NavBar } from 'src/components/Layouts/Primary/NavBar/NavBar';
 
-const useStyles = makeStyles((theme: Theme) => ({
-  root: {
-    backgroundColor: theme.palette.common.white,
-    display: 'flex',
-    height: '100%',
-    overflow: 'hidden',
-    width: '100%',
-  },
-  contentContainer: {
-    display: 'flex',
-    flex: '1 1 auto',
-    overflow: 'hidden',
-  },
-  content: {
-    flex: '1 1 auto',
-    height: '100%',
-    overflow: 'auto',
-  },
-  wrapper: {
-    display: 'flex',
-    flex: '1 1 auto',
-    overflow: 'hidden',
-    paddingTop: 60,
-  },
+const RootContainer = styled('div')(({ theme }) => ({
+  backgroundColor: theme.palette.common.white,
+  display: 'flex',
+  height: '100%',
+  overflow: 'hidden',
+  width: '100%',
+}));
+
+const ContentContainer = styled('div')(() => ({
+  display: 'flex',
+  flex: '1 1 auto',
+  overflow: 'hidden',
+}));
+
+const Content = styled('div')(() => ({
+  flex: '1 1 auto',
+  height: '100%',
+  overflow: 'auto',
+}));
+
+const Wrapper = styled('div')(() => ({
+  display: 'flex',
+  flex: '1 1 auto',
+  overflow: 'hidden',
+  paddingTop: 60,
 }));
 
 interface Props {
@@ -37,25 +39,30 @@ interface Props {
 }
 
 const Primary = ({ children, navBar }: Props): ReactElement => {
-  const classes = useStyles();
+  const accountListId = useAccountListId();
   const [isMobileNavOpen, setMobileNavOpen] = useState<boolean>(false);
 
   return (
     <>
-      <div className={classes.root}>
-        <TopBar onMobileNavOpen={() => setMobileNavOpen(true)} />
-        <NavBar
-          onMobileClose={() => setMobileNavOpen(false)}
-          openMobile={isMobileNavOpen}
-        >
-          {navBar}
-        </NavBar>
-        <div className={classes.wrapper}>
-          <div className={classes.contentContainer}>
-            <div className={classes.content}>{children}</div>
-          </div>
-        </div>
-      </div>
+      <RootContainer>
+        <TopBar
+          onMobileNavOpen={() => setMobileNavOpen(true)}
+          accountListId={accountListId}
+        />
+        {accountListId && (
+          <NavBar
+            onMobileClose={() => setMobileNavOpen(false)}
+            openMobile={isMobileNavOpen}
+          >
+            {navBar}
+          </NavBar>
+        )}
+        <Wrapper>
+          <ContentContainer>
+            <Content>{children}</Content>
+          </ContentContainer>
+        </Wrapper>
+      </RootContainer>
       <Hidden mdUp>
         <BottomBar />
       </Hidden>
