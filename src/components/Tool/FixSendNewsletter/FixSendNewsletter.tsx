@@ -63,7 +63,7 @@ const FixSendNewsletter = (): ReactElement => {
     variables: { accountListId: accountListId || '' },
   });
 
-  //TODO: Make navbar selectId = "fixSendNewsletter" when other branch gets merged
+  //TODO: Add deceased to contact filters
 
   return (
     <>
