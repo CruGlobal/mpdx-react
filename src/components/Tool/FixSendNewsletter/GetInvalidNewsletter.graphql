@@ -1,7 +1,10 @@
 query GetInvalidNewsletter($accountListId: ID!) {
   contacts(
     accountListId: $accountListId
-    contactsFilter: { newsletter: NO_VALUE }
+    contactsFilter: {
+      newsletter: NO_VALUE
+      status: [PARTNER_FINANCIAL, PARTNER_SPECIAL, PARTNER_PRAY]
+    }
   ) {
     nodes {
       id

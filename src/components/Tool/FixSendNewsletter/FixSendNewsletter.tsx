@@ -63,13 +63,6 @@ const FixSendNewsletter = (): ReactElement => {
     variables: { accountListId: accountListId || '' },
   });
 
-  const filtered = data?.contacts.nodes.filter(
-    (el) =>
-      el.status === 'PARTNER_FINANCIAL' ||
-      el.status === 'PARTNER_SPECIAL' ||
-      el.status === 'PARTNER_PRAY',
-  );
-
   //TODO: Make navbar selectId = "fixSendNewsletter" when other branch gets merged
 
   return (
@@ -81,7 +74,7 @@ const FixSendNewsletter = (): ReactElement => {
               <Typography variant="h4">{t('Fix Send Newsletter')}</Typography>
               <Divider className={classes.divider} />
             </Grid>
-            {filtered && filtered.length > 0 ? (
+            {data?.contacts.nodes.length > 0 ? (
               <>
                 <Grid item xs={12}>
                   <Box className={classes.descriptionBox}>
@@ -90,7 +83,7 @@ const FixSendNewsletter = (): ReactElement => {
                         {t(
                           'You have {{amount}} newsletter statuses to confirm.',
                           {
-                            amount: filtered.length,
+                            amount: data?.contacts.nodes.length,
                           },
                         )}
                       </strong>
@@ -109,14 +102,14 @@ const FixSendNewsletter = (): ReactElement => {
                       <Trans
                         defaults="Cofirm {{value}}"
                         values={{
-                          value: filtered.length,
+                          value: data?.contacts.nodes.length,
                         }}
                       />
                     </Button>
                   </Box>
                 </Grid>
                 <Grid item xs={12}>
-                  {filtered.map((contact) => (
+                  {data.contacts.nodes.map((contact) => (
                     <Contact
                       name={contact.name}
                       // need to fix this after changes to fix commitment info get merged
@@ -150,7 +143,7 @@ const FixSendNewsletter = (): ReactElement => {
                       <Trans
                         defaults="Showing <bold>{{value}}</bold> of <bold>{{value}}</bold>"
                         values={{
-                          value: filtered.length,
+                          value: data?.contacts.nodes.length,
                         }}
                         components={{ bold: <strong /> }}
                       />
