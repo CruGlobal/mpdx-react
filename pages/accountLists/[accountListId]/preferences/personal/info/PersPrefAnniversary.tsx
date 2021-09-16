@@ -7,7 +7,7 @@ interface AnniversaryProps {
   anniversary_month: string;
 }
 
-const PersPrefAnniversary: React.FC<AnniversaryProps> = ({
+export const PersPrefAnniversary: React.FC<AnniversaryProps> = ({
   marital_status,
   anniversary_day,
   anniversary_month,
@@ -38,5 +38,3 @@ const PersPrefAnniversary: React.FC<AnniversaryProps> = ({
 
   return null;
 };
-
-export default PersPrefAnniversary;
