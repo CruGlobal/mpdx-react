@@ -84,7 +84,7 @@ function renderNavItems({
 }) {
   return (
     <List disablePadding>
-      {items?.reduce(
+      {items?.reduce<ReactElement[]>(
         (acc, item) =>
           reduceChildRoutes({
             acc,
