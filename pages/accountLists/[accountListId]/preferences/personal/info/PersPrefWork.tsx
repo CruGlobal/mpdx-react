@@ -6,7 +6,7 @@ interface WorkProps {
   occupation: string;
 }
 
-const PersPrefWork: React.FC<WorkProps> = ({ employer, occupation }) => {
+export const PersPrefWork: React.FC<WorkProps> = ({ employer, occupation }) => {
   const separator = occupation && employer ? ' - ' : '';
 
   if (occupation || employer) {
@@ -19,5 +19,3 @@ const PersPrefWork: React.FC<WorkProps> = ({ employer, occupation }) => {
 
   return null;
 };
-
-export default PersPrefWork;

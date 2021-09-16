@@ -72,7 +72,7 @@ interface PersPrefContactsProps {
   contacts: ContactData[];
 }
 
-const PersPrefContacts = ({
+export const PersPrefContacts = ({
   contacts,
 }: PersPrefContactsProps): ReactElement<PersPrefContactsProps> => {
   const dataValid = contacts.filter((current) => current.invalid !== true);
@@ -101,5 +101,3 @@ const PersPrefContacts = ({
     </>
   );
 };
-
-export default PersPrefContacts;

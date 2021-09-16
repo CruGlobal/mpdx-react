@@ -72,7 +72,7 @@ interface SocialMediaProps {
   websites: string[];
 }
 
-const PersPrefSocials: React.FC<SocialMediaProps> = ({
+export const PersPrefSocials: React.FC<SocialMediaProps> = ({
   facebook_accounts,
   twitter_accounts,
   linkedin_accounts,
@@ -87,5 +87,3 @@ const PersPrefSocials: React.FC<SocialMediaProps> = ({
     </StyledList>
   );
 };
-
-export default PersPrefSocials;

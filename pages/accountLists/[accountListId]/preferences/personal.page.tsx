@@ -1,27 +1,24 @@
 import React from 'react';
-import Head from 'next/head';
 import { useTranslation } from 'react-i18next';
-import { Box, Typography } from '@material-ui/core';
-import PersPrefInfo from './personal/info/PersPrefInfo';
+import { Box } from '@material-ui/core';
+import { PreferencesWrapper } from './wrapper';
+import { PersPrefInfo } from './personal/info/PersPrefInfo';
 
 const PersonalPreferences: React.FC = () => {
   const { t } = useTranslation();
 
   return (
-    <>
-      <Head>
-        <title>MPDX | {t('Personal Preferences')}</title>
-      </Head>
-      <Box component="section" padding={2}>
-        <Typography component="h1" variant="h4" gutterBottom>
-          {t('Preferences')}
-        </Typography>
+    <PreferencesWrapper
+      pageTitle={t('Personal Preferences')}
+      pageHeading={t('Preferences')}
+    >
+      <Box component="section">
         <PersPrefInfo />
       </Box>
-      <Box component="main" padding={2}>
+      <Box component="section" marginTop={3}>
         <div>Main content area</div>
       </Box>
-    </>
+    </PreferencesWrapper>
   );
 };
 
