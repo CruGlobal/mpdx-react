@@ -173,8 +173,7 @@ const Contact = ({
                       )}
                       <Box display="flex" flexDirection="column" ml={2}>
                         <Typography variant="h6">
-                          {`${primaryPerson.firstName} ${primaryPerson.lastName}` ||
-                            ''}
+                          {`${primaryPerson.firstName} ${primaryPerson.lastName}`}
                         </Typography>
                         <Typography>
                           {primaryPerson.primaryEmailAddress?.email || ''}
