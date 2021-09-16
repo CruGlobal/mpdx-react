@@ -72,11 +72,22 @@ const AddAppealForm = (): ReactElement => {
   const { enqueueSnackbar } = useSnackbar();
   const [createNewAppeal, { loading: updating }] = useCreateAppealMutation();
 
+  const calculateGoal = (
+    initialGoal: number,
+    letterCost: number,
+    adminCost: number,
+  ): number => {
+    return (initialGoal + letterCost) * (1 + adminCost / 100);
+  };
+
   const onSubmit = async (props: formProps) => {
     const attributes = {
       name: props.name,
-      amount:
-        (props.initialGoal + props.letterCost) * (1 + props.adminCost / 100),
+      amount: calculateGoal(
+        props.initialGoal,
+        props.letterCost,
+        props.adminCost,
+      ),
     };
 
     await createNewAppeal({
@@ -131,7 +142,7 @@ const AddAppealForm = (): ReactElement => {
                       helperText={errors.name}
                       data-testid="nameInput"
                       label={t('Name')}
-                      placeholder="Appeal Name"
+                      placeholder={t('Appeal Name')}
                       name="name"
                       type="input"
                       variant="outlined"
@@ -245,9 +256,10 @@ const AddAppealForm = (): ReactElement => {
                           variant="outlined"
                           size="small"
                           className={classes.input}
-                          value={(
-                            (initialGoal + letterCost) *
-                            (1 + adminCost / 100)
+                          value={calculateGoal(
+                            initialGoal,
+                            letterCost,
+                            adminCost,
                           ).toFixed(2)}
                         />
                       </Box>
@@ -256,25 +268,25 @@ const AddAppealForm = (): ReactElement => {
                 </Box>
                 <Box mt={2} mb={1} className={classes.blueBox}>
                   <Typography variant="body2">
-                    You can add contacts to your appeal based on their status
-                    and/or tags. You can also add additional contacts
-                    individually at a later time.
+                    {t(
+                      'You can add contacts to your appeal based on their status and/or tags. You can also add additional contacts individually at a later time.',
+                    )}
                   </Typography>
                 </Box>
                 <Box mt={1} mb={1}>
                   <Typography variant="h6" display="inline">
-                    Add contacts with the following status(es):
+                    {t('Add contacts with the following status(es):')}
                   </Typography>
                   <Typography
                     variant="h6"
                     display="inline"
                     className={classes.selectAll}
                   >
-                    select all
+                    {t('select all')}
                   </Typography>
                   <TextField
                     variant="outlined"
-                    placeholder="Select Some Options"
+                    placeholder={t('Select Some Options')}
                     className={classes.input}
                     inputProps={{
                       style: {
@@ -285,18 +297,18 @@ const AddAppealForm = (): ReactElement => {
                 </Box>
                 <Box mt={1} mb={1}>
                   <Typography variant="h6" display="inline">
-                    Add contacts with the following tag(s):
+                    {t('Add contacts with the following tag(s):')}
                   </Typography>
                   <Typography
                     variant="h6"
                     display="inline"
                     className={classes.selectAll}
                   >
-                    select all
+                    {t('select all')}
                   </Typography>
                   <TextField
                     variant="outlined"
-                    placeholder="Select Some Options"
+                    placeholder={t('Select Some Options')}
                     className={classes.input}
                     inputProps={{
                       style: {
@@ -306,10 +318,12 @@ const AddAppealForm = (): ReactElement => {
                   />
                 </Box>
                 <Box mt={1} mb={1}>
-                  <Typography variant="h6">Do not add contacts who:</Typography>
+                  <Typography variant="h6">
+                    {t('Do not add contacts who:')}
+                  </Typography>
                   <TextField
                     variant="outlined"
-                    placeholder="Select Some Options"
+                    placeholder={t('Select Some Options')}
                     className={classes.input}
                     inputProps={{
                       style: {
