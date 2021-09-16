@@ -1,6 +1,5 @@
-/* eslint-disable react/display-name */
 import React, { useEffect } from 'react';
-import type { FC, ReactNode } from 'react';
+import type { FC } from 'react';
 import {
   Box,
   Drawer,
@@ -11,6 +10,7 @@ import {
 } from '@material-ui/core';
 import { useRouter } from 'next/router';
 import NextLink from 'next/link';
+import { useTranslation } from 'react-i18next';
 import { NavItem } from './NavItem/NavItem';
 import logo from 'src/images/logo.svg';
 import { ReportNavItems } from 'src/components/Reports/NavReportsList/ReportNavItems';
@@ -24,7 +24,7 @@ interface NavBarProps {
 
 interface Item {
   href?: string;
-  icon?: ReactNode;
+  icon?: React.Component;
   items?: Item[];
   title: string;
 }
@@ -32,7 +32,7 @@ interface Item {
 interface Section {
   as?: string;
   href?: string;
-  icon?: ReactNode;
+  icon?: React.Component;
   items?: Item[];
   title: string;
 }
@@ -84,17 +84,16 @@ function renderNavItems({
 }) {
   return (
     <List disablePadding>
-      {items &&
-        items.reduce(
-          (acc, item) =>
-            reduceChildRoutes({
-              acc,
-              item,
-              pathname,
-              depth,
-            }),
-          [],
-        )}
+      {items?.reduce(
+        (acc, item) =>
+          reduceChildRoutes({
+            acc,
+            item,
+            pathname,
+            depth,
+          }),
+        [],
+      )}
     </List>
   );
 }
@@ -113,10 +112,11 @@ function reduceChildRoutes({
 }) {
   const key = item.title + depth;
   const accountListId = useAccountListId();
+  const { t } = useTranslation();
 
   if (item.items) {
     acc.push(
-      <NavItem depth={depth} icon={item.icon} key={key} title={item.title}>
+      <NavItem depth={depth} icon={item.icon} key={key} title={t(item.title)}>
         {renderNavItems({
           depth: depth + 1,
           pathname,
@@ -136,7 +136,7 @@ function reduceChildRoutes({
         }
         icon={item.icon}
         key={key}
-        title={item.title}
+        title={t(item.title)}
       />,
     );
   }
@@ -167,7 +167,7 @@ export const NavBar: FC<NavBarProps> = ({ onMobileClose, openMobile }) => {
       <Hidden lgUp>
         <Box p={2} display="flex" justifyContent="center">
           <NextLink href="/">
-            <img src={logo} alt="logo" />
+            <img src={logo} alt="logo" style={{ cursor: 'pointer' }} />
           </NextLink>
         </Box>
       </Hidden>

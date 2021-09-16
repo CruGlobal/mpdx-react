@@ -17,24 +17,24 @@ interface NavItemProps {
   depth: number;
   href?: string;
   as?: string;
-  icon?: ReactNode;
+  icon?: React.Component;
   open?: boolean;
   title: string;
 }
 
-const StyledListItem = styled(ListItem)(() => ({
+export const StyledListItem = styled(ListItem)(() => ({
   display: 'block',
   paddingTop: 0,
   paddingBottom: 0,
 }));
 
-const LeafListItem = styled(ListItem)(() => ({
+export const LeafListItem = styled(ListItem)(() => ({
   display: 'flex',
   paddingTop: 0,
   paddingBottom: 0,
 }));
 
-const StyledButton = styled(Button)(({ theme }) => ({
+export const StyledButton = styled(Button)(({ theme }) => ({
   color: theme.palette.common.white,
   padding: '10px 8px',
   justifyContent: 'flex-start',
@@ -43,7 +43,7 @@ const StyledButton = styled(Button)(({ theme }) => ({
   width: '100%',
 }));
 
-const LeafButton = styled(Button)(({ theme }) => ({
+export const LeafButton = styled(Button)(({ theme }) => ({
   color: theme.palette.text.secondary,
   padding: '10px 8px',
   justifyContent: 'flex-start',
@@ -52,10 +52,20 @@ const LeafButton = styled(Button)(({ theme }) => ({
   width: '100%',
 }));
 
-const Title = styled('span')(({ theme }) => ({
+export const ExpandItemIcon = styled(ExpandLessIcon)(({ theme }) => ({
+  color: theme.palette.cruGrayMedium.main,
+}));
+
+export const CollapseItemIcon = styled(ChevronRightIcon)(({ theme }) => ({
+  color: theme.palette.cruGrayMedium.main,
+}));
+
+export const Title = styled('span')(({ theme }) => ({
   color: theme.palette.common.white,
   fontSize: 16,
   marginRight: 'auto',
+  textAlign: 'left',
+  lineHeight: 1.5,
 }));
 
 export const NavItem: FC<NavItemProps> = ({
@@ -95,9 +105,9 @@ export const NavItem: FC<NavItemProps> = ({
           {Icon && <Icon style={iconStyle} size="20" />}
           <Title>{title}</Title>
           {open ? (
-            <ExpandLessIcon fontSize="small" color="disabled" />
+            <ExpandItemIcon fontSize="small" color="disabled" />
           ) : (
-            <ChevronRightIcon fontSize="small" color="disabled" />
+            <CollapseItemIcon fontSize="small" color="disabled" />
           )}
         </StyledButton>
         <Collapse in={open}>{children}</Collapse>
