@@ -40,10 +40,25 @@ const contactMock = gqlMock<ContactDonorAccountsFragment>(
           currency: 'CAD',
         },
       },
+      contactReferralsToMe: {
+        nodes: [
+          {
+            id: 'referred-by-id-1',
+            referredBy: {
+              id: 'referred-by-contact-id',
+              name: 'Person, Cool',
+            },
+          },
+        ],
+      },
     },
   },
 );
 
+const contactMockNoReferrals: ContactDonorAccountsFragment = {
+  ...contactMock,
+  contactReferralsToMe: { nodes: [] },
+};
 jest.mock('next/router', () => ({
   useRouter: () => {
     return {
@@ -76,7 +91,6 @@ describe('EditPartnershipInfoModal', () => {
               <EditPartnershipInfoModal
                 contact={contactMock}
                 handleClose={handleClose}
-                isOpen={true}
               />
             </GqlMockedProvider>
           </ThemeProvider>
@@ -97,7 +111,6 @@ describe('EditPartnershipInfoModal', () => {
               <EditPartnershipInfoModal
                 contact={contactMock}
                 handleClose={handleClose}
-                isOpen={true}
               />
             </GqlMockedProvider>
           </ThemeProvider>
@@ -119,7 +132,6 @@ describe('EditPartnershipInfoModal', () => {
               <EditPartnershipInfoModal
                 contact={contactMock}
                 handleClose={handleClose}
-                isOpen={true}
               />
             </GqlMockedProvider>
           </ThemeProvider>
@@ -141,7 +153,6 @@ describe('EditPartnershipInfoModal', () => {
               <EditPartnershipInfoModal
                 contact={contactMock}
                 handleClose={handleClose}
-                isOpen={true}
               />
             </GqlMockedProvider>
           </ThemeProvider>
@@ -190,7 +201,6 @@ describe('EditPartnershipInfoModal', () => {
               <EditPartnershipInfoModal
                 contact={contactMock}
                 handleClose={handleClose}
-                isOpen={true}
               />
             </GqlMockedProvider>
           </ThemeProvider>
@@ -235,7 +245,6 @@ describe('EditPartnershipInfoModal', () => {
               <EditPartnershipInfoModal
                 contact={contactMock}
                 handleClose={handleClose}
-                isOpen={true}
               />
             </GqlMockedProvider>
           </ThemeProvider>
@@ -271,7 +280,6 @@ describe('EditPartnershipInfoModal', () => {
               <EditPartnershipInfoModal
                 contact={contactMock}
                 handleClose={handleClose}
-                isOpen={true}
               />
             </GqlMockedProvider>
           </ThemeProvider>
@@ -328,13 +336,13 @@ describe('EditPartnershipInfoModal', () => {
               <EditPartnershipInfoModal
                 contact={contactMock}
                 handleClose={handleClose}
-                isOpen={true}
               />
             </GqlMockedProvider>
           </ThemeProvider>
         </MuiPickersUtilsProvider>
       </SnackbarProvider>,
     );
+    await waitFor(() => expect(getByLabelText('Currency')).toBeInTheDocument());
     const currencyInput = getByLabelText('Currency');
 
     userEvent.click(currencyInput);
@@ -381,7 +389,6 @@ describe('EditPartnershipInfoModal', () => {
               <EditPartnershipInfoModal
                 contact={contactMock}
                 handleClose={handleClose}
-                isOpen={true}
               />
             </GqlMockedProvider>
           </ThemeProvider>
@@ -405,6 +412,126 @@ describe('EditPartnershipInfoModal', () => {
       ),
     );
     expect(handleClose).toHaveBeenCalled();
+  });
+
+  it('should handle editing the referred by | Delete', async () => {
+    const { getByLabelText, getByText, getByRole, queryByText } = render(
+      <SnackbarProvider>
+        <MuiPickersUtilsProvider utils={LuxonUtils}>
+          <ThemeProvider theme={theme}>
+            <GqlMockedProvider<UpdateContactPartnershipMutation>>
+              <EditPartnershipInfoModal
+                contact={contactMock}
+                handleClose={handleClose}
+              />
+            </GqlMockedProvider>
+          </ThemeProvider>
+        </MuiPickersUtilsProvider>
+      </SnackbarProvider>,
+    );
+
+    const referredByInput = getByLabelText('Referred By');
+    await waitFor(() => expect(referredByInput).toBeInTheDocument());
+    expect(getByText('Person, Cool')).toBeInTheDocument();
+    const deleteIcon = getByRole('button', {
+      name: 'Person, Cool',
+    }).querySelector('.MuiChip-deleteIcon');
+
+    expect(deleteIcon).toBeInTheDocument();
+    deleteIcon && userEvent.click(deleteIcon);
+    expect(queryByText('Person, Cool')).not.toBeInTheDocument();
+    userEvent.click(getByText('Save'));
+    await waitFor(() =>
+      expect(mockEnqueue).toHaveBeenCalledWith(
+        'Partnership information updated successfully.',
+        {
+          variant: 'success',
+        },
+      ),
+    );
+    expect(handleClose).toHaveBeenCalled();
+  });
+
+  it('should handle editing the referred by | Create', async () => {
+    const { getByLabelText, getByText } = render(
+      <SnackbarProvider>
+        <MuiPickersUtilsProvider utils={LuxonUtils}>
+          <ThemeProvider theme={theme}>
+            <GqlMockedProvider<UpdateContactPartnershipMutation>
+              mocks={{
+                GetDataForPartnershipInfoModal: {
+                  contacts: {
+                    nodes: [
+                      {
+                        id: 'contact-1',
+                        name: 'Person, Cool',
+                      },
+                      {
+                        id: 'contact-2',
+                        name: 'Guy, Great',
+                      },
+                    ],
+                  },
+                },
+              }}
+            >
+              <EditPartnershipInfoModal
+                contact={contactMock}
+                handleClose={handleClose}
+              />
+            </GqlMockedProvider>
+          </ThemeProvider>
+        </MuiPickersUtilsProvider>
+      </SnackbarProvider>,
+    );
+
+    const referredByInput = getByLabelText('Referred By');
+    await waitFor(() => expect(referredByInput).toBeInTheDocument());
+    userEvent.click(referredByInput);
+    userEvent.type(referredByInput, 'G');
+    await waitFor(() => expect(getByText('Guy, Great')).toBeInTheDocument());
+    userEvent.click(getByText('Guy, Great'));
+    expect(getByText('Guy, Great')).toBeInTheDocument();
+    userEvent.click(getByText('Save'));
+    await waitFor(() =>
+      expect(mockEnqueue).toHaveBeenCalledWith(
+        'Partnership information updated successfully.',
+        {
+          variant: 'success',
+        },
+      ),
+    );
+    expect(handleClose).toHaveBeenCalled();
+  });
+
+  it('should handle editing the referred by | No Contacts or Referrals', async () => {
+    const { getByLabelText, getByText } = render(
+      <SnackbarProvider>
+        <MuiPickersUtilsProvider utils={LuxonUtils}>
+          <ThemeProvider theme={theme}>
+            <GqlMockedProvider<UpdateContactPartnershipMutation>
+              mocks={{
+                GetDataForPartnershipInfoModal: {
+                  contacts: {
+                    nodes: [],
+                  },
+                },
+              }}
+            >
+              <EditPartnershipInfoModal
+                contact={contactMockNoReferrals}
+                handleClose={handleClose}
+              />
+            </GqlMockedProvider>
+          </ThemeProvider>
+        </MuiPickersUtilsProvider>
+      </SnackbarProvider>,
+    );
+
+    const referredByInput = getByLabelText('Referred By');
+    await waitFor(() => expect(referredByInput).toBeInTheDocument());
+    userEvent.click(referredByInput);
+    expect(getByText('No options')).toBeInTheDocument();
   });
 
   it('should handle editing next ask date', async () => {
@@ -437,7 +564,6 @@ describe('EditPartnershipInfoModal', () => {
               <EditPartnershipInfoModal
                 contact={contactMock}
                 handleClose={handleClose}
-                isOpen={true}
               />
             </GqlMockedProvider>
           </ThemeProvider>
