@@ -1,0 +1,39 @@
+query GetInvalidNewsletter($accountListId: ID!) {
+  contacts(
+    accountListId: $accountListId
+    contactsFilter: {
+      newsletter: NO_VALUE
+      status: [PARTNER_FINANCIAL, PARTNER_SPECIAL, PARTNER_PRAY]
+    }
+  ) {
+    nodes {
+      id
+      name
+      status
+      source
+      primaryAddress {
+        ...ContactPrimaryAddress
+      }
+      primaryPerson {
+        ...ContactPrimaryPerson
+      }
+    }
+  }
+}
+
+fragment ContactPrimaryAddress on Address {
+  street
+  city
+  state
+  postalCode
+  source
+  updatedAt
+}
+
+fragment ContactPrimaryPerson on Person {
+  firstName
+  lastName
+  primaryEmailAddress {
+    email
+  }
+}
