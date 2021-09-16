@@ -1,16 +1,22 @@
-import React, { ReactElement, useState } from 'react';
+import React, { ReactElement } from 'react';
 import {
   makeStyles,
   Box,
   Typography,
   Grid,
   Divider,
+  CircularProgress,
   Button,
 } from '@material-ui/core';
+import { Icon } from '@mdi/react';
+import { mdiCheckboxMarkedCircle } from '@mdi/js';
 import { useTranslation, Trans } from 'react-i18next';
 import theme from '../../../theme';
+import { useAccountListId } from '../../../../src/hooks/useAccountListId';
+// import { ContactTags } from '../FixCommitmentInfo/InputOptions/ContactTags';
 import Contact from './Contact';
 import NoContacts from './NoContacts';
+import { useGetInvalidNewsletterQuery } from './GetInvalidNewsletter.generated';
 
 const useStyles = makeStyles(() => ({
   container: {
@@ -39,101 +45,119 @@ const useStyles = makeStyles(() => ({
     display: 'flex',
     justifyContent: 'center',
   },
+  buttonBlue: {
+    backgroundColor: theme.palette.mpdxBlue.main,
+    marginTop: theme.spacing(1),
+    color: 'white',
+  },
+  buttonIcon: {
+    marginRight: theme.spacing(1),
+  },
 }));
-
-const testData = [
-  {
-    title: 'Test Contact and Friends',
-    name: 'Test Contact',
-    tag: 'Partner - Financial',
-    address: {
-      street: '70 Test Ave',
-      city: 'Vancouver BC V5Z 2V7',
-    },
-    source: 'Source: DonorHub (12/16/2014)',
-    newsletterType: 'physical',
-    email: 'test@test.com',
-  },
-  {
-    title: 'Anonymous Test',
-    newsletterType: 'both',
-  },
-];
 
 const FixSendNewsletter = (): ReactElement => {
   const classes = useStyles();
-  const [test, setTest] = useState(testData);
   const { t } = useTranslation();
+  const accountListId = useAccountListId();
+  const { data, loading } = useGetInvalidNewsletterQuery({
+    variables: { accountListId: accountListId || '' },
+  });
 
-  const toggleData = (): void => {
-    test.length > 0 ? setTest([]) : setTest(testData);
-  };
-
-  //TODO: Make navbar selectId = "fixSendNewsletter" when other branch gets merged
+  //TODO: Add deceased to contact filters
 
   return (
     <>
       <Box className={classes.outer} data-testid="Home">
-        <Grid container className={classes.container}>
-          <Grid item xs={12}>
-            <Typography variant="h4">{t('Fix Send Newsletter')}</Typography>
-            <Divider className={classes.divider} />
-            <Box className={classes.descriptionBox}>
-              {test.length > 0 && (
-                <>
-                  <Typography>
-                    <strong>
+        {!loading && data ? (
+          <Grid container className={classes.container}>
+            <Grid item xs={12}>
+              <Typography variant="h4">{t('Fix Send Newsletter')}</Typography>
+              <Divider className={classes.divider} />
+            </Grid>
+            {data?.contacts.nodes.length > 0 ? (
+              <>
+                <Grid item xs={12}>
+                  <Box className={classes.descriptionBox}>
+                    <Typography>
+                      <strong>
+                        {t(
+                          'You have {{amount}} newsletter statuses to confirm.',
+                          {
+                            amount: data?.contacts.nodes.length,
+                          },
+                        )}
+                      </strong>
+                    </Typography>
+                    <Typography>
                       {t(
-                        'You have {{amount}} newsletter statuses to confirm.',
-                        {
-                          amount: test.length,
-                        },
+                        'Contacts that appear here have an empty Newsletter Status and Partner Status set to Financial, Special, or Pray. Choose a newsletter status for contacts below.',
                       )}
-                    </strong>
-                  </Typography>
-                  <Typography>
-                    {t(
-                      'Contacts that appear here have an empty Newsletter Status and Partner Status set to Financial, Special, or Pray. Choose a newsletter status for contacts below.',
-                    )}
-                  </Typography>
-                </>
-              )}
-              <Button size="small" variant="outlined" onClick={toggleData}>
-                {t('Change Test')}
-              </Button>
-            </Box>
-          </Grid>
-          {test.length > 0 ? (
-            <>
-              <Grid item xs={12}>
-                {test.map((contact) => (
-                  <Contact
-                    title={contact.title}
-                    tag={contact.tag}
-                    name={contact.name || ''}
-                    key={contact.title}
-                    address={contact.address || { street: '', city: '' }}
-                    email={contact.email || ''}
-                    newsletterType={contact.newsletterType}
-                  />
-                ))}
-              </Grid>
-              <Grid item xs={12}>
-                <Box className={classes.footer}>
-                  <Typography>
-                    <Trans
-                      defaults="Showing <bold>{{value}}</bold> of <bold>{{value}}</bold>"
-                      values={{ value: test.length }}
-                      components={{ bold: <strong /> }}
+                    </Typography>
+                    <Button variant="contained" className={classes.buttonBlue}>
+                      <Icon
+                        path={mdiCheckboxMarkedCircle}
+                        size={0.8}
+                        className={classes.buttonIcon}
+                      />
+                      <Trans
+                        defaults="Cofirm {{value}}"
+                        values={{
+                          value: data?.contacts.nodes.length,
+                        }}
+                      />
+                    </Button>
+                  </Box>
+                </Grid>
+                <Grid item xs={12}>
+                  {data.contacts.nodes.map((contact) => (
+                    <Contact
+                      name={contact.name}
+                      // need to fix this after changes to fix commitment info get merged
+                      status={contact.status || ''}
+                      primaryPerson={
+                        contact.primaryPerson || {
+                          firstName: '',
+                          lastName: '',
+                          primaryEmailAddress: {
+                            email: '',
+                          },
+                        }
+                      }
+                      key={contact.id}
+                      primaryAddress={
+                        contact.primaryAddress || {
+                          street: '',
+                          city: '',
+                          state: '',
+                          postalCode: '',
+                          source: '',
+                          updatedAt: '',
+                        }
+                      }
                     />
-                  </Typography>
-                </Box>
-              </Grid>
-            </>
-          ) : (
-            <NoContacts />
-          )}
-        </Grid>
+                  ))}
+                </Grid>
+                <Grid item xs={12}>
+                  <Box className={classes.footer}>
+                    <Typography>
+                      <Trans
+                        defaults="Showing <bold>{{value}}</bold> of <bold>{{value}}</bold>"
+                        values={{
+                          value: data?.contacts.nodes.length,
+                        }}
+                        components={{ bold: <strong /> }}
+                      />
+                    </Typography>
+                  </Box>
+                </Grid>
+              </>
+            ) : (
+              <NoContacts />
+            )}
+          </Grid>
+        ) : (
+          <CircularProgress style={{ marginTop: theme.spacing(3) }} />
+        )}
       </Box>
     </>
   );
