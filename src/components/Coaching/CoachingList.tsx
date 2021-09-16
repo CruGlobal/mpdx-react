@@ -24,6 +24,7 @@ const CoachingTitleIcon = styled(EcoOutlined)(({ theme }) => ({
 
 const CoachingListTitle = styled(Typography)(({ theme }) => ({
   color: theme.palette.text.primary,
+  margin: theme.spacing(1),
 }));
 
 const CoachingLoading = styled(Skeleton)(() => ({
@@ -35,7 +36,7 @@ export const CoachingList = (): ReactElement => {
   const { data, loading } = useLoadCoachingListQuery();
   const { t } = useTranslation();
 
-  const coaches = data?.coachingAccountLists.nodes;
+  const coaches = data?.coachingAccountLists;
 
   return (
     <CoachingListWrapper>
@@ -55,7 +56,17 @@ export const CoachingList = (): ReactElement => {
             <CoachingLoading />
           </>
         ) : (
-          <></>
+          <>
+            <CoachingTitleWrapper>
+              <CoachingListTitle variant="body1">
+                {'Showing ' +
+                  coaches?.totalPageCount +
+                  ' of ' +
+                  coaches?.totalCount}
+              </CoachingListTitle>
+            </CoachingTitleWrapper>
+            <Divider />
+          </>
         )}
       </Box>
     </CoachingListWrapper>
