@@ -14,6 +14,7 @@ import { Icon } from '@mdi/react';
 import { mdiCheckboxMarkedCircle, mdiLock, mdiPlus, mdiPencil } from '@mdi/js';
 import StarIcon from '@material-ui/icons/Star';
 import StarOutlineIcon from '@material-ui/icons/StarOutline';
+import { DateTime } from 'luxon';
 import theme from '../../../theme';
 import { emptyAddress } from './FixMailingAddresses';
 import { ContactAddressFragment } from './GetInvalidAddresses.generated';
@@ -123,14 +124,6 @@ const Contact: React.FC<Props> = ({
   //TODO: Add button functionality
   //TODO: Make contact name a link to contact page
 
-  const formatDate = (date: string): string => {
-    const temp = new Date(date);
-    const year = temp.getFullYear();
-    const month = temp.getMonth();
-    const day = temp.getDay();
-    return `(${month}/${day}/${year})`;
-  };
-
   return (
     <Grid container className={classes.container}>
       <Grid container>
@@ -199,7 +192,9 @@ const Contact: React.FC<Props> = ({
                               {address.source}{' '}
                             </Typography>
                             <Typography display="inline">
-                              {formatDate(address.createdAt)}
+                              {DateTime.fromISO(
+                                address.createdAt,
+                              ).toLocaleString(DateTime.DATE_SHORT)}
                             </Typography>
                           </Box>
                           <Typography>
