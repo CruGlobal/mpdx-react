@@ -1,0 +1,33 @@
+query InvalidAddresses($accountListId: ID!) {
+  contacts(
+    accountListId: $accountListId
+    contactsFilter: { addressValid: false }
+  ) {
+    nodes {
+      id
+      name
+      status
+      addresses {
+        nodes {
+          ...ContactAddress
+        }
+      }
+    }
+  }
+}
+
+fragment ContactAddress on Address {
+  id
+  street
+  city
+  state
+  region
+  metroArea
+  country
+  postalCode
+  primaryMailingAddress
+  source
+  location
+  createdAt
+  historic
+}
