@@ -17,10 +17,6 @@ import { PersPrefAnniversary } from './PersPrefAnniversary';
 import { PersPrefSocials } from './PersPrefSocials';
 // import { PersPrefModal } from "./Modals/PersPrefModal";
 
-const InfoCard = styled(Card)(() => ({
-  position: 'relative',
-}));
-
 const StyledContactTop = styled(Box)(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
@@ -97,7 +93,7 @@ export const PersPrefInfo: React.FC = () => {
   ];
 
   return (
-    <InfoCard>
+    <Card style={{ position: 'relative' }}>
       <CardContent>
         <StyledContactTop>
           <StyledAvatar
@@ -131,6 +127,6 @@ export const PersPrefInfo: React.FC = () => {
           {/* <PersPrefModal isOpen={profileOpen} handleOpen={setProfileOpen} /> */}
         </StyledContactEdit>
       </CardContent>
-    </InfoCard>
+    </Card>
   );
 };
