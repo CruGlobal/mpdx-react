@@ -25,6 +25,7 @@ fragment RecordInfo on Contact {
   name
   status
   source
+  createdAt
   primaryAddress {
     ...BasicAddressInfo
   }
