@@ -1,0 +1,21 @@
+query GetInvalidPhoneNumbers($accountListId: ID!) {
+  people(accountListId: $accountListId, phoneNumberValid: false) {
+    nodes {
+      id
+      firstName
+      lastName
+      phoneNumbers {
+        nodes {
+          ...PersonPhoneNumber
+        }
+      }
+    }
+  }
+}
+
+fragment PersonPhoneNumber on PhoneNumber {
+  id
+  primary
+  number
+  updatedAt
+}
