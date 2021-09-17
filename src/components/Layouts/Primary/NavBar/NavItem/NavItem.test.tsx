@@ -41,7 +41,7 @@ describe('NavItem', () => {
 
     expect(getByText(title)).toBeInTheDocument();
     expect(
-      getByRole('img', { hidden: true, name: 'Expand' }),
+      getByRole('img', { hidden: true, name: 'Collapse' }),
     ).toBeInTheDocument();
   });
 
@@ -62,7 +62,7 @@ describe('NavItem', () => {
 
     expect(getByText(title)).toBeInTheDocument();
     expect(
-      getByRole('img', { hidden: true, name: 'Collapse' }),
+      getByRole('img', { hidden: true, name: 'Expand' }),
     ).toBeInTheDocument();
   });
 });
