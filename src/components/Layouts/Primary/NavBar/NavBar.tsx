@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { ReactElement, useEffect } from 'react';
 import type { FC } from 'react';
 import {
   Box,
@@ -24,7 +24,8 @@ interface NavBarProps {
 
 interface Item {
   href?: string;
-  icon?: React.Component;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  icon?: any;
   items?: Item[];
   title: string;
 }
@@ -32,7 +33,8 @@ interface Item {
 interface Section {
   as?: string;
   href?: string;
-  icon?: React.Component;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  icon?: any;
   items?: Item[];
   title: string;
 }

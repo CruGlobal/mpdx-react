@@ -11,13 +11,16 @@ import {
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 
+// type PropsWithChildren<P> = P & { children?: ReactNode | undefined };
+
 interface NavItemProps {
   children?: ReactNode;
   className?: string;
   depth: number;
   href?: string;
   as?: string;
-  icon?: React.Component;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  icon?: any;
   open?: boolean;
   title: string;
 }
