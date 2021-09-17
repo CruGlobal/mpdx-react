@@ -46,6 +46,11 @@ const useStyles = makeStyles(() => ({
     display: 'flex',
     justifyContent: 'center',
   },
+  confirmButton: {
+    backgroundColor: theme.palette.mpdxBlue.main,
+    width: 200,
+    color: 'white',
+  },
 }));
 
 // Temporary date for desting, structure most likely isn't accurate
@@ -176,10 +181,7 @@ const MergeContacts: React.FC = () => {
                     <Button
                       variant="contained"
                       onClick={() => testFnc()}
-                      style={{
-                        backgroundColor: theme.palette.mpdxBlue.main,
-                        color: 'white',
-                      }}
+                      className={classes.confirmButton}
                     >
                       {t('Confirm and Continue')}
                     </Button>
@@ -188,13 +190,7 @@ const MergeContacts: React.FC = () => {
                         <strong>{t('OR')}</strong>
                       </Typography>
                     </Box>
-                    <Button
-                      variant="contained"
-                      style={{
-                        backgroundColor: theme.palette.mpdxBlue.main,
-                        color: 'white',
-                      }}
-                    >
+                    <Button className={classes.confirmButton}>
                       {t('Confirm and Leave')}
                     </Button>
                   </Box>
