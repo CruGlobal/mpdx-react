@@ -15,9 +15,9 @@ import { NavItem } from './NavItem/NavItem';
 import logo from 'src/images/logo.svg';
 import { ReportNavItems } from 'src/components/Reports/NavReportsList/ReportNavItems';
 import { ToolsList } from 'src/components/Tool/Home/ToolList';
-import { useAccountListId } from 'src/hooks/useAccountListId';
 
 interface NavBarProps {
+  accountListId: string;
   onMobileClose: () => void;
   openMobile: boolean;
 }
@@ -76,10 +76,12 @@ const sections: Section[] = [
 ];
 
 function renderNavItems({
+  accountListId,
   items,
   pathname,
   depth = 0,
 }: {
+  accountListId: string;
   items: Item[];
   pathname: string;
   depth?: number;
@@ -90,6 +92,7 @@ function renderNavItems({
         (acc, item) =>
           reduceChildRoutes({
             acc,
+            accountListId,
             item,
             pathname,
             depth,
@@ -102,23 +105,25 @@ function renderNavItems({
 
 function reduceChildRoutes({
   acc,
+  accountListId,
   pathname,
   item,
   depth,
 }: {
   acc: ReactElement[];
+  accountListId: string;
   pathname: string;
   item: Item;
   depth: number;
 }) {
   const key = item.title + depth;
-  const accountListId = useAccountListId();
   const { t } = useTranslation();
 
   if (item.items) {
     acc.push(
       <NavItem depth={depth} icon={item.icon} key={key} title={t(item.title)}>
         {renderNavItems({
+          accountListId,
           depth: depth + 1,
           pathname,
           items: item.items,
@@ -153,7 +158,11 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-export const NavBar: FC<NavBarProps> = ({ onMobileClose, openMobile }) => {
+export const NavBar: FC<NavBarProps> = ({
+  accountListId,
+  onMobileClose,
+  openMobile,
+}) => {
   const classes = useStyles();
   const { pathname } = useRouter();
 
@@ -174,6 +183,7 @@ export const NavBar: FC<NavBarProps> = ({ onMobileClose, openMobile }) => {
       </Hidden>
       <Box p={2}>
         {renderNavItems({
+          accountListId,
           items: sections,
           pathname,
         })}
