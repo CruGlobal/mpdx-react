@@ -153,7 +153,9 @@ const Contact: React.FC<Props> = ({ contact1, contact2, update }) => {
                       <Typography variant="h6">{contact1.name}</Typography>
                     </Box>
 
-                    <Typography>{t('Status:')}</Typography>
+                    <Typography>
+                      {t('Status: {{status}}', { where: contact1.status })}
+                    </Typography>
                     {contact1.primaryAddress ? (
                       <>
                         <Typography>
@@ -288,7 +290,9 @@ const Contact: React.FC<Props> = ({ contact1, contact2, update }) => {
                       </Typography>
                     )}
                     <Typography variant="h6">{contact2.name}</Typography>
-                    <Typography>{t('Status:')}</Typography>
+                    <Typography>
+                      {t('Status: {{status}}', { where: contact2.status })}
+                    </Typography>
                     {contact2.primaryAddress ? (
                       <>
                         <Typography>
