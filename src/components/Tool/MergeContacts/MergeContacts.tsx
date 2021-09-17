@@ -53,37 +53,6 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-// Temporary date for desting, structure most likely isn't accurate
-// but making adjustments should be easy in the future
-// const testData = [
-//   {
-//     contact1: {
-//       id: 'aa',
-//       title: 'Test Contact and Friends',
-//       address: {
-//         street: '70 Test Ave',
-//         city: 'Vancouver',
-//         state: 'BC',
-//         zip: 'V5Z 2V7',
-//       },
-//       source: 'DonorHub',
-//       date: '01/01/2021',
-//     },
-//     contact2: {
-//       id: 'bb',
-//       title: 'Test Contact Duplicate',
-//       address: {
-//         street: '123 Another St',
-//         city: 'Test',
-//         state: 'TS',
-//         zip: '4321',
-//       },
-//       source: 'DonorHub',
-//       date: '03/23/2023',
-//     },
-//   },
-// ];
-
 interface actionType {
   action: string;
   mergeId?: string;
