@@ -194,6 +194,7 @@ export const NavBar: FC<NavBarProps> = ({
   return (
     <Hidden lgUp>
       <Drawer
+        data-testid="NavBarDrawer"
         anchor="left"
         classes={{ paper: classes.mobileDrawer }}
         onClose={onMobileClose}

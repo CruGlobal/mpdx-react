@@ -106,9 +106,17 @@ export const NavItem: FC<NavItemProps> = ({
           {Icon && <Icon style={iconStyle} size="20" />}
           <Title>{title}</Title>
           {open ? (
-            <ExpandItemIcon fontSize="small" color="disabled" />
+            <ExpandItemIcon
+              fontSize="small"
+              color="disabled"
+              titleAccess="Expand"
+            />
           ) : (
-            <CollapseItemIcon fontSize="small" color="disabled" />
+            <CollapseItemIcon
+              fontSize="small"
+              color="disabled"
+              titleAccess="Collapse"
+            />
           )}
         </StyledButton>
         <Collapse in={open}>{children}</Collapse>
