@@ -17,7 +17,9 @@ import {
   mdiArrowDownBold,
   mdiCloseThick,
 } from '@mdi/js';
+import { DateTime } from 'luxon';
 import theme from '../../../theme';
+import { RecordInfoFragment } from './GetContactDuplicates.generated';
 
 const useStyles = makeStyles(() => ({
   container: {
@@ -75,17 +77,9 @@ export interface address {
 }
 
 interface Props {
-  contact1: Contact;
-  contact2: Contact;
+  contact1: RecordInfoFragment;
+  contact2: RecordInfoFragment;
   update: (id1: string, id2: string, action: string) => void;
-}
-
-interface Contact {
-  id: string;
-  title: string;
-  source: string;
-  address: address;
-  date: string;
 }
 
 const Contact: React.FC<Props> = ({ contact1, contact2, update }) => {
@@ -156,17 +150,29 @@ const Contact: React.FC<Props> = ({ contact1, contact2, update }) => {
                         width: '100%',
                       }}
                     >
-                      <Typography variant="h6">{contact1.title}</Typography>
+                      <Typography variant="h6">{contact1.name}</Typography>
                     </Box>
 
                     <Typography>{t('Status:')}</Typography>
-                    <Typography>{contact1.address.street}</Typography>
-                    <Typography>{`${contact1.address.city}, ${contact1.address.state} ${contact1.address.zip}`}</Typography>
+                    {contact1.primaryAddress ? (
+                      <>
+                        <Typography>
+                          {contact1.primaryAddress.street}
+                        </Typography>
+                        <Typography>{`${contact1.primaryAddress.city}, ${contact1.primaryAddress.state} ${contact1.primaryAddress.postalCode}`}</Typography>
+                      </>
+                    ) : (
+                      ''
+                    )}
                     <Typography>
                       {t('From: {{where}}', { where: contact1.source })}
                     </Typography>
                     <Typography>
-                      {t('On: {{when}}', { when: contact1.date })}
+                      {t('On: {{when}}', {
+                        when: DateTime.fromISO(
+                          contact1.createdAt,
+                        ).toLocaleString(DateTime.DATE_SHORT),
+                      })}
                     </Typography>
                   </Box>
                 </Box>
@@ -281,15 +287,27 @@ const Contact: React.FC<Props> = ({ contact1, contact2, update }) => {
                         {t('Use this one')}
                       </Typography>
                     )}
-                    <Typography variant="h6">{contact2.title}</Typography>
+                    <Typography variant="h6">{contact2.name}</Typography>
                     <Typography>{t('Status:')}</Typography>
-                    <Typography>{contact2.address.street}</Typography>
-                    <Typography>{`${contact2.address.city}, ${contact2.address.state} ${contact2.address.zip}`}</Typography>
+                    {contact2.primaryAddress ? (
+                      <>
+                        <Typography>
+                          {contact2.primaryAddress.street}
+                        </Typography>
+                        <Typography>{`${contact2.primaryAddress.city}, ${contact2.primaryAddress.state} ${contact2.primaryAddress.postalCode}`}</Typography>
+                      </>
+                    ) : (
+                      ''
+                    )}
                     <Typography>
                       {t('From: {{where}}', { where: contact2.source })}
                     </Typography>
                     <Typography>
-                      {t('On: {{when}}', { when: contact2.date })}
+                      {t('On: {{when}}', {
+                        when: DateTime.fromISO(
+                          contact2.createdAt,
+                        ).toLocaleString(DateTime.DATE_SHORT),
+                      })}
                     </Typography>
                   </Box>
                 </Box>
