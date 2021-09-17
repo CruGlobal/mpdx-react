@@ -159,7 +159,7 @@ const PersonDuplicate: React.FC<Props> = ({ person1, person2, update }) => {
                           {person1.primaryPhoneNumber.number}
                         </Typography>
                         <Typography>
-                          {/* {t('From: {{where}}', { where: person1.primaryPhoneNumber.sourcce })} */}
+                          {/* {t('From: {{where}}', { where: person1.primaryPhoneNumber.source })} */}
                         </Typography>
                       </>
                     ) : (
@@ -171,7 +171,7 @@ const PersonDuplicate: React.FC<Props> = ({ person1, person2, update }) => {
                           {person1.primaryEmailAddress.email}
                         </Typography>
                         <Typography>
-                          {/* {t('From: {{where}}', { where: person1.primaryEmailAddress.sourcce })} */}
+                          {/* {t('From: {{where}}', { where: person1.primaryEmailAddress.source })} */}
                         </Typography>
                       </>
                     ) : (
@@ -305,7 +305,7 @@ const PersonDuplicate: React.FC<Props> = ({ person1, person2, update }) => {
                           {person1.primaryPhoneNumber.number}
                         </Typography>
                         <Typography>
-                          {/* {t('From: {{where}}', { where: person1.primaryPhoneNumber.sourcce })} */}
+                          {/* {t('From: {{where}}', { where: person1.primaryPhoneNumber.source })} */}
                         </Typography>
                       </>
                     ) : (
@@ -317,7 +317,7 @@ const PersonDuplicate: React.FC<Props> = ({ person1, person2, update }) => {
                           {person1.primaryEmailAddress.email}
                         </Typography>
                         <Typography>
-                          {/* {t('From: {{where}}', { where: person1.primaryEmailAddress.sourcce })} */}
+                          {/* {t('From: {{where}}', { where: person1.primaryEmailAddress.source })} */}
                         </Typography>
                       </>
                     ) : (
