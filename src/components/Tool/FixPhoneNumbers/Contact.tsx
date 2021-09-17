@@ -13,10 +13,13 @@ import {
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { Icon } from '@mdi/react';
-import { mdiCheckboxMarkedCircle, mdiLock, mdiPlus, mdiDelete } from '@mdi/js';
+import { mdiCheckboxMarkedCircle, mdiPlus } from '@mdi/js';
+//import { mdiLock, mdiDelete } from '@mdi/js';
 import StarIcon from '@material-ui/icons/Star';
 import StarOutlineIcon from '@material-ui/icons/StarOutline';
+import { DateTime } from 'luxon';
 import theme from '../../../theme';
+import { PersonPhoneNumberFragment } from './GetInvalidPhoneNumbers.generated';
 
 const useStyles = makeStyles((theme: Theme) => ({
   left: {
@@ -93,16 +96,9 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-export interface phoneNumber {
-  source: string;
-  date: string;
-  number: string;
-  primary: boolean;
-}
-
 interface Props {
   name: string;
-  numbers: phoneNumber[];
+  numbers: PersonPhoneNumberFragment[];
   contactIndex: number;
   handleChange: (
     contactIndex: number,
@@ -119,7 +115,7 @@ const Contact: React.FC<Props> = ({
   numbers,
   contactIndex,
   handleChange,
-  handleDelete,
+  //handleDelete,
   handleAdd,
   handleChangePrimary,
 }) => {
@@ -206,7 +202,9 @@ const Contact: React.FC<Props> = ({
                               </Typography>
                             </Hidden>
                             <Typography display="inline">
-                              {`${phoneNumber.source} (${phoneNumber.date})`}
+                              {`${'Source'} (${DateTime.fromISO(
+                                phoneNumber.updatedAt,
+                              ).toLocaleString(DateTime.DATE_SHORT)})`}
                             </Typography>
                           </Box>
                           <Typography>
@@ -243,10 +241,10 @@ const Contact: React.FC<Props> = ({
                               event: React.ChangeEvent<HTMLInputElement>,
                             ) => handleChange(contactIndex, index, event)}
                             value={phoneNumber.number}
-                            disabled={phoneNumber.source !== 'MPDX'}
+                            //disabled={phoneNumber.source !== 'MPDX'}
                           />
 
-                          {phoneNumber.source === 'MPDX' ? (
+                          {/* {phoneNumber.source === 'MPDX' ? (
                             <Box
                               data-testid={`delete-${contactIndex}-${index}`}
                               onClick={() => handleDelete(contactIndex, index)}
@@ -265,7 +263,7 @@ const Contact: React.FC<Props> = ({
                                 color: theme.palette.cruGrayMedium.main,
                               }}
                             />
-                          )}
+                          )} */}
                         </Box>
                       </Grid>
                     </Fragment>
