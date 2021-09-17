@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link, List, ListItem, styled } from '@material-ui/core';
+import { IconButton, List, ListItem, styled } from '@material-ui/core';
 import { Facebook, Language, LinkedIn, Twitter } from '@material-ui/icons';
 
 const StyledList = styled(List)({
@@ -14,12 +14,18 @@ const StyledListItem = styled(ListItem)(({ theme }) => ({
   '&:last-child': {
     marginRight: '0',
   },
+  '&:hover': {
+    backgroundColor: 'transparent',
+  },
 }));
 
-const StyledAnchor = styled(Link)({
-  display: 'block',
-  fontSize: '0',
-});
+const StyledSocialButton = styled(IconButton)(({ theme }) => ({
+  padding: 0,
+  color: theme.palette.primary.main,
+  '&:hover': {
+    backgroundColor: 'transparent',
+  },
+})) as typeof IconButton;
 
 const profileTypes = {
   facebook: {
@@ -52,13 +58,14 @@ const ListItemLinks: React.FC<ListItemProps> = ({ accounts, type }) => {
     <>
       {accounts.map((account) => (
         <StyledListItem key={`${type}-${account}`} disableGutters button>
-          <StyledAnchor
+          <StyledSocialButton
             href={`${link}${account}`}
+            color="primary"
             target="_blank"
-            underline="none"
+            disableRipple
           >
             {icon}
-          </StyledAnchor>
+          </StyledSocialButton>
         </StyledListItem>
       ))}
     </>
