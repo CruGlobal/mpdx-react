@@ -4,7 +4,7 @@ import { Box, Typography, styled } from '@material-ui/core';
 
 const PageTitle = styled(Box)(({ theme }) => ({
   color: theme.palette.common.white,
-  backgroundColor: theme.palette.mpdxBlue.main,
+  backgroundColor: theme.palette.primary.main,
   padding: theme.spacing(3),
 }));
 
