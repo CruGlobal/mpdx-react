@@ -9,7 +9,7 @@ const title = 'Test NavItem Button';
 
 describe('NavItem', () => {
   it('default', async () => {
-    const { getByRole } = render(
+    const { getByText } = render(
       <ThemeProvider theme={theme}>
         <NavItem
           depth={0}
@@ -21,8 +21,6 @@ describe('NavItem', () => {
       </ThemeProvider>,
     );
 
-    expect(
-      getByRole('button', { hidden: true, name: title }),
-    ).toBeInTheDocument();
+    expect(getByText('Test NavItem Button')).toBeInTheDocument();
   });
 });
