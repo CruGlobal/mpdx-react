@@ -5,7 +5,7 @@ import { NavItem } from './NavItem';
 import theme from 'src/theme';
 
 const accountListId = 'test-id';
-const title = 'Test Button';
+const title = 'Test NavItem Button';
 
 describe('NavItem', () => {
   it('default', async () => {
