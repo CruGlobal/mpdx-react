@@ -212,7 +212,7 @@ const MergeContacts: React.FC = () => {
             )}
           </Grid>
         ) : (
-          <CircularProgress />
+          <CircularProgress style={{ marginTop: theme.spacing(3) }} />
         )}
       </Box>
     </>
