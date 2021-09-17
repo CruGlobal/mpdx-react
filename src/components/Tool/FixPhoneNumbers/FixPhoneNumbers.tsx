@@ -119,18 +119,17 @@ const FixPhoneNumbers: React.FC = () => {
     setDataState(data ? JSON.parse(JSON.stringify(data.people.nodes)) : []);
   }, [loading]);
 
-  const handleDeleteModalOpen = (
-    contactIndex: number,
-    numberIndex: number,
-  ): void => {
-    setDeleteModalState({
-      open: true,
-      contactIndex: contactIndex,
-      numberIndex: numberIndex,
-      phoneNumber: dataState
-        ? dataState[contactIndex].phoneNumbers.nodes[numberIndex].number
-        : '',
-    });
+  const handleDeleteModalOpen = (): // contactIndex: number,
+  // numberIndex: number,
+  void => {
+    // setDeleteModalState({
+    //   open: true,
+    //   contactIndex: contactIndex,
+    //   numberIndex: numberIndex,
+    //   phoneNumber: dataState
+    //     ? dataState[contactIndex].phoneNumbers.nodes[numberIndex].number
+    //     : '',
+    // });
   };
 
   const handleDeleteModalClose = (): void => {
@@ -149,16 +148,16 @@ const FixPhoneNumbers: React.FC = () => {
   };
 
   const handleDelete = (): void => {
-    const temp = [...dataState];
-    const wasPrimary = temp[
-      deleteModalState.contactIndex
-    ].phoneNumbers.nodes.splice(deleteModalState.numberIndex, 1);
-    wasPrimary[0].primary &&
-      (temp[deleteModalState.contactIndex].phoneNumbers.nodes[0][
-        'primary'
-      ] = true); // If the deleted number was primary, set the new first index to primary
-    setDataState(temp);
-    handleDeleteModalClose();
+    // const temp = [...dataState];
+    // const wasPrimary = temp[
+    //   deleteModalState.contactIndex
+    // ].phoneNumbers.nodes.splice(deleteModalState.numberIndex, 1);
+    // wasPrimary[0].primary &&
+    //   (temp[deleteModalState.contactIndex].phoneNumbers.nodes[0][
+    //     'primary'
+    //   ] = true); // If the deleted number was primary, set the new first index to primary
+    // setDataState(temp);
+    // handleDeleteModalClose();
   };
 
   const handleAdd = (contactIndex: number, number: string): void => {
@@ -226,14 +225,25 @@ const FixPhoneNumbers: React.FC = () => {
                         input={<StyledInput />}
                         className={classes.nativeSelect}
                         value={defaultSource}
+                        data-testid="source-select"
                         onChange={(
                           event: React.ChangeEvent<HTMLSelectElement>,
                         ) => handleSourceChange(event)}
                       >
-                        <option value="MPDX">MPDX</option>
-                        <option value="DataServer">DataServer</option>
+                        <option value="MPDX" data-testid="source-option-mpdx">
+                          MPDX
+                        </option>
+                        <option
+                          value="DataServer"
+                          data-testid="source-option-dataserver"
+                        >
+                          DataServer
+                        </option>
                       </NativeSelect>
-                      <Button className={classes.buttonBlue}>
+                      <Button
+                        className={classes.buttonBlue}
+                        data-testid="source-button"
+                      >
                         <Icon
                           path={mdiCheckboxMarkedCircle}
                           size={0.8}
