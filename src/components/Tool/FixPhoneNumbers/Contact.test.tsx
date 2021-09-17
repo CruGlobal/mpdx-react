@@ -11,14 +11,14 @@ const testData = {
   id: 'testid',
   numbers: [
     {
-      source: 'DonorHub',
-      date: '06/21/2021',
+      id: '123',
+      updatedAt: new Date('2019-12-03T03:40:05-06:00').toISOString(),
       number: '3533895895',
       primary: true,
     },
     {
-      source: 'MPDX',
-      date: '06/22/2021',
+      id: '1234',
+      updatedAt: new Date('2019-12-04T03:40:05-06:00').toISOString(),
       number: '623533895895',
       primary: false,
     },
@@ -50,10 +50,10 @@ describe('FixPhoneNumbers-Contact', () => {
     );
 
     expect(getByText(testData.name)).toBeInTheDocument();
-    expect(getByText('DonorHub (06/21/2021)')).toBeInTheDocument();
+    expect(getByText('Source (2019-12-03)')).toBeInTheDocument();
     expect(getByTestId('textfield-0-0')).toBeInTheDocument();
     expect(getByDisplayValue('3533895895')).toBeInTheDocument();
-    expect(getByText('MPDX (06/22/2021)')).toBeInTheDocument();
+    expect(getByText('Source (2019-12-04)')).toBeInTheDocument();
     expect(getByTestId('textfield-0-1')).toBeInTheDocument();
     expect(getByDisplayValue('623533895895')).toBeInTheDocument();
   });
