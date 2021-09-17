@@ -13,7 +13,20 @@ export default {
 
 export const Defaulst = (): ReactElement => {
   return (
-    <GqlMockedProvider<LoadCoachingListQuery>>
+    <GqlMockedProvider<LoadCoachingListQuery>
+      mocks={{
+        coachingAccountLists: {
+          nodes: [...Array(5)].map((_x, _i) => {
+            return {
+              currency: 'USD',
+              primaryAppeal: {
+                amountCurrency: 'USD',
+              },
+            };
+          }),
+        },
+      }}
+    >
       <CoachingList />
     </GqlMockedProvider>
   );

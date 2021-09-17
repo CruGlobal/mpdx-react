@@ -3,7 +3,11 @@ import { EcoOutlined } from '@material-ui/icons';
 import { Skeleton } from '@material-ui/lab';
 import React, { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useLoadCoachingListQuery } from './LoadCoachingList.generated';
+import { CoachingRow } from './CoachingRow/CoachingRow';
+import {
+  CoachFragment,
+  useLoadCoachingListQuery,
+} from './LoadCoachingList.generated';
 
 const CoachingListWrapper = styled(Box)(({ theme }) => ({
   width: '100%',
@@ -57,15 +61,14 @@ export const CoachingList = (): ReactElement => {
           </>
         ) : (
           <>
-            <CoachingTitleWrapper>
-              <CoachingListTitle variant="body1">
-                {'Showing ' +
-                  coaches?.totalPageCount +
-                  ' of ' +
-                  coaches?.totalCount}
-              </CoachingListTitle>
-            </CoachingTitleWrapper>
-            <Divider />
+            {coaches?.nodes.map((coach, _index) => {
+              return (
+                <>
+                  <CoachingRow coach={coach as CoachFragment} />
+                  <Divider />
+                </>
+              );
+            })}
           </>
         )}
       </Box>

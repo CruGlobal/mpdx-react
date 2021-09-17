@@ -11,6 +11,8 @@ interface Props {
 
 const CoachingRowWrapper = styled(Box)(({ theme }) => ({
   width: '100%',
+  maxWidth: '950px',
+  margin: 'auto',
   padding: theme.spacing(1),
 }));
 
@@ -39,17 +41,50 @@ export const CoachingRow: React.FC<Props> = ({ coach }) => {
   const calculatedMonthlyGoal = monthlyGoal ? monthlyGoal : 0;
   const percentageRecievedPledges = receivedPledges / calculatedMonthlyGoal;
   const percentageTotalPledges = totalPledges / calculatedMonthlyGoal;
+  const recievedCurrency = currencyFormat(receivedPledges, currency)
+    ? currencyFormat(receivedPledges, currency)
+    : receivedPledges;
+  const totalCurrency = currencyFormat(totalPledges, currency)
+    ? currencyFormat(totalPledges, currency)
+    : totalPledges;
+  const monthlyGoalCurrency = currencyFormat(calculatedMonthlyGoal, currency)
+    ? currencyFormat(calculatedMonthlyGoal, currency)
+    : calculatedMonthlyGoal;
 
+  const appealCurrencyCode = primaryAppeal?.amountCurrency
+    ? primaryAppeal.amountCurrency
+    : 'USD';
   const calculatedAppealAmount = primaryAppeal?.amount
     ? primaryAppeal.amount
     : 0;
+  const calculatedAppealProcessed = primaryAppeal?.pledgesAmountProcessed
+    ? primaryAppeal.pledgesAmountProcessed
+    : 0;
+  const calculatedAppealTotal = primaryAppeal?.pledgesAmountTotal
+    ? primaryAppeal.pledgesAmountTotal
+    : 0;
   const percentageAppealProcessed =
-    (primaryAppeal?.pledgesAmountProcessed
-      ? primaryAppeal.pledgesAmountProcessed
-      : 0) / calculatedAppealAmount;
-  const percentageAppealTotal =
-    (primaryAppeal?.pledgesAmountTotal ? primaryAppeal.pledgesAmountTotal : 0) /
-    calculatedAppealAmount;
+    calculatedAppealProcessed / calculatedAppealAmount;
+  const percentageAppealTotal = calculatedAppealTotal / calculatedAppealAmount;
+  const appealAmountCurrency = currencyFormat(
+    calculatedAppealAmount,
+    appealCurrencyCode,
+  )
+    ? currencyFormat(calculatedAppealAmount, appealCurrencyCode)
+    : calculatedAppealAmount;
+  const appealProcessedCurrency = currencyFormat(
+    calculatedAppealProcessed,
+    appealCurrencyCode,
+  )
+    ? currencyFormat(calculatedAppealProcessed, appealCurrencyCode)
+    : calculatedAppealProcessed;
+  const appealTotalCurrency = currencyFormat(
+    calculatedAppealTotal,
+    appealCurrencyCode,
+  )
+    ? currencyFormat(calculatedAppealTotal, appealCurrencyCode)
+    : calculatedAppealTotal;
+
   return (
     <CoachingRowWrapper>
       <CoachingNameText variant="h6" color="primary">
@@ -57,17 +92,12 @@ export const CoachingRow: React.FC<Props> = ({ coach }) => {
       </CoachingNameText>
       <CoachingProgressLabelContainer>
         <Typography>
-          {t('Monthly ') + currencyFormat(calculatedMonthlyGoal, currency)}
+          {t('Monthly ')} {monthlyGoalCurrency}
         </Typography>
         <Typography>
-          {currencyFormat(receivedPledges, currency) +
-            '(' +
-            percentageFormat(percentageRecievedPledges) +
-            ')/ ' +
-            currencyFormat(totalPledges, currency) +
-            '(' +
-            percentageFormat(percentageTotalPledges) +
-            ')'}
+          {recievedCurrency}({percentageFormat(percentageRecievedPledges)}
+          )/
+          {totalCurrency}({percentageFormat(percentageTotalPledges)})
         </Typography>
       </CoachingProgressLabelContainer>
       <StyledProgress
@@ -86,24 +116,14 @@ export const CoachingRow: React.FC<Props> = ({ coach }) => {
         ) : (
           <>
             <Typography>
-              {t('Primary Appeal ') +
-                currencyFormat(calculatedAppealAmount, currency)}
+              {t('Primary Appeal ')} {appealAmountCurrency}
             </Typography>
             <Typography>
-              {currencyFormat(
-                primaryAppeal?.pledgesAmountProcessed
-                  ? primaryAppeal.pledgesAmountProcessed
-                  : 0,
-                currency,
-              ) +
+              {appealProcessedCurrency +
                 ' (' +
                 percentageFormat(percentageAppealProcessed) +
                 ') / ' +
-                currencyFormat(
-                  primaryAppeal?.pledgesAmountTotal
-                    ? primaryAppeal.pledgesAmountTotal
-                    : 0,
-                ) +
+                appealTotalCurrency +
                 '(' +
                 percentageFormat(percentageAppealTotal) +
                 ')'}
