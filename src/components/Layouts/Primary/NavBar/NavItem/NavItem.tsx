@@ -11,8 +11,6 @@ import {
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 
-// type PropsWithChildren<P> = P & { children?: ReactNode | undefined };
-
 interface NavItemProps {
   children?: ReactNode;
   className?: string;
