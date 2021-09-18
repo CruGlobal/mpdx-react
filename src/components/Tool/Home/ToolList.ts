@@ -20,13 +20,13 @@ export interface toolItem {
   id: string;
 }
 
-interface test {
+interface toolsGroup {
   groupName: string;
   groupIcon: string;
   items: toolItem[];
 }
 
-export const ToolsList: test[] = [
+export const ToolsList: toolsGroup[] = [
   {
     groupName: 'Appeals',
     groupIcon: mdiWrench,
