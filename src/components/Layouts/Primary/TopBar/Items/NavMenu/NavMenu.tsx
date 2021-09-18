@@ -70,6 +70,12 @@ const useStyles = makeStyles(() => ({
     alignItems: 'center',
     marginLeft: theme.spacing(2),
   },
+  darkText: {
+    color: theme.palette.cruGrayDark.main,
+  },
+  whiteText: {
+    color: 'white',
+  },
 }));
 
 const NavMenu = (): ReactElement => {
@@ -281,19 +287,19 @@ const NavMenu = (): ReactElement => {
                                     <Icon
                                       path={tool.icon}
                                       size={1}
-                                      className={classes.menuIcon}
-                                      style={{
-                                        color: needsAttention
-                                          ? theme.palette.cruGrayDark.main
-                                          : 'white',
-                                      }}
+                                      className={clsx(
+                                        classes.menuIcon,
+                                        needsAttention
+                                          ? classes.darkText
+                                          : classes.whiteText,
+                                      )}
                                     />
                                     <ListItemText
-                                      style={{
-                                        color: needsAttention
-                                          ? theme.palette.cruGrayDark.main
-                                          : 'white',
-                                      }}
+                                      className={clsx(
+                                        needsAttention
+                                          ? classes.darkText
+                                          : classes.whiteText,
+                                      )}
                                       primary={t('{{toolname}}', {
                                         toolname: tool.tool,
                                       })}
