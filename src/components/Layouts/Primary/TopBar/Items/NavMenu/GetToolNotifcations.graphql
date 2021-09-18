@@ -1,0 +1,41 @@
+query GetToolNotifications($accountListId: ID!) {
+  fixCommitmentInfo: contacts(
+    accountListId: $accountListId
+    contactsFilter: { statusValid: false }
+  ) {
+    totalCount
+  }
+  fixMailingAddresses: contacts(
+    accountListId: $accountListId
+    contactsFilter: { addressValid: false }
+  ) {
+    totalCount
+  }
+  fixSendNewsletter: contacts(
+    accountListId: $accountListId
+    contactsFilter: {
+      newsletter: NO_VALUE
+      status: [PARTNER_FINANCIAL, PARTNER_SPECIAL, PARTNER_PRAY]
+    }
+  ) {
+    totalCount
+  }
+  fixEmailAddresses: people(
+    accountListId: $accountListId
+    emailAddressValid: false
+  ) {
+    totalCount
+  }
+  fixPhoneNumbers: people(
+    accountListId: $accountListId
+    phoneNumberValid: false
+  ) {
+    totalCount
+  }
+  mergeContacts: contactDuplicates(accountListId: $accountListId) {
+    totalCount
+  }
+  mergePeople: personDuplicates(accountListId: $accountListId) {
+    totalCount
+  }
+}

@@ -21,7 +21,6 @@ export const ToolsList = [
       {
         tool: 'Appeal',
         desc: 'Set goals, create asks, and track progress for one-time needs',
-
         icon: mdiTrophy,
         id: 'appeals',
       },

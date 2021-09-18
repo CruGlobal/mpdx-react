@@ -10,6 +10,7 @@ import {
   MenuList,
   Paper,
   Box,
+  Typography,
 } from '@material-ui/core';
 import clsx from 'clsx';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
@@ -22,6 +23,7 @@ import { ToolsList } from '../../../../../Tool/Home/ToolList';
 import { useAccountListId } from '../../../../../../hooks/useAccountListId';
 import { useCurrentToolId } from '../../../../../../hooks/useCurrentToolId';
 import theme from '../../../../../../theme';
+import { useGetToolNotificationsQuery } from './GetToolNotifcations.generated';
 
 const useStyles = makeStyles(() => ({
   navListItem: {
@@ -52,8 +54,21 @@ const useStyles = makeStyles(() => ({
   menuItemSelected: {
     backgroundColor: theme.palette.cruGrayMedium.main,
   },
+  needsAttention: {
+    backgroundColor: theme.palette.mpdxYellow.main,
+  },
   menuIcon: {
     marginRight: theme.spacing(1),
+  },
+  notificationBox: {
+    backgroundColor: theme.palette.progressBarYellow.main,
+    paddingLeft: theme.spacing(1),
+    paddingRight: theme.spacing(1),
+    borderRadius: '25%',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginLeft: theme.spacing(2),
   },
 }));
 
@@ -62,6 +77,9 @@ const NavMenu = (): ReactElement => {
   const classes = useStyles();
   const accountListId = useAccountListId();
   const currentToolId = useCurrentToolId();
+  const { data, loading } = useGetToolNotificationsQuery({
+    variables: { accountListId: accountListId || '' },
+  });
 
   const [reportsMenuOpen, setReportsMenuOpen] = useState(false);
   const [toolsMenuOpen, setToolsMenuOpen] = useState(false);
@@ -224,37 +242,60 @@ const NavMenu = (): ReactElement => {
                       >
                         {ToolsList.map((toolsGroup) => (
                           <Box key={toolsGroup.groupName}>
-                            {toolsGroup.items.map((tool) => (
-                              <NextLink
-                                key={tool.id}
-                                href={`/accountLists/[accountListId]/tools/${tool.id}`}
-                                as={`/accountLists/${accountListId}/tools/${tool.id}`}
-                                scroll={false}
-                              >
-                                <MenuItem
-                                  onClick={handleToolsMenuClose}
-                                  data-testid={`${tool.id}-${
-                                    currentToolId === tool.id
-                                  }`}
-                                  className={clsx(
-                                    classes.menuItem,
-                                    currentToolId === tool.id &&
-                                      classes.menuItemSelected,
-                                  )}
+                            {toolsGroup.items.map((tool) => {
+                              const needsAttention =
+                                data[tool.id]?.totalCount > 0;
+                              return (
+                                <NextLink
+                                  key={tool.id}
+                                  href={`/accountLists/[accountListId]/tools/${tool.id}`}
+                                  as={`/accountLists/${accountListId}/tools/${tool.id}`}
+                                  scroll={false}
                                 >
-                                  <Icon
-                                    path={tool.icon}
-                                    size={1}
-                                    className={classes.menuIcon}
-                                  />
-                                  <ListItemText
-                                    primary={t('{{toolname}}', {
-                                      toolname: tool.tool,
-                                    })}
-                                  />
-                                </MenuItem>
-                              </NextLink>
-                            ))}
+                                  <MenuItem
+                                    onClick={handleToolsMenuClose}
+                                    data-testid={`${tool.id}-${
+                                      currentToolId === tool.id
+                                    }`}
+                                    className={clsx(
+                                      classes.menuItem,
+                                      needsAttention
+                                        ? classes.needsAttention
+                                        : currentToolId === tool.id &&
+                                            classes.menuItemSelected,
+                                    )}
+                                  >
+                                    <Icon
+                                      path={tool.icon}
+                                      size={1}
+                                      className={classes.menuIcon}
+                                      style={{
+                                        color: needsAttention
+                                          ? theme.palette.cruGrayDark.main
+                                          : 'white',
+                                      }}
+                                    />
+                                    <ListItemText
+                                      style={{
+                                        color: needsAttention
+                                          ? theme.palette.cruGrayDark.main
+                                          : 'white',
+                                      }}
+                                      primary={t('{{toolname}}', {
+                                        toolname: tool.tool,
+                                      })}
+                                    />
+                                    {!loading && needsAttention && (
+                                      <Box className={classes.notificationBox}>
+                                        <Typography>
+                                          {data[tool.id]?.totalCount}
+                                        </Typography>
+                                      </Box>
+                                    )}
+                                  </MenuItem>
+                                </NextLink>
+                              );
+                            })}
                           </Box>
                         ))}
                       </MenuList>
