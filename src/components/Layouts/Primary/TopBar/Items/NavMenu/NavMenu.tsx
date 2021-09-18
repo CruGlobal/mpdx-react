@@ -213,6 +213,19 @@ const NavMenu = (): ReactElement => {
               data-testid="ToolsMenuToggle"
             >
               <ListItemText primary={t('Tools')} />
+              <Box className={classes.notificationBox}>
+                <Typography>
+                  {data
+                    ? data?.fixCommitmentInfo.totalCount +
+                      data?.fixEmailAddresses.totalCount +
+                      data?.fixMailingAddresses.totalCount +
+                      data?.fixPhoneNumbers.totalCount +
+                      data?.fixSendNewsletter.totalCount +
+                      data?.mergeContacts.totalCount +
+                      data?.mergePeople.totalCount
+                    : ''}
+                </Typography>
+              </Box>
               <ArrowDropDownIcon
                 className={clsx(classes.expand, {
                   [classes.expandOpen]: toolsMenuOpen,
@@ -244,7 +257,7 @@ const NavMenu = (): ReactElement => {
                           <Box key={toolsGroup.groupName}>
                             {toolsGroup.items.map((tool) => {
                               const needsAttention =
-                                data[tool.id]?.totalCount > 0;
+                                (data as any)[tool.id]?.totalCount > 0;
                               return (
                                 <NextLink
                                   key={tool.id}
@@ -288,7 +301,7 @@ const NavMenu = (): ReactElement => {
                                     {!loading && needsAttention && (
                                       <Box className={classes.notificationBox}>
                                         <Typography>
-                                          {data[tool.id]?.totalCount}
+                                          {(data as any)[tool.id]?.totalCount}
                                         </Typography>
                                       </Box>
                                     )}
