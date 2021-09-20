@@ -10,7 +10,6 @@ import {
 } from '@material-ui/core';
 
 import { Trans, useTranslation } from 'react-i18next';
-import { useAccountListId } from '../../../../src/hooks/useAccountListId';
 import theme from '../../../theme';
 import { useGetPersonDuplicatesQuery } from './GetPersonDuplicates.generated';
 import PersonDuplicate from './PersonDuplicates';
@@ -62,13 +61,16 @@ interface actionsType {
   [key: string]: actionType;
 }
 
-const MergePeople: React.FC = () => {
+interface Props {
+  accountListId: string;
+}
+
+const MergePeople: React.FC<Props> = ({ accountListId }: Props) => {
   const classes = useStyles();
   const [actions, setActions] = useState<actionsType>({});
   const { t } = useTranslation();
-  const accountListId = useAccountListId();
   const { data, loading } = useGetPersonDuplicatesQuery({
-    variables: { accountListId: accountListId || '' },
+    variables: { accountListId: accountListId },
   });
 
   const updateActions = (id1: string, id2: string, action: string): void => {
