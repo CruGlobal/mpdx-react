@@ -1,4 +1,4 @@
-import React, { Fragment, ReactElement, useState } from 'react';
+import React, { Fragment, ReactElement, useEffect, useState } from 'react';
 import {
   makeStyles,
   Grid,
@@ -78,14 +78,27 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
+interface query {
+  totalCount: number;
+}
+
+interface responseData {
+  [key: string]: query;
+}
+
 const NavMenu = (): ReactElement => {
   const { t } = useTranslation();
   const classes = useStyles();
   const accountListId = useAccountListId();
   const currentToolId = useCurrentToolId();
   const { data, loading } = useGetToolNotificationsQuery({
-    variables: { accountListId: accountListId || '' },
+    variables: { accountListId: accountListId ?? '' },
   });
+  const [dataState, setDataState] = useState<responseData>({});
+
+  useEffect(() => {
+    setDataState(data ? JSON.parse(JSON.stringify(data)) : []);
+  }, [loading]);
 
   const [reportsMenuOpen, setReportsMenuOpen] = useState(false);
   const [toolsMenuOpen, setToolsMenuOpen] = useState(false);
@@ -221,14 +234,11 @@ const NavMenu = (): ReactElement => {
               <ListItemText primary={t('Tools')} />
               <Box className={classes.notificationBox}>
                 <Typography>
-                  {data
-                    ? data?.fixCommitmentInfo.totalCount +
-                      data?.fixEmailAddresses.totalCount +
-                      data?.fixMailingAddresses.totalCount +
-                      data?.fixPhoneNumbers.totalCount +
-                      data?.fixSendNewsletter.totalCount +
-                      data?.mergeContacts.totalCount +
-                      data?.mergePeople.totalCount
+                  {dataState
+                    ? Object.entries(dataState)
+                        .map(([tool]) => dataState[tool])
+                        .flatMap((entry) => entry.totalCount)
+                        .reduce((a, b) => a + b, 0)
                     : ''}
                 </Typography>
               </Box>
@@ -262,8 +272,9 @@ const NavMenu = (): ReactElement => {
                         {ToolsList.map((toolsGroup) => (
                           <Box key={toolsGroup.groupName}>
                             {toolsGroup.items.map((tool) => {
-                              const needsAttention =
-                                (data as any)[tool.id]?.totalCount > 0;
+                              const needsAttention = dataState
+                                ? dataState[tool.id]?.totalCount > 0
+                                : false;
                               return (
                                 <NextLink
                                   key={tool.id}
@@ -307,7 +318,7 @@ const NavMenu = (): ReactElement => {
                                     {!loading && needsAttention && (
                                       <Box className={classes.notificationBox}>
                                         <Typography>
-                                          {(data as any)[tool.id]?.totalCount}
+                                          {dataState[tool.id]?.totalCount}
                                         </Typography>
                                       </Box>
                                     )}
