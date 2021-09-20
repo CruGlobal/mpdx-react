@@ -70,7 +70,7 @@ const MergeContacts: React.FC<Props> = ({ accountListId }: Props) => {
   const [actions, setActions] = useState<actionsType>({});
   const { t } = useTranslation();
   const { data, loading } = useGetContactDuplicatesQuery({
-    variables: { accountListId: accountListId || '' },
+    variables: { accountListId: accountListId },
   });
 
   const updateActions = (id1: string, id2: string, action: string): void => {
