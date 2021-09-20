@@ -156,8 +156,9 @@ const Contact: React.FC<Props> = ({
                   value={values.tagValue}
                   onChange={(event) => handleChange(event, 'tagValue')}
                 >
-                  {Object.entries(contactTags).map(
-                    ([statusValue, statusTranslated]) => (
+                  {Object.entries(contactTags)
+                    .slice(0, Object.entries(contactTags).length - 3)
+                    .map(([statusValue, statusTranslated]) => (
                       <option
                         value={statusValue}
                         key={statusValue}
@@ -165,8 +166,7 @@ const Contact: React.FC<Props> = ({
                       >
                         {statusTranslated}
                       </option>
-                    ),
-                  )}
+                    ))}
                 </NativeSelect>
               </Box>
             </Grid>
