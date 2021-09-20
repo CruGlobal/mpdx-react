@@ -1,5 +1,8 @@
 query GetInvalidPhoneNumbers($accountListId: ID!) {
-  people(accountListId: $accountListId, phoneNumberValid: false) {
+  people(
+    accountListId: $accountListId
+    peopleFilter: { phoneNumberValid: false }
+  ) {
     nodes {
       ...PersonInvalidNumber
     }
