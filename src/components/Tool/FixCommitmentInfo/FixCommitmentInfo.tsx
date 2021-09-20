@@ -9,12 +9,12 @@ import {
   CircularProgress,
 } from '@material-ui/core';
 import { Trans, useTranslation } from 'react-i18next';
+import theme from '../../../theme';
 import { useGetInvalidStatusesQuery } from './GetInvalidStatuses.generated';
 import Contact from './Contact';
 import NoContacts from './NoContacts';
 import { contactTags } from './InputOptions/ContactTags';
 import { frequencies } from './InputOptions/Frequencies';
-import theme from 'src/theme';
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
