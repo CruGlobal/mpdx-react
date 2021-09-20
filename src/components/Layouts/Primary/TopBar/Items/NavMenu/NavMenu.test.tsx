@@ -32,7 +32,7 @@ describe('NavMenu', () => {
       getByRole('menuitem', { hidden: true, name: 'Reports' }),
     ).toBeInTheDocument();
     expect(
-      getByRole('menuitem', { hidden: true, name: 'Tools 0' }),
+      getByRole('menuitem', { hidden: true, name: 'Tools' }),
     ).toBeInTheDocument();
     expect(
       getByRole('menuitem', { hidden: true, name: 'Coaches' }),
