@@ -13,7 +13,6 @@ import {
 import { Trans, useTranslation } from 'react-i18next';
 import Icon from '@mdi/react';
 import { mdiCheckboxMarkedCircle } from '@mdi/js';
-import { useAccountListId } from '../../../../src/hooks/useAccountListId';
 import theme from '../../../theme';
 import { StyledInput } from '../FixCommitmentInfo/StyledInput';
 import {
@@ -104,16 +103,19 @@ const defaultDeleteModalState = {
   phoneNumber: '',
 };
 
-const FixPhoneNumbers: React.FC = () => {
+interface Props {
+  accountListId: string;
+}
+
+const FixPhoneNumbers: React.FC<Props> = ({ accountListId }: Props) => {
   const classes = useStyles();
 
   const [defaultSource, setDefaultSource] = useState('MPDX');
   const [deleteModalState, setDeleteModalState] = useState<ModalState>(
     defaultDeleteModalState,
   );
-  const accountListId = useAccountListId();
   const { data, loading } = useGetInvalidPhoneNumbersQuery({
-    variables: { accountListId: accountListId || '' },
+    variables: { accountListId },
   });
   const [dataState, setDataState] = useState<PersonInvalidNumberFragment[]>([]);
   const { t } = useTranslation();
@@ -179,7 +181,6 @@ const FixPhoneNumbers: React.FC = () => {
     numberIndex: number,
   ): void => {
     const temp = [...dataState];
-    console.log(temp);
     temp[contactIndex].phoneNumbers.nodes = temp[
       contactIndex
     ].phoneNumbers.nodes.map((number, index) => ({
