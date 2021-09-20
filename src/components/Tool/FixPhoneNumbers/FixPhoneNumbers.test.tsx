@@ -86,7 +86,7 @@ describe('FixPhoneNumbers-Home', () => {
                 },
               }}
             >
-              <FixPhoneNumbers />
+              <FixPhoneNumbers accountListId={accountListId} />
             </GqlMockedProvider>
           </TestWrapper>
         </TestRouter>
@@ -120,7 +120,7 @@ describe('FixPhoneNumbers-Home', () => {
                 },
               }}
             >
-              <FixPhoneNumbers />
+              <FixPhoneNumbers accountListId={accountListId} />
             </GqlMockedProvider>
           </TestWrapper>
         </TestRouter>
@@ -149,7 +149,7 @@ describe('FixPhoneNumbers-Home', () => {
   //               },
   //             }}
   //           >
-  //             <FixPhoneNumbers />
+  //             <FixPhoneNumbers accountListId={accountListId}/>
   //           </GqlMockedProvider>
   //         </TestWrapper>
   //       </TestRouter>
@@ -179,7 +179,7 @@ describe('FixPhoneNumbers-Home', () => {
                 },
               }}
             >
-              <FixPhoneNumbers />
+              <FixPhoneNumbers accountListId={accountListId} />
             </GqlMockedProvider>
           </TestWrapper>
         </TestRouter>
@@ -209,7 +209,7 @@ describe('FixPhoneNumbers-Home', () => {
   //               },
   //             }}
   //           >
-  //             <FixPhoneNumbers />
+  //             <FixPhoneNumbers accountListId={accountListId}/>
   //           </GqlMockedProvider>
   //         </TestWrapper>
   //       </TestRouter>
@@ -243,7 +243,7 @@ describe('FixPhoneNumbers-Home', () => {
                 },
               }}
             >
-              <FixPhoneNumbers />
+              <FixPhoneNumbers accountListId={accountListId} />
             </GqlMockedProvider>
           </TestWrapper>
         </TestRouter>
