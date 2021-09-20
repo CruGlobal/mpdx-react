@@ -9,12 +9,12 @@ import {
   CircularProgress,
 } from '@material-ui/core';
 import { Trans, useTranslation } from 'react-i18next';
-import { useAccountListId } from '../../../../src/hooks/useAccountListId';
 import { useGetInvalidStatusesQuery } from './GetInvalidStatuses.generated';
 import Contact from './Contact';
 import NoContacts from './NoContacts';
 import { contactTags } from './InputOptions/ContactTags';
 import { frequencies } from './InputOptions/Frequencies';
+import theme from 'src/theme';
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
@@ -50,10 +50,13 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-const FixCommitmentInfo: React.FC = () => {
+interface Props {
+  accountListId: string;
+}
+
+const FixCommitmentInfo: React.FC<Props> = ({ accountListId }: Props) => {
   const classes = useStyles();
   const { t } = useTranslation();
-  const accountListId = useAccountListId();
   const { data, loading } = useGetInvalidStatusesQuery({
     variables: { accountListId: accountListId || '' },
   });
@@ -129,7 +132,7 @@ const FixCommitmentInfo: React.FC = () => {
             )}
           </Grid>
         ) : (
-          <CircularProgress />
+          <CircularProgress style={{ marginTop: theme.spacing(3) }} />
         )}
       </Box>
     </>

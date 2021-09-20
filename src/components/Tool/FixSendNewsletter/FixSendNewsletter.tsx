@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react';
+import React from 'react';
 import {
   makeStyles,
   Box,
@@ -12,7 +12,6 @@ import { Icon } from '@mdi/react';
 import { mdiCheckboxMarkedCircle } from '@mdi/js';
 import { useTranslation, Trans } from 'react-i18next';
 import theme from '../../../theme';
-import { useAccountListId } from '../../../../src/hooks/useAccountListId';
 // import { ContactTags } from '../FixCommitmentInfo/InputOptions/ContactTags';
 import Contact from './Contact';
 import NoContacts from './NoContacts';
@@ -55,10 +54,13 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const FixSendNewsletter = (): ReactElement => {
+interface Props {
+  accountListId: string;
+}
+
+const FixSendNewsletter: React.FC<Props> = ({ accountListId }: Props) => {
   const classes = useStyles();
   const { t } = useTranslation();
-  const accountListId = useAccountListId();
   const { data, loading } = useGetInvalidNewsletterQuery({
     variables: { accountListId: accountListId || '' },
   });

@@ -12,7 +12,6 @@ import {
 import { Icon } from '@mdi/react';
 import { mdiCheckboxMarkedCircle } from '@mdi/js';
 import { Trans, useTranslation } from 'react-i18next';
-import { useAccountListId } from '../../../../src/hooks/useAccountListId';
 import theme from '../../../theme';
 import { StyledInput } from '../FixCommitmentInfo/StyledInput';
 import {
@@ -103,14 +102,17 @@ export const emptyAddress: ContactAddressFragment = {
   createdAt: '',
 };
 
-const FixSendNewsletter: React.FC = () => {
+interface Props {
+  accountListId: string;
+}
+
+const FixSendNewsletter: React.FC<Props> = ({ accountListId }: Props) => {
   const classes = useStyles();
   const [modalState, setModalState] = useState({
     open: false,
     address: emptyAddress,
   });
   const { t } = useTranslation();
-  const accountListId = useAccountListId();
   const [defaultSource, setDefaultSource] = useState('MPDX');
   const { data, loading } = useInvalidAddressesQuery({
     variables: { accountListId: accountListId || '' },
