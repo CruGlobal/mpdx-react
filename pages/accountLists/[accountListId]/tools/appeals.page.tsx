@@ -14,7 +14,7 @@ import { useAccountListId } from '../../../../src/hooks/useAccountListId';
 import Appeals from '../../../../src/components/Tool/Appeal/Appeals';
 
 import AddAppealForm from '../../../../src/components/Tool/Appeal/AddAppealForm';
-import Loading from 'src/components/Loading';
+import Loading from '../../../../src/components/Loading';
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
