@@ -97,9 +97,17 @@ const NavMenu = (): ReactElement => {
     variables: { accountListId: accountListId ?? '' },
   });
   const [dataState, setDataState] = useState<responseData>({});
+  const [total, setTotal] = useState(0);
 
   useEffect(() => {
-    setDataState(data ? JSON.parse(JSON.stringify(data)) : []);
+    const deepCopy = data ? JSON.parse(JSON.stringify(data)) : [];
+    setDataState(deepCopy);
+    setTotal(
+      Object.entries(deepCopy)
+        .map(([tool]) => deepCopy[tool])
+        .flatMap((entry) => entry.totalCount)
+        .reduce((a, b) => a + b, 0),
+    );
   }, [loading]);
 
   const [reportsMenuOpen, setReportsMenuOpen] = useState(false);
@@ -235,14 +243,7 @@ const NavMenu = (): ReactElement => {
             >
               <ListItemText primary={t('Tools')} />
               <Box className={classes.notificationBox}>
-                <Typography>
-                  {dataState
-                    ? Object.entries(dataState)
-                        .map(([tool]) => dataState[tool])
-                        .flatMap((entry) => entry.totalCount)
-                        .reduce((a, b) => a + b, 0)
-                    : ''}
-                </Typography>
+                <Typography>{total ? total : ''}</Typography>
               </Box>
               <ArrowDropDownIcon
                 className={clsx(classes.expand, {
