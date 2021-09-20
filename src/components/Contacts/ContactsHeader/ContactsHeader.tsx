@@ -39,6 +39,7 @@ const HeaderWrap = styled(Box)(({ theme }) => ({
   justifyContent: 'space-evenly',
   alignItems: 'center',
   backgroundColor: theme.palette.common.white,
+  borderBottom: `1px solid ${theme.palette.grey[200]}`,
 }));
 const FilterButton = styled(
   ({ activeFilters: _activeFilters, panelOpen: _panelOpen, ...props }) => (
