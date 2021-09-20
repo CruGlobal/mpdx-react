@@ -242,9 +242,14 @@ const NavMenu = (): ReactElement => {
               data-testid="ToolsMenuToggle"
             >
               <ListItemText primary={t('Tools')} />
-              <Box className={classes.notificationBox}>
-                <Typography>{total ? total : ''}</Typography>
-              </Box>
+              {total > 0 && (
+                <Box
+                  className={classes.notificationBox}
+                  data-testid="notificationsTotal"
+                >
+                  <Typography>{total}</Typography>
+                </Box>
+              )}
               <ArrowDropDownIcon
                 className={clsx(classes.expand, {
                   [classes.expandOpen]: toolsMenuOpen,

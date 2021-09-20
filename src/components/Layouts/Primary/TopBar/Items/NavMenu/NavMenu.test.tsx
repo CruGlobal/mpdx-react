@@ -3,7 +3,9 @@ import userEvent from '@testing-library/user-event';
 import * as nextRouter from 'next/router';
 import { render } from '../../../../../../../__tests__/util/testingLibraryReactMock';
 import TestWrapper from '../../../../../../../__tests__/util/TestWrapper';
+import { GqlMockedProvider } from '../../../../../../../__tests__/util/graphqlMocking';
 import NavMenu from './NavMenu';
+import { GetToolNotificationsQuery } from './GetToolNotifcations.generated';
 
 describe('NavMenu', () => {
   const useRouter = jest.spyOn(nextRouter, 'useRouter');
@@ -168,5 +170,28 @@ describe('NavMenu', () => {
     );
     userEvent.click(getByTestId('ToolsMenuToggle'));
     expect(getByTestId('appeals-true')).toBeInTheDocument();
+  });
+
+  it('test notifications = 0', () => {
+    const { queryByTestId } = render(
+      <TestWrapper>
+        <GqlMockedProvider<GetToolNotificationsQuery>
+          mocks={{
+            GetToolNotifications: {
+              contacts: {
+                totalCount: 0,
+              },
+              people: {
+                totalCount: 0,
+              },
+            },
+          }}
+        >
+          <NavMenu />
+        </GqlMockedProvider>
+      </TestWrapper>,
+    );
+
+    expect(queryByTestId('notificationsTotal')).not.toBeInTheDocument();
   });
 });
