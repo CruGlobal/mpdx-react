@@ -58,7 +58,7 @@ const FixCommitmentInfo: React.FC<Props> = ({ accountListId }: Props) => {
   const classes = useStyles();
   const { t } = useTranslation();
   const { data, loading } = useGetInvalidStatusesQuery({
-    variables: { accountListId: accountListId || '' },
+    variables: { accountListId: accountListId },
   });
 
   //TODO: Make currency field a select element
