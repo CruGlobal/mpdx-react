@@ -70,7 +70,7 @@ const MergePeople: React.FC<Props> = ({ accountListId }: Props) => {
   const [actions, setActions] = useState<actionsType>({});
   const { t } = useTranslation();
   const { data, loading } = useGetPersonDuplicatesQuery({
-    variables: { accountListId: accountListId },
+    variables: { accountListId },
   });
 
   const updateActions = (id1: string, id2: string, action: string): void => {
