@@ -138,6 +138,7 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
               nodes: dataFromCache.contacts.nodes.filter(
                 (contact) => contact.id !== deletedContactId,
               ),
+              totalCount: dataFromCache.contacts.totalCount - 1,
             },
           };
           cache.writeQuery({ ...query, data });
