@@ -115,7 +115,7 @@ const FixSendNewsletter: React.FC<Props> = ({ accountListId }: Props) => {
   const { t } = useTranslation();
   const [defaultSource, setDefaultSource] = useState('MPDX');
   const { data, loading } = useInvalidAddressesQuery({
-    variables: { accountListId: accountListId },
+    variables: { accountListId },
   });
 
   const handleOpen = (address: ContactAddressFragment): void => {

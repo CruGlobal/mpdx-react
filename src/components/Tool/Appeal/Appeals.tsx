@@ -22,7 +22,7 @@ interface Props {
 const Appeals: React.FC<Props> = ({ accountListId }: Props) => {
   const { t } = useTranslation();
   const { data, loading } = useGetAppealsQuery({
-    variables: { accountListId: accountListId },
+    variables: { accountListId },
   });
 
   return (

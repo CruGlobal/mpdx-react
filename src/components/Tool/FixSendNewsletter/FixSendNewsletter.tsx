@@ -62,7 +62,7 @@ const FixSendNewsletter: React.FC<Props> = ({ accountListId }: Props) => {
   const classes = useStyles();
   const { t } = useTranslation();
   const { data, loading } = useGetInvalidNewsletterQuery({
-    variables: { accountListId: accountListId },
+    variables: { accountListId },
   });
 
   //TODO: Add deceased to contact filters
