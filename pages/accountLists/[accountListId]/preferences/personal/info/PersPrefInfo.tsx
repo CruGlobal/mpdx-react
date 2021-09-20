@@ -11,11 +11,11 @@ import {
 } from '@material-ui/core';
 import { Edit } from '@material-ui/icons';
 import { info } from '../DemoContent';
+import { PersPrefModal } from '../modals/PersPrefModal';
 import { PersPrefWork } from './PersPrefWork';
 import { PersPrefContacts } from './PersPrefContacts';
 import { PersPrefAnniversary } from './PersPrefAnniversary';
 import { PersPrefSocials } from './PersPrefSocials';
-// import { PersPrefModal } from "./Modals/PersPrefModal";
 
 const StyledContactTop = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -124,7 +124,9 @@ export const PersPrefInfo: React.FC = () => {
           <Button onClick={handleOpen} startIcon={<Edit />} disableRipple>
             {t('Edit')}
           </Button>
-          {/* <PersPrefModal isOpen={profileOpen} handleOpen={setProfileOpen} /> */}
+          {profileOpen ? (
+            <PersPrefModal handleClose={() => setProfileOpen(false)} />
+          ) : null}
         </StyledContactEdit>
       </CardContent>
     </Card>
