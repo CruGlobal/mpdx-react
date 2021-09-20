@@ -12,8 +12,9 @@ import {
   styled,
   FormControl,
 } from '@material-ui/core';
+import Autocomplete from '@material-ui/lab/Autocomplete';
 import { Formik, Field, Form } from 'formik';
-import React, { ReactElement } from 'react';
+import React, { ReactElement, useState } from 'react';
 import Icon from '@mdi/react';
 import { mdiPlus, mdiClose, mdiEqual } from '@mdi/js';
 import { useTranslation } from 'react-i18next';
@@ -22,6 +23,7 @@ import { useSnackbar } from 'notistack';
 import theme from '../../../../src/theme';
 import AnimatedCard from '../../../../src/components/AnimatedCard';
 import { useAccountListId } from '../../../../src/hooks/useAccountListId';
+import { contactTags } from '../FixCommitmentInfo/InputOptions/ContactTags';
 import { useCreateAppealMutation } from './CreateAppeal.generated';
 
 const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
@@ -70,6 +72,11 @@ const AddAppealForm = (): ReactElement => {
   const { t } = useTranslation();
   const accountListId = useAccountListId() || '';
   const { enqueueSnackbar } = useSnackbar();
+  const [filterTags, setFilterTags] = useState({
+    statuses: [],
+    tags: [],
+    exlusions: [],
+  });
   const [createNewAppeal, { loading: updating }] = useCreateAppealMutation();
 
   const calculateGoal = (
@@ -78,6 +85,16 @@ const AddAppealForm = (): ReactElement => {
     adminCost: number,
   ): number => {
     return (initialGoal + letterCost) * (1 + adminCost / 100);
+  };
+
+  const handleChange = (
+    values: { title: string; value: string }[],
+    props: string,
+  ): void => {
+    setFilterTags((prevState) => ({
+      ...prevState,
+      [props]: values,
+    }));
   };
 
   const onSubmit = async (props: formProps) => {
@@ -104,6 +121,10 @@ const AddAppealForm = (): ReactElement => {
   const appealFormSchema = yup.object({
     name: yup.string().required('Please enter a name'),
   });
+
+  const contactTagsFormatted = Object.entries(
+    contactTags,
+  ).map(([tag, translatedTag]) => ({ title: tag, value: translatedTag }));
 
   return (
     <Box m={1}>
@@ -306,15 +327,21 @@ const AddAppealForm = (): ReactElement => {
                   >
                     {t('select all')}
                   </Typography>
-                  <TextField
-                    variant="outlined"
-                    placeholder={t('Select Some Options')}
-                    className={classes.input}
-                    inputProps={{
-                      style: {
-                        padding: 10,
-                      },
-                    }}
+                  <Autocomplete
+                    multiple
+                    id="tags-standard"
+                    options={contactTagsFormatted}
+                    getOptionLabel={(option) => option.value}
+                    value={filterTags.statuses}
+                    onChange={({}, values) => handleChange(values, 'statuses')}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        variant="outlined"
+                        size="small"
+                        placeholder={t('Select Some Options')}
+                      />
+                    )}
                   />
                 </Box>
                 <Box mt={1} mb={1}>
