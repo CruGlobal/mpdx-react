@@ -43,19 +43,21 @@ const useStyles = makeStyles(() => ({
     transform: 'rotate(180deg)',
   },
   subMenu: {
-    backgroundColor: theme.palette.cruGrayDark.main,
+    backgroundImage: `linear-gradient(0deg, ${theme.palette.cruGrayDark.main}, ${theme.palette.cruGrayDark.main})`,
   },
   menuItem: {
     color: 'white',
     '&:hover': {
       backgroundColor: theme.palette.cruGrayMedium.main,
+      backgroundBlendMode: 'multiply',
     },
   },
   menuItemSelected: {
+    backgroundBlendMode: 'multiply',
     backgroundColor: theme.palette.cruGrayMedium.main,
   },
   needsAttention: {
-    backgroundColor: theme.palette.mpdxYellow.main,
+    backgroundImage: `linear-gradient(0deg, ${theme.palette.mpdxYellow.main}, ${theme.palette.mpdxYellow.main})`,
   },
   menuIcon: {
     marginRight: theme.spacing(1),
@@ -289,10 +291,9 @@ const NavMenu = (): ReactElement => {
                                     }`}
                                     className={clsx(
                                       classes.menuItem,
-                                      needsAttention
-                                        ? classes.needsAttention
-                                        : currentToolId === tool.id &&
-                                            classes.menuItemSelected,
+                                      needsAttention && classes.needsAttention,
+                                      currentToolId === tool.id &&
+                                        classes.menuItemSelected,
                                     )}
                                   >
                                     <Icon
