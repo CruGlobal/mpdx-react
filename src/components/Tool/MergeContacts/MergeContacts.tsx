@@ -10,7 +10,6 @@ import {
 } from '@material-ui/core';
 
 import { Trans, useTranslation } from 'react-i18next';
-import { useAccountListId } from '../../../../src/hooks/useAccountListId';
 import theme from '../../../theme';
 import { useGetContactDuplicatesQuery } from './GetContactDuplicates.generated';
 import Contact from './Contact';
@@ -62,11 +61,14 @@ interface actionsType {
   [key: string]: actionType;
 }
 
-const MergeContacts: React.FC = () => {
+interface Props {
+  accountListId: string;
+}
+
+const MergeContacts: React.FC<Props> = ({ accountListId }: Props) => {
   const classes = useStyles();
   const [actions, setActions] = useState<actionsType>({});
   const { t } = useTranslation();
-  const accountListId = useAccountListId();
   const { data, loading } = useGetContactDuplicatesQuery({
     variables: { accountListId: accountListId || '' },
   });
