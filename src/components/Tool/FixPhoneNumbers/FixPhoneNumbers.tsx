@@ -16,7 +16,10 @@ import { mdiCheckboxMarkedCircle } from '@mdi/js';
 import { useAccountListId } from '../../../../src/hooks/useAccountListId';
 import theme from '../../../theme';
 import { StyledInput } from '../FixCommitmentInfo/StyledInput';
-import { useGetInvalidPhoneNumbersQuery } from './GetInvalidPhoneNumbers.generated';
+import {
+  PersonInvalidNumberFragment,
+  useGetInvalidPhoneNumbersQuery,
+} from './GetInvalidPhoneNumbers.generated';
 import Contact from './Contact';
 import NoContacts from './NoContacts';
 import DeleteModal from './DeleteModal';
@@ -112,7 +115,7 @@ const FixPhoneNumbers: React.FC = () => {
   const { data, loading } = useGetInvalidPhoneNumbersQuery({
     variables: { accountListId: accountListId || '' },
   });
-  const [dataState, setDataState] = useState(data ? data.people.nodes : []);
+  const [dataState, setDataState] = useState<PersonInvalidNumberFragment[]>([]);
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -162,7 +165,6 @@ const FixPhoneNumbers: React.FC = () => {
 
   const handleAdd = (contactIndex: number, number: string): void => {
     const temp = [...dataState];
-    console.log(temp);
     temp[contactIndex].phoneNumbers.nodes.push({
       id: '',
       updatedAt: new Date().toISOString(),
