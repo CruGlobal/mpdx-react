@@ -13,8 +13,7 @@ import {
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { Icon } from '@mdi/react';
-import { mdiCheckboxMarkedCircle, mdiPlus } from '@mdi/js';
-//import { mdiLock, mdiDelete } from '@mdi/js';
+import { mdiCheckboxMarkedCircle, mdiPlus, mdiLock, mdiDelete } from '@mdi/js';
 import StarIcon from '@material-ui/icons/Star';
 import StarOutlineIcon from '@material-ui/icons/StarOutline';
 import { DateTime } from 'luxon';
@@ -115,7 +114,7 @@ const Contact: React.FC<Props> = ({
   numbers,
   contactIndex,
   handleChange,
-  //handleDelete,
+  handleDelete,
   handleAdd,
   handleChangePrimary,
 }) => {
@@ -241,10 +240,10 @@ const Contact: React.FC<Props> = ({
                               event: React.ChangeEvent<HTMLInputElement>,
                             ) => handleChange(contactIndex, index, event)}
                             value={phoneNumber.number}
-                            //disabled={phoneNumber.source !== 'MPDX'}
+                            disabled={phoneNumber.source !== 'MPDX'}
                           />
 
-                          {/* {phoneNumber.source === 'MPDX' ? (
+                          {phoneNumber.source === 'MPDX' ? (
                             <Box
                               data-testid={`delete-${contactIndex}-${index}`}
                               onClick={() => handleDelete(contactIndex, index)}
@@ -263,7 +262,7 @@ const Contact: React.FC<Props> = ({
                                 color: theme.palette.cruGrayMedium.main,
                               }}
                             />
-                          )} */}
+                          )}
                         </Box>
                       </Grid>
                     </Fragment>

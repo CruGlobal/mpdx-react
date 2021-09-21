@@ -13,10 +13,12 @@ import {
 import { Trans, useTranslation } from 'react-i18next';
 import Icon from '@mdi/react';
 import { mdiCheckboxMarkedCircle } from '@mdi/js';
+import { PhoneNumberConnection } from 'graphql/types.generated';
 import theme from '../../../theme';
 import { StyledInput } from '../FixCommitmentInfo/StyledInput';
 import {
   PersonInvalidNumberFragment,
+  PersonPhoneNumberFragment,
   useGetInvalidPhoneNumbersQuery,
 } from './GetInvalidPhoneNumbers.generated';
 import Contact from './Contact';
@@ -117,24 +119,39 @@ const FixPhoneNumbers: React.FC<Props> = ({ accountListId }: Props) => {
   const { data, loading } = useGetInvalidPhoneNumbersQuery({
     variables: { accountListId },
   });
-  const [dataState, setDataState] = useState<PersonInvalidNumberFragment[]>([]);
+  const [dataState, setDataState] = useState<{
+    [key: string]: PersonPhoneNumberFragment[];
+  }>({});
   const { t } = useTranslation();
 
-  useEffect(() => {
-    setDataState(data ? JSON.parse(JSON.stringify(data.people.nodes)) : []);
-  }, [loading]);
+  useEffect(
+    () =>
+      setDataState(
+        data
+          ? data.people.nodes.reduce(
+              (map: { [key: string]: PersonPhoneNumberFragment[] }, obj) => {
+                map[obj.id] = obj.phoneNumbers.nodes;
+                return map;
+              },
+              {},
+            )
+          : {},
+      ),
+    [loading],
+  );
 
-  const handleDeleteModalOpen = (): // contactIndex: number,
-  // numberIndex: number,
-  void => {
-    // setDeleteModalState({
-    //   open: true,
-    //   contactIndex: contactIndex,
-    //   numberIndex: numberIndex,
-    //   phoneNumber: dataState
-    //     ? dataState[contactIndex].phoneNumbers.nodes[numberIndex].number
-    //     : '',
-    // });
+  const handleDeleteModalOpen = (
+    contactIndex: number,
+    numberIndex: number,
+  ): void => {
+    setDeleteModalState({
+      open: true,
+      contactIndex: contactIndex,
+      numberIndex: numberIndex,
+      phoneNumber: dataState
+        ? dataState[contactIndex].phoneNumbers.nodes[numberIndex].number
+        : '',
+    });
   };
 
   const handleDeleteModalClose = (): void => {
@@ -153,16 +170,16 @@ const FixPhoneNumbers: React.FC<Props> = ({ accountListId }: Props) => {
   };
 
   const handleDelete = (): void => {
-    // const temp = [...dataState];
-    // const wasPrimary = temp[
-    //   deleteModalState.contactIndex
-    // ].phoneNumbers.nodes.splice(deleteModalState.numberIndex, 1);
-    // wasPrimary[0].primary &&
-    //   (temp[deleteModalState.contactIndex].phoneNumbers.nodes[0][
-    //     'primary'
-    //   ] = true); // If the deleted number was primary, set the new first index to primary
-    // setDataState(temp);
-    // handleDeleteModalClose();
+    const temp = [...dataState];
+    const wasPrimary = temp[
+      deleteModalState.contactIndex
+    ].phoneNumbers.nodes.splice(deleteModalState.numberIndex, 1);
+    wasPrimary[0].primary &&
+      (temp[deleteModalState.contactIndex].phoneNumbers.nodes[0][
+        'primary'
+      ] = true); // If the deleted number was primary, set the new first index to primary
+    setDataState(temp);
+    handleDeleteModalClose();
   };
 
   const handleAdd = (contactIndex: number, number: string): void => {
