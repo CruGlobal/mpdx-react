@@ -184,7 +184,7 @@ describe('NavMenu', () => {
   });
 
   it('test notifications = 0', async () => {
-    const { queryByTestId } = render(
+    const { queryByTestId, getByTestId } = render(
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
           <GqlMockedProvider<GetToolNotificationsQuery>
@@ -214,6 +214,16 @@ describe('NavMenu', () => {
     await waitFor(() =>
       expect(queryByTestId('notificationTotal')).not.toBeInTheDocument(),
     );
+    userEvent.click(getByTestId('ToolsMenuToggle'));
+    expect(getByTestId('appeals-false').firstChild).toHaveClass(
+      'makeStyles-whiteText-52',
+    );
+    expect(getByTestId('appeals-false').children[1]).toHaveClass(
+      'makeStyles-whiteText-52',
+    );
+    expect(
+      queryByTestId('fixCommitmentInfo-notifications'),
+    ).not.toBeInTheDocument();
   });
 
   it('test notifications > 0', async () => {
@@ -248,5 +258,13 @@ describe('NavMenu', () => {
       expect(getByTestId('notificationTotal')).toBeInTheDocument(),
     );
     expect(getByTestId('notificationTotalText')).toHaveTextContent('7');
+    userEvent.click(getByTestId('ToolsMenuToggle'));
+    expect(getByTestId('fixCommitmentInfo-false').firstChild).toHaveClass(
+      'makeStyles-darkText-66',
+    );
+    expect(getByTestId('fixCommitmentInfo-false').children[1]).toHaveClass(
+      'makeStyles-darkText-66',
+    );
+    expect(getByTestId('fixCommitmentInfo-notifications')).toBeInTheDocument();
   });
 });

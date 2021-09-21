@@ -325,7 +325,10 @@ const NavMenu = (): ReactElement => {
                                       })}
                                     />
                                     {!loading && needsAttention && (
-                                      <Box className={classes.notificationBox}>
+                                      <Box
+                                        className={classes.notificationBox}
+                                        data-testid={`${tool.id}-notifications`}
+                                      >
                                         <Typography>
                                           {dataState[tool.id]?.totalCount}
                                         </Typography>
