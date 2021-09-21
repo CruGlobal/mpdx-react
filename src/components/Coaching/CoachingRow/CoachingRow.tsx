@@ -106,14 +106,7 @@ export const CoachingRow: React.FC<Props> = ({ coach }) => {
         secondary={percentageTotalPledges}
       />
       <CoachingProgressLabelContainer>
-        {primaryAppeal === null ? (
-          <>
-            <Typography>{t('Primary Appeal')}</Typography>
-            <Typography color="textSecondary">
-              {t('No primary appeal set for this account')}
-            </Typography>
-          </>
-        ) : (
+        {primaryAppeal ? (
           <>
             <Typography>
               {t('Primary Appeal ')} {appealAmountCurrency}
@@ -127,6 +120,13 @@ export const CoachingRow: React.FC<Props> = ({ coach }) => {
                 '(' +
                 percentageFormat(percentageAppealTotal) +
                 ')'}
+            </Typography>
+          </>
+        ) : (
+          <>
+            <Typography>{t('Primary Appeal')}</Typography>
+            <Typography color="textSecondary">
+              {t('No primary appeal set for this account')}
             </Typography>
           </>
         )}
