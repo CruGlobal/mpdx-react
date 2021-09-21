@@ -13,11 +13,9 @@ import {
 import { Trans, useTranslation } from 'react-i18next';
 import Icon from '@mdi/react';
 import { mdiCheckboxMarkedCircle } from '@mdi/js';
-import { PhoneNumberConnection } from 'graphql/types.generated';
 import theme from '../../../theme';
 import { StyledInput } from '../FixCommitmentInfo/StyledInput';
 import {
-  PersonInvalidNumberFragment,
   PersonPhoneNumberFragment,
   useGetInvalidPhoneNumbersQuery,
 } from './GetInvalidPhoneNumbers.generated';
@@ -93,14 +91,14 @@ const useStyles = makeStyles(() => ({
 
 export interface ModalState {
   open: boolean;
-  contactIndex: number;
+  personId: string;
   numberIndex: number;
   phoneNumber: string;
 }
 
 const defaultDeleteModalState = {
   open: false,
-  contactIndex: 0,
+  personId: '',
   numberIndex: 0,
   phoneNumber: '',
 };
@@ -141,16 +139,14 @@ const FixPhoneNumbers: React.FC<Props> = ({ accountListId }: Props) => {
   );
 
   const handleDeleteModalOpen = (
-    contactIndex: number,
+    personId: string,
     numberIndex: number,
   ): void => {
     setDeleteModalState({
       open: true,
-      contactIndex: contactIndex,
+      personId: personId,
       numberIndex: numberIndex,
-      phoneNumber: dataState
-        ? dataState[contactIndex].phoneNumbers.nodes[numberIndex].number
-        : '',
+      phoneNumber: dataState ? dataState[personId][numberIndex].number : '',
     });
   };
 
@@ -159,32 +155,30 @@ const FixPhoneNumbers: React.FC<Props> = ({ accountListId }: Props) => {
   };
 
   const handleChange = (
-    contactIndex: number,
+    personId: string,
     numberIndex: number,
     event: React.ChangeEvent<HTMLInputElement>,
   ): void => {
-    const temp = [...dataState];
-    dataState[contactIndex].phoneNumbers.nodes[numberIndex].number =
-      event.target.value;
+    const temp = { ...dataState };
+    dataState[personId][numberIndex].number = event.target.value;
     setDataState(temp);
   };
 
   const handleDelete = (): void => {
-    const temp = [...dataState];
-    const wasPrimary = temp[
-      deleteModalState.contactIndex
-    ].phoneNumbers.nodes.splice(deleteModalState.numberIndex, 1);
+    const temp = { ...dataState };
+    const wasPrimary = temp[deleteModalState.personId].splice(
+      deleteModalState.numberIndex,
+      1,
+    );
     wasPrimary[0].primary &&
-      (temp[deleteModalState.contactIndex].phoneNumbers.nodes[0][
-        'primary'
-      ] = true); // If the deleted number was primary, set the new first index to primary
+      (temp[deleteModalState.personId][0]['primary'] = true); // If the deleted number was primary, set the new first index to primary
     setDataState(temp);
     handleDeleteModalClose();
   };
 
-  const handleAdd = (contactIndex: number, number: string): void => {
-    const temp = [...dataState];
-    temp[contactIndex].phoneNumbers.nodes.push({
+  const handleAdd = (personId: string, number: string): void => {
+    const temp = { ...dataState };
+    temp[personId].push({
       id: '',
       updatedAt: new Date().toISOString(),
       number: number,
@@ -193,14 +187,9 @@ const FixPhoneNumbers: React.FC<Props> = ({ accountListId }: Props) => {
     setDataState(temp);
   };
 
-  const handleChangePrimary = (
-    contactIndex: number,
-    numberIndex: number,
-  ): void => {
-    const temp = [...dataState];
-    temp[contactIndex].phoneNumbers.nodes = temp[
-      contactIndex
-    ].phoneNumbers.nodes.map((number, index) => ({
+  const handleChangePrimary = (personId: string, numberIndex: number): void => {
+    const temp = { ...dataState };
+    temp[personId] = temp[personId].map((number, index) => ({
       ...number,
       primary: index === numberIndex ? true : false,
     }));
@@ -222,14 +211,14 @@ const FixPhoneNumbers: React.FC<Props> = ({ accountListId }: Props) => {
               <Typography variant="h4">{t('Fix Phone Numbers')}</Typography>
               <Divider className={classes.divider} />
             </Grid>
-            {dataState.length > 0 ? (
+            {data.people.nodes.length > 0 ? (
               <>
                 <Grid item xs={12}>
                   <Box className={classes.descriptionBox}>
                     <Typography>
                       <strong>
                         {t('You have {{amount}} phone numbers to confirm.', {
-                          amount: dataState.length,
+                          amount: data.people.nodes.length,
                         })}
                       </strong>
                     </Typography>
@@ -270,7 +259,7 @@ const FixPhoneNumbers: React.FC<Props> = ({ accountListId }: Props) => {
                           className={classes.buttonIcon}
                         />
                         {t('Confirm {{amount}} as {{source}}', {
-                          amount: dataState.length,
+                          amount: data.people.nodes.length,
                           source: defaultSource,
                         })}
                       </Button>
@@ -278,12 +267,12 @@ const FixPhoneNumbers: React.FC<Props> = ({ accountListId }: Props) => {
                   </Box>
                 </Grid>
                 <Grid item xs={12}>
-                  {dataState.map((person, index) => (
+                  {data.people.nodes.map((person) => (
                     <Contact
                       name={`${person.firstName} ${person.lastName}`}
                       key={person.id}
-                      contactIndex={index}
-                      numbers={person.phoneNumbers.nodes}
+                      personId={person.id}
+                      numbers={dataState[person.id]}
                       handleChange={handleChange}
                       handleDelete={handleDeleteModalOpen}
                       handleAdd={handleAdd}
@@ -296,7 +285,7 @@ const FixPhoneNumbers: React.FC<Props> = ({ accountListId }: Props) => {
                     <Typography>
                       <Trans
                         defaults="Showing <bold>{{value}}</bold> of <bold>{{value}}</bold>"
-                        values={{ value: dataState.length }}
+                        values={{ value: data.people.nodes.length }}
                         components={{ bold: <strong /> }}
                       />
                     </Typography>

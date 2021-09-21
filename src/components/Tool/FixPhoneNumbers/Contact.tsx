@@ -98,21 +98,21 @@ const useStyles = makeStyles((theme: Theme) => ({
 interface Props {
   name: string;
   numbers: PersonPhoneNumberFragment[];
-  contactIndex: number;
+  personId: string;
   handleChange: (
-    contactIndex: number,
+    personId: string,
     numberIndex: number,
     event: React.ChangeEvent<HTMLInputElement>,
   ) => void;
-  handleDelete: (contactIndex: number, phoneNumber: number) => void;
-  handleAdd: (contactIndex: number, number: string) => void;
-  handleChangePrimary: (contactIndex: number, numberIndex: number) => void;
+  handleDelete: (personId: string, phoneNumber: number) => void;
+  handleAdd: (personId: string, number: string) => void;
+  handleChangePrimary: (personId: string, numberIndex: number) => void;
 }
 
 const Contact: React.FC<Props> = ({
   name,
   numbers,
-  contactIndex,
+  personId,
   handleChange,
   handleDelete,
   handleAdd,
@@ -132,7 +132,7 @@ const Contact: React.FC<Props> = ({
 
   const addNewPhoneNumber = (): void => {
     if (newPhoneNumber) {
-      handleAdd(contactIndex, newPhoneNumber);
+      handleAdd(personId, newPhoneNumber);
       setNewPhoneNumber('');
     }
   };
@@ -209,15 +209,15 @@ const Contact: React.FC<Props> = ({
                           <Typography>
                             {phoneNumber.primary ? (
                               <StarIcon
-                                data-testid={`starIcon-${contactIndex}-${index}`}
+                                data-testid={`starIcon-${personId}-${index}`}
                                 className={classes.hoverHighlight}
                               />
                             ) : (
                               <StarOutlineIcon
-                                data-testid={`starOutlineIcon-${contactIndex}-${index}`}
+                                data-testid={`starOutlineIcon-${personId}-${index}`}
                                 className={classes.hoverHighlight}
                                 onClick={() =>
-                                  handleChangePrimary(contactIndex, index)
+                                  handleChangePrimary(personId, index)
                                 }
                               />
                             )}
@@ -235,18 +235,18 @@ const Contact: React.FC<Props> = ({
                         >
                           <TextField
                             style={{ width: '100%' }}
-                            data-testid={`textfield-${contactIndex}-${index}`}
+                            data-testid={`textfield-${personId}-${index}`}
                             onChange={(
                               event: React.ChangeEvent<HTMLInputElement>,
-                            ) => handleChange(contactIndex, index, event)}
+                            ) => handleChange(personId, index, event)}
                             value={phoneNumber.number}
                             disabled={phoneNumber.source !== 'MPDX'}
                           />
 
                           {phoneNumber.source === 'MPDX' ? (
                             <Box
-                              data-testid={`delete-${contactIndex}-${index}`}
-                              onClick={() => handleDelete(contactIndex, index)}
+                              data-testid={`delete-${personId}-${index}`}
+                              onClick={() => handleDelete(personId, index)}
                             >
                               <Icon
                                 path={mdiDelete}
@@ -298,13 +298,13 @@ const Contact: React.FC<Props> = ({
                           event: React.ChangeEvent<HTMLInputElement>,
                         ) => updateNewPhoneNumber(event)}
                         inputProps={{
-                          'data-testid': `addNewNumberInput-${contactIndex}`,
+                          'data-testid': `addNewNumberInput-${personId}`,
                         }}
                         value={newPhoneNumber}
                       />
                       <Box
                         onClick={() => addNewPhoneNumber()}
-                        data-testid={`addButton-${contactIndex}`}
+                        data-testid={`addButton-${personId}`}
                       >
                         <Icon
                           path={mdiPlus}

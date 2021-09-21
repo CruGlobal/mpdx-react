@@ -102,8 +102,8 @@ describe('FixPhoneNumbers-Home', () => {
     expect(getByText('Confirm 2 as MPDX')).toBeInTheDocument();
     expect(getByText('Test Contact')).toBeInTheDocument();
     expect(getByText('Simba Lion')).toBeInTheDocument();
-    expect(getByTestId('textfield-0-0')).toBeInTheDocument();
-    expect(getByTestId('starIcon-0-0')).toBeInTheDocument();
+    expect(getByTestId('textfield-testid-0')).toBeInTheDocument();
+    expect(getByTestId('starIcon-testid-0')).toBeInTheDocument();
   });
 
   it('change primary of first number', async () => {
@@ -130,40 +130,40 @@ describe('FixPhoneNumbers-Home', () => {
     const star1 = await waitFor(() => getByTestId('starOutlineIcon-0-1'));
     userEvent.click(star1);
 
-    expect(queryByTestId('starIcon-0-0')).not.toBeInTheDocument();
-    expect(getByTestId('starIcon-0-1')).toBeInTheDocument();
-    expect(getByTestId('starOutlineIcon-0-0')).toBeInTheDocument();
+    expect(queryByTestId('starIcon-testid-0')).not.toBeInTheDocument();
+    expect(getByTestId('starIcon-testid-1')).toBeInTheDocument();
+    expect(getByTestId('starOutlineIcon-testid-0')).toBeInTheDocument();
   });
 
-  // it('delete third number from first person', async () => {
-  //   const { getByTestId, queryByTestId } = render(
-  //     <ThemeProvider theme={theme}>
-  //       <TestRouter router={router}>
-  //         <TestWrapper>
-  //           <GqlMockedProvider<GetInvalidPhoneNumbersQuery>
-  //             mocks={{
-  //               GetInvalidPhoneNumbers: {
-  //                 people: {
-  //                   nodes: testData,
-  //                 },
-  //               },
-  //             }}
-  //           >
-  //             <FixPhoneNumbers accountListId={accountListId}/>
-  //           </GqlMockedProvider>
-  //         </TestWrapper>
-  //       </TestRouter>
-  //     </ThemeProvider>,
-  //   );
+  it('delete third number from first person', async () => {
+    const { getByTestId, queryByTestId } = render(
+      <ThemeProvider theme={theme}>
+        <TestRouter router={router}>
+          <TestWrapper>
+            <GqlMockedProvider<GetInvalidPhoneNumbersQuery>
+              mocks={{
+                GetInvalidPhoneNumbers: {
+                  people: {
+                    nodes: testData,
+                  },
+                },
+              }}
+            >
+              <FixPhoneNumbers accountListId={accountListId} />
+            </GqlMockedProvider>
+          </TestWrapper>
+        </TestRouter>
+      </ThemeProvider>,
+    );
 
-  //   const delete02 = await waitFor(() => getByTestId('delete-0-2'));
-  //   userEvent.click(delete02);
+    const delete02 = await waitFor(() => getByTestId('delete-testid-2'));
+    userEvent.click(delete02);
 
-  //   const deleteButton = getByTestId('phoneNumberDeleteButton');
-  //   userEvent.click(deleteButton);
+    const deleteButton = getByTestId('phoneNumberDeleteButton');
+    userEvent.click(deleteButton);
 
-  //   expect(queryByTestId('textfield-0-2')).not.toBeInTheDocument();
-  // });
+    expect(queryByTestId('textfield-testid-2')).not.toBeInTheDocument();
+  });
 
   it('change third number from second person', async () => {
     const { getByDisplayValue } = render(
@@ -195,39 +195,41 @@ describe('FixPhoneNumbers-Home', () => {
     expect(textfield11.value).toBe('+6235357850561');
   });
 
-  // it('change second number for second person to primary then delete it', async () => {
-  //   const { getByTestId, queryByTestId } = render(
-  //     <ThemeProvider theme={theme}>
-  //       <TestRouter router={router}>
-  //         <TestWrapper>
-  //           <GqlMockedProvider<GetInvalidPhoneNumbersQuery>
-  //             mocks={{
-  //               GetInvalidPhoneNumbers: {
-  //                 people: {
-  //                   nodes: testData,
-  //                 },
-  //               },
-  //             }}
-  //           >
-  //             <FixPhoneNumbers accountListId={accountListId}/>
-  //           </GqlMockedProvider>
-  //         </TestWrapper>
-  //       </TestRouter>
-  //     </ThemeProvider>,
-  //   );
+  it('change second number for second person to primary then delete it', async () => {
+    const { getByTestId, queryByTestId } = render(
+      <ThemeProvider theme={theme}>
+        <TestRouter router={router}>
+          <TestWrapper>
+            <GqlMockedProvider<GetInvalidPhoneNumbersQuery>
+              mocks={{
+                GetInvalidPhoneNumbers: {
+                  people: {
+                    nodes: testData,
+                  },
+                },
+              }}
+            >
+              <FixPhoneNumbers accountListId={accountListId} />
+            </GqlMockedProvider>
+          </TestWrapper>
+        </TestRouter>
+      </ThemeProvider>,
+    );
 
-  //   const star11 = await waitFor(() => getByTestId('starOutlineIcon-1-1'));
-  //   userEvent.click(star11);
+    const star11 = await waitFor(() =>
+      getByTestId('starOutlineIcon-testid2-1'),
+    );
+    userEvent.click(star11);
 
-  //   const delete11 = getByTestId('delete-1-1');
-  //   userEvent.click(delete11);
+    const delete11 = getByTestId('delete-testid2-1');
+    userEvent.click(delete11);
 
-  //   const deleteButton = getByTestId('phoneNumberDeleteButton');
-  //   userEvent.click(deleteButton);
+    const deleteButton = getByTestId('phoneNumberDeleteButton');
+    userEvent.click(deleteButton);
 
-  //   expect(queryByTestId('starIcon-1-1')).not.toBeInTheDocument();
-  //   expect(getByTestId('starIcon-1-0')).toBeInTheDocument();
-  // });
+    expect(queryByTestId('starIcon-testid2-1')).not.toBeInTheDocument();
+    expect(getByTestId('starIcon-testid2-0')).toBeInTheDocument();
+  });
 
   it('add a phone number to first person', async () => {
     const { getByTestId, getByDisplayValue } = render(
@@ -250,19 +252,19 @@ describe('FixPhoneNumbers-Home', () => {
       </ThemeProvider>,
     );
     await waitFor(() =>
-      expect(getByTestId('starIcon-1-0')).toBeInTheDocument(),
+      expect(getByTestId('starIcon-testid2-0')).toBeInTheDocument(),
     );
-    expect(getByTestId('textfield-1-0')).toBeInTheDocument();
+    expect(getByTestId('textfield-testid2-0')).toBeInTheDocument();
 
     const textfieldNew1 = getByTestId(
-      'addNewNumberInput-1',
+      'addNewNumberInput-testid2',
     ) as HTMLInputElement;
     userEvent.type(textfieldNew1, '+12345');
-    const addButton1 = getByTestId('addButton-1');
+    const addButton1 = getByTestId('addButton-testid2');
     userEvent.click(addButton1);
 
     expect(textfieldNew1.value).toBe('');
-    expect(getByTestId('textfield-1-1')).toBeInTheDocument();
+    expect(getByTestId('textfield-testid2-1')).toBeInTheDocument();
     expect(getByDisplayValue('+12345')).toBeInTheDocument();
   });
 });
