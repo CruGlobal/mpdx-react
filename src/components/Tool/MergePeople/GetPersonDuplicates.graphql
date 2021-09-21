@@ -1,0 +1,35 @@
+query GetPersonDuplicates($accountListId: ID!) {
+  personDuplicates(accountListId: $accountListId) {
+    nodes {
+      id
+      reason
+      recordOne {
+        ...PersonInfo
+      }
+      recordTwo {
+        ...PersonInfo
+      }
+    }
+  }
+}
+
+fragment BasicEmailInfo on EmailAddress {
+  email
+}
+
+fragment BasicPhoneNumberInfo on PhoneNumber {
+  number
+}
+
+fragment PersonInfo on Person {
+  id
+  firstName
+  lastName
+  createdAt
+  primaryPhoneNumber {
+    ...BasicPhoneNumberInfo
+  }
+  primaryEmailAddress {
+    ...BasicEmailInfo
+  }
+}
