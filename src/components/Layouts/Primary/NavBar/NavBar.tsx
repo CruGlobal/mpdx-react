@@ -40,7 +40,7 @@ interface Section {
 
 const sections: Section[] = [
   {
-    title: 'Dashboard',
+    title: i18next.t('Dashboard'),
     href: '/accountLists/[accountListId]',
   },
   {
