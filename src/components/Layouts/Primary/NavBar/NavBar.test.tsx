@@ -14,17 +14,12 @@ jest.mock('next/router', () => ({
 }));
 
 const onMobileClose = jest.fn();
-const accountListId = 'test-id';
 
 describe('NavBar', () => {
   it('default', async () => {
     const { queryByTestId } = render(
       <ThemeProvider theme={theme}>
-        <NavBar
-          accountListId={accountListId}
-          onMobileClose={onMobileClose}
-          openMobile={false}
-        />
+        <NavBar onMobileClose={onMobileClose} openMobile={false} />
       </ThemeProvider>,
     );
 
@@ -34,11 +29,7 @@ describe('NavBar', () => {
   it('opened', async () => {
     const { queryByTestId } = render(
       <ThemeProvider theme={theme}>
-        <NavBar
-          accountListId={accountListId}
-          onMobileClose={onMobileClose}
-          openMobile={true}
-        />
+        <NavBar onMobileClose={onMobileClose} openMobile={true} />
       </ThemeProvider>,
     );
 
