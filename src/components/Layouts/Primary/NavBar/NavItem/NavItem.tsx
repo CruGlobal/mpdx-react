@@ -10,7 +10,6 @@ import {
 } from '@material-ui/core';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import { useTranslation } from 'react-i18next';
 
 interface NavItemProps {
   children?: ReactNode;
@@ -83,7 +82,6 @@ export const NavItem: FC<NavItemProps> = ({
 }) => {
   const [open, setOpen] = useState<boolean>(openProp ?? false);
   const theme = useTheme();
-  const { t } = useTranslation();
 
   const handleToggle = (): void => {
     setOpen((prevOpen) => !prevOpen);
@@ -107,7 +105,7 @@ export const NavItem: FC<NavItemProps> = ({
       <StyledListItem button disableGutters key={title} {...rest}>
         <StyledButton onClick={handleToggle} style={style}>
           {Icon && <Icon style={iconStyle} size="20" />}
-          <Title>{t(title)}</Title>
+          <Title>{title}</Title>
           {open ? (
             <ExpandItemIcon
               fontSize="small"

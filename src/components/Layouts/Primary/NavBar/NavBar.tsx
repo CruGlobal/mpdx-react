@@ -10,6 +10,7 @@ import {
 } from '@material-ui/core';
 import { useRouter } from 'next/router';
 import NextLink from 'next/link';
+import i18next from 'i18next';
 import { NavItem } from './NavItem/NavItem';
 import logo from 'src/images/logo.svg';
 import { ReportNavItems } from 'src/components/Reports/NavReportsList/ReportNavItems';
@@ -44,15 +45,15 @@ const sections: Section[] = [
     href: '/accountLists/[accountListId]',
   },
   {
-    title: 'Contacts',
+    title: i18next.t('Contacts'),
     href: '/accountLists/[accountListId]/contacts',
   },
   {
-    title: 'Tasks',
+    title: i18next.t('Tasks'),
     href: '/accountLists/[accountListId]/tasks',
   },
   {
-    title: 'Reports',
+    title: i18next.t('Reports'),
     items: ReportNavItems.map((item) => ({
       ...item,
       title: item.subTitle ? `${item.title} (${item.subTitle})` : item.title,
@@ -60,7 +61,7 @@ const sections: Section[] = [
     })),
   },
   {
-    title: 'Tools',
+    title: i18next.t('Tools'),
     items: ToolsList.flatMap((toolsGroup) => [
       ...toolsGroup.items.map((tool) => ({
         title: tool.tool,
@@ -69,7 +70,7 @@ const sections: Section[] = [
     ]),
   },
   {
-    title: 'Coaches',
+    title: i18next.t('Coaches'),
     href: '/coaches',
   },
 ];
