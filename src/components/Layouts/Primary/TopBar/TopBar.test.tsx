@@ -9,6 +9,9 @@ import { getNotificationsMocks } from './Items/NotificationMenu/NotificationMenu
 import { getTopBarMultipleMock } from './TopBar.mock';
 import TopBar from './TopBar';
 
+const accountListId = 'accountListId';
+const onMobileNavOpen = jest.fn();
+
 describe('TopBar', () => {
   const useRouter = jest.spyOn(nextRouter, 'useRouter');
   const mocks = [getTopBarMultipleMock(), ...getNotificationsMocks()];
@@ -16,7 +19,7 @@ describe('TopBar', () => {
     (useRouter as jest.SpyInstance<
       Pick<nextRouter.NextRouter, 'query' | 'isReady'>
     >).mockImplementation(() => ({
-      query: { accountListId: 'accountListId' },
+      query: { accountListId },
       isReady: true,
     }));
   });
@@ -25,7 +28,10 @@ describe('TopBar', () => {
     const { queryByText, getByTestId } = render(
       <ThemeProvider theme={theme}>
         <MockedProvider mocks={mocks} addTypename={false}>
-          <TopBar />
+          <TopBar
+            accountListId={accountListId}
+            onMobileNavOpen={onMobileNavOpen}
+          />
         </MockedProvider>
       </ThemeProvider>,
     );

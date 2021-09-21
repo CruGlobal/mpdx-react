@@ -33,7 +33,7 @@ export const Default = (): ReactElement => {
   return (
     <>
       <MockedProvider mocks={mocks} addTypename={false}>
-        <TopBar />
+        <TopBar accountListId="test" onMobileNavOpen={() => {}} />
       </MockedProvider>
       <Content />
     </>
