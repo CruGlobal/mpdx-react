@@ -14,6 +14,7 @@ import { accordionShared } from '../shared/PersPrefShared';
 
 const StyledAccordion = styled(Accordion)({
   backgroundColor: 'transparent',
+  boxShadow: 'none',
   '&.Mui-expanded': {
     margin: 0,
   },

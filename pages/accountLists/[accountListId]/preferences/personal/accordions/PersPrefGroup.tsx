@@ -18,7 +18,7 @@ export const PersPrefGroup: React.FC<PersPrefGroupProps> = ({
 
   return (
     <StyledGroupWrapper>
-      <Typography component="h3" variant="h5" gutterBottom>
+      <Typography component="h3" variant="h5">
         {t(title)}
       </Typography>
       {children}
