@@ -1,5 +1,4 @@
 export const accordionShared = {
-  boxShadow: 'none',
   '&:before': {
     content: 'none',
   },
