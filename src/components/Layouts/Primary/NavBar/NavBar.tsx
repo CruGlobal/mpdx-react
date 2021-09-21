@@ -10,14 +10,13 @@ import {
 } from '@material-ui/core';
 import { useRouter } from 'next/router';
 import NextLink from 'next/link';
-import { useTranslation } from 'react-i18next';
 import { NavItem } from './NavItem/NavItem';
 import logo from 'src/images/logo.svg';
 import { ReportNavItems } from 'src/components/Reports/NavReportsList/ReportNavItems';
 import { ToolsList } from 'src/components/Tool/Home/ToolList';
+import { useAccountListId } from 'src/hooks/useAccountListId';
 
 interface NavBarProps {
-  accountListId: string;
   onMobileClose: () => void;
   openMobile: boolean;
 }
@@ -81,7 +80,7 @@ function renderNavItems({
   pathname,
   depth = 0,
 }: {
-  accountListId: string;
+  accountListId: string | undefined;
   items: Item[];
   pathname: string;
   depth?: number;
@@ -111,17 +110,16 @@ function reduceChildRoutes({
   depth,
 }: {
   acc: ReactElement[];
-  accountListId: string;
+  accountListId: string | undefined;
   pathname: string;
   item: Item;
   depth: number;
 }) {
   const key = item.title + depth;
-  const { t } = useTranslation();
 
   if (item.items) {
     acc.push(
-      <NavItem depth={depth} icon={item.icon} key={key} title={t(item.title)}>
+      <NavItem depth={depth} icon={item.icon} key={key} title={item.title}>
         {renderNavItems({
           accountListId,
           depth: depth + 1,
@@ -142,7 +140,7 @@ function reduceChildRoutes({
         }
         icon={item.icon}
         key={key}
-        title={t(item.title)}
+        title={item.title}
       />,
     );
   }
@@ -158,12 +156,9 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-export const NavBar: FC<NavBarProps> = ({
-  accountListId,
-  onMobileClose,
-  openMobile,
-}) => {
+export const NavBar: FC<NavBarProps> = ({ onMobileClose, openMobile }) => {
   const classes = useStyles();
+  const accountListId = useAccountListId();
   const { pathname } = useRouter();
 
   useEffect(() => {

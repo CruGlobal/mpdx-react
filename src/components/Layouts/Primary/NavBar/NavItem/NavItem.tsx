@@ -10,6 +10,7 @@ import {
 } from '@material-ui/core';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import { useTranslation } from 'react-i18next';
 
 interface NavItemProps {
   children?: ReactNode;
@@ -39,6 +40,7 @@ export const StyledButton = styled(Button)(({ theme }) => ({
   color: theme.palette.common.white,
   padding: '10px 8px',
   justifyContent: 'flex-start',
+  alignItems: 'center',
   textTransform: 'none',
   letterSpacing: 0,
   width: '100%',
@@ -81,6 +83,7 @@ export const NavItem: FC<NavItemProps> = ({
 }) => {
   const [open, setOpen] = useState<boolean>(openProp ?? false);
   const theme = useTheme();
+  const { t } = useTranslation();
 
   const handleToggle = (): void => {
     setOpen((prevOpen) => !prevOpen);
@@ -95,8 +98,8 @@ export const NavItem: FC<NavItemProps> = ({
   const style = { paddingLeft, paddingTop: 11, paddingBottom: 11 };
   const iconStyle = {
     color: theme.palette.common.white,
-    fontSize: 16,
-    marginRight: 'auto',
+    fontSize: 18,
+    marginRight: theme.spacing(1.5),
   };
 
   if (children) {
@@ -104,7 +107,7 @@ export const NavItem: FC<NavItemProps> = ({
       <StyledListItem button disableGutters key={title} {...rest}>
         <StyledButton onClick={handleToggle} style={style}>
           {Icon && <Icon style={iconStyle} size="20" />}
-          <Title>{title}</Title>
+          <Title>{t(title)}</Title>
           {open ? (
             <ExpandItemIcon
               fontSize="small"
