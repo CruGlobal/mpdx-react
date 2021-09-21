@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import Head from 'next/head';
 import { Box, Typography, styled } from '@material-ui/core';
 
@@ -18,15 +19,17 @@ export const PreferencesWrapper: React.FC<PrefWrapperProps> = ({
   pageHeading,
   children,
 }) => {
+  const { t } = useTranslation();
+
   return (
     <>
       <Head>
-        <title>MPDX | {pageTitle}</title>
+        <title>MPDX | {t(pageTitle)}</title>
       </Head>
       <Box component="main">
         <PageTitle>
           <Typography component="h1" variant="h4">
-            {pageHeading}
+            {t(pageHeading)}
           </Typography>
         </PageTitle>
         <Box padding={3}>{children}</Box>
