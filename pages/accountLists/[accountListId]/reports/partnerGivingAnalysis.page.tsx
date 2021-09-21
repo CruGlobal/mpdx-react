@@ -1,15 +1,27 @@
-import React, { ReactElement } from 'react';
+import React, { useState } from 'react';
 import Head from 'next/head';
 import { useTranslation } from 'react-i18next';
-import { Box } from '@material-ui/core';
-import { PartnerGivingAnalysisReportFilters } from '../../../../src/components/Reports/PartnerGivingAnalysisReport/PartnerGivingAnalysisReportFilters';
-import { PartnerGivingAnalysisReportTable } from '../../../../src/components/Reports/PartnerGivingAnalysisReport/PartnerGivingAnalysisReportTable';
-import Loading from '../../../../src/components/Loading';
-import { useAccountListId } from '../../../../src/hooks/useAccountListId';
+import { Box, styled } from '@material-ui/core';
+import { PartnerGivingAnalysisReport } from 'src/components/Reports/PartnerGivingAnalysisReport/PartnerGivingAnalysisReport';
 
-const PartnerGivingAnalysisReportPage = (): ReactElement => {
+import Loading from 'src/components/Loading';
+import { useAccountListId } from 'src/hooks/useAccountListId';
+import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
+
+import { NavReportsList } from 'src/components/Reports/NavReportsList/NavReportsList';
+
+const PartnerGivingAnalysisReportPageWrapper = styled(Box)(({ theme }) => ({
+  backgroundColor: theme.palette.common.white,
+}));
+
+const PartnerGivingAnalysisReportPage: React.FC = () => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
+  const [isNavListOpen, setNavListOpen] = useState<boolean>(false);
+
+  const handleNavListToggle = () => {
+    setNavListOpen(!isNavListOpen);
+  };
 
   return (
     <>
@@ -19,15 +31,28 @@ const PartnerGivingAnalysisReportPage = (): ReactElement => {
         </title>
       </Head>
       {accountListId ? (
-        <Box height="100vh" display="flex" overflow-y="scroll">
-          <Box width="290px">
-            <PartnerGivingAnalysisReportFilters accountListId={accountListId} />
-          </Box>
-
-          <Box flex={1}>
-            <PartnerGivingAnalysisReportTable accountListId={accountListId} />
-          </Box>
-        </Box>
+        <PartnerGivingAnalysisReportPageWrapper>
+          <SidePanelsLayout
+            isScrollBox={false}
+            leftPanel={
+              <NavReportsList
+                isOpen={isNavListOpen}
+                selectedId="designationAccounts"
+                onClose={handleNavListToggle}
+              />
+            }
+            leftOpen={isNavListOpen}
+            leftWidth="290px"
+            mainContent={
+              <PartnerGivingAnalysisReport
+                accountListId={accountListId}
+                isNavListOpen={isNavListOpen}
+                onNavListToggle={handleNavListToggle}
+                title={t('Partner Giving Analysis Report')}
+              />
+            }
+          />
+        </PartnerGivingAnalysisReportPageWrapper>
       ) : (
         <Loading loading />
       )}

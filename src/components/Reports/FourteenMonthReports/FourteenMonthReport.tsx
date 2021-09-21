@@ -3,13 +3,10 @@ import { Box, CircularProgress, Theme, useMediaQuery } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { useReactToPrint } from 'react-to-print';
 import { FourteenMonthReportCurrencyType } from '../../../../graphql/types.generated';
+import type { Order } from '../Reports.type';
 import { FourteenMonthReportHeader as Header } from './Layout/Header/Header';
 import { useFourteenMonthReportQuery } from './GetFourteenMonthReport.generated';
-import type {
-  Contact,
-  Order,
-  OrderBy,
-} from './Layout/Table/TableHead/TableHead';
+import type { Contact, OrderBy } from './Layout/Table/TableHead/TableHead';
 import { FourteenMonthReportTable as Table } from './Layout/Table/Table';
 import { Notification } from 'src/components/Notification/Notification';
 import { EmptyReport } from 'src/components/Reports/EmptyReport/EmptyReport';
