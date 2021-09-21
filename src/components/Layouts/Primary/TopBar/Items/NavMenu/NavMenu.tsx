@@ -245,9 +245,11 @@ const NavMenu = (): ReactElement => {
               {total > 0 && (
                 <Box
                   className={classes.notificationBox}
-                  data-testid="notificationsTotal"
+                  data-testid="notificationTotal"
                 >
-                  <Typography>{total}</Typography>
+                  <Typography data-testid="notificationTotalText">
+                    {total}
+                  </Typography>
                 </Box>
               )}
               <ArrowDropDownIcon
