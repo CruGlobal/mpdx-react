@@ -2,7 +2,11 @@ import { Box, styled, Typography } from '@material-ui/core';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { CoachFragment } from '../LoadCoachingList.generated';
-import { currencyFormat, percentageFormat } from 'src/lib/intlFormat';
+import {
+  currencyFormat,
+  numberFormat,
+  percentageFormat,
+} from 'src/lib/intlFormat';
 import StyledProgress from 'src/components/StyledProgress';
 
 interface Props {
@@ -39,17 +43,22 @@ export const CoachingRow: React.FC<Props> = ({ coach }) => {
   } = coach;
 
   const calculatedMonthlyGoal = monthlyGoal ? monthlyGoal : 0;
-  const percentageRecievedPledges = receivedPledges / calculatedMonthlyGoal;
-  const percentageTotalPledges = totalPledges / calculatedMonthlyGoal;
-  const recievedCurrency = currencyFormat(receivedPledges, currency)
-    ? currencyFormat(receivedPledges, currency)
-    : receivedPledges;
-  const totalCurrency = currencyFormat(totalPledges, currency)
-    ? currencyFormat(totalPledges, currency)
-    : totalPledges;
-  const monthlyGoalCurrency = currencyFormat(calculatedMonthlyGoal, currency)
-    ? currencyFormat(calculatedMonthlyGoal, currency)
-    : calculatedMonthlyGoal;
+  const percentageRecievedPledges =
+    (receivedPledges ? receivedPledges : 0) / calculatedMonthlyGoal;
+  const percentageTotalPledges =
+    (totalPledges ? totalPledges : 0) / calculatedMonthlyGoal;
+  const recievedCurrency =
+    currency.length === 3
+      ? currencyFormat(receivedPledges, currency)
+      : numberFormat(receivedPledges);
+  const totalCurrency =
+    currency.length === 3
+      ? currencyFormat(totalPledges, currency)
+      : numberFormat(totalPledges);
+  const monthlyGoalCurrency =
+    currency.length === 3
+      ? currencyFormat(calculatedMonthlyGoal, currency)
+      : numberFormat(calculatedMonthlyGoal);
 
   const appealCurrencyCode = primaryAppeal?.amountCurrency
     ? primaryAppeal.amountCurrency
@@ -72,18 +81,14 @@ export const CoachingRow: React.FC<Props> = ({ coach }) => {
   )
     ? currencyFormat(calculatedAppealAmount, appealCurrencyCode)
     : calculatedAppealAmount;
-  const appealProcessedCurrency = currencyFormat(
-    calculatedAppealProcessed,
-    appealCurrencyCode,
-  )
-    ? currencyFormat(calculatedAppealProcessed, appealCurrencyCode)
-    : calculatedAppealProcessed;
-  const appealTotalCurrency = currencyFormat(
-    calculatedAppealTotal,
-    appealCurrencyCode,
-  )
-    ? currencyFormat(calculatedAppealTotal, appealCurrencyCode)
-    : calculatedAppealTotal;
+  const appealProcessedCurrency =
+    currency.length === 3
+      ? currencyFormat(calculatedAppealProcessed, appealCurrencyCode)
+      : numberFormat(calculatedAppealProcessed);
+  const appealTotalCurrency =
+    currency.length === 3
+      ? currencyFormat(calculatedAppealTotal, appealCurrencyCode)
+      : numberFormat(calculatedAppealTotal);
 
   return (
     <CoachingRowWrapper>

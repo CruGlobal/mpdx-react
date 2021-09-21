@@ -16,7 +16,6 @@ const CoachingListWrapper = styled(Box)(({ theme }) => ({
 const CoachingTitleWrapper = styled(Box)(({ theme }) => ({
   width: '100%',
   display: 'flex',
-  flexDirection: 'row',
   padding: theme.spacing(2),
   alignItems: 'center',
   alignContent: 'center',
