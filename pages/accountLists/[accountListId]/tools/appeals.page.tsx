@@ -10,9 +10,11 @@ import {
   Divider,
 } from '@material-ui/core';
 import { motion } from 'framer-motion';
+import { useAccountListId } from '../../../../src/hooks/useAccountListId';
 import Appeals from '../../../../src/components/Tool/Appeal/Appeals';
 
 import AddAppealForm from '../../../../src/components/Tool/Appeal/AddAppealForm';
+import Loading from '../../../../src/components/Loading';
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
@@ -43,6 +45,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 const AppealsPage: React.FC = () => {
   const { t } = useTranslation();
   const classes = useStyles();
+  const accountListId = useAccountListId();
 
   const variants = {
     animate: {
@@ -62,43 +65,47 @@ const AppealsPage: React.FC = () => {
       <Head>
         <title>MPDX | {t('Appeals')}</title>
       </Head>
-      <motion.div
-        initial="initial"
-        animate="animate"
-        exit="exit"
-        variants={variants}
-      >
-        <Box className={classes.outer}>
-          <Grid container spacing={3} className={classes.container}>
-            <Grid item xs={12}>
-              <Box m={1}>
-                <Typography variant="h4">{t('Appeals')}</Typography>
-              </Box>
-              <Divider />
-              <Box m={1}>
-                <Typography variant="body2">
-                  {t(
-                    'You can track recurring support goals or special need ' +
-                      'support goals through our appeals wizard. Track the ' +
-                      'recurring support you raise for an increase ask for example, ' +
-                      'or special gifts you raise for a summer mission trip or your ' +
-                      'new staff special gift goal.',
-                  )}
-                </Typography>
-              </Box>
-            </Grid>
+      {accountListId ? (
+        <motion.div
+          initial="initial"
+          animate="animate"
+          exit="exit"
+          variants={variants}
+        >
+          <Box className={classes.outer}>
+            <Grid container spacing={3} className={classes.container}>
+              <Grid item xs={12}>
+                <Box m={1}>
+                  <Typography variant="h4">{t('Appeals')}</Typography>
+                </Box>
+                <Divider />
+                <Box m={1}>
+                  <Typography variant="body2">
+                    {t(
+                      'You can track recurring support goals or special need ' +
+                        'support goals through our appeals wizard. Track the ' +
+                        'recurring support you raise for an increase ask for example, ' +
+                        'or special gifts you raise for a summer mission trip or your ' +
+                        'new staff special gift goal.',
+                    )}
+                  </Typography>
+                </Box>
+              </Grid>
 
-            <Grid item xs={12} sm={12} lg={6}>
-              <Appeals />
+              <Grid item xs={12} sm={12} lg={6}>
+                <Appeals accountListId={accountListId} />
+              </Grid>
+              <Grid item xs={12} sm={12} lg={6}>
+                <Box>
+                  <AddAppealForm />
+                </Box>
+              </Grid>
             </Grid>
-            <Grid item xs={12} sm={12} lg={6}>
-              <Box>
-                <AddAppealForm />
-              </Box>
-            </Grid>
-          </Grid>
-        </Box>
-      </motion.div>
+          </Box>
+        </motion.div>
+      ) : (
+        <Loading loading />
+      )}
     </>
   );
 };

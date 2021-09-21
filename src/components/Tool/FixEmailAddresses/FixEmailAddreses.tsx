@@ -146,7 +146,11 @@ const defaultDeleteModalState = {
   emailAddress: '',
 };
 
-const FixEmailAddresses: React.FC = () => {
+interface Props {
+  accountListId: string;
+}
+
+const FixEmailAddresses: React.FC<Props> = () => {
   const classes = useStyles();
   const [test, setTest] = useState(testData);
   const [defaultSource, setDefaultSource] = useState('MPDX');
