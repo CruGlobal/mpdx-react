@@ -25,4 +25,5 @@ fragment PersonPhoneNumber on PhoneNumber {
   primary
   number
   updatedAt
+  source
 }
