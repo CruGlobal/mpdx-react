@@ -15,13 +15,15 @@ export const Defaulst = (): ReactElement => {
   return (
     <GqlMockedProvider<LoadCoachingListQuery>
       mocks={{
-        coachingAccountLists: {
-          totalCount: 3,
-          nodes: [
-            { currency: 'USD', primaryAppeal: { amountCurrency: 'EUR' } },
-            { currency: 'USD', primaryAppeal: { amountCurrency: 'EUR' } },
-            { currency: 'USD', primaryAppeal: { amountCurrency: 'JPN' } },
-          ],
+        LoadCoachingList: {
+          coachingAccountLists: {
+            totalCount: 3,
+            nodes: [
+              { currency: 'USD', primaryAppeal: { amountCurrency: 'EUR' } },
+              { currency: 'USD', primaryAppeal: { amountCurrency: 'EUR' } },
+              { currency: 'USD', primaryAppeal: { amountCurrency: 'JPN' } },
+            ],
+          },
         },
       }}
     >
