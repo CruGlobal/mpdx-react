@@ -49,7 +49,7 @@ const Primary = ({ children, navBar }: Props): ReactElement => {
           onMobileNavOpen={() => setMobileNavOpen(true)}
           accountListId={accountListId}
         />
-        {accountListId && navBar && (
+        {accountListId && (
           <NavBar
             onMobileClose={() => setMobileNavOpen(false)}
             openMobile={isMobileNavOpen}
