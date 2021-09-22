@@ -26,7 +26,7 @@ import theme from '../../../../../../theme';
 const useStyles = makeStyles(() => ({
   navListItem: {
     order: 2,
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down('md')]: {
       display: 'none',
     },
   },
@@ -89,7 +89,7 @@ const NavMenu = (): ReactElement => {
   return (
     <>
       {accountListId ? (
-        <Grid container item alignItems="center" xs="auto" md={6}>
+        <Grid container item alignItems="center" xs="auto">
           <Grid item className={classes.navListItem}>
             <NextLink
               href="/accountLists/[accountListId]"
