@@ -15,12 +15,14 @@ const testData = {
       updatedAt: new Date('2019-12-03T03:40:05-06:00').toISOString(),
       number: '3533895895',
       primary: true,
+      source: 'MPDX',
     },
     {
       id: '1234',
       updatedAt: new Date('2019-12-04T03:40:05-06:00').toISOString(),
       number: '623533895895',
       primary: false,
+      source: 'MPDX',
     },
   ],
 };
@@ -38,7 +40,7 @@ describe('FixPhoneNumbers-Contact', () => {
           <Contact
             name={testData.name}
             key={testData.name}
-            contactIndex={0}
+            personId={testData.id}
             numbers={testData.numbers}
             handleChange={handleChangeMock}
             handleDelete={handleDeleteModalOpenMock}
@@ -50,11 +52,11 @@ describe('FixPhoneNumbers-Contact', () => {
     );
 
     expect(getByText(testData.name)).toBeInTheDocument();
-    //expect(getByText('Source (2019-12-03)')).toBeInTheDocument();
-    expect(getByTestId('textfield-0-0')).toBeInTheDocument();
+    expect(getByText('MPDX (2019-12-03)')).toBeInTheDocument();
+    expect(getByTestId('textfield-testid-0')).toBeInTheDocument();
     expect(getByDisplayValue('3533895895')).toBeInTheDocument();
-    //expect(getByText('Source (2019-12-04)')).toBeInTheDocument();
-    expect(getByTestId('textfield-0-1')).toBeInTheDocument();
+    expect(getByText('MPDX (2019-12-04)')).toBeInTheDocument();
+    expect(getByTestId('textfield-testid-1')).toBeInTheDocument();
     expect(getByDisplayValue('623533895895')).toBeInTheDocument();
   });
 
@@ -70,7 +72,7 @@ describe('FixPhoneNumbers-Contact', () => {
           <Contact
             name={testData.name}
             key={testData.name}
-            contactIndex={0}
+            personId={testData.id}
             numbers={testData.numbers}
             handleChange={handleChangeMock}
             handleDelete={handleDeleteModalOpenMock}
@@ -81,8 +83,10 @@ describe('FixPhoneNumbers-Contact', () => {
       </ThemeProvider>,
     );
 
-    const addInput = getByTestId('addNewNumberInput-0') as HTMLInputElement;
-    const addButton = getByTestId('addButton-0');
+    const addInput = getByTestId(
+      'addNewNumberInput-testid',
+    ) as HTMLInputElement;
+    const addButton = getByTestId('addButton-testid');
 
     userEvent.type(addInput, '123');
     expect(addInput.value).toBe('123');
