@@ -1,7 +1,7 @@
 import { Box, styled, Typography } from '@material-ui/core';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { CoachFragment } from '../LoadCoachingList.generated';
+import { CoachedPersonFragment } from '../LoadCoachingList.generated';
 import {
   currencyFormat,
   numberFormat,
@@ -10,7 +10,7 @@ import {
 import StyledProgress from 'src/components/StyledProgress';
 
 interface Props {
-  coach: CoachFragment;
+  coach: CoachedPersonFragment;
 }
 
 const CoachingRowWrapper = styled(Box)(({ theme }) => ({
@@ -117,14 +117,9 @@ export const CoachingRow: React.FC<Props> = ({ coach }) => {
               {t('Primary Appeal ')} {appealAmountCurrency}
             </Typography>
             <Typography>
-              {appealProcessedCurrency +
-                ' (' +
-                percentageFormat(percentageAppealProcessed) +
-                ') / ' +
-                appealTotalCurrency +
-                '(' +
-                percentageFormat(percentageAppealTotal) +
-                ')'}
+              {appealProcessedCurrency} (
+              {percentageFormat(percentageAppealProcessed)}) /{' '}
+              {appealTotalCurrency}({percentageFormat(percentageAppealTotal)})
             </Typography>
           </>
         ) : (

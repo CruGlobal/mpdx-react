@@ -5,6 +5,7 @@ import React, { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { CoachingRow } from './CoachingRow/CoachingRow';
 import {
+  CoachedPersonFragment,
   CoachFragment,
   useLoadCoachingListQuery,
 } from './LoadCoachingList.generated';
@@ -63,7 +64,7 @@ export const CoachingList = (): ReactElement => {
             {coaches?.nodes.map((coach, _index) => {
               return (
                 <>
-                  <CoachingRow coach={coach as CoachFragment} />
+                  <CoachingRow coach={coach as CoachedPersonFragment} />
                   <Divider />
                 </>
               );

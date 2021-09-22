@@ -1,5 +1,8 @@
 import React, { ReactElement } from 'react';
-import { CoachFragment, CoachFragmentDoc } from '../LoadCoachingList.generated';
+import {
+  CoachedPersonFragment,
+  CoachedPersonFragmentDoc,
+} from '../LoadCoachingList.generated';
 import { gqlMock } from '../../../../__tests__/util/graphqlMocking';
 import { CoachingRow } from './CoachingRow';
 
@@ -8,7 +11,7 @@ export default {
 };
 
 export const Default = (): ReactElement => {
-  const coach = gqlMock<CoachFragment>(CoachFragmentDoc, {
+  const coach = gqlMock<CoachedPersonFragment>(CoachedPersonFragmentDoc, {
     mocks: {
       currency: 'USD',
       primaryAppeal: {

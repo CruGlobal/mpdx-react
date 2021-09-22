@@ -1,7 +1,7 @@
 query LoadCoachingList {
   coachingAccountLists {
     nodes {
-      ...Coach
+      ...CoachedPerson
     }
     totalCount
     totalPageCount
@@ -14,7 +14,7 @@ query LoadCoachingList {
   }
 }
 
-fragment Coach on CoachingAccountList {
+fragment CoachedPerson on CoachingAccountList {
   id
   name
   primaryAppeal {
