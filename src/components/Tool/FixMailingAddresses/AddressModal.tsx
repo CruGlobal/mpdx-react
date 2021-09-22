@@ -22,7 +22,7 @@ import { mdiMap, mdiCloseThick, mdiInformation } from '@mdi/js';
 import Icon from '@mdi/react';
 import theme from '../../../theme';
 import { StyledInput } from './StyledInput';
-import { address } from './Contact';
+import { ContactAddressFragment } from './GetInvalidAddresses.generated';
 
 const useStyles = makeStyles(() => ({
   modal: {
@@ -90,7 +90,7 @@ const useStyles = makeStyles(() => ({
 interface Props {
   modalState: {
     open: boolean;
-    address: address;
+    address: ContactAddressFragment;
   };
   handleClose: () => void;
   handleChange: (
@@ -133,7 +133,7 @@ const AddressModal: React.FC<Props> = ({
                     variant="h5"
                     style={{ marginTop: -theme.spacing(1) }}
                   >
-                    {modalState.address.newAddress
+                    {modalState.address.id === 'new'
                       ? 'Add Address'
                       : 'Edit Address'}
                   </Typography>
@@ -199,14 +199,14 @@ const AddressModal: React.FC<Props> = ({
                   className={clsx(classes.paddingX, classes.paddingY)}
                 >
                   <NativeSelect
-                    value={modalState.address?.locationType || ''}
+                    value={modalState.address?.location || ''}
                     input={<StyledInput />}
                     disabled={disableAll}
                     onChange={(
                       event: React.ChangeEvent<
                         HTMLSelectElement & HTMLInputElement
                       >,
-                    ) => handleChange(event, 'locationType')}
+                    ) => handleChange(event, 'location')}
                     className={classes.widthFull}
                   >
                     <option value="" disabled>
@@ -267,11 +267,11 @@ const AddressModal: React.FC<Props> = ({
                     label="Zip"
                     disabled={disableAll}
                     variant="outlined"
-                    value={modalState.address?.zip || ''}
+                    value={modalState.address?.postalCode || ''}
                     size="small"
                     className={classes.widthFull}
                     onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
-                      handleChange(event, 'zip')
+                      handleChange(event, 'postalCode')
                     }
                   />
                 </Grid>
@@ -321,11 +321,11 @@ const AddressModal: React.FC<Props> = ({
                     label="Metro"
                     variant="outlined"
                     disabled={disableAll}
-                    value={modalState.address?.metro || ''}
+                    value={modalState.address?.metroArea || ''}
                     size="small"
                     className={classes.widthFull}
                     onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
-                      handleChange(event, 'metro')
+                      handleChange(event, 'metroArea')
                     }
                   />
                 </Grid>
@@ -337,11 +337,13 @@ const AddressModal: React.FC<Props> = ({
                   >
                     <Checkbox
                       checked={
-                        modalState.address ? !modalState.address?.valid : false
+                        modalState.address
+                          ? modalState.address?.historic
+                          : false
                       }
                       name="checkbox"
                       onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
-                        handleChange(event, 'valid')
+                        handleChange(event, 'historic')
                       }
                     />
                     <Typography style={{ marginLeft: theme.spacing(1) }}>

@@ -1,0 +1,19 @@
+mutation UpdatePerson($accountListId: ID!, $attributes: PersonUpdateInput!) {
+  updatePerson(
+    input: { accountListId: $accountListId, attributes: $attributes }
+  ) {
+    person {
+      ...ContactPerson
+    }
+  }
+}
+
+mutation CreatePerson($accountListId: ID!, $attributes: PersonCreateInput!) {
+  createPerson(
+    input: { accountListId: $accountListId, attributes: $attributes }
+  ) {
+    person {
+      ...ContactPerson
+    }
+  }
+}

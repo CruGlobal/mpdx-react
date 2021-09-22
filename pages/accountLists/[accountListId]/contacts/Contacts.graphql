@@ -12,6 +12,7 @@ query Contacts(
       id
       ...ContactRow
     }
+    totalCount
     pageInfo {
       endCursor
       hasNextPage

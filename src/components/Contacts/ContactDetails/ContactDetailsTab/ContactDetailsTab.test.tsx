@@ -205,6 +205,110 @@ describe('ContactDetailTab', () => {
     );
   });
 
+  it('should open edit person modal', async () => {
+    const { queryByText, getAllByLabelText } = render(
+      <SnackbarProvider>
+        <TestRouter router={router}>
+          <MuiPickersUtilsProvider utils={LuxonUtils}>
+            <ThemeProvider theme={theme}>
+              <GqlMockedProvider<ContactDetailsTabQuery>>
+                <ContactDetailsTab
+                  accountListId={accountListId}
+                  contactId={contactId}
+                  onClose={onClose}
+                />
+              </GqlMockedProvider>
+            </ThemeProvider>
+          </MuiPickersUtilsProvider>
+        </TestRouter>
+      </SnackbarProvider>,
+    );
+    await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());
+    userEvent.click(getAllByLabelText('Edit Icon')[1]);
+    await waitFor(() => expect(queryByText('Edit Person')).toBeInTheDocument());
+  });
+
+  it('should close edit person modal', async () => {
+    const { queryByText, getAllByLabelText, getByLabelText } = render(
+      <SnackbarProvider>
+        <TestRouter router={router}>
+          <MuiPickersUtilsProvider utils={LuxonUtils}>
+            <ThemeProvider theme={theme}>
+              <GqlMockedProvider<ContactDetailsTabQuery>>
+                <ContactDetailsTab
+                  accountListId={accountListId}
+                  contactId={contactId}
+                  onClose={onClose}
+                />
+              </GqlMockedProvider>
+            </ThemeProvider>
+          </MuiPickersUtilsProvider>
+        </TestRouter>
+      </SnackbarProvider>,
+    );
+    await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());
+    userEvent.click(getAllByLabelText('Edit Icon')[1]);
+    await waitFor(() => expect(queryByText('Edit Person')).toBeInTheDocument());
+    userEvent.click(getByLabelText('Close'));
+    await waitFor(() =>
+      expect(queryByText('Edit Person')).not.toBeInTheDocument(),
+    );
+  });
+
+  it('should open create person modal', async () => {
+    const { queryByText, getByText } = render(
+      <SnackbarProvider>
+        <TestRouter router={router}>
+          <MuiPickersUtilsProvider utils={LuxonUtils}>
+            <ThemeProvider theme={theme}>
+              <GqlMockedProvider<ContactDetailsTabQuery>>
+                <ContactDetailsTab
+                  accountListId={accountListId}
+                  contactId={contactId}
+                  onClose={onClose}
+                />
+              </GqlMockedProvider>
+            </ThemeProvider>
+          </MuiPickersUtilsProvider>
+        </TestRouter>
+      </SnackbarProvider>,
+    );
+    await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());
+    userEvent.click(getByText('Add Person'));
+    await waitFor(() =>
+      expect(queryByText('Create Person')).toBeInTheDocument(),
+    );
+  });
+
+  it('should close create person modal', async () => {
+    const { queryByText, getByText, getByLabelText } = render(
+      <SnackbarProvider>
+        <TestRouter router={router}>
+          <MuiPickersUtilsProvider utils={LuxonUtils}>
+            <ThemeProvider theme={theme}>
+              <GqlMockedProvider<ContactDetailsTabQuery>>
+                <ContactDetailsTab
+                  accountListId={accountListId}
+                  contactId={contactId}
+                  onClose={onClose}
+                />
+              </GqlMockedProvider>
+            </ThemeProvider>
+          </MuiPickersUtilsProvider>
+        </TestRouter>
+      </SnackbarProvider>,
+    );
+    await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());
+    userEvent.click(getByText('Add Person'));
+    await waitFor(() =>
+      expect(queryByText('Create Person')).toBeInTheDocument(),
+    );
+    userEvent.click(getByLabelText('Close'));
+    await waitFor(() =>
+      expect(queryByText('Create Person')).not.toBeInTheDocument(),
+    );
+  });
+
   it('should open edit contact mailing modal', async () => {
     const { queryByText, getAllByLabelText } = render(
       <SnackbarProvider>
@@ -504,11 +608,22 @@ describe('ContactDetailTab', () => {
             name: 'Person, Test',
             starred: false,
             people: {
-              nodes: [],
+              nodes: [
+                {
+                  id: contactId,
+                  firstName: 'Test',
+                  lastName: 'Person',
+                  primaryPhoneNumber: { number: '555-555-5555' },
+                  primaryEmailAddress: {
+                    email: 'testperson@fake.com',
+                  },
+                },
+              ],
             },
           },
         ],
         pageInfo: { endCursor: 'Mg', hasNextPage: false },
+        totalCount: 1,
       },
     };
     cache.writeQuery({
@@ -554,6 +669,7 @@ describe('ContactDetailTab', () => {
           contacts: {
             nodes: [],
             pageInfo: { endCursor: 'Mg', hasNextPage: false },
+            totalCount: 0,
           },
         },
       }),

@@ -1,0 +1,40 @@
+mutation UpdateContactPartnership(
+  $accountListId: ID!
+  $attributes: ContactUpdateInput!
+) {
+  updateContact(
+    input: { accountListId: $accountListId, attributes: $attributes }
+  ) {
+    contact {
+      id
+      status
+      pledgeAmount
+      pledgeFrequency
+      pledgeCurrency
+      pledgeStartDate
+      nextAsk
+      noAppeals
+      contactReferralsToMe {
+        nodes {
+          id
+          referredBy {
+            id
+            name
+          }
+        }
+      }
+    }
+  }
+}
+
+query GetDataForPartnershipInfoModal(
+  $accountListId: ID!
+  $contactsFilter: ContactFilterSetInput
+) {
+  contacts(accountListId: $accountListId, contactsFilter: $contactsFilter) {
+    nodes {
+      id
+      name
+    }
+  }
+}

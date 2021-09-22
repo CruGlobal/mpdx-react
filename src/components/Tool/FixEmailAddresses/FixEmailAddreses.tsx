@@ -27,7 +27,7 @@ const useStyles = makeStyles(() => ({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  outter: {
+  outer: {
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'end',
@@ -146,7 +146,11 @@ const defaultDeleteModalState = {
   emailAddress: '',
 };
 
-const FixEmailAddresses: React.FC = () => {
+interface Props {
+  accountListId: string;
+}
+
+const FixEmailAddresses: React.FC<Props> = () => {
   const classes = useStyles();
   const [test, setTest] = useState(testData);
   const [defaultSource, setDefaultSource] = useState('MPDX');
@@ -232,7 +236,7 @@ const FixEmailAddresses: React.FC = () => {
   return (
     <>
       <Box className={classes.container}>
-        <Grid container className={classes.outter}>
+        <Grid container className={classes.outer}>
           <Grid item xs={12}>
             <Typography variant="h4">{t('Fix Email Addresses')}</Typography>
             <Divider className={classes.divider} />

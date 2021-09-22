@@ -69,9 +69,8 @@ export const EditContactAddressModal: React.FC<EditContactAddressModalProps> = (
     { loading: updating },
   ] = useUpdateContactAddressMutation();
 
-  // TODO Remove Omit once https://jira.cru.org/browse/MPDX-7090 is complete
   const contactAddressSchema: yup.SchemaOf<
-    Omit<AddressUpdateInput, 'contactId'>
+    Omit<AddressUpdateInput, 'validValues'>
   > = yup.object({
     city: yup.string().nullable(),
     country: yup.string().nullable(),
@@ -86,7 +85,7 @@ export const EditContactAddressModal: React.FC<EditContactAddressModalProps> = (
   });
 
   const onSubmit = async (
-    attributes: Omit<AddressUpdateInput, 'contactId'>,
+    attributes: Omit<AddressUpdateInput, 'validValues'>,
   ) => {
     await updateContactAddress({
       variables: {

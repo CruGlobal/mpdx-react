@@ -16,13 +16,15 @@ query GetTasksForTaskList(
     first: $first
     before: $before
     after: $after
-    activityType: $activityType
-    contactIds: $contactIds
-    userIds: $userIds
-    tags: $tags
-    completed: $completed
-    wildcardSearch: $wildcardSearch
-    startAt: $startAt
+    tasksFilter: {
+      activityType: $activityType
+      contactIds: $contactIds
+      userIds: $userIds
+      tags: $tags
+      completed: $completed
+      wildcardSearch: $wildcardSearch
+      startAt: $startAt
+    }
   ) {
     nodes {
       id
