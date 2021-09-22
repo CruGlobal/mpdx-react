@@ -6,7 +6,6 @@ import { useTranslation } from 'react-i18next';
 import { CoachingRow } from './CoachingRow/CoachingRow';
 import {
   CoachedPersonFragment,
-  CoachFragment,
   useLoadCoachingListQuery,
 } from './LoadCoachingList.generated';
 
