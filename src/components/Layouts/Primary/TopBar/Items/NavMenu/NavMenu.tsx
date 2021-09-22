@@ -101,13 +101,12 @@ const NavMenu = (): ReactElement => {
 
   useEffect(() => {
     const deepCopy = data ? JSON.parse(JSON.stringify(data)) : [];
-    setDataState(deepCopy);
-    setTotal(
-      Object.entries(deepCopy)
-        .map(([tool]) => deepCopy[tool])
-        .flatMap((entry) => entry.totalCount)
-        .reduce((a, b) => a + b, 0),
+    let sum = 0;
+    Object.entries(deepCopy).forEach(
+      ([entry]) => (sum += deepCopy[entry].totalCount),
     );
+    setDataState(deepCopy);
+    setTotal(sum);
   }, [loading]);
 
   const [reportsMenuOpen, setReportsMenuOpen] = useState(false);
