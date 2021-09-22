@@ -32,18 +32,21 @@ const testData: ErgonoMockShape[] = [
           updatedAt: new Date('2021-06-21T03:40:05-06:00').toISOString(),
           number: '+3533895895',
           primary: true,
+          source: 'MPDX',
         },
         {
           id: 'id12',
           updatedAt: new Date('2021-06-21T03:40:05-06:00').toISOString(),
           number: '3533895895',
           primary: false,
+          source: 'MPDX',
         },
         {
           id: 'id3',
           updatedAt: new Date('2021-06-21T03:40:05-06:00').toISOString(),
           number: '+623533895895',
           primary: false,
+          source: 'MPDX',
         },
       ],
     },
@@ -59,12 +62,14 @@ const testData: ErgonoMockShape[] = [
           updatedAt: new Date('2021-06-21T03:40:05-06:00').toISOString(),
           number: '+3535785056',
           primary: true,
+          source: 'MPDX',
         },
         {
           id: 'id5',
           updatedAt: new Date('2021-06-22T03:40:05-06:00').toISOString(),
           number: '+623535785056',
           primary: false,
+          source: 'MPDX',
         },
       ],
     },
@@ -127,7 +132,7 @@ describe('FixPhoneNumbers-Home', () => {
       </ThemeProvider>,
     );
 
-    const star1 = await waitFor(() => getByTestId('starOutlineIcon-0-1'));
+    const star1 = await waitFor(() => getByTestId('starOutlineIcon-testid-1'));
     userEvent.click(star1);
 
     expect(queryByTestId('starIcon-testid-0')).not.toBeInTheDocument();
@@ -163,36 +168,6 @@ describe('FixPhoneNumbers-Home', () => {
     userEvent.click(deleteButton);
 
     expect(queryByTestId('textfield-testid-2')).not.toBeInTheDocument();
-  });
-
-  it('change third number from second person', async () => {
-    const { getByDisplayValue } = render(
-      <ThemeProvider theme={theme}>
-        <TestRouter router={router}>
-          <TestWrapper>
-            <GqlMockedProvider<GetInvalidPhoneNumbersQuery>
-              mocks={{
-                GetInvalidPhoneNumbers: {
-                  people: {
-                    nodes: testData,
-                  },
-                },
-              }}
-            >
-              <FixPhoneNumbers accountListId={accountListId} />
-            </GqlMockedProvider>
-          </TestWrapper>
-        </TestRouter>
-      </ThemeProvider>,
-    );
-
-    await waitFor(() =>
-      expect(getByDisplayValue('+623535785056')).toBeInTheDocument(),
-    );
-    const textfield11 = getByDisplayValue('+623535785056') as HTMLInputElement;
-    userEvent.type(textfield11, '1');
-
-    expect(textfield11.value).toBe('+6235357850561');
   });
 
   it('change second number for second person to primary then delete it', async () => {
