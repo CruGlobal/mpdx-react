@@ -201,7 +201,7 @@ const Contact: React.FC<Props> = ({
                               </Typography>
                             </Hidden>
                             <Typography display="inline">
-                              {`${'Source'} (${DateTime.fromISO(
+                              {`${phoneNumber.source} (${DateTime.fromISO(
                                 phoneNumber.updatedAt,
                               ).toLocaleString(DateTime.DATE_SHORT)})`}
                             </Typography>

@@ -128,7 +128,7 @@ const FixPhoneNumbers: React.FC<Props> = ({ accountListId }: Props) => {
         data
           ? data.people.nodes.reduce(
               (map: { [key: string]: PersonPhoneNumberFragment[] }, obj) => {
-                map[obj.id] = obj.phoneNumbers.nodes;
+                map[obj.id] = [...obj.phoneNumbers.nodes];
                 return map;
               },
               {},
@@ -267,17 +267,23 @@ const FixPhoneNumbers: React.FC<Props> = ({ accountListId }: Props) => {
                   </Box>
                 </Grid>
                 <Grid item xs={12}>
+                  {console.log(dataState)}
                   {data.people.nodes.map((person) => (
-                    <Contact
-                      name={`${person.firstName} ${person.lastName}`}
-                      key={person.id}
-                      personId={person.id}
-                      numbers={dataState[person.id]}
-                      handleChange={handleChange}
-                      handleDelete={handleDeleteModalOpen}
-                      handleAdd={handleAdd}
-                      handleChangePrimary={handleChangePrimary}
-                    />
+                    <>
+                      {console.log(
+                        dataState['59db6502-e3db-4704-b891-24d8c853e11f'],
+                      )}
+                      <Contact
+                        name={`${person.firstName} ${person.lastName}`}
+                        key={person.id}
+                        personId={person.id}
+                        numbers={dataState[person.id] || []}
+                        handleChange={handleChange}
+                        handleDelete={handleDeleteModalOpen}
+                        handleAdd={handleAdd}
+                        handleChangePrimary={handleChangePrimary}
+                      />
+                    </>
                   ))}
                 </Grid>
                 <Grid item xs={12}>
