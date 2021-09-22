@@ -623,6 +623,7 @@ describe('ContactDetailTab', () => {
           },
         ],
         pageInfo: { endCursor: 'Mg', hasNextPage: false },
+        totalCount: 1,
       },
     };
     cache.writeQuery({
@@ -668,6 +669,7 @@ describe('ContactDetailTab', () => {
           contacts: {
             nodes: [],
             pageInfo: { endCursor: 'Mg', hasNextPage: false },
+            totalCount: 0,
           },
         },
       }),

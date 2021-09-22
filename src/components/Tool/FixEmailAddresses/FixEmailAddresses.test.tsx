@@ -6,12 +6,14 @@ import TestWrapper from '../../../../__tests__/util/TestWrapper';
 import theme from '../../../theme';
 import FixEmailAddresses from './FixEmailAddreses';
 
+const accountListId = 'test121';
+
 describe('FixEmailAddresses-Home', () => {
   it('default with test data', () => {
     const { getByText, getByTestId } = render(
       <ThemeProvider theme={theme}>
         <TestWrapper>
-          <FixEmailAddresses />
+          <FixEmailAddresses accountListId={accountListId} />
         </TestWrapper>
       </ThemeProvider>,
     );
@@ -31,7 +33,7 @@ describe('FixEmailAddresses-Home', () => {
     const { getByText, getByTestId } = render(
       <ThemeProvider theme={theme}>
         <TestWrapper>
-          <FixEmailAddresses />
+          <FixEmailAddresses accountListId={accountListId} />
         </TestWrapper>
       </ThemeProvider>,
     );
@@ -53,7 +55,7 @@ describe('FixEmailAddresses-Home', () => {
     const { getByTestId, queryByTestId } = render(
       <ThemeProvider theme={theme}>
         <TestWrapper>
-          <FixEmailAddresses />
+          <FixEmailAddresses accountListId={accountListId} />
         </TestWrapper>
       </ThemeProvider>,
     );
@@ -70,7 +72,7 @@ describe('FixEmailAddresses-Home', () => {
     const { getByTestId, queryByTestId } = render(
       <ThemeProvider theme={theme}>
         <TestWrapper>
-          <FixEmailAddresses />
+          <FixEmailAddresses accountListId={accountListId} />
         </TestWrapper>
       </ThemeProvider>,
     );
@@ -88,7 +90,7 @@ describe('FixEmailAddresses-Home', () => {
     const { getByDisplayValue } = render(
       <ThemeProvider theme={theme}>
         <TestWrapper>
-          <FixEmailAddresses />
+          <FixEmailAddresses accountListId={accountListId} />
         </TestWrapper>
       </ThemeProvider>,
     );
@@ -106,7 +108,7 @@ describe('FixEmailAddresses-Home', () => {
     const { getByTestId, queryByTestId } = render(
       <ThemeProvider theme={theme}>
         <TestWrapper>
-          <FixEmailAddresses />
+          <FixEmailAddresses accountListId={accountListId} />
         </TestWrapper>
       </ThemeProvider>,
     );
@@ -128,7 +130,7 @@ describe('FixEmailAddresses-Home', () => {
     const { getByTestId, getByDisplayValue } = render(
       <ThemeProvider theme={theme}>
         <TestWrapper>
-          <FixEmailAddresses />
+          <FixEmailAddresses accountListId={accountListId} />
         </TestWrapper>
       </ThemeProvider>,
     );
