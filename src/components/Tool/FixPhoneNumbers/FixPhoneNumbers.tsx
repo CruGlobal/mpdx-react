@@ -44,9 +44,7 @@ const useStyles = makeStyles(() => ({
     marginTop: theme.spacing(2),
     marginBottom: theme.spacing(2),
   },
-  descriptionBox: {
-    marginBottom: theme.spacing(2),
-  },
+
   footer: {
     width: '100%',
     display: 'flex',
@@ -214,7 +212,7 @@ const FixPhoneNumbers: React.FC<Props> = ({ accountListId }: Props) => {
             {data.people.nodes.length > 0 ? (
               <>
                 <Grid item xs={12}>
-                  <Box className={classes.descriptionBox}>
+                  <Box mb={2}>
                     <Typography>
                       <strong>
                         {t('You have {{amount}} phone numbers to confirm.', {
