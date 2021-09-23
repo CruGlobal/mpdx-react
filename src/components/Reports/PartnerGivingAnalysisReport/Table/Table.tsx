@@ -10,18 +10,23 @@ import {
   TableRow,
 } from '@material-ui/core';
 import type { Contact } from '../PartnerGivingAnalysisReport';
-import {
-  PartnerGivingAnalysisReportTableHead as TableHead,
-  PartnerGivingAnalysisReportTableHeadProps as TableHeadProps,
-} from './TableHead/TableHead';
+import type { Order } from '../../Reports.type';
+import { PartnerGivingAnalysisReportTableHead as TableHead } from './TableHead/TableHead';
 
-interface PartnerGivingAnalysisReportTableProps extends TableHeadProps {
+interface PartnerGivingAnalysisReportTableProps {
   onSelectOne: (
     event: React.ChangeEvent<HTMLInputElement>,
     contactId: string,
   ) => void;
+  onSelectAll: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onRequestSort: (
+    event: React.MouseEvent<unknown>,
+    property: keyof Contact,
+  ) => void;
   contacts: Contact[];
   selectedContacts: Array<string>;
+  order: Order;
+  orderBy: string | null;
 }
 
 const StickyTableContainer = styled(TableContainer)(() => ({
@@ -46,7 +51,7 @@ export const PartnerGivingAnalysisReportTable: FC<PartnerGivingAnalysisReportTab
   const isSelectedSome =
     selectedContacts.length > 0 && selectedContacts.length < contacts.length;
 
-  const isSelectedAll = selectedContacts.length === contacts.length;
+  const isSelectedAll = selectedContacts?.length === contacts.length;
 
   return (
     <StickyTableContainer>
@@ -82,7 +87,7 @@ export const PartnerGivingAnalysisReportTable: FC<PartnerGivingAnalysisReportTab
               label: t('Last Gift Date'),
             },
             {
-              id: 'lifetimeTotal',
+              id: 'lifeTimeTotal',
               label: t('Lifetime Total'),
             },
           ]}
@@ -95,7 +100,7 @@ export const PartnerGivingAnalysisReportTable: FC<PartnerGivingAnalysisReportTab
         />
         <TableBody>
           {contacts?.map((contact) => {
-            const isContactSelected = selectedContacts.includes(contact.id);
+            const isContactSelected = selectedContacts?.includes(contact.id);
 
             return (
               <TableRow

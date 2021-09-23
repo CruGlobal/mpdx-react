@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import { Box, CircularProgress, TablePagination } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { AccountsListHeader as Header } from '../AccountsListLayout/Header/Header';
@@ -6,7 +6,7 @@ import { AccountsListHeader as Header } from '../AccountsListLayout/Header/Heade
 import type { Order } from '../Reports.type';
 import { PartnerGivingAnalysisReportTable as Table } from './Table/Table';
 import { PartnerGivingAnalysisReportActions as Actions } from './Actions/Actions';
-import { Notification } from 'src/components/Notification/Notification';
+// import { Notification } from 'src/components/Notification/Notification';
 import { EmptyReport } from 'src/components/Reports/EmptyReport/EmptyReport';
 
 interface Props {
@@ -39,7 +39,9 @@ const applyFilters = (contacts: Contact[], query: string): Contact[] => {
       let containsQuery = false;
 
       properties.forEach((property) => {
-        if (contact[property].toLowerCase().includes(query.toLowerCase())) {
+        if (
+          String(contact[property]).toLowerCase().includes(query.toLowerCase())
+        ) {
           containsQuery = true;
         }
       });
@@ -82,7 +84,6 @@ const applyPagination = (
 };
 
 export const PartnerGivingAnalysisReport: React.FC<Props> = ({
-  accountListId,
   isNavListOpen,
   onNavListToggle,
   title,
@@ -96,7 +97,7 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
   const [query, setQuery] = useState<string>('');
 
   // Mock data
-  const error: Array<string> | null = null;
+  // const error: Array<string> | null = null;
   const loading = false;
   const data = {
     partnerGivingAnalysisReport: [
@@ -371,8 +372,6 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
         >
           <CircularProgress data-testid="LoadingPartnerGivingAnalysisReport" />
         </Box>
-      ) : error ? (
-        <Notification type="error" message={error?.toString()} />
       ) : data?.partnerGivingAnalysisReport.length > 0 ? (
         <>
           <Actions

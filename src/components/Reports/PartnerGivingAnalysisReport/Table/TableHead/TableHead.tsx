@@ -5,10 +5,15 @@ import type { Order } from '../../../Reports.type';
 import type { Contact } from '../../PartnerGivingAnalysisReport';
 import { TableHeadCell } from './TableHeadCell/TableHeadCell';
 
+export type Item = {
+  id: keyof Contact;
+  label: string;
+};
+
 export interface PartnerGivingAnalysisReportTableHeadProps {
   isSelectedAll: boolean;
   isSelectedSome: boolean;
-  items: Array<Record<string, keyof Contact | string>>;
+  items: Item[];
   onRequestSort: (
     event: React.MouseEvent<unknown>,
     property: keyof Contact,
