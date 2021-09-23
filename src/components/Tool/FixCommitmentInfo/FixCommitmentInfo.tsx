@@ -9,7 +9,7 @@ import {
   CircularProgress,
 } from '@material-ui/core';
 import { Trans, useTranslation } from 'react-i18next';
-import { useAccountListId } from '../../../../src/hooks/useAccountListId';
+import theme from '../../../theme';
 import { useGetInvalidStatusesQuery } from './GetInvalidStatuses.generated';
 import Contact from './Contact';
 import NoContacts from './NoContacts';
@@ -51,12 +51,15 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-const FixCommitmentInfo: React.FC = () => {
+interface Props {
+  accountListId: string;
+}
+
+const FixCommitmentInfo: React.FC<Props> = ({ accountListId }: Props) => {
   const classes = useStyles();
   const { t } = useTranslation();
-  const accountListId = useAccountListId();
   const { data, loading } = useGetInvalidStatusesQuery({
-    variables: { accountListId: accountListId || '' },
+    variables: { accountListId },
   });
 
   //TODO: Make currency field a select element

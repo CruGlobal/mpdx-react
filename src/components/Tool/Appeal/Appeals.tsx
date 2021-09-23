@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react';
+import React from 'react';
 import {
   Box,
   Typography,
@@ -8,7 +8,6 @@ import {
 } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { useGetAppealsQuery } from '../../../../pages/accountLists/[accountListId]/tools/GetAppeals.generated';
-import { useAccountListId } from '../../../../src/hooks/useAccountListId';
 import Appeal from '../../../../src/components/Tool/Appeal/Appeal';
 import NoAppeals from '../../../../src/components/Tool/Appeal/NoAppeals';
 
@@ -16,11 +15,14 @@ const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
   margin: theme.spacing(0, 1, 0, 0),
 }));
 
-const Appeals = (): ReactElement => {
-  const accountListId = useAccountListId();
+interface Props {
+  accountListId: string;
+}
+
+const Appeals: React.FC<Props> = ({ accountListId }: Props) => {
   const { t } = useTranslation();
   const { data, loading } = useGetAppealsQuery({
-    variables: { accountListId: accountListId || '' },
+    variables: { accountListId },
   });
 
   return (

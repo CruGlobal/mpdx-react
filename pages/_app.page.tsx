@@ -1,7 +1,6 @@
 import React, { ReactElement } from 'react';
 import { AppProps } from 'next/app';
-import { ThemeProvider } from '@material-ui/core/styles';
-import CssBaseline from '@material-ui/core/CssBaseline';
+import { StylesProvider, ThemeProvider } from '@material-ui/core/styles';
 import { ApolloProvider } from '@apollo/client';
 import { AnimatePresence } from 'framer-motion';
 import { Provider as NextAuthProvider } from 'next-auth/client';
@@ -18,6 +17,7 @@ import Loading from '../src/components/Loading';
 import i18n from '../src/lib/i18n';
 import TaskDrawerProvider from '../src/components/Task/Drawer/TaskDrawerProvider';
 import { SnackbarUtilsConfigurator } from '../src/components/Snackbar/Snackbar';
+import { GlobalStyles } from '../src/components/GlobalStyles/GlobalStyles';
 
 const handleExitComplete = (): void => {
   if (typeof window !== 'undefined') {
@@ -84,23 +84,25 @@ const App = ({ Component, pageProps, router }: AppProps): ReactElement => {
         <NextAuthProvider session={session}>
           <ApolloProvider client={client}>
             <ThemeProvider theme={theme}>
-              <CssBaseline />
-              <MuiPickersUtilsProvider utils={LuxonUtils}>
-                <SnackbarProvider maxSnack={3}>
-                  <AnimatePresence
-                    exitBeforeEnter
-                    onExitComplete={handleExitComplete}
-                  >
-                    <TaskDrawerProvider>
-                      <Layout>
-                        <SnackbarUtilsConfigurator />
-                        <Component {...pageProps} key={router.route} />
-                      </Layout>
-                    </TaskDrawerProvider>
-                  </AnimatePresence>
-                  <Loading />
-                </SnackbarProvider>
-              </MuiPickersUtilsProvider>
+              <StylesProvider>
+                <MuiPickersUtilsProvider utils={LuxonUtils}>
+                  <SnackbarProvider maxSnack={3}>
+                    <AnimatePresence
+                      exitBeforeEnter
+                      onExitComplete={handleExitComplete}
+                    >
+                      <GlobalStyles />
+                      <TaskDrawerProvider>
+                        <Layout>
+                          <SnackbarUtilsConfigurator />
+                          <Component {...pageProps} key={router.route} />
+                        </Layout>
+                      </TaskDrawerProvider>
+                    </AnimatePresence>
+                    <Loading />
+                  </SnackbarProvider>
+                </MuiPickersUtilsProvider>
+              </StylesProvider>
             </ThemeProvider>
           </ApolloProvider>
         </NextAuthProvider>
