@@ -52,13 +52,13 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-interface actionType {
+interface ActionType {
   action: string;
   mergeId?: string;
 }
 
-interface actionsType {
-  [key: string]: actionType;
+interface ActionsType {
+  [key: string]: ActionType;
 }
 
 interface Props {
@@ -67,7 +67,7 @@ interface Props {
 
 const MergePeople: React.FC<Props> = ({ accountListId }: Props) => {
   const classes = useStyles();
-  const [actions, setActions] = useState<actionsType>({});
+  const [actions, setActions] = useState<ActionsType>({});
   const { t } = useTranslation();
   const { data, loading } = useGetPersonDuplicatesQuery({
     variables: { accountListId },
