@@ -1,0 +1,27 @@
+query Tasks(
+  $accountListId: ID!
+  $tasksFilter: TaskFilterSetInput
+  $after: String
+) {
+  tasks(
+    accountListId: $accountListId
+    tasksFilter: $tasksFilter
+    after: $after
+  ) {
+    nodes {
+      id
+      subject
+      contacts {
+        nodes {
+          id
+          name
+        }
+      }
+    }
+    totalCount
+    pageInfo {
+      endCursor
+      hasNextPage
+    }
+  }
+}
