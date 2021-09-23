@@ -33,19 +33,6 @@ jest.mock('react-virtuoso', () => ({
   },
 }));
 
-it('should show loading state', () => {
-  const { getByText } = render(
-    <ThemeProvider theme={theme}>
-      <TestRouter router={router}>
-        <GqlMockedProvider>
-          <Contacts />
-        </GqlMockedProvider>
-      </TestRouter>
-    </ThemeProvider>,
-  );
-  expect(getByText('Loading...')).toBeInTheDocument();
-});
-
 it('should render list of people', async () => {
   const { findByTestId, getByText } = render(
     <ThemeProvider theme={theme}>
