@@ -4,10 +4,7 @@ import { Skeleton } from '@material-ui/lab';
 import React, { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { CoachingRow } from './CoachingRow/CoachingRow';
-import {
-  CoachedPersonFragment,
-  useLoadCoachingListQuery,
-} from './LoadCoachingList.generated';
+import { useLoadCoachingListQuery } from './LoadCoachingList.generated';
 
 const CoachingListWrapper = styled(Box)(({ theme }) => ({
   width: '100%',
@@ -63,7 +60,7 @@ export const CoachingList = (): ReactElement => {
             {coaches?.nodes.map((coach, _index) => {
               return (
                 <>
-                  <CoachingRow coach={coach as CoachedPersonFragment} />
+                  <CoachingRow coach={coach} />
                   <Divider />
                 </>
               );

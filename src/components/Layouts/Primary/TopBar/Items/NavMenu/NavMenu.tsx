@@ -267,7 +267,6 @@ const NavMenu = (): ReactElement => {
             <NextLink
               href="/accountLists/[accountListId]/coaches"
               as={`/accountLists/${accountListId}/coaches`}
-              scroll={false}
             >
               <MenuItem component="a">
                 <ListItemText primary={t('Coaches')} />
