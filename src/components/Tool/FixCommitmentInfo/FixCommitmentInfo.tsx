@@ -15,7 +15,6 @@ import Contact from './Contact';
 import NoContacts from './NoContacts';
 import { contactTags } from './InputOptions/ContactTags';
 import { frequencies } from './InputOptions/Frequencies';
-import theme from 'src/theme';
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
