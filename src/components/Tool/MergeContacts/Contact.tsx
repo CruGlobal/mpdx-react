@@ -19,6 +19,7 @@ import {
 } from '@mdi/js';
 import { DateTime } from 'luxon';
 import theme from '../../../theme';
+import { contactTags } from '../FixCommitmentInfo/InputOptions/ContactTags';
 import { RecordInfoFragment } from './GetContactDuplicates.generated';
 
 const useStyles = makeStyles(() => ({
@@ -152,10 +153,13 @@ const Contact: React.FC<Props> = ({ contact1, contact2, update }) => {
                     >
                       <Typography variant="h6">{contact1.name}</Typography>
                     </Box>
-
-                    <Typography>
-                      {t('Status: {{status}}', { where: contact1.status })}
-                    </Typography>
+                    {contact1.status && (
+                      <Typography>
+                        {t('Status: {{status}}', {
+                          status: contactTags[contact1.status],
+                        })}
+                      </Typography>
+                    )}
                     {contact1.primaryAddress ? (
                       <>
                         <Typography>
@@ -290,9 +294,13 @@ const Contact: React.FC<Props> = ({ contact1, contact2, update }) => {
                       </Typography>
                     )}
                     <Typography variant="h6">{contact2.name}</Typography>
-                    <Typography>
-                      {t('Status: {{status}}', { where: contact2.status })}
-                    </Typography>
+                    {contact2.status && (
+                      <Typography>
+                        {t('Status: {{status}}', {
+                          status: contactTags[contact2.status],
+                        })}
+                      </Typography>
+                    )}
                     {contact2.primaryAddress ? (
                       <>
                         <Typography>
