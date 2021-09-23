@@ -31,7 +31,7 @@ describe('AppealsTest', () => {
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
           <GqlMockedProvider>
-            <Appeals />
+            <Appeals accountListId={accountListId} />
           </GqlMockedProvider>
         </TestRouter>
       </ThemeProvider>,
@@ -53,7 +53,7 @@ describe('AppealsTest', () => {
               },
             }}
           >
-            <Appeals />
+            <Appeals accountListId={accountListId} />
           </GqlMockedProvider>
         </TestRouter>
       </ThemeProvider>,

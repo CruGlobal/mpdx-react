@@ -1,11 +1,17 @@
 import React, { useState } from 'react';
-import { Box, Button, Divider, styled, Typography } from '@material-ui/core';
+import {
+  Box,
+  Button,
+  Checkbox,
+  Divider,
+  styled,
+  Typography,
+} from '@material-ui/core';
 import { Add, CheckCircleOutline } from '@material-ui/icons';
 import { useTranslation } from 'react-i18next';
 import { DateTime } from 'luxon';
 import { StarredItemIcon } from '../../../common/StarredItemIcon/StarredItemIcon';
 import { SearchBox } from '../../../common/SearchBox/SearchBox';
-import { ContactCheckBox } from '../../ContactCheckBox/ContactCheckBox';
 import useTaskDrawer from '../../../../hooks/useTaskDrawer';
 import { ContactTaskRow } from './ContactTaskRow/ContactTaskRow';
 import { useContactTasksTabQuery } from './ContactTasksTab.generated';
@@ -122,7 +128,7 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
         </HeaderRow>
         <HeaderRow>
           <HeaderItemsWrap>
-            <ContactCheckBox />
+            <Checkbox />
             <SearchBox
               onChange={setSearchTerm}
               placeholder={t('Search Tasks')}

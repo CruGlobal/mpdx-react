@@ -1,27 +1,35 @@
-import { Box, styled, IconButton, Hidden, Theme } from '@material-ui/core';
-import { FilterList, FormatListBulleted, ViewColumn } from '@material-ui/icons';
-import { ToggleButton, ToggleButtonProps } from '@material-ui/lab';
 import React, { useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import {
-  ContactCheckBox,
-  ContactCheckBoxState,
-} from '../ContactCheckBox/ContactCheckBox';
+  Box,
+  Checkbox,
+  styled,
+  IconButton,
+  Hidden,
+  Theme,
+} from '@material-ui/core';
+import { FilterList, FormatListBulleted, ViewColumn } from '@material-ui/icons';
+import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
+import { useTranslation } from 'react-i18next';
 import { StarredItemIcon } from '../../common/StarredItemIcon/StarredItemIcon';
 import { SearchBox } from '../../common/SearchBox/SearchBox';
 
+export enum ContactCheckBoxState {
+  'unchecked',
+  'checked',
+  'partial',
+}
+
 interface Props {
   activeFilters: boolean;
+  contactCheckboxState: ContactCheckBoxState;
   filterPanelOpen: boolean;
   toggleFilterPanel: () => void;
+  onCheckAllContacts: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onSearchTermChanged: (searchTerm: string) => void;
   totalContacts?: number;
 }
 
-enum ContactsTableDisplayState {
-  'list',
-  'columns',
-}
+type ContactsTableViewMode = 'list' | 'columns';
 
 const HeaderWrap = styled(Box)(({ theme }) => ({
   height: 96,
@@ -31,8 +39,13 @@ const HeaderWrap = styled(Box)(({ theme }) => ({
   justifyContent: 'space-evenly',
   alignItems: 'center',
   backgroundColor: theme.palette.common.white,
+  borderBottom: `1px solid ${theme.palette.grey[200]}`,
 }));
-const FilterButton = styled(IconButton)(
+const FilterButton = styled(
+  ({ activeFilters: _activeFilters, panelOpen: _panelOpen, ...props }) => (
+    <IconButton {...props} />
+  ),
+)(
   ({
     theme,
     activeFilters,
@@ -72,36 +85,6 @@ const PlaceholderActionsDropdown = styled(Box)(({ theme }) => ({
   margin: theme.spacing(1),
   backgroundColor: 'red',
 }));
-const DisplayOptionButtonLeft = styled(ToggleButton)(
-  ({ theme, selected }: { theme: Theme } & ToggleButtonProps) => ({
-    display: 'inline-block',
-    width: 48,
-    height: 48,
-    backgroundColor: selected ? theme.palette.cruGrayLight.main : 'transparent',
-    border: `1px solid ${
-      selected ? theme.palette.primary.dark : theme.palette.cruGrayLight.main
-    }`,
-    borderTopLeftRadius: 5,
-    borderBottomLeftRadius: 5,
-    borderTopRightRadius: 0,
-    borderBottomRightRadius: 0,
-  }),
-);
-const DisplayOptionButtonRight = styled(ToggleButton)(
-  ({ theme, selected }: { theme: Theme } & ToggleButtonProps) => ({
-    display: 'inline-block',
-    width: 48,
-    height: 48,
-    backgroundColor: selected ? theme.palette.cruGrayLight.main : 'transparent',
-    border: `1px solid ${
-      selected ? theme.palette.primary.dark : theme.palette.cruGrayLight.main
-    }`,
-    borderTopLeftRadius: 0,
-    borderBottomLeftRadius: 0,
-    borderTopRightRadius: 5,
-    borderBottomRightRadius: 5,
-  }),
-);
 const BulletedListIcon = styled(FormatListBulleted)(({ theme }) => ({
   color: theme.palette.primary.dark,
 }));
@@ -115,39 +98,36 @@ const StarIconWrap = styled(Box)(({ theme }) => ({
 
 export const ContactsHeader: React.FC<Props> = ({
   activeFilters,
+  contactCheckboxState,
   filterPanelOpen,
   toggleFilterPanel,
+  onCheckAllContacts,
   onSearchTermChanged,
   totalContacts = 0,
 }) => {
   const { t } = useTranslation();
+  const [
+    contactsTableDisplayState,
+    setContactsTableDisplayState,
+  ] = useState<ContactsTableViewMode>('list');
 
-  const [checkBoxState, setCheckboxState] = useState(
-    ContactCheckBoxState.unchecked,
-  );
-  const [contactsTableDisplayState, setContactsTableDisplayState] = useState(
-    ContactsTableDisplayState.list,
-  );
-
-  const toggleAllContactsCheckbox = () => {
-    switch (checkBoxState) {
-      case ContactCheckBoxState.unchecked:
-        return setCheckboxState(ContactCheckBoxState.checked);
-
-      case ContactCheckBoxState.checked:
-        return setCheckboxState(ContactCheckBoxState.unchecked);
-
-      case ContactCheckBoxState.partial:
-        return setCheckboxState(ContactCheckBoxState.checked);
+  const handleViewModeChange = (
+    event: React.MouseEvent<HTMLElement>,
+    viewMode: ContactsTableViewMode | null,
+  ) => {
+    if (viewMode) {
+      setContactsTableDisplayState(viewMode);
     }
   };
 
   return (
     <HeaderWrap>
       <Hidden smDown>
-        <ContactCheckBox
-          state={checkBoxState}
-          onClick={toggleAllContactsCheckbox}
+        <Checkbox
+          checked={contactCheckboxState === ContactCheckBoxState.checked}
+          color="default"
+          indeterminate={contactCheckboxState === ContactCheckBoxState.partial}
+          onChange={onCheckAllContacts}
         />
       </Hidden>
 
@@ -173,26 +153,18 @@ export const ContactsHeader: React.FC<Props> = ({
       </Hidden>
 
       <Hidden xsDown>
-        <DisplayOptionButtonLeft
-          selected={
-            contactsTableDisplayState === ContactsTableDisplayState.list
-          }
-          onClick={() =>
-            setContactsTableDisplayState(ContactsTableDisplayState.list)
-          }
+        <ToggleButtonGroup
+          exclusive
+          value={contactsTableDisplayState}
+          onChange={handleViewModeChange}
         >
-          <BulletedListIcon titleAccess={t('List View')} />
-        </DisplayOptionButtonLeft>
-        <DisplayOptionButtonRight
-          selected={
-            contactsTableDisplayState === ContactsTableDisplayState.columns
-          }
-          onClick={() =>
-            setContactsTableDisplayState(ContactsTableDisplayState.columns)
-          }
-        >
-          <ViewColumnIcon titleAccess={t('Column Workflow View')} />
-        </DisplayOptionButtonRight>
+          <ToggleButton value="list">
+            <BulletedListIcon titleAccess={t('List View')} />
+          </ToggleButton>
+          <ToggleButton value="columns">
+            <ViewColumnIcon titleAccess={t('Column Workflow View')} />
+          </ToggleButton>
+        </ToggleButtonGroup>
       </Hidden>
 
       <Hidden smDown>
