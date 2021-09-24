@@ -83,7 +83,9 @@ export const PersPrefItem: React.FC<PersPrefItemProps> = ({
           )}
         </StyledAccordionSummary>
         <AccordionDetails>
-          <StyledAccordionDetails>{children}</StyledAccordionDetails>
+          <StyledAccordionDetails style={{ flexGrow: 1 }}>
+            {children}
+          </StyledAccordionDetails>
         </AccordionDetails>
       </StyledAccordion>
     </Box>
