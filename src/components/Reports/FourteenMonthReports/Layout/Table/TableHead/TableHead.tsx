@@ -10,14 +10,13 @@ import {
 } from '@material-ui/core';
 // eslint-disable-next-line import/extensions
 import { FourteenMonthReportQuery } from '../../../GetFourteenMonthReport.generated';
+import type { Order, Unarray } from '../../../../Reports.type';
 import { TableHeadCell } from './TableHeadCell/TableHeadCell';
 
-export type Unarray<T> = T extends Array<infer U> ? U : T;
 export type Contacts = FourteenMonthReportQuery['fourteenMonthReport']['currencyGroups'][0]['contacts'];
 export type Contact = Contacts[0];
 export type Months = Contact['months'];
 export type Month = Unarray<Months>;
-export type Order = 'asc' | 'desc';
 export type OrderBy = keyof Contact | keyof Unarray<Months>;
 
 export interface FourteenMonthReportTableHeadProps {
