@@ -82,7 +82,7 @@ describe('PartnerGivingAnalysisReportTable', () => {
   });
 
   it('check event should happen', async () => {
-    const { getByRole, queryByTestId } = render(
+    const { getAllByRole, queryByTestId } = render(
       <ThemeProvider theme={theme}>
         <PartnerGivingAnalysisReportTable
           order="asc"
@@ -104,8 +104,8 @@ describe('PartnerGivingAnalysisReportTable', () => {
       ).not.toBeInTheDocument();
     });
 
-    const checkbox = getByRole('checkbox');
+    const checkbox = getAllByRole('checkbox')[0];
     userEvent.click(checkbox);
-    expect(onSelectOne).toHaveBeenCalled();
+    expect(onSelectAll).toHaveBeenCalled();
   });
 });

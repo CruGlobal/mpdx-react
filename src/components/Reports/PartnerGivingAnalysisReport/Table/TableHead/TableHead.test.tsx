@@ -51,24 +51,4 @@ describe('PartnerGivingAnalysisReportTableHead', () => {
     userEvent.click(getByText('Gift Total'));
     expect(onRequestSort).toHaveBeenCalled();
   });
-
-  it('check all event', async () => {
-    const { getAllByRole } = render(
-      <ThemeProvider theme={theme}>
-        <PartnerGivingAnalysisReportTableHead
-          isSelectedAll={false}
-          isSelectedSome={false}
-          items={items}
-          order={order}
-          orderBy={orderBy}
-          onRequestSort={onRequestSort}
-          onSelectAll={onSelectAll}
-        />
-      </ThemeProvider>,
-    );
-
-    const checkbox = getAllByRole('checkbox')[0];
-    userEvent.click(checkbox);
-    expect(onSelectAll).toHaveBeenCalled();
-  });
 });
