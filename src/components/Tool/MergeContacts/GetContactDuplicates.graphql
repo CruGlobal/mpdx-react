@@ -1,0 +1,32 @@
+query GetContactDuplicates($accountListId: ID!) {
+  contactDuplicates(accountListId: $accountListId) {
+    nodes {
+      id
+      reason
+      recordOne {
+        ...RecordInfo
+      }
+      recordTwo {
+        ...RecordInfo
+      }
+    }
+  }
+}
+
+fragment BasicAddressInfo on Address {
+  street
+  city
+  state
+  postalCode
+}
+
+fragment RecordInfo on Contact {
+  id
+  name
+  status
+  source
+  createdAt
+  primaryAddress {
+    ...BasicAddressInfo
+  }
+}
