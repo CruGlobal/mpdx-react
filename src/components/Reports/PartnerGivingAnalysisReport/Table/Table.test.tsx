@@ -1,6 +1,7 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import { ThemeProvider } from '@material-ui/core';
+import userEvent from '@testing-library/user-event';
 import { PartnerGivingAnalysisReportTable } from './Table';
 import theme from 'src/theme';
 
@@ -78,5 +79,33 @@ describe('PartnerGivingAnalysisReportTable', () => {
       3,
     );
     // expect(queryByTestId('PartnerGivingAnalysisReport')).toBeInTheDocument();
+  });
+
+  it('check event should happen', async () => {
+    const { getByRole, queryByTestId } = render(
+      <ThemeProvider theme={theme}>
+        <PartnerGivingAnalysisReportTable
+          order="asc"
+          orderBy={null}
+          selectedContacts={selectedContacts}
+          onRequestSort={onRequestSort}
+          onSelectAll={onSelectAll}
+          onSelectOne={onSelectOne}
+          contacts={
+            mocks.PartnerGivingAnalysisReport.partnerGivingAnalysisReport
+          }
+        />
+      </ThemeProvider>,
+    );
+
+    await waitFor(() => {
+      expect(
+        queryByTestId('LoadingPartnerGivingAnalysisReport'),
+      ).not.toBeInTheDocument();
+    });
+
+    const checkbox = getByRole('checkbox');
+    userEvent.click(checkbox);
+    expect(onSelectOne).toHaveBeenCalled();
   });
 });
