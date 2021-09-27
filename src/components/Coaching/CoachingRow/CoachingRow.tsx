@@ -10,7 +10,7 @@ import {
 import StyledProgress from 'src/components/StyledProgress';
 
 interface Props {
-  coach: CoachedPersonFragment;
+  coachingAccount: CoachedPersonFragment;
 }
 
 const CoachingRowWrapper = styled(Box)(({ theme }) => ({
