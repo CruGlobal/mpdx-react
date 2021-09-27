@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   AppBar,
+  Box,
   Button,
   DialogContent,
   Tab,
@@ -86,7 +87,7 @@ export const PersPrefModal: React.FC<PersPrefModalProps> = ({
               ))}
             </StyledTabs>
           </StyledAppBar>
-          {/* {tabData.map((current, index) => (
+          {tabData.map((current, index) => (
             <div
               role="tabpanel"
               hidden={openTab !== index}
@@ -95,7 +96,7 @@ export const PersPrefModal: React.FC<PersPrefModalProps> = ({
             >
               {openTab === index && <Box>{current.data}</Box>}
             </div>
-          ))} */}
+          ))}
         </DialogContent>
         <StyledDialogActions>
           <Button onClick={handleClose} disableElevation disableRipple>
