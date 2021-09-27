@@ -57,10 +57,10 @@ export const CoachingList = (): ReactElement => {
           </>
         ) : (
           <>
-            {coaches?.nodes.map((coach, _index) => {
+            {coachingAccounts?.nodes.map((coachingAccount, _index) => {
               return (
                 <>
-                  <CoachingRow coach={coach} />
+                  <CoachingRow coachingAccount={coachingAccount} />
                   <Divider />
                 </>
               );
