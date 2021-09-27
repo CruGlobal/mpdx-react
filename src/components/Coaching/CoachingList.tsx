@@ -36,7 +36,7 @@ export const CoachingList = (): ReactElement => {
   const { data, loading } = useLoadCoachingListQuery();
   const { t } = useTranslation();
 
-  const coaches = data?.coachingAccountLists;
+  const coachingAccounts = data?.coachingAccountLists;
 
   return (
     <CoachingListWrapper>
