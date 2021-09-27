@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   AppBar,
-  Box,
   Button,
   DialogContent,
   Tab,
@@ -56,7 +55,10 @@ export const PersPrefModal: React.FC<PersPrefModalProps> = ({
   const { t } = useTranslation();
   const [openTab, setOpenTab] = useState(0);
 
-  const handleChange = (newValue: number) => {
+  const handleChange = (
+    event: React.ChangeEvent<Record<string, unknown>>,
+    newValue: number,
+  ) => {
     setOpenTab(newValue);
   };
 
@@ -84,7 +86,7 @@ export const PersPrefModal: React.FC<PersPrefModalProps> = ({
               ))}
             </StyledTabs>
           </StyledAppBar>
-          {tabData.map((current, index) => (
+          {/* {tabData.map((current, index) => (
             <div
               role="tabpanel"
               hidden={openTab !== index}
@@ -93,11 +95,18 @@ export const PersPrefModal: React.FC<PersPrefModalProps> = ({
             >
               {openTab === index && <Box>{current.data}</Box>}
             </div>
-          ))}
+          ))} */}
         </DialogContent>
         <StyledDialogActions>
-          <Button onClick={handleClose}>{t('Cancel')}</Button>
-          <Button variant="contained" color="primary">
+          <Button onClick={handleClose} disableElevation disableRipple>
+            {t('Cancel')}
+          </Button>
+          <Button
+            variant="contained"
+            color="primary"
+            disableElevation
+            disableRipple
+          >
             {t('Save')}
           </Button>
         </StyledDialogActions>

@@ -17,7 +17,7 @@ export const SectionHeading = styled(Typography)(() => ({
   display: 'block',
 }));
 
-const SmallColumnLabels = styled(Grid)(({ _, align }) => ({
+const SmallColumnLabels = styled(Grid)(({ align }) => ({
   display: 'flex',
   justifyContent: align === 'left' ? 'flex-start' : 'center',
   alignItems: 'flex-end',
@@ -28,13 +28,13 @@ const SmallColumnLabels = styled(Grid)(({ _, align }) => ({
 }));
 
 interface OptionHeadingsProps {
-  smallCols: boolean | GridProps['GridSize'] | undefined;
-  align: string;
+  smallCols: GridProps['sm'];
+  align?: string;
 }
 
 export const OptionHeadings: React.FC<OptionHeadingsProps> = ({
   smallCols,
-  align,
+  align = '',
   children,
 }) => (
   <SmallColumnLabels item sm={smallCols} align={align}>
