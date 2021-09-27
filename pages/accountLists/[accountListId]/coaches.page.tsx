@@ -3,7 +3,7 @@ import Head from 'next/head';
 import { useTranslation } from 'react-i18next';
 import { CoachingList } from 'src/components/Coaching/CoachingList';
 
-const CoachesPage = (): ReactElement => {
+const CoachingPage = (): ReactElement => {
   const { t } = useTranslation();
 
   return (

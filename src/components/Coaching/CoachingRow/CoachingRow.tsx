@@ -30,7 +30,7 @@ const CoachingProgressLabelContainer = styled(Box)(({ theme }) => ({
   margin: theme.spacing(2, 2, 0),
 }));
 
-export const CoachingRow: React.FC<Props> = ({ coach }) => {
+export const CoachingRow: React.FC<Props> = ({ coachingAccount }) => {
   const { t } = useTranslation();
 
   const {
@@ -40,7 +40,7 @@ export const CoachingRow: React.FC<Props> = ({ coach }) => {
     totalPledges,
     receivedPledges,
     primaryAppeal,
-  } = coach;
+  } = coachingAccount;
 
   const calculatedMonthlyGoal = monthlyGoal ? monthlyGoal : 0;
   const percentageRecievedPledges =

@@ -19,5 +19,5 @@ export const Default = (): ReactElement => {
       },
     },
   });
-  return <CoachingRow coach={coach} />;
+  return <CoachingRow coachingAccount={coach} />;
 };
