@@ -29,15 +29,8 @@ const AccountListIdPage = ({ data, accountListId }: Props): ReactElement => {
 export const getServerSideProps: GetServerSideProps = async ({
   params,
   req,
-  res,
 }) => {
   const session = await getSession({ req });
-
-  if (!session?.user['token']) {
-    res.writeHead(302, { Location: '/' });
-    res.end();
-    return { props: {} };
-  }
 
   const client = await ssrClient(session?.user['token']);
   const response = await client.query<

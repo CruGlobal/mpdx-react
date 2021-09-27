@@ -1,15 +1,21 @@
-import React, { ReactElement } from 'react';
+import React, { ReactElement, useEffect } from 'react';
 import { AppProps } from 'next/app';
 import { StylesProvider, ThemeProvider } from '@material-ui/core/styles';
 import { ApolloProvider } from '@apollo/client';
 import { AnimatePresence } from 'framer-motion';
-import { Provider as NextAuthProvider } from 'next-auth/client';
-import { NextPage } from 'next';
+import {
+  getSession,
+  Provider as NextAuthProvider,
+  Session,
+  signin,
+} from 'next-auth/client';
+import { GetServerSidePropsContext, NextPage } from 'next';
 import Head from 'next/head';
 import { I18nextProvider } from 'react-i18next';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import LuxonUtils from '@date-io/luxon';
 import { SnackbarProvider } from 'notistack';
+import { DateTime } from 'luxon';
 import theme from '../src/theme';
 import client from '../src/lib/client';
 import PrimaryLayout from '../src/components/Layouts/Primary';
@@ -29,8 +35,12 @@ export type PageWithLayout = NextPage & {
   layout?: React.FC;
 };
 
-const App = ({ Component, pageProps, router }: AppProps): ReactElement => {
-  const { session } = pageProps;
+const App = ({
+  Component,
+  pageProps,
+  router,
+  session,
+}: AppProps & { session: Session }): ReactElement => {
   const Layout = (Component as PageWithLayout).layout || PrimaryLayout;
 
   // useEffect(() => {
@@ -40,6 +50,16 @@ const App = ({ Component, pageProps, router }: AppProps): ReactElement => {
   //         jssStyles.parentElement.removeChild(jssStyles);
   //     }
   // }, []);
+  useEffect(() => {
+    if (!session) {
+      router.push('/login');
+    }
+
+    if (session?.user)
+      if (DateTime.now().toISO() > session?.expires) {
+        signin('thekey');
+      }
+  }, [session]);
 
   return (
     <>
@@ -112,3 +132,9 @@ const App = ({ Component, pageProps, router }: AppProps): ReactElement => {
 };
 
 export default App;
+
+App.getInitialProps = async (context: GetServerSidePropsContext) => {
+  const session = await getSession(context);
+
+  return { session };
+};
