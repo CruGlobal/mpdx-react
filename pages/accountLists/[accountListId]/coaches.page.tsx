@@ -16,4 +16,4 @@ const CoachesPage = (): ReactElement => {
   );
 };
 
-export default CoachesPage;
+export default CoachingPage;
