@@ -51,18 +51,18 @@ export const CoachingList = (): ReactElement => {
       <Box>
         {loading ? (
           <>
-            <CoachingLoading />
-            <CoachingLoading />
-            <CoachingLoading />
+            <CoachingLoading role="listitem" />
+            <CoachingLoading role="listitem" />
+            <CoachingLoading role="listitem" />
           </>
         ) : (
           <>
             {coachingAccounts?.nodes.map((coachingAccount, _index) => {
               return (
-                <>
+                <span key={coachingAccount.id} role="listitem">
                   <CoachingRow coachingAccount={coachingAccount} />
                   <Divider />
-                </>
+                </span>
               );
             })}
           </>

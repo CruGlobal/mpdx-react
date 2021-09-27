@@ -1,6 +1,11 @@
 import { renderHook } from '@testing-library/react-hooks';
 import { GqlMockedProvider } from '../../../__tests__/util/graphqlMocking';
-import { useLoadCoachingListQuery } from './LoadCoachingList.generated';
+import { CoachingList } from './CoachingList';
+import {
+  LoadCoachingListQuery,
+  useLoadCoachingListQuery,
+} from './LoadCoachingList.generated';
+import { render } from '__tests__/util/testingLibraryReactMock';
 
 describe('LoadCoaching', () => {
   it('query correct', async () => {
@@ -111,5 +116,26 @@ describe('LoadCoaching', () => {
         "totalPageCount": 60,
       }
     `);
+  });
+  it('test list view', () => {
+    const { getAllByRole } = render(
+      <GqlMockedProvider<LoadCoachingListQuery>
+        mocks={{
+          LoadCoachingList: {
+            coachingAccountLists: {
+              totalCount: 3,
+              nodes: [
+                { currency: 'USD', primaryAppeal: { amountCurrency: 'EUR' } },
+                { currency: 'USD', primaryAppeal: { amountCurrency: 'EUR' } },
+                { currency: 'USD', primaryAppeal: { amountCurrency: 'JPN' } },
+              ],
+            },
+          },
+        }}
+      >
+        <CoachingList />
+      </GqlMockedProvider>,
+    );
+    expect(getAllByRole('listitem').length).toMatchInlineSnapshot(`3`);
   });
 });

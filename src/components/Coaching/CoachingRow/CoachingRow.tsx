@@ -91,7 +91,7 @@ export const CoachingRow: React.FC<Props> = ({ coachingAccount }) => {
       : numberFormat(calculatedAppealTotal);
 
   return (
-    <CoachingRowWrapper>
+    <CoachingRowWrapper role="listitem">
       <CoachingNameText variant="h6" color="primary">
         {name}
       </CoachingNameText>
