@@ -59,15 +59,17 @@ const TopBar = ({
               <img src={logo} alt="logo" style={{ cursor: 'pointer' }} />
             </NextLink>
           </Hidden>
-          <Box ml={10} flexGrow={1}>
-            <NavMenu />
-          </Box>
-          <SearchMenu />
-          <AddMenu />
-          <NotificationMenu />
-          <Box ml={2}>
-            <ProfileMenu />
-          </Box>
+          <Hidden mdDown>
+            <Box ml={10} flexGrow={1}>
+              <NavMenu />
+            </Box>
+            <SearchMenu />
+            <AddMenu />
+            <NotificationMenu />
+            <Box ml={2}>
+              <ProfileMenu />
+            </Box>
+          </Hidden>
         </StyledToolbar>
       </StyledAppBar>
     </>

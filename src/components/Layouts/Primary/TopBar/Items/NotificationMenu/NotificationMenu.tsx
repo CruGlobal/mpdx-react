@@ -23,6 +23,10 @@ import {
 } from './GetNotificationsQuery.generated';
 import { useAcknowledgeAllUserNotificationsMutation } from './AcknowledgeAllUserNotifications.generated';
 
+interface NotificationMenuProps {
+  isInDrawer?: boolean;
+}
+
 const useStyles = makeStyles((theme: Theme) => ({
   link: {
     textTransform: 'none',
@@ -60,9 +64,83 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-const NotificationMenu = (): ReactElement => {
+export const NotificationContent = ({
+  data,
+  loading,
+  onAcknowledgeAllClick,
+  onClose,
+  onFetchMore,
+}: {
+  data: GetNotificationsQuery | undefined;
+  loading: boolean;
+  onAcknowledgeAllClick: () => void;
+  onClose: () => void;
+  onFetchMore: () => void;
+}): ReactElement => {
   const classes = useStyles();
   const { t } = useTranslation();
+
+  return (
+    <>
+      <ListSubheader className={classes.listSubheader}>
+        <Box display="flex" flexDirection="row" justifyContent="center">
+          <Box flexGrow={1}>{t('Notifications')}</Box>
+          <Box>
+            <Button
+              size="small"
+              disabled={
+                !data ||
+                data.userNotifications.nodes.filter(({ read }) => !read)
+                  .length === 0
+              }
+              onClick={onAcknowledgeAllClick}
+            >
+              {t('Mark all as read')}
+            </Button>
+          </Box>
+        </Box>
+      </ListSubheader>
+      {data?.userNotifications?.nodes.map((item, index, nodes) => (
+        <NotificationMenuItem
+          key={item.id}
+          item={item}
+          previousItem={nodes[index - 1]}
+          last={index + 1 === nodes.length && !loading}
+          onClick={onClose}
+        />
+      ))}
+      {!loading && data?.userNotifications?.pageInfo?.hasNextPage && (
+        <ListItem>
+          <Button
+            className={classes.menuButton}
+            variant="outlined"
+            color="default"
+            onClick={onFetchMore}
+          >
+            {t('Load More')}
+          </Button>
+        </ListItem>
+      )}
+      {!loading && data?.userNotifications.nodes.length === 0 && (
+        <ListItem className={classes.listItemEmpty}>
+          <img src={illustration13} className={classes.img} alt="empty" />
+          {t('No notifications to show.')}
+        </ListItem>
+      )}
+      {loading && (
+        <Box data-testid="NotificationMenuLoading">
+          <NotificationMenuItem />
+          <NotificationMenuItem last={true} />
+        </Box>
+      )}
+    </>
+  );
+};
+
+const NotificationMenu = ({
+  isInDrawer = false,
+}: NotificationMenuProps): ReactElement => {
+  const classes = useStyles();
   const accountListId = useAccountListId();
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>();
 
@@ -131,6 +209,18 @@ const NotificationMenu = (): ReactElement => {
     });
   };
 
+  if (isInDrawer) {
+    return (
+      <NotificationContent
+        data={data}
+        loading={loading}
+        onAcknowledgeAllClick={handleAcknowledgeAllClick}
+        onClose={handleClose}
+        onFetchMore={handleFetchMore}
+      />
+    );
+  }
+
   return (
     <>
       <IconButton
@@ -158,57 +248,13 @@ const NotificationMenu = (): ReactElement => {
         onClose={handleClose}
         classes={{ paper: classes.menuPaper, list: classes.menuList }}
       >
-        <ListSubheader className={classes.listSubheader}>
-          <Box display="flex" flexDirection="row" justifyContent="center">
-            <Box flexGrow={1}>{t('Notifications')}</Box>
-            <Box>
-              <Button
-                size="small"
-                disabled={
-                  !data ||
-                  data.userNotifications.nodes.filter(({ read }) => !read)
-                    .length === 0
-                }
-                onClick={handleAcknowledgeAllClick}
-              >
-                {t('Mark all as read')}
-              </Button>
-            </Box>
-          </Box>
-        </ListSubheader>
-        {data?.userNotifications?.nodes.map((item, index, nodes) => (
-          <NotificationMenuItem
-            key={item.id}
-            item={item}
-            previousItem={nodes[index - 1]}
-            last={index + 1 === nodes.length && !loading}
-            onClick={handleClose}
-          />
-        ))}
-        {!loading && data?.userNotifications?.pageInfo?.hasNextPage && (
-          <ListItem>
-            <Button
-              className={classes.menuButton}
-              variant="outlined"
-              color="default"
-              onClick={handleFetchMore}
-            >
-              {t('Load More')}
-            </Button>
-          </ListItem>
-        )}
-        {!loading && data?.userNotifications.nodes.length === 0 && (
-          <ListItem className={classes.listItemEmpty}>
-            <img src={illustration13} className={classes.img} alt="empty" />
-            {t('No notifications to show.')}
-          </ListItem>
-        )}
-        {loading && (
-          <Box data-testid="NotificationMenuLoading">
-            <NotificationMenuItem />
-            <NotificationMenuItem last={true} />
-          </Box>
-        )}
+        <NotificationContent
+          data={data}
+          loading={loading}
+          onAcknowledgeAllClick={handleAcknowledgeAllClick}
+          onClose={handleClose}
+          onFetchMore={handleFetchMore}
+        />
       </Menu>
     </>
   );

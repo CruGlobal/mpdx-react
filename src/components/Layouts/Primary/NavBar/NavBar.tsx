@@ -12,6 +12,7 @@ import { useRouter } from 'next/router';
 import NextLink from 'next/link';
 import i18next from 'i18next';
 import { NavItem } from './NavItem/NavItem';
+import { NavTools } from './NavTools/NavTools';
 import logo from 'src/images/logo.svg';
 import { ReportNavItems } from 'src/components/Reports/NavReportsList/ReportNavItems';
 import { ToolsList } from 'src/components/Tool/Home/ToolList';
@@ -183,6 +184,9 @@ export const NavBar: FC<NavBarProps> = ({ onMobileClose, openMobile }) => {
           items: sections,
           pathname,
         })}
+      </Box>
+      <Box p={2}>
+        <NavTools />
       </Box>
     </Box>
   );
