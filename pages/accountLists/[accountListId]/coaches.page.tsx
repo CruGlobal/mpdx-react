@@ -9,7 +9,7 @@ const CoachesPage = (): ReactElement => {
   return (
     <>
       <Head>
-        <title>MPDX | {t('Coaches')}</title>
+        <title>MPDX | {t('Coaching Accounts')}</title>
       </Head>
       <CoachingList />
     </>
