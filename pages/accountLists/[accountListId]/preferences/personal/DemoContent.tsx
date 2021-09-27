@@ -1,13 +1,13 @@
 export const info = {
   alma_mater: 'Sac State',
-  anniversary_day: 23,
-  anniversary_month: 6,
-  anniversary_year: 1979,
+  anniversary_day: '23',
+  anniversary_month: '6',
+  anniversary_year: '1979',
   avatar:
     'https://lumiere-a.akamaihd.net/v1/images/ct_mickeymouseandfriends_mickey_ddt-16970_4e99445d.jpeg?region=0,0,600,600&width=480',
-  birthday_day: 7,
-  birthday_month: 10,
-  birthday_year: 1983,
+  birthday_day: '7',
+  birthday_month: '10',
+  birthday_year: '1983',
   email: [
     {
       value: 'personal@test.com',
