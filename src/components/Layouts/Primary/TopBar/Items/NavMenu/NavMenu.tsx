@@ -1,4 +1,4 @@
-import React, { Fragment, ReactElement, useEffect, useState } from 'react';
+import React, { ReactElement, useMemo, useState } from 'react';
 import {
   makeStyles,
   Grid,
@@ -80,12 +80,14 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-interface query {
-  totalCount: number;
-}
-
-interface responseData {
-  [key: string]: query;
+enum ToolName {
+  fixCommitmentInfo = 'fixCommitmentInfo',
+  fixMailingAddresses = 'fixMailingAddresses',
+  fixSendNewsletter = 'fixSendNewsletter',
+  fixEmailAddresses = 'fixEmailAddresses',
+  fixPhoneNumbers = 'fixPhoneNumbers',
+  mergeContacts = 'mergeContacts',
+  mergePeople = 'mergePeople',
 }
 
 const NavMenu = (): ReactElement => {
@@ -96,17 +98,36 @@ const NavMenu = (): ReactElement => {
   const { data, loading } = useGetToolNotificationsQuery({
     variables: { accountListId: accountListId ?? '' },
   });
-  const [dataState, setDataState] = useState<responseData>({});
-  const [total, setTotal] = useState(0);
 
-  useEffect(() => {
-    const deepCopy = data ? JSON.parse(JSON.stringify(data)) : [];
-    let sum = 0;
-    Object.entries(deepCopy).forEach(
-      ([entry]) => (sum += deepCopy[entry].totalCount),
-    );
-    setDataState(deepCopy);
-    setTotal(sum);
+  const toolData: { [key: string]: { totalCount: number } } = {
+    [ToolName.fixCommitmentInfo]: data?.[ToolName.fixCommitmentInfo] ?? {
+      totalCount: 0,
+    },
+    [ToolName.fixMailingAddresses]: data?.[ToolName.fixMailingAddresses] ?? {
+      totalCount: 0,
+    },
+    [ToolName.fixSendNewsletter]: data?.[ToolName.fixSendNewsletter] ?? {
+      totalCount: 0,
+    },
+    [ToolName.fixEmailAddresses]: data?.[ToolName.fixEmailAddresses] ?? {
+      totalCount: 0,
+    },
+    [ToolName.fixPhoneNumbers]: data?.[ToolName.fixPhoneNumbers] ?? {
+      totalCount: 0,
+    },
+    [ToolName.mergeContacts]: data?.[ToolName.mergeContacts] ?? {
+      totalCount: 0,
+    },
+    [ToolName.mergePeople]: data?.[ToolName.mergePeople] ?? { totalCount: 0 },
+  };
+
+  const sum = useMemo<number>(() => {
+    return data
+      ? Object.values(toolData).reduce(
+          (sum, toolContacts) => sum + toolContacts.totalCount,
+          0,
+        )
+      : 0;
   }, [loading]);
 
   const [reportsMenuOpen, setReportsMenuOpen] = useState(false);
@@ -241,13 +262,13 @@ const NavMenu = (): ReactElement => {
               data-testid="ToolsMenuToggle"
             >
               <ListItemText primary={t('Tools')} />
-              {total > 0 && (
+              {sum > 0 && (
                 <Box
                   className={classes.notificationBox}
                   data-testid="notificationTotal"
                 >
                   <Typography data-testid="notificationTotalText">
-                    {total}
+                    {sum}
                   </Typography>
                 </Box>
               )}
@@ -281,8 +302,8 @@ const NavMenu = (): ReactElement => {
                         {ToolsList.map((toolsGroup) => (
                           <Box key={toolsGroup.groupName}>
                             {toolsGroup.items.map((tool) => {
-                              const needsAttention = dataState
-                                ? dataState[tool.id]?.totalCount > 0
+                              const needsAttention = toolData
+                                ? toolData[tool.id]?.totalCount > 0
                                 : false;
                               return (
                                 <NextLink
@@ -329,7 +350,7 @@ const NavMenu = (): ReactElement => {
                                         data-testid={`${tool.id}-notifications`}
                                       >
                                         <Typography>
-                                          {dataState[tool.id]?.totalCount}
+                                          {toolData[tool.id].totalCount}
                                         </Typography>
                                       </Box>
                                     )}
