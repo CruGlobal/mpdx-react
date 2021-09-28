@@ -215,11 +215,9 @@ describe('NavMenu', () => {
       expect(queryByTestId('notificationTotal')).not.toBeInTheDocument(),
     );
     userEvent.click(getByTestId('ToolsMenuToggle'));
-    expect(getByTestId('appeals-false').firstChild).toHaveClass(
-      'makeStyles-whiteText-52',
-    );
-    expect(getByTestId('appeals-false').children[1]).toHaveClass(
-      'makeStyles-whiteText-52',
+    expect(getByTestId('appeals-false').firstChild).toHaveStyle('color: white');
+    expect(getByTestId('appeals-false').children[1]).toHaveStyle(
+      'color: white',
     );
     expect(
       queryByTestId('fixCommitmentInfo-notifications'),
@@ -259,11 +257,11 @@ describe('NavMenu', () => {
     );
     expect(getByTestId('notificationTotalText')).toHaveTextContent('7');
     userEvent.click(getByTestId('ToolsMenuToggle'));
-    expect(getByTestId('fixCommitmentInfo-false').firstChild).toHaveClass(
-      'makeStyles-darkText-66',
+    expect(getByTestId('fixCommitmentInfo-false').firstChild).toHaveStyle(
+      'color: #383F43;',
     );
-    expect(getByTestId('fixCommitmentInfo-false').children[1]).toHaveClass(
-      'makeStyles-darkText-66',
+    expect(getByTestId('fixCommitmentInfo-false').children[1]).toHaveStyle(
+      'color: #383F43;',
     );
     expect(getByTestId('fixCommitmentInfo-notifications')).toBeInTheDocument();
   });
