@@ -15,10 +15,7 @@ import Icon from '@mdi/react';
 import { mdiCheckboxMarkedCircle } from '@mdi/js';
 import theme from '../../../theme';
 import { StyledInput } from '../FixCommitmentInfo/StyledInput';
-import {
-  PersonPhoneNumberFragment,
-  useGetInvalidPhoneNumbersQuery,
-} from './GetInvalidPhoneNumbers.generated';
+import { useGetInvalidPhoneNumbersQuery } from './GetInvalidPhoneNumbers.generated';
 import Contact from './Contact';
 import NoContacts from './NoContacts';
 import DeleteModal from './DeleteModal';
@@ -105,6 +102,15 @@ interface Props {
   accountListId: string;
 }
 
+export interface PhoneNumberData {
+  id: string;
+  primary: boolean;
+  updatedAt: string;
+  source: string;
+  number: string;
+  destroy?: boolean;
+}
+
 const FixPhoneNumbers: React.FC<Props> = ({ accountListId }: Props) => {
   const classes = useStyles();
 
@@ -116,7 +122,7 @@ const FixPhoneNumbers: React.FC<Props> = ({ accountListId }: Props) => {
     variables: { accountListId },
   });
   const [dataState, setDataState] = useState<{
-    [key: string]: PersonPhoneNumberFragment[];
+    [key: string]: PhoneNumberData[];
   }>({});
   const { t } = useTranslation();
 
@@ -125,8 +131,14 @@ const FixPhoneNumbers: React.FC<Props> = ({ accountListId }: Props) => {
       setDataState(
         data
           ? data.people.nodes.reduce(
-              (map: { [key: string]: PersonPhoneNumberFragment[] }, obj) => {
-                map[obj.id] = [...obj.phoneNumbers.nodes];
+              (map: { [key: string]: PhoneNumberData[] }, obj) => {
+                map[obj.id] = obj.phoneNumbers.nodes.map((phoneNumber) => ({
+                  id: phoneNumber.id,
+                  primary: phoneNumber.primary,
+                  updatedAt: phoneNumber.updatedAt,
+                  source: phoneNumber.source,
+                  number: phoneNumber.number,
+                }));
                 return map;
               },
               {},
