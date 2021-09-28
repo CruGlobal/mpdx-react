@@ -12,14 +12,14 @@ const testData = {
   numbers: [
     {
       id: '123',
-      updatedAt: new Date('2019-12-03T03:40:05-06:00').toISOString(),
+      updatedAt: '2019-12-03',
       number: '3533895895',
       primary: true,
       source: 'MPDX',
     },
     {
       id: '1234',
-      updatedAt: new Date('2019-12-04T03:40:05-06:00').toISOString(),
+      updatedAt: '2019-12-04',
       number: '623533895895',
       primary: false,
       source: 'MPDX',
@@ -42,6 +42,7 @@ describe('FixPhoneNumbers-Contact', () => {
             key={testData.name}
             personId={testData.id}
             numbers={testData.numbers}
+            toDelete={[]}
             handleChange={handleChangeMock}
             handleDelete={handleDeleteModalOpenMock}
             handleAdd={handleAddMock}
@@ -74,6 +75,7 @@ describe('FixPhoneNumbers-Contact', () => {
             key={testData.name}
             personId={testData.id}
             numbers={testData.numbers}
+            toDelete={[]}
             handleChange={handleChangeMock}
             handleDelete={handleDeleteModalOpenMock}
             handleAdd={handleAddMock}
