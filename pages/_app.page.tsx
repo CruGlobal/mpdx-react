@@ -18,7 +18,7 @@ import i18n from '../src/lib/i18n';
 import TaskDrawerProvider from '../src/components/Task/Drawer/TaskDrawerProvider';
 import { SnackbarUtilsConfigurator } from '../src/components/Snackbar/Snackbar';
 import { GlobalStyles } from '../src/components/GlobalStyles/GlobalStyles';
-import { RouterGuard } from './routerGuard';
+import { RouterGuard } from '../src/components/RouterGuard/RouterGuard';
 
 const handleExitComplete = (): void => {
   if (typeof window !== 'undefined') {
