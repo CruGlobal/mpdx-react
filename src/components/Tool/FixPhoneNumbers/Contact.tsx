@@ -17,8 +17,9 @@ import { mdiCheckboxMarkedCircle, mdiPlus, mdiLock, mdiDelete } from '@mdi/js';
 import StarIcon from '@material-ui/icons/Star';
 import StarOutlineIcon from '@material-ui/icons/StarOutline';
 import { DateTime } from 'luxon';
+import { PersonPhoneNumberInput } from '../../../../graphql/types.generated';
 import theme from '../../../theme';
-import { PersonPhoneNumberFragment } from './GetInvalidPhoneNumbers.generated';
+import { PhoneNumberData } from './FixPhoneNumbers';
 
 const useStyles = makeStyles((theme: Theme) => ({
   left: {
@@ -97,7 +98,8 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 interface Props {
   name: string;
-  numbers: PersonPhoneNumberFragment[];
+  numbers: PhoneNumberData[];
+  toDelete: PersonPhoneNumberInput[];
   personId: string;
   handleChange: (
     personId: string,

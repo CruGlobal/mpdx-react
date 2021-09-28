@@ -13,6 +13,7 @@ import {
 import { Trans, useTranslation } from 'react-i18next';
 import Icon from '@mdi/react';
 import { mdiCheckboxMarkedCircle } from '@mdi/js';
+import { PersonPhoneNumberInput } from '../../../../graphql/types.generated';
 import theme from '../../../theme';
 import { StyledInput } from '../FixCommitmentInfo/StyledInput';
 import { useGetInvalidPhoneNumbersQuery } from './GetInvalidPhoneNumbers.generated';
@@ -103,12 +104,17 @@ interface Props {
 }
 
 export interface PhoneNumberData {
-  id: string;
+  id?: string;
   primary: boolean;
   updatedAt: string;
   source: string;
   number: string;
   destroy?: boolean;
+}
+
+interface PersonPhoneNumbers {
+  phoneNumbers: PhoneNumberData[];
+  toDelete: PersonPhoneNumberInput[];
 }
 
 const FixPhoneNumbers: React.FC<Props> = ({ accountListId }: Props) => {
@@ -122,7 +128,7 @@ const FixPhoneNumbers: React.FC<Props> = ({ accountListId }: Props) => {
     variables: { accountListId },
   });
   const [dataState, setDataState] = useState<{
-    [key: string]: PhoneNumberData[];
+    [key: string]: PersonPhoneNumbers;
   }>({});
   const { t } = useTranslation();
 
@@ -131,14 +137,17 @@ const FixPhoneNumbers: React.FC<Props> = ({ accountListId }: Props) => {
       setDataState(
         data
           ? data.people.nodes.reduce(
-              (map: { [key: string]: PhoneNumberData[] }, obj) => {
-                map[obj.id] = obj.phoneNumbers.nodes.map((phoneNumber) => ({
-                  id: phoneNumber.id,
-                  primary: phoneNumber.primary,
-                  updatedAt: phoneNumber.updatedAt,
-                  source: phoneNumber.source,
-                  number: phoneNumber.number,
-                }));
+              (map: { [key: string]: PersonPhoneNumbers }, obj) => {
+                map[obj.id] = {
+                  phoneNumbers: obj.phoneNumbers.nodes.map((phoneNumber) => ({
+                    id: phoneNumber.id,
+                    primary: phoneNumber.primary,
+                    updatedAt: phoneNumber.updatedAt,
+                    source: phoneNumber.source,
+                    number: phoneNumber.number,
+                  })),
+                  toDelete: [],
+                };
                 return map;
               },
               {},
@@ -156,7 +165,9 @@ const FixPhoneNumbers: React.FC<Props> = ({ accountListId }: Props) => {
       open: true,
       personId: personId,
       numberIndex: numberIndex,
-      phoneNumber: dataState ? dataState[personId][numberIndex].number : '',
+      phoneNumber: dataState
+        ? dataState[personId].phoneNumbers[numberIndex].number
+        : '',
     });
   };
 
@@ -170,26 +181,31 @@ const FixPhoneNumbers: React.FC<Props> = ({ accountListId }: Props) => {
     event: React.ChangeEvent<HTMLInputElement>,
   ): void => {
     const temp = { ...dataState };
-    dataState[personId][numberIndex].number = event.target.value;
+    dataState[personId].phoneNumbers[numberIndex].number = event.target.value;
     setDataState(temp);
   };
 
   const handleDelete = (): void => {
     const temp = { ...dataState };
-    const wasPrimary = temp[deleteModalState.personId].splice(
+    const deleting = temp[deleteModalState.personId].phoneNumbers.splice(
       deleteModalState.numberIndex,
       1,
-    );
-    wasPrimary[0].primary &&
-      (temp[deleteModalState.personId][0]['primary'] = true); // If the deleted number was primary, set the new first index to primary
+    )[0];
+    deleting.destroy = true;
+    deleting.primary &&
+      (temp[deleteModalState.personId].phoneNumbers[0]['primary'] = true); // If the deleted number was primary, set the new first index to primary
+    deleting.id &&
+      temp[deleteModalState.personId].toDelete.push({
+        destroy: true,
+        id: deleting.id,
+      }); //Only destroy the number if it already exists (has an ID)
     setDataState(temp);
     handleDeleteModalClose();
   };
 
   const handleAdd = (personId: string, number: string): void => {
     const temp = { ...dataState };
-    temp[personId].push({
-      id: '',
+    temp[personId].phoneNumbers.push({
       updatedAt: new Date().toISOString(),
       number: number,
       primary: false,
@@ -200,10 +216,12 @@ const FixPhoneNumbers: React.FC<Props> = ({ accountListId }: Props) => {
 
   const handleChangePrimary = (personId: string, numberIndex: number): void => {
     const temp = { ...dataState };
-    temp[personId] = temp[personId].map((number, index) => ({
-      ...number,
-      primary: index === numberIndex ? true : false,
-    }));
+    temp[personId].phoneNumbers = temp[personId].phoneNumbers.map(
+      (number, index) => ({
+        ...number,
+        primary: index === numberIndex ? true : false,
+      }),
+    );
     setDataState(temp);
   };
 
@@ -278,17 +296,14 @@ const FixPhoneNumbers: React.FC<Props> = ({ accountListId }: Props) => {
                   </Box>
                 </Grid>
                 <Grid item xs={12}>
-                  {console.log(dataState)}
                   {data.people.nodes.map((person) => (
                     <>
-                      {console.log(
-                        dataState['59db6502-e3db-4704-b891-24d8c853e11f'],
-                      )}
                       <Contact
                         name={`${person.firstName} ${person.lastName}`}
                         key={person.id}
                         personId={person.id}
-                        numbers={dataState[person.id] || []}
+                        numbers={dataState[person.id]?.phoneNumbers || []}
+                        toDelete={dataState[person.id]?.toDelete}
                         handleChange={handleChange}
                         handleDelete={handleDeleteModalOpen}
                         handleAdd={handleAdd}
