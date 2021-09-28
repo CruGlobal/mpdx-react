@@ -265,8 +265,8 @@ const NavMenu = (): ReactElement => {
           </Grid>
           <Grid item className={classes.navListItem}>
             <NextLink
-              href="/accountLists/[accountListId]/coaches"
-              as={`/accountLists/${accountListId}/coaches`}
+              href="/accountLists/[accountListId]/coaching"
+              as={`/accountLists/${accountListId}/coaching`}
             >
               <MenuItem component="a">
                 <ListItemText primary={t('Coaches')} />
