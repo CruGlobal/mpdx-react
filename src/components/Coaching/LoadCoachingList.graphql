@@ -1,0 +1,35 @@
+query LoadCoachingList {
+  coachingAccountLists {
+    nodes {
+      ...CoachedPerson
+    }
+    totalCount
+    totalPageCount
+    pageInfo {
+      startCursor
+      endCursor
+      hasNextPage
+      hasPreviousPage
+    }
+  }
+}
+
+fragment CoachedPerson on CoachingAccountList {
+  id
+  name
+  primaryAppeal {
+    active
+    amount
+    amountCurrency
+    id
+    name
+    pledgesAmountNotReceivedNotProcessed
+    pledgesAmountProcessed
+    pledgesAmountTotal
+  }
+  currency
+  monthlyGoal
+  balance
+  receivedPledges
+  totalPledges
+}
