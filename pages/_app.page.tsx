@@ -1,21 +1,15 @@
-import React, { ReactElement, useEffect } from 'react';
+import React, { ReactElement } from 'react';
 import { AppProps } from 'next/app';
 import { StylesProvider, ThemeProvider } from '@material-ui/core/styles';
 import { ApolloProvider } from '@apollo/client';
 import { AnimatePresence } from 'framer-motion';
-import {
-  getSession,
-  Provider as NextAuthProvider,
-  Session,
-  signin,
-} from 'next-auth/client';
-import { GetServerSidePropsContext, NextPage } from 'next';
+import { Provider as NextAuthProvider } from 'next-auth/client';
+import { NextPage } from 'next';
 import Head from 'next/head';
 import { I18nextProvider } from 'react-i18next';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import LuxonUtils from '@date-io/luxon';
 import { SnackbarProvider } from 'notistack';
-import { DateTime } from 'luxon';
 import theme from '../src/theme';
 import client from '../src/lib/client';
 import PrimaryLayout from '../src/components/Layouts/Primary';
@@ -24,6 +18,7 @@ import i18n from '../src/lib/i18n';
 import TaskDrawerProvider from '../src/components/Task/Drawer/TaskDrawerProvider';
 import { SnackbarUtilsConfigurator } from '../src/components/Snackbar/Snackbar';
 import { GlobalStyles } from '../src/components/GlobalStyles/GlobalStyles';
+import { RouterGuard } from './routerGuard';
 
 const handleExitComplete = (): void => {
   if (typeof window !== 'undefined') {
@@ -35,14 +30,9 @@ export type PageWithLayout = NextPage & {
   layout?: React.FC;
 };
 
-const App = ({
-  Component,
-  pageProps,
-  router,
-  session,
-}: AppProps & { session: Session }): ReactElement => {
+const App = ({ Component, pageProps, router }: AppProps): ReactElement => {
   const Layout = (Component as PageWithLayout).layout || PrimaryLayout;
-
+  const { session } = pageProps;
   // useEffect(() => {
   //     // Remove the server-side injected CSS.
   //     const jssStyles = document.querySelector('#jss-server-side');
@@ -50,16 +40,6 @@ const App = ({
   //         jssStyles.parentElement.removeChild(jssStyles);
   //     }
   // }, []);
-  useEffect(() => {
-    if (!session) {
-      router.push('/login');
-    }
-
-    if (session?.user)
-      if (DateTime.now().toISO() > session?.expires) {
-        signin('thekey');
-      }
-  }, [session]);
 
   return (
     <>
@@ -112,12 +92,14 @@ const App = ({
                       onExitComplete={handleExitComplete}
                     >
                       <GlobalStyles />
-                      <TaskDrawerProvider>
-                        <Layout>
-                          <SnackbarUtilsConfigurator />
-                          <Component {...pageProps} key={router.route} />
-                        </Layout>
-                      </TaskDrawerProvider>
+                      <RouterGuard>
+                        <TaskDrawerProvider>
+                          <Layout>
+                            <SnackbarUtilsConfigurator />
+                            <Component {...pageProps} key={router.route} />
+                          </Layout>
+                        </TaskDrawerProvider>
+                      </RouterGuard>
                     </AnimatePresence>
                     <Loading />
                   </SnackbarProvider>
@@ -132,9 +114,3 @@ const App = ({
 };
 
 export default App;
-
-App.getInitialProps = async (context: GetServerSidePropsContext) => {
-  const session = await getSession(context);
-
-  return { session };
-};

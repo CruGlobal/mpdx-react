@@ -40,9 +40,12 @@ export const getServerSideProps: GetServerSideProps = async ({
   const token = session?.user.token;
 
   if (!token) {
-    res.writeHead(302, { Location: '/' });
-    res.end();
-    return { props: {} };
+    return {
+      redirect: {
+        destination: '/login',
+        permanent: false,
+      },
+    };
   }
 
   const client = await ssrClient(token);

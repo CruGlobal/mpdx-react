@@ -32,6 +32,16 @@ export const getServerSideProps: GetServerSideProps = async ({
 }) => {
   const session = await getSession({ req });
 
+  // If no token from session, redirect to login page
+  if (!session?.user['token']) {
+    return {
+      redirect: {
+        destination: '/login',
+        permanent: false,
+      },
+    };
+  }
+
   const client = await ssrClient(session?.user['token']);
   const response = await client.query<
     GetDashboardQuery,
