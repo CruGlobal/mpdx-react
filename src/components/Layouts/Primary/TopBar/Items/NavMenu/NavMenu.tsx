@@ -16,7 +16,6 @@ import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import NextLink from 'next/link';
 import { useTranslation } from 'react-i18next';
 import Icon from '@mdi/react';
-import HandoffLink from '../../../../../HandoffLink';
 import { ReportNavItems } from '../../../../../Reports/NavReportsList/ReportNavItems';
 import { ToolsList } from '../../../../../Tool/Home/ToolList';
 import { useAccountListId } from '../../../../../../hooks/useAccountListId';
@@ -265,11 +264,14 @@ const NavMenu = (): ReactElement => {
             </Popper>
           </Grid>
           <Grid item className={classes.navListItem}>
-            <HandoffLink path="/coaches">
+            <NextLink
+              href="/accountLists/[accountListId]/coaching"
+              as={`/accountLists/${accountListId}/coaching`}
+            >
               <MenuItem component="a">
                 <ListItemText primary={t('Coaches')} />
               </MenuItem>
-            </HandoffLink>
+            </NextLink>
           </Grid>
         </Grid>
       ) : null}
