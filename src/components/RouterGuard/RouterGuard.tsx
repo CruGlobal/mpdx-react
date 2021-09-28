@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { getSession, signin } from 'next-auth/client';
 import { useRouter } from 'next/router';
 import { DateTime } from 'luxon';
+import { Box, CircularProgress } from '@material-ui/core';
 
 export const RouterGuard: React.FC = ({ children }) => {
   const [isAuthed, setIsAuthed] = useState(false);
@@ -29,6 +30,19 @@ export const RouterGuard: React.FC = ({ children }) => {
   }, [pathname, query]);
 
   return (
-    <>{(isReady && isAuthed) || pathname === '/login' ? children : null}</>
+    <>
+      {(isReady && isAuthed) || pathname === '/login' ? (
+        children
+      ) : (
+        <Box
+          height="100vh"
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+        >
+          <CircularProgress size={100} />
+        </Box>
+      )}
+    </>
   );
 };
