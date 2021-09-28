@@ -19,8 +19,7 @@ query GetThisWeek(
   dueTasks: tasks(
     accountListId: $accountListId
     first: 3
-    startAt: { max: $endOfDay }
-    completed: false
+    tasksFilter: { startAt: { max: $endOfDay }, completed: false }
   ) {
     nodes {
       id
@@ -39,8 +38,7 @@ query GetThisWeek(
   prayerRequestTasks: tasks(
     accountListId: $accountListId
     first: 3
-    activityType: PRAYER_REQUEST
-    completed: false
+    tasksFilter: { activityType: PRAYER_REQUEST, completed: false }
   ) {
     nodes {
       id
