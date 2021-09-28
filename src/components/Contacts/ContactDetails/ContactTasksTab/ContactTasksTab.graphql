@@ -5,8 +5,7 @@ query ContactTasksTab(
 ) {
   tasks(
     accountListId: $accountListId
-    contactIds: [$contactId]
-    wildcardSearch: $searchTerm
+    tasksFilter: { contactIds: [$contactId], wildcardSearch: $searchTerm }
   ) {
     nodes {
       ...ContactTaskRow
