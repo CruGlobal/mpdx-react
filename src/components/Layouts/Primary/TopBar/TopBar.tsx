@@ -43,7 +43,7 @@ const TopBar = ({
 
   return (
     <>
-      <StyledAppBar elevation={trigger ? 3 : 0}>
+      <StyledAppBar elevation={trigger ? 3 : 0} data-testid="TopBar">
         <StyledToolbar>
           {accountListId && (
             <Hidden lgUp>
