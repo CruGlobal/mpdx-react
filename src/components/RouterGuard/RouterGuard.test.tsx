@@ -49,6 +49,60 @@ describe('RouterGuard', () => {
         expect(getByText('Authed route')).toBeInTheDocument(),
       );
     });
+
+    it('should render loading indicator while isReady is false', async () => {
+      (client.getSession as jest.Mock).mockReturnValue(session);
+      (useRouter as jest.SpyInstance<
+        Pick<nextRouter.NextRouter, 'query' | 'isReady' | 'pathname' | 'push'>
+      >).mockImplementation(() => ({
+        pathname: '/authRoute',
+        query: { accountListId: 'accountListId' },
+        isReady: false,
+        push: jest.fn(),
+      }));
+
+      const { queryByText, getByTestId } = render(
+        <ThemeProvider theme={theme}>
+          <SnackbarProvider>
+            <RouterGuard>
+              <div>Authed route</div>
+            </RouterGuard>
+          </SnackbarProvider>
+        </ThemeProvider>,
+      );
+
+      await waitFor(() =>
+        expect(queryByText('Authed route')).not.toBeInTheDocument(),
+      );
+      expect(getByTestId('LoadingIndicator')).toBeInTheDocument();
+    });
+
+    it('should render loading indicator while isAuthed is false', async () => {
+      (client.getSession as jest.Mock).mockReturnValue(null);
+      (useRouter as jest.SpyInstance<
+        Pick<nextRouter.NextRouter, 'query' | 'isReady' | 'pathname' | 'push'>
+      >).mockImplementation(() => ({
+        pathname: '/authRoute',
+        query: { accountListId: 'accountListId' },
+        isReady: true,
+        push: jest.fn(),
+      }));
+
+      const { queryByText, getByTestId } = render(
+        <ThemeProvider theme={theme}>
+          <SnackbarProvider>
+            <RouterGuard>
+              <div>Authed route</div>
+            </RouterGuard>
+          </SnackbarProvider>
+        </ThemeProvider>,
+      );
+
+      await waitFor(() =>
+        expect(queryByText('Authed route')).not.toBeInTheDocument(),
+      );
+      expect(getByTestId('LoadingIndicator')).toBeInTheDocument();
+    });
   });
 
   describe('unathenticated', () => {

@@ -40,7 +40,7 @@ export const RouterGuard: React.FC = ({ children }) => {
           justifyContent="center"
           alignItems="center"
         >
-          <CircularProgress size={100} />
+          <CircularProgress size={100} data-testid="LoadingIndicator" />
         </Box>
       )}
     </>
