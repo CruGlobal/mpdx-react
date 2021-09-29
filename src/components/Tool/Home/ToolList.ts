@@ -13,7 +13,20 @@ import {
   mdiWrench,
 } from '@mdi/js';
 
-export const ToolsList = [
+export interface toolItem {
+  tool: string;
+  desc: string;
+  icon: string;
+  id: string;
+}
+
+interface toolsGroup {
+  groupName: string;
+  groupIcon: string;
+  items: toolItem[];
+}
+
+export const ToolsList: toolsGroup[] = [
   {
     groupName: 'Appeals',
     groupIcon: mdiWrench,
@@ -21,7 +34,6 @@ export const ToolsList = [
       {
         tool: 'Appeal',
         desc: 'Set goals, create asks, and track progress for one-time needs',
-
         icon: mdiTrophy,
         id: 'appeals',
       },
