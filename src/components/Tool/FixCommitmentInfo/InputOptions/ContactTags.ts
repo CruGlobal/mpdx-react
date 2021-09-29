@@ -15,7 +15,7 @@ export const contactTags: { [key: string]: string } = {
   NEVER_ASK: i18n.t('Never Ask'),
   RESEARCH_ABANDONED: i18n.t('Research Abandoned'),
   EXPIRED_REFERRAL: i18n.t('Expired Referral'),
+  NULL: i18n.t('-- None --'),
   ACTIVE: i18n.t('-- All Active --'),
   HIDDEN: i18n.t('--All Hidden --'),
-  NULL: i18n.t('-- None --'),
 };
