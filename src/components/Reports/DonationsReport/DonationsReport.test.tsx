@@ -6,11 +6,25 @@ import theme from '../../../theme';
 import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
 import { DonationsReport } from './DonationsReport';
 
+const title = 'test title';
+const onNavListToggle = jest.fn();
+
 it('renders', async () => {
-  const { getByTestId, queryByRole, queryAllByRole, queryByTestId } = render(
+  const {
+    getByTestId,
+    getByText,
+    queryByRole,
+    queryAllByRole,
+    queryByTestId,
+  } = render(
     <ThemeProvider theme={theme}>
       <GqlMockedProvider>
-        <DonationsReport accountListId={'abc'} />
+        <DonationsReport
+          accountListId={'abc'}
+          isNavListOpen={true}
+          onNavListToggle={onNavListToggle}
+          title={title}
+        />
       </GqlMockedProvider>
     </ThemeProvider>,
   );
@@ -18,6 +32,7 @@ it('renders', async () => {
   await waitFor(() =>
     expect(queryByRole('progressbar')).not.toBeInTheDocument(),
   );
+  expect(getByText(title)).toBeInTheDocument();
   expect(getByTestId('DonationHistoriesBoxEmpty')).toBeInTheDocument();
   expect(queryByTestId('DonationHistoriesGridLoading')).not.toBeInTheDocument();
   expect(queryAllByRole('button')[1]).toBeInTheDocument();
@@ -90,7 +105,12 @@ it('renders with data', async () => {
   const { getByTestId, queryByRole, queryByTestId } = render(
     <ThemeProvider theme={theme}>
       <GqlMockedProvider mocks={mocks}>
-        <DonationsReport accountListId={'abc'} />
+        <DonationsReport
+          accountListId={'abc'}
+          isNavListOpen={true}
+          onNavListToggle={onNavListToggle}
+          title={title}
+        />
       </GqlMockedProvider>
     </ThemeProvider>,
   );

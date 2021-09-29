@@ -4,19 +4,29 @@ import {
   InMemoryCache,
   NormalizedCacheObject,
 } from '@apollo/client';
-import { relayStylePagination } from '@apollo/client/utilities';
 import { onError } from '@apollo/client/link/error';
 import { persistCache, LocalStorageWrapper } from 'apollo3-cache-persist';
 import fetch from 'isomorphic-fetch';
 import generatedIntrospection from '../../graphql/possibleTypes.generated';
 import snackNotifications from '../components/Snackbar/Snackbar';
+import { relayStylePaginationWithNodes } from './relayStylePaginationWithNodes';
+
+const ignoredkeyArgsForPagination = ['before', 'after', 'first', 'last'];
+const paginationFieldPolicy = relayStylePaginationWithNodes((args) =>
+  args
+    ? Object.keys(args).filter(
+        (arg) => !ignoredkeyArgsForPagination.includes(arg),
+      )
+    : undefined,
+);
 
 export const cache = new InMemoryCache({
   possibleTypes: generatedIntrospection.possibleTypes,
   typePolicies: {
     Query: {
       fields: {
-        userNotifications: relayStylePagination(['accountListId']),
+        contacts: paginationFieldPolicy,
+        userNotifications: paginationFieldPolicy,
       },
     },
   },
@@ -45,6 +55,12 @@ if (process.browser && process.env.NODE_ENV === 'production') {
 const client = new ApolloClient({
   link: errorLink.concat(httpLink),
   cache,
+  assumeImmutableResults: true,
+  defaultOptions: {
+    watchQuery: {
+      notifyOnNetworkStatusChange: true,
+    },
+  },
 });
 
 export const ssrClient = (
@@ -62,14 +78,10 @@ export const ssrClient = (
   return new ApolloClient({
     link: errorLink.concat(httpLink),
     ssrMode: true,
+    assumeImmutableResults: true,
     cache: new InMemoryCache({
       possibleTypes: generatedIntrospection.possibleTypes,
     }),
-    defaultOptions: {
-      watchQuery: {
-        notifyOnNetworkStatusChange: true,
-      },
-    },
   });
 };
 

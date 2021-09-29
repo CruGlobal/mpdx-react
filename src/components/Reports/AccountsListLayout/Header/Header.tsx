@@ -7,7 +7,7 @@ interface AccountsListHeaderProps {
   isNavListOpen: boolean;
   onNavListToggle: () => void;
   title: string;
-  totalBalance: string | undefined;
+  totalBalance?: string | undefined;
 }
 
 const StickyHeader = styled(Box)(({}) => ({

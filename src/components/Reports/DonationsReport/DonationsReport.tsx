@@ -1,40 +1,32 @@
 import React from 'react';
 import { Container, Box } from '@material-ui/core';
-import { motion } from 'framer-motion';
+import { AccountsListHeader as Header } from '../AccountsListLayout/Header/Header';
 import { MonthlyActivitySection } from './MonthlyActivity/MonthlyActivitySection';
 import { DonationsReportTable } from './Table/DonationsReportTable';
 
 interface Props {
   accountListId: string;
+  isNavListOpen: boolean;
+  onNavListToggle: () => void;
+  title: string;
 }
 
-const variants = {
-  animate: {
-    transition: {
-      delayChildren: 1,
-      staggerChildren: 0.15,
-    },
-  },
-  exit: {
-    transition: {
-      staggerChildren: 0.1,
-    },
-  },
-};
-
-export const DonationsReport: React.FC<Props> = ({ accountListId }) => {
+export const DonationsReport: React.FC<Props> = ({
+  accountListId,
+  isNavListOpen,
+  onNavListToggle,
+  title,
+}) => {
   return (
-    <Box py={5}>
+    <Box>
+      <Header
+        isNavListOpen={isNavListOpen}
+        onNavListToggle={onNavListToggle}
+        title={title}
+      />
       <Container>
-        <motion.div
-          initial="initial"
-          animate="animate"
-          exit="exit"
-          variants={variants}
-        >
-          <MonthlyActivitySection accountListId={accountListId} />
-          <DonationsReportTable accountListId={accountListId} />
-        </motion.div>
+        <MonthlyActivitySection accountListId={accountListId} />
+        <DonationsReportTable accountListId={accountListId} />
       </Container>
     </Box>
   );

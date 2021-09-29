@@ -12,104 +12,111 @@ import {
   mdiAccountGroup,
   mdiWrench,
 } from '@mdi/js';
-import i18n from 'i18next';
 
-export const ToolsList = [
+export interface toolItem {
+  tool: string;
+  desc: string;
+  icon: string;
+  id: string;
+}
+
+interface toolsGroup {
+  groupName: string;
+  groupIcon: string;
+  items: toolItem[];
+}
+
+export const ToolsList: toolsGroup[] = [
   {
-    groupName: i18n.t('Appeals'),
+    groupName: 'Appeals',
     groupIcon: mdiWrench,
     items: [
       {
-        tool: i18n.t('Appeal'),
-        desc: i18n.t(
-          'Set goals, create asks, and track progress for one-time needs',
-        ),
+        tool: 'Appeal',
+        desc: 'Set goals, create asks, and track progress for one-time needs',
         icon: mdiTrophy,
         id: 'appeals',
       },
     ],
   },
   {
-    groupName: i18n.t('Contacts'),
+    groupName: 'Contacts',
     groupIcon: mdiHome,
     items: [
       {
-        tool: i18n.t('Fix Commitment Info'),
-        desc: i18n.t(
-          'Set the correct contacts commitment info for each contact',
-        ),
+        tool: 'Fix Commitment Info',
+        desc: 'Set the correct contacts commitment info for each contact',
+
         icon: mdiCurrencyUsd,
         id: 'fixCommitmentInfo',
       },
       {
-        tool: i18n.t('Fix Mailing Addresses'),
-        desc: i18n.t(
-          'Set the correct primary mailing address for each contact',
-        ),
+        tool: 'Fix Mailing Addresses',
+        desc: 'Set the correct primary mailing address for each contact',
+
         icon: mdiMap,
         id: 'fixMailingAddresses',
       },
       {
-        tool: i18n.t('Fix Send Newsletter'),
-        desc: i18n.t('Set the correct newsletter state for each contact'),
+        tool: 'Fix Send Newsletter',
+        desc: 'Set the correct newsletter state for each contact',
         icon: mdiNewspaperVariantOutline,
         id: 'fixSendNewsletter',
       },
       {
-        tool: i18n.t('Merge Contacts'),
-        desc: i18n.t('Review and merge duplicate contacts'),
+        tool: 'Merge Contacts',
+        desc: 'Review and merge duplicate contacts',
         icon: mdiHome,
         id: 'mergeContacts',
       },
     ],
   },
   {
-    groupName: i18n.t('People'),
+    groupName: 'People',
     groupIcon: mdiAccountGroup,
     items: [
       {
-        tool: i18n.t('Fix Email Addresses'),
-        desc: i18n.t('Set the correct primary email address for each person'),
+        tool: 'Fix Email Addresses',
+        desc: 'Set the correct primary email address for each person',
         icon: mdiEmail,
         id: 'fixEmailAddresses',
       },
       {
-        tool: i18n.t('Fix Phone Numbers'),
-        desc: i18n.t('Set the correct primary phone number for each person'),
+        tool: 'Fix Phone Numbers',
+        desc: 'Set the correct primary phone number for each person',
         icon: mdiPhone,
         id: 'fixPhoneNumbers',
       },
       {
-        tool: i18n.t('Merge People'),
-        desc: i18n.t('Review and merge duplicate people'),
+        tool: 'Merge People',
+        desc: 'Review and merge duplicate people',
         icon: mdiAccountGroup,
         id: 'mergePeople',
       },
     ],
   },
   {
-    groupName: i18n.t('Imports'),
+    groupName: 'Imports',
     groupIcon: mdiCloudUpload,
     items: [
       {
-        tool: i18n.t('Import from Google'),
-        desc: i18n.t(
-          'Import your contact information from your Google account',
-        ),
+        tool: 'Import from Google',
+        desc: 'Import your contact information from your Google account',
+
         icon: mdiGoogle,
         id: 'google',
       },
 
       {
-        tool: i18n.t('Import from TntConnect'),
-        desc: i18n.t('Import your contacts from your TntConnect database'),
+        tool: 'Import from TntConnect',
+        desc: 'Import your contacts from your TntConnect database',
         icon: mdiCloudUpload,
         id: 'tntConnect',
       },
 
       {
-        tool: i18n.t('Import from CSV'),
-        desc: i18n.t('Import contacts you have saved in a CSV file'),
+        tool: 'Import from CSV',
+        desc: 'Import contacts you have saved in a CSV file',
         icon: mdiTable,
         id: 'csv',
       },

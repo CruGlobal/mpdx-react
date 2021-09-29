@@ -1,4 +1,12 @@
-import { Box, Button, Divider, styled, Typography } from '@material-ui/core';
+import React, { useState } from 'react';
+import {
+  Box,
+  Button,
+  Divider,
+  IconButton,
+  styled,
+  Typography,
+} from '@material-ui/core';
 import {
   CheckCircleOutline,
   Clear,
@@ -7,11 +15,12 @@ import {
   FiberManualRecordOutlined,
 } from '@material-ui/icons';
 import { DateTime } from 'luxon';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
+import CreateIcon from '@material-ui/icons/Create';
 import { currencyFormat } from '../../../../../lib/intlFormat';
 import { HandshakeIcon } from '../../ContactDetailsHeader/ContactHeaderSection/HandshakeIcon';
 import { ContactDonorAccountsFragment } from '../ContactDonationsTab.generated';
+import { EditPartnershipInfoModal } from './EditPartnershipInfoModal/EditPartnershipInfoModal';
 
 const IconAndTextContainer = styled(Box)(({ theme }) => ({
   margin: theme.spacing(0, 4),
@@ -38,6 +47,7 @@ const IconContainer = styled(Box)(({ theme }) => ({
 }));
 
 const PartnershipInfoContainer = styled(Box)(({ theme }) => ({
+  width: '100%',
   margin: theme.spacing(1),
 }));
 
@@ -50,27 +60,47 @@ const PartnershipTitle = styled(Typography)(({ theme }) => ({
   margin: theme.spacing(1),
 }));
 
+const PartnershipEditIcon = styled(CreateIcon)(({ theme }) => ({
+  width: '18px',
+  height: '18px',
+  margin: theme.spacing(0),
+  color: theme.palette.cruGrayMedium.main,
+}));
+
 interface PartnershipInfoProp {
   contact: ContactDonorAccountsFragment | null;
 }
 
 export const PartnershipInfo: React.FC<PartnershipInfoProp> = ({ contact }) => {
   const { t } = useTranslation();
+  const [editPartnershipModalOpen, setEditPartnershipModalOpen] = useState(
+    false,
+  );
 
   return (
     <PartnershipInfoContainer>
-      <PartnershipTitle variant="h6">{t('Partnership')}</PartnershipTitle>
+      <Box display="flex" justifyContent="space-between">
+        <PartnershipTitle variant="h6">{t('Partnership')}</PartnershipTitle>
+        <IconButton
+          onClick={() => setEditPartnershipModalOpen(true)}
+          aria-label={t('Edit Icon')}
+        >
+          <PartnershipEditIcon />
+        </IconButton>
+      </Box>
       <IconAndTextContainer>
         <IconContainer>
           <HandshakeIcon />
         </IconContainer>
         <Box style={{ margin: 0, padding: 0 }} role="cell">
-          <LabelsAndText variant="subtitle1">{status}</LabelsAndText>
+          <LabelsAndText variant="subtitle1">
+            {contact?.status ? t(contact?.status) : t('No Status')}
+          </LabelsAndText>
           <LabelsAndText variant="subtitle1">
             {`${currencyFormat(
               contact?.pledgeAmount ?? 0,
               contact?.pledgeCurrency ?? 'USD',
-            )} ${contact?.pledgeFrequency ?? t('No Frequency Set')}`}
+            )} - ${contact?.pledgeFrequency ?? t('No Frequency Set')}`}
           </LabelsAndText>
           <LabelsAndText variant="subtitle1">{contact?.source}</LabelsAndText>
         </Box>
@@ -192,6 +222,12 @@ export const PartnershipInfo: React.FC<PartnershipInfoProp> = ({ contact }) => {
           {t('Add Account')}
         </AddAccountButton>
       </IconAndTextContainerCenter>
+      {contact && editPartnershipModalOpen ? (
+        <EditPartnershipInfoModal
+          handleClose={() => setEditPartnershipModalOpen(false)}
+          contact={contact}
+        />
+      ) : null}
     </PartnershipInfoContainer>
   );
 };

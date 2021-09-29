@@ -19,6 +19,7 @@ const StyledBox = styled(Box)(({ theme }) => ({
   paddingRight: theme.spacing(3),
   textAlign: 'center',
   boxShadow: `0px 0px 5px ${theme.palette.cruGrayMedium.main} inset`,
+  marginTop: theme.spacing(2),
 }));
 
 const NoContacts = (): ReactElement => {
