@@ -20,11 +20,13 @@ import { mdiPlus, mdiClose, mdiEqual } from '@mdi/js';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { useSnackbar } from 'notistack';
+import i18n from 'i18next';
 import theme from '../../../../src/theme';
 import AnimatedCard from '../../../../src/components/AnimatedCard';
 import { useAccountListId } from '../../../../src/hooks/useAccountListId';
 import { contactTags } from '../FixCommitmentInfo/InputOptions/ContactTags';
 import { useCreateAppealMutation } from './CreateAppeal.generated';
+import { useGetContactTagsQuery } from './GetContactTags.generated';
 
 const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
   margin: theme.spacing(0, 1, 0, 0),
@@ -67,15 +69,45 @@ interface formProps {
   adminCost: number;
 }
 
+const contactExclusions = [
+  {
+    title: i18n.t('May have given a special gift in the last 3 months'),
+    value: 'SPECIAL_GIFT',
+  },
+  {
+    title: i18n.t('May have joined my team in the last 3 months'),
+    value: 'JOINED_TEAM',
+  },
+  {
+    title: i18n.t('May have increased their giving in the last 3 months'),
+    value: 'INCREASED_GIVING',
+  },
+  {
+    title: i18n.t('May have missed a gift in the last 30-90 days'),
+    value: 'MISSED_GIFT',
+  },
+  {
+    title: i18n.t('Have "Send Appeals" set to No'),
+    value: 'NO_APPEALS',
+  },
+];
+
 const AddAppealForm = (): ReactElement => {
   const classes = useStyles();
   const { t } = useTranslation();
   const accountListId = useAccountListId() || '';
   const { enqueueSnackbar } = useSnackbar();
-  const [filterTags, setFilterTags] = useState({
+  const { data, loading } = useGetContactTagsQuery({
+    variables: { accountListId },
+  });
+  const [filterTags, setFilterTags] = useState<{
+    statuses: { title: string; value: string }[];
+    tags: string[];
+    exclusions: { title: string; value: string }[];
+  }>({
     statuses: [],
     tags: [],
-    exlusions: [],
+    exclusions: [],
   });
   const [createNewAppeal, { loading: updating }] = useCreateAppealMutation();
 
@@ -88,7 +120,7 @@ const AddAppealForm = (): ReactElement => {
   };
 
   const handleChange = (
-    values: { title: string; value: string }[],
+    values: { title: string; value: string }[] | string[],
     props: string,
   ): void => {
     setFilterTags((prevState) => ({
@@ -122,11 +154,32 @@ const AddAppealForm = (): ReactElement => {
     name: yup.string().required('Please enter a name'),
   });
 
-  const contactTagsFormatted = Object.entries(
+  const contactStatusesFormatted = Object.entries(
     contactTags,
-  ).map(([tag, translatedTag]) => ({ title: tag, value: translatedTag }));
+  ).map(([tag, translatedTag]) => ({ value: tag, title: translatedTag }));
 
-  return (
+  const contactTagsList = data?.accountList.contactTagList ?? [];
+
+  const selectAllStatuses = (): void => {
+    setFilterTags((prevState) => ({
+      ...prevState,
+      statuses: contactStatusesFormatted.slice(
+        0,
+        contactStatusesFormatted.length - 2,
+      ),
+    }));
+  };
+
+  const selectAllTags = (): void => {
+    setFilterTags((prevState) => ({
+      ...prevState,
+      tags: contactTagsList,
+    }));
+  };
+
+  return loading ? (
+    <CircularProgress />
+  ) : (
     <Box m={1}>
       <AnimatedCard>
         <CardHeader
@@ -302,36 +355,20 @@ const AddAppealForm = (): ReactElement => {
                     variant="h6"
                     display="inline"
                     className={classes.selectAll}
-                  >
-                    {t('select all')}
-                  </Typography>
-                  <TextField
-                    variant="outlined"
-                    placeholder={t('Select Some Options')}
-                    className={classes.input}
-                    inputProps={{
-                      style: {
-                        padding: 10,
-                      },
-                    }}
-                  />
-                </Box>
-                <Box mt={1} mb={1}>
-                  <Typography variant="h6" display="inline">
-                    {t('Add contacts with the following tag(s):')}
-                  </Typography>
-                  <Typography
-                    variant="h6"
-                    display="inline"
-                    className={classes.selectAll}
+                    onClick={selectAllStatuses}
                   >
                     {t('select all')}
                   </Typography>
                   <Autocomplete
                     multiple
                     id="tags-standard"
-                    options={contactTagsFormatted}
-                    getOptionLabel={(option) => option.value}
+                    options={contactStatusesFormatted.filter(
+                      ({ value: id1 }) =>
+                        !filterTags.statuses.some(
+                          ({ value: id2 }) => id2 === id1,
+                        ),
+                    )}
+                    getOptionLabel={(option) => option.title}
                     value={filterTags.statuses}
                     onChange={({}, values) => handleChange(values, 'statuses')}
                     renderInput={(params) => (
@@ -344,19 +381,66 @@ const AddAppealForm = (): ReactElement => {
                     )}
                   />
                 </Box>
+                {contactTagsList && contactTagsList.length > 0 && (
+                  <Box mt={1} mb={1}>
+                    <Typography variant="h6" display="inline">
+                      {t('Add contacts with the following tag(s):')}
+                    </Typography>
+                    <Typography
+                      variant="h6"
+                      display="inline"
+                      className={classes.selectAll}
+                      onClick={selectAllTags}
+                    >
+                      {t('select all')}
+                    </Typography>
+                    <Autocomplete
+                      multiple
+                      id="tags-standard"
+                      options={contactTagsList.filter(
+                        (tag1) =>
+                          !filterTags.tags.some((tag2) => tag2 === tag1),
+                      )}
+                      getOptionLabel={(option) => option}
+                      value={filterTags.tags}
+                      onChange={({}, values) => handleChange(values, 'tags')}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          variant="outlined"
+                          size="small"
+                          placeholder={t('Select Some Options')}
+                        />
+                      )}
+                    />
+                  </Box>
+                )}
                 <Box mt={1} mb={1}>
                   <Typography variant="h6">
                     {t('Do not add contacts who:')}
                   </Typography>
-                  <TextField
-                    variant="outlined"
-                    placeholder={t('Select Some Options')}
-                    className={classes.input}
-                    inputProps={{
-                      style: {
-                        padding: 10,
-                      },
-                    }}
+                  <Autocomplete
+                    multiple
+                    id="tags-standard"
+                    options={contactExclusions.filter(
+                      ({ value: id1 }) =>
+                        !filterTags.exclusions.some(
+                          ({ value: id2 }) => id2 === id1,
+                        ),
+                    )}
+                    getOptionLabel={(option) => option.title}
+                    value={filterTags.exclusions}
+                    onChange={({}, values) =>
+                      handleChange(values, 'exclusions')
+                    }
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        variant="outlined"
+                        size="small"
+                        placeholder={t('Select Some Options')}
+                      />
+                    )}
                   />
                 </Box>
                 <Box mt={2} mb={1}>
