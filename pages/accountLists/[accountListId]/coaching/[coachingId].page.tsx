@@ -1,15 +1,22 @@
-import React, { ReactElement } from 'react';
+import React from 'react';
 import Head from 'next/head';
 import { useTranslation } from 'react-i18next';
+import { useRouter } from 'next/router';
 import { CoachingList } from 'src/components/Coaching/CoachingList';
 
-const CoachingPage = (): ReactElement => {
+const CoachingPage: React.FC = () => {
   const { t } = useTranslation();
+  const { query, push, replace, isReady, pathname } = useRouter();
 
   return (
     <>
       <Head>
         <title>MPDX | {t('Coaching Accounts')}</title>
+        {console.log(query)}
+        {console.log(push)}
+        {console.log(replace)}
+        {console.log(isReady)}
+        {console.log(pathname)}
       </Head>
       <CoachingList />
     </>
