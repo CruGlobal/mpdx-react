@@ -10,7 +10,7 @@ import {
 } from '@material-ui/core';
 import { useRouter } from 'next/router';
 import NextLink from 'next/link';
-import i18next from 'i18next';
+import { useTranslation } from 'react-i18next';
 import { NavItem } from './NavItem/NavItem';
 import { NavTools } from './NavTools/NavTools';
 import logo from 'src/images/logo.svg';
@@ -39,42 +39,6 @@ interface Section {
   items?: Item[];
   title: string;
 }
-
-const sections: Section[] = [
-  {
-    title: i18next.t('Dashboard'),
-    href: '/accountLists/[accountListId]',
-  },
-  {
-    title: i18next.t('Contacts'),
-    href: '/accountLists/[accountListId]/contacts',
-  },
-  {
-    title: i18next.t('Tasks'),
-    href: '/accountLists/[accountListId]/tasks',
-  },
-  {
-    title: i18next.t('Reports'),
-    items: ReportNavItems.map((item) => ({
-      ...item,
-      title: item.subTitle ? `${item.title} (${item.subTitle})` : item.title,
-      href: `/accountLists/[accountListId]/reports/${item.id}`,
-    })),
-  },
-  {
-    title: i18next.t('Tools'),
-    items: ToolsList.flatMap((toolsGroup) => [
-      ...toolsGroup.items.map((tool) => ({
-        title: tool.tool,
-        href: `/accountLists/[accountListId]/reports/${tool.id}`,
-      })),
-    ]),
-  },
-  {
-    title: i18next.t('Coaches'),
-    href: '/coaches',
-  },
-];
 
 function renderNavItems({
   accountListId,
@@ -162,6 +126,43 @@ export const NavBar: FC<NavBarProps> = ({ onMobileClose, openMobile }) => {
   const classes = useStyles();
   const accountListId = useAccountListId();
   const { pathname } = useRouter();
+  const { t } = useTranslation();
+
+  const sections: Section[] = [
+    {
+      title: t('Dashboard'),
+      href: '/accountLists/[accountListId]',
+    },
+    {
+      title: t('Contacts'),
+      href: '/accountLists/[accountListId]/contacts',
+    },
+    {
+      title: t('Tasks'),
+      href: '/accountLists/[accountListId]/tasks',
+    },
+    {
+      title: t('Reports'),
+      items: ReportNavItems.map((item) => ({
+        ...item,
+        title: item.subTitle ? `${item.title} (${item.subTitle})` : item.title,
+        href: `/accountLists/[accountListId]/reports/${item.id}`,
+      })),
+    },
+    {
+      title: t('Tools'),
+      items: ToolsList.flatMap((toolsGroup) => [
+        ...toolsGroup.items.map((tool) => ({
+          title: tool.tool,
+          href: `/accountLists/[accountListId]/reports/${tool.id}`,
+        })),
+      ]),
+    },
+    {
+      title: t('Coaches'),
+      href: '/coaches',
+    },
+  ];
 
   useEffect(() => {
     if (openMobile && onMobileClose) {
