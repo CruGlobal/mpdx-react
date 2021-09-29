@@ -59,9 +59,11 @@ const TopBar = ({
               <img src={logo} alt="logo" style={{ cursor: 'pointer' }} />
             </NextLink>
           </Hidden>
-          <Box ml={10} flexGrow={1}>
-            <NavMenu />
-          </Box>
+          {accountListId && (
+            <Box ml={10} flexGrow={1}>
+              <NavMenu accountListId={accountListId} />
+            </Box>
+          )}
           <SearchMenu />
           <AddMenu />
           <NotificationMenu />
