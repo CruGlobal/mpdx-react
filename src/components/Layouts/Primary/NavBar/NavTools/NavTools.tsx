@@ -1,15 +1,13 @@
 import React from 'react';
 import type { FC } from 'react';
-import { Box, List } from '@material-ui/core';
+import { List } from '@material-ui/core';
 import SearchIcon from '@material-ui/icons/Search';
 import AddIcon from '@material-ui/icons/Add';
 import NotificationsIcon from '@material-ui/icons/Notifications';
-import SettingsIcon from '@material-ui/icons/Settings';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import { useTranslation } from 'react-i18next';
 import { NavItem } from '../NavItem/NavItem';
 import NotificationMenu from '../../TopBar/Items/NotificationMenu/NotificationMenu';
-// import { useGetTopBarQuery } from '../../TopBar/GetTopBar.generated';
 import { useGetTopBarQuery } from '../../TopBar/GetTopBar.generated';
 import { SearchMenuPanel } from './SearchMenuPanel/SearchMenuPanel';
 import { AddMenuPanel } from './AddMenuPanel/AddMenuPanel';
@@ -29,9 +27,6 @@ export const NavTools: FC = () => {
       </NavItem>
       <NavItem icon={NotificationsIcon} title={t('Notifications')}>
         <NotificationMenu isInDrawer={true} />
-      </NavItem>
-      <NavItem icon={SettingsIcon} title={t('Settings')}>
-        <Box />
       </NavItem>
       <NavItem
         icon={AccountCircleIcon}
