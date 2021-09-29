@@ -160,7 +160,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["storybook-addon-designs", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:6.0.0-alpha.3"],
             ["storybook-addon-i18next", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:1.3.0"],
             ["ts-essentials", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:7.0.1"],
-            ["typescript", "patch:typescript@npm%3A4.2.3#~builtin<compat/typescript>::version=4.2.3&hash=d8b4e7"],
+            ["typescript", "patch:typescript@npm%3A4.2.3#~builtin<compat/typescript>::version=4.2.3&hash=32657b"],
             ["url-loader", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:4.1.1"],
             ["uuid", "npm:8.3.2"],
             ["webpack", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:4.46.0"],
@@ -11793,7 +11793,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["regexpp", "npm:3.1.0"],
             ["semver", "npm:7.3.2"],
             ["tsutils", "virtual:5598bc836ad2c973414e1a89d567ecd1cdbf6739c7024ed25ca2e63b71929c3d84974d48c54a952176f7927822844523c1f46f6aca2b29c6fce5cfa1da24fa4a#npm:3.17.1"],
-            ["typescript", "patch:typescript@npm%3A4.2.3#~builtin<compat/typescript>::version=4.2.3&hash=d8b4e7"]
+            ["typescript", "patch:typescript@npm%3A4.2.3#~builtin<compat/typescript>::version=4.2.3&hash=32657b"]
           ],
           "packagePeers": [
             "@types/eslint",
@@ -11877,7 +11877,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@typescript-eslint/typescript-estree", "virtual:274a597fc2688e12ae5a02b0aaf32cbe9671a34b40618f738991960b8d25ce707079e33399b5fdf4e35b6ddde4bd9b9fa6a586687c5633bdd956017c903f865f#npm:4.15.0"],
             ["debug", "virtual:0a3559c13bfb93d26a2b998652bc9ef7a06479e57829d89d855e3a8e1819edb01e30e267dd8d9ed1baa236fdff98a98889884952f3fbad96330d5b64748f3f3e#npm:4.2.0"],
             ["eslint", "npm:7.19.0"],
-            ["typescript", "patch:typescript@npm%3A4.2.3#~builtin<compat/typescript>::version=4.2.3&hash=d8b4e7"]
+            ["typescript", "patch:typescript@npm%3A4.2.3#~builtin<compat/typescript>::version=4.2.3&hash=32657b"]
           ],
           "packagePeers": [
             "@types/eslint",
@@ -11949,7 +11949,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["is-glob", "npm:4.0.1"],
             ["semver", "npm:7.3.2"],
             ["tsutils", "virtual:5598bc836ad2c973414e1a89d567ecd1cdbf6739c7024ed25ca2e63b71929c3d84974d48c54a952176f7927822844523c1f46f6aca2b29c6fce5cfa1da24fa4a#npm:3.17.1"],
-            ["typescript", "patch:typescript@npm%3A4.2.3#~builtin<compat/typescript>::version=4.2.3&hash=d8b4e7"]
+            ["typescript", "patch:typescript@npm%3A4.2.3#~builtin<compat/typescript>::version=4.2.3&hash=32657b"]
           ],
           "packagePeers": [
             "typescript"
@@ -12030,7 +12030,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@vercel/node", "npm:1.9.0"],
             ["@types/node", "npm:14.11.1"],
             ["ts-node", "virtual:7de2b9c13afed9f68beb0bc06fa1e22f909ba37a3d98c81fc036dde37b55d2bd1663b6c05bef1e2d4c1d85407f1550c14ae71795db323f4aab334fa9520df5bc#npm:8.9.1"],
-            ["typescript", "patch:typescript@npm%3A3.9.3#~builtin<compat/typescript>::version=3.9.3&hash=d8b4e7"]
+            ["typescript", "patch:typescript@npm%3A3.9.3#~builtin<compat/typescript>::version=3.9.3&hash=32657b"]
           ],
           "linkType": "HARD",
         }]
@@ -21762,7 +21762,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["js-yaml", "npm:3.14.1"],
             ["rsvp", "npm:4.8.5"],
             ["through2", "npm:2.0.5"],
-            ["typescript", "patch:typescript@npm%3A3.9.7#~builtin<compat/typescript>::version=3.9.7&hash=d8b4e7"],
+            ["typescript", "patch:typescript@npm%3A3.9.7#~builtin<compat/typescript>::version=3.9.7&hash=32657b"],
             ["vinyl", "npm:2.0.2"],
             ["vinyl-fs", "npm:3.0.3"],
             ["vue-template-compiler", "npm:2.6.12"]
@@ -25791,7 +25791,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["storybook-addon-designs", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:6.0.0-alpha.3"],
             ["storybook-addon-i18next", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:1.3.0"],
             ["ts-essentials", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:7.0.1"],
-            ["typescript", "patch:typescript@npm%3A4.2.3#~builtin<compat/typescript>::version=4.2.3&hash=d8b4e7"],
+            ["typescript", "patch:typescript@npm%3A4.2.3#~builtin<compat/typescript>::version=4.2.3&hash=32657b"],
             ["url-loader", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:4.1.1"],
             ["uuid", "npm:8.3.2"],
             ["webpack", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:4.46.0"],
@@ -33204,7 +33204,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [
             ["ts-essentials", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:7.0.1"],
             ["@types/typescript", null],
-            ["typescript", "patch:typescript@npm%3A4.2.3#~builtin<compat/typescript>::version=4.2.3&hash=d8b4e7"]
+            ["typescript", "patch:typescript@npm%3A4.2.3#~builtin<compat/typescript>::version=4.2.3&hash=32657b"]
           ],
           "packagePeers": [
             "@types/typescript",
@@ -33296,7 +33296,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["diff", "npm:4.0.2"],
             ["make-error", "npm:1.3.6"],
             ["source-map-support", "npm:0.5.19"],
-            ["typescript", "patch:typescript@npm%3A3.9.3#~builtin<compat/typescript>::version=3.9.3&hash=d8b4e7"],
+            ["typescript", "patch:typescript@npm%3A3.9.3#~builtin<compat/typescript>::version=3.9.3&hash=32657b"],
             ["yn", "npm:3.1.1"]
           ],
           "packagePeers": [
@@ -33409,7 +33409,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["tsutils", "virtual:5598bc836ad2c973414e1a89d567ecd1cdbf6739c7024ed25ca2e63b71929c3d84974d48c54a952176f7927822844523c1f46f6aca2b29c6fce5cfa1da24fa4a#npm:3.17.1"],
             ["@types/typescript", null],
             ["tslib", "npm:1.13.0"],
-            ["typescript", "patch:typescript@npm%3A4.2.3#~builtin<compat/typescript>::version=4.2.3&hash=d8b4e7"]
+            ["typescript", "patch:typescript@npm%3A4.2.3#~builtin<compat/typescript>::version=4.2.3&hash=32657b"]
           ],
           "packagePeers": [
             "@types/typescript",
@@ -33627,24 +33627,24 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]
       ]],
       ["typescript", [
-        ["patch:typescript@npm%3A3.9.3#~builtin<compat/typescript>::version=3.9.3&hash=d8b4e7", {
-          "packageLocation": "./.yarn/cache/typescript-patch-0be26eb740-de97cb641a.zip/node_modules/typescript/",
+        ["patch:typescript@npm%3A3.9.3#~builtin<compat/typescript>::version=3.9.3&hash=32657b", {
+          "packageLocation": "./.yarn/cache/typescript-patch-3c9722001f-de97cb641a.zip/node_modules/typescript/",
           "packageDependencies": [
-            ["typescript", "patch:typescript@npm%3A3.9.3#~builtin<compat/typescript>::version=3.9.3&hash=d8b4e7"]
+            ["typescript", "patch:typescript@npm%3A3.9.3#~builtin<compat/typescript>::version=3.9.3&hash=32657b"]
           ],
           "linkType": "HARD",
         }],
-        ["patch:typescript@npm%3A3.9.7#~builtin<compat/typescript>::version=3.9.7&hash=d8b4e7", {
-          "packageLocation": "./.yarn/cache/typescript-patch-ee29668afe-46b87576ee.zip/node_modules/typescript/",
+        ["patch:typescript@npm%3A3.9.7#~builtin<compat/typescript>::version=3.9.7&hash=32657b", {
+          "packageLocation": "./.yarn/cache/typescript-patch-0500fd065d-46b87576ee.zip/node_modules/typescript/",
           "packageDependencies": [
-            ["typescript", "patch:typescript@npm%3A3.9.7#~builtin<compat/typescript>::version=3.9.7&hash=d8b4e7"]
+            ["typescript", "patch:typescript@npm%3A3.9.7#~builtin<compat/typescript>::version=3.9.7&hash=32657b"]
           ],
           "linkType": "HARD",
         }],
-        ["patch:typescript@npm%3A4.2.3#~builtin<compat/typescript>::version=4.2.3&hash=d8b4e7", {
-          "packageLocation": "./.yarn/cache/typescript-patch-a4a9e52d5c-f24cd92218.zip/node_modules/typescript/",
+        ["patch:typescript@npm%3A4.2.3#~builtin<compat/typescript>::version=4.2.3&hash=32657b", {
+          "packageLocation": "./.yarn/cache/typescript-patch-6a93864bf9-d75725ea2c.zip/node_modules/typescript/",
           "packageDependencies": [
-            ["typescript", "patch:typescript@npm%3A4.2.3#~builtin<compat/typescript>::version=4.2.3&hash=d8b4e7"]
+            ["typescript", "patch:typescript@npm%3A4.2.3#~builtin<compat/typescript>::version=4.2.3&hash=32657b"]
           ],
           "linkType": "HARD",
         }]
@@ -41638,7 +41638,7 @@ class VirtualFS extends ProxiedFS {
     if (this.pathUtils.isAbsolute(p)) return VirtualFS.resolveVirtual(p);
     const resolvedRoot = VirtualFS.resolveVirtual(this.baseFs.resolve(PortablePath.dot));
     const resolvedP = VirtualFS.resolveVirtual(this.baseFs.resolve(p));
-    return ppath.relative(resolvedRoot, resolvedP);
+    return ppath.relative(resolvedRoot, resolvedP) || PortablePath.dot;
   }
 
   mapFromBase(p) {
