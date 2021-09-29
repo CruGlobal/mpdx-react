@@ -66,7 +66,7 @@ export const AddMenuPanel = (): ReactElement => {
 
   return (
     <>
-      <List disablePadding>
+      <List disablePadding data-testid="AddMenuPanelForNavBar">
         {addMenuContent.map(({ text, icon: Icon, onClick }, index) => (
           <LeafListItem key={index} button disableGutters onClick={onClick}>
             <LeafButton style={style}>

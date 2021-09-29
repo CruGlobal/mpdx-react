@@ -20,7 +20,7 @@ export const NavTools: FC = () => {
   const { t } = useTranslation();
 
   return (
-    <List disablePadding>
+    <List disablePadding data-testid="NavTools">
       <NavItem icon={SearchIcon} title={t('Search')}>
         <SearchMenuPanel />
       </NavItem>

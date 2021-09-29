@@ -42,85 +42,83 @@ export const ProfileMenuPanel = (): ReactElement => {
   const style = { paddingLeft: 40, paddingTop: 11, paddingBottom: 11 };
 
   return (
-    <>
-      <List disablePadding>
-        {addProfileContent.map(({ text, path, onClick }, index) => (
-          <LeafListItem key={index} button disableGutters onClick={onClick}>
-            <HandoffLink path={path}>
-              <LeafButton style={style}>
-                <Title>{t(text)}</Title>
-              </LeafButton>
-            </HandoffLink>
-          </LeafListItem>
-        ))}
-        {(data?.user?.admin ||
-          !!data?.user?.administrativeOrganizations?.nodes?.length) && (
-          <LeafListItem button disableGutters>
-            <HandoffLink path="/preferences/organizations">
-              <LeafButton style={style}>
-                <Title>{t('Manage Organizations')}</Title>
-              </LeafButton>
-            </HandoffLink>
-          </LeafListItem>
-        )}
-        {(data?.user?.admin || data?.user?.developer) && (
-          <LeafListItem button disableGutters>
-            <HandoffLink path="/preferences/admin">
-              <LeafButton style={style}>
-                <Title>{t('Admin Console')}</Title>
-              </LeafButton>
-            </HandoffLink>
-          </LeafListItem>
-        )}
-        {data?.user?.developer && (
-          <LeafListItem button disableGutters>
-            <HandoffLink path="/auth/user/admin">
-              <LeafButton style={style}>
-                <Title>{t('Backend Admin')}</Title>
-              </LeafButton>
-            </HandoffLink>
-          </LeafListItem>
-        )}
-        {data?.user?.developer && (
-          <LeafListItem button disableGutters>
-            <HandoffLink path="/auth/user/sidekiq">
-              <LeafButton style={style}>
-                <Title>{t('Sidekiq')}</Title>
-              </LeafButton>
-            </HandoffLink>
-          </LeafListItem>
-        )}
-        <LeafListItem button disableGutters>
-          <Box display="flex" flexDirection="column" px={4} py={2}>
-            <Button
-              variant="outlined"
-              color="secondary"
-              onClick={() => signout()}
-            >
-              {t('Sign Out')}
-            </Button>
-            <Box display="flex" justifyContent="center" py={1}>
-              <Link
-                href="https://get.mpdx.org/privacy-policy/"
-                target="_blank"
-                color="secondary"
-                variant="caption"
-              >
-                {t('Privacy Policy')}
-              </Link>
-              &nbsp; • &nbsp;
-              <Link
-                href="https://get.mpdx.org/terms-of-use/"
-                target="_blank"
-                color="secondary"
-                variant="caption"
-              >
-                {t('Terms of Use')}
-              </Link>
-            </Box>
-          </Box>
+    <List disablePadding data-testid="ProfileMenuPanelForNavBar">
+      {addProfileContent.map(({ text, path, onClick }, index) => (
+        <LeafListItem key={index} button disableGutters onClick={onClick}>
+          <HandoffLink path={path}>
+            <LeafButton style={style}>
+              <Title>{t(text)}</Title>
+            </LeafButton>
+          </HandoffLink>
         </LeafListItem>
-      </List>
-    </>
+      ))}
+      {(data?.user?.admin ||
+        !!data?.user?.administrativeOrganizations?.nodes?.length) && (
+        <LeafListItem button disableGutters>
+          <HandoffLink path="/preferences/organizations">
+            <LeafButton style={style}>
+              <Title>{t('Manage Organizations')}</Title>
+            </LeafButton>
+          </HandoffLink>
+        </LeafListItem>
+      )}
+      {(data?.user?.admin || data?.user?.developer) && (
+        <LeafListItem button disableGutters>
+          <HandoffLink path="/preferences/admin">
+            <LeafButton style={style}>
+              <Title>{t('Admin Console')}</Title>
+            </LeafButton>
+          </HandoffLink>
+        </LeafListItem>
+      )}
+      {data?.user?.developer && (
+        <LeafListItem button disableGutters>
+          <HandoffLink path="/auth/user/admin">
+            <LeafButton style={style}>
+              <Title>{t('Backend Admin')}</Title>
+            </LeafButton>
+          </HandoffLink>
+        </LeafListItem>
+      )}
+      {data?.user?.developer && (
+        <LeafListItem button disableGutters>
+          <HandoffLink path="/auth/user/sidekiq">
+            <LeafButton style={style}>
+              <Title>{t('Sidekiq')}</Title>
+            </LeafButton>
+          </HandoffLink>
+        </LeafListItem>
+      )}
+      <LeafListItem button disableGutters>
+        <Box display="flex" flexDirection="column" px={4} py={2}>
+          <Button
+            variant="outlined"
+            color="secondary"
+            onClick={() => signout()}
+          >
+            {t('Sign Out')}
+          </Button>
+          <Box display="flex" justifyContent="center" py={1}>
+            <Link
+              href="https://get.mpdx.org/privacy-policy/"
+              target="_blank"
+              color="secondary"
+              variant="caption"
+            >
+              {t('Privacy Policy')}
+            </Link>
+            &nbsp; • &nbsp;
+            <Link
+              href="https://get.mpdx.org/terms-of-use/"
+              target="_blank"
+              color="secondary"
+              variant="caption"
+            >
+              {t('Terms of Use')}
+            </Link>
+          </Box>
+        </Box>
+      </LeafListItem>
+    </List>
   );
 };
