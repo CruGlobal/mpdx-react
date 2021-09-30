@@ -41,9 +41,12 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getSession(context);
 
   if (context.res && session) {
-    context.res.writeHead(302, { Location: '/accountLists' });
-    context.res.end();
-    return { props: {} };
+    return {
+      redirect: {
+        destination: '/accountLists',
+        permanent: false,
+      },
+    };
   }
 
   return { props: {} };
