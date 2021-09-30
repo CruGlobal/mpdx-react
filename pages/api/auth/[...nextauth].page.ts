@@ -31,17 +31,17 @@ const options: InitOptions = {
     },
   ],
   callbacks: {
-    session: (session, user) => {
-      return Promise.resolve({
+    session: async (session, user) => {
+      return {
         ...session,
         user: { ...session.user, token: user.token },
-      });
+      };
     },
     jwt: async (token, user, _account, profile) => {
       if (user) {
-        return Promise.resolve({ ...token, token: profile.token });
+        return { ...token, token: profile.token };
       } else {
-        return Promise.resolve(token);
+        return token;
       }
     },
   },
