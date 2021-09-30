@@ -298,13 +298,5 @@ describe('NavMenu', () => {
       expect(getByTestId('notificationTotal')).toBeInTheDocument(),
     );
     expect(getByTestId('notificationTotalText')).toHaveTextContent('9+');
-    userEvent.click(getByTestId('ToolsMenuToggle'));
-    expect(getByTestId('fixCommitmentInfo-false').firstChild).toHaveStyle(
-      'color: #383F43;',
-    );
-    expect(getByTestId('fixCommitmentInfo-false').children[1]).toHaveStyle(
-      'color: #383F43;',
-    );
-    expect(getByTestId('fixCommitmentInfo-notifications')).toBeInTheDocument();
   });
 });
