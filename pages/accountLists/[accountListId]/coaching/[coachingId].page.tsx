@@ -4,10 +4,13 @@ import { useTranslation } from 'react-i18next';
 import { useRouter } from 'next/router';
 import { CoachingList } from 'src/components/Coaching/CoachingList';
 import { CoachingDetail } from 'src/components/Coaching/CoachingDetail/CoachingDetail';
+import { useAccountListId } from 'src/hooks/useAccountListId';
+import Loading from 'src/components/Loading';
 
 const CoachingPage: React.FC = () => {
   const { t } = useTranslation();
   const { query, push, replace, isReady, pathname } = useRouter();
+  const accountListId = useAccountListId();
 
   const { coachingId } = query;
   const [coachingDetailId, setContactDetailId] = useState<string>();
@@ -28,10 +31,14 @@ const CoachingPage: React.FC = () => {
         {console.log(isReady)}
         {console.log(pathname)}
       </Head>
-      {coachingDetailId ? (
-        <CoachingDetail coachingId={coachingDetailId} />
+      {accountListId ? (
+        coachingDetailId ? (
+          <CoachingDetail coachingId={coachingDetailId} />
+        ) : (
+          <CoachingList accountListId={accountListId} />
+        )
       ) : (
-        <CoachingList />
+        <Loading loading />
       )}
     </>
   );

@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useRouter } from 'next/router';
 import { CoachingList } from 'src/components/Coaching/CoachingList';
 import { useAccountListId } from 'src/hooks/useAccountListId';
+import Loading from 'src/components/Loading';
 
 const CoachingPage: React.FC = () => {
   const { t } = useTranslation();
@@ -20,7 +21,11 @@ const CoachingPage: React.FC = () => {
         {console.log(isReady)}
         {console.log(pathname)}
       </Head>
-      <CoachingList accountList={accountListId} />
+      {accountListId ? (
+        <CoachingList accountListId={accountListId} />
+      ) : (
+        <Loading loading />
+      )}
     </>
   );
 };
