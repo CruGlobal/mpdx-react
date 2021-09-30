@@ -370,7 +370,9 @@ const AddAppealForm = (): ReactElement => {
                     )}
                     getOptionLabel={(option) => option.title}
                     value={filterTags.statuses}
-                    onChange={({}, values) => handleChange(values, 'statuses')}
+                    onChange={(_event, values) =>
+                      handleChange(values, 'statuses')
+                    }
                     renderInput={(params) => (
                       <TextField
                         {...params}
@@ -403,7 +405,9 @@ const AddAppealForm = (): ReactElement => {
                       )}
                       getOptionLabel={(option) => option}
                       value={filterTags.tags}
-                      onChange={({}, values) => handleChange(values, 'tags')}
+                      onChange={(_event, values) =>
+                        handleChange(values, 'tags')
+                      }
                       renderInput={(params) => (
                         <TextField
                           {...params}
@@ -430,7 +434,7 @@ const AddAppealForm = (): ReactElement => {
                     )}
                     getOptionLabel={(option) => option.title}
                     value={filterTags.exclusions}
-                    onChange={({}, values) =>
+                    onChange={(_event, values) =>
                       handleChange(values, 'exclusions')
                     }
                     renderInput={(params) => (
