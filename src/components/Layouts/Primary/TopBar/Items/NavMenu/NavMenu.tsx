@@ -267,7 +267,7 @@ const NavMenu = (): ReactElement => {
                   data-testid="notificationTotal"
                 >
                   <Typography data-testid="notificationTotalText">
-                    {sum}
+                    {sum < 10 ? sum : '9+'}
                   </Typography>
                 </Box>
               )}
@@ -349,7 +349,9 @@ const NavMenu = (): ReactElement => {
                                         data-testid={`${tool.id}-notifications`}
                                       >
                                         <Typography>
-                                          {toolData[tool.id].totalCount}
+                                          {toolData[tool.id].totalCount < 10
+                                            ? toolData[tool.id].totalCount
+                                            : '9+'}
                                         </Typography>
                                       </Box>
                                     )}
