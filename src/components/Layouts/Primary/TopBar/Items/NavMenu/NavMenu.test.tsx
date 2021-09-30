@@ -35,7 +35,7 @@ describe('NavMenu', () => {
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
           <GqlMockedProvider>
-            <NavMenu accountListId={accountListId} />
+            <NavMenu />
           </GqlMockedProvider>
         </TestRouter>
       </ThemeProvider>,
@@ -161,7 +161,7 @@ describe('NavMenu', () => {
       <ThemeProvider theme={theme}>
         <TestRouter router={routerHidden}>
           <GqlMockedProvider>
-            <NavMenu accountListId={''} />
+            <NavMenu />
           </GqlMockedProvider>
         </TestRouter>
       </ThemeProvider>,
@@ -174,7 +174,7 @@ describe('NavMenu', () => {
       <ThemeProvider theme={theme}>
         <TestRouter router={routerAppeals}>
           <GqlMockedProvider>
-            <NavMenu accountListId={accountListId} />
+            <NavMenu />
           </GqlMockedProvider>
         </TestRouter>
       </ThemeProvider>,
@@ -205,7 +205,7 @@ describe('NavMenu', () => {
               },
             }}
           >
-            <NavMenu accountListId={accountListId} />
+            <NavMenu />
           </GqlMockedProvider>
         </TestRouter>
       </ThemeProvider>,
@@ -246,7 +246,7 @@ describe('NavMenu', () => {
               },
             }}
           >
-            <NavMenu accountListId={accountListId} />
+            <NavMenu />
           </GqlMockedProvider>
         </TestRouter>
       </ThemeProvider>,

@@ -12,7 +12,7 @@ export const Default = (): ReactElement => {
     <>
       <AppBar>
         <Box>
-          <NavMenu accountListId={'123'} />
+          <NavMenu />
         </Box>
       </AppBar>
     </>
@@ -24,7 +24,7 @@ export const Hidden = (): ReactElement => {
     <TestWrapper>
       <AppBar>
         <Box>
-          <NavMenu accountListId="" />
+          <NavMenu />
         </Box>
       </AppBar>
     </TestWrapper>

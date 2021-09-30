@@ -61,7 +61,7 @@ const TopBar = ({
           </Hidden>
           {accountListId && (
             <Box ml={10} flexGrow={1}>
-              <NavMenu accountListId={accountListId} />
+              <NavMenu />
             </Box>
           )}
           <SearchMenu />

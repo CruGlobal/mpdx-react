@@ -21,6 +21,7 @@ import { ReportNavItems } from '../../../../../Reports/NavReportsList/ReportNavI
 import { ToolsList } from '../../../../../Tool/Home/ToolList';
 import { useCurrentToolId } from '../../../../../../hooks/useCurrentToolId';
 import theme from '../../../../../../theme';
+import { useAccountListId } from '../../../../../../hooks/useAccountListId';
 import { useGetToolNotificationsQuery } from './GetToolNotifcations.generated';
 
 const useStyles = makeStyles(() => ({
@@ -88,16 +89,13 @@ enum ToolName {
   mergePeople = 'mergePeople',
 }
 
-interface NavBarProps {
-  accountListId: string;
-}
-
-const NavMenu = ({ accountListId }: NavBarProps): ReactElement => {
+const NavMenu = (): ReactElement => {
   const { t } = useTranslation();
+  const accountListId = useAccountListId();
   const classes = useStyles();
   const currentToolId = useCurrentToolId();
   const { data, loading } = useGetToolNotificationsQuery({
-    variables: { accountListId },
+    variables: { accountListId: accountListId ?? '' },
   });
 
   const toolData: { [key: string]: { totalCount: number } } = {
