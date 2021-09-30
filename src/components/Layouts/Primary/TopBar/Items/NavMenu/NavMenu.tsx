@@ -19,9 +19,9 @@ import { useTranslation } from 'react-i18next';
 import Icon from '@mdi/react';
 import { ReportNavItems } from '../../../../../Reports/NavReportsList/ReportNavItems';
 import { ToolsList } from '../../../../../Tool/Home/ToolList';
-import { useAccountListId } from '../../../../../../hooks/useAccountListId';
 import { useCurrentToolId } from '../../../../../../hooks/useCurrentToolId';
 import theme from '../../../../../../theme';
+import { useAccountListId } from '../../../../../../hooks/useAccountListId';
 import { useGetToolNotificationsQuery } from './GetToolNotifcations.generated';
 
 const useStyles = makeStyles(() => ({
@@ -91,8 +91,8 @@ enum ToolName {
 
 const NavMenu = (): ReactElement => {
   const { t } = useTranslation();
-  const classes = useStyles();
   const accountListId = useAccountListId();
+  const classes = useStyles();
   const currentToolId = useCurrentToolId();
   const { data, loading } = useGetToolNotificationsQuery({
     variables: { accountListId: accountListId ?? '' },
