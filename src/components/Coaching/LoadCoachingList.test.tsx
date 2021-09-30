@@ -133,7 +133,7 @@ describe('LoadCoaching', () => {
           },
         }}
       >
-        <CoachingList />
+        <CoachingList accountListId="account-list-id" />
       </GqlMockedProvider>,
     );
     expect(getAllByRole('listitem').length).toMatchInlineSnapshot(`3`);

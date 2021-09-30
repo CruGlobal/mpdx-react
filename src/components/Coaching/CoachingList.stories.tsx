@@ -27,7 +27,7 @@ export const Defaulst = (): ReactElement => {
         },
       }}
     >
-      <CoachingList />
+      <CoachingList accountListId="account-list-id" />
     </GqlMockedProvider>
   );
 };
@@ -45,7 +45,7 @@ export const Loading = (): ReactElement => {
         },
       ]}
     >
-      <CoachingList />
+      <CoachingList accountListId="account-list-id" />
     </MockedProvider>
   );
 };
