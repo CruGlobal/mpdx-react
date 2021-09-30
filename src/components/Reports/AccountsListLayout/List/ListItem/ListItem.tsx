@@ -11,11 +11,11 @@ import {
   Typography,
 } from '@material-ui/core';
 import { Maybe } from 'graphql/jsutils/Maybe';
+import { Unarray } from '../../../Reports.type';
 import { AccountListItemChart as Chart } from './Chart/Chart';
 import { currencyFormat } from 'src/lib/intlFormat';
 import HandoffLink from 'src/components/HandoffLink';
 import { EntryHistoriesQuery } from 'src/components/Reports/ResponsibilityCentersReport/GetEntryHistories.generated';
-import { Unarray } from 'src/components/Reports/FourteenMonthReports/Layout/Table/TableHead/TableHead';
 
 type EntryHistoriesGroup = Unarray<EntryHistoriesQuery['entryHistories']>;
 type EntryHistory = Unarray<NonNullable<EntryHistoriesGroup>['entryHistories']>;

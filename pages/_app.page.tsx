@@ -87,11 +87,11 @@ const App = ({ Component, pageProps, router }: AppProps): ReactElement => {
               <StylesProvider>
                 <MuiPickersUtilsProvider utils={LuxonUtils}>
                   <SnackbarProvider maxSnack={3}>
+                    <GlobalStyles />
                     <AnimatePresence
                       exitBeforeEnter
                       onExitComplete={handleExitComplete}
                     >
-                      <GlobalStyles />
                       <RouterGuard>
                         <TaskDrawerProvider>
                           <Layout>

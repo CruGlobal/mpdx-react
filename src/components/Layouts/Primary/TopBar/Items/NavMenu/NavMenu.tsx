@@ -1,4 +1,4 @@
-import React, { Fragment, ReactElement, useState } from 'react';
+import React, { ReactElement, useMemo, useState } from 'react';
 import {
   makeStyles,
   Grid,
@@ -10,18 +10,19 @@ import {
   MenuList,
   Paper,
   Box,
+  Typography,
 } from '@material-ui/core';
 import clsx from 'clsx';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import NextLink from 'next/link';
 import { useTranslation } from 'react-i18next';
 import Icon from '@mdi/react';
-import HandoffLink from '../../../../../HandoffLink';
 import { ReportNavItems } from '../../../../../Reports/NavReportsList/ReportNavItems';
 import { ToolsList } from '../../../../../Tool/Home/ToolList';
 import { useAccountListId } from '../../../../../../hooks/useAccountListId';
 import { useCurrentToolId } from '../../../../../../hooks/useCurrentToolId';
 import theme from '../../../../../../theme';
+import { useGetToolNotificationsQuery } from './GetToolNotifcations.generated';
 
 const useStyles = makeStyles(() => ({
   navListItem: {
@@ -41,27 +42,92 @@ const useStyles = makeStyles(() => ({
     transform: 'rotate(180deg)',
   },
   subMenu: {
-    backgroundColor: theme.palette.cruGrayDark.main,
+    backgroundImage: `linear-gradient(0deg, ${theme.palette.cruGrayDark.main}, ${theme.palette.cruGrayDark.main})`,
   },
   menuItem: {
     color: 'white',
     '&:hover': {
       backgroundColor: theme.palette.cruGrayMedium.main,
+      backgroundBlendMode: 'multiply',
     },
   },
   menuItemSelected: {
+    backgroundBlendMode: 'multiply',
     backgroundColor: theme.palette.cruGrayMedium.main,
+  },
+  needsAttention: {
+    backgroundImage: `linear-gradient(0deg, ${theme.palette.mpdxYellow.main}, ${theme.palette.mpdxYellow.main})`,
   },
   menuIcon: {
     marginRight: theme.spacing(1),
   },
+  notificationBox: {
+    backgroundColor: theme.palette.progressBarYellow.main,
+    paddingLeft: theme.spacing(1),
+    paddingRight: theme.spacing(1),
+    borderRadius: '25%',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginLeft: theme.spacing(2),
+  },
+  darkText: {
+    color: theme.palette.cruGrayDark.main,
+  },
+  whiteText: {
+    color: 'white',
+  },
 }));
+
+enum ToolName {
+  fixCommitmentInfo = 'fixCommitmentInfo',
+  fixMailingAddresses = 'fixMailingAddresses',
+  fixSendNewsletter = 'fixSendNewsletter',
+  fixEmailAddresses = 'fixEmailAddresses',
+  fixPhoneNumbers = 'fixPhoneNumbers',
+  mergeContacts = 'mergeContacts',
+  mergePeople = 'mergePeople',
+}
 
 const NavMenu = (): ReactElement => {
   const { t } = useTranslation();
   const classes = useStyles();
   const accountListId = useAccountListId();
   const currentToolId = useCurrentToolId();
+  const { data, loading } = useGetToolNotificationsQuery({
+    variables: { accountListId: accountListId ?? '' },
+  });
+
+  const toolData: { [key: string]: { totalCount: number } } = {
+    [ToolName.fixCommitmentInfo]: data?.[ToolName.fixCommitmentInfo] ?? {
+      totalCount: 0,
+    },
+    [ToolName.fixMailingAddresses]: data?.[ToolName.fixMailingAddresses] ?? {
+      totalCount: 0,
+    },
+    [ToolName.fixSendNewsletter]: data?.[ToolName.fixSendNewsletter] ?? {
+      totalCount: 0,
+    },
+    [ToolName.fixEmailAddresses]: data?.[ToolName.fixEmailAddresses] ?? {
+      totalCount: 0,
+    },
+    [ToolName.fixPhoneNumbers]: data?.[ToolName.fixPhoneNumbers] ?? {
+      totalCount: 0,
+    },
+    [ToolName.mergeContacts]: data?.[ToolName.mergeContacts] ?? {
+      totalCount: 0,
+    },
+    [ToolName.mergePeople]: data?.[ToolName.mergePeople] ?? { totalCount: 0 },
+  };
+
+  const sum = useMemo<number>(() => {
+    return data
+      ? Object.values(toolData).reduce(
+          (sum, toolContacts) => sum + toolContacts.totalCount,
+          0,
+        )
+      : 0;
+  }, [loading]);
 
   const [reportsMenuOpen, setReportsMenuOpen] = useState(false);
   const [toolsMenuOpen, setToolsMenuOpen] = useState(false);
@@ -195,6 +261,16 @@ const NavMenu = (): ReactElement => {
               data-testid="ToolsMenuToggle"
             >
               <ListItemText primary={t('Tools')} />
+              {sum > 0 && (
+                <Box
+                  className={classes.notificationBox}
+                  data-testid="notificationTotal"
+                >
+                  <Typography data-testid="notificationTotalText">
+                    {sum}
+                  </Typography>
+                </Box>
+              )}
               <ArrowDropDownIcon
                 className={clsx(classes.expand, {
                   [classes.expandOpen]: toolsMenuOpen,
@@ -224,37 +300,63 @@ const NavMenu = (): ReactElement => {
                       >
                         {ToolsList.map((toolsGroup) => (
                           <Box key={toolsGroup.groupName}>
-                            {toolsGroup.items.map((tool) => (
-                              <NextLink
-                                key={tool.id}
-                                href={`/accountLists/[accountListId]/tools/${tool.id}`}
-                                as={`/accountLists/${accountListId}/tools/${tool.id}`}
-                                scroll={false}
-                              >
-                                <MenuItem
-                                  onClick={handleToolsMenuClose}
-                                  data-testid={`${tool.id}-${
-                                    currentToolId === tool.id
-                                  }`}
-                                  className={clsx(
-                                    classes.menuItem,
-                                    currentToolId === tool.id &&
-                                      classes.menuItemSelected,
-                                  )}
+                            {toolsGroup.items.map((tool) => {
+                              const needsAttention = toolData
+                                ? toolData[tool.id]?.totalCount > 0
+                                : false;
+                              return (
+                                <NextLink
+                                  key={tool.id}
+                                  href={`/accountLists/[accountListId]/tools/${tool.id}`}
+                                  as={`/accountLists/${accountListId}/tools/${tool.id}`}
+                                  scroll={false}
                                 >
-                                  <Icon
-                                    path={tool.icon}
-                                    size={1}
-                                    className={classes.menuIcon}
-                                  />
-                                  <ListItemText
-                                    primary={t('{{toolname}}', {
-                                      toolname: tool.tool,
-                                    })}
-                                  />
-                                </MenuItem>
-                              </NextLink>
-                            ))}
+                                  <MenuItem
+                                    onClick={handleToolsMenuClose}
+                                    data-testid={`${tool.id}-${
+                                      currentToolId === tool.id
+                                    }`}
+                                    className={clsx(
+                                      classes.menuItem,
+                                      needsAttention && classes.needsAttention,
+                                      currentToolId === tool.id &&
+                                        classes.menuItemSelected,
+                                    )}
+                                  >
+                                    <Icon
+                                      path={tool.icon}
+                                      size={1}
+                                      className={clsx(
+                                        classes.menuIcon,
+                                        needsAttention
+                                          ? classes.darkText
+                                          : classes.whiteText,
+                                      )}
+                                    />
+                                    <ListItemText
+                                      className={clsx(
+                                        needsAttention
+                                          ? classes.darkText
+                                          : classes.whiteText,
+                                      )}
+                                      primary={t('{{toolname}}', {
+                                        toolname: tool.tool,
+                                      })}
+                                    />
+                                    {!loading && needsAttention && (
+                                      <Box
+                                        className={classes.notificationBox}
+                                        data-testid={`${tool.id}-notifications`}
+                                      >
+                                        <Typography>
+                                          {toolData[tool.id].totalCount}
+                                        </Typography>
+                                      </Box>
+                                    )}
+                                  </MenuItem>
+                                </NextLink>
+                              );
+                            })}
                           </Box>
                         ))}
                       </MenuList>
@@ -265,11 +367,14 @@ const NavMenu = (): ReactElement => {
             </Popper>
           </Grid>
           <Grid item className={classes.navListItem}>
-            <HandoffLink path="/coaches">
+            <NextLink
+              href="/accountLists/[accountListId]/coaching"
+              as={`/accountLists/${accountListId}/coaching`}
+            >
               <MenuItem component="a">
                 <ListItemText primary={t('Coaches')} />
               </MenuItem>
-            </HandoffLink>
+            </NextLink>
           </Grid>
         </Grid>
       ) : null}
