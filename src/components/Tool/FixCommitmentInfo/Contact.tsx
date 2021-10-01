@@ -103,6 +103,14 @@ interface Props {
   frequencyTitle: string;
   frequencyValue: string;
   hideFunction: (hideId: string) => void;
+  updateFunction: (
+    id: string,
+    change: boolean,
+    status?: string,
+    pledgeCurrency?: string,
+    pledgeAmount?: number,
+    pledgeFrequency?: string,
+  ) => Promise<void>;
 }
 
 const Contact: React.FC<Props> = ({
@@ -115,6 +123,7 @@ const Contact: React.FC<Props> = ({
   frequencyTitle,
   frequencyValue,
   hideFunction,
+  updateFunction,
 }) => {
   const [values, setValues] = useState({
     statusValue: statusValue,
@@ -243,25 +252,42 @@ const Contact: React.FC<Props> = ({
             style={{ paddingLeft: theme.spacing(1) }}
           >
             <Box className={classes.buttonTop}>
-              <Button variant="contained" style={{ width: '100%' }}>
+              <Button
+                variant="contained"
+                style={{ width: '100%' }}
+                onClick={() =>
+                  updateFunction(
+                    id,
+                    true,
+                    values.statusValue,
+                    values.amountCurrency,
+                    parseFloat(`${values.amount}`),
+                    values.frequencyValue,
+                  )
+                }
+              >
                 {t('Confirm')}
               </Button>
             </Box>
             <Box className={classes.buttonBottom}>
-              <Button variant="contained" style={{ width: '100%' }}>
+              <Button
+                variant="contained"
+                style={{ width: '100%' }}
+                onClick={() => updateFunction(id, false)}
+              >
                 {"Don't Change"}
               </Button>
             </Box>
             <Box>
-              <IconButton>
-                <SearchIcon
-                  onClick={() =>
-                    push({
-                      pathname: `/accountLists/[accountListId]/contacts/[contactId]`,
-                      query: { accountListId, contactId: id },
-                    })
-                  }
-                />
+              <IconButton
+                onClick={() =>
+                  push({
+                    pathname: `/accountLists/[accountListId]/contacts/[contactId]`,
+                    query: { accountListId, contactId: id },
+                  })
+                }
+              >
+                <SearchIcon />
               </IconButton>
               <IconButton onClick={() => hideFunction(id)}>
                 <VisibilityOffIcon />

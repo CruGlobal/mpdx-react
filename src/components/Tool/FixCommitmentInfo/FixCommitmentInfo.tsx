@@ -9,6 +9,11 @@ import {
   CircularProgress,
 } from '@material-ui/core';
 import { Trans, useTranslation } from 'react-i18next';
+import { useSnackbar } from 'notistack';
+import {
+  PledgeFrequencyEnum,
+  StatusEnum,
+} from '../../../../graphql/types.generated';
 import theme from '../../../theme';
 import {
   GetInvalidStatusesDocument,
@@ -19,6 +24,7 @@ import Contact from './Contact';
 import NoContacts from './NoContacts';
 import { contactTags } from './InputOptions/ContactTags';
 import { frequencies } from './InputOptions/Frequencies';
+import { useUpdateInvalidStatusMutation } from './UpdateInvalidStatus.generated';
 import client from 'src/lib/client';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -62,11 +68,46 @@ interface Props {
 const FixCommitmentInfo: React.FC<Props> = ({ accountListId }: Props) => {
   const classes = useStyles();
   const { t } = useTranslation();
+  const { enqueueSnackbar } = useSnackbar();
   const { data, loading } = useGetInvalidStatusesQuery({
     variables: { accountListId },
   });
+  const [
+    updateInvalidStatus,
+    { loading: updating },
+  ] = useUpdateInvalidStatusMutation();
 
   //TODO: Make currency field a select element
+
+  const updateContact = async (
+    id: string,
+    change: boolean,
+    status?: string,
+    pledgeCurrency?: string,
+    pledgeAmount?: number,
+    pledgeFrequency?: string,
+  ): Promise<void> => {
+    const attributes = change
+      ? {
+          id,
+          status: status as StatusEnum,
+          pledgeAmount,
+          pledgeCurrency,
+          pledgeFrequency: pledgeFrequency as PledgeFrequencyEnum,
+          statusValid: true,
+        }
+      : { id, statusValid: true };
+    await updateInvalidStatus({
+      variables: {
+        accountListId,
+        attributes,
+      },
+    });
+    enqueueSnackbar(t('Contact commitment info updated!'), {
+      variant: 'success',
+    });
+    hideContact(id);
+  };
 
   const hideContact = (hideId: string): void => {
     const query = {
@@ -96,7 +137,7 @@ const FixCommitmentInfo: React.FC<Props> = ({ accountListId }: Props) => {
   return (
     <>
       <Box className={classes.outer} data-testid="Home">
-        {!loading && data ? (
+        {!loading && !updating && data ? (
           <Grid container className={classes.container}>
             <Grid item xs={12}>
               <Typography variant="h4">{t('Fix Commitment Info')}</Typography>
@@ -145,6 +186,7 @@ const FixCommitmentInfo: React.FC<Props> = ({ accountListId }: Props) => {
                         }
                         frequencyValue={contact.pledgeFrequency || ''}
                         hideFunction={hideContact}
+                        updateFunction={updateContact}
                       />
                     ))}
                   </Box>
