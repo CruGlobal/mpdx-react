@@ -1,6 +1,7 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import { ThemeProvider } from '@material-ui/core';
+import { SnackbarProvider } from 'notistack';
 import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
 import TestRouter from '../../../../__tests__/util/TestRouter';
 import theme from '../../../../src/theme';
@@ -28,13 +29,15 @@ const testAppeal = {
 describe('AppealsTest', () => {
   it('show titles', () => {
     const { getByText } = render(
-      <ThemeProvider theme={theme}>
-        <TestRouter router={router}>
-          <GqlMockedProvider>
-            <Appeals accountListId={accountListId} />
-          </GqlMockedProvider>
-        </TestRouter>
-      </ThemeProvider>,
+      <SnackbarProvider>
+        <ThemeProvider theme={theme}>
+          <TestRouter router={router}>
+            <GqlMockedProvider>
+              <Appeals accountListId={accountListId} />
+            </GqlMockedProvider>
+          </TestRouter>
+        </ThemeProvider>
+      </SnackbarProvider>,
     );
     expect(getByText('Primary Appeal')).toBeInTheDocument();
     expect(getByText('Appeals')).toBeInTheDocument();
@@ -42,21 +45,23 @@ describe('AppealsTest', () => {
 
   it('should render an appeal', async () => {
     const { getByText, getByTestId } = render(
-      <ThemeProvider theme={theme}>
-        <TestRouter router={router}>
-          <GqlMockedProvider<GetAppealsQuery>
-            mocks={{
-              GetAppeals: {
-                appeals: {
-                  nodes: [testAppeal],
+      <SnackbarProvider>
+        <ThemeProvider theme={theme}>
+          <TestRouter router={router}>
+            <GqlMockedProvider<GetAppealsQuery>
+              mocks={{
+                GetAppeals: {
+                  appeals: {
+                    nodes: [testAppeal],
+                  },
                 },
-              },
-            }}
-          >
-            <Appeals accountListId={accountListId} />
-          </GqlMockedProvider>
-        </TestRouter>
-      </ThemeProvider>,
+              }}
+            >
+              <Appeals accountListId={accountListId} />
+            </GqlMockedProvider>
+          </TestRouter>
+        </ThemeProvider>
+      </SnackbarProvider>,
     );
     await waitFor(() =>
       expect(getByText('Primary Appeal')).toBeInTheDocument(),
