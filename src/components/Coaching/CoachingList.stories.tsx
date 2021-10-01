@@ -11,7 +11,7 @@ export default {
   title: 'Coaching/CoachingList',
 };
 
-export const Defaulst = (): ReactElement => {
+export const Default = (): ReactElement => {
   return (
     <GqlMockedProvider<LoadCoachingListQuery>
       mocks={{
