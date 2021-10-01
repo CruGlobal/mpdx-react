@@ -85,7 +85,7 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const ContactLink = styled(Typography)(({ theme }) => ({
+const ContactLink = styled(Typography)(() => ({
   color: theme.palette.mpdxBlue.main,
   '&:hover': {
     textDecoration: 'underline',
