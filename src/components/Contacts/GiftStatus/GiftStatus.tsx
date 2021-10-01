@@ -1,9 +1,10 @@
 import React from 'react';
+import { useTheme } from '@material-ui/core';
+import type { Theme } from '@material-ui/core/styles/createMuiTheme';
 import ErrorIcon from '@material-ui/icons/Error';
-import Circle from '@material-ui/icons/FiberManualRecord';
+import CircleIcon from '@material-ui/icons/FiberManualRecord';
 import { useTranslation } from 'react-i18next';
 import { DateTime } from 'luxon';
-import theme from '../../../theme';
 
 interface GiftStatusProps {
   lateAt?: string;
@@ -26,6 +27,7 @@ const giftIsLateStatus = (giftDate?: string): GiftStatusEnum => {
 };
 
 export const GiftStatus: React.FC<GiftStatusProps> = ({ lateAt }) => {
+  const theme = useTheme<Theme>();
   const { t } = useTranslation();
 
   switch (giftIsLateStatus(lateAt)) {
@@ -33,16 +35,13 @@ export const GiftStatus: React.FC<GiftStatusProps> = ({ lateAt }) => {
       return null;
     case GiftStatusEnum.OnTime:
       return (
-        <span title={t('On Time')}>
-          <Circle style={{ color: '#00CA99' }} />
-        </span>
+        <CircleIcon
+          style={{ color: theme.palette.mpdxGreen.main }}
+          titleAccess={t('On Time')}
+        />
       );
     case GiftStatusEnum.Late:
-      return (
-        <span title={t('Late')}>
-          <ErrorIcon style={{ color: theme.palette.error.main }} />
-        </span>
-      );
+      return <ErrorIcon color="error" titleAccess={t('Late')} />;
   }
 };
 
