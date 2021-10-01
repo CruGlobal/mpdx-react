@@ -1,6 +1,8 @@
+import { ThemeProvider } from '@material-ui/styles';
 import React from 'react';
 import { render } from '../../../../__tests__/util/testingLibraryReactMock';
 import TestWrapper from '../../../../__tests__/util/TestWrapper';
+import theme from '../../../theme';
 import Contact from './Contact';
 
 const testData = {
@@ -19,21 +21,23 @@ describe('FixCommitmentContact', () => {
     const hideFunction = jest.fn();
     const updateFunction = jest.fn();
     const { getByText } = render(
-      <TestWrapper>
-        <Contact
-          id={testData.id}
-          name={testData.name}
-          key={testData.name}
-          statusTitle={testData.statusTitle}
-          statusValue={testData.statusValue}
-          amount={testData.amount}
-          amountCurrency={testData.amountCurrency}
-          frequencyTitle={testData.frequencyTitle}
-          frequencyValue={testData.frequencyValue}
-          hideFunction={hideFunction}
-          updateFunction={updateFunction}
-        />
-      </TestWrapper>,
+      <ThemeProvider theme={theme}>
+        <TestWrapper>
+          <Contact
+            id={testData.id}
+            name={testData.name}
+            key={testData.name}
+            statusTitle={testData.statusTitle}
+            statusValue={testData.statusValue}
+            amount={testData.amount}
+            amountCurrency={testData.amountCurrency}
+            frequencyTitle={testData.frequencyTitle}
+            frequencyValue={testData.frequencyValue}
+            hideFunction={hideFunction}
+            updateFunction={updateFunction}
+          />
+        </TestWrapper>
+      </ThemeProvider>,
     );
     expect(getByText(testData.name)).toBeInTheDocument();
     expect(getByText(testData.statusTitle)).toBeInTheDocument();
