@@ -96,8 +96,8 @@ const ContactLink = styled(Typography)(({ theme }) => ({
 interface Props {
   id: string;
   name: string;
-  tagTitle: string;
-  tagValue: string;
+  statusTitle: string;
+  statusValue: string;
   amount: number;
   amountCurrency: string;
   frequencyTitle: string;
@@ -108,8 +108,8 @@ interface Props {
 const Contact: React.FC<Props> = ({
   id,
   name,
-  tagTitle,
-  tagValue,
+  statusTitle,
+  statusValue,
   amount,
   amountCurrency,
   frequencyTitle,
@@ -117,7 +117,7 @@ const Contact: React.FC<Props> = ({
   hideFunction,
 }) => {
   const [values, setValues] = useState({
-    tagValue: tagValue,
+    statusValue: statusValue,
     amountCurrency: amountCurrency,
     amount: amount,
     frequencyValue: frequencyValue,
@@ -161,7 +161,7 @@ const Contact: React.FC<Props> = ({
               </NextLink>
               <Typography>
                 Current:{' '}
-                {`${tagTitle} ${amount.toFixed(
+                {`${statusTitle} ${amount.toFixed(
                   2,
                 )} ${amountCurrency} ${frequencyTitle}`}
               </Typography>
@@ -175,8 +175,8 @@ const Contact: React.FC<Props> = ({
                 <NativeSelect
                   input={<StyledInput />}
                   style={{ width: '100%' }}
-                  value={values.tagValue}
-                  onChange={(event) => handleChange(event, 'tagValue')}
+                  value={values.statusValue}
+                  onChange={(event) => handleChange(event, 'statusValue')}
                 >
                   {Object.entries(contactTags).map(
                     ([statusValue, statusTranslated]) => (

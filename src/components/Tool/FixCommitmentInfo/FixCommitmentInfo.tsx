@@ -132,10 +132,10 @@ const FixCommitmentInfo: React.FC<Props> = ({ accountListId }: Props) => {
                         id={contact.id}
                         name={contact.name}
                         key={contact.name}
-                        tagTitle={
+                        statusTitle={
                           contact.status ? contactTags[contact.status] : ''
                         }
-                        tagValue={contact.status || ''}
+                        statusValue={contact.status || ''}
                         amount={contact.pledgeAmount || 0}
                         amountCurrency={contact.pledgeCurrency || ''}
                         frequencyTitle={
