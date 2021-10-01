@@ -9531,14 +9531,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chromatic@https://github.com/chromaui/chromatic-cli.git#tech/bundling":
-  version: 6.0.0-canary.9
-  resolution: "chromatic@https://github.com/chromaui/chromatic-cli.git#commit=193fcb0b98cd026472b333345b94057b4fa5e0f1"
+"chromatic@npm:^6.0.0":
+  version: 6.0.0
+  resolution: "chromatic@npm:6.0.0"
   bin:
     chroma: bin/main.cjs
     chromatic: bin/main.cjs
     chromatic-cli: bin/main.cjs
-  checksum: 21d820787b909d375023f933cb530550775a493a3980ad4f8d3dea2cd0e32bb3bbba0c2caefd07b2e400157f598766eb4dbc8afe24a85182c2ced7079bbce83c
+  checksum: 2edf0b4f0d5b5e859da73dfda8077d2f355ed86150d34825eac22fd081187c0f87735e1f5ecbed03cfdbb611242312e9db47897d9df32b19f100360c3f9c1057
   languageName: node
   linkType: hard
 
@@ -17938,7 +17938,7 @@ fsevents@~2.3.1:
     axios: ^0.21.1
     babel-loader: ^8.2.2
     babel-preset-react-app: ^10.0.0
-    chromatic: "https://github.com/chromaui/chromatic-cli.git#tech/bundling"
+    chromatic: ^6.0.0
     clsx: ^1.1.1
     core-js: ^3.8.3
     cross-env: ^7.0.3

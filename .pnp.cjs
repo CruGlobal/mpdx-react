@@ -96,7 +96,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["axios", "npm:0.21.1"],
             ["babel-loader", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:8.2.2"],
             ["babel-preset-react-app", "npm:10.0.0"],
-            ["chromatic", "https://github.com/chromaui/chromatic-cli.git#commit=193fcb0b98cd026472b333345b94057b4fa5e0f1"],
+            ["chromatic", "npm:6.0.0"],
             ["clsx", "npm:1.1.1"],
             ["core-js", "npm:3.8.3"],
             ["cross-env", "npm:7.0.3"],
@@ -14819,10 +14819,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]
       ]],
       ["chromatic", [
-        ["https://github.com/chromaui/chromatic-cli.git#commit=193fcb0b98cd026472b333345b94057b4fa5e0f1", {
-          "packageLocation": "./.yarn/cache/chromatic-https-05f68a4170-21d820787b.zip/node_modules/chromatic/",
+        ["npm:6.0.0", {
+          "packageLocation": "./.yarn/cache/chromatic-npm-6.0.0-a6ab03ca7a-2edf0b4f0d.zip/node_modules/chromatic/",
           "packageDependencies": [
-            ["chromatic", "https://github.com/chromaui/chromatic-cli.git#commit=193fcb0b98cd026472b333345b94057b4fa5e0f1"]
+            ["chromatic", "npm:6.0.0"]
           ],
           "linkType": "HARD",
         }]
@@ -24554,7 +24554,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["axios", "npm:0.21.1"],
             ["babel-loader", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:8.2.2"],
             ["babel-preset-react-app", "npm:10.0.0"],
-            ["chromatic", "https://github.com/chromaui/chromatic-cli.git#commit=193fcb0b98cd026472b333345b94057b4fa5e0f1"],
+            ["chromatic", "npm:6.0.0"],
             ["clsx", "npm:1.1.1"],
             ["core-js", "npm:3.8.3"],
             ["cross-env", "npm:7.0.3"],
