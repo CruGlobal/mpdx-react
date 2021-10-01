@@ -71,27 +71,30 @@ const FixCommitmentInfo: React.FC<Props> = ({ accountListId }: Props) => {
             <Grid item xs={12}>
               <Typography variant="h4">{t('Fix Commitment Info')}</Typography>
               <Divider className={classes.divider} />
-              <Box className={classes.descriptionBox}>
-                <Typography>
-                  <strong>
-                    {t('You have {{amount}} partner statuses to confirm.', {
-                      amount: data?.contacts.nodes.length,
-                    })}
-                  </strong>
-                </Typography>
-                <Typography>
-                  {t(
-                    'MPDX has assigned partnership statuses and giving frequencies ' +
-                      'based on your partner’s giving history. MPDX has made its best ' +
-                      'attempt at matching the appropriate statuses for you. However, ' +
-                      'you will need to confirm them to be sure MPDX’s matching was ' +
-                      'accurate.',
-                  )}
-                </Typography>
-              </Box>
             </Grid>
             {data.contacts?.nodes.length > 0 ? (
               <>
+                <Grid item xs={12}>
+                  <Box className={classes.descriptionBox}>
+                    <Typography>
+                      <strong>
+                        {t('You have {{amount}} partner statuses to confirm.', {
+                          amount: data?.contacts.nodes.length,
+                        })}
+                      </strong>
+                    </Typography>
+                    <Typography>
+                      {t(
+                        'MPDX has assigned partnership statuses and giving frequencies ' +
+                          'based on your partner’s giving history. MPDX has made its best ' +
+                          'attempt at matching the appropriate statuses for you. However, ' +
+                          'you will need to confirm them to be sure MPDX’s matching was ' +
+                          'accurate.',
+                      )}
+                    </Typography>
+                  </Box>
+                </Grid>
+
                 <Grid item xs={12}>
                   <Box>
                     {data.contacts.nodes.map((contact) => (
