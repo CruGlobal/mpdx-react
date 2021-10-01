@@ -7,9 +7,14 @@ import {
   styled,
 } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
-import { useGetAppealsQuery } from '../../../../pages/accountLists/[accountListId]/tools/GetAppeals.generated';
+import { useSnackbar } from 'notistack';
+import {
+  GetAppealsDocument,
+  useGetAppealsQuery,
+} from '../../../../pages/accountLists/[accountListId]/tools/GetAppeals.generated';
 import Appeal from '../../../../src/components/Tool/Appeal/Appeal';
 import NoAppeals from '../../../../src/components/Tool/Appeal/NoAppeals';
+import { useChangePrimaryAppealMutation } from './ChangePrimaryAppeal.generated';
 
 const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
   margin: theme.spacing(0, 1, 0, 0),
@@ -21,9 +26,38 @@ interface Props {
 
 const Appeals: React.FC<Props> = ({ accountListId }: Props) => {
   const { t } = useTranslation();
+  const { enqueueSnackbar } = useSnackbar();
+  const [
+    changePrimaryAppeal,
+    { loading: updating },
+  ] = useChangePrimaryAppealMutation();
   const { data, loading } = useGetAppealsQuery({
     variables: { accountListId },
   });
+
+  const changePrimary = async (newPrimaryId: string): Promise<void> => {
+    await changePrimaryAppeal({
+      variables: {
+        accountListId,
+        attributes1: {
+          id: newPrimaryId,
+          primary: true,
+        },
+        attributes2: {
+          id: data?.primaryAppeal.nodes[0].id || '',
+          primary: false,
+        },
+      },
+      refetchQueries: [
+        { query: GetAppealsDocument, variables: { accountListId } },
+      ],
+    });
+    console.log(`New Primary ID: ${newPrimaryId}`);
+    console.log(data?.primaryAppeal.nodes[0].id);
+    enqueueSnackbar(t('Primary Appeal Updated'), {
+      variant: 'success',
+    });
+  };
 
   return (
     <Box mb={1}>
@@ -31,7 +65,7 @@ const Appeals: React.FC<Props> = ({ accountListId }: Props) => {
         <Typography variant="h6">{t('Primary Appeal')}</Typography>
       </Box>
       <Divider />
-      {loading ? (
+      {loading || updating ? (
         <Box display="flex" justifyContent="center" mt={10}>
           <LoadingIndicator color="primary" size={40} />
         </Box>
@@ -59,7 +93,7 @@ const Appeals: React.FC<Props> = ({ accountListId }: Props) => {
         <Typography variant="h6">{t('Appeals')}</Typography>
       </Box>
       <Divider />
-      {loading ? (
+      {loading || updating ? (
         <Box display="flex" justifyContent="center" mt={10}>
           <LoadingIndicator color="primary" size={40} />
         </Box>
@@ -77,6 +111,7 @@ const Appeals: React.FC<Props> = ({ accountListId }: Props) => {
                 received={appeal.pledgesAmountReceivedNotProcessed}
                 commited={appeal.pledgesAmountNotReceivedNotProcessed}
                 total={appeal.pledgesAmountTotal}
+                changePrimary={changePrimary}
               />
             </Box>
           ))}
