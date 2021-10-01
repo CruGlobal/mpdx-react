@@ -106,6 +106,7 @@ const Appeal = ({
               ) : (
                 <StarOutlineIcon
                   className={classes.starPrimary}
+                  data-testid={`setPrimary-${id}`}
                   onClick={() => changePrimary(id)}
                 />
               )}

@@ -2,6 +2,7 @@ import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import { ThemeProvider } from '@material-ui/core';
 import { SnackbarProvider } from 'notistack';
+import userEvent from '@testing-library/user-event';
 import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
 import TestRouter from '../../../../__tests__/util/TestRouter';
 import theme from '../../../../src/theme';
@@ -19,12 +20,26 @@ const testAppeal = {
   id: '1',
   name: 'Test Appeal',
   amount: 200,
+  primary: false,
   amountCurrency: 'CAD',
   pledgesAmountNotReceivedNotProcessed: 5,
   pledgesAmountReceivedNotProcessed: 15,
   pledgesAmountProcessed: 25,
   pledgesAmountTotal: 55,
 };
+
+const mockEnqueue = jest.fn();
+
+jest.mock('notistack', () => ({
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  ...jest.requireActual('notistack'),
+  useSnackbar: () => {
+    return {
+      enqueueSnackbar: mockEnqueue,
+    };
+  },
+}));
 
 describe('AppealsTest', () => {
   it('show titles', () => {
@@ -72,5 +87,32 @@ describe('AppealsTest', () => {
         'Showing 2 of 2',
       ),
     );
+  });
+
+  it('should set appeal to primary', async () => {
+    const { getByTestId } = render(
+      <SnackbarProvider>
+        <ThemeProvider theme={theme}>
+          <TestRouter router={router}>
+            <GqlMockedProvider<GetAppealsQuery>
+              mocks={{
+                GetAppeals: {
+                  appeals: {
+                    nodes: [testAppeal],
+                  },
+                },
+              }}
+            >
+              <Appeals accountListId={accountListId} />
+            </GqlMockedProvider>
+          </TestRouter>
+        </ThemeProvider>
+      </SnackbarProvider>,
+    );
+    const setPrimaryButton = await waitFor(() => getByTestId('setPrimary-1'));
+    expect(setPrimaryButton).toBeInTheDocument();
+    userEvent.click(setPrimaryButton);
+    await waitFor(() => expect(setPrimaryButton).not.toBeInTheDocument());
+    expect(mockEnqueue).toBeCalled();
   });
 });
