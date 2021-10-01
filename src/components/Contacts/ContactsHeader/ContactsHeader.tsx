@@ -7,11 +7,15 @@ import {
   Hidden,
   Theme,
 } from '@material-ui/core';
-import { FilterList, FormatListBulleted, ViewColumn } from '@material-ui/icons';
-import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
+import { FilterList } from '@material-ui/icons';
 import { useTranslation } from 'react-i18next';
 import { StarredItemIcon } from '../../common/StarredItemIcon/StarredItemIcon';
 import { SearchBox } from '../../common/SearchBox/SearchBox';
+import { ActionsDropDown } from './ActionsDropdown/ActionsDropdown';
+import {
+  ViewModeToggle,
+  ContactsTableViewMode,
+} from './ViewModeToggle/ViewModeToggle';
 
 export enum ContactCheckBoxState {
   'unchecked',
@@ -23,17 +27,16 @@ interface Props {
   activeFilters: boolean;
   contactCheckboxState: ContactCheckBoxState;
   filterPanelOpen: boolean;
+  isContactDetailOpen: boolean;
   toggleFilterPanel: () => void;
   onCheckAllContacts: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  onSearchTermChanged: (searchTerm: string) => void;
+  onSearchTermChanged: (event: React.ChangeEvent<HTMLInputElement>) => void;
   totalContacts?: number;
 }
 
-type ContactsTableViewMode = 'list' | 'columns';
-
 const HeaderWrap = styled(Box)(({ theme }) => ({
   height: 96,
-  padding: theme.spacing(2),
+  padding: theme.spacing(2, 0),
   display: 'flex',
   flexDirection: 'row',
   justifyContent: 'space-evenly',
@@ -41,6 +44,7 @@ const HeaderWrap = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.common.white,
   borderBottom: `1px solid ${theme.palette.grey[200]}`,
 }));
+
 const FilterButton = styled(
   ({ activeFilters: _activeFilters, panelOpen: _panelOpen, ...props }) => (
     <IconButton {...props} />
@@ -72,34 +76,25 @@ const FilterIcon = styled(FilterList)(({ theme }) => ({
   height: 24,
   color: theme.palette.primary.dark,
 }));
+
+const CheckboxContact = styled(Checkbox)(({ theme }) => ({
+  '& .Mui-checked:checked': {
+    color: theme.palette.cruGrayDark.main,
+  },
+}));
+
 const ContactsShowingText = styled('p')(({ theme }) => ({
   flexGrow: 4,
   flexBasis: 0,
   margin: theme.spacing(1),
   color: theme.palette.text.secondary,
 }));
-const PlaceholderActionsDropdown = styled(Box)(({ theme }) => ({
-  display: 'inline-block',
-  width: 114,
-  height: 48,
-  margin: theme.spacing(1),
-  backgroundColor: 'red',
-}));
-const BulletedListIcon = styled(FormatListBulleted)(({ theme }) => ({
-  color: theme.palette.primary.dark,
-}));
-const ViewColumnIcon = styled(ViewColumn)(({ theme }) => ({
-  color: theme.palette.primary.dark,
-}));
-const StarIconWrap = styled(Box)(({ theme }) => ({
-  marginLeft: theme.spacing(4),
-  marginRight: theme.spacing(1),
-}));
 
 export const ContactsHeader: React.FC<Props> = ({
   activeFilters,
   contactCheckboxState,
   filterPanelOpen,
+  isContactDetailOpen,
   toggleFilterPanel,
   onCheckAllContacts,
   onSearchTermChanged,
@@ -111,6 +106,14 @@ export const ContactsHeader: React.FC<Props> = ({
     setContactsTableDisplayState,
   ] = useState<ContactsTableViewMode>('list');
 
+  const [action, setAction] = useState<string>('');
+
+  const handleActionChange = (
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
+    setAction(event.target.value);
+  };
+
   const handleViewModeChange = (
     event: React.MouseEvent<HTMLElement>,
     viewMode: ContactsTableViewMode | null,
@@ -119,18 +122,17 @@ export const ContactsHeader: React.FC<Props> = ({
       setContactsTableDisplayState(viewMode);
     }
   };
-
+  console.log('isContactDetailOpen', isContactDetailOpen);
   return (
     <HeaderWrap>
       <Hidden smDown>
-        <Checkbox
+        <CheckboxContact
           checked={contactCheckboxState === ContactCheckBoxState.checked}
-          color="default"
+          color="secondary"
           indeterminate={contactCheckboxState === ContactCheckBoxState.partial}
           onChange={onCheckAllContacts}
         />
       </Hidden>
-
       <FilterButton
         activeFilters={activeFilters}
         panelOpen={filterPanelOpen}
@@ -138,39 +140,26 @@ export const ContactsHeader: React.FC<Props> = ({
       >
         <FilterIcon titleAccess={t('Toggle Filter Panel')} />
       </FilterButton>
-
       <SearchBox
-        onChange={onSearchTermChanged}
+        onChange={(event) => onSearchTermChanged(event)}
         placeholder={t('Search List')}
       />
       <ContactsShowingText>
         {t('Showing {{count}}', { count: totalContacts })}
       </ContactsShowingText>
-
-      <Hidden smDown>
-        {/*TODO: Replace this with Actions Dropdown*/}
-        <PlaceholderActionsDropdown />
-      </Hidden>
-
-      <Hidden xsDown>
-        <ToggleButtonGroup
-          exclusive
-          value={contactsTableDisplayState}
+      <Hidden lgDown={isContactDetailOpen}>
+        <ActionsDropDown
+          disabled={!activeFilters}
+          onChange={handleActionChange}
+          value={action}
+        />
+        <ViewModeToggle
           onChange={handleViewModeChange}
-        >
-          <ToggleButton value="list">
-            <BulletedListIcon titleAccess={t('List View')} />
-          </ToggleButton>
-          <ToggleButton value="columns">
-            <ViewColumnIcon titleAccess={t('Column Workflow View')} />
-          </ToggleButton>
-        </ToggleButtonGroup>
-      </Hidden>
-
-      <Hidden smDown>
-        <StarIconWrap>
+          value={contactsTableDisplayState}
+        />
+        <Box display="flex" justifyContent="center" width={48} mx={1}>
           <StarredItemIcon isStarred={false} />
-        </StarIconWrap>
+        </Box>
       </Hidden>
     </HeaderWrap>
   );
