@@ -10,11 +10,16 @@ import {
 } from '@material-ui/core';
 import { Trans, useTranslation } from 'react-i18next';
 import theme from '../../../theme';
-import { useGetInvalidStatusesQuery } from './GetInvalidStatuses.generated';
+import {
+  GetInvalidStatusesDocument,
+  GetInvalidStatusesQuery,
+  useGetInvalidStatusesQuery,
+} from './GetInvalidStatuses.generated';
 import Contact from './Contact';
 import NoContacts from './NoContacts';
 import { contactTags } from './InputOptions/ContactTags';
 import { frequencies } from './InputOptions/Frequencies';
+import client from 'src/lib/client';
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
@@ -62,6 +67,31 @@ const FixCommitmentInfo: React.FC<Props> = ({ accountListId }: Props) => {
   });
 
   //TODO: Make currency field a select element
+
+  const hideContact = (hideId: string): void => {
+    const query = {
+      query: GetInvalidStatusesDocument,
+      variables: {
+        accountListId,
+      },
+    };
+
+    const dataFromCache = client.readQuery<GetInvalidStatusesQuery>(query);
+
+    if (dataFromCache) {
+      const data = {
+        ...dataFromCache,
+        contacts: {
+          ...dataFromCache.contacts,
+          nodes: dataFromCache.contacts.nodes.filter(
+            (contact) => contact.id !== hideId,
+          ),
+        },
+      };
+
+      client.writeQuery({ ...query, data });
+    }
+  };
 
   return (
     <>
@@ -114,6 +144,7 @@ const FixCommitmentInfo: React.FC<Props> = ({ accountListId }: Props) => {
                             : ''
                         }
                         frequencyValue={contact.pledgeFrequency || ''}
+                        hideFunction={hideContact}
                       />
                     ))}
                   </Box>

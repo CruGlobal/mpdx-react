@@ -82,7 +82,7 @@ const useStyles = makeStyles(() => ({
 }));
 
 interface Props {
-  id?: string;
+  id: string;
   name: string;
   tagTitle: string;
   tagValue: string;
@@ -90,9 +90,11 @@ interface Props {
   amountCurrency: string;
   frequencyTitle: string;
   frequencyValue: string;
+  hideFunction: (hideId: string) => void;
 }
 
 const Contact: React.FC<Props> = ({
+  id,
   name,
   tagTitle,
   tagValue,
@@ -100,6 +102,7 @@ const Contact: React.FC<Props> = ({
   amountCurrency,
   frequencyTitle,
   frequencyValue,
+  hideFunction,
 }) => {
   const [values, setValues] = useState({
     tagValue: tagValue,
@@ -234,7 +237,7 @@ const Contact: React.FC<Props> = ({
               <IconButton>
                 <SearchIcon />
               </IconButton>
-              <IconButton>
+              <IconButton onClick={() => hideFunction(id)}>
                 <VisibilityOffIcon />
               </IconButton>
             </Box>
