@@ -9,14 +9,18 @@ import {
   IconButton,
   makeStyles,
   NativeSelect,
+  styled,
 } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import SearchIcon from '@material-ui/icons/Search';
 import VisibilityOffIcon from '@material-ui/icons/VisibilityOff';
+import { useRouter } from 'next/router';
+import NextLink from 'next/link';
 import theme from '../../../theme';
 import { StyledInput } from './StyledInput';
 import { contactTags } from './InputOptions/ContactTags';
 import { frequencies } from './InputOptions/Frequencies';
+import { useAccountListId } from 'src/hooks/useAccountListId';
 
 const useStyles = makeStyles(() => ({
   right: {
@@ -81,6 +85,14 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
+const ContactLink = styled(Typography)(({ theme }) => ({
+  color: theme.palette.mpdxBlue.main,
+  '&:hover': {
+    textDecoration: 'underline',
+    cursor: 'pointer',
+  },
+}));
+
 interface Props {
   id: string;
   name: string;
@@ -112,6 +124,8 @@ const Contact: React.FC<Props> = ({
   });
   const classes = useStyles();
   const { t } = useTranslation();
+  const accountListId = useAccountListId();
+  const { push } = useRouter();
   //TODO: Add button functionality
   //TODO: Show donation history
 
@@ -139,7 +153,12 @@ const Contact: React.FC<Props> = ({
               style={{ width: theme.spacing(7), height: theme.spacing(7) }}
             />
             <Box display="flex" flexDirection="column" ml={2}>
-              <Typography variant="h6">{name}</Typography>
+              <NextLink
+                href={`/accountLists/${accountListId}/contacts/${id}`}
+                scroll={false}
+              >
+                <ContactLink variant="h6">{name}</ContactLink>
+              </NextLink>
               <Typography>
                 Current:{' '}
                 {`${tagTitle} ${amount.toFixed(
@@ -235,7 +254,14 @@ const Contact: React.FC<Props> = ({
             </Box>
             <Box>
               <IconButton>
-                <SearchIcon />
+                <SearchIcon
+                  onClick={() =>
+                    push({
+                      pathname: `/accountLists/[accountListId]/contacts/[contactId]`,
+                      query: { accountListId, contactId: id },
+                    })
+                  }
+                />
               </IconButton>
               <IconButton onClick={() => hideFunction(id)}>
                 <VisibilityOffIcon />
