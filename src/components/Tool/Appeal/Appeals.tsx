@@ -85,6 +85,7 @@ const Appeals: React.FC<Props> = ({ accountListId }: Props) => {
             0
           }
           total={data.primaryAppeal.nodes[0].pledgesAmountTotal || 0}
+          changePrimary={changePrimary}
         />
       ) : (
         <NoAppeals primary />

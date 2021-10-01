@@ -18,7 +18,7 @@ export interface Props {
   received: number;
   commited: number;
   total: number;
-  changePrimary?: (newPrimaryId: string) => Promise<void>;
+  changePrimary: (newPrimaryId: string) => Promise<void>;
 }
 
 const useStyles = makeStyles(() => ({
