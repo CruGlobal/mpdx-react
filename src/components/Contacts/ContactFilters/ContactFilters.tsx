@@ -78,7 +78,7 @@ export const ContactFilters: React.FC<Props & BoxProps> = ({
     variables: { accountListId },
   });
 
-  const [selectedGroup, showGroup] = useState<FilterGroup>();
+  const [selectedGroup, setSelectedGroup] = useState<FilterGroup>();
   const [selectedFilters, setSelectedFilters] = useState<ContactFilterSetInput>(
     {},
   );
@@ -105,14 +105,29 @@ export const ContactFilters: React.FC<Props & BoxProps> = ({
     }
   };
 
+  const clearSelectedFilter = () => {
+    setSelectedFilters({});
+    onSelectedFiltersChanged({});
+  };
+
   const getSelectedFilters = (group: FilterGroup) =>
     group.filters.filter((value) => {
       const key = snakeToCamel(value.filterKey) as ContactFilterKey;
 
-      selectedFilters[key];
+      return selectedFilters[key];
     });
+
+  const getOptionsSelected = (group: FilterGroup) =>
+    getSelectedFilters(group).flatMap(
+      (f) => selectedFilters[snakeToCamel(f.filterKey) as ContactFilterKey],
+    );
+
+  const getFeaturedFilters = (group: FilterGroup) =>
+    group.filters.filter((value) => value.featured);
+
   const isGroupVisible = (group: FilterGroup) =>
-    getSelectedFilters(group).length > 0;
+    getSelectedFilters(group).length > 0 ||
+    getFeaturedFilters(group).length > 0;
 
   return (
     <Box {...boxProps}>
@@ -150,7 +165,7 @@ export const ContactFilters: React.FC<Props & BoxProps> = ({
                 color="primary"
                 style={{ marginInlineStart: theme.spacing(2) }}
                 disabled={Object.keys(selectedFilters).length === 0}
-                onClick={() => setSelectedFilters({})}
+                onClick={clearSelectedFilter}
               >
                 {t('Clear All')}
               </LinkButton>
@@ -180,21 +195,31 @@ export const ContactFilters: React.FC<Props & BoxProps> = ({
                 </ListItem>
               ) : (
                 <>
-                  {data?.accountList.contactFilterGroups.map((group) => (
-                    <Collapse
-                      key={group.name}
-                      in={showAll || isGroupVisible(group)}
-                      data-testid="FilterGroup"
-                    >
-                      <ListItem button onClick={() => showGroup(group)}>
-                        <ListItemText
-                          primary={group.name}
-                          primaryTypographyProps={{ variant: 'subtitle1' }}
-                        />
-                        <ArrowForwardIos fontSize="small" color="disabled" />
-                      </ListItem>
-                    </Collapse>
-                  ))}
+                  {data?.accountList.contactFilterGroups.map((group) => {
+                    const selectedOptions = getOptionsSelected(group);
+                    return (
+                      <Collapse
+                        key={group.name}
+                        in={showAll || isGroupVisible(group)}
+                        data-testid="FilterGroup"
+                      >
+                        <ListItem
+                          button
+                          onClick={() => setSelectedGroup(group)}
+                        >
+                          <ListItemText
+                            primary={`${group.name} ${
+                              selectedOptions.length > 0
+                                ? `(${selectedOptions.length})`
+                                : ''
+                            }`}
+                            primaryTypographyProps={{ variant: 'subtitle1' }}
+                          />
+                          <ArrowForwardIos fontSize="small" color="disabled" />
+                        </ListItem>
+                      </Collapse>
+                    );
+                  })}
                   {data?.accountList.contactFilterGroups.some(
                     (g) => !isGroupVisible(g),
                   ) ? (
@@ -214,7 +239,7 @@ export const ContactFilters: React.FC<Props & BoxProps> = ({
               <IconButton
                 size="small"
                 edge="start"
-                onClick={() => showGroup(undefined)}
+                onClick={() => setSelectedGroup(undefined)}
                 style={{ verticalAlign: 'middle' }}
               >
                 <ArrowBackIos fontSize="small" />

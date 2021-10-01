@@ -14,15 +14,15 @@ const mockDateRangeFilter: DaterangeFilter = {
 };
 const mockMultiselectFilter: MultiselectFilter = {
   __typename: 'MultiselectFilter',
-  featured: false,
-  filterKey: 'daterange',
-  title: 'Date Range',
+  featured: true,
+  filterKey: 'multiselect',
+  title: 'MultiSelect',
 };
 const mockCheckboxFilter: CheckboxFilter = {
   __typename: 'CheckboxFilter',
   featured: false,
-  filterKey: 'daterange',
-  title: 'Date Range',
+  filterKey: 'checkbox',
+  title: 'Checkbox',
 };
 
 export const ContactFiltersDefaultMock = {

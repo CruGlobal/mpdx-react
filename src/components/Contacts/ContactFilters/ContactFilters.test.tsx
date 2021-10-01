@@ -32,6 +32,12 @@ describe('ContactFilters', () => {
     expect(queryAllByTestId('FilterGroup').length).toEqual(2);
     expect(getByTestId('FilterListItemShowAll')).toBeVisible();
 
+    expect(
+      getByText(
+        ContactFiltersDefaultMock.accountList.contactFilterGroups[1].name,
+      ),
+    ).toBeVisible();
+
     expect(getByText('See More Filters')).toBeVisible();
 
     userEvent.click(getByTestId('FilterListItemShowAll'));
@@ -42,6 +48,24 @@ describe('ContactFilters', () => {
         ContactFiltersDefaultMock.accountList.contactFilterGroups[0].name,
       ),
     ).toBeVisible();
+    expect(
+      getByText(
+        ContactFiltersDefaultMock.accountList.contactFilterGroups[1].name,
+      ),
+    ).toBeVisible();
+
+    userEvent.click(getByTestId('FilterListItemShowAll'));
+
+    expect(getByText('See More Filters')).toBeVisible();
+
+    await waitFor(() =>
+      expect(
+        getByText(
+          ContactFiltersDefaultMock.accountList.contactFilterGroups[0].name,
+        ),
+      ).not.toBeVisible(),
+    );
+
     expect(
       getByText(
         ContactFiltersDefaultMock.accountList.contactFilterGroups[1].name,
