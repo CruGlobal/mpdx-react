@@ -1,54 +1,57 @@
-import React from 'react';
+import React, { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
-import { makeStyles, Theme } from '@material-ui/core/styles';
+import { InputAdornment, TextField, styled } from '@material-ui/core';
 import { DebounceInput } from 'react-debounce-input';
+import Icon from '@mdi/react';
+import { mdiAccountSearch } from '@mdi/js';
 
 export interface SearchBoxProps {
-  onChange: (searchTerm: string) => void;
+  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   placeholder?: string;
 }
 
-const useStyle = makeStyles((theme: Theme) => ({
-  searchWrapper: {
-    backgroundColor: theme.palette.common.white,
-    color: theme.palette.text.secondary,
-    borderWidth: '2px',
-    borderColor: theme.palette.cruGrayLight.main,
-    borderStyle: 'solid',
-    borderRadius: '5px',
-    padding: '10px 16px',
-    overflow: 'hidden',
-  },
-  input: {
-    backgroundColor: 'transparent',
-    lineHeight: '24px',
-    padding: '0',
-    marginLeft: '16px',
-    fontSize: '16px',
-    width: 'auto',
-    height: 'auto',
-    minWidth: '176px',
-    '&::placeholder': {
-      color: theme.palette.text.secondary,
-      opacity: 1,
-    },
+export const AccountSearchIcon = styled(Icon)(({ theme }) => ({
+  color: theme.palette.text.secondary,
+}));
+
+export const AccountSearchBox = styled(TextField)(() => ({
+  '& .MuiInputBase-root': {
+    height: 48,
   },
 }));
 
-export const SearchBox: React.FC<SearchBoxProps> = ({
+const DebounceSearchBox = ({
   onChange,
-  placeholder,
-}) => {
+  ...other
+}: {
+  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void | undefined;
+}): ReactElement => {
   const { t } = useTranslation();
-  const classes = useStyle();
 
   return (
     <DebounceInput
-      className={classes.searchWrapper}
+      {...other}
       debounceTimeout={300}
-      placeholder={placeholder ?? t('Search')}
-      onChange={(event) => {
-        onChange(event.target.value);
+      placeholder={t('Search List')}
+      onChange={(event) => onChange(event)}
+    />
+  );
+};
+
+export const SearchBox: React.FC<SearchBoxProps> = ({ onChange }) => {
+  return (
+    <AccountSearchBox
+      onChange={onChange}
+      size="small"
+      variant="outlined"
+      InputProps={{
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        inputComponent: DebounceSearchBox as any,
+        startAdornment: (
+          <InputAdornment position="start">
+            <AccountSearchIcon path={mdiAccountSearch} size={1} />
+          </InputAdornment>
+        ),
       }}
     />
   );
