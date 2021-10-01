@@ -29,14 +29,17 @@ const AccountListIdPage = ({ data, accountListId }: Props): ReactElement => {
 export const getServerSideProps: GetServerSideProps = async ({
   params,
   req,
-  res,
 }) => {
   const session = await getSession({ req });
 
+  // If no token from session, redirect to login page
   if (!session?.user['token']) {
-    res.writeHead(302, { Location: '/' });
-    res.end();
-    return { props: {} };
+    return {
+      redirect: {
+        destination: '/login',
+        permanent: false,
+      },
+    };
   }
 
   const client = await ssrClient(session?.user['token']);

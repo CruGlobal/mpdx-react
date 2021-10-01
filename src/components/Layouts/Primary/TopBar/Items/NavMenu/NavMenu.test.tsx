@@ -265,4 +265,38 @@ describe('NavMenu', () => {
     );
     expect(getByTestId('fixCommitmentInfo-notifications')).toBeInTheDocument();
   });
+
+  it('test notifications > 10', async () => {
+    const { getByTestId } = render(
+      <ThemeProvider theme={theme}>
+        <TestRouter router={router}>
+          <GqlMockedProvider<GetToolNotificationsQuery>
+            mocks={{
+              GetToolNotifications: {
+                contacts: {
+                  totalCount: 3,
+                },
+                people: {
+                  totalCount: 3,
+                },
+                contactDuplicates: {
+                  totalCount: 3,
+                },
+                personDuplicates: {
+                  totalCount: 3,
+                },
+              },
+            }}
+          >
+            <NavMenu />
+          </GqlMockedProvider>
+        </TestRouter>
+      </ThemeProvider>,
+    );
+
+    await waitFor(() =>
+      expect(getByTestId('notificationTotal')).toBeInTheDocument(),
+    );
+    expect(getByTestId('notificationTotalText')).toHaveTextContent('9+');
+  });
 });
