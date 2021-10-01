@@ -52,8 +52,6 @@ const Appeals: React.FC<Props> = ({ accountListId }: Props) => {
         { query: GetAppealsDocument, variables: { accountListId } },
       ],
     });
-    console.log(`New Primary ID: ${newPrimaryId}`);
-    console.log(data?.primaryAppeal.nodes[0].id);
     enqueueSnackbar(t('Primary Appeal Updated'), {
       variant: 'success',
     });
