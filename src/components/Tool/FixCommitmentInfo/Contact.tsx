@@ -158,11 +158,7 @@ const Contact: React.FC<Props> = ({
                 >
                   {Object.entries(contactTags).map(
                     ([statusValue, statusTranslated]) => (
-                      <option
-                        value={statusValue}
-                        key={statusValue}
-                        selected={tagTitle === statusTranslated}
-                      >
+                      <option value={statusValue} key={statusValue}>
                         {statusTranslated}
                       </option>
                     ),
@@ -208,11 +204,7 @@ const Contact: React.FC<Props> = ({
                   </option>
                   {Object.entries(frequencies).map(
                     ([freqValue, freqTranslated]) => (
-                      <option
-                        value={freqValue}
-                        key={freqValue}
-                        selected={freqTranslated === frequencyTitle}
-                      >
+                      <option value={freqValue} key={freqValue}>
                         {freqTranslated}
                       </option>
                     ),
