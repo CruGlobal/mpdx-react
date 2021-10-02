@@ -98,7 +98,10 @@ const AddAppealForm = (): ReactElement => {
   const { t } = useTranslation();
   const accountListId = useAccountListId() || '';
   const { enqueueSnackbar } = useSnackbar();
-  const { data, loading } = useGetContactTagsQuery({
+  const {
+    data: contactFilterTags,
+    loading: loadingTags,
+  } = useGetContactTagsQuery({
     variables: { accountListId },
   });
   const {
@@ -110,14 +113,11 @@ const AddAppealForm = (): ReactElement => {
     },
   });
 
-  const contactStatuses = contactFilterGroups
-    ? (contactFilterGroups?.accountList?.contactFilterGroups?.filter(
+  const contactStatuses = contactFilterGroups?.accountList.contactFilterGroups
+    ? (contactFilterGroups.accountList.contactFilterGroups.filter(
         (group) => group.name === 'Status',
-      )[0].filters[0] as MultiselectFilter).options?.map((option) => ({
-        name: option.name,
-        value: option.value,
-      }))
-    : [];
+      )[0].filters[0] as MultiselectFilter).options
+    : [{ name: '', value: '' }];
 
   const [filterTags, setFilterTags] = useState<{
     statuses: { name: string; value: string }[] | undefined;
@@ -173,7 +173,7 @@ const AddAppealForm = (): ReactElement => {
     name: yup.string().required('Please enter a name'),
   });
 
-  const contactTagsList = data?.accountList.contactTagList ?? [];
+  const contactTagsList = contactFilterTags?.accountList.contactTagList ?? [];
 
   const selectAllStatuses = (): void => {
     setFilterTags((prevState) => ({
@@ -191,7 +191,7 @@ const AddAppealForm = (): ReactElement => {
     }));
   };
 
-  return loading || loadingStatuses ? (
+  return loadingStatuses || loadingTags ? (
     <CircularProgress />
   ) : (
     <Box m={1}>
@@ -361,19 +361,20 @@ const AddAppealForm = (): ReactElement => {
                     )}
                   </Typography>
                 </Box>
-                <Box mt={1} mb={1}>
-                  <Typography variant="h6" display="inline">
-                    {t('Add contacts with the following status(es):')}
-                  </Typography>
-                  <Typography
-                    variant="h6"
-                    display="inline"
-                    className={classes.selectAll}
-                    onClick={selectAllStatuses}
-                  >
-                    {t('select all')}
-                  </Typography>
-                  {contactStatuses && (
+                {contactStatuses && (
+                  <Box mt={1} mb={1}>
+                    <Typography variant="h6" display="inline">
+                      {t('Add contacts with the following status(es):')}
+                    </Typography>
+                    <Typography
+                      variant="h6"
+                      display="inline"
+                      className={classes.selectAll}
+                      onClick={selectAllStatuses}
+                    >
+                      {t('select all')}
+                    </Typography>
+
                     <Autocomplete
                       multiple
                       id="tags-standard"
@@ -397,8 +398,8 @@ const AddAppealForm = (): ReactElement => {
                         />
                       )}
                     />
-                  )}
-                </Box>
+                  </Box>
+                )}
                 {contactTagsList && contactTagsList.length > 0 && (
                   <Box mt={1} mb={1}>
                     <Typography variant="h6" display="inline">
