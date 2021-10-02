@@ -21,12 +21,13 @@ import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { useSnackbar } from 'notistack';
 import i18n from 'i18next';
+import { MultiselectFilter } from '../../../../graphql/types.generated';
 import theme from '../../../../src/theme';
 import AnimatedCard from '../../../../src/components/AnimatedCard';
 import { useAccountListId } from '../../../../src/hooks/useAccountListId';
-import { contactTags } from '../FixCommitmentInfo/InputOptions/ContactTags';
 import { useCreateAppealMutation } from './CreateAppeal.generated';
 import { useGetContactTagsQuery } from './GetContactTags.generated';
+import { useContactFiltersQuery } from 'src/components/Contacts/ContactFilters/ContactFilters.generated';
 
 const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
   margin: theme.spacing(0, 1, 0, 0),
@@ -71,23 +72,23 @@ interface formProps {
 
 const contactExclusions = [
   {
-    title: i18n.t('May have given a special gift in the last 3 months'),
+    name: i18n.t('May have given a special gift in the last 3 months'),
     value: 'SPECIAL_GIFT',
   },
   {
-    title: i18n.t('May have joined my team in the last 3 months'),
+    name: i18n.t('May have joined my team in the last 3 months'),
     value: 'JOINED_TEAM',
   },
   {
-    title: i18n.t('May have increased their giving in the last 3 months'),
+    name: i18n.t('May have increased their giving in the last 3 months'),
     value: 'INCREASED_GIVING',
   },
   {
-    title: i18n.t('May have missed a gift in the last 30-90 days'),
+    name: i18n.t('May have missed a gift in the last 30-90 days'),
     value: 'MISSED_GIFT',
   },
   {
-    title: i18n.t('Have "Send Appeals" set to No'),
+    name: i18n.t('Have "Send Appeals" set to No'),
     value: 'NO_APPEALS',
   },
 ];
@@ -100,10 +101,28 @@ const AddAppealForm = (): ReactElement => {
   const { data, loading } = useGetContactTagsQuery({
     variables: { accountListId },
   });
+  const {
+    data: contactFilterGroups,
+    loading: loadingStatuses,
+  } = useContactFiltersQuery({
+    variables: {
+      accountListId,
+    },
+  });
+
+  const contactStatuses = contactFilterGroups
+    ? (contactFilterGroups?.accountList?.contactFilterGroups?.filter(
+        (group) => group.name === 'Status',
+      )[0].filters[0] as MultiselectFilter).options?.map((option) => ({
+        name: option.name,
+        value: option.value,
+      }))
+    : [];
+
   const [filterTags, setFilterTags] = useState<{
-    statuses: { title: string; value: string }[];
+    statuses: { name: string; value: string }[] | undefined;
     tags: string[];
-    exclusions: { title: string; value: string }[];
+    exclusions: { name: string; value: string }[];
   }>({
     statuses: [],
     tags: [],
@@ -120,7 +139,7 @@ const AddAppealForm = (): ReactElement => {
   };
 
   const handleChange = (
-    values: { title: string; value: string }[] | string[],
+    values: { name: string; value: string }[] | string[],
     props: string,
   ): void => {
     setFilterTags((prevState) => ({
@@ -154,18 +173,13 @@ const AddAppealForm = (): ReactElement => {
     name: yup.string().required('Please enter a name'),
   });
 
-  const contactStatusesFormatted = Object.entries(
-    contactTags,
-  ).map(([tag, translatedTag]) => ({ value: tag, title: translatedTag }));
-
   const contactTagsList = data?.accountList.contactTagList ?? [];
 
   const selectAllStatuses = (): void => {
     setFilterTags((prevState) => ({
       ...prevState,
-      statuses: contactStatusesFormatted.slice(
-        0,
-        contactStatusesFormatted.length - 2,
+      statuses: contactStatuses?.filter(
+        (status) => status.value !== 'ACTIVE' && status.value !== 'HIDDEN',
       ),
     }));
   };
@@ -177,7 +191,7 @@ const AddAppealForm = (): ReactElement => {
     }));
   };
 
-  return loading ? (
+  return loading || loadingStatuses ? (
     <CircularProgress />
   ) : (
     <Box m={1}>
@@ -359,29 +373,31 @@ const AddAppealForm = (): ReactElement => {
                   >
                     {t('select all')}
                   </Typography>
-                  <Autocomplete
-                    multiple
-                    id="tags-standard"
-                    options={contactStatusesFormatted.filter(
-                      ({ value: id1 }) =>
-                        !filterTags.statuses.some(
-                          ({ value: id2 }) => id2 === id1,
-                        ),
-                    )}
-                    getOptionLabel={(option) => option.title}
-                    value={filterTags.statuses}
-                    onChange={(_event, values) =>
-                      handleChange(values, 'statuses')
-                    }
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        variant="outlined"
-                        size="small"
-                        placeholder={t('Select Some Options')}
-                      />
-                    )}
-                  />
+                  {contactStatuses && (
+                    <Autocomplete
+                      multiple
+                      id="tags-standard"
+                      options={contactStatuses.filter(
+                        ({ value: id1 }) =>
+                          !filterTags?.statuses?.some(
+                            ({ value: id2 }) => id2 === id1,
+                          ),
+                      )}
+                      getOptionLabel={(option) => option.name}
+                      value={filterTags.statuses}
+                      onChange={(_event, values) =>
+                        handleChange(values, 'statuses')
+                      }
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          variant="outlined"
+                          size="small"
+                          placeholder={t('Select Some Options')}
+                        />
+                      )}
+                    />
+                  )}
                 </Box>
                 {contactTagsList && contactTagsList.length > 0 && (
                   <Box mt={1} mb={1}>
@@ -432,7 +448,7 @@ const AddAppealForm = (): ReactElement => {
                           ({ value: id2 }) => id2 === id1,
                         ),
                     )}
-                    getOptionLabel={(option) => option.title}
+                    getOptionLabel={(option) => option.name}
                     value={filterTags.exclusions}
                     onChange={(_event, values) =>
                       handleChange(values, 'exclusions')
