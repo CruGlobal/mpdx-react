@@ -39,13 +39,9 @@ const Appeals: React.FC<Props> = ({ accountListId }: Props) => {
     await changePrimaryAppeal({
       variables: {
         accountListId,
-        attributes1: {
+        attributes: {
           id: newPrimaryId,
           primary: true,
-        },
-        attributes2: {
-          id: data?.primaryAppeal.nodes[0].id || '',
-          primary: false,
         },
       },
       refetchQueries: [
