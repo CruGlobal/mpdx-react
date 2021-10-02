@@ -96,7 +96,7 @@ const AppealsPage: React.FC = () => {
                 <Appeals accountListId={accountListId} />
               </Grid>
               <Grid item xs={12} sm={12} lg={6}>
-                <Box>
+                <Box width="100%" display="flex" justifyContent="center">
                   <AddAppealForm />
                 </Box>
               </Grid>
