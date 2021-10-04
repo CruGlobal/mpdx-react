@@ -80,7 +80,12 @@ export const ContactRow: React.FC<Props> = ({
               secondary={
                 primaryAddress && (
                   <Typography component="p" variant="body2">
-                    {primaryAddress?.street}
+                    {[
+                      primaryAddress.street,
+                      primaryAddress.city,
+                      primaryAddress.state,
+                      primaryAddress.postalCode,
+                    ].join(', ')}
                   </Typography>
                 )
               }
