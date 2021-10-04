@@ -129,6 +129,45 @@ describe('ContactFilters', () => {
     expect(getByText('Group 1 (1)')).toBeVisible();
   });
 
+  it('clears filters', async () => {
+    const { getByTestId, getByText, queryByTestId, queryAllByTestId } = render(
+      <MuiPickersUtilsProvider utils={LuxonUtils}>
+        <GqlMockedProvider<ContactFiltersQuery>
+          mocks={{ ContactFilters: ContactFiltersDefaultMock }}
+        >
+          <ContactFilters
+            accountListId={accountListId}
+            onClose={() => {}}
+            onSelectedFiltersChanged={() => {}}
+          />
+        </GqlMockedProvider>
+      </MuiPickersUtilsProvider>,
+    );
+
+    await waitFor(() => expect(queryByTestId('LoadingState')).toBeNull());
+    expect(queryByTestId('LoadingState')).toBeNull();
+    expect(queryByTestId('ErrorState')).toBeNull();
+
+    expect(queryAllByTestId('FilterGroup').length).toEqual(2);
+    expect(getByTestId('FilterListItemShowAll')).toBeVisible();
+    userEvent.click(getByTestId('FilterListItemShowAll'));
+    userEvent.click(
+      getByText(
+        ContactFiltersDefaultMock.accountList.contactFilterGroups[0].name,
+      ),
+    );
+
+    userEvent.click(queryAllByTestId('CheckboxIcon')[0]);
+
+    await waitFor(() => userEvent.click(getByTestId('CloseFilterGroupButton')));
+
+    expect(getByText('Group 1 (1)')).toBeVisible();
+
+    userEvent.click(getByText('Clear All'));
+    expect(getByText('Group 1')).toBeVisible();
+    expect(getByText('Filter')).toBeVisible();
+  });
+
   it('no filters', async () => {
     const { queryByTestId, queryAllByTestId } = render(
       <GqlMockedProvider<ContactFiltersQuery>
