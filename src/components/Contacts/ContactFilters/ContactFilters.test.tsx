@@ -1,6 +1,8 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { MuiPickersUtilsProvider } from '@material-ui/pickers';
+import LuxonUtils from '@date-io/luxon';
 import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
 import { ContactFilters } from './ContactFilters';
 import { ContactFiltersQuery } from './ContactFilters.generated';
@@ -71,6 +73,60 @@ describe('ContactFilters', () => {
         ContactFiltersDefaultMock.accountList.contactFilterGroups[1].name,
       ),
     ).toBeVisible();
+  });
+
+  it('opens and selects a filter', async () => {
+    const { getByTestId, getByText, queryByTestId, queryAllByTestId } = render(
+      <MuiPickersUtilsProvider utils={LuxonUtils}>
+        <GqlMockedProvider<ContactFiltersQuery>
+          mocks={{ ContactFilters: ContactFiltersDefaultMock }}
+        >
+          <ContactFilters
+            accountListId={accountListId}
+            onClose={() => {}}
+            onSelectedFiltersChanged={() => {}}
+          />
+        </GqlMockedProvider>
+      </MuiPickersUtilsProvider>,
+    );
+
+    await waitFor(() => expect(queryByTestId('LoadingState')).toBeNull());
+    expect(queryByTestId('LoadingState')).toBeNull();
+    expect(queryByTestId('ErrorState')).toBeNull();
+
+    expect(queryAllByTestId('FilterGroup').length).toEqual(2);
+    expect(getByTestId('FilterListItemShowAll')).toBeVisible();
+    userEvent.click(getByTestId('FilterListItemShowAll'));
+    userEvent.click(
+      getByText(
+        ContactFiltersDefaultMock.accountList.contactFilterGroups[0].name,
+      ),
+    );
+    expect(
+      getByText(
+        ContactFiltersDefaultMock.accountList.contactFilterGroups[0].filters[0]
+          .title,
+      ),
+    ).toBeVisible();
+    expect(
+      getByText(
+        ContactFiltersDefaultMock.accountList.contactFilterGroups[0].filters[1]
+          .title,
+      ),
+    ).toBeVisible();
+    const option1 =
+      ContactFiltersDefaultMock.accountList.contactFilterGroups[0].filters[1]
+        ?.options &&
+      getByText(
+        ContactFiltersDefaultMock.accountList.contactFilterGroups[0].filters[1]
+          .options[0].name,
+      );
+    expect(option1).toBeVisible();
+    userEvent.click(queryAllByTestId('CheckboxIcon')[0]);
+    expect(option1).toBeVisible();
+    await waitFor(() => userEvent.click(getByTestId('CloseFilterGroupButton')));
+
+    expect(getByText('Group 1 (1)')).toBeVisible();
   });
 
   it('no filters', async () => {

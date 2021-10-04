@@ -237,6 +237,7 @@ export const ContactFilters: React.FC<Props & BoxProps> = ({
           <div>
             <FilterHeader>
               <IconButton
+                data-testid="CloseFilterGroupButton"
                 size="small"
                 edge="start"
                 onClick={() => setSelectedGroup(undefined)}
