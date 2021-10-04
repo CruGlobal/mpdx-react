@@ -77,12 +77,6 @@ const FilterIcon = styled(FilterList)(({ theme }) => ({
   color: theme.palette.primary.dark,
 }));
 
-const CheckboxContact = styled(Checkbox)(({ theme }) => ({
-  '& .Mui-checked:checked': {
-    color: theme.palette.cruGrayDark.main,
-  },
-}));
-
 const ContactsShowingText = styled('p')(({ theme }) => ({
   flexGrow: 4,
   flexBasis: 0,
@@ -126,7 +120,7 @@ export const ContactsHeader: React.FC<Props> = ({
   return (
     <HeaderWrap>
       <Hidden smDown>
-        <CheckboxContact
+        <Checkbox
           checked={contactCheckboxState === ContactCheckBoxState.checked}
           color="secondary"
           indeterminate={contactCheckboxState === ContactCheckBoxState.partial}
