@@ -96,6 +96,10 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
 }) => {
   const [searchTerm, setSearchTerm] = useState<string | undefined>(undefined);
 
+  const handleSearchTerm = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(event.target.value);
+  };
+
   const { data, loading } = useContactTasksTabQuery({
     variables: { accountListId, contactId, searchTerm },
   });
@@ -130,7 +134,7 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
           <HeaderItemsWrap>
             <Checkbox />
             <SearchBox
-              onChange={setSearchTerm}
+              onChange={(event) => handleSearchTerm(event)}
               placeholder={t('Search Tasks')}
             />
           </HeaderItemsWrap>
