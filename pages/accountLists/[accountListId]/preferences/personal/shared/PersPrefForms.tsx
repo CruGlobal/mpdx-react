@@ -1,11 +1,15 @@
 import React, { ReactElement, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Button,
+  ButtonProps,
   Checkbox,
   FormControl,
   FormControlLabel,
   FormControlLabelProps,
+  FormControlProps,
   FormHelperText,
+  FormHelperTextProps,
   FormLabel,
   MenuItem,
   OutlinedInput,
@@ -46,25 +50,25 @@ const SharedFieldStyles = ({ theme }: { theme: Theme }) => ({
   },
 });
 
-const StyledOutlinedInput = styled(OutlinedInput)(SharedFieldStyles);
-const StyledSelect = styled(Select)(SharedFieldStyles);
+export const StyledOutlinedInput = styled(OutlinedInput)(SharedFieldStyles);
+export const StyledSelect = styled(Select)(SharedFieldStyles);
 
-export const PersPrefForm: React.FC = ({ children }) => {
-  const theme = useTheme();
-  return (
-    <form>
-      {children}
-      <Button
-        style={{ marginTop: theme.spacing(2) }}
-        variant="contained"
-        color="primary"
-        disableElevation
-      >
-        Save
-      </Button>
-    </form>
-  );
-};
+// export const PersPrefForm: React.FC = ({ children }) => {
+//   const theme = useTheme();
+//   return (
+//     <form>
+//       {children}
+//       <Button
+//         style={{ marginTop: theme.spacing(2) }}
+//         variant="contained"
+//         color="primary"
+//         disableElevation
+//       >
+//         Save
+//       </Button>
+//     </form>
+//   );
+// };
 
 // interface PersPrefFieldWrapperProps {
 //   label?: string;
@@ -292,6 +296,93 @@ export const PersPrefField: React.FC<PersPrefFieldProps> = ({
       {helperText !== '' && helperPosition === 'bottom' && (
         <StyledFormHelperText>{helperText}</StyledFormHelperText>
       )}
+    </FormControl>
+  );
+};
+
+// New version
+
+interface PersPrefFormWrapperProps {
+  formAttrs?: { action?: string; method?: string };
+  formButtonText?: string;
+  formButtonColor?: ButtonProps['color'];
+  formButtonVariant?: ButtonProps['variant'];
+}
+
+export const PersPrefFormWrapper: React.FC<PersPrefFormWrapperProps> = ({
+  formAttrs = {},
+  formButtonText = 'Save',
+  formButtonColor = 'primary',
+  formButtonVariant = 'contained',
+  children,
+}) => {
+  const { t } = useTranslation();
+  const theme = useTheme();
+
+  return (
+    <form {...formAttrs}>
+      {children}
+      <Button
+        style={{ marginTop: theme.spacing(2) }}
+        variant={formButtonVariant}
+        color={formButtonColor}
+        disableElevation
+        disableRipple
+      >
+        {t(formButtonText)}
+      </Button>
+    </form>
+  );
+};
+
+interface PersPrefFieldWrapperProps {
+  labelText?: string;
+  helperText?: string;
+  helperPosition?: string;
+  formControlDisabled?: FormControlProps['disabled'];
+  formControlError?: FormControlProps['error'];
+  formControlFullWidth?: FormControlProps['fullWidth'];
+  formControlRequired?: FormControlProps['required'];
+  formControlVariant?: FormControlProps['variant'];
+  formHelperTextProps?: { variant?: FormHelperTextProps['variant'] };
+}
+
+export const PersPrefFieldWrapper: React.FC<PersPrefFieldWrapperProps> = ({
+  labelText = '',
+  helperText = '',
+  helperPosition = 'top',
+  formControlDisabled = false,
+  formControlError = false,
+  formControlFullWidth = true,
+  formControlRequired = false,
+  formControlVariant = 'outlined',
+  formHelperTextProps = { variant: 'standard' },
+  children,
+}) => {
+  const { t } = useTranslation();
+  const labelOutput =
+    labelText !== '' ? <StyledFormLabel>{t(labelText)}</StyledFormLabel> : '';
+  const helperTextOutput =
+    helperText !== '' ? (
+      <StyledFormHelperText {...formHelperTextProps}>
+        {t(helperText)}
+      </StyledFormHelperText>
+    ) : (
+      ''
+    );
+
+  return (
+    <FormControl
+      disabled={formControlDisabled}
+      error={formControlError}
+      fullWidth={formControlFullWidth}
+      required={formControlRequired}
+      variant={formControlVariant}
+    >
+      {labelOutput}
+      {helperPosition === 'top' && helperTextOutput}
+      {children}
+      {helperPosition === 'bottom' && helperTextOutput}
     </FormControl>
   );
 };

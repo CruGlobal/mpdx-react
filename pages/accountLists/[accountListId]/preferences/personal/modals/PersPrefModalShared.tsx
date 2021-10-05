@@ -1,3 +1,4 @@
+import React from 'react';
 import {
   Box,
   DialogActions,
@@ -17,9 +18,8 @@ export const SectionHeading = styled(Typography)(() => ({
   display: 'block',
 }));
 
-const SmallColumnLabels = styled(Grid)(({ align }) => ({
+const SmallColumnLabels = styled(Grid)(() => ({
   display: 'flex',
-  justifyContent: align === 'left' ? 'flex-start' : 'center',
   alignItems: 'flex-end',
   '& span': {
     fontSize: '0.6875em',
@@ -29,20 +29,20 @@ const SmallColumnLabels = styled(Grid)(({ align }) => ({
 
 interface OptionHeadingsProps {
   smallCols: GridProps['sm'];
-  align?: string;
+  align?: GridProps['justify'];
 }
 
 export const OptionHeadings: React.FC<OptionHeadingsProps> = ({
   smallCols,
-  align = '',
+  align = 'center',
   children,
 }) => (
-  <SmallColumnLabels item sm={smallCols} align={align}>
+  <SmallColumnLabels item sm={smallCols} justify={align}>
     <Typography component="span">{children}</Typography>
   </SmallColumnLabels>
 );
 
-export const EmptyIcon = ({ size = 24 }) => {
+export const EmptyIcon: React.FC<{ size?: number }> = ({ size = 24 }) => {
   return (
     <span
       style={{ width: `${size}px`, height: `${size}px`, display: 'block' }}
@@ -79,13 +79,13 @@ export const StyledGridItem = styled(Grid)(({ theme }) => ({
   },
 }));
 
-export const HiddenSmLabel = ({ children }) => (
+export const HiddenSmLabel: React.FC = ({ children }) => (
   <Hidden smUp>
     <Typography component="span">{children}</Typography>
   </Hidden>
 );
 
-export const DeleteButton = () => (
+export const DeleteButton: React.FC = () => (
   <>
     <HiddenSmLabel>Delete</HiddenSmLabel>
     <IconButton disableRipple>
@@ -99,16 +99,14 @@ export const AddButtonBox = styled(Box)(({ theme }) => ({
   [theme.breakpoints.up('sm')]: { marginTop: theme.spacing(1) },
 }));
 
-export const StyledDivider = styled(Divider)(
-  ({ marginTop = null, marginBottom = null, marginY = 3, theme }) => {
-    return {
-      marginTop: theme.spacing(marginTop ? marginTop : marginY),
-      marginLeft: 0,
-      marginRight: 0,
-      marginBottom: theme.spacing(marginBottom ? marginBottom : marginY),
-    };
-  },
-);
+export const StyledDivider = styled(Divider)(({ theme }) => {
+  return {
+    marginTop: theme.spacing(3),
+    marginLeft: 0,
+    marginRight: 0,
+    marginBottom: theme.spacing(3),
+  };
+});
 
 export const StyledDialogActions = styled(DialogActions)(({ theme }) => ({
   padding: `${theme.spacing(2)}px ${theme.spacing(3)}px`,

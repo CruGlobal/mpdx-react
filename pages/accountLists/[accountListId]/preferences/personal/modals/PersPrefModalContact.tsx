@@ -1,15 +1,22 @@
+import React from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Button,
   Checkbox,
   Grid,
   Hidden,
+  MenuItem,
   Radio,
   Theme,
   styled,
   useTheme,
 } from '@material-ui/core';
 import { AddCircle, Cancel, Check } from '@material-ui/icons';
-import { PersPrefField } from '../shared/PersPrefForms';
+import {
+  PersPrefFieldWrapper,
+  StyledOutlinedInput,
+  StyledSelect,
+} from '../shared/PersPrefForms';
 import { info } from '../DemoContent';
 import {
   AddButtonBox,
@@ -50,51 +57,57 @@ const AddContact: React.FC<AddContactProps> = ({
   type,
   index = 1000,
 }) => {
+  const { t } = useTranslation();
   const theme = useTheme();
 
-  if (!current) {
-    return null;
-  }
+  const contactTypes = isPhone
+    ? [
+        ['mobile', 'Mobile'],
+        ['home', 'Home'],
+        ['work', 'Work'],
+        ['other', 'Other'],
+      ]
+    : [
+        ['personal', 'Personal'],
+        ['work', 'Work'],
+        ['other', 'Other'],
+      ];
 
-  const { value, type: category, primary, invalid } = current;
+  const value = current ? current.value : '';
+  const category = current ? current.type : '';
+  const primary = current ? current.primary : false;
+  const invalid = current ? current.invalid : false;
 
   return (
     <StyledGridContainer container spacing={2} key={index}>
       {/* Input field */}
       <StyledGridItem item xs={12} sm={5}>
-        <PersPrefField
-          inputType={isPhone ? 'tel' : 'email'}
-          inputPlaceholder={isPhone ? 'Phone *' : 'Email *'}
-          inputValue={value}
-          required
-        />
+        <PersPrefFieldWrapper>
+          <StyledOutlinedInput
+            type={isPhone ? 'tel' : 'email'}
+            placeholder={t(isPhone ? 'Phone' : 'Email') + ' *'}
+            value={value}
+            required
+          />
+        </PersPrefFieldWrapper>
       </StyledGridItem>
 
       {/* Contact category */}
       <StyledGridItem item xs={12} sm={4}>
-        <PersPrefField
-          type="select"
-          options={
-            isPhone
-              ? [
-                  ['mobile', 'Mobile'],
-                  ['home', 'Home'],
-                  ['work', 'Work'],
-                  ['other', 'Other'],
-                ]
-              : [
-                  ['personal', 'Personal'],
-                  ['work', 'Work'],
-                  ['other', 'Other'],
-                ]
-          }
-          selectValue={category ? category : 'other'}
-        />
+        <PersPrefFieldWrapper>
+          <StyledSelect value={category ? category : 'other'}>
+            {contactTypes.map((current, index) => (
+              <MenuItem value={current[0]} key={index}>
+                {t(current[1])}
+              </MenuItem>
+            ))}
+          </StyledSelect>
+        </PersPrefFieldWrapper>
       </StyledGridItem>
 
       {/* Primary contact method selection */}
       <StyledGridItem item xs={12} sm={1}>
-        <HiddenSmLabel>Primary</HiddenSmLabel>
+        <HiddenSmLabel>{t('Primary')}</HiddenSmLabel>
         <StyledRadio
           name={`primary-${type}`}
           value={`primary${index}`}
@@ -109,7 +122,7 @@ const AddContact: React.FC<AddContactProps> = ({
 
       {/* Inactive contact method */}
       <StyledGridItem item xs={12} sm={1}>
-        <HiddenSmLabel>Invalid</HiddenSmLabel>
+        <HiddenSmLabel>{t('Invalid')}</HiddenSmLabel>
         <StyledCheckbox
           icon={<EmptyIcon />}
           checkedIcon={<Cancel style={{ color: theme.palette.mpdxRed.main }} />}
@@ -127,6 +140,7 @@ const AddContact: React.FC<AddContactProps> = ({
 };
 
 const ContactMethods: React.FC<{ type: string }> = ({ type }) => {
+  const { t } = useTranslation();
   const isPhone = type === 'phone' ? true : false;
   const data = isPhone ? info.phone : info.email;
 
@@ -142,16 +156,16 @@ const ContactMethods: React.FC<{ type: string }> = ({ type }) => {
       <Grid container spacing={2}>
         <Grid item xs={12} sm={5}>
           <SectionHeading>
-            {isPhone ? 'Phone Numbers' : 'Email Addresses'}
+            {isPhone ? t('Phone Numbers') : t('Email Addresses')}
           </SectionHeading>
         </Grid>
         <Hidden xsDown>
-          <OptionHeadings smallCols={4} align="left">
-            Type
+          <OptionHeadings smallCols={4} align="flex-start">
+            {t('Type')}
           </OptionHeadings>
-          <OptionHeadings smallCols={1}>Primary</OptionHeadings>
-          <OptionHeadings smallCols={1}>Invalid</OptionHeadings>
-          <OptionHeadings smallCols={1}>Delete</OptionHeadings>
+          <OptionHeadings smallCols={1}>{t('Primary')}</OptionHeadings>
+          <OptionHeadings smallCols={1}>{t('Invalid')}</OptionHeadings>
+          <OptionHeadings smallCols={1}>{t('Delete')}</OptionHeadings>
         </Hidden>
       </Grid>
       {data.map((current, index) => (
@@ -165,8 +179,13 @@ const ContactMethods: React.FC<{ type: string }> = ({ type }) => {
       ))}
       <AddContact isPhone={isPhone} type={type} />
       <AddButtonBox>
-        <Button variant="outlined" size="small" startIcon={<AddCircle />}>
-          Add {type}
+        <Button
+          variant="outlined"
+          size="small"
+          startIcon={<AddCircle />}
+          disableRipple
+        >
+          {t('Add')} {t(type)}
         </Button>
       </AddButtonBox>
     </>

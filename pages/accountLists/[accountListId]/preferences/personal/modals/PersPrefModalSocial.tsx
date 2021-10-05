@@ -1,14 +1,12 @@
-import {
-  Button,
-  ButtonProps,
-  Grid,
-  Hidden,
-  Typography,
-  styled,
-} from '@material-ui/core';
+import React, { ReactElement } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Button, Grid, Hidden, Typography, styled } from '@material-ui/core';
 import { Facebook, Language, LinkedIn, Twitter } from '@material-ui/icons';
-import { ReactElement } from 'react';
-import { PersPrefField } from '../shared/PersPrefForms';
+
+import {
+  PersPrefFieldWrapper,
+  StyledOutlinedInput,
+} from '../shared/PersPrefForms';
 import { info } from '../DemoContent';
 import {
   AddButtonBox,
@@ -41,39 +39,38 @@ interface MediaRowProps {
     icon: ReactElement;
     inputType: string;
   };
-  savedData: string;
+  savedData?: string;
 }
 
-const MediaRow: React.FC<MediaRowProps> = ({ localData, savedData }) => (
-  <StyledGridContainer container spacing={2}>
-    <StyledGridItem item xs={12} sm={8}>
-      <PersPrefField
-        inputType={localData.inputType}
-        inputPlaceholder={localData.placeholder}
-        inputValue={savedData}
-        required
-      />
-    </StyledGridItem>
-    <StyledGridItem item xs={12} sm={3}>
-      <PersPrefField inputValue={localData.mediaType} disabled={true} />
-    </StyledGridItem>
-    <StyledGridItem item xs={12} sm={1}>
-      <DeleteButton />
-    </StyledGridItem>
-  </StyledGridContainer>
-);
+const MediaRow: React.FC<MediaRowProps> = ({ localData, savedData }) => {
+  const { t } = useTranslation();
 
-interface SocialButtonProps {
-  icon: ButtonProps['startIcon'];
-}
-
-const SocialButton: React.FC<SocialButtonProps> = ({ icon, children }) => (
-  <StyledButton startIcon={icon} size="small" variant="outlined">
-    {children}
-  </StyledButton>
-);
+  return (
+    <StyledGridContainer container spacing={2}>
+      <StyledGridItem item xs={12} sm={8}>
+        <PersPrefFieldWrapper>
+          <StyledOutlinedInput
+            value={savedData}
+            type={localData.inputType}
+            placeholder={localData.placeholder}
+          />
+        </PersPrefFieldWrapper>
+      </StyledGridItem>
+      <StyledGridItem item xs={12} sm={3}>
+        <PersPrefFieldWrapper formControlDisabled={true}>
+          <StyledOutlinedInput value={t(localData.mediaType)} />
+        </PersPrefFieldWrapper>
+      </StyledGridItem>
+      <StyledGridItem item xs={12} sm={1}>
+        <DeleteButton />
+      </StyledGridItem>
+    </StyledGridContainer>
+  );
+};
 
 export const PersPrefModalSocial: React.FC = () => {
+  const { t } = useTranslation();
+
   const connections = [
     {
       data: info.facebook_accounts,
@@ -109,13 +106,13 @@ export const PersPrefModalSocial: React.FC = () => {
     <>
       <Grid container spacing={2}>
         <Grid item xs={12} sm={8}>
-          <SectionHeading>Social Connections</SectionHeading>
+          <SectionHeading>{t('Social Connections')}</SectionHeading>
         </Grid>
         <Hidden xsDown>
-          <OptionHeadings smallCols={3} align="left">
-            Type
+          <OptionHeadings smallCols={3} align="flex-start">
+            {t('Type')}
           </OptionHeadings>
-          <OptionHeadings smallCols={1}>Delete</OptionHeadings>
+          <OptionHeadings smallCols={1}>{t('Delete')}</OptionHeadings>
         </Hidden>
       </Grid>
       {connections.map((current) =>
@@ -123,14 +120,21 @@ export const PersPrefModalSocial: React.FC = () => {
           <MediaRow localData={current} savedData={current2} key={index} />
         )),
       )}
+      <MediaRow localData={connections[0]} />
       <AddButtonBox>
         <Typography component="span">
-          <strong>Add:</strong>
+          <strong>{t('Add')}:</strong>
         </Typography>
         {connections.map((current, index) => (
-          <SocialButton icon={current.icon} key={index}>
-            {current.mediaType}
-          </SocialButton>
+          <StyledButton
+            startIcon={current.icon}
+            size="small"
+            variant="outlined"
+            key={index}
+            disableRipple
+          >
+            {t(current.mediaType)}
+          </StyledButton>
         ))}
       </AddButtonBox>
     </>

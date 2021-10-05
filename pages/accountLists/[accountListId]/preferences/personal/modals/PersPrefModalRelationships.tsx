@@ -1,8 +1,20 @@
-import { useState } from 'react';
-import { Button, DialogContent, Grid, Hidden, styled } from '@material-ui/core';
+import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import {
+  Button,
+  DialogContent,
+  Grid,
+  Hidden,
+  MenuItem,
+  styled,
+} from '@material-ui/core';
 import { AddCircle, Search } from '@material-ui/icons';
 import Modal from '../../../../../../src/components/common/Modal/Modal';
-import { PersPrefField } from '../shared/PersPrefForms';
+import {
+  PersPrefFieldWrapper,
+  StyledOutlinedInput,
+  StyledSelect,
+} from '../shared/PersPrefForms';
 import { info } from '../DemoContent';
 import {
   AddButtonBox,
@@ -14,7 +26,7 @@ import {
   StyledGridItem,
 } from './PersPrefModalShared';
 
-const AddPersonButton = styled(Button)({
+const AddRelationshipButton = styled(Button)({
   fontSize: 16,
   padding: '17.5px 14px',
   lineHeight: 1.1876,
@@ -29,6 +41,8 @@ const RelationshipModal: React.FC<RelationshipModalProps> = ({
   isOpen,
   handleOpen,
 }) => {
+  const { t } = useTranslation();
+
   const handleClose = () => {
     handleOpen(false);
   };
@@ -37,12 +51,21 @@ const RelationshipModal: React.FC<RelationshipModalProps> = ({
     <Modal isOpen={isOpen} title="Person" handleClose={handleClose} size={'md'}>
       <form>
         <DialogContent dividers>
-          <PersPrefField label="Select Person" inputStartIcon={<Search />} />
+          <PersPrefFieldWrapper labelText="Select Person">
+            <StyledOutlinedInput startAdornment={<Search />} />
+          </PersPrefFieldWrapper>
         </DialogContent>
         <StyledDialogActions>
-          <Button onClick={handleClose}>Cancel</Button>
-          <Button variant="contained" color="primary">
-            Save
+          <Button onClick={handleClose} disableRipple disableElevation>
+            {t('Cancel')}
+          </Button>
+          <Button
+            variant="contained"
+            color="primary"
+            disableRipple
+            disableElevation
+          >
+            {t('Save')}
           </Button>
         </StyledDialogActions>
       </form>
@@ -60,59 +83,68 @@ interface AddRelationshipProps {
 const AddRelationship: React.FC<AddRelationshipProps> = ({
   current = null,
 }) => {
+  const { t } = useTranslation();
   const [relationshipOpen, setRelationshipOpen] = useState(false);
 
   const handleOpen = () => {
     setRelationshipOpen(true);
   };
 
+  const relationships = [
+    'Husband',
+    'Son',
+    'Father',
+    'Brother',
+    'Uncle',
+    'Newphew',
+    'Cousin Male',
+    'Grandfather',
+    'Grandson',
+    'Wife',
+    'Daughter',
+    'Mother',
+    'Sister',
+    'Aunt',
+    'Niece',
+    'Cousin Female',
+    'Grandmother',
+    'Granddaughter',
+  ];
+
   return (
     <StyledGridContainer container spacing={2}>
       <Grid item xs={12} sm={7}>
         {!current ? (
           <>
-            <AddPersonButton
+            <AddRelationshipButton
               variant="outlined"
               onClick={handleOpen}
               fullWidth
               disableRipple
             >
               Select Person
-            </AddPersonButton>
+            </AddRelationshipButton>
             <RelationshipModal
               isOpen={relationshipOpen}
               handleOpen={setRelationshipOpen}
             />
           </>
         ) : (
-          <PersPrefField inputValue={current.name} disabled={true} />
+          <PersPrefFieldWrapper formControlDisabled={true}>
+            <StyledOutlinedInput value={current.name} />
+          </PersPrefFieldWrapper>
         )}
       </Grid>
       <Grid item xs={12} sm={4}>
-        <PersPrefField
-          type="select"
-          options={[
-            ['Husband', 'Husband'],
-            ['Son', 'Son'],
-            ['Father', 'Father'],
-            ['Brother', 'Brother'],
-            ['Uncle', 'Uncle'],
-            ['Newphew', 'Newphew'],
-            ['Cousin Male', 'Cousin Male'],
-            ['Grandfather', 'Grandfather'],
-            ['Grandson', 'Grandson'],
-            ['Wife', 'Wife'],
-            ['Daughter', 'Daughter'],
-            ['Mother', 'Mother'],
-            ['Sister', 'Sister'],
-            ['Aunt', 'Aunt'],
-            ['Niece', 'Niece'],
-            ['Cousin Female', 'Cousin Female'],
-            ['Grandmother', 'Grandmother'],
-            ['Granddaughter', 'Granddaughter'],
-          ]}
-          selectValue={current ? current.relation : ''}
-        />
+        <PersPrefFieldWrapper>
+          <StyledSelect value={current ? current.relation : ''}>
+            {relationships.map((current2) => (
+              <MenuItem value={current2} key={current2}>
+                {t(current2)}
+              </MenuItem>
+            ))}
+          </StyledSelect>
+        </PersPrefFieldWrapper>
       </Grid>
       <StyledGridItem item xs={12} sm={1}>
         <DeleteButton />
@@ -122,40 +154,51 @@ const AddRelationship: React.FC<AddRelationshipProps> = ({
 };
 
 export const PersPrefModalRelationships: React.FC = () => {
+  const { t } = useTranslation();
+
+  const statuses = [
+    'Single',
+    'Engaged',
+    'Married',
+    'Separated',
+    'Divorced',
+    'Widowed',
+  ];
+
   return (
     <>
       <Grid container spacing={2}>
         <Grid item xs={12} sm={4}>
-          <PersPrefField label="Occupation" inputValue={info.occupation} />
+          <PersPrefFieldWrapper labelText={t('Occupation')}>
+            <StyledOutlinedInput value={info.occupation} />
+          </PersPrefFieldWrapper>
         </Grid>
         <Grid item xs={12} sm={4}>
-          <PersPrefField label="Employer" inputValue={info.employer} />
+          <PersPrefFieldWrapper labelText={t('Employer')}>
+            <StyledOutlinedInput value={info.employer} />
+          </PersPrefFieldWrapper>
         </Grid>
         <Grid item xs={12} sm={4}>
-          <PersPrefField
-            label="Relationship Status"
-            type="select"
-            options={[
-              ['Single', 'Single'],
-              ['Engaged', 'Engaged'],
-              ['Married', 'Married'],
-              ['Separated', 'Separated'],
-              ['Divorced', 'Divorced'],
-              ['Widowed', 'Widowed'],
-            ]}
-            selectValue={info.marital_status}
-          />
+          <PersPrefFieldWrapper labelText={t('Relationship Status')}>
+            <StyledSelect value={info.marital_status}>
+              {statuses.map((current) => (
+                <MenuItem value={current} key={current}>
+                  {t(current)}
+                </MenuItem>
+              ))}
+            </StyledSelect>
+          </PersPrefFieldWrapper>
         </Grid>
       </Grid>
       <Grid container spacing={2}>
         <Grid item xs={12} sm={7} style={{ marginTop: 8 }}>
-          <SectionHeading>Relationships</SectionHeading>
+          <SectionHeading>{t('Relationships')}</SectionHeading>
         </Grid>
         <Hidden xsDown>
-          <OptionHeadings smallCols={4} align="left">
-            Type
+          <OptionHeadings smallCols={4} align="flex-start">
+            {t('Type')}
           </OptionHeadings>
-          <OptionHeadings smallCols={1}>Delete</OptionHeadings>
+          <OptionHeadings smallCols={1}>{t('Delete')}</OptionHeadings>
         </Hidden>
       </Grid>
       {info.family_relationships.map((current, index) => (
@@ -163,8 +206,13 @@ export const PersPrefModalRelationships: React.FC = () => {
       ))}
       <AddRelationship />
       <AddButtonBox>
-        <Button variant="outlined" size="small" startIcon={<AddCircle />}>
-          Add Relationship
+        <Button
+          variant="outlined"
+          size="small"
+          startIcon={<AddCircle />}
+          disableRipple
+        >
+          {t('Add Relationship')}
         </Button>
       </AddButtonBox>
     </>

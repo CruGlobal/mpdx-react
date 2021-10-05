@@ -155,3 +155,11 @@ export const locale = [
   ['vi', 'Vietnamese (vi) (Tiếng Việt - vi)'],
   ['cy', 'Welsh (cy) (Cymraeg - cy)'],
 ];
+
+export const options = [
+  ['opt1', 'Option 1'],
+  ['opt2', 'Option 2'],
+  ['opt3', 'Option 3'],
+  ['opt4', 'Option 4'],
+  ['opt5', 'Option 5'],
+];
