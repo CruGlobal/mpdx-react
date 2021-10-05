@@ -18,6 +18,7 @@ export interface Props {
   received: number;
   commited: number;
   total: number;
+  changePrimary: (newPrimaryId: string) => void;
 }
 
 const useStyles = makeStyles(() => ({
@@ -74,6 +75,7 @@ const Appeal = ({
   given,
   received,
   commited,
+  changePrimary,
 }: Props): ReactElement => {
   const classes = useStyles();
   const accountListId = useAccountListId();
@@ -102,7 +104,11 @@ const Appeal = ({
               {primary ? (
                 <StarIcon className={classes.starPrimary} />
               ) : (
-                <StarOutlineIcon className={classes.starPrimary} />
+                <StarOutlineIcon
+                  className={classes.starPrimary}
+                  data-testid={`setPrimary-${id}`}
+                  onClick={() => changePrimary(id)}
+                />
               )}
             </Box>
           </Box>

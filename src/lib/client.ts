@@ -58,6 +58,7 @@ const client = new ApolloClient({
   assumeImmutableResults: true,
   defaultOptions: {
     watchQuery: {
+      fetchPolicy: 'cache-and-network',
       notifyOnNetworkStatusChange: true,
     },
   },
