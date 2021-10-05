@@ -114,9 +114,9 @@ const AddAppealForm = (): ReactElement => {
   });
 
   const contactStatuses = contactFilterGroups?.accountList.contactFilterGroups
-    ? (contactFilterGroups.accountList.contactFilterGroups.filter(
+    ? (contactFilterGroups.accountList.contactFilterGroups.find(
         (group) => group.name === 'Status',
-      )[0].filters[0] as MultiselectFilter).options
+      ).filters[0] as MultiselectFilter).options
     : [{ name: '', value: '' }];
 
   const [filterTags, setFilterTags] = useState<{
