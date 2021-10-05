@@ -241,7 +241,6 @@ export const ContactFilters: React.FC<Props & BoxProps> = ({
                 size="small"
                 edge="start"
                 onClick={() => setSelectedGroup(undefined)}
-                style={{ verticalAlign: 'middle' }}
               >
                 <ArrowBackIos fontSize="small" />
               </IconButton>
