@@ -7,6 +7,7 @@ import Appeal from './Appeal';
 
 describe('AppealTest', () => {
   it('regular', () => {
+    const changePrimary = jest.fn();
     const { getByText } = render(
       <ThemeProvider theme={theme}>
         <TestWrapper>
@@ -20,6 +21,7 @@ describe('AppealTest', () => {
             received={20}
             commited={30}
             total={60}
+            changePrimary={changePrimary}
           />
         </TestWrapper>
       </ThemeProvider>,
