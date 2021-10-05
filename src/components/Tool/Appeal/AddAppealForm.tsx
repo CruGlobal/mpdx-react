@@ -113,10 +113,12 @@ const AddAppealForm = (): ReactElement => {
     },
   });
 
-  const contactStatuses = contactFilterGroups?.accountList.contactFilterGroups
-    ? (contactFilterGroups.accountList.contactFilterGroups.find(
-        (group) => group.name === 'Status',
-      ).filters[0] as MultiselectFilter).options
+  const contactStatuses = contactFilterGroups?.accountList?.contactFilterGroups
+    ? (contactFilterGroups.accountList.contactFilterGroups
+        .find((group) => group.name === 'Status')
+        ?.filters.find(
+          (filter: { filterKey: string }) => filter.filterKey === 'status',
+        ) as MultiselectFilter).options
     : [{ name: '', value: '' }];
 
   const [filterTags, setFilterTags] = useState<{
@@ -179,7 +181,8 @@ const AddAppealForm = (): ReactElement => {
     setFilterTags((prevState) => ({
       ...prevState,
       statuses: contactStatuses?.filter(
-        (status) => status.value !== 'ACTIVE' && status.value !== 'HIDDEN',
+        (status: { value: string }) =>
+          status.value !== 'ACTIVE' && status.value !== 'HIDDEN',
       ),
     }));
   };
