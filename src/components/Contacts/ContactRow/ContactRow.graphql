@@ -16,6 +16,6 @@ fragment ContactRow on Contact {
   sendNewsletter
   starred
   # TODO: Add when available in schema
-  # taskCount
+  uncompletedTasksCount
   ...CelebrationItems
 }

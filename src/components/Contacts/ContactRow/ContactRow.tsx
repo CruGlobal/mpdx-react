@@ -10,11 +10,26 @@ import {
   styled,
   Typography,
 } from '@material-ui/core';
-import CheckCircleOutlineIcon from '@material-ui/icons/CheckCircleOutline';
 import { CelebrationIcons } from '../CelebrationIcons/CelebrationIcons';
 import { GiftStatus } from '../GiftStatus/GiftStatus';
 import { StarContactIconButton } from '../StarContactIconButton/StarContactIconButton';
+import { ContactUncompletedTasksCount } from '../ContactUncompletedTasksCount/ContactUncompletedTasksCount';
+import { ContactStatusLabel } from '../ContactStatusLabel/ContactStatusLabel';
+import { ContactLateLabel } from '../ContactLateLabel/ContactLateLabel';
 import { ContactRowFragment } from './ContactRow.generated';
+import { currencyFormat } from 'src/lib/intlFormat';
+
+enum PledgeFrequencyEnum {
+  ANNUAL = 'Annual',
+  EVERY_2_MONTHS = 'Every 2 Months',
+  EVERY_2_WEEKS = 'Every 2 Weeks',
+  EVERY_2_YEARS = 'Every 2 Years',
+  EVERY_4_MONTHS = 'Every 4 Months',
+  EVERY_6_MONTHS = 'Every 6 Months',
+  MONTHLY = 'Monthly',
+  QUARTERLY = 'Quarterly',
+  WEEKLY = 'Weekly',
+}
 
 const ListItemButton = styled(ButtonBase)(() => ({
   flex: '1 1 auto',
@@ -53,6 +68,7 @@ export const ContactRow: React.FC<Props> = ({
     primaryAddress,
     starred,
     status,
+    uncompletedTasksCount,
   } = contact;
 
   return (
@@ -73,8 +89,10 @@ export const ContactRow: React.FC<Props> = ({
             <ListItemText
               primary={
                 <Typography variant="h6" noWrap>
-                  {name}
-                  <CelebrationIcons contact={contact} />
+                  <Box component="span" display="flex" alignItems="center">
+                    {name}
+                    <CelebrationIcons contact={contact} />
+                  </Box>
                 </Typography>
               }
               secondary={
@@ -101,21 +119,24 @@ export const ContactRow: React.FC<Props> = ({
                 flexDirection="column"
                 justifyContent="center"
               >
-                <Typography>{status}</Typography>
-                {pledgeAmount
-                  ? pledgeCurrency
-                    ? `${pledgeAmount} ${pledgeCurrency}`
-                    : pledgeAmount
-                  : ''}{' '}
-                {pledgeFrequency ?? ''}
+                {status && <ContactStatusLabel status={status} />}
+                <Typography component="span">
+                  {pledgeAmount && pledgeCurrency
+                    ? currencyFormat(pledgeAmount, pledgeCurrency)
+                    : pledgeAmount}{' '}
+                  {pledgeFrequency && PledgeFrequencyEnum[pledgeFrequency]}{' '}
+                  {lateAt && <ContactLateLabel lateAt={lateAt} />}
+                </Typography>
               </Box>
             </Box>
           </Grid>
         </Grid>
       </ListItemButton>
-      <Box>
-        <CheckCircleOutlineIcon color="disabled" />
-      </Box>
+      {uncompletedTasksCount > 0 && (
+        <ContactUncompletedTasksCount
+          uncompletedTasksCount={uncompletedTasksCount}
+        />
+      )}
       <ListItemSecondaryAction
         style={{ position: 'static', top: 0, transform: 'none' }}
       >
