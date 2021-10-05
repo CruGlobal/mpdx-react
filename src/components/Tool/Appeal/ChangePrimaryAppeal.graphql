@@ -1,0 +1,12 @@
+mutation ChangePrimaryAppeal(
+  $accountListId: ID!
+  $attributes: AppealUpdateInput!
+) {
+  setPrimary: updateAppeal(
+    input: { accountListId: $accountListId, attributes: $attributes }
+  ) {
+    appeal {
+      id
+    }
+  }
+}
