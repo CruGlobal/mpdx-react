@@ -21,6 +21,8 @@ const WhiteBackground = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.common.white,
 }));
 
+export type ContactsTableViewMode = 'list' | 'columns';
+
 const ContactsPage: React.FC = () => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
@@ -49,6 +51,19 @@ const ContactsPage: React.FC = () => {
   const [filterPanelOpen, setFilterPanelOpen] = useState<boolean>(false);
   const [activeFilters, setActiveFilters] = useState<ContactFilterSetInput>({});
   const [selectedContacts, setSelectedContacts] = useState<Array<string>>([]);
+  const [
+    contactsTableDisplayState,
+    setContactsTableDisplayState,
+  ] = useState<ContactsTableViewMode>('list');
+
+  const handleViewModeChange = (
+    event: React.MouseEvent<HTMLElement>,
+    viewMode: ContactsTableViewMode | null,
+  ) => {
+    if (viewMode) {
+      setContactsTableDisplayState(viewMode);
+    }
+  };
 
   const { data, loading, fetchMore } = useContactsQuery({
     variables: {
@@ -144,6 +159,8 @@ const ContactsPage: React.FC = () => {
                   toggleFilterPanel={toggleFilterPanel}
                   onCheckAllContacts={handleCheckAllContacts}
                   onSearchTermChanged={setSearchTerm}
+                  contactsTableDisplayState={contactsTableDisplayState}
+                  onViewModeChange={handleViewModeChange}
                   totalContacts={data?.contacts.totalCount}
                   contactCheckboxState={
                     isSelectedSomeContacts

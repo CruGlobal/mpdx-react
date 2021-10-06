@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   Box,
   Checkbox,
@@ -12,6 +12,7 @@ import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
 import { useTranslation } from 'react-i18next';
 import { StarredItemIcon } from '../../common/StarredItemIcon/StarredItemIcon';
 import { SearchBox } from '../../common/SearchBox/SearchBox';
+import { ContactsTableViewMode } from 'pages/accountLists/[accountListId]/contacts/[[...contactId]].page';
 
 export enum ContactCheckBoxState {
   'unchecked',
@@ -27,9 +28,12 @@ interface Props {
   onCheckAllContacts: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onSearchTermChanged: (searchTerm: string) => void;
   totalContacts?: number;
+  contactsTableDisplayState: ContactsTableViewMode;
+  onViewModeChange: (
+    event: React.MouseEvent<HTMLElement>,
+    viewMode: ContactsTableViewMode | null,
+  ) => void;
 }
-
-type ContactsTableViewMode = 'list' | 'columns';
 
 const HeaderWrap = styled(Box)(({ theme }) => ({
   height: 96,
@@ -104,21 +108,10 @@ export const ContactsHeader: React.FC<Props> = ({
   onCheckAllContacts,
   onSearchTermChanged,
   totalContacts = 0,
+  contactsTableDisplayState,
+  onViewModeChange,
 }) => {
   const { t } = useTranslation();
-  const [
-    contactsTableDisplayState,
-    setContactsTableDisplayState,
-  ] = useState<ContactsTableViewMode>('list');
-
-  const handleViewModeChange = (
-    event: React.MouseEvent<HTMLElement>,
-    viewMode: ContactsTableViewMode | null,
-  ) => {
-    if (viewMode) {
-      setContactsTableDisplayState(viewMode);
-    }
-  };
 
   return (
     <HeaderWrap>
@@ -156,7 +149,7 @@ export const ContactsHeader: React.FC<Props> = ({
         <ToggleButtonGroup
           exclusive
           value={contactsTableDisplayState}
-          onChange={handleViewModeChange}
+          onChange={onViewModeChange}
         >
           <ToggleButton value="list">
             <BulletedListIcon titleAccess={t('List View')} />
