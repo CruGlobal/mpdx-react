@@ -26,7 +26,6 @@ export const ContactFlow: React.FC<Props> = ({ accountListId }: Props) => {
         <Box
           display="grid"
           width="100%"
-          height="100%"
           gridTemplateColumns="repeat(5, 1fr)"
           gridGap={theme.spacing(1)}
         >
