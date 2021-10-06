@@ -151,7 +151,6 @@ const Contact: React.FC<Props> = ({
 
   return (
     <Grid container className={classes.container}>
-      {console.log(statuses)}
       <Grid container>
         <Grid item lg={5} xs={12}>
           <Box
