@@ -167,9 +167,7 @@ const FixPhoneNumbers: React.FC<Props> = ({ accountListId }: Props) => {
       open: true,
       personId: personId,
       numberIndex: numberIndex,
-      phoneNumber: dataState
-        ? dataState[personId].phoneNumbers[numberIndex].number
-        : '',
+      phoneNumber: dataState[personId].phoneNumbers[numberIndex].number,
     });
   };
 
@@ -262,7 +260,13 @@ const FixPhoneNumbers: React.FC<Props> = ({ accountListId }: Props) => {
                       <Typography>{t('Default Primary Source:')}</Typography>
 
                       <NativeSelect
-                        input={<StyledInput />}
+                        input={
+                          <StyledInput
+                            inputProps={{
+                              'data-testid': 'source-select',
+                            }}
+                          />
+                        }
                         className={classes.nativeSelect}
                         value={defaultSource}
                         data-testid="source-select"
