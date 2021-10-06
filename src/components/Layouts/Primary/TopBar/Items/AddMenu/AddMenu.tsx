@@ -19,6 +19,17 @@ import useTaskDrawer from '../../../../../../hooks/useTaskDrawer';
 import { useAccountListId } from '../../../../../../hooks/useAccountListId';
 import CreateContact from './Items/CreateContact/CreateContact';
 
+interface AddMenuProps {
+  isInDrawer?: boolean;
+}
+
+type AddMenuItem = {
+  text: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  icon: any;
+  onClick: () => void;
+};
+
 const HoverAddIcon = styled(AddIcon)(({ theme }) => ({
   textTransform: 'none',
   color: theme.palette.common.white,
@@ -60,40 +71,64 @@ const MenuItemText = styled(ListItemText)(({ theme }) => ({
   padding: theme.spacing(0, 1),
 }));
 
-const AddMenu = (): ReactElement => {
+export const renderDialog = (
+  selectedMenuItem: number,
+  dialogOpen: boolean,
+  onDialogOpen: (status: boolean) => void,
+): ReactElement => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
+
+  const handleDialogClose = () => {
+    onDialogOpen(false);
+  };
+
+  const renderDialogContent = () => {
+    switch (selectedMenuItem) {
+      case 0:
+        return (
+          <CreateContact
+            accountListId={accountListId ?? ''}
+            handleClose={handleDialogClose}
+          />
+        );
+    }
+  };
+  return (
+    <Dialog
+      open={dialogOpen}
+      aria-labelledby={t('Create Contact Dialog')}
+      fullWidth
+      maxWidth="sm"
+    >
+      {renderDialogContent()}
+    </Dialog>
+  );
+};
+
+const AddMenuPanel = ({
+  addMenuContent,
+}: {
+  addMenuContent: AddMenuItem[];
+}): ReactElement => {
+  const { t } = useTranslation();
+
+  return (
+    <Box display="flex" flexDirection="column" justifyContent="center">
+      {addMenuContent.map(({ text, icon, onClick }, index) => (
+        <RowContainer key={index} display="flex" onClick={onClick}>
+          {icon}
+          <MenuItemText primary={t(`${text}`)} />
+        </RowContainer>
+      ))}
+    </Box>
+  );
+};
+
+const AddMenu = ({ isInDrawer = false }: AddMenuProps): ReactElement => {
   const { openTaskDrawer } = useTaskDrawer();
   const [selectedMenuItem, changeSelectedMenuItem] = useState(-1);
   const [dialogOpen, changeDialogOpen] = useState(false);
-
-  const handleDialogClose = () => {
-    changeDialogOpen(false);
-  };
-
-  const renderDialog = () => {
-    const renderDialogContent = () => {
-      switch (selectedMenuItem) {
-        case 0:
-          return (
-            <CreateContact
-              accountListId={accountListId ?? ''}
-              handleClose={handleDialogClose}
-            />
-          );
-      }
-    };
-    return (
-      <Dialog
-        open={dialogOpen}
-        aria-labelledby={t('Create Contact Dialog')}
-        fullWidth
-        maxWidth="sm"
-      >
-        {renderDialogContent()}
-      </Dialog>
-    );
-  };
 
   const addMenuContent = [
     {
@@ -132,6 +167,10 @@ const AddMenu = (): ReactElement => {
 
   const [anchorEl, setAnchorEl] = useState<EventTarget & HTMLButtonElement>();
 
+  if (isInDrawer) {
+    return <AddMenuPanel addMenuContent={addMenuContent} />;
+  }
+
   return (
     <>
       <IconButton
@@ -151,16 +190,9 @@ const AddMenu = (): ReactElement => {
         anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
         transformOrigin={{ vertical: 'top', horizontal: 'center' }}
       >
-        <Box display="flex" flexDirection="column" justifyContent="center">
-          {addMenuContent.map(({ text, icon, onClick }, index) => (
-            <RowContainer key={index} display="flex" onClick={onClick}>
-              {icon}
-              <MenuItemText primary={t(`${text}`)} />
-            </RowContainer>
-          ))}
-        </Box>
+        <AddMenuPanel addMenuContent={addMenuContent} />
       </MenuContainer>
-      {renderDialog()}
+      {renderDialog(selectedMenuItem, dialogOpen, changeDialogOpen)}
     </>
   );
 };

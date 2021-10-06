@@ -14,7 +14,7 @@ import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 interface NavItemProps {
   children?: ReactNode;
   className?: string;
-  depth: number;
+  depth?: number;
   href?: string;
   as?: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -72,7 +72,7 @@ export const Title = styled('span')(({ theme }) => ({
 
 export const NavItem: FC<NavItemProps> = ({
   children,
-  depth,
+  depth = 0,
   href = '',
   as,
   icon: Icon,
