@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useRouter } from 'next/router';
 import { Box, Card, CardContent, styled } from '@material-ui/core';
 import { ContactFilters } from '../../../../src/components/Contacts/ContactFilters/ContactFilters';
+import { ContactFlow } from '../../../../src/components/Contacts/ContactFlow/ContactFlow';
 import { InfiniteList } from '../../../../src/components/InfiniteList/InfiniteList';
 import { ContactDetails } from '../../../../src/components/Contacts/ContactDetails/ContactDetails';
 import Loading from '../../../../src/components/Loading';
@@ -170,35 +171,39 @@ const ContactsPage: React.FC = () => {
                       : ContactCheckBoxState.unchecked
                   }
                 />
-                <InfiniteList
-                  loading={loading}
-                  data={data?.contacts.nodes}
-                  totalCount={data?.contacts.totalCount}
-                  style={{ height: 'calc(100vh - 160px)' }}
-                  itemContent={(index, contact) => (
-                    <ContactRow
-                      accountListId={accountListId}
-                      key={index}
-                      contact={contact}
-                      isChecked={selectedContacts.includes(contact.id)}
-                      onContactSelected={setContactFocus}
-                      onContactCheckToggle={handleCheckOneContact}
-                    />
-                  )}
-                  endReached={() =>
-                    data?.contacts.pageInfo.hasNextPage &&
-                    fetchMore({
-                      variables: { after: data.contacts.pageInfo.endCursor },
-                    })
-                  }
-                  EmptyPlaceholder={
-                    <Card>
-                      <CardContent>
-                        TODO: Implement Empty Placeholder
-                      </CardContent>
-                    </Card>
-                  }
-                />
+                {contactsTableDisplayState === 'list' ? (
+                  <InfiniteList
+                    loading={loading}
+                    data={data?.contacts.nodes}
+                    totalCount={data?.contacts.totalCount}
+                    style={{ height: 'calc(100vh - 160px)' }}
+                    itemContent={(index, contact) => (
+                      <ContactRow
+                        accountListId={accountListId}
+                        key={index}
+                        contact={contact}
+                        isChecked={selectedContacts.includes(contact.id)}
+                        onContactSelected={setContactFocus}
+                        onContactCheckToggle={handleCheckOneContact}
+                      />
+                    )}
+                    endReached={() =>
+                      data?.contacts.pageInfo.hasNextPage &&
+                      fetchMore({
+                        variables: { after: data.contacts.pageInfo.endCursor },
+                      })
+                    }
+                    EmptyPlaceholder={
+                      <Card>
+                        <CardContent>
+                          TODO: Implement Empty Placeholder
+                        </CardContent>
+                      </Card>
+                    }
+                  />
+                ) : (
+                  <ContactFlow accountListId={accountListId} />
+                )}
               </>
             }
             rightPanel={
