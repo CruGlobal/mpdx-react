@@ -5,6 +5,7 @@ import {
   CardContent,
   CardHeader,
   Typography,
+  styled,
 } from '@material-ui/core';
 import { StarOutline, Star } from '@material-ui/icons';
 import React from 'react';
@@ -17,6 +18,22 @@ interface Props {
   color: string;
 }
 
+const ContactLink = styled(Typography)(() => ({
+  color: theme.palette.mpdxBlue.main,
+  '&:hover': {
+    textDecoration: 'underline',
+    cursor: 'pointer',
+  },
+}));
+
+const ContactStarOutline = styled(StarOutline)(() => ({
+  color: theme.palette.mpdxBlue.main,
+  '&:hover': {
+    color: theme.palette.progressBarYellow.main,
+    cursor: 'pointer',
+  },
+}));
+
 export const ContactFlowColumn: React.FC<Props> = ({
   data,
   title,
@@ -28,7 +45,9 @@ export const ContactFlowColumn: React.FC<Props> = ({
         style={{ borderBottom: `3px solid ${color}` }}
         title={
           <Box display="flex" justifyContent="space-between">
-            <Typography>{title}</Typography>
+            <Typography variant="h6" style={{ fontWeight: 600 }}>
+              {title}
+            </Typography>
             <Typography>{data.length}</Typography>
           </Box>
         }
@@ -59,11 +78,11 @@ export const ContactFlowColumn: React.FC<Props> = ({
                 style={{ width: theme.spacing(4), height: theme.spacing(4) }}
               />
               <Box display="flex" flexDirection="column" ml={2}>
-                <Typography>{contact.name}</Typography>
+                <ContactLink>{contact.name}</ContactLink>
                 <Typography>{contact.status}</Typography>
               </Box>
             </Box>
-            {contact.starred ? <Star /> : <StarOutline />}
+            {contact.starred ? <Star /> : <ContactStarOutline />}
           </Box>
         ))}
       </CardContent>
