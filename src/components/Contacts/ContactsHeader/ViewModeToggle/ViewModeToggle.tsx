@@ -11,7 +11,7 @@ interface ViewModeToggleProps {
     event: React.MouseEvent<HTMLElement>,
     viewMode: ContactsTableViewMode | null,
   ) => void;
-  value: string;
+  value: ContactsTableViewMode;
 }
 
 const BulletedListIcon = styled(FormatListBulleted)(({ theme }) => ({

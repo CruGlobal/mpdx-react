@@ -4,6 +4,7 @@ import {
   ButtonBase,
   Checkbox,
   Grid,
+  Hidden,
   ListItemIcon,
   ListItemSecondaryAction,
   ListItemText,
@@ -31,15 +32,17 @@ enum PledgeFrequencyEnum {
   WEEKLY = 'Weekly',
 }
 
-const ListItemButton = styled(ButtonBase)(() => ({
+const ListItemButton = styled(ButtonBase)(({ theme }) => ({
   flex: '1 1 auto',
   textAlign: 'left',
+  padding: theme.spacing(0, 2),
 }));
 
 interface Props {
   accountListId: string;
   contact: ContactRowFragment;
   isChecked: boolean;
+  isContactDetailOpen: boolean;
   onContactSelected: (contactId: string) => void;
   onContactCheckToggle: (
     event: React.ChangeEvent<HTMLInputElement>,
@@ -51,6 +54,7 @@ export const ContactRow: React.FC<Props> = ({
   accountListId,
   contact,
   isChecked,
+  isContactDetailOpen,
   onContactSelected,
   onContactCheckToggle,
 }) => {
@@ -73,16 +77,18 @@ export const ContactRow: React.FC<Props> = ({
 
   return (
     <>
-      <ListItemIcon>
-        <Checkbox
-          checked={isChecked}
-          color="secondary"
-          onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
-            onContactCheckToggle(event, contact.id)
-          }
-          value={isChecked}
-        />
-      </ListItemIcon>
+      <Hidden xsUp={isContactDetailOpen}>
+        <ListItemIcon>
+          <Checkbox
+            checked={isChecked}
+            color="secondary"
+            onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
+              onContactCheckToggle(event, contact.id)
+            }
+            value={isChecked}
+          />
+        </ListItemIcon>
+      </Hidden>
       <ListItemButton focusRipple onClick={onClick} data-testid="rowButton">
         <Grid container alignItems="center">
           <Grid item xs={6}>
@@ -110,42 +116,50 @@ export const ContactRow: React.FC<Props> = ({
             />
           </Grid>
           <Grid item xs={6}>
-            <Box display="flex" alignItems="center">
+            <Box
+              display="flex"
+              alignItems="center"
+              justifyContent={isContactDetailOpen ? 'flex-end' : undefined}
+            >
               <Box display="flex" alignItems="center" width={32}>
                 <GiftStatus lateAt={lateAt ?? undefined} />
               </Box>
-              <Box
-                display="flex"
-                flexDirection="column"
-                justifyContent="center"
-              >
-                {status && <ContactStatusLabel status={status} />}
-                <Typography component="span">
-                  {pledgeAmount && pledgeCurrency
-                    ? currencyFormat(pledgeAmount, pledgeCurrency)
-                    : pledgeAmount}{' '}
-                  {pledgeFrequency && PledgeFrequencyEnum[pledgeFrequency]}{' '}
-                  {lateAt && <ContactLateLabel lateAt={lateAt} />}
-                </Typography>
-              </Box>
+              <Hidden xsUp={isContactDetailOpen}>
+                <Box
+                  display="flex"
+                  flexDirection="column"
+                  justifyContent="center"
+                >
+                  {status && <ContactStatusLabel status={status} />}
+                  <Typography component="span">
+                    {pledgeAmount && pledgeCurrency
+                      ? currencyFormat(pledgeAmount, pledgeCurrency)
+                      : pledgeAmount}{' '}
+                    {pledgeFrequency && PledgeFrequencyEnum[pledgeFrequency]}{' '}
+                    {lateAt && <ContactLateLabel lateAt={lateAt} />}
+                  </Typography>
+                </Box>
+              </Hidden>
             </Box>
           </Grid>
         </Grid>
       </ListItemButton>
-      {uncompletedTasksCount > 0 && (
-        <ContactUncompletedTasksCount
-          uncompletedTasksCount={uncompletedTasksCount}
-        />
-      )}
-      <ListItemSecondaryAction
-        style={{ position: 'static', top: 0, transform: 'none' }}
-      >
-        <StarContactIconButton
-          accountListId={accountListId}
-          contactId={contactId}
-          isStarred={starred || false}
-        />
-      </ListItemSecondaryAction>
+      <Hidden xsUp={isContactDetailOpen}>
+        {uncompletedTasksCount > 0 && (
+          <ContactUncompletedTasksCount
+            uncompletedTasksCount={uncompletedTasksCount}
+          />
+        )}
+        <ListItemSecondaryAction
+          style={{ position: 'static', top: 0, transform: 'none' }}
+        >
+          <StarContactIconButton
+            accountListId={accountListId}
+            contactId={contactId}
+            isStarred={starred || false}
+          />
+        </ListItemSecondaryAction>
+      </Hidden>
     </>
   );
 };
