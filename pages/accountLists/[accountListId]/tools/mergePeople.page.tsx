@@ -1,20 +1,20 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import Head from 'next/head';
-import MergeContacts from '../../../../src/components/Tool/MergeContacts/MergeContacts';
+import MergePeople from '../../../../src/components/Tool/MergePeople/MergePeople';
 import { useAccountListId } from '../../../../src/hooks/useAccountListId';
 import Loading from '../../../../src/components/Loading';
 
-const MergeContactsPage: React.FC = () => {
+const MergePeoplePage: React.FC = () => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
   return (
     <>
       <Head>
-        <title>MPDX | {t('Merge Contacts')}</title>
+        <title>MPDX | {t('Merge People')}</title>
       </Head>
       {accountListId ? (
-        <MergeContacts accountListId={accountListId} />
+        <MergePeople accountListId={accountListId} />
       ) : (
         <Loading loading />
       )}
@@ -22,4 +22,4 @@ const MergeContactsPage: React.FC = () => {
   );
 };
 
-export default MergeContactsPage;
+export default MergePeoplePage;

@@ -11,9 +11,9 @@ import {
 
 import { Trans, useTranslation } from 'react-i18next';
 import theme from '../../../theme';
-import { useGetContactDuplicatesQuery } from './GetContactDuplicates.generated';
-import Contact from './Contact';
-import NoContacts from './NoContacts';
+import { useGetPersonDuplicatesQuery } from './GetPersonDuplicates.generated';
+import PersonDuplicate from './PersonDuplicates';
+import NoPeople from './NoPeople';
 
 const useStyles = makeStyles(() => ({
   container: {
@@ -52,24 +52,24 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-interface actionType {
+interface ActionType {
   action: string;
   mergeId?: string;
 }
 
-interface actionsType {
-  [key: string]: actionType;
+interface ActionsType {
+  [key: string]: ActionType;
 }
 
 interface Props {
   accountListId: string;
 }
 
-const MergeContacts: React.FC<Props> = ({ accountListId }: Props) => {
+const MergePeople: React.FC<Props> = ({ accountListId }: Props) => {
   const classes = useStyles();
-  const [actions, setActions] = useState<actionsType>({});
+  const [actions, setActions] = useState<ActionsType>({});
   const { t } = useTranslation();
-  const { data, loading } = useGetContactDuplicatesQuery({
+  const { data, loading } = useGetPersonDuplicatesQuery({
     variables: { accountListId },
   });
 
@@ -115,13 +115,13 @@ const MergeContacts: React.FC<Props> = ({ accountListId }: Props) => {
         {!loading && data ? (
           <Grid container className={classes.container}>
             <Grid item xs={12}>
-              <Typography variant="h4">{t('Merge Contacts')}</Typography>
+              <Typography variant="h4">{t('Merge People')}</Typography>
               <Divider className={classes.divider} />
               <Box className={classes.descriptionBox}>
                 <Typography>
                   {t(
-                    ' You have {{amount}} possible duplicate contacts. This is sometimes caused when you imported data into MPDX. We recommend reconciling these as soon as possible. Please select the duplicate that should win the merge. No data will be lost. ',
-                    { amount: data?.contactDuplicates.nodes.length },
+                    ' You have {{amount}} possible duplicate people. This is sometimes caused when you imported data into MPDX. We recommend reconciling these as soon as possible. Please select the duplicate that should win the merge. No data will be lost.',
+                    { amount: data?.personDuplicates.nodes.length },
                   )}
                 </Typography>
                 <Typography>
@@ -129,14 +129,14 @@ const MergeContacts: React.FC<Props> = ({ accountListId }: Props) => {
                 </Typography>
               </Box>
             </Grid>
-            {data?.contactDuplicates.nodes.length > 0 ? (
+            {data?.personDuplicates.nodes.length > 0 ? (
               <>
                 <Grid item xs={12}>
-                  {data?.contactDuplicates.nodes.map((duplicate) => (
-                    <Contact
+                  {data?.personDuplicates.nodes.map((duplicate) => (
+                    <PersonDuplicate
                       key={duplicate.id}
-                      contact1={duplicate.recordOne}
-                      contact2={duplicate.recordTwo}
+                      person1={duplicate.recordOne}
+                      person2={duplicate.recordTwo}
                       update={updateActions}
                     />
                   ))}
@@ -171,7 +171,7 @@ const MergeContacts: React.FC<Props> = ({ accountListId }: Props) => {
                     <Typography>
                       <Trans
                         defaults="Showing <bold>{{value}}</bold> of <bold>{{value}}</bold>"
-                        values={{ value: data?.contactDuplicates.nodes.length }}
+                        values={{ value: data?.personDuplicates.nodes.length }}
                         components={{ bold: <strong /> }}
                       />
                     </Typography>
@@ -179,7 +179,7 @@ const MergeContacts: React.FC<Props> = ({ accountListId }: Props) => {
                 </Grid>
               </>
             ) : (
-              <NoContacts />
+              <NoPeople />
             )}
           </Grid>
         ) : (
@@ -190,4 +190,4 @@ const MergeContacts: React.FC<Props> = ({ accountListId }: Props) => {
   );
 };
 
-export default MergeContacts;
+export default MergePeople;

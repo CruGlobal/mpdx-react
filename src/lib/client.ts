@@ -55,8 +55,10 @@ if (process.browser && process.env.NODE_ENV === 'production') {
 const client = new ApolloClient({
   link: errorLink.concat(httpLink),
   cache,
+  assumeImmutableResults: true,
   defaultOptions: {
     watchQuery: {
+      fetchPolicy: 'cache-and-network',
       notifyOnNetworkStatusChange: true,
     },
   },
@@ -77,6 +79,7 @@ export const ssrClient = (
   return new ApolloClient({
     link: errorLink.concat(httpLink),
     ssrMode: true,
+    assumeImmutableResults: true,
     cache: new InMemoryCache({
       possibleTypes: generatedIntrospection.possibleTypes,
     }),

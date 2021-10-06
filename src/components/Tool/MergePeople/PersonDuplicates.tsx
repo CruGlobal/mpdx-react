@@ -19,8 +19,7 @@ import {
 } from '@mdi/js';
 import { DateTime } from 'luxon';
 import theme from '../../../theme';
-import { contactTags } from '../FixCommitmentInfo/InputOptions/ContactTags';
-import { RecordInfoFragment } from './GetContactDuplicates.generated';
+import { PersonInfoFragment } from './GetPersonDuplicates.generated';
 
 const useStyles = makeStyles(() => ({
   container: {
@@ -78,12 +77,12 @@ export interface address {
 }
 
 interface Props {
-  contact1: RecordInfoFragment;
-  contact2: RecordInfoFragment;
+  person1: PersonInfoFragment;
+  person2: PersonInfoFragment;
   update: (id1: string, id2: string, action: string) => void;
 }
 
-const Contact: React.FC<Props> = ({ contact1, contact2, update }) => {
+const PersonDuplicate: React.FC<Props> = ({ person1, person2, update }) => {
   const [selected, setSelected] = useState('none');
   const { t } = useTranslation();
   const classes = useStyles();
@@ -94,19 +93,19 @@ const Contact: React.FC<Props> = ({ contact1, contact2, update }) => {
     switch (side) {
       case 'left':
         setSelected('left');
-        update(contact1.id, contact2.id, 'merge');
+        update(person1.id, person2.id, 'merge');
         break;
       case 'right':
         setSelected('right');
-        update(contact2.id, contact1.id, 'merge');
+        update(person2.id, person1.id, 'merge');
         break;
       case 'cancel':
         setSelected('cancel');
-        update(contact1.id, contact2.id, 'cancel');
+        update(person1.id, person2.id, 'cancel');
         break;
       default:
         setSelected('');
-        update(contact1.id, contact2.id, 'cancel');
+        update(person1.id, person2.id, 'cancel');
     }
   };
 
@@ -151,32 +150,37 @@ const Contact: React.FC<Props> = ({ contact1, contact2, update }) => {
                         width: '100%',
                       }}
                     >
-                      <Typography variant="h6">{contact1.name}</Typography>
+                      <Typography variant="h6">{`${person1.firstName} ${person1.lastName}`}</Typography>
                     </Box>
-                    {contact1.status && (
-                      <Typography>
-                        {t('Status: {{status}}', {
-                          status: contactTags[contact1.status],
-                        })}
-                      </Typography>
-                    )}
-                    {contact1.primaryAddress ? (
+
+                    {person1.primaryPhoneNumber ? (
                       <>
                         <Typography>
-                          {contact1.primaryAddress.street}
+                          {person1.primaryPhoneNumber.number}
                         </Typography>
-                        <Typography>{`${contact1.primaryAddress.city}, ${contact1.primaryAddress.state} ${contact1.primaryAddress.postalCode}`}</Typography>
+                        <Typography>
+                          {/* {t('From: {{where}}', { where: person1.primaryPhoneNumber.source })} */}
+                        </Typography>
+                      </>
+                    ) : (
+                      ''
+                    )}
+                    {person1.primaryEmailAddress ? (
+                      <>
+                        <Typography>
+                          {person1.primaryEmailAddress.email}
+                        </Typography>
+                        <Typography>
+                          {/* {t('From: {{where}}', { where: person1.primaryEmailAddress.source })} */}
+                        </Typography>
                       </>
                     ) : (
                       ''
                     )}
                     <Typography>
-                      {t('From: {{where}}', { where: contact1.source })}
-                    </Typography>
-                    <Typography>
                       {t('On: {{when}}', {
                         when: DateTime.fromISO(
-                          contact1.createdAt,
+                          person1.createdAt,
                         ).toLocaleString(DateTime.DATE_SHORT),
                       })}
                     </Typography>
@@ -293,31 +297,36 @@ const Contact: React.FC<Props> = ({ contact1, contact2, update }) => {
                         {t('Use this one')}
                       </Typography>
                     )}
-                    <Typography variant="h6">{contact2.name}</Typography>
-                    {contact2.status && (
-                      <Typography>
-                        {t('Status: {{status}}', {
-                          status: contactTags[contact2.status],
-                        })}
-                      </Typography>
-                    )}
-                    {contact2.primaryAddress ? (
+                    <Typography variant="h6">{`${person1.firstName} ${person1.lastName}`}</Typography>
+
+                    {person1.primaryPhoneNumber ? (
                       <>
                         <Typography>
-                          {contact2.primaryAddress.street}
+                          {person1.primaryPhoneNumber.number}
                         </Typography>
-                        <Typography>{`${contact2.primaryAddress.city}, ${contact2.primaryAddress.state} ${contact2.primaryAddress.postalCode}`}</Typography>
+                        <Typography>
+                          {/* {t('From: {{where}}', { where: person1.primaryPhoneNumber.source })} */}
+                        </Typography>
+                      </>
+                    ) : (
+                      ''
+                    )}
+                    {person1.primaryEmailAddress ? (
+                      <>
+                        <Typography>
+                          {person1.primaryEmailAddress.email}
+                        </Typography>
+                        <Typography>
+                          {/* {t('From: {{where}}', { where: person1.primaryEmailAddress.source })} */}
+                        </Typography>
                       </>
                     ) : (
                       ''
                     )}
                     <Typography>
-                      {t('From: {{where}}', { where: contact2.source })}
-                    </Typography>
-                    <Typography>
                       {t('On: {{when}}', {
                         when: DateTime.fromISO(
-                          contact2.createdAt,
+                          person2.createdAt,
                         ).toLocaleString(DateTime.DATE_SHORT),
                       })}
                     </Typography>
@@ -332,4 +341,4 @@ const Contact: React.FC<Props> = ({ contact1, contact2, update }) => {
   );
 };
 
-export default Contact;
+export default PersonDuplicate;

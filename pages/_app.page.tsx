@@ -18,6 +18,7 @@ import i18n from '../src/lib/i18n';
 import TaskDrawerProvider from '../src/components/Task/Drawer/TaskDrawerProvider';
 import { SnackbarUtilsConfigurator } from '../src/components/Snackbar/Snackbar';
 import { GlobalStyles } from '../src/components/GlobalStyles/GlobalStyles';
+import { RouterGuard } from '../src/components/RouterGuard/RouterGuard';
 
 const handleExitComplete = (): void => {
   if (typeof window !== 'undefined') {
@@ -30,9 +31,8 @@ export type PageWithLayout = NextPage & {
 };
 
 const App = ({ Component, pageProps, router }: AppProps): ReactElement => {
-  const { session } = pageProps;
   const Layout = (Component as PageWithLayout).layout || PrimaryLayout;
-
+  const { session } = pageProps;
   // useEffect(() => {
   //     // Remove the server-side injected CSS.
   //     const jssStyles = document.querySelector('#jss-server-side');
@@ -87,17 +87,19 @@ const App = ({ Component, pageProps, router }: AppProps): ReactElement => {
               <StylesProvider>
                 <MuiPickersUtilsProvider utils={LuxonUtils}>
                   <SnackbarProvider maxSnack={3}>
+                    <GlobalStyles />
                     <AnimatePresence
                       exitBeforeEnter
                       onExitComplete={handleExitComplete}
                     >
-                      <GlobalStyles />
-                      <TaskDrawerProvider>
-                        <Layout>
-                          <SnackbarUtilsConfigurator />
-                          <Component {...pageProps} key={router.route} />
-                        </Layout>
-                      </TaskDrawerProvider>
+                      <RouterGuard>
+                        <TaskDrawerProvider>
+                          <Layout>
+                            <SnackbarUtilsConfigurator />
+                            <Component {...pageProps} key={router.route} />
+                          </Layout>
+                        </TaskDrawerProvider>
+                      </RouterGuard>
                     </AnimatePresence>
                     <Loading />
                   </SnackbarProvider>
