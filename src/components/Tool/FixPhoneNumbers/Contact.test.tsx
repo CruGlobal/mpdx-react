@@ -94,7 +94,7 @@ describe('FixPhoneNumbers-Contact', () => {
     expect(addInput.value).toBe('');
   });
 
-  it('should call handle change function', () => {
+  it('should call mock functions', () => {
     const handleChangeMock = jest.fn();
     const handleDeleteModalOpenMock = jest.fn();
     const handleAddMock = jest.fn();
@@ -122,5 +122,9 @@ describe('FixPhoneNumbers-Contact', () => {
     expect(firstInput.value).toBe('3533895895');
     userEvent.type(firstInput, '123');
     expect(handleChangeMock).toHaveBeenCalled();
+    userEvent.click(getByTestId('starOutlineIcon-testid-1'));
+    expect(handleChangePrimaryMock).toHaveBeenCalled();
+    userEvent.click(getByTestId('delete-testid-1'));
+    expect(handleDeleteModalOpenMock).toHaveBeenCalled();
   });
 });
