@@ -11,6 +11,7 @@ import {
 import { Trans, useTranslation } from 'react-i18next';
 import { useSnackbar } from 'notistack';
 import {
+  MultiselectFilter,
   PledgeFrequencyEnum,
   StatusEnum,
 } from '../../../../graphql/types.generated';
@@ -26,6 +27,7 @@ import { contactTags } from './InputOptions/ContactTags';
 import { frequencies } from './InputOptions/Frequencies';
 import { useUpdateInvalidStatusMutation } from './UpdateInvalidStatus.generated';
 import client from 'src/lib/client';
+import { useContactFiltersQuery } from 'src/components/Contacts/ContactFilters/ContactFilters.generated';
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
@@ -72,10 +74,26 @@ const FixCommitmentInfo: React.FC<Props> = ({ accountListId }: Props) => {
   const { data, loading } = useGetInvalidStatusesQuery({
     variables: { accountListId },
   });
+  const {
+    data: contactFilterGroups,
+    loading: loadingStatuses,
+  } = useContactFiltersQuery({
+    variables: {
+      accountListId,
+    },
+  });
   const [
     updateInvalidStatus,
     { loading: updating },
   ] = useUpdateInvalidStatusMutation();
+
+  const contactStatuses = contactFilterGroups?.accountList?.contactFilterGroups
+    ? (contactFilterGroups.accountList.contactFilterGroups
+        .find((group) => group.name === 'Status')
+        ?.filters.find(
+          (filter: { filterKey: string }) => filter.filterKey === 'status',
+        ) as MultiselectFilter).options
+    : [{ name: '', value: '' }];
 
   //TODO: Make currency field a select element
 
@@ -137,7 +155,7 @@ const FixCommitmentInfo: React.FC<Props> = ({ accountListId }: Props) => {
   return (
     <>
       <Box className={classes.outer} data-testid="Home">
-        {!loading && !updating && data ? (
+        {!loading && !updating && !loadingStatuses && data ? (
           <Grid container className={classes.container}>
             <Grid item xs={12}>
               <Typography variant="h4">{t('Fix Commitment Info')}</Typography>
@@ -187,6 +205,7 @@ const FixCommitmentInfo: React.FC<Props> = ({ accountListId }: Props) => {
                         frequencyValue={contact.pledgeFrequency || ''}
                         hideFunction={hideContact}
                         updateFunction={updateContact}
+                        statuses={contactStatuses || [{ name: '', value: '' }]}
                       />
                     ))}
                   </Box>

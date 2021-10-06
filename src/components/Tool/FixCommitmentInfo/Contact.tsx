@@ -16,9 +16,9 @@ import SearchIcon from '@material-ui/icons/Search';
 import VisibilityOffIcon from '@material-ui/icons/VisibilityOff';
 import { useRouter } from 'next/router';
 import NextLink from 'next/link';
+import { FilterOption } from '../../../../graphql/types.generated';
 import theme from '../../../theme';
 import { StyledInput } from './StyledInput';
-import { contactTags } from './InputOptions/ContactTags';
 import { frequencies } from './InputOptions/Frequencies';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 
@@ -111,6 +111,7 @@ interface Props {
     pledgeAmount?: number,
     pledgeFrequency?: string,
   ) => Promise<void>;
+  statuses: FilterOption[];
 }
 
 const Contact: React.FC<Props> = ({
@@ -124,6 +125,7 @@ const Contact: React.FC<Props> = ({
   frequencyValue,
   hideFunction,
   updateFunction,
+  statuses,
 }) => {
   const [values, setValues] = useState({
     statusValue: statusValue,
@@ -187,13 +189,11 @@ const Contact: React.FC<Props> = ({
                   value={values.statusValue}
                   onChange={(event) => handleChange(event, 'statusValue')}
                 >
-                  {Object.entries(contactTags).map(
-                    ([statusValue, statusTranslated]) => (
-                      <option value={statusValue} key={statusValue}>
-                        {statusTranslated}
-                      </option>
-                    ),
-                  )}
+                  {statuses.map((status) => (
+                    <option value={status.value} key={status.value}>
+                      {status.name}
+                    </option>
+                  ))}
                 </NativeSelect>
               </Box>
             </Grid>
