@@ -116,10 +116,10 @@ export const ContactsHeader: React.FC<Props> = ({
       setContactsTableDisplayState(viewMode);
     }
   };
-  console.log('isContactDetailOpen', isContactDetailOpen);
+
   return (
     <HeaderWrap>
-      <Hidden smDown>
+      <Hidden xsUp={isContactDetailOpen}>
         <Checkbox
           checked={contactCheckboxState === ContactCheckBoxState.checked}
           color="secondary"
