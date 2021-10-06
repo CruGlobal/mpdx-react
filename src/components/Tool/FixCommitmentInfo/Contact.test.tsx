@@ -1,7 +1,9 @@
 import { ThemeProvider } from '@material-ui/styles';
+import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { render } from '../../../../__tests__/util/testingLibraryReactMock';
 import TestWrapper from '../../../../__tests__/util/TestWrapper';
+import TestRouter from '../../../../__tests__/util/TestRouter';
 import theme from '../../../theme';
 import Contact from './Contact';
 
@@ -14,6 +16,10 @@ const testData = {
   frequencyValue: 'monthly',
   amount: 50,
   amountCurrency: 'CAD',
+};
+
+const router = {
+  push: jest.fn(),
 };
 
 describe('FixCommitmentContact', () => {
@@ -48,5 +54,71 @@ describe('FixCommitmentContact', () => {
         } ${testData.frequencyTitle}`,
       ),
     ).toBeInTheDocument();
+  });
+
+  it('should call hide and update functions', () => {
+    const hideFunction = jest.fn();
+    const updateFunction = jest.fn();
+    const { getByTestId } = render(
+      <ThemeProvider theme={theme}>
+        <TestWrapper>
+          <Contact
+            id={testData.id}
+            name={testData.name}
+            key={testData.name}
+            statusTitle={testData.statusTitle}
+            statusValue={testData.statusValue}
+            amount={testData.amount}
+            amountCurrency={testData.amountCurrency}
+            frequencyTitle={testData.frequencyTitle}
+            frequencyValue={testData.frequencyValue}
+            hideFunction={hideFunction}
+            updateFunction={updateFunction}
+            statuses={[]}
+          />
+        </TestWrapper>
+      </ThemeProvider>,
+    );
+
+    userEvent.click(getByTestId('confirmButton'));
+
+    expect(updateFunction).toHaveBeenCalledTimes(1);
+
+    userEvent.click(getByTestId('doNotChangeButton'));
+
+    expect(updateFunction).toHaveBeenCalledTimes(2);
+
+    userEvent.click(getByTestId('hideButton'));
+
+    expect(hideFunction).toHaveBeenCalledTimes(1);
+  });
+
+  it('should redirect the page', () => {
+    const hideFunction = jest.fn();
+    const updateFunction = jest.fn();
+
+    const { getByTestId } = render(
+      <ThemeProvider theme={theme}>
+        <TestRouter router={router}>
+          <Contact
+            id={testData.id}
+            name={testData.name}
+            key={testData.name}
+            statusTitle={testData.statusTitle}
+            statusValue={testData.statusValue}
+            amount={testData.amount}
+            amountCurrency={testData.amountCurrency}
+            frequencyTitle={testData.frequencyTitle}
+            frequencyValue={testData.frequencyValue}
+            hideFunction={hideFunction}
+            updateFunction={updateFunction}
+            statuses={[]}
+          />
+        </TestRouter>
+      </ThemeProvider>,
+    );
+    userEvent.click(getByTestId('goToContactsButton'));
+
+    expect(router.push).toHaveBeenCalled();
   });
 });

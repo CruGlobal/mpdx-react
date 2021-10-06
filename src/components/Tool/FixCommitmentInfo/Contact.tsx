@@ -254,6 +254,7 @@ const Contact: React.FC<Props> = ({
             <Box className={classes.buttonTop}>
               <Button
                 variant="contained"
+                data-testid="confirmButton"
                 style={{ width: '100%' }}
                 onClick={() =>
                   updateFunction(
@@ -273,6 +274,7 @@ const Contact: React.FC<Props> = ({
               <Button
                 variant="contained"
                 style={{ width: '100%' }}
+                data-testid="doNotChangeButton"
                 onClick={() => updateFunction(id, false)}
               >
                 {"Don't Change"}
@@ -280,6 +282,7 @@ const Contact: React.FC<Props> = ({
             </Box>
             <Box>
               <IconButton
+                data-testid="goToContactsButton"
                 onClick={() =>
                   push({
                     pathname: `/accountLists/[accountListId]/contacts/[contactId]`,
@@ -289,7 +292,10 @@ const Contact: React.FC<Props> = ({
               >
                 <SearchIcon />
               </IconButton>
-              <IconButton onClick={() => hideFunction(id)}>
+              <IconButton
+                data-testid="hideButton"
+                onClick={() => hideFunction(id)}
+              >
                 <VisibilityOffIcon />
               </IconButton>
             </Box>
