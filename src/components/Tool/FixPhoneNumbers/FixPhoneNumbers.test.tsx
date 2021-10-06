@@ -242,4 +242,66 @@ describe('FixPhoneNumbers-Home', () => {
     expect(getByTestId('textfield-testid2-1')).toBeInTheDocument();
     expect(getByDisplayValue('+12345')).toBeInTheDocument();
   });
+
+  it('should render no contacts with no data', async () => {
+    const { getByText, queryByText, queryByTestId } = render(
+      <ThemeProvider theme={theme}>
+        <TestRouter router={router}>
+          <TestWrapper>
+            <GqlMockedProvider<GetInvalidPhoneNumbersQuery>
+              mocks={{
+                GetInvalidPhoneNumbers: {
+                  people: {
+                    nodes: [],
+                  },
+                },
+              }}
+            >
+              <FixPhoneNumbers accountListId={accountListId} />
+            </GqlMockedProvider>
+          </TestWrapper>
+        </TestRouter>
+      </ThemeProvider>,
+    );
+    await waitFor(() =>
+      expect(
+        getByText('No people with phone numbers need attention'),
+      ).toBeInTheDocument(),
+    );
+    expect(queryByText('Confirm 2 as MPDX')).not.toBeInTheDocument();
+    expect(queryByText('Test Contact')).not.toBeInTheDocument();
+    expect(queryByText('Simba Lion')).not.toBeInTheDocument();
+    expect(queryByTestId('textfield-testid-0')).not.toBeInTheDocument();
+    expect(queryByTestId('starIcon-testid-0')).not.toBeInTheDocument();
+  });
+
+  it('should modify first number of first contact', async () => {
+    const { getByTestId } = render(
+      <ThemeProvider theme={theme}>
+        <TestRouter router={router}>
+          <TestWrapper>
+            <GqlMockedProvider<GetInvalidPhoneNumbersQuery>
+              mocks={{
+                GetInvalidPhoneNumbers: {
+                  people: {
+                    nodes: testData,
+                  },
+                },
+              }}
+            >
+              <FixPhoneNumbers accountListId={accountListId} />
+            </GqlMockedProvider>
+          </TestWrapper>
+        </TestRouter>
+      </ThemeProvider>,
+    );
+    await waitFor(() => {
+      expect(getByTestId('textfield-testid-0')).toBeInTheDocument();
+    });
+    const firstInput = getByTestId('textfield-testid-0') as HTMLInputElement;
+
+    expect(firstInput.value).toBe('+3533895895');
+    userEvent.type(firstInput, '123');
+    expect(firstInput.value).toBe('+3533895895123');
+  });
 });

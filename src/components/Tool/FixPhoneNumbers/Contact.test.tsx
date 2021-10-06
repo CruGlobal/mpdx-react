@@ -118,7 +118,9 @@ describe('FixPhoneNumbers-Contact', () => {
       </ThemeProvider>,
     );
 
-    userEvent.type(getByTestId('textfield-testid-0'), '123');
-    expect(handleChangeMock).toHaveBeenCalledTimes(0);
+    const firstInput = getByTestId('textfield-testid-0') as HTMLInputElement;
+    expect(firstInput.value).toBe('3533895895');
+    userEvent.type(firstInput, '123');
+    expect(handleChangeMock).toHaveBeenCalled();
   });
 });
