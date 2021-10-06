@@ -185,6 +185,7 @@ const Contact: React.FC<Props> = ({
               <Box className={classes.boxTop}>
                 <NativeSelect
                   input={<StyledInput />}
+                  data-testid="statusSelect"
                   style={{ width: '100%' }}
                   value={values.statusValue}
                   onChange={(event) => handleChange(event, 'statusValue')}

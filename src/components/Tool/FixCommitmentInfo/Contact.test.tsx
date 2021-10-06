@@ -121,4 +121,36 @@ describe('FixCommitmentContact', () => {
 
     expect(router.push).toHaveBeenCalled();
   });
+
+  it('should render statuses', () => {
+    const hideFunction = jest.fn();
+    const updateFunction = jest.fn();
+
+    const { getByTestId, getByText } = render(
+      <ThemeProvider theme={theme}>
+        <TestRouter router={router}>
+          <Contact
+            id={testData.id}
+            name={testData.name}
+            key={testData.name}
+            statusTitle={'testData.statusTitle'}
+            statusValue={testData.statusValue}
+            amount={testData.amount}
+            amountCurrency={testData.amountCurrency}
+            frequencyTitle={testData.frequencyTitle}
+            frequencyValue={testData.frequencyValue}
+            hideFunction={hideFunction}
+            updateFunction={updateFunction}
+            statuses={[
+              { name: 'Partner - Financial', value: 'PARTNER_FINANCIAL' },
+              { name: 'test_option_1', value: 'test1' },
+            ]}
+          />
+        </TestRouter>
+      </ThemeProvider>,
+    );
+    expect(getByText(testData.statusTitle)).toBeInTheDocument();
+    userEvent.click(getByTestId('statusSelect'));
+    expect(getByText('test_option_1')).toBeInTheDocument();
+  });
 });
