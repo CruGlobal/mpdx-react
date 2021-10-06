@@ -1,7 +1,6 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import { MockedProvider } from '@apollo/client/testing';
-import userEvent from '@testing-library/user-event';
 import { ThemeProvider } from '@material-ui/core';
 import * as nextRouter from 'next/router';
 import theme from '../../../../theme';
@@ -24,8 +23,8 @@ describe('TopBar', () => {
     }));
   });
 
-  it('has correct defaults', () => {
-    const { queryByText, getByTestId } = render(
+  it('default', () => {
+    const { getByTestId } = render(
       <ThemeProvider theme={theme}>
         <MockedProvider mocks={mocks} addTypename={false}>
           <TopBar
@@ -35,10 +34,7 @@ describe('TopBar', () => {
         </MockedProvider>
       </ThemeProvider>,
     );
-    userEvent.click(getByTestId('profileMenuButton'));
-    expect(queryByText('Manage Organizations')).not.toBeInTheDocument();
-    expect(queryByText('Admin Console')).not.toBeInTheDocument();
-    expect(queryByText('Backend Admin')).not.toBeInTheDocument();
-    expect(queryByText('Sidekiq')).not.toBeInTheDocument();
+
+    expect(getByTestId('TopBar')).toBeInTheDocument();
   });
 });
