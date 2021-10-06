@@ -193,7 +193,7 @@ const FixPhoneNumbers: React.FC<Props> = ({ accountListId }: Props) => {
     )[0];
     deleting.destroy = true;
     deleting.primary &&
-      (temp[deleteModalState.personId].phoneNumbers[0]['primary'] = true); // If the deleted number was primary, set the new first index to primary
+      (temp[deleteModalState.personId].phoneNumbers[0].primary = true); // If the deleted number was primary, set the new first index to primary
     deleting.id &&
       temp[deleteModalState.personId].toDelete.push({
         destroy: true,
