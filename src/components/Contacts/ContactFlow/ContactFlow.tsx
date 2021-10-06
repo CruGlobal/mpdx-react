@@ -10,6 +10,7 @@ interface Props {
 }
 
 export const ContactFlow: React.FC<Props> = ({ accountListId }: Props) => {
+  // Uses its own query because the list view's data depends on the active filters
   const { data, loading } = useContactsFlowQuery({
     variables: {
       accountListId: accountListId ?? '',
