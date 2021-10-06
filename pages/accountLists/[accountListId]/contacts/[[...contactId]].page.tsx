@@ -21,6 +21,7 @@ import {
   ContactCheckBoxState,
   ContactsHeader,
 } from '../../../../src/components/Contacts/ContactsHeader/ContactsHeader';
+// eslint-disable-next-line import/namespace
 import { ContactRow } from '../../../../src/components/Contacts/ContactRow/ContactRow';
 import { useContactsQuery } from './Contacts.generated';
 
@@ -193,6 +194,7 @@ const ContactsPage: React.FC = () => {
                       key={index}
                       contact={contact}
                       isChecked={selectedContacts.includes(contact.id)}
+                      isContactDetailOpen={contactDetailsOpen}
                       onContactSelected={setContactFocus}
                       onContactCheckToggle={handleCheckOneContact}
                     />
