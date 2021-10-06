@@ -92,7 +92,12 @@ const FixCommitmentInfo: React.FC<Props> = ({ accountListId }: Props) => {
         .find((group) => group.name === 'Status')
         ?.filters.find(
           (filter: { filterKey: string }) => filter.filterKey === 'status',
-        ) as MultiselectFilter).options
+        ) as MultiselectFilter).options?.filter(
+        (status) =>
+          status.value !== 'NULL' &&
+          status.value !== 'HIDDEN' &&
+          status.value !== 'ACTIVE',
+      )
     : [{ name: '', value: '' }];
 
   //TODO: Make currency field a select element
