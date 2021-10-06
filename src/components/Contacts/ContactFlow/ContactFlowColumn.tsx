@@ -39,6 +39,7 @@ export const ContactFlowColumn: React.FC<Props> = ({
           padding: 0,
           width: '100%',
           overflow: 'auto',
+          background: theme.palette.cruGrayLight.main,
         }}
       >
         {data.map((contact) => (
@@ -50,6 +51,7 @@ export const ContactFlowColumn: React.FC<Props> = ({
             width="100%"
             p={2}
             borderBottom={`1px solid ${theme.palette.cruGrayLight.main}`}
+            style={{ backgroundColor: 'white' }}
           >
             <Box display="flex" alignItems="center">
               <Avatar
