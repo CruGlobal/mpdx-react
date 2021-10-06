@@ -136,7 +136,7 @@ const FixPhoneNumbers: React.FC<Props> = ({ accountListId }: Props) => {
     () =>
       setDataState(
         data
-          ? data.people.nodes.reduce<{ [key: string]: PersonPhoneNumbers }>(
+          ? data.people.nodes?.reduce<{ [key: string]: PersonPhoneNumbers }>(
               (map, obj) => {
                 map[obj.id] = {
                   phoneNumbers: obj.phoneNumbers.nodes.map((phoneNumber) => ({
