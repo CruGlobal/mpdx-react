@@ -93,4 +93,32 @@ describe('FixPhoneNumbers-Contact', () => {
     userEvent.click(addButton);
     expect(addInput.value).toBe('');
   });
+
+  it('should call handle change function', () => {
+    const handleChangeMock = jest.fn();
+    const handleDeleteModalOpenMock = jest.fn();
+    const handleAddMock = jest.fn();
+    const handleChangePrimaryMock = jest.fn();
+
+    const { getByTestId } = render(
+      <ThemeProvider theme={theme}>
+        <TestWrapper>
+          <Contact
+            name={testData.name}
+            key={testData.name}
+            personId={testData.id}
+            numbers={testData.numbers}
+            toDelete={[]}
+            handleChange={handleChangeMock}
+            handleDelete={handleDeleteModalOpenMock}
+            handleAdd={handleAddMock}
+            handleChangePrimary={handleChangePrimaryMock}
+          />
+        </TestWrapper>
+      </ThemeProvider>,
+    );
+
+    userEvent.type(getByTestId('textfield-testid-0'), '123');
+    expect(handleChangeMock).toHaveBeenCalledTimes(0);
+  });
 });
