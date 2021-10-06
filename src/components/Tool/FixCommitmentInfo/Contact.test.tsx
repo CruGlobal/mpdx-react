@@ -35,13 +35,12 @@ describe('FixCommitmentContact', () => {
             frequencyValue={testData.frequencyValue}
             hideFunction={hideFunction}
             updateFunction={updateFunction}
+            statuses={[]}
           />
         </TestWrapper>
       </ThemeProvider>,
     );
     expect(getByText(testData.name)).toBeInTheDocument();
-    expect(getByText(testData.statusTitle)).toBeInTheDocument();
-    expect(getByText(testData.frequencyTitle)).toBeInTheDocument();
     expect(
       getByText(
         `Current: ${testData.statusTitle} ${testData.amount.toFixed(2)} ${
