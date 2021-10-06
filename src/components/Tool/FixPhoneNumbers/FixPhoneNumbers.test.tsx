@@ -78,7 +78,7 @@ const testData: ErgonoMockShape[] = [
 
 describe('FixPhoneNumbers-Home', () => {
   it('default with test data', async () => {
-    const { getByText, getByTestId } = render(
+    const { getByText, getByTestId, queryByTestId } = render(
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
           <TestWrapper>
@@ -109,6 +109,7 @@ describe('FixPhoneNumbers-Home', () => {
     expect(getByText('Simba Lion')).toBeInTheDocument();
     expect(getByTestId('textfield-testid-0')).toBeInTheDocument();
     expect(getByTestId('starIcon-testid-0')).toBeInTheDocument();
+    expect(queryByTestId('no-contacts')).not.toBeInTheDocument();
   });
 
   it('change primary of first number', async () => {
@@ -244,7 +245,7 @@ describe('FixPhoneNumbers-Home', () => {
   });
 
   it('should render no contacts with no data', async () => {
-    const { getByText, queryByText, queryByTestId } = render(
+    const { getByText, getByTestId } = render(
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
           <TestWrapper>
@@ -263,16 +264,10 @@ describe('FixPhoneNumbers-Home', () => {
         </TestRouter>
       </ThemeProvider>,
     );
-    await waitFor(() =>
-      expect(
-        getByText('No people with phone numbers need attention'),
-      ).toBeInTheDocument(),
-    );
-    expect(queryByText('Confirm 2 as MPDX')).not.toBeInTheDocument();
-    expect(queryByText('Test Contact')).not.toBeInTheDocument();
-    expect(queryByText('Simba Lion')).not.toBeInTheDocument();
-    expect(queryByTestId('textfield-testid-0')).not.toBeInTheDocument();
-    expect(queryByTestId('starIcon-testid-0')).not.toBeInTheDocument();
+    await waitFor(() => expect(getByTestId('no-contacts')).toBeInTheDocument());
+    expect(
+      getByText('No people with phone numbers need attention'),
+    ).toBeInTheDocument();
   });
 
   it('should modify first number of first contact', async () => {
