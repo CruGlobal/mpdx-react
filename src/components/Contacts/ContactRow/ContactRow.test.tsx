@@ -24,6 +24,7 @@ it('should display contact name', () => {
         accountListId={accountListId}
         contact={contact}
         isChecked={false}
+        isContactDetailOpen={false}
         onContactCheckToggle={onContactCheckToggle}
         onContactSelected={() => {}}
       />
