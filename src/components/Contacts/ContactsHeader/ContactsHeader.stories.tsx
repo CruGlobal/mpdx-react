@@ -11,6 +11,7 @@ export const Default = (): ReactElement => {
       activeFilters={false}
       contactCheckboxState={ContactCheckBoxState.unchecked}
       filterPanelOpen={false}
+      isContactDetailOpen={false}
       toggleFilterPanel={() => {}}
       onCheckAllContacts={() => {}}
       onSearchTermChanged={() => {}}
@@ -24,6 +25,7 @@ export const ActiveFilters = (): ReactElement => {
       activeFilters={true}
       contactCheckboxState={ContactCheckBoxState.unchecked}
       filterPanelOpen={false}
+      isContactDetailOpen={false}
       toggleFilterPanel={() => {}}
       onCheckAllContacts={() => {}}
       onSearchTermChanged={() => {}}
@@ -37,6 +39,7 @@ export const FilterPanelOpen = (): ReactElement => {
       activeFilters={false}
       contactCheckboxState={ContactCheckBoxState.unchecked}
       filterPanelOpen={true}
+      isContactDetailOpen={false}
       toggleFilterPanel={() => {}}
       onCheckAllContacts={() => {}}
       onSearchTermChanged={() => {}}
@@ -50,6 +53,7 @@ export const ActiveFiltersAndFilterPanelOpen = (): ReactElement => {
       activeFilters={true}
       contactCheckboxState={ContactCheckBoxState.unchecked}
       filterPanelOpen={true}
+      isContactDetailOpen={false}
       toggleFilterPanel={() => {}}
       onCheckAllContacts={() => {}}
       onSearchTermChanged={() => {}}
