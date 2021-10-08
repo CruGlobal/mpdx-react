@@ -81,15 +81,12 @@ const FixSendNewsletter: React.FC<Props> = ({ accountListId }: Props) => {
   //TODO: Add deceased to contact filters
   const updateContact = async (
     id: string,
-    change: boolean,
     sendNewsletter: string,
   ): Promise<void> => {
-    const attributes = change
-      ? {
-          id,
-          sendNewsletter: sendNewsletter as SendNewsletterEnum,
-        }
-      : { id, statusValid: true };
+    const attributes = {
+      id,
+      sendNewsletter: sendNewsletter as SendNewsletterEnum,
+    };
     await updateNewsletter({
       variables: {
         accountListId,
@@ -130,7 +127,7 @@ const FixSendNewsletter: React.FC<Props> = ({ accountListId }: Props) => {
   return (
     <>
       <Box className={classes.outer} data-testid="Home">
-        {!loading && data ? (
+        {!loading && !updating && data ? (
           <Grid container className={classes.container}>
             <Grid item xs={12}>
               <Typography variant="h4">{t('Fix Send Newsletter')}</Typography>
@@ -173,6 +170,7 @@ const FixSendNewsletter: React.FC<Props> = ({ accountListId }: Props) => {
                 <Grid item xs={12}>
                   {data.contacts.nodes.map((contact) => (
                     <Contact
+                      id={contact.id}
                       name={contact.name}
                       // need to fix this after changes to fix commitment info get merged
                       status={contact.status || ''}
@@ -196,6 +194,7 @@ const FixSendNewsletter: React.FC<Props> = ({ accountListId }: Props) => {
                           updatedAt: '',
                         }
                       }
+                      updateFunction={updateContact}
                     />
                   ))}
                 </Grid>
