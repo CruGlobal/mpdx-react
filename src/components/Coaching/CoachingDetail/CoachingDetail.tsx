@@ -55,7 +55,6 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
     variables: { coachingId: coachingId },
   });
 
-  console.log(coachingId);
   return (
     <CoachingDetailContainer>
       <CoachingSideContainer bgcolor={theme.palette.progressBarGray.main}>
