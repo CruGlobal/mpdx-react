@@ -127,7 +127,7 @@ const FixSendNewsletter: React.FC<Props> = ({ accountListId }: Props) => {
   return (
     <>
       <Box className={classes.outer} data-testid="Home">
-        {!loading && !updating && data ? (
+        {!loading && data ? (
           <Grid container className={classes.container}>
             <Grid item xs={12}>
               <Typography variant="h4">{t('Fix Send Newsletter')}</Typography>
