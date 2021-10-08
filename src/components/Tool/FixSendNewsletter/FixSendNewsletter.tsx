@@ -12,9 +12,8 @@ import { Icon } from '@mdi/react';
 import { mdiCheckboxMarkedCircle } from '@mdi/js';
 import { useTranslation, Trans } from 'react-i18next';
 import theme from '../../../theme';
-// import { ContactTags } from '../FixCommitmentInfo/InputOptions/ContactTags';
+import NoData from '../NoData';
 import Contact from './Contact';
-import NoContacts from './NoContacts';
 import { useGetInvalidNewsletterQuery } from './GetInvalidNewsletter.generated';
 
 const useStyles = makeStyles(() => ({
@@ -154,7 +153,7 @@ const FixSendNewsletter: React.FC<Props> = ({ accountListId }: Props) => {
                 </Grid>
               </>
             ) : (
-              <NoContacts />
+              <NoData tool="fixSendNewsletter" />
             )}
           </Grid>
         ) : (
