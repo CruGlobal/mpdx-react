@@ -1,10 +1,10 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Typography } from '@material-ui/core';
-import { StatusEnum } from '../../../../graphql/types.generated';
+import { StatusEnum as ContactRelationshipStatus } from '../../../../graphql/types.generated';
 
 interface ContactStatusLabelProps {
-  status: StatusEnum;
+  status: ContactRelationshipStatus;
 }
 
 enum ContactStatusEnum {
