@@ -73,10 +73,7 @@ const FixSendNewsletter: React.FC<Props> = ({ accountListId }: Props) => {
   const { data, loading } = useGetInvalidNewsletterQuery({
     variables: { accountListId },
   });
-  const [
-    updateNewsletter,
-    { loading: updating },
-  ] = useUpdateContactNewsletterMutation();
+  const [updateNewsletter] = useUpdateContactNewsletterMutation();
 
   //TODO: Add deceased to contact filters
   const updateContact = async (
@@ -93,7 +90,7 @@ const FixSendNewsletter: React.FC<Props> = ({ accountListId }: Props) => {
         attributes,
       },
     });
-    enqueueSnackbar(t('Contact commitment info updated!'), {
+    enqueueSnackbar(t('Newsletter updated!'), {
       variant: 'success',
     });
     hideContact(id);
