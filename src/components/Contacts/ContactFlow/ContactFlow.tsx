@@ -55,29 +55,40 @@ export const ContactFlow: React.FC<Props> = ({ accountListId }: Props) => {
       {loadingUserOptions ? (
         <CircularProgress />
       ) : (
-        <Box
-          display="grid"
-          width="100%"
-          gridTemplateColumns="repeat(5, 1fr)"
-          gridGap={theme.spacing(1)}
-          overflow="auto"
-        >
-          {flowOptions &&
-            flowOptions.map(
-              (column: { name: string; statuses: string[]; color: string }) => (
-                <Box width="100%" p={2} key={column.name}>
-                  <ContactFlowColumn
-                    accountListId={accountListId}
-                    title={column.name}
-                    color={colorMap[column.color]}
-                    statuses={column.statuses.map(
-                      (status) => statusMap[status] as ContactFilterStatusEnum,
-                    )}
-                  />
-                </Box>
-              ),
-            )}
-        </Box>
+        <>
+          {flowOptions && (
+            <Box
+              display="grid"
+              minWidth="100%"
+              gridTemplateColumns={`repeat(${flowOptions.length}, 1fr`}
+              gridAutoFlow="column"
+              gridGap={theme.spacing(1)}
+              overflow="auto"
+              style={{ overflowX: 'auto' }}
+            >
+              {flowOptions.map(
+                (column: {
+                  name: string;
+                  statuses: string[];
+                  color: string;
+                }) => (
+                  <Box width={'100%'} p={2} key={column.name}>
+                    <ContactFlowColumn
+                      accountListId={accountListId}
+                      title={column.name}
+                      color={colorMap[column.color]}
+                      statuses={column.statuses.map(
+                        (status) =>
+                          statusMap[status] as ContactFilterStatusEnum,
+                      )}
+                    />
+                  </Box>
+                ),
+              )}
+              ,
+            </Box>
+          )}
+        </>
       )}
     </>
   );
