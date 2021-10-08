@@ -109,7 +109,7 @@ describe('FixPhoneNumbers-Home', () => {
     expect(getByText('Simba Lion')).toBeInTheDocument();
     expect(getByTestId('textfield-testid-0')).toBeInTheDocument();
     expect(getByTestId('starIcon-testid-0')).toBeInTheDocument();
-    expect(queryByTestId('no-contacts')).not.toBeInTheDocument();
+    expect(queryByTestId('no-data')).not.toBeInTheDocument();
   });
 
   it('change primary of first number', async () => {
@@ -264,7 +264,7 @@ describe('FixPhoneNumbers-Home', () => {
         </TestRouter>
       </ThemeProvider>,
     );
-    await waitFor(() => expect(getByTestId('no-contacts')).toBeInTheDocument());
+    await waitFor(() => expect(getByTestId('no-data')).toBeInTheDocument());
     expect(
       getByText('No people with phone numbers need attention'),
     ).toBeInTheDocument();

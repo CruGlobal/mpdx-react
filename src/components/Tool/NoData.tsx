@@ -95,7 +95,7 @@ const textMap: { [key: string]: ToolText } = {
 
 const NoData: React.FC<Props> = ({ tool }: Props) => {
   return (
-    <StyledBox>
+    <StyledBox data-testid="no-data">
       <Icon path={textMap[tool].icon} size={1.5} />
       <Typography variant="h5">{textMap[tool].primaryText}</Typography>
       <Typography>{textMap[tool].secondaryText}</Typography>
