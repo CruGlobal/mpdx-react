@@ -25,11 +25,6 @@ const CoachingPage: React.FC = () => {
     <>
       <Head>
         <title>MPDX | {t('Coaching Accounts')}</title>
-        {console.log(query)}
-        {console.log(push)}
-        {console.log(replace)}
-        {console.log(isReady)}
-        {console.log(pathname)}
       </Head>
       {accountListId ? (
         coachingDetailId ? (
