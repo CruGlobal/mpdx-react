@@ -13,10 +13,13 @@ import {
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { Icon } from '@mdi/react';
-import { mdiCheckboxMarkedCircle, mdiLock, mdiPlus, mdiDelete } from '@mdi/js';
+import { mdiCheckboxMarkedCircle, mdiPlus, mdiLock, mdiDelete } from '@mdi/js';
 import StarIcon from '@material-ui/icons/Star';
 import StarOutlineIcon from '@material-ui/icons/StarOutline';
+import { DateTime } from 'luxon';
+import { PersonPhoneNumberInput } from '../../../../graphql/types.generated';
 import theme from '../../../theme';
+import { PhoneNumberData } from './FixPhoneNumbers';
 
 const useStyles = makeStyles((theme: Theme) => ({
   left: {
@@ -93,31 +96,25 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-export interface phoneNumber {
-  source: string;
-  date: string;
-  number: string;
-  primary: boolean;
-}
-
 interface Props {
   name: string;
-  numbers: phoneNumber[];
-  contactIndex: number;
+  numbers: PhoneNumberData[];
+  toDelete: PersonPhoneNumberInput[];
+  personId: string;
   handleChange: (
-    contactIndex: number,
+    personId: string,
     numberIndex: number,
     event: React.ChangeEvent<HTMLInputElement>,
   ) => void;
-  handleDelete: (contactIndex: number, phoneNumber: number) => void;
-  handleAdd: (contactIndex: number, number: string) => void;
-  handleChangePrimary: (contactIndex: number, numberIndex: number) => void;
+  handleDelete: (personId: string, phoneNumber: number) => void;
+  handleAdd: (personId: string, number: string) => void;
+  handleChangePrimary: (personId: string, numberIndex: number) => void;
 }
 
 const Contact: React.FC<Props> = ({
   name,
   numbers,
-  contactIndex,
+  personId,
   handleChange,
   handleDelete,
   handleAdd,
@@ -137,7 +134,7 @@ const Contact: React.FC<Props> = ({
 
   const addNewPhoneNumber = (): void => {
     if (newPhoneNumber) {
-      handleAdd(contactIndex, newPhoneNumber);
+      handleAdd(personId, newPhoneNumber);
       setNewPhoneNumber('');
     }
   };
@@ -206,21 +203,23 @@ const Contact: React.FC<Props> = ({
                               </Typography>
                             </Hidden>
                             <Typography display="inline">
-                              {`${phoneNumber.source} (${phoneNumber.date})`}
+                              {`${phoneNumber.source} (${DateTime.fromISO(
+                                phoneNumber.updatedAt,
+                              ).toLocaleString(DateTime.DATE_SHORT)})`}
                             </Typography>
                           </Box>
                           <Typography>
                             {phoneNumber.primary ? (
                               <StarIcon
-                                data-testid={`starIcon-${contactIndex}-${index}`}
+                                data-testid={`starIcon-${personId}-${index}`}
                                 className={classes.hoverHighlight}
                               />
                             ) : (
                               <StarOutlineIcon
-                                data-testid={`starOutlineIcon-${contactIndex}-${index}`}
+                                data-testid={`starOutlineIcon-${personId}-${index}`}
                                 className={classes.hoverHighlight}
                                 onClick={() =>
-                                  handleChangePrimary(contactIndex, index)
+                                  handleChangePrimary(personId, index)
                                 }
                               />
                             )}
@@ -238,18 +237,20 @@ const Contact: React.FC<Props> = ({
                         >
                           <TextField
                             style={{ width: '100%' }}
-                            data-testid={`textfield-${contactIndex}-${index}`}
+                            inputProps={{
+                              'data-testid': `textfield-${personId}-${index}`,
+                            }}
                             onChange={(
                               event: React.ChangeEvent<HTMLInputElement>,
-                            ) => handleChange(contactIndex, index, event)}
+                            ) => handleChange(personId, index, event)}
                             value={phoneNumber.number}
                             disabled={phoneNumber.source !== 'MPDX'}
                           />
 
                           {phoneNumber.source === 'MPDX' ? (
                             <Box
-                              data-testid={`delete-${contactIndex}-${index}`}
-                              onClick={() => handleDelete(contactIndex, index)}
+                              data-testid={`delete-${personId}-${index}`}
+                              onClick={() => handleDelete(personId, index)}
                             >
                               <Icon
                                 path={mdiDelete}
@@ -301,13 +302,13 @@ const Contact: React.FC<Props> = ({
                           event: React.ChangeEvent<HTMLInputElement>,
                         ) => updateNewPhoneNumber(event)}
                         inputProps={{
-                          'data-testid': `addNewNumberInput-${contactIndex}`,
+                          'data-testid': `addNewNumberInput-${personId}`,
                         }}
                         value={newPhoneNumber}
                       />
                       <Box
                         onClick={() => addNewPhoneNumber()}
-                        data-testid={`addButton-${contactIndex}`}
+                        data-testid={`addButton-${personId}`}
                       >
                         <Icon
                           path={mdiPlus}
