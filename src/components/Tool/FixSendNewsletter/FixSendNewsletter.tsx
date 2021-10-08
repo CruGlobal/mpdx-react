@@ -14,7 +14,6 @@ import { useTranslation, Trans } from 'react-i18next';
 import { useSnackbar } from 'notistack';
 import { SendNewsletterEnum } from '../../../../graphql/types.generated';
 import theme from '../../../theme';
-// import { ContactTags } from '../FixCommitmentInfo/InputOptions/ContactTags';
 import Contact from './Contact';
 import NoContacts from './NoContacts';
 import {
