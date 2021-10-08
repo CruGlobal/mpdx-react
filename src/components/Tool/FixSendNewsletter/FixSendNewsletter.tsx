@@ -73,7 +73,10 @@ const FixSendNewsletter: React.FC<Props> = ({ accountListId }: Props) => {
   const { data, loading } = useGetInvalidNewsletterQuery({
     variables: { accountListId },
   });
-  const [updateNewsletter] = useUpdateContactNewsletterMutation();
+  const [
+    updateNewsletter,
+    { loading: updating },
+  ] = useUpdateContactNewsletterMutation();
 
   //TODO: Add deceased to contact filters
   const updateContact = async (
@@ -124,7 +127,7 @@ const FixSendNewsletter: React.FC<Props> = ({ accountListId }: Props) => {
   return (
     <>
       <Box className={classes.outer} data-testid="Home">
-        {!loading && data ? (
+        {!loading && !updating && data ? (
           <Grid container className={classes.container}>
             <Grid item xs={12}>
               <Typography variant="h4">{t('Fix Send Newsletter')}</Typography>
