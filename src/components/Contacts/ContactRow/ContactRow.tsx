@@ -17,6 +17,7 @@ import { StarContactIconButton } from '../StarContactIconButton/StarContactIconB
 import { ContactUncompletedTasksCount } from '../ContactUncompletedTasksCount/ContactUncompletedTasksCount';
 import { ContactStatusLabel } from '../ContactStatusLabel/ContactStatusLabel';
 import { ContactLateLabel } from '../ContactLateLabel/ContactLateLabel';
+import { StatusEnum } from '../../../../graphql/types.generated';
 import { ContactRowFragment } from './ContactRow.generated';
 import { currencyFormat } from 'src/lib/intlFormat';
 
@@ -76,7 +77,7 @@ export const ContactRow: React.FC<Props> = ({
   } = contact;
 
   return (
-    <>
+    <React.Fragment data-testid="ContactRow">
       <Hidden xsUp={isContactDetailOpen}>
         <ListItemIcon>
           <Checkbox
@@ -122,7 +123,9 @@ export const ContactRow: React.FC<Props> = ({
               justifyContent={isContactDetailOpen ? 'flex-end' : undefined}
             >
               <Box display="flex" alignItems="center" width={32}>
-                <GiftStatus lateAt={lateAt ?? undefined} />
+                {status === StatusEnum.PartnerFinancial && (
+                  <GiftStatus lateAt={lateAt ?? undefined} />
+                )}
               </Box>
               <Hidden xsUp={isContactDetailOpen}>
                 <Box
@@ -160,6 +163,6 @@ export const ContactRow: React.FC<Props> = ({
           />
         </ListItemSecondaryAction>
       </Hidden>
-    </>
+    </React.Fragment>
   );
 };
