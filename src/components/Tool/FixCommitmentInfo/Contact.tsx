@@ -9,14 +9,18 @@ import {
   IconButton,
   makeStyles,
   NativeSelect,
+  styled,
 } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import SearchIcon from '@material-ui/icons/Search';
 import VisibilityOffIcon from '@material-ui/icons/VisibilityOff';
+import { useRouter } from 'next/router';
+import NextLink from 'next/link';
+import { FilterOption } from '../../../../graphql/types.generated';
 import theme from '../../../theme';
 import { StyledInput } from './StyledInput';
-import { contactTags } from './InputOptions/ContactTags';
 import { frequencies } from './InputOptions/Frequencies';
+import { useAccountListId } from 'src/hooks/useAccountListId';
 
 const useStyles = makeStyles(() => ({
   right: {
@@ -81,34 +85,58 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
+const ContactLink = styled(Typography)(() => ({
+  color: theme.palette.mpdxBlue.main,
+  '&:hover': {
+    textDecoration: 'underline',
+    cursor: 'pointer',
+  },
+}));
+
 interface Props {
-  id?: string;
+  id: string;
   name: string;
-  tagTitle: string;
-  tagValue: string;
+  statusTitle: string;
+  statusValue: string;
   amount: number;
   amountCurrency: string;
   frequencyTitle: string;
   frequencyValue: string;
+  hideFunction: (hideId: string) => void;
+  updateFunction: (
+    id: string,
+    change: boolean,
+    status?: string,
+    pledgeCurrency?: string,
+    pledgeAmount?: number,
+    pledgeFrequency?: string,
+  ) => Promise<void>;
+  statuses: FilterOption[];
 }
 
 const Contact: React.FC<Props> = ({
+  id,
   name,
-  tagTitle,
-  tagValue,
+  statusTitle,
+  statusValue,
   amount,
   amountCurrency,
   frequencyTitle,
   frequencyValue,
+  hideFunction,
+  updateFunction,
+  statuses,
 }) => {
   const [values, setValues] = useState({
-    tagValue: tagValue,
+    statusValue: statusValue,
     amountCurrency: amountCurrency,
     amount: amount,
     frequencyValue: frequencyValue,
   });
   const classes = useStyles();
   const { t } = useTranslation();
+  const accountListId = useAccountListId();
+  const { push } = useRouter();
   //TODO: Add button functionality
   //TODO: Show donation history
 
@@ -136,10 +164,15 @@ const Contact: React.FC<Props> = ({
               style={{ width: theme.spacing(7), height: theme.spacing(7) }}
             />
             <Box display="flex" flexDirection="column" ml={2}>
-              <Typography variant="h6">{name}</Typography>
+              <NextLink
+                href={`/accountLists/${accountListId}/contacts/${id}`}
+                scroll={false}
+              >
+                <ContactLink variant="h6">{name}</ContactLink>
+              </NextLink>
               <Typography>
                 Current:{' '}
-                {`${tagTitle} ${amount.toFixed(
+                {`${statusTitle} ${amount.toFixed(
                   2,
                 )} ${amountCurrency} ${frequencyTitle}`}
               </Typography>
@@ -152,17 +185,16 @@ const Contact: React.FC<Props> = ({
               <Box className={classes.boxTop}>
                 <NativeSelect
                   input={<StyledInput />}
+                  data-testid="statusSelect"
                   style={{ width: '100%' }}
-                  value={values.tagValue}
-                  onChange={(event) => handleChange(event, 'tagValue')}
+                  value={values.statusValue}
+                  onChange={(event) => handleChange(event, 'statusValue')}
                 >
-                  {Object.entries(contactTags).map(
-                    ([statusValue, statusTranslated]) => (
-                      <option value={statusValue} key={statusValue}>
-                        {statusTranslated}
-                      </option>
-                    ),
-                  )}
+                  {statuses.map((status) => (
+                    <option value={status.value} key={status.value}>
+                      {status.name}
+                    </option>
+                  ))}
                 </NativeSelect>
               </Box>
             </Grid>
@@ -221,20 +253,50 @@ const Contact: React.FC<Props> = ({
             style={{ paddingLeft: theme.spacing(1) }}
           >
             <Box className={classes.buttonTop}>
-              <Button variant="contained" style={{ width: '100%' }}>
+              <Button
+                variant="contained"
+                data-testid="confirmButton"
+                style={{ width: '100%' }}
+                onClick={() =>
+                  updateFunction(
+                    id,
+                    true,
+                    values.statusValue,
+                    values.amountCurrency,
+                    parseFloat(`${values.amount}`),
+                    values.frequencyValue,
+                  )
+                }
+              >
                 {t('Confirm')}
               </Button>
             </Box>
             <Box className={classes.buttonBottom}>
-              <Button variant="contained" style={{ width: '100%' }}>
+              <Button
+                variant="contained"
+                style={{ width: '100%' }}
+                data-testid="doNotChangeButton"
+                onClick={() => updateFunction(id, false)}
+              >
                 {"Don't Change"}
               </Button>
             </Box>
             <Box>
-              <IconButton>
+              <IconButton
+                data-testid="goToContactsButton"
+                onClick={() =>
+                  push({
+                    pathname: `/accountLists/[accountListId]/contacts/[contactId]`,
+                    query: { accountListId, contactId: id },
+                  })
+                }
+              >
                 <SearchIcon />
               </IconButton>
-              <IconButton>
+              <IconButton
+                data-testid="hideButton"
+                onClick={() => hideFunction(id)}
+              >
                 <VisibilityOffIcon />
               </IconButton>
             </Box>
