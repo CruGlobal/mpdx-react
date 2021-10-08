@@ -11,11 +11,19 @@ import {
 import { Icon } from '@mdi/react';
 import { mdiCheckboxMarkedCircle } from '@mdi/js';
 import { useTranslation, Trans } from 'react-i18next';
+import { useSnackbar } from 'notistack';
+import { SendNewsletterEnum } from '../../../../graphql/types.generated';
 import theme from '../../../theme';
 // import { ContactTags } from '../FixCommitmentInfo/InputOptions/ContactTags';
 import Contact from './Contact';
 import NoContacts from './NoContacts';
-import { useGetInvalidNewsletterQuery } from './GetInvalidNewsletter.generated';
+import {
+  GetInvalidNewsletterDocument,
+  GetInvalidNewsletterQuery,
+  useGetInvalidNewsletterQuery,
+} from './GetInvalidNewsletter.generated';
+import { useUpdateContactNewsletterMutation } from './UpdateNewsletter.generated';
+import client from 'src/lib/client';
 
 const useStyles = makeStyles(() => ({
   container: {
@@ -61,11 +69,63 @@ interface Props {
 const FixSendNewsletter: React.FC<Props> = ({ accountListId }: Props) => {
   const classes = useStyles();
   const { t } = useTranslation();
+  const { enqueueSnackbar } = useSnackbar();
   const { data, loading } = useGetInvalidNewsletterQuery({
     variables: { accountListId },
   });
+  const [
+    updateNewsletter,
+    { loading: updating },
+  ] = useUpdateContactNewsletterMutation();
 
   //TODO: Add deceased to contact filters
+  const updateContact = async (
+    id: string,
+    change: boolean,
+    sendNewsletter: string,
+  ): Promise<void> => {
+    const attributes = change
+      ? {
+          id,
+          sendNewsletter: sendNewsletter as SendNewsletterEnum,
+        }
+      : { id, statusValid: true };
+    await updateNewsletter({
+      variables: {
+        accountListId,
+        attributes,
+      },
+    });
+    enqueueSnackbar(t('Contact commitment info updated!'), {
+      variant: 'success',
+    });
+    hideContact(id);
+  };
+
+  const hideContact = (hideId: string): void => {
+    const query = {
+      query: GetInvalidNewsletterDocument,
+      variables: {
+        accountListId,
+      },
+    };
+
+    const dataFromCache = client.readQuery<GetInvalidNewsletterQuery>(query);
+
+    if (dataFromCache) {
+      const data = {
+        ...dataFromCache,
+        contacts: {
+          ...dataFromCache.contacts,
+          nodes: dataFromCache.contacts.nodes.filter(
+            (contact) => contact.id !== hideId,
+          ),
+        },
+      };
+
+      client.writeQuery({ ...query, data });
+    }
+  };
 
   return (
     <>
