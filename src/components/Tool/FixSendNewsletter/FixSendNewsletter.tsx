@@ -22,7 +22,7 @@ import {
   useGetInvalidNewsletterQuery,
 } from './GetInvalidNewsletter.generated';
 import { useUpdateContactNewsletterMutation } from './UpdateNewsletter.generated';
-import client from 'src/lib/client';
+import { cache } from 'src/lib/client';
 
 const useStyles = makeStyles(() => ({
   container: {
@@ -110,7 +110,7 @@ const FixSendNewsletter: React.FC<Props> = ({ accountListId }: Props) => {
       },
     };
 
-    const dataFromCache = client.readQuery<GetInvalidNewsletterQuery>(query);
+    const dataFromCache = cache.readQuery<GetInvalidNewsletterQuery>(query);
 
     if (dataFromCache) {
       const data = {
@@ -123,7 +123,7 @@ const FixSendNewsletter: React.FC<Props> = ({ accountListId }: Props) => {
         },
       };
 
-      client.writeQuery({ ...query, data });
+      cache.writeQuery({ ...query, data });
     }
   };
 
