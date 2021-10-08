@@ -76,18 +76,22 @@ const useStyles = makeStyles(() => ({
 }));
 
 interface Props {
+  id: string;
   name: string;
   primaryPerson?: ContactPrimaryPersonFragment;
   status?: string;
   primaryAddress?: ContactPrimaryAddressFragment;
   source?: string;
+  updateFunction: (id: string, sendNewsletter: string) => Promise<void>;
 }
 
 const Contact = ({
+  id,
   name,
   primaryPerson,
   status,
   primaryAddress,
+  updateFunction,
 }: Props): ReactElement => {
   const { t } = useTranslation();
   const [newsletter, setNewsletter] = useState('BOTH');
@@ -213,7 +217,10 @@ const Contact = ({
             style={{ paddingLeft: theme.spacing(1) }}
           >
             <Box className={classes.buttonTop}>
-              <Button variant="contained">
+              <Button
+                variant="contained"
+                onClick={() => updateFunction(id, newsletter)}
+              >
                 <Icon
                   path={mdiCheckboxMarkedCircle}
                   size={0.8}
