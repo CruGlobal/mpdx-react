@@ -134,7 +134,7 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
           <HeaderItemsWrap>
             <Checkbox />
             <SearchBox
-              onChange={(event) => handleSearchTerm(event)}
+              onChange={handleSearchTerm}
               placeholder={t('Search Tasks')}
             />
           </HeaderItemsWrap>
