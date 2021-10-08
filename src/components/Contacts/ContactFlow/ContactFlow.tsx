@@ -1,7 +1,8 @@
 import { Box, CircularProgress } from '@material-ui/core';
 import React from 'react';
+import { ContactFilterStatusEnum } from '../../../../graphql/types.generated';
 import { ContactFlowColumn } from './ContactFlowColumn';
-import { useContactsFlowQuery } from './ContactsFlow.generated';
+import { useGetUserOptionsQuery } from './GetUserOptions.generated';
 import theme from 'src/theme';
 
 interface Props {
@@ -9,18 +10,49 @@ interface Props {
   accountListId: string;
 }
 
+const statusMap: { [key: string]: string } = {
+  'Never Contacted': 'NEVER_CONTACTED',
+  'Ask in Future': 'ASK_IN_FUTURE',
+  'Cultivate Relationship': 'CULTIVATE_RELATIONSHIP',
+  'Contact for Appointment': 'CONTACT_FOR_APPOINTMENT',
+  'Appointment Scheduled': 'APPOINTMENT_SCHEDULED',
+  'Call for Decision': 'CALL_FOR_DECISION',
+  'Partner - Financial': 'PARTNER_FINANCIAL',
+  'Partner - Special': 'PARTNER_SPECIAL',
+  'Partner - Pray': 'PARTNER_PRAY',
+  'Not Interested': 'NOT_INTERESTED',
+  Unresponsive: 'UNRESPONSIVE',
+  'Never Ask': 'NEVER_ASK',
+  'Research Abandoned': 'RESEARCH_ABANDONED',
+  'Expired Referral': 'EXPIRED_REFERRAL',
+};
+
+const colorMap: { [key: string]: string } = {
+  'color-danger': 'red',
+  'color-warning': theme.palette.progressBarYellow.main,
+  'color-success': theme.palette.mpdxGreen.main,
+  'color-info': theme.palette.mpdxBlue.main,
+  'color-text': theme.palette.cruGrayDark.main,
+};
+
 export const ContactFlow: React.FC<Props> = ({ accountListId }: Props) => {
   // Uses its own query because the list view's data depends on the active filters
-  const { data, loading } = useContactsFlowQuery({
-    variables: {
-      accountListId: accountListId ?? '',
-    },
-    skip: !accountListId,
-  });
+
+  const {
+    data: userOptions,
+    loading: loadingUserOptions,
+  } = useGetUserOptionsQuery({});
+
+  const flowOptions = JSON.parse(
+    userOptions?.userOptions.find((option) => option.key === 'flows')?.value ||
+      '{}',
+  );
+
+  console.log(userOptions);
 
   return (
     <>
-      {loading ? (
+      {loadingUserOptions ? (
         <CircularProgress />
       ) : (
         <Box
@@ -30,41 +62,21 @@ export const ContactFlow: React.FC<Props> = ({ accountListId }: Props) => {
           gridGap={theme.spacing(1)}
           overflow="auto"
         >
-          <Box width="100%" p={2}>
-            <ContactFlowColumn
-              title="Contact for Appointment"
-              color={'red'}
-              data={data?.contactForAppointment.nodes || []}
-            />
-          </Box>
-          <Box width="100%" p={2}>
-            <ContactFlowColumn
-              title="Potential Partners"
-              color={theme.palette.progressBarYellow.main}
-              data={data?.potentialPartners.nodes || []}
-            />
-          </Box>
-          <Box width="100%" p={2}>
-            <ContactFlowColumn
-              title="Monthly Partners"
-              color={theme.palette.mpdxGreen.main}
-              data={data?.monthlyPartners.nodes || []}
-            />
-          </Box>
-          <Box width="100%" p={2}>
-            <ContactFlowColumn
-              title="Special Partners"
-              color={theme.palette.mpdxBlue.main}
-              data={data?.specialPartners.nodes || []}
-            />
-          </Box>
-          <Box width="100%" p={2}>
-            <ContactFlowColumn
-              title="Prayer Partners"
-              color={theme.palette.cruGrayDark.main}
-              data={data?.prayerPartners.nodes || []}
-            />
-          </Box>
+          {flowOptions &&
+            flowOptions.map(
+              (column: { name: string; statuses: string[]; color: string }) => (
+                <Box width="100%" p={2} key={column.name}>
+                  <ContactFlowColumn
+                    accountListId={accountListId}
+                    title={column.name}
+                    color={colorMap[column.color]}
+                    statuses={column.statuses.map(
+                      (status) => statusMap[status] as ContactFilterStatusEnum,
+                    )}
+                  />
+                </Box>
+              ),
+            )}
         </Box>
       )}
     </>
