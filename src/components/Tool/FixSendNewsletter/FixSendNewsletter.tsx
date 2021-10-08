@@ -91,11 +91,15 @@ const FixSendNewsletter: React.FC<Props> = ({ accountListId }: Props) => {
         accountListId,
         attributes,
       },
+      update: (_cache, { data: updateContactData }) => {
+        const updateContactId =
+          updateContactData?.updateContact?.contact.id || '';
+        enqueueSnackbar(t('Newsletter updated!'), {
+          variant: 'success',
+        });
+        hideContact(updateContactId);
+      },
     });
-    enqueueSnackbar(t('Newsletter updated!'), {
-      variant: 'success',
-    });
-    hideContact(id);
   };
 
   const hideContact = (hideId: string): void => {
