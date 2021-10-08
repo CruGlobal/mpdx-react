@@ -8,12 +8,15 @@ import { ContactCheckBoxState, ContactsHeader } from './ContactsHeader';
 const toggleFilterPanel = jest.fn();
 const onSearchTermChanged = jest.fn();
 const onCheckAllContacts = jest.fn();
+const onViewModeChange = jest.fn();
 
 describe('ContactsHeader', () => {
   it('checkbox is unchecked', async () => {
     const { getByRole } = render(
       <ThemeProvider theme={theme}>
         <ContactsHeader
+          contactsTableDisplayState="list"
+          onViewModeChange={onViewModeChange}
           activeFilters={false}
           contactCheckboxState={ContactCheckBoxState.unchecked}
           filterPanelOpen={false}
@@ -42,6 +45,8 @@ describe('ContactsHeader', () => {
     const { getByRole } = render(
       <ThemeProvider theme={theme}>
         <ContactsHeader
+          contactsTableDisplayState="list"
+          onViewModeChange={onViewModeChange}
           activeFilters={false}
           contactCheckboxState={ContactCheckBoxState.unchecked}
           filterPanelOpen={false}
@@ -63,6 +68,8 @@ describe('ContactsHeader', () => {
     const { getByRole } = render(
       <ThemeProvider theme={theme}>
         <ContactsHeader
+          contactsTableDisplayState="list"
+          onViewModeChange={onViewModeChange}
           activeFilters={false}
           contactCheckboxState={ContactCheckBoxState.unchecked}
           filterPanelOpen={false}
@@ -86,6 +93,8 @@ describe('ContactsHeader', () => {
     const { getByRole } = render(
       <ThemeProvider theme={theme}>
         <ContactsHeader
+          contactsTableDisplayState="list"
+          onViewModeChange={onViewModeChange}
           activeFilters={false}
           contactCheckboxState={ContactCheckBoxState.unchecked}
           filterPanelOpen={true}
@@ -111,6 +120,8 @@ describe('ContactsHeader', () => {
     const { getByRole } = render(
       <ThemeProvider theme={theme}>
         <ContactsHeader
+          contactsTableDisplayState="list"
+          onViewModeChange={onViewModeChange}
           activeFilters={true}
           contactCheckboxState={ContactCheckBoxState.unchecked}
           filterPanelOpen={false}
@@ -136,6 +147,8 @@ describe('ContactsHeader', () => {
     const { getByRole } = render(
       <ThemeProvider theme={theme}>
         <ContactsHeader
+          contactsTableDisplayState="list"
+          onViewModeChange={onViewModeChange}
           activeFilters={true}
           contactCheckboxState={ContactCheckBoxState.unchecked}
           filterPanelOpen={true}
@@ -161,6 +174,8 @@ describe('ContactsHeader', () => {
     const { getByRole } = render(
       <ThemeProvider theme={theme}>
         <ContactsHeader
+          contactsTableDisplayState="list"
+          onViewModeChange={onViewModeChange}
           activeFilters={false}
           contactCheckboxState={ContactCheckBoxState.unchecked}
           filterPanelOpen={false}
@@ -187,6 +202,8 @@ describe('ContactsHeader', () => {
     const { getByRole } = render(
       <ThemeProvider theme={theme}>
         <ContactsHeader
+          contactsTableDisplayState="list"
+          onViewModeChange={onViewModeChange}
           activeFilters={true}
           contactCheckboxState={ContactCheckBoxState.unchecked}
           filterPanelOpen={false}

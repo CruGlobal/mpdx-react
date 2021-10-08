@@ -8,6 +8,8 @@ export default {
 export const Default = (): ReactElement => {
   return (
     <ContactsHeader
+      contactsTableDisplayState="list"
+      onViewModeChange={() => {}}
       activeFilters={false}
       contactCheckboxState={ContactCheckBoxState.unchecked}
       filterPanelOpen={false}
@@ -21,6 +23,8 @@ export const Default = (): ReactElement => {
 export const ActiveFilters = (): ReactElement => {
   return (
     <ContactsHeader
+      contactsTableDisplayState="list"
+      onViewModeChange={() => {}}
       activeFilters={true}
       contactCheckboxState={ContactCheckBoxState.unchecked}
       filterPanelOpen={false}
@@ -34,6 +38,8 @@ export const ActiveFilters = (): ReactElement => {
 export const FilterPanelOpen = (): ReactElement => {
   return (
     <ContactsHeader
+      contactsTableDisplayState="list"
+      onViewModeChange={() => {}}
       activeFilters={false}
       contactCheckboxState={ContactCheckBoxState.unchecked}
       filterPanelOpen={true}
@@ -47,6 +53,8 @@ export const FilterPanelOpen = (): ReactElement => {
 export const ActiveFiltersAndFilterPanelOpen = (): ReactElement => {
   return (
     <ContactsHeader
+      contactsTableDisplayState="list"
+      onViewModeChange={() => {}}
       activeFilters={true}
       contactCheckboxState={ContactCheckBoxState.unchecked}
       filterPanelOpen={true}
