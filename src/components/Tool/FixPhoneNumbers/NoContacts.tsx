@@ -24,7 +24,7 @@ const StyledBox = styled(Box)(({ theme }) => ({
 const NoContacts: React.FC = () => {
   const { t } = useTranslation();
   return (
-    <StyledBox>
+    <StyledBox data-testid="no-contacts">
       <Icon path={mdiPhone} size={1.5} />
       <Typography variant="h5">
         {t('No people with phone numbers need attention')}
