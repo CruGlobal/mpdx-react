@@ -11,10 +11,17 @@ import {
 import { Icon } from '@mdi/react';
 import { mdiCheckboxMarkedCircle } from '@mdi/js';
 import { useTranslation, Trans } from 'react-i18next';
+import { useSnackbar } from 'notistack';
+import { SendNewsletterEnum } from '../../../../graphql/types.generated';
 import theme from '../../../theme';
 import NoData from '../NoData';
 import Contact from './Contact';
-import { useGetInvalidNewsletterQuery } from './GetInvalidNewsletter.generated';
+import {
+  GetInvalidNewsletterDocument,
+  GetInvalidNewsletterQuery,
+  useGetInvalidNewsletterQuery,
+} from './GetInvalidNewsletter.generated';
+import { useUpdateContactNewsletterMutation } from './UpdateNewsletter.generated';
 
 const useStyles = makeStyles(() => ({
   container: {
@@ -60,16 +67,65 @@ interface Props {
 const FixSendNewsletter: React.FC<Props> = ({ accountListId }: Props) => {
   const classes = useStyles();
   const { t } = useTranslation();
+  const { enqueueSnackbar } = useSnackbar();
   const { data, loading } = useGetInvalidNewsletterQuery({
     variables: { accountListId },
   });
+  const [
+    updateNewsletter,
+    { loading: updating },
+  ] = useUpdateContactNewsletterMutation();
 
   //TODO: Add deceased to contact filters
+  const updateContact = async (
+    id: string,
+    sendNewsletter: string,
+  ): Promise<void> => {
+    const attributes = {
+      id,
+      sendNewsletter: sendNewsletter as SendNewsletterEnum,
+    };
+    await updateNewsletter({
+      variables: {
+        accountListId,
+        attributes,
+      },
+      update: (cache, { data: updateContactData }) => {
+        const updateContactId =
+          updateContactData?.updateContact?.contact.id || '';
+
+        const query = {
+          query: GetInvalidNewsletterDocument,
+          variables: {
+            accountListId,
+          },
+        };
+
+        const dataFromCache = cache.readQuery<GetInvalidNewsletterQuery>(query);
+
+        if (dataFromCache) {
+          const data = {
+            ...dataFromCache,
+            contacts: {
+              ...dataFromCache.contacts,
+              nodes: dataFromCache.contacts.nodes.filter(
+                (contact) => contact.id !== updateContactId,
+              ),
+            },
+          };
+          cache.writeQuery({ ...query, data });
+        }
+      },
+    });
+    enqueueSnackbar(t('Newsletter updated!'), {
+      variant: 'success',
+    });
+  };
 
   return (
     <>
       <Box className={classes.outer} data-testid="Home">
-        {!loading && data ? (
+        {!loading && !updating && data ? (
           <Grid container className={classes.container}>
             <Grid item xs={12}>
               <Typography variant="h4">{t('Fix Send Newsletter')}</Typography>
@@ -112,6 +168,7 @@ const FixSendNewsletter: React.FC<Props> = ({ accountListId }: Props) => {
                 <Grid item xs={12}>
                   {data.contacts.nodes.map((contact) => (
                     <Contact
+                      id={contact.id}
                       name={contact.name}
                       // need to fix this after changes to fix commitment info get merged
                       status={contact.status || ''}
@@ -135,6 +192,7 @@ const FixSendNewsletter: React.FC<Props> = ({ accountListId }: Props) => {
                           updatedAt: '',
                         }
                       }
+                      updateFunction={updateContact}
                     />
                   ))}
                 </Grid>
