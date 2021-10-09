@@ -1,0 +1,13 @@
+mutation UpdateContactNewsletter(
+  $accountListId: ID!
+  $attributes: ContactUpdateInput!
+) {
+  updateContact(
+    input: { accountListId: $accountListId, attributes: $attributes }
+  ) {
+    contact {
+      id
+      sendNewsletter
+    }
+  }
+}
