@@ -22,7 +22,6 @@ import {
   useGetInvalidNewsletterQuery,
 } from './GetInvalidNewsletter.generated';
 import { useUpdateContactNewsletterMutation } from './UpdateNewsletter.generated';
-import { cache } from 'src/lib/client';
 
 const useStyles = makeStyles(() => ({
   container: {
@@ -91,40 +90,36 @@ const FixSendNewsletter: React.FC<Props> = ({ accountListId }: Props) => {
         accountListId,
         attributes,
       },
-      update: (_cache, { data: updateContactData }) => {
+      update: (cache, { data: updateContactData }) => {
         const updateContactId =
           updateContactData?.updateContact?.contact.id || '';
-        enqueueSnackbar(t('Newsletter updated!'), {
-          variant: 'success',
-        });
-        hideContact(updateContactId);
+
+        const query = {
+          query: GetInvalidNewsletterDocument,
+          variables: {
+            accountListId,
+          },
+        };
+
+        const dataFromCache = cache.readQuery<GetInvalidNewsletterQuery>(query);
+
+        if (dataFromCache) {
+          const data = {
+            ...dataFromCache,
+            contacts: {
+              ...dataFromCache.contacts,
+              nodes: dataFromCache.contacts.nodes.filter(
+                (contact) => contact.id !== updateContactId,
+              ),
+            },
+          };
+          cache.writeQuery({ ...query, data });
+        }
       },
     });
-  };
-
-  const hideContact = (hideId: string): void => {
-    const query = {
-      query: GetInvalidNewsletterDocument,
-      variables: {
-        accountListId,
-      },
-    };
-
-    const dataFromCache = cache.readQuery<GetInvalidNewsletterQuery>(query);
-
-    if (dataFromCache) {
-      const data = {
-        ...dataFromCache,
-        contacts: {
-          ...dataFromCache.contacts,
-          nodes: dataFromCache.contacts.nodes.filter(
-            (contact) => contact.id !== hideId,
-          ),
-        },
-      };
-
-      cache.writeQuery({ ...query, data });
-    }
+    enqueueSnackbar(t('Newsletter updated!'), {
+      variant: 'success',
+    });
   };
 
   return (
