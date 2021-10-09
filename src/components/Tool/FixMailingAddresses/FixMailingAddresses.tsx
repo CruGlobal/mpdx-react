@@ -14,14 +14,12 @@ import { mdiCheckboxMarkedCircle } from '@mdi/js';
 import { Trans, useTranslation } from 'react-i18next';
 import theme from '../../../theme';
 import { StyledInput } from '../FixCommitmentInfo/StyledInput';
+import NoData from '../NoData';
 import {
   useInvalidAddressesQuery,
   ContactAddressFragment,
 } from './GetInvalidAddresses.generated';
-
 import Contact from './Contact';
-import NoContacts from './NoContacts';
-
 import AddressModal from './AddressModal';
 
 const useStyles = makeStyles(() => ({
@@ -234,7 +232,7 @@ const FixSendNewsletter: React.FC<Props> = ({ accountListId }: Props) => {
                 </Grid>
               </>
             ) : (
-              <NoContacts />
+              <NoData tool="fixMailingAddresses" />
             )}
           </Grid>
         ) : (

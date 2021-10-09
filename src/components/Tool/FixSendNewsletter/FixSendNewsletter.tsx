@@ -14,8 +14,8 @@ import { useTranslation, Trans } from 'react-i18next';
 import { useSnackbar } from 'notistack';
 import { SendNewsletterEnum } from '../../../../graphql/types.generated';
 import theme from '../../../theme';
+import NoData from '../NoData';
 import Contact from './Contact';
-import NoContacts from './NoContacts';
 import {
   GetInvalidNewsletterDocument,
   GetInvalidNewsletterQuery,
@@ -211,7 +211,7 @@ const FixSendNewsletter: React.FC<Props> = ({ accountListId }: Props) => {
                 </Grid>
               </>
             ) : (
-              <NoContacts />
+              <NoData tool="fixSendNewsletter" />
             )}
           </Grid>
         ) : (
