@@ -11,9 +11,9 @@ import {
 
 import { Trans, useTranslation } from 'react-i18next';
 import theme from '../../../theme';
+import NoData from '../NoData';
 import { useGetContactDuplicatesQuery } from './GetContactDuplicates.generated';
 import Contact from './Contact';
-import NoContacts from './NoContacts';
 
 const useStyles = makeStyles(() => ({
   container: {
@@ -117,20 +117,22 @@ const MergeContacts: React.FC<Props> = ({ accountListId }: Props) => {
             <Grid item xs={12}>
               <Typography variant="h4">{t('Merge Contacts')}</Typography>
               <Divider className={classes.divider} />
-              <Box className={classes.descriptionBox}>
-                <Typography>
-                  {t(
-                    ' You have {{amount}} possible duplicate contacts. This is sometimes caused when you imported data into MPDX. We recommend reconciling these as soon as possible. Please select the duplicate that should win the merge. No data will be lost. ',
-                    { amount: data?.contactDuplicates.nodes.length },
-                  )}
-                </Typography>
-                <Typography>
-                  <strong>{t('This cannot be undone.')}</strong>
-                </Typography>
-              </Box>
             </Grid>
             {data?.contactDuplicates.nodes.length > 0 ? (
               <>
+                <Grid item xs={12}>
+                  <Box className={classes.descriptionBox}>
+                    <Typography>
+                      {t(
+                        ' You have {{amount}} possible duplicate contacts. This is sometimes caused when you imported data into MPDX. We recommend reconciling these as soon as possible. Please select the duplicate that should win the merge. No data will be lost. ',
+                        { amount: data?.contactDuplicates.nodes.length },
+                      )}
+                    </Typography>
+                    <Typography>
+                      <strong>{t('This cannot be undone.')}</strong>
+                    </Typography>
+                  </Box>
+                </Grid>
                 <Grid item xs={12}>
                   {data?.contactDuplicates.nodes.map((duplicate) => (
                     <Contact
@@ -179,7 +181,7 @@ const MergeContacts: React.FC<Props> = ({ accountListId }: Props) => {
                 </Grid>
               </>
             ) : (
-              <NoContacts />
+              <NoData tool="mergeContacts" />
             )}
           </Grid>
         ) : (

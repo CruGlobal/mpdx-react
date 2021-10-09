@@ -16,9 +16,9 @@ import { mdiCheckboxMarkedCircle } from '@mdi/js';
 import { PersonPhoneNumberInput } from '../../../../graphql/types.generated';
 import theme from '../../../theme';
 import { StyledInput } from '../FixCommitmentInfo/StyledInput';
+import NoData from '../NoData';
 import { useGetInvalidPhoneNumbersQuery } from './GetInvalidPhoneNumbers.generated';
 import Contact from './Contact';
-import NoContacts from './NoContacts';
 import DeleteModal from './DeleteModal';
 
 const useStyles = makeStyles(() => ({
@@ -331,7 +331,7 @@ const FixPhoneNumbers: React.FC<Props> = ({ accountListId }: Props) => {
                 </Grid>
               </>
             ) : (
-              <NoContacts />
+              <NoData tool="fixPhoneNumbers" />
             )}
           </Grid>
         ) : (
