@@ -7,28 +7,27 @@ import { GiftStatus } from './GiftStatus';
 
 describe('GiftStatus', () => {
   it('is Late', () => {
-    const { getByTitle } = render(
+    const { getByRole } = render(
       <ThemeProvider theme={theme}>
         <GiftStatus lateAt={DateTime.now().minus({ day: 1 }).toISO()} />
       </ThemeProvider>,
     );
-    expect(getByTitle('Late')).toBeVisible();
+    expect(
+      getByRole('img', {
+        name: 'Late',
+      }),
+    ).toBeVisible();
   });
   it('is On Time', () => {
-    const { getByTitle } = render(
+    const { getByRole } = render(
       <ThemeProvider theme={theme}>
         <GiftStatus lateAt={DateTime.now().toISO()} />
       </ThemeProvider>,
     );
-    expect(getByTitle('On Time')).toBeVisible();
-  });
-  it('is hidden', () => {
-    const { queryByTitle } = render(
-      <ThemeProvider theme={theme}>
-        <GiftStatus lateAt={undefined} />
-      </ThemeProvider>,
-    );
-    expect(queryByTitle('On Time')).toBeNull();
-    expect(queryByTitle('Late')).toBeNull();
+    expect(
+      getByRole('img', {
+        name: 'On Time',
+      }),
+    ).toBeVisible();
   });
 });
