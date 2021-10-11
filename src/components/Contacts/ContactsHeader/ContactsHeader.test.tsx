@@ -212,6 +212,6 @@ describe('ContactsHeader', () => {
 
     await new Promise((resolve) => setTimeout(resolve, 500));
 
-    expect(onSearchTermChanged).toHaveBeenCalledWith(searchText);
+    expect(onSearchTermChanged).toHaveBeenCalled();
   });
 });
