@@ -10,6 +10,13 @@ const cruColors = {
   grayLight: '#EBECEC',
 };
 
+const testColors = {
+  yellow: '#FFCF07',
+  grayDark: '#383F43',
+  grayMedium: '#9C9FA1',
+  grayLight: '#EBECEC',
+};
+
 const mpdxColors = {
   green: '#00CA99',
   blue: '#05699B',
