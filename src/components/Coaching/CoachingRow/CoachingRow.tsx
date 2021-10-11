@@ -1,7 +1,7 @@
 import { Box, styled, Typography } from '@material-ui/core';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import NextLink from 'next/link';
+import Link from 'next/link';
 import { CoachedPersonFragment } from '../LoadCoachingList.generated';
 import {
   currencyFormat,
@@ -97,10 +97,11 @@ export const CoachingRow: React.FC<Props> = ({
       : numberFormat(calculatedAppealTotal);
 
   return (
-    <NextLink
-      href="/accountLists/[accountListId]/coaching/[coachingId]"
-      as={`/accountLists/${accountListId}/coaching/${id}`}
-      scroll={false}
+    <Link
+      href={{
+        pathname: '/accountLists/[accountListId]/coaching/[coachingId]',
+        query: { accountListId: accountListId, coachingId: id },
+      }}
     >
       <CoachingRowWrapper role="listitem">
         <CoachingNameText variant="h6" color="primary">
@@ -148,6 +149,6 @@ export const CoachingRow: React.FC<Props> = ({
           secondary={percentageAppealTotal}
         />
       </CoachingRowWrapper>
-    </NextLink>
+    </Link>
   );
 };
