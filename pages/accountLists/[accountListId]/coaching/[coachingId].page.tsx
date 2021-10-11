@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import Head from 'next/head';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'next/router';
@@ -9,26 +9,19 @@ import Loading from 'src/components/Loading';
 
 const CoachingPage: React.FC = () => {
   const { t } = useTranslation();
-  const { query, push, replace, isReady, pathname } = useRouter();
+  const { query, isReady } = useRouter();
   const accountListId = useAccountListId();
 
   const { coachingId } = query;
-  const [coachingDetailId, setContactDetailId] = useState<string>();
-
-  useEffect(() => {
-    if (isReady && coachingId) {
-      setContactDetailId(coachingId[0]);
-    }
-  }, [isReady, coachingId]);
 
   return (
     <>
       <Head>
         <title>MPDX | {t('Coaching Accounts')}</title>
       </Head>
-      {accountListId ? (
-        coachingDetailId ? (
-          <CoachingDetail coachingId={coachingDetailId} />
+      {accountListId && isReady ? (
+        coachingId ? (
+          <CoachingDetail coachingId={coachingId[0]} />
         ) : (
           <CoachingList accountListId={accountListId} />
         )
