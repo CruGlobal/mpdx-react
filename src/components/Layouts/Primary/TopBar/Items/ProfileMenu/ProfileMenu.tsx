@@ -11,12 +11,19 @@ import {
   MenuItem,
   Button,
   Link,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
 } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
+import { useRouter } from 'next/router';
 import { signout } from 'next-auth/client';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import clsx from 'clsx';
 import HandoffLink from '../../../../../HandoffLink';
 import { useGetTopBarQuery } from '../../GetTopBar.generated';
+import { useAccountListId } from 'src/hooks/useAccountListId';
 
 const useStyles = makeStyles((theme: Theme) => ({
   accountName: {
@@ -43,11 +50,47 @@ const useStyles = makeStyles((theme: Theme) => ({
     width: '100%',
     marginTop: theme.spacing(1),
   },
+  accountListSelectorSummary: {
+    minHeight: '48px !important',
+    '& .MuiAccordion-root.Mui-expanded': {
+      margin: 0,
+    },
+    '& .MuiAccordionSummary-content.Mui-expanded': {
+      margin: 0,
+    },
+  },
+  accountListSelectorDetails: {
+    display: 'flex',
+    flexDirection: 'column',
+    padding: 0,
+    height: theme.spacing(24),
+    overflow: 'auto',
+    '& .MuiMenuItem-root': {
+      minHeight: theme.spacing(6),
+    },
+  },
+  test: {
+    '& .MuiAccordion-root.Mui-expanded': {
+      margin: 0,
+    },
+    '& .MuiPaper-elevation1': {
+      boxShadow: 'none',
+    },
+    '& .MuiAccordionSummary-root.Mui-expanded': {
+      borderTop: `1px solid ${theme.palette.cruGrayLight.main}`,
+      borderBottom: `1px solid ${theme.palette.cruGrayLight.main}`,
+    },
+  },
+  selectedId: {
+    backgroundColor: theme.palette.cruGrayLight.main,
+  },
 }));
 
 const ProfileMenu = (): ReactElement => {
   const classes = useStyles();
   const { t } = useTranslation();
+  const router = useRouter();
+  const accountListId = useAccountListId();
   const { data } = useGetTopBarQuery();
   const [
     profileMenuAnchorEl,
@@ -85,6 +128,7 @@ const ProfileMenu = (): ReactElement => {
         anchorEl={profileMenuAnchorEl}
         open={profileMenuOpen}
         onClose={handleProfileMenuClose}
+        className={classes.test}
       >
         {data && (
           <MenuItem button={false} className={classes.menuItemAccount}>
@@ -99,6 +143,34 @@ const ProfileMenu = (): ReactElement => {
             />
           </MenuItem>
         )}
+        <Accordion>
+          <AccordionSummary
+            className={classes.accountListSelectorSummary}
+            expandIcon={<ExpandMoreIcon />}
+          >
+            Account List Selector
+          </AccordionSummary>
+          <AccordionDetails className={classes.accountListSelectorDetails}>
+            {data?.accountLists.nodes.map((accountList) => (
+              <MenuItem
+                key={accountList.id}
+                className={clsx(
+                  accountListId === accountList.id && classes.selectedId,
+                )}
+                onClick={() =>
+                  router.push({
+                    pathname: accountListId
+                      ? router.pathname
+                      : '/accountLists/[accountListId]/',
+                    query: { accountListId: accountList.id },
+                  })
+                }
+              >
+                <ListItemText primary={accountList.name} />
+              </MenuItem>
+            ))}
+          </AccordionDetails>
+        </Accordion>
         <Divider />
         <HandoffLink path="/preferences/personal">
           <MenuItem onClick={handleProfileMenuClose} component="a">
