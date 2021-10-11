@@ -69,7 +69,7 @@ const useStyles = makeStyles((theme: Theme) => ({
       minHeight: theme.spacing(6),
     },
   },
-  test: {
+  menuWrapper: {
     '& .MuiAccordion-root.Mui-expanded': {
       margin: 0,
     },
@@ -128,7 +128,7 @@ const ProfileMenu = (): ReactElement => {
         anchorEl={profileMenuAnchorEl}
         open={profileMenuOpen}
         onClose={handleProfileMenuClose}
-        className={classes.test}
+        className={classes.menuWrapper}
       >
         {data && (
           <MenuItem button={false} className={classes.menuItemAccount}>
