@@ -21,7 +21,7 @@ const CoachingPage: React.FC = () => {
       </Head>
       {accountListId && isReady ? (
         coachingId ? (
-          <CoachingDetail coachingId={coachingId[0]} />
+          <CoachingDetail coachingId={coachingId as string} />
         ) : (
           <CoachingList accountListId={accountListId} />
         )
