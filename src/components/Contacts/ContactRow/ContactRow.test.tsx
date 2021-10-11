@@ -18,7 +18,7 @@ it('should display contact name', () => {
   const contact = gqlMock<ContactRowFragment>(ContactRowFragmentDoc, {
     mocks: { name },
   });
-  const { getByRole } = render(
+  const { getByTestId } = render(
     <GqlMockedProvider>
       <ContactRow
         accountListId={accountListId}
@@ -30,5 +30,5 @@ it('should display contact name', () => {
       />
     </GqlMockedProvider>,
   );
-  expect(within(getByRole('row')).getByText(name)).toBeVisible();
+  expect(within(getByTestId('ContactRow')).getByText(name)).toBeVisible();
 });
