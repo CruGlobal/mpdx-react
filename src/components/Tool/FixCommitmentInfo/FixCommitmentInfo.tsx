@@ -23,9 +23,10 @@ import {
 } from './GetInvalidStatuses.generated';
 import Contact from './Contact';
 import NoContacts from './NoContacts';
-import { contactTags } from './InputOptions/ContactTags';
 import { frequencies } from './InputOptions/Frequencies';
+// eslint-disable-next-line import/extensions
 import { useUpdateInvalidStatusMutation } from './UpdateInvalidStatus.generated';
+import { contactPartnershipStatus } from 'src/utils/contacts/contactPartnershipStatus';
 import client from 'src/lib/client';
 import { useContactFiltersQuery } from 'src/components/Contacts/ContactFilters/ContactFilters.generated';
 
@@ -197,7 +198,9 @@ const FixCommitmentInfo: React.FC<Props> = ({ accountListId }: Props) => {
                         name={contact.name}
                         key={contact.name}
                         statusTitle={
-                          contact.status ? contactTags[contact.status] : ''
+                          contact.status
+                            ? contactPartnershipStatus[contact.status]
+                            : ''
                         }
                         statusValue={contact.status || ''}
                         amount={contact.pledgeAmount || 0}
