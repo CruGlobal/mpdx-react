@@ -49,6 +49,8 @@ const useStyles = makeStyles((theme: Theme) => ({
   menuButton: {
     width: '100%',
     marginTop: theme.spacing(1),
+    borderColor: theme.palette.cruGrayLight.main,
+    color: theme.palette.cruGrayLight.main,
   },
   accountListSelectorSummary: {
     minHeight: '48px !important',
@@ -76,13 +78,17 @@ const useStyles = makeStyles((theme: Theme) => ({
     '& .MuiPaper-elevation1': {
       boxShadow: 'none',
     },
-    '& .MuiAccordionSummary-root.Mui-expanded': {
+    '& .MuiAccordionSummary-root': {
       borderTop: `1px solid ${theme.palette.cruGrayLight.main}`,
       borderBottom: `1px solid ${theme.palette.cruGrayLight.main}`,
     },
+    '& .MuiPaper-root': {
+      color: 'white',
+      backgroundColor: theme.palette.cruGrayDark.main,
+    },
   },
   selectedId: {
-    backgroundColor: theme.palette.cruGrayLight.main,
+    backgroundColor: theme.palette.cruGrayMedium.main,
   },
 }));
 
