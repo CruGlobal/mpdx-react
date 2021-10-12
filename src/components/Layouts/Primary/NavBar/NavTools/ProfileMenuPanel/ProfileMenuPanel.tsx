@@ -28,7 +28,12 @@ const useStyles = makeStyles((theme: Theme) => ({
   mobileDrawer: {
     width: 290,
     backgroundColor: theme.palette.cruGrayDark.main,
-    zIndex: theme.zIndex.drawer + 200,
+    zIndex: theme.zIndex.drawer + 201,
+  },
+  itemHover: {
+    '&:hover': {
+      backgroundColor: `${theme.palette.cruGrayMedium.main} !important`,
+    },
   },
 }));
 
@@ -121,6 +126,7 @@ export const ProfileMenuPanel: React.FC = () => {
                 button
                 data-testid={`accountListButton-${accountList.id}`}
                 disableGutters
+                className={classes.itemHover}
                 style={{
                   backgroundColor:
                     accountListId === accountList.id

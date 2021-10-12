@@ -53,6 +53,11 @@ const useStyles = makeStyles((theme: Theme) => ({
     borderColor: theme.palette.cruGrayLight.main,
     color: theme.palette.cruGrayLight.main,
   },
+  menuItemHover: {
+    '&:hover': {
+      backgroundColor: theme.palette.cruGrayMedium.main,
+    },
+  },
   accountListSelectorSummary: {
     minHeight: '48px !important',
     '& .MuiAccordion-root.Mui-expanded': {
@@ -165,6 +170,7 @@ const ProfileMenu = (): ReactElement => {
                 key={accountList.id}
                 data-testid={`accountListButton-${accountList.id}`}
                 className={clsx(
+                  classes.menuItemHover,
                   accountListId === accountList.id && classes.selectedId,
                 )}
                 onClick={() =>
