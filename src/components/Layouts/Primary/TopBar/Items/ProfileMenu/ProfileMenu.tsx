@@ -14,6 +14,7 @@ import {
   Accordion,
   AccordionSummary,
   AccordionDetails,
+  Typography,
 } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'next/router';
@@ -155,7 +156,7 @@ const ProfileMenu = (): ReactElement => {
             expandIcon={<ExpandMoreIcon style={{ color: 'white' }} />}
             data-testid="accountListSelector"
           >
-            Account List Selector
+            <Typography>Account List Selector</Typography>
           </AccordionSummary>
           <AccordionDetails className={classes.accountListSelectorDetails}>
             {data?.accountLists.nodes.map((accountList) => (
