@@ -96,8 +96,8 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
 }) => {
   const [searchTerm, setSearchTerm] = useState<string | undefined>(undefined);
 
-  const handleSearchTerm = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(event.target.value);
+  const handleSearchTerm = (searchTerm: string) => {
+    setSearchTerm(searchTerm);
   };
 
   const { data, loading } = useContactTasksTabQuery({

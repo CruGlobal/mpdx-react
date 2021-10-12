@@ -115,8 +115,7 @@ const ContactsPage: React.FC = () => {
   const isSelectedAllContacts =
     selectedContacts.length === data?.contacts.nodes.length;
 
-  const setSearchTerm = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const searchTerm = event.target.value;
+  const setSearchTerm = (searchTerm: string) => {
     const { searchTerm: _, ...oldQuery } = query;
     replace({
       pathname,

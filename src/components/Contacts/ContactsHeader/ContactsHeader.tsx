@@ -30,7 +30,7 @@ interface Props {
   isContactDetailOpen: boolean;
   toggleFilterPanel: () => void;
   onCheckAllContacts: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  onSearchTermChanged: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onSearchTermChanged: (searchTerm: string) => void;
   totalContacts?: number;
 }
 
@@ -135,7 +135,7 @@ export const ContactsHeader: React.FC<Props> = ({
         <FilterIcon titleAccess={t('Toggle Filter Panel')} />
       </FilterButton>
       <SearchBox
-        onChange={(event) => onSearchTermChanged(event)}
+        onChange={onSearchTermChanged}
         placeholder={t('Search List')}
       />
       <ContactsShowingText>

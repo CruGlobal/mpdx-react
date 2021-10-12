@@ -1,12 +1,17 @@
-import React, { ReactElement } from 'react';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { InputAdornment, TextField, styled } from '@material-ui/core';
+import {
+  InputAdornment,
+  TextField,
+  styled,
+  InputBaseComponentProps,
+} from '@material-ui/core';
 import { DebounceInput } from 'react-debounce-input';
 import Icon from '@mdi/react';
 import { mdiAccountSearch } from '@mdi/js';
 
 export interface SearchBoxProps {
-  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onChange: (searchTerm: string) => void;
   placeholder?: string;
 }
 
@@ -20,12 +25,10 @@ export const AccountSearchBox = styled(TextField)(() => ({
   },
 }));
 
-const DebounceSearchBox = ({
+const DebounceSearchBox: React.ElementType<InputBaseComponentProps> = ({
   onChange,
   ...other
-}: {
-  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void | undefined;
-}): ReactElement => {
+}) => {
   const { t } = useTranslation();
 
   return (
@@ -33,7 +36,7 @@ const DebounceSearchBox = ({
       {...other}
       debounceTimeout={300}
       placeholder={t('Search List')}
-      onChange={(event) => onChange(event)}
+      onChange={(event) => onChange?.(event)}
     />
   );
 };
@@ -41,7 +44,7 @@ const DebounceSearchBox = ({
 export const SearchBox: React.FC<SearchBoxProps> = ({ onChange }) => {
   return (
     <AccountSearchBox
-      onChange={onChange}
+      onChange={(event) => onChange(event.target.value)}
       size="small"
       variant="outlined"
       InputProps={{
