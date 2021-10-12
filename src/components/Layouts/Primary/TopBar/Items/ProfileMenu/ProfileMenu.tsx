@@ -66,6 +66,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     display: 'flex',
     flexDirection: 'column',
     padding: 0,
+    borderBottom: `1px solid ${theme.palette.cruGrayLight.main}`,
     maxHeight: theme.spacing(24),
     overflow: 'auto',
     '& .MuiMenuItem-root': {
