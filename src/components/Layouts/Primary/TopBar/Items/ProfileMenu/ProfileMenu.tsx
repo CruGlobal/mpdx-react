@@ -152,7 +152,7 @@ const ProfileMenu = (): ReactElement => {
         <Accordion>
           <AccordionSummary
             className={classes.accountListSelectorSummary}
-            expandIcon={<ExpandMoreIcon />}
+            expandIcon={<ExpandMoreIcon style={{ color: 'white' }} />}
             data-testid="accountListSelector"
           >
             Account List Selector
