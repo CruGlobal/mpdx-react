@@ -85,9 +85,14 @@ export const ProfileMenuPanel: React.FC = () => {
 
   return (
     <List disablePadding data-testid="ProfileMenuPanelForNavBar">
-      {accountListId && (
+      {data && (
         <>
-          <LeafListItem button disableGutters onClick={toggleAccountsDrawer}>
+          <LeafListItem
+            data-testid="accountListSelectorButton"
+            button
+            disableGutters
+            onClick={toggleAccountsDrawer}
+          >
             <LeafButton style={style}>
               <Title>{t('Account List Selector')}</Title>
             </LeafButton>
@@ -98,7 +103,12 @@ export const ProfileMenuPanel: React.FC = () => {
             onClose={toggleAccountsDrawer}
             classes={{ paper: classes.mobileDrawer }}
           >
-            <LeafListItem button disableGutters onClick={toggleAccountsDrawer}>
+            <LeafListItem
+              data-testid="closeAccountListDrawerButton"
+              button
+              disableGutters
+              onClick={toggleAccountsDrawer}
+            >
               <LeafButton style={accountListStyle}>
                 <ArrowBackIcon
                   style={{ color: 'white', marginRight: theme.spacing(2) }}
@@ -110,6 +120,7 @@ export const ProfileMenuPanel: React.FC = () => {
               <LeafListItem
                 key={accountList.id}
                 button
+                data-testid={`accountListButton-${accountList.id}`}
                 disableGutters
                 style={{
                   backgroundColor:

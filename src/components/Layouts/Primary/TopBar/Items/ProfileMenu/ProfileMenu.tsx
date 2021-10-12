@@ -153,6 +153,7 @@ const ProfileMenu = (): ReactElement => {
           <AccordionSummary
             className={classes.accountListSelectorSummary}
             expandIcon={<ExpandMoreIcon />}
+            data-testid="accountListSelector"
           >
             Account List Selector
           </AccordionSummary>
@@ -160,6 +161,7 @@ const ProfileMenu = (): ReactElement => {
             {data?.accountLists.nodes.map((accountList) => (
               <MenuItem
                 key={accountList.id}
+                data-testid={`accountListButton-${accountList.id}`}
                 className={clsx(
                   accountListId === accountList.id && classes.selectedId,
                 )}
