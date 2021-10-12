@@ -1,27 +1,11 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Typography } from '@material-ui/core';
-import { StatusEnum as ContactRelationshipStatus } from '../../../../graphql/types.generated';
+import { StatusEnum as ContactPartnershipStatus } from '../../../../graphql/types.generated';
+import { contactPartnershipStatus } from 'src/utils/contacts/contactPartnershipStatus';
 
 interface ContactStatusLabelProps {
-  status: ContactRelationshipStatus;
-}
-
-enum ContactStatusEnum {
-  APPOINTMENT_SCHEDULED = 'Appointment Scheduled',
-  ASK_IN_FUTURE = 'Ask in Future',
-  CALL_FOR_DECISION = 'Call For Decision',
-  CONTACT_FOR_APPOINTMENT = 'Contact For Appointment',
-  CULTIVATE_RELATIONSHIP = 'Cultivate Relationship',
-  EXPIRED_REFERRAL = 'Expired Referral',
-  NEVER_ASK = 'Never Ask',
-  NEVER_CONTACTED = 'Never Contacted',
-  NOT_INTERESTED = 'Not Interested',
-  PARTNER_FINANCIAL = 'Partner - Financial',
-  PARTNER_PRAY = 'Partner - Pray',
-  PARTNER_SPECIAL = 'Partner - Special',
-  RESEARCH_ABANDONED = 'Research Abandoned',
-  UNRESPONSIVE = 'Unresponsive',
+  status: ContactPartnershipStatus;
 }
 
 export const ContactStatusLabel: React.FC<ContactStatusLabelProps> = ({
@@ -29,5 +13,5 @@ export const ContactStatusLabel: React.FC<ContactStatusLabelProps> = ({
 }) => {
   const { t } = useTranslation();
 
-  return <Typography>{t(ContactStatusEnum[status])}</Typography>;
+  return <Typography>{t(contactPartnershipStatus[status])}</Typography>;
 };
