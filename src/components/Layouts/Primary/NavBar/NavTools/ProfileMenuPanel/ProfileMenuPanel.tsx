@@ -11,7 +11,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { signout } from 'next-auth/client';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
-import router from 'next/router';
+import { useRouter } from 'next/router';
 import { LeafButton, LeafListItem, Title } from '../../NavItem/NavItem';
 import HandoffLink from '../../../../../HandoffLink';
 import { useGetTopBarQuery } from '../../../TopBar/GetTopBar.generated';
@@ -37,6 +37,7 @@ export const ProfileMenuPanel: React.FC = () => {
   const { data } = useGetTopBarQuery();
   const accountListId = useAccountListId();
   const classes = useStyles();
+  const { push, pathname } = useRouter();
   const [accountsDrawerOpen, setAccountsDrawerOpen] = useState<boolean>(false);
 
   const toggleAccountsDrawer = (): void => {
@@ -45,10 +46,8 @@ export const ProfileMenuPanel: React.FC = () => {
 
   const changeAccountListId = (id: string): void => {
     setAccountsDrawerOpen(false);
-    router.push({
-      pathname: accountListId
-        ? router.pathname
-        : '/accountLists/[accountListId]/',
+    push({
+      pathname: accountListId ? pathname : '/accountLists/[accountListId]/',
       query: { accountListId: id },
     });
   };

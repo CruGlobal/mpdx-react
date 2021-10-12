@@ -11,6 +11,7 @@ import TestRouter from '__tests__/util/TestRouter';
 const router = {
   pathname: '/accountLists/[accountListId]/test',
   query: { accountListId: '1' },
+  push: jest.fn(),
 };
 
 describe('ProfileMenuPanelForNavBar', () => {
@@ -68,5 +69,30 @@ describe('ProfileMenuPanelForNavBar', () => {
     ).not.toBeInTheDocument();
     userEvent.click(getByTestId('accountListSelectorButton'));
     expect(getByTestId('closeAccountListDrawerButton')).toBeInTheDocument();
+  });
+
+  it('should call router push', async () => {
+    const { getByTestId } = render(
+      <ThemeProvider theme={theme}>
+        <TestWrapper mocks={[getTopBarMock()]}>
+          <TestRouter router={router}>
+            <ProfileMenuPanel />
+          </TestRouter>
+          ,
+        </TestWrapper>
+      </ThemeProvider>,
+    );
+
+    await waitFor(() =>
+      expect(getByTestId('accountListSelectorButton')).toBeInTheDocument(),
+    );
+    userEvent.click(getByTestId('accountListSelectorButton'));
+    userEvent.click(getByTestId('accountListButton-1'));
+    await waitFor(() =>
+      expect(router.push).toHaveBeenCalledWith({
+        pathname: '/accountLists/[accountListId]/',
+        query: { accountListId: '1' },
+      }),
+    );
   });
 });
