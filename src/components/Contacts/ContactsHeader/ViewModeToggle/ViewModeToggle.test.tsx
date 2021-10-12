@@ -1,6 +1,7 @@
 import React from 'react';
 import { MuiThemeProvider } from '@material-ui/core';
 import { render } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { ViewModeToggle } from './ViewModeToggle';
 import theme from 'src/theme';
 
@@ -35,16 +36,17 @@ describe('ViewModeToggle', () => {
       </MuiThemeProvider>,
     );
 
-    const bulletedListIcon = getByRole('img', {
+    const bulletedListIcon = getByRole('button', {
       hidden: true,
       name: 'List View',
     });
-    const viewColumnIcon = getByRole('img', {
+    const viewColumnIcon = getByRole('button', {
       hidden: true,
       name: 'Column Workflow View',
     });
 
+    userEvent.click(viewColumnIcon);
+    expect(onChange).toHaveBeenCalled();
     expect(bulletedListIcon).toBeInTheDocument();
-    expect(viewColumnIcon).toBeInTheDocument();
   });
 });

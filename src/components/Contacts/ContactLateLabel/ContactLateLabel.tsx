@@ -26,9 +26,9 @@ export const ContactLateLabel: React.FC<ContactLateLabelProps> = ({
           {`(${t('On time')})`}
         </Typography>
       ) : (
-        <Typography component="span" color="error">{`(${
-          contactLateStatus?.days
-        }+ ${t('days')} ${t('late')})`}</Typography>
+        <Typography component="span" color="error">{`(${Math.round(
+          contactLateStatus?.days ?? 0,
+        )}+ ${t('days')} ${t('late')})`}</Typography>
       )}
     </>
   );

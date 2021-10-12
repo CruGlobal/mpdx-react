@@ -77,7 +77,7 @@ export const ContactRow: React.FC<Props> = ({
   } = contact;
 
   return (
-    <Box data-testid="ContactRow">
+    <>
       <Hidden xsUp={isContactDetailOpen}>
         <ListItemIcon>
           <Checkbox
@@ -163,6 +163,6 @@ export const ContactRow: React.FC<Props> = ({
           />
         </ListItemSecondaryAction>
       </Hidden>
-    </Box>
+    </>
   );
 };
