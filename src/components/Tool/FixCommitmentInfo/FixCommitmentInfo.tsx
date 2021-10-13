@@ -16,13 +16,13 @@ import {
   StatusEnum,
 } from '../../../../graphql/types.generated';
 import theme from '../../../theme';
+import NoData from '../NoData';
 import {
   GetInvalidStatusesDocument,
   GetInvalidStatusesQuery,
   useGetInvalidStatusesQuery,
 } from './GetInvalidStatuses.generated';
 import Contact from './Contact';
-import NoContacts from './NoContacts';
 import { frequencies } from './InputOptions/Frequencies';
 // eslint-disable-next-line import/extensions
 import { useUpdateInvalidStatusMutation } from './UpdateInvalidStatus.generated';
@@ -231,7 +231,7 @@ const FixCommitmentInfo: React.FC<Props> = ({ accountListId }: Props) => {
                 </Grid>
               </>
             ) : (
-              <NoContacts />
+              <NoData tool="fixCommitmentInfo" />
             )}
           </Grid>
         ) : (
