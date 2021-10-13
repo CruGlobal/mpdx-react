@@ -9,12 +9,25 @@ import {
   CircularProgress,
 } from '@material-ui/core';
 import { Trans, useTranslation } from 'react-i18next';
+import { useSnackbar } from 'notistack';
+import {
+  MultiselectFilter,
+  PledgeFrequencyEnum,
+  StatusEnum,
+} from '../../../../graphql/types.generated';
 import theme from '../../../theme';
-import { useGetInvalidStatusesQuery } from './GetInvalidStatuses.generated';
+import NoData from '../NoData';
+import {
+  GetInvalidStatusesDocument,
+  GetInvalidStatusesQuery,
+  useGetInvalidStatusesQuery,
+} from './GetInvalidStatuses.generated';
 import Contact from './Contact';
-import NoContacts from './NoContacts';
 import { contactTags } from './InputOptions/ContactTags';
 import { frequencies } from './InputOptions/Frequencies';
+import { useUpdateInvalidStatusMutation } from './UpdateInvalidStatus.generated';
+import client from 'src/lib/client';
+import { useContactFiltersQuery } from 'src/components/Contacts/ContactFilters/ContactFilters.generated';
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
@@ -57,41 +70,125 @@ interface Props {
 const FixCommitmentInfo: React.FC<Props> = ({ accountListId }: Props) => {
   const classes = useStyles();
   const { t } = useTranslation();
+  const { enqueueSnackbar } = useSnackbar();
   const { data, loading } = useGetInvalidStatusesQuery({
     variables: { accountListId },
   });
+  const {
+    data: contactFilterGroups,
+    loading: loadingStatuses,
+  } = useContactFiltersQuery({
+    variables: {
+      accountListId,
+    },
+  });
+  const [
+    updateInvalidStatus,
+    { loading: updating },
+  ] = useUpdateInvalidStatusMutation();
+
+  const contactStatuses = contactFilterGroups?.accountList?.contactFilterGroups
+    ? (contactFilterGroups.accountList.contactFilterGroups
+        .find((group) => group.name === 'Status')
+        ?.filters.find(
+          (filter: { filterKey: string }) => filter.filterKey === 'status',
+        ) as MultiselectFilter).options?.filter(
+        (status) =>
+          status.value !== 'NULL' &&
+          status.value !== 'HIDDEN' &&
+          status.value !== 'ACTIVE',
+      )
+    : [{ name: '', value: '' }];
 
   //TODO: Make currency field a select element
+
+  const updateContact = async (
+    id: string,
+    change: boolean,
+    status?: string,
+    pledgeCurrency?: string,
+    pledgeAmount?: number,
+    pledgeFrequency?: string,
+  ): Promise<void> => {
+    const attributes = change
+      ? {
+          id,
+          status: status as StatusEnum,
+          pledgeAmount,
+          pledgeCurrency,
+          pledgeFrequency: pledgeFrequency as PledgeFrequencyEnum,
+          statusValid: true,
+        }
+      : { id, statusValid: true };
+    await updateInvalidStatus({
+      variables: {
+        accountListId,
+        attributes,
+      },
+    });
+    enqueueSnackbar(t('Contact commitment info updated!'), {
+      variant: 'success',
+    });
+    hideContact(id);
+  };
+
+  const hideContact = (hideId: string): void => {
+    const query = {
+      query: GetInvalidStatusesDocument,
+      variables: {
+        accountListId,
+      },
+    };
+
+    const dataFromCache = client.readQuery<GetInvalidStatusesQuery>(query);
+
+    if (dataFromCache) {
+      const data = {
+        ...dataFromCache,
+        contacts: {
+          ...dataFromCache.contacts,
+          nodes: dataFromCache.contacts.nodes.filter(
+            (contact) => contact.id !== hideId,
+          ),
+        },
+      };
+
+      client.writeQuery({ ...query, data });
+    }
+  };
 
   return (
     <>
       <Box className={classes.outer} data-testid="Home">
-        {!loading && data ? (
+        {!loading && !updating && !loadingStatuses && data ? (
           <Grid container className={classes.container}>
             <Grid item xs={12}>
               <Typography variant="h4">{t('Fix Commitment Info')}</Typography>
               <Divider className={classes.divider} />
-              <Box className={classes.descriptionBox}>
-                <Typography>
-                  <strong>
-                    {t('You have {{amount}} partner statuses to confirm.', {
-                      amount: data?.contacts.nodes.length,
-                    })}
-                  </strong>
-                </Typography>
-                <Typography>
-                  {t(
-                    'MPDX has assigned partnership statuses and giving frequencies ' +
-                      'based on your partner’s giving history. MPDX has made its best ' +
-                      'attempt at matching the appropriate statuses for you. However, ' +
-                      'you will need to confirm them to be sure MPDX’s matching was ' +
-                      'accurate.',
-                  )}
-                </Typography>
-              </Box>
             </Grid>
             {data.contacts?.nodes.length > 0 ? (
               <>
+                <Grid item xs={12}>
+                  <Box className={classes.descriptionBox}>
+                    <Typography>
+                      <strong>
+                        {t('You have {{amount}} partner statuses to confirm.', {
+                          amount: data?.contacts.nodes.length,
+                        })}
+                      </strong>
+                    </Typography>
+                    <Typography>
+                      {t(
+                        'MPDX has assigned partnership statuses and giving frequencies ' +
+                          'based on your partner’s giving history. MPDX has made its best ' +
+                          'attempt at matching the appropriate statuses for you. However, ' +
+                          'you will need to confirm them to be sure MPDX’s matching was ' +
+                          'accurate.',
+                      )}
+                    </Typography>
+                  </Box>
+                </Grid>
+
                 <Grid item xs={12}>
                   <Box>
                     {data.contacts.nodes.map((contact) => (
@@ -99,10 +196,10 @@ const FixCommitmentInfo: React.FC<Props> = ({ accountListId }: Props) => {
                         id={contact.id}
                         name={contact.name}
                         key={contact.name}
-                        tagTitle={
+                        statusTitle={
                           contact.status ? contactTags[contact.status] : ''
                         }
-                        tagValue={contact.status || ''}
+                        statusValue={contact.status || ''}
                         amount={contact.pledgeAmount || 0}
                         amountCurrency={contact.pledgeCurrency || ''}
                         frequencyTitle={
@@ -111,6 +208,9 @@ const FixCommitmentInfo: React.FC<Props> = ({ accountListId }: Props) => {
                             : ''
                         }
                         frequencyValue={contact.pledgeFrequency || ''}
+                        hideFunction={hideContact}
+                        updateFunction={updateContact}
+                        statuses={contactStatuses || [{ name: '', value: '' }]}
                       />
                     ))}
                   </Box>
@@ -128,7 +228,7 @@ const FixCommitmentInfo: React.FC<Props> = ({ accountListId }: Props) => {
                 </Grid>
               </>
             ) : (
-              <NoContacts />
+              <NoData tool="fixCommitmentInfo" />
             )}
           </Grid>
         ) : (

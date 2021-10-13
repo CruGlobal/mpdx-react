@@ -1,6 +1,8 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import { ThemeProvider } from '@material-ui/core';
+import { MockedProvider } from '@apollo/client/testing';
+import { getTopBarMultipleMock } from '../TopBar/TopBar.mock';
 import { NavBar } from './NavBar';
 import theme from 'src/theme';
 
@@ -14,6 +16,7 @@ jest.mock('next/router', () => ({
 }));
 
 const onMobileClose = jest.fn();
+const mocks = [getTopBarMultipleMock()];
 
 describe('NavBar', () => {
   it('default', async () => {
@@ -29,7 +32,9 @@ describe('NavBar', () => {
   it('opened', async () => {
     const { queryByTestId } = render(
       <ThemeProvider theme={theme}>
-        <NavBar onMobileClose={onMobileClose} openMobile={true} />
+        <MockedProvider mocks={mocks} addTypename={false}>
+          <NavBar onMobileClose={onMobileClose} openMobile={true} />
+        </MockedProvider>
       </ThemeProvider>,
     );
 

@@ -15,8 +15,8 @@ import Icon from '@mdi/react';
 import { mdiCheckboxMarkedCircle } from '@mdi/js';
 import theme from '../../../theme';
 import { StyledInput } from '../FixCommitmentInfo/StyledInput';
+import NoData from '../NoData';
 import Contact from './Contact';
-import NoContacts from './NoContacts';
 import DeleteModal from './DeleteModal';
 
 const useStyles = makeStyles(() => ({
@@ -326,7 +326,7 @@ const FixEmailAddresses: React.FC<Props> = () => {
               </Grid>
             </>
           ) : (
-            <NoContacts />
+            <NoData tool="fixEmailAddresses" />
           )}
         </Grid>
         <DeleteModal
