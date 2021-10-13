@@ -106,7 +106,7 @@ const ContactsPage: React.FC = () => {
                   totalCount={data?.tasks.totalCount}
                   style={{ height: 'calc(100vh - 160px)' }}
                   itemContent={(index, task) => (
-                    <Box key={index} flexDirection="row">
+                    <Box key={index} flexDirection="row" p={1}>
                       <Box>
                         {task.contacts.nodes.map((contact) => (
                           <Link

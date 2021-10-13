@@ -1,5 +1,6 @@
-import { Box, CircularProgress } from '@material-ui/core';
+import { Box } from '@material-ui/core';
 import React from 'react';
+import Loading from '../../Loading';
 import { ContactFilterStatusEnum } from '../../../../graphql/types.generated';
 import theme from '../../../theme';
 import { ContactFlowColumn } from './ContactFlowColumn';
@@ -56,7 +57,7 @@ export const ContactFlow: React.FC<Props> = ({
   return (
     <>
       {loadingUserOptions ? (
-        <CircularProgress />
+        <Loading loading={loadingUserOptions} />
       ) : (
         <>
           {flowOptions && (
