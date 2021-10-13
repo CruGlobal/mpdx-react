@@ -202,7 +202,10 @@ const ContactsPage: React.FC = () => {
                     }
                   />
                 ) : (
-                  <ContactFlow accountListId={accountListId} />
+                  <ContactFlow
+                    accountListId={accountListId}
+                    onContactSelected={setContactFocus}
+                  />
                 )}
               </>
             }

@@ -6,8 +6,8 @@ import { useGetUserOptionsQuery } from './GetUserOptions.generated';
 import theme from 'src/theme';
 
 interface Props {
-  x?: string;
   accountListId: string;
+  onContactSelected: (contactId: string) => void;
 }
 
 const statusMap: { [key: string]: string } = {
@@ -35,7 +35,10 @@ const colorMap: { [key: string]: string } = {
   'color-text': theme.palette.cruGrayDark.main,
 };
 
-export const ContactFlow: React.FC<Props> = ({ accountListId }: Props) => {
+export const ContactFlow: React.FC<Props> = ({
+  accountListId,
+  onContactSelected,
+}: Props) => {
   // Uses its own query because the list view's data depends on the active filters
 
   const {
@@ -88,6 +91,7 @@ export const ContactFlow: React.FC<Props> = ({ accountListId }: Props) => {
                       accountListId={accountListId}
                       title={column.name}
                       color={colorMap[column.color]}
+                      onContactSelected={onContactSelected}
                       statuses={column.statuses.map(
                         (status) =>
                           statusMap[status] as ContactFilterStatusEnum,

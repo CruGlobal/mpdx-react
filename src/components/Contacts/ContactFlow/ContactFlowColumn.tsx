@@ -21,6 +21,7 @@ interface Props {
   title: string;
   color: string;
   accountListId: string;
+  onContactSelected: (contactId: string) => void;
 }
 
 const ContactLink = styled(Typography)(() => ({
@@ -44,6 +45,7 @@ export const ContactFlowColumn: React.FC<Props> = ({
   title,
   color,
   accountListId,
+  onContactSelected,
 }: Props) => {
   const { data, loading } = useContactsQuery({
     variables: {
@@ -99,7 +101,9 @@ export const ContactFlowColumn: React.FC<Props> = ({
                     }}
                   />
                   <Box display="flex" flexDirection="column" ml={2}>
-                    <ContactLink>{contact.name}</ContactLink>
+                    <ContactLink onClick={() => onContactSelected(contact.id)}>
+                      {contact.name}
+                    </ContactLink>
                     <Typography>{contact.status}</Typography>
                   </Box>
                 </Box>
