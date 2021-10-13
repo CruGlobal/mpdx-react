@@ -1,9 +1,9 @@
 import { Box, CircularProgress } from '@material-ui/core';
 import React from 'react';
 import { ContactFilterStatusEnum } from '../../../../graphql/types.generated';
+import theme from '../../../theme';
 import { ContactFlowColumn } from './ContactFlowColumn';
 import { useGetUserOptionsQuery } from './GetUserOptions.generated';
-import theme from 'src/theme';
 
 interface Props {
   accountListId: string;
@@ -51,7 +51,7 @@ export const ContactFlow: React.FC<Props> = ({
       '{}',
   );
 
-  console.log(userOptions);
+  console.log(flowOptions);
 
   return (
     <>

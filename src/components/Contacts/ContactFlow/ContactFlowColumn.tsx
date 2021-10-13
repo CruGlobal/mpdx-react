@@ -9,10 +9,11 @@ import {
 } from '@material-ui/core';
 import { StarOutline, Star } from '@material-ui/icons';
 import React from 'react';
+import { contactStatusMap } from '../../Tool/FixCommitmentInfo/InputOptions/ContactStatuses';
+import theme from '../../../../src/theme';
 import { ContactFilterStatusEnum } from '../../../../graphql/types.generated';
 import { ContactRowFragment } from '../ContactRow/ContactRow.generated';
-import theme from 'src/theme';
-import { useContactsQuery } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
+import { useContactsQuery } from '../../../../pages/accountLists/[accountListId]/contacts/Contacts.generated';
 
 interface Props {
   data?: ContactRowFragment[];
@@ -113,7 +114,9 @@ export const ContactFlowColumn: React.FC<Props> = ({
                     <ContactLink onClick={() => onContactSelected(contact.id)}>
                       {contact.name}
                     </ContactLink>
-                    <Typography>{contact.status}</Typography>
+                    <Typography>
+                      {contactStatusMap[contact.status || 'NULL']}
+                    </Typography>
                   </Box>
                 </Box>
                 {contact.starred ? <Star /> : <ContactStarOutline />}
