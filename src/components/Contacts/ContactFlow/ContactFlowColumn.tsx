@@ -14,6 +14,7 @@ import { ContactFilterStatusEnum } from '../../../../graphql/types.generated';
 import { ContactRowFragment } from '../ContactRow/ContactRow.generated';
 import { useContactsQuery } from '../../../../pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import { StarContactIconButton } from '../StarContactIconButton/StarContactIconButton';
+import { InfiniteList } from '../../InfiniteList/InfiniteList';
 
 interface Props {
   data?: ContactRowFragment[];
@@ -39,7 +40,7 @@ export const ContactFlowColumn: React.FC<Props> = ({
   accountListId,
   onContactSelected,
 }: Props) => {
-  const { data, loading } = useContactsQuery({
+  const { data, loading, fetchMore } = useContactsQuery({
     variables: {
       accountListId: accountListId ?? '',
       contactsFilters: { status: statuses },
@@ -73,53 +74,71 @@ export const ContactFlowColumn: React.FC<Props> = ({
               </Typography>
             </Box>
             <Box display="flex" alignItems="center">
-              <Typography>{data?.contacts.nodes.length}</Typography>
+              <Typography>{data?.contacts.totalCount}</Typography>
             </Box>
           </Box>
           <CardContent
             style={{
               height: 'calc(100vh - 260px)',
               padding: 0,
-              overflow: 'auto',
               background: theme.palette.cruGrayLight.main,
             }}
           >
-            {data?.contacts.nodes.map((contact) => (
-              <Box
-                key={contact.id}
-                display="flex"
-                justifyContent="space-between"
-                alignItems="center"
-                p={2}
-                borderBottom={`1px solid ${theme.palette.cruGrayLight.main}`}
-                style={{ background: 'white' }}
-              >
-                <Box display="flex" alignItems="center">
-                  <Avatar
-                    src=""
-                    style={{
-                      width: theme.spacing(4),
-                      height: theme.spacing(4),
-                    }}
-                  />
-                  <Box display="flex" flexDirection="column" ml={2}>
-                    <ContactLink onClick={() => onContactSelected(contact.id)}>
-                      {contact.name}
-                    </ContactLink>
-                    <Typography>
-                      {contactStatusMap[contact.status || 'NULL']}
-                    </Typography>
+            <InfiniteList
+              loading={loading}
+              data={data?.contacts.nodes}
+              totalCount={data?.contacts.totalCount}
+              itemContent={(index, contact) => (
+                <Box
+                  key={index}
+                  display="flex"
+                  justifyContent="space-between"
+                  alignItems="center"
+                  pt={2}
+                  pl={2}
+                  pb={2}
+                  style={{ background: 'white' }}
+                >
+                  <Box display="flex" alignItems="center">
+                    <Avatar
+                      src=""
+                      style={{
+                        width: theme.spacing(4),
+                        height: theme.spacing(4),
+                      }}
+                    />
+                    <Box display="flex" flexDirection="column" ml={2}>
+                      <ContactLink
+                        onClick={() => onContactSelected(contact.id)}
+                      >
+                        {contact.name}
+                      </ContactLink>
+                      <Typography>
+                        {contactStatusMap[contact.status || 'NULL']}
+                      </Typography>
+                    </Box>
+                  </Box>
+                  <Box display="flex">
+                    <StarContactIconButton
+                      accountListId={accountListId}
+                      contactId={contact.id}
+                      isStarred={contact.starred || false}
+                    />
                   </Box>
                 </Box>
-                {
-                  <StarContactIconButton
-                    accountListId={accountListId}
-                    contactId={contact.id}
-                    isStarred={contact.starred || false}
-                  />
-                }
-              </Box>
-            ))}
+              )}
+              endReached={() =>
+                data?.contacts.pageInfo.hasNextPage &&
+                fetchMore({
+                  variables: { after: data.contacts.pageInfo.endCursor },
+                })
+              }
+              EmptyPlaceholder={
+                <Card>
+                  <CardContent>TODO: Implement Empty Placeholder</CardContent>
+                </Card>
+              }
+            />
           </CardContent>
         </Card>
       )}
