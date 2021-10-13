@@ -1,5 +1,5 @@
 import React from 'react';
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ThemeProvider } from '@material-ui/core';
 import {
@@ -79,7 +79,7 @@ describe('ContactsRow', () => {
     ).toBeInTheDocument();
   });
 
-  it('should render check event', () => {
+  it('should render check event', async () => {
     const { getByRole } = render(
       <GqlMockedProvider>
         <ThemeProvider theme={theme}>
@@ -96,9 +96,9 @@ describe('ContactsRow', () => {
     );
 
     const checkbox = getByRole('checkbox');
-    userEvent.click(checkbox);
+    expect(checkbox).not.toBeChecked();
+    await waitFor(() => userEvent.click(checkbox));
     expect(onContactCheckToggle).toHaveBeenCalled();
-    expect(checkbox).toHaveProperty('checked', true);
   });
 
   it('should render contact select event', () => {
