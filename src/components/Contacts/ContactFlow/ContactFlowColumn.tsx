@@ -7,13 +7,13 @@ import {
   styled,
   CircularProgress,
 } from '@material-ui/core';
-import { StarOutline, Star } from '@material-ui/icons';
 import React from 'react';
 import { contactStatusMap } from '../../Tool/FixCommitmentInfo/InputOptions/ContactStatuses';
 import theme from '../../../../src/theme';
 import { ContactFilterStatusEnum } from '../../../../graphql/types.generated';
 import { ContactRowFragment } from '../ContactRow/ContactRow.generated';
 import { useContactsQuery } from '../../../../pages/accountLists/[accountListId]/contacts/Contacts.generated';
+import { StarContactIconButton } from '../StarContactIconButton/StarContactIconButton';
 
 interface Props {
   data?: ContactRowFragment[];
@@ -28,14 +28,6 @@ const ContactLink = styled(Typography)(() => ({
   color: theme.palette.mpdxBlue.main,
   '&:hover': {
     textDecoration: 'underline',
-    cursor: 'pointer',
-  },
-}));
-
-const ContactStarOutline = styled(StarOutline)(() => ({
-  color: theme.palette.mpdxBlue.main,
-  '&:hover': {
-    color: theme.palette.progressBarYellow.main,
     cursor: 'pointer',
   },
 }));
@@ -119,7 +111,13 @@ export const ContactFlowColumn: React.FC<Props> = ({
                     </Typography>
                   </Box>
                 </Box>
-                {contact.starred ? <Star /> : <ContactStarOutline />}
+                {
+                  <StarContactIconButton
+                    accountListId={accountListId}
+                    contactId={contact.id}
+                    isStarred={contact.starred || false}
+                  />
+                }
               </Box>
             ))}
           </CardContent>
