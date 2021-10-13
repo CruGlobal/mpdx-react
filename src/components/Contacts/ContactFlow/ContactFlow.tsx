@@ -60,7 +60,11 @@ export const ContactFlow: React.FC<Props> = ({ accountListId }: Props) => {
             <Box
               display="grid"
               minWidth="100%"
-              gridTemplateColumns={`repeat(${flowOptions.length}, 1fr`}
+              gridTemplateColumns={`repeat(${flowOptions.length}, ${
+                flowOptions.length > 5
+                  ? '1fr'
+                  : 'minmax(0, 1fr)); minmax(0, 1fr)'
+              }`}
               gridAutoFlow="column"
               gridGap={theme.spacing(1)}
               overflow="auto"
@@ -72,7 +76,14 @@ export const ContactFlow: React.FC<Props> = ({ accountListId }: Props) => {
                   statuses: string[];
                   color: string;
                 }) => (
-                  <Box width={'100%'} p={2} key={column.name}>
+                  <Box
+                    width={'100%'}
+                    // If there are more than five columns give them a fixed width
+                    // otherwise fit them equally into the screen
+                    minWidth={flowOptions.length > 5 ? 360 : '100%'}
+                    p={2}
+                    key={column.name}
+                  >
                     <ContactFlowColumn
                       accountListId={accountListId}
                       title={column.name}
