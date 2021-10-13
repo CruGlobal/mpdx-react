@@ -122,7 +122,7 @@
     "@typescript-eslint/parser": "^4.15.0",
     "babel-loader": "^8.2.2",
     "babel-preset-react-app": "^10.0.0",
-    "chromatic": "^5.6.2",
+    "chromatic": "^6.0.0",
     "core-js": "^3.8.3",
     "cross-env": "^7.0.3",
     "css-mediaquery": "^0.1.2",
@@ -170,5 +170,6 @@
       "eslint --fix",
       "git add"
     ]
-  }
+  },
+  "packageManager": "yarn@3.0.2"
 }
