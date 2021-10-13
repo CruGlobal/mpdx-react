@@ -5604,9 +5604,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@testing-library/react-hooks@npm:^5.1.0":
-  version: 5.1.0
-  resolution: "@testing-library/react-hooks@npm:5.1.0"
+"@testing-library/react-hooks@npm:5.1.3":
+  version: 5.1.3
+  resolution: "@testing-library/react-hooks@npm:5.1.3"
   dependencies:
     "@babel/runtime": ^7.12.5
     "@types/react": ">=16.9.0"
@@ -5623,7 +5623,7 @@ __metadata:
       optional: true
     react-test-renderer:
       optional: true
-  checksum: 40e081c4d2b16b4cbf3eef72096dc97b01611a2623a24a0ff25053e30e98e1781a4d32552de8e1474c9f939e6ca84563aa5e581b127b741292e087ce48bd9031
+  checksum: cc1991e2c1bd2fcfbc374817859e1439a06b39507fe2d8a1d903abec0b0937e20f82ce6d15eb1afa55b449b1894b0b1d5ce9d265dafadf555d6438d443809877
   languageName: node
   linkType: hard
 
@@ -17913,7 +17913,7 @@ fsevents@~2.3.1:
     "@testing-library/dom": ^7.29.4
     "@testing-library/jest-dom": ^5.11.9
     "@testing-library/react": 11.2.7
-    "@testing-library/react-hooks": ^5.1.0
+    "@testing-library/react-hooks": 5.1.3
     "@testing-library/user-event": ^12.7.0
     "@types/axios": ^0.14.0
     "@types/css-mediaquery": ^0.1.0
