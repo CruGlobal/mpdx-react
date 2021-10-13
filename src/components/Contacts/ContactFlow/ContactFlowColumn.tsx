@@ -3,7 +3,6 @@ import {
   Box,
   Card,
   CardContent,
-  CardHeader,
   Typography,
   styled,
   CircularProgress,
@@ -61,22 +60,33 @@ export const ContactFlowColumn: React.FC<Props> = ({
         <CircularProgress />
       ) : (
         <Card>
-          <CardHeader
-            style={{ borderBottom: `3px solid ${color}` }}
-            title={
-              <Box display="flex" justifyContent="space-between">
-                <Typography variant="h6" style={{ fontWeight: 600 }}>
-                  {title}
-                </Typography>
-                <Typography>{data?.contacts.nodes.length}</Typography>
-              </Box>
-            }
-          />
+          <Box
+            p={2}
+            display="flex"
+            justifyContent="space-between"
+            borderBottom={`5px solid ${color}`}
+          >
+            <Box width="80%">
+              <Typography
+                variant="h6"
+                style={{
+                  fontWeight: 600,
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                }}
+              >
+                {title}
+              </Typography>
+            </Box>
+            <Box display="flex" alignItems="center">
+              <Typography>{data?.contacts.nodes.length}</Typography>
+            </Box>
+          </Box>
           <CardContent
             style={{
               height: 'calc(100vh - 260px)',
               padding: 0,
-              width: '100%',
               overflow: 'auto',
               background: theme.palette.cruGrayLight.main,
             }}
@@ -87,10 +97,9 @@ export const ContactFlowColumn: React.FC<Props> = ({
                 display="flex"
                 justifyContent="space-between"
                 alignItems="center"
-                width="100%"
                 p={2}
                 borderBottom={`1px solid ${theme.palette.cruGrayLight.main}`}
-                style={{ backgroundColor: 'white' }}
+                style={{ background: 'white' }}
               >
                 <Box display="flex" alignItems="center">
                   <Avatar
