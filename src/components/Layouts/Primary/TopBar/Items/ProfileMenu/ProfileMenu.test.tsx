@@ -42,7 +42,7 @@ describe('ProfileMenu', () => {
   });
 
   it('should change account list in the router', async () => {
-    const { getByTestId, queryByText, getByText } = render(
+    const { getByTestId, getByText } = render(
       <ThemeProvider theme={theme}>
         <TestWrapper mocks={[getTopBarMock()]}>
           <TestRouter router={router}>
@@ -53,7 +53,6 @@ describe('ProfileMenu', () => {
     );
     await waitFor(() => expect(getByText('John Smith')).toBeInTheDocument());
     userEvent.click(getByTestId('profileMenuButton'));
-    expect(queryByText('Account List Selector')).toBeInTheDocument();
     userEvent.click(getByTestId('accountListSelector'));
     userEvent.click(getByTestId('accountListButton-1'));
     await waitFor(() => expect(router.push).toHaveBeenCalled());
