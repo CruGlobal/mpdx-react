@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { signout } from 'next-auth/client';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import { useRouter } from 'next/router';
+import { ChevronRight } from '@material-ui/icons';
 import theme from '../../../../../../theme';
 import { useAccountListId } from '../../../../../../hooks/useAccountListId';
 import { LeafButton, LeafListItem, Title } from '../../NavItem/NavItem';
@@ -90,7 +91,21 @@ export const ProfileMenuPanel: React.FC = () => {
             onClick={toggleAccountsDrawer}
           >
             <LeafButton style={style}>
-              <Title>{t('Account List Selector')}</Title>
+              <Title
+                style={{
+                  whiteSpace: 'nowrap',
+                  width: '80%',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                }}
+              >
+                {
+                  data?.accountLists.nodes.find(
+                    (accountList) => accountList.id === accountListId,
+                  )?.name
+                }
+              </Title>
+              <ChevronRight />
             </LeafButton>
           </LeafListItem>
           <MobileDrawer

@@ -162,7 +162,13 @@ const ProfileMenu = (): ReactElement => {
             expandIcon={<ExpandMoreIcon style={{ color: 'white' }} />}
             data-testid="accountListSelector"
           >
-            <Typography>{t('Account List Selector')}</Typography>
+            <Typography>
+              {
+                data?.accountLists.nodes.find(
+                  (accountList) => accountList.id === accountListId,
+                )?.name
+              }
+            </Typography>
           </AccordionSummary>
           <AccordionDetails className={classes.accountListSelectorDetails}>
             {data?.accountLists.nodes.map((accountList) => (
