@@ -9,7 +9,7 @@ const futureDate = DateTime.now().plus({ days: 3 }).toISO();
 const PastDate = DateTime.now().minus({ days: 3 }).toISO();
 
 describe('ContactLateLabel', () => {
-  it('late', async () => {
+  it('on time', async () => {
     const { getByText } = render(
       <MuiThemeProvider theme={theme}>
         <ContactLateLabel lateAt={futureDate} />
@@ -19,7 +19,7 @@ describe('ContactLateLabel', () => {
     expect(getByText('(On time)')).toBeInTheDocument();
   });
 
-  it('on time', async () => {
+  it('late', async () => {
     const { getByText } = render(
       <MuiThemeProvider theme={theme}>
         <ContactLateLabel lateAt={PastDate} />
