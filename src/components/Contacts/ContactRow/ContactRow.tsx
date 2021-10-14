@@ -17,7 +17,7 @@ import { StarContactIconButton } from '../StarContactIconButton/StarContactIconB
 import { ContactUncompletedTasksCount } from '../ContactUncompletedTasksCount/ContactUncompletedTasksCount';
 import { ContactStatusLabel } from '../ContactStatusLabel/ContactStatusLabel';
 import { ContactLateLabel } from '../ContactLateLabel/ContactLateLabel';
-import { StatusEnum } from '../../../../graphql/types.generated';
+import { StatusEnum as ContactPartnershipStatus } from '../../../../graphql/types.generated';
 import { ContactRowFragment } from './ContactRow.generated';
 import { currencyFormat } from 'src/lib/intlFormat';
 
@@ -123,11 +123,16 @@ export const ContactRow: React.FC<Props> = ({
               justifyContent={isContactDetailOpen ? 'flex-end' : undefined}
             >
               <Box display="flex" alignItems="center" width={32}>
-                {status === StatusEnum.PartnerFinancial && (
+                {status === ContactPartnershipStatus.PartnerFinancial && (
                   <GiftStatus lateAt={lateAt ?? undefined} />
                 )}
               </Box>
-              <Hidden xsUp={isContactDetailOpen}>
+              <Hidden
+                xsUp={
+                  isContactDetailOpen ||
+                  status === ContactPartnershipStatus.PartnerFinancial
+                }
+              >
                 <Box
                   display="flex"
                   flexDirection="column"
@@ -139,7 +144,7 @@ export const ContactRow: React.FC<Props> = ({
                       ? currencyFormat(pledgeAmount, pledgeCurrency)
                       : pledgeAmount}{' '}
                     {pledgeFrequency && PledgeFrequencyEnum[pledgeFrequency]}{' '}
-                    {status === StatusEnum.PartnerFinancial && lateAt && <ContactLateLabel lateAt={lateAt} />}
+                    {status === ContactPartnershipStatus.PartnerFinancial && lateAt && <ContactLateLabel lateAt={lateAt} />}
                   </Typography>
                 </Box>
               </Hidden>
