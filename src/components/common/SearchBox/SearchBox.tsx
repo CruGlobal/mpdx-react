@@ -27,6 +27,7 @@ export const AccountSearchBox = styled(TextField)(() => ({
 
 const DebounceSearchBox: React.ElementType<InputBaseComponentProps> = ({
   onChange,
+  placeholder,
   ...other
 }) => {
   const { t } = useTranslation();
@@ -35,7 +36,7 @@ const DebounceSearchBox: React.ElementType<InputBaseComponentProps> = ({
     <DebounceInput
       {...other}
       debounceTimeout={300}
-      placeholder={t('Search List')}
+      placeholder={placeholder ?? t('Search')}
       onChange={(event) => onChange?.(event)}
     />
   );
