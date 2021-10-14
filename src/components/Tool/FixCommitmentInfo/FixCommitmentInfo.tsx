@@ -24,7 +24,6 @@ import {
 } from './GetInvalidStatuses.generated';
 import Contact from './Contact';
 import { frequencies } from './InputOptions/Frequencies';
-// eslint-disable-next-line import/extensions
 import { useUpdateInvalidStatusMutation } from './UpdateInvalidStatus.generated';
 import { contactPartnershipStatus } from 'src/utils/contacts/contactPartnershipStatus';
 import client from 'src/lib/client';
