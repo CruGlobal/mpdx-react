@@ -14,6 +14,13 @@ import ProfileMenu from './ProfileMenu';
 const router = {
   pathname: '/accountLists/[accountListId]/test',
   query: { accountListId: '123' },
+  isReady: true,
+  push: jest.fn(),
+};
+
+const routerNoAccountListId = {
+  pathname: '/accountLists/',
+  isReady: true,
   push: jest.fn(),
 };
 
@@ -51,6 +58,30 @@ describe('ProfileMenu', () => {
     userEvent.click(getByTestId('accountListButton-1'));
     await waitFor(() => expect(router.push).toHaveBeenCalled());
     expect(router.push).toHaveBeenCalledWith({
+      pathname: '/accountLists/[accountListId]/test',
+      query: {
+        accountListId: '1',
+      },
+    });
+  });
+
+  it('should route to path with account list', async () => {
+    const { getByTestId, queryByText, getByText } = render(
+      <ThemeProvider theme={theme}>
+        <TestWrapper mocks={[getTopBarMock()]}>
+          <TestRouter router={routerNoAccountListId}>
+            <ProfileMenu />
+          </TestRouter>
+        </TestWrapper>
+      </ThemeProvider>,
+    );
+    await waitFor(() => expect(getByText('John Smith')).toBeInTheDocument());
+    userEvent.click(getByTestId('profileMenuButton'));
+    expect(queryByText('Account List Selector')).toBeInTheDocument();
+    userEvent.click(getByTestId('accountListSelector'));
+    userEvent.click(getByTestId('accountListButton-1'));
+    await waitFor(() => expect(routerNoAccountListId.push).toHaveBeenCalled());
+    expect(routerNoAccountListId.push).toHaveBeenCalledWith({
       pathname: '/accountLists/[accountListId]/',
       query: {
         accountListId: '1',
