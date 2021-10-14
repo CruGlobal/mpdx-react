@@ -5,8 +5,7 @@ import {
   Drawer,
   Link,
   List,
-  makeStyles,
-  Theme,
+  styled
 } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { signout } from 'next-auth/client';
@@ -24,24 +23,24 @@ type ProfileMenuContent = {
   onClick?: () => void;
 };
 
-const useStyles = makeStyles((theme: Theme) => ({
-  mobileDrawer: {
+const MobileDrawer = styled(Drawer)(()=>({
+  '& .MuiDrawer-paper': {
     width: 290,
     backgroundColor: theme.palette.cruGrayDark.main,
     zIndex: theme.zIndex.drawer + 201,
+  }
+}))
+
+const LeafListItemHover = styled(LeafListItem)(()=>({
+  '&:hover': {
+    backgroundColor: `${theme.palette.cruGrayMedium.main} !important`,
   },
-  itemHover: {
-    '&:hover': {
-      backgroundColor: `${theme.palette.cruGrayMedium.main} !important`,
-    },
-  },
-}));
+}))
 
 export const ProfileMenuPanel: React.FC = () => {
   const { t } = useTranslation();
   const { data } = useGetTopBarQuery();
   const accountListId = useAccountListId();
-  const classes = useStyles();
   const { push, pathname } = useRouter();
   const [accountsDrawerOpen, setAccountsDrawerOpen] = useState<boolean>(false);
 
@@ -101,11 +100,10 @@ export const ProfileMenuPanel: React.FC = () => {
               <Title>{t('Account List Selector')}</Title>
             </LeafButton>
           </LeafListItem>
-          <Drawer
+          <MobileDrawer
             anchor="left"
             open={accountsDrawerOpen}
             onClose={toggleAccountsDrawer}
-            classes={{ paper: classes.mobileDrawer }}
           >
             <LeafListItem
               data-testid="closeAccountListDrawerButton"
@@ -121,12 +119,11 @@ export const ProfileMenuPanel: React.FC = () => {
               </LeafButton>
             </LeafListItem>
             {data?.accountLists.nodes.map((accountList) => (
-              <LeafListItem
+              <LeafListItemHover
                 key={accountList.id}
                 button
                 data-testid={`accountListButton-${accountList.id}`}
                 disableGutters
-                className={classes.itemHover}
                 style={{
                   backgroundColor:
                     accountListId === accountList.id
@@ -138,9 +135,9 @@ export const ProfileMenuPanel: React.FC = () => {
                 <LeafButton style={accountListStyle}>
                   <Title>{accountList.name}</Title>
                 </LeafButton>
-              </LeafListItem>
+              </LeafListItemHover>
             ))}
-          </Drawer>
+          </MobileDrawer>
         </>
       )}
       {addProfileContent.map(({ text, path, onClick }, index) => (
