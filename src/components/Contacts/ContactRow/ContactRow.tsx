@@ -144,7 +144,8 @@ export const ContactRow: React.FC<Props> = ({
                       ? currencyFormat(pledgeAmount, pledgeCurrency)
                       : pledgeAmount}{' '}
                     {pledgeFrequency && PledgeFrequencyEnum[pledgeFrequency]}{' '}
-                    {status === ContactPartnershipStatus.PartnerFinancial && lateAt && <ContactLateLabel lateAt={lateAt} />}
+                    {status === ContactPartnershipStatus.PartnerFinancial &&
+                      lateAt && <ContactLateLabel lateAt={lateAt} />}
                   </Typography>
                 </Box>
               </Hidden>

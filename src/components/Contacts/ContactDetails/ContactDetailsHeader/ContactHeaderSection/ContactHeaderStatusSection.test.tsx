@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, waitFor } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import { StatusEnum as ContactPartnershipStatus } from '../../../../../../graphql/types.generated';
 import { gqlMock } from '../../../../../../__tests__/util/graphqlMocking';
 import {
