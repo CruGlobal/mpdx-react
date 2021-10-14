@@ -24,7 +24,7 @@ describe('ProfileMenu', () => {
         <TestWrapper mocks={[getTopBarMock()]}>
           <ProfileMenu />
         </TestWrapper>
-      </ThemeProvider>,
+      </ThemeProvider>
     );
     await waitFor(() => expect(getByText('John Smith')).toBeInTheDocument());
     userEvent.click(getByTestId('profileMenuButton'));
@@ -42,7 +42,7 @@ describe('ProfileMenu', () => {
             <ProfileMenu />
           </TestRouter>
         </TestWrapper>
-      </ThemeProvider>,
+      </ThemeProvider>
     );
     await waitFor(() => expect(getByText('John Smith')).toBeInTheDocument());
     userEvent.click(getByTestId('profileMenuButton'));

@@ -21,7 +21,7 @@ describe('ProfileMenuPanelForNavBar', () => {
         <TestWrapper mocks={[getTopBarMock()]}>
           <ProfileMenuPanel />
         </TestWrapper>
-      </ThemeProvider>,
+      </ThemeProvider>
     );
 
     expect(getByTestId('ProfileMenuPanelForNavBar')).toBeInTheDocument();
@@ -35,8 +35,7 @@ describe('ProfileMenuPanelForNavBar', () => {
             <ProfileMenuPanel />
           </TestWrapper>
         </ThemeProvider>
-        ,
-      </TestRouter>,
+      </TestRouter>
     );
 
     await waitFor(() =>
@@ -57,8 +56,7 @@ describe('ProfileMenuPanelForNavBar', () => {
             <ProfileMenuPanel />
           </TestWrapper>
         </ThemeProvider>
-        ,
-      </TestRouter>,
+      </TestRouter>
     );
 
     await waitFor(() =>
@@ -78,9 +76,8 @@ describe('ProfileMenuPanelForNavBar', () => {
           <TestRouter router={router}>
             <ProfileMenuPanel />
           </TestRouter>
-          ,
         </TestWrapper>
-      </ThemeProvider>,
+      </ThemeProvider>
     );
 
     await waitFor(() =>
