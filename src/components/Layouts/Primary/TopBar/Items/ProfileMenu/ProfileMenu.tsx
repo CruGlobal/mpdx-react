@@ -1,6 +1,7 @@
 import React, { useState, ReactElement } from 'react';
 import {
   Avatar,
+  Box,
   makeStyles,
   Theme,
   IconButton,
@@ -29,6 +30,7 @@ import { useGetTopBarQuery } from '../../GetTopBar.generated';
 const useStyles = makeStyles((theme: Theme) => ({
   accountName: {
     color: theme.palette.common.white,
+    margin: 0,
     padding: '0px 8px',
   },
   avatar: {
@@ -126,15 +128,34 @@ const ProfileMenu = (): ReactElement => {
         onClick={handleProfileMenuOpen}
         data-testid="profileMenuButton"
       >
-        <AccountCircleIcon className={classes.avatar} />
-        {data && (
-          <ListItemText
-            className={classes.accountName}
-            primary={[data.user.firstName, data.user.lastName]
-              .filter(Boolean)
-              .join(' ')}
-          />
-        )}
+        <Box display="flex" alignItems="center" m={-1}>
+          <AccountCircleIcon className={classes.avatar} />
+          {data && (
+            <Box display="block" textAlign="left">
+              <ListItemText
+                className={classes.accountName}
+                primary={[data.user.firstName, data.user.lastName]
+                  .filter(Boolean)
+                  .join(' ')}
+              />
+
+              {accountListId && (
+                <Typography
+                  className={classes.accountName}
+                  display="block"
+                  variant="body2"
+                  data-testid="accountListName"
+                >
+                  {
+                    data?.accountLists.nodes.find(
+                      (accountList) => accountList.id === accountListId,
+                    )?.name
+                  }
+                </Typography>
+              )}
+            </Box>
+          )}
+        </Box>
       </IconButton>
       <Menu
         data-testid="profileMenu"
@@ -163,11 +184,11 @@ const ProfileMenu = (): ReactElement => {
             data-testid="accountListSelector"
           >
             <Typography>
-              {
-                data?.accountLists.nodes.find(
-                  (accountList) => accountList.id === accountListId,
-                )?.name
-              }
+              {accountListId
+                ? data?.accountLists.nodes.find(
+                    (accountList) => accountList.id === accountListId,
+                  )?.name
+                : t('Account List Selector')}
             </Typography>
           </AccordionSummary>
           <AccordionDetails className={classes.accountListSelectorDetails}>

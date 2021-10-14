@@ -42,7 +42,7 @@ describe('ProfileMenu', () => {
   });
 
   it('should change account list in the router', async () => {
-    const { getByTestId, getByText } = render(
+    const { getByTestId, getByText, queryByTestId } = render(
       <ThemeProvider theme={theme}>
         <TestWrapper mocks={[getTopBarMock()]}>
           <TestRouter router={router}>
@@ -52,6 +52,7 @@ describe('ProfileMenu', () => {
       </ThemeProvider>,
     );
     await waitFor(() => expect(getByText('John Smith')).toBeInTheDocument());
+    expect(queryByTestId('accountListName')).toBeInTheDocument();
     userEvent.click(getByTestId('profileMenuButton'));
     userEvent.click(getByTestId('accountListSelector'));
     userEvent.click(getByTestId('accountListButton-1'));
@@ -65,7 +66,7 @@ describe('ProfileMenu', () => {
   });
 
   it('should route to path with account list', async () => {
-    const { getByTestId, getByText } = render(
+    const { getByTestId, getByText, queryByTestId } = render(
       <ThemeProvider theme={theme}>
         <TestWrapper mocks={[getTopBarMock()]}>
           <TestRouter router={routerNoAccountListId}>
@@ -75,6 +76,7 @@ describe('ProfileMenu', () => {
       </ThemeProvider>,
     );
     await waitFor(() => expect(getByText('John Smith')).toBeInTheDocument());
+    expect(queryByTestId('accountListName')).not.toBeInTheDocument();
     userEvent.click(getByTestId('profileMenuButton'));
     userEvent.click(getByTestId('accountListSelector'));
     userEvent.click(getByTestId('accountListButton-1'));
