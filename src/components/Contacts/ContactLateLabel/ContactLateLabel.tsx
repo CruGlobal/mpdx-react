@@ -19,17 +19,21 @@ export const ContactLateLabel: React.FC<ContactLateLabelProps> = ({
     }
   }, [lateAt]);
 
-  return (
-    <>
-      {contactLateStatus && contactLateStatus?.days > 0 ? (
-        <Typography component="span" color="textPrimary">
-          {`(${t('On time')})`}
-        </Typography>
-      ) : (
-        <Typography component="span" color="error">{`(${Math.round(
-          contactLateStatus?.days ?? 0,
-        )}+ ${t('days')} ${t('late')})`}</Typography>
-      )}
-    </>
+  return !daysLate ? null : daysLate < 0 ? (
+    <Typography component="span" color="success">
+      {t('On time')}
+    </Typography>
+  ) : daysLate < 30 ? (
+    <Typography component="span" color="textPrimary">
+      {t('0-30 days late')}
+    </Typography>
+  ) : daysLate < 60 ? (
+    <Typography component="span" color="warning">
+      {t('30-60 days late')}
+    </Typography>
+  ) : (
+    <Typography component="span" color="error">
+      {t('60+ days late')}
+    </Typography>
   );
 };
