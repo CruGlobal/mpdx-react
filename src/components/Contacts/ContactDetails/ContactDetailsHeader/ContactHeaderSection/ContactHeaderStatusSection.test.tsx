@@ -1,5 +1,5 @@
 import React from 'react';
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import { StatusEnum as ContactPartnershipStatus } from '../../../../../../graphql/types.generated';
 import { gqlMock } from '../../../../../../__tests__/util/graphqlMocking';
 import {
@@ -53,13 +53,19 @@ describe('ContactHeaderStatusSection', () => {
     [ContactPartnershipStatus.NeverAsk, 'Never Ask'],
     [ContactPartnershipStatus.ResearchAbandoned, 'Research Abandoned'],
     [ContactPartnershipStatus.ExpiredReferral, 'Expired Referral'],
-  ])('should render status | %s', (status, expected) => {
-    const { queryByText } = render(
+  ])('should render status | %s', async (status, expected) => {
+    const { getByRole, getByText } = render(
       <ContactHeaderStatusSection
         loading={false}
         contact={contactMock(status)}
       />,
     );
-    expect(queryByText(expected)).toBeInTheDocument();
+
+    const handshakeIcon = getByRole('img', {
+      hidden: true,
+      name: 'HandshakeIcon',
+    });
+    expect(handshakeIcon).toBeInTheDocument();
+    expect(getByText(expected)).toBeInTheDocument();
   });
 });

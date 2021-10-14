@@ -22,7 +22,7 @@ const TextSkeleton = styled(Skeleton)(({}) => ({
 export const ContactHeaderStatusSection = ({
   loading,
   contact,
-}: Props): ReactElement => {
+}: Props): ReactElement | null => {
   const status = contact?.status;
 
   if (loading) {
@@ -39,7 +39,7 @@ export const ContactHeaderStatusSection = ({
         <Typography variant="subtitle1">{statusText}</Typography>
       </ContactHeaderSection>
     );
+  } else {
+    return null;
   }
-
-  return <ContactHeaderSection icon={<HandshakeIcon />} />;
 };
