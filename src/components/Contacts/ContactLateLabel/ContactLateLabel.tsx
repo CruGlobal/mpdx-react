@@ -15,7 +15,7 @@ export const ContactLateLabel: React.FC<ContactLateLabelProps> = ({
 
   const contactLateStatus: Duration | undefined = useMemo(() => {
     if (lateAt) {
-      return DateTime.fromISO(lateAt).diff(DateTime.now(), ['days']);
+      return DateTime.now().diff(DateTime.fromISO(lateAt), 'days')?.days;
     }
   }, [lateAt]);
 
