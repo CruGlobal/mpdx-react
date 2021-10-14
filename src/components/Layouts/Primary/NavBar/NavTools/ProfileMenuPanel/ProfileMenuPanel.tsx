@@ -1,21 +1,14 @@
 import React, { useState } from 'react';
-import {
-  Box,
-  Button,
-  Drawer,
-  Link,
-  List,
-  styled
-} from '@material-ui/core';
+import { Box, Button, Drawer, Link, List, styled } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { signout } from 'next-auth/client';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import { useRouter } from 'next/router';
+import theme from '../../../../../../theme';
+import { useAccountListId } from '../../../../../../hooks/useAccountListId';
 import { LeafButton, LeafListItem, Title } from '../../NavItem/NavItem';
 import HandoffLink from '../../../../../HandoffLink';
 import { useGetTopBarQuery } from '../../../TopBar/GetTopBar.generated';
-import theme from 'src/theme';
-import { useAccountListId } from 'src/hooks/useAccountListId';
 
 type ProfileMenuContent = {
   text: string;
@@ -23,19 +16,19 @@ type ProfileMenuContent = {
   onClick?: () => void;
 };
 
-const MobileDrawer = styled(Drawer)(()=>({
+const MobileDrawer = styled(Drawer)(() => ({
   '& .MuiDrawer-paper': {
     width: 290,
     backgroundColor: theme.palette.cruGrayDark.main,
     zIndex: theme.zIndex.drawer + 201,
-  }
-}))
+  },
+}));
 
-const LeafListItemHover = styled(LeafListItem)(()=>({
+const LeafListItemHover = styled(LeafListItem)(() => ({
   '&:hover': {
     backgroundColor: `${theme.palette.cruGrayMedium.main} !important`,
   },
-}))
+}));
 
 export const ProfileMenuPanel: React.FC = () => {
   const { t } = useTranslation();

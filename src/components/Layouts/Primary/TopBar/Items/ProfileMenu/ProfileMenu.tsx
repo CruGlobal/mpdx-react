@@ -22,9 +22,9 @@ import { signout } from 'next-auth/client';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import clsx from 'clsx';
+import { useAccountListId } from '../../../../../../hooks/useAccountListId';
 import HandoffLink from '../../../../../HandoffLink';
 import { useGetTopBarQuery } from '../../GetTopBar.generated';
-import { useAccountListId } from 'src/hooks/useAccountListId';
 
 const useStyles = makeStyles((theme: Theme) => ({
   accountName: {

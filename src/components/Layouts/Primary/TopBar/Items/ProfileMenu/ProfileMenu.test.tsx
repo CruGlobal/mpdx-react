@@ -1,6 +1,7 @@
 import React from 'react';
 import userEvent from '@testing-library/user-event';
 import { ThemeProvider } from '@material-ui/core';
+import TestRouter from '../../../../../../../__tests__/util/TestRouter';
 import {
   render,
   waitFor,
@@ -9,7 +10,6 @@ import { getTopBarMock } from '../../TopBar.mock';
 import TestWrapper from '../../../../../../../__tests__/util/TestWrapper';
 import theme from '../../../../../../theme';
 import ProfileMenu from './ProfileMenu';
-import TestRouter from '__tests__/util/TestRouter';
 
 const router = {
   pathname: '/accountLists/[accountListId]/test',
@@ -24,7 +24,7 @@ describe('ProfileMenu', () => {
         <TestWrapper mocks={[getTopBarMock()]}>
           <ProfileMenu />
         </TestWrapper>
-      </ThemeProvider>
+      </ThemeProvider>,
     );
     await waitFor(() => expect(getByText('John Smith')).toBeInTheDocument());
     userEvent.click(getByTestId('profileMenuButton'));
@@ -42,7 +42,7 @@ describe('ProfileMenu', () => {
             <ProfileMenu />
           </TestRouter>
         </TestWrapper>
-      </ThemeProvider>
+      </ThemeProvider>,
     );
     await waitFor(() => expect(getByText('John Smith')).toBeInTheDocument());
     userEvent.click(getByTestId('profileMenuButton'));

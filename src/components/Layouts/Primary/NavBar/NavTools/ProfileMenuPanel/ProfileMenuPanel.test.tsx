@@ -2,11 +2,11 @@ import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import { ThemeProvider } from '@material-ui/core';
 import userEvent from '@testing-library/user-event';
+import TestWrapper from '../../../../../../../__tests__/util/TestWrapper';
+import TestRouter from '../../../../../../../__tests__/util/TestRouter';
+import theme from '../../../../../../theme';
 import { getTopBarMock } from '../../../TopBar/TopBar.mock';
 import { ProfileMenuPanel } from './ProfileMenuPanel';
-import theme from 'src/theme';
-import TestWrapper from '__tests__/util/TestWrapper';
-import TestRouter from '__tests__/util/TestRouter';
 
 const router = {
   pathname: '/accountLists/[accountListId]/test',
@@ -21,7 +21,7 @@ describe('ProfileMenuPanelForNavBar', () => {
         <TestWrapper mocks={[getTopBarMock()]}>
           <ProfileMenuPanel />
         </TestWrapper>
-      </ThemeProvider>
+      </ThemeProvider>,
     );
 
     expect(getByTestId('ProfileMenuPanelForNavBar')).toBeInTheDocument();
@@ -35,7 +35,7 @@ describe('ProfileMenuPanelForNavBar', () => {
             <ProfileMenuPanel />
           </TestWrapper>
         </ThemeProvider>
-      </TestRouter>
+      </TestRouter>,
     );
 
     await waitFor(() =>
@@ -56,7 +56,7 @@ describe('ProfileMenuPanelForNavBar', () => {
             <ProfileMenuPanel />
           </TestWrapper>
         </ThemeProvider>
-      </TestRouter>
+      </TestRouter>,
     );
 
     await waitFor(() =>
@@ -77,7 +77,7 @@ describe('ProfileMenuPanelForNavBar', () => {
             <ProfileMenuPanel />
           </TestRouter>
         </TestWrapper>
-      </ThemeProvider>
+      </ThemeProvider>,
     );
 
     await waitFor(() =>
