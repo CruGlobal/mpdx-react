@@ -53,7 +53,7 @@ describe('ContactHeaderStatusSection', () => {
     [ContactPartnershipStatus.NeverAsk, 'Never Ask'],
     [ContactPartnershipStatus.ResearchAbandoned, 'Research Abandoned'],
     [ContactPartnershipStatus.ExpiredReferral, 'Expired Referral'],
-  ])('should render status | %s', async (status, expected) => {
+  ])('should render status | %s', (status, expected) => {
     const { getByRole, getByText } = render(
       <ContactHeaderStatusSection
         loading={false}
