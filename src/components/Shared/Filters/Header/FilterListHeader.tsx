@@ -31,7 +31,7 @@ interface Props {
     event: React.MouseEvent<HTMLElement>,
     viewMode: ContactsTableViewMode | null,
   ) => void;
-  buttonGroup: ReactElement;
+  buttonGroup?: ReactElement;
 }
 
 type ContactsTableViewMode = 'list' | 'columns';
