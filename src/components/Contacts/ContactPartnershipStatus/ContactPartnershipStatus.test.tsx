@@ -24,6 +24,26 @@ describe('ContactPartnershipStatusLabel', () => {
       getByText(
         contactPartnershipStatus[ContactPartnershipStatusEnum.PartnerFinancial],
       ),
+    ).not.toBeInTheDocument();
+  });
+
+  it('render partner pray', () => {
+    const { getByText } = render(
+      <ThemeProvider theme={theme}>
+        <ContactPartnershipStatus
+          lateAt={null}
+          isContactDetailOpen={false}
+          pledgeAmount={null}
+          pledgeCurrency={null}
+          pledgeFrequency={null}
+          status={ContactPartnershipStatusEnum.PartnerPray}
+        />
+      </ThemeProvider>,
+    );
+    expect(
+      getByText(
+        contactPartnershipStatus[ContactPartnershipStatusEnum.PartnerPray],
+      ),
     ).toBeInTheDocument();
   });
 });

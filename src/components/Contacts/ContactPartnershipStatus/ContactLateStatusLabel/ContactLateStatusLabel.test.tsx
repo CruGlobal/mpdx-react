@@ -21,13 +21,13 @@ describe('ContactLateStatusLabel', () => {
     expect(getByText('(On time)')).toBeInTheDocument();
   });
 
-  it('late', () => {
+  it('is late less than 30 days', () => {
     const { getByText } = render(
       <MuiThemeProvider theme={theme}>
         <ContactLateStatusLabel lateStatusEnum={lateDate} />
       </MuiThemeProvider>,
     );
 
-    expect(getByText('0-30 days late')).toBeInTheDocument();
+    expect(getByText('(0-30 days late)')).toBeInTheDocument();
   });
 });
