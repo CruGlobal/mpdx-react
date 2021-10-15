@@ -2,14 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Head from 'next/head';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'next/router';
-import {
-  Box,
-  Card,
-  CardContent,
-  List,
-  ListItem,
-  styled,
-} from '@material-ui/core';
+import { Box, Card, CardContent, styled } from '@material-ui/core';
 import { ContactFilters } from '../../../../src/components/Contacts/ContactFilters/ContactFilters';
 import { InfiniteList } from '../../../../src/components/InfiniteList/InfiniteList';
 import { ContactDetails } from '../../../../src/components/Contacts/ContactDetails/ContactDetails';
@@ -166,22 +159,6 @@ const ContactsPage: React.FC = () => {
                   data={data?.contacts.nodes}
                   totalCount={data?.contacts.totalCount}
                   style={{ height: 'calc(100vh - 160px)' }}
-                  components={{
-                    // eslint-disable-next-line react/display-name
-                    List: React.forwardRef(({ style, children }, listRef) => (
-                      <List style={style} component="div" ref={listRef}>
-                        {children}
-                      </List>
-                    )),
-                    // eslint-disable-next-line react/display-name
-                    Item: ({ children, ...props }) => {
-                      return (
-                        <ListItem disableGutters {...props}>
-                          {children}
-                        </ListItem>
-                      );
-                    },
-                  }}
                   itemContent={(index, contact) => (
                     <ContactRow
                       accountListId={accountListId}

@@ -1,5 +1,5 @@
 import React, { ReactElement } from 'react';
-import { styled, Theme } from '@material-ui/core';
+import { List, ListItem, styled, Theme } from '@material-ui/core';
 import { ItemProps, Virtuoso, VirtuosoProps } from 'react-virtuoso';
 import { Skeleton } from '@material-ui/lab';
 
@@ -31,9 +31,18 @@ const ItemWithBorders = styled(({ disableHover: _, ...props }) => (
   }),
 );
 
-const Item: React.ComponentType<ItemProps> = (props) => (
-  <ItemWithBorders {...props} />
+const Item: React.ComponentType<ItemProps> = ({ children, ...props }) => (
+  <ListItem disableGutters {...props}>
+    {children}
+  </ListItem>
 );
+
+// eslint-disable-next-line react/display-name
+// const List: React.forwardRef<ListProps> = ({ style, children }, listRef) => (
+//   <List style={style} component="div" ref={listRef}>
+//     {children}
+//   </List>
+// );
 
 const SkeletonItem: React.FC<{ height: number }> = ({ height }) => (
   <ItemWithBorders disableHover>
@@ -70,6 +79,12 @@ export const InfiniteList = <T,>({
     components={{
       Footer: loading ? Loading : undefined,
       EmptyPlaceholder: loading ? undefined : () => EmptyPlaceholder,
+      // eslint-disable-next-line react/display-name
+      List: React.forwardRef(({ style, children }, listRef) => (
+        <List style={style} component="div" ref={listRef}>
+          {children}
+        </List>
+      )),
       Item,
       ScrollSeekPlaceholder: SkeletonItem,
       ...props.components,
