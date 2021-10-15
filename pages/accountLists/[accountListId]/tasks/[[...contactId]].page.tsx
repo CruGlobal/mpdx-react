@@ -2,7 +2,17 @@ import React, { useEffect, useState } from 'react';
 import Head from 'next/head';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'next/router';
-import { Box, Card, CardContent, Link, styled } from '@material-ui/core';
+import {
+  Box,
+  Button,
+  ButtonGroup,
+  Card,
+  CardContent,
+  Hidden,
+  Link,
+  styled,
+} from '@material-ui/core';
+import { FilterListHeader } from '../../../../src/components/Shared/Filters/Header/FilterListHeader';
 import { InfiniteList } from '../../../../src/components/InfiniteList/InfiniteList';
 import { ContactDetails } from '../../../../src/components/Contacts/ContactDetails/ContactDetails';
 import Loading from '../../../../src/components/Loading';
@@ -99,7 +109,21 @@ const ContactsPage: React.FC = () => {
             leftWidth="290px"
             mainContent={
               <>
-                TODO: implement tasks header/share header from contacts
+                <FilterListHeader
+                  activeFilters={Object.keys(activeFilters).length > 0}
+                  filterPanelOpen={filterPanelOpen}
+                  toggleFilterPanel={toggleFilterPanel}
+                  onSearchTermChanged={setSearchTerm}
+                  totalCount={data?.tasks.totalCount}
+                  buttonGroup={
+                    <Hidden xsDown>
+                      <ButtonGroup variant="contained">
+                        <Button>Add Task</Button>
+                        <Button>Log Task</Button>
+                      </ButtonGroup>
+                    </Hidden>
+                  }
+                />
                 <InfiniteList
                   loading={loading}
                   data={data?.tasks.nodes}
