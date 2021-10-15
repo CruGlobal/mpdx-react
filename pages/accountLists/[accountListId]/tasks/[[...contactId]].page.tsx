@@ -19,6 +19,7 @@ import Loading from '../../../../src/components/Loading';
 import { SidePanelsLayout } from '../../../../src/components/Layouts/SidePanelsLayout';
 import { useAccountListId } from '../../../../src/hooks/useAccountListId';
 import { TaskFilterSetInput } from '../../../../graphql/types.generated';
+import useTaskDrawer from '../../../../src/hooks/useTaskDrawer';
 import { useTasksQuery } from './Tasks.generated';
 
 const WhiteBackground = styled(Box)(({ theme }) => ({
@@ -34,6 +35,8 @@ const ContactsPage: React.FC = () => {
   const [contactDetailsId, setContactDetailsId] = useState<string>();
 
   const { contactId, searchTerm } = query;
+
+  const { openTaskDrawer } = useTaskDrawer();
 
   if (contactId !== undefined && !Array.isArray(contactId)) {
     throw new Error('contactId should be an array or undefined');
@@ -118,7 +121,9 @@ const ContactsPage: React.FC = () => {
                   buttonGroup={
                     <Hidden xsDown>
                       <ButtonGroup variant="contained">
-                        <Button>Add Task</Button>
+                        <Button onClick={() => openTaskDrawer({})}>
+                          Add Task
+                        </Button>
                         <Button>Log Task</Button>
                       </ButtonGroup>
                     </Hidden>
