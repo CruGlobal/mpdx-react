@@ -12,26 +12,10 @@ import {
   Typography,
 } from '@material-ui/core';
 import { CelebrationIcons } from '../CelebrationIcons/CelebrationIcons';
-import { GiftStatus } from '../GiftStatus/GiftStatus';
+import { ContactPartnershipStatus } from '../ContactPartnershipStatus/ContactPartnershipStatus';
 import { StarContactIconButton } from '../StarContactIconButton/StarContactIconButton';
 import { ContactUncompletedTasksCount } from '../ContactUncompletedTasksCount/ContactUncompletedTasksCount';
-import { ContactStatusLabel } from '../ContactStatusLabel/ContactStatusLabel';
-import { ContactLateLabel } from '../ContactLateLabel/ContactLateLabel';
-import { StatusEnum as ContactPartnershipStatus } from '../../../../graphql/types.generated';
 import { ContactRowFragment } from './ContactRow.generated';
-import { currencyFormat } from 'src/lib/intlFormat';
-
-enum PledgeFrequencyEnum {
-  ANNUAL = 'Annual',
-  EVERY_2_MONTHS = 'Every 2 Months',
-  EVERY_2_WEEKS = 'Every 2 Weeks',
-  EVERY_2_YEARS = 'Every 2 Years',
-  EVERY_4_MONTHS = 'Every 4 Months',
-  EVERY_6_MONTHS = 'Every 6 Months',
-  MONTHLY = 'Monthly',
-  QUARTERLY = 'Quarterly',
-  WEEKLY = 'Weekly',
-}
 
 const ListItemButton = styled(ButtonBase)(({ theme }) => ({
   flex: '1 1 auto',
@@ -117,39 +101,14 @@ export const ContactRow: React.FC<Props> = ({
             />
           </Grid>
           <Grid item xs={6}>
-            <Box
-              display="flex"
-              alignItems="center"
-              justifyContent={isContactDetailOpen ? 'flex-end' : undefined}
-            >
-              <Box display="flex" alignItems="center" width={32}>
-                {status === ContactPartnershipStatus.PartnerFinancial && (
-                  <GiftStatus lateAt={lateAt ?? undefined} />
-                )}
-              </Box>
-              <Hidden
-                xsUp={
-                  isContactDetailOpen ||
-                  status === ContactPartnershipStatus.PartnerFinancial
-                }
-              >
-                <Box
-                  display="flex"
-                  flexDirection="column"
-                  justifyContent="center"
-                >
-                  {status && <ContactStatusLabel status={status} />}
-                  <Typography component="span">
-                    {pledgeAmount && pledgeCurrency
-                      ? currencyFormat(pledgeAmount, pledgeCurrency)
-                      : pledgeAmount}{' '}
-                    {pledgeFrequency && PledgeFrequencyEnum[pledgeFrequency]}{' '}
-                    {status === ContactPartnershipStatus.PartnerFinancial &&
-                      lateAt && <ContactLateLabel lateAt={lateAt} />}
-                  </Typography>
-                </Box>
-              </Hidden>
-            </Box>
+            <ContactPartnershipStatus
+              isContactDetailOpen={isContactDetailOpen}
+              lateAt={lateAt}
+              pledgeAmount={pledgeAmount}
+              pledgeCurrency={pledgeCurrency}
+              pledgeFrequency={pledgeFrequency}
+              status={status}
+            />
           </Grid>
         </Grid>
       </ListItemButton>
