@@ -11,14 +11,14 @@ describe('ContactPartnershipStatusLabel', () => {
     const { getByText } = render(
       <ThemeProvider theme={theme}>
         <ContactPartnershipStatusLabel
-          status={ContactPartnershipStatusEnum.PartnerFinancial}
+          status={ContactPartnershipStatusEnum.PartnerPray}
         />
       </ThemeProvider>,
     );
     expect(
       getByText(
-        contactPartnershipStatus[ContactPartnershipStatusEnum.PartnerFinancial],
+        contactPartnershipStatus[ContactPartnershipStatusEnum.PartnerPray],
       ),
-    ).toBeInTheDocument();
+    ).not.toBeInTheDocument();
   });
 });

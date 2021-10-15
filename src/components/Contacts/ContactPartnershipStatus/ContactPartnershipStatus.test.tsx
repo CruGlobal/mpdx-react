@@ -6,9 +6,9 @@ import { StatusEnum as ContactPartnershipStatusEnum } from '../../../../graphql/
 import { ContactPartnershipStatus } from './ContactPartnershipStatus';
 import { contactPartnershipStatus } from 'src/utils/contacts/contactPartnershipStatus';
 
-describe('ContactPartnershipStatusLabel', () => {
+describe('ContactPartnershipStatus', () => {
   it('default', () => {
-    const { getByText } = render(
+    const { queryByText } = render(
       <ThemeProvider theme={theme}>
         <ContactPartnershipStatus
           lateAt={null}
@@ -21,7 +21,7 @@ describe('ContactPartnershipStatusLabel', () => {
       </ThemeProvider>,
     );
     expect(
-      getByText(
+      queryByText(
         contactPartnershipStatus[ContactPartnershipStatusEnum.PartnerFinancial],
       ),
     ).not.toBeInTheDocument();

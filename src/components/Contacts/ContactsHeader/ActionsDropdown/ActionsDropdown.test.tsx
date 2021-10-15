@@ -14,8 +14,8 @@ describe('ActionsDropDown', () => {
       </ThemeProvider>,
     );
 
-    const actionsDropdown = getByRole('textbox');
+    const actionsDropdown = getByRole('button');
     expect(actionsDropdown).toBeInTheDocument();
-    expect(actionsDropdown).toBeDisabled();
+    expect(actionsDropdown.getAttribute('class')).toContain('Mui-disabled');
   });
 });
