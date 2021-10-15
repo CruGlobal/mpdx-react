@@ -12,7 +12,7 @@ import {
   Link,
   styled,
 } from '@material-ui/core';
-import { FilterListHeader } from '../../../../src/components/Shared/Filters/Header/FilterListHeader';
+import { ListHeader } from '../../../../src/components/Shared/Header/ListHeader';
 import { InfiniteList } from '../../../../src/components/InfiniteList/InfiniteList';
 import { ContactDetails } from '../../../../src/components/Contacts/ContactDetails/ContactDetails';
 import Loading from '../../../../src/components/Loading';
@@ -112,7 +112,7 @@ const ContactsPage: React.FC = () => {
             leftWidth="290px"
             mainContent={
               <>
-                <FilterListHeader
+                <ListHeader
                   activeFilters={Object.keys(activeFilters).length > 0}
                   filterPanelOpen={filterPanelOpen}
                   toggleFilterPanel={toggleFilterPanel}

@@ -6,9 +6,9 @@ import { Box, Card, CardContent, Hidden, styled } from '@material-ui/core';
 import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
 import { FormatListBulleted, ViewColumn } from '@material-ui/icons';
 import {
-  FilterListHeader,
   CheckBoxState,
-} from '../../../../src/components/Shared/Filters/Header/FilterListHeader';
+  ListHeader,
+} from '../../../../src/components/Shared/Header/ListHeader';
 import { ContactFilters } from '../../../../src/components/Contacts/ContactFilters/ContactFilters';
 import { InfiniteList } from '../../../../src/components/InfiniteList/InfiniteList';
 import { ContactDetails } from '../../../../src/components/Contacts/ContactDetails/ContactDetails';
@@ -163,7 +163,7 @@ const ContactsPage: React.FC = () => {
             leftWidth="290px"
             mainContent={
               <>
-                <FilterListHeader
+                <ListHeader
                   activeFilters={Object.keys(activeFilters).length > 0}
                   filterPanelOpen={filterPanelOpen}
                   toggleFilterPanel={toggleFilterPanel}

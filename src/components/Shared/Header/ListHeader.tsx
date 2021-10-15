@@ -9,8 +9,8 @@ import {
 } from '@material-ui/core';
 import { FilterList } from '@material-ui/icons';
 import { useTranslation } from 'react-i18next';
-import { StarredItemIcon } from '../../../common/StarredItemIcon/StarredItemIcon';
-import { SearchBox } from '../../../common/SearchBox/SearchBox';
+import { StarredItemIcon } from '../../common/StarredItemIcon/StarredItemIcon';
+import { SearchBox } from '../../common/SearchBox/SearchBox';
 
 export enum CheckBoxState {
   'unchecked',
@@ -96,7 +96,7 @@ const StarIconWrap = styled(Box)(({ theme }) => ({
   marginRight: theme.spacing(1),
 }));
 
-export const FilterListHeader: React.FC<Props> = ({
+export const ListHeader: React.FC<Props> = ({
   activeFilters,
   checkBoxState,
   filterPanelOpen,

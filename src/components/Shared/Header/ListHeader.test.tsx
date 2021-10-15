@@ -2,18 +2,18 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ThemeProvider } from '@material-ui/core';
-import theme from '../../../../theme';
-import { CheckBoxState, FilterListHeader } from './FilterListHeader';
+import theme from '../../../theme';
+import { CheckBoxState, ListHeader } from './ListHeader';
 
 const toggleFilterPanel = jest.fn();
 const onSearchTermChanged = jest.fn();
 const onCheckAll = jest.fn();
 
-describe('FilterListHeader', () => {
+describe('ListHeader', () => {
   it('checkbox is unchecked', async () => {
     const { getByRole } = render(
       <ThemeProvider theme={theme}>
-        <FilterListHeader
+        <ListHeader
           activeFilters={false}
           checkBoxState={CheckBoxState.unchecked}
           filterPanelOpen={false}
@@ -41,7 +41,7 @@ describe('FilterListHeader', () => {
 
     const { getByRole } = render(
       <ThemeProvider theme={theme}>
-        <FilterListHeader
+        <ListHeader
           activeFilters={false}
           checkBoxState={CheckBoxState.unchecked}
           filterPanelOpen={false}
@@ -62,7 +62,7 @@ describe('FilterListHeader', () => {
   it('filters button displays for no filters', async () => {
     const { getByRole } = render(
       <ThemeProvider theme={theme}>
-        <FilterListHeader
+        <ListHeader
           activeFilters={false}
           checkBoxState={CheckBoxState.unchecked}
           filterPanelOpen={false}
@@ -85,7 +85,7 @@ describe('FilterListHeader', () => {
   it.skip('filters button displays for open filter panel', async () => {
     const { getByRole } = render(
       <ThemeProvider theme={theme}>
-        <FilterListHeader
+        <ListHeader
           activeFilters={false}
           checkBoxState={CheckBoxState.unchecked}
           filterPanelOpen={true}
@@ -110,7 +110,7 @@ describe('FilterListHeader', () => {
   it.skip('filters button displays for active filters', async () => {
     const { getByRole } = render(
       <ThemeProvider theme={theme}>
-        <FilterListHeader
+        <ListHeader
           activeFilters={true}
           checkBoxState={CheckBoxState.unchecked}
           filterPanelOpen={false}
@@ -135,7 +135,7 @@ describe('FilterListHeader', () => {
   it.skip('filters button displays for active filters and filter panel open', async () => {
     const { getByRole } = render(
       <ThemeProvider theme={theme}>
-        <FilterListHeader
+        <ListHeader
           activeFilters={true}
           checkBoxState={CheckBoxState.unchecked}
           filterPanelOpen={true}
@@ -160,7 +160,7 @@ describe('FilterListHeader', () => {
   it('filters button pressed', async () => {
     const { getByRole } = render(
       <ThemeProvider theme={theme}>
-        <FilterListHeader
+        <ListHeader
           activeFilters={false}
           checkBoxState={CheckBoxState.unchecked}
           filterPanelOpen={false}
@@ -186,7 +186,7 @@ describe('FilterListHeader', () => {
 
     const { getByRole } = render(
       <ThemeProvider theme={theme}>
-        <FilterListHeader
+        <ListHeader
           activeFilters={true}
           checkBoxState={CheckBoxState.unchecked}
           filterPanelOpen={false}
