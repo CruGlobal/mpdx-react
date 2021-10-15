@@ -139,7 +139,7 @@ const ProfileMenu = (): ReactElement => {
                   .join(' ')}
               />
 
-              {accountListId && (
+              {accountListId && data.accountLists.nodes.length > 1 && (
                 <Typography
                   className={classes.accountName}
                   display="block"
