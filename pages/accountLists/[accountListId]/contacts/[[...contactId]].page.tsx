@@ -2,7 +2,13 @@ import React, { useEffect, useState } from 'react';
 import Head from 'next/head';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'next/router';
-import { Box, Card, CardContent, styled } from '@material-ui/core';
+import { Box, Card, CardContent, Hidden, styled } from '@material-ui/core';
+import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
+import { FormatListBulleted, ViewColumn } from '@material-ui/icons';
+import {
+  FilterListHeader,
+  CheckBoxState,
+} from '../../../../src/components/Shared/Filters/Header/FilterListHeader';
 import { ContactFilters } from '../../../../src/components/Contacts/ContactFilters/ContactFilters';
 import { InfiniteList } from '../../../../src/components/InfiniteList/InfiniteList';
 import { ContactDetails } from '../../../../src/components/Contacts/ContactDetails/ContactDetails';
@@ -10,15 +16,21 @@ import Loading from '../../../../src/components/Loading';
 import { SidePanelsLayout } from '../../../../src/components/Layouts/SidePanelsLayout';
 import { useAccountListId } from '../../../../src/hooks/useAccountListId';
 import { ContactFilterSetInput } from '../../../../graphql/types.generated';
-import {
-  ContactCheckBoxState,
-  ContactsHeader,
-} from '../../../../src/components/Contacts/ContactsHeader/ContactsHeader';
+
 import { ContactRow } from '../../../../src/components/Contacts/ContactRow/ContactRow';
 import { useContactsQuery } from './Contacts.generated';
 
 const WhiteBackground = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.common.white,
+}));
+
+export type ContactsTableViewMode = 'list' | 'columns';
+
+const BulletedListIcon = styled(FormatListBulleted)(({ theme }) => ({
+  color: theme.palette.primary.dark,
+}));
+const ViewColumnIcon = styled(ViewColumn)(({ theme }) => ({
+  color: theme.palette.primary.dark,
 }));
 
 const ContactsPage: React.FC = () => {
@@ -49,6 +61,19 @@ const ContactsPage: React.FC = () => {
   const [filterPanelOpen, setFilterPanelOpen] = useState<boolean>(false);
   const [activeFilters, setActiveFilters] = useState<ContactFilterSetInput>({});
   const [selectedContacts, setSelectedContacts] = useState<Array<string>>([]);
+  const [
+    contactsTableDisplayState,
+    setContactsTableDisplayState,
+  ] = useState<ContactsTableViewMode>('list');
+
+  const handleViewModeChange = (
+    event: React.MouseEvent<HTMLElement>,
+    viewMode: ContactsTableViewMode | null,
+  ) => {
+    if (viewMode) {
+      setContactsTableDisplayState(viewMode);
+    }
+  };
 
   const { data, loading, fetchMore } = useContactsQuery({
     variables: {
@@ -138,50 +163,74 @@ const ContactsPage: React.FC = () => {
             leftWidth="290px"
             mainContent={
               <>
-                <ContactsHeader
+                <FilterListHeader
                   activeFilters={Object.keys(activeFilters).length > 0}
                   filterPanelOpen={filterPanelOpen}
                   toggleFilterPanel={toggleFilterPanel}
-                  onCheckAllContacts={handleCheckAllContacts}
+                  onCheckAll={handleCheckAllContacts}
                   onSearchTermChanged={setSearchTerm}
-                  totalContacts={data?.contacts.totalCount}
-                  contactCheckboxState={
-                    isSelectedSomeContacts
-                      ? ContactCheckBoxState.partial
-                      : isSelectedAllContacts
-                      ? ContactCheckBoxState.checked
-                      : ContactCheckBoxState.unchecked
-                  }
-                />
-                <InfiniteList
-                  loading={loading}
-                  data={data?.contacts.nodes}
+                  viewMode={contactsTableDisplayState}
+                  onViewChange={handleViewModeChange}
                   totalCount={data?.contacts.totalCount}
-                  style={{ height: 'calc(100vh - 160px)' }}
-                  itemContent={(index, contact) => (
-                    <ContactRow
-                      accountListId={accountListId}
-                      key={index}
-                      contact={contact}
-                      isChecked={selectedContacts.includes(contact.id)}
-                      onContactSelected={setContactFocus}
-                      onContactCheckToggle={handleCheckOneContact}
-                    />
-                  )}
-                  endReached={() =>
-                    data?.contacts.pageInfo.hasNextPage &&
-                    fetchMore({
-                      variables: { after: data.contacts.pageInfo.endCursor },
-                    })
+                  checkBoxState={
+                    isSelectedSomeContacts
+                      ? CheckBoxState.partial
+                      : isSelectedAllContacts
+                      ? CheckBoxState.checked
+                      : CheckBoxState.unchecked
                   }
-                  EmptyPlaceholder={
-                    <Card>
-                      <CardContent>
-                        TODO: Implement Empty Placeholder
-                      </CardContent>
-                    </Card>
+                  buttonGroup={
+                    <Hidden xsDown>
+                      <ToggleButtonGroup
+                        exclusive
+                        value={contactsTableDisplayState}
+                        onChange={handleViewModeChange}
+                      >
+                        <ToggleButton value="list">
+                          <BulletedListIcon titleAccess={t('List View')} />
+                        </ToggleButton>
+                        <ToggleButton value="columns">
+                          <ViewColumnIcon
+                            titleAccess={t('Column Workflow View')}
+                          />
+                        </ToggleButton>
+                      </ToggleButtonGroup>
+                    </Hidden>
                   }
                 />
+                {contactsTableDisplayState === 'list' ? (
+                  <InfiniteList
+                    loading={loading}
+                    data={data?.contacts.nodes}
+                    totalCount={data?.contacts.totalCount}
+                    style={{ height: 'calc(100vh - 160px)' }}
+                    itemContent={(index, contact) => (
+                      <ContactRow
+                        accountListId={accountListId}
+                        key={index}
+                        contact={contact}
+                        isChecked={selectedContacts.includes(contact.id)}
+                        onContactSelected={setContactFocus}
+                        onContactCheckToggle={handleCheckOneContact}
+                      />
+                    )}
+                    endReached={() =>
+                      data?.contacts.pageInfo.hasNextPage &&
+                      fetchMore({
+                        variables: { after: data.contacts.pageInfo.endCursor },
+                      })
+                    }
+                    EmptyPlaceholder={
+                      <Card>
+                        <CardContent>
+                          TODO: Implement Empty Placeholder
+                        </CardContent>
+                      </Card>
+                    }
+                  />
+                ) : (
+                  <></>
+                )}
               </>
             }
             rightPanel={
