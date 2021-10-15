@@ -6,14 +6,17 @@ import {
   render,
   waitFor,
 } from '../../../../../../../__tests__/util/testingLibraryReactMock';
-import { getTopBarMock } from '../../TopBar.mock';
+import {
+  getTopBarMock,
+  getTopBarMockWithMultipleAccountLists,
+} from '../../TopBar.mock';
 import TestWrapper from '../../../../../../../__tests__/util/TestWrapper';
 import theme from '../../../../../../theme';
 import ProfileMenu from './ProfileMenu';
 
 const router = {
   pathname: '/accountLists/[accountListId]/test',
-  query: { accountListId: '123' },
+  query: { accountListId: '1' },
   isReady: true,
   push: jest.fn(),
 };
@@ -86,5 +89,20 @@ describe('ProfileMenu', () => {
         accountListId: '1',
       },
     });
+  });
+
+  it('should display account name if user has two or more account lists', async () => {
+    const { getByTestId, getByText } = render(
+      <ThemeProvider theme={theme}>
+        <TestWrapper mocks={[getTopBarMockWithMultipleAccountLists()]}>
+          <TestRouter router={router}>
+            <ProfileMenu />
+          </TestRouter>
+        </TestWrapper>
+      </ThemeProvider>,
+    );
+    await waitFor(() => expect(getByText('John Smith')).toBeInTheDocument());
+    expect(getByTestId('accountListName')).toBeInTheDocument();
+    expect(getByText('Staff Account')).toBeInTheDocument();
   });
 });
