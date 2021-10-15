@@ -60,6 +60,7 @@ const ContactsPage: React.FC = () => {
 
   const [filterPanelOpen, setFilterPanelOpen] = useState<boolean>(false);
   const [activeFilters, setActiveFilters] = useState<ContactFilterSetInput>({});
+  const [starredFilter, setStarredFilter] = useState<ContactFilterSetInput>({});
   const [selectedContacts, setSelectedContacts] = useState<Array<string>>([]);
   const [
     contactsTableDisplayState,
@@ -78,7 +79,11 @@ const ContactsPage: React.FC = () => {
   const { data, loading, fetchMore } = useContactsQuery({
     variables: {
       accountListId: accountListId ?? '',
-      contactsFilters: { ...activeFilters, wildcardSearch: searchTerm?.[0] },
+      contactsFilters: {
+        ...activeFilters,
+        wildcardSearch: searchTerm?.[0],
+        ...starredFilter,
+      },
     },
     skip: !accountListId,
   });
@@ -151,6 +156,7 @@ const ContactsPage: React.FC = () => {
       </Head>
       {accountListId ? (
         <WhiteBackground>
+          {console.log(activeFilters)}
           <SidePanelsLayout
             leftPanel={
               <ContactFilters
@@ -167,6 +173,8 @@ const ContactsPage: React.FC = () => {
                   activeFilters={Object.keys(activeFilters).length > 0}
                   filterPanelOpen={filterPanelOpen}
                   toggleFilterPanel={toggleFilterPanel}
+                  starredFilter={starredFilter}
+                  toggleStarredFilter={setStarredFilter}
                   onCheckAll={handleCheckAllContacts}
                   onSearchTermChanged={setSearchTerm}
                   viewMode={contactsTableDisplayState}

@@ -9,6 +9,7 @@ import {
 } from '@material-ui/core';
 import { FilterList } from '@material-ui/icons';
 import { useTranslation } from 'react-i18next';
+import { ContactFilterSetInput } from '../../../../../graphql/types.generated';
 import { StarredItemIcon } from '../../../common/StarredItemIcon/StarredItemIcon';
 import { SearchBox } from '../../../common/SearchBox/SearchBox';
 
@@ -22,6 +23,8 @@ interface Props {
   activeFilters: boolean;
   checkBoxState?: CheckBoxState;
   filterPanelOpen: boolean;
+  starredFilter: ContactFilterSetInput;
+  toggleStarredFilter: (filter: ContactFilterSetInput) => void;
   toggleFilterPanel: () => void;
   onCheckAll?: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onSearchTermChanged: (searchTerm: string) => void;
@@ -105,6 +108,8 @@ export const FilterListHeader: React.FC<Props> = ({
   onSearchTermChanged,
   totalCount = 0,
   buttonGroup,
+  starredFilter,
+  toggleStarredFilter,
 }) => {
   const { t } = useTranslation();
 
@@ -144,7 +149,15 @@ export const FilterListHeader: React.FC<Props> = ({
 
       <Hidden smDown>
         <StarIconWrap>
-          <StarredItemIcon isStarred={false} />
+          <IconButton
+            onClick={() =>
+              toggleStarredFilter(
+                starredFilter.starred ? {} : { starred: true },
+              )
+            }
+          >
+            <StarredItemIcon isStarred={starredFilter.starred || false} />
+          </IconButton>
         </StarIconWrap>
       </Hidden>
     </HeaderWrap>
