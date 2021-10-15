@@ -7,7 +7,7 @@ import { ContactPartnershipStatusIcon } from './ContactPartnershipStatusIcon';
 
 describe('ContactPartnershipStatusIcon', () => {
   it('is late less than 30 days', () => {
-    const { getByRole, getByText } = render(
+    const { getByRole } = render(
       <ThemeProvider theme={theme}>
         <ContactPartnershipStatusIcon
           lateStatusEnum={ContactLateStatusEnum.LateLessThirty}
@@ -16,14 +16,13 @@ describe('ContactPartnershipStatusIcon', () => {
     );
     expect(
       getByRole('img', {
-        name: 'Late',
+        name: 'Late Less Than Thirty',
       }),
     ).toBeVisible();
-    expect(getByText('0 - 30')).toBeInTheDocument();
   });
 
   it('is On Time', () => {
-    const { getByRole, getByText } = render(
+    const { getByRole } = render(
       <ThemeProvider theme={theme}>
         <ContactPartnershipStatusIcon
           lateStatusEnum={ContactLateStatusEnum.OnTime}
@@ -35,6 +34,5 @@ describe('ContactPartnershipStatusIcon', () => {
         name: 'On Time',
       }),
     ).toBeVisible();
-    expect(getByText('(On Time)')).toBeInTheDocument();
   });
 });
