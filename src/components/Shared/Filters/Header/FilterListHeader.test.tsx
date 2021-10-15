@@ -8,12 +8,15 @@ import { CheckBoxState, FilterListHeader } from './FilterListHeader';
 const toggleFilterPanel = jest.fn();
 const onSearchTermChanged = jest.fn();
 const onCheckAll = jest.fn();
+const toggleStarredFilter = jest.fn();
 
 describe('FilterListHeader', () => {
   it('checkbox is unchecked', async () => {
     const { getByRole } = render(
       <ThemeProvider theme={theme}>
         <FilterListHeader
+          starredFilter={{}}
+          toggleStarredFilter={toggleStarredFilter}
           activeFilters={false}
           checkBoxState={CheckBoxState.unchecked}
           filterPanelOpen={false}
@@ -42,6 +45,8 @@ describe('FilterListHeader', () => {
     const { getByRole } = render(
       <ThemeProvider theme={theme}>
         <FilterListHeader
+          starredFilter={{}}
+          toggleStarredFilter={toggleStarredFilter}
           activeFilters={false}
           checkBoxState={CheckBoxState.unchecked}
           filterPanelOpen={false}
@@ -63,6 +68,8 @@ describe('FilterListHeader', () => {
     const { getByRole } = render(
       <ThemeProvider theme={theme}>
         <FilterListHeader
+          starredFilter={{}}
+          toggleStarredFilter={toggleStarredFilter}
           activeFilters={false}
           checkBoxState={CheckBoxState.unchecked}
           filterPanelOpen={false}
@@ -86,6 +93,8 @@ describe('FilterListHeader', () => {
     const { getByRole } = render(
       <ThemeProvider theme={theme}>
         <FilterListHeader
+          starredFilter={{}}
+          toggleStarredFilter={toggleStarredFilter}
           activeFilters={false}
           checkBoxState={CheckBoxState.unchecked}
           filterPanelOpen={true}
@@ -111,6 +120,8 @@ describe('FilterListHeader', () => {
     const { getByRole } = render(
       <ThemeProvider theme={theme}>
         <FilterListHeader
+          starredFilter={{}}
+          toggleStarredFilter={toggleStarredFilter}
           activeFilters={true}
           checkBoxState={CheckBoxState.unchecked}
           filterPanelOpen={false}
@@ -136,6 +147,8 @@ describe('FilterListHeader', () => {
     const { getByRole } = render(
       <ThemeProvider theme={theme}>
         <FilterListHeader
+          starredFilter={{}}
+          toggleStarredFilter={toggleStarredFilter}
           activeFilters={true}
           checkBoxState={CheckBoxState.unchecked}
           filterPanelOpen={true}
@@ -161,6 +174,8 @@ describe('FilterListHeader', () => {
     const { getByRole } = render(
       <ThemeProvider theme={theme}>
         <FilterListHeader
+          starredFilter={{}}
+          toggleStarredFilter={toggleStarredFilter}
           activeFilters={false}
           checkBoxState={CheckBoxState.unchecked}
           filterPanelOpen={false}
@@ -187,6 +202,8 @@ describe('FilterListHeader', () => {
     const { getByRole } = render(
       <ThemeProvider theme={theme}>
         <FilterListHeader
+          starredFilter={{}}
+          toggleStarredFilter={toggleStarredFilter}
           activeFilters={true}
           checkBoxState={CheckBoxState.unchecked}
           filterPanelOpen={false}
