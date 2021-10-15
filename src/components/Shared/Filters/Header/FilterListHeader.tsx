@@ -9,7 +9,10 @@ import {
 } from '@material-ui/core';
 import { FilterList } from '@material-ui/icons';
 import { useTranslation } from 'react-i18next';
-import { ContactFilterSetInput } from '../../../../../graphql/types.generated';
+import {
+  ContactFilterSetInput,
+  TaskFilterSetInput,
+} from '../../../../../graphql/types.generated';
 import { StarredItemIcon } from '../../../common/StarredItemIcon/StarredItemIcon';
 import { SearchBox } from '../../../common/SearchBox/SearchBox';
 
@@ -23,8 +26,10 @@ interface Props {
   activeFilters: boolean;
   checkBoxState?: CheckBoxState;
   filterPanelOpen: boolean;
-  starredFilter: ContactFilterSetInput;
-  toggleStarredFilter: (filter: ContactFilterSetInput) => void;
+  starredFilter: ContactFilterSetInput | TaskFilterSetInput;
+  toggleStarredFilter: (
+    filter: ContactFilterSetInput | TaskFilterSetInput,
+  ) => void;
   toggleFilterPanel: () => void;
   onCheckAll?: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onSearchTermChanged: (searchTerm: string) => void;

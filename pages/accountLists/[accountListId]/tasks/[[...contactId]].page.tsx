@@ -56,11 +56,15 @@ const ContactsPage: React.FC = () => {
   const [filterPanelOpen, setFilterPanelOpen] = useState<boolean>(false);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [activeFilters, setActiveFilters] = useState<TaskFilterSetInput>({});
-
+  const [starredFilter, setStarredFilter] = useState<TaskFilterSetInput>({});
   const { data, loading, fetchMore } = useTasksQuery({
     variables: {
       accountListId: accountListId ?? '',
-      tasksFilter: { ...activeFilters, wildcardSearch: searchTerm?.[0] },
+      tasksFilter: {
+        ...activeFilters,
+        ...starredFilter,
+        wildcardSearch: searchTerm?.[0],
+      },
     },
     skip: !accountListId,
   });
@@ -116,6 +120,8 @@ const ContactsPage: React.FC = () => {
                   activeFilters={Object.keys(activeFilters).length > 0}
                   filterPanelOpen={filterPanelOpen}
                   toggleFilterPanel={toggleFilterPanel}
+                  starredFilter={starredFilter}
+                  toggleStarredFilter={setStarredFilter}
                   onSearchTermChanged={setSearchTerm}
                   totalCount={data?.tasks.totalCount}
                   buttonGroup={
