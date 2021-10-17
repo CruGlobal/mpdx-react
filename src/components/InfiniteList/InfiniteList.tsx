@@ -31,10 +31,8 @@ const ItemWithBorders = styled(({ disableHover: _, ...props }) => (
   }),
 );
 
-const Item: React.ComponentType<ItemProps> = ({ children, ...props }) => (
-  <ListItem disableGutters {...props}>
-    {children}
-  </ListItem>
+const Item: React.ComponentType<ItemProps> = (props) => (
+  <ListItem disableGutters {...props} />
 );
 
 // eslint-disable-next-line react/display-name

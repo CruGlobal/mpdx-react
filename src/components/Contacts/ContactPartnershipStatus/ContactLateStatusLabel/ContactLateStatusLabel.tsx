@@ -40,7 +40,7 @@ export const ContactLateStatusLabel: React.FC<ContactLateStatusProps> = ({
           : 'error'
       }
     >
-      {`(${lateStatusLabel})`}
+      ({lateStatusLabel})
     </Typography>
   );
 };
