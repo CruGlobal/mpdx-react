@@ -176,17 +176,19 @@ const ContactsPage: React.FC = () => {
                     })
                   }
                   EmptyPlaceholder={
-                    <NullState
-                      page="contact"
-                      totalCount={data?.contacts.totalCount || 0}
-                      filtered={
-                        Object.keys(activeFilters).length > 0 ||
-                        Object.values(activeFilters).filter(
-                          (filter) => filter !== [],
-                        ).length > 0
-                      }
-                      changeFilters={setActiveFilters}
-                    />
+                    <Box width="75%" margin="auto" mt={2}>
+                      <NullState
+                        page="contact"
+                        totalCount={data?.contacts.totalCount || 0}
+                        filtered={
+                          Object.keys(activeFilters).length > 0 ||
+                          Object.values(activeFilters).filter(
+                            (filter) => filter !== [],
+                          ).length > 0
+                        }
+                        changeFilters={setActiveFilters}
+                      />
+                    </Box>
                   }
                 />
               </>
