@@ -1,5 +1,5 @@
 import React, { Dispatch, SetStateAction, useState } from 'react';
-import { Box, Typography, styled, Button } from '@material-ui/core';
+import { Box, Typography, Button } from '@material-ui/core';
 import { mdiFormatListBulleted, mdiHome } from '@mdi/js';
 import Icon from '@mdi/react';
 import { Trans, useTranslation } from 'react-i18next';
@@ -10,24 +10,7 @@ import {
 import useTaskDrawer from '../../../../../src/hooks/useTaskDrawer';
 import theme from '../../../../theme';
 import { renderDialog } from '../../../Layouts/Primary/TopBar/Items/AddMenu/AddMenu';
-
-const StyledBox = styled(Box)(() => ({
-  width: '100%',
-  border: '1px solid',
-  borderColor: theme.palette.cruGrayMedium.main,
-  color: theme.palette.cruGrayDark.main,
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-  flexDirection: 'column',
-  backgroundColor: theme.palette.cruGrayLight.main,
-  paddingTop: theme.spacing(7),
-  paddingBottom: theme.spacing(7),
-  paddingLeft: theme.spacing(3),
-  paddingRight: theme.spacing(3),
-  textAlign: 'center',
-  boxShadow: `0px 0px 5px ${theme.palette.cruGrayMedium.main} inset`,
-}));
+import { NullStateBox } from './NullStateBox';
 
 interface Props {
   page: 'contact' | 'task';
@@ -49,7 +32,7 @@ const NullState: React.FC<Props> = ({
   const [dialogOpen, changeDialogOpen] = useState(false);
 
   return (
-    <StyledBox data-testid="no-data">
+    <NullStateBox data-testid="no-data">
       <Icon
         path={page === 'contact' ? mdiHome : mdiFormatListBulleted}
         size={1.5}
@@ -126,7 +109,7 @@ const NullState: React.FC<Props> = ({
         </>
       )}
       {renderDialog(0, dialogOpen, changeDialogOpen)}
-    </StyledBox>
+    </NullStateBox>
   );
 };
 
