@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import Head from 'next/head';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'next/router';
-import { Box, Card, CardContent, styled } from '@material-ui/core';
+import { Box, styled } from '@material-ui/core';
+import NullState from '../../../../src/components/Shared/Filters/NullState/NullState';
 import { ContactFilters } from '../../../../src/components/Contacts/ContactFilters/ContactFilters';
 import { InfiniteList } from '../../../../src/components/InfiniteList/InfiniteList';
 import { ContactDetails } from '../../../../src/components/Contacts/ContactDetails/ContactDetails';
@@ -175,11 +176,16 @@ const ContactsPage: React.FC = () => {
                     })
                   }
                   EmptyPlaceholder={
-                    <Card>
-                      <CardContent>
-                        TODO: Implement Empty Placeholder
-                      </CardContent>
-                    </Card>
+                    <NullState
+                      page="contact"
+                      totalCount={data?.contacts.totalCount || 0}
+                      filtered={
+                        Object.keys(activeFilters).length > 0 ||
+                        Object.values(activeFilters).filter(
+                          (filter) => filter !== [],
+                        ).length > 0
+                      }
+                    />
                   }
                 />
               </>

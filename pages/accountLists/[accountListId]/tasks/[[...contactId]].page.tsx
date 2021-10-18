@@ -2,13 +2,14 @@ import React, { useEffect, useState } from 'react';
 import Head from 'next/head';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'next/router';
-import { Box, Card, CardContent, Link, styled } from '@material-ui/core';
+import { Box, Link, styled } from '@material-ui/core';
 import { InfiniteList } from '../../../../src/components/InfiniteList/InfiniteList';
 import { ContactDetails } from '../../../../src/components/Contacts/ContactDetails/ContactDetails';
 import Loading from '../../../../src/components/Loading';
 import { SidePanelsLayout } from '../../../../src/components/Layouts/SidePanelsLayout';
 import { useAccountListId } from '../../../../src/hooks/useAccountListId';
 import { TaskFilterSetInput } from '../../../../graphql/types.generated';
+import NullState from '../../../../src/components/Shared/Filters/NullState/NullState';
 import { useTasksQuery } from './Tasks.generated';
 
 const WhiteBackground = styled(Box)(({ theme }) => ({
@@ -93,6 +94,7 @@ const ContactsPage: React.FC = () => {
       </Head>
       {accountListId ? (
         <WhiteBackground>
+          {console.log(activeFilters !== {})}
           <SidePanelsLayout
             leftPanel={<>TODO: implement task filters</>}
             leftOpen={filterPanelOpen}
@@ -127,11 +129,16 @@ const ContactsPage: React.FC = () => {
                     })
                   }
                   EmptyPlaceholder={
-                    <Card>
-                      <CardContent>
-                        TODO: Implement Empty Placeholder
-                      </CardContent>
-                    </Card>
+                    <NullState
+                      page="task"
+                      totalCount={data?.tasks.totalCount || 0}
+                      filtered={
+                        Object.keys(activeFilters).length > 0 ||
+                        Object.values(activeFilters).filter(
+                          (filter) => filter !== [],
+                        ).length > 0
+                      }
+                    />
                   }
                 />
               </>
