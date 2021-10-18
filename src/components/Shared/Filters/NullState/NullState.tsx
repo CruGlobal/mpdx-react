@@ -37,7 +37,6 @@ const NullState: React.FC<Props> = ({
         path={page === 'contact' ? mdiHome : mdiFormatListBulleted}
         size={1.5}
       />
-      {console.log(filtered)}
       {filtered ? (
         <>
           <Typography variant="h5">

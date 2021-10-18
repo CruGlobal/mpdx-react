@@ -8,11 +8,21 @@ import {
 } from '../../../../../__tests__/util/testingLibraryReactMock';
 import TestWrapper from '../../../../../__tests__/util/TestWrapper';
 import theme from '../../../../theme';
+import useTaskDrawer from '../../../../../src/hooks/useTaskDrawer';
 import NullState from './NullState';
 
 const changeFilters = jest.fn();
+const openTaskDrawer = jest.fn();
+
+jest.mock('../../../../../src/hooks/useTaskDrawer');
 
 describe('NullState', () => {
+  beforeEach(() => {
+    (useTaskDrawer as jest.Mock).mockReturnValue({
+      openTaskDrawer,
+    });
+  });
+
   it('render text for unfiltered null contact state', async () => {
     const { getByText } = render(
       <SnackbarProvider>
@@ -73,6 +83,34 @@ describe('NullState', () => {
     expect(getByText('Save')).toBeInTheDocument();
   });
 
+  it('render text for unfiltered null tasks state', async () => {
+    const { getByText } = render(
+      <SnackbarProvider>
+        <ThemeProvider theme={theme}>
+          <TestWrapper>
+            <NullState
+              page="task"
+              totalCount={0}
+              filtered={false}
+              changeFilters={changeFilters}
+            />
+          </TestWrapper>
+        </ThemeProvider>
+      </SnackbarProvider>,
+    );
+
+    await waitFor(() =>
+      expect(
+        getByText(`Looks like you haven't added any tasks yet`),
+      ).toBeInTheDocument(),
+    );
+    expect(
+      getByText('You can import tasks from another service or add a new task.'),
+    ).toBeInTheDocument();
+    userEvent.click(getByText('Add new task'));
+    await waitFor(() => expect(openTaskDrawer).toHaveBeenCalledWith({}));
+  });
+
   it('render text filtered tasks', async () => {
     const { getByText } = render(
       <SnackbarProvider>
@@ -99,5 +137,7 @@ describe('NullState', () => {
     ).toBeInTheDocument();
     userEvent.click(getByText('Reset All Search Filters'));
     expect(changeFilters).toHaveBeenCalled();
+    userEvent.click(getByText('Add new task'));
+    await waitFor(() => expect(openTaskDrawer).toHaveBeenCalledWith({}));
   });
 });
