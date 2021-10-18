@@ -1,8 +1,12 @@
-import React, { useState } from 'react';
+import React, { Dispatch, SetStateAction, useState } from 'react';
 import { Box, Typography, styled, Button } from '@material-ui/core';
 import { mdiFormatListBulleted, mdiHome } from '@mdi/js';
 import Icon from '@mdi/react';
 import { Trans, useTranslation } from 'react-i18next';
+import {
+  ContactFilterSetInput,
+  TaskFilterSetInput,
+} from '../../../../../graphql/types.generated';
 import useTaskDrawer from '../../../../../src/hooks/useTaskDrawer';
 import theme from '../../../../theme';
 import { renderDialog } from '../../../Layouts/Primary/TopBar/Items/AddMenu/AddMenu';
@@ -29,9 +33,17 @@ interface Props {
   page: 'contact' | 'task';
   totalCount: number;
   filtered: boolean;
+  changeFilters:
+    | Dispatch<SetStateAction<TaskFilterSetInput>>
+    | Dispatch<SetStateAction<ContactFilterSetInput>>;
 }
 
-const NullState: React.FC<Props> = ({ page, totalCount, filtered }: Props) => {
+const NullState: React.FC<Props> = ({
+  page,
+  totalCount,
+  filtered,
+  changeFilters,
+}: Props) => {
   const { t } = useTranslation();
   const { openTaskDrawer } = useTaskDrawer();
   const [dialogOpen, changeDialogOpen] = useState(false);
@@ -56,6 +68,26 @@ const NullState: React.FC<Props> = ({ page, totalCount, filtered }: Props) => {
               'Unfortunately none of them match your current search or filters.',
             )}
           </Typography>
+          <Box display="flex" mt={1}>
+            <Button variant="contained" onClick={() => changeFilters({})}>
+              {t('Reset All Search Filters')}
+            </Button>
+            <Button
+              variant="contained"
+              onClick={
+                page === 'task'
+                  ? () => openTaskDrawer({})
+                  : () => changeDialogOpen(true)
+              }
+              style={{
+                marginLeft: theme.spacing(2),
+                color: theme.palette.common.white,
+                backgroundColor: theme.palette.mpdxBlue.main,
+              }}
+            >
+              <Trans defaults="Add new {{page}}" values={{ page }} />
+            </Button>
+          </Box>
         </>
       ) : (
         <>

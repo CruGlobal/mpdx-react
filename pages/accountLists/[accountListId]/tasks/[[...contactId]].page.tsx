@@ -138,6 +138,7 @@ const ContactsPage: React.FC = () => {
                           (filter) => filter !== [],
                         ).length > 0
                       }
+                      changeFilters={setActiveFilters}
                     />
                   }
                 />
