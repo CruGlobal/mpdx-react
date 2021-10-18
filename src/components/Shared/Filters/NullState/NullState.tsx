@@ -1,9 +1,11 @@
-import React from 'react';
-import { Box, Typography, styled } from '@material-ui/core';
+import React, { useState } from 'react';
+import { Box, Typography, styled, Button } from '@material-ui/core';
 import { mdiFormatListBulleted, mdiHome } from '@mdi/js';
 import Icon from '@mdi/react';
 import { Trans, useTranslation } from 'react-i18next';
+import useTaskDrawer from '../../../../../src/hooks/useTaskDrawer';
 import theme from '../../../../theme';
+import { renderDialog } from '../../../Layouts/Primary/TopBar/Items/AddMenu/AddMenu';
 
 const StyledBox = styled(Box)(() => ({
   width: '100%',
@@ -29,8 +31,10 @@ interface Props {
   filtered: boolean;
 }
 
-const NoData: React.FC<Props> = ({ page, totalCount, filtered }: Props) => {
+const NullState: React.FC<Props> = ({ page, totalCount, filtered }: Props) => {
   const { t } = useTranslation();
+  const { openTaskDrawer } = useTaskDrawer();
+  const [dialogOpen, changeDialogOpen] = useState(false);
 
   return (
     <StyledBox data-testid="no-data">
@@ -67,10 +71,31 @@ const NoData: React.FC<Props> = ({ page, totalCount, filtered }: Props) => {
               values={{ page }}
             />
           </Typography>
+          <Box display="flex" mt={1}>
+            <Button variant="contained">
+              <Trans defaults="Import {{page}}s" values={{ page }} />
+            </Button>
+            <Button
+              variant="contained"
+              onClick={
+                page === 'task'
+                  ? () => openTaskDrawer({})
+                  : () => changeDialogOpen(true)
+              }
+              style={{
+                marginLeft: theme.spacing(2),
+                color: theme.palette.common.white,
+                backgroundColor: theme.palette.mpdxBlue.main,
+              }}
+            >
+              <Trans defaults="Add new {{page}}" values={{ page }} />
+            </Button>
+          </Box>
         </>
       )}
+      {renderDialog(0, dialogOpen, changeDialogOpen)}
     </StyledBox>
   );
 };
 
-export default NoData;
+export default NullState;
