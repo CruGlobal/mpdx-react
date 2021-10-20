@@ -1,38 +1,44 @@
 import React, { ReactElement } from 'react';
-import { text, select, number } from '@storybook/addon-knobs';
 import PageHeading from './PageHeading';
 
 export default {
   title: 'PageHeading',
+  args: {
+    heading: 'Good Afternoon, Sarah.',
+    subheading: 'Welcome back to MPDX. Here is what has been happening.',
+    imgSrc: null,
+    overlap: 20,
+  },
+  argTypes: {
+    imgSrc: {
+      options: {
+        Default: null,
+        Custom: require(`../../images/drawkit/grape/drawkit-grape-pack-illustration-1.svg`),
+      },
+      control: { type: 'select' },
+    },
+    overlap: { control: { type: 'range', min: 20, max: 100, step: 1 } },
+  },
 };
 
-export const Default = (): ReactElement => {
-  const options = {
-    range: true,
-    min: 20,
-    max: 100,
-    step: 1,
-  };
-
-  return (
-    <PageHeading
-      heading={text('heading', 'Good Afternoon, Sarah.')}
-      subheading={text(
-        'subheading',
-        'Welcome back to MPDX. Here is what has been happening.',
-      )}
-      imgSrc={select(
-        'imgSrc',
-        {
-          Default: null,
-          Custom: require(`../../images/drawkit/grape/drawkit-grape-pack-illustration-1.svg`),
-        },
-        null,
-      )}
-      overlap={number('overlap', 20, options)}
-    />
-  );
-};
+export const Default = ({
+  heading,
+  subheading,
+  imgSrc,
+  overlap,
+}: {
+  heading: string;
+  subheading: string;
+  imgSrc: string;
+  overlap: number;
+}): ReactElement => (
+  <PageHeading
+    heading={heading}
+    subheading={subheading}
+    imgSrc={imgSrc}
+    overlap={overlap}
+  />
+);
 
 Default.story = {
   parameters: {
