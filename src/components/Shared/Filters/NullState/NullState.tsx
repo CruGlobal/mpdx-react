@@ -32,7 +32,7 @@ const NullState: React.FC<Props> = ({
   const [dialogOpen, changeDialogOpen] = useState(false);
 
   return (
-    <NullStateBox data-testid="no-data">
+    <NullStateBox data-testid={`${page}-null-state`}>
       <Icon
         path={page === 'contact' ? mdiHome : mdiFormatListBulleted}
         size={1.5}

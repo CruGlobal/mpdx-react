@@ -77,7 +77,7 @@ const textMap: { [key: string]: ToolText } = {
 
 const NoData: React.FC<Props> = ({ tool }: Props) => {
   return (
-    <NullStateBox data-testid="no-data">
+    <NullStateBox data-testid={`${tool}-null-state`}>
       <Icon path={textMap[tool].icon} size={1.5} />
       <Typography variant="h5">{textMap[tool].primaryText}</Typography>
       <Typography>{textMap[tool].secondaryText}</Typography>
