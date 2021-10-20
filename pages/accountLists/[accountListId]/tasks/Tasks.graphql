@@ -9,7 +9,7 @@ query Tasks(
     after: $after
   ) {
     nodes {
-      ...ContactTaskRow
+      ...TaskRow
     }
     totalCount
     pageInfo {

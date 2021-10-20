@@ -18,7 +18,7 @@ describe('ContactTasks', () => {
     );
     await waitForNextUpdate();
 
-    expect(result.current.data?.tasks.totalCount).toMatchInlineSnapshot(`47`);
+    expect(result.current.data?.tasks.totalCount).toMatchInlineSnapshot(`82`);
     expect(result.current.variables).toMatchInlineSnapshot(`
       Object {
         "accountListId": "accountList-id",

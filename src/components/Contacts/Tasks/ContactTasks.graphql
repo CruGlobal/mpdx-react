@@ -5,7 +5,7 @@ query ContactTasks($accountListId: ID!, $contactIds: [ID!]) {
   ) {
     totalCount
     nodes {
-      ...ContactTaskRow
+      ...TaskRow
     }
   }
 }

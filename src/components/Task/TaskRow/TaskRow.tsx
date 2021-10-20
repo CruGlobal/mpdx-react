@@ -2,7 +2,6 @@ import React from 'react';
 import { Box, Checkbox, styled, Tooltip, Typography } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { DateTime } from 'luxon';
-import { ContactTaskRowFragment } from '../../Contacts/ContactDetails/ContactTasksTab/ContactTaskRow/ContactTaskRow.generated';
 import { TaskCompleteButton } from '../../Contacts/ContactDetails/ContactTasksTab/ContactTaskRow/TaskCompleteButton/TaskCompleteButton';
 import { ResultEnum } from '../../../../graphql/types.generated';
 import useTaskDrawer from '../../../hooks/useTaskDrawer';
@@ -10,6 +9,7 @@ import { StarTaskIconButton } from '../../Contacts/ContactDetails/ContactTasksTa
 import { TaskDueDate } from '../../Contacts/ContactDetails/ContactTasksTab/ContactTaskRow/TaskDueDate/TaskDueDate';
 import { TaskCommentsButton } from '../../Contacts/ContactDetails/ContactTasksTab/ContactTaskRow/TaskCommentsButton/TaskCommentsButton';
 import { TaskDrawerTabsEnum } from '../Drawer/Drawer';
+import { TaskRowFragment } from './TaskRow.generated';
 
 const ContactRowButton = styled(Box)(({}) => ({
   height: '56px',
@@ -50,7 +50,7 @@ const ContactTextHover = styled(ContactText)(() => ({
 
 interface TaskRowProps {
   accountListId: string;
-  task: ContactTaskRowFragment;
+  task: TaskRowFragment;
   isChecked: boolean;
   onContactSelected: (taskId: string) => void;
   onTaskCheckToggle: (taskId: string) => void;
