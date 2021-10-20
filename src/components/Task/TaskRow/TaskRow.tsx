@@ -36,7 +36,14 @@ const ContactText = styled(Typography)(({ theme }) => ({
   letterSpacing: '0.25',
 }));
 
-const ContactTextHover = styled(ContactText)(() => ({
+const TaskType = styled(ContactText)(({ theme }) => ({
+  fontWeight: 700,
+  marginRight: theme.spacing(0.5),
+}));
+
+const TaskContactName = styled(ContactText)(({ theme }) => ({
+  fontWeight: 700,
+  marginRight: theme.spacing(0.5),
   '&:hover': {
     textDecoration: 'underline',
   },
@@ -149,19 +156,14 @@ export const TaskRow: React.FC<TaskRowProps> = ({
           >
             <Box display="flex">
               {contacts.nodes.map((contact, index) => (
-                <Box
-                  fontSize="16px"
-                  letterSpacing="0.15px"
-                  fontWeight="fontWeightBold"
-                  marginRight={0.5}
-                  component={ContactTextHover}
+                <TaskContactName
                   key={contact.id}
                   onClick={(e) => onClick(e, contact.id)}
                 >
                   {index !== contacts.nodes.length - 1
                     ? `${contact.name},`
                     : contact.name}
-                </Box>
+                </TaskContactName>
               ))}
             </Box>
             <Box
@@ -172,14 +174,7 @@ export const TaskRow: React.FC<TaskRowProps> = ({
                 flexGrow: 1,
               }}
             >
-              <Box
-                fontWeight="fontWeightBold"
-                fontSize="14px"
-                marginRight={0.5}
-                component={Typography}
-              >
-                {activityType ? t(activityType) : ''}
-              </Box>
+              <TaskType>{activityType ? t(activityType) : ''}</TaskType>
               <Tooltip title={subject}>
                 <ContactText>{subject}</ContactText>
               </Tooltip>
