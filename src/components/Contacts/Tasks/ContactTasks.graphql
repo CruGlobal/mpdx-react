@@ -5,19 +5,7 @@ query ContactTasks($accountListId: ID!, $contactIds: [ID!]) {
   ) {
     totalCount
     nodes {
-      id
-      activityType
-      completedAt
-      subject
-      comments {
-        totalCount
-      }
-      contacts {
-        nodes {
-          id
-          name
-        }
-      }
+      ...ContactTaskRow
     }
   }
 }

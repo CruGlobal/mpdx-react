@@ -2,26 +2,28 @@ import React, { useEffect, useState } from 'react';
 import Head from 'next/head';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'next/router';
-import { Box, Card, CardContent, Link, styled } from '@material-ui/core';
+import { Box, Card, CardContent, styled } from '@material-ui/core';
 import { InfiniteList } from '../../../../src/components/InfiniteList/InfiniteList';
 import { ContactDetails } from '../../../../src/components/Contacts/ContactDetails/ContactDetails';
 import Loading from '../../../../src/components/Loading';
 import { SidePanelsLayout } from '../../../../src/components/Layouts/SidePanelsLayout';
 import { useAccountListId } from '../../../../src/hooks/useAccountListId';
 import { TaskFilterSetInput } from '../../../../graphql/types.generated';
+import { TaskRow } from '../../../../src/components/Task/TaskRow/TaskRow';
 import { useTasksQuery } from './Tasks.generated';
 
 const WhiteBackground = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.common.white,
 }));
 
-const ContactsPage: React.FC = () => {
+const TasksPage: React.FC = () => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
   const { query, push, replace, isReady, pathname } = useRouter();
 
   const [contactDetailsOpen, setContactDetailsOpen] = useState(false);
   const [contactDetailsId, setContactDetailsId] = useState<string>();
+  const [selectedTasks, setSelectedTasks] = useState<Array<string>>([]);
 
   const { contactId, searchTerm } = query;
 
@@ -74,6 +76,25 @@ const ContactsPage: React.FC = () => {
     setContactDetailsOpen(!!id);
   };
 
+  const handleCheckOneTask = (contactId: string): void => {
+    if (!selectedTasks.includes(contactId)) {
+      setSelectedTasks((prevSelected) => [...prevSelected, contactId]);
+    } else {
+      setSelectedTasks((prevSelected) =>
+        prevSelected.filter((id) => id !== contactId),
+      );
+    }
+  };
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const handleCheckAllTasks = (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ): void => {
+    setSelectedTasks(
+      event.target.checked ? data?.tasks.nodes.map(({ id }) => id) ?? [] : [],
+    );
+  };
+
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const setSearchTerm = (searchTerm?: string) => {
     const { searchTerm: _, ...oldQuery } = query;
@@ -107,17 +128,13 @@ const ContactsPage: React.FC = () => {
                   style={{ height: 'calc(100vh - 160px)' }}
                   itemContent={(index, task) => (
                     <Box key={index} flexDirection="row">
-                      <Box>
-                        {task.contacts.nodes.map((contact) => (
-                          <Link
-                            key={contact.id}
-                            onClick={() => setContactFocus(contact.id)}
-                          >
-                            {contact.name}
-                          </Link>
-                        ))}
-                      </Box>
-                      {task.subject}
+                      <TaskRow
+                        accountListId={accountListId}
+                        task={task}
+                        onContactSelected={setContactFocus}
+                        onTaskCheckToggle={handleCheckOneTask}
+                        isChecked={selectedTasks.includes(task.id)}
+                      />
                     </Box>
                   )}
                   endReached={() =>
@@ -158,4 +175,4 @@ const ContactsPage: React.FC = () => {
   );
 };
 
-export default ContactsPage;
+export default TasksPage;

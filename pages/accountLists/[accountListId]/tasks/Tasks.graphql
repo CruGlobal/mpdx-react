@@ -9,14 +9,7 @@ query Tasks(
     after: $after
   ) {
     nodes {
-      id
-      subject
-      contacts {
-        nodes {
-          id
-          name
-        }
-      }
+      ...ContactTaskRow
     }
     totalCount
     pageInfo {
