@@ -9827,7 +9827,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["change-case-all", "npm:1.0.14"],
             ["chokidar", "npm:3.5.2"],
             ["common-tags", "npm:1.8.0"],
-            ["cosmiconfig", "npm:7.0.0"],
+            ["cosmiconfig", "npm:7.0.1"],
             ["debounce", "npm:1.2.0"],
             ["dependency-graph", "npm:0.11.0"],
             ["detect-indent", "npm:6.0.0"],
@@ -12153,13 +12153,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD",
         }]
       ]],
-<<<<<<< HEAD
-      ["@microsoft/fetch-event-source", [
-        ["npm:2.0.1", {
-          "packageLocation": "./.yarn/cache/@microsoft-fetch-event-source-npm-2.0.1-679d34d9ba-a50e1c0f33.zip/node_modules/@microsoft/fetch-event-source/",
-          "packageDependencies": [
-            ["@microsoft/fetch-event-source", "npm:2.0.1"]
-=======
       ["@mdx-js/mdx", [
         ["npm:1.6.22", {
           "packageLocation": "./.yarn/cache/@mdx-js-mdx-npm-1.6.22-ba5aaf406b-0839b4a389.zip/node_modules/@mdx-js/mdx/",
@@ -12193,7 +12186,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/@mdx-js-util-npm-1.6.22-8e56495eac-4b393907e3.zip/node_modules/@mdx-js/util/",
           "packageDependencies": [
             ["@mdx-js/util", "npm:1.6.22"]
->>>>>>> 0bd38245 (Upgrade storybook packages)
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
+      ["@microsoft/fetch-event-source", [
+        ["npm:2.0.1", {
+          "packageLocation": "./.yarn/cache/@microsoft-fetch-event-source-npm-2.0.1-679d34d9ba-a50e1c0f33.zip/node_modules/@microsoft/fetch-event-source/",
+          "packageDependencies": [
+            ["@microsoft/fetch-event-source", "npm:2.0.1"]
           ],
           "linkType": "HARD",
         }]
@@ -17663,7 +17664,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [
             ["babel-plugin-macros", "npm:3.1.0"],
             ["@babel/runtime", "npm:7.12.5"],
-            ["cosmiconfig", "npm:7.0.0"],
+            ["cosmiconfig", "npm:7.0.1"],
             ["resolve", "patch:resolve@npm%3A1.20.0#~builtin<compat/resolve>::version=1.20.0&hash=00b1ff"]
           ],
           "linkType": "HARD",
@@ -19833,6 +19834,18 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/cosmiconfig-npm-7.0.0-b9d0d7d156-6801feaa02.zip/node_modules/cosmiconfig/",
           "packageDependencies": [
             ["cosmiconfig", "npm:7.0.0"],
+            ["@types/parse-json", "npm:4.0.0"],
+            ["import-fresh", "npm:3.2.1"],
+            ["parse-json", "npm:5.1.0"],
+            ["path-type", "npm:4.0.0"],
+            ["yaml", "npm:1.10.0"]
+          ],
+          "linkType": "HARD",
+        }],
+        ["npm:7.0.1", {
+          "packageLocation": "./.yarn/cache/cosmiconfig-npm-7.0.1-dd19ae2403-4be63e7117.zip/node_modules/cosmiconfig/",
+          "packageDependencies": [
+            ["cosmiconfig", "npm:7.0.1"],
             ["@types/parse-json", "npm:4.0.0"],
             ["import-fresh", "npm:3.2.1"],
             ["parse-json", "npm:5.1.0"],
@@ -27777,7 +27790,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["chalk", "npm:4.1.0"],
             ["cli-truncate", "npm:2.1.0"],
             ["commander", "npm:6.2.1"],
-            ["cosmiconfig", "npm:7.0.0"],
+            ["cosmiconfig", "npm:7.0.1"],
             ["debug", "virtual:cd5df63f2a5b353bc617d9d0b55f1b1ca86360bba86697ffb790b321a77a7bfe28d863044032bbcee7d8d175129ae81ece55859f24a980569f086a0690ac2b32#npm:4.3.1"],
             ["dedent", "npm:0.7.0"],
             ["enquirer", "npm:2.3.6"],
@@ -31281,7 +31294,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["postcss-loader", "virtual:6c72e9692d6853f3ef39026acbb9ab3f798dcdaa201181760c64d249330e10dc22cbcaf68da22503390c462a79a1d2cc93bf4997780a4b4494689841fce48547#npm:4.3.0"],
             ["@types/postcss", null],
             ["@types/webpack", "npm:4.41.31"],
-            ["cosmiconfig", "npm:7.0.0"],
+            ["cosmiconfig", "npm:7.0.1"],
             ["klona", "npm:2.0.4"],
             ["loader-utils", "npm:2.0.0"],
             ["postcss", "npm:7.0.39"],
@@ -36371,16 +36384,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD",
         }]
       ]],
-<<<<<<< HEAD
-      ["tinycolor2", [
-        ["npm:1.4.1", {
-          "packageLocation": "./.yarn/cache/tinycolor2-npm-1.4.1-c3c0a28523-ffc22d9866.zip/node_modules/tinycolor2/",
-          "packageDependencies": [
-            ["tinycolor2", "npm:1.4.1"]
-          ],
-          "linkType": "HARD",
-        }]
-      ]],
       ["title-case", [
         ["npm:3.0.3", {
           "packageLocation": "./.yarn/cache/title-case-npm-3.0.3-101a1194a3-e8b7ea006b.zip/node_modules/title-case/",
@@ -36391,8 +36394,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD",
         }]
       ]],
-=======
->>>>>>> 0bd38245 (Upgrade storybook packages)
       ["tmp", [
         ["npm:0.0.33", {
           "packageLocation": "./.yarn/cache/tmp-npm-0.0.33-bcbf65df2a-902d7aceb7.zip/node_modules/tmp/",
