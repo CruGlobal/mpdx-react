@@ -1,13 +1,24 @@
 import React, { ReactElement } from 'react';
 import { Box } from '@material-ui/core';
-import { number } from '@storybook/addon-knobs';
 import { CelebrationIcons } from './CelebrationIcons';
+
+interface Props {
+  anniversaryMonth: number;
+  anniversaryDay: number;
+  birthdayMonth: number;
+  birthdayDay: number;
+}
 
 export default {
   title: 'Contacts/ContactRow/Widgets/CelebrationIcons',
 };
 
-export const Default = (): ReactElement => {
+export const Default = ({
+  anniversaryMonth,
+  anniversaryDay,
+  birthdayMonth,
+  birthdayDay,
+}: Props): ReactElement => {
   return (
     <Box m={2}>
       <CelebrationIcons
@@ -15,10 +26,10 @@ export const Default = (): ReactElement => {
           people: {
             nodes: [
               {
-                anniversaryMonth: number('anniversaryMonth', 2),
-                anniversaryDay: number('anniversaryDay', 1),
-                birthdayMonth: number('birthdayMonth', 2),
-                birthdayDay: number('birthdayDay', 1),
+                anniversaryMonth,
+                anniversaryDay,
+                birthdayMonth,
+                birthdayDay,
               },
             ],
           },
@@ -27,8 +38,19 @@ export const Default = (): ReactElement => {
     </Box>
   );
 };
+Default.args = {
+  anniversaryMonth: 2,
+  anniversaryDay: 1,
+  birthdayMonth: 2,
+  birthdayDay: 1,
+};
 
-export const HasBirthdayOnly = (): ReactElement => {
+export const HasBirthdayOnly = ({
+  anniversaryMonth,
+  anniversaryDay,
+  birthdayMonth,
+  birthdayDay,
+}: Props): ReactElement => {
   return (
     <Box m={2}>
       <CelebrationIcons
@@ -36,10 +58,10 @@ export const HasBirthdayOnly = (): ReactElement => {
           people: {
             nodes: [
               {
-                anniversaryMonth: number('anniversaryMonth', 2),
-                anniversaryDay: number('anniversaryDay', 1),
-                birthdayMonth: number('birthdayMonth', 1),
-                birthdayDay: number('birthdayDay', 1),
+                anniversaryMonth,
+                anniversaryDay,
+                birthdayMonth,
+                birthdayDay,
               },
             ],
           },
@@ -48,8 +70,19 @@ export const HasBirthdayOnly = (): ReactElement => {
     </Box>
   );
 };
+HasBirthdayOnly.args = {
+  anniversaryMonth: 1,
+  anniversaryDay: 1,
+  birthdayMonth: 2,
+  birthdayDay: 1,
+};
 
-export const HasAnniversaryOnly = (): ReactElement => {
+export const HasAnniversaryOnly = ({
+  anniversaryMonth,
+  anniversaryDay,
+  birthdayMonth,
+  birthdayDay,
+}: Props): ReactElement => {
   return (
     <Box m={2}>
       <CelebrationIcons
@@ -57,10 +90,10 @@ export const HasAnniversaryOnly = (): ReactElement => {
           people: {
             nodes: [
               {
-                anniversaryMonth: number('anniversaryMonth', 1),
-                anniversaryDay: number('anniversaryDay', 1),
-                birthdayMonth: number('birthdayMonth', 2),
-                birthdayDay: number('birthdayDay', 1),
+                anniversaryMonth,
+                anniversaryDay,
+                birthdayMonth,
+                birthdayDay,
               },
             ],
           },
@@ -69,8 +102,19 @@ export const HasAnniversaryOnly = (): ReactElement => {
     </Box>
   );
 };
+HasAnniversaryOnly.args = {
+  anniversaryMonth: 1,
+  anniversaryDay: 1,
+  birthdayMonth: 2,
+  birthdayDay: 1,
+};
 
-export const HasBoth = (): ReactElement => {
+export const HasBoth = ({
+  anniversaryMonth,
+  anniversaryDay,
+  birthdayMonth,
+  birthdayDay,
+}: Props): ReactElement => {
   return (
     <Box m={2}>
       <CelebrationIcons
@@ -78,10 +122,10 @@ export const HasBoth = (): ReactElement => {
           people: {
             nodes: [
               {
-                anniversaryMonth: number('anniversaryMonth', 1),
-                anniversaryDay: number('anniversaryDay', 1),
-                birthdayMonth: number('birthdayMonth', 1),
-                birthdayDay: number('birthdayDay', 1),
+                anniversaryMonth,
+                anniversaryDay,
+                birthdayMonth,
+                birthdayDay,
               },
             ],
           },
@@ -89,4 +133,10 @@ export const HasBoth = (): ReactElement => {
       />
     </Box>
   );
+};
+HasBoth.args = {
+  anniversaryMonth: 1,
+  anniversaryDay: 1,
+  birthdayMonth: 1,
+  birthdayDay: 1,
 };
