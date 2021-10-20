@@ -53,6 +53,10 @@ const ContactsPage: React.FC = () => {
     skip: !accountListId,
   });
 
+  const isFiltered =
+    Object.keys(activeFilters).length > 0 ||
+    Object.values(activeFilters).filter((filter) => filter !== []).length > 0;
+
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const toggleFilterPanel = () => {
     setFilterPanelOpen(!filterPanelOpen);
@@ -94,7 +98,6 @@ const ContactsPage: React.FC = () => {
       </Head>
       {accountListId ? (
         <WhiteBackground>
-          {console.log(activeFilters !== {})}
           <SidePanelsLayout
             leftPanel={<>TODO: implement task filters</>}
             leftOpen={filterPanelOpen}
@@ -133,12 +136,7 @@ const ContactsPage: React.FC = () => {
                       <NullState
                         page="task"
                         totalCount={data?.tasks.totalCount || 0}
-                        filtered={
-                          Object.keys(activeFilters).length > 0 ||
-                          Object.values(activeFilters).filter(
-                            (filter) => filter !== [],
-                          ).length > 0
-                        }
+                        filtered={isFiltered}
                         changeFilters={setActiveFilters}
                       />
                     </Box>
