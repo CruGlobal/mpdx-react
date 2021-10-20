@@ -1,7 +1,7 @@
 import { styled, Box } from '@material-ui/core';
 import theme from '../../../../../src/theme';
 
-export const NullStateBox = styled(Box)(() => ({
+export const NullStateBox = styled(Box)(({ theme }) => ({
   width: '100%',
   border: '1px solid',
   borderColor: theme.palette.cruGrayMedium.main,
