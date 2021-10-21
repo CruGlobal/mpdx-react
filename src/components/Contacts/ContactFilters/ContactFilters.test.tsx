@@ -23,6 +23,7 @@ describe('ContactFilters', () => {
         <ContactFilters
           accountListId={accountListId}
           onClose={() => {}}
+          selectedFilters={{}}
           onSelectedFiltersChanged={() => {}}
         />
       </GqlMockedProvider>,
@@ -84,6 +85,7 @@ describe('ContactFilters', () => {
           <ContactFilters
             accountListId={accountListId}
             onClose={() => {}}
+            selectedFilters={{}}
             onSelectedFiltersChanged={() => {}}
           />
         </GqlMockedProvider>
@@ -138,6 +140,7 @@ describe('ContactFilters', () => {
           <ContactFilters
             accountListId={accountListId}
             onClose={() => {}}
+            selectedFilters={{}}
             onSelectedFiltersChanged={() => {}}
           />
         </GqlMockedProvider>
@@ -176,6 +179,7 @@ describe('ContactFilters', () => {
         <ContactFilters
           accountListId={accountListId}
           onClose={() => {}}
+          selectedFilters={{}}
           onSelectedFiltersChanged={() => {}}
         />
       </GqlMockedProvider>,
@@ -194,6 +198,7 @@ describe('ContactFilters', () => {
         <ContactFilters
           accountListId={accountListId}
           onClose={() => {}}
+          selectedFilters={{}}
           onSelectedFiltersChanged={() => {}}
         />
       </GqlMockedProvider>,
@@ -213,6 +218,7 @@ describe('ContactFilters', () => {
         <ContactFilters
           accountListId={accountListId}
           onClose={() => {}}
+          selectedFilters={{}}
           onSelectedFiltersChanged={() => {}}
         />
       </GqlMockedProvider>,
