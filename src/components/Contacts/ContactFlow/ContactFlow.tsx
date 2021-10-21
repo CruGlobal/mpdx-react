@@ -40,8 +40,6 @@ export const ContactFlow: React.FC<Props> = ({
   accountListId,
   onContactSelected,
 }: Props) => {
-  // Uses its own query because the list view's data depends on the active filters
-
   const {
     data: userOptions,
     loading: loadingUserOptions,

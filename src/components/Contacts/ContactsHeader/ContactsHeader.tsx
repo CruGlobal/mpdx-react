@@ -10,9 +10,9 @@ import {
 import { FilterList, FormatListBulleted, ViewColumn } from '@material-ui/icons';
 import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
 import { useTranslation } from 'react-i18next';
+import { ContactsTableViewMode } from '../../../../pages/accountLists/[accountListId]/contacts/[[...contactId]].page';
 import { StarredItemIcon } from '../../common/StarredItemIcon/StarredItemIcon';
 import { SearchBox } from '../../common/SearchBox/SearchBox';
-import { ContactsTableViewMode } from 'pages/accountLists/[accountListId]/contacts/[[...contactId]].page';
 
 export enum ContactCheckBoxState {
   'unchecked',
