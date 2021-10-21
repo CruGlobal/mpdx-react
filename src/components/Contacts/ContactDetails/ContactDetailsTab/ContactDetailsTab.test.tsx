@@ -625,6 +625,9 @@ describe('ContactDetailTab', () => {
         pageInfo: { endCursor: 'Mg', hasNextPage: false },
         totalCount: 1,
       },
+      allContacts: {
+        totalCount: 1,
+      },
     };
     cache.writeQuery({
       query: ContactsDocument,

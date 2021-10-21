@@ -107,8 +107,8 @@ const ContactsPage: React.FC = () => {
                 TODO: implement tasks header/share header from contacts
                 <InfiniteList
                   loading={loading}
-                  data={data?.tasks.nodes}
-                  totalCount={data?.tasks.totalCount}
+                  data={data?.tasks?.nodes}
+                  totalCount={data?.tasks?.totalCount}
                   style={{ height: 'calc(100vh - 160px)' }}
                   itemContent={(index, task) => (
                     <Box key={index} flexDirection="row">
@@ -126,16 +126,16 @@ const ContactsPage: React.FC = () => {
                     </Box>
                   )}
                   endReached={() =>
-                    data?.tasks.pageInfo.hasNextPage &&
+                    data?.tasks?.pageInfo.hasNextPage &&
                     fetchMore({
-                      variables: { after: data.tasks.pageInfo.endCursor },
+                      variables: { after: data.tasks?.pageInfo.endCursor },
                     })
                   }
                   EmptyPlaceholder={
                     <Box width="75%" margin="auto" mt={2}>
                       <NullState
                         page="task"
-                        totalCount={data?.tasks.totalCount || 0}
+                        totalCount={data?.tasks?.totalCount || 0}
                         filtered={isFiltered}
                         changeFilters={setActiveFilters}
                       />
