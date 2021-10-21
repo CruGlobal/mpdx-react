@@ -47,13 +47,14 @@ export const ContactFlow: React.FC<Props> = ({
     loading: loadingUserOptions,
   } = useGetUserOptionsQuery({});
 
-  const flowOptions = JSON.parse(
+  const flowOptions: {
+    name: string;
+    statuses: string[];
+    color: string;
+  }[] = JSON.parse(
     userOptions?.userOptions.find((option) => option.key === 'flows')?.value ||
       '{}',
   );
-
-  console.log(flowOptions);
-
   return (
     <>
       {loadingUserOptions ? (
@@ -74,34 +75,26 @@ export const ContactFlow: React.FC<Props> = ({
               overflow="auto"
               style={{ overflowX: 'auto' }}
             >
-              {flowOptions.map(
-                (column: {
-                  name: string;
-                  statuses: string[];
-                  color: string;
-                }) => (
-                  <Box
-                    width={'100%'}
-                    // If there are more than five columns give them a fixed width
-                    // otherwise fit them equally into the screen
-                    minWidth={flowOptions.length > 5 ? 360 : '100%'}
-                    p={2}
-                    key={column.name}
-                  >
-                    <ContactFlowColumn
-                      accountListId={accountListId}
-                      title={column.name}
-                      color={colorMap[column.color]}
-                      onContactSelected={onContactSelected}
-                      statuses={column.statuses.map(
-                        (status) =>
-                          statusMap[status] as ContactFilterStatusEnum,
-                      )}
-                    />
-                  </Box>
-                ),
-              )}
-              ,
+              {flowOptions.map((column) => (
+                <Box
+                  width={'100%'}
+                  // If there are more than five columns give them a fixed width
+                  // otherwise fit them equally into the screen
+                  minWidth={flowOptions.length > 5 ? 360 : '100%'}
+                  p={2}
+                  key={column.name}
+                >
+                  <ContactFlowColumn
+                    accountListId={accountListId}
+                    title={column.name}
+                    color={colorMap[column.color]}
+                    onContactSelected={onContactSelected}
+                    statuses={column.statuses.map(
+                      (status) => statusMap[status] as ContactFilterStatusEnum,
+                    )}
+                  />
+                </Box>
+              ))}
             </Box>
           )}
         </>
