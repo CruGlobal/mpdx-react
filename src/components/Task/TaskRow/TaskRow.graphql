@@ -16,4 +16,9 @@ fragment TaskRow on Task {
   starred
   subject
   tagList
+  user {
+    id
+    firstName
+    lastName
+  }
 }

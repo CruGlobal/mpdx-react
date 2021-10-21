@@ -36,7 +36,10 @@ const ContactText = styled(Typography)(({ theme }) => ({
   letterSpacing: '0.25',
 }));
 
-const TaskType = styled(ContactText)(({ theme }) => ({
+const TaskType = styled(Typography)(({ theme }) => ({
+  fontSize: '14px',
+  letterSpacing: '0.25',
+  whiteSpace: 'nowrap',
   fontWeight: 700,
   marginRight: theme.spacing(0.5),
 }));
@@ -48,12 +51,6 @@ const TaskContactName = styled(ContactText)(({ theme }) => ({
     textDecoration: 'underline',
   },
 }));
-
-// const ContactName = styled(Typography)(({ theme }) => ({
-//   fontSize: 14,
-//   color: theme.palette.text.primary,
-//   margin: theme.spacing(1),
-// }));
 
 interface TaskRowProps {
   accountListId: string;
@@ -106,10 +103,9 @@ export const TaskRow: React.FC<TaskRowProps> = ({
 
   const isComplete = result === ResultEnum.Completed;
   const dueDate = (startAt && DateTime.fromISO(startAt)) || null;
-  //   const contactName =
-  //     contacts?.nodes.length > 1
-  //       ? t(`${contacts.nodes[0].name} and ${contacts?.nodes.length - 1} others`)
-  //       : contacts?.nodes[0]?.name;
+  const assigneeName = `${task?.user?.firstName ?? ''} ${
+    task.user?.lastName ?? ''
+  }`;
 
   return (
     <Box role="row">
@@ -182,7 +178,7 @@ export const TaskRow: React.FC<TaskRowProps> = ({
           </Box>
         </Box>
         <Box display="flex" justifyContent="flex-end" alignItems="center">
-          {/* <ContactName>{contactName}</ContactName> */}
+          <ContactText>{assigneeName}</ContactText>
           <TaskDueDate isComplete={isComplete} dueDate={dueDate} />
           <TaskCommentsButton
             isComplete={isComplete}

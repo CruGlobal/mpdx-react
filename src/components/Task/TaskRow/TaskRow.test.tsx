@@ -111,6 +111,44 @@ describe('TaskRow', () => {
     expect(await findByText(task.contacts.nodes[0].name)).toBeVisible();
   });
 
+  it('should render with Assignee', async () => {
+    const assignee = {
+      firstName: 'Cool',
+      lastName: 'Guy',
+      id: 'cool123',
+    };
+
+    const task = gqlMock<TaskRowFragment>(TaskRowFragmentDoc, {
+      mocks: {
+        startAt,
+        result: ResultEnum.None,
+        user: assignee,
+      },
+    });
+
+    const { findByText } = render(
+      <GqlMockedProvider>
+        <MuiThemeProvider theme={theme}>
+          <TaskRow
+            accountListId={accountListId}
+            task={task}
+            onTaskCheckToggle={onTaskCheckSelected}
+            onContactSelected={onContactSelected}
+            isChecked={false}
+          />
+        </MuiThemeProvider>
+      </GqlMockedProvider>,
+    );
+
+    expect(await findByText(task.subject)).toBeVisible();
+
+    expect(await findByText(task.contacts.nodes[0].name)).toBeVisible();
+
+    expect(
+      await findByText(`${assignee.firstName} ${assignee.lastName}`),
+    ).toBeVisible();
+  });
+
   describe('task interactions', () => {
     it('handles task checkbox click', async () => {
       const task = gqlMock<TaskRowFragment>(TaskRowFragmentDoc, {
