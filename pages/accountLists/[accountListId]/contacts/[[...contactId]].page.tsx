@@ -136,6 +136,7 @@ const ContactsPage: React.FC = () => {
               <ContactFilters
                 accountListId={accountListId}
                 onClose={toggleFilterPanel}
+                selectedFilters={activeFilters}
                 onSelectedFiltersChanged={setActiveFilters}
               />
             }

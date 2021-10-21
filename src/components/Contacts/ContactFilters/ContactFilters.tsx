@@ -62,12 +62,14 @@ const LinkButton = styled(Button)(() => ({
 interface Props {
   accountListId: string;
   onClose: () => void;
+  selectedFilters: ContactFilterSetInput;
   onSelectedFiltersChanged: (selectedFilters: ContactFilterSetInput) => void;
 }
 
 export const ContactFilters: React.FC<Props & BoxProps> = ({
   accountListId,
   onClose,
+  selectedFilters,
   onSelectedFiltersChanged,
   ...boxProps
 }) => {
@@ -79,9 +81,6 @@ export const ContactFilters: React.FC<Props & BoxProps> = ({
   });
 
   const [selectedGroup, setSelectedGroup] = useState<FilterGroup>();
-  const [selectedFilters, setSelectedFilters] = useState<ContactFilterSetInput>(
-    {},
-  );
   const [showAll, setShowAll] = useState(false);
 
   const updateSelectedFilter = (
@@ -93,20 +92,16 @@ export const ContactFilters: React.FC<Props & BoxProps> = ({
         ...selectedFilters,
         [name]: value,
       };
-
-      setSelectedFilters(newFilters);
       onSelectedFiltersChanged(newFilters);
     } else {
       const newFilters: ContactFilterSetInput = { ...selectedFilters };
       delete newFilters[name];
 
-      setSelectedFilters(newFilters);
       onSelectedFiltersChanged(newFilters);
     }
   };
 
   const clearSelectedFilter = () => {
-    setSelectedFilters({});
     onSelectedFiltersChanged({});
   };
 
@@ -129,6 +124,10 @@ export const ContactFilters: React.FC<Props & BoxProps> = ({
     getSelectedFilters(group).length > 0 ||
     getFeaturedFilters(group).length > 0;
 
+  const selectedFilterCount = Object.values(selectedFilters).filter(
+    (filter) => !(Array.isArray(filter) && filter.length === 0),
+  ).length;
+
   return (
     <Box {...boxProps}>
       <div style={{ overflow: 'hidden' }}>
@@ -143,9 +142,9 @@ export const ContactFilters: React.FC<Props & BoxProps> = ({
             <FilterHeader>
               <Box display="flex" justifyContent="space-between">
                 <Typography variant="h6">
-                  {Object.keys(selectedFilters).length > 0
+                  {selectedFilterCount > 0
                     ? t('Filter ({{count}})', {
-                        count: Object.keys(selectedFilters).length,
+                        count: selectedFilterCount,
                       })
                     : t('Filter')}
                 </Typography>
