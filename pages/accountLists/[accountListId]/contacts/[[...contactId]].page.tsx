@@ -107,8 +107,6 @@ const ContactsPage: React.FC = () => {
     );
   };
 
-  console.log(data);
-
   const isSelectedSomeContacts =
     selectedContacts.length > 0 &&
     selectedContacts.length < (data?.contacts?.nodes.length ?? 0);
