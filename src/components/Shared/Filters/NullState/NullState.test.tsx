@@ -24,7 +24,7 @@ describe('NullState', () => {
   });
 
   it('render text for unfiltered null contact state', async () => {
-    const { getByText } = render(
+    const { getByText, getByTestId } = render(
       <SnackbarProvider>
         <ThemeProvider theme={theme}>
           <TestWrapper>
@@ -49,6 +49,7 @@ describe('NullState', () => {
         'You can import contacts from another service or add a new contact.',
       ),
     ).toBeInTheDocument();
+    expect(getByTestId('contact-null-state')).toBeInTheDocument();
     userEvent.click(getByText('Add new contact'));
     expect(getByText('Save')).toBeInTheDocument();
   });
@@ -84,7 +85,7 @@ describe('NullState', () => {
   });
 
   it('render text for unfiltered null tasks state', async () => {
-    const { getByText } = render(
+    const { getByText, getByTestId } = render(
       <SnackbarProvider>
         <ThemeProvider theme={theme}>
           <TestWrapper>
@@ -107,6 +108,7 @@ describe('NullState', () => {
     expect(
       getByText('You can import tasks from another service or add a new task.'),
     ).toBeInTheDocument();
+    expect(getByTestId('task-null-state')).toBeInTheDocument();
     userEvent.click(getByText('Add new task'));
     await waitFor(() => expect(openTaskDrawer).toHaveBeenCalledWith({}));
   });
