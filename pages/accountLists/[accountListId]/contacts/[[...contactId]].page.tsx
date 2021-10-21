@@ -102,16 +102,18 @@ const ContactsPage: React.FC = () => {
   ): void => {
     setSelectedContacts(
       event.target.checked
-        ? data?.contacts.nodes.map((contact) => contact.id) ?? []
+        ? data?.contacts?.nodes.map((contact) => contact.id) ?? []
         : [],
     );
   };
 
+  console.log(data);
+
   const isSelectedSomeContacts =
     selectedContacts.length > 0 &&
-    selectedContacts.length < (data?.contacts.nodes.length ?? 0);
+    selectedContacts.length < (data?.contacts?.nodes.length ?? 0);
   const isSelectedAllContacts =
-    selectedContacts.length === data?.contacts.nodes.length;
+    selectedContacts.length === data?.contacts?.nodes.length;
 
   const setSearchTerm = (searchTerm?: string) => {
     const { searchTerm: _, ...oldQuery } = query;
@@ -149,7 +151,7 @@ const ContactsPage: React.FC = () => {
                   toggleFilterPanel={toggleFilterPanel}
                   onCheckAllContacts={handleCheckAllContacts}
                   onSearchTermChanged={setSearchTerm}
-                  totalContacts={data?.contacts.totalCount}
+                  totalContacts={data?.contacts?.totalCount}
                   contactCheckboxState={
                     isSelectedSomeContacts
                       ? ContactCheckBoxState.partial
@@ -160,8 +162,8 @@ const ContactsPage: React.FC = () => {
                 />
                 <InfiniteList
                   loading={loading}
-                  data={data?.contacts.nodes}
-                  totalCount={data?.contacts.totalCount}
+                  data={data?.contacts?.nodes}
+                  totalCount={data?.contacts?.totalCount}
                   style={{ height: 'calc(100vh - 160px)' }}
                   itemContent={(index, contact) => (
                     <ContactRow
@@ -174,16 +176,16 @@ const ContactsPage: React.FC = () => {
                     />
                   )}
                   endReached={() =>
-                    data?.contacts.pageInfo.hasNextPage &&
+                    data?.contacts?.pageInfo.hasNextPage &&
                     fetchMore({
-                      variables: { after: data.contacts.pageInfo.endCursor },
+                      variables: { after: data.contacts?.pageInfo.endCursor },
                     })
                   }
                   EmptyPlaceholder={
                     <Box width="75%" margin="auto" mt={2}>
                       <NullState
                         page="contact"
-                        totalCount={data?.contacts.totalCount || 0}
+                        totalCount={data?.allContacts.totalCount || 0}
                         filtered={isFiltered}
                         changeFilters={setActiveFilters}
                       />
