@@ -1,6 +1,5 @@
 import React, { ReactElement } from 'react';
 import { Box, MuiThemeProvider } from '@material-ui/core';
-import { array } from '@storybook/addon-knobs';
 import theme from '../../../../../theme';
 import { GqlMockedProvider } from '../../../../../../__tests__/util/graphqlMocking';
 import { ContactTags } from './ContactTags';
@@ -13,7 +12,11 @@ export default {
 
 const accountListId = '123';
 const contactId = 'abc';
-export const Default = (): ReactElement => {
+export const Default = ({
+  contactTags,
+}: {
+  contactTags: string[];
+}): ReactElement => {
   return (
     <Box m={2}>
       <GqlMockedProvider<UpdateContactTagsMutation>>
@@ -21,15 +24,22 @@ export const Default = (): ReactElement => {
           <ContactTags
             accountListId={accountListId}
             contactId={contactId}
-            contactTags={array('contactTags', ['help', 'something'])}
+            contactTags={contactTags}
           />
         </MuiThemeProvider>
       </GqlMockedProvider>
     </Box>
   );
 };
+Default.args = {
+  contactTags: ['help', 'something'],
+};
 
-export const EmptyTags = (): ReactElement => {
+export const EmptyTags = ({
+  contactTags,
+}: {
+  contactTags: string[];
+}): ReactElement => {
   return (
     <Box m={2}>
       <GqlMockedProvider<UpdateContactTagsMutation>>
@@ -37,10 +47,13 @@ export const EmptyTags = (): ReactElement => {
           <ContactTags
             accountListId={accountListId}
             contactId={contactId}
-            contactTags={array('contactTags', [])}
+            contactTags={contactTags}
           />
         </MuiThemeProvider>
       </GqlMockedProvider>
     </Box>
   );
+};
+EmptyTags.args = {
+  contactTags: [],
 };
