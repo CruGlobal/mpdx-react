@@ -22,7 +22,10 @@ const WhiteBackground = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.common.white,
 }));
 
-export type ContactsTableViewMode = 'list' | 'columns';
+export enum TableViewModeEnum {
+  List = 'list',
+  Column = 'column',
+}
 
 const ContactsPage: React.FC = () => {
   const { t } = useTranslation();
@@ -55,11 +58,11 @@ const ContactsPage: React.FC = () => {
   const [
     contactsTableDisplayState,
     setContactsTableDisplayState,
-  ] = useState<ContactsTableViewMode>('list');
+  ] = useState<TableViewModeEnum>(TableViewModeEnum.List);
 
   const handleViewModeChange = (
     event: React.MouseEvent<HTMLElement>,
-    viewMode: ContactsTableViewMode | null,
+    viewMode: TableViewModeEnum | null,
   ) => {
     if (viewMode) {
       setContactsTableDisplayState(viewMode);
