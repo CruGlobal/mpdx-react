@@ -1,20 +1,18 @@
 import {
-  Avatar,
   Box,
   Card,
   CardContent,
   Typography,
-  styled,
   CircularProgress,
 } from '@material-ui/core';
 import React from 'react';
-import { contactStatusMap } from '../../Tool/FixCommitmentInfo/InputOptions/ContactStatuses';
 import theme from '../../../../src/theme';
 import { ContactFilterStatusEnum } from '../../../../graphql/types.generated';
 import { ContactRowFragment } from '../ContactRow/ContactRow.generated';
 import { useContactsQuery } from '../../../../pages/accountLists/[accountListId]/contacts/Contacts.generated';
-import { StarContactIconButton } from '../StarContactIconButton/StarContactIconButton';
+
 import { InfiniteList } from '../../InfiniteList/InfiniteList';
+import { ContactFlowRow } from './ContactFlowRow/ContactFlowRow';
 
 interface Props {
   data?: ContactRowFragment[];
@@ -24,14 +22,6 @@ interface Props {
   accountListId: string;
   onContactSelected: (contactId: string) => void;
 }
-
-const ContactLink = styled(Typography)(() => ({
-  color: theme.palette.mpdxBlue.main,
-  '&:hover': {
-    textDecoration: 'underline',
-    cursor: 'pointer',
-  },
-}));
 
 export const ContactFlowColumn: React.FC<Props> = ({
   statuses,
@@ -89,43 +79,14 @@ export const ContactFlowColumn: React.FC<Props> = ({
               data={data?.contacts.nodes}
               totalCount={data?.contacts.totalCount}
               itemContent={(index, contact) => (
-                <Box
-                  key={index}
-                  display="flex"
-                  justifyContent="space-between"
-                  alignItems="center"
-                  pt={2}
-                  pl={2}
-                  pb={2}
-                  style={{ background: 'white' }}
-                >
-                  <Box display="flex" alignItems="center">
-                    <Avatar
-                      src=""
-                      style={{
-                        width: theme.spacing(4),
-                        height: theme.spacing(4),
-                      }}
-                    />
-                    <Box display="flex" flexDirection="column" ml={2}>
-                      <ContactLink
-                        onClick={() => onContactSelected(contact.id)}
-                      >
-                        {contact.name}
-                      </ContactLink>
-                      <Typography>
-                        {contactStatusMap[contact.status || 'NULL']}
-                      </Typography>
-                    </Box>
-                  </Box>
-                  <Box display="flex">
-                    <StarContactIconButton
-                      accountListId={accountListId}
-                      contactId={contact.id}
-                      isStarred={contact.starred || false}
-                    />
-                  </Box>
-                </Box>
+                <ContactFlowRow
+                  accountListId={accountListId}
+                  id={contact.id}
+                  name={contact.name}
+                  status={contact.status || 'NULL'}
+                  starred={contact.starred}
+                  onContactSelected={onContactSelected}
+                />
               )}
               endReached={() =>
                 data?.contacts.pageInfo.hasNextPage &&
@@ -133,11 +94,7 @@ export const ContactFlowColumn: React.FC<Props> = ({
                   variables: { after: data.contacts.pageInfo.endCursor },
                 })
               }
-              EmptyPlaceholder={
-                <Card>
-                  <CardContent>TODO: Implement Empty Placeholder</CardContent>
-                </Card>
-              }
+              EmptyPlaceholder={<></>}
             />
           </CardContent>
         </Card>
