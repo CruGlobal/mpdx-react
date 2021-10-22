@@ -11211,6 +11211,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"dnd-core@npm:14.0.1":
+  version: 14.0.1
+  resolution: "dnd-core@npm:14.0.1"
+  dependencies:
+    "@react-dnd/asap": ^4.0.0
+    "@react-dnd/invariant": ^2.0.0
+    redux: ^4.1.1
+  checksum: dbc50727f53baad1cb1e0430a2a1b81c5c291389322f90fdc46edeb2fd49cc206ce4fa30a95afb53d88238945228e34866d7465f7ea49285c296baf883551301
+  languageName: node
+  linkType: hard
+
 "dnd-core@npm:^11.1.3":
   version: 11.1.3
   resolution: "dnd-core@npm:11.1.3"
@@ -12532,7 +12543,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fast-deep-equal@npm:^3.1.1":
+"fast-deep-equal@npm:^3.1.1, fast-deep-equal@npm:^3.1.3":
   version: 3.1.3
   resolution: "fast-deep-equal@npm:3.1.3"
   checksum: e21a9d8d84f53493b6aa15efc9cfd53dd5b714a1f23f67fb5dc8f574af80df889b3bce25dc081887c6d25457cce704e636395333abad896ccdec03abaf1f3f9d
@@ -17993,6 +18004,8 @@ fsevents@~2.3.1:
     react: 17.0.1
     react-csv: ^2.0.3
     react-debounce-input: ^3.2.3
+    react-dnd: ^14.0.4
+    react-dnd-html5-backend: ^14.0.2
     react-dom: 17.0.1
     react-i18next: ^11.8.11
     react-to-print: ^2.12.6
@@ -20480,6 +20493,15 @@ fsevents@~2.3.1:
   languageName: node
   linkType: hard
 
+"react-dnd-html5-backend@npm:^14.0.2":
+  version: 14.0.2
+  resolution: "react-dnd-html5-backend@npm:14.0.2"
+  dependencies:
+    dnd-core: 14.0.1
+  checksum: c11dca3dcb9218d696d3d8b9a334e9b96952c399ceda159a164a61f44303be0603284e133729ff9a77901023500e92e5539f9b626100907c868ad858ea7c2d23
+  languageName: node
+  linkType: hard
+
 "react-dnd@npm:^11.1.3":
   version: 11.1.3
   resolution: "react-dnd@npm:11.1.3"
@@ -20492,6 +20514,31 @@ fsevents@~2.3.1:
     react: ">= 16.9.0"
     react-dom: ">= 16.9.0"
   checksum: f1fab4c1b4cee234326da4f1c44cb6df9cfac658c45e193a307f0f82ee4c849024d179b31ea91b17970f3703a2dcc63b877e8c4370f4c1125b4e88f94c83e686
+  languageName: node
+  linkType: hard
+
+"react-dnd@npm:^14.0.4":
+  version: 14.0.4
+  resolution: "react-dnd@npm:14.0.4"
+  dependencies:
+    "@react-dnd/invariant": ^2.0.0
+    "@react-dnd/shallowequal": ^2.0.0
+    dnd-core: 14.0.1
+    fast-deep-equal: ^3.1.3
+    hoist-non-react-statics: ^3.3.2
+  peerDependencies:
+    "@types/hoist-non-react-statics": ">= 3.3.1"
+    "@types/node": ">= 12"
+    "@types/react": ">= 16"
+    react: ">= 16.14"
+  peerDependenciesMeta:
+    "@types/hoist-non-react-statics":
+      optional: true
+    "@types/node":
+      optional: true
+    "@types/react":
+      optional: true
+  checksum: bcd6d87694b32ba49408c01a648790bf213a94a40a1f3e5c96d754753e1cb30dc7c276aab851c1b42f432bad8155cb8c3cc7053641f8e175fb042bf1e2027c93
   languageName: node
   linkType: hard
 
@@ -21242,6 +21289,15 @@ fsevents@~2.3.1:
     loose-envify: ^1.4.0
     symbol-observable: ^1.2.0
   checksum: 23689ba4318bfffd4517c8c8d49c5e9a7df1b864b3cf4a4784e10060652e28054586a4a64053d1252ae5f105da61cda03fe01a422b05a053c8604b1be1689d16
+  languageName: node
+  linkType: hard
+
+"redux@npm:^4.1.1":
+  version: 4.1.1
+  resolution: "redux@npm:4.1.1"
+  dependencies:
+    "@babel/runtime": ^7.9.2
+  checksum: 99519438a5d20b69404ad3816307ccc189f16df04b64c50d82c415ec488ea68b656d7a2fc81b6345e8d90f095344dfea68246500f72613d76464986660bc0485
   languageName: node
   linkType: hard
 
