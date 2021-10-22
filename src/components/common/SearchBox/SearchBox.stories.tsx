@@ -6,13 +6,24 @@ import { SearchBox } from './SearchBox';
 export default {
   title: 'SearchBox',
   component: SearchBox,
-  argTypes: { onChange: { action: 'search box changed' } },
+  args: {
+    page: 'contact',
+  },
+  argTypes: {
+    onChange: { action: 'search box changed' },
+    page: {
+      name: 'page',
+      options: ['task', 'contact'],
+      control: { type: 'select' },
+    },
+  },
   decorators: [withDesign],
 } as Meta;
 
 export const Default: Story = (args) => {
   return (
     <SearchBox
+      page={args.page}
       onChange={(searchTerm) => {
         args.onChange(searchTerm);
       }}

@@ -2,34 +2,16 @@ import React, { useState } from 'react';
 import {
   Box,
   Checkbox,
-  styled,
-  IconButton,
   Hidden,
+  IconButton,
+  styled,
   Theme,
 } from '@material-ui/core';
-import { FilterList, FormatListBulleted, ViewColumn } from '@material-ui/icons';
+import { FilterList, ViewColumn, FormatListBulleted } from '@material-ui/icons';
 import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
 import { useTranslation } from 'react-i18next';
-import { StarredItemIcon } from '../../common/StarredItemIcon/StarredItemIcon';
 import { SearchBox } from '../../common/SearchBox/SearchBox';
-
-export enum ContactCheckBoxState {
-  'unchecked',
-  'checked',
-  'partial',
-}
-
-interface Props {
-  activeFilters: boolean;
-  contactCheckboxState: ContactCheckBoxState;
-  filterPanelOpen: boolean;
-  toggleFilterPanel: () => void;
-  onCheckAllContacts: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  onSearchTermChanged: (searchTerm: string) => void;
-  totalContacts?: number;
-}
-
-type ContactsTableViewMode = 'list' | 'columns';
+import { StarredItemIcon } from '../../common/StarredItemIcon/StarredItemIcon';
 
 const HeaderWrap = styled(Box)(({ theme }) => ({
   height: 96,
@@ -41,6 +23,7 @@ const HeaderWrap = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.common.white,
   borderBottom: `1px solid ${theme.palette.grey[200]}`,
 }));
+
 const FilterButton = styled(
   ({ activeFilters: _activeFilters, panelOpen: _panelOpen, ...props }) => (
     <IconButton {...props} />
@@ -67,17 +50,20 @@ const FilterButton = styled(
       : 'transparent',
   }),
 );
+
 const FilterIcon = styled(FilterList)(({ theme }) => ({
   width: 24,
   height: 24,
   color: theme.palette.primary.dark,
 }));
-const ContactsShowingText = styled('p')(({ theme }) => ({
+
+const ItemsShowingText = styled('p')(({ theme }) => ({
   flexGrow: 4,
   flexBasis: 0,
   margin: theme.spacing(1),
   color: theme.palette.text.secondary,
 }));
+
 const PlaceholderActionsDropdown = styled(Box)(({ theme }) => ({
   display: 'inline-block',
   width: 114,
@@ -85,38 +71,60 @@ const PlaceholderActionsDropdown = styled(Box)(({ theme }) => ({
   margin: theme.spacing(1),
   backgroundColor: 'red',
 }));
+
 const BulletedListIcon = styled(FormatListBulleted)(({ theme }) => ({
   color: theme.palette.primary.dark,
 }));
+
 const ViewColumnIcon = styled(ViewColumn)(({ theme }) => ({
   color: theme.palette.primary.dark,
 }));
+
 const StarIconWrap = styled(Box)(({ theme }) => ({
   marginLeft: theme.spacing(4),
   marginRight: theme.spacing(1),
 }));
 
-export const ContactsHeader: React.FC<Props> = ({
+export enum HeaderCheckBoxState {
+  'unchecked',
+  'checked',
+  'partial',
+}
+
+interface HeaderProps {
+  page: 'contact' | 'task';
+  activeFilters: boolean;
+  headerCheckboxState: HeaderCheckBoxState;
+  filterPanelOpen: boolean;
+  toggleFilterPanel: () => void;
+  onCheckAllItems: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onSearchTermChanged: (searchTerm: string) => void;
+  totalItems?: number;
+}
+
+type TableViewMode = 'list' | 'columns';
+
+export const Header: React.FC<HeaderProps> = ({
+  page,
   activeFilters,
-  contactCheckboxState,
+  headerCheckboxState,
   filterPanelOpen,
   toggleFilterPanel,
-  onCheckAllContacts,
+  onCheckAllItems,
   onSearchTermChanged,
-  totalContacts = 0,
+  totalItems,
 }) => {
   const { t } = useTranslation();
-  const [
-    contactsTableDisplayState,
-    setContactsTableDisplayState,
-  ] = useState<ContactsTableViewMode>('list');
+  const [tableDisplayState, setTableDisplayState] = useState<TableViewMode>(
+    'list',
+  );
 
   const handleViewModeChange = (
     event: React.MouseEvent<HTMLElement>,
-    viewMode: ContactsTableViewMode | null,
+    viewMode: TableViewMode | null,
   ) => {
     if (viewMode) {
-      setContactsTableDisplayState(viewMode);
+      setTableDisplayState(viewMode);
     }
   };
 
@@ -124,10 +132,10 @@ export const ContactsHeader: React.FC<Props> = ({
     <HeaderWrap>
       <Hidden smDown>
         <Checkbox
-          checked={contactCheckboxState === ContactCheckBoxState.checked}
+          checked={headerCheckboxState === HeaderCheckBoxState.checked}
           color="default"
-          indeterminate={contactCheckboxState === ContactCheckBoxState.partial}
-          onChange={onCheckAllContacts}
+          indeterminate={headerCheckboxState === HeaderCheckBoxState.partial}
+          onChange={onCheckAllItems}
         />
       </Hidden>
 
@@ -138,14 +146,14 @@ export const ContactsHeader: React.FC<Props> = ({
       >
         <FilterIcon titleAccess={t('Toggle Filter Panel')} />
       </FilterButton>
-
       <SearchBox
+        page={page}
         onChange={onSearchTermChanged}
-        placeholder={t('Search List')}
+        placeholder={page === 'contact' ? t('Search List') : t('Search Tasks')}
       />
-      <ContactsShowingText>
-        {t('Showing {{count}}', { count: totalContacts })}
-      </ContactsShowingText>
+      <ItemsShowingText>
+        {t('Showing {{count}}', { count: totalItems })}
+      </ItemsShowingText>
 
       <Hidden smDown>
         {/*TODO: Replace this with Actions Dropdown*/}
@@ -155,7 +163,7 @@ export const ContactsHeader: React.FC<Props> = ({
       <Hidden xsDown>
         <ToggleButtonGroup
           exclusive
-          value={contactsTableDisplayState}
+          value={tableDisplayState}
           onChange={handleViewModeChange}
         >
           <ToggleButton value="list">
@@ -169,6 +177,7 @@ export const ContactsHeader: React.FC<Props> = ({
 
       <Hidden smDown>
         <StarIconWrap>
+          {/* TODO connect to filter to only show starred items */}
           <StarredItemIcon isStarred={false} />
         </StarIconWrap>
       </Hidden>

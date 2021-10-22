@@ -1,18 +1,33 @@
 import React, { ReactElement } from 'react';
-import { ContactCheckBoxState, ContactsHeader } from './ContactsHeader';
+import { Header, HeaderCheckBoxState } from './Header';
 
 export default {
-  title: 'Contacts/ContactHeaders',
+  title: 'Shared/Header',
 };
 
 export const Default = (): ReactElement => {
   return (
-    <ContactsHeader
+    <Header
+      page="contact"
       activeFilters={false}
-      contactCheckboxState={ContactCheckBoxState.unchecked}
+      headerCheckboxState={HeaderCheckBoxState.unchecked}
       filterPanelOpen={false}
       toggleFilterPanel={() => {}}
-      onCheckAllContacts={() => {}}
+      onCheckAllItems={() => {}}
+      onSearchTermChanged={() => {}}
+    />
+  );
+};
+
+export const Task = (): ReactElement => {
+  return (
+    <Header
+      page="task"
+      activeFilters={false}
+      headerCheckboxState={HeaderCheckBoxState.unchecked}
+      filterPanelOpen={false}
+      toggleFilterPanel={() => {}}
+      onCheckAllItems={() => {}}
       onSearchTermChanged={() => {}}
     />
   );
@@ -20,12 +35,13 @@ export const Default = (): ReactElement => {
 
 export const ActiveFilters = (): ReactElement => {
   return (
-    <ContactsHeader
+    <Header
+      page="contact"
       activeFilters={true}
-      contactCheckboxState={ContactCheckBoxState.unchecked}
+      headerCheckboxState={HeaderCheckBoxState.unchecked}
       filterPanelOpen={false}
       toggleFilterPanel={() => {}}
-      onCheckAllContacts={() => {}}
+      onCheckAllItems={() => {}}
       onSearchTermChanged={() => {}}
     />
   );
@@ -33,12 +49,13 @@ export const ActiveFilters = (): ReactElement => {
 
 export const FilterPanelOpen = (): ReactElement => {
   return (
-    <ContactsHeader
+    <Header
+      page="contact"
       activeFilters={false}
-      contactCheckboxState={ContactCheckBoxState.unchecked}
+      headerCheckboxState={HeaderCheckBoxState.unchecked}
       filterPanelOpen={true}
       toggleFilterPanel={() => {}}
-      onCheckAllContacts={() => {}}
+      onCheckAllItems={() => {}}
       onSearchTermChanged={() => {}}
     />
   );
@@ -46,12 +63,13 @@ export const FilterPanelOpen = (): ReactElement => {
 
 export const ActiveFiltersAndFilterPanelOpen = (): ReactElement => {
   return (
-    <ContactsHeader
+    <Header
+      page="contact"
       activeFilters={true}
-      contactCheckboxState={ContactCheckBoxState.unchecked}
+      headerCheckboxState={HeaderCheckBoxState.unchecked}
       filterPanelOpen={true}
       toggleFilterPanel={() => {}}
-      onCheckAllContacts={() => {}}
+      onCheckAllItems={() => {}}
       onSearchTermChanged={() => {}}
     />
   );

@@ -10,11 +10,11 @@ import Loading from '../../../../src/components/Loading';
 import { SidePanelsLayout } from '../../../../src/components/Layouts/SidePanelsLayout';
 import { useAccountListId } from '../../../../src/hooks/useAccountListId';
 import { ContactFilterSetInput } from '../../../../graphql/types.generated';
-import {
-  ContactCheckBoxState,
-  ContactsHeader,
-} from '../../../../src/components/Contacts/ContactsHeader/ContactsHeader';
 import { ContactRow } from '../../../../src/components/Contacts/ContactRow/ContactRow';
+import {
+  Header,
+  HeaderCheckBoxState,
+} from '../../../../src/components/Shared/Header/Header';
 import { useContactsQuery } from './Contacts.generated';
 
 const WhiteBackground = styled(Box)(({ theme }) => ({
@@ -138,19 +138,20 @@ const ContactsPage: React.FC = () => {
             leftWidth="290px"
             mainContent={
               <>
-                <ContactsHeader
+                <Header
+                  page="contact"
                   activeFilters={Object.keys(activeFilters).length > 0}
                   filterPanelOpen={filterPanelOpen}
                   toggleFilterPanel={toggleFilterPanel}
-                  onCheckAllContacts={handleCheckAllContacts}
+                  onCheckAllItems={handleCheckAllContacts}
                   onSearchTermChanged={setSearchTerm}
-                  totalContacts={data?.contacts.totalCount}
-                  contactCheckboxState={
+                  totalItems={data?.contacts.totalCount}
+                  headerCheckboxState={
                     isSelectedSomeContacts
-                      ? ContactCheckBoxState.partial
+                      ? HeaderCheckBoxState.partial
                       : isSelectedAllContacts
-                      ? ContactCheckBoxState.checked
-                      : ContactCheckBoxState.unchecked
+                      ? HeaderCheckBoxState.checked
+                      : HeaderCheckBoxState.unchecked
                   }
                 />
                 <InfiniteList
