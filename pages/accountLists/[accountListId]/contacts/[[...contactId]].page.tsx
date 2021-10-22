@@ -2,7 +2,10 @@ import React, { useEffect, useState } from 'react';
 import Head from 'next/head';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'next/router';
-import { Box, Card, CardContent, styled } from '@material-ui/core';
+import { Box, Card, CardContent, Hidden, styled } from '@material-ui/core';
+import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
+import FormatListBulleted from '@material-ui/icons/FormatListBulleted';
+import ViewColumn from '@material-ui/icons/ViewColumn';
 import { ContactFilters } from '../../../../src/components/Contacts/ContactFilters/ContactFilters';
 import { InfiniteList } from '../../../../src/components/InfiniteList/InfiniteList';
 import { ContactDetails } from '../../../../src/components/Contacts/ContactDetails/ContactDetails';
@@ -14,11 +17,19 @@ import { ContactRow } from '../../../../src/components/Contacts/ContactRow/Conta
 import {
   Header,
   HeaderCheckBoxState,
+  TableViewModeEnum,
 } from '../../../../src/components/Shared/Header/Header';
 import { useContactsQuery } from './Contacts.generated';
 
 const WhiteBackground = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.common.white,
+}));
+
+const BulletedListIcon = styled(FormatListBulleted)(({ theme }) => ({
+  color: theme.palette.primary.dark,
+}));
+const ViewColumnIcon = styled(ViewColumn)(({ theme }) => ({
+  color: theme.palette.primary.dark,
 }));
 
 const ContactsPage: React.FC = () => {
@@ -119,6 +130,19 @@ const ContactsPage: React.FC = () => {
     });
   };
 
+  const [tableDisplayState, setTableDisplayState] = useState<TableViewModeEnum>(
+    TableViewModeEnum.List,
+  );
+
+  const handleViewModeChange = (
+    event: React.MouseEvent<HTMLElement>,
+    viewMode: TableViewModeEnum | null,
+  ) => {
+    if (viewMode) {
+      setTableDisplayState(viewMode);
+    }
+  };
+
   return (
     <>
       <Head>
@@ -153,36 +177,58 @@ const ContactsPage: React.FC = () => {
                       ? HeaderCheckBoxState.checked
                       : HeaderCheckBoxState.unchecked
                   }
-                />
-                <InfiniteList
-                  loading={loading}
-                  data={data?.contacts.nodes}
-                  totalCount={data?.contacts.totalCount}
-                  style={{ height: 'calc(100vh - 160px)' }}
-                  itemContent={(index, contact) => (
-                    <ContactRow
-                      accountListId={accountListId}
-                      key={index}
-                      contact={contact}
-                      isChecked={selectedContacts.includes(contact.id)}
-                      onContactSelected={setContactFocus}
-                      onContactCheckToggle={handleCheckOneContact}
-                    />
-                  )}
-                  endReached={() =>
-                    data?.contacts.pageInfo.hasNextPage &&
-                    fetchMore({
-                      variables: { after: data.contacts.pageInfo.endCursor },
-                    })
-                  }
-                  EmptyPlaceholder={
-                    <Card>
-                      <CardContent>
-                        TODO: Implement Empty Placeholder
-                      </CardContent>
-                    </Card>
+                  buttonGroup={
+                    <Hidden xsDown>
+                      <ToggleButtonGroup
+                        exclusive
+                        value={tableDisplayState}
+                        onChange={handleViewModeChange}
+                      >
+                        <ToggleButton value="list">
+                          <BulletedListIcon titleAccess={t('List View')} />
+                        </ToggleButton>
+                        <ToggleButton value="columns">
+                          <ViewColumnIcon
+                            titleAccess={t('Column Workflow View')}
+                          />
+                        </ToggleButton>
+                      </ToggleButtonGroup>
+                    </Hidden>
                   }
                 />
+                {tableDisplayState === 'list' ? (
+                  <InfiniteList
+                    loading={loading}
+                    data={data?.contacts.nodes}
+                    totalCount={data?.contacts.totalCount}
+                    style={{ height: 'calc(100vh - 160px)' }}
+                    itemContent={(index, contact) => (
+                      <ContactRow
+                        accountListId={accountListId}
+                        key={index}
+                        contact={contact}
+                        isChecked={selectedContacts.includes(contact.id)}
+                        onContactSelected={setContactFocus}
+                        onContactCheckToggle={handleCheckOneContact}
+                      />
+                    )}
+                    endReached={() =>
+                      data?.contacts.pageInfo.hasNextPage &&
+                      fetchMore({
+                        variables: { after: data.contacts.pageInfo.endCursor },
+                      })
+                    }
+                    EmptyPlaceholder={
+                      <Card>
+                        <CardContent>
+                          TODO: Implement Empty Placeholder
+                        </CardContent>
+                      </Card>
+                    }
+                  />
+                ) : (
+                  <></>
+                )}
               </>
             }
             rightPanel={

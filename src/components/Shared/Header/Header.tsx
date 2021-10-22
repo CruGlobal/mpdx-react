@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { ReactElement } from 'react';
 import {
   Box,
   Checkbox,
@@ -7,8 +7,7 @@ import {
   styled,
   Theme,
 } from '@material-ui/core';
-import { FilterList, ViewColumn, FormatListBulleted } from '@material-ui/icons';
-import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
+import FilterList from '@material-ui/icons/FilterList';
 import { useTranslation } from 'react-i18next';
 import { SearchBox } from '../../common/SearchBox/SearchBox';
 import { StarredItemIcon } from '../../common/StarredItemIcon/StarredItemIcon';
@@ -72,18 +71,15 @@ const PlaceholderActionsDropdown = styled(Box)(({ theme }) => ({
   backgroundColor: 'red',
 }));
 
-const BulletedListIcon = styled(FormatListBulleted)(({ theme }) => ({
-  color: theme.palette.primary.dark,
-}));
-
-const ViewColumnIcon = styled(ViewColumn)(({ theme }) => ({
-  color: theme.palette.primary.dark,
-}));
-
 const StarIconWrap = styled(Box)(({ theme }) => ({
   marginLeft: theme.spacing(4),
   marginRight: theme.spacing(1),
 }));
+
+export enum TableViewModeEnum {
+  List = 'list',
+  Column = 'column',
+}
 
 export enum HeaderCheckBoxState {
   'unchecked',
@@ -100,9 +96,8 @@ interface HeaderProps {
   onCheckAllItems: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onSearchTermChanged: (searchTerm: string) => void;
   totalItems?: number;
+  buttonGroup?: ReactElement;
 }
-
-type TableViewMode = 'list' | 'columns';
 
 export const Header: React.FC<HeaderProps> = ({
   page,
@@ -113,20 +108,9 @@ export const Header: React.FC<HeaderProps> = ({
   onCheckAllItems,
   onSearchTermChanged,
   totalItems,
+  buttonGroup,
 }) => {
   const { t } = useTranslation();
-  const [tableDisplayState, setTableDisplayState] = useState<TableViewMode>(
-    'list',
-  );
-
-  const handleViewModeChange = (
-    event: React.MouseEvent<HTMLElement>,
-    viewMode: TableViewMode | null,
-  ) => {
-    if (viewMode) {
-      setTableDisplayState(viewMode);
-    }
-  };
 
   return (
     <HeaderWrap>
@@ -160,20 +144,7 @@ export const Header: React.FC<HeaderProps> = ({
         <PlaceholderActionsDropdown />
       </Hidden>
 
-      <Hidden xsDown>
-        <ToggleButtonGroup
-          exclusive
-          value={tableDisplayState}
-          onChange={handleViewModeChange}
-        >
-          <ToggleButton value="list">
-            <BulletedListIcon titleAccess={t('List View')} />
-          </ToggleButton>
-          <ToggleButton value="columns">
-            <ViewColumnIcon titleAccess={t('Column Workflow View')} />
-          </ToggleButton>
-        </ToggleButtonGroup>
-      </Hidden>
+      {buttonGroup}
 
       <Hidden smDown>
         <StarIconWrap>
