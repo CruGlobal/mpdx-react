@@ -3,6 +3,7 @@ import { useSnackbar } from 'notistack';
 import React from 'react';
 import { useDrop } from 'react-dnd';
 import { useTranslation } from 'react-i18next';
+import theme from '../../../../../src/theme';
 import { ContactsDocument } from '../../../../../pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import {
   Contact,
@@ -61,12 +62,18 @@ export const ContactFlowDropZone: React.FC<Props> = ({
     <Box
       key={status}
       {...{ ref: drop }}
+      display="flex"
       style={{
-        border: isOver ? '3px solid gold' : '3px solid gray',
+        border: canDrop
+          ? `3px dashed ${theme.palette.mpdxBlue.main}`
+          : `3px solid ${theme.palette.cruGrayMedium.main}`,
         height: '100%',
         width: '100%',
-        backgroundColor: isOver ? 'white' : 'skyblue',
-        display: canDrop ? 'flex' : 'none',
+        backgroundColor: canDrop
+          ? isOver
+            ? theme.palette.mpdxYellow.main
+            : theme.palette.common.white
+          : theme.palette.cruGrayLight.main,
       }}
       justifyContent="center"
       alignItems="center"
