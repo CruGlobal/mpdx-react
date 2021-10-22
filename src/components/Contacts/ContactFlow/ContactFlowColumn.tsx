@@ -6,6 +6,7 @@ import {
   CircularProgress,
 } from '@material-ui/core';
 import React from 'react';
+import { useDrop } from 'react-dnd';
 import theme from '../../../../src/theme';
 import { ContactFilterStatusEnum } from '../../../../graphql/types.generated';
 import { ContactRowFragment } from '../ContactRow/ContactRow.generated';
@@ -13,6 +14,7 @@ import { useContactsQuery } from '../../../../pages/accountLists/[accountListId]
 
 import { InfiniteList } from '../../InfiniteList/InfiniteList';
 import { ContactFlowRow } from './ContactFlowRow/ContactFlowRow';
+import { ContactFlowDropZone } from './ContactFlowDropZone/ContactFlowDropZone';
 
 interface Props {
   data?: ContactRowFragment[];
@@ -37,6 +39,13 @@ export const ContactFlowColumn: React.FC<Props> = ({
     },
     skip: !accountListId,
   });
+
+  const [{ canDrop }, drop] = useDrop(() => ({
+    accept: 'contact',
+    collect: (monitor) => ({
+      canDrop: !!monitor.canDrop(),
+    }),
+  }));
 
   return (
     <>
@@ -69,11 +78,31 @@ export const ContactFlowColumn: React.FC<Props> = ({
           </Box>
           <CardContent
             style={{
+              position: 'relative',
               height: 'calc(100vh - 260px)',
               padding: 0,
               background: theme.palette.cruGrayLight.main,
             }}
           >
+            <Box
+              {...{ ref: drop }}
+              position="absolute"
+              width="100%"
+              height="100%"
+              top={0}
+              right={0}
+              zIndex={canDrop ? 1 : 0}
+              display="grid"
+              gridTemplateRows={`repeat(${statuses.length},auto)`}
+            >
+              {statuses.map((status) => (
+                <ContactFlowDropZone
+                  key={status}
+                  status={status}
+                  accountListId={accountListId}
+                />
+              ))}
+            </Box>
             <InfiniteList
               loading={loading}
               data={data?.contacts.nodes}

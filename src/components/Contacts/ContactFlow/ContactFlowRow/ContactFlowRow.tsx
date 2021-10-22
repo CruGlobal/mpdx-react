@@ -1,5 +1,6 @@
 import { Avatar, Box, styled, Typography } from '@material-ui/core';
 import React from 'react';
+import { useDrag } from 'react-dnd';
 import theme from '../../../../../src/theme';
 import { StatusEnum } from '../../../../../graphql/types.generated';
 import { StarContactIconButton } from '../../StarContactIconButton/StarContactIconButton';
@@ -30,15 +31,27 @@ export const ContactFlowRow: React.FC<Props> = ({
   starred,
   onContactSelected,
 }: Props) => {
+  const [{ isDragging }, drag] = useDrag(() => ({
+    type: 'contact',
+    item: { id, status },
+    collect: (monitor) => ({
+      isDragging: !!monitor.isDragging(),
+    }),
+  }));
+
   return (
     <Box
+      {...{ ref: drag }} //TS gives an error if you try to pass a ref normally, seems to be a MUI issue
       display="flex"
       justifyContent="space-between"
       alignItems="center"
       pt={2}
       pl={2}
       pb={2}
-      style={{ background: 'white' }}
+      style={{
+        background: 'white',
+        border: isDragging ? '5px solid skyblue' : 'none',
+      }}
     >
       <Box display="flex" alignItems="center">
         <Avatar
