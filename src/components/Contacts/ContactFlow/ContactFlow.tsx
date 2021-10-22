@@ -1,5 +1,7 @@
 import { Box } from '@material-ui/core';
 import React from 'react';
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
 import Loading from '../../Loading';
 import { ContactFilterStatusEnum } from '../../../../graphql/types.generated';
 import theme from '../../../theme';
@@ -54,7 +56,7 @@ export const ContactFlow: React.FC<Props> = ({
       '{}',
   );
   return (
-    <>
+    <DndProvider backend={HTML5Backend}>
       {loadingUserOptions ? (
         <Loading loading={loadingUserOptions} />
       ) : (
@@ -97,6 +99,6 @@ export const ContactFlow: React.FC<Props> = ({
           )}
         </>
       )}
-    </>
+    </DndProvider>
   );
 };
