@@ -1,7 +1,12 @@
-import React, { ReactElement } from 'react';
-import { Box, Button, Link, List } from '@material-ui/core';
+import React, { useState } from 'react';
+import { Box, Button, Drawer, Link, List, styled } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { signout } from 'next-auth/client';
+import ArrowBackIcon from '@material-ui/icons/ArrowBack';
+import { useRouter } from 'next/router';
+import { ChevronRight } from '@material-ui/icons';
+import theme from '../../../../../../theme';
+import { useAccountListId } from '../../../../../../hooks/useAccountListId';
 import { LeafButton, LeafListItem, Title } from '../../NavItem/NavItem';
 import HandoffLink from '../../../../../HandoffLink';
 import { useGetTopBarQuery } from '../../../TopBar/GetTopBar.generated';
@@ -12,9 +17,38 @@ type ProfileMenuContent = {
   onClick?: () => void;
 };
 
-export const ProfileMenuPanel = (): ReactElement => {
+const MobileDrawer = styled(Drawer)(() => ({
+  '& .MuiDrawer-paper': {
+    width: 290,
+    backgroundColor: theme.palette.cruGrayDark.main,
+    zIndex: theme.zIndex.drawer + 201,
+  },
+}));
+
+const LeafListItemHover = styled(LeafListItem)(() => ({
+  '&:hover': {
+    backgroundColor: `${theme.palette.cruGrayMedium.main} !important`,
+  },
+}));
+
+export const ProfileMenuPanel: React.FC = () => {
   const { t } = useTranslation();
   const { data } = useGetTopBarQuery();
+  const accountListId = useAccountListId();
+  const { push, pathname } = useRouter();
+  const [accountsDrawerOpen, setAccountsDrawerOpen] = useState<boolean>(false);
+
+  const toggleAccountsDrawer = (): void => {
+    setAccountsDrawerOpen((prevState) => !prevState);
+  };
+
+  const changeAccountListId = (id: string): void => {
+    setAccountsDrawerOpen(false);
+    push({
+      pathname: accountListId ? pathname : '/accountLists/[accountListId]/',
+      query: { accountListId: id },
+    });
+  };
 
   const addProfileContent: ProfileMenuContent[] = [
     {
@@ -40,9 +74,80 @@ export const ProfileMenuPanel = (): ReactElement => {
   ];
 
   const style = { paddingLeft: 40, paddingTop: 11, paddingBottom: 11 };
+  const accountListStyle = {
+    paddingLeft: theme.spacing(2),
+    paddingTop: 11,
+    paddingBottom: 11,
+  };
 
   return (
     <List disablePadding data-testid="ProfileMenuPanelForNavBar">
+      {data && (
+        <>
+          <LeafListItem
+            data-testid="accountListSelectorButton"
+            button
+            disableGutters
+            onClick={toggleAccountsDrawer}
+          >
+            <LeafButton style={style}>
+              <Title
+                style={{
+                  whiteSpace: 'nowrap',
+                  width: '80%',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                }}
+              >
+                {
+                  data?.accountLists.nodes.find(
+                    (accountList) => accountList.id === accountListId,
+                  )?.name
+                }
+              </Title>
+              <ChevronRight />
+            </LeafButton>
+          </LeafListItem>
+          <MobileDrawer
+            anchor="left"
+            open={accountsDrawerOpen}
+            onClose={toggleAccountsDrawer}
+          >
+            <LeafListItem
+              data-testid="closeAccountListDrawerButton"
+              button
+              disableGutters
+              onClick={toggleAccountsDrawer}
+            >
+              <LeafButton style={accountListStyle}>
+                <ArrowBackIcon
+                  style={{ color: 'white', marginRight: theme.spacing(2) }}
+                />
+                <Title>{t('Account List Selector')}</Title>
+              </LeafButton>
+            </LeafListItem>
+            {data?.accountLists.nodes.map((accountList) => (
+              <LeafListItemHover
+                key={accountList.id}
+                button
+                data-testid={`accountListButton-${accountList.id}`}
+                disableGutters
+                style={{
+                  backgroundColor:
+                    accountListId === accountList.id
+                      ? theme.palette.cruGrayMedium.main
+                      : theme.palette.cruGrayDark.main,
+                }}
+                onClick={() => changeAccountListId(accountList.id)}
+              >
+                <LeafButton style={accountListStyle}>
+                  <Title>{accountList.name}</Title>
+                </LeafButton>
+              </LeafListItemHover>
+            ))}
+          </MobileDrawer>
+        </>
+      )}
       {addProfileContent.map(({ text, path, onClick }, index) => (
         <LeafListItem key={index} button disableGutters onClick={onClick}>
           <HandoffLink path={path}>
