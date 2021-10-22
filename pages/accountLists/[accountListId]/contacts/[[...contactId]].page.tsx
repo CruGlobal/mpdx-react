@@ -15,10 +15,10 @@ import { useAccountListId } from '../../../../src/hooks/useAccountListId';
 import { ContactFilterSetInput } from '../../../../graphql/types.generated';
 import { ContactRow } from '../../../../src/components/Contacts/ContactRow/ContactRow';
 import {
-  Header,
-  HeaderCheckBoxState,
+  ListHeader,
+  ListHeaderCheckBoxState,
   TableViewModeEnum,
-} from '../../../../src/components/Shared/Header/Header';
+} from '../../../../src/components/Shared/Header/ListHeader';
 import { useContactsQuery } from './Contacts.generated';
 
 const WhiteBackground = styled(Box)(({ theme }) => ({
@@ -162,7 +162,7 @@ const ContactsPage: React.FC = () => {
             leftWidth="290px"
             mainContent={
               <>
-                <Header
+                <ListHeader
                   page="contact"
                   activeFilters={Object.keys(activeFilters).length > 0}
                   filterPanelOpen={filterPanelOpen}
@@ -172,10 +172,10 @@ const ContactsPage: React.FC = () => {
                   totalItems={data?.contacts.totalCount}
                   headerCheckboxState={
                     isSelectedSomeContacts
-                      ? HeaderCheckBoxState.partial
+                      ? ListHeaderCheckBoxState.partial
                       : isSelectedAllContacts
-                      ? HeaderCheckBoxState.checked
-                      : HeaderCheckBoxState.unchecked
+                      ? ListHeaderCheckBoxState.checked
+                      : ListHeaderCheckBoxState.unchecked
                   }
                   buttonGroup={
                     <Hidden xsDown>

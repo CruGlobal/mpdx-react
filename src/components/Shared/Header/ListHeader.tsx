@@ -81,16 +81,16 @@ export enum TableViewModeEnum {
   Column = 'column',
 }
 
-export enum HeaderCheckBoxState {
+export enum ListHeaderCheckBoxState {
   'unchecked',
   'checked',
   'partial',
 }
 
-interface HeaderProps {
+interface ListHeaderProps {
   page: 'contact' | 'task';
   activeFilters: boolean;
-  headerCheckboxState: HeaderCheckBoxState;
+  headerCheckboxState: ListHeaderCheckBoxState;
   filterPanelOpen: boolean;
   toggleFilterPanel: () => void;
   onCheckAllItems: (event: React.ChangeEvent<HTMLInputElement>) => void;
@@ -99,7 +99,7 @@ interface HeaderProps {
   buttonGroup?: ReactElement;
 }
 
-export const Header: React.FC<HeaderProps> = ({
+export const ListHeader: React.FC<ListHeaderProps> = ({
   page,
   activeFilters,
   headerCheckboxState,
@@ -116,9 +116,11 @@ export const Header: React.FC<HeaderProps> = ({
     <HeaderWrap>
       <Hidden smDown>
         <Checkbox
-          checked={headerCheckboxState === HeaderCheckBoxState.checked}
+          checked={headerCheckboxState === ListHeaderCheckBoxState.checked}
           color="default"
-          indeterminate={headerCheckboxState === HeaderCheckBoxState.partial}
+          indeterminate={
+            headerCheckboxState === ListHeaderCheckBoxState.partial
+          }
           onChange={onCheckAllItems}
         />
       </Hidden>

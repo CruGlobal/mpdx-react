@@ -1,16 +1,16 @@
 import React, { ReactElement } from 'react';
-import { Header, HeaderCheckBoxState } from './Header';
+import { ListHeader, ListHeaderCheckBoxState } from './ListHeader';
 
 export default {
-  title: 'Shared/Header',
+  title: 'Shared/Header/ListHeader',
 };
 
 export const Default = (): ReactElement => {
   return (
-    <Header
+    <ListHeader
       page="contact"
       activeFilters={false}
-      headerCheckboxState={HeaderCheckBoxState.unchecked}
+      headerCheckboxState={ListHeaderCheckBoxState.unchecked}
       filterPanelOpen={false}
       toggleFilterPanel={() => {}}
       onCheckAllItems={() => {}}
@@ -21,10 +21,10 @@ export const Default = (): ReactElement => {
 
 export const Task = (): ReactElement => {
   return (
-    <Header
+    <ListHeader
       page="task"
       activeFilters={false}
-      headerCheckboxState={HeaderCheckBoxState.unchecked}
+      headerCheckboxState={ListHeaderCheckBoxState.unchecked}
       filterPanelOpen={false}
       toggleFilterPanel={() => {}}
       onCheckAllItems={() => {}}
@@ -35,10 +35,10 @@ export const Task = (): ReactElement => {
 
 export const ActiveFilters = (): ReactElement => {
   return (
-    <Header
+    <ListHeader
       page="contact"
       activeFilters={true}
-      headerCheckboxState={HeaderCheckBoxState.unchecked}
+      headerCheckboxState={ListHeaderCheckBoxState.unchecked}
       filterPanelOpen={false}
       toggleFilterPanel={() => {}}
       onCheckAllItems={() => {}}
@@ -49,10 +49,10 @@ export const ActiveFilters = (): ReactElement => {
 
 export const FilterPanelOpen = (): ReactElement => {
   return (
-    <Header
+    <ListHeader
       page="contact"
       activeFilters={false}
-      headerCheckboxState={HeaderCheckBoxState.unchecked}
+      headerCheckboxState={ListHeaderCheckBoxState.unchecked}
       filterPanelOpen={true}
       toggleFilterPanel={() => {}}
       onCheckAllItems={() => {}}
@@ -63,10 +63,10 @@ export const FilterPanelOpen = (): ReactElement => {
 
 export const ActiveFiltersAndFilterPanelOpen = (): ReactElement => {
   return (
-    <Header
+    <ListHeader
       page="contact"
       activeFilters={true}
-      headerCheckboxState={HeaderCheckBoxState.unchecked}
+      headerCheckboxState={ListHeaderCheckBoxState.unchecked}
       filterPanelOpen={true}
       toggleFilterPanel={() => {}}
       onCheckAllItems={() => {}}
