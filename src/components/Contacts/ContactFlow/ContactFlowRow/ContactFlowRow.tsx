@@ -4,7 +4,6 @@ import { useDrag } from 'react-dnd';
 import theme from '../../../../../src/theme';
 import { StatusEnum } from '../../../../../graphql/types.generated';
 import { StarContactIconButton } from '../../StarContactIconButton/StarContactIconButton';
-import { contactStatusMap } from '../../../Tool/FixCommitmentInfo/InputOptions/ContactStatuses';
 
 interface Props {
   accountListId: string;
@@ -65,7 +64,7 @@ export const ContactFlowRow: React.FC<Props> = ({
           <ContactLink onClick={() => onContactSelected(id)}>
             {name}
           </ContactLink>
-          <Typography>{contactStatusMap[status || 'NULL']}</Typography>
+          <Typography>{status || 'NULL'}</Typography>
         </Box>
       </Box>
       <Box display="flex">
