@@ -8,7 +8,7 @@ query ContactTasksTab(
     tasksFilter: { contactIds: [$contactId], wildcardSearch: $searchTerm }
   ) {
     nodes {
-      ...ContactTaskRow
+      ...TaskRow
     }
     pageInfo {
       endCursor
