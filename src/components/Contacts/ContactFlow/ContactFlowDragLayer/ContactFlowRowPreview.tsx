@@ -28,8 +28,7 @@ export const ContactFlowRowPreview: React.FC<Props> = memo(
           justifyContent="space-between"
           alignItems="center"
           width="100%"
-          p={1}
-          pl={2}
+          p={2}
         >
           <Box display="flex" alignItems="center" width="100%">
             <Avatar
@@ -40,7 +39,9 @@ export const ContactFlowRowPreview: React.FC<Props> = memo(
               }}
             />
             <Box display="flex" flexDirection="column" ml={2}>
-              <Typography>{name}</Typography>
+              <Typography style={{ color: theme.palette.mpdxBlue.main }}>
+                {name}
+              </Typography>
               <Typography>{status}</Typography>
             </Box>
           </Box>
