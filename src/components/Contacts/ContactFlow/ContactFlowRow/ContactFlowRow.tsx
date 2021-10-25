@@ -1,5 +1,5 @@
 import { Avatar, Box, styled, Typography } from '@material-ui/core';
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect } from 'react';
 import { useDrag } from 'react-dnd';
 import { getEmptyImage } from 'react-dnd-html5-backend';
 import theme from '../../../../../src/theme';
@@ -24,6 +24,18 @@ const ContactLink = styled(Typography)(() => ({
   },
 }));
 
+const DraggableBox = styled(Box)(() => ({
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  width: '100%',
+  padding: theme.spacing(1),
+  paddingLeft: theme.spacing(2),
+  '&:hover': {
+    cursor: 'move',
+  },
+}));
+
 export const ContactFlowRow: React.FC<Props> = ({
   accountListId,
   id,
@@ -33,7 +45,6 @@ export const ContactFlowRow: React.FC<Props> = ({
   onContactSelected,
   columnWidth,
 }: Props) => {
-  const contactFlowRow = useRef<HTMLDivElement>();
   const [, drag, preview] = useDrag(() => ({
     type: 'contact',
     item: {
@@ -61,15 +72,7 @@ export const ContactFlowRow: React.FC<Props> = ({
         background: 'white',
       }}
     >
-      <Box
-        display="flex"
-        justifyContent="space-between"
-        alignItems="center"
-        width="100%"
-        p={1}
-        pl={2}
-        {...{ ref: contactFlowRow }}
-      >
+      <DraggableBox>
         <Box display="flex" alignItems="center" width="100%">
           <Avatar
             src=""
@@ -92,7 +95,7 @@ export const ContactFlowRow: React.FC<Props> = ({
             isStarred={starred || false}
           />
         </Box>
-      </Box>
+      </DraggableBox>
     </Box>
   );
 };
