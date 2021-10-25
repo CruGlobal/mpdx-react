@@ -13,8 +13,7 @@ describe('NavItem', () => {
       <ThemeProvider theme={theme}>
         <NavItem
           depth={0}
-          href="/test/[accountListId]"
-          as={`/test/${accountListId}`}
+          href={`/test/${accountListId}`}
           open={false}
           title={title}
         />
