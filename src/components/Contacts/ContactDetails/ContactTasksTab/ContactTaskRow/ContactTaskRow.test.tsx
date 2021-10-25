@@ -13,11 +13,11 @@ import {
 import useTaskDrawer from '../../../../../hooks/useTaskDrawer';
 import theme from '../../../../../theme';
 import { TaskDrawerTabsEnum } from '../../../../Task/Drawer/Drawer';
-import { ContactTaskRow } from './ContactTaskRow';
 import {
-  ContactTaskRowFragment,
-  ContactTaskRowFragmentDoc,
-} from './ContactTaskRow.generated';
+  TaskRowFragment,
+  TaskRowFragmentDoc,
+} from '../../../../Task/TaskRow/TaskRow.generated';
+import { ContactTaskRow } from './ContactTaskRow';
 
 const accountListId = 'abc';
 const startAt = '2021-04-12';
@@ -46,7 +46,7 @@ describe('ContactTaskRow', () => {
   });
 
   it('should render not complete', async () => {
-    const task = gqlMock<ContactTaskRowFragment>(ContactTaskRowFragmentDoc, {
+    const task = gqlMock<TaskRowFragment>(TaskRowFragmentDoc, {
       mocks: {
         startAt,
         result: ResultEnum.None,
@@ -70,7 +70,7 @@ describe('ContactTaskRow', () => {
 
   describe('task interactions', () => {
     it('handles complete button click', async () => {
-      const task = gqlMock<ContactTaskRowFragment>(ContactTaskRowFragmentDoc, {
+      const task = gqlMock<TaskRowFragment>(TaskRowFragmentDoc, {
         mocks: {
           startAt,
           result: ResultEnum.None,
@@ -94,7 +94,7 @@ describe('ContactTaskRow', () => {
     });
 
     it('handle comment button click', async () => {
-      const task = gqlMock<ContactTaskRowFragment>(ContactTaskRowFragmentDoc, {
+      const task = gqlMock<TaskRowFragment>(TaskRowFragmentDoc, {
         mocks: {
           startAt,
           result: ResultEnum.None,
@@ -120,7 +120,7 @@ describe('ContactTaskRow', () => {
 
   describe('activity type', () => {
     it('displays Appointment', () => {
-      const task = gqlMock<ContactTaskRowFragment>(ContactTaskRowFragmentDoc, {
+      const task = gqlMock<TaskRowFragment>(TaskRowFragmentDoc, {
         mocks: {
           activityType: ActivityTypeEnum.Appointment,
         },
@@ -138,7 +138,7 @@ describe('ContactTaskRow', () => {
     });
 
     it('displays Call', () => {
-      const task = gqlMock<ContactTaskRowFragment>(ContactTaskRowFragmentDoc, {
+      const task = gqlMock<TaskRowFragment>(TaskRowFragmentDoc, {
         mocks: {
           activityType: ActivityTypeEnum.Call,
         },
@@ -156,7 +156,7 @@ describe('ContactTaskRow', () => {
     });
 
     it('displays Email', () => {
-      const task = gqlMock<ContactTaskRowFragment>(ContactTaskRowFragmentDoc, {
+      const task = gqlMock<TaskRowFragment>(TaskRowFragmentDoc, {
         mocks: {
           activityType: ActivityTypeEnum.Email,
         },
@@ -174,7 +174,7 @@ describe('ContactTaskRow', () => {
     });
 
     it('displays Facebook Message', () => {
-      const task = gqlMock<ContactTaskRowFragment>(ContactTaskRowFragmentDoc, {
+      const task = gqlMock<TaskRowFragment>(TaskRowFragmentDoc, {
         mocks: {
           activityType: ActivityTypeEnum.FacebookMessage,
         },
@@ -192,7 +192,7 @@ describe('ContactTaskRow', () => {
     });
 
     it('displays Letter', () => {
-      const task = gqlMock<ContactTaskRowFragment>(ContactTaskRowFragmentDoc, {
+      const task = gqlMock<TaskRowFragment>(TaskRowFragmentDoc, {
         mocks: {
           activityType: ActivityTypeEnum.Letter,
         },
@@ -210,7 +210,7 @@ describe('ContactTaskRow', () => {
     });
 
     it('displays Newslatter - Email', () => {
-      const task = gqlMock<ContactTaskRowFragment>(ContactTaskRowFragmentDoc, {
+      const task = gqlMock<TaskRowFragment>(TaskRowFragmentDoc, {
         mocks: {
           activityType: ActivityTypeEnum.NewsletterEmail,
         },
@@ -228,7 +228,7 @@ describe('ContactTaskRow', () => {
     });
 
     it('displays Newsletter - Physical', () => {
-      const task = gqlMock<ContactTaskRowFragment>(ContactTaskRowFragmentDoc, {
+      const task = gqlMock<TaskRowFragment>(TaskRowFragmentDoc, {
         mocks: {
           activityType: ActivityTypeEnum.NewsletterPhysical,
         },
@@ -246,7 +246,7 @@ describe('ContactTaskRow', () => {
     });
 
     it('displays Prayer Request', () => {
-      const task = gqlMock<ContactTaskRowFragment>(ContactTaskRowFragmentDoc, {
+      const task = gqlMock<TaskRowFragment>(TaskRowFragmentDoc, {
         mocks: {
           activityType: ActivityTypeEnum.PrayerRequest,
         },
@@ -264,7 +264,7 @@ describe('ContactTaskRow', () => {
     });
 
     it('displays Pre-Call Letter', () => {
-      const task = gqlMock<ContactTaskRowFragment>(ContactTaskRowFragmentDoc, {
+      const task = gqlMock<TaskRowFragment>(TaskRowFragmentDoc, {
         mocks: {
           activityType: ActivityTypeEnum.PreCallLetter,
         },
@@ -282,7 +282,7 @@ describe('ContactTaskRow', () => {
     });
 
     it('displays Reminder Letter', () => {
-      const task = gqlMock<ContactTaskRowFragment>(ContactTaskRowFragmentDoc, {
+      const task = gqlMock<TaskRowFragment>(TaskRowFragmentDoc, {
         mocks: {
           activityType: ActivityTypeEnum.ReminderLetter,
         },
@@ -300,7 +300,7 @@ describe('ContactTaskRow', () => {
     });
 
     it('displays Support Letter', () => {
-      const task = gqlMock<ContactTaskRowFragment>(ContactTaskRowFragmentDoc, {
+      const task = gqlMock<TaskRowFragment>(TaskRowFragmentDoc, {
         mocks: {
           activityType: ActivityTypeEnum.SupportLetter,
         },
@@ -318,7 +318,7 @@ describe('ContactTaskRow', () => {
     });
 
     it('displays Talk To In Person', () => {
-      const task = gqlMock<ContactTaskRowFragment>(ContactTaskRowFragmentDoc, {
+      const task = gqlMock<TaskRowFragment>(TaskRowFragmentDoc, {
         mocks: {
           activityType: ActivityTypeEnum.TalkToInPerson,
         },
@@ -336,7 +336,7 @@ describe('ContactTaskRow', () => {
     });
 
     it('displays Text Message', () => {
-      const task = gqlMock<ContactTaskRowFragment>(ContactTaskRowFragmentDoc, {
+      const task = gqlMock<TaskRowFragment>(TaskRowFragmentDoc, {
         mocks: {
           activityType: ActivityTypeEnum.TextMessage,
         },
@@ -354,7 +354,7 @@ describe('ContactTaskRow', () => {
     });
 
     it('displays Thank', () => {
-      const task = gqlMock<ContactTaskRowFragment>(ContactTaskRowFragmentDoc, {
+      const task = gqlMock<TaskRowFragment>(TaskRowFragmentDoc, {
         mocks: {
           activityType: ActivityTypeEnum.Thank,
         },
@@ -372,7 +372,7 @@ describe('ContactTaskRow', () => {
     });
 
     it('displays To Do', () => {
-      const task = gqlMock<ContactTaskRowFragment>(ContactTaskRowFragmentDoc, {
+      const task = gqlMock<TaskRowFragment>(TaskRowFragmentDoc, {
         mocks: {
           activityType: ActivityTypeEnum.ToDo,
         },
