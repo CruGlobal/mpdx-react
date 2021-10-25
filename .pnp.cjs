@@ -62,6 +62,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@mdi/js", "npm:5.9.55"],
             ["@mdi/react", "npm:1.5.0"],
             ["@next/bundle-analyzer", "npm:11.1.2"],
+            ["@next/eslint-plugin-next", "npm:11.1.2"],
             ["@react-dnd/invariant", "npm:2.0.0"],
             ["@saeris/apollo-server-vercel", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:0.4.0"],
             ["@storybook/addon-actions", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:6.3.11"],
@@ -12179,6 +12180,16 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD",
         }]
       ]],
+      ["@next/eslint-plugin-next", [
+        ["npm:11.1.2", {
+          "packageLocation": "./.yarn/cache/@next-eslint-plugin-next-npm-11.1.2-4b9843f816-93e4379558.zip/node_modules/@next/eslint-plugin-next/",
+          "packageDependencies": [
+            ["@next/eslint-plugin-next", "npm:11.1.2"],
+            ["glob", "npm:7.1.7"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
       ["@next/polyfill-module", [
         ["npm:11.1.2", {
           "packageLocation": "./.yarn/cache/@next-polyfill-module-npm-11.1.2-3411a51878-f739b999b7.zip/node_modules/@next/polyfill-module/",
@@ -23738,6 +23749,19 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["path-is-absolute", "npm:1.0.1"]
           ],
           "linkType": "HARD",
+        }],
+        ["npm:7.1.7", {
+          "packageLocation": "./.yarn/cache/glob-npm-7.1.7-5698ad9c48-b61f48973b.zip/node_modules/glob/",
+          "packageDependencies": [
+            ["glob", "npm:7.1.7"],
+            ["fs.realpath", "npm:1.0.0"],
+            ["inflight", "npm:1.0.6"],
+            ["inherits", "npm:2.0.4"],
+            ["minimatch", "npm:3.0.4"],
+            ["once", "npm:1.4.0"],
+            ["path-is-absolute", "npm:1.0.1"]
+          ],
+          "linkType": "HARD",
         }]
       ]],
       ["glob-base", [
@@ -29162,6 +29186,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@mdi/js", "npm:5.9.55"],
             ["@mdi/react", "npm:1.5.0"],
             ["@next/bundle-analyzer", "npm:11.1.2"],
+            ["@next/eslint-plugin-next", "npm:11.1.2"],
             ["@react-dnd/invariant", "npm:2.0.0"],
             ["@saeris/apollo-server-vercel", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:0.4.0"],
             ["@storybook/addon-actions", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:6.3.11"],
