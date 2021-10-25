@@ -141,12 +141,24 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
         {t('Showing {{count}}', { count: totalItems })}
       </ItemsShowingText>
 
-      <Hidden smDown>
-        {/*TODO: Replace this with Actions Dropdown*/}
-        <PlaceholderActionsDropdown />
-      </Hidden>
+      {page === 'contact' ? (
+        <>
+          <Hidden smDown>
+            {/*TODO: Replace this with Actions Dropdown*/}
+            <PlaceholderActionsDropdown />
+          </Hidden>
 
-      {buttonGroup}
+          {buttonGroup}
+        </>
+      ) : (
+        <>
+          {buttonGroup}
+          <Hidden smDown>
+            {/*TODO: Replace this with Actions Dropdown*/}
+            <PlaceholderActionsDropdown />
+          </Hidden>
+        </>
+      )}
 
       <Hidden smDown>
         <StarIconWrap>

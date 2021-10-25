@@ -10,7 +10,47 @@ const toggleFilterPanel = jest.fn();
 const onSearchTermChanged = jest.fn();
 const onCheckAllItems = jest.fn();
 
-describe('Header | Contact', () => {
+describe('ListHeader', () => {
+  describe('Contact', () => {
+    it('renders contact header', () => {
+      const { getByPlaceholderText } = render(
+        <ThemeProvider theme={theme}>
+          <ListHeader
+            page="contact"
+            activeFilters={false}
+            headerCheckboxState={ListHeaderCheckBoxState.unchecked}
+            filterPanelOpen={false}
+            toggleFilterPanel={toggleFilterPanel}
+            onCheckAllItems={onCheckAllItems}
+            onSearchTermChanged={onSearchTermChanged}
+          />
+        </ThemeProvider>,
+      );
+
+      expect(getByPlaceholderText('Search List')).toBeInTheDocument();
+    });
+  });
+
+  describe('Task', () => {
+    it('renders task header', () => {
+      const { getByPlaceholderText } = render(
+        <ThemeProvider theme={theme}>
+          <ListHeader
+            page="task"
+            activeFilters={false}
+            headerCheckboxState={ListHeaderCheckBoxState.unchecked}
+            filterPanelOpen={false}
+            toggleFilterPanel={toggleFilterPanel}
+            onCheckAllItems={onCheckAllItems}
+            onSearchTermChanged={onSearchTermChanged}
+          />
+        </ThemeProvider>,
+      );
+
+      expect(getByPlaceholderText('Search Tasks')).toBeVisible();
+    });
+  });
+
   it('checkbox is unchecked', async () => {
     const { getByRole } = render(
       <ThemeProvider theme={theme}>
