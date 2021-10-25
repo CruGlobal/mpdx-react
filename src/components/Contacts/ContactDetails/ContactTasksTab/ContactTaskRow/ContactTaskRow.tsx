@@ -12,8 +12,8 @@ import useTaskDrawer from '../../../../../hooks/useTaskDrawer';
 import theme from '../../../../../theme';
 import { StarredItemIcon } from '../../../../common/StarredItemIcon/StarredItemIcon';
 import { TaskDrawerTabsEnum } from '../../../../Task/Drawer/Drawer';
+import { TaskRowFragment } from '../../../../Task/TaskRow/TaskRow.generated';
 import { StarTaskIconButton } from '../StarTaskIconButton/StarTaskIconButton';
-import { ContactTaskRowFragment } from './ContactTaskRow.generated';
 import { TaskCommentsButton } from './TaskCommentsButton/TaskCommentsButton';
 import { TaskCompleteButton } from './TaskCompleteButton/TaskCompleteButton';
 import { TaskDueDate } from './TaskDueDate/TaskDueDate';
@@ -125,7 +125,7 @@ const getLocalizedTaskType = (
 
 interface ContactTaskRowProps {
   accountListId: string;
-  task?: ContactTaskRowFragment;
+  task?: TaskRowFragment;
 }
 
 export const ContactTaskRow: React.FC<ContactTaskRowProps> = ({

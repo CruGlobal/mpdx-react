@@ -1,4 +1,4 @@
-fragment ContactTaskRow on Task {
+fragment TaskRow on Task {
   id
   activityType
   startAt
@@ -15,4 +15,10 @@ fragment ContactTaskRow on Task {
   result
   starred
   subject
+  tagList
+  user {
+    id
+    firstName
+    lastName
+  }
 }
