@@ -5858,12 +5858,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@next/bundle-analyzer@npm:^10.0.6":
-  version: 10.0.6
-  resolution: "@next/bundle-analyzer@npm:10.0.6"
+"@next/bundle-analyzer@npm:^11.1.2":
+  version: 11.1.2
+  resolution: "@next/bundle-analyzer@npm:11.1.2"
   dependencies:
     webpack-bundle-analyzer: 4.3.0
-  checksum: afa4ff0044d429f27ae6c007b7edb8954385028db29a42146397ce00e708ef26930c82c7ec355c248c29da79130e76a827553fe7360c6c6d0f51545a9f02804f
+  checksum: f869e7067a612b5ebb78dab4225fa3159ffa52d0f33c43e51941f21daff96b24e2d0519f4ba2899917cb353ad1b963f1d1b0d718b5947a17d760e9279d8df55a
   languageName: node
   linkType: hard
 
@@ -19874,7 +19874,7 @@ fsevents@~2.3.2:
     "@material-ui/styles": ^4.11.4
     "@mdi/js": ^5.9.55
     "@mdi/react": ^1.5.0
-    "@next/bundle-analyzer": ^10.0.6
+    "@next/bundle-analyzer": ^11.1.2
     "@react-dnd/invariant": ^2.0.0
     "@saeris/apollo-server-vercel": ^0.4.0
     "@storybook/addon-actions": ^6.3.11
@@ -19949,7 +19949,7 @@ fsevents@~2.3.2:
     luxon: ^1.26.0
     mockdate: ^3.0.2
     mui-datatables: ^3.7.6
-    next: ^11.0.0
+    next: ^11.1.2
     next-auth: ^3.4.1
     next-compose-plugins: ^2.2.1
     next-optimized-images: ^2.6.2
@@ -20217,7 +20217,7 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"next@npm:^11.0.0":
+"next@npm:^11.1.2":
   version: 11.1.2
   resolution: "next@npm:11.1.2"
   dependencies:

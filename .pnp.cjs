@@ -61,7 +61,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@material-ui/styles", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:4.11.4"],
             ["@mdi/js", "npm:5.9.55"],
             ["@mdi/react", "npm:1.5.0"],
-            ["@next/bundle-analyzer", "npm:10.0.6"],
+            ["@next/bundle-analyzer", "npm:11.1.2"],
             ["@react-dnd/invariant", "npm:2.0.0"],
             ["@saeris/apollo-server-vercel", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:0.4.0"],
             ["@storybook/addon-actions", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:6.3.11"],
@@ -12161,10 +12161,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]
       ]],
       ["@next/bundle-analyzer", [
-        ["npm:10.0.6", {
-          "packageLocation": "./.yarn/cache/@next-bundle-analyzer-npm-10.0.6-966531f1aa-afa4ff0044.zip/node_modules/@next/bundle-analyzer/",
+        ["npm:11.1.2", {
+          "packageLocation": "./.yarn/cache/@next-bundle-analyzer-npm-11.1.2-029b2e7289-f869e7067a.zip/node_modules/@next/bundle-analyzer/",
           "packageDependencies": [
-            ["@next/bundle-analyzer", "npm:10.0.6"],
+            ["@next/bundle-analyzer", "npm:11.1.2"],
             ["webpack-bundle-analyzer", "npm:4.3.0"]
           ],
           "linkType": "HARD",
@@ -29161,7 +29161,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@material-ui/styles", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:4.11.4"],
             ["@mdi/js", "npm:5.9.55"],
             ["@mdi/react", "npm:1.5.0"],
-            ["@next/bundle-analyzer", "npm:10.0.6"],
+            ["@next/bundle-analyzer", "npm:11.1.2"],
             ["@react-dnd/invariant", "npm:2.0.0"],
             ["@saeris/apollo-server-vercel", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:0.4.0"],
             ["@storybook/addon-actions", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:6.3.11"],
