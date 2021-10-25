@@ -3,22 +3,64 @@ import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ThemeProvider } from '@material-ui/core';
 import theme from '../../../theme';
-import { ContactCheckBoxState, ContactsHeader } from './ContactsHeader';
+
+import { ListHeader, ListHeaderCheckBoxState } from './ListHeader';
 
 const toggleFilterPanel = jest.fn();
 const onSearchTermChanged = jest.fn();
-const onCheckAllContacts = jest.fn();
+const onCheckAllItems = jest.fn();
 
-describe('ContactsHeader', () => {
+describe('ListHeader', () => {
+  describe('Contact', () => {
+    it('renders contact header', () => {
+      const { getByPlaceholderText } = render(
+        <ThemeProvider theme={theme}>
+          <ListHeader
+            page="contact"
+            activeFilters={false}
+            headerCheckboxState={ListHeaderCheckBoxState.unchecked}
+            filterPanelOpen={false}
+            toggleFilterPanel={toggleFilterPanel}
+            onCheckAllItems={onCheckAllItems}
+            onSearchTermChanged={onSearchTermChanged}
+          />
+        </ThemeProvider>,
+      );
+
+      expect(getByPlaceholderText('Search List')).toBeInTheDocument();
+    });
+  });
+
+  describe('Task', () => {
+    it('renders task header', () => {
+      const { getByPlaceholderText } = render(
+        <ThemeProvider theme={theme}>
+          <ListHeader
+            page="task"
+            activeFilters={false}
+            headerCheckboxState={ListHeaderCheckBoxState.unchecked}
+            filterPanelOpen={false}
+            toggleFilterPanel={toggleFilterPanel}
+            onCheckAllItems={onCheckAllItems}
+            onSearchTermChanged={onSearchTermChanged}
+          />
+        </ThemeProvider>,
+      );
+
+      expect(getByPlaceholderText('Search Tasks')).toBeVisible();
+    });
+  });
+
   it('checkbox is unchecked', async () => {
     const { getByRole } = render(
       <ThemeProvider theme={theme}>
-        <ContactsHeader
+        <ListHeader
+          page="contact"
           activeFilters={false}
-          contactCheckboxState={ContactCheckBoxState.unchecked}
+          headerCheckboxState={ListHeaderCheckBoxState.unchecked}
           filterPanelOpen={false}
           toggleFilterPanel={toggleFilterPanel}
-          onCheckAllContacts={onCheckAllContacts}
+          onCheckAllItems={onCheckAllItems}
           onSearchTermChanged={onSearchTermChanged}
         />
       </ThemeProvider>,
@@ -37,16 +79,17 @@ describe('ContactsHeader', () => {
   it('checkbox is checked', async () => {
     const toggleFilterPanel = jest.fn();
     const onSearchTermChanged = jest.fn();
-    const onCheckAllContacts = jest.fn();
+    const onCheckAllItems = jest.fn();
 
     const { getByRole } = render(
       <ThemeProvider theme={theme}>
-        <ContactsHeader
+        <ListHeader
+          page="contact"
           activeFilters={false}
-          contactCheckboxState={ContactCheckBoxState.unchecked}
+          headerCheckboxState={ListHeaderCheckBoxState.unchecked}
           filterPanelOpen={false}
           toggleFilterPanel={toggleFilterPanel}
-          onCheckAllContacts={onCheckAllContacts}
+          onCheckAllItems={onCheckAllItems}
           onSearchTermChanged={onSearchTermChanged}
         />
       </ThemeProvider>,
@@ -54,7 +97,7 @@ describe('ContactsHeader', () => {
 
     const checkbox = getByRole('checkbox');
     userEvent.click(checkbox);
-    expect(onCheckAllContacts).toHaveBeenCalled();
+    expect(onCheckAllItems).toHaveBeenCalled();
     expect(toggleFilterPanel).not.toHaveBeenCalled();
     expect(onSearchTermChanged).not.toHaveBeenCalled();
   });
@@ -62,12 +105,13 @@ describe('ContactsHeader', () => {
   it('filters button displays for no filters', async () => {
     const { getByRole } = render(
       <ThemeProvider theme={theme}>
-        <ContactsHeader
+        <ListHeader
+          page="contact"
           activeFilters={false}
-          contactCheckboxState={ContactCheckBoxState.unchecked}
+          headerCheckboxState={ListHeaderCheckBoxState.unchecked}
           filterPanelOpen={false}
           toggleFilterPanel={toggleFilterPanel}
-          onCheckAllContacts={onCheckAllContacts}
+          onCheckAllItems={onCheckAllItems}
           onSearchTermChanged={onSearchTermChanged}
         />
       </ThemeProvider>,
@@ -85,12 +129,13 @@ describe('ContactsHeader', () => {
   it.skip('filters button displays for open filter panel', async () => {
     const { getByRole } = render(
       <ThemeProvider theme={theme}>
-        <ContactsHeader
+        <ListHeader
+          page="contact"
           activeFilters={false}
-          contactCheckboxState={ContactCheckBoxState.unchecked}
+          headerCheckboxState={ListHeaderCheckBoxState.unchecked}
           filterPanelOpen={true}
           toggleFilterPanel={toggleFilterPanel}
-          onCheckAllContacts={onCheckAllContacts}
+          onCheckAllItems={onCheckAllItems}
           onSearchTermChanged={onSearchTermChanged}
         />
       </ThemeProvider>,
@@ -110,12 +155,13 @@ describe('ContactsHeader', () => {
   it.skip('filters button displays for active filters', async () => {
     const { getByRole } = render(
       <ThemeProvider theme={theme}>
-        <ContactsHeader
+        <ListHeader
+          page="contact"
           activeFilters={true}
-          contactCheckboxState={ContactCheckBoxState.unchecked}
+          headerCheckboxState={ListHeaderCheckBoxState.unchecked}
           filterPanelOpen={false}
           toggleFilterPanel={toggleFilterPanel}
-          onCheckAllContacts={onCheckAllContacts}
+          onCheckAllItems={onCheckAllItems}
           onSearchTermChanged={onSearchTermChanged}
         />
       </ThemeProvider>,
@@ -135,12 +181,13 @@ describe('ContactsHeader', () => {
   it.skip('filters button displays for active filters and filter panel open', async () => {
     const { getByRole } = render(
       <ThemeProvider theme={theme}>
-        <ContactsHeader
+        <ListHeader
+          page="contact"
           activeFilters={true}
-          contactCheckboxState={ContactCheckBoxState.unchecked}
+          headerCheckboxState={ListHeaderCheckBoxState.unchecked}
           filterPanelOpen={true}
           toggleFilterPanel={toggleFilterPanel}
-          onCheckAllContacts={onCheckAllContacts}
+          onCheckAllItems={onCheckAllItems}
           onSearchTermChanged={onSearchTermChanged}
         />
       </ThemeProvider>,
@@ -160,12 +207,13 @@ describe('ContactsHeader', () => {
   it('filters button pressed', async () => {
     const { getByRole } = render(
       <ThemeProvider theme={theme}>
-        <ContactsHeader
+        <ListHeader
+          page="contact"
           activeFilters={false}
-          contactCheckboxState={ContactCheckBoxState.unchecked}
+          headerCheckboxState={ListHeaderCheckBoxState.unchecked}
           filterPanelOpen={false}
           toggleFilterPanel={toggleFilterPanel}
-          onCheckAllContacts={onCheckAllContacts}
+          onCheckAllItems={onCheckAllItems}
           onSearchTermChanged={onSearchTermChanged}
         />
       </ThemeProvider>,
@@ -186,12 +234,13 @@ describe('ContactsHeader', () => {
 
     const { getByRole } = render(
       <ThemeProvider theme={theme}>
-        <ContactsHeader
+        <ListHeader
+          page="contact"
           activeFilters={true}
-          contactCheckboxState={ContactCheckBoxState.unchecked}
+          headerCheckboxState={ListHeaderCheckBoxState.unchecked}
           filterPanelOpen={false}
           toggleFilterPanel={toggleFilterPanel}
-          onCheckAllContacts={onCheckAllContacts}
+          onCheckAllItems={onCheckAllItems}
           onSearchTermChanged={onSearchTermChanged}
         />
       </ThemeProvider>,

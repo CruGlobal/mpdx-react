@@ -1,52 +1,66 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { makeStyles, Theme } from '@material-ui/core/styles';
+import { styled } from '@material-ui/core/styles';
 import { DebounceInput } from 'react-debounce-input';
+import { InputAdornment, TextField } from '@material-ui/core';
+import SearchIcon from '@material-ui/icons/Search';
 
 export interface SearchBoxProps {
   onChange: (searchTerm: string) => void;
   placeholder?: string;
+  page: 'task' | 'contact';
 }
 
-const useStyle = makeStyles((theme: Theme) => ({
-  searchWrapper: {
-    backgroundColor: theme.palette.common.white,
+const SearchInput = styled(TextField)(({ theme }) => ({
+  backgroundColor: theme.palette.common.white,
+  color: theme.palette.text.secondary,
+  borderWidth: '2px',
+  borderColor: theme.palette.cruGrayLight.main,
+  borderStyle: 'solid',
+  borderRadius: '5px',
+  padding: '0',
+  overflow: 'hidden',
+  lineHeight: '24px',
+  marginLeft: '16px',
+  fontSize: '16px',
+  width: 'auto',
+  height: 'auto',
+  minWidth: '176px',
+  '&::placeholder': {
     color: theme.palette.text.secondary,
-    borderWidth: '2px',
-    borderColor: theme.palette.cruGrayLight.main,
-    borderStyle: 'solid',
-    borderRadius: '5px',
-    padding: '10px 16px',
-    overflow: 'hidden',
-  },
-  input: {
-    backgroundColor: 'transparent',
-    lineHeight: '24px',
-    padding: '0',
-    marginLeft: '16px',
-    fontSize: '16px',
-    width: 'auto',
-    height: 'auto',
-    minWidth: '176px',
-    '&::placeholder': {
-      color: theme.palette.text.secondary,
-      opacity: 1,
-    },
+    opacity: 1,
   },
 }));
 
 export const SearchBox: React.FC<SearchBoxProps> = ({
   onChange,
   placeholder,
+  page,
 }) => {
   const { t } = useTranslation();
-  const classes = useStyle();
 
   return (
     <DebounceInput
-      className={classes.searchWrapper}
+      element={(e) => {
+        return (
+          <SearchInput
+            size="small"
+            onChange={e.onChange}
+            value={e.value}
+            variant="outlined"
+            placeholder={placeholder ?? t('Search')}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  {/* TODO Use PersonSearch icon that is avaiable in MUIv5 */}
+                  {page === 'contact' ? <SearchIcon /> : <SearchIcon />}
+                </InputAdornment>
+              ),
+            }}
+          />
+        );
+      }}
       debounceTimeout={300}
-      placeholder={placeholder ?? t('Search')}
       onChange={(event) => {
         onChange(event.target.value);
       }}

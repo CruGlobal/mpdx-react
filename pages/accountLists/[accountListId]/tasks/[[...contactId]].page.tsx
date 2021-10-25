@@ -2,7 +2,16 @@ import React, { useEffect, useState } from 'react';
 import Head from 'next/head';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'next/router';
-import { Box, Card, CardContent, styled } from '@material-ui/core';
+import {
+  Box,
+  Button,
+  Card,
+  CardContent,
+  Hidden,
+  styled,
+} from '@material-ui/core';
+import AddIcon from '@material-ui/icons/Add';
+import CheckCircleOutlineIcon from '@material-ui/icons/CheckCircleOutline';
 import { InfiniteList } from '../../../../src/components/InfiniteList/InfiniteList';
 import { ContactDetails } from '../../../../src/components/Contacts/ContactDetails/ContactDetails';
 import Loading from '../../../../src/components/Loading';
@@ -10,16 +19,37 @@ import { SidePanelsLayout } from '../../../../src/components/Layouts/SidePanelsL
 import { useAccountListId } from '../../../../src/hooks/useAccountListId';
 import { TaskFilterSetInput } from '../../../../graphql/types.generated';
 import { TaskRow } from '../../../../src/components/Task/TaskRow/TaskRow';
+import {
+  ListHeader,
+  ListHeaderCheckBoxState,
+} from '../../../../src/components/Shared/Header/ListHeader';
+import useTaskDrawer from '../../../../src/hooks/useTaskDrawer';
 import { useTasksQuery } from './Tasks.generated';
 
 const WhiteBackground = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.common.white,
 }));
 
+const TaskHeaderButton = styled(Button)(({ theme }) => ({
+  color: '#2196F3',
+  fontWeight: 600,
+  marginRight: theme.spacing(1),
+  marginLeft: theme.spacing(1),
+}));
+
+const TaskCheckIcon = styled(CheckCircleOutlineIcon)(() => ({
+  color: '#2196F3',
+}));
+
+const TaskAddIcon = styled(AddIcon)(() => ({
+  color: '#2196F3',
+}));
+
 const TasksPage: React.FC = () => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
   const { query, push, replace, isReady, pathname } = useRouter();
+  const { openTaskDrawer } = useTaskDrawer();
 
   const [contactDetailsOpen, setContactDetailsOpen] = useState(false);
   const [contactDetailsId, setContactDetailsId] = useState<string>();
@@ -54,7 +84,6 @@ const TasksPage: React.FC = () => {
     skip: !accountListId,
   });
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const toggleFilterPanel = () => {
     setFilterPanelOpen(!filterPanelOpen);
   };
@@ -86,7 +115,6 @@ const TasksPage: React.FC = () => {
     }
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleCheckAllTasks = (
     event: React.ChangeEvent<HTMLInputElement>,
   ): void => {
@@ -95,7 +123,6 @@ const TasksPage: React.FC = () => {
     );
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const setSearchTerm = (searchTerm?: string) => {
     const { searchTerm: _, ...oldQuery } = query;
     replace({
@@ -106,6 +133,11 @@ const TasksPage: React.FC = () => {
       },
     });
   };
+
+  const hasSelectedSomeTasks =
+    selectedTasks.length > 0 &&
+    selectedTasks.length < (data?.tasks.nodes.length ?? 0);
+  const hasSelectedAllTasks = selectedTasks.length === data?.tasks.nodes.length;
 
   return (
     <>
@@ -120,7 +152,39 @@ const TasksPage: React.FC = () => {
             leftWidth="290px"
             mainContent={
               <>
-                TODO: implement tasks header/share header from contacts
+                <ListHeader
+                  page="task"
+                  activeFilters={Object.keys(activeFilters).length > 0}
+                  filterPanelOpen={filterPanelOpen}
+                  toggleFilterPanel={toggleFilterPanel}
+                  onCheckAllItems={handleCheckAllTasks}
+                  onSearchTermChanged={setSearchTerm}
+                  totalItems={data?.tasks.totalCount}
+                  headerCheckboxState={
+                    hasSelectedSomeTasks
+                      ? ListHeaderCheckBoxState.partial
+                      : hasSelectedAllTasks
+                      ? ListHeaderCheckBoxState.checked
+                      : ListHeaderCheckBoxState.unchecked
+                  }
+                  buttonGroup={
+                    <Hidden xsDown>
+                      <TaskHeaderButton
+                        onClick={() => openTaskDrawer({})}
+                        variant="text"
+                        startIcon={<TaskAddIcon />}
+                      >
+                        {t('Add Task')}
+                      </TaskHeaderButton>
+                      <TaskHeaderButton
+                        variant="text"
+                        startIcon={<TaskCheckIcon />}
+                      >
+                        {t('Log Task')}
+                      </TaskHeaderButton>
+                    </Hidden>
+                  }
+                />
                 <InfiniteList
                   loading={loading}
                   data={data?.tasks.nodes}
