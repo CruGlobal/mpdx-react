@@ -5786,10 +5786,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mdi/js@npm:^5.9.55":
-  version: 5.9.55
-  resolution: "@mdi/js@npm:5.9.55"
-  checksum: 5980a4226974853b7d603eeba9621a2f2dd29839b9138cce52d43b023a4a2646bbbda371ef4ceff18d7ed2d2ba33c493dc6a7d480c1e3a5ea1ed6a2215e7f779
+"@mdi/js@npm:^6.0.0":
+  version: 6.4.95
+  resolution: "@mdi/js@npm:6.4.95"
+  checksum: 76055821b0b611090f1fadff3cb93b0d2c05f7c52778a0e8966abe1c85d3aae8312c497e91882bb8cb02bf9235edda901da944099553afb2dbacafb11ed40b18
   languageName: node
   linkType: hard
 
@@ -19895,7 +19895,7 @@ fsevents@~2.3.2:
     "@material-ui/lab": ^4.0.0-alpha.57
     "@material-ui/pickers": ^3.2.10
     "@material-ui/styles": ^4.11.4
-    "@mdi/js": ^5.9.55
+    "@mdi/js": ^6.0.0
     "@mdi/react": ^1.5.0
     "@next/bundle-analyzer": ^11.1.2
     "@next/eslint-plugin-next": ^11.1.2
