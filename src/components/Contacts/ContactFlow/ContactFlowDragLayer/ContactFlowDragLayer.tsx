@@ -60,7 +60,6 @@ export const ContactFlowDragLayer: React.FC = () => {
               name={item.name}
               status={item.status}
               starred={item.starred}
-              height={item.height}
               width={item.width}
             />
           </div>

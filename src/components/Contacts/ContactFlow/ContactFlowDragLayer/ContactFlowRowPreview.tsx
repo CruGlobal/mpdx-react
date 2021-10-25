@@ -8,17 +8,15 @@ interface Props {
   name: string;
   status: StatusEnum;
   starred: boolean;
-  height: number;
   width: number;
 }
 
 export const ContactFlowRowPreview: React.FC<Props> = memo(
-  function ContactFlowRowPreview({ name, status, starred, height, width }) {
+  function ContactFlowRowPreview({ name, status, starred, width }) {
     return (
       <Box
         display="flex"
         width={width}
-        height={height}
         style={{
           background: 'white',
         }}

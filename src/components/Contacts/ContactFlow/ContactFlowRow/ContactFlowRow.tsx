@@ -13,7 +13,7 @@ interface Props {
   status: StatusEnum | 'NULL';
   starred: boolean;
   onContactSelected: (contactId: string) => void;
-  test?: number;
+  columnWidth?: number;
 }
 
 const ContactLink = styled(Typography)(() => ({
@@ -31,7 +31,7 @@ export const ContactFlowRow: React.FC<Props> = ({
   status,
   starred,
   onContactSelected,
-  test,
+  columnWidth,
 }: Props) => {
   const contactFlowRow = useRef<HTMLDivElement>();
   const [, drag, preview] = useDrag(() => ({
@@ -41,8 +41,7 @@ export const ContactFlowRow: React.FC<Props> = ({
       status,
       name,
       starred,
-      width: test,
-      height: contactFlowRow.current?.offsetHeight,
+      width: columnWidth,
     },
     collect: (monitor) => ({
       isDragging: !!monitor.isDragging(),
@@ -83,11 +82,7 @@ export const ContactFlowRow: React.FC<Props> = ({
             <ContactLink onClick={() => onContactSelected(id)}>
               {name}
             </ContactLink>
-            <Typography
-              onClick={() => console.log(contactFlowRow.current?.offsetWidth)}
-            >
-              {status || 'NULL'}
-            </Typography>
+            <Typography>{status || 'NULL'}</Typography>
           </Box>
         </Box>
         <Box display="flex">
