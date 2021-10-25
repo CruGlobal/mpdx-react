@@ -3,6 +3,9 @@ import Head from 'next/head';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'next/router';
 import { Box, Card, CardContent, styled } from '@material-ui/core';
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
+import { ContactFlowDragLayer } from '../../../../src/components/Contacts/ContactFlow/ContactFlowDragLayer/ContactFlowDragLayer';
 import { ContactFilters } from '../../../../src/components/Contacts/ContactFilters/ContactFilters';
 import { ContactFlow } from '../../../../src/components/Contacts/ContactFlow/ContactFlow';
 import { InfiniteList } from '../../../../src/components/InfiniteList/InfiniteList';
@@ -144,89 +147,94 @@ const ContactsPage: React.FC = () => {
         <title>MPDX | {t('Contacts')}</title>
       </Head>
       {accountListId ? (
-        <WhiteBackground>
-          <SidePanelsLayout
-            leftPanel={
-              <ContactFilters
-                accountListId={accountListId}
-                onClose={toggleFilterPanel}
-                onSelectedFiltersChanged={setActiveFilters}
-              />
-            }
-            leftOpen={filterPanelOpen}
-            leftWidth="290px"
-            mainContent={
-              <>
-                <ContactsHeader
-                  activeFilters={Object.keys(activeFilters).length > 0}
-                  filterPanelOpen={filterPanelOpen}
-                  toggleFilterPanel={toggleFilterPanel}
-                  onCheckAllContacts={handleCheckAllContacts}
-                  onSearchTermChanged={setSearchTerm}
-                  contactsTableDisplayState={contactsTableDisplayState}
-                  onViewModeChange={handleViewModeChange}
-                  totalContacts={data?.contacts.totalCount}
-                  contactCheckboxState={
-                    isSelectedSomeContacts
-                      ? ContactCheckBoxState.partial
-                      : isSelectedAllContacts
-                      ? ContactCheckBoxState.checked
-                      : ContactCheckBoxState.unchecked
-                  }
+        <DndProvider backend={HTML5Backend}>
+          <ContactFlowDragLayer />
+          <WhiteBackground>
+            <SidePanelsLayout
+              leftPanel={
+                <ContactFilters
+                  accountListId={accountListId}
+                  onClose={toggleFilterPanel}
+                  onSelectedFiltersChanged={setActiveFilters}
                 />
-                {contactsTableDisplayState === 'list' ? (
-                  <InfiniteList
-                    loading={loading}
-                    data={data?.contacts.nodes}
-                    totalCount={data?.contacts.totalCount}
-                    style={{ height: 'calc(100vh - 160px)' }}
-                    itemContent={(index, contact) => (
-                      <ContactRow
-                        accountListId={accountListId}
-                        key={index}
-                        contact={contact}
-                        isChecked={selectedContacts.includes(contact.id)}
-                        onContactSelected={setContactFocus}
-                        onContactCheckToggle={handleCheckOneContact}
-                      />
-                    )}
-                    endReached={() =>
-                      data?.contacts.pageInfo.hasNextPage &&
-                      fetchMore({
-                        variables: { after: data.contacts.pageInfo.endCursor },
-                      })
+              }
+              leftOpen={filterPanelOpen}
+              leftWidth="290px"
+              mainContent={
+                <>
+                  <ContactsHeader
+                    activeFilters={Object.keys(activeFilters).length > 0}
+                    filterPanelOpen={filterPanelOpen}
+                    toggleFilterPanel={toggleFilterPanel}
+                    onCheckAllContacts={handleCheckAllContacts}
+                    onSearchTermChanged={setSearchTerm}
+                    contactsTableDisplayState={contactsTableDisplayState}
+                    onViewModeChange={handleViewModeChange}
+                    totalContacts={data?.contacts.totalCount}
+                    contactCheckboxState={
+                      isSelectedSomeContacts
+                        ? ContactCheckBoxState.partial
+                        : isSelectedAllContacts
+                        ? ContactCheckBoxState.checked
+                        : ContactCheckBoxState.unchecked
                     }
-                    EmptyPlaceholder={
-                      <Card>
-                        <CardContent>
-                          TODO: Implement Empty Placeholder
-                        </CardContent>
-                      </Card>
-                    }
+                  />
+                  {contactsTableDisplayState === 'list' ? (
+                    <InfiniteList
+                      loading={loading}
+                      data={data?.contacts.nodes}
+                      totalCount={data?.contacts.totalCount}
+                      style={{ height: 'calc(100vh - 160px)' }}
+                      itemContent={(index, contact) => (
+                        <ContactRow
+                          accountListId={accountListId}
+                          key={index}
+                          contact={contact}
+                          isChecked={selectedContacts.includes(contact.id)}
+                          onContactSelected={setContactFocus}
+                          onContactCheckToggle={handleCheckOneContact}
+                        />
+                      )}
+                      endReached={() =>
+                        data?.contacts.pageInfo.hasNextPage &&
+                        fetchMore({
+                          variables: {
+                            after: data.contacts.pageInfo.endCursor,
+                          },
+                        })
+                      }
+                      EmptyPlaceholder={
+                        <Card>
+                          <CardContent>
+                            TODO: Implement Empty Placeholder
+                          </CardContent>
+                        </Card>
+                      }
+                    />
+                  ) : (
+                    <ContactFlow
+                      accountListId={accountListId}
+                      onContactSelected={setContactFocus}
+                    />
+                  )}
+                </>
+              }
+              rightPanel={
+                contactDetailsId ? (
+                  <ContactDetails
+                    accountListId={accountListId}
+                    contactId={contactDetailsId}
+                    onClose={() => setContactFocus(undefined)}
                   />
                 ) : (
-                  <ContactFlow
-                    accountListId={accountListId}
-                    onContactSelected={setContactFocus}
-                  />
-                )}
-              </>
-            }
-            rightPanel={
-              contactDetailsId ? (
-                <ContactDetails
-                  accountListId={accountListId}
-                  contactId={contactDetailsId}
-                  onClose={() => setContactFocus(undefined)}
-                />
-              ) : (
-                <></>
-              )
-            }
-            rightOpen={contactDetailsOpen}
-            rightWidth="45%"
-          />
-        </WhiteBackground>
+                  <></>
+                )
+              }
+              rightOpen={contactDetailsOpen}
+              rightWidth="45%"
+            />
+          </WhiteBackground>
+        </DndProvider>
       ) : (
         <Loading loading />
       )}

@@ -25,7 +25,6 @@ export const ContactFlowDropZone: React.FC<Props> = ({
     accept: 'contact',
     canDrop: (contact) => String(contact.status) !== String(status),
     drop: (contact: Contact) => {
-      console.log(contact.status);
       String(contact.status) !== String(status)
         ? changeContactStatus(contact.id)
         : null;

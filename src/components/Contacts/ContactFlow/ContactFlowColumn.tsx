@@ -5,7 +5,7 @@ import {
   Typography,
   CircularProgress,
 } from '@material-ui/core';
-import React from 'react';
+import React, { useRef } from 'react';
 import { useDrop } from 'react-dnd';
 import theme from '../../../../src/theme';
 import { ContactFilterStatusEnum } from '../../../../graphql/types.generated';
@@ -39,6 +39,8 @@ export const ContactFlowColumn: React.FC<Props> = ({
     },
     skip: !accountListId,
   });
+
+  const CardContentRef = useRef<HTMLDivElement>();
 
   const [{ canDrop }, drop] = useDrop(() => ({
     accept: 'contact',
@@ -104,28 +106,31 @@ export const ContactFlowColumn: React.FC<Props> = ({
                 />
               ))}
             </Box>
-            <InfiniteList
-              loading={loading}
-              data={data?.contacts.nodes}
-              totalCount={data?.contacts.totalCount}
-              itemContent={(_index, contact) => (
-                <ContactFlowRow
-                  accountListId={accountListId}
-                  id={contact.id}
-                  name={contact.name}
-                  status={contact.status || 'NULL'}
-                  starred={contact.starred}
-                  onContactSelected={onContactSelected}
-                />
-              )}
-              endReached={() =>
-                data?.contacts.pageInfo.hasNextPage &&
-                fetchMore({
-                  variables: { after: data.contacts.pageInfo.endCursor },
-                })
-              }
-              EmptyPlaceholder={<></>}
-            />
+            <Box {...{ ref: CardContentRef }} width="100%" height="100%">
+              <InfiniteList
+                loading={loading}
+                data={data?.contacts.nodes}
+                totalCount={data?.contacts.totalCount}
+                itemContent={(_index, contact) => (
+                  <ContactFlowRow
+                    accountListId={accountListId}
+                    id={contact.id}
+                    name={contact.name}
+                    status={contact.status || 'NULL'}
+                    starred={contact.starred}
+                    onContactSelected={onContactSelected}
+                    test={CardContentRef.current?.offsetWidth}
+                  />
+                )}
+                endReached={() =>
+                  data?.contacts.pageInfo.hasNextPage &&
+                  fetchMore({
+                    variables: { after: data.contacts.pageInfo.endCursor },
+                  })
+                }
+                EmptyPlaceholder={<></>}
+              />
+            </Box>
           </CardContent>
         </Card>
       )}
