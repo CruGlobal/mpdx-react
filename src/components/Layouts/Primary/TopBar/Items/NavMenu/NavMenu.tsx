@@ -96,6 +96,7 @@ const NavMenu = (): ReactElement => {
   const currentToolId = useCurrentToolId();
   const { data, loading } = useGetToolNotificationsQuery({
     variables: { accountListId: accountListId ?? '' },
+    skip: !accountListId,
   });
 
   const toolData: { [key: string]: { totalCount: number } } = {
