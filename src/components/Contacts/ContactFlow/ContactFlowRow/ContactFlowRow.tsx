@@ -1,6 +1,7 @@
 import { Avatar, Box, styled, Typography } from '@material-ui/core';
-import React, { useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useDrag } from 'react-dnd';
+import { getEmptyImage } from 'react-dnd-html5-backend';
 import theme from '../../../../../src/theme';
 import { StatusEnum } from '../../../../../graphql/types.generated';
 import { StarContactIconButton } from '../../StarContactIconButton/StarContactIconButton';
@@ -33,7 +34,7 @@ export const ContactFlowRow: React.FC<Props> = ({
   test,
 }: Props) => {
   const contactFlowRow = useRef<HTMLDivElement>();
-  const [, drag] = useDrag(() => ({
+  const [, drag, preview] = useDrag(() => ({
     type: 'contact',
     item: {
       id,
@@ -47,6 +48,10 @@ export const ContactFlowRow: React.FC<Props> = ({
       isDragging: !!monitor.isDragging(),
     }),
   }));
+
+  useEffect(() => {
+    preview(getEmptyImage(), { captureDraggingState: true });
+  }, []);
 
   return (
     <Box
