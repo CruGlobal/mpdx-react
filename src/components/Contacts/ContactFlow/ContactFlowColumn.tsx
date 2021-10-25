@@ -57,6 +57,7 @@ export const ContactFlowColumn: React.FC<Props> = ({
             p={2}
             display="flex"
             justifyContent="space-between"
+            data-testid="column-header"
             borderBottom={`5px solid ${color}`}
           >
             <Box width="80%">
