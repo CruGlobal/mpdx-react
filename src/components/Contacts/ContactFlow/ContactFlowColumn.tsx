@@ -108,7 +108,7 @@ export const ContactFlowColumn: React.FC<Props> = ({
               loading={loading}
               data={data?.contacts.nodes}
               totalCount={data?.contacts.totalCount}
-              itemContent={(index, contact) => (
+              itemContent={(_index, contact) => (
                 <ContactFlowRow
                   accountListId={accountListId}
                   id={contact.id}
