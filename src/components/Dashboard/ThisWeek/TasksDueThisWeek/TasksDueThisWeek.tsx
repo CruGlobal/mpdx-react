@@ -188,8 +188,7 @@ const TasksDueThisWeek = ({
               </List>
               <CardActions>
                 <Link
-                  href="/accountLists/[accountListId]/tasks"
-                  as={`/accountLists/${accountListId}/tasks?completed=false&startAt[max]=${DateTime.local().toISODate()}`}
+                  href={`/accountLists/${accountListId}/tasks?completed=false&startAt[max]=${DateTime.local().toISODate()}`}
                   passHref
                 >
                   <Button

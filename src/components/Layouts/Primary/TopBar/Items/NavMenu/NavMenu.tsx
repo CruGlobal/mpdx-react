@@ -157,33 +157,21 @@ const NavMenu = (): ReactElement => {
       {accountListId ? (
         <Grid container item alignItems="center" xs="auto">
           <Grid item className={classes.navListItem}>
-            <NextLink
-              href="/accountLists/[accountListId]"
-              as={`/accountLists/${accountListId}`}
-              scroll={false}
-            >
+            <NextLink href={`/accountLists/${accountListId}`}>
               <MenuItem>
                 <ListItemText primary={t('Dashboard')} />
               </MenuItem>
             </NextLink>
           </Grid>
           <Grid item className={classes.navListItem}>
-            <NextLink
-              href="/accountLists/[accountListId]/contacts"
-              as={`/accountLists/${accountListId}/contacts`}
-              scroll={false}
-            >
+            <NextLink href={`/accountLists/${accountListId}/contacts`}>
               <MenuItem>
                 <ListItemText primary={t('Contacts')} />
               </MenuItem>
             </NextLink>
           </Grid>
           <Grid item className={classes.navListItem}>
-            <NextLink
-              href="/accountLists/[accountListId]/tasks"
-              as={`/accountLists/${accountListId}/tasks`}
-              scroll={false}
-            >
+            <NextLink href={`/accountLists/${accountListId}/tasks`}>
               <MenuItem>
                 <ListItemText primary={t('Tasks')} />
               </MenuItem>
@@ -228,9 +216,7 @@ const NavMenu = (): ReactElement => {
                         {ReportNavItems.map((reportItem) => (
                           <NextLink
                             key={reportItem.id}
-                            href={`/accountLists/[accountListId]/reports/${reportItem.id}`}
-                            as={`/accountLists/${accountListId}/reports/${reportItem.id}`}
-                            scroll={false}
+                            href={`/accountLists/${accountListId}/reports/${reportItem.id}`}
                           >
                             <MenuItem onClick={handleReportsMenuClose}>
                               <ListItemText
@@ -307,9 +293,7 @@ const NavMenu = (): ReactElement => {
                               return (
                                 <NextLink
                                   key={tool.id}
-                                  href={`/accountLists/[accountListId]/tools/${tool.id}`}
-                                  as={`/accountLists/${accountListId}/tools/${tool.id}`}
-                                  scroll={false}
+                                  href={`/accountLists/${accountListId}/tools/${tool.id}`}
                                 >
                                   <MenuItem
                                     onClick={handleToolsMenuClose}
@@ -369,10 +353,7 @@ const NavMenu = (): ReactElement => {
             </Popper>
           </Grid>
           <Grid item className={classes.navListItem}>
-            <NextLink
-              href="/accountLists/[accountListId]/coaching"
-              as={`/accountLists/${accountListId}/coaching`}
-            >
+            <NextLink href={`/accountLists/${accountListId}/coaching`}>
               <MenuItem component="a">
                 <ListItemText primary={t('Coaches')} />
               </MenuItem>
