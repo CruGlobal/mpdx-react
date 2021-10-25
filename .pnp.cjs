@@ -59,7 +59,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@material-ui/lab", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:4.0.0-alpha.57"],
             ["@material-ui/pickers", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:3.2.10"],
             ["@material-ui/styles", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:4.11.4"],
-            ["@mdi/js", "npm:5.9.55"],
+            ["@mdi/js", "npm:6.4.95"],
             ["@mdi/react", "npm:1.5.0"],
             ["@next/bundle-analyzer", "npm:11.1.2"],
             ["@next/eslint-plugin-next", "npm:11.1.2"],
@@ -12078,10 +12078,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]
       ]],
       ["@mdi/js", [
-        ["npm:5.9.55", {
-          "packageLocation": "./.yarn/cache/@mdi-js-npm-5.9.55-4a4fcc7bcf-5980a42269.zip/node_modules/@mdi/js/",
+        ["npm:6.4.95", {
+          "packageLocation": "./.yarn/cache/@mdi-js-npm-6.4.95-9ff1ece8f2-76055821b0.zip/node_modules/@mdi/js/",
           "packageDependencies": [
-            ["@mdi/js", "npm:5.9.55"]
+            ["@mdi/js", "npm:6.4.95"]
           ],
           "linkType": "HARD",
         }]
@@ -29183,7 +29183,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@material-ui/lab", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:4.0.0-alpha.57"],
             ["@material-ui/pickers", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:3.2.10"],
             ["@material-ui/styles", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:4.11.4"],
-            ["@mdi/js", "npm:5.9.55"],
+            ["@mdi/js", "npm:6.4.95"],
             ["@mdi/react", "npm:1.5.0"],
             ["@next/bundle-analyzer", "npm:11.1.2"],
             ["@next/eslint-plugin-next", "npm:11.1.2"],
