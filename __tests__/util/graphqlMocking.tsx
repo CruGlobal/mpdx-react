@@ -14,7 +14,7 @@ import {
   ErgonoMockedProviderProps,
   ErgonomockOptions,
 } from 'graphql-ergonomock';
-import { mergeSchemas } from '@graphql-tools/merge';
+import { mergeSchemas } from '@graphql-tools/schema';
 import { gql } from 'graphql-tag';
 import { DeepPartial } from 'ts-essentials';
 import schema from '../../graphql/schema.graphql';
