@@ -83,7 +83,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/luxon", "npm:1.26.2"],
             ["@types/mui-datatables", "npm:3.7.1"],
             ["@types/next-auth", "npm:3.1.24"],
-            ["@types/node", "npm:14.14.26"],
+            ["@types/node", "npm:16.11.6"],
             ["@types/query-string", "npm:6.3.0"],
             ["@types/react", "npm:17.0.1"],
             ["@types/react-csv", "npm:1.1.1"],
@@ -14874,17 +14874,17 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           ],
           "linkType": "HARD",
         }],
-        ["npm:14.14.26", {
-          "packageLocation": "./.yarn/cache/@types-node-npm-14.14.26-8e9465b306-f4bc16c402.zip/node_modules/@types/node/",
-          "packageDependencies": [
-            ["@types/node", "npm:14.14.26"]
-          ],
-          "linkType": "HARD",
-        }],
         ["npm:14.17.23", {
           "packageLocation": "./.yarn/cache/@types-node-npm-14.17.23-9c73d9fae4-58bc0147f4.zip/node_modules/@types/node/",
           "packageDependencies": [
             ["@types/node", "npm:14.17.23"]
+          ],
+          "linkType": "HARD",
+        }],
+        ["npm:16.11.6", {
+          "packageLocation": "./.yarn/cache/@types-node-npm-16.11.6-3a38cc239a-6e19634766.zip/node_modules/@types/node/",
+          "packageDependencies": [
+            ["@types/node", "npm:16.11.6"]
           ],
           "linkType": "HARD",
         }]
@@ -29207,7 +29207,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/luxon", "npm:1.26.2"],
             ["@types/mui-datatables", "npm:3.7.1"],
             ["@types/next-auth", "npm:3.1.24"],
-            ["@types/node", "npm:14.14.26"],
+            ["@types/node", "npm:16.11.6"],
             ["@types/query-string", "npm:6.3.0"],
             ["@types/react", "npm:17.0.1"],
             ["@types/react-csv", "npm:1.1.1"],
