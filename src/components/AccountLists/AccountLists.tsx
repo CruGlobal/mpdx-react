@@ -85,11 +85,7 @@ const AccountLists = ({ data }: Props): ReactElement => {
                 return (
                   <Grid key={id} item xs={12} sm={4}>
                     <AnimatedCard elevation={3}>
-                      <Link
-                        href="/accountLists/[accountListId]"
-                        as={`/accountLists/${id}`}
-                        scroll={false}
-                      >
+                      <Link href={`/accountLists/${id}`} passHref>
                         <CardActionArea>
                           <CardContent className={classes.cardContent}>
                             <Box flex={1}>

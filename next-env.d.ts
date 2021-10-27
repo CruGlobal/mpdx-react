@@ -1,10 +1,6 @@
 /// <reference types="next" />
 /// <reference types="next/types/global" />
-declare module '*.graphql' {
-  import { DocumentNode } from 'graphql';
+/// <reference types="next/image-types/global" />
 
-  const value: DocumentNode;
-  export = value;
-}
-
-declare module '*.svg';
+// NOTE: This file should not be edited
+// see https://nextjs.org/docs/basic-features/typescript for more information.

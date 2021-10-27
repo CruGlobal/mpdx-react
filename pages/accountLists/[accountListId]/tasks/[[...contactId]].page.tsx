@@ -5,20 +5,24 @@ import { useRouter } from 'next/router';
 import {
   Box,
   Button,
-  ButtonGroup,
   Card,
   CardContent,
   Hidden,
-  Link,
   styled,
 } from '@material-ui/core';
-import { FilterListHeader } from '../../../../src/components/Shared/Filters/Header/FilterListHeader';
+import AddIcon from '@material-ui/icons/Add';
+import CheckCircleOutlineIcon from '@material-ui/icons/CheckCircleOutline';
 import { InfiniteList } from '../../../../src/components/InfiniteList/InfiniteList';
 import { ContactDetails } from '../../../../src/components/Contacts/ContactDetails/ContactDetails';
 import Loading from '../../../../src/components/Loading';
 import { SidePanelsLayout } from '../../../../src/components/Layouts/SidePanelsLayout';
 import { useAccountListId } from '../../../../src/hooks/useAccountListId';
 import { TaskFilterSetInput } from '../../../../graphql/types.generated';
+import { TaskRow } from '../../../../src/components/Task/TaskRow/TaskRow';
+import {
+  ListHeader,
+  ListHeaderCheckBoxState,
+} from '../../../../src/components/Shared/Header/ListHeader';
 import useTaskDrawer from '../../../../src/hooks/useTaskDrawer';
 import { useTasksQuery } from './Tasks.generated';
 
@@ -26,13 +30,30 @@ const WhiteBackground = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.common.white,
 }));
 
-const ContactsPage: React.FC = () => {
+const TaskHeaderButton = styled(Button)(({ theme }) => ({
+  color: '#2196F3',
+  fontWeight: 600,
+  marginRight: theme.spacing(1),
+  marginLeft: theme.spacing(1),
+}));
+
+const TaskCheckIcon = styled(CheckCircleOutlineIcon)(() => ({
+  color: '#2196F3',
+}));
+
+const TaskAddIcon = styled(AddIcon)(() => ({
+  color: '#2196F3',
+}));
+
+const TasksPage: React.FC = () => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
   const { query, push, replace, isReady, pathname } = useRouter();
+  const { openTaskDrawer } = useTaskDrawer();
 
   const [contactDetailsOpen, setContactDetailsOpen] = useState(false);
   const [contactDetailsId, setContactDetailsId] = useState<string>();
+  const [selectedTasks, setSelectedTasks] = useState<Array<string>>([]);
 
   const { contactId, searchTerm } = query;
 
@@ -69,29 +90,49 @@ const ContactsPage: React.FC = () => {
     skip: !accountListId,
   });
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const toggleFilterPanel = () => {
     setFilterPanelOpen(!filterPanelOpen);
   };
 
   const setContactFocus = (id?: string) => {
-    const { contactId: _, ...queryWithoutContactId } = query;
+    const {
+      accountListId: _accountListId,
+      contactId: _contactId,
+      ...filteredQuery
+    } = query;
     push(
       id
         ? {
-            pathname: '/accountLists/[accountListId]/tasks/[contactId]',
-            query: { ...queryWithoutContactId, contactId: id },
+            pathname: `/accountLists/${accountListId}/tasks/${id}`,
+            query: filteredQuery,
           }
         : {
-            pathname: '/accountLists/[accountListId]/tasks/',
-            query: queryWithoutContactId,
+            pathname: `/accountLists/${accountListId}/tasks/`,
+            query: filteredQuery,
           },
     );
     id && setContactDetailsId(id);
     setContactDetailsOpen(!!id);
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const handleCheckOneTask = (contactId: string): void => {
+    if (!selectedTasks.includes(contactId)) {
+      setSelectedTasks((prevSelected) => [...prevSelected, contactId]);
+    } else {
+      setSelectedTasks((prevSelected) =>
+        prevSelected.filter((id) => id !== contactId),
+      );
+    }
+  };
+
+  const handleCheckAllTasks = (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ): void => {
+    setSelectedTasks(
+      event.target.checked ? data?.tasks.nodes.map(({ id }) => id) ?? [] : [],
+    );
+  };
+
   const setSearchTerm = (searchTerm?: string) => {
     const { searchTerm: _, ...oldQuery } = query;
     replace({
@@ -102,6 +143,11 @@ const ContactsPage: React.FC = () => {
       },
     });
   };
+
+  const hasSelectedSomeTasks =
+    selectedTasks.length > 0 &&
+    selectedTasks.length < (data?.tasks.nodes.length ?? 0);
+  const hasSelectedAllTasks = selectedTasks.length === data?.tasks.nodes.length;
 
   return (
     <>
@@ -116,22 +162,36 @@ const ContactsPage: React.FC = () => {
             leftWidth="290px"
             mainContent={
               <>
-                <FilterListHeader
+                <ListHeader
+                  page="task"
                   activeFilters={Object.keys(activeFilters).length > 0}
                   filterPanelOpen={filterPanelOpen}
                   toggleFilterPanel={toggleFilterPanel}
-                  starredFilter={starredFilter}
-                  toggleStarredFilter={setStarredFilter}
+                  onCheckAllItems={handleCheckAllTasks}
                   onSearchTermChanged={setSearchTerm}
-                  totalCount={data?.tasks.totalCount}
+                  totalItems={data?.tasks.totalCount}
+                  headerCheckboxState={
+                    hasSelectedSomeTasks
+                      ? ListHeaderCheckBoxState.partial
+                      : hasSelectedAllTasks
+                      ? ListHeaderCheckBoxState.checked
+                      : ListHeaderCheckBoxState.unchecked
+                  }
                   buttonGroup={
                     <Hidden xsDown>
-                      <ButtonGroup variant="contained">
-                        <Button onClick={() => openTaskDrawer({})}>
-                          Add Task
-                        </Button>
-                        <Button>Log Task</Button>
-                      </ButtonGroup>
+                      <TaskHeaderButton
+                        onClick={() => openTaskDrawer({})}
+                        variant="text"
+                        startIcon={<TaskAddIcon />}
+                      >
+                        {t('Add Task')}
+                      </TaskHeaderButton>
+                      <TaskHeaderButton
+                        variant="text"
+                        startIcon={<TaskCheckIcon />}
+                      >
+                        {t('Log Task')}
+                      </TaskHeaderButton>
                     </Hidden>
                   }
                 />
@@ -142,17 +202,13 @@ const ContactsPage: React.FC = () => {
                   style={{ height: 'calc(100vh - 160px)' }}
                   itemContent={(index, task) => (
                     <Box key={index} flexDirection="row">
-                      <Box>
-                        {task.contacts.nodes.map((contact) => (
-                          <Link
-                            key={contact.id}
-                            onClick={() => setContactFocus(contact.id)}
-                          >
-                            {contact.name}
-                          </Link>
-                        ))}
-                      </Box>
-                      {task.subject}
+                      <TaskRow
+                        accountListId={accountListId}
+                        task={task}
+                        onContactSelected={setContactFocus}
+                        onTaskCheckToggle={handleCheckOneTask}
+                        isChecked={selectedTasks.includes(task.id)}
+                      />
                     </Box>
                   )}
                   endReached={() =>
@@ -193,4 +249,4 @@ const ContactsPage: React.FC = () => {
   );
 };
 
-export default ContactsPage;
+export default TasksPage;

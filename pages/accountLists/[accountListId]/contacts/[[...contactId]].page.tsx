@@ -4,11 +4,8 @@ import { useTranslation } from 'react-i18next';
 import { useRouter } from 'next/router';
 import { Box, Card, CardContent, Hidden, styled } from '@material-ui/core';
 import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
-import { FormatListBulleted, ViewColumn } from '@material-ui/icons';
-import {
-  FilterListHeader,
-  CheckBoxState,
-} from '../../../../src/components/Shared/Filters/Header/FilterListHeader';
+import FormatListBulleted from '@material-ui/icons/FormatListBulleted';
+import ViewColumn from '@material-ui/icons/ViewColumn';
 import { ContactFilters } from '../../../../src/components/Contacts/ContactFilters/ContactFilters';
 import { InfiniteList } from '../../../../src/components/InfiniteList/InfiniteList';
 import { ContactDetails } from '../../../../src/components/Contacts/ContactDetails/ContactDetails';
@@ -16,15 +13,17 @@ import Loading from '../../../../src/components/Loading';
 import { SidePanelsLayout } from '../../../../src/components/Layouts/SidePanelsLayout';
 import { useAccountListId } from '../../../../src/hooks/useAccountListId';
 import { ContactFilterSetInput } from '../../../../graphql/types.generated';
-
 import { ContactRow } from '../../../../src/components/Contacts/ContactRow/ContactRow';
+import {
+  ListHeader,
+  ListHeaderCheckBoxState,
+  TableViewModeEnum,
+} from '../../../../src/components/Shared/Header/ListHeader';
 import { useContactsQuery } from './Contacts.generated';
 
 const WhiteBackground = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.common.white,
 }));
-
-export type ContactsTableViewMode = 'list' | 'columns';
 
 const BulletedListIcon = styled(FormatListBulleted)(({ theme }) => ({
   color: theme.palette.primary.dark,
@@ -65,16 +64,7 @@ const ContactsPage: React.FC = () => {
   const [
     contactsTableDisplayState,
     setContactsTableDisplayState,
-  ] = useState<ContactsTableViewMode>('list');
-
-  const handleViewModeChange = (
-    event: React.MouseEvent<HTMLElement>,
-    viewMode: ContactsTableViewMode | null,
-  ) => {
-    if (viewMode) {
-      setContactsTableDisplayState(viewMode);
-    }
-  };
+  ] = useState<TableViewModeEnum>('LIST');
 
   const { data, loading, fetchMore } = useContactsQuery({
     variables: {
@@ -93,16 +83,20 @@ const ContactsPage: React.FC = () => {
   };
 
   const setContactFocus = (id?: string) => {
-    const { contactId: _, ...queryWithoutContactId } = query;
+    const {
+      accountListId: _accountListId,
+      contactId: _contactId,
+      ...filteredQuery
+    } = query;
     push(
       id
         ? {
-            pathname: '/accountLists/[accountListId]/contacts/[contactId]',
-            query: { ...queryWithoutContactId, contactId: id },
+            pathname: `/accountLists/${accountListId}/contacts/${id}`,
+            query: filteredQuery,
           }
         : {
-            pathname: '/accountLists/[accountListId]/contacts/',
-            query: queryWithoutContactId,
+            pathname: `/accountLists/${accountListId}/contacts/`,
+            query: filteredQuery,
           },
     );
     id && setContactDetailsId(id);
@@ -149,6 +143,19 @@ const ContactsPage: React.FC = () => {
     });
   };
 
+  const [tableDisplayState, setTableDisplayState] = useState<TableViewModeEnum>(
+    TableViewModeEnum.List,
+  );
+
+  const handleViewModeChange = (
+    event: React.MouseEvent<HTMLElement>,
+    viewMode: TableViewModeEnum | null,
+  ) => {
+    if (viewMode) {
+      setTableDisplayState(viewMode);
+    }
+  };
+
   return (
     <>
       <Head>
@@ -169,29 +176,26 @@ const ContactsPage: React.FC = () => {
             leftWidth="290px"
             mainContent={
               <>
-                <FilterListHeader
+                <ListHeader
+                  page="contact"
                   activeFilters={Object.keys(activeFilters).length > 0}
                   filterPanelOpen={filterPanelOpen}
                   toggleFilterPanel={toggleFilterPanel}
-                  starredFilter={starredFilter}
-                  toggleStarredFilter={setStarredFilter}
-                  onCheckAll={handleCheckAllContacts}
+                  onCheckAllItems={handleCheckAllContacts}
                   onSearchTermChanged={setSearchTerm}
-                  viewMode={contactsTableDisplayState}
-                  onViewChange={handleViewModeChange}
-                  totalCount={data?.contacts.totalCount}
-                  checkBoxState={
+                  totalItems={data?.contacts.totalCount}
+                  headerCheckboxState={
                     isSelectedSomeContacts
-                      ? CheckBoxState.partial
+                      ? ListHeaderCheckBoxState.partial
                       : isSelectedAllContacts
-                      ? CheckBoxState.checked
-                      : CheckBoxState.unchecked
+                      ? ListHeaderCheckBoxState.checked
+                      : ListHeaderCheckBoxState.unchecked
                   }
                   buttonGroup={
                     <Hidden xsDown>
                       <ToggleButtonGroup
                         exclusive
-                        value={contactsTableDisplayState}
+                        value={tableDisplayState}
                         onChange={handleViewModeChange}
                       >
                         <ToggleButton value="list">
@@ -206,7 +210,7 @@ const ContactsPage: React.FC = () => {
                     </Hidden>
                   }
                 />
-                {contactsTableDisplayState === 'list' ? (
+                {tableDisplayState === 'list' ? (
                   <InfiniteList
                     loading={loading}
                     data={data?.contacts.nodes}

@@ -1,30 +1,39 @@
 import React, { ReactElement } from 'react';
 import { Button } from '@material-ui/core';
 import SubjectIcon from '@material-ui/icons/Subject';
-import { text, select } from '@storybook/addon-knobs';
 import Welcome from '.';
 
 export default {
   title: 'Welcome',
+  args: {
+    title: 'Welcome to MPDX',
+    subtitle:
+      'MPDX is fundraising software from Cru that helps you grow and maintain your ministry partners in a quick and easy way.',
+    imgSrc: null,
+  },
+  argTypes: {
+    imgSrc: {
+      name: 'imgSrc',
+      options: {
+        Default: null,
+        Custom: require(`../../images/drawkit/grape/drawkit-grape-pack-illustration-1.svg`),
+      },
+      control: { type: 'select' },
+    },
+  },
 };
 
-export const Default = (): ReactElement => {
+export const Default = ({
+  title,
+  subtitle,
+  imgSrc,
+}: {
+  title: string;
+  subtitle: string;
+  imgSrc: string;
+}): ReactElement => {
   return (
-    <Welcome
-      title={text('title', 'Welcome to MPDX')}
-      subtitle={text(
-        'subtitle',
-        'MPDX is fundraising software from Cru that helps you grow and maintain your ministry partners in a quick and easy way.',
-      )}
-      imgSrc={select(
-        'imgSrc',
-        {
-          Default: null,
-          Custom: require(`../../images/drawkit/grape/drawkit-grape-pack-illustration-1.svg`),
-        },
-        null,
-      )}
-    >
+    <Welcome title={title} subtitle={subtitle} imgSrc={imgSrc}>
       <Button size="large" variant="contained">
         Get Started
       </Button>

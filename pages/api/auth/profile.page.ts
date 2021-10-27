@@ -21,7 +21,7 @@ const profile = async (
     data: { ticket: ticket },
   } = await Axios.get('https://thekey.me/cas/api/oauth/ticket', {
     headers: {
-      Authorization: req.headers.authorization,
+      Authorization: req.headers.authorization ?? '',
       Accept: 'application/json',
     },
     params: {
