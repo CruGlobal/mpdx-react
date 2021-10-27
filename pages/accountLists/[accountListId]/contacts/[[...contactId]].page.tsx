@@ -59,12 +59,17 @@ const ContactsPage: React.FC = () => {
 
   const [filterPanelOpen, setFilterPanelOpen] = useState<boolean>(false);
   const [activeFilters, setActiveFilters] = useState<ContactFilterSetInput>({});
+  const [starredFilter, setStarredFilter] = useState<ContactFilterSetInput>({});
   const [selectedContacts, setSelectedContacts] = useState<Array<string>>([]);
 
   const { data, loading, fetchMore } = useContactsQuery({
     variables: {
       accountListId: accountListId ?? '',
-      contactsFilters: { ...activeFilters, wildcardSearch: searchTerm?.[0] },
+      contactsFilters: {
+        ...activeFilters,
+        wildcardSearch: searchTerm?.[0],
+        ...starredFilter,
+      },
     },
     skip: !accountListId,
   });
@@ -174,6 +179,8 @@ const ContactsPage: React.FC = () => {
                   onCheckAllItems={handleCheckAllContacts}
                   onSearchTermChanged={setSearchTerm}
                   totalItems={data?.contacts.totalCount}
+                  starredFilter={starredFilter}
+                  toggleStarredFilter={setStarredFilter}
                   headerCheckboxState={
                     isSelectedSomeContacts
                       ? ListHeaderCheckBoxState.partial
