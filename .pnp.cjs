@@ -78,7 +78,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/css-mediaquery", "npm:0.1.0"],
             ["@types/faker", "npm:5.1.6"],
             ["@types/isomorphic-fetch", "npm:0.0.35"],
-            ["@types/jest", "npm:26.0.20"],
+            ["@types/jest", "npm:27.0.2"],
             ["@types/lodash", "npm:4.14.168"],
             ["@types/luxon", "npm:1.26.2"],
             ["@types/mui-datatables", "npm:3.7.1"],
@@ -14656,12 +14656,12 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           ],
           "linkType": "HARD",
         }],
-        ["npm:26.0.20", {
-          "packageLocation": "./.yarn/cache/@types-jest-npm-26.0.20-e4c9c054bf-db7730d2d7.zip/node_modules/@types/jest/",
+        ["npm:27.0.2", {
+          "packageLocation": "./.yarn/cache/@types-jest-npm-27.0.2-f9ba43c7f9-814ad5f5d2.zip/node_modules/@types/jest/",
           "packageDependencies": [
-            ["@types/jest", "npm:26.0.20"],
-            ["jest-diff", "npm:26.6.2"],
-            ["pretty-format", "npm:26.6.2"]
+            ["@types/jest", "npm:27.0.2"],
+            ["jest-diff", "npm:27.3.1"],
+            ["pretty-format", "npm:27.3.1"]
           ],
           "linkType": "HARD",
         }]
@@ -21007,6 +21007,13 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["diff-sequences", "npm:26.6.2"]
           ],
           "linkType": "HARD",
+        }],
+        ["npm:27.0.6", {
+          "packageLocation": "./.yarn/cache/diff-sequences-npm-27.0.6-1eed05107b-f35ad024d4.zip/node_modules/diff-sequences/",
+          "packageDependencies": [
+            ["diff-sequences", "npm:27.0.6"]
+          ],
+          "linkType": "HARD",
         }]
       ]],
       ["diffie-hellman", [
@@ -26785,6 +26792,17 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["pretty-format", "npm:26.6.2"]
           ],
           "linkType": "HARD",
+        }],
+        ["npm:27.3.1", {
+          "packageLocation": "./.yarn/cache/jest-diff-npm-27.3.1-c347dd1e5a-49231a4ac4.zip/node_modules/jest-diff/",
+          "packageDependencies": [
+            ["jest-diff", "npm:27.3.1"],
+            ["chalk", "npm:4.1.0"],
+            ["diff-sequences", "npm:27.0.6"],
+            ["jest-get-type", "npm:27.3.1"],
+            ["pretty-format", "npm:27.3.1"]
+          ],
+          "linkType": "HARD",
         }]
       ]],
       ["jest-docblock", [
@@ -26867,6 +26885,13 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/jest-get-type-npm-26.3.0-a481f14d96-1cc6465ae4.zip/node_modules/jest-get-type/",
           "packageDependencies": [
             ["jest-get-type", "npm:26.3.0"]
+          ],
+          "linkType": "HARD",
+        }],
+        ["npm:27.3.1", {
+          "packageLocation": "./.yarn/cache/jest-get-type-npm-27.3.1-fdb27a0157-b0b8db1d77.zip/node_modules/jest-get-type/",
+          "packageDependencies": [
+            ["jest-get-type", "npm:27.3.1"]
           ],
           "linkType": "HARD",
         }]
@@ -29251,7 +29276,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/css-mediaquery", "npm:0.1.0"],
             ["@types/faker", "npm:5.1.6"],
             ["@types/isomorphic-fetch", "npm:0.0.35"],
-            ["@types/jest", "npm:26.0.20"],
+            ["@types/jest", "npm:27.0.2"],
             ["@types/lodash", "npm:4.14.168"],
             ["@types/luxon", "npm:1.26.2"],
             ["@types/mui-datatables", "npm:3.7.1"],
