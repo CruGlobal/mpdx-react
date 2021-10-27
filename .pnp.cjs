@@ -73,7 +73,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@testing-library/jest-dom", "npm:5.11.9"],
             ["@testing-library/react", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:12.1.2"],
             ["@testing-library/react-hooks", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:7.0.2"],
-            ["@testing-library/user-event", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:12.7.0"],
+            ["@testing-library/user-event", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:13.5.0"],
             ["@types/axios", "npm:0.14.0"],
             ["@types/css-mediaquery", "npm:0.1.0"],
             ["@types/faker", "npm:5.1.6"],
@@ -14226,17 +14226,17 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]
       ]],
       ["@testing-library/user-event", [
-        ["npm:12.7.0", {
-          "packageLocation": "./.yarn/cache/@testing-library-user-event-npm-12.7.0-05095aa125-e03bc41ca2.zip/node_modules/@testing-library/user-event/",
+        ["npm:13.5.0", {
+          "packageLocation": "./.yarn/cache/@testing-library-user-event-npm-13.5.0-1ff89b703a-16319de685.zip/node_modules/@testing-library/user-event/",
           "packageDependencies": [
-            ["@testing-library/user-event", "npm:12.7.0"]
+            ["@testing-library/user-event", "npm:13.5.0"]
           ],
           "linkType": "SOFT",
         }],
-        ["virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:12.7.0", {
-          "packageLocation": "./.yarn/__virtual__/@testing-library-user-event-virtual-ef4d505202/0/cache/@testing-library-user-event-npm-12.7.0-05095aa125-e03bc41ca2.zip/node_modules/@testing-library/user-event/",
+        ["virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:13.5.0", {
+          "packageLocation": "./.yarn/__virtual__/@testing-library-user-event-virtual-46aee72819/0/cache/@testing-library-user-event-npm-13.5.0-1ff89b703a-16319de685.zip/node_modules/@testing-library/user-event/",
           "packageDependencies": [
-            ["@testing-library/user-event", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:12.7.0"],
+            ["@testing-library/user-event", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:13.5.0"],
             ["@babel/runtime", "npm:7.12.5"],
             ["@testing-library/dom", "npm:8.10.1"],
             ["@types/testing-library__dom", null]
@@ -29246,7 +29246,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@testing-library/jest-dom", "npm:5.11.9"],
             ["@testing-library/react", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:12.1.2"],
             ["@testing-library/react-hooks", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:7.0.2"],
-            ["@testing-library/user-event", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:12.7.0"],
+            ["@testing-library/user-event", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:13.5.0"],
             ["@types/axios", "npm:0.14.0"],
             ["@types/css-mediaquery", "npm:0.1.0"],
             ["@types/faker", "npm:5.1.6"],
