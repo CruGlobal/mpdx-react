@@ -6,7 +6,6 @@ import { Box, Card, CardContent, Hidden, styled } from '@material-ui/core';
 import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
 import FormatListBulleted from '@material-ui/icons/FormatListBulleted';
 import ViewColumn from '@material-ui/icons/ViewColumn';
-import { ContactFilters } from '../../../../src/components/Contacts/ContactFilters/ContactFilters';
 import { InfiniteList } from '../../../../src/components/InfiniteList/InfiniteList';
 import { ContactDetails } from '../../../../src/components/Contacts/ContactDetails/ContactDetails';
 import Loading from '../../../../src/components/Loading';
@@ -19,6 +18,7 @@ import {
   ListHeaderCheckBoxState,
   TableViewModeEnum,
 } from '../../../../src/components/Shared/Header/ListHeader';
+import { FilterPanel } from '../../../../src/components/Shared/Filters/FilterPanel';
 import { useContactsQuery } from './Contacts.generated';
 
 const WhiteBackground = styled(Box)(({ theme }) => ({
@@ -156,7 +156,8 @@ const ContactsPage: React.FC = () => {
         <WhiteBackground>
           <SidePanelsLayout
             leftPanel={
-              <ContactFilters
+              <FilterPanel
+                page="contact"
                 accountListId={accountListId}
                 onClose={toggleFilterPanel}
                 onSelectedFiltersChanged={setActiveFilters}

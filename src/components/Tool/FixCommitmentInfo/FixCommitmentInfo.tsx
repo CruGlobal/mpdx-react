@@ -17,6 +17,7 @@ import {
 } from '../../../../graphql/types.generated';
 import theme from '../../../theme';
 import NoData from '../NoData';
+import { useFiltersQuery } from '../../Shared/Filters/FilterPanel.generated';
 import {
   GetInvalidStatusesDocument,
   GetInvalidStatusesQuery,
@@ -27,7 +28,6 @@ import { contactTags } from './InputOptions/ContactTags';
 import { frequencies } from './InputOptions/Frequencies';
 import { useUpdateInvalidStatusMutation } from './UpdateInvalidStatus.generated';
 import client from 'src/lib/client';
-import { useContactFiltersQuery } from 'src/components/Contacts/ContactFilters/ContactFilters.generated';
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
@@ -77,7 +77,7 @@ const FixCommitmentInfo: React.FC<Props> = ({ accountListId }: Props) => {
   const {
     data: contactFilterGroups,
     loading: loadingStatuses,
-  } = useContactFiltersQuery({
+  } = useFiltersQuery({
     variables: {
       accountListId,
     },

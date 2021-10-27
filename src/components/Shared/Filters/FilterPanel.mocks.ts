@@ -40,31 +40,45 @@ const mockTextilter: TextFilter = {
   options: [],
 };
 
-export const ContactFiltersDefaultMock = {
+export const FiltersDefaultMock = {
   accountList: {
-    contactFilterGroups: [
+    taskFilterGroups: [
       {
-        name: 'Group 1',
+        name: 'Group 1 | Tasks',
         filters: [mockTextilter, mockMultiselectFilterNonFeatured],
       },
       {
-        name: 'Group 2',
+        name: 'Group 2 | Tasks',
+        filters: [mockMultiselectFilterFeatured, mockDateRangeFilter],
+      },
+    ],
+    contactFilterGroups: [
+      {
+        name: 'Group 1 | Contacts',
+        filters: [mockTextilter, mockMultiselectFilterNonFeatured],
+      },
+      {
+        name: 'Group 2 | Contacts',
         filters: [mockMultiselectFilterFeatured, mockDateRangeFilter],
       },
     ],
   },
 };
 
-export const ContactFiltersEmptyMock = {
+export const FiltersEmptyMock = {
   accountList: {
+    taskFilterGroups: [],
     contactFilterGroups: [],
   },
 };
 
-export const ContactFiltersErrorMock = {
+export const FiltersErrorMock = {
   accountList: {
+    taskFilterGroups: new GraphQLError(
+      'GraphQL Error #42: Error loading Tasks Filters',
+    ),
     contactFilterGroups: new GraphQLError(
-      'GraphQL Error #42: Error loading Filters',
+      'GraphQL Error #42: Error loading Contacts Filters',
     ),
   },
 };

@@ -24,6 +24,7 @@ import {
   ListHeaderCheckBoxState,
 } from '../../../../src/components/Shared/Header/ListHeader';
 import useTaskDrawer from '../../../../src/hooks/useTaskDrawer';
+import { FilterPanel } from '../../../../src/components/Shared/Filters/FilterPanel';
 import { useTasksQuery } from './Tasks.generated';
 
 const WhiteBackground = styled(Box)(({ theme }) => ({
@@ -151,7 +152,14 @@ const TasksPage: React.FC = () => {
       {accountListId ? (
         <WhiteBackground>
           <SidePanelsLayout
-            leftPanel={<>TODO: implement task filters</>}
+            leftPanel={
+              <FilterPanel
+                page="task"
+                accountListId={accountListId}
+                onClose={toggleFilterPanel}
+                onSelectedFiltersChanged={setActiveFilters}
+              />
+            }
             leftOpen={filterPanelOpen}
             leftWidth="290px"
             mainContent={
