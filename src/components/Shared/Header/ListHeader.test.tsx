@@ -299,4 +299,27 @@ describe('ListHeader', () => {
 
     expect(toggleStarredFilter).toHaveBeenCalledWith({ starred: true });
   });
+
+  it('reset the star filter', async () => {
+    const { getByTestId } = render(
+      <ThemeProvider theme={theme}>
+        <ListHeader
+          page="contact"
+          activeFilters={true}
+          headerCheckboxState={ListHeaderCheckBoxState.unchecked}
+          starredFilter={{ starred: true }}
+          toggleStarredFilter={toggleStarredFilter}
+          filterPanelOpen={false}
+          toggleFilterPanel={toggleFilterPanel}
+          onCheckAllItems={onCheckAllItems}
+          onSearchTermChanged={onSearchTermChanged}
+        />
+      </ThemeProvider>,
+    );
+    const starFilterButton = getByTestId('star-filter-button');
+
+    userEvent.click(starFilterButton);
+
+    expect(toggleStarredFilter).toHaveBeenCalledWith({});
+  });
 });
