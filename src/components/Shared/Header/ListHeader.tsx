@@ -173,6 +173,7 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
       <Hidden smDown>
         <StarIconWrap>
           <IconButton
+            data-testid="star-filter-button"
             onClick={() =>
               toggleStarredFilter(
                 starredFilter.starred ? {} : { starred: true },

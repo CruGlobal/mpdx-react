@@ -276,4 +276,27 @@ describe('ListHeader', () => {
 
     expect(onSearchTermChanged).toHaveBeenCalledWith(searchText);
   });
+
+  it('press star filter button and set to true', async () => {
+    const { getByTestId } = render(
+      <ThemeProvider theme={theme}>
+        <ListHeader
+          page="contact"
+          activeFilters={true}
+          headerCheckboxState={ListHeaderCheckBoxState.unchecked}
+          starredFilter={{}}
+          toggleStarredFilter={toggleStarredFilter}
+          filterPanelOpen={false}
+          toggleFilterPanel={toggleFilterPanel}
+          onCheckAllItems={onCheckAllItems}
+          onSearchTermChanged={onSearchTermChanged}
+        />
+      </ThemeProvider>,
+    );
+    const starFilterButton = getByTestId('star-filter-button');
+
+    userEvent.click(starFilterButton);
+
+    expect(toggleStarredFilter).toHaveBeenCalledWith({ starred: true });
+  });
 });
