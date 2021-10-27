@@ -89,16 +89,20 @@ const TasksPage: React.FC = () => {
   };
 
   const setContactFocus = (id?: string) => {
-    const { contactId: _, ...queryWithoutContactId } = query;
+    const {
+      accountListId: _accountListId,
+      contactId: _contactId,
+      ...filteredQuery
+    } = query;
     push(
       id
         ? {
-            pathname: '/accountLists/[accountListId]/tasks/[contactId]',
-            query: { ...queryWithoutContactId, contactId: id },
+            pathname: `/accountLists/${accountListId}/tasks/${id}`,
+            query: filteredQuery,
           }
         : {
-            pathname: '/accountLists/[accountListId]/tasks/',
-            query: queryWithoutContactId,
+            pathname: `/accountLists/${accountListId}/tasks/`,
+            query: filteredQuery,
           },
     );
     id && setContactDetailsId(id);
