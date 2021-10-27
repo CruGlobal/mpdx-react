@@ -159,7 +159,6 @@ const ContactsPage: React.FC = () => {
       </Head>
       {accountListId ? (
         <WhiteBackground>
-          {console.log(activeFilters)}
           <SidePanelsLayout
             leftPanel={
               <ContactFilters
