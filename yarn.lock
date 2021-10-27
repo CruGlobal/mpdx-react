@@ -7227,22 +7227,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@testing-library/dom@npm:^7.29.4":
-  version: 7.29.4
-  resolution: "@testing-library/dom@npm:7.29.4"
-  dependencies:
-    "@babel/code-frame": ^7.10.4
-    "@babel/runtime": ^7.12.5
-    "@types/aria-query": ^4.2.0
-    aria-query: ^4.2.2
-    chalk: ^4.1.0
-    dom-accessibility-api: ^0.5.4
-    lz-string: ^1.4.4
-    pretty-format: ^26.6.2
-  checksum: 205d125e1e8d5f711f2592f2f3d25994f481641f6bad17724f8e077431042c3204ae585a8c7df483d84ea8562e75229bf915cb6090a4657c5897fbd3f742a3b9
-  languageName: node
-  linkType: hard
-
 "@testing-library/dom@npm:^8.0.0":
   version: 8.10.1
   resolution: "@testing-library/dom@npm:8.10.1"
@@ -12970,13 +12954,6 @@ __metadata:
   dependencies:
     esutils: ^2.0.2
   checksum: fd7673ca77fe26cd5cba38d816bc72d641f500f1f9b25b83e8ce28827fe2da7ad583a8da26ab6af85f834138cf8dae9f69b0cd6ab925f52ddab1754db44d99ce
-  languageName: node
-  linkType: hard
-
-"dom-accessibility-api@npm:^0.5.4":
-  version: 0.5.4
-  resolution: "dom-accessibility-api@npm:0.5.4"
-  checksum: 1fb22b351984564212b41bd7265ad1288322ad72e7367753f589facaeb98c2e3515502396acf2463f71dbaa1e238d6e006ec144a6217f1cd42e962b9bebd2dee
   languageName: node
   linkType: hard
 
@@ -19981,7 +19958,7 @@ fsevents@~2.3.2:
     "@storybook/addon-controls": ^6.3.11
     "@storybook/addon-viewport": ^6.3.11
     "@storybook/react": ^6.3.11
-    "@testing-library/dom": ^7.29.4
+    "@testing-library/dom": ^8.0.0
     "@testing-library/jest-dom": ^5.11.9
     "@testing-library/react": 12.1.2
     "@testing-library/react-hooks": ^5.1.0
