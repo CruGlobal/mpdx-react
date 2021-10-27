@@ -7275,15 +7275,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@testing-library/react-hooks@npm:^5.1.0":
-  version: 5.1.0
-  resolution: "@testing-library/react-hooks@npm:5.1.0"
+"@testing-library/react-hooks@npm:^7.0.0":
+  version: 7.0.2
+  resolution: "@testing-library/react-hooks@npm:7.0.2"
   dependencies:
     "@babel/runtime": ^7.12.5
     "@types/react": ">=16.9.0"
     "@types/react-dom": ">=16.9.0"
     "@types/react-test-renderer": ">=16.9.0"
-    filter-console: ^0.1.1
     react-error-boundary: ^3.1.0
   peerDependencies:
     react: ">=16.9.0"
@@ -7294,7 +7293,7 @@ __metadata:
       optional: true
     react-test-renderer:
       optional: true
-  checksum: 40e081c4d2b16b4cbf3eef72096dc97b01611a2623a24a0ff25053e30e98e1781a4d32552de8e1474c9f939e6ca84563aa5e581b127b741292e087ce48bd9031
+  checksum: 27c6169b5c9832bd02dcea232e6a0a3cd8d4504e13ecb49d57eb5ab6bea5e2f1bff65f3102068b7e57eec3cbd671326dc0b277335014b0edfbdedf11a1fe6db5
   languageName: node
   linkType: hard
 
@@ -14505,13 +14504,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"filter-console@npm:^0.1.1":
-  version: 0.1.1
-  resolution: "filter-console@npm:0.1.1"
-  checksum: 020a6aee2b0b7f0e7fdff76b2b86429a7cfc0fd2bae131a8d0d6eaddad05ffbeac16e3267f382a2beaead9568d6b90f2aba923daeb8dd0c97720d8eba885ede2
-  languageName: node
-  linkType: hard
-
 "filter-obj@npm:^1.1.0":
   version: 1.1.0
   resolution: "filter-obj@npm:1.1.0"
@@ -19984,7 +19976,7 @@ fsevents@~2.3.2:
     "@testing-library/dom": ^7.29.4
     "@testing-library/jest-dom": ^5.11.9
     "@testing-library/react": 12.1.2
-    "@testing-library/react-hooks": ^5.1.0
+    "@testing-library/react-hooks": ^7.0.0
     "@testing-library/user-event": ^12.7.0
     "@types/axios": ^0.14.0
     "@types/css-mediaquery": ^0.1.0
