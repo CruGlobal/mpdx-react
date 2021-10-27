@@ -11,6 +11,10 @@ import FilterList from '@material-ui/icons/FilterList';
 import { useTranslation } from 'react-i18next';
 import { SearchBox } from '../../common/SearchBox/SearchBox';
 import { StarredItemIcon } from '../../common/StarredItemIcon/StarredItemIcon';
+import {
+  ContactFilterSetInput,
+  TaskFilterSetInput,
+} from '../../../../graphql/types.generated';
 
 const HeaderWrap = styled(Box)(({ theme }) => ({
   height: 96,
@@ -97,6 +101,10 @@ interface ListHeaderProps {
   onSearchTermChanged: (searchTerm: string) => void;
   totalItems?: number;
   buttonGroup?: ReactElement;
+  starredFilter: ContactFilterSetInput | TaskFilterSetInput;
+  toggleStarredFilter: (
+    filter: ContactFilterSetInput | TaskFilterSetInput,
+  ) => void;
 }
 
 export const ListHeader: React.FC<ListHeaderProps> = ({
@@ -109,6 +117,8 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
   onSearchTermChanged,
   totalItems,
   buttonGroup,
+  starredFilter,
+  toggleStarredFilter,
 }) => {
   const { t } = useTranslation();
 
@@ -162,8 +172,15 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
 
       <Hidden smDown>
         <StarIconWrap>
-          {/* TODO connect to filter to only show starred items */}
-          <StarredItemIcon isStarred={false} />
+          <IconButton
+            onClick={() =>
+              toggleStarredFilter(
+                starredFilter.starred ? {} : { starred: true },
+              )
+            }
+          >
+            <StarredItemIcon isStarred={starredFilter.starred || false} />
+          </IconButton>
         </StarIconWrap>
       </Hidden>
     </HeaderWrap>

@@ -57,8 +57,6 @@ const TasksPage: React.FC = () => {
 
   const { contactId, searchTerm } = query;
 
-  const { openTaskDrawer } = useTaskDrawer();
-
   if (contactId !== undefined && !Array.isArray(contactId)) {
     throw new Error('contactId should be an array or undefined');
   }
@@ -170,6 +168,8 @@ const TasksPage: React.FC = () => {
                   onCheckAllItems={handleCheckAllTasks}
                   onSearchTermChanged={setSearchTerm}
                   totalItems={data?.tasks.totalCount}
+                  starredFilter={starredFilter}
+                  toggleStarredFilter={setStarredFilter}
                   headerCheckboxState={
                     hasSelectedSomeTasks
                       ? ListHeaderCheckBoxState.partial

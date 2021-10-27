@@ -61,10 +61,6 @@ const ContactsPage: React.FC = () => {
   const [activeFilters, setActiveFilters] = useState<ContactFilterSetInput>({});
   const [starredFilter, setStarredFilter] = useState<ContactFilterSetInput>({});
   const [selectedContacts, setSelectedContacts] = useState<Array<string>>([]);
-  const [
-    contactsTableDisplayState,
-    setContactsTableDisplayState,
-  ] = useState<TableViewModeEnum>('LIST');
 
   const { data, loading, fetchMore } = useContactsQuery({
     variables: {
@@ -184,6 +180,8 @@ const ContactsPage: React.FC = () => {
                   onCheckAllItems={handleCheckAllContacts}
                   onSearchTermChanged={setSearchTerm}
                   totalItems={data?.contacts.totalCount}
+                  starredFilter={starredFilter}
+                  toggleStarredFilter={setStarredFilter}
                   headerCheckboxState={
                     isSelectedSomeContacts
                       ? ListHeaderCheckBoxState.partial
