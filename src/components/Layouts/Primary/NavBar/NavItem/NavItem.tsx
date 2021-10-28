@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import type { FC, ReactNode } from 'react';
-import NextLink from 'next/link';
+import NextLink, { LinkProps } from 'next/link';
 import {
   Button,
   Collapse,
@@ -15,8 +15,7 @@ interface NavItemProps {
   children?: ReactNode;
   className?: string;
   depth?: number;
-  href?: string;
-  as?: string;
+  href?: LinkProps['href'];
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   icon?: any;
   open?: boolean;
@@ -74,7 +73,6 @@ export const NavItem: FC<NavItemProps> = ({
   children,
   depth = 0,
   href = '',
-  as,
   icon: Icon,
   open: openProp,
   title,
@@ -127,7 +125,7 @@ export const NavItem: FC<NavItemProps> = ({
 
   return (
     <LeafListItem button disableGutters key={title} {...rest}>
-      <NextLink href={href} as={as}>
+      <NextLink href={href}>
         <LeafButton style={style}>
           {Icon && <Icon style={iconStyle} size="20" />}
           <Title>{title}</Title>

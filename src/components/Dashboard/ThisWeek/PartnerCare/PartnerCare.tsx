@@ -292,8 +292,7 @@ const PartnerCare = ({
                   </CardList>
                   <CardActions>
                     <Link
-                      href="/accountLists/[accountListId]/tasks"
-                      as={`/accountLists/${accountListId}/tasks?activityType=PRAYER_REQUEST&completed=false`}
+                      href={`/accountLists/${accountListId}/tasks?activityType=PRAYER_REQUEST&completed=false`}
                       passHref
                     >
                       <Button size="small" color="primary">

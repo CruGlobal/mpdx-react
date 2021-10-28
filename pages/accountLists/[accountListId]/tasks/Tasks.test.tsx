@@ -6,6 +6,7 @@ import { ItemContent } from 'react-virtuoso';
 import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
 import TestRouter from '../../../../__tests__/util/TestRouter';
 import theme from '../../../../src/theme';
+import useTaskDrawer from '../../../../src/hooks/useTaskDrawer';
 import Tasks from './[[...contactId]].page';
 import { TasksQuery } from './Tasks.generated';
 
@@ -21,6 +22,16 @@ const task = {
   subject: 'Test Subject',
   contacts: { nodes: [{ id: '2', name: 'Test Person' }] },
 };
+
+jest.mock('../../../../src/hooks/useTaskDrawer');
+
+const openTaskDrawer = jest.fn();
+
+beforeEach(() => {
+  (useTaskDrawer as jest.Mock).mockReturnValue({
+    openTaskDrawer,
+  });
+});
 
 jest.mock('react-virtuoso', () => ({
   // eslint-disable-next-line react/display-name
@@ -87,4 +98,29 @@ it('should render contact detail panel', async () => {
   const detailsTabList = (await findAllByRole('tablist'))[0];
 
   expect(detailsTabList).toBeInTheDocument();
+});
+
+it('should open add task panel', async () => {
+  const { getByText } = render(
+    <ThemeProvider theme={theme}>
+      <TestRouter router={router}>
+        <GqlMockedProvider<TasksQuery>
+          mocks={{
+            Tasks: {
+              tasks: {
+                nodes: [task],
+                pageInfo: { endCursor: 'Mg', hasNextPage: false },
+              },
+            },
+          }}
+        >
+          <Tasks />
+        </GqlMockedProvider>
+      </TestRouter>
+    </ThemeProvider>,
+  );
+  await waitFor(() => expect(getByText('Test Person')).toBeInTheDocument());
+  await waitFor(() => expect(getByText('Test Subject')).toBeInTheDocument());
+  await waitFor(() => userEvent.click(getByText('Add Task')));
+  await waitFor(() => expect(openTaskDrawer).toHaveBeenCalled());
 });
