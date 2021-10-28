@@ -1,93 +1,44 @@
-query Filters($accountListId: ID!) {
-  accountList(id: $accountListId) {
-    taskFilterGroups {
-      name
-      filters {
-        __typename
-        featured
-        filterKey
-        title
-        ... on DaterangeFilter {
-          options {
-            name
-            rangeEnd
-            rangeStart
-          }
-        }
-        ... on MultiselectFilter {
-          defaultSelection
-          options {
-            name
-            placeholder
-            value
-          }
-        }
-        ... on NumericRangeFilter {
-          min
-          minLabel
-          maxLabel
-          title
-        }
-        ... on RadioFilter {
-          defaultSelection
-          options {
-            name
-            placeholder
-            value
-          }
-        }
-        ... on TextFilter {
-          options {
-            name
-            placeholder
-            value
-          }
-        }
+fragment FilterPanelGroup on FilterGroup {
+  name
+  filters {
+    __typename
+    featured
+    filterKey
+    title
+    ... on DaterangeFilter {
+      options {
+        name
+        rangeEnd
+        rangeStart
       }
     }
-    contactFilterGroups {
-      name
-      filters {
-        __typename
-        featured
-        filterKey
-        title
-        ... on DaterangeFilter {
-          options {
-            name
-            rangeEnd
-            rangeStart
-          }
-        }
-        ... on MultiselectFilter {
-          defaultSelection
-          options {
-            name
-            placeholder
-            value
-          }
-        }
-        ... on NumericRangeFilter {
-          min
-          minLabel
-          maxLabel
-          title
-        }
-        ... on RadioFilter {
-          defaultSelection
-          options {
-            name
-            placeholder
-            value
-          }
-        }
-        ... on TextFilter {
-          options {
-            name
-            placeholder
-            value
-          }
-        }
+    ... on MultiselectFilter {
+      defaultSelection
+      options {
+        name
+        placeholder
+        value
+      }
+    }
+    ... on NumericRangeFilter {
+      min
+      minLabel
+      maxLabel
+      title
+    }
+    ... on RadioFilter {
+      defaultSelection
+      options {
+        name
+        placeholder
+        value
+      }
+    }
+    ... on TextFilter {
+      options {
+        name
+        placeholder
+        value
       }
     }
   }

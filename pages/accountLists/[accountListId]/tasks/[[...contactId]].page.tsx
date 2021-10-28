@@ -25,7 +25,7 @@ import {
 } from '../../../../src/components/Shared/Header/ListHeader';
 import useTaskDrawer from '../../../../src/hooks/useTaskDrawer';
 import { FilterPanel } from '../../../../src/components/Shared/Filters/FilterPanel';
-import { useTasksQuery } from './Tasks.generated';
+import { useTaskFiltersQuery, useTasksQuery } from './Tasks.generated';
 
 const WhiteBackground = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.common.white,
@@ -82,6 +82,11 @@ const TasksPage: React.FC = () => {
       accountListId: accountListId ?? '',
       tasksFilter: { ...activeFilters, wildcardSearch: searchTerm?.[0] },
     },
+    skip: !accountListId,
+  });
+
+  const { data: filterData, loading: filtersLoading } = useTaskFiltersQuery({
+    variables: { accountListId: accountListId ?? '' },
     skip: !accountListId,
   });
 
@@ -153,12 +158,15 @@ const TasksPage: React.FC = () => {
         <WhiteBackground>
           <SidePanelsLayout
             leftPanel={
-              <FilterPanel
-                page="task"
-                accountListId={accountListId}
-                onClose={toggleFilterPanel}
-                onSelectedFiltersChanged={setActiveFilters}
-              />
+              filterData && !filtersLoading ? (
+                <FilterPanel
+                  filters={filterData?.accountList.taskFilterGroups}
+                  onClose={toggleFilterPanel}
+                  onSelectedFiltersChanged={setActiveFilters}
+                />
+              ) : (
+                <></>
+              )
             }
             leftOpen={filterPanelOpen}
             leftWidth="290px"

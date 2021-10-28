@@ -19,7 +19,7 @@ import {
   TableViewModeEnum,
 } from '../../../../src/components/Shared/Header/ListHeader';
 import { FilterPanel } from '../../../../src/components/Shared/Filters/FilterPanel';
-import { useContactsQuery } from './Contacts.generated';
+import { useContactFiltersQuery, useContactsQuery } from './Contacts.generated';
 
 const WhiteBackground = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.common.white,
@@ -66,6 +66,11 @@ const ContactsPage: React.FC = () => {
       accountListId: accountListId ?? '',
       contactsFilters: { ...activeFilters, wildcardSearch: searchTerm?.[0] },
     },
+    skip: !accountListId,
+  });
+
+  const { data: filterData, loading: filtersLoading } = useContactFiltersQuery({
+    variables: { accountListId: accountListId ?? '' },
     skip: !accountListId,
   });
 
@@ -156,12 +161,15 @@ const ContactsPage: React.FC = () => {
         <WhiteBackground>
           <SidePanelsLayout
             leftPanel={
-              <FilterPanel
-                page="contact"
-                accountListId={accountListId}
-                onClose={toggleFilterPanel}
-                onSelectedFiltersChanged={setActiveFilters}
-              />
+              filterData && !filtersLoading ? (
+                <FilterPanel
+                  filters={filterData?.accountList.contactFilterGroups}
+                  onClose={toggleFilterPanel}
+                  onSelectedFiltersChanged={setActiveFilters}
+                />
+              ) : (
+                <></>
+              )
             }
             leftOpen={filterPanelOpen}
             leftWidth="290px"

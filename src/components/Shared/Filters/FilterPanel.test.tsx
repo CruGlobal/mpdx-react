@@ -3,18 +3,41 @@ import { render, waitFor } from '@testing-library/react';
 import LuxonUtils from '@date-io/luxon';
 import userEvent from '@testing-library/user-event';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
-import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
+import { gqlMock } from '../../../../__tests__/util/graphqlMocking';
+import { MultiselectFilter } from '../../../../graphql/types.generated';
 import {
-  FiltersDefaultMock,
-  FiltersEmptyMock,
-  FiltersErrorMock,
+  mockDateRangeFilter,
+  mockMultiselectFilterFeatured,
+  mockMultiselectFilterNonFeatured,
+  mockTextilter,
 } from './FilterPanel.mocks';
 import { FilterPanel } from './FilterPanel';
-import { FiltersQuery } from './FilterPanel.generated';
+import {
+  FilterPanelGroupFragment,
+  FilterPanelGroupFragmentDoc,
+} from './FilterPanel.generated';
 
-const accountListId = '111';
 const onSelectedFiltersChanged = jest.fn();
 const onClose = jest.fn();
+
+const filterPanelDefaultMock = gqlMock<FilterPanelGroupFragment>(
+  FilterPanelGroupFragmentDoc,
+  {
+    mocks: {
+      name: 'Group 1',
+      filters: [mockTextilter, mockMultiselectFilterNonFeatured],
+    },
+  },
+);
+const filterPanelFeaturedMock = gqlMock<FilterPanelGroupFragment>(
+  FilterPanelGroupFragmentDoc,
+  {
+    mocks: {
+      name: 'Group 2',
+      filters: [mockMultiselectFilterFeatured, mockDateRangeFilter],
+    },
+  },
+);
 
 describe('FilterPanel', () => {
   describe('Contacts', () => {
@@ -25,16 +48,11 @@ describe('FilterPanel', () => {
         queryByTestId,
         queryAllByTestId,
       } = render(
-        <GqlMockedProvider<FiltersQuery>
-          mocks={{ Filters: FiltersDefaultMock }}
-        >
-          <FilterPanel
-            page="contact"
-            accountListId={accountListId}
-            onClose={onClose}
-            onSelectedFiltersChanged={onSelectedFiltersChanged}
-          />
-        </GqlMockedProvider>,
+        <FilterPanel
+          filters={[filterPanelDefaultMock, filterPanelFeaturedMock]}
+          onClose={onClose}
+          onSelectedFiltersChanged={onSelectedFiltersChanged}
+        />,
       );
 
       await waitFor(() => expect(queryByTestId('LoadingState')).toBeNull());
@@ -43,35 +61,23 @@ describe('FilterPanel', () => {
       expect(queryAllByTestId('FilterGroup').length).toEqual(2);
       expect(getByTestId('FilterListItemShowAll')).toBeVisible();
 
-      expect(
-        getByText(FiltersDefaultMock.accountList.contactFilterGroups[1].name),
-      ).toBeVisible();
+      expect(getByText(filterPanelFeaturedMock.name)).toBeVisible();
 
       expect(getByText('See More Filters')).toBeVisible();
 
       userEvent.click(getByTestId('FilterListItemShowAll'));
 
       expect(getByText('See Fewer Filters')).toBeVisible();
-      expect(
-        getByText(FiltersDefaultMock.accountList.contactFilterGroups[0].name),
-      ).toBeVisible();
-      expect(
-        getByText(FiltersDefaultMock.accountList.contactFilterGroups[1].name),
-      ).toBeVisible();
-
+      expect(getByText(filterPanelDefaultMock.name)).toBeVisible();
+      expect(getByText(filterPanelFeaturedMock.name)).toBeVisible();
       userEvent.click(getByTestId('FilterListItemShowAll'));
 
       expect(getByText('See More Filters')).toBeVisible();
 
       await waitFor(() =>
-        expect(
-          getByText(FiltersDefaultMock.accountList.contactFilterGroups[0].name),
-        ).not.toBeVisible(),
+        expect(getByText(filterPanelDefaultMock.name)).not.toBeVisible(),
       );
-
-      expect(
-        getByText(FiltersDefaultMock.accountList.contactFilterGroups[1].name),
-      ).toBeVisible();
+      expect(getByText(filterPanelFeaturedMock.name)).toBeVisible();
     });
 
     it('opens and selects a filter', async () => {
@@ -82,16 +88,11 @@ describe('FilterPanel', () => {
         queryAllByTestId,
       } = render(
         <MuiPickersUtilsProvider utils={LuxonUtils}>
-          <GqlMockedProvider<FiltersQuery>
-            mocks={{ Filters: FiltersDefaultMock }}
-          >
-            <FilterPanel
-              page="contact"
-              accountListId={accountListId}
-              onClose={onClose}
-              onSelectedFiltersChanged={onSelectedFiltersChanged}
-            />
-          </GqlMockedProvider>
+          <FilterPanel
+            filters={[filterPanelDefaultMock, filterPanelFeaturedMock]}
+            onClose={onClose}
+            onSelectedFiltersChanged={onSelectedFiltersChanged}
+          />
         </MuiPickersUtilsProvider>,
       );
 
@@ -102,27 +103,17 @@ describe('FilterPanel', () => {
       expect(queryAllByTestId('FilterGroup').length).toEqual(2);
       expect(getByTestId('FilterListItemShowAll')).toBeVisible();
       userEvent.click(getByTestId('FilterListItemShowAll'));
-      userEvent.click(
-        getByText(FiltersDefaultMock.accountList.contactFilterGroups[0].name),
-      );
-      expect(
-        getByText(
-          FiltersDefaultMock.accountList.contactFilterGroups[0].filters[0]
-            .title,
-        ),
-      ).toBeVisible();
-      expect(
-        getByText(
-          FiltersDefaultMock.accountList.contactFilterGroups[0].filters[1]
-            .title,
-        ),
-      ).toBeVisible();
+      userEvent.click(getByText(filterPanelDefaultMock.name));
+      expect(getByText(filterPanelDefaultMock.filters[0].title)).toBeVisible();
+      expect(getByText(filterPanelDefaultMock.filters[1].title)).toBeVisible();
+
       const option1 =
-        FiltersDefaultMock.accountList.contactFilterGroups[0].filters[1]
-          ?.options &&
+        (filterPanelDefaultMock.filters[1] as MultiselectFilter)?.options &&
         getByText(
-          FiltersDefaultMock.accountList.contactFilterGroups[0].filters[1]
-            .options[0].name,
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          (filterPanelDefaultMock.filters[1] as MultiselectFilter)?.options[0]
+            .name,
         );
       expect(option1).toBeVisible();
       userEvent.click(queryAllByTestId('CheckboxIcon')[0]);
@@ -132,19 +123,16 @@ describe('FilterPanel', () => {
       );
       expect(onSelectedFiltersChanged).toHaveBeenCalled();
 
-      expect(getByText('Group 1 | Contacts (1)')).toBeVisible();
+      expect(getByText('Group 1 (1)')).toBeVisible();
     });
 
     it('closes panel', async () => {
       const { queryByTestId, getByLabelText } = render(
-        <GqlMockedProvider<FiltersQuery> mocks={{ Filters: FiltersEmptyMock }}>
-          <FilterPanel
-            page="contact"
-            accountListId={accountListId}
-            onClose={onClose}
-            onSelectedFiltersChanged={onSelectedFiltersChanged}
-          />
-        </GqlMockedProvider>,
+        <FilterPanel
+          filters={[]}
+          onClose={onClose}
+          onSelectedFiltersChanged={onSelectedFiltersChanged}
+        />,
       );
 
       await waitFor(() => expect(queryByTestId('LoadingState')).toBeNull());
@@ -161,16 +149,11 @@ describe('FilterPanel', () => {
         queryAllByTestId,
       } = render(
         <MuiPickersUtilsProvider utils={LuxonUtils}>
-          <GqlMockedProvider<FiltersQuery>
-            mocks={{ Filters: FiltersDefaultMock }}
-          >
-            <FilterPanel
-              page="contact"
-              accountListId={accountListId}
-              onClose={onClose}
-              onSelectedFiltersChanged={onSelectedFiltersChanged}
-            />
-          </GqlMockedProvider>
+          <FilterPanel
+            filters={[filterPanelDefaultMock, filterPanelFeaturedMock]}
+            onClose={onClose}
+            onSelectedFiltersChanged={onSelectedFiltersChanged}
+          />
         </MuiPickersUtilsProvider>,
       );
 
@@ -181,9 +164,7 @@ describe('FilterPanel', () => {
       expect(queryAllByTestId('FilterGroup').length).toEqual(2);
       expect(getByTestId('FilterListItemShowAll')).toBeVisible();
       userEvent.click(getByTestId('FilterListItemShowAll'));
-      userEvent.click(
-        getByText(FiltersDefaultMock.accountList.contactFilterGroups[0].name),
-      );
+      userEvent.click(getByText(filterPanelDefaultMock.name));
 
       userEvent.click(queryAllByTestId('CheckboxIcon')[0]);
 
@@ -191,65 +172,25 @@ describe('FilterPanel', () => {
         userEvent.click(getByTestId('CloseFilterGroupButton')),
       );
 
-      expect(getByText('Group 1 | Contacts (1)')).toBeVisible();
+      expect(getByText('Group 1 (1)')).toBeVisible();
 
       userEvent.click(getByText('Clear All'));
-      expect(getByText('Group 1 | Contacts')).toBeVisible();
+      expect(getByText('Group 1')).toBeVisible();
       expect(getByText('Filter')).toBeVisible();
     });
 
     it('no filters', async () => {
       const { queryByTestId, queryAllByTestId } = render(
-        <GqlMockedProvider<FiltersQuery> mocks={{ Filters: FiltersEmptyMock }}>
-          <FilterPanel
-            page="contact"
-            accountListId={accountListId}
-            onClose={onClose}
-            onSelectedFiltersChanged={onSelectedFiltersChanged}
-          />
-        </GqlMockedProvider>,
+        <FilterPanel
+          filters={[]}
+          onClose={onClose}
+          onSelectedFiltersChanged={onSelectedFiltersChanged}
+        />,
       );
 
       await waitFor(() => expect(queryByTestId('LoadingState')).toBeNull());
       expect(queryByTestId('LoadingState')).toBeNull();
       //expect(queryByTestId('ErrorState')).toBeNull();
-      expect(queryAllByTestId('FilterGroup').length).toEqual(0);
-      expect(queryByTestId('FilterListItemShowAll')).toBeNull();
-    });
-
-    it('loading indicator', async () => {
-      const { getByTestId, queryByTestId, queryAllByTestId } = render(
-        <GqlMockedProvider<FiltersQuery>>
-          <FilterPanel
-            page="contact"
-            accountListId={accountListId}
-            onClose={onClose}
-            onSelectedFiltersChanged={onSelectedFiltersChanged}
-          />
-        </GqlMockedProvider>,
-      );
-
-      expect(getByTestId('LoadingState')).toBeVisible();
-      expect(queryByTestId('ErrorText')).toBeNull();
-      expect(queryAllByTestId('FilterGroup').length).toEqual(0);
-      expect(queryByTestId('FilterListItemShowAll')).toBeNull();
-    });
-
-    it('error loading filters', async () => {
-      const { getByTestId, queryByTestId, queryAllByTestId } = render(
-        <GqlMockedProvider<FiltersQuery> mocks={{ Filters: FiltersErrorMock }}>
-          <FilterPanel
-            page="contact"
-            accountListId={accountListId}
-            onClose={onClose}
-            onSelectedFiltersChanged={onSelectedFiltersChanged}
-          />
-        </GqlMockedProvider>,
-      );
-
-      await waitFor(() => expect(queryByTestId('LoadingState')).toBeNull());
-      expect(queryByTestId('LoadingState')).toBeNull();
-      expect(getByTestId('ErrorState')).toBeVisible();
       expect(queryAllByTestId('FilterGroup').length).toEqual(0);
       expect(queryByTestId('FilterListItemShowAll')).toBeNull();
     });
@@ -263,16 +204,11 @@ describe('FilterPanel', () => {
         queryByTestId,
         queryAllByTestId,
       } = render(
-        <GqlMockedProvider<FiltersQuery>
-          mocks={{ Filters: FiltersDefaultMock }}
-        >
-          <FilterPanel
-            page="task"
-            accountListId={accountListId}
-            onClose={onClose}
-            onSelectedFiltersChanged={onSelectedFiltersChanged}
-          />
-        </GqlMockedProvider>,
+        <FilterPanel
+          filters={[filterPanelDefaultMock, filterPanelFeaturedMock]}
+          onClose={onClose}
+          onSelectedFiltersChanged={onSelectedFiltersChanged}
+        />,
       );
 
       await waitFor(() => expect(queryByTestId('LoadingState')).toBeNull());
@@ -281,35 +217,25 @@ describe('FilterPanel', () => {
       expect(queryAllByTestId('FilterGroup').length).toEqual(2);
       expect(getByTestId('FilterListItemShowAll')).toBeVisible();
 
-      expect(
-        getByText(FiltersDefaultMock.accountList.taskFilterGroups[1].name),
-      ).toBeVisible();
+      expect(getByText(filterPanelFeaturedMock.name)).toBeVisible();
 
       expect(getByText('See More Filters')).toBeVisible();
 
       userEvent.click(getByTestId('FilterListItemShowAll'));
 
       expect(getByText('See Fewer Filters')).toBeVisible();
-      expect(
-        getByText(FiltersDefaultMock.accountList.taskFilterGroups[0].name),
-      ).toBeVisible();
-      expect(
-        getByText(FiltersDefaultMock.accountList.taskFilterGroups[1].name),
-      ).toBeVisible();
+      expect(getByText(filterPanelFeaturedMock.name)).toBeVisible();
+      expect(getByText(filterPanelDefaultMock.name)).toBeVisible();
 
       userEvent.click(getByTestId('FilterListItemShowAll'));
 
       expect(getByText('See More Filters')).toBeVisible();
 
       await waitFor(() =>
-        expect(
-          getByText(FiltersDefaultMock.accountList.taskFilterGroups[0].name),
-        ).not.toBeVisible(),
+        expect(getByText(filterPanelDefaultMock.name)).not.toBeVisible(),
       );
 
-      expect(
-        getByText(FiltersDefaultMock.accountList.taskFilterGroups[1].name),
-      ).toBeVisible();
+      expect(getByText(filterPanelFeaturedMock.name)).toBeVisible();
     });
 
     it('opens and selects a filter', async () => {
@@ -320,16 +246,11 @@ describe('FilterPanel', () => {
         queryAllByTestId,
       } = render(
         <MuiPickersUtilsProvider utils={LuxonUtils}>
-          <GqlMockedProvider<FiltersQuery>
-            mocks={{ Filters: FiltersDefaultMock }}
-          >
-            <FilterPanel
-              page="task"
-              accountListId={accountListId}
-              onClose={onClose}
-              onSelectedFiltersChanged={onSelectedFiltersChanged}
-            />
-          </GqlMockedProvider>
+          <FilterPanel
+            filters={[filterPanelDefaultMock, filterPanelFeaturedMock]}
+            onClose={onClose}
+            onSelectedFiltersChanged={onSelectedFiltersChanged}
+          />
         </MuiPickersUtilsProvider>,
       );
 
@@ -340,25 +261,16 @@ describe('FilterPanel', () => {
       expect(queryAllByTestId('FilterGroup').length).toEqual(2);
       expect(getByTestId('FilterListItemShowAll')).toBeVisible();
       userEvent.click(getByTestId('FilterListItemShowAll'));
-      userEvent.click(
-        getByText(FiltersDefaultMock.accountList.taskFilterGroups[0].name),
-      );
-      expect(
-        getByText(
-          FiltersDefaultMock.accountList.taskFilterGroups[0].filters[0].title,
-        ),
-      ).toBeVisible();
-      expect(
-        getByText(
-          FiltersDefaultMock.accountList.taskFilterGroups[0].filters[1].title,
-        ),
-      ).toBeVisible();
+      userEvent.click(getByText(filterPanelDefaultMock.name));
+      expect(getByText(filterPanelDefaultMock.filters[0].title)).toBeVisible();
+      expect(getByText(filterPanelDefaultMock.filters[1].title)).toBeVisible();
       const option1 =
-        FiltersDefaultMock.accountList.taskFilterGroups[0].filters[1]
-          ?.options &&
+        (filterPanelDefaultMock.filters[1] as MultiselectFilter)?.options &&
         getByText(
-          FiltersDefaultMock.accountList.taskFilterGroups[0].filters[1]
-            .options[0].name,
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          (filterPanelDefaultMock.filters[1] as MultiselectFilter).options[0]
+            .name,
         );
       expect(option1).toBeVisible();
       userEvent.click(queryAllByTestId('CheckboxIcon')[0]);
@@ -368,19 +280,16 @@ describe('FilterPanel', () => {
       );
 
       expect(onSelectedFiltersChanged).toHaveBeenCalled();
-      expect(getByText('Group 1 | Tasks (1)')).toBeVisible();
+      expect(getByText('Group 1 (1)')).toBeVisible();
     });
 
     it('closes panel', async () => {
       const { queryByTestId, getByLabelText } = render(
-        <GqlMockedProvider<FiltersQuery> mocks={{ Filters: FiltersEmptyMock }}>
-          <FilterPanel
-            page="contact"
-            accountListId={accountListId}
-            onClose={onClose}
-            onSelectedFiltersChanged={onSelectedFiltersChanged}
-          />
-        </GqlMockedProvider>,
+        <FilterPanel
+          filters={[]}
+          onClose={onClose}
+          onSelectedFiltersChanged={onSelectedFiltersChanged}
+        />,
       );
 
       await waitFor(() => expect(queryByTestId('LoadingState')).toBeNull());
@@ -397,16 +306,11 @@ describe('FilterPanel', () => {
         queryAllByTestId,
       } = render(
         <MuiPickersUtilsProvider utils={LuxonUtils}>
-          <GqlMockedProvider<FiltersQuery>
-            mocks={{ Filters: FiltersDefaultMock }}
-          >
-            <FilterPanel
-              page="task"
-              accountListId={accountListId}
-              onClose={onClose}
-              onSelectedFiltersChanged={onSelectedFiltersChanged}
-            />
-          </GqlMockedProvider>
+          <FilterPanel
+            filters={[filterPanelDefaultMock, filterPanelFeaturedMock]}
+            onClose={onClose}
+            onSelectedFiltersChanged={onSelectedFiltersChanged}
+          />
         </MuiPickersUtilsProvider>,
       );
 
@@ -417,9 +321,7 @@ describe('FilterPanel', () => {
       expect(queryAllByTestId('FilterGroup').length).toEqual(2);
       expect(getByTestId('FilterListItemShowAll')).toBeVisible();
       userEvent.click(getByTestId('FilterListItemShowAll'));
-      userEvent.click(
-        getByText(FiltersDefaultMock.accountList.taskFilterGroups[0].name),
-      );
+      userEvent.click(getByText(filterPanelDefaultMock.name));
 
       userEvent.click(queryAllByTestId('CheckboxIcon')[0]);
 
@@ -427,65 +329,24 @@ describe('FilterPanel', () => {
         userEvent.click(getByTestId('CloseFilterGroupButton')),
       );
 
-      expect(getByText('Group 1 | Tasks (1)')).toBeVisible();
+      expect(getByText('Group 1 (1)')).toBeVisible();
 
       userEvent.click(getByText('Clear All'));
-      expect(getByText('Group 1 | Tasks')).toBeVisible();
+      expect(getByText('Group 1')).toBeVisible();
       expect(getByText('Filter')).toBeVisible();
     });
 
     it('no filters', async () => {
       const { queryByTestId, queryAllByTestId } = render(
-        <GqlMockedProvider<FiltersQuery> mocks={{ Filters: FiltersEmptyMock }}>
-          <FilterPanel
-            page="task"
-            accountListId={accountListId}
-            onClose={onClose}
-            onSelectedFiltersChanged={onSelectedFiltersChanged}
-          />
-        </GqlMockedProvider>,
+        <FilterPanel
+          filters={[]}
+          onClose={onClose}
+          onSelectedFiltersChanged={onSelectedFiltersChanged}
+        />,
       );
 
       await waitFor(() => expect(queryByTestId('LoadingState')).toBeNull());
       expect(queryByTestId('LoadingState')).toBeNull();
-      //expect(queryByTestId('ErrorState')).toBeNull();
-      expect(queryAllByTestId('FilterGroup').length).toEqual(0);
-      expect(queryByTestId('FilterListItemShowAll')).toBeNull();
-    });
-
-    it('loading indicator', async () => {
-      const { getByTestId, queryByTestId, queryAllByTestId } = render(
-        <GqlMockedProvider<FiltersQuery>>
-          <FilterPanel
-            page="task"
-            accountListId={accountListId}
-            onClose={onClose}
-            onSelectedFiltersChanged={onSelectedFiltersChanged}
-          />
-        </GqlMockedProvider>,
-      );
-
-      expect(getByTestId('LoadingState')).toBeVisible();
-      expect(queryByTestId('ErrorText')).toBeNull();
-      expect(queryAllByTestId('FilterGroup').length).toEqual(0);
-      expect(queryByTestId('FilterListItemShowAll')).toBeNull();
-    });
-
-    it('error loading filters', async () => {
-      const { getByTestId, queryByTestId, queryAllByTestId } = render(
-        <GqlMockedProvider<FiltersQuery> mocks={{ Filters: FiltersErrorMock }}>
-          <FilterPanel
-            page="task"
-            accountListId={accountListId}
-            onClose={onClose}
-            onSelectedFiltersChanged={onSelectedFiltersChanged}
-          />
-        </GqlMockedProvider>,
-      );
-
-      await waitFor(() => expect(queryByTestId('LoadingState')).toBeNull());
-      expect(queryByTestId('LoadingState')).toBeNull();
-      expect(getByTestId('ErrorState')).toBeVisible();
       expect(queryAllByTestId('FilterGroup').length).toEqual(0);
       expect(queryByTestId('FilterListItemShowAll')).toBeNull();
     });

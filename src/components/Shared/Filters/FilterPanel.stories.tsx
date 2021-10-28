@@ -1,40 +1,46 @@
-import { MockedProvider } from '@apollo/client/testing';
 import { Box } from '@material-ui/core';
 import React, { ReactElement } from 'react';
-import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
+import { gqlMock } from '../../../../__tests__/util/graphqlMocking';
 import { FilterPanel } from './FilterPanel';
-import { FiltersDocument, FiltersQuery } from './FilterPanel.generated';
 import {
-  FiltersDefaultMock,
-  FiltersEmptyMock,
-  FiltersErrorMock,
+  FilterPanelGroupFragment,
+  FilterPanelGroupFragmentDoc,
+} from './FilterPanel.generated';
+import {
+  mockDateRangeFilter,
+  mockMultiselectFilterFeatured,
+  mockMultiselectFilterNonFeatured,
+  mockTextilter,
 } from './FilterPanel.mocks';
 
 export default {
   title: 'Shared/FilterPanel',
-  args: { width: 290, page: 'contact' },
-  argTypes: {
-    page: {
-      name: 'page',
-      options: ['task', 'contact'],
-      control: { type: 'select' },
-    },
-  },
+  args: { width: 290 },
 };
 
-const accountListId = '111';
+const filterPanelDefaultMock = gqlMock<FilterPanelGroupFragment>(
+  FilterPanelGroupFragmentDoc,
+  {
+    mocks: {
+      name: 'Group 1',
+      filters: [mockTextilter, mockMultiselectFilterNonFeatured],
+    },
+  },
+);
+const filterPanelFeaturedMock = gqlMock<FilterPanelGroupFragment>(
+  FilterPanelGroupFragmentDoc,
+  {
+    mocks: {
+      name: 'Group 2',
+      filters: [mockMultiselectFilterFeatured, mockDateRangeFilter],
+    },
+  },
+);
 
-const StorybookFilterPanel = ({
-  width,
-  page,
-}: {
-  width: number;
-  page: 'contact' | 'task';
-}): ReactElement => (
+export const Default = ({ width }: { width: number }): ReactElement => (
   <Box width={width} height="100vh" bgcolor="#fff">
     <FilterPanel
-      page={page}
-      accountListId={accountListId}
+      filters={[filterPanelDefaultMock, filterPanelFeaturedMock]}
       width={width}
       onClose={() => {}}
       onSelectedFiltersChanged={() => {}}
@@ -42,61 +48,13 @@ const StorybookFilterPanel = ({
   </Box>
 );
 
-export const Default = ({
-  width,
-  page,
-}: {
-  width: number;
-  page: 'contact' | 'task';
-}): ReactElement => (
-  <GqlMockedProvider<FiltersQuery> mocks={{ Filters: FiltersDefaultMock }}>
-    <StorybookFilterPanel width={width} page={page} />
-  </GqlMockedProvider>
-);
-
-export const Loading = ({
-  width,
-  page,
-}: {
-  width: number;
-  page: 'contact' | 'task';
-}): ReactElement => {
-  const mock = {
-    request: {
-      query: FiltersDocument,
-      variables: { accountListId: accountListId },
-    },
-    result: {},
-    delay: 86_400_000,
-  };
-
-  return (
-    <MockedProvider mocks={[mock]}>
-      <StorybookFilterPanel width={width} page={page} />
-    </MockedProvider>
-  );
-};
-
-export const Empty = ({
-  width,
-  page,
-}: {
-  width: number;
-  page: 'contact' | 'task';
-}): ReactElement => (
-  <GqlMockedProvider<FiltersQuery> mocks={{ Filters: FiltersEmptyMock }}>
-    <StorybookFilterPanel width={width} page={page} />
-  </GqlMockedProvider>
-);
-
-export const Error = ({
-  width,
-  page,
-}: {
-  width: number;
-  page: 'contact' | 'task';
-}): ReactElement => (
-  <GqlMockedProvider<FiltersQuery> mocks={{ Filters: FiltersErrorMock }}>
-    <StorybookFilterPanel width={width} page={page} />
-  </GqlMockedProvider>
+export const Empty = ({ width }: { width: number }): ReactElement => (
+  <Box width={width} height="100vh" bgcolor="#fff">
+    <FilterPanel
+      filters={[]}
+      width={width}
+      onClose={() => {}}
+      onSelectedFiltersChanged={() => {}}
+    />
+  </Box>
 );

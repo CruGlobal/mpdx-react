@@ -17,7 +17,7 @@ import {
 } from '../../../../graphql/types.generated';
 import theme from '../../../theme';
 import NoData from '../NoData';
-import { useFiltersQuery } from '../../Shared/Filters/FilterPanel.generated';
+import { useContactFiltersQuery } from '../../../../pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import {
   GetInvalidStatusesDocument,
   GetInvalidStatusesQuery,
@@ -77,7 +77,7 @@ const FixCommitmentInfo: React.FC<Props> = ({ accountListId }: Props) => {
   const {
     data: contactFilterGroups,
     loading: loadingStatuses,
-  } = useFiltersQuery({
+  } = useContactFiltersQuery({
     variables: {
       accountListId,
     },

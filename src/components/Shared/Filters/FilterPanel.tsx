@@ -15,13 +15,12 @@ import {
 } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { ArrowBackIos, ArrowForwardIos, Close } from '@material-ui/icons';
-import { Skeleton } from '@material-ui/lab';
 import {
   ContactFilterSetInput,
   FilterGroup,
   TaskFilterSetInput,
 } from '../../../../graphql/types.generated';
-import { useFiltersQuery } from './FilterPanel.generated';
+import { FilterPanelGroupFragment } from './FilterPanel.generated';
 import { FilterListItemShowAll } from './FilterListItemShowAll';
 import { FilterListItem } from './FilterListItem';
 
@@ -65,8 +64,7 @@ const LinkButton = styled(Button)(() => ({
 }));
 
 interface FilterPanelProps {
-  page: 'contact' | 'task';
-  accountListId: string;
+  filters: FilterPanelGroupFragment[];
   onClose: () => void;
   onSelectedFiltersChanged: (
     selectedFilters: ContactFilterSetInput & TaskFilterSetInput,
@@ -74,22 +72,14 @@ interface FilterPanelProps {
 }
 
 export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
-  accountListId,
+  filters,
   onClose,
   onSelectedFiltersChanged,
-  page,
   ...boxProps
 }) => {
   const theme = useTheme();
   const { t } = useTranslation();
 
-  const { data, loading, error } = useFiltersQuery({
-    variables: { accountListId },
-  });
-  const filterType =
-    page === 'contact'
-      ? data?.accountList.contactFilterGroups
-      : data?.accountList.taskFilterGroups;
   const [selectedGroup, setSelectedGroup] = useState<FilterGroup>();
   const [selectedFilters, setSelectedFilters] = useState<
     ContactFilterSetInput & TaskFilterSetInput
@@ -179,43 +169,16 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
               </LinkButton>
             </FilterHeader>
             <FilterList dense>
-              {error && (
-                <ListItem data-testid="ErrorState">
-                  <ListItemText
-                    primary={error.toString()}
-                    primaryTypographyProps={{
-                      variant: 'subtitle1',
-                      color: 'error',
-                    }}
-                  />
-                </ListItem>
-              )}
-              {loading ? (
-                <Box data-testid="LoadingState">
-                  <ListItem>
-                    <Skeleton variant="rect" width="100%" height={30} />
-                  </ListItem>
-                  <ListItem>
-                    <Skeleton variant="rect" width="100%" height={30} />
-                  </ListItem>
-                  <ListItem>
-                    <Skeleton variant="rect" width="100%" height={30} />
-                  </ListItem>
-                </Box>
-              ) : filterType?.length === 0 ? (
+              {filters?.length === 0 ? (
                 <ListItem data-testid="NoFiltersState">
                   <ListItemText
-                    primary={
-                      page === 'contact'
-                        ? t('No Contact Filters Found')
-                        : t('No Task Filters Found')
-                    }
+                    primary={t('No Filters Found')}
                     primaryTypographyProps={{ variant: 'subtitle1' }}
                   />
                 </ListItem>
               ) : (
                 <>
-                  {filterType?.map((group) => {
+                  {filters?.map((group) => {
                     const selectedOptions = getOptionsSelected(group);
                     return (
                       <Collapse
@@ -240,7 +203,7 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
                       </Collapse>
                     );
                   })}
-                  {filterType?.some((g) => !isGroupVisible(g)) ? (
+                  {filters?.some((g) => !isGroupVisible(g)) ? (
                     <FilterListItemShowAll
                       showAll={showAll}
                       onToggle={() => setShowAll(!showAll)}

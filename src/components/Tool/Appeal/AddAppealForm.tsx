@@ -25,7 +25,7 @@ import { MultiselectFilter } from '../../../../graphql/types.generated';
 import theme from '../../../../src/theme';
 import AnimatedCard from '../../../../src/components/AnimatedCard';
 import { useAccountListId } from '../../../../src/hooks/useAccountListId';
-import { useFiltersQuery } from '../../Shared/Filters/FilterPanel.generated';
+import { useContactFiltersQuery } from '../../../../pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import { useCreateAppealMutation } from './CreateAppeal.generated';
 import { useGetContactTagsQuery } from './GetContactTags.generated';
 
@@ -107,7 +107,7 @@ const AddAppealForm = (): ReactElement => {
   const {
     data: contactFilterGroups,
     loading: loadingStatuses,
-  } = useFiltersQuery({
+  } = useContactFiltersQuery({
     variables: {
       accountListId,
     },
