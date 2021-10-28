@@ -156,9 +156,8 @@ export const ContactFilters: React.FC<Props & BoxProps> = ({
                 color="primary"
                 style={{ marginInlineStart: theme.spacing(-1) }}
                 disabled={Object.keys(selectedFilters).length === 0}
-                onClick={() => alert('TODO')}
               >
-                {t('Save')}
+                {t('Save (TODO)')}
               </LinkButton>
               <LinkButton
                 color="primary"
@@ -194,6 +193,7 @@ export const ContactFilters: React.FC<Props & BoxProps> = ({
                 </ListItem>
               ) : (
                 <>
+                  <Typography>{JSON.stringify(selectedFilters)}</Typography>
                   {data?.accountList.contactFilterGroups.map((group) => {
                     const selectedOptions = getOptionsSelected(group);
                     return (

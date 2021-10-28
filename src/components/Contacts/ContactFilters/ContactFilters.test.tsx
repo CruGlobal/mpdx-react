@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import LuxonUtils from '@date-io/luxon';
 import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
+import { ContactFilterStatusEnum } from '../../../../graphql/types.generated';
 import { ContactFilters } from './ContactFilters';
 import { ContactFiltersQuery } from './ContactFilters.generated';
 import {
@@ -13,6 +14,8 @@ import {
 } from './ContactFilters.mocks';
 
 const accountListId = '111';
+
+const onSelectedFiltersChanged = jest.fn();
 
 describe('ContactFilters', () => {
   it('default', async () => {
@@ -24,7 +27,7 @@ describe('ContactFilters', () => {
           accountListId={accountListId}
           onClose={() => {}}
           selectedFilters={{}}
-          onSelectedFiltersChanged={() => {}}
+          onSelectedFiltersChanged={onSelectedFiltersChanged}
         />
       </GqlMockedProvider>,
     );
@@ -87,7 +90,7 @@ describe('ContactFilters', () => {
             accountListId={accountListId}
             onClose={() => {}}
             selectedFilters={{}}
-            onSelectedFiltersChanged={() => {}}
+            onSelectedFiltersChanged={onSelectedFiltersChanged}
           />
         </GqlMockedProvider>
       </MuiPickersUtilsProvider>,
@@ -130,6 +133,9 @@ describe('ContactFilters', () => {
     await waitFor(() => userEvent.click(getByTestId('CloseFilterGroupButton')));
 
     expect(getByText('Group 1')).toBeVisible();
+    expect(onSelectedFiltersChanged).toHaveBeenCalledWith({
+      multiselect: ['option3'],
+    });
   });
 
   it('clears filters', async () => {
@@ -142,7 +148,7 @@ describe('ContactFilters', () => {
             accountListId={accountListId}
             onClose={() => {}}
             selectedFilters={{}}
-            onSelectedFiltersChanged={() => {}}
+            onSelectedFiltersChanged={onSelectedFiltersChanged}
           />
         </GqlMockedProvider>
       </MuiPickersUtilsProvider>,
@@ -165,8 +171,6 @@ describe('ContactFilters', () => {
 
     await waitFor(() => userEvent.click(getByTestId('CloseFilterGroupButton')));
 
-    expect(getByText('Group 1')).toBeVisible();
-
     userEvent.click(getByText('Clear All'));
     expect(getByText('Group 1')).toBeVisible();
     expect(getByText('Filter')).toBeVisible();
@@ -181,7 +185,7 @@ describe('ContactFilters', () => {
           accountListId={accountListId}
           onClose={() => {}}
           selectedFilters={{}}
-          onSelectedFiltersChanged={() => {}}
+          onSelectedFiltersChanged={onSelectedFiltersChanged}
         />
       </GqlMockedProvider>,
     );
@@ -200,7 +204,7 @@ describe('ContactFilters', () => {
           accountListId={accountListId}
           onClose={() => {}}
           selectedFilters={{}}
-          onSelectedFiltersChanged={() => {}}
+          onSelectedFiltersChanged={onSelectedFiltersChanged}
         />
       </GqlMockedProvider>,
     );
@@ -220,7 +224,7 @@ describe('ContactFilters', () => {
           accountListId={accountListId}
           onClose={() => {}}
           selectedFilters={{}}
-          onSelectedFiltersChanged={() => {}}
+          onSelectedFiltersChanged={onSelectedFiltersChanged}
         />
       </GqlMockedProvider>,
     );
@@ -230,5 +234,27 @@ describe('ContactFilters', () => {
     expect(getByTestId('ErrorState')).toBeVisible();
     expect(queryAllByTestId('FilterGroup').length).toEqual(0);
     expect(queryByTestId('FilterListItemShowAll')).toBeNull();
+  });
+
+  it('ignore empty list as filter', async () => {
+    const { getByText } = render(
+      <GqlMockedProvider<ContactFiltersQuery>
+        mocks={{ ContactFilters: ContactFiltersDefaultMock }}
+      >
+        <ContactFilters
+          accountListId={accountListId}
+          onClose={() => {}}
+          selectedFilters={{
+            status: ['PARTNER_FINANCIAL' as ContactFilterStatusEnum],
+            likely: [],
+          }}
+          onSelectedFiltersChanged={onSelectedFiltersChanged}
+        />
+      </GqlMockedProvider>,
+    );
+
+    await waitFor(() =>
+      expect(getByText('Filter ({{count}})')).toBeInTheDocument(),
+    );
   });
 });
