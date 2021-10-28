@@ -9,7 +9,7 @@ import {
   Theme,
 } from '@material-ui/core';
 import { useRouter } from 'next/router';
-import NextLink from 'next/link';
+import NextLink, { LinkProps } from 'next/link';
 import { useTranslation } from 'react-i18next';
 import { NavItem } from './NavItem/NavItem';
 import { NavTools } from './NavTools/NavTools';
@@ -24,7 +24,7 @@ interface NavBarProps {
 }
 
 interface Item {
-  href?: string;
+  href?: LinkProps['href'];
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   icon?: any;
   items?: Item[];
@@ -32,8 +32,7 @@ interface Item {
 }
 
 interface Section {
-  as?: string;
-  href?: string;
+  href?: LinkProps['href'];
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   icon?: any;
   items?: Item[];
@@ -99,11 +98,6 @@ function reduceChildRoutes({
       <NavItem
         depth={depth}
         href={item.href}
-        as={
-          accountListId && item.href?.includes('[accountListId]')
-            ? item.href.replace('[accountListId]', accountListId)
-            : item.href
-        }
         icon={item.icon}
         key={key}
         title={item.title}

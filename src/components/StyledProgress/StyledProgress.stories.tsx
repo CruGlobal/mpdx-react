@@ -1,29 +1,45 @@
 import React, { ReactElement } from 'react';
 import { Box } from '@material-ui/core';
-import { number, boolean } from '@storybook/addon-knobs';
 import StyledProgress from '.';
+
+const control = {
+  type: 'range',
+  min: 0,
+  max: 100,
+  step: 1,
+};
 
 export default {
   title: 'StyledProgress',
+  args: { loading: false },
+  argTypes: {
+    primary: { control },
+    secondary: { control },
+  },
 };
 
-export const Default = (): ReactElement => {
-  const options = {
-    range: true,
-    min: 0,
-    max: 100,
-    step: 1,
-  };
-
+export const Default = ({
+  primary,
+  secondary,
+  loading,
+}: {
+  primary: number;
+  secondary: number;
+  loading: boolean;
+}): ReactElement => {
   return (
     <Box m={2}>
       <StyledProgress
-        primary={number('primary', 50, options) / 100}
-        secondary={number('secondary', 75, options) / 100}
-        loading={boolean('loading', false)}
+        primary={primary / 100}
+        secondary={secondary / 100}
+        loading={loading}
       />
     </Box>
   );
+};
+Default.args = {
+  primary: 50,
+  secondary: 75,
 };
 
 export const WhenMin = (): ReactElement => {

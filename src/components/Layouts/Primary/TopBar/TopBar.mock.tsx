@@ -28,6 +28,36 @@ export const getTopBarMock = (): MockedResponse => {
   };
 };
 
+export const getTopBarMockWithMultipleAccountLists = (): MockedResponse => {
+  const data: GetTopBarQuery = {
+    accountLists: {
+      nodes: [
+        { id: '1', name: 'Staff Account' },
+        { id: '2', name: 'Other Account' },
+      ],
+    },
+    user: {
+      id: 'user-1',
+      firstName: 'John',
+      lastName: 'Smith',
+      admin: true,
+      developer: true,
+      keyAccounts: [{ id: '1', email: 'john.smith@gmail.com' }],
+      administrativeOrganizations: {
+        nodes: [{ id: '1' }],
+      },
+    },
+  };
+  return {
+    request: {
+      query: GetTopBarDocument,
+    },
+    result: {
+      data,
+    },
+  };
+};
+
 export const getTopBarMultipleMock = (): MockedResponse => {
   const data: GetTopBarQuery = {
     accountLists: {

@@ -1,6 +1,6 @@
 import React, { ReactElement, ReactNode } from 'react';
 import Router, { NextRouter, Router as IRouter } from 'next/router'; // eslint-disable-line import/no-named-as-default
-import { RouterContext } from 'next/dist/next-server/lib/router-context';
+import { RouterContext } from 'next/dist/shared/lib/router-context';
 
 interface Props {
   children: ReactNode;
@@ -27,6 +27,8 @@ const TestRouter = ({ children, router = {} }: Props): ReactElement => {
       off: (): void => undefined,
       emit: (): void => undefined,
     },
+    isLocaleDomain: false,
+    isPreview: false,
   };
 
   const configuredRouter = { ...defaultRouter, ...router };

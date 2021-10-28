@@ -1,6 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing';
 import { Box } from '@material-ui/core';
-import { number, withKnobs } from '@storybook/addon-knobs';
 import React, { ReactElement } from 'react';
 import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
 import { ContactFilters } from './ContactFilters';
@@ -16,31 +15,35 @@ import {
 
 export default {
   title: 'Contacts/ContactFilters',
-  decorators: [withKnobs],
+  args: { width: 290 },
 };
 
 const accountListId = '111';
 
-const StorybookContactFilters = (): ReactElement => (
-  <Box width={number('Width', 290)} height="100vh" bgcolor="#fff">
+const StorybookContactFilters = ({
+  width,
+}: {
+  width: number;
+}): ReactElement => (
+  <Box width={width} height="100vh" bgcolor="#fff">
     <ContactFilters
       accountListId={accountListId}
-      width={number('Width', 290)}
+      width={width}
       onClose={() => {}}
       onSelectedFiltersChanged={() => {}}
     />
   </Box>
 );
 
-export const Default = (): ReactElement => (
+export const Default = ({ width }: { width: number }): ReactElement => (
   <GqlMockedProvider<ContactFiltersQuery>
     mocks={{ ContactFilters: ContactFiltersDefaultMock }}
   >
-    <StorybookContactFilters />
+    <StorybookContactFilters width={width} />
   </GqlMockedProvider>
 );
 
-export const Loading = (): ReactElement => {
+export const Loading = ({ width }: { width: number }): ReactElement => {
   const mock = {
     request: {
       query: ContactFiltersDocument,
@@ -52,23 +55,23 @@ export const Loading = (): ReactElement => {
 
   return (
     <MockedProvider mocks={[mock]}>
-      <StorybookContactFilters />
+      <StorybookContactFilters width={width} />
     </MockedProvider>
   );
 };
 
-export const Empty = (): ReactElement => (
+export const Empty = ({ width }: { width: number }): ReactElement => (
   <GqlMockedProvider<ContactFiltersQuery>
     mocks={{ ContactFilters: ContactFiltersEmptyMock }}
   >
-    <StorybookContactFilters />
+    <StorybookContactFilters width={width} />
   </GqlMockedProvider>
 );
 
-export const Error = (): ReactElement => (
+export const Error = ({ width }: { width: number }): ReactElement => (
   <GqlMockedProvider<ContactFiltersQuery>
     mocks={{ ContactFilters: ContactFiltersErrorMock }}
   >
-    <StorybookContactFilters />
+    <StorybookContactFilters width={width} />
   </GqlMockedProvider>
 );

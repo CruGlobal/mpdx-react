@@ -62,6 +62,7 @@ query GetThisWeek(
       status: PARTNER_FINANCIAL
       pledgeReceived: true
     }
+    sortBy: ACTIVE_STATUS_AND_NAME
   ) {
     nodes {
       id
@@ -110,6 +111,7 @@ query GetThisWeek(
     accountListId: $accountListId
     first: 3
     contactsFilter: { referrer: ["any"], createdAt: { min: $twoWeeksAgo } }
+    sortBy: ACTIVE_STATUS_AND_NAME
   ) {
     nodes {
       id
@@ -129,6 +131,7 @@ query GetThisWeek(
       ]
       referrer: ["any"]
     }
+    sortBy: ACTIVE_STATUS_AND_NAME
   ) {
     nodes {
       id
