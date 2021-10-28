@@ -29,10 +29,6 @@ const WhiteBackground = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.common.white,
 }));
 
-export enum TableViewModeEnum {
-  List = 'list',
-  Column = 'column',
-}
 const BulletedListIcon = styled(FormatListBulleted)(({ theme }) => ({
   color: theme.palette.primary.dark,
 }));
@@ -69,19 +65,6 @@ const ContactsPage: React.FC = () => {
   const [activeFilters, setActiveFilters] = useState<ContactFilterSetInput>({});
   const [starredFilter, setStarredFilter] = useState<ContactFilterSetInput>({});
   const [selectedContacts, setSelectedContacts] = useState<Array<string>>([]);
-  const [
-    contactsTableDisplayState,
-    setContactsTableDisplayState,
-  ] = useState<TableViewModeEnum>(TableViewModeEnum.List);
-
-  const handleViewModeChange = (
-    event: React.MouseEvent<HTMLElement>,
-    viewMode: TableViewModeEnum | null,
-  ) => {
-    if (viewMode) {
-      setContactsTableDisplayState(viewMode);
-    }
-  };
 
   const { data, loading, fetchMore } = useContactsQuery({
     variables: {

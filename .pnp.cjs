@@ -153,7 +153,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["react-csv", "npm:2.0.3"],
             ["react-debounce-input", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:3.2.3"],
             ["react-dnd", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:14.0.4"],
-            ["react-dnd-html5-backend", "npm:14.0.2"],            
+            ["react-dnd-html5-backend", "npm:14.0.2"],
             ["react-dom", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:17.0.2"],
             ["react-i18next", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:11.8.11"],
             ["react-to-print", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:2.12.6"],
@@ -29363,7 +29363,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["react-csv", "npm:2.0.3"],
             ["react-debounce-input", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:3.2.3"],
             ["react-dnd", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:14.0.4"],
-            ["react-dnd-html5-backend", "npm:14.0.2"],          
+            ["react-dnd-html5-backend", "npm:14.0.2"],
             ["react-dom", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:17.0.2"],
             ["react-i18next", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:11.8.11"],
             ["react-to-print", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:2.12.6"],
@@ -32388,12 +32388,12 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@react-dnd/invariant", "npm:2.0.0"],
             ["@react-dnd/shallowequal", "npm:2.0.0"],
             ["@types/hoist-non-react-statics", null],
-            ["@types/node", "npm:14.14.26"],
+            ["@types/node", "npm:16.11.6"],
             ["@types/react", "npm:17.0.1"],
             ["dnd-core", "npm:14.0.1"],
             ["fast-deep-equal", "npm:3.1.3"],
             ["hoist-non-react-statics", "npm:3.3.2"],
-            ["react", "npm:17.0.1"]
+            ["react", "npm:17.0.2"]
           ],
           "packagePeers": [
             "@types/hoist-non-react-statics",
