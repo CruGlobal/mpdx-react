@@ -193,7 +193,6 @@ export const ContactFilters: React.FC<Props & BoxProps> = ({
                 </ListItem>
               ) : (
                 <>
-                  <Typography>{JSON.stringify(selectedFilters)}</Typography>
                   {data?.accountList.contactFilterGroups.map((group) => {
                     const selectedOptions = getOptionsSelected(group);
                     return (
