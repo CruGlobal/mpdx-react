@@ -161,6 +161,7 @@ const TasksPage: React.FC = () => {
               filterData && !filtersLoading ? (
                 <FilterPanel
                   filters={filterData?.accountList.taskFilterGroups}
+                  selectedFilters={activeFilters}
                   onClose={toggleFilterPanel}
                   onSelectedFiltersChanged={setActiveFilters}
                 />

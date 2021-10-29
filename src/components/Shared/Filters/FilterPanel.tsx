@@ -65,6 +65,7 @@ const LinkButton = styled(Button)(() => ({
 
 interface FilterPanelProps {
   filters: FilterPanelGroupFragment[];
+  selectedFilters: ContactFilterSetInput & TaskFilterSetInput;
   onClose: () => void;
   onSelectedFiltersChanged: (
     selectedFilters: ContactFilterSetInput & TaskFilterSetInput,
@@ -73,6 +74,7 @@ interface FilterPanelProps {
 
 export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
   filters,
+  selectedFilters,
   onClose,
   onSelectedFiltersChanged,
   ...boxProps
@@ -81,9 +83,6 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
   const { t } = useTranslation();
 
   const [selectedGroup, setSelectedGroup] = useState<FilterGroup>();
-  const [selectedFilters, setSelectedFilters] = useState<
-    ContactFilterSetInput & TaskFilterSetInput
-  >({});
   const [showAll, setShowAll] = useState(false);
   const updateSelectedFilter = (name: FilterKey, value?: FilterValue) => {
     if (value) {
@@ -92,7 +91,6 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
         [name]: value,
       };
 
-      setSelectedFilters(newFilters);
       onSelectedFiltersChanged(newFilters);
     } else {
       const newFilters: ContactFilterSetInput & TaskFilterSetInput = {
@@ -100,12 +98,10 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
       };
       delete newFilters[name];
 
-      setSelectedFilters(newFilters);
       onSelectedFiltersChanged(newFilters);
     }
   };
   const clearSelectedFilter = () => {
-    setSelectedFilters({});
     onSelectedFiltersChanged({});
   };
   const getSelectedFilters = (group: FilterGroup) =>

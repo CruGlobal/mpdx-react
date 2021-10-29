@@ -164,6 +164,7 @@ const ContactsPage: React.FC = () => {
               filterData && !filtersLoading ? (
                 <FilterPanel
                   filters={filterData?.accountList.contactFilterGroups}
+                  selectedFilters={activeFilters}
                   onClose={toggleFilterPanel}
                   onSelectedFiltersChanged={setActiveFilters}
                 />

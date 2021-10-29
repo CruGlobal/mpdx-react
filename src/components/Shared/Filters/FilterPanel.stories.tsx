@@ -41,6 +41,7 @@ export const Default = ({ width }: { width: number }): ReactElement => (
   <Box width={width} height="100vh" bgcolor="#fff">
     <FilterPanel
       filters={[filterPanelDefaultMock, filterPanelFeaturedMock]}
+      selectedFilters={{}}
       width={width}
       onClose={() => {}}
       onSelectedFiltersChanged={() => {}}
@@ -52,6 +53,7 @@ export const Empty = ({ width }: { width: number }): ReactElement => (
   <Box width={width} height="100vh" bgcolor="#fff">
     <FilterPanel
       filters={[]}
+      selectedFilters={{}}
       width={width}
       onClose={() => {}}
       onSelectedFiltersChanged={() => {}}
