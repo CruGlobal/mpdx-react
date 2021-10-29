@@ -14,7 +14,7 @@ import { StarredItemIcon } from '../../common/StarredItemIcon/StarredItemIcon';
 
 const HeaderWrap = styled(Box)(({ theme }) => ({
   height: 96,
-  padding: theme.spacing(2),
+  padding: theme.spacing(1),
   display: 'flex',
   flexDirection: 'row',
   justifyContent: 'space-evenly',
@@ -163,7 +163,9 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
       <Hidden smDown>
         <StarIconWrap>
           {/* TODO connect to filter to only show starred items */}
-          <StarredItemIcon isStarred={false} />
+          <IconButton>
+            <StarredItemIcon isStarred={false} />
+          </IconButton>
         </StarIconWrap>
       </Hidden>
     </HeaderWrap>
