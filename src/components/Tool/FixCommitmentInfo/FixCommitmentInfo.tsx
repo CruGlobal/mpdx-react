@@ -24,7 +24,7 @@ import {
   useGetInvalidStatusesQuery,
 } from './GetInvalidStatuses.generated';
 import Contact from './Contact';
-import { contactTags } from './InputOptions/ContactTags';
+import { contactStatusMap } from './InputOptions/ContactStatuses';
 import { frequencies } from './InputOptions/Frequencies';
 import { useUpdateInvalidStatusMutation } from './UpdateInvalidStatus.generated';
 import client from 'src/lib/client';
@@ -197,7 +197,7 @@ const FixCommitmentInfo: React.FC<Props> = ({ accountListId }: Props) => {
                         name={contact.name}
                         key={contact.name}
                         statusTitle={
-                          contact.status ? contactTags[contact.status] : ''
+                          contact.status ? contactStatusMap[contact.status] : ''
                         }
                         statusValue={contact.status || ''}
                         amount={contact.pledgeAmount || 0}

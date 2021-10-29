@@ -6,6 +6,10 @@ import { Box, Card, CardContent, Hidden, styled } from '@material-ui/core';
 import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
 import FormatListBulleted from '@material-ui/icons/FormatListBulleted';
 import ViewColumn from '@material-ui/icons/ViewColumn';
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
+import { ContactFlowDragLayer } from '../../../../src/components/Contacts/ContactFlow/ContactFlowDragLayer/ContactFlowDragLayer';
+import { ContactFlow } from '../../../../src/components/Contacts/ContactFlow/ContactFlow';
 import { InfiniteList } from '../../../../src/components/InfiniteList/InfiniteList';
 import { ContactDetails } from '../../../../src/components/Contacts/ContactDetails/ContactDetails';
 import Loading from '../../../../src/components/Loading';
@@ -163,110 +167,118 @@ const ContactsPage: React.FC = () => {
         <title>MPDX | {t('Contacts')}</title>
       </Head>
       {accountListId ? (
-        <WhiteBackground>
-          <SidePanelsLayout
-            leftPanel={
-              filterData && !filtersLoading ? (
-                <FilterPanel
-                  filters={filterData?.accountList.contactFilterGroups}
-                  selectedFilters={activeFilters}
-                  onClose={toggleFilterPanel}
-                  onSelectedFiltersChanged={setActiveFilters}
-                />
-              ) : (
-                <></>
-              )
-            }
-            leftOpen={filterPanelOpen}
-            leftWidth="290px"
-            mainContent={
-              <>
-                <ListHeader
-                  page="contact"
-                  activeFilters={Object.keys(activeFilters).length > 0}
-                  filterPanelOpen={filterPanelOpen}
-                  toggleFilterPanel={toggleFilterPanel}
-                  onCheckAllItems={handleCheckAllContacts}
-                  onSearchTermChanged={setSearchTerm}
-                  totalItems={data?.contacts.totalCount}
-                  starredFilter={starredFilter}
-                  toggleStarredFilter={setStarredFilter}
-                  headerCheckboxState={
-                    isSelectedSomeContacts
-                      ? ListHeaderCheckBoxState.partial
-                      : isSelectedAllContacts
-                      ? ListHeaderCheckBoxState.checked
-                      : ListHeaderCheckBoxState.unchecked
-                  }
-                  buttonGroup={
-                    <Hidden xsDown>
-                      <ToggleButtonGroup
-                        exclusive
-                        value={tableDisplayState}
-                        onChange={handleViewModeChange}
-                      >
-                        <ToggleButton value="list">
-                          <BulletedListIcon titleAccess={t('List View')} />
-                        </ToggleButton>
-                        <ToggleButton value="columns">
-                          <ViewColumnIcon
-                            titleAccess={t('Column Workflow View')}
-                          />
-                        </ToggleButton>
-                      </ToggleButtonGroup>
-                    </Hidden>
-                  }
-                />
-                {tableDisplayState === 'list' ? (
-                  <InfiniteList
-                    loading={loading}
-                    data={data?.contacts.nodes}
-                    totalCount={data?.contacts.totalCount}
-                    style={{ height: 'calc(100vh - 160px)' }}
-                    itemContent={(index, contact) => (
-                      <ContactRow
-                        accountListId={accountListId}
-                        key={index}
-                        contact={contact}
-                        isChecked={selectedContacts.includes(contact.id)}
-                        onContactSelected={setContactFocus}
-                        onContactCheckToggle={handleCheckOneContact}
-                      />
-                    )}
-                    endReached={() =>
-                      data?.contacts.pageInfo.hasNextPage &&
-                      fetchMore({
-                        variables: { after: data.contacts.pageInfo.endCursor },
-                      })
-                    }
-                    EmptyPlaceholder={
-                      <Card>
-                        <CardContent>
-                          TODO: Implement Empty Placeholder
-                        </CardContent>
-                      </Card>
-                    }
+        <DndProvider backend={HTML5Backend}>
+          <ContactFlowDragLayer />
+          <WhiteBackground>
+            <SidePanelsLayout
+              leftPanel={
+                filterData && !filtersLoading ? (
+                  <FilterPanel
+                    filters={filterData?.accountList.contactFilterGroups}
+                    selectedFilters={activeFilters}
+                    onClose={toggleFilterPanel}
+                    onSelectedFiltersChanged={setActiveFilters}
                   />
                 ) : (
                   <></>
-                )}
-              </>
-            }
-            rightPanel={
-              contactDetailsId ? (
-                <ContactDetails
-                  accountListId={accountListId}
-                  contactId={contactDetailsId}
-                  onClose={() => setContactFocus(undefined)}
-                />
-              ) : (
-                <></>
-              )
-            }
-            rightOpen={contactDetailsOpen}
-            rightWidth="45%"
-          />
-        </WhiteBackground>
+                )
+              }
+              leftOpen={filterPanelOpen}
+              leftWidth="290px"
+              mainContent={
+                <>
+                  <ListHeader
+                    page="contact"
+                    activeFilters={Object.keys(activeFilters).length > 0}
+                    filterPanelOpen={filterPanelOpen}
+                    toggleFilterPanel={toggleFilterPanel}
+                    onCheckAllItems={handleCheckAllContacts}
+                    onSearchTermChanged={setSearchTerm}
+                    totalItems={data?.contacts.totalCount}
+                    starredFilter={starredFilter}
+                    toggleStarredFilter={setStarredFilter}
+                    headerCheckboxState={
+                      isSelectedSomeContacts
+                        ? ListHeaderCheckBoxState.partial
+                        : isSelectedAllContacts
+                        ? ListHeaderCheckBoxState.checked
+                        : ListHeaderCheckBoxState.unchecked
+                    }
+                    buttonGroup={
+                      <Hidden xsDown>
+                        <ToggleButtonGroup
+                          exclusive
+                          value={tableDisplayState}
+                          onChange={handleViewModeChange}
+                        >
+                          <ToggleButton value="list">
+                            <BulletedListIcon titleAccess={t('List View')} />
+                          </ToggleButton>
+                          <ToggleButton value="columns">
+                            <ViewColumnIcon
+                              titleAccess={t('Column Workflow View')}
+                            />
+                          </ToggleButton>
+                        </ToggleButtonGroup>
+                      </Hidden>
+                    }
+                  />
+                  {tableDisplayState === 'list' ? (
+                    <InfiniteList
+                      loading={loading}
+                      data={data?.contacts.nodes}
+                      totalCount={data?.contacts.totalCount}
+                      style={{ height: 'calc(100vh - 160px)' }}
+                      itemContent={(index, contact) => (
+                        <ContactRow
+                          accountListId={accountListId}
+                          key={index}
+                          contact={contact}
+                          isChecked={selectedContacts.includes(contact.id)}
+                          onContactSelected={setContactFocus}
+                          onContactCheckToggle={handleCheckOneContact}
+                        />
+                      )}
+                      endReached={() =>
+                        data?.contacts.pageInfo.hasNextPage &&
+                        fetchMore({
+                          variables: {
+                            after: data.contacts.pageInfo.endCursor,
+                          },
+                        })
+                      }
+                      EmptyPlaceholder={
+                        <Card>
+                          <CardContent>
+                            TODO: Implement Empty Placeholder
+                          </CardContent>
+                        </Card>
+                      }
+                    />
+                  ) : (
+                    <ContactFlow
+                      accountListId={accountListId}
+                      onContactSelected={setContactFocus}
+                    />
+                  )}
+                </>
+              }
+              rightPanel={
+                contactDetailsId ? (
+                  <ContactDetails
+                    accountListId={accountListId}
+                    contactId={contactDetailsId}
+                    onClose={() => setContactFocus(undefined)}
+                  />
+                ) : (
+                  <></>
+                )
+              }
+              rightOpen={contactDetailsOpen}
+              rightWidth="45%"
+            />
+          </WhiteBackground>
+        </DndProvider>
       ) : (
         <Loading loading />
       )}
