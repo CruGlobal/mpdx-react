@@ -10,6 +10,8 @@ import {
 } from '@material-ui/core';
 import { Trans, useTranslation } from 'react-i18next';
 import { useSnackbar } from 'notistack';
+import client from '../../../../src/lib/client';
+import { useContactFiltersQuery } from '../../../../src/components/Contacts/ContactFilters/ContactFilters.generated';
 import {
   MultiselectFilter,
   PledgeFrequencyEnum,
@@ -23,11 +25,9 @@ import {
   useGetInvalidStatusesQuery,
 } from './GetInvalidStatuses.generated';
 import Contact from './Contact';
-import { contactTags } from './InputOptions/ContactTags';
+import { contactStatusMap } from './InputOptions/ContactStatuses';
 import { frequencies } from './InputOptions/Frequencies';
 import { useUpdateInvalidStatusMutation } from './UpdateInvalidStatus.generated';
-import client from 'src/lib/client';
-import { useContactFiltersQuery } from 'src/components/Contacts/ContactFilters/ContactFilters.generated';
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
@@ -197,7 +197,7 @@ const FixCommitmentInfo: React.FC<Props> = ({ accountListId }: Props) => {
                         name={contact.name}
                         key={contact.name}
                         statusTitle={
-                          contact.status ? contactTags[contact.status] : ''
+                          contact.status ? contactStatusMap[contact.status] : ''
                         }
                         statusValue={contact.status || ''}
                         amount={contact.pledgeAmount || 0}

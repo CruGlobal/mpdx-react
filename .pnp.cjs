@@ -152,6 +152,8 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["react", "npm:17.0.2"],
             ["react-csv", "npm:2.0.3"],
             ["react-debounce-input", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:3.2.3"],
+            ["react-dnd", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:14.0.4"],
+            ["react-dnd-html5-backend", "npm:14.0.2"],
             ["react-dom", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:17.0.2"],
             ["react-i18next", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:11.8.11"],
             ["react-to-print", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:2.12.6"],
@@ -21065,6 +21067,16 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["redux", "npm:4.0.5"]
           ],
           "linkType": "HARD",
+        }],
+        ["npm:14.0.1", {
+          "packageLocation": "./.yarn/cache/dnd-core-npm-14.0.1-8d80db20ad-dbc50727f5.zip/node_modules/dnd-core/",
+          "packageDependencies": [
+            ["dnd-core", "npm:14.0.1"],
+            ["@react-dnd/asap", "npm:4.0.0"],
+            ["@react-dnd/invariant", "npm:2.0.0"],
+            ["redux", "npm:4.1.1"]
+          ],
+          "linkType": "HARD",
         }]
       ]],
       ["doctrine", [
@@ -29350,6 +29362,8 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["react", "npm:17.0.2"],
             ["react-csv", "npm:2.0.3"],
             ["react-debounce-input", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:3.2.3"],
+            ["react-dnd", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:14.0.4"],
+            ["react-dnd-html5-backend", "npm:14.0.2"],
             ["react-dom", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:17.0.2"],
             ["react-i18next", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:11.8.11"],
             ["react-to-print", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:2.12.6"],
@@ -32339,6 +32353,13 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           ],
           "linkType": "SOFT",
         }],
+        ["npm:14.0.4", {
+          "packageLocation": "./.yarn/cache/react-dnd-npm-14.0.4-e78f537ec4-bcd6d87694.zip/node_modules/react-dnd/",
+          "packageDependencies": [
+            ["react-dnd", "npm:14.0.4"]
+          ],
+          "linkType": "SOFT",
+        }],
         ["virtual:09727c31f5c60bec68fad52b2c65fbd2d7c6155b7c9c41e3ca9dc09b6b34f3ff11f76f701e7577a5e1f8c262414b9416b5ea0580282938fec748d4e7d807680c#npm:11.1.3", {
           "packageLocation": "./.yarn/__virtual__/react-dnd-virtual-827cfa2280/0/cache/react-dnd-npm-11.1.3-1f2e35a5e7-f1fab4c1b4.zip/node_modules/react-dnd/",
           "packageDependencies": [
@@ -32359,6 +32380,28 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             "react"
           ],
           "linkType": "HARD",
+        }],
+        ["virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:14.0.4", {
+          "packageLocation": "./.yarn/__virtual__/react-dnd-virtual-3743f7be63/0/cache/react-dnd-npm-14.0.4-e78f537ec4-bcd6d87694.zip/node_modules/react-dnd/",
+          "packageDependencies": [
+            ["react-dnd", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:14.0.4"],
+            ["@react-dnd/invariant", "npm:2.0.0"],
+            ["@react-dnd/shallowequal", "npm:2.0.0"],
+            ["@types/hoist-non-react-statics", null],
+            ["@types/node", "npm:16.11.6"],
+            ["@types/react", "npm:17.0.1"],
+            ["dnd-core", "npm:14.0.1"],
+            ["fast-deep-equal", "npm:3.1.3"],
+            ["hoist-non-react-statics", "npm:3.3.2"],
+            ["react", "npm:17.0.2"]
+          ],
+          "packagePeers": [
+            "@types/hoist-non-react-statics",
+            "@types/node",
+            "@types/react",
+            "react"
+          ],
+          "linkType": "HARD",
         }]
       ]],
       ["react-dnd-html5-backend", [
@@ -32367,6 +32410,14 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [
             ["react-dnd-html5-backend", "npm:11.1.3"],
             ["dnd-core", "npm:11.1.3"]
+          ],
+          "linkType": "HARD",
+        }],
+        ["npm:14.0.2", {
+          "packageLocation": "./.yarn/cache/react-dnd-html5-backend-npm-14.0.2-1c08fb2088-c11dca3dcb.zip/node_modules/react-dnd-html5-backend/",
+          "packageDependencies": [
+            ["react-dnd-html5-backend", "npm:14.0.2"],
+            ["dnd-core", "npm:14.0.1"]
           ],
           "linkType": "HARD",
         }]
@@ -33443,6 +33494,14 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["redux", "npm:4.0.5"],
             ["loose-envify", "npm:1.4.0"],
             ["symbol-observable", "npm:1.2.0"]
+          ],
+          "linkType": "HARD",
+        }],
+        ["npm:4.1.1", {
+          "packageLocation": "./.yarn/cache/redux-npm-4.1.1-b6f44c6668-99519438a5.zip/node_modules/redux/",
+          "packageDependencies": [
+            ["redux", "npm:4.1.1"],
+            ["@babel/runtime", "npm:7.11.2"]
           ],
           "linkType": "HARD",
         }]
