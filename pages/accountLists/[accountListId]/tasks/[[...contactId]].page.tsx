@@ -76,11 +76,15 @@ const TasksPage: React.FC = () => {
   const [filterPanelOpen, setFilterPanelOpen] = useState<boolean>(false);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [activeFilters, setActiveFilters] = useState<TaskFilterSetInput>({});
-
+  const [starredFilter, setStarredFilter] = useState<TaskFilterSetInput>({});
   const { data, loading, fetchMore } = useTasksQuery({
     variables: {
       accountListId: accountListId ?? '',
-      tasksFilter: { ...activeFilters, wildcardSearch: searchTerm?.[0] },
+      tasksFilter: {
+        ...activeFilters,
+        ...starredFilter,
+        wildcardSearch: searchTerm?.[0],
+      },
     },
     skip: !accountListId,
   });
@@ -181,6 +185,8 @@ const TasksPage: React.FC = () => {
                   onCheckAllItems={handleCheckAllTasks}
                   onSearchTermChanged={setSearchTerm}
                   totalItems={data?.tasks.totalCount}
+                  starredFilter={starredFilter}
+                  toggleStarredFilter={setStarredFilter}
                   headerCheckboxState={
                     hasSelectedSomeTasks
                       ? ListHeaderCheckBoxState.partial

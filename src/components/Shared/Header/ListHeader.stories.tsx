@@ -10,6 +10,8 @@ export const Default = (): ReactElement => {
     <ListHeader
       page="contact"
       activeFilters={false}
+      starredFilter={{}}
+      toggleStarredFilter={() => {}}
       headerCheckboxState={ListHeaderCheckBoxState.unchecked}
       filterPanelOpen={false}
       toggleFilterPanel={() => {}}
@@ -25,6 +27,8 @@ export const Task = (): ReactElement => {
       page="task"
       activeFilters={false}
       headerCheckboxState={ListHeaderCheckBoxState.unchecked}
+      starredFilter={{}}
+      toggleStarredFilter={() => {}}
       filterPanelOpen={false}
       toggleFilterPanel={() => {}}
       onCheckAllItems={() => {}}
@@ -39,6 +43,8 @@ export const ActiveFilters = (): ReactElement => {
       page="contact"
       activeFilters={true}
       headerCheckboxState={ListHeaderCheckBoxState.unchecked}
+      starredFilter={{}}
+      toggleStarredFilter={() => {}}
       filterPanelOpen={false}
       toggleFilterPanel={() => {}}
       onCheckAllItems={() => {}}
@@ -53,6 +59,8 @@ export const FilterPanelOpen = (): ReactElement => {
       page="contact"
       activeFilters={false}
       headerCheckboxState={ListHeaderCheckBoxState.unchecked}
+      starredFilter={{}}
+      toggleStarredFilter={() => {}}
       filterPanelOpen={true}
       toggleFilterPanel={() => {}}
       onCheckAllItems={() => {}}
@@ -67,6 +75,8 @@ export const ActiveFiltersAndFilterPanelOpen = (): ReactElement => {
       page="contact"
       activeFilters={true}
       headerCheckboxState={ListHeaderCheckBoxState.unchecked}
+      starredFilter={{}}
+      toggleStarredFilter={() => {}}
       filterPanelOpen={true}
       toggleFilterPanel={() => {}}
       onCheckAllItems={() => {}}
