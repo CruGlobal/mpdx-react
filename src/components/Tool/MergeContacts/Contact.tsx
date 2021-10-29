@@ -19,7 +19,7 @@ import {
 } from '@mdi/js';
 import { DateTime } from 'luxon';
 import theme from '../../../theme';
-import { contactTags } from '../FixCommitmentInfo/InputOptions/ContactTags';
+import { contactStatusMap } from '../FixCommitmentInfo/InputOptions/ContactStatuses';
 import { RecordInfoFragment } from './GetContactDuplicates.generated';
 
 const useStyles = makeStyles(() => ({
@@ -156,7 +156,7 @@ const Contact: React.FC<Props> = ({ contact1, contact2, update }) => {
                     {contact1.status && (
                       <Typography>
                         {t('Status: {{status}}', {
-                          status: contactTags[contact1.status],
+                          status: contactStatusMap[contact1.status],
                         })}
                       </Typography>
                     )}
@@ -297,7 +297,7 @@ const Contact: React.FC<Props> = ({ contact1, contact2, update }) => {
                     {contact2.status && (
                       <Typography>
                         {t('Status: {{status}}', {
-                          status: contactTags[contact2.status],
+                          status: contactStatusMap[contact2.status],
                         })}
                       </Typography>
                     )}
