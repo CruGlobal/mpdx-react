@@ -1,10 +1,14 @@
 import { Box, Divider, styled, Typography } from '@material-ui/core';
 import { EcoOutlined } from '@material-ui/icons';
 import { Skeleton } from '@material-ui/lab';
-import React, { ReactElement } from 'react';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { CoachingRow } from './CoachingRow/CoachingRow';
 import { useLoadCoachingListQuery } from './LoadCoachingList.generated';
+
+interface CoachingListProps {
+  accountListId: string;
+}
 
 const CoachingListWrapper = styled(Box)(({ theme }) => ({
   width: '100%',
@@ -32,7 +36,9 @@ const CoachingLoading = styled(Skeleton)(() => ({
   height: '50px',
 }));
 
-export const CoachingList = (): ReactElement => {
+export const CoachingList: React.FC<CoachingListProps> = ({
+  accountListId,
+}) => {
   const { data, loading } = useLoadCoachingListQuery();
   const { t } = useTranslation();
 
@@ -60,7 +66,10 @@ export const CoachingList = (): ReactElement => {
             {coachingAccounts?.nodes.map((coachingAccount, _index) => {
               return (
                 <span key={coachingAccount.id} role="listitem">
-                  <CoachingRow coachingAccount={coachingAccount} />
+                  <CoachingRow
+                    coachingAccount={coachingAccount}
+                    accountListId={accountListId}
+                  />
                   <Divider />
                 </span>
               );

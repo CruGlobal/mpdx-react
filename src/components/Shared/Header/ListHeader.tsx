@@ -23,7 +23,7 @@ import {
 
 const HeaderWrap = styled(Box)(({ theme }) => ({
   height: 96,
-  padding: theme.spacing(2),
+  padding: theme.spacing(1),
   display: 'flex',
   flexDirection: 'row',
   justifyContent: 'space-evenly',
