@@ -41,8 +41,8 @@ const NullState: React.FC<Props> = ({
         <>
           <Typography variant="h5">
             <Trans
-              defaults="You have {{count}} total {{page}}s"
-              values={{ count: totalCount, page }}
+              defaults="You have {{count}} total {{page}}"
+              values={{ count: totalCount, page: page + 's' }}
             />
           </Typography>
           <Typography>
@@ -75,14 +75,14 @@ const NullState: React.FC<Props> = ({
         <>
           <Typography variant="h5">
             <Trans
-              defaults="Looks like you haven't added any {{page}}s yet"
-              values={{ page }}
+              defaults="Looks like you haven't added any {{page}} yet"
+              values={{ page: page + 's' }}
             />
           </Typography>
           <Typography>
             <Trans
-              defaults="You can import {{page}}s from another service or add a new {{page}}."
-              values={{ page }}
+              defaults="You can import {{plural}} from another service or add a new {{singular}}."
+              values={{ singular: page, plural: page + 's' }}
             />
           </Typography>
           <Box display="flex" mt={1}>
