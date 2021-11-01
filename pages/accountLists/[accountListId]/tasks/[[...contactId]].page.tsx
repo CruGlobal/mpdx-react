@@ -131,7 +131,7 @@ const TasksPage: React.FC = () => {
     event: React.ChangeEvent<HTMLInputElement>,
   ): void => {
     setSelectedTasks(
-      event.target.checked ? data?.tasks.nodes.map(({ id }) => id) ?? [] : [],
+      event.target.checked ? data?.tasks?.nodes.map(({ id }) => id) ?? [] : [],
     );
   };
 
@@ -148,8 +148,9 @@ const TasksPage: React.FC = () => {
 
   const hasSelectedSomeTasks =
     selectedTasks.length > 0 &&
-    selectedTasks.length < (data?.tasks.nodes.length ?? 0);
-  const hasSelectedAllTasks = selectedTasks.length === data?.tasks.nodes.length;
+    selectedTasks.length < (data?.tasks?.nodes.length ?? 0);
+  const hasSelectedAllTasks =
+    selectedTasks.length === data?.tasks?.nodes.length;
 
   return (
     <>
@@ -182,7 +183,7 @@ const TasksPage: React.FC = () => {
                   toggleFilterPanel={toggleFilterPanel}
                   onCheckAllItems={handleCheckAllTasks}
                   onSearchTermChanged={setSearchTerm}
-                  totalItems={data?.tasks.totalCount}
+                  totalItems={data?.tasks?.totalCount}
                   starredFilter={starredFilter}
                   toggleStarredFilter={setStarredFilter}
                   headerCheckboxState={

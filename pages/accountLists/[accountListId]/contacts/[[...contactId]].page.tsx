@@ -199,7 +199,7 @@ const ContactsPage: React.FC = () => {
                     toggleFilterPanel={toggleFilterPanel}
                     onCheckAllItems={handleCheckAllContacts}
                     onSearchTermChanged={setSearchTerm}
-                    totalItems={data?.contacts.totalCount}
+                    totalItems={data?.contacts?.totalCount}
                     starredFilter={starredFilter}
                     toggleStarredFilter={setStarredFilter}
                     headerCheckboxState={
@@ -231,8 +231,8 @@ const ContactsPage: React.FC = () => {
                   {tableDisplayState === 'list' ? (
                     <InfiniteList
                       loading={loading}
-                      data={data?.contacts.nodes}
-                      totalCount={data?.contacts.totalCount}
+                      data={data?.contacts?.nodes}
+                      totalCount={data?.contacts?.totalCount}
                       style={{ height: 'calc(100vh - 160px)' }}
                       itemContent={(index, contact) => (
                         <ContactRow
@@ -245,10 +245,10 @@ const ContactsPage: React.FC = () => {
                         />
                       )}
                       endReached={() =>
-                        data?.contacts.pageInfo.hasNextPage &&
+                        data?.contacts?.pageInfo.hasNextPage &&
                         fetchMore({
                           variables: {
-                            after: data.contacts.pageInfo.endCursor,
+                            after: data.contacts?.pageInfo.endCursor,
                           },
                         })
                       }
