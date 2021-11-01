@@ -237,7 +237,7 @@ const TasksPage: React.FC = () => {
                     <Box width="75%" margin="auto" mt={2}>
                       <NullState
                         page="task"
-                        totalCount={data?.tasks?.totalCount || 0}
+                        totalCount={data?.allTasks?.totalCount || 0}
                         filtered={isFiltered}
                         changeFilters={setActiveFilters}
                       />
