@@ -9,7 +9,6 @@ import ViewColumn from '@material-ui/icons/ViewColumn';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { ContactFlowDragLayer } from '../../../../src/components/Contacts/ContactFlow/ContactFlowDragLayer/ContactFlowDragLayer';
-import { ContactFilters } from '../../../../src/components/Contacts/ContactFilters/ContactFilters';
 import { ContactFlow } from '../../../../src/components/Contacts/ContactFlow/ContactFlow';
 import { InfiniteList } from '../../../../src/components/InfiniteList/InfiniteList';
 import { ContactDetails } from '../../../../src/components/Contacts/ContactDetails/ContactDetails';
@@ -23,7 +22,8 @@ import {
   ListHeaderCheckBoxState,
   TableViewModeEnum,
 } from '../../../../src/components/Shared/Header/ListHeader';
-import { useContactsQuery } from './Contacts.generated';
+import { FilterPanel } from '../../../../src/components/Shared/Filters/FilterPanel';
+import { useContactFiltersQuery, useContactsQuery } from './Contacts.generated';
 
 const WhiteBackground = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.common.white,
@@ -75,6 +75,11 @@ const ContactsPage: React.FC = () => {
         ...starredFilter,
       },
     },
+    skip: !accountListId,
+  });
+
+  const { data: filterData, loading: filtersLoading } = useContactFiltersQuery({
+    variables: { accountListId: accountListId ?? '' },
     skip: !accountListId,
   });
 
@@ -167,11 +172,16 @@ const ContactsPage: React.FC = () => {
           <WhiteBackground>
             <SidePanelsLayout
               leftPanel={
-                <ContactFilters
-                  accountListId={accountListId}
-                  onClose={toggleFilterPanel}
-                  onSelectedFiltersChanged={setActiveFilters}
-                />
+                filterData && !filtersLoading ? (
+                  <FilterPanel
+                    filters={filterData?.accountList.contactFilterGroups}
+                    selectedFilters={activeFilters}
+                    onClose={toggleFilterPanel}
+                    onSelectedFiltersChanged={setActiveFilters}
+                  />
+                ) : (
+                  <></>
+                )
               }
               leftOpen={filterPanelOpen}
               leftWidth="290px"

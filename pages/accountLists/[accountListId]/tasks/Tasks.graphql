@@ -18,3 +18,11 @@ query Tasks(
     }
   }
 }
+
+query TaskFilters($accountListId: ID!) {
+  accountList(id: $accountListId) {
+    taskFilterGroups {
+      ...FilterPanelGroup
+    }
+  }
+}

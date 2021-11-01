@@ -1,8 +1,8 @@
+import React, { useState } from 'react';
 import {
   Box,
   BoxProps,
   Button,
-  CircularProgress,
   Collapse,
   IconButton,
   List,
@@ -13,19 +13,23 @@ import {
   Typography,
   useTheme,
 } from '@material-ui/core';
-import { ArrowBackIos, ArrowForwardIos, Close } from '@material-ui/icons';
-import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FilterListItem } from '../../Shared/Filters/FilterListItem';
-import { FilterListItemShowAll } from '../../Shared/Filters/FilterListItemShowAll';
+import { ArrowBackIos, ArrowForwardIos, Close } from '@material-ui/icons';
 import {
   ContactFilterSetInput,
   FilterGroup,
+  TaskFilterSetInput,
 } from '../../../../graphql/types.generated';
-import { useContactFiltersQuery } from './ContactFilters.generated';
+import { FilterPanelGroupFragment } from './FilterPanel.generated';
+import { FilterListItemShowAll } from './FilterListItemShowAll';
+import { FilterListItem } from './FilterListItem';
 
-export type ContactFilterKey = keyof ContactFilterSetInput;
-export type ContactFilterValue = ContactFilterSetInput[ContactFilterKey];
+type ContactFilterKey = keyof ContactFilterSetInput;
+type ContactFilterValue = ContactFilterSetInput[ContactFilterKey];
+type TaskFilterKey = keyof TaskFilterSetInput;
+type TaskFilterValue = TaskFilterSetInput[TaskFilterKey];
+export type FilterKey = ContactFilterKey | TaskFilterKey;
+export type FilterValue = ContactFilterValue | TaskFilterValue;
 
 export const snakeToCamel = (inputKey: string): string => {
   const stringParts = inputKey.split('_');
@@ -59,14 +63,18 @@ const LinkButton = styled(Button)(() => ({
   textTransform: 'none',
 }));
 
-interface Props {
-  accountListId: string;
+interface FilterPanelProps {
+  filters: FilterPanelGroupFragment[];
+  selectedFilters: ContactFilterSetInput & TaskFilterSetInput;
   onClose: () => void;
-  onSelectedFiltersChanged: (selectedFilters: ContactFilterSetInput) => void;
+  onSelectedFiltersChanged: (
+    selectedFilters: ContactFilterSetInput & TaskFilterSetInput,
+  ) => void;
 }
 
-export const ContactFilters: React.FC<Props & BoxProps> = ({
-  accountListId,
+export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
+  filters,
+  selectedFilters,
   onClose,
   onSelectedFiltersChanged,
   ...boxProps
@@ -74,52 +82,38 @@ export const ContactFilters: React.FC<Props & BoxProps> = ({
   const theme = useTheme();
   const { t } = useTranslation();
 
-  const { data, loading, error } = useContactFiltersQuery({
-    variables: { accountListId },
-  });
-
   const [selectedGroup, setSelectedGroup] = useState<FilterGroup>();
-  const [selectedFilters, setSelectedFilters] = useState<ContactFilterSetInput>(
-    {},
-  );
   const [showAll, setShowAll] = useState(false);
-
-  const updateSelectedFilter = (
-    name: ContactFilterKey,
-    value?: ContactFilterValue,
-  ) => {
+  const updateSelectedFilter = (name: FilterKey, value?: FilterValue) => {
     if (value) {
-      const newFilters: ContactFilterSetInput = {
+      const newFilters: ContactFilterSetInput & TaskFilterSetInput = {
         ...selectedFilters,
         [name]: value,
       };
 
-      setSelectedFilters(newFilters);
       onSelectedFiltersChanged(newFilters);
     } else {
-      const newFilters: ContactFilterSetInput = { ...selectedFilters };
+      const newFilters: ContactFilterSetInput & TaskFilterSetInput = {
+        ...selectedFilters,
+      };
       delete newFilters[name];
 
-      setSelectedFilters(newFilters);
       onSelectedFiltersChanged(newFilters);
     }
   };
-
   const clearSelectedFilter = () => {
-    setSelectedFilters({});
     onSelectedFiltersChanged({});
   };
-
   const getSelectedFilters = (group: FilterGroup) =>
     group.filters.filter((value) => {
-      const key = snakeToCamel(value.filterKey) as ContactFilterKey;
+      const key = snakeToCamel(value.filterKey) as FilterKey;
 
       return selectedFilters[key];
     });
 
   const getOptionsSelected = (group: FilterGroup) =>
     getSelectedFilters(group).flatMap(
-      (f) => selectedFilters[snakeToCamel(f.filterKey) as ContactFilterKey],
+      (f) => selectedFilters[snakeToCamel(f.filterKey) as FilterKey],
     );
 
   const getFeaturedFilters = (group: FilterGroup) =>
@@ -149,7 +143,7 @@ export const ContactFilters: React.FC<Props & BoxProps> = ({
                       })
                     : t('Filter')}
                 </Typography>
-                <IconButton onClick={onClose}>
+                <IconButton onClick={onClose} aria-label={t('Close')}>
                   <Close titleAccess={t('Close')} />
                 </IconButton>
               </Box>
@@ -171,31 +165,16 @@ export const ContactFilters: React.FC<Props & BoxProps> = ({
               </LinkButton>
             </FilterHeader>
             <FilterList dense>
-              {error && (
-                <ListItem data-testid="ErrorState">
-                  <ListItemText
-                    primary={error.toString()}
-                    primaryTypographyProps={{
-                      variant: 'subtitle1',
-                      color: 'error',
-                    }}
-                  />
-                </ListItem>
-              )}
-              {loading ? (
-                <ListItem data-testid="LoadingState">
-                  <CircularProgress />
-                </ListItem>
-              ) : data?.accountList.contactFilterGroups.length === 0 ? (
+              {filters?.length === 0 ? (
                 <ListItem data-testid="NoFiltersState">
                   <ListItemText
-                    primary={t('No Contact Filters Found')}
+                    primary={t('No Filters Found')}
                     primaryTypographyProps={{ variant: 'subtitle1' }}
                   />
                 </ListItem>
               ) : (
                 <>
-                  {data?.accountList.contactFilterGroups.map((group) => {
+                  {filters?.map((group) => {
                     const selectedOptions = getOptionsSelected(group);
                     return (
                       <Collapse
@@ -220,9 +199,7 @@ export const ContactFilters: React.FC<Props & BoxProps> = ({
                       </Collapse>
                     );
                   })}
-                  {data?.accountList.contactFilterGroups.some(
-                    (g) => !isGroupVisible(g),
-                  ) ? (
+                  {filters?.some((g) => !isGroupVisible(g)) ? (
                     <FilterListItemShowAll
                       showAll={showAll}
                       onToggle={() => setShowAll(!showAll)}
@@ -255,9 +232,7 @@ export const ContactFilters: React.FC<Props & BoxProps> = ({
             </FilterHeader>
             <FilterList dense>
               {selectedGroup?.filters?.map((filter) => {
-                const filterKey = snakeToCamel(
-                  filter.filterKey,
-                ) as ContactFilterKey;
+                const filterKey = snakeToCamel(filter.filterKey) as FilterKey;
 
                 return (
                   <FilterListItem
