@@ -67,7 +67,7 @@ const TasksPage: React.FC = () => {
   }, [isReady, contactId]);
 
   const [filterPanelOpen, setFilterPanelOpen] = useState<boolean>(false);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
   const [activeFilters, setActiveFilters] = useState<TaskFilterSetInput>({});
   const [starredFilter, setStarredFilter] = useState<TaskFilterSetInput>({});
   const { data, loading, fetchMore } = useTasksQuery({
@@ -84,9 +84,8 @@ const TasksPage: React.FC = () => {
 
   const isFiltered =
     Object.keys(activeFilters).length > 0 ||
-    Object.values(activeFilters).filter((filter) => filter !== []).length > 0;
+    Object.values(activeFilters).some((filter) => filter !== []);
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const toggleFilterPanel = () => {
     setFilterPanelOpen(!filterPanelOpen);
   };
