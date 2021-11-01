@@ -42,7 +42,10 @@ const NullState: React.FC<Props> = ({
           <Typography variant="h5">
             <Trans
               defaults="You have {{count}} total {{page}}"
-              values={{ count: totalCount, page: page + 's' }}
+              values={{
+                count: totalCount,
+                page: totalCount === 1 ? page : page + 's',
+              }}
             />
           </Typography>
           <Typography>
