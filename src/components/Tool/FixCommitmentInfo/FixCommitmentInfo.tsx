@@ -10,8 +10,6 @@ import {
 } from '@material-ui/core';
 import { Trans, useTranslation } from 'react-i18next';
 import { useSnackbar } from 'notistack';
-import client from '../../../../src/lib/client';
-import { useContactFiltersQuery } from '../../../../src/components/Contacts/ContactFilters/ContactFilters.generated';
 import {
   MultiselectFilter,
   PledgeFrequencyEnum,
@@ -19,6 +17,7 @@ import {
 } from '../../../../graphql/types.generated';
 import theme from '../../../theme';
 import NoData from '../NoData';
+import { useContactFiltersQuery } from '../../../../pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import {
   GetInvalidStatusesDocument,
   GetInvalidStatusesQuery,
@@ -28,6 +27,7 @@ import Contact from './Contact';
 import { contactStatusMap } from './InputOptions/ContactStatuses';
 import { frequencies } from './InputOptions/Frequencies';
 import { useUpdateInvalidStatusMutation } from './UpdateInvalidStatus.generated';
+import client from 'src/lib/client';
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {

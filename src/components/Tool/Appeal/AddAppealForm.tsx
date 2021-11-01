@@ -25,7 +25,7 @@ import { MultiselectFilter } from '../../../../graphql/types.generated';
 import theme from '../../../../src/theme';
 import AnimatedCard from '../../../../src/components/AnimatedCard';
 import { useAccountListId } from '../../../../src/hooks/useAccountListId';
-import { useContactFiltersQuery } from '../../../components/Contacts/ContactFilters/ContactFilters.generated';
+import { useContactFiltersQuery } from '../../../../pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import { useCreateAppealMutation } from './CreateAppeal.generated';
 import { useGetContactTagsQuery } from './GetContactTags.generated';
 
