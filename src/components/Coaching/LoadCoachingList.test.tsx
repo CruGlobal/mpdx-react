@@ -1,3 +1,4 @@
+import React from 'react';
 import { renderHook } from '@testing-library/react-hooks';
 import { GqlMockedProvider } from '../../../__tests__/util/graphqlMocking';
 import { CoachingList } from './CoachingList';
@@ -133,7 +134,7 @@ describe('LoadCoaching', () => {
           },
         }}
       >
-        <CoachingList />
+        <CoachingList accountListId="account-list-id" />
       </GqlMockedProvider>,
     );
     expect(getAllByRole('listitem').length).toMatchInlineSnapshot(`3`);

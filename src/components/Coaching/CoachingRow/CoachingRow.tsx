@@ -1,6 +1,7 @@
 import { Box, styled, Typography } from '@material-ui/core';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import Link from 'next/link';
 import { CoachedPersonFragment } from '../LoadCoachingList.generated';
 import {
   currencyFormat,
@@ -11,6 +12,7 @@ import StyledProgress from 'src/components/StyledProgress';
 
 interface Props {
   coachingAccount: CoachedPersonFragment;
+  accountListId: string;
 }
 
 const CoachingRowWrapper = styled(Box)(({ theme }) => ({
@@ -30,10 +32,14 @@ const CoachingProgressLabelContainer = styled(Box)(({ theme }) => ({
   margin: theme.spacing(2, 2, 0),
 }));
 
-export const CoachingRow: React.FC<Props> = ({ coachingAccount }) => {
+export const CoachingRow: React.FC<Props> = ({
+  coachingAccount,
+  accountListId,
+}) => {
   const { t } = useTranslation();
 
   const {
+    id,
     monthlyGoal,
     currency,
     name,
@@ -91,51 +97,58 @@ export const CoachingRow: React.FC<Props> = ({ coachingAccount }) => {
       : numberFormat(calculatedAppealTotal);
 
   return (
-    <CoachingRowWrapper role="listitem">
-      <CoachingNameText variant="h6" color="primary">
-        {name}
-      </CoachingNameText>
-      <CoachingProgressLabelContainer>
-        <Typography>
-          {t('Monthly ')} {monthlyGoalCurrency}
-        </Typography>
-        <Typography>
-          {recievedCurrency}({percentageFormat(percentageRecievedPledges)}
-          )/
-          {totalCurrency}({percentageFormat(percentageTotalPledges)})
-        </Typography>
-      </CoachingProgressLabelContainer>
-      <StyledProgress
-        loading={false}
-        primary={percentageRecievedPledges}
-        secondary={percentageTotalPledges}
-      />
-      <CoachingProgressLabelContainer>
-        {primaryAppeal ? (
-          <>
-            <Typography>
-              {t('Primary Appeal ')} {appealAmountCurrency}
-            </Typography>
-            <Typography>
-              {appealProcessedCurrency} (
-              {percentageFormat(percentageAppealProcessed)}) /{' '}
-              {appealTotalCurrency}({percentageFormat(percentageAppealTotal)})
-            </Typography>
-          </>
-        ) : (
-          <>
-            <Typography>{t('Primary Appeal')}</Typography>
-            <Typography color="textSecondary">
-              {t('No primary appeal set for this account')}
-            </Typography>
-          </>
-        )}
-      </CoachingProgressLabelContainer>
-      <StyledProgress
-        loading={false}
-        primary={percentageAppealProcessed}
-        secondary={percentageAppealTotal}
-      />
-    </CoachingRowWrapper>
+    <Link
+      href={{
+        pathname: '/accountLists/[accountListId]/coaching/[coachingId]',
+        query: { accountListId: accountListId, coachingId: id },
+      }}
+    >
+      <CoachingRowWrapper role="listitem">
+        <CoachingNameText variant="h6" color="primary">
+          {name}
+        </CoachingNameText>
+        <CoachingProgressLabelContainer>
+          <Typography>
+            {t('Monthly ')} {monthlyGoalCurrency}
+          </Typography>
+          <Typography>
+            {recievedCurrency}({percentageFormat(percentageRecievedPledges)}
+            )/
+            {totalCurrency}({percentageFormat(percentageTotalPledges)})
+          </Typography>
+        </CoachingProgressLabelContainer>
+        <StyledProgress
+          loading={false}
+          primary={percentageRecievedPledges}
+          secondary={percentageTotalPledges}
+        />
+        <CoachingProgressLabelContainer>
+          {primaryAppeal ? (
+            <>
+              <Typography>
+                {t('Primary Appeal ')} {appealAmountCurrency}
+              </Typography>
+              <Typography>
+                {appealProcessedCurrency} (
+                {percentageFormat(percentageAppealProcessed)}) /{' '}
+                {appealTotalCurrency}({percentageFormat(percentageAppealTotal)})
+              </Typography>
+            </>
+          ) : (
+            <>
+              <Typography>{t('Primary Appeal')}</Typography>
+              <Typography color="textSecondary">
+                {t('No primary appeal set for this account')}
+              </Typography>
+            </>
+          )}
+        </CoachingProgressLabelContainer>
+        <StyledProgress
+          loading={false}
+          primary={percentageAppealProcessed}
+          secondary={percentageAppealTotal}
+        />
+      </CoachingRowWrapper>
+    </Link>
   );
 };
