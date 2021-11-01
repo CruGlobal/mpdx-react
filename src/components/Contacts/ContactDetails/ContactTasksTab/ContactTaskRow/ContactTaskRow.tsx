@@ -68,10 +68,6 @@ const getLocalizedTaskType = (
   t: TFunction,
   taskType: ActivityTypeEnum | null | undefined,
 ): string => {
-  if (!taskType) {
-    return '';
-  }
-
   switch (taskType) {
     case ActivityTypeEnum.Appointment:
       return t('Appointment');
@@ -120,6 +116,9 @@ const getLocalizedTaskType = (
 
     case ActivityTypeEnum.ToDo:
       return t('To Do');
+
+    default:
+      return '';
   }
 };
 
