@@ -17,17 +17,17 @@ import {
 } from '../../../../graphql/types.generated';
 import theme from '../../../theme';
 import NoData from '../NoData';
+import { useContactFiltersQuery } from '../../../../pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import {
   GetInvalidStatusesDocument,
   GetInvalidStatusesQuery,
   useGetInvalidStatusesQuery,
 } from './GetInvalidStatuses.generated';
 import Contact from './Contact';
-import { contactTags } from './InputOptions/ContactTags';
+import { contactStatusMap } from './InputOptions/ContactStatuses';
 import { frequencies } from './InputOptions/Frequencies';
 import { useUpdateInvalidStatusMutation } from './UpdateInvalidStatus.generated';
 import client from 'src/lib/client';
-import { useContactFiltersQuery } from 'src/components/Contacts/ContactFilters/ContactFilters.generated';
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
@@ -197,7 +197,7 @@ const FixCommitmentInfo: React.FC<Props> = ({ accountListId }: Props) => {
                         name={contact.name}
                         key={contact.name}
                         statusTitle={
-                          contact.status ? contactTags[contact.status] : ''
+                          contact.status ? contactStatusMap[contact.status] : ''
                         }
                         statusValue={contact.status || ''}
                         amount={contact.pledgeAmount || 0}

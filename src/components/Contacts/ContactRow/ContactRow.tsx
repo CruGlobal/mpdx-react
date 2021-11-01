@@ -69,7 +69,7 @@ export const ContactRow: React.FC<Props> = ({
   } = contact;
 
   return (
-    <Box role="row">
+    <Box role="row" p={1}>
       <Box display="flex" alignItems="center">
         <Box padding="checkbox">
           <Checkbox

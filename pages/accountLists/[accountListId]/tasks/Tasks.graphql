@@ -21,3 +21,11 @@ query Tasks(
     totalCount
   }
 }
+
+query TaskFilters($accountListId: ID!) {
+  accountList(id: $accountListId) {
+    taskFilterGroups {
+      ...FilterPanelGroup
+    }
+  }
+}

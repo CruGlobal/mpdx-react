@@ -19,5 +19,7 @@ export const Default = (): ReactElement => {
       },
     },
   });
-  return <CoachingRow coachingAccount={coach} />;
+  return (
+    <CoachingRow accountListId="account-list-id" coachingAccount={coach} />
+  );
 };

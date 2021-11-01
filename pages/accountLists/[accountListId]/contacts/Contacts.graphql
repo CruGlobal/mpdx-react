@@ -22,3 +22,11 @@ query Contacts(
     totalCount
   }
 }
+
+query ContactFilters($accountListId: ID!) {
+  accountList(id: $accountListId) {
+    contactFilterGroups {
+      ...FilterPanelGroup
+    }
+  }
+}
