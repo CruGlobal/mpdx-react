@@ -19,10 +19,10 @@ import { ContactFilterSetInput } from '../../../../graphql/types.generated';
 import { ContactRow } from '../../../../src/components/Contacts/ContactRow/ContactRow';
 import {
   ListHeader,
-  ListHeaderCheckBoxState,
   TableViewModeEnum,
 } from '../../../../src/components/Shared/Header/ListHeader';
 import { FilterPanel } from '../../../../src/components/Shared/Filters/FilterPanel';
+import { useMassSelection } from '../../../../src/hooks/useMassSelection';
 import { useContactFiltersQuery, useContactsQuery } from './Contacts.generated';
 
 const WhiteBackground = styled(Box)(({ theme }) => ({
@@ -64,7 +64,6 @@ const ContactsPage: React.FC = () => {
   const [filterPanelOpen, setFilterPanelOpen] = useState<boolean>(false);
   const [activeFilters, setActiveFilters] = useState<ContactFilterSetInput>({});
   const [starredFilter, setStarredFilter] = useState<ContactFilterSetInput>({});
-  const [selectedContacts, setSelectedContacts] = useState<Array<string>>([]);
 
   const { data, loading, fetchMore } = useContactsQuery({
     variables: {
@@ -108,34 +107,23 @@ const ContactsPage: React.FC = () => {
     setContactDetailsOpen(!!id);
   };
 
+  const {
+    selectionType,
+    isRowChecked,
+    toggleSelectAll,
+    toggleSelectionById,
+  } = useMassSelection(data?.contacts.totalCount ?? 0);
+
   const handleCheckOneContact = (
     event: React.ChangeEvent<HTMLInputElement>,
     contactId: string,
   ): void => {
-    if (!selectedContacts.includes(contactId)) {
-      setSelectedContacts((prevSelected) => [...prevSelected, contactId]);
-    } else {
-      setSelectedContacts((prevSelected) =>
-        prevSelected.filter((id) => id !== contactId),
-      );
-    }
+    toggleSelectionById(contactId);
   };
 
-  const handleCheckAllContacts = (
-    event: React.ChangeEvent<HTMLInputElement>,
-  ): void => {
-    setSelectedContacts(
-      event.target.checked
-        ? data?.contacts.nodes.map((contact) => contact.id) ?? []
-        : [],
-    );
+  const handleCheckAllContacts = (): void => {
+    toggleSelectAll();
   };
-
-  const isSelectedSomeContacts =
-    selectedContacts.length > 0 &&
-    selectedContacts.length < (data?.contacts.nodes.length ?? 0);
-  const isSelectedAllContacts =
-    selectedContacts.length === data?.contacts.nodes.length;
 
   const setSearchTerm = (searchTerm?: string) => {
     const { searchTerm: _, ...oldQuery } = query;
@@ -197,13 +185,7 @@ const ContactsPage: React.FC = () => {
                     totalItems={data?.contacts.totalCount}
                     starredFilter={starredFilter}
                     toggleStarredFilter={setStarredFilter}
-                    headerCheckboxState={
-                      isSelectedSomeContacts
-                        ? ListHeaderCheckBoxState.partial
-                        : isSelectedAllContacts
-                        ? ListHeaderCheckBoxState.checked
-                        : ListHeaderCheckBoxState.unchecked
-                    }
+                    headerCheckboxState={selectionType}
                     buttonGroup={
                       <Hidden xsDown>
                         <ToggleButtonGroup
@@ -234,7 +216,7 @@ const ContactsPage: React.FC = () => {
                           accountListId={accountListId}
                           key={index}
                           contact={contact}
-                          isChecked={selectedContacts.includes(contact.id)}
+                          isChecked={isRowChecked(contact.id)}
                           onContactSelected={setContactFocus}
                           onContactCheckToggle={handleCheckOneContact}
                         />
