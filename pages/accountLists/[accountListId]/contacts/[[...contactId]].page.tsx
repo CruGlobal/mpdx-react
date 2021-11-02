@@ -61,9 +61,19 @@ const ContactsPage: React.FC = () => {
     }
   }, [isReady, contactId]);
 
+  //#region Filters
   const [filterPanelOpen, setFilterPanelOpen] = useState<boolean>(false);
   const [activeFilters, setActiveFilters] = useState<ContactFilterSetInput>({});
   const [starredFilter, setStarredFilter] = useState<ContactFilterSetInput>({});
+
+  const { data: filterData, loading: filtersLoading } = useContactFiltersQuery({
+    variables: { accountListId: accountListId ?? '' },
+    skip: !accountListId,
+  });
+
+  const toggleFilterPanel = () => {
+    setFilterPanelOpen(!filterPanelOpen);
+  };
 
   const { data, loading, fetchMore } = useContactsQuery({
     variables: {
@@ -77,15 +87,29 @@ const ContactsPage: React.FC = () => {
     skip: !accountListId,
   });
 
-  const { data: filterData, loading: filtersLoading } = useContactFiltersQuery({
-    variables: { accountListId: accountListId ?? '' },
-    skip: !accountListId,
-  });
+  //#endregion
 
-  const toggleFilterPanel = () => {
-    setFilterPanelOpen(!filterPanelOpen);
+  //#region Mass Actions
+  const {
+    selectionType,
+    isRowChecked,
+    toggleSelectAll,
+    toggleSelectionById,
+  } = useMassSelection(data?.contacts.totalCount ?? 0);
+
+  const handleCheckOneContact = (
+    event: React.ChangeEvent<HTMLInputElement>,
+    contactId: string,
+  ): void => {
+    toggleSelectionById(contactId);
   };
 
+  const handleCheckAllContacts = (): void => {
+    toggleSelectAll();
+  };
+  //#endregion
+
+  //#region User Actions
   const setContactFocus = (id?: string) => {
     const {
       accountListId: _accountListId,
@@ -106,25 +130,6 @@ const ContactsPage: React.FC = () => {
     id && setContactDetailsId(id);
     setContactDetailsOpen(!!id);
   };
-
-  const {
-    selectionType,
-    isRowChecked,
-    toggleSelectAll,
-    toggleSelectionById,
-  } = useMassSelection(data?.contacts.totalCount ?? 0);
-
-  const handleCheckOneContact = (
-    event: React.ChangeEvent<HTMLInputElement>,
-    contactId: string,
-  ): void => {
-    toggleSelectionById(contactId);
-  };
-
-  const handleCheckAllContacts = (): void => {
-    toggleSelectAll();
-  };
-
   const setSearchTerm = (searchTerm?: string) => {
     const { searchTerm: _, ...oldQuery } = query;
     replace({
@@ -148,7 +153,9 @@ const ContactsPage: React.FC = () => {
       setTableDisplayState(viewMode);
     }
   };
+  //#endregion
 
+  //#region JSX
   return (
     <>
       <Head>
@@ -266,6 +273,7 @@ const ContactsPage: React.FC = () => {
       )}
     </>
   );
+  //#endregion
 };
 
 export default ContactsPage;
