@@ -46,11 +46,6 @@ export const useMassSelection = (
             previousIds.filter((selectedIds) => selectedIds !== id),
           );
         } else {
-          if (reverseIds.indexOf(id) !== -1) {
-            setReverseIds((previousIds) =>
-              previousIds.filter((previousId) => previousId !== id),
-            );
-          }
           setIds((previousIds) => [...previousIds, id]);
         }
         break;

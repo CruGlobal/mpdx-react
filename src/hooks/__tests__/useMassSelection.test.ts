@@ -104,7 +104,36 @@ describe('useMassSelection', () => {
       ListHeaderCheckBoxState.unchecked,
     );
   });
-  //#endregion
+
+  it('toggleSelectionById | should retoggled an id that was previously selected', () => {
+    const { result, rerender } = renderHook(() => useMassSelection(3), {});
+
+    expect(result.current.selectionType).toEqual(
+      ListHeaderCheckBoxState.unchecked,
+    );
+
+    result.current.toggleSelectAll();
+
+    expect(result.current.selectionType).toEqual(
+      ListHeaderCheckBoxState.checked,
+    );
+
+    // Toggle to unselected
+    result.current.toggleSelectionById(id);
+
+    expect(result.current.isRowChecked(id)).toBe(false);
+
+    // Retoggle back to selected
+    result.current.toggleSelectionById(id);
+
+    expect(result.current.isRowChecked(id)).toBe(true);
+
+    rerender();
+
+    expect(result.current.selectionType).toEqual(
+      ListHeaderCheckBoxState.checked,
+    );
+  });
 
   it('toggleSelectAll | Partial', () => {
     const { result } = renderHook(() => useMassSelection(10), {});
