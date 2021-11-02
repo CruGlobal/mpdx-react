@@ -74,8 +74,8 @@ interface FilterPanelProps {
 
 export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
   filters,
-  selectedFilters,
   onClose,
+  selectedFilters,
   onSelectedFiltersChanged,
   ...boxProps
 }) => {
@@ -90,7 +90,6 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
         ...selectedFilters,
         [name]: value,
       };
-
       onSelectedFiltersChanged(newFilters);
     } else {
       const newFilters: ContactFilterSetInput & TaskFilterSetInput = {
@@ -123,6 +122,10 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
     getSelectedFilters(group).length > 0 ||
     getFeaturedFilters(group).length > 0;
 
+  const selectedFilterCount = Object.values(selectedFilters).filter(
+    (filter) => !(Array.isArray(filter) && filter.length === 0),
+  ).length;
+
   return (
     <Box {...boxProps}>
       <div style={{ overflow: 'hidden' }}>
@@ -137,9 +140,9 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
             <FilterHeader>
               <Box display="flex" justifyContent="space-between">
                 <Typography variant="h6">
-                  {Object.keys(selectedFilters).length > 0
+                  {selectedFilterCount > 0
                     ? t('Filter ({{count}})', {
-                        count: Object.keys(selectedFilters).length,
+                        count: selectedFilterCount,
                       })
                     : t('Filter')}
                 </Typography>
@@ -151,9 +154,8 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
                 color="primary"
                 style={{ marginInlineStart: theme.spacing(-1) }}
                 disabled={Object.keys(selectedFilters).length === 0}
-                onClick={() => alert('TODO')}
               >
-                {t('Save')}
+                {t('Save (TODO)')}
               </LinkButton>
               <LinkButton
                 color="primary"

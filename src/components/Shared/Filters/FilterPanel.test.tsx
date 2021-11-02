@@ -123,7 +123,9 @@ describe('FilterPanel', () => {
       await waitFor(() =>
         userEvent.click(getByTestId('CloseFilterGroupButton')),
       );
-      expect(onSelectedFiltersChanged).toHaveBeenCalled();
+      expect(onSelectedFiltersChanged).toHaveBeenCalledWith({
+        multiselect: ['option3'],
+      });
       // TODO Fix test | should be Group 1 (1)
       expect(getByText('Group 1')).toBeVisible();
     });
@@ -286,7 +288,9 @@ describe('FilterPanel', () => {
         userEvent.click(getByTestId('CloseFilterGroupButton')),
       );
 
-      expect(onSelectedFiltersChanged).toHaveBeenCalled();
+      expect(onSelectedFiltersChanged).toHaveBeenCalledWith({
+        multiselect: ['option3'],
+      });
       // TODO Fix test | should be Group 1 (1)
       expect(getByText('Group 1')).toBeVisible();
     });

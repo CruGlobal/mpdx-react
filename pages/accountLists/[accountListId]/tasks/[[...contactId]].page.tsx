@@ -2,14 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Head from 'next/head';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'next/router';
-import {
-  Box,
-  Button,
-  Card,
-  CardContent,
-  Hidden,
-  styled,
-} from '@material-ui/core';
+import { Box, Button, Hidden, styled } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 import CheckCircleOutlineIcon from '@material-ui/icons/CheckCircleOutline';
 import { InfiniteList } from '../../../../src/components/InfiniteList/InfiniteList';
@@ -19,6 +12,7 @@ import { SidePanelsLayout } from '../../../../src/components/Layouts/SidePanelsL
 import { useAccountListId } from '../../../../src/hooks/useAccountListId';
 import { TaskFilterSetInput } from '../../../../graphql/types.generated';
 import { TaskRow } from '../../../../src/components/Task/TaskRow/TaskRow';
+import NullState from '../../../../src/components/Shared/Filters/NullState/NullState';
 import {
   ListHeader,
   ListHeaderCheckBoxState,
@@ -74,7 +68,7 @@ const TasksPage: React.FC = () => {
   }, [isReady, contactId]);
 
   const [filterPanelOpen, setFilterPanelOpen] = useState<boolean>(false);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
   const [activeFilters, setActiveFilters] = useState<TaskFilterSetInput>({});
   const [starredFilter, setStarredFilter] = useState<TaskFilterSetInput>({});
   const { data, loading, fetchMore } = useTasksQuery({
@@ -93,6 +87,10 @@ const TasksPage: React.FC = () => {
     variables: { accountListId: accountListId ?? '' },
     skip: !accountListId,
   });
+
+  const isFiltered =
+    Object.keys(activeFilters).length > 0 ||
+    Object.values(activeFilters).some((filter) => filter !== []);
 
   const toggleFilterPanel = () => {
     setFilterPanelOpen(!filterPanelOpen);
@@ -133,7 +131,7 @@ const TasksPage: React.FC = () => {
     event: React.ChangeEvent<HTMLInputElement>,
   ): void => {
     setSelectedTasks(
-      event.target.checked ? data?.tasks.nodes.map(({ id }) => id) ?? [] : [],
+      event.target.checked ? data?.tasks?.nodes.map(({ id }) => id) ?? [] : [],
     );
   };
 
@@ -150,8 +148,9 @@ const TasksPage: React.FC = () => {
 
   const hasSelectedSomeTasks =
     selectedTasks.length > 0 &&
-    selectedTasks.length < (data?.tasks.nodes.length ?? 0);
-  const hasSelectedAllTasks = selectedTasks.length === data?.tasks.nodes.length;
+    selectedTasks.length < (data?.tasks?.nodes.length ?? 0);
+  const hasSelectedAllTasks =
+    selectedTasks.length === data?.tasks?.nodes.length;
 
   return (
     <>
@@ -184,7 +183,7 @@ const TasksPage: React.FC = () => {
                   toggleFilterPanel={toggleFilterPanel}
                   onCheckAllItems={handleCheckAllTasks}
                   onSearchTermChanged={setSearchTerm}
-                  totalItems={data?.tasks.totalCount}
+                  totalItems={data?.tasks?.totalCount}
                   starredFilter={starredFilter}
                   toggleStarredFilter={setStarredFilter}
                   headerCheckboxState={
@@ -214,8 +213,8 @@ const TasksPage: React.FC = () => {
                 />
                 <InfiniteList
                   loading={loading}
-                  data={data?.tasks.nodes}
-                  totalCount={data?.tasks.totalCount}
+                  data={data?.tasks?.nodes}
+                  totalCount={data?.tasks?.totalCount}
                   style={{ height: 'calc(100vh - 160px)' }}
                   itemContent={(index, task) => (
                     <Box key={index} flexDirection="row">
@@ -229,17 +228,20 @@ const TasksPage: React.FC = () => {
                     </Box>
                   )}
                   endReached={() =>
-                    data?.tasks.pageInfo.hasNextPage &&
+                    data?.tasks?.pageInfo.hasNextPage &&
                     fetchMore({
-                      variables: { after: data.tasks.pageInfo.endCursor },
+                      variables: { after: data.tasks?.pageInfo.endCursor },
                     })
                   }
                   EmptyPlaceholder={
-                    <Card>
-                      <CardContent>
-                        TODO: Implement Empty Placeholder
-                      </CardContent>
-                    </Card>
+                    <Box width="75%" margin="auto" mt={2}>
+                      <NullState
+                        page="task"
+                        totalCount={data?.allTasks?.totalCount || 0}
+                        filtered={isFiltered}
+                        changeFilters={setActiveFilters}
+                      />
+                    </Box>
                   }
                 />
               </>
