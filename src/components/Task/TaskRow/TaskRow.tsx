@@ -108,7 +108,7 @@ export const TaskRow: React.FC<TaskRowProps> = ({
   }`;
 
   return (
-    <Box role="row">
+    <Box role="row" p={1}>
       <ContactRowButton
         display="flex"
         alignItems="center"
