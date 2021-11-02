@@ -2,12 +2,13 @@ import React, { useEffect, useState } from 'react';
 import Head from 'next/head';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'next/router';
-import { Box, Card, CardContent, Hidden, styled } from '@material-ui/core';
+import { Box, Hidden, styled } from '@material-ui/core';
 import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
 import FormatListBulleted from '@material-ui/icons/FormatListBulleted';
 import ViewColumn from '@material-ui/icons/ViewColumn';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
+import NullState from '../../../../src/components/Shared/Filters/NullState/NullState';
 import { ContactFlowDragLayer } from '../../../../src/components/Contacts/ContactFlow/ContactFlowDragLayer/ContactFlowDragLayer';
 import { ContactFlow } from '../../../../src/components/Contacts/ContactFlow/ContactFlow';
 import { InfiniteList } from '../../../../src/components/InfiniteList/InfiniteList';
@@ -83,6 +84,10 @@ const ContactsPage: React.FC = () => {
     skip: !accountListId,
   });
 
+  const isFiltered =
+    Object.keys(activeFilters).length > 0 ||
+    Object.values(activeFilters).some((filter) => filter !== []);
+
   const toggleFilterPanel = () => {
     setFilterPanelOpen(!filterPanelOpen);
   };
@@ -126,16 +131,16 @@ const ContactsPage: React.FC = () => {
   ): void => {
     setSelectedContacts(
       event.target.checked
-        ? data?.contacts.nodes.map((contact) => contact.id) ?? []
+        ? data?.contacts?.nodes.map((contact) => contact.id) ?? []
         : [],
     );
   };
 
   const isSelectedSomeContacts =
     selectedContacts.length > 0 &&
-    selectedContacts.length < (data?.contacts.nodes.length ?? 0);
+    selectedContacts.length < (data?.contacts?.nodes.length ?? 0);
   const isSelectedAllContacts =
-    selectedContacts.length === data?.contacts.nodes.length;
+    selectedContacts.length === data?.contacts?.nodes.length;
 
   const setSearchTerm = (searchTerm?: string) => {
     const { searchTerm: _, ...oldQuery } = query;
@@ -194,7 +199,7 @@ const ContactsPage: React.FC = () => {
                     toggleFilterPanel={toggleFilterPanel}
                     onCheckAllItems={handleCheckAllContacts}
                     onSearchTermChanged={setSearchTerm}
-                    totalItems={data?.contacts.totalCount}
+                    totalItems={data?.contacts?.totalCount}
                     starredFilter={starredFilter}
                     toggleStarredFilter={setStarredFilter}
                     headerCheckboxState={
@@ -226,8 +231,8 @@ const ContactsPage: React.FC = () => {
                   {tableDisplayState === 'list' ? (
                     <InfiniteList
                       loading={loading}
-                      data={data?.contacts.nodes}
-                      totalCount={data?.contacts.totalCount}
+                      data={data?.contacts?.nodes}
+                      totalCount={data?.contacts?.totalCount}
                       style={{ height: 'calc(100vh - 160px)' }}
                       itemContent={(index, contact) => (
                         <ContactRow
@@ -240,19 +245,22 @@ const ContactsPage: React.FC = () => {
                         />
                       )}
                       endReached={() =>
-                        data?.contacts.pageInfo.hasNextPage &&
+                        data?.contacts?.pageInfo.hasNextPage &&
                         fetchMore({
                           variables: {
-                            after: data.contacts.pageInfo.endCursor,
+                            after: data.contacts?.pageInfo.endCursor,
                           },
                         })
                       }
                       EmptyPlaceholder={
-                        <Card>
-                          <CardContent>
-                            TODO: Implement Empty Placeholder
-                          </CardContent>
-                        </Card>
+                        <Box width="75%" margin="auto" mt={2}>
+                          <NullState
+                            page="contact"
+                            totalCount={data?.allContacts.totalCount || 0}
+                            filtered={isFiltered}
+                            changeFilters={setActiveFilters}
+                          />
+                        </Box>
                       }
                     />
                   ) : (
