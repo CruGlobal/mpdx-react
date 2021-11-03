@@ -15,6 +15,7 @@ describe('LoadCoachingDetail', () => {
               id: coachingId,
               name: 'John Doe',
               currency: 'USD',
+              monthlyGoal: 55,
             },
           },
         }}
@@ -23,5 +24,26 @@ describe('LoadCoachingDetail', () => {
       </GqlMockedProvider>,
     );
     expect(await findByText('John Doe')).toBeVisible();
+    expect(await findByText('Monthly $55')).toBeVisible();
+  });
+  it('null goal', async () => {
+    const { findByText } = render(
+      <GqlMockedProvider<LoadCoachingDetailQuery>
+        mocks={{
+          LoadCoachingDetail: {
+            coachingAccountList: {
+              id: coachingId,
+              name: 'John Doe',
+              currency: 'USD',
+              monthlyGoal: null,
+            },
+          },
+        }}
+      >
+        <CoachingDetail coachingId="coaching-id" />
+      </GqlMockedProvider>,
+    );
+    expect(await findByText('John Doe')).toBeVisible();
+    expect(await findByText('Monthly $0')).toBeVisible();
   });
 });
