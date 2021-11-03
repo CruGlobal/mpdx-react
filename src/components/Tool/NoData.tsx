@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Typography, styled } from '@material-ui/core';
+import { Typography } from '@material-ui/core';
 import {
   mdiAccountGroup,
   mdiCurrencyUsd,
@@ -11,25 +11,7 @@ import {
 } from '@mdi/js';
 import Icon from '@mdi/react';
 import i18n from 'i18next';
-import theme from '../../theme';
-
-const StyledBox = styled(Box)(() => ({
-  width: '100%',
-  border: '1px solid',
-  borderColor: theme.palette.cruGrayMedium.main,
-  color: theme.palette.cruGrayDark.main,
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-  flexDirection: 'column',
-  backgroundColor: theme.palette.cruGrayLight.main,
-  paddingTop: theme.spacing(7),
-  paddingBottom: theme.spacing(7),
-  paddingLeft: theme.spacing(3),
-  paddingRight: theme.spacing(3),
-  textAlign: 'center',
-  boxShadow: `0px 0px 5px ${theme.palette.cruGrayMedium.main} inset`,
-}));
+import { NullStateBox } from '../Shared/Filters/NullState/NullStateBox';
 
 interface Props {
   tool: string;
@@ -95,11 +77,11 @@ const textMap: { [key: string]: ToolText } = {
 
 const NoData: React.FC<Props> = ({ tool }: Props) => {
   return (
-    <StyledBox data-testid="no-data">
+    <NullStateBox data-testid={`${tool}-null-state`}>
       <Icon path={textMap[tool].icon} size={1.5} />
       <Typography variant="h5">{textMap[tool].primaryText}</Typography>
       <Typography>{textMap[tool].secondaryText}</Typography>
-    </StyledBox>
+    </NullStateBox>
   );
 };
 
