@@ -20,10 +20,10 @@ import { ContactFilterSetInput } from '../../../../graphql/types.generated';
 import { ContactRow } from '../../../../src/components/Contacts/ContactRow/ContactRow';
 import {
   ListHeader,
-  ListHeaderCheckBoxState,
   TableViewModeEnum,
 } from '../../../../src/components/Shared/Header/ListHeader';
 import { FilterPanel } from '../../../../src/components/Shared/Filters/FilterPanel';
+import { useMassSelection } from '../../../../src/hooks/useMassSelection';
 import { useContactFiltersQuery, useContactsQuery } from './Contacts.generated';
 
 const WhiteBackground = styled(Box)(({ theme }) => ({
@@ -62,10 +62,19 @@ const ContactsPage: React.FC = () => {
     }
   }, [isReady, contactId]);
 
+  //#region Filters
   const [filterPanelOpen, setFilterPanelOpen] = useState<boolean>(false);
   const [activeFilters, setActiveFilters] = useState<ContactFilterSetInput>({});
   const [starredFilter, setStarredFilter] = useState<ContactFilterSetInput>({});
-  const [selectedContacts, setSelectedContacts] = useState<Array<string>>([]);
+
+  const { data: filterData, loading: filtersLoading } = useContactFiltersQuery({
+    variables: { accountListId: accountListId ?? '' },
+    skip: !accountListId,
+  });
+
+  const toggleFilterPanel = () => {
+    setFilterPanelOpen(!filterPanelOpen);
+  };
 
   const { data, loading, fetchMore } = useContactsQuery({
     variables: {
@@ -79,19 +88,22 @@ const ContactsPage: React.FC = () => {
     skip: !accountListId,
   });
 
-  const { data: filterData, loading: filtersLoading } = useContactFiltersQuery({
-    variables: { accountListId: accountListId ?? '' },
-    skip: !accountListId,
-  });
-
   const isFiltered =
     Object.keys(activeFilters).length > 0 ||
     Object.values(activeFilters).some((filter) => filter !== []);
 
-  const toggleFilterPanel = () => {
-    setFilterPanelOpen(!filterPanelOpen);
-  };
+  //#endregion
 
+  //#region Mass Actions
+  const {
+    selectionType,
+    isRowChecked,
+    toggleSelectAll,
+    toggleSelectionById,
+  } = useMassSelection(data?.contacts.totalCount ?? 0);
+  //#endregion
+
+  //#region User Actions
   const setContactFocus = (id?: string) => {
     const {
       accountListId: _accountListId,
@@ -112,36 +124,6 @@ const ContactsPage: React.FC = () => {
     id && setContactDetailsId(id);
     setContactDetailsOpen(!!id);
   };
-
-  const handleCheckOneContact = (
-    event: React.ChangeEvent<HTMLInputElement>,
-    contactId: string,
-  ): void => {
-    if (!selectedContacts.includes(contactId)) {
-      setSelectedContacts((prevSelected) => [...prevSelected, contactId]);
-    } else {
-      setSelectedContacts((prevSelected) =>
-        prevSelected.filter((id) => id !== contactId),
-      );
-    }
-  };
-
-  const handleCheckAllContacts = (
-    event: React.ChangeEvent<HTMLInputElement>,
-  ): void => {
-    setSelectedContacts(
-      event.target.checked
-        ? data?.contacts?.nodes.map((contact) => contact.id) ?? []
-        : [],
-    );
-  };
-
-  const isSelectedSomeContacts =
-    selectedContacts.length > 0 &&
-    selectedContacts.length < (data?.contacts?.nodes.length ?? 0);
-  const isSelectedAllContacts =
-    selectedContacts.length === data?.contacts?.nodes.length;
-
   const setSearchTerm = (searchTerm?: string) => {
     const { searchTerm: _, ...oldQuery } = query;
     replace({
@@ -165,7 +147,9 @@ const ContactsPage: React.FC = () => {
       setTableDisplayState(viewMode);
     }
   };
+  //#endregion
 
+  //#region JSX
   return (
     <>
       <Head>
@@ -197,18 +181,12 @@ const ContactsPage: React.FC = () => {
                     activeFilters={Object.keys(activeFilters).length > 0}
                     filterPanelOpen={filterPanelOpen}
                     toggleFilterPanel={toggleFilterPanel}
-                    onCheckAllItems={handleCheckAllContacts}
+                    onCheckAllItems={toggleSelectAll}
                     onSearchTermChanged={setSearchTerm}
                     totalItems={data?.contacts?.totalCount}
                     starredFilter={starredFilter}
                     toggleStarredFilter={setStarredFilter}
-                    headerCheckboxState={
-                      isSelectedSomeContacts
-                        ? ListHeaderCheckBoxState.partial
-                        : isSelectedAllContacts
-                        ? ListHeaderCheckBoxState.checked
-                        : ListHeaderCheckBoxState.unchecked
-                    }
+                    headerCheckboxState={selectionType}
                     buttonGroup={
                       <Hidden xsDown>
                         <ToggleButtonGroup
@@ -239,9 +217,9 @@ const ContactsPage: React.FC = () => {
                           accountListId={accountListId}
                           key={index}
                           contact={contact}
-                          isChecked={selectedContacts.includes(contact.id)}
+                          isChecked={isRowChecked(contact.id)}
                           onContactSelected={setContactFocus}
-                          onContactCheckToggle={handleCheckOneContact}
+                          onContactCheckToggle={toggleSelectionById}
                         />
                       )}
                       endReached={() =>
@@ -292,6 +270,7 @@ const ContactsPage: React.FC = () => {
       )}
     </>
   );
+  //#endregion
 };
 
 export default ContactsPage;
