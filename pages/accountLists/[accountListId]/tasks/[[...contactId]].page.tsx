@@ -12,13 +12,11 @@ import { SidePanelsLayout } from '../../../../src/components/Layouts/SidePanelsL
 import { useAccountListId } from '../../../../src/hooks/useAccountListId';
 import { TaskFilterSetInput } from '../../../../graphql/types.generated';
 import { TaskRow } from '../../../../src/components/Task/TaskRow/TaskRow';
+import { ListHeader } from '../../../../src/components/Shared/Header/ListHeader';
 import NullState from '../../../../src/components/Shared/Filters/NullState/NullState';
-import {
-  ListHeader,
-  ListHeaderCheckBoxState,
-} from '../../../../src/components/Shared/Header/ListHeader';
 import useTaskDrawer from '../../../../src/hooks/useTaskDrawer';
 import { FilterPanel } from '../../../../src/components/Shared/Filters/FilterPanel';
+import { useMassSelection } from '../../../../src/hooks/useMassSelection';
 import { useTaskFiltersQuery, useTasksQuery } from './Tasks.generated';
 
 const WhiteBackground = styled(Box)(({ theme }) => ({
@@ -48,7 +46,6 @@ const TasksPage: React.FC = () => {
 
   const [contactDetailsOpen, setContactDetailsOpen] = useState(false);
   const [contactDetailsId, setContactDetailsId] = useState<string>();
-  const [selectedTasks, setSelectedTasks] = useState<Array<string>>([]);
 
   const { contactId, searchTerm } = query;
 
@@ -67,10 +64,11 @@ const TasksPage: React.FC = () => {
     }
   }, [isReady, contactId]);
 
+  //#region Filters
   const [filterPanelOpen, setFilterPanelOpen] = useState<boolean>(false);
-
   const [activeFilters, setActiveFilters] = useState<TaskFilterSetInput>({});
   const [starredFilter, setStarredFilter] = useState<TaskFilterSetInput>({});
+
   const { data, loading, fetchMore } = useTasksQuery({
     variables: {
       accountListId: accountListId ?? '',
@@ -95,7 +93,18 @@ const TasksPage: React.FC = () => {
   const toggleFilterPanel = () => {
     setFilterPanelOpen(!filterPanelOpen);
   };
+  //#endregion
 
+  //#region Mass Actions
+  const {
+    selectionType,
+    isRowChecked,
+    toggleSelectAll,
+    toggleSelectionById,
+  } = useMassSelection(data?.tasks.totalCount ?? 0);
+  //#endregion
+
+  //#region User Actions
   const setContactFocus = (id?: string) => {
     const {
       accountListId: _accountListId,
@@ -117,24 +126,6 @@ const TasksPage: React.FC = () => {
     setContactDetailsOpen(!!id);
   };
 
-  const handleCheckOneTask = (contactId: string): void => {
-    if (!selectedTasks.includes(contactId)) {
-      setSelectedTasks((prevSelected) => [...prevSelected, contactId]);
-    } else {
-      setSelectedTasks((prevSelected) =>
-        prevSelected.filter((id) => id !== contactId),
-      );
-    }
-  };
-
-  const handleCheckAllTasks = (
-    event: React.ChangeEvent<HTMLInputElement>,
-  ): void => {
-    setSelectedTasks(
-      event.target.checked ? data?.tasks?.nodes.map(({ id }) => id) ?? [] : [],
-    );
-  };
-
   const setSearchTerm = (searchTerm?: string) => {
     const { searchTerm: _, ...oldQuery } = query;
     replace({
@@ -145,13 +136,9 @@ const TasksPage: React.FC = () => {
       },
     });
   };
+  //#endregion
 
-  const hasSelectedSomeTasks =
-    selectedTasks.length > 0 &&
-    selectedTasks.length < (data?.tasks?.nodes.length ?? 0);
-  const hasSelectedAllTasks =
-    selectedTasks.length === data?.tasks?.nodes.length;
-
+  //#region JSX
   return (
     <>
       <Head>
@@ -181,18 +168,12 @@ const TasksPage: React.FC = () => {
                   activeFilters={Object.keys(activeFilters).length > 0}
                   filterPanelOpen={filterPanelOpen}
                   toggleFilterPanel={toggleFilterPanel}
-                  onCheckAllItems={handleCheckAllTasks}
+                  onCheckAllItems={toggleSelectAll}
                   onSearchTermChanged={setSearchTerm}
                   totalItems={data?.tasks?.totalCount}
                   starredFilter={starredFilter}
                   toggleStarredFilter={setStarredFilter}
-                  headerCheckboxState={
-                    hasSelectedSomeTasks
-                      ? ListHeaderCheckBoxState.partial
-                      : hasSelectedAllTasks
-                      ? ListHeaderCheckBoxState.checked
-                      : ListHeaderCheckBoxState.unchecked
-                  }
+                  headerCheckboxState={selectionType}
                   buttonGroup={
                     <Hidden xsDown>
                       <TaskHeaderButton
@@ -222,8 +203,8 @@ const TasksPage: React.FC = () => {
                         accountListId={accountListId}
                         task={task}
                         onContactSelected={setContactFocus}
-                        onTaskCheckToggle={handleCheckOneTask}
-                        isChecked={selectedTasks.includes(task.id)}
+                        onTaskCheckToggle={toggleSelectionById}
+                        isChecked={isRowChecked(task.id)}
                       />
                     </Box>
                   )}
@@ -266,6 +247,7 @@ const TasksPage: React.FC = () => {
       )}
     </>
   );
+  //#endregion
 };
 
 export default TasksPage;
