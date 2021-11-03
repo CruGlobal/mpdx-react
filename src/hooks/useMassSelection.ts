@@ -42,8 +42,7 @@ export const useMassSelection = (
   const toggleSelectionById = (id: string) => {
     switch (selectionType) {
       case ListHeaderCheckBoxState.partial:
-        const currentIndex = ids.indexOf(id);
-        if (currentIndex !== -1) {
+        if (ids.includes(id)) {
           setIds((previousIds) =>
             previousIds.filter((selectedIds) => selectedIds !== id),
           );
@@ -52,8 +51,7 @@ export const useMassSelection = (
         }
         break;
       case ListHeaderCheckBoxState.checked:
-        const currentReverseIndex = reverseIds.indexOf(id);
-        if (currentReverseIndex !== -1) {
+        if (reverseIds.includes(id)) {
           setReverseIds((previousIds) =>
             previousIds.filter((previousId) => previousId !== id),
           );
