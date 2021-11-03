@@ -26,6 +26,7 @@ describe('useMassSelection', () => {
     expect(result.current.selectionType).toEqual(
       ListHeaderCheckBoxState.partial,
     );
+    expect(result.current.ids).toEqual([id]);
   });
 
   it('toggleSelectionById | should unselect a selected row', () => {
@@ -41,7 +42,7 @@ describe('useMassSelection', () => {
     expect(result.current.selectionType).toEqual(
       ListHeaderCheckBoxState.partial,
     );
-
+    expect(result.current.ids).toEqual([id]);
     // Toggle to unselected
     result.current.toggleSelectionById(id);
 
@@ -52,6 +53,7 @@ describe('useMassSelection', () => {
     expect(result.current.selectionType).toEqual(
       ListHeaderCheckBoxState.unchecked,
     );
+    expect(result.current.ids).toEqual([]);
   });
 
   it('toggleSelectionById | should switch to All if all ids selected', () => {
@@ -68,12 +70,13 @@ describe('useMassSelection', () => {
     expect(result.current.isRowChecked(id)).toBe(true);
     expect(result.current.isRowChecked('321')).toBe(true);
     expect(result.current.isRowChecked('231')).toBe(true);
-
+    expect(result.current.ids).toEqual([id, '321', '231']);
     rerender();
 
     expect(result.current.selectionType).toEqual(
       ListHeaderCheckBoxState.checked,
     );
+    expect(result.current.ids).toEqual([]);
   });
 
   it('toggleSelectionById | should switch to None if all ids are unselected', () => {
@@ -122,6 +125,8 @@ describe('useMassSelection', () => {
     result.current.toggleSelectionById(id);
 
     expect(result.current.isRowChecked(id)).toBe(false);
+
+    expect(result.current.reverseIds).toEqual([id]);
 
     // Retoggle back to selected
     result.current.toggleSelectionById(id);

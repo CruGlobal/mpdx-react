@@ -4,6 +4,8 @@ import { ListHeaderCheckBoxState } from '../components/Shared/Header/ListHeader'
 export const useMassSelection = (
   totalCount: number,
 ): {
+  ids: string[];
+  reverseIds: string[];
   selectionType: ListHeaderCheckBoxState;
   isRowChecked: (id: string) => boolean;
   toggleSelectAll: () => void;
@@ -92,6 +94,8 @@ export const useMassSelection = (
       !reverseIds.includes(id));
 
   return {
+    ids,
+    reverseIds,
     selectionType,
     isRowChecked,
     toggleSelectAll,
