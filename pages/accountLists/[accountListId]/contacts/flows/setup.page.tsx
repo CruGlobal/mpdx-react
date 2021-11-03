@@ -5,6 +5,7 @@ import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { Box } from '@material-ui/core';
 import { useSnackbar } from 'notistack';
+import { v4 as uuidv4 } from 'uuid';
 import { UnusedStatusesColumn } from '../../../../../src/components/Contacts/ContactFlow/ContactFlowSetup/Column/UnusedStatusesColumn';
 import { ContactFilterStatusEnum } from '../../../../../graphql/types.generated';
 import {
@@ -95,6 +96,7 @@ const ContactFlowSetupPage: React.FC = () => {
       ...flowOptions,
       {
         name: 'Untitled',
+        id: uuidv4(),
         statuses: [],
         color: 'color-text',
       },
