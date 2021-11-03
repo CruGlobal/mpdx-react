@@ -14,6 +14,7 @@ describe('LoadCoachingDetail', () => {
             coachingAccountList: {
               id: coachingId,
               name: 'John Doe',
+              currency: 'USD',
             },
           },
         }}
