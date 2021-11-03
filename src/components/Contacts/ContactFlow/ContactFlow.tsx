@@ -11,7 +11,13 @@ interface Props {
   onContactSelected: (contactId: string) => void;
 }
 
-const statusMap: { [key: string]: string } = {
+export interface ContactFlowOption {
+  name: string;
+  statuses: string[];
+  color: string;
+}
+
+export const statusMap: { [key: string]: string } = {
   'Never Contacted': 'NEVER_CONTACTED',
   'Ask in Future': 'ASK_IN_FUTURE',
   'Cultivate Relationship': 'CULTIVATE_RELATIONSHIP',
@@ -28,7 +34,7 @@ const statusMap: { [key: string]: string } = {
   'Expired Referral': 'EXPIRED_REFERRAL',
 };
 
-const colorMap: { [key: string]: string } = {
+export const colorMap: { [key: string]: string } = {
   'color-danger': 'red',
   'color-warning': theme.palette.progressBarYellow.main,
   'color-success': theme.palette.mpdxGreen.main,
@@ -45,11 +51,7 @@ export const ContactFlow: React.FC<Props> = ({
     loading: loadingUserOptions,
   } = useGetUserOptionsQuery({});
 
-  const flowOptions: {
-    name: string;
-    statuses: string[];
-    color: string;
-  }[] = JSON.parse(
+  const flowOptions: ContactFlowOption[] = JSON.parse(
     userOptions?.userOptions.find((option) => option.key === 'flows')?.value ||
       '{}',
   );
