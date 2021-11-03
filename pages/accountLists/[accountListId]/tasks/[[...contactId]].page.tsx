@@ -123,14 +123,6 @@ const TasksPage: React.FC = () => {
     toggleSelectionById,
   } = useMassSelection(data?.tasks.totalCount ?? 0);
 
-  const handleCheckOneTask = (contactId: string): void => {
-    toggleSelectionById(contactId);
-  };
-
-  const handleCheckAllTasks = (): void => {
-    toggleSelectAll();
-  };
-
   const setSearchTerm = (searchTerm?: string) => {
     const { searchTerm: _, ...oldQuery } = query;
     replace({
@@ -171,7 +163,7 @@ const TasksPage: React.FC = () => {
                   activeFilters={Object.keys(activeFilters).length > 0}
                   filterPanelOpen={filterPanelOpen}
                   toggleFilterPanel={toggleFilterPanel}
-                  onCheckAllItems={handleCheckAllTasks}
+                  onCheckAllItems={toggleSelectAll}
                   onSearchTermChanged={setSearchTerm}
                   totalItems={data?.tasks.totalCount}
                   starredFilter={starredFilter}
@@ -206,7 +198,7 @@ const TasksPage: React.FC = () => {
                         accountListId={accountListId}
                         task={task}
                         onContactSelected={setContactFocus}
-                        onTaskCheckToggle={handleCheckOneTask}
+                        onTaskCheckToggle={toggleSelectionById}
                         isChecked={isRowChecked(task.id)}
                       />
                     </Box>

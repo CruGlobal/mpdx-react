@@ -38,10 +38,7 @@ interface Props {
   contact: ContactRowFragment;
   isChecked: boolean;
   onContactSelected: (contactId: string) => void;
-  onContactCheckToggle: (
-    event: React.ChangeEvent<HTMLInputElement>,
-    contactId: string,
-  ) => void;
+  onContactCheckToggle: (contactId: string) => void;
 }
 
 export const ContactRow: React.FC<Props> = ({
@@ -75,9 +72,7 @@ export const ContactRow: React.FC<Props> = ({
           <Checkbox
             checked={isChecked}
             color="default"
-            onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
-              onContactCheckToggle(event, contact.id)
-            }
+            onChange={() => onContactCheckToggle(contact.id)}
             value={isChecked}
           />
         </Box>

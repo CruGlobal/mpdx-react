@@ -96,17 +96,6 @@ const ContactsPage: React.FC = () => {
     toggleSelectAll,
     toggleSelectionById,
   } = useMassSelection(data?.contacts.totalCount ?? 0);
-
-  const handleCheckOneContact = (
-    event: React.ChangeEvent<HTMLInputElement>,
-    contactId: string,
-  ): void => {
-    toggleSelectionById(contactId);
-  };
-
-  const handleCheckAllContacts = (): void => {
-    toggleSelectAll();
-  };
   //#endregion
 
   //#region User Actions
@@ -187,7 +176,7 @@ const ContactsPage: React.FC = () => {
                     activeFilters={Object.keys(activeFilters).length > 0}
                     filterPanelOpen={filterPanelOpen}
                     toggleFilterPanel={toggleFilterPanel}
-                    onCheckAllItems={handleCheckAllContacts}
+                    onCheckAllItems={toggleSelectAll}
                     onSearchTermChanged={setSearchTerm}
                     totalItems={data?.contacts.totalCount}
                     starredFilter={starredFilter}
@@ -225,7 +214,7 @@ const ContactsPage: React.FC = () => {
                           contact={contact}
                           isChecked={isRowChecked(contact.id)}
                           onContactSelected={setContactFocus}
-                          onContactCheckToggle={handleCheckOneContact}
+                          onContactCheckToggle={toggleSelectionById}
                         />
                       )}
                       endReached={() =>
