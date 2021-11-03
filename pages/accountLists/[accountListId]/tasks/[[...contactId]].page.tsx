@@ -70,10 +70,11 @@ const TasksPage: React.FC = () => {
     }
   }, [isReady, contactId]);
 
+  //#region Filters
   const [filterPanelOpen, setFilterPanelOpen] = useState<boolean>(false);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [activeFilters, setActiveFilters] = useState<TaskFilterSetInput>({});
   const [starredFilter, setStarredFilter] = useState<TaskFilterSetInput>({});
+
   const { data, loading, fetchMore } = useTasksQuery({
     variables: {
       accountListId: accountListId ?? '',
@@ -94,7 +95,18 @@ const TasksPage: React.FC = () => {
   const toggleFilterPanel = () => {
     setFilterPanelOpen(!filterPanelOpen);
   };
+  //#endregion
 
+  //#region Mass Actions
+  const {
+    selectionType,
+    isRowChecked,
+    toggleSelectAll,
+    toggleSelectionById,
+  } = useMassSelection(data?.tasks.totalCount ?? 0);
+  //#endregion
+
+  //#region User Actions
   const setContactFocus = (id?: string) => {
     const {
       accountListId: _accountListId,
@@ -116,13 +128,6 @@ const TasksPage: React.FC = () => {
     setContactDetailsOpen(!!id);
   };
 
-  const {
-    selectionType,
-    isRowChecked,
-    toggleSelectAll,
-    toggleSelectionById,
-  } = useMassSelection(data?.tasks.totalCount ?? 0);
-
   const setSearchTerm = (searchTerm?: string) => {
     const { searchTerm: _, ...oldQuery } = query;
     replace({
@@ -133,7 +138,9 @@ const TasksPage: React.FC = () => {
       },
     });
   };
+  //#endregion
 
+  //#region JSX
   return (
     <>
       <Head>
@@ -239,6 +246,7 @@ const TasksPage: React.FC = () => {
       )}
     </>
   );
+  //#endregion
 };
 
 export default TasksPage;
