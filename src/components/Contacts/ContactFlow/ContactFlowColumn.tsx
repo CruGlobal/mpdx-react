@@ -37,7 +37,7 @@ export const ContactFlowColumn: React.FC<Props> = ({
       accountListId: accountListId ?? '',
       contactsFilters: { status: statuses },
     },
-    skip: !accountListId,
+    skip: !accountListId || statuses.length === 0,
   });
 
   const CardContentRef = useRef<HTMLDivElement>();
@@ -58,9 +58,11 @@ export const ContactFlowColumn: React.FC<Props> = ({
           <Box
             p={2}
             display="flex"
+            alignItems="center"
             justifyContent="space-between"
             data-testid="column-header"
             borderBottom={`5px solid ${color}`}
+            height={theme.spacing(7)}
           >
             <Box width="80%">
               <Typography
@@ -76,7 +78,7 @@ export const ContactFlowColumn: React.FC<Props> = ({
               </Typography>
             </Box>
             <Box display="flex" alignItems="center">
-              <Typography>{data?.contacts.totalCount}</Typography>
+              <Typography>{data?.contacts.totalCount || 0}</Typography>
             </Box>
           </Box>
           <CardContent
