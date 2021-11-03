@@ -34,7 +34,11 @@ export const AppealProgress = ({
     <>
       <CoachingProgressLabelContainer>
         <Typography>
-          {loading ? ' ' : isPrimary ? t('Primary Appeal') : goalText}
+          {loading
+            ? ' '
+            : isPrimary
+            ? t('Primary Appeal ') + currencyFormat(goal, currency)
+            : goalText}
         </Typography>
         <Typography>
           {currencyFormat(received, currency)}(
