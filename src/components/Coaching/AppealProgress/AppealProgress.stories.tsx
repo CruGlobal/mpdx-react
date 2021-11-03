@@ -9,30 +9,39 @@ const control = {
 };
 export default {
   title: 'Coaching/AppealProgress',
-  args: { loading: false },
+  args: { loading: false, isPrimary: false },
   argTypes: {
-    primary: { control },
-    secondary: { control },
+    received: { control },
+    pledged: { control },
   },
 };
 
 export const Default = ({
-  primary,
-  secondary,
+  isPrimary,
   loading,
+  received,
+  pledged,
 }: {
-  primary: number;
-  secondary: number;
   loading: boolean;
+  isPrimary: boolean;
+  received: number;
+  pledged: number;
 }): ReactElement => {
   return (
     <Box m={2}>
-      <AppealProgress />
+      <AppealProgress
+        currency={'USD'}
+        isPrimary={isPrimary}
+        loading={loading}
+        goal={100}
+        received={received}
+        pledged={pledged}
+      />
     </Box>
   );
 };
 
 Default.args = {
-  primary: 50,
-  secondary: 75,
+  received: 50,
+  pledged: 75,
 };
