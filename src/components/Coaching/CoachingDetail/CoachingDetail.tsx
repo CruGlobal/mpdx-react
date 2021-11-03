@@ -34,8 +34,7 @@ const CoachingSideTitleContainer = styled(Box)(({ theme }) => ({
   width: '100%',
   margin: theme.spacing(1),
   alignItems: 'center',
-  alignContent: 'center|stretch',
-  justifyContent: 'space-between',
+  alignContent: 'center',
 }));
 
 const CoachingMainContainer = styled(Box)(({ theme }) => ({
