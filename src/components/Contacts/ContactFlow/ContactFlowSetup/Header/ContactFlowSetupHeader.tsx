@@ -11,8 +11,8 @@ const HeaderWrap = styled(Box)(({ theme }) => ({
   borderBottom: `1px solid ${theme.palette.cruGrayMedium.main}`,
 }));
 
-const BackButton = styled(Button)(() => ({
-  color: '#2196F3',
+const BackButton = styled(Button)(({ theme }) => ({
+  color: theme.palette.info.main,
   fontWeight: 600,
 }));
 

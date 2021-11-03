@@ -70,7 +70,7 @@ export const ContactFlowSetupColumn: React.FC<Props> = ({
             }}
           />
           <IconButton onClick={() => deleteColumn(index)}>
-            <Clear style={{ color: 'red' }} />
+            <Clear style={{ color: theme.palette.error.main }} />
           </IconButton>
         </Box>
         <CardContent
