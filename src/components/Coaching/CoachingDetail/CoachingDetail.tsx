@@ -92,40 +92,44 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
           <>
             <CoachingLoadingSkeleton />
             <CoachingLoadingSkeleton />
+            <CoachingLoadingSkeleton />
+            <CoachingLoadingSkeleton />
           </>
         ) : (
-          <CoachingMainTitleContainer>
-            <Box style={{ flexGrow: 1 }}>
-              <Typography
-                variant="h5"
-                display="block"
-                style={{
-                  margin: theme.spacing(1),
-                }}
-              >
-                {data?.coachingAccountList.name}
-              </Typography>
-            </Box>
-            <Box style={{ flexGrow: 1 }}>
-              <AppealProgress
-                loading={loading}
-                isPrimary={false}
-                currency={data?.coachingAccountList.currency}
-                goal={
-                  data?.coachingAccountList.monthlyGoal
-                    ? data.coachingAccountList.monthlyGoal
-                    : 0
-                }
-                received={data?.coachingAccountList.receivedPledges}
-                pledged={data?.coachingAccountList.totalPledges}
-              />
-            </Box>
-          </CoachingMainTitleContainer>
+          <>
+            <CoachingMainTitleContainer>
+              <Box style={{ flexGrow: 1 }}>
+                <Typography
+                  variant="h5"
+                  display="block"
+                  style={{
+                    margin: theme.spacing(1),
+                  }}
+                >
+                  {data?.coachingAccountList.name}
+                </Typography>
+              </Box>
+              <Box style={{ flexGrow: 1 }}>
+                <AppealProgress
+                  loading={loading}
+                  isPrimary={false}
+                  currency={data?.coachingAccountList.currency}
+                  goal={
+                    data?.coachingAccountList.monthlyGoal
+                      ? data.coachingAccountList.monthlyGoal
+                      : 0
+                  }
+                  received={data?.coachingAccountList.receivedPledges}
+                  pledged={data?.coachingAccountList.totalPledges}
+                />
+              </Box>
+            </CoachingMainTitleContainer>
+            <Divider />
+            <MonthlyActivitySection
+              accountListId={accountList?.id ? accountList.id : coachingId}
+            />
+          </>
         )}
-        <Divider />
-        <MonthlyActivitySection
-          accountListId={accountList?.id ? accountList.id : coachingId}
-        />
       </CoachingMainContainer>
     </CoachingDetailContainer>
   );
