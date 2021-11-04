@@ -22,8 +22,8 @@ import { ContactUpdateInput } from '../../../../../../../../graphql/types.genera
 import { ContactPeopleFragment } from '../../ContactPeople.generated';
 import { useUpdateContactDetailsMutation } from './EditContactDetails.generated';
 
-const ContactEditModalFooterButton = styled(Button)(() => ({
-  color: '#2196F3',
+const ContactEditModalFooterButton = styled(Button)(({ theme }) => ({
+  color: theme.palette.info.main,
   fontWeight: 'bold',
 }));
 

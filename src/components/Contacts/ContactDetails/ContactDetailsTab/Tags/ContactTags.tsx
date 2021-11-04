@@ -40,7 +40,7 @@ const ContactTagInput = styled(TextField)(({ theme }) => ({
     minWidth: '200px',
   },
   '& ::placeholder': {
-    color: '#2196F3',
+    color: theme.palette.info.main,
     opacity: 1,
   },
   '& :hover::placeholder': {

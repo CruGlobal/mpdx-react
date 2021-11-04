@@ -41,12 +41,12 @@ const EmailSelect = styled(Select)(({ destroyed }: { destroyed: boolean }) => ({
   textDecoration: destroyed ? 'line-through' : 'none',
 }));
 
-const ContactAddIcon = styled(AddIcon)(() => ({
-  color: '#2196F3',
+const ContactAddIcon = styled(AddIcon)(({ theme }) => ({
+  color: theme.palette.info.main,
 }));
 
-const ContactAddText = styled(Typography)(() => ({
-  color: '#2196F3',
+const ContactAddText = styled(Typography)(({ theme }) => ({
+  color: theme.palette.info.main,
   textTransform: 'uppercase',
   fontWeight: 'bold',
 }));

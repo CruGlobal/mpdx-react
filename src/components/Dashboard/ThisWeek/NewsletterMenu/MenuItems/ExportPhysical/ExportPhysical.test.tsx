@@ -2,12 +2,14 @@ import React from 'react';
 import { render, waitFor, within } from '@testing-library/react';
 import { useSession } from 'next-auth/client';
 import userEvent from '@testing-library/user-event';
+import { MuiThemeProvider } from '@material-ui/core';
 import {
   ExportFormatEnum,
   ExportLabelTypeEnum,
   ExportSortEnum,
 } from '../../../../../../../graphql/types.generated';
 import { GqlMockedProvider } from '../../../../../../../__tests__/util/graphqlMocking';
+import theme from '../../../../../../theme';
 import ExportPhysical from './ExportPhysical';
 import { CreateExportedContactsMutation } from './ExportPhysical.generated';
 
@@ -37,24 +39,28 @@ describe('ExportPhysical', () => {
 
   it('default', () => {
     const { getByText } = render(
-      <GqlMockedProvider<CreateExportedContactsMutation> mocks={mocks}>
-        <ExportPhysical
-          accountListId={accountListId}
-          handleClose={handleClose}
-        />
-      </GqlMockedProvider>,
+      <MuiThemeProvider theme={theme}>
+        <GqlMockedProvider<CreateExportedContactsMutation> mocks={mocks}>
+          <ExportPhysical
+            accountListId={accountListId}
+            handleClose={handleClose}
+          />
+        </GqlMockedProvider>
+      </MuiThemeProvider>,
     );
     expect(getByText('Export Contacts')).toBeInTheDocument();
   });
 
   it('handles closing menu', () => {
     const { getByRole } = render(
-      <GqlMockedProvider<CreateExportedContactsMutation> mocks={mocks}>
-        <ExportPhysical
-          accountListId={accountListId}
-          handleClose={handleClose}
-        />
-      </GqlMockedProvider>,
+      <MuiThemeProvider theme={theme}>
+        <GqlMockedProvider<CreateExportedContactsMutation> mocks={mocks}>
+          <ExportPhysical
+            accountListId={accountListId}
+            handleClose={handleClose}
+          />
+        </GqlMockedProvider>
+      </MuiThemeProvider>,
     );
     userEvent.click(getByRole('button', { hidden: true, name: 'Close' }));
     expect(handleClose).toHaveBeenCalled();
@@ -86,14 +92,16 @@ describe('ExportPhysical', () => {
 
     it('Exports Contacts and Downloads File - PDF of Mail Merged Labels | Avery5160 and Contact Name', async () => {
       const { getByText, getByTestId } = render(
-        <GqlMockedProvider<CreateExportedContactsMutation>
-          mocks={createMock(ExportFormatEnum.Pdf)}
-        >
-          <ExportPhysical
-            accountListId={accountListId}
-            handleClose={handleClose}
-          />
-        </GqlMockedProvider>,
+        <MuiThemeProvider theme={theme}>
+          <GqlMockedProvider<CreateExportedContactsMutation>
+            mocks={createMock(ExportFormatEnum.Pdf)}
+          >
+            <ExportPhysical
+              accountListId={accountListId}
+              handleClose={handleClose}
+            />
+          </GqlMockedProvider>
+        </MuiThemeProvider>,
       );
       userEvent.click(getByText('PDF of Mail Merged Labels'));
       // value of the select is held in a child Input element, so we must reference that element for the value
@@ -114,14 +122,16 @@ describe('ExportPhysical', () => {
 
     it('Exports Contacts and Downloads File - PDF of Mail Merged Labels | Avery7160 and Zip', async () => {
       const { getByText, getByTestId, getByLabelText, getByRole } = render(
-        <GqlMockedProvider<CreateExportedContactsMutation>
-          mocks={createMock(ExportFormatEnum.Pdf)}
-        >
-          <ExportPhysical
-            accountListId={accountListId}
-            handleClose={handleClose}
-          />
-        </GqlMockedProvider>,
+        <MuiThemeProvider theme={theme}>
+          <GqlMockedProvider<CreateExportedContactsMutation>
+            mocks={createMock(ExportFormatEnum.Pdf)}
+          >
+            <ExportPhysical
+              accountListId={accountListId}
+              handleClose={handleClose}
+            />
+          </GqlMockedProvider>
+        </MuiThemeProvider>,
       );
 
       userEvent.click(getByText('PDF of Mail Merged Labels'));
@@ -152,14 +162,16 @@ describe('ExportPhysical', () => {
 
     it('Exports Contacts and Downloads File - CSV For Mailing', async () => {
       const { getByText } = render(
-        <GqlMockedProvider<CreateExportedContactsMutation>
-          mocks={createMock(ExportFormatEnum.Csv)}
-        >
-          <ExportPhysical
-            accountListId={accountListId}
-            handleClose={handleClose}
-          />
-        </GqlMockedProvider>,
+        <MuiThemeProvider theme={theme}>
+          <GqlMockedProvider<CreateExportedContactsMutation>
+            mocks={createMock(ExportFormatEnum.Csv)}
+          >
+            <ExportPhysical
+              accountListId={accountListId}
+              handleClose={handleClose}
+            />
+          </GqlMockedProvider>
+        </MuiThemeProvider>,
       );
       userEvent.click(getByText('CSV for Mail Merge'));
       await waitFor(() =>
@@ -171,14 +183,16 @@ describe('ExportPhysical', () => {
 
     it('Exports Contacts and Downloads File - Advanced CSV', async () => {
       const { getByText } = render(
-        <GqlMockedProvider<CreateExportedContactsMutation>
-          mocks={createMock(ExportFormatEnum.Csv)}
-        >
-          <ExportPhysical
-            accountListId={accountListId}
-            handleClose={handleClose}
-          />
-        </GqlMockedProvider>,
+        <MuiThemeProvider theme={theme}>
+          <GqlMockedProvider<CreateExportedContactsMutation>
+            mocks={createMock(ExportFormatEnum.Csv)}
+          >
+            <ExportPhysical
+              accountListId={accountListId}
+              handleClose={handleClose}
+            />
+          </GqlMockedProvider>
+        </MuiThemeProvider>,
       );
       userEvent.click(getByText('Advanced CSV'));
       await waitFor(() =>
@@ -190,14 +204,16 @@ describe('ExportPhysical', () => {
 
     it('Exports Contacts and Downloads File - Advanced Excel (XLSX)', async () => {
       const { getByText } = render(
-        <GqlMockedProvider<CreateExportedContactsMutation>
-          mocks={createMock(ExportFormatEnum.Xlsx)}
-        >
-          <ExportPhysical
-            accountListId={accountListId}
-            handleClose={handleClose}
-          />
-        </GqlMockedProvider>,
+        <MuiThemeProvider theme={theme}>
+          <GqlMockedProvider<CreateExportedContactsMutation>
+            mocks={createMock(ExportFormatEnum.Xlsx)}
+          >
+            <ExportPhysical
+              accountListId={accountListId}
+              handleClose={handleClose}
+            />
+          </GqlMockedProvider>
+        </MuiThemeProvider>,
       );
       userEvent.click(getByText('Advanced Excel (XLSX)'));
       await waitFor(() =>
