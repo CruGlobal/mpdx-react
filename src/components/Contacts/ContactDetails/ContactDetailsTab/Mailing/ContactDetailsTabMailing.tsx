@@ -38,8 +38,8 @@ const ContactDetailsMailingLabel = styled(Typography)(({ theme }) => ({
   marginRight: '5px',
 }));
 
-const ContactMailingShowMoreLabel = styled(Typography)(() => ({
-  color: '#2196F3',
+const ContactMailingShowMoreLabel = styled(Typography)(({ theme }) => ({
+  color: theme.palette.info.main,
 }));
 
 const ContactAddressPrimaryText = styled(Typography)(({ theme }) => ({
@@ -59,8 +59,8 @@ const AddressEditIcon = styled(CreateIcon)(({ theme }) => ({
   color: theme.palette.cruGrayMedium.main,
 }));
 
-const AddressAddText = styled(Typography)(() => ({
-  color: '#2196F3',
+const AddressAddText = styled(Typography)(({ theme }) => ({
+  color: theme.palette.info.main,
   textTransform: 'uppercase',
   fontWeight: 'bold',
 }));
@@ -69,8 +69,8 @@ const AddressEditIconContainer = styled(IconButton)(({ theme }) => ({
   margin: theme.spacing(0, 1),
 }));
 
-const AddressAddIcon = styled(AddIcon)(() => ({
-  color: '#2196F3',
+const AddressAddIcon = styled(AddIcon)(({ theme }) => ({
+  color: theme.palette.info.main,
 }));
 
 interface MailingProp {
