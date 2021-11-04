@@ -2,8 +2,10 @@ import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import { SnackbarProvider } from 'notistack';
 import userEvent from '@testing-library/user-event';
+import { MuiThemeProvider } from '@material-ui/core';
 import { GqlMockedProvider } from '../../../../../../../../../__tests__/util/graphqlMocking';
 import TestRouter from '../../../../../../../../../__tests__/util/TestRouter';
+import theme from '../../../../../../../../theme';
 import { CreateContactMutation } from './CreateContact.generated';
 import CreateContact from './CreateContact';
 
@@ -17,32 +19,36 @@ const router = {
 describe('CreateContact', () => {
   it('default', () => {
     const { queryByText } = render(
-      <SnackbarProvider>
-        <TestRouter router={router}>
-          <GqlMockedProvider<CreateContactMutation>>
-            <CreateContact
-              accountListId={accountListId}
-              handleClose={handleClose}
-            />
-          </GqlMockedProvider>
-        </TestRouter>
-      </SnackbarProvider>,
+      <MuiThemeProvider theme={theme}>
+        <SnackbarProvider>
+          <TestRouter router={router}>
+            <GqlMockedProvider<CreateContactMutation>>
+              <CreateContact
+                accountListId={accountListId}
+                handleClose={handleClose}
+              />
+            </GqlMockedProvider>
+          </TestRouter>
+        </SnackbarProvider>
+      </MuiThemeProvider>,
     );
     expect(queryByText('New Contact')).toBeInTheDocument();
   });
 
   it('closes menu', () => {
     const { getByRole } = render(
-      <SnackbarProvider>
-        <TestRouter router={router}>
-          <GqlMockedProvider<CreateContactMutation>>
-            <CreateContact
-              accountListId={accountListId}
-              handleClose={handleClose}
-            />
-          </GqlMockedProvider>
-        </TestRouter>
-      </SnackbarProvider>,
+      <MuiThemeProvider theme={theme}>
+        <SnackbarProvider>
+          <TestRouter router={router}>
+            <GqlMockedProvider<CreateContactMutation>>
+              <CreateContact
+                accountListId={accountListId}
+                handleClose={handleClose}
+              />
+            </GqlMockedProvider>
+          </TestRouter>
+        </SnackbarProvider>
+      </MuiThemeProvider>,
     );
 
     userEvent.click(getByRole('button', { hidden: true, name: 'Close' }));
@@ -54,16 +60,18 @@ describe('CreateContact', () => {
     const name = 'Huffman, Christian';
     it('creates contact', async () => {
       const { getByText, findByText, getByRole } = render(
-        <SnackbarProvider>
-          <TestRouter router={router}>
-            <GqlMockedProvider<CreateContactMutation> onCall={mutationSpy}>
-              <CreateContact
-                accountListId={accountListId}
-                handleClose={handleClose}
-              />
-            </GqlMockedProvider>
-          </TestRouter>
-        </SnackbarProvider>,
+        <MuiThemeProvider theme={theme}>
+          <SnackbarProvider>
+            <TestRouter router={router}>
+              <GqlMockedProvider<CreateContactMutation> onCall={mutationSpy}>
+                <CreateContact
+                  accountListId={accountListId}
+                  handleClose={handleClose}
+                />
+              </GqlMockedProvider>
+            </TestRouter>
+          </SnackbarProvider>
+        </MuiThemeProvider>,
       );
 
       userEvent.click(getByText('Save'));

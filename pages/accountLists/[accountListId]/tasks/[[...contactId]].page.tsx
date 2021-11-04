@@ -24,18 +24,18 @@ const WhiteBackground = styled(Box)(({ theme }) => ({
 }));
 
 const TaskHeaderButton = styled(Button)(({ theme }) => ({
-  color: '#2196F3',
+  color: theme.palette.info.main,
   fontWeight: 600,
   marginRight: theme.spacing(1),
   marginLeft: theme.spacing(1),
 }));
 
-const TaskCheckIcon = styled(CheckCircleOutlineIcon)(() => ({
-  color: '#2196F3',
+const TaskCheckIcon = styled(CheckCircleOutlineIcon)(({ theme }) => ({
+  color: theme.palette.info.main,
 }));
 
-const TaskAddIcon = styled(AddIcon)(() => ({
-  color: '#2196F3',
+const TaskAddIcon = styled(AddIcon)(({ theme }) => ({
+  color: theme.palette.info.main,
 }));
 
 const TasksPage: React.FC = () => {
