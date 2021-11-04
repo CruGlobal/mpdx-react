@@ -6,6 +6,7 @@ import { Skeleton } from '@material-ui/lab';
 import { AppealProgress } from '../AppealProgress/AppealProgress';
 import { useLoadCoachingDetailQuery } from './LoadCoachingDetail.generated';
 import theme from 'src/theme';
+import { MonthlyActivitySection } from 'src/components/Reports/DonationsReport/MonthlyActivity/MonthlyActivitySection';
 
 interface CoachingDetailProps {
   coachingId: string;
@@ -115,6 +116,8 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
             </Box>
           </CoachingMainTitleContainer>
         )}
+        <Divider />
+        <MonthlyActivitySection accountListId={coachingId} />
       </CoachingMainContainer>
     </CoachingDetailContainer>
   );
