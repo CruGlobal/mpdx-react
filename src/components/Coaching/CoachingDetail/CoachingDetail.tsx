@@ -3,6 +3,7 @@ import { Box, Divider, styled, Typography } from '@material-ui/core';
 import { EcoOutlined } from '@material-ui/icons';
 import { useTranslation } from 'react-i18next';
 import { Skeleton } from '@material-ui/lab';
+import { AppealProgress } from '../AppealProgress/AppealProgress';
 import { useLoadCoachingDetailQuery } from './LoadCoachingDetail.generated';
 import theme from 'src/theme';
 
@@ -30,6 +31,7 @@ const CoachingSideContainer = styled(Box)(({ theme }) => ({
 
 const CoachingSideTitleContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
+  width: '100%',
   margin: theme.spacing(1),
   alignItems: 'center',
   alignContent: 'center',
@@ -86,7 +88,7 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
           </>
         ) : (
           <CoachingMainTitleContainer>
-            <span role="doc-subtitle">
+            <Box style={{ flexGrow: 1 }}>
               <Typography
                 variant="h5"
                 display="block"
@@ -96,7 +98,21 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
               >
                 {data?.coachingAccountList.name}
               </Typography>
-            </span>
+            </Box>
+            <Box style={{ flexGrow: 1 }}>
+              <AppealProgress
+                loading={loading}
+                isPrimary={false}
+                currency={data?.coachingAccountList.currency}
+                goal={
+                  data?.coachingAccountList.monthlyGoal
+                    ? data.coachingAccountList.monthlyGoal
+                    : 0
+                }
+                received={data?.coachingAccountList.receivedPledges}
+                pledged={data?.coachingAccountList.totalPledges}
+              />
+            </Box>
           </CoachingMainTitleContainer>
         )}
       </CoachingMainContainer>
