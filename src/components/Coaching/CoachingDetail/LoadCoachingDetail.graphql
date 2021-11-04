@@ -2,4 +2,10 @@ query LoadCoachingDetail($coachingId: ID!) {
   coachingAccountList(id: $coachingId) {
     ...CoachedPerson
   }
+  accountLists {
+    nodes {
+      id
+      name
+    }
+  }
 }

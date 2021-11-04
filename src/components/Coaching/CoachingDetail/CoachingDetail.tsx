@@ -58,6 +58,12 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
     variables: { coachingId: coachingId },
   });
 
+  //TODO: Add accountlist reference in Coaching
+
+  // HACK: A CoachingAccountList is an AccountList but they aren't connected in GraphQl this forces that connection.
+  const accountList = data?.accountLists.nodes.find(
+    (accountList) => accountList.name === data.coachingAccountList.name,
+  );
   return (
     <CoachingDetailContainer>
       <CoachingSideContainer bgcolor={theme.palette.progressBarGray.main}>
@@ -117,7 +123,9 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
           </CoachingMainTitleContainer>
         )}
         <Divider />
-        <MonthlyActivitySection accountListId={coachingId} />
+        <MonthlyActivitySection
+          accountListId={accountList?.id ? accountList.id : coachingId}
+        />
       </CoachingMainContainer>
     </CoachingDetailContainer>
   );
