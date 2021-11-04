@@ -2,27 +2,51 @@ import {
   Box,
   Card,
   CardContent,
-  Typography,
   IconButton,
   TextField,
   styled,
+  Theme,
 } from '@material-ui/core';
 import { Menu, Clear, FiberManualRecord } from '@material-ui/icons';
+import React, { useRef, useState, useLayoutEffect } from 'react';
 import theme from '../../../../../../src/theme';
 import { ContactFilterStatusEnum } from '../../../../../../graphql/types.generated';
 import { colorMap } from '../../../../../../src/components/Contacts/ContactFlow/ContactFlow';
+import { ContactFlowSetupStatusRow } from '../Row/ContactFlowSetupStatusRow';
 
-export const ContactFlowSetupStatusRow = styled(Box)(({ theme }) => ({
-  padding: theme.spacing(2),
-  borderBottom: `1px solid ${theme.palette.cruGrayMedium.main}`,
+const DeleteColumnButton = styled(IconButton)(({ theme }) => ({
+  color: theme.palette.error.main,
+  padding: theme.spacing(1),
   '&:hover': {
-    backgroundColor: theme.palette.mpdxYellow.main,
-    cursor: 'move',
+    backgroundColor: theme.palette.cruGrayLight.main,
+    color: theme.palette.error.dark,
   },
 }));
 
+const ColoredCircle = styled(FiberManualRecord)(
+  ({
+    theme,
+    circlecolor,
+    size,
+    selected,
+  }: {
+    theme: Theme;
+    circlecolor: string;
+    size: number;
+    selected: boolean;
+  }) => ({
+    color: circlecolor,
+    height: size,
+    width: size,
+    '&:hover': {
+      height: !selected ? size + theme.spacing(1) : 'initial',
+      width: !selected ? size + theme.spacing(1) : 'initial',
+    },
+  }),
+);
+
 interface Props {
-  statuses: ContactFilterStatusEnum[];
+  statuses: { id: ContactFilterStatusEnum; value: string }[];
   title: string;
   color: string;
   accountListId: string;
@@ -44,12 +68,21 @@ export const ContactFlowSetupColumn: React.FC<Props> = ({
   changeTitle,
   deleteColumn,
 }: Props) => {
+  const CardContentRef = useRef<HTMLDivElement>();
+  const [columnWidth, setColumnWidth] = useState(0);
+
+  useLayoutEffect(() => {
+    if (CardContentRef.current) {
+      setColumnWidth(CardContentRef.current.offsetWidth);
+    }
+  }, []);
+
   return (
     <>
       <Card>
         <Box
           p={2}
-          pr={0}
+          pr={1}
           display="flex"
           alignItems="center"
           justifyContent="space-between"
@@ -69,9 +102,9 @@ export const ContactFlowSetupColumn: React.FC<Props> = ({
               marginRight: theme.spacing(1),
             }}
           />
-          <IconButton onClick={() => deleteColumn(index)}>
-            <Clear style={{ color: theme.palette.error.main }} />
-          </IconButton>
+          <DeleteColumnButton onClick={() => deleteColumn(index)}>
+            <Clear />
+          </DeleteColumnButton>
         </Box>
         <CardContent
           style={{
@@ -82,7 +115,7 @@ export const ContactFlowSetupColumn: React.FC<Props> = ({
             overflowY: 'auto',
           }}
         >
-          <Box width="100%" height="100%">
+          <Box {...{ ref: CardContentRef }} width="100%" height="100%">
             <Box
               width="100%"
               display="flex"
@@ -92,34 +125,46 @@ export const ContactFlowSetupColumn: React.FC<Props> = ({
             >
               {Object.entries(colorMap).map(([colorKey, colorValue]) => {
                 return (
-                  <IconButton
+                  <Box
                     key={colorKey}
-                    onClick={() => changeColor(index, colorKey)}
+                    display="flex"
+                    justifyContent="center"
+                    alignItems="center"
+                    m={0.5}
+                    height={theme.spacing(4)}
+                    width={theme.spacing(4)}
                   >
-                    <FiberManualRecord
+                    <IconButton
+                      onClick={() => changeColor(index, colorKey)}
                       style={{
-                        color: colorValue,
-                        height:
-                          color === colorValue
-                            ? theme.spacing(4)
-                            : theme.spacing(2.5),
-                        width:
-                          color === colorValue
-                            ? theme.spacing(4)
-                            : theme.spacing(2.5),
+                        padding: 0,
                       }}
-                    />
-                  </IconButton>
+                    >
+                      <ColoredCircle
+                        circlecolor={colorValue}
+                        selected={color === colorValue}
+                        size={
+                          color === colorValue
+                            ? theme.spacing(4)
+                            : theme.spacing(3)
+                        }
+                      />
+                    </IconButton>
+                  </Box>
                 );
               })}
             </Box>
-            <Box style={{ backgroundColor: theme.palette.common.white }}>
-              {statuses.map((status) => (
-                <ContactFlowSetupStatusRow key={status}>
-                  <Typography>{status}</Typography>
-                </ContactFlowSetupStatusRow>
-              ))}
-            </Box>
+            {columnWidth > 0 && (
+              <Box style={{ backgroundColor: theme.palette.common.white }}>
+                {statuses.map((status) => (
+                  <ContactFlowSetupStatusRow
+                    key={status.id}
+                    status={status}
+                    columnWidth={columnWidth}
+                  />
+                ))}
+              </Box>
+            )}
           </Box>
         </CardContent>
       </Card>

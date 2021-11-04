@@ -13,6 +13,7 @@ const HeaderWrap = styled(Box)(({ theme }) => ({
 
 const BackButton = styled(Button)(({ theme }) => ({
   color: theme.palette.info.main,
+  borderColor: theme.palette.info.main,
   fontWeight: 600,
 }));
 
@@ -31,7 +32,7 @@ export const ContactFlowSetupHeader: React.FC<Props> = ({
   const { t } = useTranslation();
   return (
     <HeaderWrap>
-      <BackButton>
+      <BackButton variant="outlined">
         <ChevronLeft />
         {t('Contacts')}
       </BackButton>

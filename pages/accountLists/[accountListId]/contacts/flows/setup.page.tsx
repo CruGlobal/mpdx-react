@@ -6,6 +6,7 @@ import { HTML5Backend } from 'react-dnd-html5-backend';
 import { Box } from '@material-ui/core';
 import { useSnackbar } from 'notistack';
 import { v4 as uuidv4 } from 'uuid';
+import { ContactFlowSetupDragLayer } from '../../../../../src/components/Contacts/ContactFlow/ContactFlowSetup/DragLayer/ContactFlowSetupDragLayer';
 import { UnusedStatusesColumn } from '../../../../../src/components/Contacts/ContactFlow/ContactFlowSetup/Column/UnusedStatusesColumn';
 import { ContactFilterStatusEnum } from '../../../../../graphql/types.generated';
 import {
@@ -43,8 +44,6 @@ const ContactFlowSetupPage: React.FC = () => {
     userOptions?.userOptions.find((option) => option.key === 'flows')?.value ||
       '[]',
   );
-
-  console.log(flowOptions);
 
   const allUsedStatuses = flowOptions
     ? flowOptions.flatMap((option) => option.statuses)
@@ -134,6 +133,7 @@ const ContactFlowSetupPage: React.FC = () => {
       </Head>
       {accountListId && !loadingUserOptions ? (
         <DndProvider backend={HTML5Backend}>
+          <ContactFlowSetupDragLayer />
           <Box>
             <ContactFlowSetupHeader addColumn={addColumn} />
             {flowOptions && (
@@ -156,7 +156,7 @@ const ContactFlowSetupPage: React.FC = () => {
                     // otherwise fit them equally into the screen
                     minWidth={flowOptions.length > 5 ? 360 : '100%'}
                     p={2}
-                    key={column.name}
+                    key={index}
                   >
                     <ContactFlowSetupColumn
                       index={index}
@@ -166,10 +166,10 @@ const ContactFlowSetupPage: React.FC = () => {
                       changeColor={changeColor}
                       changeTitle={changeTitle}
                       deleteColumn={deleteColumn}
-                      statuses={column.statuses.map(
-                        (status) =>
-                          statusMap[status] as ContactFilterStatusEnum,
-                      )}
+                      statuses={column.statuses.map((status) => ({
+                        id: statusMap[status] as ContactFilterStatusEnum,
+                        value: status,
+                      }))}
                     />
                   </Box>
                 ))}
@@ -182,9 +182,10 @@ const ContactFlowSetupPage: React.FC = () => {
                 >
                   <UnusedStatusesColumn
                     accountListId={accountListId}
-                    statuses={unusedStatuses.map(
-                      (status) => statusMap[status] as ContactFilterStatusEnum,
-                    )}
+                    statuses={unusedStatuses.map((status) => ({
+                      id: statusMap[status] as ContactFilterStatusEnum,
+                      value: status,
+                    }))}
                   />
                 </Box>
               </Box>

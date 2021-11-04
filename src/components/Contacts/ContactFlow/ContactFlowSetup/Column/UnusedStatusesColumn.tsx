@@ -7,17 +7,26 @@ import {
 } from '@material-ui/core';
 import { FiberManualRecord } from '@material-ui/icons';
 import { useTranslation } from 'react-i18next';
+import React, { useRef, useState, useLayoutEffect } from 'react';
 import theme from '../../../../../../src/theme';
 import { ContactFilterStatusEnum } from '../../../../../../graphql/types.generated';
-import { ContactFlowSetupStatusRow } from './ContactFlowSetupColumn';
+import { ContactFlowSetupStatusRow } from '../Row/ContactFlowSetupStatusRow';
 
 interface Props {
-  statuses: ContactFilterStatusEnum[];
+  statuses: { id: ContactFilterStatusEnum; value: string }[];
   accountListId: string;
 }
 
 export const UnusedStatusesColumn: React.FC<Props> = ({ statuses }: Props) => {
   const { t } = useTranslation();
+  const CardContentRef = useRef<HTMLDivElement>();
+  const [columnWidth, setColumnWidth] = useState(0);
+
+  useLayoutEffect(() => {
+    if (CardContentRef.current) {
+      setColumnWidth(CardContentRef.current.offsetWidth);
+    }
+  }, []);
   return (
     <>
       <Card>
@@ -41,7 +50,7 @@ export const UnusedStatusesColumn: React.FC<Props> = ({ statuses }: Props) => {
             overflowY: 'auto',
           }}
         >
-          <Box width="100%" height="100%">
+          <Box {...{ ref: CardContentRef }} width="100%" height="100%">
             <Box
               width="100%"
               display="flex"
@@ -59,13 +68,17 @@ export const UnusedStatusesColumn: React.FC<Props> = ({ statuses }: Props) => {
                 />
               </IconButton>
             </Box>
-            <Box style={{ backgroundColor: theme.palette.common.white }}>
-              {statuses.map((status) => (
-                <ContactFlowSetupStatusRow key={status}>
-                  <Typography>{status}</Typography>
-                </ContactFlowSetupStatusRow>
-              ))}
-            </Box>
+            {columnWidth > 0 && (
+              <Box style={{ backgroundColor: theme.palette.common.white }}>
+                {statuses.map((status) => (
+                  <ContactFlowSetupStatusRow
+                    key={status.id}
+                    status={status}
+                    columnWidth={columnWidth}
+                  />
+                ))}
+              </Box>
+            )}
           </Box>
         </CardContent>
       </Card>

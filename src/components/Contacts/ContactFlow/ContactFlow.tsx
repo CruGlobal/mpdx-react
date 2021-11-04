@@ -37,7 +37,7 @@ export const statusMap: { [key: string]: string } = {
 export const colorMap: { [key: string]: string } = {
   'color-danger': theme.palette.error.main,
   'color-warning': theme.palette.progressBarYellow.main,
-  'color-success': theme.palette.mpdxGreen.main,
+  'color-success': theme.palette.success.main,
   'color-info': theme.palette.mpdxBlue.main,
   'color-text': theme.palette.cruGrayDark.main,
 };
