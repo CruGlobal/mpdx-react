@@ -29,7 +29,7 @@ export const AppealProgress = ({
 }: Props): ReactElement => {
   const { t } = useTranslation();
 
-  const goalText = t('Monthly') + ' ' + currencyFormat(goal, currency);
+  const goalText = `${t('Monthly')} ${currencyFormat(goal, currency)}`;
   return (
     <>
       <CoachingProgressLabelContainer>
