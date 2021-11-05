@@ -1,11 +1,12 @@
-import { Box, styled, Theme, Typography } from '@material-ui/core';
+import { Box, styled, Typography } from '@material-ui/core';
 import React, { useEffect } from 'react';
 import { useDrag } from 'react-dnd';
 import { getEmptyImage } from 'react-dnd-html5-backend';
 import { useTranslation } from 'react-i18next';
 import { ContactFilterStatusEnum } from '../../../../../../graphql/types.generated';
+import theme from '../../../../../theme';
 
-export const StatusRow = styled(Box)(({ theme }: { theme: Theme }) => ({
+export const StatusRow = styled(Box)(() => ({
   padding: theme.spacing(1.5),
   borderBottom: `1px solid ${theme.palette.cruGrayMedium.main}`,
   '&:hover': {

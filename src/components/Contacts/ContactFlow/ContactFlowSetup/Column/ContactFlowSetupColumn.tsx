@@ -14,7 +14,7 @@ import { ContactFilterStatusEnum } from '../../../../../../graphql/types.generat
 import { colorMap } from '../../../../../../src/components/Contacts/ContactFlow/ContactFlow';
 import { ContactFlowSetupStatusRow } from '../Row/ContactFlowSetupStatusRow';
 
-const DeleteColumnButton = styled(IconButton)(({ theme }) => ({
+const DeleteColumnButton = styled(IconButton)(() => ({
   color: theme.palette.error.main,
   padding: theme.spacing(1),
   '&:hover': {
@@ -93,6 +93,9 @@ export const ContactFlowSetupColumn: React.FC<Props> = ({
           <Menu />
           <TextField
             fullWidth
+            inputProps={{
+              'data-testid': `column-title`,
+            }}
             value={title}
             onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
               changeTitle(event, index)
@@ -102,7 +105,10 @@ export const ContactFlowSetupColumn: React.FC<Props> = ({
               marginRight: theme.spacing(1),
             }}
           />
-          <DeleteColumnButton onClick={() => deleteColumn(index)}>
+          <DeleteColumnButton
+            onClick={() => deleteColumn(index)}
+            data-testid="delete-column-button"
+          >
             <Clear />
           </DeleteColumnButton>
         </Box>
@@ -119,6 +125,7 @@ export const ContactFlowSetupColumn: React.FC<Props> = ({
             <Box
               width="100%"
               display="flex"
+              data-testid="color-selector-box"
               justifyContent="center"
               borderBottom={`1px solid ${theme.palette.cruGrayMedium.main}`}
               style={{ backgroundColor: theme.palette.common.white }}
@@ -135,6 +142,7 @@ export const ContactFlowSetupColumn: React.FC<Props> = ({
                     width={theme.spacing(4)}
                   >
                     <IconButton
+                      data-testid={`colorButton-${colorKey}`}
                       onClick={() => changeColor(index, colorKey)}
                       style={{
                         padding: 0,
