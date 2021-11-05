@@ -25,6 +25,7 @@ describe('LoadCoachingDetail', () => {
     );
     expect(await findByText('John Doe')).toBeVisible();
     expect(await findByText('Monthly $55')).toBeVisible();
+    expect(await findByText('Monthly Activity')).toBeVisible();
   });
   it('null goal', async () => {
     const { findByText } = render(
@@ -45,5 +46,6 @@ describe('LoadCoachingDetail', () => {
     );
     expect(await findByText('John Doe')).toBeVisible();
     expect(await findByText('Monthly $0')).toBeVisible();
+    expect(await findByText('Monthly Activity')).toBeVisible();
   });
 });
