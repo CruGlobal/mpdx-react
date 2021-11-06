@@ -607,6 +607,7 @@ describe('ContactDetailTab', () => {
             id: contactId,
             name: 'Person, Test',
             starred: false,
+            pledgeReceived: false,
             people: {
               nodes: [
                 {

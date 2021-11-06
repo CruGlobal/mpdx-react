@@ -19,6 +19,7 @@ describe('ContactPartnershipStatus', () => {
             pledgeAmount={null}
             pledgeCurrency={null}
             pledgeFrequency={null}
+            pledgeReceived={false}
             status={ContactPartnershipStatusEnum.PartnerFinancial}
           />
         </I18nextProvider>
@@ -28,7 +29,7 @@ describe('ContactPartnershipStatus', () => {
       queryByText(
         contactPartnershipStatus[ContactPartnershipStatusEnum.PartnerFinancial],
       ),
-    ).not.toBeInTheDocument();
+    ).toBeInTheDocument();
   });
 
   it('render partner pray', () => {
@@ -41,6 +42,7 @@ describe('ContactPartnershipStatus', () => {
             pledgeAmount={null}
             pledgeCurrency={null}
             pledgeFrequency={null}
+            pledgeReceived={false}
             status={ContactPartnershipStatusEnum.PartnerPray}
           />
         </I18nextProvider>
