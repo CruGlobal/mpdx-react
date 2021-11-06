@@ -17,10 +17,9 @@ import { StarContactIconButton } from '../StarContactIconButton/StarContactIconB
 import { ContactUncompletedTasksCount } from '../ContactUncompletedTasksCount/ContactUncompletedTasksCount';
 import { ContactRowFragment } from './ContactRow.generated';
 
-const ListItemButton = styled(ButtonBase)(({ theme }) => ({
+const ListItemButton = styled(ButtonBase)(() => ({
   flex: '1 1 auto',
   textAlign: 'left',
-  padding: theme.spacing(0, 2),
 }));
 
 interface Props {
@@ -58,55 +57,54 @@ export const ContactRow: React.FC<Props> = ({
   } = contact;
 
   return (
-    <>
+    <ListItemButton focusRipple onClick={onClick} data-testid="rowButton">
       <Hidden xsUp={contactDetailsOpen}>
         <ListItemIcon>
           <Checkbox
             checked={isChecked}
             color="secondary"
+            onClick={(event) => event.stopPropagation()}
             onChange={() => onContactCheckToggle(contact.id)}
             value={isChecked}
           />
         </ListItemIcon>
       </Hidden>
-      <ListItemButton focusRipple onClick={onClick} data-testid="rowButton">
-        <Grid container alignItems="center">
-          <Grid item xs={6}>
-            <ListItemText
-              primary={
-                <Typography variant="h6" noWrap>
-                  <Box component="span" display="flex" alignItems="center">
-                    {name}
-                    <CelebrationIcons contact={contact} />
-                  </Box>
+      <Grid container alignItems="center">
+        <Grid item xs={6}>
+          <ListItemText
+            primary={
+              <Typography variant="h6" noWrap>
+                <Box component="span" display="flex" alignItems="center">
+                  {name}
+                  <CelebrationIcons contact={contact} />
+                </Box>
+              </Typography>
+            }
+            secondary={
+              primaryAddress && (
+                <Typography component="p" variant="body2">
+                  {[
+                    primaryAddress.street,
+                    primaryAddress.city,
+                    primaryAddress.state,
+                    primaryAddress.postalCode,
+                  ].join(', ')}
                 </Typography>
-              }
-              secondary={
-                primaryAddress && (
-                  <Typography component="p" variant="body2">
-                    {[
-                      primaryAddress.street,
-                      primaryAddress.city,
-                      primaryAddress.state,
-                      primaryAddress.postalCode,
-                    ].join(', ')}
-                  </Typography>
-                )
-              }
-            />
-          </Grid>
-          <Grid item xs={6}>
-            <ContactPartnershipStatus
-              contactDetailsOpen={contactDetailsOpen}
-              lateAt={lateAt}
-              pledgeAmount={pledgeAmount}
-              pledgeCurrency={pledgeCurrency}
-              pledgeFrequency={pledgeFrequency}
-              status={status}
-            />
-          </Grid>
+              )
+            }
+          />
         </Grid>
-      </ListItemButton>
+        <Grid item xs={6}>
+          <ContactPartnershipStatus
+            contactDetailsOpen={contactDetailsOpen}
+            lateAt={lateAt}
+            pledgeAmount={pledgeAmount}
+            pledgeCurrency={pledgeCurrency}
+            pledgeFrequency={pledgeFrequency}
+            status={status}
+          />
+        </Grid>
+      </Grid>
       <Hidden xsUp={contactDetailsOpen}>
         {uncompletedTasksCount > 0 && (
           <ContactUncompletedTasksCount
@@ -123,6 +121,6 @@ export const ContactRow: React.FC<Props> = ({
           />
         </ListItemSecondaryAction>
       </Hidden>
-    </>
+    </ListItemButton>
   );
 };

@@ -1,13 +1,18 @@
 import React, { ReactElement } from 'react';
 import { List, ListItem, styled, Theme } from '@material-ui/core';
-import { ItemProps, Virtuoso, VirtuosoProps } from 'react-virtuoso';
+import { ListProps, ItemProps, Virtuoso, VirtuosoProps } from 'react-virtuoso';
 import { Skeleton } from '@material-ui/lab';
 
 const height = 72;
 const padding = 0;
 
+// eslint-disable-next-line react/display-name
+const ListContainer: React.ComponentType<ListProps> = React.forwardRef(
+  (props, listRef) => <List component="div" {...props} ref={listRef} />,
+);
+
 const ItemWithBorders = styled(({ disableHover: _, ...props }) => (
-  <div {...props} />
+  <ListItem disableGutters {...props} />
 ))(
   ({
     theme,
@@ -32,15 +37,8 @@ const ItemWithBorders = styled(({ disableHover: _, ...props }) => (
 );
 
 const Item: React.ComponentType<ItemProps> = (props) => (
-  <ListItem disableGutters {...props} />
+  <ItemWithBorders {...props} />
 );
-
-// eslint-disable-next-line react/display-name
-// const List: React.forwardRef<ListProps> = ({ style, children }, listRef) => (
-//   <List style={style} component="div" ref={listRef}>
-//     {children}
-//   </List>
-// );
 
 const SkeletonItem: React.FC<{ height: number }> = ({ height }) => (
   <ItemWithBorders disableHover>
@@ -77,12 +75,7 @@ export const InfiniteList = <T,>({
     components={{
       Footer: loading ? Loading : undefined,
       EmptyPlaceholder: loading ? undefined : () => EmptyPlaceholder,
-      // eslint-disable-next-line react/display-name
-      List: React.forwardRef(({ style, children }, listRef) => (
-        <List style={style} component="div" ref={listRef}>
-          {children}
-        </List>
-      )),
+      List: ListContainer,
       Item,
       ScrollSeekPlaceholder: SkeletonItem,
       ...props.components,
