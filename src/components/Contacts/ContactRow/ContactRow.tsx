@@ -29,10 +29,7 @@ interface Props {
   isChecked: boolean;
   isContactDetailOpen: boolean;
   onContactSelected: (contactId: string) => void;
-  onContactCheckToggle: (
-    event: React.ChangeEvent<HTMLInputElement>,
-    contactId: string,
-  ) => void;
+  onContactCheckToggle: (contactId: string) => void;
 }
 
 export const ContactRow: React.FC<Props> = ({
@@ -67,9 +64,7 @@ export const ContactRow: React.FC<Props> = ({
           <Checkbox
             checked={isChecked}
             color="secondary"
-            onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
-              onContactCheckToggle(event, contact.id)
-            }
+            onChange={() => onContactCheckToggle(contact.id)}
             value={isChecked}
           />
         </ListItemIcon>
@@ -81,9 +76,9 @@ export const ContactRow: React.FC<Props> = ({
               primary={
                 <Typography variant="h6" noWrap>
                   <Box component="span" display="flex" alignItems="center">
-                    {name}
-                    <CelebrationIcons contact={contact} />
-                  </Box>
+              {name}
+              <CelebrationIcons contact={contact} />
+            </Box>
                 </Typography>
               }
               secondary={
@@ -120,7 +115,7 @@ export const ContactRow: React.FC<Props> = ({
         )}
         <ListItemSecondaryAction
           style={{ position: 'static', top: 0, transform: 'none' }}
-        >
+            >
           <StarContactIconButton
             accountListId={accountListId}
             contactId={contactId}

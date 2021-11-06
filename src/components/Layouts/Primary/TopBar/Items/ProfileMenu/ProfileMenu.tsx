@@ -1,8 +1,7 @@
 import React, { useState, ReactElement } from 'react';
 import {
   Avatar,
-  makeStyles,
-  Theme,
+  Box,
   IconButton,
   ListItemText,
   Menu,
@@ -11,43 +10,100 @@ import {
   MenuItem,
   Button,
   Link,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  Typography,
+  styled,
 } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
+import { useRouter } from 'next/router';
 import { signout } from 'next-auth/client';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import { useAccountListId } from '../../../../../../hooks/useAccountListId';
 import HandoffLink from '../../../../../HandoffLink';
 import { useGetTopBarQuery } from '../../GetTopBar.generated';
+import theme from '../../../../../../theme';
 
-const useStyles = makeStyles((theme: Theme) => ({
-  accountName: {
-    color: theme.palette.common.white,
-    padding: '0px 8px',
+const AccountName = styled(Typography)(({ theme }) => ({
+  color: theme.palette.common.white,
+  margin: 0,
+  padding: '0px 8px',
+}));
+
+const StyledAvatar = styled(AccountCircleIcon)(({ theme }) => ({
+  color: theme.palette.cruGrayMedium.main,
+}));
+
+const MenuItemAccount = styled(MenuItem)(() => ({
+  paddingTop: 0,
+  outline: 0,
+}));
+
+const MenuItemFooter = styled(MenuItem)(({ theme }) => ({
+  fontSize: theme.typography.body2.fontSize,
+  justifyContent: 'center',
+  paddingTop: theme.spacing(2),
+  outline: 0,
+}));
+
+const MenuButton = styled(Button)(({ theme }) => ({
+  width: '100%',
+  marginTop: theme.spacing(1),
+  borderColor: theme.palette.cruGrayLight.main,
+  color: theme.palette.cruGrayLight.main,
+}));
+
+const StyledMenuItem = styled(MenuItem)(({ theme }) => ({
+  '&:hover': {
+    backgroundColor: `${theme.palette.cruGrayMedium.main} !important`,
   },
-  avatar: {
-    color: theme.palette.cruGrayMedium.main,
+}));
+
+const AccountListSelectorSummary = styled(AccordionSummary)(() => ({
+  minHeight: '48px !important',
+  '& .MuiAccordion-root.Mui-expanded': {
+    margin: 0,
   },
-  menuList: {
-    paddingTop: 0,
+  '& .MuiAccordionSummary-content.Mui-expanded': {
+    margin: 0,
   },
-  menuItemAccount: {
-    paddingTop: 0,
-    outline: 0,
+}));
+
+const AccountListSelectorDetails = styled(AccordionDetails)(({ theme }) => ({
+  display: 'flex',
+  flexDirection: 'column',
+  padding: 0,
+  borderBottom: `1px solid ${theme.palette.cruGrayLight.main}`,
+  maxHeight: theme.spacing(24),
+  overflow: 'auto',
+  '& .MuiMenuItem-root': {
+    minHeight: theme.spacing(6),
   },
-  menuItemFooter: {
-    fontSize: theme.typography.body2.fontSize,
-    justifyContent: 'center',
-    paddingTop: theme.spacing(2),
-    outline: 0,
+}));
+
+const MenuWrapper = styled(Menu)(({ theme }) => ({
+  '& .MuiAccordion-root.Mui-expanded': {
+    margin: 0,
   },
-  menuButton: {
-    width: '100%',
-    marginTop: theme.spacing(1),
+  '& .MuiPaper-elevation1': {
+    boxShadow: 'none',
+  },
+  '& .MuiAccordionSummary-root': {
+    borderTop: `1px solid ${theme.palette.cruGrayLight.main}`,
+    borderBottom: `1px solid ${theme.palette.cruGrayLight.main}`,
+  },
+  '& .MuiPaper-root': {
+    color: 'white',
+    backgroundColor: theme.palette.cruGrayDark.main,
   },
 }));
 
 const ProfileMenu = (): ReactElement => {
-  const classes = useStyles();
   const { t } = useTranslation();
+  const router = useRouter();
+  const accountListId = useAccountListId();
   const { data } = useGetTopBarQuery();
   const [
     profileMenuAnchorEl,
@@ -70,24 +126,40 @@ const ProfileMenu = (): ReactElement => {
         onClick={handleProfileMenuOpen}
         data-testid="profileMenuButton"
       >
-        <AccountCircleIcon className={classes.avatar} />
-        {data && (
-          <ListItemText
-            className={classes.accountName}
-            primary={[data.user.firstName, data.user.lastName]
-              .filter(Boolean)
-              .join(' ')}
-          />
-        )}
+        <Box display="flex" alignItems="center" m={-1}>
+          <StyledAvatar />
+          {data && (
+            <Box display="block" textAlign="left">
+              <AccountName>
+                {[data.user.firstName, data.user.lastName]
+                  .filter(Boolean)
+                  .join(' ')}
+              </AccountName>
+              {accountListId && data.accountLists.nodes.length > 1 && (
+                <AccountName
+                  display="block"
+                  variant="body2"
+                  data-testid="accountListName"
+                >
+                  {
+                    data?.accountLists.nodes.find(
+                      (accountList) => accountList.id === accountListId,
+                    )?.name
+                  }
+                </AccountName>
+              )}
+            </Box>
+          )}
+        </Box>
       </IconButton>
-      <Menu
+      <MenuWrapper
         data-testid="profileMenu"
         anchorEl={profileMenuAnchorEl}
         open={profileMenuOpen}
         onClose={handleProfileMenuClose}
       >
         {data && (
-          <MenuItem button={false} className={classes.menuItemAccount}>
+          <MenuItemAccount>
             <ListItemAvatar>
               <Avatar>{data.user.firstName?.[0]}</Avatar>
             </ListItemAvatar>
@@ -97,8 +169,46 @@ const ProfileMenu = (): ReactElement => {
                 .join(' ')}
               secondary={data.user.keyAccounts[0]?.email}
             />
-          </MenuItem>
+          </MenuItemAccount>
         )}
+        <Accordion>
+          <AccountListSelectorSummary
+            expandIcon={<ExpandMoreIcon style={{ color: 'white' }} />}
+            data-testid="accountListSelector"
+          >
+            <Typography>
+              {accountListId
+                ? data?.accountLists.nodes.find(
+                    (accountList) => accountList.id === accountListId,
+                  )?.name
+                : t('Account List Selector')}
+            </Typography>
+          </AccountListSelectorSummary>
+          <AccountListSelectorDetails>
+            {data?.accountLists.nodes.map((accountList) => (
+              <StyledMenuItem
+                key={accountList.id}
+                data-testid={`accountListButton-${accountList.id}`}
+                style={{
+                  backgroundColor:
+                    accountListId === accountList.id
+                      ? theme.palette.cruGrayMedium.main
+                      : 'inherit',
+                }}
+                onClick={() =>
+                  router.push({
+                    pathname: accountListId
+                      ? router.pathname
+                      : '/accountLists/[accountListId]/',
+                    query: { accountListId: accountList.id },
+                  })
+                }
+              >
+                <ListItemText primary={accountList.name} />
+              </StyledMenuItem>
+            ))}
+          </AccountListSelectorDetails>
+        </Accordion>
         <Divider />
         <HandoffLink path="/preferences/personal">
           <MenuItem onClick={handleProfileMenuClose} component="a">
@@ -155,16 +265,15 @@ const ProfileMenu = (): ReactElement => {
           </HandoffLink>
         )}
         <MenuItem button={false}>
-          <Button
-            className={classes.menuButton}
+          <MenuButton
             variant="outlined"
             color="default"
             onClick={() => signout()}
           >
             {t('Sign Out')}
-          </Button>
+          </MenuButton>
         </MenuItem>
-        <MenuItem button={false} className={classes.menuItemFooter}>
+        <MenuItemFooter>
           <Link
             href="https://get.mpdx.org/privacy-policy/"
             target="_blank"
@@ -180,8 +289,8 @@ const ProfileMenu = (): ReactElement => {
           >
             {t('Terms of Use')}
           </Link>
-        </MenuItem>
-      </Menu>
+        </MenuItemFooter>
+      </MenuWrapper>
     </>
   );
 };

@@ -2,23 +2,39 @@ import React, { useEffect, useState } from 'react';
 import Head from 'next/head';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'next/router';
-import { Box, Card, CardContent, styled } from '@material-ui/core';
-import { ContactFilters } from '../../../../src/components/Contacts/ContactFilters/ContactFilters';
+import { Box, Hidden, styled } from '@material-ui/core';
+import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
+import FormatListBulleted from '@material-ui/icons/FormatListBulleted';
+import ViewColumn from '@material-ui/icons/ViewColumn';
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
+import NullState from '../../../../src/components/Shared/Filters/NullState/NullState';
+import { ContactFlowDragLayer } from '../../../../src/components/Contacts/ContactFlow/ContactFlowDragLayer/ContactFlowDragLayer';
+import { ContactFlow } from '../../../../src/components/Contacts/ContactFlow/ContactFlow';
 import { InfiniteList } from '../../../../src/components/InfiniteList/InfiniteList';
 import { ContactDetails } from '../../../../src/components/Contacts/ContactDetails/ContactDetails';
 import Loading from '../../../../src/components/Loading';
 import { SidePanelsLayout } from '../../../../src/components/Layouts/SidePanelsLayout';
 import { useAccountListId } from '../../../../src/hooks/useAccountListId';
 import { ContactFilterSetInput } from '../../../../graphql/types.generated';
-import {
-  ContactCheckBoxState,
-  ContactsHeader,
-} from '../../../../src/components/Contacts/ContactsHeader/ContactsHeader';
 import { ContactRow } from '../../../../src/components/Contacts/ContactRow/ContactRow';
-import { useContactsQuery } from './Contacts.generated';
+import {
+  ListHeader,
+  TableViewModeEnum,
+} from '../../../../src/components/Shared/Header/ListHeader';
+import { FilterPanel } from '../../../../src/components/Shared/Filters/FilterPanel';
+import { useMassSelection } from '../../../../src/hooks/useMassSelection';
+import { useContactFiltersQuery, useContactsQuery } from './Contacts.generated';
 
 const WhiteBackground = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.common.white,
+}));
+
+const BulletedListIcon = styled(FormatListBulleted)(({ theme }) => ({
+  color: theme.palette.primary.dark,
+}));
+const ViewColumnIcon = styled(ViewColumn)(({ theme }) => ({
+  color: theme.palette.primary.dark,
 }));
 
 const ContactsPage: React.FC = () => {
@@ -46,15 +62,13 @@ const ContactsPage: React.FC = () => {
     }
   }, [isReady, contactId]);
 
+  //#region Filters
   const [filterPanelOpen, setFilterPanelOpen] = useState<boolean>(false);
   const [activeFilters, setActiveFilters] = useState<ContactFilterSetInput>({});
-  const [selectedContacts, setSelectedContacts] = useState<Array<string>>([]);
+  const [starredFilter, setStarredFilter] = useState<ContactFilterSetInput>({});
 
-  const { data, loading, fetchMore } = useContactsQuery({
-    variables: {
-      accountListId: accountListId ?? '',
-      contactsFilters: { ...activeFilters, wildcardSearch: searchTerm?.[0] },
-    },
+  const { data: filterData, loading: filtersLoading } = useContactFiltersQuery({
+    variables: { accountListId: accountListId ?? '' },
     skip: !accountListId,
   });
 
@@ -62,52 +76,54 @@ const ContactsPage: React.FC = () => {
     setFilterPanelOpen(!filterPanelOpen);
   };
 
+  const { data, loading, fetchMore } = useContactsQuery({
+    variables: {
+      accountListId: accountListId ?? '',
+      contactsFilters: {
+        ...activeFilters,
+        wildcardSearch: searchTerm?.[0],
+        ...starredFilter,
+      },
+    },
+    skip: !accountListId,
+  });
+
+  const isFiltered =
+    Object.keys(activeFilters).length > 0 ||
+    Object.values(activeFilters).some((filter) => filter !== []);
+
+  //#endregion
+
+  //#region Mass Actions
+  const {
+    selectionType,
+    isRowChecked,
+    toggleSelectAll,
+    toggleSelectionById,
+  } = useMassSelection(data?.contacts.totalCount ?? 0);
+  //#endregion
+
+  //#region User Actions
   const setContactFocus = (id?: string) => {
-    const { contactId: _, ...queryWithoutContactId } = query;
+    const {
+      accountListId: _accountListId,
+      contactId: _contactId,
+      ...filteredQuery
+    } = query;
     push(
       id
         ? {
-            pathname: '/accountLists/[accountListId]/contacts/[contactId]',
-            query: { ...queryWithoutContactId, contactId: id },
+            pathname: `/accountLists/${accountListId}/contacts/${id}`,
+            query: filteredQuery,
           }
         : {
-            pathname: '/accountLists/[accountListId]/contacts/',
-            query: queryWithoutContactId,
+            pathname: `/accountLists/${accountListId}/contacts/`,
+            query: filteredQuery,
           },
     );
     id && setContactDetailsId(id);
     setContactDetailsOpen(!!id);
   };
-
-  const handleCheckOneContact = (
-    event: React.ChangeEvent<HTMLInputElement>,
-    contactId: string,
-  ): void => {
-    if (!selectedContacts.includes(contactId)) {
-      setSelectedContacts((prevSelected) => [...prevSelected, contactId]);
-    } else {
-      setSelectedContacts((prevSelected) =>
-        prevSelected.filter((id) => id !== contactId),
-      );
-    }
-  };
-
-  const handleCheckAllContacts = (
-    event: React.ChangeEvent<HTMLInputElement>,
-  ): void => {
-    setSelectedContacts(
-      event.target.checked
-        ? data?.contacts.nodes.map((contact) => contact.id) ?? []
-        : [],
-    );
-  };
-
-  const isSelectedSomeContacts =
-    selectedContacts.length > 0 &&
-    selectedContacts.length < (data?.contacts.nodes.length ?? 0);
-  const isSelectedAllContacts =
-    selectedContacts.length === data?.contacts.nodes.length;
-
   const setSearchTerm = (searchTerm: string) => {
     const { searchTerm: _, ...oldQuery } = query;
     replace({
@@ -119,71 +135,118 @@ const ContactsPage: React.FC = () => {
     });
   };
 
+  const [tableDisplayState, setTableDisplayState] = useState<TableViewModeEnum>(
+    TableViewModeEnum.List,
+  );
+
+  const handleViewModeChange = (
+    event: React.MouseEvent<HTMLElement>,
+    viewMode: TableViewModeEnum | null,
+  ) => {
+    if (viewMode) {
+      setTableDisplayState(viewMode);
+    }
+  };
+  //#endregion
+
+  //#region JSX
   return (
     <>
       <Head>
         <title>MPDX | {t('Contacts')}</title>
       </Head>
       {accountListId ? (
+        <DndProvider backend={HTML5Backend}>
+          <ContactFlowDragLayer />
         <WhiteBackground>
           <SidePanelsLayout
             leftPanel={
-              <ContactFilters
-                accountListId={accountListId}
+                filterData && !filtersLoading ? (
+                  <FilterPanel
+                    filters={filterData?.accountList.contactFilterGroups}
+                    selectedFilters={activeFilters}
                 onClose={toggleFilterPanel}
                 onSelectedFiltersChanged={setActiveFilters}
               />
+                ) : (
+                  <></>
+                )
             }
             leftOpen={filterPanelOpen}
             leftWidth="290px"
             mainContent={
               <>
-                <ContactsHeader
+                  <ListHeader
+                    page="contact"
                   activeFilters={Object.keys(activeFilters).length > 0}
                   filterPanelOpen={filterPanelOpen}
                   toggleFilterPanel={toggleFilterPanel}
-                  onCheckAllContacts={handleCheckAllContacts}
+                    onCheckAllItems={toggleSelectAll}
                   onSearchTermChanged={setSearchTerm}
-                  totalContacts={data?.contacts.totalCount}
-                  isContactDetailOpen={contactDetailsOpen}
-                  contactCheckboxState={
-                    isSelectedSomeContacts
-                      ? ContactCheckBoxState.partial
-                      : isSelectedAllContacts
-                      ? ContactCheckBoxState.checked
-                      : ContactCheckBoxState.unchecked
+                    totalItems={data?.contacts?.totalCount}
+                    starredFilter={starredFilter}
+                    toggleStarredFilter={setStarredFilter}
+                    headerCheckboxState={selectionType}
+                    buttonGroup={
+                      <Hidden xsDown>
+                        <ToggleButtonGroup
+                          exclusive
+                          value={tableDisplayState}
+                          onChange={handleViewModeChange}
+                        >
+                          <ToggleButton value="list">
+                            <BulletedListIcon titleAccess={t('List View')} />
+                          </ToggleButton>
+                          <ToggleButton value="columns">
+                            <ViewColumnIcon
+                              titleAccess={t('Column Workflow View')}
+                            />
+                          </ToggleButton>
+                        </ToggleButtonGroup>
+                      </Hidden>
                   }
                 />
+                  {tableDisplayState === 'list' ? (
                 <InfiniteList
                   loading={loading}
-                  data={data?.contacts.nodes}
-                  totalCount={data?.contacts.totalCount}
+                      data={data?.contacts?.nodes}
+                      totalCount={data?.contacts?.totalCount}
                   style={{ height: 'calc(100vh - 160px)' }}
                   itemContent={(index, contact) => (
                     <ContactRow
                       accountListId={accountListId}
                       key={index}
                       contact={contact}
-                      isChecked={selectedContacts.includes(contact.id)}
-                      isContactDetailOpen={contactDetailsOpen}
+                          isChecked={isRowChecked(contact.id)}
                       onContactSelected={setContactFocus}
-                      onContactCheckToggle={handleCheckOneContact}
+                          onContactCheckToggle={toggleSelectionById}
                     />
                   )}
                   endReached={() =>
-                    data?.contacts.pageInfo.hasNextPage &&
+                        data?.contacts?.pageInfo.hasNextPage &&
                     fetchMore({
-                      variables: { after: data.contacts.pageInfo.endCursor },
+                          variables: {
+                            after: data.contacts?.pageInfo.endCursor,
+                          },
                     })
                   }
                   EmptyPlaceholder={
-                    <Card>
-                      <CardContent>
-                        TODO: Implement Empty Placeholder
-                      </CardContent>
-                    </Card>
+                        <Box width="75%" margin="auto" mt={2}>
+                          <NullState
+                            page="contact"
+                            totalCount={data?.allContacts.totalCount || 0}
+                            filtered={isFiltered}
+                            changeFilters={setActiveFilters}
+                          />
+                        </Box>
                   }
                 />
+                  ) : (
+                    <ContactFlow
+                      accountListId={accountListId}
+                      onContactSelected={setContactFocus}
+                    />
+                  )}
               </>
             }
             rightPanel={
@@ -201,11 +264,13 @@ const ContactsPage: React.FC = () => {
             rightWidth="45%"
           />
         </WhiteBackground>
+        </DndProvider>
       ) : (
         <Loading loading />
       )}
     </>
   );
+  //#endregion
 };
 
 export default ContactsPage;

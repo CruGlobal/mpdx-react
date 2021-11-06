@@ -4,7 +4,7 @@ import { ItemProps, Virtuoso, VirtuosoProps } from 'react-virtuoso';
 import { Skeleton } from '@material-ui/lab';
 
 const height = 72;
-const padding = 8;
+const padding = 0;
 
 const ItemWithBorders = styled(({ disableHover: _, ...props }) => (
   <div {...props} />

@@ -10,7 +10,12 @@ it('starts without value', () => {
 
   const { getByRole } = render(
     <MuiThemeProvider theme={theme}>
-      <SearchBox placeholder={placeholderText} onChange={() => {}} />,
+      <SearchBox
+        page="contact"
+        placeholder={placeholderText}
+        onChange={() => {}}
+      />
+      ,
     </MuiThemeProvider>,
   );
 
@@ -26,7 +31,12 @@ it('triggers onChange', async () => {
 
   const { getByRole } = render(
     <MuiThemeProvider theme={theme}>
-      <SearchBox placeholder={placeholderText} onChange={onChange} />,
+      <SearchBox
+        page="task"
+        placeholder={placeholderText}
+        onChange={onChange}
+      />
+      ,
     </MuiThemeProvider>,
   );
 

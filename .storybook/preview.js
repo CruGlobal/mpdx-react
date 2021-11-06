@@ -2,7 +2,6 @@ import React from 'react';
 import { configure } from '@storybook/react';
 import { addDecorator, addParameters } from '@storybook/react';
 import { ThemeProvider, CssBaseline } from '@material-ui/core';
-import { withKnobs } from '@storybook/addon-knobs';
 import { withI18next } from 'storybook-addon-i18next';
 import { Settings } from 'luxon';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
@@ -24,7 +23,6 @@ addDecorator(
     },
   }),
 );
-addDecorator(withKnobs);
 addDecorator((StoryFn) => (
   <MockedProvider mocks={[]} addTypename={false}>
     <ThemeProvider theme={theme}>
