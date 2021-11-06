@@ -59,7 +59,7 @@ describe('ContactsRow', () => {
             accountListId={accountListId}
             contact={contact}
             isChecked={false}
-            isContactDetailOpen={false}
+            contactDetailsOpen={false}
             onContactCheckToggle={onContactCheckToggle}
             onContactSelected={onContactSelected}
           />
@@ -87,7 +87,7 @@ describe('ContactsRow', () => {
             accountListId={accountListId}
             contact={contact}
             isChecked={false}
-            isContactDetailOpen={false}
+            contactDetailsOpen={false}
             onContactCheckToggle={onContactCheckToggle}
             onContactSelected={onContactSelected}
           />
@@ -109,7 +109,7 @@ describe('ContactsRow', () => {
             accountListId={accountListId}
             contact={contact}
             isChecked={false}
-            isContactDetailOpen={false}
+            contactDetailsOpen={false}
             onContactCheckToggle={onContactCheckToggle}
             onContactSelected={onContactSelected}
           />

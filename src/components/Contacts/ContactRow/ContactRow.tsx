@@ -27,7 +27,7 @@ interface Props {
   accountListId: string;
   contact: ContactRowFragment;
   isChecked: boolean;
-  isContactDetailOpen: boolean;
+  contactDetailsOpen: boolean;
   onContactSelected: (contactId: string) => void;
   onContactCheckToggle: (contactId: string) => void;
 }
@@ -36,7 +36,7 @@ export const ContactRow: React.FC<Props> = ({
   accountListId,
   contact,
   isChecked,
-  isContactDetailOpen,
+  contactDetailsOpen,
   onContactSelected,
   onContactCheckToggle,
 }) => {
@@ -59,7 +59,7 @@ export const ContactRow: React.FC<Props> = ({
 
   return (
     <>
-      <Hidden xsUp={isContactDetailOpen}>
+      <Hidden xsUp={contactDetailsOpen}>
         <ListItemIcon>
           <Checkbox
             checked={isChecked}
@@ -76,9 +76,9 @@ export const ContactRow: React.FC<Props> = ({
               primary={
                 <Typography variant="h6" noWrap>
                   <Box component="span" display="flex" alignItems="center">
-              {name}
-              <CelebrationIcons contact={contact} />
-            </Box>
+                    {name}
+                    <CelebrationIcons contact={contact} />
+                  </Box>
                 </Typography>
               }
               secondary={
@@ -97,7 +97,7 @@ export const ContactRow: React.FC<Props> = ({
           </Grid>
           <Grid item xs={6}>
             <ContactPartnershipStatus
-              isContactDetailOpen={isContactDetailOpen}
+              contactDetailsOpen={contactDetailsOpen}
               lateAt={lateAt}
               pledgeAmount={pledgeAmount}
               pledgeCurrency={pledgeCurrency}
@@ -107,7 +107,7 @@ export const ContactRow: React.FC<Props> = ({
           </Grid>
         </Grid>
       </ListItemButton>
-      <Hidden xsUp={isContactDetailOpen}>
+      <Hidden xsUp={contactDetailsOpen}>
         {uncompletedTasksCount > 0 && (
           <ContactUncompletedTasksCount
             uncompletedTasksCount={uncompletedTasksCount}
@@ -115,7 +115,7 @@ export const ContactRow: React.FC<Props> = ({
         )}
         <ListItemSecondaryAction
           style={{ position: 'static', top: 0, transform: 'none' }}
-            >
+        >
           <StarContactIconButton
             accountListId={accountListId}
             contactId={contactId}

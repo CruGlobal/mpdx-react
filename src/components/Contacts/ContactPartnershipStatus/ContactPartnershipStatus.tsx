@@ -25,7 +25,7 @@ export enum PledgeFrequencyEnum {
 
 interface ContactPartnershipStatusProps {
   lateAt: ContactRowFragment['lateAt'];
-  isContactDetailOpen: boolean;
+  contactDetailsOpen: boolean;
   pledgeAmount: ContactRowFragment['pledgeAmount'];
   pledgeCurrency: ContactRowFragment['pledgeCurrency'];
   pledgeFrequency: ContactRowFragment['pledgeFrequency'];
@@ -34,7 +34,7 @@ interface ContactPartnershipStatusProps {
 
 export const ContactPartnershipStatus: React.FC<ContactPartnershipStatusProps> = ({
   lateAt,
-  isContactDetailOpen,
+  contactDetailsOpen,
   // pledgeAmount,
   // pledgeCurrency,
   pledgeFrequency,
@@ -60,7 +60,7 @@ export const ContactPartnershipStatus: React.FC<ContactPartnershipStatusProps> =
     <Box
       display="flex"
       alignItems="center"
-      justifyContent={isContactDetailOpen ? 'flex-end' : undefined}
+      justifyContent={contactDetailsOpen ? 'flex-end' : undefined}
     >
       <Box display="flex" alignItems="center" width={32}>
         {status === ContactPartnershipStatusEnum.PartnerFinancial &&
@@ -70,7 +70,7 @@ export const ContactPartnershipStatus: React.FC<ContactPartnershipStatusProps> =
       </Box>
       <Hidden
         xsUp={
-          isContactDetailOpen ||
+          contactDetailsOpen ||
           status === ContactPartnershipStatusEnum.PartnerFinancial
         }
       >

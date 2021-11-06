@@ -24,7 +24,6 @@ import {
   useGetInvalidStatusesQuery,
 } from './GetInvalidStatuses.generated';
 import Contact from './Contact';
-import { contactPartnershipStatus } from './InputOptions/ContactStatuses';
 import { frequencies } from './InputOptions/Frequencies';
 import { useUpdateInvalidStatusMutation } from './UpdateInvalidStatus.generated';
 import { contactPartnershipStatus } from 'src/utils/contacts/contactPartnershipStatus';

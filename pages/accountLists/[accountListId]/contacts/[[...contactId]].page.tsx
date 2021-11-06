@@ -158,31 +158,32 @@ const ContactsPage: React.FC = () => {
       {accountListId ? (
         <DndProvider backend={HTML5Backend}>
           <ContactFlowDragLayer />
-        <WhiteBackground>
-          <SidePanelsLayout
-            leftPanel={
+          <WhiteBackground>
+            <SidePanelsLayout
+              leftPanel={
                 filterData && !filtersLoading ? (
                   <FilterPanel
                     filters={filterData?.accountList.contactFilterGroups}
                     selectedFilters={activeFilters}
-                onClose={toggleFilterPanel}
-                onSelectedFiltersChanged={setActiveFilters}
-              />
+                    onClose={toggleFilterPanel}
+                    onSelectedFiltersChanged={setActiveFilters}
+                  />
                 ) : (
                   <></>
                 )
-            }
-            leftOpen={filterPanelOpen}
-            leftWidth="290px"
-            mainContent={
-              <>
+              }
+              leftOpen={filterPanelOpen}
+              leftWidth="290px"
+              mainContent={
+                <>
                   <ListHeader
                     page="contact"
-                  activeFilters={Object.keys(activeFilters).length > 0}
-                  filterPanelOpen={filterPanelOpen}
-                  toggleFilterPanel={toggleFilterPanel}
+                    activeFilters={Object.keys(activeFilters).length > 0}
+                    filterPanelOpen={filterPanelOpen}
+                    toggleFilterPanel={toggleFilterPanel}
+                    contactDetailsOpen={contactDetailsOpen}
                     onCheckAllItems={toggleSelectAll}
-                  onSearchTermChanged={setSearchTerm}
+                    onSearchTermChanged={setSearchTerm}
                     totalItems={data?.contacts?.totalCount}
                     starredFilter={starredFilter}
                     toggleStarredFilter={setStarredFilter}
@@ -204,33 +205,34 @@ const ContactsPage: React.FC = () => {
                           </ToggleButton>
                         </ToggleButtonGroup>
                       </Hidden>
-                  }
-                />
+                    }
+                  />
                   {tableDisplayState === 'list' ? (
-                <InfiniteList
-                  loading={loading}
+                    <InfiniteList
+                      loading={loading}
                       data={data?.contacts?.nodes}
                       totalCount={data?.contacts?.totalCount}
-                  style={{ height: 'calc(100vh - 160px)' }}
-                  itemContent={(index, contact) => (
-                    <ContactRow
-                      accountListId={accountListId}
-                      key={index}
-                      contact={contact}
+                      style={{ height: 'calc(100vh - 160px)' }}
+                      itemContent={(index, contact) => (
+                        <ContactRow
+                          accountListId={accountListId}
+                          key={index}
+                          contact={contact}
                           isChecked={isRowChecked(contact.id)}
-                      onContactSelected={setContactFocus}
+                          onContactSelected={setContactFocus}
                           onContactCheckToggle={toggleSelectionById}
-                    />
-                  )}
-                  endReached={() =>
+                          contactDetailsOpen={contactDetailsOpen}
+                        />
+                      )}
+                      endReached={() =>
                         data?.contacts?.pageInfo.hasNextPage &&
-                    fetchMore({
+                        fetchMore({
                           variables: {
                             after: data.contacts?.pageInfo.endCursor,
                           },
-                    })
-                  }
-                  EmptyPlaceholder={
+                        })
+                      }
+                      EmptyPlaceholder={
                         <Box width="75%" margin="auto" mt={2}>
                           <NullState
                             page="contact"
@@ -239,31 +241,31 @@ const ContactsPage: React.FC = () => {
                             changeFilters={setActiveFilters}
                           />
                         </Box>
-                  }
-                />
+                      }
+                    />
                   ) : (
                     <ContactFlow
                       accountListId={accountListId}
                       onContactSelected={setContactFocus}
                     />
                   )}
-              </>
-            }
-            rightPanel={
-              contactDetailsId ? (
-                <ContactDetails
-                  accountListId={accountListId}
-                  contactId={contactDetailsId}
-                  onClose={() => setContactFocus(undefined)}
-                />
-              ) : (
-                <></>
-              )
-            }
-            rightOpen={contactDetailsOpen}
-            rightWidth="45%"
-          />
-        </WhiteBackground>
+                </>
+              }
+              rightPanel={
+                contactDetailsId ? (
+                  <ContactDetails
+                    accountListId={accountListId}
+                    contactId={contactDetailsId}
+                    onClose={() => setContactFocus(undefined)}
+                  />
+                ) : (
+                  <></>
+                )
+              }
+              rightOpen={contactDetailsOpen}
+              rightWidth="45%"
+            />
+          </WhiteBackground>
         </DndProvider>
       ) : (
         <Loading loading />

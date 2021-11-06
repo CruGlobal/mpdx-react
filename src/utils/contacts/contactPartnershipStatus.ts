@@ -1,10 +1,6 @@
 import i18n from 'i18next';
 
-<<<<<<< HEAD:src/utils/contacts/contactPartnershipStatus.ts
 export const contactPartnershipStatus: { [key: string]: string } = {
-=======
-export const contactStatusMap: { [key: string]: string } = {
->>>>>>> main:src/components/Tool/FixCommitmentInfo/InputOptions/ContactStatuses.ts
   NEVER_CONTACTED: i18n.t('Never Contacted'),
   ASK_IN_FUTURE: i18n.t('Ask In Future'),
   CULTIVATE_RELATIONSHIP: i18n.t('Cultivate Relationship'),

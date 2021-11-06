@@ -19,7 +19,6 @@ import {
 } from '@mdi/js';
 import { DateTime } from 'luxon';
 import theme from '../../../theme';
-import { contactPartnershipStatus } from '../FixCommitmentInfo/InputOptions/ContactStatuses';
 import { RecordInfoFragment } from './GetContactDuplicates.generated';
 import { contactPartnershipStatus } from 'src/utils/contacts/contactPartnershipStatus';
 
