@@ -23,11 +23,11 @@ export const ContactLateStatusLabel: React.FC<ContactLateStatusProps> = ({
       case ContactLateStatusEnum.OnTime:
         return t('On time');
       case ContactLateStatusEnum.LateLessThirty:
-        return `0-30 ${t('days late')}`;
+        return t('0-30 days late');
       case ContactLateStatusEnum.LateMoreThirty:
-        return `30-60 ${t('days late')}`;
+        return t('30-60 days late');
       case ContactLateStatusEnum.LateMoreSixty:
-        return `60+ ${t('days late')}`;
+        return t('60+ days late');
     }
   }, [lateStatusEnum]);
 

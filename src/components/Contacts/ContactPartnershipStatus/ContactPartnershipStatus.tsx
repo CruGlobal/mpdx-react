@@ -9,7 +9,7 @@ import {
 } from './ContactLateStatusLabel/ContactLateStatusLabel';
 import { ContactPartnershipStatusIcon } from './ContactPartnershipStatusIcon/ContactPartnershipStatusIcon';
 import { ContactPartnershipStatusLabel } from './ContactPartnershipStatusLabel/ContactPartnershipStatusLabel';
-// import { currencyFormat } from 'src/lib/intlFormat';
+import { currencyFormat } from 'src/lib/intlFormat';
 
 export enum PledgeFrequencyEnum {
   ANNUAL = 'Annual',
@@ -35,8 +35,8 @@ interface ContactPartnershipStatusProps {
 export const ContactPartnershipStatus: React.FC<ContactPartnershipStatusProps> = ({
   lateAt,
   contactDetailsOpen,
-  // pledgeAmount,
-  // pledgeCurrency,
+  pledgeAmount,
+  pledgeCurrency,
   pledgeFrequency,
   status,
 }) => {
@@ -64,22 +64,17 @@ export const ContactPartnershipStatus: React.FC<ContactPartnershipStatusProps> =
     >
       <Box display="flex" alignItems="center" width={32}>
         {status === ContactPartnershipStatusEnum.PartnerFinancial &&
-          lateStatusEnum && (
+          lateStatusEnum !== undefined && (
             <ContactPartnershipStatusIcon lateStatusEnum={lateStatusEnum} />
           )}
       </Box>
-      <Hidden
-        xsUp={
-          contactDetailsOpen ||
-          status === ContactPartnershipStatusEnum.PartnerFinancial
-        }
-      >
+      <Hidden xsUp={contactDetailsOpen}>
         <Box display="flex" flexDirection="column" justifyContent="center">
           {status && <ContactPartnershipStatusLabel status={status} />}
           <Typography component="span">
-            {/* {pledgeAmount && pledgeCurrency
+            {pledgeAmount && pledgeCurrency
               ? currencyFormat(pledgeAmount, pledgeCurrency)
-              : pledgeAmount}{' '} */}
+              : pledgeAmount}{' '}
             {pledgeFrequency && PledgeFrequencyEnum[pledgeFrequency]}{' '}
             {status === ContactPartnershipStatusEnum.PartnerFinancial &&
               lateStatusEnum && (
