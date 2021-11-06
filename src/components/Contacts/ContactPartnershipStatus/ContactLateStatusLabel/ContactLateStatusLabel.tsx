@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
-import { Typography } from '@material-ui/core';
+import { useTheme, Typography } from '@material-ui/core';
+import type { Theme } from '@material-ui/core/styles/createMuiTheme';
 import { useTranslation } from 'react-i18next';
 
 export enum ContactLateStatusEnum {
@@ -16,6 +17,7 @@ interface ContactLateStatusProps {
 export const ContactLateStatusLabel: React.FC<ContactLateStatusProps> = ({
   lateStatusEnum,
 }) => {
+  const theme = useTheme<Theme>();
   const { t } = useTranslation();
 
   const lateStatusLabel: string | undefined = useMemo(() => {
@@ -34,11 +36,18 @@ export const ContactLateStatusLabel: React.FC<ContactLateStatusProps> = ({
   return !lateStatusLabel ? null : (
     <Typography
       component="span"
-      color={
-        lateStatusEnum === ContactLateStatusEnum.OnTime
-          ? 'textPrimary'
-          : 'error'
-      }
+      style={{
+        color:
+          lateStatusEnum === ContactLateStatusEnum.OnTime
+            ? theme.palette.mpdxGreen.main
+            : lateStatusEnum === ContactLateStatusEnum.LateLessThirty
+            ? theme.palette.cruGrayMedium.main
+            : lateStatusEnum === ContactLateStatusEnum.LateMoreThirty
+            ? theme.palette.cruYellow.main
+            : lateStatusEnum === ContactLateStatusEnum.LateMoreSixty
+            ? theme.palette.error.main
+            : undefined,
+      }}
     >
       ({lateStatusLabel})
     </Typography>

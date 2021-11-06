@@ -7,7 +7,7 @@ import {
   ContactLateStatusEnum,
   ContactLateStatusLabel,
 } from './ContactLateStatusLabel/ContactLateStatusLabel';
-import { ContactPartnershipStatusIcon } from './ContactPartnershipStatusIcon/ContactPartnershipStatusIcon';
+import { ContactPledgeReceivedIcon } from './ContactPledgeReceivedIcon/ContactPledgeReceivedIcon';
 import { ContactPartnershipStatusLabel } from './ContactPartnershipStatusLabel/ContactPartnershipStatusLabel';
 import { currencyFormat } from 'src/lib/intlFormat';
 
@@ -29,6 +29,7 @@ interface ContactPartnershipStatusProps {
   pledgeAmount: ContactRowFragment['pledgeAmount'];
   pledgeCurrency: ContactRowFragment['pledgeCurrency'];
   pledgeFrequency: ContactRowFragment['pledgeFrequency'];
+  pledgeReceived: ContactRowFragment['pledgeReceived'];
   status: ContactRowFragment['status'];
 }
 
@@ -38,6 +39,7 @@ export const ContactPartnershipStatus: React.FC<ContactPartnershipStatusProps> =
   pledgeAmount,
   pledgeCurrency,
   pledgeFrequency,
+  pledgeReceived,
   status,
 }) => {
   const lateStatusEnum: number | undefined = useMemo(() => {
@@ -63,10 +65,9 @@ export const ContactPartnershipStatus: React.FC<ContactPartnershipStatusProps> =
       justifyContent={contactDetailsOpen ? 'flex-end' : undefined}
     >
       <Box display="flex" alignItems="center" width={32}>
-        {status === ContactPartnershipStatusEnum.PartnerFinancial &&
-          lateStatusEnum !== undefined && (
-            <ContactPartnershipStatusIcon lateStatusEnum={lateStatusEnum} />
-          )}
+        {status === ContactPartnershipStatusEnum.PartnerFinancial && (
+          <ContactPledgeReceivedIcon pledgeReceived={pledgeReceived} />
+        )}
       </Box>
       <Hidden xsUp={contactDetailsOpen}>
         <Box display="flex" flexDirection="column" justifyContent="center">
@@ -77,7 +78,7 @@ export const ContactPartnershipStatus: React.FC<ContactPartnershipStatusProps> =
               : pledgeAmount}{' '}
             {pledgeFrequency && PledgeFrequencyEnum[pledgeFrequency]}{' '}
             {status === ContactPartnershipStatusEnum.PartnerFinancial &&
-              lateStatusEnum && (
+              lateStatusEnum !== undefined && (
                 <ContactLateStatusLabel lateStatusEnum={lateStatusEnum} />
               )}
           </Typography>

@@ -50,6 +50,7 @@ export const ContactRow: React.FC<Props> = ({
     pledgeAmount,
     pledgeCurrency,
     pledgeFrequency,
+    pledgeReceived,
     primaryAddress,
     starred,
     status,
@@ -101,6 +102,7 @@ export const ContactRow: React.FC<Props> = ({
             pledgeAmount={pledgeAmount}
             pledgeCurrency={pledgeCurrency}
             pledgeFrequency={pledgeFrequency}
+            pledgeReceived={pledgeReceived}
             status={status}
           />
         </Grid>

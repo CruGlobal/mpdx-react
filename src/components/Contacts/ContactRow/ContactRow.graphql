@@ -12,6 +12,7 @@ fragment ContactRow on Contact {
   pledgeAmount
   pledgeFrequency
   pledgeCurrency
+  pledgeReceived
   lateAt
   sendNewsletter
   starred
