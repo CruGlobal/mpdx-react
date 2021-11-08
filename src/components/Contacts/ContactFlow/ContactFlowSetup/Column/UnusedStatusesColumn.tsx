@@ -16,9 +16,17 @@ import { ContactFlowSetupDropZone } from '../DropZone/ContactFlowSetupDropZone';
 interface Props {
   statuses: { id: ContactFilterStatusEnum; value: string }[];
   accountListId: string;
+  moveStatus: (
+    originindex: number,
+    destinationIndex: number,
+    status: string,
+  ) => void;
 }
 
-export const UnusedStatusesColumn: React.FC<Props> = ({ statuses }: Props) => {
+export const UnusedStatusesColumn: React.FC<Props> = ({
+  statuses,
+  moveStatus,
+}: Props) => {
   const { t } = useTranslation();
   const CardContentRef = useRef<HTMLDivElement>();
   const [columnWidth, setColumnWidth] = useState(0);
@@ -91,7 +99,10 @@ export const UnusedStatusesColumn: React.FC<Props> = ({ statuses }: Props) => {
                 ))}
               </Box>
             )}
-            <ContactFlowSetupDropZone columnIndex={-1} />
+            <ContactFlowSetupDropZone
+              columnIndex={-1}
+              moveStatus={moveStatus}
+            />
           </Box>
         </CardContent>
       </Card>

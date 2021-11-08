@@ -58,6 +58,11 @@ interface Props {
     index: number,
   ) => void;
   deleteColumn: (index: number) => void;
+  moveStatus: (
+    originindex: number,
+    destinationIndex: number,
+    status: string,
+  ) => void;
 }
 
 export const ContactFlowSetupColumn: React.FC<Props> = ({
@@ -68,6 +73,7 @@ export const ContactFlowSetupColumn: React.FC<Props> = ({
   changeColor,
   changeTitle,
   deleteColumn,
+  moveStatus,
 }: Props) => {
   const CardContentRef = useRef<HTMLDivElement>();
   const [columnWidth, setColumnWidth] = useState(0);
@@ -181,7 +187,10 @@ export const ContactFlowSetupColumn: React.FC<Props> = ({
                 ))}
               </Box>
             )}
-            <ContactFlowSetupDropZone columnIndex={index} />
+            <ContactFlowSetupDropZone
+              columnIndex={index}
+              moveStatus={moveStatus}
+            />
           </Box>
         </CardContent>
       </Card>

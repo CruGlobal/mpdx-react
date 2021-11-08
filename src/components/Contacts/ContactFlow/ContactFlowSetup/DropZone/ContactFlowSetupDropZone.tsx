@@ -8,10 +8,16 @@ import { ContactFlowSetupItemDrag } from '../Row/ContactFlowSetupStatusRow';
 
 interface Props {
   columnIndex: number;
+  moveStatus: (
+    originindex: number,
+    destinationIndex: number,
+    status: string,
+  ) => void;
 }
 
 export const ContactFlowSetupDropZone: React.FC<Props> = ({
   columnIndex,
+  moveStatus,
 }: // eslint-disable-next-line @typescript-eslint/no-unused-vars
 Props) => {
   const [{ isOver, canDrop }, drop] = useDrop(() => ({
@@ -20,7 +26,7 @@ Props) => {
       item.originIndex !== columnIndex,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     drop: (item) => {
-      console.log(item);
+      moveStatus(item.originIndex, columnIndex, item.status);
     },
     collect: (monitor) => ({
       isOver: !!monitor.isOver(),

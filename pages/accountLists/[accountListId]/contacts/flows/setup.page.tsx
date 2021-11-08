@@ -115,6 +115,23 @@ const ContactFlowSetupPage: React.FC = () => {
     updateOptions(temp);
   };
 
+  const moveStatus = (
+    originIndex: number,
+    destinationIndex: number,
+    draggedStatus: string,
+  ): void => {
+    const temp = [...flowOptions];
+    if (originIndex > -1) {
+      temp[originIndex].statuses = temp[originIndex].statuses.filter(
+        (status) => status !== draggedStatus,
+      );
+    }
+    if (destinationIndex > -1) {
+      temp[destinationIndex].statuses.push(draggedStatus);
+    }
+    updateOptions(temp);
+  };
+
   const changeTitle = (
     event: React.ChangeEvent<HTMLInputElement>,
     index: number,
@@ -166,6 +183,7 @@ const ContactFlowSetupPage: React.FC = () => {
                       changeColor={changeColor}
                       changeTitle={changeTitle}
                       deleteColumn={deleteColumn}
+                      moveStatus={moveStatus}
                       statuses={column.statuses.map((status) => ({
                         id: statusMap[status] as ContactFilterStatusEnum,
                         value: status,
@@ -182,6 +200,7 @@ const ContactFlowSetupPage: React.FC = () => {
                 >
                   <UnusedStatusesColumn
                     accountListId={accountListId}
+                    moveStatus={moveStatus}
                     statuses={unusedStatuses.map((status) => ({
                       id: statusMap[status] as ContactFilterStatusEnum,
                       value: status,
