@@ -1,7 +1,9 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { MuiThemeProvider } from '@material-ui/core';
 import { GqlMockedProvider } from '../../../../../../../__tests__/util/graphqlMocking';
+import theme from '../../../../../../theme';
 import ExportEmail from './ExportEmail';
 import { GetEmailNewsletterContactsQuery } from './GetNewsletterContacts.generated';
 
@@ -11,9 +13,14 @@ const handleClose = jest.fn();
 describe('LogNewsletter', () => {
   it('default', () => {
     const { queryByText } = render(
-      <GqlMockedProvider<GetEmailNewsletterContactsQuery>>
-        <ExportEmail accountListId={accountListId} handleClose={handleClose} />
-      </GqlMockedProvider>,
+      <MuiThemeProvider theme={theme}>
+        <GqlMockedProvider<GetEmailNewsletterContactsQuery>>
+          <ExportEmail
+            accountListId={accountListId}
+            handleClose={handleClose}
+          />
+        </GqlMockedProvider>
+      </MuiThemeProvider>,
     );
     expect(queryByText('Email Newsletter List')).toBeInTheDocument();
   });
@@ -47,9 +54,14 @@ describe('LogNewsletter', () => {
       },
     };
     const { queryByTestId } = render(
-      <GqlMockedProvider<GetEmailNewsletterContactsQuery> mocks={mocks}>
-        <ExportEmail accountListId={accountListId} handleClose={handleClose} />
-      </GqlMockedProvider>,
+      <MuiThemeProvider theme={theme}>
+        <GqlMockedProvider<GetEmailNewsletterContactsQuery> mocks={mocks}>
+          <ExportEmail
+            accountListId={accountListId}
+            handleClose={handleClose}
+          />
+        </GqlMockedProvider>
+      </MuiThemeProvider>,
     );
     await waitFor(() => expect(queryByTestId('emailList')).not.toBeNull());
     expect(queryByTestId('emailList')).toHaveValue(`${email1},${email2}`);
@@ -89,9 +101,14 @@ describe('LogNewsletter', () => {
       },
     };
     const { queryByTestId, getByText } = render(
-      <GqlMockedProvider<GetEmailNewsletterContactsQuery> mocks={mocks}>
-        <ExportEmail accountListId={accountListId} handleClose={handleClose} />
-      </GqlMockedProvider>,
+      <MuiThemeProvider theme={theme}>
+        <GqlMockedProvider<GetEmailNewsletterContactsQuery> mocks={mocks}>
+          <ExportEmail
+            accountListId={accountListId}
+            handleClose={handleClose}
+          />
+        </GqlMockedProvider>
+      </MuiThemeProvider>,
     );
     await waitFor(() => expect(queryByTestId('emailList')).not.toBeNull());
     userEvent.click(getByText('Copy All'));

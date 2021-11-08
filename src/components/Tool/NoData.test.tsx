@@ -7,7 +7,7 @@ import NoData from './NoData';
 
 describe('Tool-NoData', () => {
   it('render text for fix commitment info tool', () => {
-    const { getByText } = render(
+    const { getByText, getByTestId } = render(
       <ThemeProvider theme={theme}>
         <TestWrapper>
           <NoData tool="fixCommitmentInfo" />
@@ -23,10 +23,11 @@ describe('Tool-NoData', () => {
         'Contacts with possibly incorrect commitment info will appear here.',
       ),
     ).toBeInTheDocument();
+    expect(getByTestId('fixCommitmentInfo-null-state')).toBeInTheDocument();
   });
 
   it('render text for fix mailing addresses tool', () => {
-    const { getByText } = render(
+    const { getByText, getByTestId } = render(
       <ThemeProvider theme={theme}>
         <TestWrapper>
           <NoData tool="fixMailingAddresses" />
@@ -42,10 +43,11 @@ describe('Tool-NoData', () => {
         'Contacts with new addresses or multiple primary mailing addresses will appear here.',
       ),
     ).toBeInTheDocument();
+    expect(getByTestId('fixMailingAddresses-null-state')).toBeInTheDocument();
   });
 
   it('render text for fix send newsletter tool', () => {
-    const { getByText } = render(
+    const { getByText, getByTestId } = render(
       <ThemeProvider theme={theme}>
         <TestWrapper>
           <NoData tool="fixSendNewsletter" />
@@ -61,10 +63,11 @@ describe('Tool-NoData', () => {
         'Contacts that appear here have an empty newsletter status and partner status set to financial, special, or pray.',
       ),
     ).toBeInTheDocument();
+    expect(getByTestId('fixSendNewsletter-null-state')).toBeInTheDocument();
   });
 
   it('render text for merge contacts tool', () => {
-    const { getByText } = render(
+    const { getByText, getByTestId } = render(
       <ThemeProvider theme={theme}>
         <TestWrapper>
           <NoData tool="mergeContacts" />
@@ -80,10 +83,11 @@ describe('Tool-NoData', () => {
         'People with similar names and partner account numbers will appear here.',
       ),
     ).toBeInTheDocument();
+    expect(getByTestId('mergeContacts-null-state')).toBeInTheDocument();
   });
 
   it('render text for fix email addresses tool', () => {
-    const { getByText } = render(
+    const { getByText, getByTestId } = render(
       <ThemeProvider theme={theme}>
         <TestWrapper>
           <NoData tool="fixEmailAddresses" />
@@ -99,10 +103,11 @@ describe('Tool-NoData', () => {
         'People with new email addresses or multiple primary email addresses will appear here.',
       ),
     ).toBeInTheDocument();
+    expect(getByTestId('fixEmailAddresses-null-state')).toBeInTheDocument();
   });
 
   it('render text for fix phone numbers tool', () => {
-    const { getByText } = render(
+    const { getByText, getByTestId } = render(
       <ThemeProvider theme={theme}>
         <TestWrapper>
           <NoData tool="fixPhoneNumbers" />
@@ -118,10 +123,11 @@ describe('Tool-NoData', () => {
         'People with new phone numbers or multiple primary phone numbers will appear here.',
       ),
     ).toBeInTheDocument();
+    expect(getByTestId('fixPhoneNumbers-null-state')).toBeInTheDocument();
   });
 
   it('render text for merge people tool', () => {
-    const { getByText } = render(
+    const { getByText, getByTestId } = render(
       <ThemeProvider theme={theme}>
         <TestWrapper>
           <NoData tool="mergePeople" />
@@ -133,5 +139,6 @@ describe('Tool-NoData', () => {
     expect(
       getByText('People with similar names will appear here.'),
     ).toBeInTheDocument();
+    expect(getByTestId('mergePeople-null-state')).toBeInTheDocument();
   });
 });

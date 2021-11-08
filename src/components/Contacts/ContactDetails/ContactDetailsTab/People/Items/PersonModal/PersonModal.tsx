@@ -48,13 +48,13 @@ const ContactEditContainer = styled(Box)(({ theme }) => ({
   margin: theme.spacing(1, 0),
 }));
 
-const ContactEditModalFooterButton = styled(Button)(() => ({
-  color: '#2196F3',
+const ContactEditModalFooterButton = styled(Button)(({ theme }) => ({
+  color: theme.palette.info.main,
   fontWeight: 'bold',
 }));
 
-const ShowExtraText = styled(Typography)(() => ({
-  color: '#2196F3',
+const ShowExtraText = styled(Typography)(({ theme }) => ({
+  color: theme.palette.info.main,
   textTransform: 'uppercase',
   fontWeight: 'bold',
 }));

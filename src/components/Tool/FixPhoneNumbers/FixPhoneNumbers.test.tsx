@@ -264,7 +264,9 @@ describe('FixPhoneNumbers-Home', () => {
         </TestRouter>
       </ThemeProvider>,
     );
-    await waitFor(() => expect(getByTestId('no-data')).toBeInTheDocument());
+    await waitFor(() =>
+      expect(getByTestId('fixPhoneNumbers-null-state')).toBeInTheDocument(),
+    );
     expect(
       getByText('No people with phone numbers need attention'),
     ).toBeInTheDocument();

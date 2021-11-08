@@ -18,6 +18,9 @@ query Contacts(
       hasNextPage
     }
   }
+  allContacts: contacts(accountListId: $accountListId, after: $after) {
+    totalCount
+  }
 }
 
 query ContactFilters($accountListId: ID!) {
