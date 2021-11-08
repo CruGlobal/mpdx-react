@@ -21,6 +21,8 @@ const router = {
   isReady: true,
 };
 
+const moveStatus = jest.fn();
+
 describe('UnusedStatusesColumn', () => {
   it('should render a column with correct details', async () => {
     const { getByTestId, getByText } = render(
@@ -31,6 +33,7 @@ describe('UnusedStatusesColumn', () => {
               <UnusedStatusesColumn
                 accountListId={accountListId}
                 statuses={status}
+                moveStatus={moveStatus}
               />
             </TestRouter>
           </ThemeProvider>
