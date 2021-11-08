@@ -19,10 +19,10 @@ const TextSkeleton = styled(Skeleton)(({}) => ({
   fontSize: 16,
 }));
 
-export const ContactHeaderStatusSection = ({
+export const ContactHeaderStatusSection: React.FC<Props> = ({
   loading,
   contact,
-}: Props): ReactElement | null => {
+}) => {
   const status = contact?.status;
 
   if (loading) {

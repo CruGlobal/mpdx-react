@@ -7,27 +7,48 @@ import {
   ContactLateStatusEnum,
 } from './ContactLateStatusLabel';
 
-const onTimeDate = ContactLateStatusEnum.OnTime;
-const lateDate = ContactLateStatusEnum.LateLessThirty;
-
 describe('ContactLateStatusLabel', () => {
-  it('on time', () => {
+  it('should render on time', () => {
     const { getByText } = render(
       <MuiThemeProvider theme={theme}>
-        <ContactLateStatusLabel lateStatusEnum={onTimeDate} />
+        <ContactLateStatusLabel lateStatusEnum={ContactLateStatusEnum.OnTime} />
       </MuiThemeProvider>,
     );
 
     expect(getByText('(On time)')).toBeInTheDocument();
   });
 
-  it('is late less than 30 days', () => {
+  it('should render less than 30 days late', () => {
     const { getByText } = render(
       <MuiThemeProvider theme={theme}>
-        <ContactLateStatusLabel lateStatusEnum={lateDate} />
+        <ContactLateStatusLabel
+          lateStatusEnum={ContactLateStatusEnum.LateLessThirty}
+        />
       </MuiThemeProvider>,
     );
 
     expect(getByText('(0-30 days late)')).toBeInTheDocument();
+  });
+  it('should render 30 to 60 days late', () => {
+    const { getByText } = render(
+      <MuiThemeProvider theme={theme}>
+        <ContactLateStatusLabel
+          lateStatusEnum={ContactLateStatusEnum.LateMoreThirty}
+        />
+      </MuiThemeProvider>,
+    );
+
+    expect(getByText('(30-60 days late)')).toBeInTheDocument();
+  });
+  it('should render more than 60 days late', () => {
+    const { getByText } = render(
+      <MuiThemeProvider theme={theme}>
+        <ContactLateStatusLabel
+          lateStatusEnum={ContactLateStatusEnum.LateMoreSixty}
+        />
+      </MuiThemeProvider>,
+    );
+
+    expect(getByText('(60+ days late)')).toBeInTheDocument();
   });
 });
