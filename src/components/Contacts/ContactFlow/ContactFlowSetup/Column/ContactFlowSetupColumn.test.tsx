@@ -26,6 +26,7 @@ const router = {
 const changeColor = jest.fn();
 const changeTitle = jest.fn();
 const deleteColumn = jest.fn();
+const moveStatus = jest.fn();
 
 describe('ContactFlowSetupColumn', () => {
   it('should render a column with correct details', async () => {
@@ -42,6 +43,7 @@ describe('ContactFlowSetupColumn', () => {
                 changeColor={changeColor}
                 changeTitle={changeTitle}
                 deleteColumn={deleteColumn}
+                moveStatus={moveStatus}
                 statuses={status}
               />
             </TestRouter>
@@ -72,6 +74,7 @@ describe('ContactFlowSetupColumn', () => {
                 changeColor={changeColor}
                 changeTitle={changeTitle}
                 deleteColumn={deleteColumn}
+                moveStatus={moveStatus}
                 statuses={status}
               />
             </TestRouter>
@@ -113,6 +116,7 @@ describe('ContactFlowSetupColumn', () => {
                 changeColor={changeColor}
                 changeTitle={changeTitle}
                 deleteColumn={deleteColumn}
+                moveStatus={moveStatus}
                 statuses={status}
               />
             </TestRouter>
