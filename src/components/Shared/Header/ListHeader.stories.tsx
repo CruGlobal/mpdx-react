@@ -14,6 +14,7 @@ export const Default = (): ReactElement => {
       toggleStarredFilter={() => {}}
       headerCheckboxState={ListHeaderCheckBoxState.unchecked}
       filterPanelOpen={false}
+      contactDetailsOpen={false}
       toggleFilterPanel={() => {}}
       onCheckAllItems={() => {}}
       onSearchTermChanged={() => {}}
@@ -30,6 +31,7 @@ export const Task = (): ReactElement => {
       starredFilter={{}}
       toggleStarredFilter={() => {}}
       filterPanelOpen={false}
+      contactDetailsOpen={false}
       toggleFilterPanel={() => {}}
       onCheckAllItems={() => {}}
       onSearchTermChanged={() => {}}
@@ -46,6 +48,7 @@ export const ActiveFilters = (): ReactElement => {
       starredFilter={{}}
       toggleStarredFilter={() => {}}
       filterPanelOpen={false}
+      contactDetailsOpen={false}
       toggleFilterPanel={() => {}}
       onCheckAllItems={() => {}}
       onSearchTermChanged={() => {}}
@@ -62,6 +65,7 @@ export const FilterPanelOpen = (): ReactElement => {
       starredFilter={{}}
       toggleStarredFilter={() => {}}
       filterPanelOpen={true}
+      contactDetailsOpen={false}
       toggleFilterPanel={() => {}}
       onCheckAllItems={() => {}}
       onSearchTermChanged={() => {}}
@@ -78,6 +82,7 @@ export const ActiveFiltersAndFilterPanelOpen = (): ReactElement => {
       starredFilter={{}}
       toggleStarredFilter={() => {}}
       filterPanelOpen={true}
+      contactDetailsOpen={false}
       toggleFilterPanel={() => {}}
       onCheckAllItems={() => {}}
       onSearchTermChanged={() => {}}

@@ -19,8 +19,8 @@ import {
 } from '@mdi/js';
 import { DateTime } from 'luxon';
 import theme from '../../../theme';
-import { contactStatusMap } from '../FixCommitmentInfo/InputOptions/ContactStatuses';
 import { RecordInfoFragment } from './GetContactDuplicates.generated';
+import { contactPartnershipStatus } from 'src/utils/contacts/contactPartnershipStatus';
 
 const useStyles = makeStyles(() => ({
   container: {
@@ -156,7 +156,7 @@ const Contact: React.FC<Props> = ({ contact1, contact2, update }) => {
                     {contact1.status && (
                       <Typography>
                         {t('Status: {{status}}', {
-                          status: contactStatusMap[contact1.status],
+                          status: contactPartnershipStatus[contact1.status],
                         })}
                       </Typography>
                     )}
@@ -297,7 +297,7 @@ const Contact: React.FC<Props> = ({ contact1, contact2, update }) => {
                     {contact2.status && (
                       <Typography>
                         {t('Status: {{status}}', {
-                          status: contactStatusMap[contact2.status],
+                          status: contactPartnershipStatus[contact2.status],
                         })}
                       </Typography>
                     )}

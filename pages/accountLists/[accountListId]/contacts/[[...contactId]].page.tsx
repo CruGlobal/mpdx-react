@@ -124,7 +124,7 @@ const ContactsPage: React.FC = () => {
     id && setContactDetailsId(id);
     setContactDetailsOpen(!!id);
   };
-  const setSearchTerm = (searchTerm?: string) => {
+  const setSearchTerm = (searchTerm: string) => {
     const { searchTerm: _, ...oldQuery } = query;
     replace({
       pathname,
@@ -181,6 +181,7 @@ const ContactsPage: React.FC = () => {
                     activeFilters={Object.keys(activeFilters).length > 0}
                     filterPanelOpen={filterPanelOpen}
                     toggleFilterPanel={toggleFilterPanel}
+                    contactDetailsOpen={contactDetailsOpen}
                     onCheckAllItems={toggleSelectAll}
                     onSearchTermChanged={setSearchTerm}
                     totalItems={data?.contacts?.totalCount}
@@ -220,6 +221,7 @@ const ContactsPage: React.FC = () => {
                           isChecked={isRowChecked(contact.id)}
                           onContactSelected={setContactFocus}
                           onContactCheckToggle={toggleSelectionById}
+                          contactDetailsOpen={contactDetailsOpen}
                         />
                       )}
                       endReached={() =>

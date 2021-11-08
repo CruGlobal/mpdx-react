@@ -220,7 +220,6 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
                 size="small"
                 edge="start"
                 onClick={() => setSelectedGroup(undefined)}
-                style={{ verticalAlign: 'middle' }}
               >
                 <ArrowBackIos fontSize="small" />
               </IconButton>
