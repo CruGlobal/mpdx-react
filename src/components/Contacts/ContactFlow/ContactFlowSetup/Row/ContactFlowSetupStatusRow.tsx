@@ -19,11 +19,13 @@ export const StatusRow = styled(Box)(() => ({
 interface Props {
   status: { id: ContactFilterStatusEnum; value: string };
   columnWidth?: number;
+  columnIndex?: number;
 }
 
 export const ContactFlowSetupStatusRow: React.FC<Props> = ({
   status,
   columnWidth,
+  columnIndex,
 }: Props) => {
   const { t } = useTranslation();
   const [, drag, preview] = useDrag(() => ({
@@ -31,6 +33,7 @@ export const ContactFlowSetupStatusRow: React.FC<Props> = ({
     item: {
       status: status.value,
       columnWidth,
+      originIndex: columnIndex,
     },
     collect: (monitor) => ({
       isDragging: !!monitor.isDragging(),

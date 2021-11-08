@@ -13,6 +13,7 @@ import theme from '../../../../../../src/theme';
 import { ContactFilterStatusEnum } from '../../../../../../graphql/types.generated';
 import { colorMap } from '../../../../../../src/components/Contacts/ContactFlow/ContactFlow';
 import { ContactFlowSetupStatusRow } from '../Row/ContactFlowSetupStatusRow';
+import { ContactFlowSetupDropZone } from '../DropZone/ContactFlowSetupDropZone';
 
 const DeleteColumnButton = styled(IconButton)(() => ({
   color: theme.palette.error.main,
@@ -121,7 +122,13 @@ export const ContactFlowSetupColumn: React.FC<Props> = ({
             overflowY: 'auto',
           }}
         >
-          <Box {...{ ref: CardContentRef }} width="100%" height="100%">
+          <Box
+            {...{ ref: CardContentRef }}
+            width="100%"
+            height="100%"
+            display="flex"
+            flexDirection="column"
+          >
             <Box
               width="100%"
               display="flex"
@@ -169,10 +176,12 @@ export const ContactFlowSetupColumn: React.FC<Props> = ({
                     key={status.id}
                     status={status}
                     columnWidth={columnWidth}
+                    columnIndex={index}
                   />
                 ))}
               </Box>
             )}
+            <ContactFlowSetupDropZone columnIndex={index} />
           </Box>
         </CardContent>
       </Card>

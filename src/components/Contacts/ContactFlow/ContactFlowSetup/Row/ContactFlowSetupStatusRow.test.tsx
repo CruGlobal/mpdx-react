@@ -16,6 +16,7 @@ describe('ContactFlowSetupStatusRow', () => {
           <TestWrapper>
             <ContactFlowSetupStatusRow
               columnWidth={100}
+              columnIndex={0}
               status={{
                 id: 'PARTNER_FINANCIAL' as ContactFilterStatusEnum,
                 value: 'Partner - Financial',

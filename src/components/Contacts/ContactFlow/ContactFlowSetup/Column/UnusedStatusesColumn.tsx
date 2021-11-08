@@ -11,6 +11,7 @@ import React, { useRef, useState, useLayoutEffect } from 'react';
 import theme from '../../../../../../src/theme';
 import { ContactFilterStatusEnum } from '../../../../../../graphql/types.generated';
 import { ContactFlowSetupStatusRow } from '../Row/ContactFlowSetupStatusRow';
+import { ContactFlowSetupDropZone } from '../DropZone/ContactFlowSetupDropZone';
 
 interface Props {
   statuses: { id: ContactFilterStatusEnum; value: string }[];
@@ -50,13 +51,24 @@ export const UnusedStatusesColumn: React.FC<Props> = ({ statuses }: Props) => {
             overflowY: 'auto',
           }}
         >
-          <Box {...{ ref: CardContentRef }} width="100%" height="100%">
+          <Box
+            {...{ ref: CardContentRef }}
+            width="100%"
+            height="100%"
+            display="flex"
+            flexDirection="column"
+          >
             <Box
-              width="100%"
               display="flex"
               justifyContent="center"
+              alignItems="center"
+              height={theme.spacing(4)}
+              width="100%"
               borderBottom={`1px solid ${theme.palette.cruGrayMedium.main}`}
-              style={{ backgroundColor: theme.palette.common.white }}
+              style={{
+                backgroundColor: theme.palette.common.white,
+                padding: theme.spacing(2.5),
+              }}
             >
               <IconButton>
                 <FiberManualRecord
@@ -79,6 +91,7 @@ export const UnusedStatusesColumn: React.FC<Props> = ({ statuses }: Props) => {
                 ))}
               </Box>
             )}
+            <ContactFlowSetupDropZone columnIndex={-1} />
           </Box>
         </CardContent>
       </Card>
