@@ -18,7 +18,7 @@ const router = {
   isReady: true,
 };
 
-const contact = { id: '1', name: 'Test Person' };
+const contact = { id: '1', name: 'Test Person', pledgeCurrency: 'USD' };
 
 jest.mock('../../../../src/hooks/useMassSelection');
 

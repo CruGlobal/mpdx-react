@@ -22,10 +22,9 @@ export const FilterListItemCheckbox: React.FC<Props> = ({
     <ListItemIcon>
       <Checkbox
         data-testid="CheckboxIcon"
-        size="small"
         edge="start"
         value="true"
-        color="primary"
+        color="secondary"
         checked={!!value}
         disableRipple
       />
