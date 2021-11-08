@@ -1,7 +1,7 @@
 import { styled, Typography } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
 
-import React, { ReactElement } from 'react';
+import React from 'react';
 import { ContactHeaderSection } from './ContactHeaderSection';
 import { ContactHeaderStatusFragment } from './ContactHeaderStatus.generated';
 import { HandshakeIcon } from './HandshakeIcon';
