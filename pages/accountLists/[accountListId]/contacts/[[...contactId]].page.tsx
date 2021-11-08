@@ -100,7 +100,7 @@ const ContactsPage: React.FC = () => {
     isRowChecked,
     toggleSelectAll,
     toggleSelectionById,
-  } = useMassSelection(data?.contacts.totalCount ?? 0);
+  } = useMassSelection(data?.contacts?.totalCount ?? 0);
   //#endregion
 
   //#region User Actions

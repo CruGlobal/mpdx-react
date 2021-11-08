@@ -101,7 +101,7 @@ const TasksPage: React.FC = () => {
     isRowChecked,
     toggleSelectAll,
     toggleSelectionById,
-  } = useMassSelection(data?.tasks.totalCount ?? 0);
+  } = useMassSelection(data?.tasks?.totalCount ?? 0);
   //#endregion
 
   //#region User Actions
