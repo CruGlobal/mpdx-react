@@ -4,6 +4,7 @@ import React from 'react';
 import { useDrop } from 'react-dnd';
 import { useTranslation } from 'react-i18next';
 import theme from '../../../../../../src/theme';
+import { ContactFlowSetupItemDrag } from '../Row/ContactFlowSetupStatusRow';
 
 interface Props {
   columnIndex: number;
@@ -15,7 +16,8 @@ export const ContactFlowSetupDropZone: React.FC<Props> = ({
 Props) => {
   const [{ isOver, canDrop }, drop] = useDrop(() => ({
     accept: 'status',
-    canDrop: (item: any) => item.originIndex !== columnIndex,
+    canDrop: (item: ContactFlowSetupItemDrag) =>
+      item.originIndex !== columnIndex,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     drop: (item) => {
       console.log(item);

@@ -16,10 +16,21 @@ export const StatusRow = styled(Box)(() => ({
   },
 }));
 
+interface Status {
+  id: ContactFilterStatusEnum;
+  value: string;
+}
+
 interface Props {
-  status: { id: ContactFilterStatusEnum; value: string };
+  status: Status;
   columnWidth?: number;
   columnIndex?: number;
+}
+
+export interface ContactFlowSetupItemDrag {
+  status: string;
+  columnWidth: number;
+  originIndex: number;
 }
 
 export const ContactFlowSetupStatusRow: React.FC<Props> = ({
