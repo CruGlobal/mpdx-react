@@ -10,6 +10,7 @@ import ViewColumn from '@material-ui/icons/ViewColumn';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { Settings } from '@material-ui/icons';
+import { useGetUserOptionsQuery } from 'src/components/Contacts/ContactFlow/GetUserOptions.generated';
 import NullState from '../../../../src/components/Shared/Filters/NullState/NullState';
 import { ContactFlowDragLayer } from '../../../../src/components/Contacts/ContactFlow/ContactFlowDragLayer/ContactFlowDragLayer';
 import { ContactFlow } from '../../../../src/components/Contacts/ContactFlow/ContactFlow';
@@ -159,6 +160,20 @@ const ContactsPage: React.FC = () => {
   //#endregion
 
   //#region JSX
+
+  //User options for display view
+  const { data: userOptions, loading: loadingOptions } = useGetUserOptionsQuery(
+    {},
+  );
+  useEffect(() => {
+    const view = userOptions?.userOptions.find(
+      (option) => option.key === 'contacts_view',
+    )?.value;
+    setTableDisplayState(
+      view === 'flows' ? TableViewModeEnum.Column : TableViewModeEnum.List,
+    );
+  }, [loadingOptions]);
+
   return (
     <>
       <Head>
@@ -214,10 +229,16 @@ const ContactsPage: React.FC = () => {
                             value={tableDisplayState}
                             onChange={handleViewModeChange}
                           >
-                            <ToggleButton value="list">
+                            <ToggleButton
+                              value="list"
+                              onClick={() => console.log('sadasdsa')}
+                            >
                               <BulletedListIcon titleAccess={t('List View')} />
                             </ToggleButton>
-                            <ToggleButton value="column">
+                            <ToggleButton
+                              value="column"
+                              onClick={() => console.log('sadasdsa')}
+                            >
                               <ViewColumnIcon
                                 titleAccess={t('Column Workflow View')}
                               />
