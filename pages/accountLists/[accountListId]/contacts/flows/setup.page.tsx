@@ -94,18 +94,6 @@ const ContactFlowSetupPage: React.FC = () => {
     });
   };
 
-  const updateOptionsNoReload = async (
-    options: ContactFlowOption[],
-  ): Promise<void> => {
-    const stringified = JSON.stringify(options);
-    await updateUserOptions({
-      variables: {
-        key: 'flows',
-        value: stringified,
-      },
-    });
-  };
-
   const addColumn = (): void => {
     const temp = [...flowOptions];
     temp.push({
@@ -152,7 +140,7 @@ const ContactFlowSetupPage: React.FC = () => {
   ): void => {
     const temp = [...flowOptions];
     temp[index].name = event.target.value;
-    updateOptionsNoReload(temp);
+    updateOptions(temp);
   };
 
   const [columnWidth, setColumnWidth] = useState(0);
@@ -166,7 +154,7 @@ const ContactFlowSetupPage: React.FC = () => {
       </Head>
       {accountListId ? (
         <DndProvider backend={HTML5Backend}>
-          <ContactFlowSetupDragLayer />
+          {!loading && <ContactFlowSetupDragLayer />}
           <Box>
             <ContactFlowSetupHeader addColumn={addColumn} />
             {flowOptions && (
