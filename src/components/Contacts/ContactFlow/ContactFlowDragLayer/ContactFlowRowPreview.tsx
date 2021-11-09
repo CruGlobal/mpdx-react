@@ -1,12 +1,14 @@
 import { Avatar, Box, Typography } from '@material-ui/core';
 import { Star, StarBorder } from '@material-ui/icons';
 import React, { memo } from 'react';
-import { StatusEnum } from '../../../../../graphql/types.generated';
+import { IdValue } from '../../../../../graphql/types.generated';
 import theme from '../../../../../src/theme';
 
 interface Props {
   name: string;
-  status: StatusEnum;
+  status: {
+    __typename?: 'IdValue' | undefined;
+  } & Pick<IdValue, 'id' | 'value'>;
   starred: boolean;
   width: number;
 }
@@ -40,7 +42,7 @@ export const ContactFlowRowPreview: React.FC<Props> = memo(
               <Typography style={{ color: theme.palette.mpdxBlue.main }}>
                 {name}
               </Typography>
-              <Typography>{status}</Typography>
+              <Typography>{status.value}</Typography>
             </Box>
           </Box>
           <Box display="flex" pr={2}>

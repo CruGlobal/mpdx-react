@@ -16,6 +16,7 @@ import { ContactRowFragment } from '../ContactRow/ContactRow.generated';
 import { useContactsQuery } from '../../../../pages/accountLists/[accountListId]/contacts/Contacts.generated';
 
 import { InfiniteList } from '../../InfiniteList/InfiniteList';
+import { useLoadConstantsQuery } from '../../../../src/components/Constants/LoadConstants.generated';
 import { ContactFlowRow } from './ContactFlowRow/ContactFlowRow';
 import { ContactFlowDropZone } from './ContactFlowDropZone/ContactFlowDropZone';
 
@@ -28,6 +29,13 @@ interface Props {
   accountListId: string;
   onContactSelected: (contactId: string) => void;
 }
+
+export interface StatusStructure {
+  id: string | undefined;
+  value: string | undefined;
+}
+
+const nullStatus = { id: 'NULL', value: '' };
 
 export const ContactFlowColumn: React.FC<Props> = ({
   statuses,
@@ -44,6 +52,11 @@ export const ContactFlowColumn: React.FC<Props> = ({
     },
     skip: !accountListId || statuses.length === 0,
   });
+  const { data: constants } = useLoadConstantsQuery({});
+  const statusesStructured =
+    statuses.map((status) =>
+      constants?.constant.statuses?.find((constant) => constant.id === status),
+    ) || [];
 
   const CardContentRef = useRef<HTMLDivElement>();
 
@@ -105,10 +118,10 @@ export const ContactFlowColumn: React.FC<Props> = ({
               display={canDrop ? 'grid' : 'none'}
               gridTemplateRows={`repeat(${statuses.length},auto)`}
             >
-              {statuses.map((status) => (
+              {statusesStructured.map((status) => (
                 <ContactFlowDropZone
-                  key={status}
-                  status={status}
+                  key={status?.id}
+                  status={status || nullStatus}
                   accountListId={accountListId}
                 />
               ))}
@@ -123,7 +136,11 @@ export const ContactFlowColumn: React.FC<Props> = ({
                     accountListId={accountListId}
                     id={contact.id}
                     name={contact.name}
-                    status={contact.status || 'NULL'}
+                    status={
+                      constants?.constant.statuses?.find(
+                        (constant) => constant.id === contact.status,
+                      ) || nullStatus
+                    }
                     starred={contact.starred}
                     onContactSelected={onContactSelected}
                     columnWidth={CardContentRef.current?.offsetWidth}

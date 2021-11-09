@@ -5,15 +5,14 @@ import { useDrop } from 'react-dnd';
 import { useTranslation } from 'react-i18next';
 import theme from '../../../../../src/theme';
 import { ContactsDocument } from '../../../../../pages/accountLists/[accountListId]/contacts/Contacts.generated';
-import {
-  Contact,
-  ContactFilterStatusEnum,
-  StatusEnum,
-} from '../../../../../graphql/types.generated';
+import { IdValue, StatusEnum } from '../../../../../graphql/types.generated';
 import { useUpdateContactOtherMutation } from '../../ContactDetails/ContactDetailsTab/Other/EditContactOtherModal/EditContactOther.generated';
+import { DraggedContact } from '../ContactFlowRow/ContactFlowRow';
 
 interface Props {
-  status: ContactFilterStatusEnum;
+  status: {
+    __typename?: 'IdValue' | undefined;
+  } & Pick<IdValue, 'id' | 'value'>;
   accountListId: string;
 }
 
@@ -23,9 +22,9 @@ export const ContactFlowDropZone: React.FC<Props> = ({
 }: Props) => {
   const [{ isOver, canDrop }, drop] = useDrop(() => ({
     accept: 'contact',
-    canDrop: (contact) => String(contact.status) !== String(status),
-    drop: (contact: Contact) => {
-      String(contact.status) !== String(status)
+    canDrop: (contact) => String(contact.status.id) !== String(status.id),
+    drop: (contact: DraggedContact) => {
+      String(contact.status.id) !== String(status.id)
         ? changeContactStatus(contact.id)
         : null;
     },
@@ -41,7 +40,7 @@ export const ContactFlowDropZone: React.FC<Props> = ({
   const changeContactStatus = async (id: string): Promise<void> => {
     const attributes = {
       id,
-      status: (status as unknown) as StatusEnum,
+      status: (status.id as unknown) as StatusEnum,
     };
     await updateContactOther({
       variables: {
@@ -59,7 +58,7 @@ export const ContactFlowDropZone: React.FC<Props> = ({
 
   return (
     <Box
-      key={status}
+      key={status.id}
       {...{ ref: drop }}
       display="flex"
       style={{
@@ -77,7 +76,7 @@ export const ContactFlowDropZone: React.FC<Props> = ({
       justifyContent="center"
       alignItems="center"
     >
-      <Typography variant="h5">{status}</Typography>
+      <Typography variant="h5">{status.value}</Typography>
     </Box>
   );
 };
