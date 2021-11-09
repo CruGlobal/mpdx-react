@@ -127,10 +127,10 @@ export const ContactFlowSetupColumn: React.FC<Props> = ({
         (hoverBoundingRect.right - hoverBoundingRect.left) / 2;
       const clientOffset = monitor.getClientOffset();
       const hoverClientX = (clientOffset as XYCoord).x - hoverBoundingRect.left;
-      if (dragIndex < hoverIndex && hoverClientX < hoverMiddleX) {
+      if (dragIndex < hoverIndex && hoverClientX > hoverMiddleX) {
         return;
       }
-      if (dragIndex > hoverIndex && hoverClientX > hoverMiddleX) {
+      if (dragIndex > hoverIndex && hoverClientX < hoverMiddleX) {
         return;
       }
       moveColumns(dragIndex, hoverIndex);
