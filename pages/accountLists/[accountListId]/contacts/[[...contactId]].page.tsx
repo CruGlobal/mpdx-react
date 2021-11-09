@@ -10,7 +10,12 @@ import ViewColumn from '@material-ui/icons/ViewColumn';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { Settings } from '@material-ui/icons';
-import { useGetUserOptionsQuery } from 'src/components/Contacts/ContactFlow/GetUserOptions.generated';
+import {
+  GetUserOptionsDocument,
+  GetUserOptionsQuery,
+  useGetUserOptionsQuery,
+} from '../../../../src/components/Contacts/ContactFlow/GetUserOptions.generated';
+import { useUpdateUserOptionsMutation } from '../../../../src/components/Contacts/ContactFlow/ContactFlowSetup/UpdateUserOptions.generated';
 import NullState from '../../../../src/components/Shared/Filters/NullState/NullState';
 import { ContactFlowDragLayer } from '../../../../src/components/Contacts/ContactFlow/ContactFlowDragLayer/ContactFlowDragLayer';
 import { ContactFlow } from '../../../../src/components/Contacts/ContactFlow/ContactFlow';
@@ -154,7 +159,7 @@ const ContactsPage: React.FC = () => {
     viewMode: TableViewModeEnum | null,
   ) => {
     if (viewMode) {
-      setTableDisplayState(viewMode);
+      updateOptions(viewMode);
     }
   };
   //#endregion
@@ -165,14 +170,49 @@ const ContactsPage: React.FC = () => {
   const { data: userOptions, loading: loadingOptions } = useGetUserOptionsQuery(
     {},
   );
+  const [updateUserOptions] = useUpdateUserOptionsMutation();
   useEffect(() => {
     const view = userOptions?.userOptions.find(
       (option) => option.key === 'contacts_view',
     )?.value;
     setTableDisplayState(
-      view === 'flows' ? TableViewModeEnum.Column : TableViewModeEnum.List,
+      view === 'flows' ? TableViewModeEnum.Flows : TableViewModeEnum.List,
     );
   }, [loadingOptions]);
+
+  const updateOptions = async (view: string): Promise<void> => {
+    await updateUserOptions({
+      variables: {
+        key: 'contacts_view',
+        value: view,
+      },
+      update: (cache, { data: updatedUserOption }) => {
+        const query = {
+          query: GetUserOptionsDocument,
+        };
+        const dataFromCache = cache.readQuery<GetUserOptionsQuery>(query);
+
+        if (dataFromCache) {
+          const filteredOld = dataFromCache.userOptions.filter(
+            (option) => option.key !== 'flows',
+          );
+          const userOptions = [
+            ...filteredOld,
+            {
+              __typename: 'Option',
+              id: updatedUserOption?.createOrUpdateUserOption?.option.id,
+              key: 'contacts_view',
+              value: view,
+            },
+          ];
+          const data = {
+            userOptions,
+          };
+          cache.writeQuery({ ...query, data });
+        }
+      },
+    });
+  };
 
   return (
     <>
@@ -214,7 +254,7 @@ const ContactsPage: React.FC = () => {
                     buttonGroup={
                       <Hidden xsDown>
                         <Box display="flex" alignItems="center">
-                          {tableDisplayState === TableViewModeEnum.Column && (
+                          {tableDisplayState === TableViewModeEnum.Flows && (
                             <NextLink
                               href={`/accountLists/${accountListId}/contacts/flows/setup`}
                             >
@@ -231,13 +271,17 @@ const ContactsPage: React.FC = () => {
                           >
                             <ToggleButton
                               value="list"
-                              onClick={() => console.log('sadasdsa')}
+                              disabled={
+                                tableDisplayState === TableViewModeEnum.List
+                              }
                             >
                               <BulletedListIcon titleAccess={t('List View')} />
                             </ToggleButton>
                             <ToggleButton
-                              value="column"
-                              onClick={() => console.log('sadasdsa')}
+                              value="flows"
+                              disabled={
+                                tableDisplayState === TableViewModeEnum.Flows
+                              }
                             >
                               <ViewColumnIcon
                                 titleAccess={t('Column Workflow View')}
