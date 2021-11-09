@@ -76,7 +76,9 @@ export const ContactFlowDropZone: React.FC<Props> = ({
       justifyContent="center"
       alignItems="center"
     >
-      <Typography variant="h5">{status.value}</Typography>
+      <Typography variant="h5">
+        {t('{{status}}', { status: status.value })}
+      </Typography>
     </Box>
   );
 };

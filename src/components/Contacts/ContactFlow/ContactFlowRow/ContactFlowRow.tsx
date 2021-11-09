@@ -2,6 +2,7 @@ import { Avatar, Box, styled, Typography } from '@material-ui/core';
 import React, { useEffect } from 'react';
 import { useDrag } from 'react-dnd';
 import { getEmptyImage } from 'react-dnd-html5-backend';
+import { useTranslation } from 'react-i18next';
 import theme from '../../../../../src/theme';
 import { IdValue } from '../../../../../graphql/types.generated';
 import { StarContactIconButton } from '../../StarContactIconButton/StarContactIconButton';
@@ -75,6 +76,8 @@ export const ContactFlowRow: React.FC<Props> = ({
     preview(getEmptyImage(), { captureDraggingState: true });
   }, []);
 
+  const { t } = useTranslation();
+
   return (
     <Box
       {...{ ref: drag }} //TS gives an error if you try to pass a ref normally, seems to be a MUI issue
@@ -97,7 +100,7 @@ export const ContactFlowRow: React.FC<Props> = ({
             <ContactLink onClick={() => onContactSelected(id)}>
               {name}
             </ContactLink>
-            <Typography>{status.value}</Typography>
+            <Typography>{t('{{status}}', { status: status.value })}</Typography>
           </Box>
         </Box>
         <Box display="flex">

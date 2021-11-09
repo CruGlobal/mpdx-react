@@ -1,6 +1,7 @@
 import { Avatar, Box, Typography } from '@material-ui/core';
 import { Star, StarBorder } from '@material-ui/icons';
 import React, { memo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { IdValue } from '../../../../../graphql/types.generated';
 import theme from '../../../../../src/theme';
 
@@ -15,6 +16,7 @@ interface Props {
 
 export const ContactFlowRowPreview: React.FC<Props> = memo(
   function ContactFlowRowPreview({ name, status, starred, width }) {
+    const { t } = useTranslation();
     return (
       <Box
         display="flex"
@@ -42,7 +44,9 @@ export const ContactFlowRowPreview: React.FC<Props> = memo(
               <Typography style={{ color: theme.palette.mpdxBlue.main }}>
                 {name}
               </Typography>
-              <Typography>{status.value}</Typography>
+              <Typography>
+                {t('{{status}}', { status: status.value })}
+              </Typography>
             </Box>
           </Box>
           <Box display="flex" pr={2}>
