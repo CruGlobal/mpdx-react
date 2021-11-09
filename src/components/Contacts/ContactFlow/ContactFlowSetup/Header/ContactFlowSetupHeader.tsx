@@ -1,7 +1,9 @@
 import React from 'react';
 import { styled, Box, Button } from '@material-ui/core';
 import { ChevronLeft } from '@material-ui/icons';
+import NextLink from 'next/link';
 import { useTranslation } from 'react-i18next';
+import { useAccountListId } from '../../../../../../src/hooks/useAccountListId';
 
 const HeaderWrap = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -30,12 +32,15 @@ export const ContactFlowSetupHeader: React.FC<Props> = ({
   addColumn,
 }: Props) => {
   const { t } = useTranslation();
+  const accountListId = useAccountListId();
   return (
     <HeaderWrap>
-      <BackButton variant="outlined">
-        <ChevronLeft />
-        {t('Contacts')}
-      </BackButton>
+      <NextLink href={`/accountLists/${accountListId}/contacts`}>
+        <BackButton variant="outlined">
+          <ChevronLeft />
+          {t('Contacts')}
+        </BackButton>
+      </NextLink>
       <AddColumnButton onClick={addColumn}>{t('Add Column')}</AddColumnButton>
     </HeaderWrap>
   );

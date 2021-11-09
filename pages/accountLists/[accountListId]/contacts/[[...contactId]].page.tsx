@@ -2,12 +2,14 @@ import React, { useEffect, useState } from 'react';
 import Head from 'next/head';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'next/router';
-import { Box, Hidden, styled } from '@material-ui/core';
+import NextLink from 'next/link';
+import { Box, Button, Hidden, styled } from '@material-ui/core';
 import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
 import FormatListBulleted from '@material-ui/icons/FormatListBulleted';
 import ViewColumn from '@material-ui/icons/ViewColumn';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
+import { Settings } from '@material-ui/icons';
 import NullState from '../../../../src/components/Shared/Filters/NullState/NullState';
 import { ContactFlowDragLayer } from '../../../../src/components/Contacts/ContactFlow/ContactFlowDragLayer/ContactFlowDragLayer';
 import { ContactFlow } from '../../../../src/components/Contacts/ContactFlow/ContactFlow';
@@ -35,6 +37,13 @@ const BulletedListIcon = styled(FormatListBulleted)(({ theme }) => ({
 }));
 const ViewColumnIcon = styled(ViewColumn)(({ theme }) => ({
   color: theme.palette.primary.dark,
+}));
+
+const ViewSettingsButton = styled(Button)(({ theme }) => ({
+  textTransform: 'none',
+  padding: theme.spacing(1.25),
+  marginLeft: theme.spacing(1),
+  marginRight: theme.spacing(2),
 }));
 
 const ContactsPage: React.FC = () => {
@@ -189,20 +198,32 @@ const ContactsPage: React.FC = () => {
                     headerCheckboxState={selectionType}
                     buttonGroup={
                       <Hidden xsDown>
-                        <ToggleButtonGroup
-                          exclusive
-                          value={tableDisplayState}
-                          onChange={handleViewModeChange}
-                        >
-                          <ToggleButton value="list">
-                            <BulletedListIcon titleAccess={t('List View')} />
-                          </ToggleButton>
-                          <ToggleButton value="columns">
-                            <ViewColumnIcon
-                              titleAccess={t('Column Workflow View')}
-                            />
-                          </ToggleButton>
-                        </ToggleButtonGroup>
+                        <Box display="flex" alignItems="center">
+                          {tableDisplayState === TableViewModeEnum.Column && (
+                            <NextLink
+                              href={`/accountLists/${accountListId}/contacts/flows/setup`}
+                            >
+                              <ViewSettingsButton variant="outlined">
+                                <Settings style={{ marginRight: 8 }} />
+                                {t('View Settings')}
+                              </ViewSettingsButton>
+                            </NextLink>
+                          )}
+                          <ToggleButtonGroup
+                            exclusive
+                            value={tableDisplayState}
+                            onChange={handleViewModeChange}
+                          >
+                            <ToggleButton value="list">
+                              <BulletedListIcon titleAccess={t('List View')} />
+                            </ToggleButton>
+                            <ToggleButton value="column">
+                              <ViewColumnIcon
+                                titleAccess={t('Column Workflow View')}
+                              />
+                            </ToggleButton>
+                          </ToggleButtonGroup>
+                        </Box>
                       </Hidden>
                     }
                   />
