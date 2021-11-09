@@ -6,6 +6,8 @@ import { ItemContent } from 'react-virtuoso';
 import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
 import TestRouter from '../../../../__tests__/util/TestRouter';
 import theme from '../../../../src/theme';
+import { useMassSelection } from '../../../../src/hooks/useMassSelection';
+import { ListHeaderCheckBoxState } from '../../../../src/components/Shared/Header/ListHeader';
 import Contacts from './[[...contactId]].page';
 import { ContactsQuery } from './Contacts.generated';
 
@@ -16,7 +18,16 @@ const router = {
   isReady: true,
 };
 
-const contact = { id: '1', name: 'Test Person' };
+const contact = { id: '1', name: 'Test Person', pledgeCurrency: 'USD' };
+
+jest.mock('../../../../src/hooks/useMassSelection');
+
+(useMassSelection as jest.Mock).mockReturnValue({
+  selectionType: ListHeaderCheckBoxState.unchecked,
+  isRowChecked: jest.fn(),
+  toggleSelectAll: jest.fn(),
+  toggleSelectionById: jest.fn(),
+});
 
 jest.mock('react-virtuoso', () => ({
   // eslint-disable-next-line react/display-name
@@ -52,6 +63,7 @@ it('should render list of people', async () => {
       </TestRouter>
     </ThemeProvider>,
   );
+
   await waitFor(() => expect(getByText('Test Person')).toBeInTheDocument());
   expect(await findByTestId('rowButton')).toHaveTextContent(contact.name);
 });

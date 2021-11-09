@@ -9,6 +9,7 @@ import { ListHeader, ListHeaderCheckBoxState } from './ListHeader';
 const toggleFilterPanel = jest.fn();
 const onSearchTermChanged = jest.fn();
 const onCheckAllItems = jest.fn();
+const toggleStarredFilter = jest.fn();
 
 describe('ListHeader', () => {
   describe('Contact', () => {
@@ -18,8 +19,11 @@ describe('ListHeader', () => {
           <ListHeader
             page="contact"
             activeFilters={false}
+            starredFilter={{}}
+            toggleStarredFilter={toggleStarredFilter}
             headerCheckboxState={ListHeaderCheckBoxState.unchecked}
             filterPanelOpen={false}
+            contactDetailsOpen={false}
             toggleFilterPanel={toggleFilterPanel}
             onCheckAllItems={onCheckAllItems}
             onSearchTermChanged={onSearchTermChanged}
@@ -27,7 +31,7 @@ describe('ListHeader', () => {
         </ThemeProvider>,
       );
 
-      expect(getByPlaceholderText('Search List')).toBeInTheDocument();
+      expect(getByPlaceholderText('Search Contacts')).toBeInTheDocument();
     });
   });
 
@@ -39,7 +43,10 @@ describe('ListHeader', () => {
             page="task"
             activeFilters={false}
             headerCheckboxState={ListHeaderCheckBoxState.unchecked}
+            starredFilter={{}}
+            toggleStarredFilter={toggleStarredFilter}
             filterPanelOpen={false}
+            contactDetailsOpen={false}
             toggleFilterPanel={toggleFilterPanel}
             onCheckAllItems={onCheckAllItems}
             onSearchTermChanged={onSearchTermChanged}
@@ -58,7 +65,10 @@ describe('ListHeader', () => {
           page="contact"
           activeFilters={false}
           headerCheckboxState={ListHeaderCheckBoxState.unchecked}
+          starredFilter={{}}
+          toggleStarredFilter={toggleStarredFilter}
           filterPanelOpen={false}
+          contactDetailsOpen={false}
           toggleFilterPanel={toggleFilterPanel}
           onCheckAllItems={onCheckAllItems}
           onSearchTermChanged={onSearchTermChanged}
@@ -87,7 +97,10 @@ describe('ListHeader', () => {
           page="contact"
           activeFilters={false}
           headerCheckboxState={ListHeaderCheckBoxState.unchecked}
+          starredFilter={{}}
+          toggleStarredFilter={toggleStarredFilter}
           filterPanelOpen={false}
+          contactDetailsOpen={false}
           toggleFilterPanel={toggleFilterPanel}
           onCheckAllItems={onCheckAllItems}
           onSearchTermChanged={onSearchTermChanged}
@@ -109,7 +122,10 @@ describe('ListHeader', () => {
           page="contact"
           activeFilters={false}
           headerCheckboxState={ListHeaderCheckBoxState.unchecked}
+          starredFilter={{}}
+          toggleStarredFilter={toggleStarredFilter}
           filterPanelOpen={false}
+          contactDetailsOpen={false}
           toggleFilterPanel={toggleFilterPanel}
           onCheckAllItems={onCheckAllItems}
           onSearchTermChanged={onSearchTermChanged}
@@ -133,7 +149,10 @@ describe('ListHeader', () => {
           page="contact"
           activeFilters={false}
           headerCheckboxState={ListHeaderCheckBoxState.unchecked}
+          starredFilter={{}}
+          toggleStarredFilter={toggleStarredFilter}
           filterPanelOpen={true}
+          contactDetailsOpen={false}
           toggleFilterPanel={toggleFilterPanel}
           onCheckAllItems={onCheckAllItems}
           onSearchTermChanged={onSearchTermChanged}
@@ -159,7 +178,10 @@ describe('ListHeader', () => {
           page="contact"
           activeFilters={true}
           headerCheckboxState={ListHeaderCheckBoxState.unchecked}
+          starredFilter={{}}
+          toggleStarredFilter={toggleStarredFilter}
           filterPanelOpen={false}
+          contactDetailsOpen={false}
           toggleFilterPanel={toggleFilterPanel}
           onCheckAllItems={onCheckAllItems}
           onSearchTermChanged={onSearchTermChanged}
@@ -185,7 +207,10 @@ describe('ListHeader', () => {
           page="contact"
           activeFilters={true}
           headerCheckboxState={ListHeaderCheckBoxState.unchecked}
+          starredFilter={{}}
+          toggleStarredFilter={toggleStarredFilter}
           filterPanelOpen={true}
+          contactDetailsOpen={false}
           toggleFilterPanel={toggleFilterPanel}
           onCheckAllItems={onCheckAllItems}
           onSearchTermChanged={onSearchTermChanged}
@@ -211,7 +236,10 @@ describe('ListHeader', () => {
           page="contact"
           activeFilters={false}
           headerCheckboxState={ListHeaderCheckBoxState.unchecked}
+          starredFilter={{}}
+          toggleStarredFilter={toggleStarredFilter}
           filterPanelOpen={false}
+          contactDetailsOpen={false}
           toggleFilterPanel={toggleFilterPanel}
           onCheckAllItems={onCheckAllItems}
           onSearchTermChanged={onSearchTermChanged}
@@ -238,7 +266,10 @@ describe('ListHeader', () => {
           page="contact"
           activeFilters={true}
           headerCheckboxState={ListHeaderCheckBoxState.unchecked}
+          starredFilter={{}}
+          toggleStarredFilter={toggleStarredFilter}
           filterPanelOpen={false}
+          contactDetailsOpen={false}
           toggleFilterPanel={toggleFilterPanel}
           onCheckAllItems={onCheckAllItems}
           onSearchTermChanged={onSearchTermChanged}
@@ -251,8 +282,56 @@ describe('ListHeader', () => {
 
     expect(toggleFilterPanel).not.toHaveBeenCalled();
 
-    await new Promise((resolve) => setTimeout(resolve, 500));
+    await new Promise((resolve) => setTimeout(resolve, 300));
 
     expect(onSearchTermChanged).toHaveBeenCalledWith(searchText);
+  });
+
+  it('press star filter button and set to true', async () => {
+    const { getByTestId } = render(
+      <ThemeProvider theme={theme}>
+        <ListHeader
+          page="contact"
+          activeFilters={true}
+          headerCheckboxState={ListHeaderCheckBoxState.unchecked}
+          starredFilter={{}}
+          toggleStarredFilter={toggleStarredFilter}
+          filterPanelOpen={false}
+          contactDetailsOpen={false}
+          toggleFilterPanel={toggleFilterPanel}
+          onCheckAllItems={onCheckAllItems}
+          onSearchTermChanged={onSearchTermChanged}
+        />
+      </ThemeProvider>,
+    );
+    const starFilterButton = getByTestId('star-filter-button');
+
+    userEvent.click(starFilterButton);
+
+    expect(toggleStarredFilter).toHaveBeenCalledWith({ starred: true });
+  });
+
+  it('reset the star filter', async () => {
+    const { getByTestId } = render(
+      <ThemeProvider theme={theme}>
+        <ListHeader
+          page="contact"
+          activeFilters={true}
+          headerCheckboxState={ListHeaderCheckBoxState.unchecked}
+          starredFilter={{ starred: true }}
+          toggleStarredFilter={toggleStarredFilter}
+          filterPanelOpen={false}
+          contactDetailsOpen={false}
+          toggleFilterPanel={toggleFilterPanel}
+          onCheckAllItems={onCheckAllItems}
+          onSearchTermChanged={onSearchTermChanged}
+        />
+      </ThemeProvider>,
+    );
+    const starFilterButton = getByTestId('star-filter-button');
+
+    userEvent.click(starFilterButton);
+
+    expect(toggleStarredFilter).toHaveBeenCalledWith({});
   });
 });

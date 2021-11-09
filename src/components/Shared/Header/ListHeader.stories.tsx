@@ -10,8 +10,11 @@ export const Default = (): ReactElement => {
     <ListHeader
       page="contact"
       activeFilters={false}
+      starredFilter={{}}
+      toggleStarredFilter={() => {}}
       headerCheckboxState={ListHeaderCheckBoxState.unchecked}
       filterPanelOpen={false}
+      contactDetailsOpen={false}
       toggleFilterPanel={() => {}}
       onCheckAllItems={() => {}}
       onSearchTermChanged={() => {}}
@@ -25,7 +28,10 @@ export const Task = (): ReactElement => {
       page="task"
       activeFilters={false}
       headerCheckboxState={ListHeaderCheckBoxState.unchecked}
+      starredFilter={{}}
+      toggleStarredFilter={() => {}}
       filterPanelOpen={false}
+      contactDetailsOpen={false}
       toggleFilterPanel={() => {}}
       onCheckAllItems={() => {}}
       onSearchTermChanged={() => {}}
@@ -39,7 +45,10 @@ export const ActiveFilters = (): ReactElement => {
       page="contact"
       activeFilters={true}
       headerCheckboxState={ListHeaderCheckBoxState.unchecked}
+      starredFilter={{}}
+      toggleStarredFilter={() => {}}
       filterPanelOpen={false}
+      contactDetailsOpen={false}
       toggleFilterPanel={() => {}}
       onCheckAllItems={() => {}}
       onSearchTermChanged={() => {}}
@@ -53,7 +62,10 @@ export const FilterPanelOpen = (): ReactElement => {
       page="contact"
       activeFilters={false}
       headerCheckboxState={ListHeaderCheckBoxState.unchecked}
+      starredFilter={{}}
+      toggleStarredFilter={() => {}}
       filterPanelOpen={true}
+      contactDetailsOpen={false}
       toggleFilterPanel={() => {}}
       onCheckAllItems={() => {}}
       onSearchTermChanged={() => {}}
@@ -67,7 +79,10 @@ export const ActiveFiltersAndFilterPanelOpen = (): ReactElement => {
       page="contact"
       activeFilters={true}
       headerCheckboxState={ListHeaderCheckBoxState.unchecked}
+      starredFilter={{}}
+      toggleStarredFilter={() => {}}
       filterPanelOpen={true}
+      contactDetailsOpen={false}
       toggleFilterPanel={() => {}}
       onCheckAllItems={() => {}}
       onSearchTermChanged={() => {}}

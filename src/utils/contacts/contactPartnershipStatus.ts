@@ -1,6 +1,6 @@
 import i18n from 'i18next';
 
-export const contactTags: { [key: string]: string } = {
+export const contactPartnershipStatus = {
   NEVER_CONTACTED: i18n.t('Never Contacted'),
   ASK_IN_FUTURE: i18n.t('Ask In Future'),
   CULTIVATE_RELATIONSHIP: i18n.t('Cultivate Relationship'),

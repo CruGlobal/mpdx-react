@@ -7,6 +7,8 @@ import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
 import TestRouter from '../../../../__tests__/util/TestRouter';
 import theme from '../../../../src/theme';
 import useTaskDrawer from '../../../../src/hooks/useTaskDrawer';
+import { useMassSelection } from '../../../../src/hooks/useMassSelection';
+import { ListHeaderCheckBoxState } from '../../../../src/components/Shared/Header/ListHeader';
 import Tasks from './[[...contactId]].page';
 import { TasksQuery } from './Tasks.generated';
 
@@ -31,6 +33,15 @@ beforeEach(() => {
   (useTaskDrawer as jest.Mock).mockReturnValue({
     openTaskDrawer,
   });
+});
+
+jest.mock('../../../../src/hooks/useMassSelection');
+
+(useMassSelection as jest.Mock).mockReturnValue({
+  selectionType: ListHeaderCheckBoxState.unchecked,
+  isRowChecked: jest.fn(),
+  toggleSelectAll: jest.fn(),
+  toggleSelectionById: jest.fn(),
 });
 
 jest.mock('react-virtuoso', () => ({

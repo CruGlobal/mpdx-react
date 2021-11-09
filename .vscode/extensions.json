@@ -1,7 +1,18 @@
 {
   "recommendations": [
+    "apollographql.vscode-apollo",
     "arcanis.vscode-zipfs",
     "dbaeumer.vscode-eslint",
-    "esbenp.prettier-vscode"
+    "eamodio.gitlens",
+    "EdgardMessias.clipboard-manager",
+    "EditorConfig.EditorConfig",
+    "esbenp.prettier-vscode",
+    "GraphQL.vscode-graphql",
+    "naumovs.color-highlight",
+    "Orta.vscode-jest",
+    "ryu1kn.partial-diff",
+    "streetsidesoftware.code-spell-checker",
+    "waderyan.nodejs-extension-pack",
+    "ziyasal.vscode-open-in-github"
   ]
 }

@@ -1,20 +1,29 @@
-import React, { ReactElement } from 'react';
+import React, { ReactElement, useState } from 'react';
 import {
   Box,
+  Button,
   Checkbox,
   Hidden,
   IconButton,
+  ListItemText,
+  Menu,
+  MenuItem,
   styled,
   Theme,
 } from '@material-ui/core';
 import FilterList from '@material-ui/icons/FilterList';
 import { useTranslation } from 'react-i18next';
+import ArrowDropDown from '@material-ui/icons/ArrowDropDown';
 import { SearchBox } from '../../common/SearchBox/SearchBox';
 import { StarredItemIcon } from '../../common/StarredItemIcon/StarredItemIcon';
+import {
+  ContactFilterSetInput,
+  TaskFilterSetInput,
+} from '../../../../graphql/types.generated';
 
 const HeaderWrap = styled(Box)(({ theme }) => ({
   height: 96,
-  padding: theme.spacing(2),
+  padding: theme.spacing(1, 0),
   display: 'flex',
   flexDirection: 'row',
   justifyContent: 'space-evenly',
@@ -63,12 +72,11 @@ const ItemsShowingText = styled('p')(({ theme }) => ({
   color: theme.palette.text.secondary,
 }));
 
-const PlaceholderActionsDropdown = styled(Box)(({ theme }) => ({
-  display: 'inline-block',
+const ActionsButton = styled(Button)(({ theme }) => ({
   width: 114,
   height: 48,
   margin: theme.spacing(1),
-  backgroundColor: 'red',
+  border: '1px solid #383F43',
 }));
 
 const StarIconWrap = styled(Box)(({ theme }) => ({
@@ -93,10 +101,15 @@ interface ListHeaderProps {
   headerCheckboxState: ListHeaderCheckBoxState;
   filterPanelOpen: boolean;
   toggleFilterPanel: () => void;
+  contactDetailsOpen: boolean;
   onCheckAllItems: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onSearchTermChanged: (searchTerm: string) => void;
   totalItems?: number;
   buttonGroup?: ReactElement;
+  starredFilter: ContactFilterSetInput | TaskFilterSetInput;
+  toggleStarredFilter: (
+    filter: ContactFilterSetInput | TaskFilterSetInput,
+  ) => void;
 }
 
 export const ListHeader: React.FC<ListHeaderProps> = ({
@@ -104,20 +117,32 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
   activeFilters,
   headerCheckboxState,
   filterPanelOpen,
+  contactDetailsOpen,
   toggleFilterPanel,
   onCheckAllItems,
   onSearchTermChanged,
   totalItems,
   buttonGroup,
+  starredFilter,
+  toggleStarredFilter,
 }) => {
   const { t } = useTranslation();
 
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
+  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
   return (
     <HeaderWrap>
-      <Hidden smDown>
+      <Hidden xsUp={contactDetailsOpen}>
         <Checkbox
           checked={headerCheckboxState === ListHeaderCheckBoxState.checked}
-          color="default"
+          color="secondary"
           indeterminate={
             headerCheckboxState === ListHeaderCheckBoxState.partial
           }
@@ -135,7 +160,9 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
       <SearchBox
         page={page}
         onChange={onSearchTermChanged}
-        placeholder={page === 'contact' ? t('Search List') : t('Search Tasks')}
+        placeholder={
+          page === 'contact' ? t('Search Contacts') : t('Search Tasks')
+        }
       />
       <ItemsShowingText>
         {t('Showing {{count}}', { count: totalItems })}
@@ -143,9 +170,57 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
 
       {page === 'contact' ? (
         <>
-          <Hidden smDown>
-            {/*TODO: Replace this with Actions Dropdown*/}
-            <PlaceholderActionsDropdown />
+          <Hidden lgDown={contactDetailsOpen}>
+            <ActionsButton
+              aria-haspopup
+              aria-expanded={open}
+              onClick={handleClick}
+              endIcon={<ArrowDropDown />}
+            >
+              {t('Actions')}
+            </ActionsButton>
+            <Menu
+              open={open}
+              onClose={handleClose}
+              anchorEl={anchorEl}
+              getContentAnchorEl={null}
+              anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+              transformOrigin={{ vertical: 'top', horizontal: 'center' }}
+            >
+              <MenuItem>
+                <ListItemText>{t('Add Tags')}</ListItemText>
+              </MenuItem>
+              <MenuItem divider>
+                <ListItemText>{t('Remove Tags')}</ListItemText>
+              </MenuItem>
+              <MenuItem>
+                <ListItemText>{t('Add Task')}</ListItemText>
+              </MenuItem>
+              <MenuItem divider>
+                <ListItemText>{t('Log Task')}</ListItemText>
+              </MenuItem>
+
+              <MenuItem>
+                <ListItemText>{t('Eidt Fields')}</ListItemText>
+              </MenuItem>
+              <MenuItem>
+                <ListItemText>{t('Hide Contacts')}</ListItemText>
+              </MenuItem>
+              <MenuItem divider>
+                <ListItemText>{t('Map Contacts')}</ListItemText>
+              </MenuItem>
+
+              <MenuItem>
+                <ListItemText>{t('Add to Appeal')}</ListItemText>
+              </MenuItem>
+              <MenuItem divider>
+                <ListItemText>{t('Add to new Appeal')}</ListItemText>
+              </MenuItem>
+
+              <MenuItem>
+                <ListItemText>{t('Export Emails')}</ListItemText>
+              </MenuItem>
+            </Menu>
           </Hidden>
 
           {buttonGroup}
@@ -154,16 +229,55 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
         <>
           {buttonGroup}
           <Hidden smDown>
-            {/*TODO: Replace this with Actions Dropdown*/}
-            <PlaceholderActionsDropdown />
+            <ActionsButton
+              aria-haspopup
+              aria-expanded={open}
+              onClick={handleClick}
+              endIcon={<ArrowDropDown />}
+            >
+              {t('Actions')}
+            </ActionsButton>
+            <Menu
+              open={open}
+              onClose={handleClose}
+              anchorEl={anchorEl}
+              getContentAnchorEl={null}
+              anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+              transformOrigin={{ vertical: 'top', horizontal: 'center' }}
+            >
+              <MenuItem>
+                <ListItemText>{t('Complete Tasks')}</ListItemText>
+              </MenuItem>
+              <MenuItem divider>
+                <ListItemText>{t('Edit Tasks')}</ListItemText>
+              </MenuItem>
+              <MenuItem>
+                <ListItemText>{t('Add Tag(s)')}</ListItemText>
+              </MenuItem>
+              <MenuItem divider>
+                <ListItemText>{t('Remove Tag(s)')}</ListItemText>
+              </MenuItem>
+
+              <MenuItem>
+                <ListItemText>{t('Delete Tasks')}</ListItemText>
+              </MenuItem>
+            </Menu>
           </Hidden>
         </>
       )}
 
       <Hidden smDown>
         <StarIconWrap>
-          {/* TODO connect to filter to only show starred items */}
-          <StarredItemIcon isStarred={false} />
+          <IconButton
+            data-testid="star-filter-button"
+            onClick={() =>
+              toggleStarredFilter(
+                starredFilter.starred ? {} : { starred: true },
+              )
+            }
+          >
+            <StarredItemIcon isStarred={starredFilter.starred || false} />
+          </IconButton>
         </StarIconWrap>
       </Hidden>
     </HeaderWrap>

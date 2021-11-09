@@ -1,6 +1,5 @@
 import { ListItem, ListItemText } from '@material-ui/core';
 import React from 'react';
-import { ContactFilterValue } from '../../Contacts/ContactFilters/ContactFilters';
 import {
   CheckboxFilter,
   DaterangeFilter,
@@ -17,6 +16,7 @@ import { FilterListItemMultiselect } from './FilterListItemMultiselect';
 import { FilterListItemNumericRange } from './FilterListItemNumericRange';
 import { FilterListItemSelect } from './FilterListItemSelect';
 import { FilterListItemTextField } from './FilterListItemTextField';
+import { FilterValue } from './FilterPanel';
 
 type FilterItem =
   | CheckboxFilter
@@ -28,8 +28,8 @@ type FilterItem =
 
 interface Props {
   filter: FilterItem;
-  value?: ContactFilterValue;
-  onUpdate: (value?: ContactFilterValue) => void;
+  value?: FilterValue;
+  onUpdate: (value?: FilterValue) => void;
 }
 
 export const FilterListItem: React.FC<Props> = ({

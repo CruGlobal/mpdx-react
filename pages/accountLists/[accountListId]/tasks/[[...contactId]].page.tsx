@@ -2,14 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Head from 'next/head';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'next/router';
-import {
-  Box,
-  Button,
-  Card,
-  CardContent,
-  Hidden,
-  styled,
-} from '@material-ui/core';
+import { Box, Button, Hidden, styled } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 import CheckCircleOutlineIcon from '@material-ui/icons/CheckCircleOutline';
 import { InfiniteList } from '../../../../src/components/InfiniteList/InfiniteList';
@@ -19,30 +12,30 @@ import { SidePanelsLayout } from '../../../../src/components/Layouts/SidePanelsL
 import { useAccountListId } from '../../../../src/hooks/useAccountListId';
 import { TaskFilterSetInput } from '../../../../graphql/types.generated';
 import { TaskRow } from '../../../../src/components/Task/TaskRow/TaskRow';
-import {
-  ListHeader,
-  ListHeaderCheckBoxState,
-} from '../../../../src/components/Shared/Header/ListHeader';
+import { ListHeader } from '../../../../src/components/Shared/Header/ListHeader';
+import NullState from '../../../../src/components/Shared/Filters/NullState/NullState';
 import useTaskDrawer from '../../../../src/hooks/useTaskDrawer';
-import { useTasksQuery } from './Tasks.generated';
+import { FilterPanel } from '../../../../src/components/Shared/Filters/FilterPanel';
+import { useMassSelection } from '../../../../src/hooks/useMassSelection';
+import { useTaskFiltersQuery, useTasksQuery } from './Tasks.generated';
 
 const WhiteBackground = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.common.white,
 }));
 
 const TaskHeaderButton = styled(Button)(({ theme }) => ({
-  color: '#2196F3',
+  color: theme.palette.info.main,
   fontWeight: 600,
   marginRight: theme.spacing(1),
   marginLeft: theme.spacing(1),
 }));
 
-const TaskCheckIcon = styled(CheckCircleOutlineIcon)(() => ({
-  color: '#2196F3',
+const TaskCheckIcon = styled(CheckCircleOutlineIcon)(({ theme }) => ({
+  color: theme.palette.info.main,
 }));
 
-const TaskAddIcon = styled(AddIcon)(() => ({
-  color: '#2196F3',
+const TaskAddIcon = styled(AddIcon)(({ theme }) => ({
+  color: theme.palette.info.main,
 }));
 
 const TasksPage: React.FC = () => {
@@ -53,7 +46,6 @@ const TasksPage: React.FC = () => {
 
   const [contactDetailsOpen, setContactDetailsOpen] = useState(false);
   const [contactDetailsId, setContactDetailsId] = useState<string>();
-  const [selectedTasks, setSelectedTasks] = useState<Array<string>>([]);
 
   const { contactId, searchTerm } = query;
 
@@ -72,22 +64,47 @@ const TasksPage: React.FC = () => {
     }
   }, [isReady, contactId]);
 
+  //#region Filters
   const [filterPanelOpen, setFilterPanelOpen] = useState<boolean>(false);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [activeFilters, setActiveFilters] = useState<TaskFilterSetInput>({});
+  const [starredFilter, setStarredFilter] = useState<TaskFilterSetInput>({});
 
   const { data, loading, fetchMore } = useTasksQuery({
     variables: {
       accountListId: accountListId ?? '',
-      tasksFilter: { ...activeFilters, wildcardSearch: searchTerm?.[0] },
+      tasksFilter: {
+        ...activeFilters,
+        ...starredFilter,
+        wildcardSearch: searchTerm?.[0],
+      },
     },
     skip: !accountListId,
   });
 
+  const { data: filterData, loading: filtersLoading } = useTaskFiltersQuery({
+    variables: { accountListId: accountListId ?? '' },
+    skip: !accountListId,
+  });
+
+  const isFiltered =
+    Object.keys(activeFilters).length > 0 ||
+    Object.values(activeFilters).some((filter) => filter !== []);
+
   const toggleFilterPanel = () => {
     setFilterPanelOpen(!filterPanelOpen);
   };
+  //#endregion
 
+  //#region Mass Actions
+  const {
+    selectionType,
+    isRowChecked,
+    toggleSelectAll,
+    toggleSelectionById,
+  } = useMassSelection(data?.tasks?.totalCount ?? 0);
+  //#endregion
+
+  //#region User Actions
   const setContactFocus = (id?: string) => {
     const {
       accountListId: _accountListId,
@@ -109,24 +126,6 @@ const TasksPage: React.FC = () => {
     setContactDetailsOpen(!!id);
   };
 
-  const handleCheckOneTask = (contactId: string): void => {
-    if (!selectedTasks.includes(contactId)) {
-      setSelectedTasks((prevSelected) => [...prevSelected, contactId]);
-    } else {
-      setSelectedTasks((prevSelected) =>
-        prevSelected.filter((id) => id !== contactId),
-      );
-    }
-  };
-
-  const handleCheckAllTasks = (
-    event: React.ChangeEvent<HTMLInputElement>,
-  ): void => {
-    setSelectedTasks(
-      event.target.checked ? data?.tasks.nodes.map(({ id }) => id) ?? [] : [],
-    );
-  };
-
   const setSearchTerm = (searchTerm?: string) => {
     const { searchTerm: _, ...oldQuery } = query;
     replace({
@@ -137,12 +136,9 @@ const TasksPage: React.FC = () => {
       },
     });
   };
+  //#endregion
 
-  const hasSelectedSomeTasks =
-    selectedTasks.length > 0 &&
-    selectedTasks.length < (data?.tasks.nodes.length ?? 0);
-  const hasSelectedAllTasks = selectedTasks.length === data?.tasks.nodes.length;
-
+  //#region JSX
   return (
     <>
       <Head>
@@ -151,7 +147,18 @@ const TasksPage: React.FC = () => {
       {accountListId ? (
         <WhiteBackground>
           <SidePanelsLayout
-            leftPanel={<>TODO: implement task filters</>}
+            leftPanel={
+              filterData && !filtersLoading ? (
+                <FilterPanel
+                  filters={filterData?.accountList.taskFilterGroups}
+                  selectedFilters={activeFilters}
+                  onClose={toggleFilterPanel}
+                  onSelectedFiltersChanged={setActiveFilters}
+                />
+              ) : (
+                <></>
+              )
+            }
             leftOpen={filterPanelOpen}
             leftWidth="290px"
             mainContent={
@@ -161,16 +168,13 @@ const TasksPage: React.FC = () => {
                   activeFilters={Object.keys(activeFilters).length > 0}
                   filterPanelOpen={filterPanelOpen}
                   toggleFilterPanel={toggleFilterPanel}
-                  onCheckAllItems={handleCheckAllTasks}
+                  contactDetailsOpen={contactDetailsOpen}
+                  onCheckAllItems={toggleSelectAll}
                   onSearchTermChanged={setSearchTerm}
-                  totalItems={data?.tasks.totalCount}
-                  headerCheckboxState={
-                    hasSelectedSomeTasks
-                      ? ListHeaderCheckBoxState.partial
-                      : hasSelectedAllTasks
-                      ? ListHeaderCheckBoxState.checked
-                      : ListHeaderCheckBoxState.unchecked
-                  }
+                  totalItems={data?.tasks?.totalCount}
+                  starredFilter={starredFilter}
+                  toggleStarredFilter={setStarredFilter}
+                  headerCheckboxState={selectionType}
                   buttonGroup={
                     <Hidden xsDown>
                       <TaskHeaderButton
@@ -191,8 +195,8 @@ const TasksPage: React.FC = () => {
                 />
                 <InfiniteList
                   loading={loading}
-                  data={data?.tasks.nodes}
-                  totalCount={data?.tasks.totalCount}
+                  data={data?.tasks?.nodes}
+                  totalCount={data?.tasks?.totalCount}
                   style={{ height: 'calc(100vh - 160px)' }}
                   itemContent={(index, task) => (
                     <Box key={index} flexDirection="row">
@@ -200,23 +204,26 @@ const TasksPage: React.FC = () => {
                         accountListId={accountListId}
                         task={task}
                         onContactSelected={setContactFocus}
-                        onTaskCheckToggle={handleCheckOneTask}
-                        isChecked={selectedTasks.includes(task.id)}
+                        onTaskCheckToggle={toggleSelectionById}
+                        isChecked={isRowChecked(task.id)}
                       />
                     </Box>
                   )}
                   endReached={() =>
-                    data?.tasks.pageInfo.hasNextPage &&
+                    data?.tasks?.pageInfo.hasNextPage &&
                     fetchMore({
-                      variables: { after: data.tasks.pageInfo.endCursor },
+                      variables: { after: data.tasks?.pageInfo.endCursor },
                     })
                   }
                   EmptyPlaceholder={
-                    <Card>
-                      <CardContent>
-                        TODO: Implement Empty Placeholder
-                      </CardContent>
-                    </Card>
+                    <Box width="75%" margin="auto" mt={2}>
+                      <NullState
+                        page="task"
+                        totalCount={data?.allTasks?.totalCount || 0}
+                        filtered={isFiltered}
+                        changeFilters={setActiveFilters}
+                      />
+                    </Box>
                   }
                 />
               </>
@@ -241,6 +248,7 @@ const TasksPage: React.FC = () => {
       )}
     </>
   );
+  //#endregion
 };
 
 export default TasksPage;

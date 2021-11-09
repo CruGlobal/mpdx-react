@@ -17,4 +17,15 @@ query Tasks(
       hasNextPage
     }
   }
+  allTasks: tasks(accountListId: $accountListId, after: $after) {
+    totalCount
+  }
+}
+
+query TaskFilters($accountListId: ID!) {
+  accountList(id: $accountListId) {
+    taskFilterGroups {
+      ...FilterPanelGroup
+    }
+  }
 }

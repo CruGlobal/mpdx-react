@@ -1,13 +1,18 @@
 import React, { ReactElement } from 'react';
-import { styled, Theme } from '@material-ui/core';
-import { ItemProps, Virtuoso, VirtuosoProps } from 'react-virtuoso';
+import { List, ListItem, styled, Theme } from '@material-ui/core';
+import { ListProps, ItemProps, Virtuoso, VirtuosoProps } from 'react-virtuoso';
 import { Skeleton } from '@material-ui/lab';
 
 const height = 72;
-const padding = 8;
+const padding = 0;
+
+// eslint-disable-next-line react/display-name
+const ListContainer: React.ComponentType<ListProps> = React.forwardRef(
+  (props, listRef) => <List component="div" {...props} ref={listRef} />,
+);
 
 const ItemWithBorders = styled(({ disableHover: _, ...props }) => (
-  <div {...props} />
+  <ListItem disableGutters {...props} />
 ))(
   ({
     theme,
@@ -70,6 +75,7 @@ export const InfiniteList = <T,>({
     components={{
       Footer: loading ? Loading : undefined,
       EmptyPlaceholder: loading ? undefined : () => EmptyPlaceholder,
+      List: ListContainer,
       Item,
       ScrollSeekPlaceholder: SkeletonItem,
       ...props.components,
