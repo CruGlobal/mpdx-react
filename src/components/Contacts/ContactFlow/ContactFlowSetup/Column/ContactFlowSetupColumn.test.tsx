@@ -28,6 +28,7 @@ const changeTitle = jest.fn();
 const deleteColumn = jest.fn();
 const moveStatus = jest.fn();
 const setColumnWidth = jest.fn();
+const moveColumns = jest.fn();
 
 describe('ContactFlowSetupColumn', () => {
   it('should render a column with correct details', async () => {
@@ -45,6 +46,7 @@ describe('ContactFlowSetupColumn', () => {
                 changeTitle={changeTitle}
                 deleteColumn={deleteColumn}
                 moveStatus={moveStatus}
+                moveColumns={moveColumns}
                 loading={false}
                 columnWidth={100}
                 setColumnWidth={setColumnWidth}
@@ -82,6 +84,7 @@ describe('ContactFlowSetupColumn', () => {
                 columnWidth={100}
                 setColumnWidth={setColumnWidth}
                 moveStatus={moveStatus}
+                moveColumns={moveColumns}
                 statuses={status}
               />
             </TestRouter>
@@ -127,6 +130,7 @@ describe('ContactFlowSetupColumn', () => {
                 columnWidth={100}
                 setColumnWidth={setColumnWidth}
                 moveStatus={moveStatus}
+                moveColumns={moveColumns}
                 statuses={status}
               />
             </TestRouter>

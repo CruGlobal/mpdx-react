@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Head from 'next/head';
 import { useTranslation } from 'react-i18next';
 import { DndProvider } from 'react-dnd';
@@ -145,6 +145,17 @@ const ContactFlowSetupPage: React.FC = () => {
 
   const [columnWidth, setColumnWidth] = useState(0);
 
+  const moveColumns = useCallback(
+    (dragIndex: number, hoverIndex: number) => {
+      const draggedColumn = flowOptions[dragIndex];
+      const temp = [...flowOptions];
+      temp.splice(dragIndex, 1);
+      temp.splice(hoverIndex, 0, draggedColumn);
+      updateOptions(temp);
+    },
+    [flowOptions],
+  );
+
   return (
     <>
       <Head>
@@ -184,6 +195,7 @@ const ContactFlowSetupPage: React.FC = () => {
                       changeTitle={changeTitle}
                       deleteColumn={deleteColumn}
                       moveStatus={moveStatus}
+                      moveColumns={moveColumns}
                       columnWidth={columnWidth}
                       setColumnWidth={setColumnWidth}
                       statuses={column.statuses.map((status) => ({

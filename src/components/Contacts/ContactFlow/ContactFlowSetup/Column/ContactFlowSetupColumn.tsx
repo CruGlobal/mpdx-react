@@ -14,6 +14,7 @@ import React, {
   Dispatch,
   SetStateAction,
 } from 'react';
+import { DropTargetMonitor, useDrag, useDrop, XYCoord } from 'react-dnd';
 import theme from '../../../../../../src/theme';
 import { ContactFilterStatusEnum } from '../../../../../../graphql/types.generated';
 import { colorMap } from '../../../../../../src/components/Contacts/ContactFlow/ContactFlow';
@@ -71,6 +72,13 @@ interface Props {
   loading: boolean;
   columnWidth: number;
   setColumnWidth: Dispatch<SetStateAction<number>>;
+  moveColumns: (dragIndex: number, hoverIndex: number) => void;
+}
+
+interface DragItem {
+  index: number;
+  id: string;
+  type: string;
 }
 
 export const ContactFlowSetupColumn: React.FC<Props> = ({
@@ -82,6 +90,7 @@ export const ContactFlowSetupColumn: React.FC<Props> = ({
   changeTitle,
   deleteColumn,
   moveStatus,
+  moveColumns,
   loading,
   columnWidth,
   setColumnWidth,
@@ -94,9 +103,56 @@ export const ContactFlowSetupColumn: React.FC<Props> = ({
     }
   }, []);
 
+  const dragRef = useRef<HTMLDivElement>(null);
+  const previewRef = useRef<HTMLDivElement>(null);
+  const [{ handlerId }, drop] = useDrop({
+    accept: 'column',
+    collect(monitor) {
+      return {
+        handlerId: monitor.getHandlerId(),
+      };
+    },
+    hover(item: DragItem, monitor: DropTargetMonitor) {
+      if (!previewRef.current) {
+        return;
+      }
+      const dragIndex = item.index;
+      const hoverIndex = index;
+
+      if (dragIndex === hoverIndex) {
+        return;
+      }
+      const hoverBoundingRect = previewRef.current?.getBoundingClientRect();
+      const hoverMiddleX =
+        (hoverBoundingRect.right - hoverBoundingRect.left) / 2;
+      const clientOffset = monitor.getClientOffset();
+      const hoverClientX = (clientOffset as XYCoord).x - hoverBoundingRect.left;
+      if (dragIndex < hoverIndex && hoverClientX < hoverMiddleX) {
+        return;
+      }
+      if (dragIndex > hoverIndex && hoverClientX > hoverMiddleX) {
+        return;
+      }
+      moveColumns(dragIndex, hoverIndex);
+      item.index = hoverIndex;
+    },
+  });
+
+  const [, drag, preview] = useDrag({
+    type: 'column',
+    item: () => {
+      return { index };
+    },
+    collect: (monitor) => ({
+      isDragging: monitor.isDragging(),
+    }),
+  });
+
+  drag(dragRef);
+  drop(preview(previewRef));
   return (
     <>
-      <Card>
+      <Card ref={previewRef} style={{ position: 'relative' }}>
         <Box
           p={2}
           pr={1}
@@ -107,7 +163,9 @@ export const ContactFlowSetupColumn: React.FC<Props> = ({
           borderBottom={`5px solid ${color}`}
           height={theme.spacing(7)}
         >
-          <Menu />
+          <Box {...{ ref: dragRef }} data-handler-id={handlerId}>
+            <Menu />
+          </Box>
           <TextField
             fullWidth
             inputProps={{
