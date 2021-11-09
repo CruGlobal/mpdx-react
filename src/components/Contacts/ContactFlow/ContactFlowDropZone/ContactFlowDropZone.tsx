@@ -67,10 +67,13 @@ export const ContactFlowDropZone: React.FC<Props> = ({
           : `3px solid ${theme.palette.cruGrayMedium.main}`,
         height: '100%',
         width: '100%',
+        color: canDrop
+          ? theme.palette.common.white
+          : theme.palette.cruGrayDark.main,
         backgroundColor: canDrop
           ? isOver
-            ? theme.palette.mpdxYellow.main
-            : theme.palette.common.white
+            ? theme.palette.info.main
+            : theme.palette.info.light
           : theme.palette.cruGrayLight.main,
       }}
       justifyContent="center"
