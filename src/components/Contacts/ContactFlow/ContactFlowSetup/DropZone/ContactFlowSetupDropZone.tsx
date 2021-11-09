@@ -25,9 +25,7 @@ Props) => {
     canDrop: (item: ContactFlowSetupItemDrag) =>
       item.originIndex !== columnIndex,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    drop: (item) => {
-      moveStatus(item.originIndex, columnIndex, item.status);
-    },
+    drop: (item) => moveStatus(item.originIndex, columnIndex, item.status),
     collect: (monitor) => ({
       isOver: !!monitor.isOver(),
       canDrop: !!monitor.canDrop(),

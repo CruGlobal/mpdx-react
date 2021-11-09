@@ -1,11 +1,11 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
 import { useTranslation } from 'react-i18next';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { Box } from '@material-ui/core';
-import { useSnackbar } from 'notistack';
 import { v4 as uuidv4 } from 'uuid';
+import { useSnackbar } from 'notistack';
 import { ContactFlowSetupDragLayer } from '../../../../../src/components/Contacts/ContactFlow/ContactFlowSetup/DragLayer/ContactFlowSetupDragLayer';
 import { UnusedStatusesColumn } from '../../../../../src/components/Contacts/ContactFlow/ContactFlowSetup/Column/UnusedStatusesColumn';
 import { ContactFilterStatusEnum } from '../../../../../graphql/types.generated';
@@ -17,7 +17,6 @@ import {
 import Loading from '../../../../../src/components/Loading';
 import { ContactFlowSetupHeader } from '../../../../../src/components/Contacts/ContactFlow/ContactFlowSetup/Header/ContactFlowSetupHeader';
 import { useAccountListId } from '../../../../../src/hooks/useAccountListId';
-import theme from '../../../../../src/theme';
 import {
   colorMap,
   ContactFlowOption,
@@ -30,20 +29,25 @@ const ContactFlowSetupPage: React.FC = () => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
   const { enqueueSnackbar } = useSnackbar();
-  const {
-    data: userOptions,
-    loading: loadingUserOptions,
-  } = useGetUserOptionsQuery({});
+  const { data: userOptions, loading } = useGetUserOptionsQuery({});
   const [updateUserOptions] = useUpdateUserOptionsMutation();
+  const [flowOptions, setFlowOptions] = useState<
+    {
+      name: string;
+      statuses: string[];
+      color: string;
+      id: string;
+    }[]
+  >([]);
 
-  const flowOptions: {
-    name: string;
-    statuses: string[];
-    color: string;
-  }[] = JSON.parse(
-    userOptions?.userOptions.find((option) => option.key === 'flows')?.value ||
-      '[]',
-  );
+  useEffect(() => {
+    setFlowOptions(
+      JSON.parse(
+        userOptions?.userOptions.find((option) => option.key === 'flows')
+          ?.value || '[]',
+      ),
+    );
+  }, [loading]);
 
   const allUsedStatuses = flowOptions
     ? flowOptions.flatMap((option) => option.statuses)
@@ -90,16 +94,26 @@ const ContactFlowSetupPage: React.FC = () => {
     });
   };
 
-  const addColumn = (): void => {
-    const temp = [
-      ...flowOptions,
-      {
-        name: 'Untitled',
-        id: uuidv4(),
-        statuses: [],
-        color: 'color-text',
+  const updateOptionsNoReload = async (
+    options: ContactFlowOption[],
+  ): Promise<void> => {
+    const stringified = JSON.stringify(options);
+    await updateUserOptions({
+      variables: {
+        key: 'flows',
+        value: stringified,
       },
-    ];
+    });
+  };
+
+  const addColumn = (): void => {
+    const temp = [...flowOptions];
+    temp.push({
+      name: 'Untitled',
+      id: uuidv4(),
+      statuses: [],
+      color: 'color-text',
+    });
     updateOptions(temp);
   };
 
@@ -138,8 +152,10 @@ const ContactFlowSetupPage: React.FC = () => {
   ): void => {
     const temp = [...flowOptions];
     temp[index].name = event.target.value;
-    updateOptions(temp);
+    updateOptionsNoReload(temp);
   };
+
+  const [columnWidth, setColumnWidth] = useState(0);
 
   return (
     <>
@@ -148,7 +164,7 @@ const ContactFlowSetupPage: React.FC = () => {
           MPDX | {t('Flows')} | {t('Setup')}
         </title>
       </Head>
-      {accountListId && !loadingUserOptions ? (
+      {accountListId ? (
         <DndProvider backend={HTML5Backend}>
           <ContactFlowSetupDragLayer />
           <Box>
@@ -157,13 +173,8 @@ const ContactFlowSetupPage: React.FC = () => {
               <Box
                 display="grid"
                 minWidth="100%"
-                gridTemplateColumns={`repeat(${flowOptions.length + 1}, ${
-                  flowOptions.length > 5
-                    ? '1fr'
-                    : 'minmax(0, 1fr)); minmax(0, 1fr)'
-                }`}
+                gridTemplateColumns={`repeat(${flowOptions.length + 1}, 1fr`}
                 gridAutoFlow="column"
-                gridGap={theme.spacing(1)}
                 style={{ overflowX: 'auto' }}
               >
                 {flowOptions.map((column, index) => (
@@ -177,6 +188,7 @@ const ContactFlowSetupPage: React.FC = () => {
                   >
                     <ContactFlowSetupColumn
                       index={index}
+                      loading={loading}
                       accountListId={accountListId}
                       title={column.name}
                       color={colorMap[column.color]}
@@ -184,6 +196,8 @@ const ContactFlowSetupPage: React.FC = () => {
                       changeTitle={changeTitle}
                       deleteColumn={deleteColumn}
                       moveStatus={moveStatus}
+                      columnWidth={columnWidth}
+                      setColumnWidth={setColumnWidth}
                       statuses={column.statuses.map((status) => ({
                         id: statusMap[status] as ContactFilterStatusEnum,
                         value: status,
@@ -200,6 +214,8 @@ const ContactFlowSetupPage: React.FC = () => {
                 >
                   <UnusedStatusesColumn
                     accountListId={accountListId}
+                    columnWidth={columnWidth}
+                    loading={loading}
                     moveStatus={moveStatus}
                     statuses={unusedStatuses.map((status) => ({
                       id: statusMap[status] as ContactFilterStatusEnum,

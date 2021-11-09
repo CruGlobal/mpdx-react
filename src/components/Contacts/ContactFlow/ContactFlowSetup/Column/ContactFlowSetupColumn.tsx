@@ -8,7 +8,12 @@ import {
   Theme,
 } from '@material-ui/core';
 import { Menu, Clear, FiberManualRecord } from '@material-ui/icons';
-import React, { useRef, useState, useLayoutEffect } from 'react';
+import React, {
+  useRef,
+  useLayoutEffect,
+  Dispatch,
+  SetStateAction,
+} from 'react';
 import theme from '../../../../../../src/theme';
 import { ContactFilterStatusEnum } from '../../../../../../graphql/types.generated';
 import { colorMap } from '../../../../../../src/components/Contacts/ContactFlow/ContactFlow';
@@ -63,6 +68,9 @@ interface Props {
     destinationIndex: number,
     status: string,
   ) => void;
+  loading: boolean;
+  columnWidth: number;
+  setColumnWidth: Dispatch<SetStateAction<number>>;
 }
 
 export const ContactFlowSetupColumn: React.FC<Props> = ({
@@ -74,9 +82,11 @@ export const ContactFlowSetupColumn: React.FC<Props> = ({
   changeTitle,
   deleteColumn,
   moveStatus,
+  loading,
+  columnWidth,
+  setColumnWidth,
 }: Props) => {
   const CardContentRef = useRef<HTMLDivElement>();
-  const [columnWidth, setColumnWidth] = useState(0);
 
   useLayoutEffect(() => {
     if (CardContentRef.current) {
@@ -187,10 +197,12 @@ export const ContactFlowSetupColumn: React.FC<Props> = ({
                 ))}
               </Box>
             )}
-            <ContactFlowSetupDropZone
-              columnIndex={index}
-              moveStatus={moveStatus}
-            />
+            {!loading && (
+              <ContactFlowSetupDropZone
+                columnIndex={index}
+                moveStatus={moveStatus}
+              />
+            )}
           </Box>
         </CardContent>
       </Card>

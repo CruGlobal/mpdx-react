@@ -7,7 +7,7 @@ import {
 } from '@material-ui/core';
 import { FiberManualRecord } from '@material-ui/icons';
 import { useTranslation } from 'react-i18next';
-import React, { useRef, useState, useLayoutEffect } from 'react';
+import React, { useRef } from 'react';
 import theme from '../../../../../../src/theme';
 import { ContactFilterStatusEnum } from '../../../../../../graphql/types.generated';
 import { ContactFlowSetupStatusRow } from '../Row/ContactFlowSetupStatusRow';
@@ -21,21 +21,18 @@ interface Props {
     destinationIndex: number,
     status: string,
   ) => void;
+  loading: boolean;
+  columnWidth: number;
 }
 
 export const UnusedStatusesColumn: React.FC<Props> = ({
   statuses,
   moveStatus,
+  loading,
+  columnWidth,
 }: Props) => {
   const { t } = useTranslation();
   const CardContentRef = useRef<HTMLDivElement>();
-  const [columnWidth, setColumnWidth] = useState(0);
-
-  useLayoutEffect(() => {
-    if (CardContentRef.current) {
-      setColumnWidth(CardContentRef.current.offsetWidth);
-    }
-  }, []);
   return (
     <>
       <Card>
@@ -95,14 +92,17 @@ export const UnusedStatusesColumn: React.FC<Props> = ({
                     key={status.id}
                     status={status}
                     columnWidth={columnWidth}
+                    columnIndex={-1}
                   />
                 ))}
               </Box>
             )}
-            <ContactFlowSetupDropZone
-              columnIndex={-1}
-              moveStatus={moveStatus}
-            />
+            {!loading && (
+              <ContactFlowSetupDropZone
+                columnIndex={-1}
+                moveStatus={moveStatus}
+              />
+            )}
           </Box>
         </CardContent>
       </Card>
