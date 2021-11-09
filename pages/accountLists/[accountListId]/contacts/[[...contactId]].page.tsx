@@ -217,7 +217,12 @@ const ContactsPage: React.FC = () => {
   return (
     <>
       <Head>
-        <title>MPDX | {t('Contacts')}</title>
+        <title>
+          MPDX |{' '}
+          {tableDisplayState === TableViewModeEnum.List
+            ? t('Contacts')
+            : t('Flows')}
+        </title>
       </Head>
       {accountListId ? (
         <DndProvider backend={HTML5Backend}>
