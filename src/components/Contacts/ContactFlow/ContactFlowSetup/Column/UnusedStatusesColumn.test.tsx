@@ -32,6 +32,8 @@ describe('UnusedStatusesColumn', () => {
             <TestRouter router={router}>
               <UnusedStatusesColumn
                 accountListId={accountListId}
+                loading={false}
+                columnWidth={100}
                 statuses={status}
                 moveStatus={moveStatus}
               />
