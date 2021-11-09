@@ -161,8 +161,8 @@ describe('TaskList', () => {
     userEvent.type(getByRole('textbox', { hidden: true, name: 'Search' }), 'a');
     userEvent.click(getByLabelText('Rows per page: 100'));
     userEvent.click(getByText('250'));
-    userEvent.click(getByLabelText('Next Page'));
-    userEvent.click(getByLabelText('Previous Page'));
+    expect(getByLabelText('Next Page')).toBeDisabled();
+    expect(getByLabelText('Previous Page')).toBeDisabled();
   });
 
   it('has correct overrides', async () => {
