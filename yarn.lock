@@ -7294,7 +7294,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@testing-library/user-event@npm:^13.0.0":
+"@testing-library/user-event@npm:^13.5.0":
   version: 13.5.0
   resolution: "@testing-library/user-event@npm:13.5.0"
   dependencies:
@@ -19991,7 +19991,7 @@ fsevents@~2.3.2:
     "@testing-library/jest-dom": ^5.11.9
     "@testing-library/react": 12.1.2
     "@testing-library/react-hooks": ^7.0.0
-    "@testing-library/user-event": ^13.0.0
+    "@testing-library/user-event": ^13.5.0
     "@types/axios": ^0.14.0
     "@types/css-mediaquery": ^0.1.0
     "@types/faker": ^5.1.6
