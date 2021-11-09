@@ -47,7 +47,7 @@ const ViewColumnIcon = styled(ViewColumn)(({ theme }) => ({
 
 const ViewSettingsButton = styled(Button)(({ theme }) => ({
   textTransform: 'none',
-  padding: theme.spacing(1.25),
+  height: theme.spacing(6),
   marginLeft: theme.spacing(1),
   marginRight: theme.spacing(2),
 }));
