@@ -330,6 +330,7 @@ const ContactsPage: React.FC = () => {
                   ) : (
                     <ContactFlow
                       accountListId={accountListId}
+                      starredFilter={starredFilter}
                       onContactSelected={setContactFocus}
                     />
                   )}

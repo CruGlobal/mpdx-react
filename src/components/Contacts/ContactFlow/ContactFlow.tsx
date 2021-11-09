@@ -1,13 +1,17 @@
 import { Box } from '@material-ui/core';
 import React from 'react';
 import Loading from '../../Loading';
-import { ContactFilterStatusEnum } from '../../../../graphql/types.generated';
+import {
+  ContactFilterSetInput,
+  ContactFilterStatusEnum,
+} from '../../../../graphql/types.generated';
 import theme from '../../../theme';
 import { ContactFlowColumn } from './ContactFlowColumn';
 import { useGetUserOptionsQuery } from './GetUserOptions.generated';
 
 interface Props {
   accountListId: string;
+  starredFilter: ContactFilterSetInput;
   onContactSelected: (contactId: string) => void;
 }
 
@@ -44,6 +48,7 @@ export const colorMap: { [key: string]: string } = {
 
 export const ContactFlow: React.FC<Props> = ({
   accountListId,
+  starredFilter,
   onContactSelected,
 }: Props) => {
   const {
@@ -87,6 +92,7 @@ export const ContactFlow: React.FC<Props> = ({
                   <ContactFlowColumn
                     accountListId={accountListId}
                     title={column.name}
+                    starredFilter={starredFilter}
                     color={colorMap[column.color]}
                     onContactSelected={onContactSelected}
                     statuses={column.statuses.map(

@@ -8,7 +8,10 @@ import {
 import React, { useRef } from 'react';
 import { useDrop } from 'react-dnd';
 import theme from '../../../../src/theme';
-import { ContactFilterStatusEnum } from '../../../../graphql/types.generated';
+import {
+  ContactFilterSetInput,
+  ContactFilterStatusEnum,
+} from '../../../../graphql/types.generated';
 import { ContactRowFragment } from '../ContactRow/ContactRow.generated';
 import { useContactsQuery } from '../../../../pages/accountLists/[accountListId]/contacts/Contacts.generated';
 
@@ -19,6 +22,7 @@ import { ContactFlowDropZone } from './ContactFlowDropZone/ContactFlowDropZone';
 interface Props {
   data?: ContactRowFragment[];
   statuses: ContactFilterStatusEnum[];
+  starredFilter: ContactFilterSetInput;
   title: string;
   color: string;
   accountListId: string;
@@ -27,6 +31,7 @@ interface Props {
 
 export const ContactFlowColumn: React.FC<Props> = ({
   statuses,
+  starredFilter,
   title,
   color,
   accountListId,
@@ -35,7 +40,7 @@ export const ContactFlowColumn: React.FC<Props> = ({
   const { data, loading, fetchMore } = useContactsQuery({
     variables: {
       accountListId: accountListId ?? '',
-      contactsFilters: { status: statuses },
+      contactsFilters: { status: statuses, ...starredFilter },
     },
     skip: !accountListId || statuses.length === 0,
   });
