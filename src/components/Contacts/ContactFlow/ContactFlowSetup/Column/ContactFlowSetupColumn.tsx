@@ -52,6 +52,10 @@ const ColoredCircle = styled(FiberManualRecord)(
   }),
 );
 
+const DraggableMenuIcon = styled(Menu)(() => ({
+  cursor: 'move',
+}));
+
 interface Props {
   statuses: { id: ContactFilterStatusEnum; value: string }[];
   title: string;
@@ -163,8 +167,13 @@ export const ContactFlowSetupColumn: React.FC<Props> = ({
           borderBottom={`5px solid ${color}`}
           height={theme.spacing(7)}
         >
-          <Box {...{ ref: dragRef }} data-handler-id={handlerId}>
-            <Menu />
+          <Box
+            {...{ ref: dragRef }}
+            data-handler-id={handlerId}
+            display="flex"
+            alignItems="center"
+          >
+            <DraggableMenuIcon />
           </Box>
           <TextField
             fullWidth
