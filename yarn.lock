@@ -4061,21 +4061,31 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@date-io/core@npm:1.x, @date-io/core@npm:^1.3.13":
+"@date-io/core@npm:1.x":
   version: 1.3.13
   resolution: "@date-io/core@npm:1.3.13"
   checksum: 5a9e9d1de20f0346a3c7d2d5946190caef4bfb0b64d82ba1f4c566657a9192667c94ebe7f438d11d4286d9c190974daad4fb2159294225cd8af4d9a140239879
   languageName: node
   linkType: hard
 
-"@date-io/luxon@npm:1.x":
-  version: 1.3.13
-  resolution: "@date-io/luxon@npm:1.3.13"
+"@date-io/core@npm:^2.11.0":
+  version: 2.11.0
+  resolution: "@date-io/core@npm:2.11.0"
+  checksum: ad26af280b0fb08bf4a272fbd5d41fb9bdb5b5aa3fcc4930ea5ae92a691c6b1adad8d54aa4172cc164b260aa5ee7994d5d1fcee00609f2e12efda8556fa32ba2
+  languageName: node
+  linkType: hard
+
+"@date-io/luxon@npm:2.x":
+  version: 2.11.1
+  resolution: "@date-io/luxon@npm:2.11.1"
   dependencies:
-    "@date-io/core": ^1.3.13
+    "@date-io/core": ^2.11.0
   peerDependencies:
-    luxon: ^1.21.3
-  checksum: 7dd18ef11ea14111595d8836247ffe756889bd31309796fd98f3bf05b5aaf25f63e8574280d35ae1f511ba11ba6903accc4a584b7103b8affd626b79ab69b056
+    luxon: ^1.21.3 || ^2.x
+  peerDependenciesMeta:
+    luxon:
+      optional: true
+  checksum: 64782a8bc95b3b4adb24bdbf05a211b0f7afe36a2c9ce92c6262bd167b43c897ef049b2fa80e03a489b67877cadae7adecd21518193359ac192a7c2d3dc11764
   languageName: node
   linkType: hard
 
@@ -19960,7 +19970,7 @@ fsevents@~2.3.2:
     "@babel/core": ^7.12.16
     "@babel/runtime": ^7.12.13
     "@brainly/onesky-utils": ^1.4.1
-    "@date-io/luxon": 1.x
+    "@date-io/luxon": 2.x
     "@graphql-codegen/add": ^2.0.2
     "@graphql-codegen/cli": 1.21.8
     "@graphql-codegen/fragment-matcher": 2.0.1

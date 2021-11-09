@@ -31,7 +31,7 @@
     "@apollo/gateway": "^0.23.2",
     "@apollo/link-context": "^2.0.0-beta.3",
     "@babel/runtime": "^7.12.13",
-    "@date-io/luxon": "1.x",
+    "@date-io/luxon": "2.x",
     "@material-ui/core": "^4.11.3",
     "@material-ui/data-grid": "^4.0.0-alpha.37",
     "@material-ui/icons": "^4.11.2",

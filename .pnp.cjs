@@ -42,7 +42,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@babel/core", "npm:7.12.16"],
             ["@babel/runtime", "npm:7.12.13"],
             ["@brainly/onesky-utils", "npm:1.4.1"],
-            ["@date-io/luxon", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:1.3.13"],
+            ["@date-io/luxon", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:2.11.1"],
             ["@graphql-codegen/add", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:2.0.2"],
             ["@graphql-codegen/cli", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:1.21.8"],
             ["@graphql-codegen/fragment-matcher", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:2.0.1"],
@@ -9240,21 +9240,28 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@date-io/core", "npm:1.3.13"]
           ],
           "linkType": "HARD",
+        }],
+        ["npm:2.11.0", {
+          "packageLocation": "./.yarn/cache/@date-io-core-npm-2.11.0-b470c05080-ad26af280b.zip/node_modules/@date-io/core/",
+          "packageDependencies": [
+            ["@date-io/core", "npm:2.11.0"]
+          ],
+          "linkType": "HARD",
         }]
       ]],
       ["@date-io/luxon", [
-        ["npm:1.3.13", {
-          "packageLocation": "./.yarn/cache/@date-io-luxon-npm-1.3.13-8873e085ec-7dd18ef11e.zip/node_modules/@date-io/luxon/",
+        ["npm:2.11.1", {
+          "packageLocation": "./.yarn/cache/@date-io-luxon-npm-2.11.1-8c1d3bd1e7-64782a8bc9.zip/node_modules/@date-io/luxon/",
           "packageDependencies": [
-            ["@date-io/luxon", "npm:1.3.13"]
+            ["@date-io/luxon", "npm:2.11.1"]
           ],
           "linkType": "SOFT",
         }],
-        ["virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:1.3.13", {
-          "packageLocation": "./.yarn/__virtual__/@date-io-luxon-virtual-bff7e7b8bb/0/cache/@date-io-luxon-npm-1.3.13-8873e085ec-7dd18ef11e.zip/node_modules/@date-io/luxon/",
+        ["virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:2.11.1", {
+          "packageLocation": "./.yarn/__virtual__/@date-io-luxon-virtual-84447cfac4/0/cache/@date-io-luxon-npm-2.11.1-8c1d3bd1e7-64782a8bc9.zip/node_modules/@date-io/luxon/",
           "packageDependencies": [
-            ["@date-io/luxon", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:1.3.13"],
-            ["@date-io/core", "npm:1.3.13"],
+            ["@date-io/luxon", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:2.11.1"],
+            ["@date-io/core", "npm:2.11.0"],
             ["@types/luxon", "npm:1.26.2"],
             ["luxon", "npm:1.26.0"]
           ],
@@ -29252,7 +29259,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@babel/core", "npm:7.12.16"],
             ["@babel/runtime", "npm:7.12.13"],
             ["@brainly/onesky-utils", "npm:1.4.1"],
-            ["@date-io/luxon", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:1.3.13"],
+            ["@date-io/luxon", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:2.11.1"],
             ["@graphql-codegen/add", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:2.0.2"],
             ["@graphql-codegen/cli", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:1.21.8"],
             ["@graphql-codegen/fragment-matcher", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:2.0.1"],
