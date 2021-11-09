@@ -36,6 +36,7 @@ const DraggableBox = styled(Box)(() => ({
   paddingLeft: theme.spacing(2),
   '&:hover': {
     cursor: 'move',
+    backgroundColor: theme.palette.mpdxYellow.main,
   },
 }));
 

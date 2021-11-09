@@ -22,7 +22,7 @@ export const ContactFlowRowPreview: React.FC<Props> = memo(
         display="flex"
         width={width}
         style={{
-          background: 'white',
+          background: theme.palette.mpdxYellow.main,
         }}
       >
         <Box
