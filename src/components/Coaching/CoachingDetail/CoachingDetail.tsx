@@ -125,8 +125,9 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
                 // HACK: A CoachingAccountList is an AccountList but they aren't connected in GraphQl this forces that connection.
                 data?.accountLists.nodes.find(
                   (accountList) =>
+                    accountList.name !== null &&
                     (accountList.name as string) ===
-                    (data.coachingAccountList.name as string),
+                      (data.coachingAccountList.name as string),
                 )?.id as string
               }
             />
