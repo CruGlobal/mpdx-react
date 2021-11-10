@@ -7,18 +7,18 @@ import {
 } from '@material-ui/core';
 import React, { useRef } from 'react';
 import { useDrop } from 'react-dnd';
-import theme from '../../../../src/theme';
+import theme from '../../../../theme';
 import {
   ContactFilterSetInput,
   ContactFilterStatusEnum,
-} from '../../../../graphql/types.generated';
-import { ContactRowFragment } from '../ContactRow/ContactRow.generated';
-import { useContactsQuery } from '../../../../pages/accountLists/[accountListId]/contacts/Contacts.generated';
+} from '../../../../../graphql/types.generated';
+import { ContactRowFragment } from '../../ContactRow/ContactRow.generated';
+import { useContactsQuery } from '../../../../../pages/accountLists/[accountListId]/contacts/Contacts.generated';
 
-import { InfiniteList } from '../../InfiniteList/InfiniteList';
-import { useLoadConstantsQuery } from '../../../../src/components/Constants/LoadConstants.generated';
-import { ContactFlowRow } from './ContactFlowRow/ContactFlowRow';
-import { ContactFlowDropZone } from './ContactFlowDropZone/ContactFlowDropZone';
+import { InfiniteList } from '../../../InfiniteList/InfiniteList';
+import { useLoadConstantsQuery } from '../../../Constants/LoadConstants.generated';
+import { ContactFlowRow } from '../ContactFlowRow/ContactFlowRow';
+import { ContactFlowDropZone } from '../ContactFlowDropZone/ContactFlowDropZone';
 
 interface Props {
   data?: ContactRowFragment[];

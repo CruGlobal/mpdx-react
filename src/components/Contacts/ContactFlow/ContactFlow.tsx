@@ -6,7 +6,7 @@ import {
   ContactFilterStatusEnum,
 } from '../../../../graphql/types.generated';
 import theme from '../../../theme';
-import { ContactFlowColumn } from './ContactFlowColumn';
+import { ContactFlowColumn } from './ContactFlowColumn/ContactFlowColumn';
 import { useGetUserOptionsQuery } from './GetUserOptions.generated';
 
 interface Props {
