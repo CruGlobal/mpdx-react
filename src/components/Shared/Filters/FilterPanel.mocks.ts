@@ -1,4 +1,5 @@
 import {
+  ContactFilterStatusEnum,
   DaterangeFilter,
   MultiselectFilter,
   TextFilter,
@@ -14,11 +15,17 @@ export const mockDateRangeFilter: DaterangeFilter = {
 export const mockMultiselectFilterNonFeatured: MultiselectFilter = {
   __typename: 'MultiselectFilter',
   featured: false,
-  filterKey: 'multiselect',
-  title: 'MultiSelect',
+  filterKey: 'status',
+  title: 'Status',
   options: [
-    { name: 'Option3', value: 'option3' },
-    { name: 'Option4', value: 'option4' },
+    {
+      name: 'Contact for Appointment',
+      value: ContactFilterStatusEnum.ContactForAppointment,
+    },
+    {
+      name: 'Appointment Scheduled',
+      value: ContactFilterStatusEnum.AppointmentScheduled,
+    },
   ],
 };
 export const mockMultiselectFilterFeatured: MultiselectFilter = {
@@ -31,7 +38,7 @@ export const mockMultiselectFilterFeatured: MultiselectFilter = {
     { name: 'Option2', value: 'option2' },
   ],
 };
-export const mockTextilter: TextFilter = {
+export const mockTextFilter: TextFilter = {
   __typename: 'TextFilter',
   featured: false,
   filterKey: 'text',
