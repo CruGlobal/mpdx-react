@@ -5,11 +5,11 @@ import { HTML5Backend } from 'react-dnd-html5-backend';
 import { ThemeProvider } from '@material-ui/styles';
 import { SnackbarProvider } from 'notistack';
 import { ItemContent } from 'react-virtuoso';
-import { ContactsQuery } from '../../../../pages/accountLists/[accountListId]/contacts/Contacts.generated';
-import TestRouter from '../../../../__tests__/util/TestRouter';
-import theme from '../../../../src/theme';
-import { ContactFilterStatusEnum } from '../../../../graphql/types.generated';
-import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
+import { ContactsQuery } from '../../../../../pages/accountLists/[accountListId]/contacts/Contacts.generated';
+import TestRouter from '../../../../../__tests__/util/TestRouter';
+import theme from '../../../../../src/theme';
+import { ContactFilterStatusEnum } from '../../../../../graphql/types.generated';
+import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
 import { ContactFlowColumn } from './ContactFlowColumn';
 
 const accountListId = 'abc';
