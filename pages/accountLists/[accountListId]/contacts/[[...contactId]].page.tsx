@@ -72,8 +72,10 @@ const ContactsPage: React.FC = () => {
 
   useEffect(() => {
     if (isReady && contactId) {
-      setContactDetailsId(contactId[0]);
-      setContactDetailsOpen(true);
+      if (contactId[contactId.length - 1] !== 'flows') {
+        setContactDetailsId(contactId[contactId.length - 1]);
+        setContactDetailsOpen(true);
+      }
     }
   }, [isReady, contactId]);
 
@@ -136,8 +138,10 @@ const ContactsPage: React.FC = () => {
             query: filteredQuery,
           },
     );
-    id && setContactDetailsId(id);
-    setContactDetailsOpen(!!id);
+    if (id && id !== 'flows') {
+      setContactDetailsId(id);
+      setContactDetailsOpen(!!id);
+    }
   };
   const setSearchTerm = (searchTerm?: string) => {
     const { searchTerm: _, ...oldQuery } = query;
@@ -178,6 +182,15 @@ const ContactsPage: React.FC = () => {
     setTableDisplayState(
       view === 'flows' ? TableViewModeEnum.Flows : TableViewModeEnum.List,
     );
+    if (view === 'flows') {
+      if (!contactId?.includes('flows')) {
+        setContactFocus('flows');
+      }
+    } else {
+      if (contactId?.includes('flows')) {
+        setContactFocus(undefined);
+      }
+    }
   }, [loadingOptions]);
 
   const updateOptions = async (view: string): Promise<void> => {
