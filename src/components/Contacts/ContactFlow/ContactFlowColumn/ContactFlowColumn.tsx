@@ -11,6 +11,7 @@ import theme from '../../../../theme';
 import {
   ContactFilterSetInput,
   ContactFilterStatusEnum,
+  IdValue,
 } from '../../../../../graphql/types.generated';
 import { ContactRowFragment } from '../../ContactRow/ContactRow.generated';
 import { useContactsQuery } from '../../../../../pages/accountLists/[accountListId]/contacts/Contacts.generated';
@@ -28,6 +29,12 @@ interface Props {
   color: string;
   accountListId: string;
   onContactSelected: (contactId: string) => void;
+  changeContactStatus: (
+    id: string,
+    status: {
+      __typename?: 'IdValue' | undefined;
+    } & Pick<IdValue, 'id' | 'value'>,
+  ) => Promise<void>;
 }
 
 export interface StatusStructure {
@@ -44,6 +51,7 @@ export const ContactFlowColumn: React.FC<Props> = ({
   color,
   accountListId,
   onContactSelected,
+  changeContactStatus,
 }: Props) => {
   const { data, loading, fetchMore } = useContactsQuery({
     variables: {
@@ -122,7 +130,7 @@ export const ContactFlowColumn: React.FC<Props> = ({
                 <ContactFlowDropZone
                   key={status?.id}
                   status={status || nullStatus}
-                  accountListId={accountListId}
+                  changeContactStatus={changeContactStatus}
                 />
               ))}
             </Box>

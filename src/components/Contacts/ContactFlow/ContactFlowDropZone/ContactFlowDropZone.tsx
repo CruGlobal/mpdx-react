@@ -1,31 +1,33 @@
 import { Box, Typography } from '@material-ui/core';
-import { useSnackbar } from 'notistack';
 import React from 'react';
 import { useDrop } from 'react-dnd';
 import { useTranslation } from 'react-i18next';
 import theme from '../../../../../src/theme';
-import { ContactsDocument } from '../../../../../pages/accountLists/[accountListId]/contacts/Contacts.generated';
-import { IdValue, StatusEnum } from '../../../../../graphql/types.generated';
-import { useUpdateContactOtherMutation } from '../../ContactDetails/ContactDetailsTab/Other/EditContactOtherModal/EditContactOther.generated';
+import { IdValue } from '../../../../../graphql/types.generated';
 import { DraggedContact } from '../ContactFlowRow/ContactFlowRow';
 
 interface Props {
   status: {
     __typename?: 'IdValue' | undefined;
   } & Pick<IdValue, 'id' | 'value'>;
-  accountListId: string;
+  changeContactStatus: (
+    id: string,
+    status: {
+      __typename?: 'IdValue' | undefined;
+    } & Pick<IdValue, 'id' | 'value'>,
+  ) => Promise<void>;
 }
 
 export const ContactFlowDropZone: React.FC<Props> = ({
   status,
-  accountListId,
+  changeContactStatus,
 }: Props) => {
   const [{ isOver, canDrop }, drop] = useDrop(() => ({
     accept: 'contact',
     canDrop: (contact) => String(contact.status.id) !== String(status.id),
     drop: (contact: DraggedContact) => {
       String(contact.status.id) !== String(status.id)
-        ? changeContactStatus(contact.id)
+        ? changeContactStatus(contact.id, status)
         : null;
     },
     collect: (monitor) => ({
@@ -33,28 +35,7 @@ export const ContactFlowDropZone: React.FC<Props> = ({
       canDrop: !!monitor.canDrop(),
     }),
   }));
-  const [updateContactOther] = useUpdateContactOtherMutation();
-  const { enqueueSnackbar } = useSnackbar();
   const { t } = useTranslation();
-
-  const changeContactStatus = async (id: string): Promise<void> => {
-    const attributes = {
-      id,
-      status: (status.id as unknown) as StatusEnum,
-    };
-    await updateContactOther({
-      variables: {
-        accountListId,
-        attributes,
-      },
-      refetchQueries: [
-        { query: ContactsDocument, variables: { accountListId } },
-      ],
-    });
-    enqueueSnackbar(t('Contact status info updated!'), {
-      variant: 'success',
-    });
-  };
 
   return (
     <Box
