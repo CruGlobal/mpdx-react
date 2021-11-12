@@ -18,13 +18,6 @@ export const Default = (): ReactElement => {
             name: 'Test',
             currency: 'USD',
           },
-          accountLists: {
-            nodes: [
-              {
-                name: 'Test',
-              },
-            ],
-          },
         },
       }}
     >
