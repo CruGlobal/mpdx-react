@@ -71,6 +71,7 @@ export const ContactFlow: React.FC<Props> = ({
   );
 
   const [updateContactOther] = useUpdateContactOtherMutation();
+  console.log(flowOptions);
 
   const changeContactStatus = async (
     id: string,
@@ -80,16 +81,25 @@ export const ContactFlow: React.FC<Props> = ({
   ): Promise<void> => {
     const attributes = {
       id,
-      status: (status.id as unknown) as StatusEnum,
+      status: status.id as StatusEnum,
     };
     await updateContactOther({
       variables: {
         accountListId,
         attributes,
       },
-      refetchQueries: [
-        { query: ContactsDocument, variables: { accountListId } },
-      ],
+      refetchQueries: () =>
+        flowOptions.map((flowOption) => ({
+          query: ContactsDocument,
+          variables: {
+            accountListId,
+            contactsFilters: {
+              status: flowOption.statuses.map(
+                (status) => statusMap[status] as ContactFilterStatusEnum,
+              ),
+            },
+          },
+        })),
     });
     enqueueSnackbar(t('Contact status info updated!'), {
       variant: 'success',
