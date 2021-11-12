@@ -15,6 +15,7 @@ export const Default = (): ReactElement => {
       mocks={{
         LoadCoachingDetail: {
           coachingAccountList: {
+            name: 'Test',
             currency: 'USD',
           },
         },
