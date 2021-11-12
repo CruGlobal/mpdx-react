@@ -71,7 +71,6 @@ export const ContactFlow: React.FC<Props> = ({
   );
 
   const [updateContactOther] = useUpdateContactOtherMutation();
-  console.log(flowOptions);
 
   const changeContactStatus = async (
     id: string,
@@ -97,6 +96,7 @@ export const ContactFlow: React.FC<Props> = ({
               status: flowOption.statuses.map(
                 (status) => statusMap[status] as ContactFilterStatusEnum,
               ),
+              ...starredFilter,
             },
           },
         })),
