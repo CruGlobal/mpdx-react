@@ -130,19 +130,34 @@ const ContactsPage: React.FC = () => {
     push(
       id
         ? {
-            pathname: `/accountLists/${accountListId}/contacts/${id}`,
+            pathname: `/accountLists/${accountListId}/contacts${
+              tableDisplayState === 'flows' ? '/flows' : ''
+            }/${id}`,
             query: filteredQuery,
           }
         : {
-            pathname: `/accountLists/${accountListId}/contacts/`,
+            pathname: `/accountLists/${accountListId}/contacts/${
+              tableDisplayState === 'flows' ? 'flows/' : ''
+            }`,
             query: filteredQuery,
           },
     );
-    if (id && id !== 'flows') {
-      setContactDetailsId(id);
-      setContactDetailsOpen(!!id);
-    }
+    id && setContactDetailsId(id);
+    setContactDetailsOpen(!!id);
   };
+
+  const setRouterPath = (path: string): void => {
+    const {
+      accountListId: _accountListId,
+      contactId: _contactId,
+      ...filteredQuery
+    } = query;
+    push({
+      pathname: `/accountLists/${accountListId}/contacts/${path}`,
+      query: filteredQuery,
+    });
+  };
+
   const setSearchTerm = (searchTerm?: string) => {
     const { searchTerm: _, ...oldQuery } = query;
     replace({
@@ -184,11 +199,11 @@ const ContactsPage: React.FC = () => {
     );
     if (view === 'flows') {
       if (!contactId?.includes('flows')) {
-        setContactFocus('flows');
+        setRouterPath('flows');
       }
     } else {
       if (contactId?.includes('flows')) {
-        setContactFocus(undefined);
+        setRouterPath('');
       }
     }
   }, [loadingOptions]);
