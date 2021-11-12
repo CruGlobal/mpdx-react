@@ -18,6 +18,7 @@ import { useGetUserOptionsQuery } from './GetUserOptions.generated';
 interface Props {
   accountListId: string;
   starredFilter: ContactFilterSetInput;
+  selectedFilters: ContactFilterSetInput;
   onContactSelected: (contactId: string) => void;
 }
 
@@ -55,6 +56,7 @@ export const colorMap: { [key: string]: string } = {
 export const ContactFlow: React.FC<Props> = ({
   accountListId,
   starredFilter,
+  selectedFilters,
   onContactSelected,
 }: Props) => {
   const {
@@ -138,6 +140,7 @@ export const ContactFlow: React.FC<Props> = ({
                   <ContactFlowColumn
                     accountListId={accountListId}
                     title={column.name}
+                    selectedFilters={selectedFilters}
                     starredFilter={starredFilter}
                     color={colorMap[column.color]}
                     onContactSelected={onContactSelected}

@@ -24,6 +24,7 @@ import { ContactFlowDropZone } from '../ContactFlowDropZone/ContactFlowDropZone'
 interface Props {
   data?: ContactRowFragment[];
   statuses: ContactFilterStatusEnum[];
+  selectedFilters: ContactFilterSetInput;
   starredFilter: ContactFilterSetInput;
   title: string;
   color: string;
@@ -47,6 +48,7 @@ const nullStatus = { id: 'NULL', value: '' };
 export const ContactFlowColumn: React.FC<Props> = ({
   statuses,
   starredFilter,
+  selectedFilters,
   title,
   color,
   accountListId,
@@ -56,7 +58,11 @@ export const ContactFlowColumn: React.FC<Props> = ({
   const { data, loading, fetchMore } = useContactsQuery({
     variables: {
       accountListId: accountListId ?? '',
-      contactsFilters: { status: statuses, ...starredFilter },
+      contactsFilters: {
+        ...selectedFilters,
+        status: statuses,
+        ...starredFilter,
+      },
     },
     skip: !accountListId || statuses.length === 0,
   });

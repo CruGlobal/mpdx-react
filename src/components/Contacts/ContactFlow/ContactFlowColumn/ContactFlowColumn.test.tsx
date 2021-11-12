@@ -57,6 +57,7 @@ describe('ContactFlowColumn', () => {
               >
                 <ContactFlowColumn
                   accountListId={accountListId}
+                  selectedFilters={{}}
                   starredFilter={{}}
                   color={theme.palette.mpdxBlue.main}
                   title={title}
