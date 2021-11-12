@@ -15,6 +15,7 @@ import { ContactFlowColumn } from './ContactFlowColumn';
 const accountListId = 'abc';
 const title = 'Test Column';
 const onContactSelected = jest.fn();
+const changeContactStatus = jest.fn();
 const contact = { id: '123', name: 'Test Person', status: 'PARTNER_FINANCIAL' };
 const router = {
   query: { accountListId },
@@ -60,6 +61,7 @@ describe('ContactFlowColumn', () => {
                   color={theme.palette.mpdxBlue.main}
                   title={title}
                   onContactSelected={onContactSelected}
+                  changeContactStatus={changeContactStatus}
                   statuses={[ContactFilterStatusEnum.PartnerFinancial]}
                 />
               </GqlMockedProvider>
