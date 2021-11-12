@@ -119,9 +119,13 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
               </Box>
             </CoachingMainTitleContainer>
             <Divider />
-            <MonthlyActivitySection
-              accountListId={data?.coachingAccountList.id as string}
-            />
+            {data?.coachingAccountList.id ? (
+              <MonthlyActivitySection
+                accountListId={data.coachingAccountList.id}
+              />
+            ) : (
+              <></>
+            )}
           </>
         )}
       </CoachingMainContainer>
