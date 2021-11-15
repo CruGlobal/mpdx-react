@@ -4,7 +4,10 @@ import { Skeleton } from '@material-ui/lab';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { CoachingRow } from './CoachingRow/CoachingRow';
-import { useLoadCoachingListQuery } from './LoadCoachingList.generated';
+import {
+  CurrentAccountListFragment,
+  useLoadCoachingListQuery,
+} from './LoadCoachingList.generated';
 
 interface CoachingListProps {
   accountListId: string;
@@ -39,7 +42,9 @@ const CoachingLoading = styled(Skeleton)(() => ({
 export const CoachingList: React.FC<CoachingListProps> = ({
   accountListId,
 }) => {
-  const { data, loading } = useLoadCoachingListQuery();
+  const { data, loading } = useLoadCoachingListQuery({
+    variables: { accountListId: accountListId },
+  });
   const { t } = useTranslation();
 
   const coachingAccounts = data?.coachingAccountLists;
@@ -55,7 +60,7 @@ export const CoachingList: React.FC<CoachingListProps> = ({
       </CoachingTitleWrapper>
       <Divider />
       <Box>
-        {loading ? (
+        {loading && data?.accountList !== null ? (
           <>
             <CoachingLoading role="listitem" />
             <CoachingLoading role="listitem" />
@@ -63,12 +68,21 @@ export const CoachingList: React.FC<CoachingListProps> = ({
           </>
         ) : (
           <>
+            <span key={data?.accountList.id} role="listitem">
+              <CoachingRow
+                coachingAccount={null}
+                accountList={data?.accountList as CurrentAccountListFragment}
+              />
+              <Divider />
+            </span>
             {coachingAccounts?.nodes.map((coachingAccount, _index) => {
               return (
                 <span key={coachingAccount.id} role="listitem">
                   <CoachingRow
                     coachingAccount={coachingAccount}
-                    accountListId={accountListId}
+                    accountList={
+                      data?.accountList as CurrentAccountListFragment
+                    }
                   />
                   <Divider />
                 </span>
