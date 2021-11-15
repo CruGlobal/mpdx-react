@@ -21,8 +21,13 @@ export const Default = (): ReactElement => {
             nodes: [
               { currency: 'USD', primaryAppeal: { amountCurrency: 'EUR' } },
               { currency: 'USD', primaryAppeal: { amountCurrency: 'EUR' } },
-              { currency: 'USD', primaryAppeal: { amountCurrency: 'JPN' } },
+              { currency: 'USD', primaryAppeal: { amountCurrency: 'JPY' } },
             ],
+          },
+          accountList: {
+            name: 'Current AccountList',
+            currency: 'EUR',
+            primaryAppeal: { amountCurrency: 'JPY' },
           },
         },
       }}
