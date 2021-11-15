@@ -1,12 +1,15 @@
 import { Box, styled, Typography } from '@material-ui/core';
 import React from 'react';
 import Link from 'next/link';
-import { CoachedPersonFragment } from '../LoadCoachingList.generated';
+import {
+  CoachedPersonFragment,
+  CurrentAccountListFragment,
+} from '../LoadCoachingList.generated';
 import { AppealProgress } from '../AppealProgress/AppealProgress';
 
 interface Props {
-  coachingAccount: CoachedPersonFragment;
-  accountListId: string;
+  coachingAccount: CoachedPersonFragment | null;
+  accountList: CurrentAccountListFragment;
 }
 
 const CoachingRowWrapper = styled(Box)(({ theme }) => ({
@@ -21,8 +24,8 @@ const CoachingNameText = styled(Typography)(({ theme }) => ({
 }));
 
 export const CoachingRow: React.FC<Props> = ({
-  coachingAccount,
-  accountListId,
+  coachingAccount = null,
+  accountList,
 }) => {
   const {
     id,
@@ -32,7 +35,7 @@ export const CoachingRow: React.FC<Props> = ({
     totalPledges,
     receivedPledges,
     primaryAppeal,
-  } = coachingAccount;
+  } = coachingAccount ? coachingAccount : accountList;
 
   const calculatedMonthlyGoal = monthlyGoal ? monthlyGoal : 0;
 
@@ -44,7 +47,7 @@ export const CoachingRow: React.FC<Props> = ({
     <Link
       href={{
         pathname: '/accountLists/[accountListId]/coaching/[coachingId]',
-        query: { accountListId: accountListId, coachingId: id },
+        query: { accountListId: accountList.id, coachingId: id },
       }}
       passHref
     >
