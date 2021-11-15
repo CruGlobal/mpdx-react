@@ -1,4 +1,4 @@
-query LoadCoachingList {
+query LoadCoachingList($accountListId: ID!) {
   coachingAccountLists {
     nodes {
       ...CoachedPerson
@@ -12,6 +12,29 @@ query LoadCoachingList {
       hasPreviousPage
     }
   }
+  accountList(id: $accountListId) {
+    ...CurrentAccountList
+  }
+}
+
+fragment CurrentAccountList on AccountList {
+  id
+  name
+  primaryAppeal {
+    active
+    amount
+    amountCurrency
+    id
+    name
+    pledgesAmountNotReceivedNotProcessed
+    pledgesAmountProcessed
+    pledgesAmountTotal
+  }
+  currency
+  monthlyGoal
+  balance
+  receivedPledges
+  totalPledges
 }
 
 fragment CoachedPerson on CoachingAccountList {
