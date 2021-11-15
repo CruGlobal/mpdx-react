@@ -100,29 +100,27 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
                     margin: theme.spacing(1),
                   }}
                 >
-                  {data?.coachingAccountList.name}
+                  {data?.accountList.name}
                 </Typography>
               </Box>
               <Box style={{ flexGrow: 1 }}>
                 <AppealProgress
                   loading={loading}
                   isPrimary={false}
-                  currency={data?.coachingAccountList.currency}
+                  currency={data?.accountList.currency}
                   goal={
-                    data?.coachingAccountList.monthlyGoal
-                      ? data.coachingAccountList.monthlyGoal
+                    data?.accountList.monthlyGoal
+                      ? data.accountList.monthlyGoal
                       : 0
                   }
-                  received={data?.coachingAccountList.receivedPledges}
-                  pledged={data?.coachingAccountList.totalPledges}
+                  received={data?.accountList.receivedPledges}
+                  pledged={data?.accountList.totalPledges}
                 />
               </Box>
             </CoachingMainTitleContainer>
             <Divider />
-            {data?.coachingAccountList.id ? (
-              <MonthlyActivitySection
-                accountListId={data.coachingAccountList.id}
-              />
+            {data?.accountList.id ? (
+              <MonthlyActivitySection accountListId={data.accountList.id} />
             ) : (
               <></>
             )}

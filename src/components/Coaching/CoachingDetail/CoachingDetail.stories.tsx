@@ -14,7 +14,7 @@ export const Default = (): ReactElement => {
     <GqlMockedProvider<LoadCoachingDetailQuery>
       mocks={{
         LoadCoachingDetail: {
-          coachingAccountList: {
+          accountList: {
             name: 'Test',
             currency: 'USD',
           },

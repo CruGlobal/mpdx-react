@@ -11,7 +11,7 @@ describe('LoadCoachingDetail', () => {
       <GqlMockedProvider<LoadCoachingDetailQuery>
         mocks={{
           LoadCoachingDetail: {
-            coachingAccountList: {
+            accountList: {
               id: coachingId,
               name: 'John Doe',
               currency: 'USD',
@@ -32,7 +32,7 @@ describe('LoadCoachingDetail', () => {
       <GqlMockedProvider<LoadCoachingDetailQuery>
         mocks={{
           LoadCoachingDetail: {
-            coachingAccountList: {
+            accountList: {
               id: coachingId,
               name: 'John Doe',
               currency: 'USD',

@@ -76,7 +76,7 @@ export const CoachingList: React.FC<CoachingListProps> = ({
               <Divider />
             </span>
             {coachingAccounts?.nodes.map((coachingAccount, _index) => {
-              return (
+              return coachingAccount.id !== data?.accountList.id ? (
                 <span key={coachingAccount.id} role="listitem">
                   <CoachingRow
                     coachingAccount={coachingAccount}
@@ -86,6 +86,8 @@ export const CoachingList: React.FC<CoachingListProps> = ({
                   />
                   <Divider />
                 </span>
+              ) : (
+                <></>
               );
             })}
           </>
