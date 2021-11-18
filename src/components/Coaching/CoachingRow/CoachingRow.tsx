@@ -35,7 +35,7 @@ export const CoachingRow: React.FC<Props> = ({
     totalPledges,
     receivedPledges,
     primaryAppeal,
-  } = coachingAccount ? coachingAccount : accountList;
+  } = coachingAccount || accountList;
 
   const calculatedMonthlyGoal = monthlyGoal ? monthlyGoal : 0;
 
