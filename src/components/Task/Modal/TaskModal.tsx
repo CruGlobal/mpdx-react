@@ -18,7 +18,7 @@ import { Task } from '../../../../graphql/types.generated';
 import { TaskFilter } from '../List/List';
 import { useAccountListId } from '../../../hooks/useAccountListId';
 import TaskDrawerCompleteForm from '../Drawer/CompleteForm';
-import { useGetTaskForTaskDrawerQuery } from '../Drawer/TaskDrawerTask.generated';
+import { useGetTaskForTaskModalQuery } from '../Modal/TaskModalTask.generated';
 import TaskModalForm from './Form/TaskModalForm';
 
 const StyledModal = styled(Modal)(() => ({
@@ -33,13 +33,12 @@ export interface TaskModalProps {
   taskId?: string;
   onClose?: () => void;
   showCompleteForm?: boolean;
-  specificTab?: TaskDrawerTabsEnum;
   defaultValues?: Partial<Task>;
   filter?: TaskFilter;
   rowsPerPage?: number;
 }
 
-export enum TaskDrawerTabsEnum {
+export enum TaskModalTabsEnum {
   details = '1',
   contacts = '2',
   comments = '3',
@@ -56,7 +55,7 @@ const TaskModal = ({
   const accountListId = useAccountListId();
   const [open, setOpen] = useState(!taskId);
   const { t } = useTranslation();
-  const { data, loading } = useGetTaskForTaskDrawerQuery({
+  const { data, loading } = useGetTaskForTaskModalQuery({
     variables: {
       accountListId: accountListId ?? '',
       taskId: taskId ?? '',
@@ -65,7 +64,7 @@ const TaskModal = ({
     onCompleted: () => setOpen(true),
   });
 
-  const onDrawerClose = (): void => {
+  const onModalClose = (): void => {
     setOpen(false);
     onClose && onClose();
   };
@@ -100,7 +99,7 @@ const TaskModal = ({
       {loading ? (
         <Loading loading />
       ) : (
-        <StyledModal open={open} onClose={onDrawerClose}>
+        <StyledModal open={open} onClose={onModalClose}>
           <Card>
             <CardHeader
               title={
@@ -110,7 +109,7 @@ const TaskModal = ({
                   alignItems="center"
                 >
                   <Typography variant="h6">Add Task</Typography>
-                  <IconButton size="small" onClick={onDrawerClose}>
+                  <IconButton size="small" onClick={onModalClose}>
                     <CloseIcon titleAccess={t('Close')} />
                   </IconButton>
                 </Box>
@@ -131,14 +130,14 @@ const TaskModal = ({
                             <TaskDrawerCompleteForm
                               accountListId={accountListId}
                               task={task}
-                              onClose={onDrawerClose}
+                              onClose={onModalClose}
                             />
                           )
                         ) : (
                           <TaskModalForm
                             accountListId={accountListId}
                             task={task} // TODO: Use fragments to ensure all required fields are loaded
-                            onClose={onDrawerClose}
+                            onClose={onModalClose}
                             defaultValues={defaultValues}
                             filter={filter}
                             rowsPerPage={rowsPerPage || 100}

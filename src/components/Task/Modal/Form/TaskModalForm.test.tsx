@@ -10,7 +10,7 @@ import { InMemoryCache } from '@apollo/client';
 import { ActivityTypeEnum } from '../../../../../graphql/types.generated';
 import { GetTasksForTaskListDocument } from '../../List/TaskList.generated';
 import {
-  getDataForTaskDrawerMock,
+  getDataForTaskModalMock,
   createTaskMutationMock,
   updateTaskMutationMock,
   deleteTaskMutationMock,
@@ -54,7 +54,7 @@ describe('TaskModalForm', () => {
         <SnackbarProvider>
           <MockedProvider
             mocks={[
-              getDataForTaskDrawerMock(accountListId),
+              getDataForTaskModalMock(accountListId),
               createTaskMutationMock(),
             ]}
             addTypename={false}
@@ -91,7 +91,7 @@ describe('TaskModalForm', () => {
         <SnackbarProvider>
           <MockedProvider
             mocks={[
-              getDataForTaskDrawerMock(accountListId),
+              getDataForTaskModalMock(accountListId),
               updateTaskMutationMock(),
             ]}
             addTypename={false}
@@ -112,9 +112,9 @@ describe('TaskModalForm', () => {
         (item) => (item as HTMLInputElement).value === 'Jan 5, 2016',
       ),
     ).toBeInTheDocument();
-    userEvent.click(getByLabelText('Type'));
+    userEvent.click(getByLabelText('Action'));
     userEvent.click(
-      within(getByRole('listbox', { hidden: true, name: 'Type' })).getByText(
+      within(getByRole('listbox', { hidden: true, name: 'Action' })).getByText(
         ActivityTypeEnum.NewsletterEmail,
       ),
     );
@@ -197,7 +197,7 @@ describe('TaskModalForm', () => {
         <SnackbarProvider>
           <MockedProvider
             mocks={[
-              getDataForTaskDrawerMock(accountListId),
+              getDataForTaskModalMock(accountListId),
               deleteTaskMutationMock(),
             ]}
             cache={cache}
@@ -214,7 +214,7 @@ describe('TaskModalForm', () => {
         </SnackbarProvider>
       </MuiPickersUtilsProvider>,
     );
-    userEvent.click(getByRole('button', { hidden: true, name: 'Remove' }));
+    userEvent.click(getByRole('button', { hidden: true, name: 'Delete' }));
     expect(
       getByText('Are you sure you wish to delete the selected task?'),
     ).toBeInTheDocument();

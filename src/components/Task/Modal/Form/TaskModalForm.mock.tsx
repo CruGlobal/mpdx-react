@@ -7,23 +7,23 @@ import {
   TaskCreateInput,
   TaskUpdateInput,
 } from '../../../../../graphql/types.generated';
-import { GetTaskForTaskDrawerQuery } from '../../Drawer/TaskDrawerTask.generated';
+import { GetTaskForTaskModalQuery } from '../../Modal/TaskModalTask.generated';
 import {
   CreateTaskDocument,
   CreateTaskMutation,
   DeleteTaskDocument,
   DeleteTaskMutation,
-  GetDataForTaskDrawerDocument,
-  GetDataForTaskDrawerQuery,
+  GetDataForTaskModalDocument,
+  GetDataForTaskModalQuery,
   TaskMutationResponseFragment,
   UpdateTaskDocument,
   UpdateTaskMutation,
-} from '../../Drawer/Form/TaskDrawer.generated';
+} from '../../Modal/Form/TaskModal.generated';
 
-export const getDataForTaskDrawerMock = (
+export const getDataForTaskModalMock = (
   accountListId: string,
 ): MockedResponse => {
-  const data: GetDataForTaskDrawerQuery = {
+  const data: GetDataForTaskModalQuery = {
     accountList: {
       id: accountListId,
       taskTagList: ['tag-1', 'tag-2', 'tag-3'],
@@ -50,7 +50,7 @@ export const getDataForTaskDrawerMock = (
 
   return {
     request: {
-      query: GetDataForTaskDrawerDocument,
+      query: GetDataForTaskModalDocument,
       variables: {
         accountListId,
       },
@@ -61,19 +61,19 @@ export const getDataForTaskDrawerMock = (
   };
 };
 
-export const getDataForTaskDrawerLoadingMock = (
+export const getDataForTaskModalLoadingMock = (
   accountListId: string,
 ): MockedResponse => {
   return {
-    ...getDataForTaskDrawerMock(accountListId),
+    ...getDataForTaskModalMock(accountListId),
     delay: 100931731455,
   };
 };
 
-export const getDataForTaskDrawerEmptyMock = (
+export const getDataForTaskModalEmptyMock = (
   accountListId: string,
 ): MockedResponse => {
-  const data: GetDataForTaskDrawerQuery = {
+  const data: GetDataForTaskModalQuery = {
     accountList: {
       id: accountListId,
       taskTagList: ['tag-1', 'tag-2', 'tag-3'],
@@ -88,7 +88,7 @@ export const getDataForTaskDrawerEmptyMock = (
 
   return {
     request: {
-      query: GetDataForTaskDrawerDocument,
+      query: GetDataForTaskModalDocument,
       variables: {
         accountListId,
       },
@@ -163,7 +163,7 @@ export const updateTaskMutationMock = (): MockedResponse => {
 };
 
 export const deleteTaskMutationMock = (): MockedResponse => {
-  const task: GetTaskForTaskDrawerQuery['task'] = {
+  const task: GetTaskForTaskModalQuery['task'] = {
     id: 'task-1',
     activityType: ActivityTypeEnum.NewsletterEmail,
     subject: 'On the Journey with the Johnson Family',
