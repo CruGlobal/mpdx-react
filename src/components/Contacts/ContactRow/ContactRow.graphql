@@ -12,10 +12,10 @@ fragment ContactRow on Contact {
   pledgeAmount
   pledgeFrequency
   pledgeCurrency
+  pledgeReceived
   lateAt
   sendNewsletter
   starred
-  # TODO: Add when available in schema
-  # taskCount
+  uncompletedTasksCount
   ...CelebrationItems
 }

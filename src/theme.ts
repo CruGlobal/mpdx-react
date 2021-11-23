@@ -146,6 +146,14 @@ const theme = createMuiTheme({
         fontWeight: 700,
       },
     },
+    MuiCheckbox: {
+      colorSecondary: {
+        color: cruColors.grayMedium,
+        '&$checked, &$indeterminate': {
+          color: cruColors.grayDark,
+        },
+      },
+    },
     MuiCssBaseline: {
       '@global': {
         html: {

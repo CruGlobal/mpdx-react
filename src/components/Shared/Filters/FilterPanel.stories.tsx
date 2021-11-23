@@ -12,7 +12,7 @@ import {
   mockDateRangeFilter,
   mockMultiselectFilterFeatured,
   mockMultiselectFilterNonFeatured,
-  mockTextilter,
+  mockTextFilter,
 } from './FilterPanel.mocks';
 
 export default {
@@ -25,7 +25,7 @@ const filterPanelDefaultMock = gqlMock<FilterPanelGroupFragment>(
   {
     mocks: {
       name: 'Group 1',
-      filters: [mockTextilter, mockMultiselectFilterNonFeatured],
+      filters: [mockTextFilter, mockMultiselectFilterNonFeatured],
     },
   },
 );

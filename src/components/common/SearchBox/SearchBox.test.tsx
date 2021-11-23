@@ -46,9 +46,7 @@ it('triggers onChange', async () => {
 
   userEvent.type(textbox, inputText);
 
-  expect(textbox).toHaveValue(inputText);
-
-  await new Promise((resolve) => setTimeout(resolve, 500));
+  await new Promise((resolve) => setTimeout(resolve, 300));
 
   expect(onChange).toHaveBeenCalledWith(inputText);
 });

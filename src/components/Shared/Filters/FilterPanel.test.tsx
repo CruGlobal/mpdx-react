@@ -4,12 +4,15 @@ import LuxonUtils from '@date-io/luxon';
 import userEvent from '@testing-library/user-event';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import { gqlMock } from '../../../../__tests__/util/graphqlMocking';
-import { MultiselectFilter } from '../../../../graphql/types.generated';
+import {
+  ContactFilterStatusEnum,
+  MultiselectFilter,
+} from '../../../../graphql/types.generated';
 import {
   mockDateRangeFilter,
   mockMultiselectFilterFeatured,
   mockMultiselectFilterNonFeatured,
-  mockTextilter,
+  mockTextFilter,
 } from './FilterPanel.mocks';
 import { FilterPanel } from './FilterPanel';
 import {
@@ -27,7 +30,7 @@ const filterPanelDefaultMock = gqlMock<FilterPanelGroupFragment>(
   {
     mocks: {
       name: 'Group 1',
-      filters: [mockTextilter, mockMultiselectFilterNonFeatured],
+      filters: [mockTextFilter, mockMultiselectFilterNonFeatured],
     },
   },
 );
@@ -137,10 +140,37 @@ describe('FilterPanel', () => {
         userEvent.click(getByTestId('CloseFilterGroupButton')),
       );
       expect(onSelectedFiltersChanged).toHaveBeenCalledWith({
-        multiselect: ['option3'],
+        status: [ContactFilterStatusEnum.ContactForAppointment],
       });
-      // TODO Fix test | should be Group 1 (1)
-      expect(getByText('Group 1')).toBeVisible();
+    });
+
+    it('should display a selected filter', async () => {
+      const { getByText, queryByTestId, getAllByTestId, getAllByRole } = render(
+        <MuiPickersUtilsProvider utils={LuxonUtils}>
+          <FilterPanel
+            filters={[filterPanelDefaultMock, filterPanelFeaturedMock]}
+            savedFilters={[savedFiltersMock]}
+            selectedFilters={{
+              status: [ContactFilterStatusEnum.ContactForAppointment],
+            }}
+            onClose={onClose}
+            onSelectedFiltersChanged={onSelectedFiltersChanged}
+          />
+        </MuiPickersUtilsProvider>,
+      );
+
+      await waitFor(() => expect(queryByTestId('LoadingState')).toBeNull());
+      expect(queryByTestId('LoadingState')).toBeNull();
+      expect(queryByTestId('ErrorState')).toBeNull();
+
+      expect(getAllByTestId('FilterGroup').length).toEqual(2);
+      userEvent.click(getByText('Group 1 (1)'));
+      expect(getByText(filterPanelDefaultMock.filters[0].title)).toBeVisible();
+      expect(getByText(filterPanelDefaultMock.filters[1].title)).toBeVisible();
+
+      expect(getByText('Group 1 (1)')).toBeVisible();
+
+      expect(getAllByRole('checkbox')[0]).toBeChecked();
     });
 
     it('opens and selects a saved filter', async () => {
@@ -253,17 +283,14 @@ describe('FilterPanel', () => {
     });
 
     it('clears filters', async () => {
-      const {
-        getByTestId,
-        getByText,
-        queryByTestId,
-        queryAllByTestId,
-      } = render(
+      const { getByText, queryByTestId, queryAllByTestId } = render(
         <MuiPickersUtilsProvider utils={LuxonUtils}>
           <FilterPanel
             filters={[filterPanelDefaultMock, filterPanelFeaturedMock]}
             savedFilters={[savedFiltersMock]}
-            selectedFilters={{}}
+            selectedFilters={{
+              status: [ContactFilterStatusEnum.ContactForAppointment],
+            }}
             onClose={onClose}
             onSelectedFiltersChanged={onSelectedFiltersChanged}
           />
@@ -275,21 +302,10 @@ describe('FilterPanel', () => {
       expect(queryByTestId('ErrorState')).toBeNull();
 
       expect(queryAllByTestId('FilterGroup').length).toEqual(2);
-      expect(getByTestId('FilterListItemShowAll')).toBeVisible();
-      userEvent.click(getByTestId('FilterListItemShowAll'));
-      userEvent.click(getByText(filterPanelDefaultMock.name));
+      expect(getByText('Group 1 (1)')).toBeVisible();
 
-      userEvent.click(queryAllByTestId('CheckboxIcon')[0]);
-
-      await waitFor(() =>
-        userEvent.click(getByTestId('CloseFilterGroupButton')),
-      );
-      // TODO Fix test | should be Group 1 (1)
-      expect(getByText('Group 1')).toBeVisible();
-
-      userEvent.click(getByText('Clear All'));
-      expect(getByText('Group 1')).toBeVisible();
-      expect(getByText('Filter')).toBeVisible();
+      await waitFor(() => userEvent.click(getByText('Clear All')));
+      expect(onSelectedFiltersChanged).toHaveBeenCalledWith({});
     });
 
     it('no filters', async () => {
@@ -305,7 +321,7 @@ describe('FilterPanel', () => {
 
       await waitFor(() => expect(queryByTestId('LoadingState')).toBeNull());
       expect(queryByTestId('LoadingState')).toBeNull();
-      //expect(queryByTestId('ErrorState')).toBeNull();
+      expect(queryByTestId('ErrorState')).toBeNull();
       expect(queryAllByTestId('FilterGroup').length).toEqual(0);
       expect(queryByTestId('FilterListItemShowAll')).toBeNull();
     });
@@ -399,10 +415,8 @@ describe('FilterPanel', () => {
       );
 
       expect(onSelectedFiltersChanged).toHaveBeenCalledWith({
-        multiselect: ['option3'],
+        status: [ContactFilterStatusEnum.ContactForAppointment],
       });
-      // TODO Fix test | should be Group 1 (1)
-      expect(getByText('Group 1')).toBeVisible();
     });
 
     it('closes panel', async () => {
@@ -423,17 +437,14 @@ describe('FilterPanel', () => {
     });
 
     it('clears filters', async () => {
-      const {
-        getByTestId,
-        getByText,
-        queryByTestId,
-        queryAllByTestId,
-      } = render(
+      const { getByText, queryByTestId, queryAllByTestId } = render(
         <MuiPickersUtilsProvider utils={LuxonUtils}>
           <FilterPanel
             filters={[filterPanelDefaultMock, filterPanelFeaturedMock]}
             savedFilters={[savedFiltersMock]}
-            selectedFilters={{}}
+            selectedFilters={{
+              status: [ContactFilterStatusEnum.ContactForAppointment],
+            }}
             onClose={onClose}
             onSelectedFiltersChanged={onSelectedFiltersChanged}
           />
@@ -445,21 +456,10 @@ describe('FilterPanel', () => {
       expect(queryByTestId('ErrorState')).toBeNull();
 
       expect(queryAllByTestId('FilterGroup').length).toEqual(2);
-      expect(getByTestId('FilterListItemShowAll')).toBeVisible();
-      userEvent.click(getByTestId('FilterListItemShowAll'));
-      userEvent.click(getByText(filterPanelDefaultMock.name));
-
-      userEvent.click(queryAllByTestId('CheckboxIcon')[0]);
-
-      await waitFor(() =>
-        userEvent.click(getByTestId('CloseFilterGroupButton')),
-      );
-      // TODO Fix test | should be Group 1 (1)
-      expect(getByText('Group 1')).toBeVisible();
+      expect(getByText('Group 1 (1)')).toBeVisible();
 
       userEvent.click(getByText('Clear All'));
-      expect(getByText('Group 1')).toBeVisible();
-      expect(getByText('Filter')).toBeVisible();
+      expect(onSelectedFiltersChanged).toHaveBeenCalledWith({});
     });
 
     it('no filters', async () => {

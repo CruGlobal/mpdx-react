@@ -23,6 +23,7 @@ describe('ListHeader', () => {
             toggleStarredFilter={toggleStarredFilter}
             headerCheckboxState={ListHeaderCheckBoxState.unchecked}
             filterPanelOpen={false}
+            contactDetailsOpen={false}
             toggleFilterPanel={toggleFilterPanel}
             onCheckAllItems={onCheckAllItems}
             onSearchTermChanged={onSearchTermChanged}
@@ -30,7 +31,7 @@ describe('ListHeader', () => {
         </ThemeProvider>,
       );
 
-      expect(getByPlaceholderText('Search List')).toBeInTheDocument();
+      expect(getByPlaceholderText('Search Contacts')).toBeInTheDocument();
     });
   });
 
@@ -45,6 +46,7 @@ describe('ListHeader', () => {
             starredFilter={{}}
             toggleStarredFilter={toggleStarredFilter}
             filterPanelOpen={false}
+            contactDetailsOpen={false}
             toggleFilterPanel={toggleFilterPanel}
             onCheckAllItems={onCheckAllItems}
             onSearchTermChanged={onSearchTermChanged}
@@ -66,6 +68,7 @@ describe('ListHeader', () => {
           starredFilter={{}}
           toggleStarredFilter={toggleStarredFilter}
           filterPanelOpen={false}
+          contactDetailsOpen={false}
           toggleFilterPanel={toggleFilterPanel}
           onCheckAllItems={onCheckAllItems}
           onSearchTermChanged={onSearchTermChanged}
@@ -97,6 +100,7 @@ describe('ListHeader', () => {
           starredFilter={{}}
           toggleStarredFilter={toggleStarredFilter}
           filterPanelOpen={false}
+          contactDetailsOpen={false}
           toggleFilterPanel={toggleFilterPanel}
           onCheckAllItems={onCheckAllItems}
           onSearchTermChanged={onSearchTermChanged}
@@ -121,6 +125,7 @@ describe('ListHeader', () => {
           starredFilter={{}}
           toggleStarredFilter={toggleStarredFilter}
           filterPanelOpen={false}
+          contactDetailsOpen={false}
           toggleFilterPanel={toggleFilterPanel}
           onCheckAllItems={onCheckAllItems}
           onSearchTermChanged={onSearchTermChanged}
@@ -147,6 +152,7 @@ describe('ListHeader', () => {
           starredFilter={{}}
           toggleStarredFilter={toggleStarredFilter}
           filterPanelOpen={true}
+          contactDetailsOpen={false}
           toggleFilterPanel={toggleFilterPanel}
           onCheckAllItems={onCheckAllItems}
           onSearchTermChanged={onSearchTermChanged}
@@ -175,6 +181,7 @@ describe('ListHeader', () => {
           starredFilter={{}}
           toggleStarredFilter={toggleStarredFilter}
           filterPanelOpen={false}
+          contactDetailsOpen={false}
           toggleFilterPanel={toggleFilterPanel}
           onCheckAllItems={onCheckAllItems}
           onSearchTermChanged={onSearchTermChanged}
@@ -203,6 +210,7 @@ describe('ListHeader', () => {
           starredFilter={{}}
           toggleStarredFilter={toggleStarredFilter}
           filterPanelOpen={true}
+          contactDetailsOpen={false}
           toggleFilterPanel={toggleFilterPanel}
           onCheckAllItems={onCheckAllItems}
           onSearchTermChanged={onSearchTermChanged}
@@ -231,6 +239,7 @@ describe('ListHeader', () => {
           starredFilter={{}}
           toggleStarredFilter={toggleStarredFilter}
           filterPanelOpen={false}
+          contactDetailsOpen={false}
           toggleFilterPanel={toggleFilterPanel}
           onCheckAllItems={onCheckAllItems}
           onSearchTermChanged={onSearchTermChanged}
@@ -260,6 +269,7 @@ describe('ListHeader', () => {
           starredFilter={{}}
           toggleStarredFilter={toggleStarredFilter}
           filterPanelOpen={false}
+          contactDetailsOpen={false}
           toggleFilterPanel={toggleFilterPanel}
           onCheckAllItems={onCheckAllItems}
           onSearchTermChanged={onSearchTermChanged}
@@ -272,7 +282,7 @@ describe('ListHeader', () => {
 
     expect(toggleFilterPanel).not.toHaveBeenCalled();
 
-    await new Promise((resolve) => setTimeout(resolve, 500));
+    await new Promise((resolve) => setTimeout(resolve, 300));
 
     expect(onSearchTermChanged).toHaveBeenCalledWith(searchText);
   });
@@ -287,6 +297,7 @@ describe('ListHeader', () => {
           starredFilter={{}}
           toggleStarredFilter={toggleStarredFilter}
           filterPanelOpen={false}
+          contactDetailsOpen={false}
           toggleFilterPanel={toggleFilterPanel}
           onCheckAllItems={onCheckAllItems}
           onSearchTermChanged={onSearchTermChanged}
@@ -310,6 +321,7 @@ describe('ListHeader', () => {
           starredFilter={{ starred: true }}
           toggleStarredFilter={toggleStarredFilter}
           filterPanelOpen={false}
+          contactDetailsOpen={false}
           toggleFilterPanel={toggleFilterPanel}
           onCheckAllItems={onCheckAllItems}
           onSearchTermChanged={onSearchTermChanged}

@@ -177,6 +177,7 @@ const TasksPage: React.FC = () => {
                   activeFilters={Object.keys(activeFilters).length > 0}
                   filterPanelOpen={filterPanelOpen}
                   toggleFilterPanel={toggleFilterPanel}
+                  contactDetailsOpen={contactDetailsOpen}
                   onCheckAllItems={toggleSelectAll}
                   onSearchTermChanged={setSearchTerm}
                   totalItems={data?.tasks?.totalCount}

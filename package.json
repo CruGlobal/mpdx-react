@@ -43,7 +43,7 @@
     "@saeris/apollo-server-vercel": "^0.4.0",
     "@types/luxon": "^1.26.2",
     "@types/react-csv": "^1.1.1",
-    "apollo-datasource-rest": "^0.10.0",
+    "apollo-datasource-rest": "^3.0.0",
     "apollo3-cache-persist": "^0.12.1",
     "axios": "^0.24.0",
     "clsx": "^1.1.1",
@@ -106,7 +106,7 @@
     "@testing-library/jest-dom": "^5.11.9",
     "@testing-library/react": "12.1.2",
     "@testing-library/react-hooks": "^7.0.0",
-    "@testing-library/user-event": "^12.7.0",
+    "@testing-library/user-event": "^13.5.0",
     "@types/axios": "^0.14.0",
     "@types/css-mediaquery": "^0.1.0",
     "@types/faker": "^5.1.6",
@@ -174,5 +174,5 @@
       "git add"
     ]
   },
-  "packageManager": "yarn@3.0.2"
+  "packageManager": "yarn@3.1.0"
 }

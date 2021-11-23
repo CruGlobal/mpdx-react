@@ -607,19 +607,18 @@ describe('ContactDetailTab', () => {
             id: contactId,
             name: 'Person, Test',
             starred: false,
+            pledgeReceived: false,
             people: {
               nodes: [
                 {
-                  id: contactId,
-                  firstName: 'Test',
-                  lastName: 'Person',
-                  primaryPhoneNumber: { number: '555-555-5555' },
-                  primaryEmailAddress: {
-                    email: 'testperson@fake.com',
-                  },
+                  anniversaryDay: null,
+                  anniversaryMonth: null,
+                  birthdayDay: null,
+                  birthdayMonth: null,
                 },
               ],
             },
+            uncompletedTasksCount: 0,
           },
         ],
         pageInfo: { endCursor: 'Mg', hasNextPage: false },
