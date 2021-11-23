@@ -29,4 +29,15 @@ query ContactFilters($accountListId: ID!) {
       ...FilterPanelGroup
     }
   }
+  userOptions {
+    ...UserOption
+  }
+}
+
+mutation SaveContactFilter($input: CreateOrUpdateOptionMutationInput!) {
+  createOrUpdateUserOption(input: $input) {
+    option {
+      ...UserOption
+    }
+  }
 }

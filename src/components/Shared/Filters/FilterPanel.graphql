@@ -43,3 +43,9 @@ fragment FilterPanelGroup on FilterGroup {
     }
   }
 }
+
+fragment UserOption on Option {
+  id
+  key
+  value
+}
