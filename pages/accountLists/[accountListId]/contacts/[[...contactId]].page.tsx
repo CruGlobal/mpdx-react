@@ -131,13 +131,13 @@ const ContactsPage: React.FC = () => {
       id
         ? {
             pathname: `/accountLists/${accountListId}/contacts${
-              tableDisplayState === 'flows' ? '/flows' : ''
+              flowsViewEnabled === 'flows' ? '/flows' : ''
             }/${id}`,
             query: filteredQuery,
           }
         : {
             pathname: `/accountLists/${accountListId}/contacts/${
-              tableDisplayState === 'flows' ? 'flows/' : ''
+              flowsViewEnabled === 'flows' ? 'flows/' : ''
             }`,
             query: filteredQuery,
           },
@@ -169,7 +169,7 @@ const ContactsPage: React.FC = () => {
     });
   };
 
-  const [tableDisplayState, setTableDisplayState] = useState<TableViewModeEnum>(
+  const [flowsViewEnabled, setflowsViewEnabled] = useState<TableViewModeEnum>(
     TableViewModeEnum.List,
   );
 
@@ -194,7 +194,7 @@ const ContactsPage: React.FC = () => {
     const view = userOptions?.userOptions.find(
       (option) => option.key === 'contacts_view',
     )?.value;
-    setTableDisplayState(
+    setflowsViewEnabled(
       view === 'flows' ? TableViewModeEnum.Flows : TableViewModeEnum.List,
     );
     if (view === 'flows') {
@@ -247,9 +247,9 @@ const ContactsPage: React.FC = () => {
       <Head>
         <title>
           MPDX |{' '}
-          {tableDisplayState === TableViewModeEnum.List
+          {flowsViewEnabled === TableViewModeEnum.List
             ? t('Contacts')
-            : t('Flows')}
+            : t('Contact Flows')}
         </title>
       </Head>
       {accountListId ? (
@@ -287,7 +287,7 @@ const ContactsPage: React.FC = () => {
                     buttonGroup={
                       <Hidden xsDown>
                         <Box display="flex" alignItems="center">
-                          {tableDisplayState === TableViewModeEnum.Flows && (
+                          {flowsViewEnabled === TableViewModeEnum.Flows && (
                             <NextLink
                               href={`/accountLists/${accountListId}/contacts/flows/setup`}
                             >
@@ -299,13 +299,13 @@ const ContactsPage: React.FC = () => {
                           )}
                           <ToggleButtonGroup
                             exclusive
-                            value={tableDisplayState}
+                            value={flowsViewEnabled}
                             onChange={handleViewModeChange}
                           >
                             <ToggleButton
                               value="list"
                               disabled={
-                                tableDisplayState === TableViewModeEnum.List
+                                flowsViewEnabled === TableViewModeEnum.List
                               }
                             >
                               <BulletedListIcon titleAccess={t('List View')} />
@@ -313,7 +313,7 @@ const ContactsPage: React.FC = () => {
                             <ToggleButton
                               value="flows"
                               disabled={
-                                tableDisplayState === TableViewModeEnum.Flows
+                                flowsViewEnabled === TableViewModeEnum.Flows
                               }
                             >
                               <ViewColumnIcon
@@ -325,7 +325,7 @@ const ContactsPage: React.FC = () => {
                       </Hidden>
                     }
                   />
-                  {tableDisplayState === 'list' ? (
+                  {flowsViewEnabled === 'list' ? (
                     <InfiniteList
                       loading={loading}
                       data={data?.contacts?.nodes}
