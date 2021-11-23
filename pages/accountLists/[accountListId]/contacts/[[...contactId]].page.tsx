@@ -172,7 +172,6 @@ const ContactsPage: React.FC = () => {
     event: React.MouseEvent<HTMLElement>,
     flowsView: boolean,
   ) => {
-    console.log(flowsView);
     updateOptions(flowsView ? 'flows' : 'list');
   };
   //#endregion
