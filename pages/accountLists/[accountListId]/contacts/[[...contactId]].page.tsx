@@ -186,27 +186,26 @@ const ContactsPage: React.FC = () => {
   //#region JSX
 
   //User options for display view
-  const { data: userOptions, loading: loadingOptions } = useGetUserOptionsQuery(
-    {},
-  );
+  const { data: userOptions } = useGetUserOptionsQuery({
+    onCompleted: () => {
+      const view = userOptions?.userOptions.find(
+        (option) => option.key === 'contacts_view',
+      )?.value;
+      setflowsViewEnabled(
+        view === 'flows' ? TableViewModeEnum.Flows : TableViewModeEnum.List,
+      );
+      if (view === 'flows') {
+        if (!contactId?.includes('flows')) {
+          setRouterPath('flows');
+        }
+      } else {
+        if (contactId?.includes('flows')) {
+          setRouterPath('');
+        }
+      }
+    },
+  });
   const [updateUserOptions] = useUpdateUserOptionsMutation();
-  useEffect(() => {
-    const view = userOptions?.userOptions.find(
-      (option) => option.key === 'contacts_view',
-    )?.value;
-    setflowsViewEnabled(
-      view === 'flows' ? TableViewModeEnum.Flows : TableViewModeEnum.List,
-    );
-    if (view === 'flows') {
-      if (!contactId?.includes('flows')) {
-        setRouterPath('flows');
-      }
-    } else {
-      if (contactId?.includes('flows')) {
-        setRouterPath('');
-      }
-    }
-  }, [loadingOptions]);
 
   const updateOptions = async (view: string): Promise<void> => {
     await updateUserOptions({
