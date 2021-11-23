@@ -160,7 +160,7 @@ const ContactFlowSetupPage: React.FC = () => {
     <>
       <Head>
         <title>
-          MPDX | {t('Flows')} | {t('Setup')}
+          MPDX | {t('Contact Flows')} | {t('Setup')}
         </title>
       </Head>
       {accountListId ? (
