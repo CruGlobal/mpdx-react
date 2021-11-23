@@ -25,7 +25,6 @@ interface Props {
   data?: ContactRowFragment[];
   statuses: ContactFilterStatusEnum[];
   selectedFilters: ContactFilterSetInput;
-  starredFilter: ContactFilterSetInput;
   title: string;
   color: string;
   accountListId: string;
@@ -47,7 +46,6 @@ const nullStatus = { id: 'NULL', value: '' };
 
 export const ContactFlowColumn: React.FC<Props> = ({
   statuses,
-  starredFilter,
   selectedFilters,
   title,
   color,
@@ -61,7 +59,6 @@ export const ContactFlowColumn: React.FC<Props> = ({
       contactsFilters: {
         ...selectedFilters,
         status: statuses,
-        ...starredFilter,
       },
     },
     skip: !accountListId || statuses.length === 0,

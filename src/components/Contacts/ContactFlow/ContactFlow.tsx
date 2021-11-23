@@ -17,7 +17,6 @@ import { useGetUserOptionsQuery } from './GetUserOptions.generated';
 
 interface Props {
   accountListId: string;
-  starredFilter: ContactFilterSetInput;
   selectedFilters: ContactFilterSetInput;
   onContactSelected: (contactId: string) => void;
 }
@@ -55,7 +54,6 @@ export const colorMap: { [key: string]: string } = {
 
 export const ContactFlow: React.FC<Props> = ({
   accountListId,
-  starredFilter,
   selectedFilters,
   onContactSelected,
 }: Props) => {
@@ -98,7 +96,7 @@ export const ContactFlow: React.FC<Props> = ({
               status: flowOption.statuses.map(
                 (status) => statusMap[status] as ContactFilterStatusEnum,
               ),
-              ...starredFilter,
+              ...selectedFilters,
             },
           },
         })),
@@ -141,7 +139,6 @@ export const ContactFlow: React.FC<Props> = ({
                     accountListId={accountListId}
                     title={column.name}
                     selectedFilters={selectedFilters}
-                    starredFilter={starredFilter}
                     color={colorMap[column.color]}
                     onContactSelected={onContactSelected}
                     statuses={column.statuses.map(

@@ -346,8 +346,10 @@ const ContactsPage: React.FC = () => {
                   ) : (
                     <ContactFlow
                       accountListId={accountListId}
-                      starredFilter={starredFilter}
-                      selectedFilters={activeFilters}
+                      selectedFilters={{
+                        ...activeFilters,
+                        ...starredFilter,
+                      }}
                       onContactSelected={setContactFocus}
                     />
                   )}
