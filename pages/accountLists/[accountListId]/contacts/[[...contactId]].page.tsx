@@ -26,10 +26,7 @@ import { SidePanelsLayout } from '../../../../src/components/Layouts/SidePanelsL
 import { useAccountListId } from '../../../../src/hooks/useAccountListId';
 import { ContactFilterSetInput } from '../../../../graphql/types.generated';
 import { ContactRow } from '../../../../src/components/Contacts/ContactRow/ContactRow';
-import {
-  ListHeader,
-  TableViewModeEnum,
-} from '../../../../src/components/Shared/Header/ListHeader';
+import { ListHeader } from '../../../../src/components/Shared/Header/ListHeader';
 import { FilterPanel } from '../../../../src/components/Shared/Filters/FilterPanel';
 import { useMassSelection } from '../../../../src/hooks/useMassSelection';
 import { useContactFiltersQuery, useContactsQuery } from './Contacts.generated';
@@ -131,13 +128,13 @@ const ContactsPage: React.FC = () => {
       id
         ? {
             pathname: `/accountLists/${accountListId}/contacts${
-              flowsViewEnabled === 'flows' ? '/flows' : ''
+              flowsViewEnabled ? '/flows' : ''
             }/${id}`,
             query: filteredQuery,
           }
         : {
             pathname: `/accountLists/${accountListId}/contacts/${
-              flowsViewEnabled === 'flows' ? 'flows/' : ''
+              flowsViewEnabled ? 'flows/' : ''
             }`,
             query: filteredQuery,
           },
@@ -169,17 +166,14 @@ const ContactsPage: React.FC = () => {
     });
   };
 
-  const [flowsViewEnabled, setflowsViewEnabled] = useState<TableViewModeEnum>(
-    TableViewModeEnum.List,
-  );
+  const [flowsViewEnabled, setflowsViewEnabled] = useState<boolean>(false);
 
   const handleViewModeChange = (
     event: React.MouseEvent<HTMLElement>,
-    viewMode: TableViewModeEnum | null,
+    flowsView: boolean,
   ) => {
-    if (viewMode) {
-      updateOptions(viewMode);
-    }
+    console.log(flowsView);
+    updateOptions(flowsView ? 'flows' : 'list');
   };
   //#endregion
 
@@ -191,9 +185,7 @@ const ContactsPage: React.FC = () => {
       const view = userOptions?.userOptions.find(
         (option) => option.key === 'contacts_view',
       )?.value;
-      setflowsViewEnabled(
-        view === 'flows' ? TableViewModeEnum.Flows : TableViewModeEnum.List,
-      );
+      setflowsViewEnabled(view === 'flows');
       if (view === 'flows') {
         if (!contactId?.includes('flows')) {
           setRouterPath('flows');
@@ -245,10 +237,7 @@ const ContactsPage: React.FC = () => {
     <>
       <Head>
         <title>
-          MPDX |{' '}
-          {flowsViewEnabled === TableViewModeEnum.List
-            ? t('Contacts')
-            : t('Contact Flows')}
+          MPDX | {flowsViewEnabled ? t('Contact Flows') : t('Contacts')}
         </title>
       </Head>
       {accountListId ? (
@@ -286,7 +275,7 @@ const ContactsPage: React.FC = () => {
                     buttonGroup={
                       <Hidden xsDown>
                         <Box display="flex" alignItems="center">
-                          {flowsViewEnabled === TableViewModeEnum.Flows && (
+                          {flowsViewEnabled && (
                             <NextLink
                               href={`/accountLists/${accountListId}/contacts/flows/setup`}
                             >
@@ -302,18 +291,14 @@ const ContactsPage: React.FC = () => {
                             onChange={handleViewModeChange}
                           >
                             <ToggleButton
-                              value="list"
-                              disabled={
-                                flowsViewEnabled === TableViewModeEnum.List
-                              }
+                              value={false}
+                              disabled={!flowsViewEnabled}
                             >
                               <BulletedListIcon titleAccess={t('List View')} />
                             </ToggleButton>
                             <ToggleButton
-                              value="flows"
-                              disabled={
-                                flowsViewEnabled === TableViewModeEnum.Flows
-                              }
+                              value={true}
+                              disabled={flowsViewEnabled}
                             >
                               <ViewColumnIcon
                                 titleAccess={t('Column Workflow View')}
@@ -324,7 +309,7 @@ const ContactsPage: React.FC = () => {
                       </Hidden>
                     }
                   />
-                  {flowsViewEnabled === 'list' ? (
+                  {!flowsViewEnabled ? (
                     <InfiniteList
                       loading={loading}
                       data={data?.contacts?.nodes}
