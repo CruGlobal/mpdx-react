@@ -95,14 +95,15 @@ const ContactFlowSetupPage: React.FC = () => {
   };
 
   const addColumn = (): void => {
-    const temp = [...flowOptions];
-    temp.push({
-      name: 'Untitled',
-      id: uuidv4(),
-      statuses: [],
-      color: 'color-text',
-    });
-    updateOptions(temp);
+    updateOptions([
+      ...flowOptions,
+      {
+        name: 'Untitled',
+        id: uuidv4(),
+        statuses: [],
+        color: 'color-text',
+      },
+    ]);
   };
 
   const deleteColumn = (index: number): void => {
@@ -138,9 +139,13 @@ const ContactFlowSetupPage: React.FC = () => {
     event: React.ChangeEvent<HTMLInputElement>,
     index: number,
   ): void => {
-    const temp = [...flowOptions];
-    temp[index].name = event.target.value;
-    updateOptions(temp);
+    updateOptions(
+      flowOptions.map((option, currentIndex) =>
+        currentIndex === index
+          ? { ...option, name: event.target.value }
+          : option,
+      ),
+    );
   };
 
   const [columnWidth, setColumnWidth] = useState(0);
