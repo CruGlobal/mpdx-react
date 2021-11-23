@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import Head from 'next/head';
 import { useTranslation } from 'react-i18next';
 import { DndProvider } from 'react-dnd';
@@ -29,7 +29,16 @@ const ContactFlowSetupPage: React.FC = () => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
   const { enqueueSnackbar } = useSnackbar();
-  const { data: userOptions, loading } = useGetUserOptionsQuery({});
+  const { data: userOptions, loading } = useGetUserOptionsQuery({
+    onCompleted: () => {
+      setFlowOptions(
+        JSON.parse(
+          userOptions?.userOptions.find((option) => option.key === 'flows')
+            ?.value || '[]',
+        ),
+      );
+    },
+  });
   const [updateUserOptions] = useUpdateUserOptionsMutation();
   const [flowOptions, setFlowOptions] = useState<
     {
@@ -39,15 +48,6 @@ const ContactFlowSetupPage: React.FC = () => {
       id: string;
     }[]
   >([]);
-
-  useEffect(() => {
-    setFlowOptions(
-      JSON.parse(
-        userOptions?.userOptions.find((option) => option.key === 'flows')
-          ?.value || '[]',
-      ),
-    );
-  }, [loading]);
 
   const allUsedStatuses = flowOptions
     ? flowOptions.flatMap((option) => option.statuses)
