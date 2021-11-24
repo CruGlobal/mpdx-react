@@ -173,7 +173,6 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
               case 'reverseAppeal':
               case 'reverseChurch':
               case 'reverseCity':
-              case 'reverseContactType':
               case 'reverseCountry':
               case 'reverseDesignationAccountId':
               case 'reverseDonation':
@@ -212,10 +211,10 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
               case 'stoppedGivingRange':
               case 'taskDueDate':
               case 'updatedAt':
-                const splitDate = value.split('..');
+                const [min, max] = value.split('..');
                 newFilter[key] = {
-                  min: splitDate[0],
-                  max: splitDate[1],
+                  min,
+                  max,
                 };
                 break;
               // Multiselect
@@ -223,7 +222,6 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
               case 'appeal':
               case 'church':
               case 'city':
-              case 'contactType':
               case 'country':
               case 'designationAccountId':
               case 'donation':
@@ -323,6 +321,7 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
               case 'contactInfoMobile':
               case 'contactInfoPhone':
               case 'contactInfoWorkPhone':
+              case 'contactType':
               case 'donationAmountRange':
               case 'nameLike':
               case 'notes':
@@ -331,6 +330,7 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
               case 'pledgeLateBy':
               case 'wildcardSearch':
                 newFilter[key] = value;
+                break;
             }
           });
           // 'accountListId' isn't used for filters, so don't include it
@@ -338,13 +338,11 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
           const key = snakeToCamel(filter.name) as FilterKey;
           switch (key) {
             case 'tags':
-              newFilter.tags = (filter.value as unknown) as string[];
+            case 'excludeTags':
+              newFilter[key] = filter.value ? filter.value.split(',') : null;
               break;
             case 'wildcardSearch':
               newFilter.wildcardSearch = filter.value;
-              break;
-            case 'excludeTags':
-              newFilter.excludeTags = (filter.value as unknown) as string[];
               break;
             case 'anyTags':
               newFilter.anyTags = (filter.value as unknown) as boolean;
