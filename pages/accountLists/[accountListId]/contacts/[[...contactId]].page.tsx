@@ -118,7 +118,7 @@ const ContactsPage: React.FC = () => {
   //#endregion
 
   //#region User Actions
-  const setContactFocus = (id?: string) => {
+  const setContactFocus = (id?: string, openDetails = true, flows = false) => {
     const {
       accountListId: _accountListId,
       contactId: _contactId,
@@ -128,31 +128,21 @@ const ContactsPage: React.FC = () => {
       id
         ? {
             pathname: `/accountLists/${accountListId}/contacts${
-              flowsViewEnabled ? '/flows' : ''
+              flows ? '/flows' : ''
             }/${id}`,
             query: filteredQuery,
           }
         : {
             pathname: `/accountLists/${accountListId}/contacts/${
-              flowsViewEnabled ? 'flows/' : ''
+              flows ? 'flows/' : ''
             }`,
             query: filteredQuery,
           },
     );
-    id && setContactDetailsId(id);
-    setContactDetailsOpen(!!id);
-  };
-
-  const setRouterPath = (path: string): void => {
-    const {
-      accountListId: _accountListId,
-      contactId: _contactId,
-      ...filteredQuery
-    } = query;
-    push({
-      pathname: `/accountLists/${accountListId}/contacts/${path}`,
-      query: filteredQuery,
-    });
+    if (openDetails) {
+      id && setContactDetailsId(id);
+      setContactDetailsOpen(!!id);
+    }
   };
 
   const setSearchTerm = (searchTerm?: string) => {
@@ -187,15 +177,16 @@ const ContactsPage: React.FC = () => {
       setflowsViewEnabled(view === 'flows');
       if (view === 'flows') {
         if (!contactId?.includes('flows')) {
-          setRouterPath('flows');
+          setContactFocus(undefined, false, true);
         }
       } else {
         if (contactId?.includes('flows')) {
-          setRouterPath('');
+          setContactFocus(undefined, false);
         }
       }
     },
   });
+
   const [updateUserOptions] = useUpdateUserOptionsMutation();
 
   const updateOptions = async (view: string): Promise<void> => {
@@ -360,7 +351,13 @@ const ContactsPage: React.FC = () => {
                   <ContactDetails
                     accountListId={accountListId}
                     contactId={contactDetailsId}
-                    onClose={() => setContactFocus(undefined)}
+                    onClose={() =>
+                      setContactFocus(
+                        undefined,
+                        true,
+                        flowsViewEnabled ? true : false,
+                      )
+                    }
                   />
                 ) : (
                   <></>

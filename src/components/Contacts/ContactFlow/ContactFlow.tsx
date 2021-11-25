@@ -18,7 +18,11 @@ import { useGetUserOptionsQuery } from './GetUserOptions.generated';
 interface Props {
   accountListId: string;
   selectedFilters: ContactFilterSetInput;
-  onContactSelected: (contactId: string) => void;
+  onContactSelected: (
+    contactId: string,
+    openDetails: boolean,
+    flows: boolean,
+  ) => void;
 }
 
 export interface ContactFlowOption {

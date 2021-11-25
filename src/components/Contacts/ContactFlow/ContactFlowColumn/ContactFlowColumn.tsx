@@ -28,7 +28,11 @@ interface Props {
   title: string;
   color: string;
   accountListId: string;
-  onContactSelected: (contactId: string) => void;
+  onContactSelected: (
+    contactId: string,
+    openDetails: boolean,
+    flows: boolean,
+  ) => void;
   changeContactStatus: (
     id: string,
     status: {

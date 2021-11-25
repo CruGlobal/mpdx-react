@@ -14,7 +14,11 @@ interface Props {
     __typename?: 'IdValue' | undefined;
   } & Pick<IdValue, 'id' | 'value'>;
   starred: boolean;
-  onContactSelected: (contactId: string) => void;
+  onContactSelected: (
+    contactId: string,
+    openDetails: boolean,
+    flows: boolean,
+  ) => void;
   columnWidth?: number;
 }
 
@@ -95,7 +99,7 @@ export const ContactFlowRow: React.FC<Props> = ({
             }}
           />
           <Box display="flex" flexDirection="column" ml={2} draggable>
-            <ContactLink onClick={() => onContactSelected(id)}>
+            <ContactLink onClick={() => onContactSelected(id, true, true)}>
               {name}
             </ContactLink>
             <Typography>{status.value}</Typography>
