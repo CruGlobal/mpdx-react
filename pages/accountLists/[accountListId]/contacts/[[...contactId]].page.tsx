@@ -203,7 +203,7 @@ const ContactsPage: React.FC = () => {
 
         if (dataFromCache) {
           const filteredOld = dataFromCache.userOptions.filter(
-            (option) => option.key !== 'flows',
+            (option) => option.key !== 'contacts_view',
           );
           const userOptions = [
             ...filteredOld,
