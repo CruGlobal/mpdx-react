@@ -149,19 +149,21 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
       const parsedFilter = JSON.parse(filter.value);
 
       // Map through keys to convert key to camel from snake
-      const filters = Object.keys(parsedFilter).map((key) => ({
-        name: snakeToCamel(key),
-        value: parsedFilter[key] as string,
-      }));
+      const filters = Object.keys(parsedFilter).map(
+        (key) =>
+          ({
+            name: snakeToCamel(key),
+            value: parsedFilter[key],
+          } as { name: string; value: FilterKey }),
+      );
 
-      // Create empty object to be used for updating selected filters using saved filter data
-      const newFilter: ContactFilterSetInput & TaskFilterSetInput = {};
-
-      // Map through filter
-      filters.map((filter) => {
-        // 'params' holds all non default filters. So we have to map through that, convert the key to camel and split the value into an array
+      const newFilter = filters.reduce<
+        ContactFilterSetInput & TaskFilterSetInput
+      >((acc, filter) => {
         if (filter.name === 'params') {
-          Object.entries(filter.value).map(([name, value]) => {
+          const nonDefaultFilters = Object.entries(filter.value).reduce<
+            ContactFilterSetInput & TaskFilterSetInput
+          >((acc, [name, value]) => {
             const key = snakeToCamel(name) as FilterKey;
             switch (key) {
               // Boolean
@@ -196,8 +198,7 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
               case 'starred':
               case 'statusValid':
               case 'tasksAllCompleted':
-                newFilter[key] = value === 'true';
-                break;
+                return { ...acc, [key]: value === 'true' };
               // DateRangeInput
               case 'donationDate':
               case 'createdAt':
@@ -212,11 +213,13 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
               case 'taskDueDate':
               case 'updatedAt':
                 const [min, max] = value.split('..');
-                newFilter[key] = {
-                  min,
-                  max,
+                return {
+                  ...acc,
+                  [key]: {
+                    min,
+                    max,
+                  },
                 };
-                break;
               // Multiselect
               case 'almaMater':
               case 'appeal':
@@ -243,75 +246,97 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
               case 'state':
               case 'timezone':
               case 'userIds':
-                newFilter[key] = value.split(',');
-                break;
+                return { ...acc, [key]: value.split(',') };
               // Newsletter
               case 'newsletter':
-                let newsletterValue;
                 switch (value) {
                   case 'all':
-                    newsletterValue = ContactFilterNewsletterEnum.All;
+                    return { ...acc, [key]: ContactFilterNewsletterEnum.All };
                   case 'both':
-                    newsletterValue = ContactFilterNewsletterEnum.Both;
+                    return {
+                      ...acc,
+                      [key]: ContactFilterNewsletterEnum.Both,
+                    };
                   case 'email':
-                    newsletterValue = ContactFilterNewsletterEnum.Email;
+                    return {
+                      ...acc,
+                      [key]: ContactFilterNewsletterEnum.Email,
+                    };
                   case 'email_only':
-                    newsletterValue = ContactFilterNewsletterEnum.EmailOnly;
+                    return {
+                      ...acc,
+                      [key]: ContactFilterNewsletterEnum.EmailOnly,
+                    };
                   case 'none':
-                    newsletterValue = ContactFilterNewsletterEnum.None;
+                    return {
+                      ...acc,
+                      [key]: ContactFilterNewsletterEnum.None,
+                    };
                   case 'no_value':
-                    newsletterValue = ContactFilterNewsletterEnum.NoValue;
+                    return {
+                      ...acc,
+                      [key]: ContactFilterNewsletterEnum.NoValue,
+                    };
                   case 'physical':
-                    newsletterValue = ContactFilterNewsletterEnum.Physical;
+                    return {
+                      ...acc,
+                      [key]: ContactFilterNewsletterEnum.Physical,
+                    };
                   case 'physical_only':
-                    newsletterValue = ContactFilterNewsletterEnum.PhysicalOnly;
+                    return {
+                      ...acc,
+                      [key]: ContactFilterNewsletterEnum.PhysicalOnly,
+                    };
+                  default:
+                    return { ...acc };
                 }
-                newFilter[key] = newsletterValue;
-                break;
               // Status
               case 'status':
-                newFilter[key] = value.split(',').map((enumValue) => {
-                  switch (enumValue) {
-                    // Status
-                    case 'active':
-                      return ContactFilterStatusEnum.Active;
-                    case 'hidden':
-                      return ContactFilterStatusEnum.Hidden;
-                    case 'null':
-                      return ContactFilterStatusEnum.Null;
-                    case 'Appointment Scheduled':
-                      return ContactFilterStatusEnum.AppointmentScheduled;
-                    case 'Ask in Future':
-                      return ContactFilterStatusEnum.AskInFuture;
-                    case 'Call for Decision':
-                      return ContactFilterStatusEnum.CallForDecision;
-                    case 'Contact for Appointment':
-                      return ContactFilterStatusEnum.ContactForAppointment;
-                    case 'Cultivate Relationship':
-                      return ContactFilterStatusEnum.CultivateRelationship;
-                    case 'Expired Referral':
-                      return ContactFilterStatusEnum.ExpiredReferral;
-                    case 'Never Ask':
-                      return ContactFilterStatusEnum.NeverAsk;
-                    case 'Never Contacted':
-                      return ContactFilterStatusEnum.NeverContacted;
-                    case 'Not Interested':
-                      return ContactFilterStatusEnum.NotInterested;
-                    case 'Partner - Financial':
-                      return ContactFilterStatusEnum.PartnerFinancial;
-                    case 'Partner - Pray':
-                      return ContactFilterStatusEnum.PartnerPray;
-                    case 'Partner - Special':
-                      return ContactFilterStatusEnum.PartnerSpecial;
-                    case 'Research Abandoned':
-                      return ContactFilterStatusEnum.ResearchAbandoned;
-                    case 'Unresponsive':
-                      return ContactFilterStatusEnum.Unresponsive;
-                    default:
-                      return ContactFilterStatusEnum.Null;
-                  }
-                });
-                break;
+                return {
+                  ...acc,
+                  [key]: value.split(',').map((enumValue) => {
+                    switch (enumValue) {
+                      // Status
+                      case 'active':
+                        return ContactFilterStatusEnum.Active;
+                      case 'hidden':
+                        return ContactFilterStatusEnum.Hidden;
+                      case 'null':
+                        return ContactFilterStatusEnum.Null;
+                      case 'Appointment Scheduled':
+                        return ContactFilterStatusEnum.AppointmentScheduled;
+                      case 'Ask in Future':
+                        return ContactFilterStatusEnum.AskInFuture;
+                      case 'Call for Decision':
+                        return ContactFilterStatusEnum.CallForDecision;
+                      case 'Contact for Appointment':
+                        return ContactFilterStatusEnum.ContactForAppointment;
+                      case 'Cultivate Relationship':
+                        return ContactFilterStatusEnum.CultivateRelationship;
+                      case 'Expired Referral':
+                        return ContactFilterStatusEnum.ExpiredReferral;
+                      case 'Never Ask':
+                        return ContactFilterStatusEnum.NeverAsk;
+                      case 'Never Contacted':
+                        return ContactFilterStatusEnum.NeverContacted;
+                      case 'Not Interested':
+                        return ContactFilterStatusEnum.NotInterested;
+                      case 'Partner - Financial':
+                        return ContactFilterStatusEnum.PartnerFinancial;
+                      case 'Partner - Pray':
+                        return ContactFilterStatusEnum.PartnerPray;
+                      case 'Partner - Special':
+                        return ContactFilterStatusEnum.PartnerSpecial;
+                      case 'Research Abandoned':
+                        return ContactFilterStatusEnum.ResearchAbandoned;
+                      case 'Unresponsive':
+                        return ContactFilterStatusEnum.Unresponsive;
+                      default:
+                        return ContactFilterStatusEnum.Null;
+                    }
+                  }),
+                };
+
               // NumericRangeInput & String
               case 'addressLatLng':
               case 'appealStatus':
@@ -329,30 +354,36 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
               case 'pledge':
               case 'pledgeLateBy':
               case 'wildcardSearch':
-                newFilter[key] = value;
-                break;
+                return { ...acc, [key]: value };
+              default:
+                return { ...acc };
             }
-          });
-          // 'accountListId' isn't used for filters, so don't include it
-        } else if (filter.name !== 'accountListId') {
+          }, {});
+
+          return { ...acc, ...nonDefaultFilters };
+        } else {
           const key = snakeToCamel(filter.name) as FilterKey;
           switch (key) {
             case 'tags':
             case 'excludeTags':
-              newFilter[key] = filter.value ? filter.value.split(',') : null;
-              break;
+              return {
+                ...acc,
+                [key]: filter.value ? filter.value.split(',') : null,
+              };
+
             case 'wildcardSearch':
-              newFilter.wildcardSearch = filter.value;
-              break;
+              return { ...acc, [key]: filter.value };
             case 'anyTags':
-              newFilter.anyTags = (filter.value as unknown) as boolean;
-              break;
+              return { ...acc, [key]: (filter.value as unknown) as boolean };
+            default:
+              return { ...acc };
           }
         }
-      });
+      }, {});
 
       // Set the selected filter with our saved filter data
       onSelectedFiltersChanged(newFilter);
+
       // close the saved filter panel
       setSavedFilterOpen(false);
     }

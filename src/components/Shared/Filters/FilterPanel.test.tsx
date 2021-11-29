@@ -223,7 +223,7 @@ describe('FilterPanel', () => {
         excludeTags: null,
         locale: ['English'],
         metroArea: ['Cool'],
-        newsletter: 'PHYSICAL_ONLY',
+        newsletter: 'NO_VALUE',
         nextAsk: {
           max: '2021-12-22',
           min: '2021-11-30',
