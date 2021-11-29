@@ -34,6 +34,7 @@ import * as yup from 'yup';
 import { useSnackbar } from 'notistack';
 import { DateTime } from 'luxon';
 import { CalendarToday, Schedule } from '@material-ui/icons';
+import { v4 as uuidv4 } from 'uuid';
 import { dateFormat } from '../../../../lib/intlFormat/intlFormat';
 import {
   ActivityTypeEnum,
@@ -53,6 +54,7 @@ import {
   useDeleteTaskMutation,
 } from '../../Drawer/Form/TaskDrawer.generated';
 import theme from '../../../../../src/theme';
+import { useCreateTaskCommentMutation } from '../../Drawer/CommentList/Form/CreateTaskComment.generated';
 
 const ActionButton = styled(Button)(() => ({
   color: theme.palette.info.main,
@@ -150,6 +152,7 @@ const TaskModalForm = ({
       };
   const classes = useStyles();
   const { t } = useTranslation();
+  const [commentBody, changeCommentBody] = useState('');
 
   const [removeDialogOpen, handleRemoveDialog] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
@@ -176,13 +179,14 @@ const TaskModalForm = ({
   const [createTask, { loading: creating }] = useCreateTaskMutation();
   const [updateTask, { loading: saving }] = useUpdateTaskMutation();
   const [deleteTask, { loading: deleting }] = useDeleteTaskMutation();
+  const [createTaskComment] = useCreateTaskCommentMutation();
   const onSubmit = async (
     attributes: TaskCreateInput | TaskUpdateInput,
   ): Promise<void> => {
     const isUpdate = (
       attributes: TaskCreateInput | TaskUpdateInput,
     ): attributes is TaskUpdateInput => !!task;
-
+    const body = commentBody.trim();
     if (isUpdate(attributes)) {
       await updateTask({
         variables: { accountListId, attributes },
@@ -190,6 +194,19 @@ const TaskModalForm = ({
     } else {
       await createTask({
         variables: { accountListId, attributes },
+        update: (_cache, { data }) => {
+          if (data?.createTask?.task.id && body !== '') {
+            const id = uuidv4();
+
+            createTaskComment({
+              variables: {
+                accountListId,
+                taskId: data.createTask.task.id,
+                attributes: { id, body },
+              },
+            });
+          }
+        },
       });
     }
     enqueueSnackbar(t('Task saved successfully'), { variant: 'success' });
@@ -597,6 +614,16 @@ const TaskModalForm = ({
                       </motion.div>
                     )}
                   </AnimatePresence>
+                </Grid>
+                <Grid item>
+                  <TextField
+                    label={t('Comment')}
+                    value={commentBody}
+                    onChange={(event) => changeCommentBody(event.target.value)}
+                    fullWidth
+                    multiline
+                    inputProps={{ 'aria-label': 'Comment' }}
+                  />
                 </Grid>
               </Grid>
             </Box>
