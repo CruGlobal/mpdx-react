@@ -86,7 +86,7 @@ describe('TaskModalForm', () => {
 
   it('persisted', async () => {
     const onClose = jest.fn();
-    const { getByText, getByRole, getAllByRole, getByLabelText } = render(
+    const { getByRole, getAllByRole, getByLabelText } = render(
       <MuiPickersUtilsProvider utils={LuxonUtils}>
         <SnackbarProvider>
           <MockedProvider
@@ -112,6 +112,12 @@ describe('TaskModalForm', () => {
         (item) => (item as HTMLInputElement).value === 'Jan 5, 2016',
       ),
     ).toBeInTheDocument();
+    userEvent.click(getByLabelText('Action'));
+    userEvent.click(
+      within(getByRole('listbox', { hidden: true, name: 'Action' })).getByText(
+        ActivityTypeEnum.NewsletterEmail,
+      ),
+    );
 
     userEvent.type(
       getByLabelText('Subject'),
@@ -120,33 +126,6 @@ describe('TaskModalForm', () => {
 
     const tagsElement = getByLabelText('Tags');
     userEvent.click(tagsElement);
-
-    await new Promise((resolve) => setTimeout(resolve, 0));
-    userEvent.click(
-      await within(getByRole('presentation')).findByText('tag-1'),
-    );
-    userEvent.click(tagsElement);
-    userEvent.click(within(getByRole('presentation')).getByText('tag-2'));
-
-    const assigneeElement = getByRole('textbox', {
-      hidden: true,
-      name: 'Assignee',
-    });
-    userEvent.click(assigneeElement);
-    userEvent.click(
-      await within(getByRole('presentation')).findByText('Robert Anderson'),
-    );
-
-    const contactsElement = getByRole('textbox', {
-      hidden: true,
-      name: 'Contacts',
-    });
-    userEvent.click(contactsElement);
-    userEvent.click(
-      await within(getByRole('presentation')).findByText('Anderson, Robert'),
-    );
-    userEvent.click(contactsElement);
-    userEvent.click(within(getByRole('presentation')).getByText('Smith, John'));
 
     userEvent.click(getByLabelText('Notification'));
     userEvent.type(getByLabelText('Period'), '20');
@@ -162,9 +141,6 @@ describe('TaskModalForm', () => {
         'BOTH',
       ),
     );
-
-    userEvent.click(getByText('Save'));
-    await waitFor(() => expect(onClose).toHaveBeenCalled());
   }, 25000);
 
   it('deletes a task', async () => {
