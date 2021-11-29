@@ -52,7 +52,7 @@ import {
   useUpdateTaskMutation,
   useDeleteTaskMutation,
 } from '../../Drawer/Form/TaskDrawer.generated';
-import theme from 'src/theme';
+import theme from '../../../../../src/theme';
 
 const ActionButton = styled(Button)(() => ({
   color: theme.palette.info.main,

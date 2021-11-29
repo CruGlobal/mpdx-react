@@ -112,12 +112,6 @@ describe('TaskModalForm', () => {
         (item) => (item as HTMLInputElement).value === 'Jan 5, 2016',
       ),
     ).toBeInTheDocument();
-    userEvent.click(getByLabelText('Action'));
-    userEvent.click(
-      within(getByRole('listbox', { hidden: true, name: 'Action' })).getByText(
-        ActivityTypeEnum.NewsletterEmail,
-      ),
-    );
 
     userEvent.type(
       getByLabelText('Subject'),
@@ -162,11 +156,11 @@ describe('TaskModalForm', () => {
         'HOURS',
       ),
     );
-    userEvent.click(getByLabelText('Platform'));
+    userEvent.click(getByLabelText('Type'));
     userEvent.click(
-      within(
-        getByRole('listbox', { hidden: true, name: 'Platform' }),
-      ).getByText('BOTH'),
+      within(getByRole('listbox', { hidden: true, name: 'Type' })).getByText(
+        'BOTH',
+      ),
     );
 
     userEvent.click(getByText('Save'));
