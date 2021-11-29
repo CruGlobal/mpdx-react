@@ -6,12 +6,12 @@ import { SnackbarProvider } from 'notistack';
 import theme from '../../../../../../theme';
 import TestRouter from '../../../../../../../__tests__/util/TestRouter';
 import { GqlMockedProvider } from '../../../../../../../__tests__/util/graphqlMocking';
-import useTaskDrawer from '../../../../../../hooks/useTaskDrawer';
+import useTaskModal from '../../../../../../hooks/useTaskModal';
 import AddMenu from './AddMenu';
 
-const openTaskDrawer = jest.fn();
+const openTaskModal = jest.fn();
 
-jest.mock('../../../../../../hooks/useTaskDrawer');
+jest.mock('../../../../../../hooks/useTaskModal');
 
 const router = {
   push: jest.fn(),
@@ -21,8 +21,8 @@ const router = {
 
 describe('AddMenu', () => {
   beforeEach(() => {
-    (useTaskDrawer as jest.Mock).mockReturnValue({
-      openTaskDrawer,
+    (useTaskModal as jest.Mock).mockReturnValue({
+      openTaskModal,
     });
   });
 
@@ -75,6 +75,6 @@ describe('AddMenu', () => {
     userEvent.click(getByRole('button', { hidden: true, name: 'Add Button' }));
     await waitFor(() => expect(getByText('Add Task')).toBeInTheDocument());
     userEvent.click(getByText('Add Task'));
-    await waitFor(() => expect(openTaskDrawer).toHaveBeenCalledWith({}));
+    await waitFor(() => expect(openTaskModal).toHaveBeenCalledWith({}));
   });
 });
