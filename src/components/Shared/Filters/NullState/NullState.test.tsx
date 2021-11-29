@@ -8,18 +8,18 @@ import {
 } from '../../../../../__tests__/util/testingLibraryReactMock';
 import TestWrapper from '../../../../../__tests__/util/TestWrapper';
 import theme from '../../../../theme';
-import useTaskDrawer from '../../../../../src/hooks/useTaskDrawer';
+import useTaskModal from '../../../../../src/hooks/useTaskModal';
 import NullState from './NullState';
 
 const changeFilters = jest.fn();
-const openTaskDrawer = jest.fn();
+const openTaskModal = jest.fn();
 
-jest.mock('../../../../../src/hooks/useTaskDrawer');
+jest.mock('../../../../../src/hooks/useTaskModal');
 
 describe('NullState', () => {
   beforeEach(() => {
-    (useTaskDrawer as jest.Mock).mockReturnValue({
-      openTaskDrawer,
+    (useTaskModal as jest.Mock).mockReturnValue({
+      openTaskModal,
     });
   });
 
@@ -110,7 +110,7 @@ describe('NullState', () => {
     ).toBeInTheDocument();
     expect(getByTestId('task-null-state')).toBeInTheDocument();
     userEvent.click(getByText('Add new task'));
-    await waitFor(() => expect(openTaskDrawer).toHaveBeenCalledWith({}));
+    await waitFor(() => expect(openTaskModal).toHaveBeenCalledWith({}));
   });
 
   it('render text filtered tasks', async () => {
@@ -140,6 +140,6 @@ describe('NullState', () => {
     userEvent.click(getByText('Reset All Search Filters'));
     expect(changeFilters).toHaveBeenCalled();
     userEvent.click(getByText('Add new task'));
-    await waitFor(() => expect(openTaskDrawer).toHaveBeenCalledWith({}));
+    await waitFor(() => expect(openTaskModal).toHaveBeenCalledWith({}));
   });
 });
