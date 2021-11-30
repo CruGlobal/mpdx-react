@@ -43,6 +43,10 @@ const CoachingMainContainer = styled(Box)(({ theme }) => ({
   flexGrow: 4,
 }));
 
+const CoachingItemContainer = styled(Box)(({ theme }) => ({
+  margin: theme.spacing(2),
+}));
+
 const CoachingMainTitleContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
   margin: theme.spacing(1),
@@ -119,7 +123,9 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
               </Box>
             </CoachingMainTitleContainer>
             <Divider />
-            <MonthlyActivitySection accountListId={coachingId} />
+            <CoachingItemContainer>
+              <MonthlyActivitySection accountListId={coachingId} />
+            </CoachingItemContainer>
           </>
         )}
       </CoachingMainContainer>
