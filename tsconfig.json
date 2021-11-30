@@ -8,6 +8,7 @@
     "strict": true,
     "forceConsistentCasingInFileNames": true,
     "noEmit": true,
+    "incremental": true,
     "esModuleInterop": true,
     "module": "esnext",
     "moduleResolution": "node",
@@ -15,6 +16,6 @@
     "isolatedModules": true,
     "jsx": "preserve"
   },
-  "exclude": ["node_modules"],
-  "include": ["next-env.d.ts", "app.d.ts", "**/*.ts", "**/*.tsx", ".env"]
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "app.d.ts", ".env"],
+  "exclude": ["node_modules"]
 }
