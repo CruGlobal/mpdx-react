@@ -124,6 +124,11 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
             </CoachingMainTitleContainer>
             <Divider />
             <CoachingItemContainer>
+              {/*
+                TODO: MonthlyActivitySection doesn't work if coaching is not one of the 
+                Accountlists. reportDonationsHistories is required for this View and it doesn't 
+                work with coaching.
+              */}
               <MonthlyActivitySection accountListId={coachingId} />
             </CoachingItemContainer>
           </>
