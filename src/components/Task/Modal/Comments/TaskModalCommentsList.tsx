@@ -1,13 +1,22 @@
-import React, { ReactElement } from 'react';
-import { Box, Card, CardContent, Divider, styled } from '@material-ui/core';
+import React, { ReactElement, useState } from 'react';
+import {
+  Box,
+  Card,
+  CardContent,
+  Divider,
+  styled,
+  Typography,
+} from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
-import Image from 'next/image';
+import { Add } from '@material-ui/icons';
 import illustration4 from '../../../../images/drawkit/grape/drawkit-grape-pack-illustration-4.svg';
 import TaskDrawerCommentListItem from '../../Drawer/CommentList/Item';
 //import TaskDrawerCommentListForm from '../../Drawer/CommentList/Form';
 import theme from '../../../../../src/theme';
 import { ActionButton } from '../Form/TaskModalForm';
 import { useGetCommentsForTaskModalCommentListQuery } from './TaskListComments.generated';
+import TaskModalCommentsListItem from './Item/TaskModalCommentListItem';
+import TaskModalCommentsListForm from './Form/TaskModalCommentsListForm';
 
 const ImageWrap = styled(Box)(() => ({
   height: '120px',
@@ -65,9 +74,13 @@ const TaskModalCommentsList = ({
 
   const nodes = data?.task.comments.nodes;
 
+  const [showNewCommentInput, setShowNewCommentInput] = useState<boolean>(
+    false,
+  );
+
   return (
     <>
-      <CommentListContainer m={2}>
+      <CommentListContainer m={2} p={2}>
         {loading ? (
           <Box data-testid="TaskDrawerCommentListLoading">
             <TaskDrawerCommentListItem />
@@ -78,30 +91,47 @@ const TaskModalCommentsList = ({
         ) : (
           <>
             {nodes?.length === 0 && (
-              <Card data-testid="TaskDrawerCommentListEmpty">
+              <Card
+                data-testid="TaskDrawerCommentListEmpty"
+                style={{ marginBottom: theme.spacing(2) }}
+              >
                 <CardContentEmpty>
                   <ImageWrap>
-                    <Image src={illustration4} alt="empty" />
+                    <img
+                      src={illustration4}
+                      alt="empty"
+                      style={{ height: 120, marginBottom: 0 }}
+                    />
                   </ImageWrap>
-                  {t('No Comments to show.')}
+                  <Typography>{t('No Comments to show.')}</Typography>
                 </CardContentEmpty>
               </Card>
             )}
-            {nodes?.reduce<JSX.Element[]>((result, comment, index) => {
+            {nodes?.reduce<JSX.Element[]>((result, comment) => {
               return [
                 ...result,
                 <Box
                   data-testid={`TaskDrawerCommentListItem-${comment.id}`}
                   key={comment.id}
                 >
-                  <TaskDrawerCommentListItem
-                    comment={comment}
-                    reverse={comment.me}
-                    nextComment={nodes[index + 1]}
-                  />
+                  <TaskModalCommentsListItem comment={comment} />
                 </Box>,
               ];
             }, [])}
+            {showNewCommentInput && (
+              <TaskModalCommentsListForm
+                accountListId={accountListId}
+                taskId={taskId}
+                handleFormClose={setShowNewCommentInput}
+              />
+            )}
+            <ActionButton
+              size="large"
+              onClick={() => setShowNewCommentInput(true)}
+            >
+              <Add style={{ marginRight: theme.spacing(1) }} />{' '}
+              {t('Add Comment')}
+            </ActionButton>
           </>
         )}
       </CommentListContainer>
