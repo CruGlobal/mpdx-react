@@ -33,7 +33,7 @@ const StyledModal = styled(Modal)(() => ({
 export interface TaskModalProps {
   taskId?: string;
   onClose?: () => void;
-  view: string;
+  view?: string;
   showCompleteForm?: boolean;
   defaultValues?: Partial<Task>;
   filter?: TaskFilter;
@@ -73,6 +73,15 @@ const TaskModal = ({
 
   const task = data?.task;
 
+  const renderTitle = (): string => {
+    switch (view) {
+      case 'comments':
+        return 'Task Comments';
+      default:
+        return 'Add Task';
+    }
+  };
+
   const renderView = (): ReactElement => {
     switch (view) {
       case 'complete':
@@ -90,6 +99,7 @@ const TaskModal = ({
           <TaskModalCommentsList
             accountListId={accountListId || ''}
             taskId={task?.id || ''}
+            onClose={onModalClose}
           />
         );
       default:
@@ -120,7 +130,7 @@ const TaskModal = ({
                   justifyContent="space-between"
                   alignItems="center"
                 >
-                  <Typography variant="h6">Add Task</Typography>
+                  <Typography variant="h6">{renderTitle()}</Typography>
                   <IconButton size="small" onClick={onModalClose}>
                     <CloseIcon titleAccess={t('Close')} />
                   </IconButton>
