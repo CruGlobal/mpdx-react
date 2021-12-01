@@ -1,7 +1,5 @@
 import React, { ReactElement, useState } from 'react';
 import {
-  makeStyles,
-  Theme,
   TextField,
   Select,
   styled,
@@ -62,38 +60,17 @@ const ActionButton = styled(Button)(() => ({
 }));
 
 const DeleteButton = styled(Button)(() => ({
-  color: theme.palette.cruGrayMedium.main,
   fontWeight: 550,
+  backgroundColor: theme.palette.error.main,
+  color: theme.palette.common.white,
+  '&:hover': {
+    backgroundColor: theme.palette.error.dark,
+  },
 }));
 
-const useStyles = makeStyles((theme: Theme) => ({
-  formControl: {
-    width: '100%',
-  },
-  select: {
-    fontSize: theme.typography.h6.fontSize,
-    minHeight: 'auto',
-    '&:focus': {
-      backgroundColor: 'transparent',
-    },
-  },
-  container: {
-    padding: theme.spacing(2, 2),
-  },
-  title: {
-    flexGrow: 1,
-  },
-  removeButton: {
-    backgroundColor: theme.palette.error.main,
-    color: theme.palette.common.white,
-    '&:hover': {
-      backgroundColor: theme.palette.error.dark,
-    },
-  },
-  loadingIndicator: {
-    display: 'flex',
-    margin: 'auto',
-  },
+const LoadingIndicator = styled(CircularProgress)(() => ({
+  display: 'flex',
+  margin: 'auto',
 }));
 
 const taskSchema: yup.SchemaOf<
@@ -150,7 +127,6 @@ const TaskModalForm = ({
         notificationTimeUnit: null,
         ...defaultValues,
       };
-  const classes = useStyles();
   const { t } = useTranslation();
   const [commentBody, changeCommentBody] = useState('');
 
@@ -293,7 +269,7 @@ const TaskModalForm = ({
                   />
                 </Grid>
                 <Grid item>
-                  <FormControl className={classes.formControl}>
+                  <FormControl fullWidth>
                     <InputLabel id="activityType">{t('Action')}</InputLabel>
                     <Select
                       labelId="activityType"
@@ -352,7 +328,7 @@ const TaskModalForm = ({
                   />
                 </Grid>
                 <Grid item>
-                  <FormControl className={classes.formControl}>
+                  <FormControl fullWidth>
                     <Grid container spacing={2}>
                       <Grid xs={6} item>
                         <DatePicker
@@ -416,7 +392,7 @@ const TaskModalForm = ({
                 </Grid>
                 {initialTask.completedAt && (
                   <Grid item>
-                    <FormControl className={classes.formControl}>
+                    <FormControl fullWidth>
                       <Grid container spacing={2}>
                         <Grid xs={6} item>
                           <DatePicker
@@ -545,7 +521,7 @@ const TaskModalForm = ({
                       >
                         <Grid item container spacing={2}>
                           <Grid xs={4} item>
-                            <FormControl className={classes.formControl}>
+                            <FormControl fullWidth>
                               <InputLabel id="notificationType">
                                 {t('Type')}
                               </InputLabel>
@@ -584,7 +560,7 @@ const TaskModalForm = ({
                             />
                           </Grid>
                           <Grid xs={5} item>
-                            <FormControl className={classes.formControl}>
+                            <FormControl fullWidth>
                               <InputLabel id="notificationTimeUnit">
                                 {t('Unit')}
                               </InputLabel>
@@ -640,7 +616,6 @@ const TaskModalForm = ({
                   <DeleteButton
                     size="large"
                     variant="contained"
-                    className={classes.removeButton}
                     onClick={() => handleRemoveDialog(true)}
                   >
                     <DeleteIcon style={{ marginRight: theme.spacing(1) }} />
@@ -680,11 +655,7 @@ const TaskModalForm = ({
                 <DialogTitle>{t('Confirm')}</DialogTitle>
                 <DialogContent dividers>
                   {deleting ? (
-                    <CircularProgress
-                      className={classes.loadingIndicator}
-                      color="primary"
-                      size={50}
-                    />
+                    <LoadingIndicator color="primary" size={50} />
                   ) : (
                     <DialogContentText>
                       {t('Are you sure you wish to delete the selected task?')}
