@@ -1,11 +1,12 @@
 import React, { ReactElement } from 'react';
-import { Box, Card, CardContent, styled } from '@material-ui/core';
+import { Box, Card, CardContent, Divider, styled } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import Image from 'next/image';
 import illustration4 from '../../../../images/drawkit/grape/drawkit-grape-pack-illustration-4.svg';
 import TaskDrawerCommentListItem from '../../Drawer/CommentList/Item';
-import TaskDrawerCommentListForm from '../../Drawer/CommentList/Form';
+//import TaskDrawerCommentListForm from '../../Drawer/CommentList/Form';
 import theme from '../../../../../src/theme';
+import { ActionButton } from '../Form/TaskModalForm';
 import { useGetCommentsForTaskModalCommentListQuery } from './TaskListComments.generated';
 
 const ImageWrap = styled(Box)(() => ({
@@ -26,9 +27,20 @@ const CardContentEmpty = styled(CardContent)(() => ({
   justifyContent: 'center',
 }));
 
+const CommentListContainer = styled(Box)(() => ({
+  width: '20vw',
+  height: '60vh',
+  overflowY: 'auto',
+  [theme.breakpoints.down('sm')]: {
+    width: '90vw',
+    height: '90vh',
+  },
+}));
+
 export interface TaskModalCommentsListProps {
   taskId: string;
   accountListId: string;
+  onClose: () => void;
 }
 
 export enum TaskModalTabsEnum {
@@ -40,6 +52,7 @@ export enum TaskModalTabsEnum {
 const TaskModalCommentsList = ({
   taskId,
   accountListId,
+  onClose,
 }: TaskModalCommentsListProps): ReactElement => {
   const { t } = useTranslation();
 
@@ -54,7 +67,7 @@ const TaskModalCommentsList = ({
 
   return (
     <>
-      <Box m={2}>
+      <CommentListContainer m={2}>
         {loading ? (
           <Box data-testid="TaskDrawerCommentListLoading">
             <TaskDrawerCommentListItem />
@@ -91,11 +104,19 @@ const TaskModalCommentsList = ({
             }, [])}
           </>
         )}
+      </CommentListContainer>
+      <Divider />
+      <Box
+        display="flex"
+        justifyContent="end"
+        alignItems="center"
+        width="100%"
+        p={1}
+      >
+        <ActionButton size="large" onClick={onClose}>
+          {t('Done')}
+        </ActionButton>
       </Box>
-      <TaskDrawerCommentListForm
-        accountListId={accountListId}
-        taskId={taskId}
-      />
     </>
   );
 };
