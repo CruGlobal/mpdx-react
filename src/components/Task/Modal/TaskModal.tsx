@@ -71,29 +71,6 @@ const TaskModal = ({
 
   const task = data?.task;
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const title = ((): string => {
-    if (task) {
-      if (task.activityType) {
-        if (showCompleteForm) {
-          return t('Complete {{activityType}}', {
-            activityType: t(task.activityType),
-          });
-        } else {
-          return t(task.activityType);
-        }
-      } else {
-        if (showCompleteForm) {
-          return t('Complete {{activityType}}', { activityType: t('Task') });
-        } else {
-          return t('Task');
-        }
-      }
-    } else {
-      return t('Add Task');
-    }
-  })();
-
   return (
     <>
       {loading ? (
@@ -127,6 +104,7 @@ const TaskModal = ({
                       <>
                         {showCompleteForm ? (
                           task && (
+                            // Will change for edit task modal
                             <TaskDrawerCompleteForm
                               accountListId={accountListId}
                               task={task}
@@ -136,7 +114,7 @@ const TaskModal = ({
                         ) : (
                           <TaskModalForm
                             accountListId={accountListId}
-                            task={task} // TODO: Use fragments to ensure all required fields are loaded
+                            task={task}
                             onClose={onModalClose}
                             defaultValues={defaultValues}
                             filter={filter}
