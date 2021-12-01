@@ -1,4 +1,4 @@
-import { Box, Typography, styled, Button } from '@material-ui/core';
+import { Box, Typography, styled, Button, Tooltip } from '@material-ui/core';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import theme from '../../../../../../src/theme';
@@ -20,6 +20,7 @@ export const ActionButtonSmall = styled(Button)(() => ({
 
 const TaskModalCommentsListItem: React.FC<Props> = ({ comment }: Props) => {
   const { t } = useTranslation();
+
   return (
     <>
       <Box borderBottom={`1px solid ${theme.palette.cruGrayLight.main}`}>
@@ -27,16 +28,20 @@ const TaskModalCommentsListItem: React.FC<Props> = ({ comment }: Props) => {
       </Box>
       <Box width="100%" display="flex" justifyContent="space-between" mb={2}>
         <Box>
-          <CommentInfoText>
+          <CommentInfoText display="inline">
             {comment?.person.firstName} {comment?.person.lastName}{' '}
-            {`${comment?.createdAt.substring(
-              5,
-              7,
-            )}/${comment?.createdAt.substring(
-              8,
-              10,
-            )}/${comment?.createdAt.substring(0, 4)}`}
           </CommentInfoText>
+          <Tooltip placement="bottom" title={comment?.createdAt || ''} arrow>
+            <CommentInfoText display="inline">
+              {`${comment?.createdAt.substring(
+                5,
+                7,
+              )}/${comment?.createdAt.substring(
+                8,
+                10,
+              )}/${comment?.createdAt.substring(0, 4)}`}
+            </CommentInfoText>
+          </Tooltip>
         </Box>
         <Box>
           <ActionButtonSmall size="small">{t('Edit')}</ActionButtonSmall>
