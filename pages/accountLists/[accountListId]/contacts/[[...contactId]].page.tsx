@@ -29,6 +29,7 @@ import { ContactRow } from '../../../../src/components/Contacts/ContactRow/Conta
 import { ListHeader } from '../../../../src/components/Shared/Header/ListHeader';
 import { FilterPanel } from '../../../../src/components/Shared/Filters/FilterPanel';
 import { useMassSelection } from '../../../../src/hooks/useMassSelection';
+import { UserOptionFragment } from '../../../../src/components/Shared/Filters/FilterPanel.generated';
 import { useContactFiltersQuery, useContactsQuery } from './Contacts.generated';
 
 const WhiteBackground = styled(Box)(({ theme }) => ({
@@ -106,6 +107,12 @@ const ContactsPage: React.FC = () => {
     Object.keys(activeFilters).length > 0 ||
     Object.values(activeFilters).some((filter) => filter !== []);
 
+  const savedFilters: UserOptionFragment[] =
+    filterData?.userOptions.filter(
+      (option) =>
+        option.key?.includes('saved_contacts_filter_') &&
+        JSON.parse(option.value ?? '').account_list_id === accountListId,
+    ) ?? [];
   //#endregion
 
   //#region Mass Actions
@@ -144,8 +151,7 @@ const ContactsPage: React.FC = () => {
       setContactDetailsOpen(!!id);
     }
   };
-
-  const setSearchTerm = (searchTerm?: string) => {
+  const setSearchTerm = (searchTerm: string) => {
     const { searchTerm: _, ...oldQuery } = query;
     replace({
       pathname,
@@ -239,6 +245,7 @@ const ContactsPage: React.FC = () => {
                 filterData && !filtersLoading ? (
                   <FilterPanel
                     filters={filterData?.accountList.contactFilterGroups}
+                    savedFilters={savedFilters}
                     selectedFilters={activeFilters}
                     onClose={toggleFilterPanel}
                     onSelectedFiltersChanged={setActiveFilters}
@@ -256,6 +263,7 @@ const ContactsPage: React.FC = () => {
                     activeFilters={Object.keys(activeFilters).length > 0}
                     filterPanelOpen={filterPanelOpen}
                     toggleFilterPanel={toggleFilterPanel}
+                    contactDetailsOpen={contactDetailsOpen}
                     onCheckAllItems={toggleSelectAll}
                     onSearchTermChanged={setSearchTerm}
                     totalItems={data?.contacts?.totalCount}
@@ -313,6 +321,7 @@ const ContactsPage: React.FC = () => {
                           isChecked={isRowChecked(contact.id)}
                           onContactSelected={setContactFocus}
                           onContactCheckToggle={toggleSelectionById}
+                          contactDetailsOpen={contactDetailsOpen}
                         />
                       )}
                       endReached={() =>

@@ -23,7 +23,7 @@ import {
 
 const HeaderWrap = styled(Box)(({ theme }) => ({
   height: 96,
-  padding: theme.spacing(1),
+  padding: theme.spacing(1, 0),
   display: 'flex',
   flexDirection: 'row',
   justifyContent: 'space-evenly',
@@ -101,6 +101,7 @@ interface ListHeaderProps {
   headerCheckboxState: ListHeaderCheckBoxState;
   filterPanelOpen: boolean;
   toggleFilterPanel: () => void;
+  contactDetailsOpen: boolean;
   onCheckAllItems: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onSearchTermChanged: (searchTerm: string) => void;
   totalItems?: number;
@@ -116,6 +117,7 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
   activeFilters,
   headerCheckboxState,
   filterPanelOpen,
+  contactDetailsOpen,
   toggleFilterPanel,
   onCheckAllItems,
   onSearchTermChanged,
@@ -137,10 +139,10 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
 
   return (
     <HeaderWrap>
-      <Hidden smDown>
+      <Hidden xsUp={contactDetailsOpen}>
         <Checkbox
           checked={headerCheckboxState === ListHeaderCheckBoxState.checked}
-          color="default"
+          color="secondary"
           indeterminate={
             headerCheckboxState === ListHeaderCheckBoxState.partial
           }
@@ -158,7 +160,9 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
       <SearchBox
         page={page}
         onChange={onSearchTermChanged}
-        placeholder={page === 'contact' ? t('Search List') : t('Search Tasks')}
+        placeholder={
+          page === 'contact' ? t('Search Contacts') : t('Search Tasks')
+        }
       />
       <ItemsShowingText>
         {t('Showing {{count}}', { count: totalItems })}
@@ -166,7 +170,7 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
 
       {page === 'contact' ? (
         <>
-          <Hidden smDown>
+          <Hidden lgDown={contactDetailsOpen}>
             <ActionsButton
               aria-haspopup
               aria-expanded={open}

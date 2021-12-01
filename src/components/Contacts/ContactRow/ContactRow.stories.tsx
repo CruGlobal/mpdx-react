@@ -25,6 +25,7 @@ export const Default: Story = () => {
       accountListId={accountListId}
       contact={contact}
       isChecked={false}
+      contactDetailsOpen={false}
       onContactCheckToggle={() => {}}
       onContactSelected={() => {}}
     />
