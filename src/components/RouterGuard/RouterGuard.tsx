@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { getSession, signin } from 'next-auth/client';
+import { getSession, signIn } from 'next-auth/react';
 import { useRouter } from 'next/router';
 import { DateTime } from 'luxon';
 import { Box, CircularProgress } from '@material-ui/core';
@@ -20,7 +20,7 @@ export const RouterGuard: React.FC = ({ children }) => {
       // If the session is expired, sign them in again to fresh token
       // TODO eventually will have to accomidate for okta, google signin, etc
       if (DateTime.now().toISO() > session?.expires) {
-        signin('thekey');
+        signIn('thekey');
       }
     }
   };

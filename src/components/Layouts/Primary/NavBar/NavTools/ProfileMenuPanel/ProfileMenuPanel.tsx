@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Box, Button, Drawer, Link, List, styled } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
-import { signout } from 'next-auth/client';
+import { signOut } from 'next-auth/react';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import { useRouter } from 'next/router';
 import { ChevronRight } from '@material-ui/icons';
@@ -199,7 +199,7 @@ export const ProfileMenuPanel: React.FC = () => {
           <Button
             variant="outlined"
             color="secondary"
-            onClick={() => signout()}
+            onClick={() => signOut()}
           >
             {t('Sign Out')}
           </Button>

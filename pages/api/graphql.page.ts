@@ -1,6 +1,6 @@
 import { ApolloServer } from '@saeris/apollo-server-vercel';
 import { ApolloGateway, RemoteGraphQLDataSource } from '@apollo/gateway';
-import jwt from 'next-auth/jwt';
+import { getToken } from 'next-auth/jwt';
 import { NextApiRequest } from 'next';
 
 class AuthenticatedDataSource extends RemoteGraphQLDataSource {
@@ -47,7 +47,7 @@ const server = new ApolloServer({
   introspection: true,
   subscriptions: false,
   context: async ({ req }: { req: NextApiRequest }) => {
-    const jwtToken = (await jwt.getToken({
+    const jwtToken = (await getToken({
       req,
       secret: process.env.JWT_SECRET as string,
     })) as { token: string } | null;

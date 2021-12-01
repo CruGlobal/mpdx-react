@@ -1,7 +1,7 @@
 import React, { ReactElement } from 'react';
 import Head from 'next/head';
 import { GetServerSideProps } from 'next';
-import { getSession } from 'next-auth/client';
+import { getSession } from 'next-auth/react';
 import Dashboard from '../../src/components/Dashboard';
 import { ssrClient } from '../../src/lib/client';
 import {

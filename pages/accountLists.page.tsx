@@ -1,7 +1,7 @@
 import React, { ReactElement } from 'react';
 import Head from 'next/head';
 import { GetServerSideProps, GetServerSidePropsResult } from 'next';
-import { getSession } from 'next-auth/client';
+import { getSession } from 'next-auth/react';
 import { useTranslation } from 'react-i18next';
 import AccountLists from '../src/components/AccountLists';
 import { ssrClient } from '../src/lib/client';
