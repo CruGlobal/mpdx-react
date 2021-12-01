@@ -5,16 +5,17 @@ import { HTML5Backend } from 'react-dnd-html5-backend';
 import { ThemeProvider } from '@material-ui/styles';
 import { SnackbarProvider } from 'notistack';
 import { ItemContent } from 'react-virtuoso';
-import { ContactsQuery } from '../../../../pages/accountLists/[accountListId]/contacts/Contacts.generated';
-import TestRouter from '../../../../__tests__/util/TestRouter';
-import theme from '../../../../src/theme';
-import { ContactFilterStatusEnum } from '../../../../graphql/types.generated';
-import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
+import { ContactsQuery } from '../../../../../pages/accountLists/[accountListId]/contacts/Contacts.generated';
+import TestRouter from '../../../../../__tests__/util/TestRouter';
+import theme from '../../../../../src/theme';
+import { ContactFilterStatusEnum } from '../../../../../graphql/types.generated';
+import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
 import { ContactFlowColumn } from './ContactFlowColumn';
 
 const accountListId = 'abc';
 const title = 'Test Column';
 const onContactSelected = jest.fn();
+const changeContactStatus = jest.fn();
 const contact = { id: '123', name: 'Test Person', status: 'PARTNER_FINANCIAL' };
 const router = {
   query: { accountListId },
@@ -56,9 +57,11 @@ describe('ContactFlowColumn', () => {
               >
                 <ContactFlowColumn
                   accountListId={accountListId}
+                  selectedFilters={{}}
                   color={theme.palette.mpdxBlue.main}
                   title={title}
                   onContactSelected={onContactSelected}
+                  changeContactStatus={changeContactStatus}
                   statuses={[ContactFilterStatusEnum.PartnerFinancial]}
                 />
               </GqlMockedProvider>
