@@ -59,6 +59,6 @@ describe('ContactFlowRow', () => {
     );
     userEvent.click(getByText('Test Name'));
     expect(getByText('Test Name')).toBeInTheDocument();
-    expect(onContactSelected).toHaveBeenCalledWith('123');
+    expect(onContactSelected).toHaveBeenCalledWith('123', true, true);
   });
 });
