@@ -1,5 +1,5 @@
 import React, { ReactElement } from 'react';
-import { getSession } from 'next-auth/client';
+import { getSession } from 'next-auth/react';
 import { GetServerSideProps } from 'next';
 import BaseLayout from '../src/components/Layouts/Basic';
 

@@ -15,7 +15,7 @@ import {
 
 import CloseIcon from '@material-ui/icons/Close';
 import { useTranslation } from 'react-i18next';
-import { useSession } from 'next-auth/client';
+import { useSession } from 'next-auth/react';
 import {
   ExportFormatEnum,
   ExportLabelTypeEnum,
@@ -62,7 +62,7 @@ const ExportPhysical: React.FC<Props> = ({
   accountListId,
 }: Props) => {
   const { t } = useTranslation();
-  const [session] = useSession();
+  const { data: session } = useSession();
   const [isExportingPdf, changeIsExportingPdf] = useState(false);
   const [labelType, changeLabelType] = useState(ExportLabelTypeEnum.Avery5160);
   const [sort, changeSort] = useState(ExportSortEnum.Name);

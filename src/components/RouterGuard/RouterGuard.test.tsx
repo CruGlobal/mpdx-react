@@ -1,12 +1,12 @@
 import { ThemeProvider } from '@material-ui/styles';
 import { render, waitFor } from '@testing-library/react';
-import client from 'next-auth/client';
+import client from 'next-auth/react';
 import { SnackbarProvider } from 'notistack';
 import * as nextRouter from 'next/router';
 import theme from '../../theme';
 import { RouterGuard } from './RouterGuard';
 
-jest.mock('next-auth/client');
+jest.mock('next-auth/react');
 
 const session = {
   expires: '2021-10-28T14:48:20.897Z',

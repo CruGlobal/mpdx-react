@@ -8,7 +8,7 @@ import {
 } from './UserKeySignIn.generated';
 
 export interface Profile {
-  id?: string;
+  id: string;
   name?: string;
   token: string;
 }
@@ -39,10 +39,10 @@ const profile = async (
     },
   });
   const payload = response.data?.userKeySignIn;
-  if (payload?.token) {
+  if (payload?.token && payload.user?.id) {
     res.status(200).json({
-      id: payload.user?.id,
-      name: payload.user?.name ?? undefined,
+      id: payload.user.id,
+      name: payload.user.name ?? undefined,
       token: payload.token,
     });
   } else {
