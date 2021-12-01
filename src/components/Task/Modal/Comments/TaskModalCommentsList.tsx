@@ -40,9 +40,12 @@ const CommentListContainer = styled(Box)(() => ({
   width: '20vw',
   height: '60vh',
   overflowY: 'auto',
+  [theme.breakpoints.down('md')]: {
+    width: '30vw',
+  },
   [theme.breakpoints.down('sm')]: {
     width: '90vw',
-    height: '90vh',
+    height: '80vh',
   },
 }));
 
