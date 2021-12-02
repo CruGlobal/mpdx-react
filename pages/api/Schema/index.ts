@@ -17,6 +17,8 @@ import FinancialAccountsTypeDefs from './reports/financialAccounts/financialAcco
 import { FinancialAccountsResolvers } from './reports/financialAccounts/resolvers';
 import EntryHistoriesTypeDefs from './reports/entryHistories/entryHistories.graphql';
 import { EntryHistoriesResolvers } from './reports/entryHistories/resolvers';
+import DeleteCommentTypeDefs from './Tasks/Comments/DeleteComments/deleteComment.graphql';
+import { DeleteCommentResolvers } from './Tasks/Comments/DeleteComments/resolvers';
 
 const schema = buildFederatedSchema([
   {
@@ -45,6 +47,10 @@ const schema = buildFederatedSchema([
   {
     typeDefs: EntryHistoriesTypeDefs,
     resolvers: EntryHistoriesResolvers,
+  },
+  {
+    typeDefs: DeleteCommentTypeDefs,
+    resolvers: DeleteCommentResolvers,
   },
 ]);
 
