@@ -27,7 +27,10 @@ const schema = buildFederatedSchema([
   },
   { typeDefs: ScalarTypeDefs, resolvers: ScalarResolvers },
   { typeDefs: TaskAnalyticsTypeDefs, resolvers: TaskAnalyticsResolvers },
-  { typeDefs: AccountListAnalyticsTypeDefs, resolvers: AccountListAnalyticsResolvers },
+  {
+    typeDefs: AccountListAnalyticsTypeDefs,
+    resolvers: AccountListAnalyticsResolvers,
+  },
   { typeDefs: ExportContactsTypeDefs, resolvers: ExportContactsResolvers },
   {
     typeDefs: FourteenMonthReportTypeDefs,
