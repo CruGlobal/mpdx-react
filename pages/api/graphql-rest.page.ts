@@ -105,9 +105,9 @@ class MpdxRestApi extends RESTDataSource {
     return `${process.env.REST_API_URL}contacts/exports${pathAddition}/${data.id}.${format}`;
   }
 
-  async getAccountListAnalytics(accountListId: string) {
+  async getAccountListAnalytics(accountListId: string, dateRange: string) {
     const { data } = await this.get(
-      `account_lists/${accountListId}/analytics`
+      dateRange ? `account_lists/${accountListId}/analytics?filter[date_range]=${dateRange}` : `account_lists/${accountListId}/analytics`
     );
 
     return getAccountListAnalytics(data);

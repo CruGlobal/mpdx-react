@@ -1,5 +1,5 @@
 extend type Query {
-    accountListAnalytics(accountListId: ID!): AccountListAnalytics!
+    accountListAnalytics(accountListId: ID!, dateRange: String): AccountListAnalytics!
 }
 type AccountListAnalytics {
     id: ID!
@@ -65,5 +65,3 @@ type TextMessageAccountListAnalytics {
     received: Int!
     sent: Int!
 }
-
-
