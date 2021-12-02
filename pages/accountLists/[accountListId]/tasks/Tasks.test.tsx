@@ -44,6 +44,19 @@ jest.mock('../../../../src/hooks/useMassSelection');
   toggleSelectionById: jest.fn(),
 });
 
+const mockEnqueue = jest.fn();
+
+jest.mock('notistack', () => ({
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  ...jest.requireActual('notistack'),
+  useSnackbar: () => {
+    return {
+      enqueueSnackbar: mockEnqueue,
+    };
+  },
+}));
+
 jest.mock('react-virtuoso', () => ({
   // eslint-disable-next-line react/display-name
   Virtuoso: ({

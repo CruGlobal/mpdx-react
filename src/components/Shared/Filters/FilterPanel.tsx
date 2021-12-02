@@ -29,6 +29,7 @@ import {
 } from './FilterPanel.generated';
 import { FilterListItemShowAll } from './FilterListItemShowAll';
 import { FilterListItem } from './FilterListItem';
+import { SaveFilterModal } from './SaveFilterModal/SaveFilterModal';
 
 type ContactFilterKey = keyof ContactFilterSetInput;
 type ContactFilterValue = ContactFilterSetInput[ContactFilterKey];
@@ -92,6 +93,7 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
 
   const [selectedGroup, setSelectedGroup] = useState<FilterGroup>();
   const [savedFilterOpen, setSavedFilterOpen] = useState(false);
+  const [saveFilterModalOpen, setSaveFilterModalOpen] = useState(false);
   const [showAll, setShowAll] = useState(false);
   const updateSelectedFilter = (name: FilterKey, value?: FilterValue) => {
     if (value) {
@@ -417,8 +419,9 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
                 color="primary"
                 style={{ marginInlineStart: theme.spacing(-1) }}
                 disabled={Object.keys(selectedFilters).length === 0}
+                onClick={() => setSaveFilterModalOpen(true)}
               >
-                {t('Save (TODO)')}
+                {t('Save')}
               </LinkButton>
               <LinkButton
                 color="primary"
@@ -563,6 +566,11 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
           </div>
         </Slide>
       </div>
+      <SaveFilterModal
+        isOpen={saveFilterModalOpen}
+        handleClose={() => setSaveFilterModalOpen(false)}
+        currentFilters={selectedFilters}
+      />
     </Box>
   );
 };
