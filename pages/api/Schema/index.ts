@@ -17,6 +17,8 @@ import FinancialAccountsTypeDefs from './reports/financialAccounts/financialAcco
 import { FinancialAccountsResolvers } from './reports/financialAccounts/resolvers';
 import EntryHistoriesTypeDefs from './reports/entryHistories/entryHistories.graphql';
 import { EntryHistoriesResolvers } from './reports/entryHistories/resolvers';
+import { AccountListAnalyticsResolvers } from './AccountListAnalytics/resolvers';
+import AccountListAnalyticsTypeDefs from './AccountListAnalytics/accountListAnalytics.graphql';
 
 const schema = buildFederatedSchema([
   {
@@ -25,6 +27,7 @@ const schema = buildFederatedSchema([
   },
   { typeDefs: ScalarTypeDefs, resolvers: ScalarResolvers },
   { typeDefs: TaskAnalyticsTypeDefs, resolvers: TaskAnalyticsResolvers },
+  { typeDefs: AccountListAnalyticsTypeDefs, resolvers: AccountListAnalyticsResolvers },
   { typeDefs: ExportContactsTypeDefs, resolvers: ExportContactsResolvers },
   {
     typeDefs: FourteenMonthReportTypeDefs,

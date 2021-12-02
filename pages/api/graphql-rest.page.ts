@@ -40,6 +40,7 @@ import {
   createEntryHistoriesGroup,
   EntryHistoriesResponse,
 } from './Schema/reports/entryHistories/datahandler';
+import { getAccountListAnalytics } from './Schema/AccountListAnalytics/dataHandler';
 
 class MpdxRestApi extends RESTDataSource {
   constructor() {
@@ -104,6 +105,14 @@ class MpdxRestApi extends RESTDataSource {
     return `${process.env.REST_API_URL}contacts/exports${pathAddition}/${data.id}.${format}`;
   }
 
+  async getAccountListAnalytics(accountListId: string) {
+    const { data } = await this.get(
+      `account_lists/${accountListId}/analytics`
+    );
+
+    return getAccountListAnalytics(data);
+  }
+
   async getTaskAnalytics(accountListId: string) {
     const { data } = await this.get(
       `tasks/analytics?filter[account_list_id]=${accountListId}`,
@@ -123,8 +132,7 @@ class MpdxRestApi extends RESTDataSource {
       data: CoachingAnswerSetData;
       included: CoachingAnswerSetIncluded;
     } = await this.get(
-      `coaching/answer_sets?filter[account_list_id]=${accountListId}&filter[completed]=${
-        completed || false
+      `coaching/answer_sets?filter[account_list_id]=${accountListId}&filter[completed]=${completed || false
       }&include=answers,questions&sort=-completed_at`,
     );
 
@@ -136,10 +144,9 @@ class MpdxRestApi extends RESTDataSource {
     currencyType: FourteenMonthReportCurrencyType,
   ) {
     const { data }: { data: FourteenMonthReportResponse } = await this.get(
-      `reports/${
-        currencyType === 'salary'
-          ? 'salary_currency_donations'
-          : 'donor_currency_donations'
+      `reports/${currencyType === 'salary'
+        ? 'salary_currency_donations'
+        : 'donor_currency_donations'
       }?filter[account_list_id]=${accountListId}&filter[month_range]=${Interval.before(
         DateTime.now().endOf('month'),
         Duration.fromObject({ months: 14 }).minus({ day: 1 }),
