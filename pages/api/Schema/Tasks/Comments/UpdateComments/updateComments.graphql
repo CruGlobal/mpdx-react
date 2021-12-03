@@ -1,0 +1,15 @@
+extend type Mutation {
+  updateComment(
+    input: CommentUpdateMutationInput!
+  ): CommentUpdateMutationPayload!
+}
+
+input CommentUpdateMutationInput {
+  taskId: ID!
+  commentId: ID!
+  body: String!
+}
+
+type CommentUpdateMutationPayload {
+  id: ID!
+}
