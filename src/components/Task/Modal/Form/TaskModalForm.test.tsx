@@ -76,9 +76,7 @@ describe('TaskModalForm', () => {
     expect(await findByText('Field is required')).toBeInTheDocument();
     expect(await queryByText('Remove')).not.toBeInTheDocument();
     userEvent.type(getByLabelText('Subject'), accountListId);
-    userEvent.click(getByLabelText('Notification'));
     userEvent.type(getByLabelText('Period'), '20');
-    userEvent.click(getByLabelText('Notification'));
     await waitFor(() => expect(getByText('Save')).not.toBeDisabled());
     userEvent.click(getByText('Save'));
     await waitFor(() => expect(onClose).toHaveBeenCalled());
@@ -127,7 +125,6 @@ describe('TaskModalForm', () => {
     const tagsElement = getByLabelText('Tags');
     userEvent.click(tagsElement);
 
-    userEvent.click(getByLabelText('Notification'));
     userEvent.type(getByLabelText('Period'), '20');
     userEvent.click(getByLabelText('Unit'));
     userEvent.click(
