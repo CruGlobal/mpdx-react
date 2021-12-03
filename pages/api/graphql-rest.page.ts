@@ -41,6 +41,10 @@ import {
   EntryHistoriesResponse,
 } from './Schema/reports/entryHistories/datahandler';
 import {
+  DeleteCommentResponse,
+  DeleteComment,
+} from './Schema/Tasks/Comments/DeleteComments/datahandler';
+import {
   UpdateCommentResponse,
   UpdateComment,
 } from './Schema/Tasks/Comments/UpdateComments/datahandler';
@@ -208,6 +212,13 @@ class MpdxRestApi extends RESTDataSource {
       },
     );
     return setActiveFinancialAccount(data);
+  }
+
+  async deleteComment(taskId: string, commentId: string) {
+    const { data }: { data: DeleteCommentResponse } = await this.delete(
+      `tasks/${taskId}/comments/${commentId}`,
+    );
+    return DeleteComment({ ...data, id: commentId });
   }
 
   async getEntryHistories(
