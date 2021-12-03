@@ -592,6 +592,7 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
         isOpen={saveFilterModalOpen}
         handleClose={() => setSaveFilterModalOpen(false)}
         currentFilters={selectedFilters}
+        currentSavedFilters={savedFilters}
       />
     </Box>
   );

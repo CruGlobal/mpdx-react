@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Field, FieldProps, Form, Formik } from 'formik';
 import { useSnackbar } from 'notistack';
 import {
@@ -10,6 +10,7 @@ import {
   FormHelperText,
   styled,
   TextField,
+  Typography,
 } from '@material-ui/core';
 import * as yup from 'yup';
 import { useTranslation } from 'react-i18next';
@@ -21,6 +22,7 @@ import {
 } from '../../../../../graphql/types.generated';
 import Modal from '../../../common/Modal/Modal';
 import { useAccountListId } from '../../../../hooks/useAccountListId';
+import { UserOptionFragment } from '../FilterPanel.generated';
 import { useSaveFilterMutation } from './SaveFilterModal.generated';
 
 const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
@@ -31,6 +33,7 @@ interface SaveFilterModalProps {
   isOpen: boolean;
   handleClose: () => void;
   currentFilters: ContactFilterSetInput & TaskFilterSetInput;
+  currentSavedFilters: UserOptionFragment[];
 }
 
 const savedFilterSchema: yup.SchemaOf<
@@ -47,28 +50,93 @@ export const SaveFilterModal: React.FC<SaveFilterModalProps> = ({
   isOpen,
   handleClose,
   currentFilters,
+  currentSavedFilters,
 }) => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
   const { enqueueSnackbar } = useSnackbar();
+  const [confirmModalStatus, setConfirmModalStatus] = useState({
+    isOpen: false,
+    key: '',
+    value: '',
+  });
   const { route } = useRouter();
   const filterPrefix = route.includes('contacts')
     ? 'graphql_saved_contacts_filter_'
     : 'graphql_saved_tasks_filter_';
+  const currentSavedFiltersNames = currentSavedFilters.map(({ key }) =>
+    key?.replace(
+      /(?:^|\W)graphql_|saved_|contacts_|tasks_|filter_|(?:$|\W)/gm,
+      '',
+    ),
+  );
+
   const [saveFilter, { loading: saving }] = useSaveFilterMutation();
-  const onSubmit = async (attributes: CreateOrUpdateOptionMutationInput) => {
-    const key = `${filterPrefix}${attributes.key.replaceAll(' ', '_')}`;
+
+  const handleSaveFilter = async (key: string, value: string) => {
     await saveFilter({
       variables: {
         input: {
           key,
-          value: attributes.value,
+          value,
         },
       },
     });
 
     enqueueSnackbar(t('Filter saved successfully'), { variant: 'success' });
     handleClose();
+  };
+  const renderConfirmModal = () => {
+    const handleNoChoice = () => {
+      setConfirmModalStatus({ isOpen: false, key: '', value: '' });
+    };
+
+    const handleYesChoice = () => {
+      handleSaveFilter(confirmModalStatus.key, confirmModalStatus.value);
+      setConfirmModalStatus({ isOpen: false, key: '', value: '' });
+    };
+
+    return (
+      <Modal
+        isOpen={confirmModalStatus.isOpen}
+        title={t('Confirm')}
+        handleClose={() =>
+          setConfirmModalStatus({ isOpen: false, key: '', value: '' })
+        }
+      >
+        <DialogContent>
+          <Typography>
+            {t(
+              'A filter with that name already exists. Do you wish to replace it?',
+            )}
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleNoChoice} variant="text">
+            {t('No')}
+          </Button>
+          <Button
+            color="primary"
+            type="button"
+            variant="contained"
+            onClick={handleYesChoice}
+          >
+            {saving && <LoadingIndicator color="primary" size={20} />}
+            {t('Yes')}
+          </Button>
+        </DialogActions>
+      </Modal>
+    );
+  };
+
+  const onSubmit = async (attributes: CreateOrUpdateOptionMutationInput) => {
+    const formatedFilterName = attributes.key.replaceAll(' ', '_');
+    const key = `${filterPrefix}${formatedFilterName}`;
+    if (currentSavedFiltersNames.includes(formatedFilterName)) {
+      setConfirmModalStatus({ isOpen: true, key, value: attributes.value });
+      return;
+    }
+    handleSaveFilter(key, attributes.value);
   };
 
   return (
@@ -112,7 +180,7 @@ export const SaveFilterModal: React.FC<SaveFilterModalProps> = ({
               <Button
                 color="primary"
                 type="submit"
-                variant="text"
+                variant="contained"
                 disabled={!isValid || isSubmitting}
               >
                 {saving && <LoadingIndicator color="primary" size={20} />}
@@ -122,6 +190,7 @@ export const SaveFilterModal: React.FC<SaveFilterModalProps> = ({
           </Form>
         )}
       </Formik>
+      {renderConfirmModal()}
     </Modal>
   );
 };
