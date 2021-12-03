@@ -8,7 +8,6 @@ import {
   DialogContent,
   FormControl,
   FormHelperText,
-  styled,
   TextField,
   Typography,
 } from '@material-ui/core';
@@ -25,10 +24,6 @@ import { useAccountListId } from '../../../../hooks/useAccountListId';
 import { UserOptionFragment } from '../FilterPanel.generated';
 import { useSaveFilterMutation } from './SaveFilterModal.generated';
 
-const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
-  margin: theme.spacing(0, 1, 0, 0),
-}));
-
 interface SaveFilterModalProps {
   isOpen: boolean;
   handleClose: () => void;
@@ -36,22 +31,13 @@ interface SaveFilterModalProps {
   currentSavedFilters: UserOptionFragment[];
 }
 
-const savedFilterSchema: yup.SchemaOf<
-  Omit<CreateOrUpdateOptionMutationInput, 'clientMutationId'>
-> = yup.object({
-  key: yup
-    .string()
-    .matches(/^[a-zA-Z0-9 ]*$/, 'Invalid character in filter name')
-    .required('Please enter a valid filter name'),
-  value: yup.string().required(),
-});
-
 export const SaveFilterModal: React.FC<SaveFilterModalProps> = ({
   isOpen,
   handleClose,
   currentFilters,
   currentSavedFilters,
 }) => {
+  //#region Hooks
   const { t } = useTranslation();
   const accountListId = useAccountListId();
   const { enqueueSnackbar } = useSnackbar();
@@ -61,6 +47,19 @@ export const SaveFilterModal: React.FC<SaveFilterModalProps> = ({
     value: '',
   });
   const { route } = useRouter();
+  //#endregion
+
+  //#region Saving Filter Logic
+  const savedFilterSchema: yup.SchemaOf<
+    Omit<CreateOrUpdateOptionMutationInput, 'clientMutationId'>
+  > = yup.object({
+    key: yup
+      .string()
+      .matches(/^[a-zA-Z0-9 ]*$/, 'Invalid character in filter name')
+      .required('Please enter a valid filter name'),
+    value: yup.string().required(),
+  });
+
   const filterPrefix = route.includes('contacts')
     ? 'graphql_saved_contacts_filter_'
     : 'graphql_saved_tasks_filter_';
@@ -121,8 +120,11 @@ export const SaveFilterModal: React.FC<SaveFilterModalProps> = ({
             variant="contained"
             onClick={handleYesChoice}
           >
-            {saving && <LoadingIndicator color="primary" size={20} />}
-            {t('Yes')}
+            {saving ? (
+              <CircularProgress color="secondary" size={20} />
+            ) : (
+              t('Yes')
+            )}
           </Button>
         </DialogActions>
       </Modal>
@@ -138,7 +140,9 @@ export const SaveFilterModal: React.FC<SaveFilterModalProps> = ({
     }
     handleSaveFilter(key, attributes.value);
   };
+  //#endregion
 
+  //#region JSX
   return (
     <Modal isOpen={isOpen} title={t('Save Filter')} handleClose={handleClose}>
       <Formik
@@ -183,8 +187,11 @@ export const SaveFilterModal: React.FC<SaveFilterModalProps> = ({
                 variant="contained"
                 disabled={!isValid || isSubmitting}
               >
-                {saving && <LoadingIndicator color="primary" size={20} />}
-                {t('Save')}
+                {saving ? (
+                  <CircularProgress color="secondary" size={20} />
+                ) : (
+                  t('Save')
+                )}
               </Button>
             </DialogActions>
           </Form>
@@ -193,4 +200,5 @@ export const SaveFilterModal: React.FC<SaveFilterModalProps> = ({
       {renderConfirmModal()}
     </Modal>
   );
+  //#endregion
 };

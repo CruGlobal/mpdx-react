@@ -15,6 +15,7 @@ import {
 import { SaveFilterModal } from './SaveFilterModal';
 import { SaveFilterMutation } from './SaveFilterModal.generated';
 
+//#region Mocks
 const mockEnqueue = jest.fn();
 
 jest.mock('notistack', () => ({
@@ -77,8 +78,10 @@ const savedFiltersMock = gqlMock<UserOptionFragment>(UserOptionFragmentDoc, {
       '{"any_tags":false,"account_list_id":"08bb09d1-3b62-4690-9596-b625b8af4750","params":{"status":"active,hidden,null,Never Contacted,Ask in Future,Cultivate Relationship,Contact for Appointment,Appointment Scheduled,Call for Decision,Partner - Financial,Partner - Special,Partner - Pray,Not Interested,Unresponsive,Never Ask,Research Abandoned,Expired Referral","pledge_received":"true","pledge_amount":"35.0,40.0","pledge_currency":"USD","pledge_frequency":"0.46153846153846,1.0","pledge_late_by":"30_60","newsletter":"no_value","referrer":"d5b1dab5-e3ae-417d-8f49-2abdd915515b","city":"Evansville","state":"FL","country":"United States","metro_area":"Cool","region":"Orange County","contact_info_email":"Yes","contact_info_phone":"No","contact_info_mobile":"No","contact_info_work_phone":"No","contact_info_addr":"Yes","contact_info_facebook":"No","opt_out":"No","church":"Cool Church II","appeal":"851769ba-b55d-45f3-b784-c4eca7ae99fd,77491693-df83-46ec-b40b-39d07333f47e","timezone":"America/Vancouver","locale":"English","donation":"first","donation_date":"2021-12-23..2021-12-23","next_ask":"2021-11-30..2021-12-22","user_ids":"787f286e-fe38-4055-b9fc-0177a0f55947","reverse_appeal":true, "contact_types": "person"},"tags":null,"exclude_tags":null,"wildcard_search":""}',
   },
 });
+//#endregion
 
 describe('SaveFilterModal', () => {
+  //#region SaveFilterModal | Contacts
   describe('Contacts', () => {
     beforeEach(() => {
       (useRouter as jest.Mock).mockReturnValue({
@@ -203,7 +206,9 @@ describe('SaveFilterModal', () => {
       expect(handleClose).toHaveBeenCalled();
     });
   });
+  //#endregion
 
+  //#region SaveFilterModal | Tasks
   describe('Tasks', () => {
     beforeEach(() => {
       (useRouter as jest.Mock).mockReturnValue({
@@ -292,4 +297,5 @@ describe('SaveFilterModal', () => {
       expect(handleClose).toHaveBeenCalled();
     });
   });
+  //#endregion
 });
