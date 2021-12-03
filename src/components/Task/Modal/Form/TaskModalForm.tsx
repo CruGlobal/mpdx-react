@@ -6,8 +6,6 @@ import {
   MenuItem,
   InputLabel,
   FormControl,
-  FormControlLabel,
-  Switch,
   Chip,
   Grid,
   Box,
@@ -27,7 +25,6 @@ import { Autocomplete } from '@material-ui/lab';
 
 import { DatePicker, TimePicker } from '@material-ui/pickers';
 import DeleteIcon from '@material-ui/icons/Delete';
-import { motion, AnimatePresence } from 'framer-motion';
 import { Formik } from 'formik';
 import * as yup from 'yup';
 import { useSnackbar } from 'notistack';
@@ -133,23 +130,7 @@ const TaskModalForm = ({
 
   const [removeDialogOpen, handleRemoveDialog] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
-  const [notification, setNotification] = useState(
-    initialTask.notificationTimeBefore !== null ||
-      initialTask.notificationType !== null ||
-      initialTask.notificationTimeUnit !== null,
-  );
-  const handleNotificationChange = (
-    event: React.ChangeEvent<HTMLInputElement>,
-    setFieldValue: (name: string, value: null) => void,
-  ): void => {
-    setNotification(event.target.checked);
 
-    if (!event.target.checked) {
-      setFieldValue('notificationTimeBefore', null);
-      setFieldValue('notificationType', null);
-      setFieldValue('notificationTimeUnit', null);
-    }
-  };
   const { data, loading } = useGetDataForTaskDrawerQuery({
     variables: { accountListId },
   });
