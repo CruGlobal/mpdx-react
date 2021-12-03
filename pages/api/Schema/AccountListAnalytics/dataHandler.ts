@@ -1,4 +1,4 @@
-import { AccountListAnalytics } from 'graphql/types.generated';
+import { AccountListAnalytics } from '../../../../graphql/types.generated';
 
 const getAccountListAnalytics = (data: {
   id: string;
