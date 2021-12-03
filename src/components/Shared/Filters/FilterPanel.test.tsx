@@ -58,6 +58,30 @@ const savedFiltersMock = gqlMock<UserOptionFragment>(UserOptionFragmentDoc, {
   },
 });
 
+const savedGraphQLContactMock = gqlMock<UserOptionFragment>(
+  UserOptionFragmentDoc,
+  {
+    mocks: {
+      id: '7215b6a3-9085-4eb5-810d-01cdb6ccd997',
+      key: 'graphql_saved_contacts_filter_GraphQL_Contact_Filter',
+      value:
+        '{"status":["ASK_IN_FUTURE","CONTACT_FOR_APPOINTMENT"],"accountListId":"08bb09d1-3b62-4690-9596-b625b8af4750"}',
+    },
+  },
+);
+
+const savedGraphQLTaskMock = gqlMock<UserOptionFragment>(
+  UserOptionFragmentDoc,
+  {
+    mocks: {
+      id: '7215b6a3-9085-4eb5-810d-01cdb6ccd997',
+      key: 'graphql_saved_tasks_filter_GraphQL_Task_Filter',
+      value:
+        '{"status":["ASK_IN_FUTURE","CONTACT_FOR_APPOINTMENT"],"accountListId":"08bb09d1-3b62-4690-9596-b625b8af4750"}',
+    },
+  },
+);
+
 const mockEnqueue = jest.fn();
 
 jest.mock('notistack', () => ({
@@ -215,7 +239,7 @@ describe('FilterPanel', () => {
           <GqlMockedProvider<SaveFilterMutation>>
             <FilterPanel
               filters={[filterPanelDefaultMock, filterPanelFeaturedMock]}
-              savedFilters={[savedFiltersMock]}
+              savedFilters={[savedFiltersMock, savedGraphQLContactMock]}
               selectedFilters={{}}
               onClose={onClose}
               onSelectedFiltersChanged={onSelectedFiltersChanged}
@@ -232,6 +256,7 @@ describe('FilterPanel', () => {
       expect(getByTestId('FilterListItemShowAll')).toBeVisible();
       userEvent.click(getByText('Saved Filters'));
       expect(getByText('My Cool Filter')).toBeVisible();
+      expect(getByText('GraphQL Contact Filter')).toBeVisible();
       userEvent.click(getByText('My Cool Filter'));
       expect(onSelectedFiltersChanged).toHaveBeenCalledWith({
         anyTags: false,
@@ -465,6 +490,41 @@ describe('FilterPanel', () => {
       expect(onSelectedFiltersChanged).toHaveBeenCalledWith({
         status: [ContactFilterStatusEnum.ContactForAppointment],
       });
+    });
+
+    it('opens and selects a saved filter', async () => {
+      const {
+        getByTestId,
+        getByText,
+        queryByTestId,
+        queryAllByTestId,
+      } = render(
+        <MuiPickersUtilsProvider utils={LuxonUtils}>
+          <GqlMockedProvider<SaveFilterMutation>>
+            <FilterPanel
+              filters={[filterPanelDefaultMock, filterPanelFeaturedMock]}
+              savedFilters={[savedGraphQLTaskMock]}
+              selectedFilters={{}}
+              onClose={onClose}
+              onSelectedFiltersChanged={onSelectedFiltersChanged}
+            />
+          </GqlMockedProvider>
+        </MuiPickersUtilsProvider>,
+      );
+
+      await waitFor(() => expect(queryByTestId('LoadingState')).toBeNull());
+      expect(queryByTestId('LoadingState')).toBeNull();
+      expect(queryByTestId('ErrorState')).toBeNull();
+
+      expect(queryAllByTestId('FilterGroup').length).toEqual(2);
+      expect(getByTestId('FilterListItemShowAll')).toBeVisible();
+      userEvent.click(getByText('Saved Filters'));
+      expect(getByText('GraphQL Task Filter')).toBeVisible();
+      userEvent.click(getByText('GraphQL Task Filter'));
+      expect(onSelectedFiltersChanged).toHaveBeenCalledWith({
+        status: ['ASK_IN_FUTURE', 'CONTACT_FOR_APPOINTMENT'],
+      });
+      expect(getByText('Filter')).toBeVisible();
     });
 
     it('closes panel', async () => {

@@ -20,6 +20,7 @@ import {
   TaskFilterSetInput,
 } from '../../../../../graphql/types.generated';
 import Modal from '../../../common/Modal/Modal';
+import { useAccountListId } from '../../../../hooks/useAccountListId';
 import { useSaveFilterMutation } from './SaveFilterModal.generated';
 
 const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
@@ -48,6 +49,7 @@ export const SaveFilterModal: React.FC<SaveFilterModalProps> = ({
   currentFilters,
 }) => {
   const { t } = useTranslation();
+  const accountListId = useAccountListId();
   const { enqueueSnackbar } = useSnackbar();
   const { route } = useRouter();
   const filterPrefix = route.includes('contacts')
@@ -72,7 +74,10 @@ export const SaveFilterModal: React.FC<SaveFilterModalProps> = ({
   return (
     <Modal isOpen={isOpen} title={t('Save Filter')} handleClose={handleClose}>
       <Formik
-        initialValues={{ key: '', value: JSON.stringify(currentFilters) }}
+        initialValues={{
+          key: '',
+          value: JSON.stringify({ ...currentFilters, accountListId }),
+        }}
         validationSchema={savedFilterSchema}
         onSubmit={onSubmit}
       >

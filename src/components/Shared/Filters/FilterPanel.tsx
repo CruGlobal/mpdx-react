@@ -150,6 +150,22 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
       // Parse from string to json object
       const parsedFilter = JSON.parse(filter.value);
 
+      if (filter.key?.includes('graphql_')) {
+        // Clear current filters
+        clearSelectedFilter();
+        // Filter out accountListId from filter
+        const newFilter = Object.keys(parsedFilter)
+          .filter((key) => key !== 'accountListId')
+          .reduce((res, key) => {
+            return { ...res, [key]: parsedFilter[key] };
+          }, {});
+        // Set the selected filter with our saved filter data
+        onSelectedFiltersChanged(newFilter);
+
+        // close the saved filter panel
+        setSavedFilterOpen(false);
+        return;
+      }
       // Map through keys to convert key to camel from snake
       const filters = Object.keys(parsedFilter).map(
         (key) =>
@@ -511,9 +527,15 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
             </FilterHeader>
             <FilterList dense>
               {savedFilters.map((filter) => {
-                const filterName = filter.key
-                  ?.replace('saved_contacts_filter_', '')
-                  .replaceAll('_', ' ');
+                const filterName = (filter.key?.includes('graphql_')
+                  ? filter.key.includes('graphql_saved_contacts_filter_')
+                    ? filter.key?.replace('graphql_saved_contacts_filter_', '')
+                    : filter.key?.replace('graphql_saved_tasks_filter_', '')
+                  : filter.key?.includes('saved_contacts_filter_')
+                  ? filter.key?.replace('saved_contacts_filter_', '')
+                  : filter.key?.replace('saved_tasks_filter_', '')
+                )?.replaceAll('_', ' ');
+
                 return (
                   <ListItem
                     key={filter.id}
