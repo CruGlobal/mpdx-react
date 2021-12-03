@@ -20,6 +20,7 @@ import {
   DialogContentText,
   Dialog,
   InputAdornment,
+  Typography,
 } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { Autocomplete } from '@material-ui/lab';
@@ -501,95 +502,65 @@ const TaskModalForm = ({
                   />
                 </Grid>
                 <Grid item>
-                  <FormControlLabel
-                    control={
-                      <Switch
-                        checked={notification}
-                        onChange={(event): void =>
-                          handleNotificationChange(event, setFieldValue)
-                        }
+                  <Typography>Notifications</Typography>
+                  <Grid container spacing={2}>
+                    <Grid xs={4} item>
+                      <FormControl fullWidth>
+                        <InputLabel id="notificationType">
+                          {t('Type')}
+                        </InputLabel>
+                        <Select
+                          labelId="notificationType"
+                          value={notificationType}
+                          onChange={handleChange('notificationType')}
+                        >
+                          <MenuItem value={undefined}>{t('None')}</MenuItem>
+                          {Object.values(NotificationTypeEnum).map((val) => (
+                            <MenuItem key={val} value={val}>
+                              {t(val) /* manually added to translation file */}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+                    </Grid>
+                    <Grid xs={3} item>
+                      <TextField
+                        label={t('Period')}
+                        fullWidth
+                        value={notificationTimeBefore}
+                        onChange={handleChange('notificationTimeBefore')}
+                        inputProps={{
+                          'aria-label': 'Period',
+                          type: 'number',
+                        }}
                       />
-                    }
-                    label={t('Notification')}
-                  />
-                  <AnimatePresence>
-                    {notification && (
-                      <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: 64, opacity: 1 }}
-                        exit={{ height: 10, opacity: 0 }}
-                      >
-                        <Grid item container spacing={2}>
-                          <Grid xs={4} item>
-                            <FormControl fullWidth>
-                              <InputLabel id="notificationType">
-                                {t('Type')}
-                              </InputLabel>
-                              <Select
-                                labelId="notificationType"
-                                value={notificationType}
-                                onChange={handleChange('notificationType')}
-                              >
-                                <MenuItem value={undefined}>
-                                  {t('None')}
-                                </MenuItem>
-                                {Object.values(NotificationTypeEnum).map(
-                                  (val) => (
-                                    <MenuItem key={val} value={val}>
-                                      {
-                                        t(
-                                          val,
-                                        ) /* manually added to translation file */
-                                      }
-                                    </MenuItem>
-                                  ),
-                                )}
-                              </Select>
-                            </FormControl>
-                          </Grid>
-                          <Grid xs={3} item>
-                            <TextField
-                              label={t('Period')}
-                              fullWidth
-                              value={notificationTimeBefore}
-                              onChange={handleChange('notificationTimeBefore')}
-                              inputProps={{
-                                'aria-label': 'Period',
-                                type: 'number',
-                              }}
-                            />
-                          </Grid>
-                          <Grid xs={5} item>
-                            <FormControl fullWidth>
-                              <InputLabel id="notificationTimeUnit">
-                                {t('Unit')}
-                              </InputLabel>
-                              <Select
-                                labelId="notificationTimeUnit"
-                                value={notificationTimeUnit}
-                                onChange={handleChange('notificationTimeUnit')}
-                              >
-                                <MenuItem value={undefined}>
-                                  {t('None')}
-                                </MenuItem>
-                                {Object.values(NotificationTimeUnitEnum).map(
-                                  (val) => (
-                                    <MenuItem key={val} value={val}>
-                                      {
-                                        t(
-                                          val,
-                                        ) /* manually added to translation file */
-                                      }
-                                    </MenuItem>
-                                  ),
-                                )}
-                              </Select>
-                            </FormControl>
-                          </Grid>
-                        </Grid>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
+                    </Grid>
+                    <Grid xs={5} item>
+                      <FormControl fullWidth>
+                        <InputLabel id="notificationTimeUnit">
+                          {t('Unit')}
+                        </InputLabel>
+                        <Select
+                          labelId="notificationTimeUnit"
+                          value={notificationTimeUnit}
+                          onChange={handleChange('notificationTimeUnit')}
+                        >
+                          <MenuItem value={undefined}>{t('None')}</MenuItem>
+                          {Object.values(NotificationTimeUnitEnum).map(
+                            (val) => (
+                              <MenuItem key={val} value={val}>
+                                {
+                                  t(
+                                    val,
+                                  ) /* manually added to translation file */
+                                }
+                              </MenuItem>
+                            ),
+                          )}
+                        </Select>
+                      </FormControl>
+                    </Grid>
+                  </Grid>
                 </Grid>
                 <Grid item>
                   <TextField
