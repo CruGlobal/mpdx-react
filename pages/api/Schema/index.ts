@@ -19,6 +19,8 @@ import EntryHistoriesTypeDefs from './reports/entryHistories/entryHistories.grap
 import { EntryHistoriesResolvers } from './reports/entryHistories/resolvers';
 import DeleteCommentTypeDefs from './Tasks/Comments/DeleteComments/deleteComment.graphql';
 import { DeleteCommentResolvers } from './Tasks/Comments/DeleteComments/resolvers';
+import UpdateCommentTypeDefs from './Tasks/Comments/UpdateComments/updateComments.graphql';
+import { UpdateCommentResolvers } from './Tasks/Comments/UpdateComments/resolvers';
 
 const schema = buildFederatedSchema([
   {
@@ -51,6 +53,10 @@ const schema = buildFederatedSchema([
   {
     typeDefs: DeleteCommentTypeDefs,
     resolvers: DeleteCommentResolvers,
+  },
+  {
+    typeDefs: UpdateCommentTypeDefs,
+    resolvers: UpdateCommentResolvers,
   },
 ]);
 
