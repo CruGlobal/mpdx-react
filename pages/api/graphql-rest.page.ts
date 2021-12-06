@@ -41,6 +41,7 @@ import {
   EntryHistoriesResponse,
 } from './Schema/reports/entryHistories/datahandler';
 import { getAccountListAnalytics } from './Schema/AccountListAnalytics/dataHandler';
+import { getAppointmentResults } from './Schema/reports/appointmentResults/dataHandler';
 
 class MpdxRestApi extends RESTDataSource {
   constructor() {
@@ -113,6 +114,18 @@ class MpdxRestApi extends RESTDataSource {
     );
 
     return getAccountListAnalytics(data);
+  }
+
+  async getAppointmentResults(
+    accountListId: string,
+    endDate: string,
+    range: string,
+  ) {
+    const { data } = await this.get(
+      `appointment_results?filter[account_list_id]=${accountListId}&filter[end_date]=${endDate}&filter[range]=${range}`,
+    );
+
+    return getAppointmentResults(data);
   }
 
   async getTaskAnalytics(accountListId: string) {

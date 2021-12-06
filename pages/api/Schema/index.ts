@@ -19,6 +19,8 @@ import EntryHistoriesTypeDefs from './reports/entryHistories/entryHistories.grap
 import { EntryHistoriesResolvers } from './reports/entryHistories/resolvers';
 import { AccountListAnalyticsResolvers } from './AccountListAnalytics/resolvers';
 import AccountListAnalyticsTypeDefs from './AccountListAnalytics/accountListAnalytics.graphql';
+import { AppointmentResultsResolvers } from './reports/appointmentResults/resolvers';
+import { AppointmentResultsTypeDefs } from './reports/appointmentResults/appointmentResults.graphql';
 
 const schema = buildFederatedSchema([
   {
@@ -30,6 +32,10 @@ const schema = buildFederatedSchema([
   {
     typeDefs: AccountListAnalyticsTypeDefs,
     resolvers: AccountListAnalyticsResolvers,
+  },
+  {
+    typeDefs: AppointmentResultsTypeDefs,
+    resolvers: AppointmentResultsResolvers,
   },
   { typeDefs: ExportContactsTypeDefs, resolvers: ExportContactsResolvers },
   {
