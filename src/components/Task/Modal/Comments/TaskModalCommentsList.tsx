@@ -117,7 +117,10 @@ const TaskModalCommentsList = ({
                   data-testid={`TaskDrawerCommentListItem-${comment.id}`}
                   key={comment.id}
                 >
-                  <TaskModalCommentsListItem comment={comment} />
+                  <TaskModalCommentsListItem
+                    taskId={taskId}
+                    comment={comment}
+                  />
                 </Box>,
               ];
             }, [])}

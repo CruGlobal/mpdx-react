@@ -16,7 +16,7 @@ import { useUser } from '../../../../User/useUser';
 import { ActionButtonSmall } from '../Item/TaskModalCommentListItem';
 import { useCreateTaskCommentMutation } from './CreateTaskComment.generated';
 
-const commentSchema: yup.SchemaOf<
+export const commentSchema: yup.SchemaOf<
   Omit<TaskCommentCreateInput, 'id'>
 > = yup.object({
   body: yup.string().trim().required(),
