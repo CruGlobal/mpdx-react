@@ -2,12 +2,20 @@ import React, { useEffect, useState } from 'react';
 import Head from 'next/head';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'next/router';
-import { Box, Hidden, styled } from '@material-ui/core';
+import NextLink from 'next/link';
+import { Box, Button, Hidden, styled } from '@material-ui/core';
 import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
 import FormatListBulleted from '@material-ui/icons/FormatListBulleted';
 import ViewColumn from '@material-ui/icons/ViewColumn';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
+import { Settings } from '@material-ui/icons';
+import {
+  GetUserOptionsDocument,
+  GetUserOptionsQuery,
+  useGetUserOptionsQuery,
+} from '../../../../src/components/Contacts/ContactFlow/GetUserOptions.generated';
+import { useUpdateUserOptionsMutation } from '../../../../src/components/Contacts/ContactFlow/ContactFlowSetup/UpdateUserOptions.generated';
 import NullState from '../../../../src/components/Shared/Filters/NullState/NullState';
 import { ContactFlowDragLayer } from '../../../../src/components/Contacts/ContactFlow/ContactFlowDragLayer/ContactFlowDragLayer';
 import { ContactFlow } from '../../../../src/components/Contacts/ContactFlow/ContactFlow';
@@ -18,12 +26,10 @@ import { SidePanelsLayout } from '../../../../src/components/Layouts/SidePanelsL
 import { useAccountListId } from '../../../../src/hooks/useAccountListId';
 import { ContactFilterSetInput } from '../../../../graphql/types.generated';
 import { ContactRow } from '../../../../src/components/Contacts/ContactRow/ContactRow';
-import {
-  ListHeader,
-  TableViewModeEnum,
-} from '../../../../src/components/Shared/Header/ListHeader';
+import { ListHeader } from '../../../../src/components/Shared/Header/ListHeader';
 import { FilterPanel } from '../../../../src/components/Shared/Filters/FilterPanel';
 import { useMassSelection } from '../../../../src/hooks/useMassSelection';
+import { UserOptionFragment } from '../../../../src/components/Shared/Filters/FilterPanel.generated';
 import { useContactFiltersQuery, useContactsQuery } from './Contacts.generated';
 
 const WhiteBackground = styled(Box)(({ theme }) => ({
@@ -35,6 +41,13 @@ const BulletedListIcon = styled(FormatListBulleted)(({ theme }) => ({
 }));
 const ViewColumnIcon = styled(ViewColumn)(({ theme }) => ({
   color: theme.palette.primary.dark,
+}));
+
+const ViewSettingsButton = styled(Button)(({ theme }) => ({
+  textTransform: 'none',
+  height: theme.spacing(6),
+  marginLeft: theme.spacing(1),
+  marginRight: theme.spacing(2),
 }));
 
 const ContactsPage: React.FC = () => {
@@ -57,8 +70,10 @@ const ContactsPage: React.FC = () => {
 
   useEffect(() => {
     if (isReady && contactId) {
-      setContactDetailsId(contactId[0]);
-      setContactDetailsOpen(true);
+      if (contactId[contactId.length - 1] !== 'flows') {
+        setContactDetailsId(contactId[contactId.length - 1]);
+        setContactDetailsOpen(true);
+      }
     }
   }, [isReady, contactId]);
 
@@ -92,6 +107,12 @@ const ContactsPage: React.FC = () => {
     Object.keys(activeFilters).length > 0 ||
     Object.values(activeFilters).some((filter) => filter !== []);
 
+  const savedFilters: UserOptionFragment[] =
+    filterData?.userOptions.filter(
+      (option) =>
+        option.key?.includes('saved_contacts_filter_') &&
+        JSON.parse(option.value ?? '').account_list_id === accountListId,
+    ) ?? [];
   //#endregion
 
   //#region Mass Actions
@@ -104,7 +125,7 @@ const ContactsPage: React.FC = () => {
   //#endregion
 
   //#region User Actions
-  const setContactFocus = (id?: string) => {
+  const setContactFocus = (id?: string, openDetails = true, flows = false) => {
     const {
       accountListId: _accountListId,
       contactId: _contactId,
@@ -113,16 +134,22 @@ const ContactsPage: React.FC = () => {
     push(
       id
         ? {
-            pathname: `/accountLists/${accountListId}/contacts/${id}`,
+            pathname: `/accountLists/${accountListId}/contacts${
+              flows ? '/flows' : ''
+            }/${id}`,
             query: filteredQuery,
           }
         : {
-            pathname: `/accountLists/${accountListId}/contacts/`,
+            pathname: `/accountLists/${accountListId}/contacts/${
+              flows ? 'flows/' : ''
+            }`,
             query: filteredQuery,
           },
     );
-    id && setContactDetailsId(id);
-    setContactDetailsOpen(!!id);
+    if (openDetails) {
+      id && setContactDetailsId(id);
+      setContactDetailsOpen(!!id);
+    }
   };
   const setSearchTerm = (searchTerm: string) => {
     const { searchTerm: _, ...oldQuery } = query;
@@ -135,25 +162,79 @@ const ContactsPage: React.FC = () => {
     });
   };
 
-  const [tableDisplayState, setTableDisplayState] = useState<TableViewModeEnum>(
-    TableViewModeEnum.List,
-  );
+  const [flowsViewEnabled, setflowsViewEnabled] = useState<boolean>(false);
 
   const handleViewModeChange = (
     event: React.MouseEvent<HTMLElement>,
-    viewMode: TableViewModeEnum | null,
+    flowsView: boolean,
   ) => {
-    if (viewMode) {
-      setTableDisplayState(viewMode);
-    }
+    updateOptions(flowsView ? 'flows' : 'list');
   };
   //#endregion
 
   //#region JSX
+
+  //User options for display view
+  const { data: userOptions } = useGetUserOptionsQuery({
+    onCompleted: () => {
+      const view = userOptions?.userOptions.find(
+        (option) => option.key === 'contacts_view',
+      )?.value;
+      setflowsViewEnabled(view === 'flows');
+      if (view === 'flows') {
+        if (!contactId?.includes('flows')) {
+          setContactFocus(undefined, false, true);
+        }
+      } else {
+        if (contactId?.includes('flows')) {
+          setContactFocus(undefined, false);
+        }
+      }
+    },
+  });
+
+  const [updateUserOptions] = useUpdateUserOptionsMutation();
+
+  const updateOptions = async (view: string): Promise<void> => {
+    await updateUserOptions({
+      variables: {
+        key: 'contacts_view',
+        value: view,
+      },
+      update: (cache, { data: updatedUserOption }) => {
+        const query = {
+          query: GetUserOptionsDocument,
+        };
+        const dataFromCache = cache.readQuery<GetUserOptionsQuery>(query);
+
+        if (dataFromCache) {
+          const filteredOld = dataFromCache.userOptions.filter(
+            (option) => option.key !== 'contacts_view',
+          );
+          const userOptions = [
+            ...filteredOld,
+            {
+              __typename: 'Option',
+              id: updatedUserOption?.createOrUpdateUserOption?.option.id,
+              key: 'contacts_view',
+              value: view,
+            },
+          ];
+          const data = {
+            userOptions,
+          };
+          cache.writeQuery({ ...query, data });
+        }
+      },
+    });
+  };
+
   return (
     <>
       <Head>
-        <title>MPDX | {t('Contacts')}</title>
+        <title>
+          MPDX | {flowsViewEnabled ? t('Contact Flows') : t('Contacts')}
+        </title>
       </Head>
       {accountListId ? (
         <DndProvider backend={HTML5Backend}>
@@ -164,6 +245,7 @@ const ContactsPage: React.FC = () => {
                 filterData && !filtersLoading ? (
                   <FilterPanel
                     filters={filterData?.accountList.contactFilterGroups}
+                    savedFilters={savedFilters}
                     selectedFilters={activeFilters}
                     onClose={toggleFilterPanel}
                     onSelectedFiltersChanged={setActiveFilters}
@@ -190,24 +272,42 @@ const ContactsPage: React.FC = () => {
                     headerCheckboxState={selectionType}
                     buttonGroup={
                       <Hidden xsDown>
-                        <ToggleButtonGroup
-                          exclusive
-                          value={tableDisplayState}
-                          onChange={handleViewModeChange}
-                        >
-                          <ToggleButton value="list">
-                            <BulletedListIcon titleAccess={t('List View')} />
-                          </ToggleButton>
-                          <ToggleButton value="columns">
-                            <ViewColumnIcon
-                              titleAccess={t('Column Workflow View')}
-                            />
-                          </ToggleButton>
-                        </ToggleButtonGroup>
+                        <Box display="flex" alignItems="center">
+                          {flowsViewEnabled && (
+                            <NextLink
+                              href={`/accountLists/${accountListId}/contacts/flows/setup`}
+                            >
+                              <ViewSettingsButton variant="outlined">
+                                <Settings style={{ marginRight: 8 }} />
+                                {t('View Settings')}
+                              </ViewSettingsButton>
+                            </NextLink>
+                          )}
+                          <ToggleButtonGroup
+                            exclusive
+                            value={flowsViewEnabled}
+                            onChange={handleViewModeChange}
+                          >
+                            <ToggleButton
+                              value={false}
+                              disabled={!flowsViewEnabled}
+                            >
+                              <BulletedListIcon titleAccess={t('List View')} />
+                            </ToggleButton>
+                            <ToggleButton
+                              value={true}
+                              disabled={flowsViewEnabled}
+                            >
+                              <ViewColumnIcon
+                                titleAccess={t('Column Workflow View')}
+                              />
+                            </ToggleButton>
+                          </ToggleButtonGroup>
+                        </Box>
                       </Hidden>
                     }
                   />
-                  {tableDisplayState === 'list' ? (
+                  {!flowsViewEnabled ? (
                     <InfiniteList
                       loading={loading}
                       data={data?.contacts?.nodes}
@@ -246,6 +346,10 @@ const ContactsPage: React.FC = () => {
                   ) : (
                     <ContactFlow
                       accountListId={accountListId}
+                      selectedFilters={{
+                        ...activeFilters,
+                        ...starredFilter,
+                      }}
                       onContactSelected={setContactFocus}
                     />
                   )}
@@ -256,7 +360,13 @@ const ContactsPage: React.FC = () => {
                   <ContactDetails
                     accountListId={accountListId}
                     contactId={contactDetailsId}
-                    onClose={() => setContactFocus(undefined)}
+                    onClose={() =>
+                      setContactFocus(
+                        undefined,
+                        true,
+                        flowsViewEnabled ? true : false,
+                      )
+                    }
                   />
                 ) : (
                   <></>

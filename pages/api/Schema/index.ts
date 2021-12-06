@@ -17,6 +17,10 @@ import FinancialAccountsTypeDefs from './reports/financialAccounts/financialAcco
 import { FinancialAccountsResolvers } from './reports/financialAccounts/resolvers';
 import EntryHistoriesTypeDefs from './reports/entryHistories/entryHistories.graphql';
 import { EntryHistoriesResolvers } from './reports/entryHistories/resolvers';
+import DeleteCommentTypeDefs from './Tasks/Comments/DeleteComments/deleteComment.graphql';
+import { DeleteCommentResolvers } from './Tasks/Comments/DeleteComments/resolvers';
+import UpdateCommentTypeDefs from './Tasks/Comments/UpdateComments/updateComments.graphql';
+import { UpdateCommentResolvers } from './Tasks/Comments/UpdateComments/resolvers';
 
 const schema = buildFederatedSchema([
   {
@@ -45,6 +49,14 @@ const schema = buildFederatedSchema([
   {
     typeDefs: EntryHistoriesTypeDefs,
     resolvers: EntryHistoriesResolvers,
+  },
+  {
+    typeDefs: DeleteCommentTypeDefs,
+    resolvers: DeleteCommentResolvers,
+  },
+  {
+    typeDefs: UpdateCommentTypeDefs,
+    resolvers: UpdateCommentResolvers,
   },
 ]);
 
