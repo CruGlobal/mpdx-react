@@ -33,11 +33,3 @@ query ContactFilters($accountListId: ID!) {
     ...UserOption
   }
 }
-
-mutation SaveContactFilter($input: CreateOrUpdateOptionMutationInput!) {
-  createOrUpdateUserOption(input: $input) {
-    option {
-      ...UserOption
-    }
-  }
-}

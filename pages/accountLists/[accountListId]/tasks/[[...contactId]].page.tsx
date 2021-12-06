@@ -98,8 +98,10 @@ const TasksPage: React.FC = () => {
   const savedFilters: UserOptionFragment[] =
     filterData?.userOptions.filter(
       (option) =>
-        option.key?.includes('saved_tasks_filter_') &&
-        JSON.parse(option.value ?? '').account_list_id === accountListId,
+        (option.key?.includes('saved_tasks_filter_') ||
+          option.key?.includes('graphql_saved_tasks_filter_')) &&
+        (JSON.parse(option.value ?? '').account_list_id === accountListId ||
+          JSON.parse(option.value ?? '').accountListId === accountListId),
     ) ?? [];
   //#endregion
 
