@@ -14,12 +14,12 @@ type ReportsAppointmentResultsPeriods {
   endDate: ISO8601DateTime
   groupAppointments: Int
   individualAppointments: Int
-  monthlyDecrease: Int
-  monthlyIncrease: Int
+  monthlyDecrease: Float
+  monthlyIncrease: Float
   newMonthlyPartners: Int
   newSpecialPledges: Int
   pledgeIncrease: Float
-  specialGifts: Int
+  specialGifts: Float
   startDate: ISO8601DateTime
   updatedAt: ISO8601DateTime
   updatedInDbAt: ISO8601DateTime
