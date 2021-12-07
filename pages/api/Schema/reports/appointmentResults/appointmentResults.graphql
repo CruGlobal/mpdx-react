@@ -9,19 +9,19 @@ extend type Query {
 type ReportsAppointmentResultsPeriods {
   id: ID!
   type: String!
-  appointments_scheduled: Int
-  created_at: ISO8601DateTime
-  end_date: ISO8601DateTime
-  group_appointments: Int
-  individual_appointments: Int
-  monthly_decrease: Int
-  monthly_increase: Int
-  new_monthly_partners: Int
-  new_special_pledges: Int
-  pledge_increase: Int
-  special_gifts: Int
-  start_date: ISO8601DateTime
-  updated_at: ISO8601DateTime
-  updated_in_db_at: ISO8601DateTime
-  weekly_individual_appointment_goal: Int
+  appointmentsScheduled: Int
+  createdAt: ISO8601DateTime
+  endDate: ISO8601DateTime
+  groupAppointments: Int
+  individualAppointments: Int
+  monthlyDecrease: Int
+  monthlyIncrease: Int
+  newMonthlyPartners: Int
+  newSpecialPledges: Int
+  pledgeIncrease: Float
+  specialGifts: Int
+  startDate: ISO8601DateTime
+  updatedAt: ISO8601DateTime
+  updatedInDbAt: ISO8601DateTime
+  weeklyIndividualAppointmentGoal: Int
 }

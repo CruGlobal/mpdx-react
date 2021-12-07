@@ -9,6 +9,7 @@ const AppointmentResultsResolvers: Resolvers = {
     ) => {
       return dataSources.mpdxRestApi.getAppointmentResults(
         accountListId,
+        endDate,
         range,
       );
     },
