@@ -20,7 +20,7 @@ import { EntryHistoriesResolvers } from './reports/entryHistories/resolvers';
 import { AccountListAnalyticsResolvers } from './AccountListAnalytics/resolvers';
 import AccountListAnalyticsTypeDefs from './AccountListAnalytics/accountListAnalytics.graphql';
 import { AppointmentResultsResolvers } from './reports/appointmentResults/resolvers';
-import { AppointmentResultsTypeDefs } from './reports/appointmentResults/appointmentResults.graphql';
+import AppointmentResultsTypeDefs from './reports/appointmentResults/appointmentResults.graphql';
 
 const schema = buildFederatedSchema([
   {
