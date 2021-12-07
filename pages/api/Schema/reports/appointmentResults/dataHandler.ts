@@ -28,6 +28,8 @@ const getAppointmentResults = (
   const appointmentResultsPeriods: ReportsAppointmentResultsPeriods[] = data.map(
     (resultPeriod) => {
       const {
+        id,
+        type,
         attributes: {
           appointments_scheduled,
           created_at,
@@ -47,7 +49,8 @@ const getAppointmentResults = (
         },
       } = resultPeriod;
       return {
-        ...resultPeriod,
+        id: id,
+        type: type,
         appointmentsScheduled: appointments_scheduled,
         createdAt: created_at,
         endDate: end_date,

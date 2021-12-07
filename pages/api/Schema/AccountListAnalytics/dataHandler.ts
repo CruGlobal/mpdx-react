@@ -51,6 +51,8 @@ const getAccountListAnalytics = (data: {
   };
 }): AccountListAnalytics => {
   const {
+    id,
+    type,
     attributes: {
       created_at,
       appointments,
@@ -69,7 +71,8 @@ const getAccountListAnalytics = (data: {
   } = data;
 
   return {
-    ...data,
+    id: id,
+    type: type,
     createdAt: created_at,
     appointments: appointments,
     contacts: contacts,
