@@ -21,6 +21,10 @@ import { AccountListAnalyticsResolvers } from './AccountListAnalytics/resolvers'
 import AccountListAnalyticsTypeDefs from './AccountListAnalytics/accountListAnalytics.graphql';
 import { AppointmentResultsResolvers } from './reports/appointmentResults/resolvers';
 import AppointmentResultsTypeDefs from './reports/appointmentResults/appointmentResults.graphql';
+import DeleteCommentTypeDefs from './Tasks/Comments/DeleteComments/deleteComment.graphql';
+import { DeleteCommentResolvers } from './Tasks/Comments/DeleteComments/resolvers';
+import UpdateCommentTypeDefs from './Tasks/Comments/UpdateComments/updateComments.graphql';
+import { UpdateCommentResolvers } from './Tasks/Comments/UpdateComments/resolvers';
 
 const schema = buildFederatedSchema([
   {
@@ -57,6 +61,14 @@ const schema = buildFederatedSchema([
   {
     typeDefs: EntryHistoriesTypeDefs,
     resolvers: EntryHistoriesResolvers,
+  },
+  {
+    typeDefs: DeleteCommentTypeDefs,
+    resolvers: DeleteCommentResolvers,
+  },
+  {
+    typeDefs: UpdateCommentTypeDefs,
+    resolvers: UpdateCommentResolvers,
   },
 ]);
 

@@ -29,6 +29,7 @@ import {
 } from './FilterPanel.generated';
 import { FilterListItemShowAll } from './FilterListItemShowAll';
 import { FilterListItem } from './FilterListItem';
+import { SaveFilterModal } from './SaveFilterModal/SaveFilterModal';
 
 type ContactFilterKey = keyof ContactFilterSetInput;
 type ContactFilterValue = ContactFilterSetInput[ContactFilterKey];
@@ -92,6 +93,7 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
 
   const [selectedGroup, setSelectedGroup] = useState<FilterGroup>();
   const [savedFilterOpen, setSavedFilterOpen] = useState(false);
+  const [saveFilterModalOpen, setSaveFilterModalOpen] = useState(false);
   const [showAll, setShowAll] = useState(false);
   const updateSelectedFilter = (name: FilterKey, value?: FilterValue) => {
     if (value) {
@@ -148,6 +150,22 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
       // Parse from string to json object
       const parsedFilter = JSON.parse(filter.value);
 
+      if (filter.key?.includes('graphql_')) {
+        // Clear current filters
+        clearSelectedFilter();
+        // Filter out accountListId from filter
+        const newFilter = Object.keys(parsedFilter)
+          .filter((key) => key !== 'accountListId')
+          .reduce((res, key) => {
+            return { ...res, [key]: parsedFilter[key] };
+          }, {});
+        // Set the selected filter with our saved filter data
+        onSelectedFiltersChanged(newFilter);
+
+        // close the saved filter panel
+        setSavedFilterOpen(false);
+        return;
+      }
       // Map through keys to convert key to camel from snake
       const filters = Object.keys(parsedFilter).map(
         (key) =>
@@ -417,8 +435,9 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
                 color="primary"
                 style={{ marginInlineStart: theme.spacing(-1) }}
                 disabled={Object.keys(selectedFilters).length === 0}
+                onClick={() => setSaveFilterModalOpen(true)}
               >
-                {t('Save (TODO)')}
+                {t('Save')}
               </LinkButton>
               <LinkButton
                 color="primary"
@@ -508,9 +527,15 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
             </FilterHeader>
             <FilterList dense>
               {savedFilters.map((filter) => {
-                const filterName = filter.key
-                  ?.replace('saved_contacts_filter_', '')
-                  .replaceAll('_', ' ');
+                const filterName = (filter.key?.includes('graphql_')
+                  ? filter.key.includes('graphql_saved_contacts_filter_')
+                    ? filter.key?.replace('graphql_saved_contacts_filter_', '')
+                    : filter.key?.replace('graphql_saved_tasks_filter_', '')
+                  : filter.key?.includes('saved_contacts_filter_')
+                  ? filter.key?.replace('saved_contacts_filter_', '')
+                  : filter.key?.replace('saved_tasks_filter_', '')
+                )?.replaceAll('_', ' ');
+
                 return (
                   <ListItem
                     key={filter.id}
@@ -563,6 +588,12 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
           </div>
         </Slide>
       </div>
+      <SaveFilterModal
+        isOpen={saveFilterModalOpen}
+        handleClose={() => setSaveFilterModalOpen(false)}
+        currentFilters={selectedFilters}
+        currentSavedFilters={savedFilters}
+      />
     </Box>
   );
 };
