@@ -122,7 +122,7 @@ class MpdxRestApi extends RESTDataSource {
     range: string,
   ) {
     const { data } = await this.get(
-      `appointment_results?filter[account_list_id]=${accountListId}&filter[end_date]=${endDate}&filter[range]=${range}`,
+      `reports/appointment_results?filter[account_list_id]=${accountListId}&filter[end_date]=${endDate}&filter[range]=${range}`,
     );
 
     return getAppointmentResults(data);
