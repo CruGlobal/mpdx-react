@@ -67,7 +67,7 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
     data: accountListData,
     loading,
   } = useLoadAccountListCoachingDetailQuery({
-    variables: { coachingId: coachingId },
+    variables: { coachingId },
     skip: !isAccountListId,
   });
 
@@ -75,7 +75,7 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
     data: coachingData,
     loading: coachingLoading,
   } = useLoadCoachingDetailQuery({
-    variables: { coachingId: coachingId },
+    variables: { coachingId },
     skip: isAccountListId,
   });
 
@@ -133,7 +133,7 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
                   loading={loading}
                   isPrimary={false}
                   currency={data?.currency}
-                  goal={data?.monthlyGoal ? data?.monthlyGoal : 0}
+                  goal={data?.monthlyGoal ?? 0}
                   received={data?.receivedPledges}
                   pledged={data?.totalPledges}
                 />
