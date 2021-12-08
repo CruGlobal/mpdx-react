@@ -5,8 +5,6 @@ import { useTranslation } from 'react-i18next';
 import { Skeleton } from '@material-ui/lab';
 import { AppealProgress } from '../AppealProgress/AppealProgress';
 import {
-  LoadAccountListCoachingDetailQuery,
-  LoadCoachingDetailQuery,
   useLoadAccountListCoachingDetailQuery,
   useLoadCoachingDetailQuery,
 } from './LoadCoachingDetail.generated';
@@ -65,16 +63,25 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
   isAccountListId = false,
 }) => {
   const { t } = useTranslation();
-  const { data, loading } = isAccountListId
-    ? useLoadAccountListCoachingDetailQuery({
-        variables: { coachingId: coachingId },
-      })
-    : useLoadCoachingDetailQuery({
-        variables: { coachingId: coachingId },
-      });
+  const {
+    data: accountListData,
+    loading,
+  } = useLoadAccountListCoachingDetailQuery({
+    variables: { coachingId: coachingId },
+    skip: !isAccountListId,
+  });
 
-  const { name, currency, monthlyGoal, receivedPledges, totalPledges } =
-    data?.accountList ?? data?.coachingAccountList;
+  const {
+    data: coachingData,
+    loading: coachingLoading,
+  } = useLoadCoachingDetailQuery({
+    variables: { coachingId: coachingId },
+    skip: isAccountListId,
+  });
+
+  const data = isAccountListId
+    ? accountListData?.accountList
+    : coachingData?.coachingAccountList;
 
   return (
     <CoachingDetailContainer>
@@ -100,7 +107,7 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
         <Divider style={{ background: theme.palette.primary.contrastText }} />
       </CoachingSideContainer>
       <CoachingMainContainer>
-        {loading ? (
+        {loading || coachingLoading ? (
           <>
             <CoachingLoadingSkeleton />
             <CoachingLoadingSkeleton />
@@ -118,17 +125,17 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
                     margin: theme.spacing(1),
                   }}
                 >
-                  {name}
+                  {data?.name}
                 </Typography>
               </Box>
               <Box style={{ flexGrow: 1 }}>
                 <AppealProgress
                   loading={loading}
                   isPrimary={false}
-                  currency={currency}
-                  goal={monthlyGoal ? monthlyGoal : 0}
-                  received={receivedPledges}
-                  pledged={totalPledges}
+                  currency={data?.currency}
+                  goal={data?.monthlyGoal ? data?.monthlyGoal : 0}
+                  received={data?.receivedPledges}
+                  pledged={data?.totalPledges}
                 />
               </Box>
             </CoachingMainTitleContainer>

@@ -21,7 +21,24 @@ export const Default = (): ReactElement => {
         },
       }}
     >
-      <CoachingDetail coachingId={coachingId} />
+      <CoachingDetail coachingId={coachingId} isAccountListId={false} />
+    </GqlMockedProvider>
+  );
+};
+
+export const AccountListDetail = (): ReactElement => {
+  return (
+    <GqlMockedProvider<LoadCoachingDetailQuery>
+      mocks={{
+        LoadAccountListCoachingDetail: {
+          accountList: {
+            name: 'Test Account List',
+            currency: 'EUR',
+          },
+        },
+      }}
+    >
+      <CoachingDetail coachingId={coachingId} isAccountListId={true} />
     </GqlMockedProvider>
   );
 };
