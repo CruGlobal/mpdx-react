@@ -32,14 +32,13 @@ const AccountListsPage = ({ data }: Props): ReactElement => {
 AccountListsPage.layout = BaseLayout;
 
 export const getServerSideProps: GetServerSideProps = async ({
-  res,
   req,
 }): Promise<GetServerSidePropsResult<Props>> => {
   const session = await getSession({ req });
 
-  const token = session?.user.token;
+  const apiToken = session?.user.apiToken;
 
-  if (!token) {
+  if (!apiToken) {
     return {
       redirect: {
         destination: '/login',
@@ -47,8 +46,7 @@ export const getServerSideProps: GetServerSideProps = async ({
       },
     };
   }
-
-  const client = await ssrClient(token);
+  const client = await ssrClient(apiToken);
   const response = await client.query<
     GetAccountListsQuery,
     GetAccountListsQueryVariables
@@ -60,11 +58,12 @@ export const getServerSideProps: GetServerSideProps = async ({
     response.data.accountLists.nodes &&
     response.data.accountLists.nodes.length === 1
   ) {
-    res.writeHead(302, {
-      Location: `/accountLists/${response.data.accountLists.nodes[0]?.id}`,
-    });
-    res.end();
-    return { props: {} };
+    return {
+      redirect: {
+        destination: `/accountLists/${response.data.accountLists.nodes[0]?.id}`,
+        permanent: false,
+      },
+    };
   }
 
   return {

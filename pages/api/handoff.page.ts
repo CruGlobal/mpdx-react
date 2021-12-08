@@ -12,7 +12,7 @@ const handoff = async (
   const jwtToken = (await getToken({
     req,
     secret: process.env.JWT_SECRET as string,
-  })) as { token: string } | null;
+  })) as { apiToken: string } | null;
   if (
     jwtToken &&
     req.query.accountListId &&
@@ -26,7 +26,7 @@ const handoff = async (
       }mpdx.org/handoff`,
     );
 
-    url.searchParams.append('accessToken', jwtToken.token);
+    url.searchParams.append('accessToken', jwtToken.apiToken);
     url.searchParams.append(
       'accountListId',
       req.query.accountListId.toString(),
@@ -41,7 +41,7 @@ const handoff = async (
       }mpdx.org/${req.query.path.toString().replace(/^\/+/, '')}`,
     );
 
-    url.searchParams.append('access_token', jwtToken['token']);
+    url.searchParams.append('access_token', jwtToken.apiToken);
     res.redirect(url.href);
   } else {
     res.status(422);

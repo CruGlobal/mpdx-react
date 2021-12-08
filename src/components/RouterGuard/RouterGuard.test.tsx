@@ -1,6 +1,6 @@
 import { ThemeProvider } from '@material-ui/styles';
 import { render, waitFor } from '@testing-library/react';
-import client from 'next-auth/react';
+import { getSession } from 'next-auth/react';
 import { SnackbarProvider } from 'notistack';
 import * as nextRouter from 'next/router';
 import theme from '../../theme';
@@ -23,7 +23,7 @@ describe('RouterGuard', () => {
 
   describe('authenticated', () => {
     beforeEach(() => {
-      (client.getSession as jest.Mock).mockReturnValue(session);
+      (getSession as jest.Mock).mockReturnValue(session);
       (useRouter as jest.SpyInstance<
         Pick<nextRouter.NextRouter, 'query' | 'isReady' | 'pathname' | 'push'>
       >).mockImplementation(() => ({
@@ -51,7 +51,7 @@ describe('RouterGuard', () => {
     });
 
     it('should render loading indicator while isReady is false', async () => {
-      (client.getSession as jest.Mock).mockReturnValue(session);
+      (getSession as jest.Mock).mockReturnValue(session);
       (useRouter as jest.SpyInstance<
         Pick<nextRouter.NextRouter, 'query' | 'isReady' | 'pathname' | 'push'>
       >).mockImplementation(() => ({
@@ -78,7 +78,7 @@ describe('RouterGuard', () => {
     });
 
     it('should render loading indicator while isAuthed is false', async () => {
-      (client.getSession as jest.Mock).mockReturnValue(null);
+      (getSession as jest.Mock).mockReturnValue(null);
       (useRouter as jest.SpyInstance<
         Pick<nextRouter.NextRouter, 'query' | 'isReady' | 'pathname' | 'push'>
       >).mockImplementation(() => ({
@@ -107,7 +107,7 @@ describe('RouterGuard', () => {
 
   describe('unathenticated', () => {
     beforeEach(() => {
-      (client.getSession as jest.Mock).mockReturnValue(null);
+      (getSession as jest.Mock).mockReturnValue(null);
       (useRouter as jest.SpyInstance<
         Pick<nextRouter.NextRouter, 'query' | 'isReady' | 'pathname' | 'push'>
       >).mockImplementation(() => ({
