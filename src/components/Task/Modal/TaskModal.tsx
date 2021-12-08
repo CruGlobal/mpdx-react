@@ -20,6 +20,7 @@ import { useAccountListId } from '../../../hooks/useAccountListId';
 import TaskDrawerCompleteForm from '../Drawer/CompleteForm';
 import { useGetTaskForTaskModalQuery } from '../Modal/TaskModalTask.generated';
 import TaskModalForm from './Form/TaskModalForm';
+import TaskModalCommentsList from './Comments/TaskModalCommentsList';
 
 const StyledModal = styled(Modal)(() => ({
   display: 'flex',
@@ -32,6 +33,7 @@ const StyledModal = styled(Modal)(() => ({
 export interface TaskModalProps {
   taskId?: string;
   onClose?: () => void;
+  view?: string;
   showCompleteForm?: boolean;
   defaultValues?: Partial<Task>;
   filter?: TaskFilter;
@@ -47,7 +49,7 @@ export enum TaskModalTabsEnum {
 const TaskModal = ({
   taskId,
   onClose,
-  showCompleteForm,
+  view,
   defaultValues,
   filter,
   rowsPerPage,
@@ -71,6 +73,49 @@ const TaskModal = ({
 
   const task = data?.task;
 
+  const renderTitle = (): string => {
+    switch (view) {
+      case 'comments':
+        return 'Task Comments';
+      default:
+        return 'Add Task';
+    }
+  };
+
+  const renderView = (): ReactElement => {
+    switch (view) {
+      case 'complete':
+        if (task) {
+          return (
+            <TaskDrawerCompleteForm
+              accountListId={accountListId || ''}
+              task={task}
+              onClose={onModalClose}
+            />
+          );
+        }
+      case 'comments':
+        return (
+          <TaskModalCommentsList
+            accountListId={accountListId || ''}
+            taskId={task?.id || ''}
+            onClose={onModalClose}
+          />
+        );
+      default:
+        return (
+          <TaskModalForm
+            accountListId={accountListId || ''}
+            task={task}
+            onClose={onModalClose}
+            defaultValues={defaultValues}
+            filter={filter}
+            rowsPerPage={rowsPerPage || 100}
+          />
+        );
+    }
+  };
+
   return (
     <>
       {loading ? (
@@ -85,7 +130,7 @@ const TaskModal = ({
                   justifyContent="space-between"
                   alignItems="center"
                 >
-                  <Typography variant="h6">Add Task</Typography>
+                  <Typography variant="h6">{renderTitle()}</Typography>
                   <IconButton size="small" onClick={onModalClose}>
                     <CloseIcon titleAccess={t('Close')} />
                   </IconButton>
@@ -100,29 +145,7 @@ const TaskModal = ({
                     animate={{ x: 0, opacity: 1 }}
                     exit={{ x: -300, opacity: 0 }}
                   >
-                    {!loading && accountListId && (
-                      <>
-                        {showCompleteForm ? (
-                          task && (
-                            // Will change for edit task modal
-                            <TaskDrawerCompleteForm
-                              accountListId={accountListId}
-                              task={task}
-                              onClose={onModalClose}
-                            />
-                          )
-                        ) : (
-                          <TaskModalForm
-                            accountListId={accountListId}
-                            task={task}
-                            onClose={onModalClose}
-                            defaultValues={defaultValues}
-                            filter={filter}
-                            rowsPerPage={rowsPerPage || 100}
-                          />
-                        )}
-                      </>
-                    )}
+                    {!loading && accountListId && <>{renderView()}</>}
                   </motion.div>
                 </AnimatePresence>
               </Box>

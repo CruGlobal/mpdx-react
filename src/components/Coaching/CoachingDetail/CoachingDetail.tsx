@@ -43,6 +43,10 @@ const CoachingMainContainer = styled(Box)(({ theme }) => ({
   flexGrow: 4,
 }));
 
+const CoachingItemContainer = styled(Box)(({ theme }) => ({
+  margin: theme.spacing(2),
+}));
+
 const CoachingMainTitleContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
   margin: theme.spacing(1),
@@ -119,13 +123,14 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
               </Box>
             </CoachingMainTitleContainer>
             <Divider />
-            {data?.coachingAccountList.id ? (
-              <MonthlyActivitySection
-                accountListId={data.coachingAccountList.id}
-              />
-            ) : (
-              <></>
-            )}
+            <CoachingItemContainer>
+              {/*
+                TODO: MonthlyActivitySection doesn't work if coaching is not one of the 
+                Accountlists. reportDonationsHistories is required for this View and it doesn't 
+                work with coaching.
+              */}
+              <MonthlyActivitySection accountListId={coachingId} />
+            </CoachingItemContainer>
           </>
         )}
       </CoachingMainContainer>

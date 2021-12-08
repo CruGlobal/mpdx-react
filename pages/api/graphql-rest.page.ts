@@ -40,6 +40,14 @@ import {
   createEntryHistoriesGroup,
   EntryHistoriesResponse,
 } from './Schema/reports/entryHistories/datahandler';
+import {
+  DeleteCommentResponse,
+  DeleteComment,
+} from './Schema/Tasks/Comments/DeleteComments/datahandler';
+import {
+  UpdateCommentResponse,
+  UpdateComment,
+} from './Schema/Tasks/Comments/UpdateComments/datahandler';
 
 class MpdxRestApi extends RESTDataSource {
   constructor() {
@@ -206,6 +214,13 @@ class MpdxRestApi extends RESTDataSource {
     return setActiveFinancialAccount(data);
   }
 
+  async deleteComment(taskId: string, commentId: string) {
+    const { data }: { data: DeleteCommentResponse } = await this.delete(
+      `tasks/${taskId}/comments/${commentId}`,
+    );
+    return DeleteComment({ ...data, id: commentId });
+  }
+
   async getEntryHistories(
     accountListId: string,
     financialAccountIds: Array<string>,
@@ -221,6 +236,21 @@ class MpdxRestApi extends RESTDataSource {
         return createEntryHistoriesGroup(data, financialAccountIds[idx]);
       });
     });
+  }
+
+  async updateComment(taskId: string, commentId: string, body: string) {
+    const { data }: { data: UpdateCommentResponse } = await this.put(
+      `tasks/${taskId}/comments/${commentId}`,
+      {
+        data: {
+          type: 'comments',
+          attributes: {
+            body,
+          },
+        },
+      },
+    );
+    return UpdateComment(data);
   }
 }
 
