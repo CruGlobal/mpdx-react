@@ -4,7 +4,12 @@ import { EcoOutlined } from '@material-ui/icons';
 import { useTranslation } from 'react-i18next';
 import { Skeleton } from '@material-ui/lab';
 import { AppealProgress } from '../AppealProgress/AppealProgress';
-import { useLoadCoachingDetailQuery } from './LoadCoachingDetail.generated';
+import {
+  LoadAccountListCoachingDetailQuery,
+  LoadCoachingDetailQuery,
+  useLoadAccountListCoachingDetailQuery,
+  useLoadCoachingDetailQuery,
+} from './LoadCoachingDetail.generated';
 import theme from 'src/theme';
 import { MonthlyActivitySection } from 'src/components/Reports/DonationsReport/MonthlyActivity/MonthlyActivitySection';
 
@@ -60,9 +65,16 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
   isAccountListId = false,
 }) => {
   const { t } = useTranslation();
-  const { data, loading } = useLoadCoachingDetailQuery({
-    variables: { coachingId: coachingId },
-  });
+  const { data, loading } = isAccountListId
+    ? useLoadAccountListCoachingDetailQuery({
+        variables: { coachingId: coachingId },
+      })
+    : useLoadCoachingDetailQuery({
+        variables: { coachingId: coachingId },
+      });
+
+  const { name, currency, monthlyGoal, receivedPledges, totalPledges } =
+    data?.accountList ?? data?.coachingAccountList;
 
   return (
     <CoachingDetailContainer>
@@ -106,21 +118,17 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
                     margin: theme.spacing(1),
                   }}
                 >
-                  {data?.coachingAccountList.name}
+                  {name}
                 </Typography>
               </Box>
               <Box style={{ flexGrow: 1 }}>
                 <AppealProgress
                   loading={loading}
                   isPrimary={false}
-                  currency={data?.coachingAccountList.currency}
-                  goal={
-                    data?.coachingAccountList.monthlyGoal
-                      ? data.coachingAccountList.monthlyGoal
-                      : 0
-                  }
-                  received={data?.coachingAccountList.receivedPledges}
-                  pledged={data?.coachingAccountList.totalPledges}
+                  currency={currency}
+                  goal={monthlyGoal ? monthlyGoal : 0}
+                  received={receivedPledges}
+                  pledged={totalPledges}
                 />
               </Box>
             </CoachingMainTitleContainer>
