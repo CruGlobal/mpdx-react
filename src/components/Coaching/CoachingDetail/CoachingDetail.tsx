@@ -10,6 +10,7 @@ import { MonthlyActivitySection } from 'src/components/Reports/DonationsReport/M
 
 interface CoachingDetailProps {
   coachingId: string;
+  isAccountListId: boolean;
 }
 
 const CoachingLoadingSkeleton = styled(Skeleton)(({ theme }) => ({
@@ -56,6 +57,7 @@ const CoachingMainTitleContainer = styled(Box)(({ theme }) => ({
 
 export const CoachingDetail: React.FC<CoachingDetailProps> = ({
   coachingId,
+  isAccountListId = false,
 }) => {
   const { t } = useTranslation();
   const { data, loading } = useLoadCoachingDetailQuery({
