@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import NextAuth, { NextAuthOptions } from 'next-auth';
+import NextAuth, { DefaultSession, NextAuthOptions } from 'next-auth';
 import getConfig from 'next/config';
 import OktaProvider from 'next-auth/providers/okta';
 import client from '../../../src/lib/client';
@@ -13,13 +13,13 @@ const { serverRuntimeConfig } = getConfig();
 process.env.NEXTAUTH_URL = serverRuntimeConfig.NEXTAUTH_URL;
 
 declare module 'next-auth' {
-  interface Session {
+  interface Session extends DefaultSession {
     user: {
-      token?: string;
+      apiToken?: string;
     };
   }
   interface User {
-    token?: string;
+    apiToken?: string;
   }
 }
 
@@ -55,23 +55,23 @@ const options: NextAuthOptions = {
         },
       });
       if (data?.oktaSignIn?.token) {
-        user.token = data.oktaSignIn.token;
+        user.apiToken = data.oktaSignIn.token;
         return true;
       }
       throw new Error('oktaSignIn mutation failed to return a token');
     },
-    session: async ({ session, user }) => {
-      return {
-        ...session,
-        user: { ...session.user, token: user.token },
-      };
-    },
-    jwt: async ({ token, user, profile }) => {
+    jwt: ({ token, user }) => {
       if (user) {
-        return { ...token, token: profile?.token };
+        return { ...token, apiToken: user?.apiToken };
       } else {
         return token;
       }
+    },
+    session: ({ session, token }) => {
+      return {
+        ...session,
+        user: { ...session.user, apiToken: token.apiToken as string },
+      };
     },
   },
   secret: process.env.JWT_SECRET,

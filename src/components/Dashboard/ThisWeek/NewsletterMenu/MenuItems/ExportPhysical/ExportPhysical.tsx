@@ -83,7 +83,7 @@ const ExportPhysical: React.FC<Props> = ({
     });
     data?.exportContacts &&
       window.location.replace(
-        `${data.exportContacts}?access_token=${session?.user.token}`,
+        `${data.exportContacts}?access_token=${session?.user.apiToken}`,
       );
     handleClose();
   };
