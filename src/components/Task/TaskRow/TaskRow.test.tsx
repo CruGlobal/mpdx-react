@@ -27,7 +27,7 @@ const openTaskModal = jest.fn();
 
 beforeEach(() => {
   (useTaskModal as jest.Mock).mockReturnValue({
-    openTaskDrawer,
+    openTaskModal,
   });
 });
 
