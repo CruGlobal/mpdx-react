@@ -18,6 +18,9 @@
 # next.js
 /.next
 
+# Typescript
+tsconfig.tsbuildinfo
+
 # misc
 .DS_Store
 
