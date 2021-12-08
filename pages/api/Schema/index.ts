@@ -17,6 +17,10 @@ import FinancialAccountsTypeDefs from './reports/financialAccounts/financialAcco
 import { FinancialAccountsResolvers } from './reports/financialAccounts/resolvers';
 import EntryHistoriesTypeDefs from './reports/entryHistories/entryHistories.graphql';
 import { EntryHistoriesResolvers } from './reports/entryHistories/resolvers';
+import { AccountListAnalyticsResolvers } from './AccountListAnalytics/resolvers';
+import AccountListAnalyticsTypeDefs from './AccountListAnalytics/accountListAnalytics.graphql';
+import { AppointmentResultsResolvers } from './reports/appointmentResults/resolvers';
+import AppointmentResultsTypeDefs from './reports/appointmentResults/appointmentResults.graphql';
 import DeleteCommentTypeDefs from './Tasks/Comments/DeleteComments/deleteComment.graphql';
 import { DeleteCommentResolvers } from './Tasks/Comments/DeleteComments/resolvers';
 import UpdateCommentTypeDefs from './Tasks/Comments/UpdateComments/updateComments.graphql';
@@ -29,6 +33,14 @@ const schema = buildFederatedSchema([
   },
   { typeDefs: ScalarTypeDefs, resolvers: ScalarResolvers },
   { typeDefs: TaskAnalyticsTypeDefs, resolvers: TaskAnalyticsResolvers },
+  {
+    typeDefs: AccountListAnalyticsTypeDefs,
+    resolvers: AccountListAnalyticsResolvers,
+  },
+  {
+    typeDefs: AppointmentResultsTypeDefs,
+    resolvers: AppointmentResultsResolvers,
+  },
   { typeDefs: ExportContactsTypeDefs, resolvers: ExportContactsResolvers },
   {
     typeDefs: FourteenMonthReportTypeDefs,
