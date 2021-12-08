@@ -1,7 +1,13 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import NextAuth, { NextAuthOptions } from 'next-auth';
 import getConfig from 'next/config';
-import { Profile } from './profile.page';
+import OktaProvider from 'next-auth/providers/okta';
+import client from '../../../src/lib/client';
+import {
+  OktaSignInDocument,
+  OktaSignInMutation,
+  OktaSignInMutationVariables,
+} from './oktaSignIn.generated';
 
 const { serverRuntimeConfig } = getConfig();
 process.env.NEXTAUTH_URL = serverRuntimeConfig.NEXTAUTH_URL;
@@ -17,27 +23,43 @@ declare module 'next-auth' {
   }
 }
 
+if (!process.env.OKTA_CLIENT_ID || !process.env.OKTA_CLIENT_SECRET) {
+  throw new Error('OKTA_CLIENT_ID or OKTA_CLIENT_SECRET envs not defined');
+}
+
 const options: NextAuthOptions = {
   providers: [
-    {
-      id: 'thekey',
-      name: 'The Key',
-      type: 'oauth',
-      version: '2.0',
-      scope: 'fullticket',
-      params: { grant_type: 'authorization_code' },
-      accessTokenUrl: 'https://thekey.me/cas/api/oauth/token',
-      authorizationUrl: 'https://thekey.me/cas/login?response_type=code',
-      profileUrl: `${process.env.SITE_URL}/api/auth/profile`,
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      profile: (profile: Profile): Profile => profile,
-      clientId: process.env.CLIENT_ID,
-      clientSecret: process.env.CLIENT_SECRET,
-      state: false,
-    },
+    OktaProvider({
+      clientId: process.env.OKTA_CLIENT_ID,
+      clientSecret: process.env.OKTA_CLIENT_SECRET,
+      issuer: process.env.OKTA_ISSUER,
+      authorization: { params: { scope: 'openid email profile' } },
+      token: { params: { scope: 'openid email profile' } },
+      userinfo: { params: { scope: 'openid email profile' } },
+    }),
   ],
   callbacks: {
+    signIn: async ({ user, account }) => {
+      const { access_token } = account;
+
+      if (!access_token) {
+        throw new Error('Okta sign in failed to return an access_token');
+      }
+      const { data } = await client.mutate<
+        OktaSignInMutation,
+        OktaSignInMutationVariables
+      >({
+        mutation: OktaSignInDocument,
+        variables: {
+          accessToken: access_token,
+        },
+      });
+      if (data?.oktaSignIn?.token) {
+        user.token = data.oktaSignIn.token;
+        return true;
+      }
+      throw new Error('oktaSignIn mutation failed to return a token');
+    },
     session: async ({ session, user }) => {
       return {
         ...session,
@@ -52,9 +74,7 @@ const options: NextAuthOptions = {
       }
     },
   },
-  jwt: {
-    secret: process.env.JWT_SECRET,
-  },
+  secret: process.env.JWT_SECRET,
 };
 
 const Auth = (req: NextApiRequest, res: NextApiResponse): Promise<void> =>

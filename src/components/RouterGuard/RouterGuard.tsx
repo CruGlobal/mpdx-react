@@ -20,7 +20,7 @@ export const RouterGuard: React.FC = ({ children }) => {
       // If the session is expired, sign them in again to fresh token
       // TODO eventually will have to accomidate for okta, google signin, etc
       if (DateTime.now().toISO() > session?.expires) {
-        signIn('thekey');
+        signIn('okta');
       }
     }
   };
