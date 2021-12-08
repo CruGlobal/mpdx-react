@@ -21,6 +21,7 @@ import { useGetTaskForTaskModalQuery } from '../Modal/TaskModalTask.generated';
 import TaskModalForm from './Form/TaskModalForm';
 import TaskModalCompleteForm from './Form/Complete/TaskModalCompleteForm';
 import TaskModalCommentsList from './Comments/TaskModalCommentsList';
+import TaskModalLogForm from './Form/LogForm/TaskModalLogForm';
 
 const StyledModal = styled(Modal)(() => ({
   display: 'flex',
@@ -79,6 +80,8 @@ const TaskModal = ({
         return 'Complete Task';
       case 'comments':
         return 'Task Comments';
+      case 'log':
+        return 'Log Task';
       default:
         return 'Add Task';
     }
@@ -102,6 +105,17 @@ const TaskModal = ({
             accountListId={accountListId || ''}
             taskId={task?.id || ''}
             onClose={onModalClose}
+          />
+        );
+      case 'log':
+        return (
+          <TaskModalLogForm
+            accountListId={accountListId || ''}
+            task={task}
+            onClose={onModalClose}
+            defaultValues={defaultValues}
+            filter={filter}
+            rowsPerPage={rowsPerPage || 100}
           />
         );
       default:
