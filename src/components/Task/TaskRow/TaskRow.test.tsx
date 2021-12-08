@@ -12,6 +12,7 @@ import useTaskModal from '../../../hooks/useTaskModal';
 import { TaskDrawerTabsEnum } from '../Drawer/Drawer';
 import { TaskRowFragment, TaskRowFragmentDoc } from './TaskRow.generated';
 import { TaskRow } from './TaskRow';
+import useTaskDrawer from 'src/hooks/useTaskDrawer';
 
 const onContactSelected = jest.fn();
 const onTaskCheckSelected = jest.fn();
@@ -28,6 +29,9 @@ const openTaskModal = jest.fn();
 beforeEach(() => {
   (useTaskModal as jest.Mock).mockReturnValue({
     openTaskModal,
+  });
+  (useTaskDrawer as jest.Mock).mockReturnValue({
+    openTaskDrawer,
   });
 });
 
@@ -204,7 +208,7 @@ describe('TaskRow', () => {
       userEvent.click(getByRole('img', { hidden: true, name: 'Check Icon' }));
       expect(openTaskModal).toHaveBeenCalledWith({
         taskId: task.id,
-        showCompleteForm: true,
+        view: 'complete',
       });
     });
 
