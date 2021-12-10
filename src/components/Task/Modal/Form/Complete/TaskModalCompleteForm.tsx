@@ -28,8 +28,10 @@ import { v4 as uuidv4 } from 'uuid';
 import { dateFormat } from '../../../../../lib/intlFormat/intlFormat';
 import {
   ActivityTypeEnum,
+  ContactConnection,
   ResultEnum,
   TaskUpdateInput,
+  UserScopedToAccountList,
 } from '../../../../../../graphql/types.generated';
 import { GetTaskForTaskDrawerQuery } from '../../../Drawer/TaskDrawerTask.generated';
 import { GetThisWeekDocument } from '../../../../Dashboard/ThisWeek/GetThisWeek.generated';
@@ -38,7 +40,8 @@ import theme from '../../../../../../src/theme';
 import { useCreateTaskCommentMutation } from '../../../Drawer/CommentList/Form/CreateTaskComment.generated';
 import { possibleNextActions } from '../PossibleNextActions';
 import { possibleResults } from '../PossibleResults';
-import { useCompleteTaskMutation } from 'src/components/Task/Drawer/CompleteForm/CompleteTask.generated';
+import { useCompleteTaskMutation } from '../../../../../../src/components/Task/Drawer/CompleteForm/CompleteTask.generated';
+import useTaskModal from '../../../../../../src/hooks/useTaskModal';
 
 const ActionButton = styled(Button)(() => ({
   color: theme.palette.info.main,
@@ -77,7 +80,7 @@ const TaskModalCompleteForm = ({
   };
   const { t } = useTranslation();
   const [commentBody, changeCommentBody] = useState('');
-
+  const { openTaskModal } = useTaskModal();
   const { enqueueSnackbar } = useSnackbar();
 
   const { data } = useGetDataForTaskDrawerQuery({
@@ -119,6 +122,20 @@ const TaskModalCompleteForm = ({
 
     enqueueSnackbar(t('Task saved successfully'), { variant: 'success' });
     onClose();
+    if (
+      attributes.nextAction &&
+      attributes.nextAction !== ActivityTypeEnum.None
+    ) {
+      openTaskModal({
+        defaultValues: {
+          activityType: attributes.nextAction as ActivityTypeEnum,
+          // TODO: Use fragments to ensure all required fields are loaded
+          contacts: task.contacts as ContactConnection,
+          user: task.user as UserScopedToAccountList,
+          tagList: task.tagList as string[],
+        },
+      });
+    }
   };
 
   const availableResults = possibleResults(task);
