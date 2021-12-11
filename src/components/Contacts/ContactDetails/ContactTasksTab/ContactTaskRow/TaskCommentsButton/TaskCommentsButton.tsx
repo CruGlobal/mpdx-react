@@ -47,7 +47,7 @@ export const TaskCommentsButton: React.FC<TaskCommentsButtonProps> = ({
 }) => {
   return (
     <TaskRowWrap onClick={() => onClick()} small={small || false}>
-      <TaskCommentIcon titleAccess="Comment Icon" />
+      <TaskCommentIcon titleAccess="Comment Icon" small={small || false} />
       <TaskCommentNumber isComplete={isComplete}>
         {numberOfComments}
       </TaskCommentNumber>
