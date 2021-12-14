@@ -1,4 +1,5 @@
 import React from 'react';
+import userEvent from '@testing-library/user-event';
 import { LoadCoachingDetailQuery } from './LoadCoachingDetail.generated';
 import { CoachingDetail } from './CoachingDetail';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
@@ -71,7 +72,7 @@ describe('LoadCoachingDetail', () => {
     expect(await findByText('Monthly Activity')).toBeVisible();
   });
   it('null goal isAccountList', async () => {
-    const { findByText } = render(
+    const { findByText, queryAllByText } = render(
       <GqlMockedProvider<LoadCoachingDetailQuery>
         mocks={{
           LoadAccountListCoachingDetail: {
@@ -90,5 +91,7 @@ describe('LoadCoachingDetail', () => {
     expect(await findByText('John Doe')).toBeVisible();
     expect(await findByText('Monthly $0')).toBeVisible();
     expect(await findByText('Monthly Activity')).toBeVisible();
+
+    userEvent.click(queryAllByText('YEARLY')[0]);
   });
 });
