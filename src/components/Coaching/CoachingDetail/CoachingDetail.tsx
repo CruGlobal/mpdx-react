@@ -95,7 +95,8 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
     ? accountListData?.accountList
     : coachingData?.coachingAccountList;
 
-  const { isMonthly, setIsMonthly } = React.useState(true);
+  const [isMonthly, setIsMonthly] = React.useState<Boolean>(true);
+
   return (
     <CoachingDetailContainer>
       <CoachingSideContainer bgcolor={theme.palette.progressBarGray.main}>
@@ -123,8 +124,18 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
           color="inherit"
           size="large"
         >
-          <Button variant="contained">{t('Monthly')}</Button>
-          <Button variant="outlined">{t('Yearly')}</Button>
+          <Button
+            variant={isMonthly ? 'contained' : 'outlined'}
+            onClick={() => setIsMonthly(true)}
+          >
+            {t('Monthly')}
+          </Button>
+          <Button
+            variant={isMonthly ? 'outlined' : 'contained'}
+            onClick={() => setIsMonthly(false)}
+          >
+            {t('Yearly')}
+          </Button>
         </CoachingMonthYearButtonGroup>
       </CoachingSideContainer>
       <CoachingMainContainer>
