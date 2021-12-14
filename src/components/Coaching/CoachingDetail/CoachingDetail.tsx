@@ -66,7 +66,7 @@ const CoachingMainTitleContainer = styled(Box)(({ theme }) => ({
 }));
 
 const CoachingMonthYearButtonGroup = styled(ButtonGroup)(({ theme }) => ({
-  margin: theme.spacing(1),
+  margin: theme.spacing(2, 0),
   color: theme.palette.primary.contrastText,
 }));
 
@@ -122,6 +122,7 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
         <CoachingMonthYearButtonGroup
           variant="outlined"
           color="inherit"
+          fullWidth={true}
           size="large"
         >
           <Button
