@@ -1,5 +1,12 @@
 import React from 'react';
-import { Box, Divider, styled, Typography } from '@material-ui/core';
+import {
+  Box,
+  Button,
+  ButtonGroup,
+  Divider,
+  styled,
+  Typography,
+} from '@material-ui/core';
 import { EcoOutlined } from '@material-ui/icons';
 import { useTranslation } from 'react-i18next';
 import { Skeleton } from '@material-ui/lab';
@@ -58,6 +65,11 @@ const CoachingMainTitleContainer = styled(Box)(({ theme }) => ({
   alignContent: 'center',
 }));
 
+const CoachingMonthYearButtonGroup = styled(ButtonGroup)(({ theme }) => ({
+  margin: theme.spacing(1),
+  color: theme.palette.primary.contrastText,
+}));
+
 export const CoachingDetail: React.FC<CoachingDetailProps> = ({
   coachingId,
   isAccountListId = false,
@@ -105,6 +117,14 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
           </Typography>
         </CoachingSideTitleContainer>
         <Divider style={{ background: theme.palette.primary.contrastText }} />
+        <CoachingMonthYearButtonGroup
+          variant="outlined"
+          color="inherit"
+          size="large"
+        >
+          <Button variant="contained">{t('Monthly')}</Button>
+          <Button variant="outlined">{t('Yearly')}</Button>
+        </CoachingMonthYearButtonGroup>
       </CoachingSideContainer>
       <CoachingMainContainer>
         {loading || coachingLoading ? (
