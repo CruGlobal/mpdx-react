@@ -7,7 +7,7 @@ import {
   ContactFilterSetInput,
   TaskFilterSetInput,
 } from '../../../../../graphql/types.generated';
-import useTaskDrawer from '../../../../../src/hooks/useTaskDrawer';
+import useTaskModal from '../../../../../src/hooks/useTaskModal';
 import theme from '../../../../theme';
 import { renderDialog } from '../../../Layouts/Primary/TopBar/Items/AddMenu/AddMenu';
 import { NullStateBox } from './NullStateBox';
@@ -28,7 +28,7 @@ const NullState: React.FC<Props> = ({
   changeFilters,
 }: Props) => {
   const { t } = useTranslation();
-  const { openTaskDrawer } = useTaskDrawer();
+  const { openTaskModal } = useTaskModal();
   const [dialogOpen, changeDialogOpen] = useState(false);
 
   return (
@@ -58,7 +58,7 @@ const NullState: React.FC<Props> = ({
               variant="contained"
               onClick={
                 page === 'task'
-                  ? () => openTaskDrawer({})
+                  ? () => openTaskModal({})
                   : () => changeDialogOpen(true)
               }
               style={{
@@ -93,7 +93,7 @@ const NullState: React.FC<Props> = ({
               variant="contained"
               onClick={
                 page === 'task'
-                  ? () => openTaskDrawer({})
+                  ? () => openTaskModal({})
                   : () => changeDialogOpen(true)
               }
               style={{

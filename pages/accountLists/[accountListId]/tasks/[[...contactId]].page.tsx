@@ -14,11 +14,11 @@ import { TaskFilterSetInput } from '../../../../graphql/types.generated';
 import { TaskRow } from '../../../../src/components/Task/TaskRow/TaskRow';
 import { ListHeader } from '../../../../src/components/Shared/Header/ListHeader';
 import NullState from '../../../../src/components/Shared/Filters/NullState/NullState';
-import useTaskDrawer from '../../../../src/hooks/useTaskDrawer';
 import { FilterPanel } from '../../../../src/components/Shared/Filters/FilterPanel';
 import { useMassSelection } from '../../../../src/hooks/useMassSelection';
 import { UserOptionFragment } from '../../../../src/components/Shared/Filters/FilterPanel.generated';
 import { useTaskFiltersQuery, useTasksQuery } from './Tasks.generated';
+import useTaskModal from 'src/hooks/useTaskModal';
 
 const WhiteBackground = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.common.white,
@@ -43,7 +43,7 @@ const TasksPage: React.FC = () => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
   const { query, push, replace, isReady, pathname } = useRouter();
-  const { openTaskDrawer } = useTaskDrawer();
+  const { openTaskModal } = useTaskModal();
 
   const [contactDetailsOpen, setContactDetailsOpen] = useState(false);
   const [contactDetailsId, setContactDetailsId] = useState<string>();
@@ -189,7 +189,7 @@ const TasksPage: React.FC = () => {
                   buttonGroup={
                     <Hidden xsDown>
                       <TaskHeaderButton
-                        onClick={() => openTaskDrawer({})}
+                        onClick={() => openTaskModal({})}
                         variant="text"
                         startIcon={<TaskAddIcon />}
                       >

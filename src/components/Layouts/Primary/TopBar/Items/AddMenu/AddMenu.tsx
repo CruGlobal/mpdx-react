@@ -15,7 +15,7 @@ import ListIcon from '@material-ui/icons/FormatListBulleted';
 import EditIcon from '@material-ui/icons/Edit';
 import { useTranslation } from 'react-i18next';
 
-import useTaskDrawer from '../../../../../../hooks/useTaskDrawer';
+import useTaskModal from '../../../../../../hooks/useTaskModal';
 import { useAccountListId } from '../../../../../../hooks/useAccountListId';
 import CreateContact from './Items/CreateContact/CreateContact';
 
@@ -126,7 +126,7 @@ const AddMenuPanel = ({
 };
 
 const AddMenu = ({ isInDrawer = false }: AddMenuProps): ReactElement => {
-  const { openTaskDrawer } = useTaskDrawer();
+  const { openTaskModal } = useTaskModal();
   const [selectedMenuItem, changeSelectedMenuItem] = useState(-1);
   const [dialogOpen, changeDialogOpen] = useState(false);
 
@@ -154,7 +154,7 @@ const AddMenu = ({ isInDrawer = false }: AddMenuProps): ReactElement => {
       text: 'Add Task',
       icon: <ListIcon />,
       onClick: () => {
-        openTaskDrawer({});
+        openTaskModal({});
         setAnchorEl(undefined);
       },
     },
