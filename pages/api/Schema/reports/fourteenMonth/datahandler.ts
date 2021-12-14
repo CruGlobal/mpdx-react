@@ -100,45 +100,49 @@ export const mapFourteenMonthReport = (
             0,
           ),
         },
-        contacts: currencyGroup.donation_infos.map((contactDonationInfo) => {
-          const contact = data.attributes.donor_infos.find(
-            (donor) => donor.contact_id === contactDonationInfo.contact_id,
-          );
-          return {
-            id: contactDonationInfo.contact_id,
-            name: contact?.contact_name ?? '',
-            total: Number(contactDonationInfo.total),
-            average: Number(contactDonationInfo.average),
-            minimum: Number(contactDonationInfo.minimum),
-            months: contactDonationInfo.months.map((month, index) => {
-              const salaryCurrencyTotal = month.donations.reduce(
-                (convertedTotal, donation) =>
-                  convertedTotal + Number(donation.converted_amount),
-                0,
-              );
-              return {
-                month: data.attributes.months[index],
-                total: isSalaryType ? salaryCurrencyTotal : Number(month.total),
-                salaryCurrencyTotal,
-                donations: month.donations.map((donation) => ({
-                  amount: Number(donation.amount),
-                  date: donation.donation_date,
-                  paymentMethod: donation.payment_method,
-                  currency: donation.currency,
-                })),
-              };
-            }),
-            accountNumbers: contact?.account_numbers ?? [],
-            lateBy30Days: contact?.late_by_30_days ?? false,
-            lateBy60Days: contact?.late_by_60_days ?? false,
-            pledgeAmount: contact?.pledge_amount
-              ? Number(contact?.pledge_amount)
-              : null,
-            pledgeCurrency: contact?.pledge_currency,
-            pledgeFrequency: contact?.pledge_frequency,
-            status: contact?.status,
-          };
-        }),
+        contacts: currencyGroup.donation_infos
+          .map((contactDonationInfo) => {
+            const contact = data.attributes.donor_infos.find(
+              (donor) => donor.contact_id === contactDonationInfo.contact_id,
+            );
+            return {
+              id: contactDonationInfo.contact_id,
+              name: contact?.contact_name ?? '',
+              total: Number(contactDonationInfo.total),
+              average: Number(contactDonationInfo.average),
+              minimum: Number(contactDonationInfo.minimum),
+              months: contactDonationInfo.months.map((month, index) => {
+                const salaryCurrencyTotal = month.donations.reduce(
+                  (convertedTotal, donation) =>
+                    convertedTotal + Number(donation.converted_amount),
+                  0,
+                );
+                return {
+                  month: data.attributes.months[index],
+                  total: isSalaryType
+                    ? salaryCurrencyTotal
+                    : Number(month.total),
+                  salaryCurrencyTotal,
+                  donations: month.donations.map((donation) => ({
+                    amount: Number(donation.amount),
+                    date: donation.donation_date,
+                    paymentMethod: donation.payment_method,
+                    currency: donation.currency,
+                  })),
+                };
+              }),
+              accountNumbers: contact?.account_numbers ?? [],
+              lateBy30Days: contact?.late_by_30_days ?? false,
+              lateBy60Days: contact?.late_by_60_days ?? false,
+              pledgeAmount: contact?.pledge_amount
+                ? Number(contact?.pledge_amount)
+                : null,
+              pledgeCurrency: contact?.pledge_currency,
+              pledgeFrequency: contact?.pledge_frequency,
+              status: contact?.status,
+            };
+          })
+          .sort((a, b) => a.name.localeCompare(b.name)),
       }),
     ),
   };

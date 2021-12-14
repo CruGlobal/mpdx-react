@@ -12,6 +12,7 @@ import {
   Typography,
 } from '@material-ui/core';
 import { Info as InfoIcon } from '@material-ui/icons';
+import { numberFormat } from '../../../../../lib/intlFormat';
 import {
   FourteenMonthReportTableHead as TableHead,
   FourteenMonthReportTableHeadProps as TableHeadProps,
@@ -99,20 +100,25 @@ export const FourteenMonthReportTable: FC<FourteenMonthReportTableProps> = forwa
                   <React.Fragment>
                     <TableCell>{contact.status}</TableCell>
                     <TableCell>
-                      {contact.pledgeAmount && Math.round(contact.pledgeAmount)}
+                      {contact.pledgeAmount &&
+                        numberFormat(Math.round(contact.pledgeAmount))}
                     </TableCell>
-                    <TableCell>{Math.round(contact.average)}</TableCell>
-                    <TableCell>{Math.round(contact.minimum)}</TableCell>
+                    <TableCell>
+                      {numberFormat(Math.round(contact.average))}
+                    </TableCell>
+                    <TableCell>
+                      {numberFormat(Math.round(contact.minimum))}
+                    </TableCell>
                   </React.Fragment>
                 )}
                 {contact.months?.map((month: Month) => (
                   <TableCell key={month?.month} align="center">
                     {month?.salaryCurrencyTotal &&
-                      Math.round(month?.salaryCurrencyTotal)}
+                      numberFormat(Math.round(month?.salaryCurrencyTotal))}
                   </TableCell>
                 ))}
                 <TableCell align="right">
-                  <strong>{Math.round(contact.total)}</strong>
+                  <strong>{numberFormat(Math.round(contact.total))}</strong>
                 </TableCell>
               </TableRow>
             ))}
@@ -122,10 +128,21 @@ export const FourteenMonthReportTable: FC<FourteenMonthReportTableProps> = forwa
               </TableCell>
               {totals?.months?.map((month) => (
                 <TableCell key={month.month} align="center">
-                  <strong>{Math.round(month.total)}</strong>
+                  <strong>{numberFormat(Math.round(month.total))}</strong>
                 </TableCell>
               ))}
-              <TableCell align="right" />
+              <TableCell align="right">
+                <strong>
+                  {numberFormat(
+                    Math.round(
+                      totals?.months?.reduce(
+                        (sum, month) => sum + month.total,
+                        0,
+                      ) ?? 0,
+                    ),
+                  )}
+                </strong>
+              </TableCell>
             </TableRow>
           </TableBody>
         </StickyTable>
