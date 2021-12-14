@@ -210,7 +210,7 @@ const TasksPage: React.FC = () => {
                   totalCount={data?.tasks?.totalCount}
                   style={{ height: 'calc(100vh - 160px)' }}
                   itemContent={(index, task) => (
-                    <Box key={index} flexDirection="row">
+                    <Box key={index} flexDirection="row" width="100%">
                       <TaskRow
                         accountListId={accountListId}
                         task={task}
