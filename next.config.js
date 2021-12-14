@@ -41,15 +41,18 @@ module.exports = withPlugins([
       NEXTAUTH_URL: siteUrl,
     },
     env: {
-      JWT_SECRET: process.env.JWT_SECRET || 'development-key',
-      API_URL: process.env.API_URL || 'https://api.stage.mpdx.org/graphql',
+      JWT_SECRET: process.env.JWT_SECRET ?? 'development-key',
+      API_URL: process.env.API_URL ?? 'https://api.stage.mpdx.org/graphql',
       REST_API_URL:
-        process.env.REST_API_URL || 'https://api.stage.mpdx.org/api/v2/',
+        process.env.REST_API_URL ?? 'https://api.stage.mpdx.org/api/v2/',
       SITE_URL: siteUrl,
-      CLIENT_ID: process.env.CLIENT_ID || '4027334344069527005',
+      CLIENT_ID: process.env.CLIENT_ID ?? '4027334344069527005',
       CLIENT_SECRET: process.env.CLIENT_SECRET,
       BEACON_TOKEN:
-        process.env.BEACON_TOKEN || '01b4f5f0-7fff-492a-b5ec-d536f3657d10',
+        process.env.BEACON_TOKEN ?? '01b4f5f0-7fff-492a-b5ec-d536f3657d10',
+      OKTA_CLIENT_ID: process.env.OKTA_CLIENT_ID ?? '0oa1n0gjoy3j5Ycdg0h8',
+      OKTA_CLIENT_SECRET: process.env.OKTA_CLIENT_SECRET,
+      OKTA_ISSUER: process.env.OKTA_ISSUER ?? 'https://signon.okta.com',
     },
     // Force .page prefix on page files (ex. index.page.tsx) so generated files can be included in /pages directory without Next.js throwing build errors
     pageExtensions: ['page.tsx', 'page.ts', 'page.jsx', 'page.js'],

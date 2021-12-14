@@ -1,6 +1,6 @@
 import { ApolloServer } from '@saeris/apollo-server-vercel';
 import { ApolloGateway, RemoteGraphQLDataSource } from '@apollo/gateway';
-import jwt from 'next-auth/jwt';
+import { getToken } from 'next-auth/jwt';
 import { NextApiRequest } from 'next';
 
 class AuthenticatedDataSource extends RemoteGraphQLDataSource {
@@ -11,10 +11,10 @@ class AuthenticatedDataSource extends RemoteGraphQLDataSource {
     NonNullable<InstanceType<typeof RemoteGraphQLDataSource>['willSendRequest']>
   >[0]) {
     try {
-      if (context.jwtToken) {
+      if (context.apiToken) {
         request?.http?.headers.set(
           'Authorization',
-          `Bearer ${context.jwtToken}`,
+          `Bearer ${context.apiToken}`,
         );
       }
     } catch (e) {
@@ -47,12 +47,12 @@ const server = new ApolloServer({
   introspection: true,
   subscriptions: false,
   context: async ({ req }: { req: NextApiRequest }) => {
-    const jwtToken = (await jwt.getToken({
+    const jwtToken = (await getToken({
       req,
       secret: process.env.JWT_SECRET as string,
-    })) as { token: string } | null;
+    })) as { apiToken: string } | null;
 
-    return { jwtToken: jwtToken?.token };
+    return { apiToken: jwtToken?.apiToken };
   },
 });
 
