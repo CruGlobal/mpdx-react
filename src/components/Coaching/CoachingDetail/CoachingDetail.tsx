@@ -95,6 +95,7 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
     ? accountListData?.accountList
     : coachingData?.coachingAccountList;
 
+  const { isMonthly, setIsMonthly } = React.useState(true);
   return (
     <CoachingDetailContainer>
       <CoachingSideContainer bgcolor={theme.palette.progressBarGray.main}>
