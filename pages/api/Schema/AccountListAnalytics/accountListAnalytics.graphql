@@ -1,0 +1,70 @@
+extend type Query {
+  accountListAnalytics(
+    accountListId: ID!
+    dateRange: String
+  ): AccountListAnalytics!
+}
+type AccountListAnalytics {
+  id: ID!
+  type: String!
+  createdAt: ISO8601DateTime!
+  appointments: AppointmentsAccountListAnalytics!
+  contacts: ContactsAccountListAnalytics!
+  correspondence: CorrespondenceAccountListAnalytics!
+  electronic: ElectronicAccountListAnalytics!
+  email: EmailsAccountListAnalytics!
+  facebook: FacebookAccountListAnalytics!
+  phone: PhoneAccountListAnalytics!
+  textMessage: TextMessageAccountListAnalytics!
+  startDate: ISO8601DateTime!
+  endDate: ISO8601DateTime!
+  updatedAt: ISO8601DateTime!
+  updatedInDbAt: ISO8601DateTime!
+}
+
+type AppointmentsAccountListAnalytics {
+  completed: Int!
+}
+
+type ContactsAccountListAnalytics {
+  active: Int!
+  referrals: Int!
+  referrals_on_hand: Int!
+}
+
+type CorrespondenceAccountListAnalytics {
+  precall: Int!
+  reminders: Int!
+  support_letters: Int!
+  thank_yous: Int!
+  newsletters: Int!
+}
+
+type ElectronicAccountListAnalytics {
+  appointments: Int!
+  received: Int!
+  sent: Int!
+}
+
+type EmailsAccountListAnalytics {
+  received: Int!
+  sent: Int!
+}
+
+type FacebookAccountListAnalytics {
+  received: Int!
+  sent: Int!
+}
+
+type PhoneAccountListAnalytics {
+  appointments: Int!
+  attempted: Int!
+  completed: Int!
+  received: Int!
+  talktoinperson: Int!
+}
+
+type TextMessageAccountListAnalytics {
+  received: Int!
+  sent: Int!
+}
