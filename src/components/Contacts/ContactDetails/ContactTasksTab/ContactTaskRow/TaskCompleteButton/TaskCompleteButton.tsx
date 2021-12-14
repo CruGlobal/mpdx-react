@@ -34,7 +34,7 @@ export const TaskCompleteButton: React.FC<TaskCompleteButtonProps> = ({
 }) => {
   return (
     <ButtonWrap isComplete={isComplete} onClick={() => onClick()}>
-      <Check />
+      <Check titleAccess="Check Icon" />
     </ButtonWrap>
   );
 };
