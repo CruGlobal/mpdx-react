@@ -51,6 +51,7 @@ import {
 } from '../../Drawer/Form/TaskDrawer.generated';
 import theme from '../../../../../src/theme';
 import { useCreateTaskCommentMutation } from '../../Drawer/CommentList/Form/CreateTaskComment.generated';
+import { TasksDocument } from 'pages/accountLists/[accountListId]/tasks/Tasks.generated';
 
 export const ActionButton = styled(Button)(() => ({
   color: theme.palette.info.main,
@@ -148,6 +149,12 @@ const TaskModalForm = ({
     if (isUpdate(attributes)) {
       await updateTask({
         variables: { accountListId, attributes },
+        refetchQueries: [
+          {
+            query: TasksDocument,
+            variables: { accountListId },
+          },
+        ],
       });
     } else {
       await createTask({
@@ -165,6 +172,16 @@ const TaskModalForm = ({
             });
           }
         },
+        refetchQueries: [
+          {
+            query: GetTasksForTaskListDocument,
+            variables: { accountListId, first: rowsPerPage, ...filter },
+          },
+          {
+            query: TasksDocument,
+            variables: { accountListId },
+          },
+        ],
       });
     }
     enqueueSnackbar(t('Task saved successfully'), { variant: 'success' });
