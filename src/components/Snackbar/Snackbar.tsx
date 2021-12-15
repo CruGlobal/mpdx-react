@@ -3,14 +3,14 @@ import { OptionsObject, useSnackbar, WithSnackbarProps } from 'notistack';
 
 // Adapted from https://github.com/iamhosseindhv/notistack/issues/30#issuecomment-832261019
 // Must be imported at least once in the app to initialize the ref
-let snackbarRef: WithSnackbarProps;
+let snackbarRef: WithSnackbarProps | undefined;
 export const SnackbarUtilsConfigurator: React.FC = () => {
   snackbarRef = useSnackbar();
   return null;
 };
 
 const toast = (msg: string, options: OptionsObject = {}): void => {
-  snackbarRef.enqueueSnackbar(msg, options);
+  snackbarRef?.enqueueSnackbar(msg, options);
 };
 
 const success = (msg: string, options: OptionsObject = {}): void => {

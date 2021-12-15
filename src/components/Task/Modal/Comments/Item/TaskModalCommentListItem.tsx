@@ -9,6 +9,7 @@ import {
 import React, { ReactElement, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Formik } from 'formik';
+import { DateTime } from 'luxon';
 import { CommentUpdateMutationInput } from '../../../../../../graphql/types.generated';
 import theme from '../../../../../../src/theme';
 import {
@@ -97,13 +98,8 @@ const TaskModalCommentsListItem: React.FC<Props> = ({
         </CommentInfoText>
         <Tooltip placement="bottom" title={comment?.createdAt || ''} arrow>
           <CommentInfoText display="inline">
-            {`${comment?.createdAt.substring(
-              5,
-              7,
-            )}/${comment?.createdAt.substring(
-              8,
-              10,
-            )}/${comment?.createdAt.substring(0, 4)}`}
+            {comment?.createdAt &&
+              DateTime.fromISO(comment.createdAt).toLocaleString()}
           </CommentInfoText>
         </Tooltip>
       </Box>

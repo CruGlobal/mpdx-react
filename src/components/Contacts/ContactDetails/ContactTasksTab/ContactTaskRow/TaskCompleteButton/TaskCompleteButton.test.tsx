@@ -5,7 +5,7 @@ import React from 'react';
 import theme from '../../../../../../theme';
 import { TaskCompleteButton } from './TaskCompleteButton';
 
-describe('TaskCommentsButton', () => {
+describe('TaskCompleteButton', () => {
   it('should render not complete', () => {
     const onClick = jest.fn();
 
@@ -23,12 +23,13 @@ describe('TaskCommentsButton', () => {
 
     const completeButtonStyle =
       completeButton && window.getComputedStyle(completeButton);
-    const checkIconStyle = checkIcon && window.getComputedStyle(checkIcon);
 
     expect(completeButtonStyle?.backgroundColor).toMatchInlineSnapshot(
       `"transparent"`,
     );
-    expect(checkIconStyle?.color).toMatchInlineSnapshot(`"rgb(0, 202, 153)"`);
+    expect(completeButtonStyle?.color).toMatchInlineSnapshot(
+      `"rgb(56, 63, 67)"`,
+    );
   });
 
   it('should render complete', () => {
@@ -48,12 +49,13 @@ describe('TaskCommentsButton', () => {
 
     const completeButtonStyle =
       completeButton && window.getComputedStyle(completeButton);
-    const checkIconStyle = checkIcon && window.getComputedStyle(checkIcon);
 
     expect(completeButtonStyle?.backgroundColor).toMatchInlineSnapshot(
       `"transparent"`,
     );
-    expect(checkIconStyle?.color).toMatchInlineSnapshot(`"rgb(255, 255, 255)"`);
+    expect(completeButtonStyle?.color).toMatchInlineSnapshot(
+      `"rgb(56, 63, 67)"`,
+    );
   });
 
   it('should handle click', () => {

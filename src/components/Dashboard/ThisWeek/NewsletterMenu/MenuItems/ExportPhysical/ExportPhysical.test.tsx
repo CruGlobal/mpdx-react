@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, waitFor, within } from '@testing-library/react';
-import { useSession } from 'next-auth/client';
+import { useSession } from 'next-auth/react';
 import userEvent from '@testing-library/user-event';
 import { MuiThemeProvider } from '@material-ui/core';
 import {
@@ -14,21 +14,21 @@ import ExportPhysical from './ExportPhysical';
 import { CreateExportedContactsMutation } from './ExportPhysical.generated';
 
 const accountListId = '111';
-const token = 'someToken1234';
+const apiToken = 'someToken1234';
 const handleClose = jest.fn();
 
-jest.mock('next-auth/client');
+jest.mock('next-auth/react');
 
 describe('ExportPhysical', () => {
   beforeEach(() => {
-    (useSession as jest.Mock).mockReturnValue([
-      {
+    (useSession as jest.Mock).mockReturnValue({
+      data: {
         user: {
-          token,
+          apiToken,
         },
       },
-      false,
-    ]);
+      status: 'authenticated',
+    });
   });
 
   const mocks = {
@@ -115,7 +115,7 @@ describe('ExportPhysical', () => {
       userEvent.click(getByText('Export'));
       await waitFor(() =>
         expect(window.location.replace).toHaveBeenCalledWith(
-          `${url}.${ExportFormatEnum.Pdf}?access_token=${token}`,
+          `${url}.${ExportFormatEnum.Pdf}?access_token=${apiToken}`,
         ),
       );
     });
@@ -155,7 +155,7 @@ describe('ExportPhysical', () => {
       userEvent.click(getByText('Export'));
       await waitFor(() =>
         expect(window.location.replace).toHaveBeenCalledWith(
-          `${url}.${ExportFormatEnum.Pdf}?access_token=${token}`,
+          `${url}.${ExportFormatEnum.Pdf}?access_token=${apiToken}`,
         ),
       );
     });
@@ -176,7 +176,7 @@ describe('ExportPhysical', () => {
       userEvent.click(getByText('CSV for Mail Merge'));
       await waitFor(() =>
         expect(window.location.replace).toHaveBeenCalledWith(
-          `${url}.${ExportFormatEnum.Csv}?access_token=${token}`,
+          `${url}.${ExportFormatEnum.Csv}?access_token=${apiToken}`,
         ),
       );
     });
@@ -197,7 +197,7 @@ describe('ExportPhysical', () => {
       userEvent.click(getByText('Advanced CSV'));
       await waitFor(() =>
         expect(window.location.replace).toHaveBeenCalledWith(
-          `${url}.${ExportFormatEnum.Csv}?access_token=${token}`,
+          `${url}.${ExportFormatEnum.Csv}?access_token=${apiToken}`,
         ),
       );
     });
@@ -218,7 +218,7 @@ describe('ExportPhysical', () => {
       userEvent.click(getByText('Advanced Excel (XLSX)'));
       await waitFor(() =>
         expect(window.location.replace).toHaveBeenCalledWith(
-          `${url}.${ExportFormatEnum.Xlsx}?access_token=${token}`,
+          `${url}.${ExportFormatEnum.Xlsx}?access_token=${apiToken}`,
         ),
       );
     });

@@ -3,7 +3,7 @@ import { AppProps } from 'next/app';
 import { StylesProvider, ThemeProvider } from '@material-ui/core/styles';
 import { ApolloProvider } from '@apollo/client';
 import { AnimatePresence } from 'framer-motion';
-import { Provider as NextAuthProvider } from 'next-auth/client';
+import { SessionProvider } from 'next-auth/react';
 import { NextPage } from 'next';
 import Head from 'next/head';
 import { I18nextProvider } from 'react-i18next';
@@ -82,7 +82,7 @@ const App = ({ Component, pageProps, router }: AppProps): ReactElement => {
         />
       </Head>
       <I18nextProvider i18n={i18n}>
-        <NextAuthProvider session={session}>
+        <SessionProvider session={session}>
           <ApolloProvider client={client}>
             <ThemeProvider theme={theme}>
               <StylesProvider>
@@ -110,7 +110,7 @@ const App = ({ Component, pageProps, router }: AppProps): ReactElement => {
               </StylesProvider>
             </ThemeProvider>
           </ApolloProvider>
-        </NextAuthProvider>
+        </SessionProvider>
       </I18nextProvider>
     </>
   );

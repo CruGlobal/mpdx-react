@@ -1,14 +1,10 @@
 import { createMocks } from 'node-mocks-http';
-import jwt from 'next-auth/jwt';
+import { getToken } from 'next-auth/jwt';
 import handoff from '../../../pages/api/handoff.page';
 
-jest.mock('next-auth/jwt', () => ({}));
+jest.mock('next-auth/jwt', () => ({ getToken: jest.fn() }));
 
 describe('/api/handoff', () => {
-  beforeEach(() => {
-    jwt.getToken = jest.fn();
-  });
-
   it('returns 422', async () => {
     const { req, res } = createMocks({ method: 'GET' });
     await handoff(req, res);
@@ -18,7 +14,7 @@ describe('/api/handoff', () => {
 
   describe('session', () => {
     beforeEach(() => {
-      jwt.getToken = jest.fn().mockReturnValue({ token: 'accessToken' });
+      (getToken as jest.Mock).mockReturnValue({ apiToken: 'accessToken' });
     });
 
     it('returns redirect', async () => {

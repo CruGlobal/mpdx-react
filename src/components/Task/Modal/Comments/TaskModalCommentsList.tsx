@@ -11,7 +11,6 @@ import { useTranslation } from 'react-i18next';
 import { Add } from '@material-ui/icons';
 import illustration4 from '../../../../images/drawkit/grape/drawkit-grape-pack-illustration-4.svg';
 import TaskDrawerCommentListItem from '../../Drawer/CommentList/Item';
-//import TaskDrawerCommentListForm from '../../Drawer/CommentList/Form';
 import theme from '../../../../../src/theme';
 import { ActionButton } from '../Form/TaskModalForm';
 import { useGetCommentsForTaskModalCommentListQuery } from './TaskListComments.generated';
@@ -114,7 +113,7 @@ const TaskModalCommentsList = ({
               return [
                 ...result,
                 <Box
-                  data-testid={`TaskDrawerCommentListItem-${comment.id}`}
+                  data-testid={`TaskModalCommentListItem-${comment.id}`}
                   key={comment.id}
                 >
                   <TaskModalCommentsListItem

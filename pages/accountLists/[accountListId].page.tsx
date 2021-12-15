@@ -1,7 +1,7 @@
 import React, { ReactElement } from 'react';
 import Head from 'next/head';
 import { GetServerSideProps } from 'next';
-import { getSession } from 'next-auth/client';
+import { getSession } from 'next-auth/react';
 import Dashboard from '../../src/components/Dashboard';
 import { ssrClient } from '../../src/lib/client';
 import {
@@ -33,7 +33,7 @@ export const getServerSideProps: GetServerSideProps = async ({
   const session = await getSession({ req });
 
   // If no token from session, redirect to login page
-  if (!session?.user['token']) {
+  if (!session?.user.apiToken) {
     return {
       redirect: {
         destination: '/login',
@@ -42,7 +42,7 @@ export const getServerSideProps: GetServerSideProps = async ({
     };
   }
 
-  const client = await ssrClient(session?.user['token']);
+  const client = await ssrClient(session?.user.apiToken);
   const response = await client.query<
     GetDashboardQuery,
     GetDashboardQueryVariables

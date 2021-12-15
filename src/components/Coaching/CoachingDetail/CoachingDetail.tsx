@@ -4,12 +4,16 @@ import { EcoOutlined } from '@material-ui/icons';
 import { useTranslation } from 'react-i18next';
 import { Skeleton } from '@material-ui/lab';
 import { AppealProgress } from '../AppealProgress/AppealProgress';
-import { useLoadCoachingDetailQuery } from './LoadCoachingDetail.generated';
+import {
+  useLoadAccountListCoachingDetailQuery,
+  useLoadCoachingDetailQuery,
+} from './LoadCoachingDetail.generated';
 import theme from 'src/theme';
 import { MonthlyActivitySection } from 'src/components/Reports/DonationsReport/MonthlyActivity/MonthlyActivitySection';
 
 interface CoachingDetailProps {
   coachingId: string;
+  isAccountListId: boolean;
 }
 
 const CoachingLoadingSkeleton = styled(Skeleton)(({ theme }) => ({
@@ -56,11 +60,28 @@ const CoachingMainTitleContainer = styled(Box)(({ theme }) => ({
 
 export const CoachingDetail: React.FC<CoachingDetailProps> = ({
   coachingId,
+  isAccountListId = false,
 }) => {
   const { t } = useTranslation();
-  const { data, loading } = useLoadCoachingDetailQuery({
-    variables: { coachingId: coachingId },
+  const {
+    data: accountListData,
+    loading,
+  } = useLoadAccountListCoachingDetailQuery({
+    variables: { coachingId },
+    skip: !isAccountListId,
   });
+
+  const {
+    data: coachingData,
+    loading: coachingLoading,
+  } = useLoadCoachingDetailQuery({
+    variables: { coachingId },
+    skip: isAccountListId,
+  });
+
+  const data = isAccountListId
+    ? accountListData?.accountList
+    : coachingData?.coachingAccountList;
 
   return (
     <CoachingDetailContainer>
@@ -86,7 +107,7 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
         <Divider style={{ background: theme.palette.primary.contrastText }} />
       </CoachingSideContainer>
       <CoachingMainContainer>
-        {loading ? (
+        {loading || coachingLoading ? (
           <>
             <CoachingLoadingSkeleton />
             <CoachingLoadingSkeleton />
@@ -104,21 +125,17 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
                     margin: theme.spacing(1),
                   }}
                 >
-                  {data?.coachingAccountList.name}
+                  {data?.name}
                 </Typography>
               </Box>
               <Box style={{ flexGrow: 1 }}>
                 <AppealProgress
                   loading={loading}
                   isPrimary={false}
-                  currency={data?.coachingAccountList.currency}
-                  goal={
-                    data?.coachingAccountList.monthlyGoal
-                      ? data.coachingAccountList.monthlyGoal
-                      : 0
-                  }
-                  received={data?.coachingAccountList.receivedPledges}
-                  pledged={data?.coachingAccountList.totalPledges}
+                  currency={data?.currency}
+                  goal={data?.monthlyGoal ?? 0}
+                  received={data?.receivedPledges}
+                  pledged={data?.totalPledges}
                 />
               </Box>
             </CoachingMainTitleContainer>

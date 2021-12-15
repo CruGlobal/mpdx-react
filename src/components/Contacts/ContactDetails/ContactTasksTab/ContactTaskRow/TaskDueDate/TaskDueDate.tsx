@@ -11,9 +11,17 @@ const TaskRowWrap = styled(Button)(({ theme }) => ({
 }));
 
 const TaskCommentIcon = styled(CalendarToday)(
-  ({ theme, isLate }: { theme: Theme; isLate: boolean }) => ({
-    width: 20,
-    height: 20,
+  ({
+    theme,
+    isLate,
+    small,
+  }: {
+    theme: Theme;
+    isLate: boolean;
+    small: boolean;
+  }) => ({
+    width: small ? 16 : 20,
+    height: small ? 16 : 20,
     color: isLate ? theme.palette.error.main : theme.palette.text.secondary,
   }),
 );
@@ -23,12 +31,14 @@ const DueDate = styled(Typography)(
     theme,
     isLate,
     isComplete,
+    small,
   }: {
     theme: Theme;
     isLate: boolean;
     isComplete: boolean;
+    small: boolean;
   }) => ({
-    fontSize: 16,
+    fontSize: small ? 12 : 16,
     color: isLate
       ? theme.palette.error.main
       : isComplete
@@ -41,11 +51,13 @@ const DueDate = styled(Typography)(
 interface TaskDueDateProps {
   isComplete: boolean;
   dueDate: DateTime | null;
+  small?: boolean;
 }
 
 export const TaskDueDate: React.FC<TaskDueDateProps> = ({
   isComplete,
   dueDate,
+  small,
 }) => {
   if (!dueDate) {
     return null;
@@ -55,8 +67,8 @@ export const TaskDueDate: React.FC<TaskDueDateProps> = ({
 
   return (
     <TaskRowWrap>
-      <TaskCommentIcon isLate={isLate} />
-      <DueDate isLate={isLate} isComplete={isComplete}>
+      <TaskCommentIcon isLate={isLate} small={small || false} />
+      <DueDate isLate={isLate} isComplete={isComplete} small={small || false}>
         {dueDate.toFormat('MMM dd')}
       </DueDate>
     </TaskRowWrap>

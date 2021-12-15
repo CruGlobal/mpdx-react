@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import jwt from 'next-auth/jwt';
+import { getToken } from 'next-auth/jwt';
 
 if (!process.env.JWT_SECRET) {
   throw new Error('JWT_SECRET env var is not set');
@@ -9,10 +9,10 @@ const handoff = async (
   req: NextApiRequest,
   res: NextApiResponse,
 ): Promise<void> => {
-  const jwtToken = (await jwt.getToken({
+  const jwtToken = (await getToken({
     req,
     secret: process.env.JWT_SECRET as string,
-  })) as { token: string } | null;
+  })) as { apiToken: string } | null;
   if (
     jwtToken &&
     req.query.accountListId &&
@@ -26,7 +26,7 @@ const handoff = async (
       }mpdx.org/handoff`,
     );
 
-    url.searchParams.append('accessToken', jwtToken.token);
+    url.searchParams.append('accessToken', jwtToken.apiToken);
     url.searchParams.append(
       'accountListId',
       req.query.accountListId.toString(),
@@ -41,7 +41,7 @@ const handoff = async (
       }mpdx.org/${req.query.path.toString().replace(/^\/+/, '')}`,
     );
 
-    url.searchParams.append('access_token', jwtToken['token']);
+    url.searchParams.append('access_token', jwtToken.apiToken);
     res.redirect(url.href);
   } else {
     res.status(422);

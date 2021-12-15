@@ -19,7 +19,10 @@ const CoachingPage: React.FC = () => {
         <title>MPDX | {t('Coaching Accounts')}</title>
       </Head>
       {accountListId && coachingId && isReady ? (
-        <CoachingDetail coachingId={coachingId as string} />
+        <CoachingDetail
+          coachingId={coachingId as string}
+          isAccountListId={false}
+        />
       ) : (
         <Loading loading />
       )}

@@ -13,14 +13,13 @@ const ButtonWrap = styled(Button)(
     borderRadius: 26,
     border: `2px solid ${theme.palette.mpdxGreen.main}`,
     margin: theme.spacing(2),
-  }),
-);
-
-const TaskCheckIcon = styled(Check)(
-  ({ theme, isComplete }: { theme: Theme; isComplete: boolean }) => ({
     color: isComplete
       ? theme.palette.common.white
       : theme.palette.mpdxGreen.main,
+    '&:hover': {
+      backgroundColor: theme.palette.mpdxGreen.main,
+      color: theme.palette.common.white,
+    },
   }),
 );
 
@@ -35,7 +34,7 @@ export const TaskCompleteButton: React.FC<TaskCompleteButtonProps> = ({
 }) => {
   return (
     <ButtonWrap isComplete={isComplete} onClick={() => onClick()}>
-      <TaskCheckIcon titleAccess="Check Icon" isComplete={isComplete} />
+      <Check titleAccess="Check Icon" />
     </ButtonWrap>
   );
 };

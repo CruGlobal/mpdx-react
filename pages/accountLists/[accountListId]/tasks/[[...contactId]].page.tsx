@@ -98,8 +98,10 @@ const TasksPage: React.FC = () => {
   const savedFilters: UserOptionFragment[] =
     filterData?.userOptions.filter(
       (option) =>
-        option.key?.includes('saved_tasks_filter_') &&
-        JSON.parse(option.value ?? '').account_list_id === accountListId,
+        (option.key?.includes('saved_tasks_filter_') ||
+          option.key?.includes('graphql_saved_tasks_filter_')) &&
+        (JSON.parse(option.value ?? '').account_list_id === accountListId ||
+          JSON.parse(option.value ?? '').accountListId === accountListId),
     ) ?? [];
   //#endregion
 
@@ -209,7 +211,7 @@ const TasksPage: React.FC = () => {
                   totalCount={data?.tasks?.totalCount}
                   style={{ height: 'calc(100vh - 160px)' }}
                   itemContent={(index, task) => (
-                    <Box key={index} flexDirection="row">
+                    <Box key={index} flexDirection="row" width="100%">
                       <TaskRow
                         accountListId={accountListId}
                         task={task}
