@@ -15,7 +15,7 @@ import useTaskDrawer from '../../../hooks/useTaskDrawer';
 import { StarTaskIconButton } from '../../Contacts/ContactDetails/ContactTasksTab/StarTaskIconButton/StarTaskIconButton';
 import { TaskDueDate } from '../../Contacts/ContactDetails/ContactTasksTab/ContactTaskRow/TaskDueDate/TaskDueDate';
 import { TaskCommentsButton } from '../../Contacts/ContactDetails/ContactTasksTab/ContactTaskRow/TaskCommentsButton/TaskCommentsButton';
-import { TaskDrawerTabsEnum } from '../Drawer/Drawer';
+import useTaskModal from '../../../hooks/useTaskModal';
 import { TaskRowFragment } from './TaskRow.generated';
 
 const ContactRowButton = styled(Box)(({}) => ({
@@ -77,6 +77,7 @@ export const TaskRow: React.FC<TaskRowProps> = ({
   const { t } = useTranslation();
 
   const { openTaskDrawer } = useTaskDrawer();
+  const { openTaskModal } = useTaskModal();
   const onClick = (
     event: React.MouseEvent<HTMLElement, MouseEvent>,
     contactId: string,
@@ -102,9 +103,9 @@ export const TaskRow: React.FC<TaskRowProps> = ({
   };
 
   const handleCommentButtonPressed = () => {
-    openTaskDrawer({
+    openTaskModal({
       taskId,
-      specificTab: TaskDrawerTabsEnum.comments,
+      view: 'comments',
     });
   };
 
