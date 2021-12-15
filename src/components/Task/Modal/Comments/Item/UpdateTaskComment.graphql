@@ -1,0 +1,7 @@
+mutation UpdateComment($taskId: ID!, $commentId: ID!, $body: String!) {
+  updateComment(
+    input: { taskId: $taskId, commentId: $commentId, body: $body }
+  ) {
+    id
+  }
+}

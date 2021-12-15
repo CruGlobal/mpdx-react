@@ -9,7 +9,7 @@ import {
 } from '../../../../__tests__/util/graphqlMocking';
 import theme from '../../../theme';
 import useTaskDrawer from '../../../hooks/useTaskDrawer';
-import { TaskDrawerTabsEnum } from '../Drawer/Drawer';
+import useTaskModal from '../../../hooks/useTaskModal';
 import { TaskRowFragment, TaskRowFragmentDoc } from './TaskRow.generated';
 import { TaskRow } from './TaskRow';
 
@@ -20,12 +20,17 @@ const startAt = '2021-10-12';
 const lateStartAt = '2019-10-12';
 
 jest.mock('../../../hooks/useTaskDrawer');
+jest.mock('../../../hooks/useTaskModal');
 
 const openTaskDrawer = jest.fn();
+const openTaskModal = jest.fn();
 
 beforeEach(() => {
   (useTaskDrawer as jest.Mock).mockReturnValue({
     openTaskDrawer,
+  });
+  (useTaskModal as jest.Mock).mockReturnValue({
+    openTaskModal,
   });
 });
 
@@ -257,9 +262,9 @@ describe('TaskRow', () => {
 
       expect(await findByText(task.subject)).toBeVisible();
       userEvent.click(getByRole('img', { hidden: true, name: 'Comment Icon' }));
-      expect(openTaskDrawer).toHaveBeenCalledWith({
+      expect(openTaskModal).toHaveBeenCalledWith({
         taskId: task.id,
-        specificTab: TaskDrawerTabsEnum.comments,
+        view: 'comments',
       });
     });
   });

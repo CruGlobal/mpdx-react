@@ -1,0 +1,5 @@
+mutation DeleteComment($taskId: ID!, $commentId: ID!) {
+  deleteComment(input: { taskId: $taskId, commentId: $commentId }) {
+    id
+  }
+}
