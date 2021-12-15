@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { ReactElement, useState } from 'react';
 import {
   Box,
   BoxProps,
@@ -78,6 +78,7 @@ interface FilterPanelProps {
   onSelectedFiltersChanged: (
     selectedFilters: ContactFilterSetInput & TaskFilterSetInput,
   ) => void;
+  buttonGroup?: ReactElement;
 }
 
 export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
@@ -86,6 +87,7 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
   onClose,
   selectedFilters,
   onSelectedFiltersChanged,
+  buttonGroup,
   ...boxProps
 }) => {
   const theme = useTheme();
@@ -418,6 +420,7 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
           unmountOnExit
         >
           <div>
+            {buttonGroup}
             <FilterHeader>
               <Box display="flex" justifyContent="space-between">
                 <Typography variant="h6">

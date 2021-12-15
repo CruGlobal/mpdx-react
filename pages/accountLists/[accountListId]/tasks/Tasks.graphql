@@ -2,16 +2,18 @@ query Tasks(
   $accountListId: ID!
   $tasksFilter: TaskFilterSetInput
   $after: String
+  $completed: Boolean
 ) {
   tasks(
     accountListId: $accountListId
     tasksFilter: $tasksFilter
     after: $after
+    completed: $completed
   ) {
+    totalCount
     nodes {
       ...TaskRow
     }
-    totalCount
     pageInfo {
       endCursor
       hasNextPage

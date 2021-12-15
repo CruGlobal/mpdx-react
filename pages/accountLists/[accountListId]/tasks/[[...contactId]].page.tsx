@@ -2,9 +2,18 @@ import React, { useEffect, useState } from 'react';
 import Head from 'next/head';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'next/router';
-import { Box, Button, Hidden, styled } from '@material-ui/core';
+import {
+  Box,
+  Button,
+  Hidden,
+  MenuItem,
+  styled,
+  TextField,
+  Typography,
+} from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 import CheckCircleOutlineIcon from '@material-ui/icons/CheckCircleOutline';
+import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
 import { InfiniteList } from '../../../../src/components/InfiniteList/InfiniteList';
 import { ContactDetails } from '../../../../src/components/Contacts/ContactDetails/ContactDetails';
 import Loading from '../../../../src/components/Loading';
@@ -19,6 +28,7 @@ import { useMassSelection } from '../../../../src/hooks/useMassSelection';
 import { UserOptionFragment } from '../../../../src/components/Shared/Filters/FilterPanel.generated';
 import { useTaskFiltersQuery, useTasksQuery } from './Tasks.generated';
 import useTaskModal from 'src/hooks/useTaskModal';
+import theme from 'src/theme';
 
 const WhiteBackground = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.common.white,
@@ -39,6 +49,14 @@ const TaskAddIcon = styled(AddIcon)(({ theme }) => ({
   color: theme.palette.info.main,
 }));
 
+enum TaskDueDates {
+  All = 'all',
+  Today = 'today',
+  Overdue = 'overdue',
+  Upcoming = 'upcoming',
+  None = 'no due date',
+}
+
 const TasksPage: React.FC = () => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
@@ -47,6 +65,7 @@ const TasksPage: React.FC = () => {
 
   const [contactDetailsOpen, setContactDetailsOpen] = useState(false);
   const [contactDetailsId, setContactDetailsId] = useState<string>();
+  const [showCurrentTasks, setShowCurrentTasks] = useState<boolean>(true);
 
   const { contactId, searchTerm } = query;
 
@@ -73,6 +92,7 @@ const TasksPage: React.FC = () => {
   const { data, loading, fetchMore } = useTasksQuery({
     variables: {
       accountListId: accountListId ?? '',
+      completed: showCurrentTasks,
       tasksFilter: {
         ...activeFilters,
         ...starredFilter,
@@ -148,6 +168,25 @@ const TasksPage: React.FC = () => {
   };
   //#endregion
 
+  const toggleLoadedTasks = (
+    event: React.MouseEvent<HTMLElement>,
+    current: boolean,
+  ): void => {
+    setShowCurrentTasks(current);
+  };
+
+  const [showDueDates, setShowDueDates] = useState<TaskDueDates>(
+    TaskDueDates.All,
+  );
+
+  const handleChangeDueDates = (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ): void => {
+    setShowDueDates(
+      TaskDueDates[event.target.value as keyof typeof TaskDueDates],
+    );
+  };
+
   //#region JSX
   return (
     <>
@@ -165,6 +204,55 @@ const TasksPage: React.FC = () => {
                   selectedFilters={activeFilters}
                   onClose={toggleFilterPanel}
                   onSelectedFiltersChanged={setActiveFilters}
+                  buttonGroup={
+                    <Box
+                      display="flex"
+                      flexDirection="column"
+                      alignItems="center"
+                      justifyContent="center"
+                      p={2}
+                      pb={0}
+                      width="100%"
+                    >
+                      <ToggleButtonGroup
+                        exclusive
+                        value={showCurrentTasks}
+                        onChange={toggleLoadedTasks}
+                      >
+                        <ToggleButton
+                          value={true}
+                          disabled={showCurrentTasks}
+                          style={{ textTransform: 'none' }}
+                        >
+                          <Typography>{t('Current')}</Typography>
+                        </ToggleButton>
+                        <ToggleButton
+                          value={false}
+                          disabled={!showCurrentTasks}
+                          style={{ textTransform: 'none' }}
+                        >
+                          <Typography>{t('Historic')}</Typography>
+                        </ToggleButton>
+                      </ToggleButtonGroup>
+                      <TextField
+                        value={showDueDates}
+                        select
+                        size="small"
+                        onChange={(
+                          event: React.ChangeEvent<HTMLInputElement>,
+                        ) => handleChangeDueDates(event)}
+                        fullWidth
+                        variant="outlined"
+                        style={{ marginTop: theme.spacing(2) }}
+                      >
+                        <MenuItem value={'All'}>{t('All')}</MenuItem>
+                        <MenuItem value={'Today'}>{t('Today')}</MenuItem>
+                        <MenuItem value={'Overdue'}>{t('Overdue')}</MenuItem>
+                        <MenuItem value={'Upcoming'}>{t('Upcoming')}</MenuItem>
+                        <MenuItem value={'None'}>{t('No Due Date')}</MenuItem>
+                      </TextField>
+                    </Box>
+                  }
                 />
               ) : (
                 <></>
@@ -204,39 +292,194 @@ const TasksPage: React.FC = () => {
                     </Hidden>
                   }
                 />
-                <InfiniteList
-                  loading={loading}
-                  data={data?.tasks?.nodes}
-                  totalCount={data?.tasks?.totalCount}
-                  style={{ height: 'calc(100vh - 160px)' }}
-                  itemContent={(index, task) => (
-                    <Box key={index} flexDirection="row" width="100%">
-                      <TaskRow
-                        accountListId={accountListId}
-                        task={task}
-                        onContactSelected={setContactFocus}
-                        onTaskCheckToggle={toggleSelectionById}
-                        isChecked={isRowChecked(task.id)}
-                      />
+                {(showDueDates === TaskDueDates.All ||
+                  showDueDates === TaskDueDates.Overdue) && (
+                  <>
+                    <Box
+                      width="full"
+                      height={theme.spacing(8)}
+                      display="flex"
+                      alignItems="center"
+                      p={2}
+                      borderBottom={`3px solid ${theme.palette.progressBarOrange.main}`}
+                    >
+                      <Typography variant="h6">{t('Overdue')}</Typography>
                     </Box>
-                  )}
-                  endReached={() =>
-                    data?.tasks?.pageInfo.hasNextPage &&
-                    fetchMore({
-                      variables: { after: data.tasks?.pageInfo.endCursor },
-                    })
-                  }
-                  EmptyPlaceholder={
-                    <Box width="75%" margin="auto" mt={2}>
-                      <NullState
-                        page="task"
-                        totalCount={data?.allTasks?.totalCount || 0}
-                        filtered={isFiltered}
-                        changeFilters={setActiveFilters}
-                      />
+                    <InfiniteList
+                      loading={loading}
+                      data={data?.tasks?.nodes}
+                      totalCount={data?.tasks?.totalCount}
+                      itemContent={(index, task) => (
+                        <Box key={index} flexDirection="row" width="100%">
+                          <TaskRow
+                            accountListId={accountListId}
+                            task={task}
+                            onContactSelected={setContactFocus}
+                            onTaskCheckToggle={toggleSelectionById}
+                            isChecked={isRowChecked(task.id)}
+                          />
+                        </Box>
+                      )}
+                      endReached={() =>
+                        data?.tasks?.pageInfo.hasNextPage &&
+                        fetchMore({
+                          variables: { after: data.tasks?.pageInfo.endCursor },
+                        })
+                      }
+                      EmptyPlaceholder={
+                        <Box width="75%" margin="auto" mt={2}>
+                          <NullState
+                            page="task"
+                            totalCount={data?.allTasks?.totalCount || 0}
+                            filtered={isFiltered}
+                            changeFilters={setActiveFilters}
+                          />
+                        </Box>
+                      }
+                    />
+                  </>
+                )}
+                {(showDueDates === TaskDueDates.All ||
+                  showDueDates === TaskDueDates.Today) && (
+                  <>
+                    <Box
+                      width="full"
+                      height={theme.spacing(8)}
+                      display="flex"
+                      alignItems="center"
+                      p={2}
+                      borderBottom={`3px solid ${theme.palette.warning.main}`}
+                    >
+                      <Typography variant="h6">{t('Today')}</Typography>
                     </Box>
-                  }
-                />
+                    <InfiniteList
+                      loading={loading}
+                      data={data?.tasks?.nodes}
+                      totalCount={data?.tasks?.totalCount}
+                      itemContent={(index, task) => (
+                        <Box key={index} flexDirection="row" width="100%">
+                          <TaskRow
+                            accountListId={accountListId}
+                            task={task}
+                            onContactSelected={setContactFocus}
+                            onTaskCheckToggle={toggleSelectionById}
+                            isChecked={isRowChecked(task.id)}
+                          />
+                        </Box>
+                      )}
+                      endReached={() =>
+                        data?.tasks?.pageInfo.hasNextPage &&
+                        fetchMore({
+                          variables: { after: data.tasks?.pageInfo.endCursor },
+                        })
+                      }
+                      EmptyPlaceholder={
+                        <Box width="75%" margin="auto" mt={2}>
+                          <NullState
+                            page="task"
+                            totalCount={data?.allTasks?.totalCount || 0}
+                            filtered={isFiltered}
+                            changeFilters={setActiveFilters}
+                          />
+                        </Box>
+                      }
+                    />
+                  </>
+                )}
+                {(showDueDates === TaskDueDates.All ||
+                  showDueDates === TaskDueDates.Upcoming) && (
+                  <>
+                    <Box
+                      width="full"
+                      height={theme.spacing(8)}
+                      display="flex"
+                      alignItems="center"
+                      p={2}
+                      borderBottom={`3px solid ${theme.palette.success.main}`}
+                    >
+                      <Typography variant="h6">{t('Upcoming')}</Typography>
+                    </Box>
+                    <InfiniteList
+                      loading={loading}
+                      data={data?.tasks?.nodes}
+                      totalCount={data?.tasks?.totalCount}
+                      itemContent={(index, task) => (
+                        <Box key={index} flexDirection="row" width="100%">
+                          <TaskRow
+                            accountListId={accountListId}
+                            task={task}
+                            onContactSelected={setContactFocus}
+                            onTaskCheckToggle={toggleSelectionById}
+                            isChecked={isRowChecked(task.id)}
+                          />
+                        </Box>
+                      )}
+                      endReached={() =>
+                        data?.tasks?.pageInfo.hasNextPage &&
+                        fetchMore({
+                          variables: { after: data.tasks?.pageInfo.endCursor },
+                        })
+                      }
+                      EmptyPlaceholder={
+                        <Box width="75%" margin="auto" mt={2}>
+                          <NullState
+                            page="task"
+                            totalCount={data?.allTasks?.totalCount || 0}
+                            filtered={isFiltered}
+                            changeFilters={setActiveFilters}
+                          />
+                        </Box>
+                      }
+                    />
+                  </>
+                )}
+                {(showDueDates === TaskDueDates.All ||
+                  showDueDates === TaskDueDates.None) && (
+                  <>
+                    <Box
+                      width="full"
+                      height={theme.spacing(8)}
+                      display="flex"
+                      alignItems="center"
+                      p={2}
+                      borderBottom={`3px solid ${theme.palette.cruGrayMedium.main}`}
+                    >
+                      <Typography variant="h6">{t('No Due Date')}</Typography>
+                    </Box>
+                    <InfiniteList
+                      loading={loading}
+                      data={data?.tasks?.nodes}
+                      totalCount={data?.tasks?.totalCount}
+                      itemContent={(index, task) => (
+                        <Box key={index} flexDirection="row" width="100%">
+                          <TaskRow
+                            accountListId={accountListId}
+                            task={task}
+                            onContactSelected={setContactFocus}
+                            onTaskCheckToggle={toggleSelectionById}
+                            isChecked={isRowChecked(task.id)}
+                          />
+                        </Box>
+                      )}
+                      endReached={() =>
+                        data?.tasks?.pageInfo.hasNextPage &&
+                        fetchMore({
+                          variables: { after: data.tasks?.pageInfo.endCursor },
+                        })
+                      }
+                      EmptyPlaceholder={
+                        <Box width="75%" margin="auto" mt={2}>
+                          <NullState
+                            page="task"
+                            totalCount={data?.allTasks?.totalCount || 0}
+                            filtered={isFiltered}
+                            changeFilters={setActiveFilters}
+                          />
+                        </Box>
+                      }
+                    />
+                  </>
+                )}
               </>
             }
             rightPanel={
