@@ -193,7 +193,7 @@ export const TaskRow: React.FC<TaskRowProps> = ({
                 alignItems: 'center',
               }}
               onClick={handleSubjectPressed}
-              data-test-id="subject-wrap"
+              data-testid="subject-wrap"
             >
               <TaskType>{activityType ? t(activityType) : ''}</TaskType>
               <Tooltip title={subject}>
