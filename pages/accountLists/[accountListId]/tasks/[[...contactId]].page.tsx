@@ -92,10 +92,10 @@ const TasksPage: React.FC = () => {
   const { data, loading, fetchMore } = useTasksQuery({
     variables: {
       accountListId: accountListId ?? '',
-      completed: showCurrentTasks,
       tasksFilter: {
         ...activeFilters,
         ...starredFilter,
+        completed: !showCurrentTasks,
         wildcardSearch: searchTerm?.[0],
       },
     },
