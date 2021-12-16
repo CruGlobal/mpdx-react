@@ -66,7 +66,7 @@ export const PersonName: React.FC<PersonNameProps> = ({
       </ModalSectionContainer>
       <ModalSectionContainer>
         <Grid container spacing={3}>
-          <Grid item xs={6}>
+          <Grid item xs={12} md={6}>
             <ContactInputField
               label={t('First Name')}
               value={firstName}
@@ -78,7 +78,7 @@ export const PersonName: React.FC<PersonNameProps> = ({
               required
             />
           </Grid>
-          <Grid item xs={6}>
+          <Grid item xs={12} md={6}>
             <ContactInputField
               label={t('Last Name')}
               value={lastName}
@@ -92,7 +92,7 @@ export const PersonName: React.FC<PersonNameProps> = ({
           </Grid>
         </Grid>
         <Grid container spacing={3}>
-          <Grid item xs={6}>
+          <Grid item xs={12} md={6}>
             <ContactInputField
               placeholder={t('Title')}
               value={title}
@@ -101,7 +101,7 @@ export const PersonName: React.FC<PersonNameProps> = ({
               fullWidth
             />
           </Grid>
-          <Grid item xs={6}>
+          <Grid item xs={12} md={6}>
             <ContactInputField
               placeholder={t('Suffix')}
               value={suffix}

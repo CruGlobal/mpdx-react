@@ -141,7 +141,14 @@ const ExportPhysical: React.FC<Props> = ({
             ) : (
               <>
                 <Grid container alignItems="flex-start">
-                  <Grid item xs={6}>
+                  <Grid
+                    container
+                    item
+                    xs={12}
+                    md={6}
+                    alignItems="center"
+                    justify="center"
+                  >
                     <LabelButton
                       variant="contained"
                       color="primary"
@@ -155,7 +162,14 @@ const ExportPhysical: React.FC<Props> = ({
                       )}
                     </DialogContentText>
                   </Grid>
-                  <Grid item xs={6}>
+                  <Grid
+                    container
+                    item
+                    xs={12}
+                    md={6}
+                    alignItems="center"
+                    justify="center"
+                  >
                     <LabelButton
                       variant="contained"
                       color="primary"
@@ -171,7 +185,14 @@ const ExportPhysical: React.FC<Props> = ({
                   </Grid>
                 </Grid>
                 <Grid container alignItems="flex-start">
-                  <Grid item xs={6}>
+                  <Grid
+                    container
+                    item
+                    xs={12}
+                    md={6}
+                    alignItems="center"
+                    justify="center"
+                  >
                     <LabelButton
                       variant="contained"
                       color="primary"
@@ -185,7 +206,14 @@ const ExportPhysical: React.FC<Props> = ({
                       )}
                     </DialogContentText>
                   </Grid>
-                  <Grid item xs={6}>
+                  <Grid
+                    container
+                    item
+                    xs={12}
+                    md={6}
+                    alignItems="center"
+                    justify="center"
+                  >
                     <LabelButton
                       variant="contained"
                       color="primary"
