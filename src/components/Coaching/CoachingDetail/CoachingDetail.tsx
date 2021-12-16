@@ -122,7 +122,7 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
         <CoachingMonthYearButtonGroup
           variant="outlined"
           color="inherit"
-          fullWidth={true}
+          fullWidth
           size="large"
         >
           <Button
