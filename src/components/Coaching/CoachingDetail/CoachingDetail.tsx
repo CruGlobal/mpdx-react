@@ -95,7 +95,7 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
     ? accountListData?.accountList
     : coachingData?.coachingAccountList;
 
-  const [isMonthly, setIsMonthly] = React.useState<boolean>(true);
+  const [isMonthly, setIsMonthly] = useState(true);
 
   return (
     <CoachingDetailContainer>
