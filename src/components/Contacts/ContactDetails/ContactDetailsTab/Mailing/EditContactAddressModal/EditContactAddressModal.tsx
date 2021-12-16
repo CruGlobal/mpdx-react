@@ -139,7 +139,7 @@ export const EditContactAddressModal: React.FC<EditContactAddressModalProps> = (
               <ContactEditContainer>
                 <ContactInputWrapper>
                   <Grid container spacing={1}>
-                    <Grid item xs={9}>
+                    <Grid item sm={12} md={9}>
                       <TextField
                         label={t('Street')}
                         value={street}
@@ -148,7 +148,7 @@ export const EditContactAddressModal: React.FC<EditContactAddressModalProps> = (
                         fullWidth
                       />
                     </Grid>
-                    <Grid item xs={3}>
+                    <Grid item xs={12} md={3}>
                       <FormControl fullWidth>
                         <InputLabel id="location-select-label">
                           {t('Location')}
@@ -175,7 +175,7 @@ export const EditContactAddressModal: React.FC<EditContactAddressModalProps> = (
                 </ContactInputWrapper>
                 <ContactInputWrapper>
                   <Grid container spacing={1}>
-                    <Grid item xs={6}>
+                    <Grid item sm={12} md={6}>
                       <TextField
                         label={t('City')}
                         value={city}
@@ -184,7 +184,7 @@ export const EditContactAddressModal: React.FC<EditContactAddressModalProps> = (
                         fullWidth
                       />
                     </Grid>
-                    <Grid item xs={3}>
+                    <Grid item sm={12} md={3}>
                       <TextField
                         label={t('State')}
                         value={state}
@@ -193,7 +193,7 @@ export const EditContactAddressModal: React.FC<EditContactAddressModalProps> = (
                         fullWidth
                       />
                     </Grid>
-                    <Grid item xs={3}>
+                    <Grid item sm={12} md={3}>
                       <TextField
                         label={t('Zip')}
                         value={postalCode}
@@ -206,7 +206,7 @@ export const EditContactAddressModal: React.FC<EditContactAddressModalProps> = (
                 </ContactInputWrapper>
                 <ContactInputWrapper>
                   <Grid container spacing={1}>
-                    <Grid item xs={6}>
+                    <Grid item sm={12} md={6}>
                       <TextField
                         label={t('Country')}
                         value={country}
@@ -215,7 +215,7 @@ export const EditContactAddressModal: React.FC<EditContactAddressModalProps> = (
                         fullWidth
                       />
                     </Grid>
-                    <Grid item xs={3}>
+                    <Grid item sm={12} md={3}>
                       <TextField
                         label={t('Region')}
                         value={region}
@@ -224,7 +224,7 @@ export const EditContactAddressModal: React.FC<EditContactAddressModalProps> = (
                         fullWidth
                       />
                     </Grid>
-                    <Grid item xs={3}>
+                    <Grid item sm={12} md={3}>
                       <TextField
                         label={t('Metro')}
                         value={metroArea}
