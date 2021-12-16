@@ -57,6 +57,11 @@ const ExportSelect = styled(Select)(() => ({
   width: '100%',
 }));
 
+const ButtonContainer = styled(Grid)(() => ({
+  alignItems: 'center',
+  justifyContent: 'center',
+}));
+
 const ExportPhysical: React.FC<Props> = ({
   handleClose,
   accountListId,
@@ -141,14 +146,7 @@ const ExportPhysical: React.FC<Props> = ({
             ) : (
               <>
                 <Grid container alignItems="flex-start">
-                  <Grid
-                    container
-                    item
-                    xs={12}
-                    md={6}
-                    alignItems="center"
-                    justify="center"
-                  >
+                  <ButtonContainer container item xs={12} md={6}>
                     <LabelButton
                       variant="contained"
                       color="primary"
@@ -161,15 +159,8 @@ const ExportPhysical: React.FC<Props> = ({
                         'Addresses will be formatted based on country. (Experimental)',
                       )}
                     </DialogContentText>
-                  </Grid>
-                  <Grid
-                    container
-                    item
-                    xs={12}
-                    md={6}
-                    alignItems="center"
-                    justify="center"
-                  >
+                  </ButtonContainer>
+                  <ButtonContainer container item xs={12} md={6}>
                     <LabelButton
                       variant="contained"
                       color="primary"
@@ -182,17 +173,10 @@ const ExportPhysical: React.FC<Props> = ({
                         'Best for making mailing labels. Addresses will be formatted based on country.',
                       )}
                     </DialogContentText>
-                  </Grid>
+                  </ButtonContainer>
                 </Grid>
                 <Grid container alignItems="flex-start">
-                  <Grid
-                    container
-                    item
-                    xs={12}
-                    md={6}
-                    alignItems="center"
-                    justify="center"
-                  >
+                  <ButtonContainer container item xs={12} md={6}>
                     <LabelButton
                       variant="contained"
                       color="primary"
@@ -205,15 +189,8 @@ const ExportPhysical: React.FC<Props> = ({
                         'All of the information for your contacts, best for advanced sorting/filtering and importing into other software.',
                       )}
                     </DialogContentText>
-                  </Grid>
-                  <Grid
-                    container
-                    item
-                    xs={12}
-                    md={6}
-                    alignItems="center"
-                    justify="center"
-                  >
+                  </ButtonContainer>
+                  <ButtonContainer container item xs={12} md={6}>
                     <LabelButton
                       variant="contained"
                       color="primary"
@@ -226,7 +203,7 @@ const ExportPhysical: React.FC<Props> = ({
                         "All of the information for your contacts in Excel's default XLSX format.",
                       )}
                     </DialogContentText>
-                  </Grid>
+                  </ButtonContainer>
                 </Grid>
               </>
             )}
