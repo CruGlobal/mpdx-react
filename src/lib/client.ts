@@ -26,6 +26,7 @@ export const cache = new InMemoryCache({
     Query: {
       fields: {
         contacts: paginationFieldPolicy,
+        tasks: paginationFieldPolicy,
         userNotifications: paginationFieldPolicy,
       },
     },
