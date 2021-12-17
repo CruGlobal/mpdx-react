@@ -82,36 +82,38 @@ export const PersonPhoneNumber: React.FC<PersonPhoneNumberProps> = ({
 
   return (
     <>
-      {phoneNumbers && phoneNumbers.length > 0 ? (
+      {phoneNumbers ? (
         <>
-          <ModalSectionContainer>
-            <ModalSectionIcon icon={<BookmarkIcon />} />
+          {phoneNumbers.length > 0 && primaryPhoneNumber && (
+            <ModalSectionContainer>
+              <ModalSectionIcon icon={<BookmarkIcon />} />
 
-            <FormControl fullWidth={true}>
-              <ContactPrimaryPersonSelectLabel id="primary-phone-number-label">
-                {t('Primary Phone')}
-              </ContactPrimaryPersonSelectLabel>
-              <Select
-                id="primary-phone-number-label"
-                value={primaryPhoneNumber?.id}
-                onChange={(event) =>
-                  handleChangePrimary(event.target.value as string)
-                }
-              >
-                {phoneNumbers.map(
-                  (phoneNumber) =>
-                    phoneNumber.id && (
-                      <MenuItem key={phoneNumber.id} value={phoneNumber.id}>
-                        {phoneNumber.number}
-                      </MenuItem>
-                    ),
-                )}
-              </Select>
-            </FormControl>
-          </ModalSectionContainer>
+              <FormControl fullWidth={true}>
+                <ContactPrimaryPersonSelectLabel id="primary-phone-number-label">
+                  {t('Primary Phone')}
+                </ContactPrimaryPersonSelectLabel>
+                <Select
+                  id="primary-phone-number-label"
+                  value={primaryPhoneNumber?.id}
+                  onChange={(event) =>
+                    handleChangePrimary(event.target.value as string)
+                  }
+                >
+                  {phoneNumbers.map(
+                    (phoneNumber) =>
+                      phoneNumber.id && (
+                        <MenuItem key={phoneNumber.id} value={phoneNumber.id}>
+                          {phoneNumber.number}
+                        </MenuItem>
+                      ),
+                  )}
+                </Select>
+              </FormControl>
+            </ModalSectionContainer>
+          )}
           <FieldArray
             name="phoneNumbers"
-            render={() => (
+            render={({ push }) => (
               <>
                 {phoneNumbers?.map((phoneNumber, index) => (
                   <>
@@ -174,17 +176,28 @@ export const PersonPhoneNumber: React.FC<PersonPhoneNumberProps> = ({
                     </ModalSectionContainer>
                   </>
                 ))}
+                <ModalSectionContainer>
+                  <Grid container alignItems="center">
+                    <ContactAddIcon />
+                    <ContactAddText
+                      variant="subtitle1"
+                      onClick={() =>
+                        push({
+                          number: '',
+                          location: '',
+                          destroy: false,
+                        })
+                      }
+                    >
+                      {t('Add Phone')}
+                    </ContactAddText>
+                  </Grid>
+                </ModalSectionContainer>
               </>
             )}
           />
         </>
       ) : null}
-      <ModalSectionContainer>
-        <Grid container alignItems="center">
-          <ContactAddIcon />
-          <ContactAddText variant="subtitle1">{t('Add Phone')}</ContactAddText>
-        </Grid>
-      </ModalSectionContainer>
     </>
   );
 };

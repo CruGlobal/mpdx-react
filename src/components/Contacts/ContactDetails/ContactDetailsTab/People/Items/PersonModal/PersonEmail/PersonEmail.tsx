@@ -82,36 +82,38 @@ export const PersonEmail: React.FC<PersonEmailProps> = ({ formikProps }) => {
 
   return (
     <>
-      {emailAddresses && emailAddresses.length > 0 ? (
+      {emailAddresses ? (
         <>
-          <ModalSectionContainer>
-            <ModalSectionIcon icon={<BookmarkIcon />} />
+          {emailAddresses.length > 0 && primaryEmail && (
+            <ModalSectionContainer>
+              <ModalSectionIcon icon={<BookmarkIcon />} />
 
-            <FormControl fullWidth={true}>
-              <ContactPrimaryPersonSelectLabel id="primary-email-label">
-                {t('Primary Email')}
-              </ContactPrimaryPersonSelectLabel>
-              <Select
-                id="primary-email-label"
-                value={primaryEmail?.id}
-                onChange={(event) =>
-                  handleChangePrimary(event.target.value as string)
-                }
-              >
-                {emailAddresses.map(
-                  (emailAddress) =>
-                    emailAddress.id && (
-                      <MenuItem key={emailAddress.id} value={emailAddress.id}>
-                        {emailAddress.email}
-                      </MenuItem>
-                    ),
-                )}
-              </Select>
-            </FormControl>
-          </ModalSectionContainer>
+              <FormControl fullWidth={true}>
+                <ContactPrimaryPersonSelectLabel id="primary-email-label">
+                  {t('Primary Email')}
+                </ContactPrimaryPersonSelectLabel>
+                <Select
+                  id="primary-email-label"
+                  value={primaryEmail?.id}
+                  onChange={(event) =>
+                    handleChangePrimary(event.target.value as string)
+                  }
+                >
+                  {emailAddresses.map(
+                    (emailAddress) =>
+                      emailAddress.id && (
+                        <MenuItem key={emailAddress.id} value={emailAddress.id}>
+                          {emailAddress.email}
+                        </MenuItem>
+                      ),
+                  )}
+                </Select>
+              </FormControl>
+            </ModalSectionContainer>
+          )}
           <FieldArray
             name="emailAddresses"
-            render={() => (
+            render={({ push }) => (
               <>
                 {emailAddresses?.map((emailAddress, index) => (
                   <>
@@ -174,34 +176,46 @@ export const PersonEmail: React.FC<PersonEmailProps> = ({ formikProps }) => {
                     </ModalSectionContainer>
                   </>
                 ))}
+                <ModalSectionContainer>
+                  <Grid container alignItems="center">
+                    <Grid container alignItems="center" item xs={6}>
+                      <ContactAddIcon />
+                      <ContactAddText
+                        variant="subtitle1"
+                        onClick={() =>
+                          push({
+                            email: '',
+                            location: '',
+                            destroy: false,
+                          })
+                        }
+                      >
+                        {t('Add Email')}
+                      </ContactAddText>
+                    </Grid>
+                    <Grid container item xs={6} alignItems="center">
+                      <OptOutENewsletterLabel
+                        control={
+                          <Checkbox
+                            checked={!!optoutEnewsletter}
+                            onChange={() =>
+                              setFieldValue(
+                                'optoutEnewsletter',
+                                !optoutEnewsletter,
+                              )
+                            }
+                          />
+                        }
+                        label={t('Opt-out of Email Newsletter')}
+                      />
+                    </Grid>
+                  </Grid>
+                </ModalSectionContainer>
               </>
             )}
           />
         </>
       ) : null}
-      <ModalSectionContainer>
-        <Grid container alignItems="center">
-          <Grid container alignItems="center" item xs={6}>
-            <ContactAddIcon />
-            <ContactAddText variant="subtitle1">
-              {t('Add Email')}
-            </ContactAddText>
-          </Grid>
-          <Grid container item xs={6} alignItems="center">
-            <OptOutENewsletterLabel
-              control={
-                <Checkbox
-                  checked={!!optoutEnewsletter}
-                  onChange={() =>
-                    setFieldValue('optoutEnewsletter', !optoutEnewsletter)
-                  }
-                />
-              }
-              label={t('Opt-out of Email Newsletter')}
-            />
-          </Grid>
-        </Grid>
-      </ModalSectionContainer>
     </>
   );
 };
