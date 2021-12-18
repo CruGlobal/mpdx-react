@@ -6,9 +6,9 @@ import { ItemContent } from 'react-virtuoso';
 import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
 import TestRouter from '../../../../__tests__/util/TestRouter';
 import theme from '../../../../src/theme';
-import useTaskDrawer from '../../../../src/hooks/useTaskDrawer';
 import { useMassSelection } from '../../../../src/hooks/useMassSelection';
 import { ListHeaderCheckBoxState } from '../../../../src/components/Shared/Header/ListHeader';
+import useTaskModal from '../../../../src/hooks/useTaskModal';
 import Tasks from './[[...contactId]].page';
 import { TasksQuery } from './Tasks.generated';
 
@@ -25,13 +25,13 @@ const task = {
   contacts: { nodes: [{ id: '2', name: 'Test Person' }] },
 };
 
-jest.mock('../../../../src/hooks/useTaskDrawer');
+jest.mock('../../../../src/hooks/useTaskModal');
 
-const openTaskDrawer = jest.fn();
+const openTaskModal = jest.fn();
 
 beforeEach(() => {
-  (useTaskDrawer as jest.Mock).mockReturnValue({
-    openTaskDrawer,
+  (useTaskModal as jest.Mock).mockReturnValue({
+    openTaskModal,
   });
 });
 
@@ -146,5 +146,5 @@ it('should open add task panel', async () => {
   await waitFor(() => expect(getByText('Test Person')).toBeInTheDocument());
   await waitFor(() => expect(getByText('Test Subject')).toBeInTheDocument());
   await waitFor(() => userEvent.click(getByText('Add Task')));
-  await waitFor(() => expect(openTaskDrawer).toHaveBeenCalled());
+  await waitFor(() => expect(openTaskModal).toHaveBeenCalled());
 });

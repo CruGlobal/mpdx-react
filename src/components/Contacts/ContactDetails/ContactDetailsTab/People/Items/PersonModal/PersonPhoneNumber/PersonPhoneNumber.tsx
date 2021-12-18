@@ -121,7 +121,7 @@ export const PersonPhoneNumber: React.FC<PersonPhoneNumberProps> = ({
                   <>
                     <ModalSectionContainer key={index}>
                       <Grid container spacing={3}>
-                        <Grid item xs={6}>
+                        <Grid item xs={12} md={6}>
                           <ContactInputField
                             destroyed={phoneNumber.destroy ?? false}
                             value={phoneNumber.number}
@@ -141,7 +141,7 @@ export const PersonPhoneNumber: React.FC<PersonPhoneNumberProps> = ({
                             fullWidth
                           />
                         </Grid>
-                        <Grid item xs={6}>
+                        <Grid item xs={12} md={6}>
                           <PhoneNumberSelect
                             destroyed={phoneNumber.destroy ?? false}
                             value={phoneNumber.location ?? ''}

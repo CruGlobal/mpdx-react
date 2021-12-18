@@ -3,19 +3,25 @@ import {
   Dialog,
   DialogProps,
   DialogTitle,
-  Grid,
   IconButton,
   styled,
 } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
 import { useTranslation } from 'react-i18next';
 
-const ModalTitle = styled(DialogTitle)(() => ({
+const ModalTitle = styled(DialogTitle)(({ theme }) => ({
   textTransform: 'uppercase',
-  textAlign: 'center',
+  paddingRight: theme.spacing(8),
+  [theme.breakpoints.up('sm')]: {
+    paddingLeft: theme.spacing(8),
+    textAlign: 'center',
+  },
 }));
 
 const CloseButton = styled(IconButton)(({ theme }) => ({
+  position: 'absolute',
+  top: theme.spacing(1),
+  right: theme.spacing(1),
   color: theme.palette.text.primary,
   '&:hover': {
     backgroundColor: theme.palette.cruGrayLight.main,
@@ -48,16 +54,11 @@ const Modal = ({
   const { t } = useTranslation();
   return (
     <Dialog open={isOpen} fullWidth={fullWidth} maxWidth={size}>
-      <Grid container alignItems="center">
-        <Grid item xs={11}>
-          <ModalTitle>{title}</ModalTitle>
-        </Grid>
-        <Grid item xs>
-          <CloseButton onClick={() => handleClose()} aria-label={t('Close')}>
-            <CloseIcon />
-          </CloseButton>
-        </Grid>
-      </Grid>
+      <ModalTitle>{title}</ModalTitle>
+      <CloseButton onClick={() => handleClose()} aria-label={t('Close')}>
+        <CloseIcon />
+      </CloseButton>
+
       {children}
     </Dialog>
   );

@@ -121,7 +121,7 @@ export const PersonEmail: React.FC<PersonEmailProps> = ({ formikProps }) => {
                   <>
                     <ModalSectionContainer key={index}>
                       <Grid container spacing={3}>
-                        <Grid item xs={6}>
+                        <Grid item xs={12} md={6}>
                           <ContactInputField
                             destroyed={emailAddress.destroy ?? false}
                             value={emailAddress.email}
@@ -141,7 +141,7 @@ export const PersonEmail: React.FC<PersonEmailProps> = ({ formikProps }) => {
                             fullWidth
                           />
                         </Grid>
-                        <Grid item xs={6}>
+                        <Grid item xs={12} md={6}>
                           <EmailSelect
                             destroyed={emailAddress.destroy ?? false}
                             value={emailAddress.location ?? ''}
