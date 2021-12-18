@@ -1,4 +1,5 @@
 import {
+  Button,
   FormControl,
   Grid,
   InputLabel,
@@ -179,19 +180,21 @@ export const PersonPhoneNumber: React.FC<PersonPhoneNumberProps> = ({
                 ))}
                 <ModalSectionContainer>
                   <Grid container alignItems="center">
-                    <ContactAddIcon />
-                    <ContactAddText
-                      variant="subtitle1"
-                      onClick={() =>
-                        push({
-                          number: '',
-                          location: '',
-                          destroy: false,
-                        })
-                      }
-                    >
-                      {t('Add Phone')}
-                    </ContactAddText>
+                    <Button>
+                      <ContactAddIcon />
+                      <ContactAddText
+                        variant="subtitle1"
+                        onClick={() =>
+                          push({
+                            number: '',
+                            location: '',
+                            destroy: false,
+                          })
+                        }
+                      >
+                        {t('Add Phone')}
+                      </ContactAddText>
+                    </Button>
                   </Grid>
                 </ModalSectionContainer>
               </>

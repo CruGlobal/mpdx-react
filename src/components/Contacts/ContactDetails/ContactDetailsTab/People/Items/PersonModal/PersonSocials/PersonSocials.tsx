@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import {
+  Button,
   FormControl,
   Grid,
   InputLabel,
@@ -387,13 +388,17 @@ export const PersonSocial: React.FC<PersonSocialProps> = ({ formikProps }) => {
             ))}
             <ModalSectionContainer>
               <Grid container alignItems="center">
-                <ContactAddIcon />
-                <ContactAddText
-                  variant="subtitle1"
-                  onClick={() => push({ value: '', type: '', destroy: false })}
-                >
-                  {t('Add Social')}
-                </ContactAddText>
+                <Button>
+                  <ContactAddIcon />
+                  <ContactAddText
+                    variant="subtitle1"
+                    onClick={() =>
+                      push({ value: '', type: '', destroy: false })
+                    }
+                  >
+                    {t('Add Social')}
+                  </ContactAddText>
+                </Button>
               </Grid>
             </ModalSectionContainer>
           </>

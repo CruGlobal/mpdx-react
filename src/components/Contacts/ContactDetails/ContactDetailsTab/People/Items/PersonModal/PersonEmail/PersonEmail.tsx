@@ -1,4 +1,5 @@
 import {
+  Button,
   Checkbox,
   FormControl,
   FormControlLabel,
@@ -180,19 +181,21 @@ export const PersonEmail: React.FC<PersonEmailProps> = ({ formikProps }) => {
                 <ModalSectionContainer>
                   <Grid container alignItems="center">
                     <Grid container alignItems="center" item xs={6}>
-                      <ContactAddIcon />
-                      <ContactAddText
-                        variant="subtitle1"
-                        onClick={() =>
-                          push({
-                            email: '',
-                            location: '',
-                            destroy: false,
-                          })
-                        }
-                      >
-                        {t('Add Email')}
-                      </ContactAddText>
+                      <Button>
+                        <ContactAddIcon />
+                        <ContactAddText
+                          variant="subtitle1"
+                          onClick={() =>
+                            push({
+                              email: '',
+                              location: '',
+                              destroy: false,
+                            })
+                          }
+                        >
+                          {t('Add Email')}
+                        </ContactAddText>
+                      </Button>
                     </Grid>
                     <Grid container item xs={6} alignItems="center">
                       <OptOutENewsletterLabel
