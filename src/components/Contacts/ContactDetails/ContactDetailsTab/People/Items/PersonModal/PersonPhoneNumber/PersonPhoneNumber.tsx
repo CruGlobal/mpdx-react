@@ -10,10 +10,10 @@ import {
   Typography,
 } from '@material-ui/core';
 import React from 'react';
-import BookmarkIcon from '@material-ui/icons/Bookmark';
 import AddIcon from '@material-ui/icons/Add';
 import { useTranslation } from 'react-i18next';
 import { FormikProps, FieldArray, getIn } from 'formik';
+import { Phone } from '@material-ui/icons';
 import { ModalSectionContainer } from '../ModalSectionContainer/ModalSectionContainer';
 import { ModalSectionDeleteIcon } from '../ModalSectionDeleteIcon/ModalSectionDeleteIcon';
 import { ModalSectionIcon } from '../ModalSectionIcon/ModalSectionIcon';
@@ -88,7 +88,7 @@ export const PersonPhoneNumber: React.FC<PersonPhoneNumberProps> = ({
         <>
           {phoneNumbers.length > 0 && primaryPhoneNumber && (
             <ModalSectionContainer>
-              <ModalSectionIcon icon={<BookmarkIcon />} />
+              <ModalSectionIcon icon={<Phone />} />
 
               <FormControl fullWidth={true}>
                 <ContactPrimaryPersonSelectLabel id="primary-phone-number-label">

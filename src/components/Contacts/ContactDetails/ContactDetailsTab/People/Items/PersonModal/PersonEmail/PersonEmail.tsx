@@ -13,10 +13,10 @@ import {
 } from '@material-ui/core';
 import React from 'react';
 
-import BookmarkIcon from '@material-ui/icons/Bookmark';
 import AddIcon from '@material-ui/icons/Add';
 import { useTranslation } from 'react-i18next';
 import { FieldArray, FormikProps, getIn } from 'formik';
+import { Mail } from '@material-ui/icons';
 import { ModalSectionContainer } from '../ModalSectionContainer/ModalSectionContainer';
 import { ModalSectionDeleteIcon } from '../ModalSectionDeleteIcon/ModalSectionDeleteIcon';
 import { ModalSectionIcon } from '../ModalSectionIcon/ModalSectionIcon';
@@ -88,7 +88,7 @@ export const PersonEmail: React.FC<PersonEmailProps> = ({ formikProps }) => {
         <>
           {emailAddresses.length > 0 && primaryEmail && (
             <ModalSectionContainer>
-              <ModalSectionIcon icon={<BookmarkIcon />} />
+              <ModalSectionIcon icon={<Mail />} />
 
               <FormControl fullWidth={true}>
                 <ContactPrimaryPersonSelectLabel id="primary-email-label">
