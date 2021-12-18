@@ -23,6 +23,7 @@ import {
   PersonCreateInput,
   PersonUpdateInput,
 } from '../../../../../../../../../graphql/types.generated';
+import { NewSocial } from '../PersonModal';
 
 const ContactPrimaryPersonSelectLabel = styled(InputLabel)(() => ({
   textTransform: 'uppercase',
@@ -56,7 +57,7 @@ const OptOutENewsletterLabel = styled(FormControlLabel)(() => ({
 }));
 
 interface PersonEmailProps {
-  formikProps: FormikProps<PersonUpdateInput | PersonCreateInput>;
+  formikProps: FormikProps<(PersonUpdateInput | PersonCreateInput) & NewSocial>;
 }
 
 export const PersonEmail: React.FC<PersonEmailProps> = ({ formikProps }) => {

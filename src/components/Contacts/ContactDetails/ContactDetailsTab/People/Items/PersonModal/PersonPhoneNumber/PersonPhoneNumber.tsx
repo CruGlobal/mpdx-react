@@ -20,6 +20,7 @@ import {
   PersonCreateInput,
   PersonUpdateInput,
 } from '../../../../../../../../../graphql/types.generated';
+import { NewSocial } from '../PersonModal';
 
 const ContactPrimaryPersonSelectLabel = styled(InputLabel)(() => ({
   textTransform: 'uppercase',
@@ -51,7 +52,7 @@ const ContactAddText = styled(Typography)(({ theme }) => ({
 }));
 
 interface PersonPhoneNumberProps {
-  formikProps: FormikProps<PersonUpdateInput | PersonCreateInput>;
+  formikProps: FormikProps<(PersonUpdateInput | PersonCreateInput) & NewSocial>;
 }
 
 export const PersonPhoneNumber: React.FC<PersonPhoneNumberProps> = ({
