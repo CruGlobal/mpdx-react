@@ -1,0 +1,25 @@
+mutation CreateTaskComment(
+  $accountListId: ID!
+  $taskId: ID!
+  $attributes: TaskCommentCreateInput!
+) {
+  createTaskComment(
+    input: {
+      accountListId: $accountListId
+      taskId: $taskId
+      attributes: $attributes
+    }
+  ) {
+    comment {
+      id
+      body
+      createdAt
+      me
+      person {
+        id
+        firstName
+        lastName
+      }
+    }
+  }
+}
