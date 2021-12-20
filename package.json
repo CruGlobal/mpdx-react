@@ -40,7 +40,7 @@
     "@material-ui/styles": "^4.11.4",
     "@mdi/js": "^6.0.0",
     "@mdi/react": "^1.5.0",
-    "@saeris/apollo-server-vercel": "^0.4.0",
+    "@saeris/apollo-server-vercel": "^1.0.0",
     "@types/luxon": "^1.26.2",
     "@types/react-csv": "^1.1.1",
     "apollo-datasource-rest": "^3.0.0",
