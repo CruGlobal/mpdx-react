@@ -100,7 +100,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["core-js", "npm:3.8.3"],
             ["cross-env", "npm:7.0.3"],
             ["css-mediaquery", "npm:0.1.2"],
-            ["dotenv", "npm:8.2.0"],
+            ["dotenv", "npm:10.0.0"],
             ["eslint", "npm:7.19.0"],
             ["eslint-config-prettier", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:7.2.0"],
             ["eslint-import-resolver-node", "npm:0.3.4"],
@@ -20361,9 +20361,20 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]
       ]],
       ["dotenv", [
+          "packageDependencies": [
+            ["dotenv", "npm:10.0.0"]
+          ],
+          "linkType": "HARD",
+        }],
+        ["npm:6.2.0", {
+          "packageLocation": "./.yarn/cache/dotenv-npm-6.2.0-72b7dafc27-d4aa189741.zip/node_modules/dotenv/",
+          "packageDependencies": [
+            ["dotenv", "npm:6.2.0"]
+          ],
+          "linkType": "HARD",
+        }],
         ["npm:8.2.0", {
           "packageLocation": "./.yarn/cache/dotenv-npm-8.2.0-6b21df4d37-ad4c8e0df3.zip/node_modules/dotenv/",
-          "packageDependencies": [
             ["dotenv", "npm:8.2.0"]
           ],
           "linkType": "HARD",
@@ -28486,7 +28497,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["core-js", "npm:3.8.3"],
             ["cross-env", "npm:7.0.3"],
             ["css-mediaquery", "npm:0.1.2"],
-            ["dotenv", "npm:8.2.0"],
+            ["dotenv", "npm:10.0.0"],
             ["eslint", "npm:7.19.0"],
             ["eslint-config-prettier", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:7.2.0"],
             ["eslint-import-resolver-node", "npm:0.3.4"],

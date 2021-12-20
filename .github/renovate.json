@@ -2,6 +2,6 @@
   "extends": ["config:base", ":preserveSemverRanges"],
   "ignorePaths": [".yarn/sdks/"],
   "labels": ["dependencies"],
-  "prConcurrentLimit": 5,
+  "prConcurrentLimit": 8,
   "prHourlyLimit": 2
 }

@@ -13314,6 +13314,31 @@ __metadata:
   languageName: node
   linkType: hard
 
+"dotenv-webpack@npm:^1.8.0":
+  version: 1.8.0
+  resolution: "dotenv-webpack@npm:1.8.0"
+  dependencies:
+    dotenv-defaults: ^1.0.2
+  peerDependencies:
+    webpack: ^1 || ^2 || ^3 || ^4
+  checksum: 21bfe5dd6a669ad9a64669ed7ada53e0036f7c97f55c43c07dd846bf6ddb963224139a25c667346f1a168b0e59e560ae87eac642edb30947bb2fa4ec0017ecb7
+  languageName: node
+  linkType: hard
+
+"dotenv@npm:^10.0.0":
+  version: 10.0.0
+  resolution: "dotenv@npm:10.0.0"
+  checksum: f412c5fe8c24fbe313d302d2500e247ba8a1946492db405a4de4d30dd0eb186a88a43f13c958c5a7de303938949c4231c56994f97d05c4bc1f22478d631b4005
+  languageName: node
+  linkType: hard
+
+"dotenv@npm:^6.2.0":
+  version: 6.2.0
+  resolution: "dotenv@npm:6.2.0"
+  checksum: d4aa189741ff45553038b0436dfdb79143c29760d3481b4b19d9f1c59fb8cc69190ab83674e07b32b3dd2ae477579619cde9f7586ea82086151dbbac5626c54c
+  languageName: node
+  linkType: hard
+
 "dotenv@npm:^8.0.0, dotenv@npm:^8.2.0":
   version: 8.2.0
   resolution: "dotenv@npm:8.2.0"
@@ -20266,7 +20291,7 @@ fsevents@~2.3.2:
     core-js: ^3.8.3
     cross-env: ^7.0.3
     css-mediaquery: ^0.1.2
-    dotenv: ^8.2.0
+    dotenv: ^10.0.0
     eslint: ^7.19.0
     eslint-config-prettier: ^7.2.0
     eslint-import-resolver-node: ^0.3.4
