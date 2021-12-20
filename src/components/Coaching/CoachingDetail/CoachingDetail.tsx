@@ -1,5 +1,12 @@
-import React from 'react';
-import { Box, Divider, styled, Typography } from '@material-ui/core';
+import React, { useState } from 'react';
+import {
+  Box,
+  Button,
+  ButtonGroup,
+  Divider,
+  styled,
+  Typography,
+} from '@material-ui/core';
 import { EcoOutlined } from '@material-ui/icons';
 import { useTranslation } from 'react-i18next';
 import { Skeleton } from '@material-ui/lab';
@@ -58,6 +65,11 @@ const CoachingMainTitleContainer = styled(Box)(({ theme }) => ({
   alignContent: 'center',
 }));
 
+const CoachingMonthYearButtonGroup = styled(ButtonGroup)(({ theme }) => ({
+  margin: theme.spacing(2, 0),
+  color: theme.palette.primary.contrastText,
+}));
+
 export const CoachingDetail: React.FC<CoachingDetailProps> = ({
   coachingId,
   isAccountListId = false,
@@ -83,6 +95,8 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
     ? accountListData?.accountList
     : coachingData?.coachingAccountList;
 
+  const [isMonthly, setIsMonthly] = useState(true);
+
   return (
     <CoachingDetailContainer>
       <CoachingSideContainer bgcolor={theme.palette.progressBarGray.main}>
@@ -105,6 +119,25 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
           </Typography>
         </CoachingSideTitleContainer>
         <Divider style={{ background: theme.palette.primary.contrastText }} />
+        <CoachingMonthYearButtonGroup
+          variant="outlined"
+          color="inherit"
+          fullWidth
+          size="large"
+        >
+          <Button
+            variant={isMonthly ? 'contained' : 'outlined'}
+            onClick={() => setIsMonthly(true)}
+          >
+            {t('Monthly')}
+          </Button>
+          <Button
+            variant={isMonthly ? 'outlined' : 'contained'}
+            onClick={() => setIsMonthly(false)}
+          >
+            {t('Yearly')}
+          </Button>
+        </CoachingMonthYearButtonGroup>
       </CoachingSideContainer>
       <CoachingMainContainer>
         {loading || coachingLoading ? (
