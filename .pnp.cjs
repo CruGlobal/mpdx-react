@@ -20361,20 +20361,16 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]
       ]],
       ["dotenv", [
+        ["npm:10.0.0", {
+          "packageLocation": "./.yarn/cache/dotenv-npm-10.0.0-36b272df25-f412c5fe8c.zip/node_modules/dotenv/",
           "packageDependencies": [
             ["dotenv", "npm:10.0.0"]
           ],
           "linkType": "HARD",
         }],
-        ["npm:6.2.0", {
-          "packageLocation": "./.yarn/cache/dotenv-npm-6.2.0-72b7dafc27-d4aa189741.zip/node_modules/dotenv/",
-          "packageDependencies": [
-            ["dotenv", "npm:6.2.0"]
-          ],
-          "linkType": "HARD",
-        }],
         ["npm:8.2.0", {
           "packageLocation": "./.yarn/cache/dotenv-npm-8.2.0-6b21df4d37-ad4c8e0df3.zip/node_modules/dotenv/",
+          "packageDependencies": [
             ["dotenv", "npm:8.2.0"]
           ],
           "linkType": "HARD",
