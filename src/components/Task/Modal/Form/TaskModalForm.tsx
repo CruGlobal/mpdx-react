@@ -113,17 +113,17 @@ const TaskModalForm = ({
       }
     : {
         id: null,
-        activityType: null,
+        activityType: defaultValues?.activityType || null,
         subject: '',
         startAt: DateTime.local().plus({ hours: 1 }).startOf('hour').toISO(),
         completedAt: null,
-        tagList: [],
-        contactIds: [],
-        userId: null,
+        tagList: defaultValues?.tagList || [],
+        contactIds:
+          defaultValues?.contacts?.nodes.map((contact) => contact.id) || [],
+        userId: defaultValues?.user?.id || null,
         notificationTimeBefore: null,
         notificationType: null,
         notificationTimeUnit: null,
-        ...defaultValues,
       };
   const { t } = useTranslation();
   const [commentBody, changeCommentBody] = useState('');

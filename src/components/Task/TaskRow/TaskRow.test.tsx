@@ -26,6 +26,9 @@ const openTaskDrawer = jest.fn();
 const openTaskModal = jest.fn();
 
 beforeEach(() => {
+  (useTaskModal as jest.Mock).mockReturnValue({
+    openTaskModal,
+  });
   (useTaskDrawer as jest.Mock).mockReturnValue({
     openTaskDrawer,
   });
@@ -205,9 +208,9 @@ describe('TaskRow', () => {
 
       expect(await findByText(task.subject)).toBeVisible();
       userEvent.click(getByRole('img', { hidden: true, name: 'Check Icon' }));
-      expect(openTaskDrawer).toHaveBeenCalledWith({
+      expect(openTaskModal).toHaveBeenCalledWith({
         taskId: task.id,
-        showCompleteForm: true,
+        view: 'complete',
       });
     });
 
