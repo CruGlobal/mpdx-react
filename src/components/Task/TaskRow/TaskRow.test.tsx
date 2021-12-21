@@ -270,5 +270,34 @@ describe('TaskRow', () => {
         view: 'comments',
       });
     });
+
+    it('handle subject click', async () => {
+      const task = gqlMock<TaskRowFragment>(TaskRowFragmentDoc, {
+        mocks: {
+          startAt,
+          result: ResultEnum.None,
+        },
+      });
+
+      const { findByText, getByTestId } = render(
+        <GqlMockedProvider>
+          <MuiThemeProvider theme={theme}>
+            <TaskRow
+              accountListId={accountListId}
+              task={task}
+              onTaskCheckToggle={onTaskCheckSelected}
+              onContactSelected={onContactSelected}
+              isChecked={false}
+            />
+          </MuiThemeProvider>
+        </GqlMockedProvider>,
+      );
+
+      expect(await findByText(task.subject)).toBeVisible();
+      userEvent.click(getByTestId('subject-wrap'));
+      expect(openTaskModal).toHaveBeenCalledWith({
+        taskId: task.id,
+      });
+    });
   });
 });

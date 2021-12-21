@@ -1,6 +1,7 @@
 import React from 'react';
 import {
   Box,
+  Button,
   Checkbox,
   Hidden,
   styled,
@@ -31,8 +32,18 @@ const ContactRowButton = styled(Box)(({}) => ({
   textOverflow: 'ellipsis',
 }));
 
+const SubjectWrap = styled(Box)(({}) => ({
+  width: '100%',
+  display: 'flex',
+  alignItems: 'center',
+  '&:hover': {
+    textDecoration: 'underline',
+  },
+}));
+
 const ContactText = styled(Typography)(({ theme }) => ({
   margin: '0px',
+  zIndex: 1,
   fontFamily: theme.typography.fontFamily,
   color: theme.palette.text.primary,
   whiteSpace: 'nowrap',
@@ -107,6 +118,12 @@ export const TaskRow: React.FC<TaskRowProps> = ({
     });
   };
 
+  const handleSubjectPressed = () => {
+    openTaskModal({
+      taskId,
+    });
+  };
+
   const isComplete = result === ResultEnum.Completed;
   const dueDate = (startAt && DateTime.fromISO(startAt)) || null;
   const assigneeName = `${task?.user?.firstName ?? ''} ${
@@ -167,20 +184,24 @@ export const TaskRow: React.FC<TaskRowProps> = ({
                 </TaskContactName>
               ))}
             </Box>
-            <Box
+            <SubjectWrap
               style={{
                 width: '100%',
                 display: 'flex',
                 alignItems: 'center',
               }}
+              onClick={handleSubjectPressed}
+              data-testid="subject-wrap"
             >
               <TaskType>{activityType ? t(activityType) : ''}</TaskType>
               <Tooltip title={subject}>
                 <ContactText>{subject}</ContactText>
               </Tooltip>
-            </Box>
+            </SubjectWrap>
             <Hidden smUp>
-              <ContactText>{assigneeName}</ContactText>
+              <Button>
+                <ContactText>{assigneeName}</ContactText>
+              </Button>
             </Hidden>
           </Box>
         </Box>
