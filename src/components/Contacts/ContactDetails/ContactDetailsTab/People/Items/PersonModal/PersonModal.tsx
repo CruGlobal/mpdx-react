@@ -288,40 +288,38 @@ export const PersonModal: React.FC<PersonModalProps> = ({
   const onSubmit = async (
     fields: (PersonCreateInput | PersonUpdateInput) & NewSocial,
   ): Promise<void> => {
-    let attributes: PersonCreateInput | PersonUpdateInput = {
-      ...fields,
+    const {newSocials, ...existingSocials} = fields;
+    const attributes: PersonCreateInput | PersonUpdateInput = {
+      ...existingSocials,
       facebookAccounts: fields.facebookAccounts?.concat(
-        fields.newSocials
+        newSocials
           .filter((social) => social.type === 'facebook' && !social.destroy)
           .map((social) => ({
             username: social.value,
           })),
       ),
       twitterAccounts: fields.twitterAccounts?.concat(
-        fields.newSocials
+        newSocials
           .filter((social) => social.type === 'twitter' && !social.destroy)
           .map((social) => ({
             screenName: social.value,
           })),
       ),
       linkedinAccounts: fields.linkedinAccounts?.concat(
-        fields.newSocials
+        newSocials
           .filter((social) => social.type === 'linkedin' && !social.destroy)
           .map((social) => ({
             publicUrl: social.value,
           })),
       ),
       websites: fields.websites?.concat(
-        fields.newSocials
+        newSocials
           .filter((social) => social.type === 'website' && !social.destroy)
           .map((social) => ({
             url: social.value,
           })),
       ),
     };
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore:next-line
-    attributes = _.omit(attributes, 'newSocials');
 
     const isUpdate = (
       attributes: PersonCreateInput | PersonUpdateInput,
