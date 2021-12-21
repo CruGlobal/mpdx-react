@@ -17,9 +17,9 @@ import Loading from '../../Loading';
 import { Task } from '../../../../graphql/types.generated';
 import { TaskFilter } from '../List/List';
 import { useAccountListId } from '../../../hooks/useAccountListId';
-import TaskDrawerCompleteForm from '../Drawer/CompleteForm';
 import { useGetTaskForTaskModalQuery } from '../Modal/TaskModalTask.generated';
 import TaskModalForm from './Form/TaskModalForm';
+import TaskModalCompleteForm from './Form/Complete/TaskModalCompleteForm';
 import TaskModalCommentsList from './Comments/TaskModalCommentsList';
 
 const StyledModal = styled(Modal)(() => ({
@@ -75,6 +75,8 @@ const TaskModal = ({
 
   const renderTitle = (): string => {
     switch (view) {
+      case 'complete':
+        return 'Complete Task';
       case 'comments':
         return 'Task Comments';
       default:
@@ -87,7 +89,7 @@ const TaskModal = ({
       case 'complete':
         if (task) {
           return (
-            <TaskDrawerCompleteForm
+            <TaskModalCompleteForm
               accountListId={accountListId || ''}
               task={task}
               onClose={onModalClose}

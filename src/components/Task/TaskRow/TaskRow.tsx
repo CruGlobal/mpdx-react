@@ -11,7 +11,6 @@ import { useTranslation } from 'react-i18next';
 import { DateTime } from 'luxon';
 import { TaskCompleteButton } from '../../Contacts/ContactDetails/ContactTasksTab/ContactTaskRow/TaskCompleteButton/TaskCompleteButton';
 import { ResultEnum } from '../../../../graphql/types.generated';
-import useTaskDrawer from '../../../hooks/useTaskDrawer';
 import { StarTaskIconButton } from '../../Contacts/ContactDetails/ContactTasksTab/StarTaskIconButton/StarTaskIconButton';
 import { TaskDueDate } from '../../Contacts/ContactDetails/ContactTasksTab/ContactTaskRow/TaskDueDate/TaskDueDate';
 import { TaskCommentsButton } from '../../Contacts/ContactDetails/ContactTasksTab/ContactTaskRow/TaskCommentsButton/TaskCommentsButton';
@@ -76,7 +75,6 @@ export const TaskRow: React.FC<TaskRowProps> = ({
 }) => {
   const { t } = useTranslation();
 
-  const { openTaskDrawer } = useTaskDrawer();
   const { openTaskModal } = useTaskModal();
   const onClick = (
     event: React.MouseEvent<HTMLElement, MouseEvent>,
@@ -99,7 +97,7 @@ export const TaskRow: React.FC<TaskRowProps> = ({
   } = task;
 
   const handleCompleteButtonPressed = () => {
-    openTaskDrawer({ taskId: task?.id, showCompleteForm: true });
+    openTaskModal({ taskId: task?.id, view: 'complete' });
   };
 
   const handleCommentButtonPressed = () => {
