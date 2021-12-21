@@ -288,7 +288,7 @@ export const PersonModal: React.FC<PersonModalProps> = ({
   const onSubmit = async (
     fields: (PersonCreateInput | PersonUpdateInput) & NewSocial,
   ): Promise<void> => {
-    const {newSocials, ...existingSocials} = fields;
+    const { newSocials, ...existingSocials } = fields;
     const attributes: PersonCreateInput | PersonUpdateInput = {
       ...existingSocials,
       facebookAccounts: fields.facebookAccounts?.concat(
