@@ -1,14 +1,19 @@
 import React from 'react';
-import { Box, Checkbox, styled, Tooltip, Typography } from '@material-ui/core';
+import {
+  Box,
+  Checkbox,
+  Hidden,
+  styled,
+  Tooltip,
+  Typography,
+} from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { DateTime } from 'luxon';
 import { TaskCompleteButton } from '../../Contacts/ContactDetails/ContactTasksTab/ContactTaskRow/TaskCompleteButton/TaskCompleteButton';
 import { ResultEnum } from '../../../../graphql/types.generated';
-import useTaskDrawer from '../../../hooks/useTaskDrawer';
 import { StarTaskIconButton } from '../../Contacts/ContactDetails/ContactTasksTab/StarTaskIconButton/StarTaskIconButton';
 import { TaskDueDate } from '../../Contacts/ContactDetails/ContactTasksTab/ContactTaskRow/TaskDueDate/TaskDueDate';
 import { TaskCommentsButton } from '../../Contacts/ContactDetails/ContactTasksTab/ContactTaskRow/TaskCommentsButton/TaskCommentsButton';
-import { TaskDrawerTabsEnum } from '../Drawer/Drawer';
 import useTaskModal from '../../../hooks/useTaskModal';
 import { TaskRowFragment } from './TaskRow.generated';
 
@@ -70,7 +75,6 @@ export const TaskRow: React.FC<TaskRowProps> = ({
 }) => {
   const { t } = useTranslation();
 
-  const { openTaskDrawer } = useTaskDrawer();
   const { openTaskModal } = useTaskModal();
   const onClick = (
     event: React.MouseEvent<HTMLElement, MouseEvent>,
@@ -97,9 +101,9 @@ export const TaskRow: React.FC<TaskRowProps> = ({
   };
 
   const handleCommentButtonPressed = () => {
-    openTaskDrawer({
+    openTaskModal({
       taskId,
-      specificTab: TaskDrawerTabsEnum.comments,
+      view: 'comments',
     });
   };
 
@@ -123,7 +127,6 @@ export const TaskRow: React.FC<TaskRowProps> = ({
             alignItems: 'center',
             overflow: 'hidden',
             whiteSpace: 'nowrap',
-            flexGrow: 1,
             textOverflow: 'ellipsis',
           }}
         >
@@ -169,7 +172,6 @@ export const TaskRow: React.FC<TaskRowProps> = ({
                 width: '100%',
                 display: 'flex',
                 alignItems: 'center',
-                flexGrow: 1,
               }}
             >
               <TaskType>{activityType ? t(activityType) : ''}</TaskType>
@@ -177,16 +179,32 @@ export const TaskRow: React.FC<TaskRowProps> = ({
                 <ContactText>{subject}</ContactText>
               </Tooltip>
             </Box>
+            <Hidden smUp>
+              <ContactText>{assigneeName}</ContactText>
+            </Hidden>
           </Box>
         </Box>
         <Box display="flex" justifyContent="flex-end" alignItems="center">
-          <ContactText>{assigneeName}</ContactText>
-          <TaskDueDate isComplete={isComplete} dueDate={dueDate} />
-          <TaskCommentsButton
-            isComplete={isComplete}
-            numberOfComments={comments?.totalCount}
-            onClick={handleCommentButtonPressed}
-          />
+          <Hidden xsDown>
+            <ContactText>{assigneeName}</ContactText>
+            <TaskDueDate isComplete={isComplete} dueDate={dueDate} />
+            <TaskCommentsButton
+              isComplete={isComplete}
+              numberOfComments={comments?.totalCount}
+              onClick={handleCommentButtonPressed}
+            />
+          </Hidden>
+          <Hidden smUp>
+            <Box>
+              <TaskDueDate isComplete={isComplete} dueDate={dueDate} small />
+              <TaskCommentsButton
+                isComplete={isComplete}
+                numberOfComments={comments?.totalCount}
+                onClick={handleCommentButtonPressed}
+                small
+              />
+            </Box>
+          </Hidden>
           <StarTaskIconButton
             accountListId={accountListId}
             taskId={taskId}

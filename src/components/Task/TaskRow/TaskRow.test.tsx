@@ -8,11 +8,10 @@ import {
   GqlMockedProvider,
 } from '../../../../__tests__/util/graphqlMocking';
 import theme from '../../../theme';
+import useTaskDrawer from '../../../hooks/useTaskDrawer';
 import useTaskModal from '../../../hooks/useTaskModal';
-import { TaskDrawerTabsEnum } from '../Drawer/Drawer';
 import { TaskRowFragment, TaskRowFragmentDoc } from './TaskRow.generated';
 import { TaskRow } from './TaskRow';
-import useTaskDrawer from 'src/hooks/useTaskDrawer';
 
 const onContactSelected = jest.fn();
 const onTaskCheckSelected = jest.fn();
@@ -32,6 +31,9 @@ beforeEach(() => {
   });
   (useTaskDrawer as jest.Mock).mockReturnValue({
     openTaskDrawer,
+  });
+  (useTaskModal as jest.Mock).mockReturnValue({
+    openTaskModal,
   });
 });
 
@@ -263,9 +265,9 @@ describe('TaskRow', () => {
 
       expect(await findByText(task.subject)).toBeVisible();
       userEvent.click(getByRole('img', { hidden: true, name: 'Comment Icon' }));
-      expect(openTaskDrawer).toHaveBeenCalledWith({
+      expect(openTaskModal).toHaveBeenCalledWith({
         taskId: task.id,
-        specificTab: TaskDrawerTabsEnum.comments,
+        view: 'comments',
       });
     });
   });

@@ -18,7 +18,7 @@ import {
 } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'next/router';
-import { signout } from 'next-auth/client';
+import { signOut } from 'next-auth/react';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { useAccountListId } from '../../../../../../hooks/useAccountListId';
@@ -268,7 +268,7 @@ const ProfileMenu = (): ReactElement => {
           <MenuButton
             variant="outlined"
             color="default"
-            onClick={() => signout()}
+            onClick={() => signOut()}
           >
             {t('Sign Out')}
           </MenuButton>

@@ -2,7 +2,6 @@ import { ReactElement, ReactNode, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import theme from '../../../theme';
 import TaskDrawer, { TaskDrawerProps } from './Drawer';
-//import TaskModal, { TaskModalProps } from '../Modal/TaskModal';
 import TaskDrawerContext from './TaskDrawerContext';
 
 interface Props {

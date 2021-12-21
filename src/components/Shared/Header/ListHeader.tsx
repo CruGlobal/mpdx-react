@@ -86,7 +86,7 @@ const StarIconWrap = styled(Box)(({ theme }) => ({
 
 export enum TableViewModeEnum {
   List = 'list',
-  Column = 'column',
+  Flows = 'flows',
 }
 
 export enum ListHeaderCheckBoxState {

@@ -1,15 +1,26 @@
-import React from 'react';
-import { Box, Divider, styled, Typography } from '@material-ui/core';
+import React, { useState } from 'react';
+import {
+  Box,
+  Button,
+  ButtonGroup,
+  Divider,
+  styled,
+  Typography,
+} from '@material-ui/core';
 import { EcoOutlined } from '@material-ui/icons';
 import { useTranslation } from 'react-i18next';
 import { Skeleton } from '@material-ui/lab';
 import { AppealProgress } from '../AppealProgress/AppealProgress';
-import { useLoadCoachingDetailQuery } from './LoadCoachingDetail.generated';
+import {
+  useLoadAccountListCoachingDetailQuery,
+  useLoadCoachingDetailQuery,
+} from './LoadCoachingDetail.generated';
 import theme from 'src/theme';
 import { MonthlyActivitySection } from 'src/components/Reports/DonationsReport/MonthlyActivity/MonthlyActivitySection';
 
 interface CoachingDetailProps {
   coachingId: string;
+  isAccountListId: boolean;
 }
 
 const CoachingLoadingSkeleton = styled(Skeleton)(({ theme }) => ({
@@ -43,6 +54,10 @@ const CoachingMainContainer = styled(Box)(({ theme }) => ({
   flexGrow: 4,
 }));
 
+const CoachingItemContainer = styled(Box)(({ theme }) => ({
+  margin: theme.spacing(2),
+}));
+
 const CoachingMainTitleContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
   margin: theme.spacing(1),
@@ -50,13 +65,37 @@ const CoachingMainTitleContainer = styled(Box)(({ theme }) => ({
   alignContent: 'center',
 }));
 
+const CoachingMonthYearButtonGroup = styled(ButtonGroup)(({ theme }) => ({
+  margin: theme.spacing(2, 0),
+  color: theme.palette.primary.contrastText,
+}));
+
 export const CoachingDetail: React.FC<CoachingDetailProps> = ({
   coachingId,
+  isAccountListId = false,
 }) => {
   const { t } = useTranslation();
-  const { data, loading } = useLoadCoachingDetailQuery({
-    variables: { coachingId: coachingId },
+  const {
+    data: accountListData,
+    loading,
+  } = useLoadAccountListCoachingDetailQuery({
+    variables: { coachingId },
+    skip: !isAccountListId,
   });
+
+  const {
+    data: coachingData,
+    loading: coachingLoading,
+  } = useLoadCoachingDetailQuery({
+    variables: { coachingId },
+    skip: isAccountListId,
+  });
+
+  const data = isAccountListId
+    ? accountListData?.accountList
+    : coachingData?.coachingAccountList;
+
+  const [isMonthly, setIsMonthly] = useState(true);
 
   return (
     <CoachingDetailContainer>
@@ -80,9 +119,28 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
           </Typography>
         </CoachingSideTitleContainer>
         <Divider style={{ background: theme.palette.primary.contrastText }} />
+        <CoachingMonthYearButtonGroup
+          variant="outlined"
+          color="inherit"
+          fullWidth
+          size="large"
+        >
+          <Button
+            variant={isMonthly ? 'contained' : 'outlined'}
+            onClick={() => setIsMonthly(true)}
+          >
+            {t('Monthly')}
+          </Button>
+          <Button
+            variant={isMonthly ? 'outlined' : 'contained'}
+            onClick={() => setIsMonthly(false)}
+          >
+            {t('Yearly')}
+          </Button>
+        </CoachingMonthYearButtonGroup>
       </CoachingSideContainer>
       <CoachingMainContainer>
-        {loading ? (
+        {loading || coachingLoading ? (
           <>
             <CoachingLoadingSkeleton />
             <CoachingLoadingSkeleton />
@@ -100,32 +158,29 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
                     margin: theme.spacing(1),
                   }}
                 >
-                  {data?.coachingAccountList.name}
+                  {data?.name}
                 </Typography>
               </Box>
               <Box style={{ flexGrow: 1 }}>
                 <AppealProgress
                   loading={loading}
                   isPrimary={false}
-                  currency={data?.coachingAccountList.currency}
-                  goal={
-                    data?.coachingAccountList.monthlyGoal
-                      ? data.coachingAccountList.monthlyGoal
-                      : 0
-                  }
-                  received={data?.coachingAccountList.receivedPledges}
-                  pledged={data?.coachingAccountList.totalPledges}
+                  currency={data?.currency}
+                  goal={data?.monthlyGoal ?? 0}
+                  received={data?.receivedPledges}
+                  pledged={data?.totalPledges}
                 />
               </Box>
             </CoachingMainTitleContainer>
             <Divider />
-            {data?.coachingAccountList.id ? (
-              <MonthlyActivitySection
-                accountListId={data.coachingAccountList.id}
-              />
-            ) : (
-              <></>
-            )}
+            <CoachingItemContainer>
+              {/*
+                TODO: MonthlyActivitySection doesn't work if coaching is not one of the 
+                Accountlists. reportDonationsHistories is required for this View and it doesn't 
+                work with coaching.
+              */}
+              <MonthlyActivitySection accountListId={coachingId} />
+            </CoachingItemContainer>
           </>
         )}
       </CoachingMainContainer>

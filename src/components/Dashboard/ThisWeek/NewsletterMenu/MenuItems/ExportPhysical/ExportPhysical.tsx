@@ -15,7 +15,7 @@ import {
 
 import CloseIcon from '@material-ui/icons/Close';
 import { useTranslation } from 'react-i18next';
-import { useSession } from 'next-auth/client';
+import { useSession } from 'next-auth/react';
 import {
   ExportFormatEnum,
   ExportLabelTypeEnum,
@@ -57,12 +57,17 @@ const ExportSelect = styled(Select)(() => ({
   width: '100%',
 }));
 
+const ButtonContainer = styled(Grid)(() => ({
+  alignItems: 'center',
+  justifyContent: 'center',
+}));
+
 const ExportPhysical: React.FC<Props> = ({
   handleClose,
   accountListId,
 }: Props) => {
   const { t } = useTranslation();
-  const [session] = useSession();
+  const { data: session } = useSession();
   const [isExportingPdf, changeIsExportingPdf] = useState(false);
   const [labelType, changeLabelType] = useState(ExportLabelTypeEnum.Avery5160);
   const [sort, changeSort] = useState(ExportSortEnum.Name);
@@ -83,7 +88,7 @@ const ExportPhysical: React.FC<Props> = ({
     });
     data?.exportContacts &&
       window.location.replace(
-        `${data.exportContacts}?access_token=${session?.user.token}`,
+        `${data.exportContacts}?access_token=${session?.user.apiToken}`,
       );
     handleClose();
   };
@@ -141,7 +146,7 @@ const ExportPhysical: React.FC<Props> = ({
             ) : (
               <>
                 <Grid container alignItems="flex-start">
-                  <Grid item xs={6}>
+                  <ButtonContainer container item xs={12} md={6}>
                     <LabelButton
                       variant="contained"
                       color="primary"
@@ -154,8 +159,8 @@ const ExportPhysical: React.FC<Props> = ({
                         'Addresses will be formatted based on country. (Experimental)',
                       )}
                     </DialogContentText>
-                  </Grid>
-                  <Grid item xs={6}>
+                  </ButtonContainer>
+                  <ButtonContainer container item xs={12} md={6}>
                     <LabelButton
                       variant="contained"
                       color="primary"
@@ -168,10 +173,10 @@ const ExportPhysical: React.FC<Props> = ({
                         'Best for making mailing labels. Addresses will be formatted based on country.',
                       )}
                     </DialogContentText>
-                  </Grid>
+                  </ButtonContainer>
                 </Grid>
                 <Grid container alignItems="flex-start">
-                  <Grid item xs={6}>
+                  <ButtonContainer container item xs={12} md={6}>
                     <LabelButton
                       variant="contained"
                       color="primary"
@@ -184,8 +189,8 @@ const ExportPhysical: React.FC<Props> = ({
                         'All of the information for your contacts, best for advanced sorting/filtering and importing into other software.',
                       )}
                     </DialogContentText>
-                  </Grid>
-                  <Grid item xs={6}>
+                  </ButtonContainer>
+                  <ButtonContainer container item xs={12} md={6}>
                     <LabelButton
                       variant="contained"
                       color="primary"
@@ -198,7 +203,7 @@ const ExportPhysical: React.FC<Props> = ({
                         "All of the information for your contacts in Excel's default XLSX format.",
                       )}
                     </DialogContentText>
-                  </Grid>
+                  </ButtonContainer>
                 </Grid>
               </>
             )}

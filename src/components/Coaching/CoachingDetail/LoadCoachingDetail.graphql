@@ -1,5 +1,43 @@
 query LoadCoachingDetail($coachingId: ID!) {
   coachingAccountList(id: $coachingId) {
-    ...CoachedPerson
+    id
+    name
+    primaryAppeal {
+      active
+      amount
+      amountCurrency
+      id
+      name
+      pledgesAmountNotReceivedNotProcessed
+      pledgesAmountProcessed
+      pledgesAmountTotal
+    }
+    currency
+    monthlyGoal
+    balance
+    receivedPledges
+    totalPledges
+  }
+}
+
+query LoadAccountListCoachingDetail($coachingId: ID!) {
+  accountList(id: $coachingId) {
+    id
+    name
+    primaryAppeal {
+      active
+      amount
+      amountCurrency
+      id
+      name
+      pledgesAmountNotReceivedNotProcessed
+      pledgesAmountProcessed
+      pledgesAmountTotal
+    }
+    currency
+    monthlyGoal
+    balance
+    receivedPledges
+    totalPledges
   }
 }

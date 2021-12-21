@@ -16,6 +16,7 @@ import { ListHeader } from '../../../../src/components/Shared/Header/ListHeader'
 import NullState from '../../../../src/components/Shared/Filters/NullState/NullState';
 import { FilterPanel } from '../../../../src/components/Shared/Filters/FilterPanel';
 import { useMassSelection } from '../../../../src/hooks/useMassSelection';
+import { UserOptionFragment } from '../../../../src/components/Shared/Filters/FilterPanel.generated';
 import { useTaskFiltersQuery, useTasksQuery } from './Tasks.generated';
 import useTaskModal from 'src/hooks/useTaskModal';
 
@@ -93,6 +94,15 @@ const TasksPage: React.FC = () => {
   const toggleFilterPanel = () => {
     setFilterPanelOpen(!filterPanelOpen);
   };
+
+  const savedFilters: UserOptionFragment[] =
+    filterData?.userOptions.filter(
+      (option) =>
+        (option.key?.includes('saved_tasks_filter_') ||
+          option.key?.includes('graphql_saved_tasks_filter_')) &&
+        (JSON.parse(option.value ?? '').account_list_id === accountListId ||
+          JSON.parse(option.value ?? '').accountListId === accountListId),
+    ) ?? [];
   //#endregion
 
   //#region Mass Actions
@@ -151,6 +161,7 @@ const TasksPage: React.FC = () => {
               filterData && !filtersLoading ? (
                 <FilterPanel
                   filters={filterData?.accountList.taskFilterGroups}
+                  savedFilters={savedFilters}
                   selectedFilters={activeFilters}
                   onClose={toggleFilterPanel}
                   onSelectedFiltersChanged={setActiveFilters}
@@ -199,7 +210,7 @@ const TasksPage: React.FC = () => {
                   totalCount={data?.tasks?.totalCount}
                   style={{ height: 'calc(100vh - 160px)' }}
                   itemContent={(index, task) => (
-                    <Box key={index} flexDirection="row">
+                    <Box key={index} flexDirection="row" width="100%">
                       <TaskRow
                         accountListId={accountListId}
                         task={task}

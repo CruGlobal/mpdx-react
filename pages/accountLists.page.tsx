@@ -1,7 +1,7 @@
 import React, { ReactElement } from 'react';
 import Head from 'next/head';
 import { GetServerSideProps, GetServerSidePropsResult } from 'next';
-import { getSession } from 'next-auth/client';
+import { getSession } from 'next-auth/react';
 import { useTranslation } from 'react-i18next';
 import AccountLists from '../src/components/AccountLists';
 import { ssrClient } from '../src/lib/client';
@@ -32,14 +32,13 @@ const AccountListsPage = ({ data }: Props): ReactElement => {
 AccountListsPage.layout = BaseLayout;
 
 export const getServerSideProps: GetServerSideProps = async ({
-  res,
   req,
 }): Promise<GetServerSidePropsResult<Props>> => {
   const session = await getSession({ req });
 
-  const token = session?.user.token;
+  const apiToken = session?.user.apiToken;
 
-  if (!token) {
+  if (!apiToken) {
     return {
       redirect: {
         destination: '/login',
@@ -47,8 +46,7 @@ export const getServerSideProps: GetServerSideProps = async ({
       },
     };
   }
-
-  const client = await ssrClient(token);
+  const client = await ssrClient(apiToken);
   const response = await client.query<
     GetAccountListsQuery,
     GetAccountListsQueryVariables
@@ -60,11 +58,12 @@ export const getServerSideProps: GetServerSideProps = async ({
     response.data.accountLists.nodes &&
     response.data.accountLists.nodes.length === 1
   ) {
-    res.writeHead(302, {
-      Location: `/accountLists/${response.data.accountLists.nodes[0]?.id}`,
-    });
-    res.end();
-    return { props: {} };
+    return {
+      redirect: {
+        destination: `/accountLists/${response.data.accountLists.nodes[0]?.id}`,
+        permanent: false,
+      },
+    };
   }
 
   return {

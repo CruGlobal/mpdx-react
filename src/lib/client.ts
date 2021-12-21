@@ -26,6 +26,7 @@ export const cache = new InMemoryCache({
     Query: {
       fields: {
         contacts: paginationFieldPolicy,
+        tasks: paginationFieldPolicy,
         userNotifications: paginationFieldPolicy,
       },
     },
@@ -65,13 +66,13 @@ const client = new ApolloClient({
 });
 
 export const ssrClient = (
-  token?: string,
+  apiToken?: string,
 ): ApolloClient<NormalizedCacheObject> => {
   const httpLink = createHttpLink({
     uri: process.env.API_URL,
     fetch,
     headers: {
-      Authorization: token ? `Bearer ${token}` : null,
+      Authorization: apiToken ? `Bearer ${apiToken}` : null,
       Accept: 'application/json',
     },
   });

@@ -1,17 +1,37 @@
 import { Box } from '@material-ui/core';
 import React from 'react';
+import { useSnackbar } from 'notistack';
+import { useTranslation } from 'react-i18next';
+import { ContactsDocument } from '../../../../pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import Loading from '../../Loading';
-import { ContactFilterStatusEnum } from '../../../../graphql/types.generated';
+import {
+  ContactFilterSetInput,
+  ContactFilterStatusEnum,
+  IdValue,
+  StatusEnum,
+} from '../../../../graphql/types.generated';
 import theme from '../../../theme';
-import { ContactFlowColumn } from './ContactFlowColumn';
+import { useUpdateContactOtherMutation } from '../ContactDetails/ContactDetailsTab/Other/EditContactOtherModal/EditContactOther.generated';
+import { ContactFlowColumn } from './ContactFlowColumn/ContactFlowColumn';
 import { useGetUserOptionsQuery } from './GetUserOptions.generated';
 
 interface Props {
   accountListId: string;
-  onContactSelected: (contactId: string) => void;
+  selectedFilters: ContactFilterSetInput;
+  onContactSelected: (
+    contactId: string,
+    openDetails: boolean,
+    flows: boolean,
+  ) => void;
 }
 
-const statusMap: { [key: string]: string } = {
+export interface ContactFlowOption {
+  name: string;
+  statuses: string[];
+  color: string;
+}
+
+export const statusMap: { [key: string]: string } = {
   'Never Contacted': 'NEVER_CONTACTED',
   'Ask in Future': 'ASK_IN_FUTURE',
   'Cultivate Relationship': 'CULTIVATE_RELATIONSHIP',
@@ -28,16 +48,17 @@ const statusMap: { [key: string]: string } = {
   'Expired Referral': 'EXPIRED_REFERRAL',
 };
 
-const colorMap: { [key: string]: string } = {
-  'color-danger': 'red',
+export const colorMap: { [key: string]: string } = {
+  'color-danger': theme.palette.error.main,
   'color-warning': theme.palette.progressBarYellow.main,
-  'color-success': theme.palette.mpdxGreen.main,
+  'color-success': theme.palette.success.main,
   'color-info': theme.palette.mpdxBlue.main,
   'color-text': theme.palette.cruGrayDark.main,
 };
 
 export const ContactFlow: React.FC<Props> = ({
   accountListId,
+  selectedFilters,
   onContactSelected,
 }: Props) => {
   const {
@@ -45,14 +66,50 @@ export const ContactFlow: React.FC<Props> = ({
     loading: loadingUserOptions,
   } = useGetUserOptionsQuery({});
 
-  const flowOptions: {
-    name: string;
-    statuses: string[];
-    color: string;
-  }[] = JSON.parse(
+  const { t } = useTranslation();
+  const { enqueueSnackbar } = useSnackbar();
+
+  const flowOptions: ContactFlowOption[] = JSON.parse(
     userOptions?.userOptions.find((option) => option.key === 'flows')?.value ||
       '{}',
   );
+
+  const [updateContactOther] = useUpdateContactOtherMutation();
+
+  const changeContactStatus = async (
+    id: string,
+    status: {
+      __typename?: 'IdValue' | undefined;
+    } & Pick<IdValue, 'id' | 'value'>,
+  ): Promise<void> => {
+    const attributes = {
+      id,
+      status: status.id as StatusEnum,
+    };
+    await updateContactOther({
+      variables: {
+        accountListId,
+        attributes,
+      },
+      refetchQueries: () =>
+        flowOptions.map((flowOption) => ({
+          query: ContactsDocument,
+          variables: {
+            accountListId,
+            contactsFilters: {
+              status: flowOption.statuses.map(
+                (status) => statusMap[status] as ContactFilterStatusEnum,
+              ),
+              ...selectedFilters,
+            },
+          },
+        })),
+    });
+    enqueueSnackbar(t('Contact status info updated!'), {
+      variant: 'success',
+    });
+  };
+
   return (
     <>
       {loadingUserOptions ? (
@@ -85,11 +142,13 @@ export const ContactFlow: React.FC<Props> = ({
                   <ContactFlowColumn
                     accountListId={accountListId}
                     title={column.name}
+                    selectedFilters={selectedFilters}
                     color={colorMap[column.color]}
                     onContactSelected={onContactSelected}
                     statuses={column.statuses.map(
                       (status) => statusMap[status] as ContactFilterStatusEnum,
                     )}
+                    changeContactStatus={changeContactStatus}
                   />
                 </Box>
               ))}

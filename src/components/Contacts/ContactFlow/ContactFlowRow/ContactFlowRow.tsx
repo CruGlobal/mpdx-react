@@ -3,16 +3,22 @@ import React, { useEffect } from 'react';
 import { useDrag } from 'react-dnd';
 import { getEmptyImage } from 'react-dnd-html5-backend';
 import theme from '../../../../../src/theme';
-import { StatusEnum } from '../../../../../graphql/types.generated';
+import { IdValue } from '../../../../../graphql/types.generated';
 import { StarContactIconButton } from '../../StarContactIconButton/StarContactIconButton';
 
 interface Props {
   accountListId: string;
   id: string;
   name: string;
-  status: StatusEnum | 'NULL';
+  status: {
+    __typename?: 'IdValue' | undefined;
+  } & Pick<IdValue, 'id' | 'value'>;
   starred: boolean;
-  onContactSelected: (contactId: string) => void;
+  onContactSelected: (
+    contactId: string,
+    openDetails: boolean,
+    flows: boolean,
+  ) => void;
   columnWidth?: number;
 }
 
@@ -33,8 +39,19 @@ const DraggableBox = styled(Box)(() => ({
   paddingLeft: theme.spacing(2),
   '&:hover': {
     cursor: 'move',
+    backgroundColor: theme.palette.mpdxYellow.main,
   },
 }));
+
+export interface DraggedContact {
+  id: string;
+  status: {
+    __typename?: 'IdValue' | undefined;
+  } & Pick<IdValue, 'id' | 'value'>;
+  name: string;
+  starred: boolean;
+  width: number;
+}
 
 export const ContactFlowRow: React.FC<Props> = ({
   accountListId,
@@ -82,10 +99,10 @@ export const ContactFlowRow: React.FC<Props> = ({
             }}
           />
           <Box display="flex" flexDirection="column" ml={2} draggable>
-            <ContactLink onClick={() => onContactSelected(id)}>
+            <ContactLink onClick={() => onContactSelected(id, true, true)}>
               {name}
             </ContactLink>
-            <Typography>{status || 'NULL'}</Typography>
+            <Typography>{status.value}</Typography>
           </Box>
         </Box>
         <Box display="flex">

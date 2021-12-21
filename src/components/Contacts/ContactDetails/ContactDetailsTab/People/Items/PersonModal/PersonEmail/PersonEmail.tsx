@@ -117,7 +117,7 @@ export const PersonEmail: React.FC<PersonEmailProps> = ({ formikProps }) => {
                   <>
                     <ModalSectionContainer key={index}>
                       <Grid container spacing={3}>
-                        <Grid item xs={6}>
+                        <Grid item xs={12} md={6}>
                           <ContactInputField
                             destroyed={emailAddress.destroy ?? false}
                             value={emailAddress.email}
@@ -137,7 +137,7 @@ export const PersonEmail: React.FC<PersonEmailProps> = ({ formikProps }) => {
                             fullWidth
                           />
                         </Grid>
-                        <Grid item xs={6}>
+                        <Grid item xs={12} md={6}>
                           <EmailSelect
                             destroyed={emailAddress.destroy ?? false}
                             value={emailAddress.location ?? ''}
@@ -181,13 +181,13 @@ export const PersonEmail: React.FC<PersonEmailProps> = ({ formikProps }) => {
       ) : null}
       <ModalSectionContainer>
         <Grid container alignItems="center">
-          <Grid container alignItems="center" item xs={6}>
+          <Grid container alignItems="center" item xs={12} md={6}>
             <ContactAddIcon />
             <ContactAddText variant="subtitle1">
               {t('Add Email')}
             </ContactAddText>
           </Grid>
-          <Grid container item xs={6} alignItems="center">
+          <Grid container item xs={12} md={6} alignItems="center">
             <OptOutENewsletterLabel
               control={
                 <Checkbox

@@ -20,6 +20,7 @@ import { useAccountListId } from '../../../hooks/useAccountListId';
 import { useGetTaskForTaskModalQuery } from '../Modal/TaskModalTask.generated';
 import TaskModalForm from './Form/TaskModalForm';
 import TaskModalCompleteForm from './Form/Complete/TaskModalCompleteForm';
+import TaskModalCommentsList from './Comments/TaskModalCommentsList';
 
 const StyledModal = styled(Modal)(() => ({
   display: 'flex',
@@ -76,6 +77,8 @@ const TaskModal = ({
     switch (view) {
       case 'complete':
         return 'Complete Task';
+      case 'comments':
+        return 'Task Comments';
       default:
         return 'Add Task';
     }
@@ -93,6 +96,14 @@ const TaskModal = ({
             />
           );
         }
+      case 'comments':
+        return (
+          <TaskModalCommentsList
+            accountListId={accountListId || ''}
+            taskId={task?.id || ''}
+            onClose={onModalClose}
+          />
+        );
       default:
         return (
           <TaskModalForm

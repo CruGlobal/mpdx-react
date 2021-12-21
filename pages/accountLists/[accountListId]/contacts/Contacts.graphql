@@ -29,4 +29,7 @@ query ContactFilters($accountListId: ID!) {
       ...FilterPanelGroup
     }
   }
+  userOptions {
+    ...UserOption
+  }
 }

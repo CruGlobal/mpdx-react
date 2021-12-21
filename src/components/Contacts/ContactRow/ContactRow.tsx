@@ -26,8 +26,12 @@ interface Props {
   accountListId: string;
   contact: ContactRowFragment;
   isChecked: boolean;
+  onContactSelected: (
+    contactId: string,
+    openDetails?: boolean,
+    flows?: boolean,
+  ) => void;
   contactDetailsOpen: boolean;
-  onContactSelected: (contactId: string) => void;
   onContactCheckToggle: (contactId: string) => void;
 }
 

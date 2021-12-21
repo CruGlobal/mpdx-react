@@ -40,6 +40,16 @@ import {
   createEntryHistoriesGroup,
   EntryHistoriesResponse,
 } from './Schema/reports/entryHistories/datahandler';
+import { getAccountListAnalytics } from './Schema/AccountListAnalytics/dataHandler';
+import { getAppointmentResults } from './Schema/reports/appointmentResults/dataHandler';
+import {
+  DeleteCommentResponse,
+  DeleteComment,
+} from './Schema/Tasks/Comments/DeleteComments/datahandler';
+import {
+  UpdateCommentResponse,
+  UpdateComment,
+} from './Schema/Tasks/Comments/UpdateComments/datahandler';
 
 class MpdxRestApi extends RESTDataSource {
   constructor() {
@@ -102,6 +112,31 @@ class MpdxRestApi extends RESTDataSource {
     });
 
     return `${process.env.REST_API_URL}contacts/exports${pathAddition}/${data.id}.${format}`;
+  }
+
+  async getAccountListAnalytics(
+    accountListId: string,
+    dateRange?: string | null,
+  ) {
+    const { data } = await this.get(
+      dateRange
+        ? `account_lists/${accountListId}/analytics?filter[date_range]=${dateRange}`
+        : `account_lists/${accountListId}/analytics`,
+    );
+
+    return getAccountListAnalytics(data);
+  }
+
+  async getAppointmentResults(
+    accountListId: string,
+    endDate: string,
+    range: string,
+  ) {
+    const { data } = await this.get(
+      `reports/appointment_results?filter[account_list_id]=${accountListId}&filter[end_date]=${endDate}&filter[range]=${range}`,
+    );
+
+    return getAppointmentResults(data);
   }
 
   async getTaskAnalytics(accountListId: string) {
@@ -206,6 +241,13 @@ class MpdxRestApi extends RESTDataSource {
     return setActiveFinancialAccount(data);
   }
 
+  async deleteComment(taskId: string, commentId: string) {
+    const { data }: { data: DeleteCommentResponse } = await this.delete(
+      `tasks/${taskId}/comments/${commentId}`,
+    );
+    return DeleteComment({ ...data, id: commentId });
+  }
+
   async getEntryHistories(
     accountListId: string,
     financialAccountIds: Array<string>,
@@ -221,6 +263,21 @@ class MpdxRestApi extends RESTDataSource {
         return createEntryHistoriesGroup(data, financialAccountIds[idx]);
       });
     });
+  }
+
+  async updateComment(taskId: string, commentId: string, body: string) {
+    const { data }: { data: UpdateCommentResponse } = await this.put(
+      `tasks/${taskId}/comments/${commentId}`,
+      {
+        data: {
+          type: 'comments',
+          attributes: {
+            body,
+          },
+        },
+      },
+    );
+    return UpdateComment(data);
   }
 }
 

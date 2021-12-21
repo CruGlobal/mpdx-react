@@ -52,7 +52,7 @@ import {
 import theme from '../../../../../src/theme';
 import { useCreateTaskCommentMutation } from '../../Drawer/CommentList/Form/CreateTaskComment.generated';
 
-const ActionButton = styled(Button)(() => ({
+export const ActionButton = styled(Button)(() => ({
   color: theme.palette.info.main,
   fontWeight: 550,
 }));

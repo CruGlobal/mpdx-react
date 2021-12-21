@@ -1,0 +1,27 @@
+extend type Query {
+  appointmentResults(
+    accountListId: ID!
+    endDate: String!
+    range: String!
+  ): [ReportsAppointmentResultsPeriods!]
+}
+
+type ReportsAppointmentResultsPeriods {
+  id: ID!
+  type: String!
+  appointmentsScheduled: Int
+  createdAt: ISO8601DateTime
+  endDate: ISO8601DateTime
+  groupAppointments: Int
+  individualAppointments: Int
+  monthlyDecrease: Float
+  monthlyIncrease: Float
+  newMonthlyPartners: Int
+  newSpecialPledges: Int
+  pledgeIncrease: Float
+  specialGifts: Float
+  startDate: ISO8601DateTime
+  updatedAt: ISO8601DateTime
+  updatedInDbAt: ISO8601DateTime
+  weeklyIndividualAppointmentGoal: Int
+}
