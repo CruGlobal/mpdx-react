@@ -64,10 +64,6 @@ const ContactsPage: React.FC = () => {
     throw new Error('contactId should be an array or undefined');
   }
 
-  if (searchTerm !== undefined && !Array.isArray(searchTerm)) {
-    throw new Error('searchTerm should be an array or undefined');
-  }
-
   useEffect(() => {
     if (isReady && contactId) {
       if (contactId[contactId.length - 1] !== 'flows') {
@@ -155,13 +151,22 @@ const ContactsPage: React.FC = () => {
   };
   const setSearchTerm = (searchTerm: string) => {
     const { searchTerm: _, ...oldQuery } = query;
-    replace({
-      pathname,
-      query: {
-        ...oldQuery,
-        ...(searchTerm && { searchTerm }),
-      },
-    });
+    if (searchTerm !== '') {
+      replace({
+        pathname,
+        query: {
+          ...oldQuery,
+          ...(searchTerm && { searchTerm }),
+        },
+      });
+    } else {
+      replace({
+        pathname,
+        query: {
+          ...oldQuery,
+        },
+      });
+    }
   };
 
   const [flowsViewEnabled, setflowsViewEnabled] = useState<boolean>(false);
