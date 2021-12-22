@@ -10,6 +10,7 @@ import ViewColumn from '@material-ui/icons/ViewColumn';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { Settings } from '@material-ui/icons';
+import debounce from 'lodash/debounce';
 import {
   GetUserOptionsDocument,
   GetUserOptionsQuery,
@@ -92,7 +93,7 @@ const ContactsPage: React.FC = () => {
       accountListId: accountListId ?? '',
       contactsFilters: {
         ...activeFilters,
-        wildcardSearch: searchTerm?.[0],
+        wildcardSearch: searchTerm as string,
         ...starredFilter,
       },
     },
@@ -149,7 +150,7 @@ const ContactsPage: React.FC = () => {
       setContactDetailsOpen(!!id);
     }
   };
-  const setSearchTerm = (searchTerm: string) => {
+  const setSearchTerm = debounce((searchTerm: string) => {
     const { searchTerm: _, ...oldQuery } = query;
     if (searchTerm !== '') {
       replace({
@@ -167,7 +168,7 @@ const ContactsPage: React.FC = () => {
         },
       });
     }
-  };
+  }, 300);
 
   const [flowsViewEnabled, setflowsViewEnabled] = useState<boolean>(false);
 
