@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import Head from 'next/head';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'next/router';
 import { Box, Button, Hidden, styled } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 import CheckCircleOutlineIcon from '@material-ui/icons/CheckCircleOutline';
+import debounce from 'lodash/debounce';
 import { InfiniteList } from '../../../../src/components/InfiniteList/InfiniteList';
 import { ContactDetails } from '../../../../src/components/Contacts/ContactDetails/ContactDetails';
 import Loading from '../../../../src/components/Loading';
@@ -54,10 +55,6 @@ const TasksPage: React.FC = () => {
     throw new Error('contactId should be an array or undefined');
   }
 
-  if (searchTerm !== undefined && !Array.isArray(searchTerm)) {
-    throw new Error('searchTerm should be an array or undefined');
-  }
-
   useEffect(() => {
     if (isReady && contactId) {
       setContactDetailsId(contactId[0]);
@@ -76,7 +73,7 @@ const TasksPage: React.FC = () => {
       tasksFilter: {
         ...activeFilters,
         ...starredFilter,
-        wildcardSearch: searchTerm?.[0],
+        wildcardSearch: searchTerm as string,
       },
     },
     skip: !accountListId,
@@ -136,16 +133,28 @@ const TasksPage: React.FC = () => {
     setContactDetailsOpen(!!id);
   };
 
-  const setSearchTerm = (searchTerm?: string) => {
-    const { searchTerm: _, ...oldQuery } = query;
-    replace({
-      pathname,
-      query: {
-        ...oldQuery,
-        ...(searchTerm && { searchTerm }),
-      },
-    });
-  };
+  const setSearchTerm = useCallback(
+    debounce((searchTerm: string) => {
+      const { searchTerm: _, ...oldQuery } = query;
+      if (searchTerm !== '') {
+        replace({
+          pathname,
+          query: {
+            ...oldQuery,
+            ...(searchTerm && { searchTerm }),
+          },
+        });
+      } else {
+        replace({
+          pathname,
+          query: {
+            ...oldQuery,
+          },
+        });
+      }
+    }, 500),
+    [],
+  );
   //#endregion
 
   //#region JSX
@@ -182,6 +191,7 @@ const TasksPage: React.FC = () => {
                   contactDetailsOpen={contactDetailsOpen}
                   onCheckAllItems={toggleSelectAll}
                   onSearchTermChanged={setSearchTerm}
+                  searchTerm={searchTerm}
                   totalItems={data?.tasks?.totalCount}
                   starredFilter={starredFilter}
                   toggleStarredFilter={setStarredFilter}
