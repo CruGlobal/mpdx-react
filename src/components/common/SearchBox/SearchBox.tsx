@@ -8,6 +8,7 @@ import SearchIcon from '@material-ui/icons/Search';
 
 export interface SearchBoxProps {
   onChange: (searchTerm: string) => void;
+  searchTerm?: string | string[];
   placeholder?: string;
   page: 'task' | 'contact';
 }
@@ -24,11 +25,12 @@ export const SearchInput = styled(TextField)(() => ({
 
 export const SearchBox: React.FC<SearchBoxProps> = ({
   onChange,
+  searchTerm,
   placeholder,
   page,
 }) => {
   const { t } = useTranslation();
-  const [searchTerm, setSearchTerm] = useState('');
+  const [currentSearchTerm, setSearchTerm] = useState(searchTerm ?? '');
 
   const handleOnChange = (searchTerm: string) => {
     setSearchTerm(searchTerm);
@@ -41,7 +43,7 @@ export const SearchBox: React.FC<SearchBoxProps> = ({
       variant="outlined"
       onChange={(e) => handleOnChange(e.target.value)}
       placeholder={placeholder ?? t('Search')}
-      value={searchTerm}
+      value={currentSearchTerm}
       InputProps={{
         startAdornment: (
           <InputAdornment position="start">

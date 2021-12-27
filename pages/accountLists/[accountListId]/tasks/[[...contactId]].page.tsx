@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import Head from 'next/head';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'next/router';
@@ -133,25 +133,28 @@ const TasksPage: React.FC = () => {
     setContactDetailsOpen(!!id);
   };
 
-  const setSearchTerm = debounce((searchTerm: string) => {
-    const { searchTerm: _, ...oldQuery } = query;
-    if (searchTerm !== '') {
-      replace({
-        pathname,
-        query: {
-          ...oldQuery,
-          ...(searchTerm && { searchTerm }),
-        },
-      });
-    } else {
-      replace({
-        pathname,
-        query: {
-          ...oldQuery,
-        },
-      });
-    }
-  }, 300);
+  const setSearchTerm = useCallback(
+    debounce((searchTerm: string) => {
+      const { searchTerm: _, ...oldQuery } = query;
+      if (searchTerm !== '') {
+        replace({
+          pathname,
+          query: {
+            ...oldQuery,
+            ...(searchTerm && { searchTerm }),
+          },
+        });
+      } else {
+        replace({
+          pathname,
+          query: {
+            ...oldQuery,
+          },
+        });
+      }
+    }, 500),
+    [],
+  );
   //#endregion
 
   //#region JSX
@@ -188,6 +191,7 @@ const TasksPage: React.FC = () => {
                   contactDetailsOpen={contactDetailsOpen}
                   onCheckAllItems={toggleSelectAll}
                   onSearchTermChanged={setSearchTerm}
+                  searchTerm={searchTerm}
                   totalItems={data?.tasks?.totalCount}
                   starredFilter={starredFilter}
                   toggleStarredFilter={setStarredFilter}
