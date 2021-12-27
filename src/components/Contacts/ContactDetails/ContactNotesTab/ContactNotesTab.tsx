@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useCallback, useState } from 'react';
 import { TextField } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { DateTime } from 'luxon';
-import { DebounceInput } from 'react-debounce-input';
+
+import debounce from 'lodash/debounce';
+import { useSnackbar } from 'notistack';
 import {
   useGetContactNotesQuery,
   useUpdateContactNotesMutation,
@@ -19,39 +21,52 @@ export const ContactNotesTab: React.FC<Props> = ({
 }) => {
   const { t } = useTranslation();
 
-  const { data, loading } = useGetContactNotesQuery({
+  const { enqueueSnackbar } = useSnackbar();
+
+  const { data } = useGetContactNotesQuery({
     variables: {
       contactId,
       accountListId,
     },
   });
+  const [notes, setNotes] = useState(data?.contact.notes ?? '');
+
+  const handleSetNotes = useCallback(
+    debounce(async (notes) => {
+      await updateNotes({
+        variables: {
+          contactId,
+          accountListId,
+          notes,
+        },
+      });
+      enqueueSnackbar(t('Notes successfully saved.'), {
+        variant: 'success',
+      });
+    }, 500),
+    [],
+  );
+
+  const handleChange = (notes: string) => {
+    setNotes(notes);
+    handleSetNotes(notes);
+  };
 
   const [updateNotes] = useUpdateContactNotesMutation();
 
   return (
     <>
-      <DebounceInput
-        debounceTimeout={500}
-        value={data?.contact.notes ?? ''}
-        onChange={(event) =>
-          updateNotes({
-            variables: {
-              contactId,
-              accountListId,
-              notes: event.target.value,
-            },
-          })
-        }
-        element={TextField}
+      <TextField
+        value={notes}
+        onChange={(event) => handleChange(event.target.value)}
         fullWidth
         multiline
         placeholder={t('Add contact notes')}
         rows="10"
         variant="outlined"
-        disabled={loading}
       />
       <p style={{ textAlign: 'right' }}>
-        Last updated{' '}
+        {t('Last updated ')}
         {data?.contact.notesSavedAt &&
           DateTime.fromISO(data.contact.notesSavedAt).toRelative()}
       </p>

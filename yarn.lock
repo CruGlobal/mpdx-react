@@ -19274,7 +19274,7 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"lodash.debounce@npm:^4, lodash.debounce@npm:^4.0.8":
+"lodash.debounce@npm:^4.0.8":
   version: 4.0.8
   resolution: "lodash.debounce@npm:4.0.8"
   checksum: a3f527d22c548f43ae31c861ada88b2637eb48ac6aa3eb56e82d44917971b8aa96fbb37aa60efea674dc4ee8c42074f90f7b1f772e9db375435f6c83a19b3bc6
@@ -20322,7 +20322,6 @@ fsevents@~2.3.2:
     query-string: ^6.14.0
     react: 17.0.2
     react-csv: ^2.0.3
-    react-debounce-input: ^3.2.3
     react-dnd: ^14.0.4
     react-dnd-html5-backend: ^14.0.2
     react-dom: 17.0.2
@@ -22842,18 +22841,6 @@ fsevents@~2.3.2:
   version: 2.0.3
   resolution: "react-csv@npm:2.0.3"
   checksum: 5ca5f8bd06e279e016d4e77a08190a43e9e6ae1ca62bc3d9b8a6cec91bcf7b4cf1d84c3513358116b753f48e7078e78c8f40cf2b8bae8f24caf82536fe2ec3df
-  languageName: node
-  linkType: hard
-
-"react-debounce-input@npm:^3.2.3":
-  version: 3.2.3
-  resolution: "react-debounce-input@npm:3.2.3"
-  dependencies:
-    lodash.debounce: ^4
-    prop-types: ^15.7.2
-  peerDependencies:
-    react: ^15.3.0 || ^16.0.0
-  checksum: e7904fec5841c524ba4141a5b1d830f9c7994114a0e7e87ba4f6e06ec872b1de3e6eb7aaed688e5b16163a280f71b0d22bb4e9f40d5c4c04d157b0c18941da00
   languageName: node
   linkType: hard
 

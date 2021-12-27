@@ -104,6 +104,7 @@ interface ListHeaderProps {
   contactDetailsOpen: boolean;
   onCheckAllItems: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onSearchTermChanged: (searchTerm: string) => void;
+  searchTerm?: string | string[];
   totalItems?: number;
   buttonGroup?: ReactElement;
   starredFilter: ContactFilterSetInput | TaskFilterSetInput;
@@ -121,6 +122,7 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
   toggleFilterPanel,
   onCheckAllItems,
   onSearchTermChanged,
+  searchTerm,
   totalItems,
   buttonGroup,
   starredFilter,
@@ -159,6 +161,7 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
       </FilterButton>
       <SearchBox
         page={page}
+        searchTerm={searchTerm}
         onChange={onSearchTermChanged}
         placeholder={
           page === 'contact' ? t('Search Contacts') : t('Search Tasks')
