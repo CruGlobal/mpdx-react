@@ -336,6 +336,7 @@ const ContactsPage: React.FC = () => {
                           contactDetailsOpen={contactDetailsOpen}
                         />
                       )}
+                      groupBy={(item) => item.name[0].toUpperCase()}
                       endReached={() =>
                         data?.contacts?.pageInfo.hasNextPage &&
                         fetchMore({
