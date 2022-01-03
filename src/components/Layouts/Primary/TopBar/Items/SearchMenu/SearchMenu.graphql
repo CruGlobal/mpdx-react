@@ -1,0 +1,13 @@
+query GetSearchMenuContacts(
+  $accountListId: ID!
+  $contactsFilter: ContactFilterSetInput
+) {
+  contacts(accountListId: $accountListId, contactsFilter: $contactsFilter) {
+    nodes {
+      id
+      name
+      status
+    }
+    totalCount
+  }
+}
