@@ -2,7 +2,11 @@ query GetSearchMenuContacts(
   $accountListId: ID!
   $contactsFilter: ContactFilterSetInput
 ) {
-  contacts(accountListId: $accountListId, contactsFilter: $contactsFilter) {
+  contacts(
+    accountListId: $accountListId
+    contactsFilter: $contactsFilter
+    first: 5
+  ) {
     nodes {
       id
       name
