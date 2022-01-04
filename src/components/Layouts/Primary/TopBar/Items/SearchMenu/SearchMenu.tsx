@@ -6,6 +6,7 @@ import {
   Dialog,
   TextField,
   Typography,
+  Popper,
 } from '@material-ui/core';
 import SearchIcon from '@material-ui/icons/Search';
 import { useTranslation } from 'react-i18next';
@@ -24,6 +25,12 @@ const SearchDialog = styled(Dialog)(() => ({
   '& .MuiPaper-root': {
     position: 'absolute',
     top: 50,
+  },
+}));
+
+const SearchPopper = styled(Popper)(() => ({
+  '& .MuiAutocomplete-option': {
+    padding: 0,
   },
 }));
 
@@ -177,7 +184,7 @@ const SearchMenu = (): ReactElement => {
     {
       name: t('Tools - Fix - Merge Contacts'),
       icon: <CompassIcon />,
-      link: `/accountLists/${accountListId}/tools/fixMergeContacts`,
+      link: `/accountLists/${accountListId}/tools/mergeContacts`,
     },
     {
       name: t('Tools - Fix - Email Addresses'),
@@ -192,7 +199,7 @@ const SearchMenu = (): ReactElement => {
     {
       name: t('Tools - Fix - Merge People'),
       icon: <CompassIcon />,
-      link: `/accountLists/${accountListId}/tools/fixMergePeople`,
+      link: `/accountLists/${accountListId}/tools/mergePeople`,
     },
     {
       name: t('Tools - Import - Google'),
@@ -238,6 +245,7 @@ const SearchMenu = (): ReactElement => {
           <Autocomplete
             fullWidth
             freeSolo
+            PopperComponent={SearchPopper}
             loading={loading}
             filterSelectedOptions
             onChange={handleClose}
@@ -250,7 +258,7 @@ const SearchMenu = (): ReactElement => {
             }}
             renderOption={(option) => (
               <NextLink href={option.link} passHref>
-                <Box display="flex">
+                <Box display="flex" width="100%" padding="6px 16px">
                   <Box display="flex" marginRight={1}>
                     {option.icon}
                   </Box>
