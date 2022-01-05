@@ -48,7 +48,23 @@ describe('SearchMenu', () => {
                   status: StatusEnum.CallForDecision,
                   id: '1234',
                 },
+                {
+                  name: 'Cool, One',
+                  status: StatusEnum.CallForDecision,
+                  id: '12341',
+                },
+                {
+                  name: 'Cool, Two',
+                  status: StatusEnum.CallForDecision,
+                  id: '12342',
+                },
+                {
+                  name: 'Cool, Three',
+                  status: StatusEnum.CallForDecision,
+                  id: '12343',
+                },
               ],
+              totalCount: 8,
             },
           },
         }}
@@ -71,6 +87,7 @@ describe('SearchMenu', () => {
     );
     await waitFor(() => expect(getByText('Cool, Guy')).toBeVisible());
     await waitFor(() => expect(getByText('Cool, Dude')).toBeVisible());
+    await waitFor(() => expect(getByText('And 3 more')).toBeVisible());
     expect(getByText('Create a new contact for "Cool"')).toBeVisible();
   });
 
