@@ -15,11 +15,14 @@ import PersonIcon from '@material-ui/icons/Person';
 import PeopleIcon from '@material-ui/icons/People';
 import AddIcon from '@material-ui/icons/Add';
 import { Autocomplete, createFilterOptions } from '@material-ui/lab';
-import debounce from 'lodash/fp/debounce';
+import debounce from 'lodash/debounce';
 import NextLink from 'next/link';
 import { useAccountListId } from '../../../../../../hooks/useAccountListId';
-import { StatusEnum } from '../../../../../../../graphql/types.generated';
-import { useGetSearchMenuContactsQuery } from './SearchMenu.generated';
+import {
+  ContactFilterStatusEnum,
+  StatusEnum,
+} from '../../../../../../../graphql/types.generated';
+import { useGetSearchMenuContactsLazyQuery } from './SearchMenu.generated';
 
 const SearchDialog = styled(Dialog)(() => ({
   '& .MuiPaper-root': {
@@ -57,35 +60,37 @@ const SearchMenu = (): ReactElement => {
   const [isOpen, setIsOpen] = useState(false);
 
   //#region Search
-  const [search, setSearch] = useState('');
   const [wildcardSearch, setWildcardSearch] = useState('');
 
-  const { data, loading } = useGetSearchMenuContactsQuery({
-    variables: {
-      accountListId: accountListId ?? '',
-      contactsFilter: {
-        wildcardSearch,
-      },
-    },
-    skip: !accountListId,
-  });
+  const [
+    searchForContacts,
+    { loading, data },
+  ] = useGetSearchMenuContactsLazyQuery();
 
   const handleUpdateWildcardSearch = useCallback(
-    debounce(1000, (searchTerm: string) => {
-      setWildcardSearch(searchTerm);
-    }),
+    debounce(
+      (wildcardSearch: string) =>
+        searchForContacts({
+          variables: {
+            accountListId: accountListId ?? '',
+            contactsFilter: {
+              status: [
+                ContactFilterStatusEnum.Active,
+                ContactFilterStatusEnum.Null,
+                ContactFilterStatusEnum.Hidden,
+              ],
+              wildcardSearch,
+            },
+          },
+        }),
+      1000,
+    ),
     [],
   );
 
-  const handleSearch = (searchTerm: string) => {
-    // Update input state via non debounced function
-    setSearch(searchTerm);
-    // Update wildcard search via debounced function
-    handleUpdateWildcardSearch(searchTerm);
-  };
   const handleClose = () => {
     setIsOpen(false);
-    setSearch('');
+    setWildcardSearch('');
   };
 
   const filter = createFilterOptions<Option>({ limit: 5 });
@@ -219,14 +224,14 @@ const SearchMenu = (): ReactElement => {
   ];
 
   const options: Option[] = [
-    data?.contacts.nodes.map((contact) => ({
-      name: contact.name,
-      status: contact.status,
+    ...(data?.contacts.nodes.map(({ name, status, id }) => ({
+      name,
+      status,
       icon: <PersonIcon />,
-      link: `/accountLists/${accountListId}/contacts/${contact.id}`,
-    })) ?? [],
-    defaultOptions,
-  ].flat();
+      link: `/accountLists/${accountListId}/contacts/${id}`,
+    })) ?? []),
+    ...defaultOptions,
+  ];
   //#endregion
 
   //#region JSX
@@ -249,13 +254,7 @@ const SearchMenu = (): ReactElement => {
             loading={loading}
             filterSelectedOptions
             onChange={handleClose}
-            getOptionLabel={(option) => {
-              if (typeof option === 'string') {
-                return option;
-              }
-
-              return option.name;
-            }}
+            getOptionLabel={(option) => option.name}
             renderOption={(option) => (
               <NextLink href={option.link} passHref>
                 <Box display="flex" width="100%" padding="6px 16px">
@@ -271,24 +270,28 @@ const SearchMenu = (): ReactElement => {
                 </Box>
               </NextLink>
             )}
-            options={search !== '' ? options : []}
+            options={wildcardSearch !== '' ? options : []}
             filterOptions={(options, params) => {
               const filtered = filter(options, params);
               if (params.inputValue !== '') {
                 if (
                   data?.contacts.totalCount &&
-                  data?.contacts.totalCount > 5
+                  data?.contacts.totalCount > data.contacts.nodes.length
                 ) {
                   filtered.splice(5, 0, {
-                    name: t(`And ${data?.contacts.totalCount - 5} more`),
+                    name: t(
+                      `And ${
+                        data?.contacts.totalCount - data.contacts.nodes.length
+                      } more`,
+                    ),
                     icon: <PeopleIcon />,
-                    link: `/accountLists/${accountListId}/contacts?searchTerm=${search}`,
+                    link: `/accountLists/${accountListId}/contacts?searchTerm=${wildcardSearch}`,
                   });
                 }
                 filtered.push({
                   name: t(`Create a new contact for "${params.inputValue}"`),
                   icon: <AddIcon />,
-                  link: `/accountLists/${accountListId}/contacts`, //temp
+                  link: `/accountLists/${accountListId}/contacts`, //TODO: https://jira.cru.org/browse/MPDX-7233
                 });
               }
 
@@ -299,6 +302,7 @@ const SearchMenu = (): ReactElement => {
                 {...params}
                 fullWidth
                 placeholder={t('Type something to start searching')}
+                value={wildcardSearch}
                 InputProps={{
                   ...params.InputProps,
                   type: 'search',
@@ -309,10 +313,12 @@ const SearchMenu = (): ReactElement => {
                   ),
                   endAdornment: null,
                 }}
-                onChange={(e) => handleSearch(e.target.value)}
+                onChange={(e) => {
+                  setWildcardSearch(e.target.value);
+                  handleUpdateWildcardSearch(e.target.value);
+                }}
               />
             )}
-            inputValue={search}
           />
         </Box>
       </SearchDialog>
