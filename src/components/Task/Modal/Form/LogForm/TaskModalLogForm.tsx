@@ -132,9 +132,9 @@ const TaskModalLogForm = ({
         ...defaultValues,
       };
   const { t } = useTranslation();
-  const [commentBody, changeCommentBody] = useState('');
-  const [showMore, setShowMore] = useState<boolean>(false);
-  const [removeDialogOpen, handleRemoveDialog] = useState(false);
+  const [commentBody, setCommentBody] = useState('');
+  const [showMore, setShowMore] = useState(false);
+  const [removeDialogOpen, setRemoveDialogOpen] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
 
   const { data, loading } = useGetDataForTaskDrawerQuery({
@@ -203,7 +203,7 @@ const TaskModalLogForm = ({
         ],
       });
       enqueueSnackbar(t('Task deleted successfully'), { variant: 'success' });
-      handleRemoveDialog(false);
+      setRemoveDialogOpen(false);
       onClose();
     }
   };
@@ -418,7 +418,7 @@ const TaskModalLogForm = ({
                               label={t('Comment')}
                               value={commentBody}
                               onChange={(event) =>
-                                changeCommentBody(event.target.value)
+                                setCommentBody(event.target.value)
                               }
                               fullWidth
                               multiline
@@ -540,7 +540,7 @@ const TaskModalLogForm = ({
                   <DeleteButton
                     size="large"
                     variant="contained"
-                    onClick={() => handleRemoveDialog(true)}
+                    onClick={() => setRemoveDialogOpen(true)}
                   >
                     <DeleteIcon style={{ marginRight: theme.spacing(1) }} />
                     {t('Delete')}
@@ -587,7 +587,7 @@ const TaskModalLogForm = ({
                   )}
                 </DialogContent>
                 <DialogActions>
-                  <Button onClick={() => handleRemoveDialog(false)}>
+                  <Button onClick={() => setRemoveDialogOpen(false)}>
                     {t('No')}
                   </Button>
                   <Button
