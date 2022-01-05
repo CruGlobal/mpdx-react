@@ -16,6 +16,8 @@ import {
   Select,
   styled,
   TextField,
+  Theme,
+  useMediaQuery,
 } from '@material-ui/core';
 import {
   ContactUpdateInput,
@@ -64,6 +66,10 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
     updateContactOther,
     { loading: updating },
   ] = useUpdateContactOtherMutation();
+
+  const isMobile = useMediaQuery((theme: Theme) =>
+    theme.breakpoints.down('sm'),
+  );
 
   const constants = useApiConstants();
   const languages = constants?.languages ?? [];
@@ -146,7 +152,10 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
               <ContactEditContainer>
                 <ContactInputWrapper>
                   <FormControl fullWidth={true}>
-                    <InputLabel id="preferred-contact-method-select-label">
+                    <InputLabel
+                      id="preferred-contact-method-select-label"
+                      style={{ fontSize: isMobile ? '0.8rem' : '1rem' }}
+                    >
                       {t('Preferred Contact Method')}
                     </InputLabel>
                     <Select
@@ -174,7 +183,7 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
                 </ContactInputWrapper>
                 <ContactInputWrapper>
                   <Grid container spacing={3}>
-                    <Grid item xs={6}>
+                    <Grid item xs={12} md={6}>
                       <FormControl fullWidth size="small">
                         <InputLabel id="language-select-label">
                           {t('Language')}
@@ -213,7 +222,7 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
                         </Select>
                       </FormControl>
                     </Grid>
-                    <Grid item xs={6}>
+                    <Grid item xs={12} md={6}>
                       <FormControl fullWidth size="small">
                         <InputLabel id="timezone-select-label">
                           {t('Timezone')}

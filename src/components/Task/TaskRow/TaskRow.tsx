@@ -1,6 +1,7 @@
 import React from 'react';
 import {
   Box,
+  Button,
   Checkbox,
   Hidden,
   styled,
@@ -11,7 +12,6 @@ import { useTranslation } from 'react-i18next';
 import { DateTime } from 'luxon';
 import { TaskCompleteButton } from '../../Contacts/ContactDetails/ContactTasksTab/ContactTaskRow/TaskCompleteButton/TaskCompleteButton';
 import { ResultEnum } from '../../../../graphql/types.generated';
-import useTaskDrawer from '../../../hooks/useTaskDrawer';
 import { StarTaskIconButton } from '../../Contacts/ContactDetails/ContactTasksTab/StarTaskIconButton/StarTaskIconButton';
 import { TaskDueDate } from '../../Contacts/ContactDetails/ContactTasksTab/ContactTaskRow/TaskDueDate/TaskDueDate';
 import { TaskCommentsButton } from '../../Contacts/ContactDetails/ContactTasksTab/ContactTaskRow/TaskCommentsButton/TaskCommentsButton';
@@ -32,8 +32,18 @@ const ContactRowButton = styled(Box)(({}) => ({
   textOverflow: 'ellipsis',
 }));
 
+const SubjectWrap = styled(Box)(({}) => ({
+  width: '100%',
+  display: 'flex',
+  alignItems: 'center',
+  '&:hover': {
+    textDecoration: 'underline',
+  },
+}));
+
 const ContactText = styled(Typography)(({ theme }) => ({
   margin: '0px',
+  zIndex: 1,
   fontFamily: theme.typography.fontFamily,
   color: theme.palette.text.primary,
   whiteSpace: 'nowrap',
@@ -76,7 +86,6 @@ export const TaskRow: React.FC<TaskRowProps> = ({
 }) => {
   const { t } = useTranslation();
 
-  const { openTaskDrawer } = useTaskDrawer();
   const { openTaskModal } = useTaskModal();
   const onClick = (
     event: React.MouseEvent<HTMLElement, MouseEvent>,
@@ -99,13 +108,19 @@ export const TaskRow: React.FC<TaskRowProps> = ({
   } = task;
 
   const handleCompleteButtonPressed = () => {
-    openTaskDrawer({ taskId: task?.id, showCompleteForm: true });
+    openTaskModal({ taskId: task?.id, view: 'complete' });
   };
 
   const handleCommentButtonPressed = () => {
     openTaskModal({
       taskId,
       view: 'comments',
+    });
+  };
+
+  const handleSubjectPressed = () => {
+    openTaskModal({
+      taskId,
     });
   };
 
@@ -169,20 +184,24 @@ export const TaskRow: React.FC<TaskRowProps> = ({
                 </TaskContactName>
               ))}
             </Box>
-            <Box
+            <SubjectWrap
               style={{
                 width: '100%',
                 display: 'flex',
                 alignItems: 'center',
               }}
+              onClick={handleSubjectPressed}
+              data-testid="subject-wrap"
             >
               <TaskType>{activityType ? t(activityType) : ''}</TaskType>
               <Tooltip title={subject}>
                 <ContactText>{subject}</ContactText>
               </Tooltip>
-            </Box>
+            </SubjectWrap>
             <Hidden smUp>
-              <ContactText>{assigneeName}</ContactText>
+              <Button>
+                <ContactText>{assigneeName}</ContactText>
+              </Button>
             </Hidden>
           </Box>
         </Box>

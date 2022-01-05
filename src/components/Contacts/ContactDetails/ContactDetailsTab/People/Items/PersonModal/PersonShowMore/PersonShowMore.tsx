@@ -65,7 +65,7 @@ export const PersonShowMore: React.FC<PersonShowMoreProps> = ({
       {/* Relationship Section */}
       <ModalSectionContainer>
         <Grid container spacing={3}>
-          <Grid item xs={6}>
+          <Grid item xs={12} md={6}>
             <FormControl fullWidth>
               <InputLabel id="relationship-status-label">
                 {t('Relationship Status')}
@@ -98,7 +98,7 @@ export const PersonShowMore: React.FC<PersonShowMoreProps> = ({
               </Select>
             </FormControl>
           </Grid>
-          <Grid item xs={6}>
+          <Grid item xs={12} md={6}>
             <FormControl fullWidth>
               <InputLabel id="gender-label">{t('Gender')}</InputLabel>
               <Select
@@ -156,7 +156,7 @@ export const PersonShowMore: React.FC<PersonShowMoreProps> = ({
       <ModalSectionContainer>
         <ModalSectionIcon icon={<BusinessIcon />} />
         <Grid container spacing={3}>
-          <Grid item xs={6}>
+          <Grid item xs={12} md={6}>
             <TextField
               label={t('Employer')}
               value={employer}
@@ -165,7 +165,7 @@ export const PersonShowMore: React.FC<PersonShowMoreProps> = ({
               fullWidth
             />
           </Grid>
-          <Grid item xs={6}>
+          <Grid item xs={12} md={6}>
             <TextField
               label={t('Occupation')}
               value={occupation}

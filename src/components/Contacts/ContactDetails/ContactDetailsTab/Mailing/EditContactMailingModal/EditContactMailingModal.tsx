@@ -145,7 +145,7 @@ export const EditContactMailingModal: React.FC<EditContactMailingModalProps> = (
                 </ContactInputWrapper>
                 <ContactInputWrapper>
                   <Grid container spacing={3}>
-                    <Grid item xs={6}>
+                    <Grid item sm={12} md={6}>
                       <TextField
                         label={t('Envelope Name Line')}
                         value={envelopeGreeting}
@@ -154,7 +154,7 @@ export const EditContactMailingModal: React.FC<EditContactMailingModalProps> = (
                         fullWidth
                       />
                     </Grid>
-                    <Grid item xs={6}>
+                    <Grid item sm={12} md={6}>
                       <TextField
                         label={t('Greeting (used in export)')}
                         value={greeting}
