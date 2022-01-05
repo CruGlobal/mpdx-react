@@ -19,6 +19,19 @@ import TaskModalLogForm from './TaskModalLogForm';
 
 const accountListId = 'abc';
 
+const mockEnqueue = jest.fn();
+
+jest.mock('notistack', () => ({
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  ...jest.requireActual('notistack'),
+  useSnackbar: () => {
+    return {
+      enqueueSnackbar: mockEnqueue,
+    };
+  },
+}));
+
 describe('TaskModalLogForm', () => {
   const mockFilter = {
     userIds: [],
@@ -48,6 +61,7 @@ describe('TaskModalLogForm', () => {
   };
 
   it('default', async () => {
+    const mutationSpy = jest.fn();
     const onClose = jest.fn();
     const { getByText, findByText, queryByText, getByLabelText } = render(
       <MuiPickersUtilsProvider utils={LuxonUtils}>
@@ -77,6 +91,12 @@ describe('TaskModalLogForm', () => {
     expect(await queryByText('Delete')).not.toBeInTheDocument();
     userEvent.type(getByLabelText('Subject'), accountListId);
     await waitFor(() => expect(getByText('Save')).not.toBeDisabled());
+    userEvent.click(getByText('Save'));
+    await waitFor(() => expect(onClose).toHaveBeenCalled());
+
+    const { operation } = mutationSpy.mock.calls[0][0];
+    expect(operation.variables.accountListId).toEqual(accountListId);
+    expect(operation.variables.attributes).toEqual({});
   }, 10000);
 
   it('persisted', async () => {
@@ -181,5 +201,8 @@ describe('TaskModalLogForm', () => {
     ).toBeInTheDocument();
 
     userEvent.click(getByRole('button', { hidden: true, name: 'Yes' }));
+    expect(mockEnqueue).toHaveBeenCalledWith('Task deleted successfully', {
+      variant: 'success',
+    });
   });
 });
