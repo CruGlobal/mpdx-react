@@ -16,14 +16,12 @@ import { FilterListItem } from './FilterListItem';
 
 const checkboxFilter: CheckboxFilter = {
   __typename: 'CheckboxFilter',
-  featured: false,
   filterKey: 'checkboxFilter',
   title: 'Checkbox Filter',
 };
 
 const daterangeFilter: DaterangeFilter = {
   __typename: 'DaterangeFilter',
-  featured: false,
   filterKey: 'dateRangeFilter',
   options: undefined,
   title: 'Date Range Filter',
@@ -32,7 +30,6 @@ const daterangeFilter: DaterangeFilter = {
 const multiselectFilter: MultiselectFilter = {
   __typename: 'MultiselectFilter',
   defaultSelection: undefined,
-  featured: false,
   filterKey: 'multiselectFilter',
   options: [
     { name: 'Option 1', value: '1' },
@@ -44,7 +41,6 @@ const multiselectFilter: MultiselectFilter = {
 
 const numericRangeFilter: NumericRangeFilter = {
   __typename: 'NumericRangeFilter',
-  featured: false,
   filterKey: 'numericRangeFilter',
   max: 1.0,
   maxLabel: 'max',
@@ -55,7 +51,6 @@ const numericRangeFilter: NumericRangeFilter = {
 
 const textFieldFilter: TextFilter = {
   __typename: 'TextFilter',
-  featured: false,
   filterKey: 'textFieldFilter',
   options: undefined,
   title: 'Text Field Filter',

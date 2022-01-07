@@ -10,8 +10,7 @@ import {
 } from './FilterPanel.generated';
 import {
   mockDateRangeFilter,
-  mockMultiselectFilterFeatured,
-  mockMultiselectFilterNonFeatured,
+  mockMultiselectFilter,
   mockTextFilter,
 } from './FilterPanel.mocks';
 
@@ -25,7 +24,7 @@ const filterPanelDefaultMock = gqlMock<FilterPanelGroupFragment>(
   {
     mocks: {
       name: 'Group 1',
-      filters: [mockTextFilter, mockMultiselectFilterNonFeatured],
+      filters: [mockTextFilter, mockMultiselectFilter],
     },
   },
 );
@@ -34,7 +33,8 @@ const filterPanelFeaturedMock = gqlMock<FilterPanelGroupFragment>(
   {
     mocks: {
       name: 'Group 2',
-      filters: [mockMultiselectFilterFeatured, mockDateRangeFilter],
+      featured: true,
+      filters: [mockMultiselectFilter, mockDateRangeFilter],
     },
   },
 );
