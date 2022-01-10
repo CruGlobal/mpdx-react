@@ -75,9 +75,36 @@ const ContactsPage: React.FC = () => {
   }, [isReady, contactId]);
 
   //#region Filters
+  const urlFilters =
+    query?.filters && JSON.parse(decodeURI(query.filters as string));
+
   const [filterPanelOpen, setFilterPanelOpen] = useState<boolean>(false);
-  const [activeFilters, setActiveFilters] = useState<ContactFilterSetInput>({});
+  const [activeFilters, setActiveFilters] = useState<ContactFilterSetInput>(
+    urlFilters ?? {},
+  );
   const [starredFilter, setStarredFilter] = useState<ContactFilterSetInput>({});
+
+  useEffect(() => {
+    const { filters: _, ...oldQuery } = query;
+    if (Object.keys(activeFilters).length > 0) {
+      replace({
+        pathname,
+        query: {
+          ...oldQuery,
+          ...(activeFilters && {
+            filters: encodeURI(JSON.stringify(activeFilters)),
+          }),
+        },
+      });
+    } else {
+      replace({
+        pathname,
+        query: {
+          ...oldQuery,
+        },
+      });
+    }
+  }, [activeFilters]);
 
   const { data: filterData, loading: filtersLoading } = useContactFiltersQuery({
     variables: { accountListId: accountListId ?? '' },

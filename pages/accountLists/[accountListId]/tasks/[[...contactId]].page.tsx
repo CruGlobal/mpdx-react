@@ -63,8 +63,13 @@ const TasksPage: React.FC = () => {
   }, [isReady, contactId]);
 
   //#region Filters
+  const urlFilters =
+    query?.filters && JSON.parse(decodeURI(query.filters as string));
+
   const [filterPanelOpen, setFilterPanelOpen] = useState<boolean>(false);
-  const [activeFilters, setActiveFilters] = useState<TaskFilterSetInput>({});
+  const [activeFilters, setActiveFilters] = useState<TaskFilterSetInput>(
+    urlFilters ?? {},
+  );
   const [starredFilter, setStarredFilter] = useState<TaskFilterSetInput>({});
 
   const { data, loading, fetchMore } = useTasksQuery({
@@ -78,6 +83,28 @@ const TasksPage: React.FC = () => {
     },
     skip: !accountListId,
   });
+
+  useEffect(() => {
+    const { filters: _, ...oldQuery } = query;
+    if (Object.keys(activeFilters).length > 0) {
+      replace({
+        pathname,
+        query: {
+          ...oldQuery,
+          ...(activeFilters && {
+            filters: encodeURI(JSON.stringify(activeFilters)),
+          }),
+        },
+      });
+    } else {
+      replace({
+        pathname,
+        query: {
+          ...oldQuery,
+        },
+      });
+    }
+  }, [activeFilters]);
 
   const { data: filterData, loading: filtersLoading } = useTaskFiltersQuery({
     variables: { accountListId: accountListId ?? '' },
