@@ -86,24 +86,15 @@ const TasksPage: React.FC = () => {
 
   useEffect(() => {
     const { filters: _, ...oldQuery } = query;
-    if (Object.keys(activeFilters).length > 0) {
-      replace({
-        pathname,
-        query: {
-          ...oldQuery,
-          ...(activeFilters && {
-            filters: encodeURI(JSON.stringify(activeFilters)),
-          }),
-        },
-      });
-    } else {
-      replace({
-        pathname,
-        query: {
-          ...oldQuery,
-        },
-      });
-    }
+    replace({
+      pathname,
+      query: {
+        ...oldQuery,
+        ...(Object.keys(activeFilters).length > 0
+          ? { filters: encodeURI(JSON.stringify(activeFilters)) }
+          : undefined),
+      },
+    });
   }, [activeFilters]);
 
   const { data: filterData, loading: filtersLoading } = useTaskFiltersQuery({
