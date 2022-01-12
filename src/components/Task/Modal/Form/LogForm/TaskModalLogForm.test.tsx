@@ -6,6 +6,7 @@ import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import LuxonUtils from '@date-io/luxon';
 import userEvent from '@testing-library/user-event';
 import { InMemoryCache } from '@apollo/client';
+import { MockedProvider } from '@apollo/client/testing';
 import { ActivityTypeEnum } from '../../../../../../graphql/types.generated';
 import { GetTasksForTaskListDocument } from '../../../List/TaskList.generated';
 import TaskModalLogForm from './TaskModalLogForm';
@@ -16,6 +17,10 @@ import {
   DeleteTaskMutation,
   UpdateTaskMutation,
 } from 'src/components/Task/Drawer/Form/TaskDrawer.generated';
+import {
+  getDataForTaskDrawerMock,
+  updateTaskMutationMock,
+} from 'src/components/Task/Drawer/Form/Form.mock';
 
 const accountListId = 'abc';
 
@@ -154,6 +159,64 @@ describe('TaskModalLogForm', () => {
     expect(getByLabelText('Next Action')).toBeInTheDocument();
     userEvent.click(getByText('Save'));
     await waitFor(() => expect(onClose).toHaveBeenCalled());
+  }, 25000);
+
+  it('should load and show data for task', async () => {
+    const onClose = jest.fn();
+    const { getByRole, getByLabelText, getByText } = render(
+      <MuiPickersUtilsProvider utils={LuxonUtils}>
+        <SnackbarProvider>
+          <MockedProvider
+            mocks={[
+              getDataForTaskDrawerMock(accountListId),
+              updateTaskMutationMock(),
+            ]}
+            addTypename={false}
+          >
+            <TaskModalLogForm
+              accountListId={accountListId}
+              filter={mockFilter}
+              rowsPerPage={100}
+              onClose={onClose}
+              task={mockTask}
+            />
+          </MockedProvider>
+        </SnackbarProvider>
+      </MuiPickersUtilsProvider>,
+    );
+    userEvent.click(getByLabelText('Show More'));
+    const tagsElement = getByLabelText('Tags');
+    userEvent.click(tagsElement);
+
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    await waitFor(() => expect(getByText('tag-1')).toBeInTheDocument());
+    await waitFor(() => expect(getByText('tag-2')).toBeInTheDocument());
+    userEvent.click(
+      await within(getByRole('presentation')).findByText('tag-1'),
+    );
+    userEvent.click(tagsElement);
+
+    const assigneeElement = getByRole('textbox', {
+      hidden: true,
+      name: 'Assignee',
+    });
+    userEvent.click(assigneeElement);
+
+    await waitFor(() =>
+      expect(getByText('Robert Anderson')).toBeInTheDocument(),
+    );
+
+    const contactsElement = getByRole('textbox', {
+      hidden: true,
+      name: 'Contacts',
+    });
+    userEvent.click(contactsElement);
+    await waitFor(() => expect(getByText('Smith, John')).toBeInTheDocument());
+    userEvent.click(
+      await within(getByRole('presentation')).findByText('Anderson, Robert'),
+    );
+    userEvent.click(contactsElement);
+    userEvent.click(within(getByRole('presentation')).getByText('Smith, John'));
   }, 25000);
 
   it('deletes a task', async () => {
