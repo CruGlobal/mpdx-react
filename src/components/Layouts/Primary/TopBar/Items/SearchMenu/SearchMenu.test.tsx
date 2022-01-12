@@ -14,6 +14,19 @@ const router = {
   isReady: true,
 };
 
+const mockEnqueue = jest.fn();
+
+jest.mock('notistack', () => ({
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  ...jest.requireActual('notistack'),
+  useSnackbar: () => {
+    return {
+      enqueueSnackbar: mockEnqueue,
+    };
+  },
+}));
+
 describe('SearchMenu', () => {
   it('default', async () => {
     const { getByRole, getByPlaceholderText } = render(
@@ -134,5 +147,67 @@ describe('SearchMenu', () => {
     expect(getByText('Create a new contact for "Cool"')).toBeVisible();
     userEvent.click(getByText('Cool, Guy'));
     await waitFor(() => expect(router.push).toHaveBeenCalled());
+  });
+});
+
+it('handles creating a new contact', async () => {
+  const { getByRole, getByPlaceholderText, getByText } = render(
+    <GqlMockedProvider<GetSearchMenuContactsQuery>
+      mocks={{
+        GetSearchMenuContacts: {
+          contacts: {
+            nodes: [
+              {
+                name: 'Cool, Guy',
+                status: StatusEnum.AskInFuture,
+                id: '123',
+              },
+              {
+                name: 'Cool, Dude',
+                status: StatusEnum.CallForDecision,
+                id: '1234',
+              },
+            ],
+          },
+        },
+        CreateContact: {
+          createContact: {
+            contact: {
+              id: 'abc123',
+            },
+          },
+        },
+      }}
+    >
+      <TestRouter router={router}>
+        <SearchMenu />
+      </TestRouter>
+    </GqlMockedProvider>,
+  );
+
+  userEvent.click(getByRole('button'));
+  await waitFor(() =>
+    expect(
+      getByPlaceholderText('Type something to start searching'),
+    ).toBeInTheDocument(),
+  );
+  userEvent.type(
+    getByPlaceholderText('Type something to start searching'),
+    'Neat',
+  );
+
+  expect(getByText('Create a new contact for "Neat"')).toBeVisible();
+  userEvent.click(getByText('Create a new contact for "Neat"'));
+  await waitFor(() =>
+    expect(router.push).toHaveBeenCalledWith({
+      pathname: '/accountLists/[accountListId]/contacts/[contactId]',
+      query: {
+        accountListId: '1',
+        contactId: 'abc123',
+      },
+    }),
+  );
+  expect(mockEnqueue).toHaveBeenCalledWith('Contact successfully created', {
+    variant: 'success',
   });
 });
