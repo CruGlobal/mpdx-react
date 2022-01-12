@@ -17,11 +17,14 @@ import AddIcon from '@material-ui/icons/Add';
 import { Autocomplete, createFilterOptions } from '@material-ui/lab';
 import debounce from 'lodash/debounce';
 import NextLink from 'next/link';
+import { useRouter } from 'next/router';
+import { useSnackbar } from 'notistack';
 import { useAccountListId } from '../../../../../../hooks/useAccountListId';
 import {
   ContactFilterStatusEnum,
   StatusEnum,
 } from '../../../../../../../graphql/types.generated';
+import { useCreateContactMutation } from '../AddMenu/Items/CreateContact/CreateContact.generated';
 import { useGetSearchMenuContactsLazyQuery } from './SearchMenu.generated';
 
 const SearchDialog = styled(Dialog)(() => ({
@@ -56,6 +59,8 @@ interface Option {
 const SearchMenu = (): ReactElement => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
+  const { enqueueSnackbar } = useSnackbar();
+  const { push } = useRouter();
 
   const [isOpen, setIsOpen] = useState(false);
 
@@ -66,6 +71,8 @@ const SearchMenu = (): ReactElement => {
     searchForContacts,
     { loading, data },
   ] = useGetSearchMenuContactsLazyQuery();
+
+  const [createContact] = useCreateContactMutation();
 
   const handleUpdateWildcardSearch = useCallback(
     debounce(
@@ -232,6 +239,28 @@ const SearchMenu = (): ReactElement => {
     })) ?? []),
     ...defaultOptions,
   ];
+
+  const handleCreateContact = async () => {
+    const { data } = await createContact({
+      variables: {
+        accountListId: accountListId ?? '',
+        attributes: {
+          name: wildcardSearch,
+        },
+      },
+    });
+    const contactId = data?.createContact?.contact.id;
+
+    if (contactId) {
+      push({
+        pathname: '/accountLists/[accountListId]/contacts/[contactId]',
+        query: { accountListId, contactId },
+      });
+    }
+    enqueueSnackbar(t('Contact successfully created'), {
+      variant: 'success',
+    });
+  };
   //#endregion
 
   //#region JSX
@@ -255,21 +284,41 @@ const SearchMenu = (): ReactElement => {
             filterSelectedOptions
             onChange={handleClose}
             getOptionLabel={(option) => option.name}
-            renderOption={(option) => (
-              <NextLink href={option.link} passHref>
-                <Box display="flex" width="100%" padding="6px 16px">
-                  <Box display="flex" marginRight={1}>
-                    {option.icon}
+            renderOption={(option) => {
+              if (option.link === 'createContact') {
+                return (
+                  <Box
+                    display="flex"
+                    width="100%"
+                    padding="6px 16px"
+                    onClick={handleCreateContact}
+                  >
+                    <Box display="flex" marginRight={1}>
+                      {option.icon}
+                    </Box>
+                    <Box display="flex" flexDirection="column">
+                      <Typography>{option.name}</Typography>
+                    </Box>
                   </Box>
-                  <Box display="flex" flexDirection="column">
-                    <Typography>{option.name}</Typography>
-                    <Typography variant="subtitle2">
-                      {option.status && t(option.status)}
-                    </Typography>
+                );
+              }
+
+              return (
+                <NextLink href={option.link} passHref>
+                  <Box display="flex" width="100%" padding="6px 16px">
+                    <Box display="flex" marginRight={1}>
+                      {option.icon}
+                    </Box>
+                    <Box display="flex" flexDirection="column">
+                      <Typography>{option.name}</Typography>
+                      <Typography variant="subtitle2">
+                        {option.status && t(option.status)}
+                      </Typography>
+                    </Box>
                   </Box>
-                </Box>
-              </NextLink>
-            )}
+                </NextLink>
+              );
+            }}
             options={wildcardSearch !== '' ? options : []}
             filterOptions={(options, params) => {
               const filtered = filter(options, params);
@@ -291,7 +340,7 @@ const SearchMenu = (): ReactElement => {
                 filtered.push({
                   name: t(`Create a new contact for "${params.inputValue}"`),
                   icon: <AddIcon />,
-                  link: `/accountLists/${accountListId}/contacts`, //TODO: https://jira.cru.org/browse/MPDX-7233
+                  link: 'createContact',
                 });
               }
 
