@@ -1,6 +1,5 @@
 import React from 'react';
 import { render, waitFor, within } from '@testing-library/react';
-import { MockedProvider } from '@apollo/client/testing';
 import { SnackbarProvider } from 'notistack';
 import { DateTime } from 'luxon';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
@@ -9,17 +8,23 @@ import userEvent from '@testing-library/user-event';
 import { InMemoryCache } from '@apollo/client';
 import { ActivityTypeEnum } from '../../../../../../graphql/types.generated';
 import { GetTasksForTaskListDocument } from '../../../List/TaskList.generated';
-import {
-  getDataForTaskModalMock,
-  updateTaskMutationMock,
-  deleteTaskMutationMock,
-  logTaskMutationMock,
-} from '../TaskModalForm.mock';
 import TaskModalLogForm from './TaskModalLogForm';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import TestRouter from '__tests__/util/TestRouter';
+import {
+  CreateTaskMutation,
+  DeleteTaskMutation,
+  UpdateTaskMutation,
+} from 'src/components/Task/Drawer/Form/TaskDrawer.generated';
 
 const accountListId = 'abc';
 
 const mockEnqueue = jest.fn();
+
+const router = {
+  query: { accountListId },
+  isReady: true,
+};
 
 jest.mock('notistack', () => ({
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -47,7 +52,7 @@ describe('TaskModalLogForm', () => {
   const mockTask = {
     activityType: null,
     contacts: {
-      nodes: [],
+      nodes: [{ id: 'contact-1', name: 'Anderson, Robert' }],
     },
     id: 'task-1',
     notificationTimeBefore: null,
@@ -66,20 +71,19 @@ describe('TaskModalLogForm', () => {
     const { getByText, findByText, queryByText, getByLabelText } = render(
       <MuiPickersUtilsProvider utils={LuxonUtils}>
         <SnackbarProvider>
-          <MockedProvider
-            mocks={[
-              getDataForTaskModalMock(accountListId),
-              logTaskMutationMock(),
-            ]}
-            addTypename={false}
-          >
-            <TaskModalLogForm
-              accountListId={accountListId}
-              filter={mockFilter}
-              rowsPerPage={100}
-              onClose={onClose}
-            />
-          </MockedProvider>
+          <TestRouter router={router}>
+            <GqlMockedProvider<CreateTaskMutation>
+              addTypename={false}
+              onCall={mutationSpy}
+            >
+              <TaskModalLogForm
+                accountListId={accountListId}
+                filter={mockFilter}
+                rowsPerPage={100}
+                onClose={onClose}
+              />
+            </GqlMockedProvider>
+          </TestRouter>
         </SnackbarProvider>
       </MuiPickersUtilsProvider>,
     );
@@ -93,10 +97,8 @@ describe('TaskModalLogForm', () => {
     await waitFor(() => expect(getByText('Save')).not.toBeDisabled());
     userEvent.click(getByText('Save'));
     await waitFor(() => expect(onClose).toHaveBeenCalled());
-
     const { operation } = mutationSpy.mock.calls[0][0];
     expect(operation.variables.accountListId).toEqual(accountListId);
-    expect(operation.variables.attributes).toEqual({});
   }, 10000);
 
   it('persisted', async () => {
@@ -106,24 +108,21 @@ describe('TaskModalLogForm', () => {
       getAllByRole,
       getByLabelText,
       queryByLabelText,
+      getByText,
     } = render(
       <MuiPickersUtilsProvider utils={LuxonUtils}>
         <SnackbarProvider>
-          <MockedProvider
-            mocks={[
-              getDataForTaskModalMock(accountListId),
-              updateTaskMutationMock(),
-            ]}
-            addTypename={false}
-          >
-            <TaskModalLogForm
-              accountListId={accountListId}
-              filter={mockFilter}
-              rowsPerPage={100}
-              onClose={onClose}
-              task={mockTask}
-            />
-          </MockedProvider>
+          <TestRouter router={router}>
+            <GqlMockedProvider<UpdateTaskMutation> addTypename={false}>
+              <TaskModalLogForm
+                accountListId={accountListId}
+                filter={mockFilter}
+                rowsPerPage={100}
+                onClose={onClose}
+                task={mockTask}
+              />
+            </GqlMockedProvider>
+          </TestRouter>
         </SnackbarProvider>
       </MuiPickersUtilsProvider>,
     );
@@ -152,6 +151,8 @@ describe('TaskModalLogForm', () => {
     expect(getByLabelText('Tags')).toBeInTheDocument();
     expect(getByLabelText('Assignee')).toBeInTheDocument();
     expect(getByLabelText('Next Action')).toBeInTheDocument();
+    userEvent.click(getByText('Save'));
+    await waitFor(() => expect(onClose).toHaveBeenCalled());
   }, 25000);
 
   it('deletes a task', async () => {
@@ -176,22 +177,20 @@ describe('TaskModalLogForm', () => {
     const { getByText, getByRole } = render(
       <MuiPickersUtilsProvider utils={LuxonUtils}>
         <SnackbarProvider>
-          <MockedProvider
-            mocks={[
-              getDataForTaskModalMock(accountListId),
-              deleteTaskMutationMock(),
-            ]}
-            cache={cache}
-            addTypename={false}
-          >
-            <TaskModalLogForm
-              accountListId={accountListId}
-              filter={mockFilter}
-              rowsPerPage={100}
-              onClose={onClose}
-              task={mockTask}
-            />
-          </MockedProvider>
+          <TestRouter router={router}>
+            <GqlMockedProvider<DeleteTaskMutation>
+              addTypename={false}
+              cache={cache}
+            >
+              <TaskModalLogForm
+                accountListId={accountListId}
+                filter={mockFilter}
+                rowsPerPage={100}
+                onClose={onClose}
+                task={mockTask}
+              />
+            </GqlMockedProvider>
+          </TestRouter>
         </SnackbarProvider>
       </MuiPickersUtilsProvider>,
     );
@@ -201,8 +200,10 @@ describe('TaskModalLogForm', () => {
     ).toBeInTheDocument();
 
     userEvent.click(getByRole('button', { hidden: true, name: 'Yes' }));
-    expect(mockEnqueue).toHaveBeenCalledWith('Task deleted successfully', {
-      variant: 'success',
-    });
+    await waitFor(() =>
+      expect(mockEnqueue).toHaveBeenCalledWith('Task deleted successfully', {
+        variant: 'success',
+      }),
+    );
   });
 });
