@@ -96,7 +96,7 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
   const [saveFilterModalOpen, setSaveFilterModalOpen] = useState(false);
   const [showAll, setShowAll] = useState(false);
   const updateSelectedFilter = (name: FilterKey, value?: FilterValue) => {
-    if (value) {
+    if (value && (!Array.isArray(value) || value.length > 0)) {
       const newFilters: ContactFilterSetInput & TaskFilterSetInput = {
         ...selectedFilters,
         [name]: value,
