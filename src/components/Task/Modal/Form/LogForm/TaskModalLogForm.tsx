@@ -429,6 +429,7 @@ const TaskModalLogForm = ({
                             <Autocomplete
                               multiple
                               freeSolo
+                              data-testid="AAAAAAAAA"
                               renderTags={(
                                 value,
                                 getTagProps,
@@ -439,6 +440,7 @@ const TaskModalLogForm = ({
                                     size="small"
                                     key={index}
                                     label={option}
+                                    data-testid="2222222"
                                     {...getTagProps({ index })}
                                   />
                                 ))

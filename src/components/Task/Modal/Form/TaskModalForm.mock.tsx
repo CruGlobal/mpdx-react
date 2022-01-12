@@ -199,36 +199,3 @@ export const deleteTaskMutationMock = (): MockedResponse => {
     result: { data },
   };
 };
-
-export const logTaskMutationMock = (): MockedResponse => {
-  const task: TaskCreateInput = {
-    id: null,
-    activityType: null,
-    subject: 'abc',
-    startAt: null,
-    completedAt: DateTime.local().plus({ hours: 1 }).startOf('hour').toISO(),
-    tagList: [],
-    contactIds: [],
-    userId: null,
-    notificationTimeBefore: null,
-    notificationType: null,
-    notificationTimeUnit: null,
-    nextAction: null,
-  };
-  const data: CreateTaskMutation = {
-    createTask: {
-      task: { ...task, id: 'task-1' } as TaskMutationResponseFragment,
-    },
-  };
-
-  return {
-    request: {
-      query: CreateTaskDocument,
-      variables: {
-        accountListId: 'abc',
-        attributes: task,
-      },
-    },
-    result: { data },
-  };
-};
