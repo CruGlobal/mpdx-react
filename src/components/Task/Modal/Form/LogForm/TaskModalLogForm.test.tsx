@@ -148,6 +148,7 @@ describe('TaskModalLogForm', () => {
     expect(queryByLabelText('Next Action')).not.toBeInTheDocument();
     userEvent.click(getByLabelText('Show More'));
     expect(getByLabelText('Comment')).toBeInTheDocument();
+    userEvent.type(getByLabelText('Comment'), 'test comment');
     expect(getByLabelText('Tags')).toBeInTheDocument();
     expect(getByLabelText('Assignee')).toBeInTheDocument();
     expect(getByLabelText('Next Action')).toBeInTheDocument();
@@ -198,7 +199,9 @@ describe('TaskModalLogForm', () => {
     expect(
       getByText('Are you sure you wish to delete the selected task?'),
     ).toBeInTheDocument();
-
+    userEvent.click(getByRole('button', { hidden: true, name: 'No' }));
+    await waitFor(() => expect(mockEnqueue).not.toHaveBeenCalled());
+    userEvent.click(getByRole('button', { hidden: true, name: 'Delete' }));
     userEvent.click(getByRole('button', { hidden: true, name: 'Yes' }));
     await waitFor(() =>
       expect(mockEnqueue).toHaveBeenCalledWith('Task deleted successfully', {
