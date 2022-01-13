@@ -43,7 +43,6 @@ const SubjectWrap = styled(Box)(({}) => ({
 
 const ContactText = styled(Typography)(({ theme }) => ({
   margin: '0px',
-  zIndex: 1,
   fontFamily: theme.typography.fontFamily,
   color: theme.palette.text.primary,
   whiteSpace: 'nowrap',
