@@ -89,15 +89,17 @@ export const InfiniteList = <T,>({
 }: Omit<GroupedVirtuosoProps<T>, 'groupCounts' | 'itemContent'> &
   InfiniteListProps<T>): ReactElement => {
   const groups =
-    groupBy && data?.length !== 0
-      ? data.reduce<{ [groupLabel: string]: number }>((acc, item) => {
-          const label = groupBy(item);
-          return {
-            ...acc,
-            [label]: acc[label] ? acc[label] + 1 : 1,
-          };
-        }, {})
-      : { '': totalCount };
+    data?.length > 0
+      ? groupBy
+        ? data.reduce<{ [groupLabel: string]: number }>((acc, item) => {
+            const label = groupBy(item);
+            return {
+              ...acc,
+              [label]: acc[label] ? acc[label] + 1 : 1,
+            };
+          }, {})
+        : { '': totalCount }
+      : {};
 
   return (
     <GroupedVirtuoso
