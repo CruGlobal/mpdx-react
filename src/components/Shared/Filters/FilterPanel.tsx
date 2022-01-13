@@ -127,7 +127,7 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
     );
 
   const isGroupVisible = (group: FilterGroup) =>
-    getSelectedFilters(group).length > 0 || group.featured;
+    (getSelectedFilters(group).length > 0 || group.featured) ?? undefined;
 
   const defaultFilters = ['anyTags', 'excludeTags', 'wildcardSearch'];
 
