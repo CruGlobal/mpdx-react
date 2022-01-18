@@ -34,6 +34,7 @@ const filterPanelDefaultMock = gqlMock<FilterPanelGroupFragment>(
   {
     mocks: {
       name: 'Group 1',
+      featured: false,
       filters: [mockTextFilter, mockMultiselectFilter],
     },
   },
