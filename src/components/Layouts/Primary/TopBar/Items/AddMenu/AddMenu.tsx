@@ -1,12 +1,5 @@
 import React, { ReactElement, useState } from 'react';
-import {
-  Box,
-  Dialog,
-  IconButton,
-  ListItemText,
-  Menu,
-  styled,
-} from '@material-ui/core';
+import { Box, IconButton, ListItemText, Menu, styled } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 import PersonIcon from '@material-ui/icons/Person';
 import PeopleIcon from '@material-ui/icons/People';
@@ -17,7 +10,9 @@ import { useTranslation } from 'react-i18next';
 
 import useTaskModal from '../../../../../../hooks/useTaskModal';
 import { useAccountListId } from '../../../../../../hooks/useAccountListId';
+import Modal from '../../../../../common/Modal/Modal';
 import CreateContact from './Items/CreateContact/CreateContact';
+import { CreateMultipleContacts } from './Items/CreateMultipleContacts/CreateMultipleContacts';
 
 interface AddMenuProps {
   isInDrawer?: boolean;
@@ -79,6 +74,17 @@ export const renderDialog = (
   const { t } = useTranslation();
   const accountListId = useAccountListId();
 
+  const modalTitle = () => {
+    switch (selectedMenuItem) {
+      case 0:
+        return t('New Contact');
+      case 1:
+        return t('Add Multiple Contacts');
+      default:
+        return t('Add Contact');
+    }
+  };
+
   const handleDialogClose = () => {
     onDialogOpen(false);
   };
@@ -92,17 +98,30 @@ export const renderDialog = (
             handleClose={handleDialogClose}
           />
         );
+      case 1:
+        return (
+          <CreateMultipleContacts
+            accountListId={accountListId ?? ''}
+            handleClose={handleDialogClose}
+          />
+        );
     }
   };
   return (
-    <Dialog
-      open={dialogOpen}
-      aria-labelledby={t('Create Contact Dialog')}
+    <Modal
+      isOpen={dialogOpen}
+      handleClose={handleDialogClose}
+      title={modalTitle()}
+      aria-labelledby={
+        selectedMenuItem === 0
+          ? t('Create Contact Dialog')
+          : t('Create Multiple Contacts Dialog')
+      }
       fullWidth
-      maxWidth="sm"
+      size={selectedMenuItem === 0 ? 'sm' : 'xl'} // TODO: Expand logic as more menu modals are added
     >
       {renderDialogContent()}
-    </Dialog>
+    </Modal>
   );
 };
 
@@ -143,7 +162,11 @@ const AddMenu = ({ isInDrawer = false }: AddMenuProps): ReactElement => {
     {
       text: 'Multiple Contacts',
       icon: <PeopleIcon />,
-      onClick: () => console.log('multiple contacts'),
+      onClick: () => {
+        changeSelectedMenuItem(1);
+        changeDialogOpen(true);
+        setAnchorEl(undefined);
+      },
     },
     {
       text: 'Add Donation',

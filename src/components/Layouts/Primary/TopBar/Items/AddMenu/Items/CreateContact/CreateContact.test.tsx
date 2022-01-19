@@ -17,8 +17,8 @@ const router = {
 };
 
 describe('CreateContact', () => {
-  it('default', () => {
-    const { queryByText } = render(
+  it('default', async () => {
+    const { queryByLabelText } = render(
       <MuiThemeProvider theme={theme}>
         <SnackbarProvider>
           <TestRouter router={router}>
@@ -32,11 +32,11 @@ describe('CreateContact', () => {
         </SnackbarProvider>
       </MuiThemeProvider>,
     );
-    expect(queryByText('New Contact')).toBeInTheDocument();
+    await waitFor(() => expect(queryByLabelText('Name')).toBeInTheDocument());
   });
 
   it('closes menu', () => {
-    const { getByRole } = render(
+    const { getByText } = render(
       <MuiThemeProvider theme={theme}>
         <SnackbarProvider>
           <TestRouter router={router}>
@@ -51,7 +51,7 @@ describe('CreateContact', () => {
       </MuiThemeProvider>,
     );
 
-    userEvent.click(getByRole('button', { hidden: true, name: 'Close' }));
+    userEvent.click(getByText('Cancel'));
     expect(handleClose).toHaveBeenCalled();
   });
 
