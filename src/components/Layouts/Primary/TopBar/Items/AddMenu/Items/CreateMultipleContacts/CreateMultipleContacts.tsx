@@ -69,88 +69,14 @@ export const CreateMultipleContacts = ({
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
   const initialContacts: InitialContactInterface = {
-    contacts: [
-      {
-        firstName: undefined,
-        spouseName: undefined,
-        lastName: undefined,
-        address: undefined,
-        phone: undefined,
-        email: undefined,
-      },
-      {
-        firstName: undefined,
-        spouseName: undefined,
-        lastName: undefined,
-        address: undefined,
-        phone: undefined,
-        email: undefined,
-      },
-      {
-        firstName: undefined,
-        spouseName: undefined,
-        lastName: undefined,
-        address: undefined,
-        phone: undefined,
-        email: undefined,
-      },
-      {
-        firstName: undefined,
-        spouseName: undefined,
-        lastName: undefined,
-        address: undefined,
-        phone: undefined,
-        email: undefined,
-      },
-      {
-        firstName: undefined,
-        spouseName: undefined,
-        lastName: undefined,
-        address: undefined,
-        phone: undefined,
-        email: undefined,
-      },
-      {
-        firstName: undefined,
-        spouseName: undefined,
-        lastName: undefined,
-        address: undefined,
-        phone: undefined,
-        email: undefined,
-      },
-      {
-        firstName: undefined,
-        spouseName: undefined,
-        lastName: undefined,
-        address: undefined,
-        phone: undefined,
-        email: undefined,
-      },
-      {
-        firstName: undefined,
-        spouseName: undefined,
-        lastName: undefined,
-        address: undefined,
-        phone: undefined,
-        email: undefined,
-      },
-      {
-        firstName: undefined,
-        spouseName: undefined,
-        lastName: undefined,
-        address: undefined,
-        phone: undefined,
-        email: undefined,
-      },
-      {
-        firstName: undefined,
-        spouseName: undefined,
-        lastName: undefined,
-        address: undefined,
-        phone: undefined,
-        email: undefined,
-      },
-    ],
+    contacts: new Array(10).fill({
+      firstName: undefined,
+      spouseName: undefined,
+      lastName: undefined,
+      address: undefined,
+      phone: undefined,
+      email: undefined,
+    }),
   };
 
   const [createContact, { loading: creating }] = useCreateContactMutation();
@@ -160,30 +86,36 @@ export const CreateMultipleContacts = ({
       (contact) => contact.firstName,
     );
     if (filteredContacts.length > 0) {
-      filteredContacts.forEach(async (contact) => {
-        await createContact({
-          variables: {
-            accountListId,
-            attributes: {
-              name: contact.lastName
-                ? contact.spouseName
-                  ? `${contact.lastName}, ${contact.firstName} and ${contact.spouseName}`
-                  : `${contact.lastName}, ${contact.firstName}`
-                : contact.spouseName
-                ? `${contact.firstName} and ${contact.spouseName}`
-                : `${contact.firstName}`,
+      const createdContacts = await Promise.all(
+        filteredContacts.map(async (contact) => {
+          const { data } = await createContact({
+            variables: {
+              accountListId,
+              attributes: {
+                name: contact.lastName
+                  ? contact.spouseName
+                    ? `${contact.lastName}, ${contact.firstName} and ${contact.spouseName}`
+                    : `${contact.lastName}, ${contact.firstName}`
+                  : contact.spouseName
+                  ? `${contact.firstName} and ${contact.spouseName}`
+                  : `${contact.firstName}`,
+              },
             },
-          },
-        });
-      });
-      enqueueSnackbar(
-        filteredContacts.length > 1
-          ? t(`${filteredContacts.length} Contacts successfully created`)
-          : t('Contact successfully created'),
-        {
-          variant: 'success',
-        },
+          });
+          return data?.createContact?.contact.id;
+        }),
       );
+
+      if (createdContacts.length > 0) {
+        enqueueSnackbar(
+          createdContacts.length > 1
+            ? t(`${createdContacts.length} Contacts successfully created`)
+            : t('Contact successfully created'),
+          {
+            variant: 'success',
+          },
+        );
+      }
     }
 
     handleClose();
