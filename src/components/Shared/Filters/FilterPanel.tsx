@@ -126,12 +126,8 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
       (f) => selectedFilters[snakeToCamel(f.filterKey) as FilterKey],
     );
 
-  const getFeaturedFilters = (group: FilterGroup) =>
-    group.filters.filter((value) => value.featured);
-
   const isGroupVisible = (group: FilterGroup) =>
-    getSelectedFilters(group).length > 0 ||
-    getFeaturedFilters(group).length > 0;
+    (getSelectedFilters(group).length > 0 || group.featured) ?? undefined;
 
   const defaultFilters = ['anyTags', 'excludeTags', 'wildcardSearch'];
 

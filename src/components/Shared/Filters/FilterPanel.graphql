@@ -1,8 +1,8 @@
 fragment FilterPanelGroup on FilterGroup {
   name
+  featured
   filters {
     __typename
-    featured
     filterKey
     title
     ... on DaterangeFilter {

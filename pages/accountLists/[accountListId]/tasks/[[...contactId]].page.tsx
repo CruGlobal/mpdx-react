@@ -6,6 +6,7 @@ import { Box, Button, Hidden, styled } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 import CheckCircleOutlineIcon from '@material-ui/icons/CheckCircleOutline';
 import debounce from 'lodash/debounce';
+import { DateTime } from 'luxon';
 import { InfiniteList } from '../../../../src/components/InfiniteList/InfiniteList';
 import { ContactDetails } from '../../../../src/components/Contacts/ContactDetails/ContactDetails';
 import Loading from '../../../../src/components/Loading';
@@ -248,6 +249,31 @@ const TasksPage: React.FC = () => {
                       />
                     </Box>
                   )}
+                  groupBy={(item) => {
+                    if (item.completedAt) {
+                      return t('Completed');
+                    } else if (!item.startAt) {
+                      return t('No Due Date');
+                    } else if (
+                      DateTime.fromISO(item.startAt).hasSame(
+                        DateTime.now(),
+                        'day',
+                      )
+                    ) {
+                      return t('Today');
+                    } else if (
+                      DateTime.now().startOf('day') >
+                      DateTime.fromISO(item.startAt).startOf('day')
+                    ) {
+                      return t('Overdue');
+                    } else if (
+                      DateTime.now().startOf('day') <
+                      DateTime.fromISO(item.startAt).startOf('day')
+                    ) {
+                      return t('Upcoming');
+                    }
+                    return t('No Due Date');
+                  }}
                   endReached={() =>
                     data?.tasks?.pageInfo.hasNextPage &&
                     fetchMore({
