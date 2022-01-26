@@ -28,6 +28,7 @@ import { PersonBirthday } from './PersonBirthday/PersonBirthday';
 import { PersonShowMore } from './PersonShowMore/PersonShowMore';
 import {
   useCreatePersonMutation,
+  useDeletePersonMutation,
   useUpdatePersonMutation,
 } from './PersonModal.generated';
 
@@ -81,6 +82,7 @@ export const PersonModal: React.FC<PersonModalProps> = ({
   const [personEditShowMore, setPersonEditShowMore] = useState(false);
   const [updatePerson, { loading: updating }] = useUpdatePersonMutation();
   const [createPerson, { loading: creating }] = useCreatePersonMutation();
+  const [deletePerson, { loading: deleting }] = useDeletePersonMutation();
 
   // grabbed from https://stackoverflow.com/a/62039270
   const phoneRegex = RegExp(
@@ -325,6 +327,23 @@ export const PersonModal: React.FC<PersonModalProps> = ({
     handleClose();
   };
 
+  const deletePersonFromContact = async (): Promise<void> => {
+    if (person) {
+      await deletePerson({
+        variables: {
+          id: person?.id,
+          accountListId,
+        },
+        refetchQueries: [
+          {
+            query: ContactDetailsTabDocument,
+            variables: { accountListId, contactId },
+          },
+        ],
+      });
+    }
+  };
+
   return (
     <Modal
       isOpen={true}
@@ -381,6 +400,14 @@ export const PersonModal: React.FC<PersonModalProps> = ({
               </ContactEditContainer>
             </DialogContent>
             <DialogActions>
+              {person && (
+                <ContactEditModalFooterButton
+                  onClick={deletePersonFromContact}
+                  variant="text"
+                >
+                  {t('Delete')}
+                </ContactEditModalFooterButton>
+              )}
               <ContactEditModalFooterButton
                 onClick={handleClose}
                 variant="text"
@@ -392,7 +419,7 @@ export const PersonModal: React.FC<PersonModalProps> = ({
                 disabled={!formikProps.isValid || formikProps.isSubmitting}
                 variant="text"
               >
-                {(updating || creating) && (
+                {(updating || creating || deleting) && (
                   <LoadingIndicator color="primary" size={20} />
                 )}
                 {t('Save')}
