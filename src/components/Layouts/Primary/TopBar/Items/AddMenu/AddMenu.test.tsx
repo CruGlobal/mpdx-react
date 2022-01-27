@@ -60,6 +60,28 @@ describe('AddMenu', () => {
     await waitFor(() => expect(getByText('New Contact')).toBeInTheDocument());
   });
 
+  it('handles menu item click | Add Multiple Contacts', async () => {
+    const { getByRole, getByText } = render(
+      <SnackbarProvider>
+        <TestRouter router={router}>
+          <ThemeProvider theme={theme}>
+            <GqlMockedProvider>
+              <AddMenu />
+            </GqlMockedProvider>
+          </ThemeProvider>
+        </TestRouter>
+      </SnackbarProvider>,
+    );
+    userEvent.click(getByRole('button', { hidden: true, name: 'Add Button' }));
+    await waitFor(() =>
+      expect(getByText('Multiple Contacts')).toBeInTheDocument(),
+    );
+    userEvent.click(getByText('Multiple Contacts'));
+    await waitFor(() =>
+      expect(getByText('Add Multiple Contacts')).toBeInTheDocument(),
+    );
+  });
+
   it('handles menu item click | Add Task', async () => {
     const { getByRole, getByText } = render(
       <SnackbarProvider>
