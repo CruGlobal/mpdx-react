@@ -10,6 +10,7 @@ import type { Contact, OrderBy } from './Layout/Table/TableHead/TableHead';
 import { FourteenMonthReportTable as Table } from './Layout/Table/Table';
 import { Notification } from 'src/components/Notification/Notification';
 import { EmptyReport } from 'src/components/Reports/EmptyReport/EmptyReport';
+import { useApiConstants } from 'src/components/Constants/UseApiConstants';
 
 interface Props {
   accountListId: string;
@@ -35,6 +36,8 @@ export const FourteenMonthReport: React.FC<Props> = ({
   const isMobile = useMediaQuery((theme: Theme) =>
     theme.breakpoints.down('sm'),
   );
+
+  const apiConstants = useApiConstants();
 
   const { data, loading, error } = useFourteenMonthReportQuery({
     variables: {
@@ -92,26 +95,74 @@ export const FourteenMonthReport: React.FC<Props> = ({
   const csvData = useMemo(() => {
     if (!contacts) return [];
 
-    const monthsTitleArray = (type: 'month' | 'total') => {
-      if (data) {
-        return data.fourteenMonthReport.currencyGroups[0]?.totals.months.map(
-          (month) => month[type],
-        );
-      } else {
-        return [];
-      }
-    };
+    const months =
+      data?.fourteenMonthReport.currencyGroups[0]?.totals.months ?? [];
+
     return [
       [t('Currency'), data?.fourteenMonthReport.salaryCurrency],
-      [t('Partner'), ...monthsTitleArray('month'), t('Total')],
-      ...contacts.map((contact) => [
-        contact.name,
-        ...(contact?.months?.map((month) => month.total) || []),
-        contact.total,
-      ]),
-      [t('Totals'), ...monthsTitleArray('total')],
+      [
+        t('Partner'),
+        t('Status'),
+        t('Pledge Amount'),
+        t('Pledge Currency'),
+        t('Pledge Frequency'),
+        t('Pledge Frequency - Months between gifts'),
+        t('Pledged Monthly Equivalent'),
+        t('In Hand Monthly Equivalent'),
+        t('In Hand One Time Gifts'),
+        ...months.map(({ month }) => month),
+        t('Total'),
+      ],
+      ...contacts.map((contact) => {
+        const numMonthsforMonthlyEquivalent = Math.max(
+          4,
+          parseInt(contact.pledgeFrequency ?? '4'),
+        );
+
+        return [
+          contact.name,
+          contact.status ?? '',
+          contact.pledgeAmount ?? '',
+          contact.pledgeCurrency ?? '',
+          apiConstants?.pledgeFrequencies?.find(
+            ({ key }) => key === contact.pledgeFrequency,
+          )?.value ?? '',
+          contact.pledgeFrequency ?? '',
+          contact.status === 'Partner - Financial' &&
+          contact.pledgeAmount &&
+          contact.pledgeFrequency
+            ? contact.pledgeAmount / parseFloat(contact.pledgeFrequency)
+            : '',
+          contact.status === 'Partner - Financial' &&
+          contact.pledgeFrequency &&
+          contact.months
+            ? contact.months
+                ?.slice(15 - numMonthsforMonthlyEquivalent - 1, 15 - 1)
+                .reduce((sum, month) => sum + month.total, 0) /
+              numMonthsforMonthlyEquivalent
+            : '',
+          contact.status === 'Partner - Special' ? contact.total : '',
+          ...(contact?.months?.map((month) => month.total) || []),
+          contact.total,
+        ];
+      }),
+      [
+        t('Totals'),
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        ...months.map(({ total }) => total),
+        months
+          .map(({ total }) => total)
+          .reduce((sum, monthTotal) => sum + monthTotal),
+      ],
     ];
-  }, [contacts]);
+  }, [apiConstants, contacts]);
 
   return (
     <Box>
