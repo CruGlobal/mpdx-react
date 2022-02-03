@@ -30,7 +30,7 @@ import { useAccountListId } from '../../../../../../hooks/useAccountListId';
 import Modal from '../../../../../common/Modal/Modal';
 import { ContactDonorAccountsFragment } from '../../ContactDonationsTab.generated';
 import {
-  ContactReferralInput,
+  ContactReferralToMeInput,
   ContactUpdateInput,
   PledgeFrequencyEnum,
   StatusEnum,
@@ -234,7 +234,7 @@ export const EditPartnershipInfoModal: React.FC<EditPartnershipInfoModalProps> =
 
   const updateReferredBy = (
     ids: string[],
-    setFieldValue: (name: string, value: ContactReferralInput[]) => void,
+    setFieldValue: (name: string, value: ContactReferralToMeInput[]) => void,
   ) => {
     // Set the ids currently selected
     setCurrentContactIds(ids);
