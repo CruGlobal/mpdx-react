@@ -111,7 +111,7 @@ export const FourteenMonthReport: React.FC<Props> = ({
         t('Missing In Hand Monthly Equivalent'),
         t('In Hand One Time Gifts'),
         ...months.map(({ month }) => month),
-        t('Total'),
+        t('Total (last month excluded from total)'),
       ],
       ...contacts.map((contact) => {
         const numMonthsforMonthlyEquivalent = Math.max(
