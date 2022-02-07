@@ -106,9 +106,9 @@ export const FourteenMonthReport: React.FC<Props> = ({
         t('Pledge Amount'),
         t('Pledge Currency'),
         t('Pledge Frequency'),
-        t('Pledge Frequency - Months between gifts'),
         t('Pledged Monthly Equivalent'),
         t('In Hand Monthly Equivalent'),
+        t('Missing In Hand Monthly Equivalent'),
         t('In Hand One Time Gifts'),
         ...months.map(({ month }) => month),
         t('Total'),
@@ -119,6 +119,16 @@ export const FourteenMonthReport: React.FC<Props> = ({
           parseInt(contact.pledgeFrequency ?? '4'),
         );
 
+        const inHandMonthlyEquivalent =
+          contact.status === 'Partner - Financial' &&
+          contact.pledgeFrequency &&
+          contact.months
+            ? contact.months
+                ?.slice(15 - numMonthsforMonthlyEquivalent - 1, 15 - 1)
+                .reduce((sum, month) => sum + month.total, 0) /
+              numMonthsforMonthlyEquivalent
+            : '';
+
         return [
           contact.name,
           contact.status ?? '',
@@ -127,21 +137,21 @@ export const FourteenMonthReport: React.FC<Props> = ({
           apiConstants?.pledgeFrequencies?.find(
             ({ key }) => key === contact.pledgeFrequency,
           )?.value ?? '',
-          contact.pledgeFrequency ?? '',
           contact.status === 'Partner - Financial' &&
           contact.pledgeAmount &&
           contact.pledgeFrequency
             ? contact.pledgeAmount / parseFloat(contact.pledgeFrequency)
             : '',
-          contact.status === 'Partner - Financial' &&
-          contact.pledgeFrequency &&
-          contact.months
-            ? contact.months
-                ?.slice(15 - numMonthsforMonthlyEquivalent - 1, 15 - 1)
-                .reduce((sum, month) => sum + month.total, 0) /
-              numMonthsforMonthlyEquivalent
+          inHandMonthlyEquivalent !== '' && contact.pledgeAmount
+            ? Math.min(contact.pledgeAmount, inHandMonthlyEquivalent)
             : '',
-          contact.status === 'Partner - Special' ? contact.total : '',
+          inHandMonthlyEquivalent !== '' && contact.pledgeAmount
+            ? Math.max(0, contact.pledgeAmount - inHandMonthlyEquivalent)
+            : '',
+          inHandMonthlyEquivalent !== '' && contact.pledgeAmount
+            ? Math.max(0, inHandMonthlyEquivalent - contact.pledgeAmount) *
+              numMonthsforMonthlyEquivalent
+            : contact.total,
           ...(contact?.months?.map((month) => month.total) || []),
           contact.total,
         ];
