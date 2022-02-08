@@ -169,7 +169,7 @@ export const FourteenMonthReport: React.FC<Props> = ({
         ...months.map(({ total }) => total),
         months
           .map(({ total }) => total)
-          .reduce((sum, monthTotal) => sum + monthTotal),
+          .reduce((sum, monthTotal) => sum + monthTotal, 0),
       ],
     ];
   }, [apiConstants, contacts]);
