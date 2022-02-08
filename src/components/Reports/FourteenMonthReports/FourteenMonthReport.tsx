@@ -158,9 +158,9 @@ export const FourteenMonthReport: React.FC<Props> = ({
           inHandMonthlyEquivalent !== '' && contact.pledgeAmount
             ? Math.max(0, inHandMonthlyEquivalent - contact.pledgeAmount) *
               numMonthsforMonthlyEquivalent
-            : contact.total,
-          ...(contact?.months?.map((month) => month.total) || []),
-          contact.total,
+            : Math.round(contact.total),
+          ...(contact?.months?.map((month) => Math.round(month.total)) || []),
+          Math.round(contact.total),
         ];
       }),
     ];
@@ -187,9 +187,9 @@ export const FourteenMonthReport: React.FC<Props> = ({
         (sum, row) => sum + (typeof row[8] === 'number' ? row[8] : 0),
         0,
       ),
-      ...months.map(({ total }) => total),
+      ...months.map(({ total }) => Math.round(total)),
       months
-        .map(({ total }) => total)
+        .map(({ total }) => Math.round(total))
         .reduce((sum, monthTotal) => sum + monthTotal, 0),
     ];
 
