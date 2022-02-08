@@ -10,6 +10,7 @@ import type { Contact, OrderBy } from './Layout/Table/TableHead/TableHead';
 import { FourteenMonthReportTable as Table } from './Layout/Table/Table';
 import { Notification } from 'src/components/Notification/Notification';
 import { EmptyReport } from 'src/components/Reports/EmptyReport/EmptyReport';
+import { useApiConstants } from 'src/components/Constants/UseApiConstants';
 
 interface Props {
   accountListId: string;
@@ -35,6 +36,8 @@ export const FourteenMonthReport: React.FC<Props> = ({
   const isMobile = useMediaQuery((theme: Theme) =>
     theme.breakpoints.down('sm'),
   );
+
+  const apiConstants = useApiConstants();
 
   const { data, loading, error } = useFourteenMonthReportQuery({
     variables: {
@@ -92,26 +95,106 @@ export const FourteenMonthReport: React.FC<Props> = ({
   const csvData = useMemo(() => {
     if (!contacts) return [];
 
-    const monthsTitleArray = (type: 'month' | 'total') => {
-      if (data) {
-        return data.fourteenMonthReport.currencyGroups[0]?.totals.months.map(
-          (month) => month[type],
-        );
-      } else {
-        return [];
-      }
-    };
-    return [
+    const months =
+      data?.fourteenMonthReport.currencyGroups[0]?.totals.months ?? [];
+
+    const csvHeaders = [
       [t('Currency'), data?.fourteenMonthReport.salaryCurrency],
-      [t('Partner'), ...monthsTitleArray('month'), t('Total')],
-      ...contacts.map((contact) => [
-        contact.name,
-        ...(contact?.months?.map((month) => month.total) || []),
-        contact.total,
-      ]),
-      [t('Totals'), ...monthsTitleArray('total')],
+      [
+        t('Partner'),
+        t('Status'),
+        t('Pledge Amount'),
+        t('Pledge Currency'),
+        t('Pledge Frequency'),
+        t('Pledged Monthly Equivalent'),
+        t('In Hand Monthly Equivalent'),
+        t('Missing In Hand Monthly Equivalent'),
+        t('In Hand One Time Gifts'),
+        ...months.map(({ month }) => month),
+        t('Total (last month excluded from total)'),
+      ],
     ];
-  }, [contacts]);
+
+    const csvBody = [
+      ...contacts.map((contact) => {
+        const numMonthsforMonthlyEquivalent = Math.max(
+          4,
+          parseInt(contact.pledgeFrequency ?? '4'),
+        );
+
+        const inHandMonthlyEquivalent =
+          contact.status === 'Partner - Financial' &&
+          contact.pledgeFrequency &&
+          contact.months
+            ? Math.round(
+                contact.months
+                  ?.slice(15 - numMonthsforMonthlyEquivalent - 1, 15 - 1)
+                  .reduce((sum, month) => sum + month.total, 0) /
+                  numMonthsforMonthlyEquivalent,
+              )
+            : '';
+
+        return [
+          contact.name,
+          contact.status ?? '',
+          contact.pledgeAmount ?? '',
+          contact.pledgeCurrency ?? '',
+          apiConstants?.pledgeFrequencies?.find(
+            ({ key }) => key === contact.pledgeFrequency,
+          )?.value ?? '',
+          contact.status === 'Partner - Financial' &&
+          contact.pledgeAmount &&
+          contact.pledgeFrequency
+            ? Math.round(
+                contact.pledgeAmount / parseFloat(contact.pledgeFrequency),
+              )
+            : '',
+          inHandMonthlyEquivalent !== '' && contact.pledgeAmount
+            ? Math.min(contact.pledgeAmount, inHandMonthlyEquivalent)
+            : '',
+          inHandMonthlyEquivalent !== '' && contact.pledgeAmount
+            ? Math.max(0, contact.pledgeAmount - inHandMonthlyEquivalent)
+            : '',
+          inHandMonthlyEquivalent !== '' && contact.pledgeAmount
+            ? Math.max(0, inHandMonthlyEquivalent - contact.pledgeAmount) *
+              numMonthsforMonthlyEquivalent
+            : Math.round(contact.total),
+          ...(contact?.months?.map((month) => Math.round(month.total)) || []),
+          Math.round(contact.total),
+        ];
+      }),
+    ];
+
+    const csvTotals = [
+      t('Totals'),
+      '',
+      '',
+      '',
+      '',
+      csvBody.reduce(
+        (sum, row) => sum + (typeof row[5] === 'number' ? row[5] : 0),
+        0,
+      ),
+      csvBody.reduce(
+        (sum, row) => sum + (typeof row[6] === 'number' ? row[6] : 0),
+        0,
+      ),
+      csvBody.reduce(
+        (sum, row) => sum + (typeof row[7] === 'number' ? row[7] : 0),
+        0,
+      ),
+      csvBody.reduce(
+        (sum, row) => sum + (typeof row[8] === 'number' ? row[8] : 0),
+        0,
+      ),
+      ...months.map(({ total }) => Math.round(total)),
+      months
+        .map(({ total }) => Math.round(total))
+        .reduce((sum, monthTotal) => sum + monthTotal, 0),
+    ];
+
+    return [...csvHeaders, ...csvBody, csvTotals];
+  }, [apiConstants, contacts]);
 
   return (
     <Box>

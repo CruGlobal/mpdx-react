@@ -16,191 +16,196 @@ describe('LoadConstants', () => {
         "activities": Array [
           Object {
             "__typename": "IdValue",
-            "id": "Weapon Aeroplane",
-            "value": "Chocolates Bomb",
+            "id": "Sandpaper Knife Fan",
+            "value": "Drum Torpedo",
           },
           Object {
             "__typename": "IdValue",
-            "id": "Girl",
-            "value": "Rainbow",
+            "id": "Tongue Sandwich",
+            "value": "Web Meteor",
+          },
+          Object {
+            "__typename": "IdValue",
+            "id": "Perfume Ship Aeroplane",
+            "value": "Airport Gemstone",
+          },
+          Object {
+            "__typename": "IdValue",
+            "id": "Cappuccino Army Coffee-shop",
+            "value": "Ice Post-office",
           },
         ],
         "languages": Array [
           Object {
             "__typename": "IdValue",
-            "id": "Chess Board Elephant",
-            "value": "Cycle",
+            "id": "Kitchen",
+            "value": "Family Sun Explosive",
           },
           Object {
             "__typename": "IdValue",
-            "id": "Fire Aeroplane Highway",
-            "value": "Satellite Necklace Shower",
+            "id": "Hose Cave",
+            "value": "Girl",
+          },
+          Object {
+            "__typename": "IdValue",
+            "id": "Chair",
+            "value": "Meteor",
+          },
+          Object {
+            "__typename": "IdValue",
+            "id": "Button Circle Chess Board",
+            "value": "Pants Bowl Car",
           },
         ],
         "likelyToGiveOptions": Array [
           Object {
             "__typename": "IdValue",
-            "id": "Drink Baby Data Base",
-            "value": "Gas Drink Meat",
+            "id": "Microscope Carpet",
+            "value": "Church Data Base Film",
           },
           Object {
             "__typename": "IdValue",
-            "id": "Spot Light Grapes Bed",
-            "value": "Bottle",
+            "id": "Coffee-shop Rock",
+            "value": "Sex Freeway",
           },
           Object {
             "__typename": "IdValue",
-            "id": "Guitar",
-            "value": "Foot",
+            "id": "Highway Bomb Circle",
+            "value": "Water Child",
+          },
+          Object {
+            "__typename": "IdValue",
+            "id": "Bird",
+            "value": "Hieroglyph Eraser Bridge",
           },
         ],
         "locations": Array [
           Object {
             "__typename": "IdValue",
-            "id": "Spectrum",
-          },
-          Object {
-            "__typename": "IdValue",
-            "id": "Bed",
-          },
-          Object {
-            "__typename": "IdValue",
-            "id": "Potato X-ray",
-          },
-          Object {
-            "__typename": "IdValue",
-            "id": "Library Flower Torpedo",
+            "id": "Mosquito",
           },
         ],
         "pledgeCurrencies": Array [
           Object {
             "__typename": "IdKeyValue",
-            "id": "Car-race Spectrum",
-            "value": "Floodlight Earth Foot",
+            "id": "Maze Barbecue Sun",
+            "value": "Teeth Chief",
           },
           Object {
             "__typename": "IdKeyValue",
-            "id": "Saddle Thermometer Tennis racquet",
-            "value": "Plane Teeth Garden",
+            "id": "Data Base Butterfly Computer",
+            "value": "Chair Floodlight Toilet",
           },
           Object {
             "__typename": "IdKeyValue",
-            "id": "Maze Hat",
-            "value": "Sandpaper",
+            "id": "Tapestry Thermometer Spoon",
+            "value": "Spice",
+          },
+          Object {
+            "__typename": "IdKeyValue",
+            "id": "Ears",
+            "value": "School School",
           },
         ],
         "pledgeFrequencies": Array [
           Object {
             "__typename": "IdKeyValue",
-            "id": "Rifle Microscope",
-            "value": "Foot Aeroplane",
+            "id": "Vampire Child",
+            "key": "Square Bathtub Cycle",
+            "value": "Church",
           },
           Object {
             "__typename": "IdKeyValue",
-            "id": "Highway",
-            "value": "Apple",
-          },
-          Object {
-            "__typename": "IdKeyValue",
-            "id": "Boy",
-            "value": "Umbrella",
-          },
-          Object {
-            "__typename": "IdKeyValue",
-            "id": "Ring Ice Drink",
-            "value": "Egg Perfume",
+            "id": "Spiral Chocolates Meat",
+            "key": "Carrot",
+            "value": "Pendulum Tennis racquet Sex",
           },
         ],
         "pledgesReceived": Array [
           Object {
             "__typename": "IdValue",
-            "id": "Satellite",
-            "value": "Album",
+            "id": "God",
+            "value": "Clown",
           },
           Object {
             "__typename": "IdValue",
-            "id": "Elephant",
-            "value": "Salt",
+            "id": "Spectrum Spiral Circus",
+            "value": "Chief Mist",
           },
         ],
         "preferredContactMethods": Array [
           Object {
             "__typename": "IdKeyValue",
-            "id": "Rifle",
-            "value": "Square",
+            "id": "Meat Guitar Umbrella",
+            "value": "Cup",
           },
           Object {
             "__typename": "IdKeyValue",
-            "id": "Tongue Cup Spot Light",
-            "value": "Nail",
+            "id": "Kitchen Prison Data Base",
+            "value": "Adult Saddle Necklace",
           },
           Object {
             "__typename": "IdKeyValue",
-            "id": "Printer Treadmill",
-            "value": "Fruit Butterfly Spiral",
+            "id": "Money $$$$ Aeroplane Cappuccino",
+            "value": "Sex",
           },
           Object {
             "__typename": "IdKeyValue",
-            "id": "Spoon",
-            "value": "Fork Swimming Pool",
+            "id": "Gemstone",
+            "value": "Fruit Money $$$$ Table",
           },
         ],
         "sendAppeals": Array [
           Object {
             "__typename": "IdValue",
-            "id": "Horse Wheelchair Onion",
-            "value": "Maze Ice-cream",
+            "id": "Mosquito Circus Staircase",
+            "value": "Pillow Square",
           },
           Object {
             "__typename": "IdValue",
-            "id": "Foot Bridge Chess Board",
-            "value": "Gemstone",
+            "id": "Sword",
+            "value": "Solid Vulture",
+          },
+          Object {
+            "__typename": "IdValue",
+            "id": "Perfume",
+            "value": "Meteor Gas Dress",
+          },
+          Object {
+            "__typename": "IdValue",
+            "id": "Printer",
+            "value": "Sphere Mosquito",
           },
         ],
         "sendNewsletterOptions": Array [
           Object {
             "__typename": "IdValue",
-            "id": "Sports-car",
-            "value": "Rope",
-          },
-          Object {
-            "__typename": "IdValue",
-            "id": "Chisel Air Table",
-            "value": "Bottle Record",
+            "id": "Album",
+            "value": "Robot Airport",
           },
         ],
         "statuses": Array [
           Object {
             "__typename": "IdValue",
-            "id": "School Bank",
-            "value": "Brain",
-          },
-          Object {
-            "__typename": "IdValue",
-            "id": "Carrot Slave Cave",
-            "value": "Elephant Hieroglyph Tongue",
-          },
-          Object {
-            "__typename": "IdValue",
-            "id": "Nail Banana",
-            "value": "Hat",
-          },
-          Object {
-            "__typename": "IdValue",
-            "id": "Coffee Bathroom",
-            "value": "Room Tongue Staircase",
+            "id": "Meat Window Torpedo",
+            "value": "Bee Money $$$$ Surveyor",
           },
         ],
         "times": Array [
           Object {
             "__typename": "Time",
-            "key": 57,
-            "value": "Passport Aeroplane",
+            "key": 41,
+            "value": "Space Shuttle Woman Software",
           },
           Object {
             "__typename": "Time",
-            "key": 5,
-            "value": "Parachute",
+            "key": 29,
+            "value": "Earth Floodlight",
+          },
+          Object {
+            "__typename": "Time",
+            "key": 49,
+            "value": "Perfume",
           },
         ],
       }
