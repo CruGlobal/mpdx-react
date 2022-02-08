@@ -98,7 +98,7 @@ export const FourteenMonthReport: React.FC<Props> = ({
     const months =
       data?.fourteenMonthReport.currencyGroups[0]?.totals.months ?? [];
 
-    return [
+    const csvHeaders = [
       [t('Currency'), data?.fourteenMonthReport.salaryCurrency],
       [
         t('Partner'),
@@ -113,6 +113,9 @@ export const FourteenMonthReport: React.FC<Props> = ({
         ...months.map(({ month }) => month),
         t('Total (last month excluded from total)'),
       ],
+    ];
+
+    const csvBody = [
       ...contacts.map((contact) => {
         const numMonthsforMonthlyEquivalent = Math.max(
           4,
@@ -123,10 +126,12 @@ export const FourteenMonthReport: React.FC<Props> = ({
           contact.status === 'Partner - Financial' &&
           contact.pledgeFrequency &&
           contact.months
-            ? contact.months
-                ?.slice(15 - numMonthsforMonthlyEquivalent - 1, 15 - 1)
-                .reduce((sum, month) => sum + month.total, 0) /
-              numMonthsforMonthlyEquivalent
+            ? Math.round(
+                contact.months
+                  ?.slice(15 - numMonthsforMonthlyEquivalent - 1, 15 - 1)
+                  .reduce((sum, month) => sum + month.total, 0) /
+                  numMonthsforMonthlyEquivalent,
+              )
             : '';
 
         return [
@@ -140,7 +145,9 @@ export const FourteenMonthReport: React.FC<Props> = ({
           contact.status === 'Partner - Financial' &&
           contact.pledgeAmount &&
           contact.pledgeFrequency
-            ? contact.pledgeAmount / parseFloat(contact.pledgeFrequency)
+            ? Math.round(
+                contact.pledgeAmount / parseFloat(contact.pledgeFrequency),
+              )
             : '',
           inHandMonthlyEquivalent !== '' && contact.pledgeAmount
             ? Math.min(contact.pledgeAmount, inHandMonthlyEquivalent)
@@ -156,22 +163,37 @@ export const FourteenMonthReport: React.FC<Props> = ({
           contact.total,
         ];
       }),
-      [
-        t('Totals'),
-        '',
-        '',
-        '',
-        '',
-        '',
-        '',
-        '',
-        '',
-        ...months.map(({ total }) => total),
-        months
-          .map(({ total }) => total)
-          .reduce((sum, monthTotal) => sum + monthTotal, 0),
-      ],
     ];
+
+    const csvTotals = [
+      t('Totals'),
+      '',
+      '',
+      '',
+      '',
+      csvBody.reduce(
+        (sum, row) => sum + (typeof row[5] === 'number' ? row[5] : 0),
+        0,
+      ),
+      csvBody.reduce(
+        (sum, row) => sum + (typeof row[6] === 'number' ? row[6] : 0),
+        0,
+      ),
+      csvBody.reduce(
+        (sum, row) => sum + (typeof row[7] === 'number' ? row[7] : 0),
+        0,
+      ),
+      csvBody.reduce(
+        (sum, row) => sum + (typeof row[8] === 'number' ? row[8] : 0),
+        0,
+      ),
+      ...months.map(({ total }) => total),
+      months
+        .map(({ total }) => total)
+        .reduce((sum, monthTotal) => sum + monthTotal, 0),
+    ];
+
+    return [...csvHeaders, ...csvBody, csvTotals];
   }, [apiConstants, contacts]);
 
   return (
