@@ -156,7 +156,7 @@ export const FourteenMonthReport: React.FC<Props> = ({
             ? Math.min(pledgedMonthlyEquivalent, inHandMonthlyEquivalent)
             : '',
           inHandMonthlyEquivalent !== '' && pledgedMonthlyEquivalent !== ''
-            ? Math.max(0, pledgedMonthlyEquivalent - inHandMonthlyEquivalent)
+            ? -Math.max(0, pledgedMonthlyEquivalent - inHandMonthlyEquivalent)
             : '',
           inHandMonthlyEquivalent !== '' && pledgedMonthlyEquivalent !== ''
             ? Math.max(0, inHandMonthlyEquivalent - pledgedMonthlyEquivalent) *
