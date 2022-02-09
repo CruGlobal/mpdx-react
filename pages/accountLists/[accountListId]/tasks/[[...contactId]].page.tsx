@@ -225,6 +225,7 @@ const TasksPage: React.FC = () => {
                         {t('Add Task')}
                       </TaskHeaderButton>
                       <TaskHeaderButton
+                        onClick={() => openTaskModal({ view: 'log' })}
                         variant="text"
                         startIcon={<TaskCheckIcon />}
                       >
