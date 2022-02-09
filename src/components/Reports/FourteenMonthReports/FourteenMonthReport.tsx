@@ -103,10 +103,10 @@ export const FourteenMonthReport: React.FC<Props> = ({
       [
         t('Partner'),
         t('Status'),
-        t('Pledge Amount'),
-        t('Pledge Currency'),
-        t('Pledge Frequency'),
-        t('Pledged Monthly Equivalent'),
+        t('Commitment Amount'),
+        t('Commitment Currency'),
+        t('Commitment Frequency'),
+        t('Committed Monthly Equivalent'),
         t('In Hand Monthly Equivalent'),
         t('Missing In Hand Monthly Equivalent'),
         t('In Hand One Time Gifts'),
@@ -156,7 +156,7 @@ export const FourteenMonthReport: React.FC<Props> = ({
             ? Math.min(pledgedMonthlyEquivalent, inHandMonthlyEquivalent)
             : '',
           inHandMonthlyEquivalent !== '' && pledgedMonthlyEquivalent !== ''
-            ? Math.max(0, pledgedMonthlyEquivalent - inHandMonthlyEquivalent)
+            ? -Math.max(0, pledgedMonthlyEquivalent - inHandMonthlyEquivalent)
             : '',
           inHandMonthlyEquivalent !== '' && pledgedMonthlyEquivalent !== ''
             ? Math.max(0, inHandMonthlyEquivalent - pledgedMonthlyEquivalent) *
