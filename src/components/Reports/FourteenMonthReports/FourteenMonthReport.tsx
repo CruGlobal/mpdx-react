@@ -122,6 +122,15 @@ export const FourteenMonthReport: React.FC<Props> = ({
           parseInt(contact.pledgeFrequency ?? '4'),
         );
 
+        const pledgedMonthlyEquivalent =
+          contact.status === 'Partner - Financial' &&
+          contact.pledgeAmount &&
+          contact.pledgeFrequency
+            ? Math.round(
+                contact.pledgeAmount / parseFloat(contact.pledgeFrequency),
+              )
+            : '';
+
         const inHandMonthlyEquivalent =
           contact.status === 'Partner - Financial' &&
           contact.pledgeFrequency &&
@@ -142,21 +151,15 @@ export const FourteenMonthReport: React.FC<Props> = ({
           apiConstants?.pledgeFrequencies?.find(
             ({ key }) => key === contact.pledgeFrequency,
           )?.value ?? '',
-          contact.status === 'Partner - Financial' &&
-          contact.pledgeAmount &&
-          contact.pledgeFrequency
-            ? Math.round(
-                contact.pledgeAmount / parseFloat(contact.pledgeFrequency),
-              )
+          pledgedMonthlyEquivalent,
+          inHandMonthlyEquivalent !== '' && pledgedMonthlyEquivalent !== ''
+            ? Math.min(pledgedMonthlyEquivalent, inHandMonthlyEquivalent)
             : '',
-          inHandMonthlyEquivalent !== '' && contact.pledgeAmount
-            ? Math.min(contact.pledgeAmount, inHandMonthlyEquivalent)
+          inHandMonthlyEquivalent !== '' && pledgedMonthlyEquivalent !== ''
+            ? Math.max(0, pledgedMonthlyEquivalent - inHandMonthlyEquivalent)
             : '',
-          inHandMonthlyEquivalent !== '' && contact.pledgeAmount
-            ? Math.max(0, contact.pledgeAmount - inHandMonthlyEquivalent)
-            : '',
-          inHandMonthlyEquivalent !== '' && contact.pledgeAmount
-            ? Math.max(0, inHandMonthlyEquivalent - contact.pledgeAmount) *
+          inHandMonthlyEquivalent !== '' && pledgedMonthlyEquivalent !== ''
+            ? Math.max(0, inHandMonthlyEquivalent - pledgedMonthlyEquivalent) *
               numMonthsforMonthlyEquivalent
             : Math.round(contact.total),
           ...(contact?.months?.map((month) => Math.round(month.total)) || []),
