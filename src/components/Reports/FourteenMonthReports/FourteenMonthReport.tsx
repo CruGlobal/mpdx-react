@@ -2,6 +2,7 @@ import React, { useMemo, useRef, useState } from 'react';
 import { Box, CircularProgress, Theme, useMediaQuery } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { useReactToPrint } from 'react-to-print';
+import { DateTime } from 'luxon';
 import { FourteenMonthReportCurrencyType } from '../../../../graphql/types.generated';
 import type { Order } from '../Reports.type';
 import { FourteenMonthReportHeader as Header } from './Layout/Header/Header';
@@ -110,6 +111,7 @@ export const FourteenMonthReport: React.FC<Props> = ({
         t('In Hand Monthly Equivalent'),
         t('Missing In Hand Monthly Equivalent'),
         t('In Hand One Time Gifts'),
+        t('In Hand Date Range'),
         ...months.map(({ month }) => month),
         t('Total (last month excluded from total)'),
       ],
@@ -131,16 +133,29 @@ export const FourteenMonthReport: React.FC<Props> = ({
               )
             : '';
 
+        const inHandMonths = contact.months?.slice(
+          15 - numMonthsforMonthlyEquivalent - 1,
+          15 - 1,
+        );
+
         const inHandMonthlyEquivalent =
           contact.status === 'Partner - Financial' &&
           contact.pledgeFrequency &&
-          contact.months
+          inHandMonths
             ? Math.round(
-                contact.months
-                  ?.slice(15 - numMonthsforMonthlyEquivalent - 1, 15 - 1)
-                  .reduce((sum, month) => sum + month.total, 0) /
+                inHandMonths.reduce((sum, month) => sum + month.total, 0) /
                   numMonthsforMonthlyEquivalent,
               )
+            : '';
+
+        const inHandDateRange =
+          inHandMonths && inHandMonthlyEquivalent
+            ? `${DateTime.fromISO(inHandMonths[0].month).toLocaleString({
+                month: 'numeric',
+                year: '2-digit',
+              })} - ${DateTime.fromISO(
+                inHandMonths[inHandMonths.length - 1].month,
+              ).toLocaleString({ month: 'numeric', year: '2-digit' })}`
             : '';
 
         return [
@@ -162,6 +177,7 @@ export const FourteenMonthReport: React.FC<Props> = ({
             ? Math.max(0, inHandMonthlyEquivalent - pledgedMonthlyEquivalent) *
               numMonthsforMonthlyEquivalent
             : Math.round(contact.total),
+          inHandDateRange,
           ...(contact?.months?.map((month) => Math.round(month.total)) || []),
           Math.round(contact.total),
         ];
@@ -190,6 +206,7 @@ export const FourteenMonthReport: React.FC<Props> = ({
         (sum, row) => sum + (typeof row[8] === 'number' ? row[8] : 0),
         0,
       ),
+      '',
       ...months.map(({ total }) => Math.round(total)),
       months
         .map(({ total }) => Math.round(total))
