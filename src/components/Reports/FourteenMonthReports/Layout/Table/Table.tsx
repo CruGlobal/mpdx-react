@@ -13,6 +13,7 @@ import {
 } from '@material-ui/core';
 import { Info as InfoIcon } from '@material-ui/icons';
 import { numberFormat } from '../../../../../lib/intlFormat';
+import { useApiConstants } from '../../../../Constants/UseApiConstants';
 import {
   FourteenMonthReportTableHead as TableHead,
   FourteenMonthReportTableHeadProps as TableHeadProps,
@@ -58,6 +59,7 @@ export const FourteenMonthReportTable: FC<FourteenMonthReportTableProps> = forwa
     ref,
   ) => {
     const { t } = useTranslation();
+    const apiConstants = useApiConstants();
 
     return (
       <PrintableContainer innerRef={ref}>
@@ -101,7 +103,13 @@ export const FourteenMonthReportTable: FC<FourteenMonthReportTableProps> = forwa
                     <TableCell>{contact.status}</TableCell>
                     <TableCell>
                       {contact.pledgeAmount &&
-                        numberFormat(Math.round(contact.pledgeAmount))}
+                        `${numberFormat(Math.round(contact.pledgeAmount))} ${
+                          contact.pledgeCurrency
+                        } ${
+                          apiConstants?.pledgeFrequencies?.find(
+                            ({ key }) => key === contact.pledgeFrequency,
+                          )?.value ?? ''
+                        }`}
                     </TableCell>
                     <TableCell>
                       {numberFormat(Math.round(contact.average))}

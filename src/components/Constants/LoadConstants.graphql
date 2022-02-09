@@ -25,6 +25,7 @@ query LoadConstants {
     }
     pledgeFrequencies {
       id
+      key
       value
     }
     pledgesReceived {
