@@ -20,6 +20,10 @@ import React, { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { useCreateContactMutation } from '../CreateContact/CreateContact.generated';
+import {
+  ContactReferralTabDocument,
+  useUpdateContactReferralMutation,
+} from 'src/components/Contacts/ContactDetails/ContactReferralTab/ContactReferralTab.generated';
 
 const InputRow = styled(TableRow)(() => ({
   '&:nth-child(odd)': {
@@ -34,6 +38,8 @@ const DialogContentContainer = styled(DialogContent)(() => ({
 interface Props {
   accountListId: string;
   handleClose: () => void;
+  referrals?: boolean;
+  contactId?: string;
 }
 
 interface ContactInputInterface {
@@ -65,6 +71,8 @@ const contactsSchema = yup.object().shape({
 export const CreateMultipleContacts = ({
   accountListId,
   handleClose,
+  referrals,
+  contactId,
 }: Props): ReactElement<Props> => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
@@ -80,6 +88,10 @@ export const CreateMultipleContacts = ({
   };
 
   const [createContact, { loading: creating }] = useCreateContactMutation();
+  const [
+    updateContact,
+    { loading: updating },
+  ] = useUpdateContactReferralMutation();
 
   const onSubmit = async (attributes: InitialContactInterface) => {
     const filteredContacts = attributes.contacts.filter(
@@ -107,6 +119,27 @@ export const CreateMultipleContacts = ({
       );
 
       if (createdContacts.length > 0) {
+        if (referrals && contactId) {
+          await Promise.all(
+            createdContacts.map(async (contact) => {
+              await updateContact({
+                variables: {
+                  accountListId,
+                  attributes: {
+                    id: contactId,
+                    contactReferralsByMe: [{ referredToId: contact }],
+                  },
+                },
+                refetchQueries: [
+                  {
+                    query: ContactReferralTabDocument,
+                    variables: { accountListId, contactId },
+                  },
+                ],
+              });
+            }),
+          );
+        }
         enqueueSnackbar(
           createdContacts.length > 1
             ? t(`${createdContacts.length} Contacts successfully created`)
@@ -333,7 +366,7 @@ export const CreateMultipleContacts = ({
                 contacts.filter((c) => c.firstName).length <= 0
               }
             >
-              {creating ? (
+              {creating || updating ? (
                 <CircularProgress color="secondary" size={20} />
               ) : (
                 t('Save')
