@@ -110,7 +110,7 @@ export const FourteenMonthReport: React.FC<Props> = ({
         t('Committed Monthly Equivalent'),
         t('In Hand Monthly Equivalent'),
         t('Missing In Hand Monthly Equivalent'),
-        t('In Hand One Time Gifts'),
+        t('In Hand Special Gifts'),
         t('In Hand Date Range'),
         ...months.map(({ month }) => month),
         t('Total (last month excluded from total)'),
