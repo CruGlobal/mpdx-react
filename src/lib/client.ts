@@ -7,6 +7,7 @@ import {
 import { onError } from '@apollo/client/link/error';
 import { persistCache, LocalStorageWrapper } from 'apollo3-cache-persist';
 import fetch from 'isomorphic-fetch';
+import { signOut } from 'next-auth/react';
 import generatedIntrospection from '../../graphql/possibleTypes.generated';
 import snackNotifications from '../components/Snackbar/Snackbar';
 import { relayStylePaginationWithNodes } from './relayStylePaginationWithNodes';
@@ -40,7 +41,12 @@ const httpLink = createHttpLink({
 
 const errorLink = onError(({ graphQLErrors, networkError }) => {
   if (graphQLErrors) {
-    graphQLErrors.map(({ message }) => snackNotifications.error(message));
+    graphQLErrors.map(({ message }) => {
+      if (message === 'permission denied') {
+        signOut({ redirect: true });
+      }
+      snackNotifications.error(message);
+    });
   }
 
   if (networkError) snackNotifications.error(networkError.message);
