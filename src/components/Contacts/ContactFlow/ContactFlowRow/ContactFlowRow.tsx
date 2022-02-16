@@ -62,7 +62,7 @@ export const ContactFlowRow: React.FC<Props> = ({
   onContactSelected,
   columnWidth,
 }: Props) => {
-  const [, drag, preview] = useDrag(() => ({
+  const [{ isDragging }, drag, preview] = useDrag(() => ({
     type: 'contact',
     item: {
       id,
@@ -87,6 +87,8 @@ export const ContactFlowRow: React.FC<Props> = ({
       width="100%"
       style={{
         background: 'white',
+        zIndex: isDragging ? 3 : 0,
+        opacity: isDragging ? 0 : 1,
       }}
     >
       <DraggableBox>
