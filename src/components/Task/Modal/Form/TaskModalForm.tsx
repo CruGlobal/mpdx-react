@@ -31,6 +31,7 @@ import { useSnackbar } from 'notistack';
 import { DateTime } from 'luxon';
 import { CalendarToday, Schedule } from '@material-ui/icons';
 import { v4 as uuidv4 } from 'uuid';
+import _ from 'lodash';
 import { dateFormat } from '../../../../lib/intlFormat/intlFormat';
 import {
   ActivityTypeEnum,
@@ -222,7 +223,7 @@ const TaskModalForm = ({
   return (
     <Box>
       <Formik
-        initialValues={initialTask}
+        initialValues={_.omit(initialTask, '__typename')}
         validationSchema={taskSchema}
         onSubmit={onSubmit}
       >
