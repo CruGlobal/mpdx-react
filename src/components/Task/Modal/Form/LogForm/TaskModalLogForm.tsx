@@ -41,6 +41,9 @@ import {
   TaskCreateInput,
   TaskUpdateInput,
   ResultEnum,
+  Task,
+  ContactConnection,
+  UserScopedToAccountList,
 } from '../../../../../../graphql/types.generated';
 import { GetTaskForTaskDrawerQuery } from '../../../Drawer/TaskDrawerTask.generated';
 import { GetTasksForTaskListDocument } from '../../../List/TaskList.generated';
@@ -54,6 +57,7 @@ import {
 } from '../../../Drawer/Form/TaskDrawer.generated';
 import theme from '../../../../../../src/theme';
 import { useCreateTaskCommentMutation } from '../../../Drawer/CommentList/Form/CreateTaskComment.generated';
+import useTaskModal from 'src/hooks/useTaskModal';
 
 export const ActionButton = styled(Button)(() => ({
   color: theme.palette.info.main,
@@ -136,6 +140,7 @@ const TaskModalLogForm = ({
   const [showMore, setShowMore] = useState(false);
   const [removeDialogOpen, setRemoveDialogOpen] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
+  const { openTaskModal } = useTaskModal();
 
   const { data, loading } = useGetDataForTaskDrawerQuery({
     variables: { accountListId },
@@ -151,6 +156,7 @@ const TaskModalLogForm = ({
       attributes: TaskCreateInput | TaskUpdateInput,
     ): attributes is TaskUpdateInput => !!task;
     const body = commentBody.trim();
+    let newTask: Partial<Task> = {};
     if (isUpdate(attributes)) {
       await updateTask({
         variables: { accountListId, attributes },
@@ -161,7 +167,6 @@ const TaskModalLogForm = ({
         update: (_cache, { data }) => {
           if (data?.createTask?.task.id && body !== '') {
             const id = uuidv4();
-
             createTaskComment({
               variables: {
                 accountListId,
@@ -170,11 +175,26 @@ const TaskModalLogForm = ({
               },
             });
           }
+          newTask = data?.createTask?.task as Partial<Task>;
         },
       });
     }
     enqueueSnackbar(t('Task saved successfully'), { variant: 'success' });
     onClose();
+    if (
+      attributes.nextAction &&
+      attributes.nextAction !== ActivityTypeEnum.None
+    ) {
+      openTaskModal({
+        defaultValues: {
+          activityType: attributes.nextAction as ActivityTypeEnum,
+          // TODO: Use fragments to ensure all required fields are loaded
+          contacts: newTask?.contacts as ContactConnection,
+          user: newTask?.user as UserScopedToAccountList,
+          tagList: newTask?.tagList as string[],
+        },
+      });
+    }
   };
 
   const onDeleteTask = async (): Promise<void> => {
