@@ -41,6 +41,8 @@ import {
   TaskCreateInput,
   TaskUpdateInput,
   ResultEnum,
+  ContactConnection,
+  UserScopedToAccountList,
 } from '../../../../../../graphql/types.generated';
 import { GetTaskForTaskDrawerQuery } from '../../../Drawer/TaskDrawerTask.generated';
 import { GetTasksForTaskListDocument } from '../../../List/TaskList.generated';
@@ -136,6 +138,7 @@ const TaskModalLogForm = ({
   const [showMore, setShowMore] = useState(false);
   const [removeDialogOpen, setRemoveDialogOpen] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
+  const { openTaskModal } = useTaskModal();
 
   const { data, loading } = useGetDataForTaskDrawerQuery({
     variables: { accountListId },
@@ -175,6 +178,20 @@ const TaskModalLogForm = ({
     }
     enqueueSnackbar(t('Task saved successfully'), { variant: 'success' });
     onClose();
+    if (
+      attributes.nextAction &&
+      attributes.nextAction !== ActivityTypeEnum.None
+    ) {
+      openTaskModal({
+        defaultValues: {
+          activityType: attributes.nextAction as ActivityTypeEnum,
+          // TODO: Use fragments to ensure all required fields are loaded
+          contacts: attributes.contactIds as ContactConnection,
+          user: attributes.userId as UserScopedToAccountList,
+          tagList: attributes.tagList as string[],
+        },
+      });
+    }
   };
 
   const onDeleteTask = async (): Promise<void> => {
