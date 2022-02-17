@@ -184,7 +184,10 @@ const AddMenu = ({ isInDrawer = false }: AddMenuProps): ReactElement => {
     {
       text: 'Log Task',
       icon: <EditIcon />,
-      onClick: () => console.log('log task'),
+      onClick: () => {
+        openTaskModal({ view: 'log' });
+        setAnchorEl(undefined);
+      },
     },
   ];
 
