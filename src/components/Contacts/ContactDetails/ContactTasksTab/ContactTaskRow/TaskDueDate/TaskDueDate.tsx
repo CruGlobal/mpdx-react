@@ -1,9 +1,9 @@
-import { Button, styled, Theme, Typography } from '@material-ui/core';
+import { Box, styled, Theme, Typography } from '@material-ui/core';
 import { CalendarToday } from '@material-ui/icons';
 import { DateTime } from 'luxon';
 import React from 'react';
 
-const TaskRowWrap = styled(Button)(({ theme }) => ({
+const TaskRowWrap = styled(Box)(({ theme }) => ({
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
