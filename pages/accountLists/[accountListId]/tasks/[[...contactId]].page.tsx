@@ -1,10 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import Head from 'next/head';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'next/router';
 import { Box, Button, Hidden, styled } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 import CheckCircleOutlineIcon from '@material-ui/icons/CheckCircleOutline';
+import debounce from 'lodash/debounce';
+import { DateTime } from 'luxon';
 import { InfiniteList } from '../../../../src/components/InfiniteList/InfiniteList';
 import { ContactDetails } from '../../../../src/components/Contacts/ContactDetails/ContactDetails';
 import Loading from '../../../../src/components/Loading';
@@ -54,10 +56,6 @@ const TasksPage: React.FC = () => {
     throw new Error('contactId should be an array or undefined');
   }
 
-  if (searchTerm !== undefined && !Array.isArray(searchTerm)) {
-    throw new Error('searchTerm should be an array or undefined');
-  }
-
   useEffect(() => {
     if (isReady && contactId) {
       setContactDetailsId(contactId[0]);
@@ -66,8 +64,13 @@ const TasksPage: React.FC = () => {
   }, [isReady, contactId]);
 
   //#region Filters
+  const urlFilters =
+    query?.filters && JSON.parse(decodeURI(query.filters as string));
+
   const [filterPanelOpen, setFilterPanelOpen] = useState<boolean>(false);
-  const [activeFilters, setActiveFilters] = useState<TaskFilterSetInput>({});
+  const [activeFilters, setActiveFilters] = useState<TaskFilterSetInput>(
+    urlFilters ?? {},
+  );
   const [starredFilter, setStarredFilter] = useState<TaskFilterSetInput>({});
 
   const { data, loading, fetchMore } = useTasksQuery({
@@ -76,11 +79,24 @@ const TasksPage: React.FC = () => {
       tasksFilter: {
         ...activeFilters,
         ...starredFilter,
-        wildcardSearch: searchTerm?.[0],
+        wildcardSearch: searchTerm as string,
       },
     },
     skip: !accountListId,
   });
+
+  useEffect(() => {
+    const { filters: _, ...oldQuery } = query;
+    replace({
+      pathname,
+      query: {
+        ...oldQuery,
+        ...(Object.keys(activeFilters).length > 0
+          ? { filters: encodeURI(JSON.stringify(activeFilters)) }
+          : undefined),
+      },
+    });
+  }, [activeFilters]);
 
   const { data: filterData, loading: filtersLoading } = useTaskFiltersQuery({
     variables: { accountListId: accountListId ?? '' },
@@ -136,16 +152,28 @@ const TasksPage: React.FC = () => {
     setContactDetailsOpen(!!id);
   };
 
-  const setSearchTerm = (searchTerm?: string) => {
-    const { searchTerm: _, ...oldQuery } = query;
-    replace({
-      pathname,
-      query: {
-        ...oldQuery,
-        ...(searchTerm && { searchTerm }),
-      },
-    });
-  };
+  const setSearchTerm = useCallback(
+    debounce((searchTerm: string) => {
+      const { searchTerm: _, ...oldQuery } = query;
+      if (searchTerm !== '') {
+        replace({
+          pathname,
+          query: {
+            ...oldQuery,
+            ...(searchTerm && { searchTerm }),
+          },
+        });
+      } else {
+        replace({
+          pathname,
+          query: {
+            ...oldQuery,
+          },
+        });
+      }
+    }, 500),
+    [],
+  );
   //#endregion
 
   //#region JSX
@@ -182,6 +210,7 @@ const TasksPage: React.FC = () => {
                   contactDetailsOpen={contactDetailsOpen}
                   onCheckAllItems={toggleSelectAll}
                   onSearchTermChanged={setSearchTerm}
+                  searchTerm={searchTerm}
                   totalItems={data?.tasks?.totalCount}
                   starredFilter={starredFilter}
                   toggleStarredFilter={setStarredFilter}
@@ -196,6 +225,7 @@ const TasksPage: React.FC = () => {
                         {t('Add Task')}
                       </TaskHeaderButton>
                       <TaskHeaderButton
+                        onClick={() => openTaskModal({ view: 'log' })}
                         variant="text"
                         startIcon={<TaskCheckIcon />}
                       >
@@ -220,6 +250,31 @@ const TasksPage: React.FC = () => {
                       />
                     </Box>
                   )}
+                  groupBy={(item) => {
+                    if (item.completedAt) {
+                      return t('Completed');
+                    } else if (!item.startAt) {
+                      return t('No Due Date');
+                    } else if (
+                      DateTime.fromISO(item.startAt).hasSame(
+                        DateTime.now(),
+                        'day',
+                      )
+                    ) {
+                      return t('Today');
+                    } else if (
+                      DateTime.now().startOf('day') >
+                      DateTime.fromISO(item.startAt).startOf('day')
+                    ) {
+                      return t('Overdue');
+                    } else if (
+                      DateTime.now().startOf('day') <
+                      DateTime.fromISO(item.startAt).startOf('day')
+                    ) {
+                      return t('Upcoming');
+                    }
+                    return t('No Due Date');
+                  }}
                   endReached={() =>
                     data?.tasks?.pageInfo.hasNextPage &&
                     fetchMore({

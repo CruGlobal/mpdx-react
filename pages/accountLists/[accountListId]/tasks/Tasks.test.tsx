@@ -2,7 +2,7 @@ import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ThemeProvider } from '@material-ui/core';
-import { ItemContent } from 'react-virtuoso';
+import { GroupItemContent } from 'react-virtuoso';
 import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
 import TestRouter from '../../../../__tests__/util/TestRouter';
 import theme from '../../../../src/theme';
@@ -59,16 +59,12 @@ jest.mock('notistack', () => ({
 
 jest.mock('react-virtuoso', () => ({
   // eslint-disable-next-line react/display-name
-  Virtuoso: ({
-    data,
+  GroupedVirtuoso: ({
     itemContent,
   }: {
-    data: TasksQuery['tasks']['nodes'];
-    itemContent: ItemContent<TasksQuery['tasks']['nodes'][0]>;
+    itemContent: GroupItemContent<undefined>;
   }) => {
-    return (
-      <div>{data.map((contact, index) => itemContent(index, contact))}</div>
-    );
+    return <div>{itemContent(0, 0, undefined)}</div>;
   },
 }));
 

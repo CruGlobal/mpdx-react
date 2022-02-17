@@ -48,6 +48,7 @@ export const ContactFlowDropZone: React.FC<Props> = ({
           : `3px solid ${theme.palette.cruGrayMedium.main}`,
         height: '100%',
         width: '100%',
+        zIndex: canDrop ? 1 : 0,
         color: canDrop
           ? theme.palette.common.white
           : theme.palette.cruGrayDark.main,
@@ -60,7 +61,7 @@ export const ContactFlowDropZone: React.FC<Props> = ({
       justifyContent="center"
       alignItems="center"
     >
-      <Typography variant="h5">
+      <Typography variant="h5" align="center">
         {t('{{status}}', { status: status.value })}
       </Typography>
     </Box>

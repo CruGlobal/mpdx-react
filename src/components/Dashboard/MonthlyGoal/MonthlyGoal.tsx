@@ -15,6 +15,7 @@ import { currencyFormat, percentageFormat } from '../../../lib/intlFormat';
 import AnimatedCard from '../../AnimatedCard';
 import AnimatedBox from '../../AnimatedBox';
 import StyledProgress from '../../StyledProgress';
+import { StatusEnum } from '../../../../graphql/types.generated';
 
 const useStyles = makeStyles((_theme: Theme) => ({
   received: {
@@ -72,8 +73,8 @@ const MonthlyGoal = ({
               <Button
                 href={`/accountLists/${accountListId}/contacts?filters=${encodeURIComponent(
                   JSON.stringify({
-                    pledge_received: false,
-                    status: 'Partner - Financial',
+                    pledgeReceived: 'false',
+                    status: [StatusEnum.PartnerFinancial],
                   }),
                 )}`}
               >

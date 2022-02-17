@@ -24,13 +24,13 @@ import { useTranslation } from 'react-i18next';
 import { Autocomplete } from '@material-ui/lab';
 
 import { DatePicker, TimePicker } from '@material-ui/pickers';
-import DeleteIcon from '@material-ui/icons/Delete';
 import { Formik } from 'formik';
 import * as yup from 'yup';
 import { useSnackbar } from 'notistack';
 import { DateTime } from 'luxon';
 import { CalendarToday, Schedule } from '@material-ui/icons';
 import { v4 as uuidv4 } from 'uuid';
+import _ from 'lodash';
 import { dateFormat } from '../../../../lib/intlFormat/intlFormat';
 import {
   ActivityTypeEnum,
@@ -51,6 +51,7 @@ import {
 } from '../../Drawer/Form/TaskDrawer.generated';
 import theme from '../../../../../src/theme';
 import { useCreateTaskCommentMutation } from '../../Drawer/CommentList/Form/CreateTaskComment.generated';
+import { TasksDocument } from 'pages/accountLists/[accountListId]/tasks/Tasks.generated';
 
 export const ActionButton = styled(Button)(() => ({
   color: theme.palette.info.main,
@@ -59,11 +60,7 @@ export const ActionButton = styled(Button)(() => ({
 
 const DeleteButton = styled(Button)(() => ({
   fontWeight: 550,
-  backgroundColor: theme.palette.error.main,
-  color: theme.palette.common.white,
-  '&:hover': {
-    backgroundColor: theme.palette.error.dark,
-  },
+  color: theme.palette.error.main,
 }));
 
 const LoadingIndicator = styled(CircularProgress)(() => ({
@@ -113,17 +110,17 @@ const TaskModalForm = ({
       }
     : {
         id: null,
-        activityType: null,
+        activityType: defaultValues?.activityType || null,
         subject: '',
         startAt: DateTime.local().plus({ hours: 1 }).startOf('hour').toISO(),
         completedAt: null,
-        tagList: [],
-        contactIds: [],
-        userId: null,
+        tagList: defaultValues?.tagList || [],
+        contactIds:
+          defaultValues?.contacts?.nodes.map((contact) => contact.id) || [],
+        userId: defaultValues?.user?.id || null,
         notificationTimeBefore: null,
         notificationType: null,
         notificationTimeUnit: null,
-        ...defaultValues,
       };
   const { t } = useTranslation();
   const [commentBody, changeCommentBody] = useState('');
@@ -148,6 +145,12 @@ const TaskModalForm = ({
     if (isUpdate(attributes)) {
       await updateTask({
         variables: { accountListId, attributes },
+        refetchQueries: [
+          {
+            query: TasksDocument,
+            variables: { accountListId },
+          },
+        ],
       });
     } else {
       await createTask({
@@ -165,6 +168,16 @@ const TaskModalForm = ({
             });
           }
         },
+        refetchQueries: [
+          {
+            query: GetTasksForTaskListDocument,
+            variables: { accountListId, first: rowsPerPage, ...filter },
+          },
+          {
+            query: TasksDocument,
+            variables: { accountListId },
+          },
+        ],
       });
     }
     enqueueSnackbar(t('Task saved successfully'), { variant: 'success' });
@@ -205,7 +218,7 @@ const TaskModalForm = ({
   return (
     <Box>
       <Formik
-        initialValues={initialTask}
+        initialValues={_.omit(initialTask, '__typename')}
         validationSchema={taskSchema}
         onSubmit={onSubmit}
       >
@@ -567,10 +580,8 @@ const TaskModalForm = ({
                 {task?.id ? (
                   <DeleteButton
                     size="large"
-                    variant="contained"
                     onClick={() => handleRemoveDialog(true)}
                   >
-                    <DeleteIcon style={{ marginRight: theme.spacing(1) }} />
                     {t('Delete')}
                   </DeleteButton>
                 ) : null}

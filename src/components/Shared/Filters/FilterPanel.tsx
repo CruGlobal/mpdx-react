@@ -96,7 +96,7 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
   const [saveFilterModalOpen, setSaveFilterModalOpen] = useState(false);
   const [showAll, setShowAll] = useState(false);
   const updateSelectedFilter = (name: FilterKey, value?: FilterValue) => {
-    if (value) {
+    if (value && (!Array.isArray(value) || value.length > 0)) {
       const newFilters: ContactFilterSetInput & TaskFilterSetInput = {
         ...selectedFilters,
         [name]: value,
@@ -126,12 +126,8 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
       (f) => selectedFilters[snakeToCamel(f.filterKey) as FilterKey],
     );
 
-  const getFeaturedFilters = (group: FilterGroup) =>
-    group.filters.filter((value) => value.featured);
-
   const isGroupVisible = (group: FilterGroup) =>
-    getSelectedFilters(group).length > 0 ||
-    getFeaturedFilters(group).length > 0;
+    (getSelectedFilters(group).length > 0 || group.featured) ?? undefined;
 
   const defaultFilters = ['anyTags', 'excludeTags', 'wildcardSearch'];
 

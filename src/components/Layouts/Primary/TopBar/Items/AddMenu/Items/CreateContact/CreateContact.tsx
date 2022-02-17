@@ -4,15 +4,12 @@ import {
   CircularProgress,
   DialogActions,
   DialogContent,
-  DialogTitle,
   FormControl,
   FormLabel,
   Grid,
-  IconButton,
   styled,
   TextField,
 } from '@material-ui/core';
-import CloseIcon from '@material-ui/icons/Close';
 import { useTranslation } from 'react-i18next';
 import { Formik } from 'formik';
 import * as yup from 'yup';
@@ -25,21 +22,6 @@ interface Props {
   accountListId: string;
   handleClose: () => void;
 }
-
-const CreateContactTitle = styled(DialogTitle)(() => ({
-  textTransform: 'uppercase',
-  textAlign: 'center',
-}));
-
-const CloseButton = styled(IconButton)(({ theme }) => ({
-  position: 'absolute',
-  right: theme.spacing(1),
-  top: theme.spacing(1),
-  color: theme.palette.text.primary,
-  '&:hover': {
-    backgroundColor: theme.palette.cruGrayLight.main,
-  },
-}));
 
 const LogFormControl = styled(FormControl)(() => ({
   width: '100%',
@@ -121,12 +103,6 @@ const CreateContact = ({
         touched,
       }): ReactElement => (
         <form onSubmit={handleSubmit} noValidate>
-          <CreateContactTitle>
-            {t('New Contact')}
-            <CloseButton onClick={handleClose}>
-              <CloseIcon titleAccess={t('Close')} />
-            </CloseButton>
-          </CreateContactTitle>
           <DialogContent dividers>
             <Grid container>
               <Grid item xs={12}>

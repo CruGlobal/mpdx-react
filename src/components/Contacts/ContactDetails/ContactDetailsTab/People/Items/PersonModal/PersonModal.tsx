@@ -13,6 +13,7 @@ import { Formik } from 'formik';
 import * as yup from 'yup';
 import { useSnackbar } from 'notistack';
 import _ from 'lodash';
+import Delete from '@material-ui/icons/Delete';
 import {
   ContactDetailsTabDocument,
   ContactDetailsTabQuery,
@@ -29,6 +30,7 @@ import { PersonBirthday } from './PersonBirthday/PersonBirthday';
 import { PersonShowMore } from './PersonShowMore/PersonShowMore';
 import {
   useCreatePersonMutation,
+  useDeletePersonMutation,
   useUpdatePersonMutation,
 } from './PersonModal.generated';
 
@@ -52,6 +54,15 @@ const ContactEditContainer = styled(Box)(({ theme }) => ({
 const ContactEditModalFooterButton = styled(Button)(({ theme }) => ({
   color: theme.palette.info.main,
   fontWeight: 'bold',
+}));
+
+const ContactEditModalDeleteButton = styled(Button)(({ theme }) => ({
+  color: theme.palette.common.white,
+  backgroundColor: theme.palette.error.main,
+  fontWeight: 'bold',
+  '&:hover': {
+    backgroundColor: theme.palette.error.dark,
+  },
 }));
 
 const ShowExtraText = styled(Typography)(({ theme }) => ({
@@ -90,6 +101,7 @@ export const PersonModal: React.FC<PersonModalProps> = ({
   const [personEditShowMore, setPersonEditShowMore] = useState(false);
   const [updatePerson, { loading: updating }] = useUpdatePersonMutation();
   const [createPerson, { loading: creating }] = useCreatePersonMutation();
+  const [deletePerson, { loading: deleting }] = useDeletePersonMutation();
 
   // grabbed from https://stackoverflow.com/a/62039270
   const phoneRegex = RegExp(
@@ -376,6 +388,23 @@ export const PersonModal: React.FC<PersonModalProps> = ({
     handleClose();
   };
 
+  const deletePersonFromContact = async (): Promise<void> => {
+    if (person) {
+      await deletePerson({
+        variables: {
+          id: person.id,
+          accountListId,
+        },
+        refetchQueries: [
+          {
+            query: ContactDetailsTabDocument,
+            variables: { accountListId, contactId },
+          },
+        ],
+      });
+    }
+  };
+
   return (
     <Modal
       isOpen={true}
@@ -436,22 +465,40 @@ export const PersonModal: React.FC<PersonModalProps> = ({
               </ContactEditContainer>
             </DialogContent>
             <DialogActions>
-              <ContactEditModalFooterButton
-                onClick={handleClose}
-                variant="text"
+              <Box
+                justifyContent={person ? 'space-between' : 'end'}
+                display="flex"
+                alignItems="center"
+                width="100%"
               >
-                {t('Cancel')}
-              </ContactEditModalFooterButton>
-              <ContactEditModalFooterButton
-                type="submit"
-                disabled={!formikProps.isValid || formikProps.isSubmitting}
-                variant="text"
-              >
-                {(updating || creating) && (
-                  <LoadingIndicator color="primary" size={20} />
+                {person && (
+                  <ContactEditModalDeleteButton
+                    onClick={deletePersonFromContact}
+                    variant="text"
+                  >
+                    <Delete />
+                    {t('Delete')}
+                  </ContactEditModalDeleteButton>
                 )}
-                {t('Save')}
-              </ContactEditModalFooterButton>
+                <Box>
+                  <ContactEditModalFooterButton
+                    onClick={handleClose}
+                    variant="text"
+                  >
+                    {t('Cancel')}
+                  </ContactEditModalFooterButton>
+                  <ContactEditModalFooterButton
+                    type="submit"
+                    disabled={!formikProps.isValid || formikProps.isSubmitting}
+                    variant="text"
+                  >
+                    {(updating || creating || deleting) && (
+                      <LoadingIndicator color="primary" size={20} />
+                    )}
+                    {t('Save')}
+                  </ContactEditModalFooterButton>
+                </Box>
+              </Box>
             </DialogActions>
           </form>
         )}

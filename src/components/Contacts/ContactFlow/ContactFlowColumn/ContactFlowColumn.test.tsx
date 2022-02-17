@@ -4,7 +4,7 @@ import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { ThemeProvider } from '@material-ui/styles';
 import { SnackbarProvider } from 'notistack';
-import { ItemContent } from 'react-virtuoso';
+import { GroupItemContent } from 'react-virtuoso';
 import { ContactsQuery } from '../../../../../pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import TestRouter from '../../../../../__tests__/util/TestRouter';
 import theme from '../../../../../src/theme';
@@ -24,16 +24,12 @@ const router = {
 
 jest.mock('react-virtuoso', () => ({
   // eslint-disable-next-line react/display-name
-  Virtuoso: ({
-    data,
+  GroupedVirtuoso: ({
     itemContent,
   }: {
-    data: ContactsQuery['contacts']['nodes'];
-    itemContent: ItemContent<ContactsQuery['contacts']['nodes'][0]>;
+    itemContent: GroupItemContent<undefined>;
   }) => {
-    return (
-      <div>{data.map((contact, index) => itemContent(index, contact))}</div>
-    );
+    return <div>{itemContent(0, 0, undefined)}</div>;
   },
 }));
 

@@ -26,6 +26,9 @@ const openTaskDrawer = jest.fn();
 const openTaskModal = jest.fn();
 
 beforeEach(() => {
+  (useTaskModal as jest.Mock).mockReturnValue({
+    openTaskModal,
+  });
   (useTaskDrawer as jest.Mock).mockReturnValue({
     openTaskDrawer,
   });
@@ -205,9 +208,9 @@ describe('TaskRow', () => {
 
       expect(await findByText(task.subject)).toBeVisible();
       userEvent.click(getByRole('img', { hidden: true, name: 'Check Icon' }));
-      expect(openTaskDrawer).toHaveBeenCalledWith({
+      expect(openTaskModal).toHaveBeenCalledWith({
         taskId: task.id,
-        showCompleteForm: true,
+        view: 'complete',
       });
     });
 
@@ -265,6 +268,35 @@ describe('TaskRow', () => {
       expect(openTaskModal).toHaveBeenCalledWith({
         taskId: task.id,
         view: 'comments',
+      });
+    });
+
+    it('handle subject click', async () => {
+      const task = gqlMock<TaskRowFragment>(TaskRowFragmentDoc, {
+        mocks: {
+          startAt,
+          result: ResultEnum.None,
+        },
+      });
+
+      const { findByText, getByTestId } = render(
+        <GqlMockedProvider>
+          <MuiThemeProvider theme={theme}>
+            <TaskRow
+              accountListId={accountListId}
+              task={task}
+              onTaskCheckToggle={onTaskCheckSelected}
+              onContactSelected={onContactSelected}
+              isChecked={false}
+            />
+          </MuiThemeProvider>
+        </GqlMockedProvider>,
+      );
+
+      expect(await findByText(task.subject)).toBeVisible();
+      userEvent.click(getByTestId('subject-wrap'));
+      expect(openTaskModal).toHaveBeenCalledWith({
+        taskId: task.id,
       });
     });
   });

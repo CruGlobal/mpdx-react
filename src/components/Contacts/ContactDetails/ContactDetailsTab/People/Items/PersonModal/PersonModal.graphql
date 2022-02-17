@@ -17,3 +17,9 @@ mutation CreatePerson($accountListId: ID!, $attributes: PersonCreateInput!) {
     }
   }
 }
+
+mutation DeletePerson($accountListId: ID!, $id: ID!) {
+  deletePerson(input: { accountListId: $accountListId, id: $id }) {
+    id
+  }
+}
