@@ -24,13 +24,13 @@ import { useTranslation } from 'react-i18next';
 import { Autocomplete } from '@material-ui/lab';
 
 import { DatePicker, TimePicker } from '@material-ui/pickers';
-import DeleteIcon from '@material-ui/icons/Delete';
 import { Formik } from 'formik';
 import * as yup from 'yup';
 import { useSnackbar } from 'notistack';
 import { DateTime } from 'luxon';
 import { CalendarToday, Schedule } from '@material-ui/icons';
 import { v4 as uuidv4 } from 'uuid';
+import _ from 'lodash';
 import { dateFormat } from '../../../../lib/intlFormat/intlFormat';
 import {
   ActivityTypeEnum,
@@ -60,11 +60,7 @@ export const ActionButton = styled(Button)(() => ({
 
 const DeleteButton = styled(Button)(() => ({
   fontWeight: 550,
-  backgroundColor: theme.palette.error.main,
-  color: theme.palette.common.white,
-  '&:hover': {
-    backgroundColor: theme.palette.error.dark,
-  },
+  color: theme.palette.error.main,
 }));
 
 const LoadingIndicator = styled(CircularProgress)(() => ({
@@ -222,7 +218,7 @@ const TaskModalForm = ({
   return (
     <Box>
       <Formik
-        initialValues={initialTask}
+        initialValues={_.omit(initialTask, '__typename')}
         validationSchema={taskSchema}
         onSubmit={onSubmit}
       >
@@ -584,10 +580,8 @@ const TaskModalForm = ({
                 {task?.id ? (
                   <DeleteButton
                     size="large"
-                    variant="contained"
                     onClick={() => handleRemoveDialog(true)}
                   >
-                    <DeleteIcon style={{ marginRight: theme.spacing(1) }} />
                     {t('Delete')}
                   </DeleteButton>
                 ) : null}

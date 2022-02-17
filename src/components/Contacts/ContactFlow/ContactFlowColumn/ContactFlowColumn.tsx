@@ -129,7 +129,6 @@ export const ContactFlowColumn: React.FC<Props> = ({
               height="100%"
               top={0}
               right={0}
-              zIndex={canDrop ? 1 : 0}
               display={canDrop ? 'grid' : 'none'}
               gridTemplateRows={`repeat(${statuses.length},auto)`}
             >
