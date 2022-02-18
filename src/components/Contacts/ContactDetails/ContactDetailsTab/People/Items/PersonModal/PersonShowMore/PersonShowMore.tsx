@@ -24,13 +24,14 @@ import {
   PersonCreateInput,
   PersonUpdateInput,
 } from '../../../../../../../../../graphql/types.generated';
+import { NewSocial } from '../PersonModal';
 
 const DeceasedLabel = styled(FormControlLabel)(() => ({
   margin: 'none',
 }));
 
 interface PersonShowMoreProps {
-  formikProps: FormikProps<PersonUpdateInput | PersonCreateInput>;
+  formikProps: FormikProps<(PersonUpdateInput | PersonCreateInput) & NewSocial>;
 }
 
 export const PersonShowMore: React.FC<PersonShowMoreProps> = ({

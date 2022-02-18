@@ -17,6 +17,7 @@ import {
 import { ContactDetailsTabQuery } from '../../../../ContactDetailsTab.generated';
 import { ModalSectionContainer } from '../ModalSectionContainer/ModalSectionContainer';
 import { ModalSectionDeleteIcon } from '../ModalSectionDeleteIcon/ModalSectionDeleteIcon';
+import { NewSocial } from '../PersonModal';
 
 const ContactAvatar = styled(Avatar)(() => ({
   position: 'absolute',
@@ -35,7 +36,7 @@ const ContactInputField = styled(TextField)(() => ({
 
 interface PersonNameProps {
   person?: ContactDetailsTabQuery['contact']['people']['nodes'][0];
-  formikProps: FormikProps<PersonUpdateInput | PersonCreateInput>;
+  formikProps: FormikProps<(PersonUpdateInput | PersonCreateInput) & NewSocial>;
 }
 
 export const PersonName: React.FC<PersonNameProps> = ({
