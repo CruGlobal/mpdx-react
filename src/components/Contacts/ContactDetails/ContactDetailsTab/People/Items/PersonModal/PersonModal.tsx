@@ -12,6 +12,7 @@ import { useTranslation } from 'react-i18next';
 import { Formik } from 'formik';
 import * as yup from 'yup';
 import { useSnackbar } from 'notistack';
+import _ from 'lodash';
 import Delete from '@material-ui/icons/Delete';
 import {
   ContactDetailsTabDocument,
@@ -79,6 +80,14 @@ interface PersonModalProps {
   contactId: string;
   accountListId: string;
   handleClose: () => void;
+}
+
+export interface NewSocial {
+  newSocials: {
+    value: string;
+    type: 'facebook' | 'twitter' | 'linkedin' | 'website';
+    destroy: boolean;
+  }[];
 }
 
 export const PersonModal: React.FC<PersonModalProps> = ({
@@ -156,6 +165,12 @@ export const PersonModal: React.FC<PersonModalProps> = ({
         url: yup.string().required(),
       }),
     ),
+    newSocials: yup.array().of(
+      yup.object({
+        value: yup.string().required(),
+        type: yup.string().required(),
+      }),
+    ),
     optoutEnewsletter: yup.boolean().default(false),
     birthdayDay: yup.number().nullable(),
     birthdayMonth: yup.number().nullable(),
@@ -222,7 +237,8 @@ export const PersonModal: React.FC<PersonModalProps> = ({
     destroy: false,
   }));
 
-  const initialPerson: PersonCreateInput | PersonUpdateInput = person
+  const initialPerson: (PersonCreateInput | PersonUpdateInput) &
+    NewSocial = person
     ? {
         id: person.id,
         firstName: person.firstName,
@@ -249,6 +265,7 @@ export const PersonModal: React.FC<PersonModalProps> = ({
         websites: personWebsites,
         legalFirstName: person.legalFirstName,
         deceased: person.deceased,
+        newSocials: [],
       }
     : {
         contactId,
@@ -277,11 +294,45 @@ export const PersonModal: React.FC<PersonModalProps> = ({
         websites: [],
         legalFirstName: null,
         deceased: false,
+        newSocials: [],
       };
 
   const onSubmit = async (
-    attributes: PersonCreateInput | PersonUpdateInput,
+    fields: (PersonCreateInput | PersonUpdateInput) & NewSocial,
   ): Promise<void> => {
+    const { newSocials, ...existingSocials } = fields;
+    const attributes: PersonCreateInput | PersonUpdateInput = {
+      ...existingSocials,
+      facebookAccounts: fields.facebookAccounts?.concat(
+        newSocials
+          .filter((social) => social.type === 'facebook' && !social.destroy)
+          .map((social) => ({
+            username: social.value,
+          })),
+      ),
+      twitterAccounts: fields.twitterAccounts?.concat(
+        newSocials
+          .filter((social) => social.type === 'twitter' && !social.destroy)
+          .map((social) => ({
+            screenName: social.value,
+          })),
+      ),
+      linkedinAccounts: fields.linkedinAccounts?.concat(
+        newSocials
+          .filter((social) => social.type === 'linkedin' && !social.destroy)
+          .map((social) => ({
+            publicUrl: social.value,
+          })),
+      ),
+      websites: fields.websites?.concat(
+        newSocials
+          .filter((social) => social.type === 'website' && !social.destroy)
+          .map((social) => ({
+            url: social.value,
+          })),
+      ),
+    };
+
     const isUpdate = (
       attributes: PersonCreateInput | PersonUpdateInput,
     ): attributes is PersonUpdateInput => !!person;
@@ -381,12 +432,14 @@ export const PersonModal: React.FC<PersonModalProps> = ({
                   {/* Show More Section */}
                   {!personEditShowMore && (
                     <ShowExtraContainer>
-                      <ShowExtraText
-                        variant="subtitle1"
-                        onClick={() => setPersonEditShowMore(true)}
-                      >
-                        {t('Show More')}
-                      </ShowExtraText>
+                      <Button>
+                        <ShowExtraText
+                          variant="subtitle1"
+                          onClick={() => setPersonEditShowMore(true)}
+                        >
+                          {t('Show More')}
+                        </ShowExtraText>
+                      </Button>
                     </ShowExtraContainer>
                   )}
                   {/* Start Show More Content */}
@@ -398,12 +451,14 @@ export const PersonModal: React.FC<PersonModalProps> = ({
                   {/* Show Less Section */}
                   {personEditShowMore && (
                     <ShowExtraContainer>
-                      <ShowExtraText
-                        variant="subtitle1"
-                        onClick={() => setPersonEditShowMore(false)}
-                      >
-                        {t('Show Less')}
-                      </ShowExtraText>
+                      <Button>
+                        <ShowExtraText
+                          variant="subtitle1"
+                          onClick={() => setPersonEditShowMore(false)}
+                        >
+                          {t('Show Less')}
+                        </ShowExtraText>
+                      </Button>
                     </ShowExtraContainer>
                   )}
                 </ContactPersonContainer>
