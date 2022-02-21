@@ -41,7 +41,6 @@ import {
   TaskCreateInput,
   TaskUpdateInput,
   ResultEnum,
-  Task,
   ContactConnection,
   UserScopedToAccountList,
 } from '../../../../../../graphql/types.generated';
@@ -52,7 +51,6 @@ import { GetThisWeekDocument } from '../../../../Dashboard/ThisWeek/GetThisWeek.
 import {
   useGetDataForTaskDrawerQuery,
   useCreateTaskMutation,
-  useUpdateTaskMutation,
   useDeleteTaskMutation,
 } from '../../../Drawer/Form/TaskDrawer.generated';
 import theme from '../../../../../../src/theme';
@@ -112,7 +110,7 @@ const TaskModalLogForm = ({
   filter,
   rowsPerPage,
 }: Props): ReactElement => {
-  const initialTask: TaskCreateInput | TaskUpdateInput = task
+  const initialTask: TaskCreateInput = task
     ? {
         ...(({ user: _user, contacts: _contacts, ...task }) => task)(task),
         contactIds: task.contacts.nodes.map(({ id }) => id),
@@ -146,40 +144,26 @@ const TaskModalLogForm = ({
     variables: { accountListId },
   });
   const [createTask, { loading: creating }] = useCreateTaskMutation();
-  const [updateTask, { loading: saving }] = useUpdateTaskMutation();
   const [deleteTask, { loading: deleting }] = useDeleteTaskMutation();
   const [createTaskComment] = useCreateTaskCommentMutation();
-  const onSubmit = async (
-    attributes: TaskCreateInput | TaskUpdateInput,
-  ): Promise<void> => {
-    const isUpdate = (
-      attributes: TaskCreateInput | TaskUpdateInput,
-    ): attributes is TaskUpdateInput => !!task;
+  const onSubmit = async (attributes: TaskCreateInput): Promise<void> => {
     const body = commentBody.trim();
-    let newTask: Partial<Task> = {};
-    if (isUpdate(attributes)) {
-      await updateTask({
-        variables: { accountListId, attributes },
-      });
-    } else {
-      await createTask({
-        variables: { accountListId, attributes },
-        update: (_cache, { data }) => {
-          if (data?.createTask?.task.id && body !== '') {
-            const id = uuidv4();
-            createTaskComment({
-              variables: {
-                accountListId,
-                taskId: data.createTask.task.id,
-                attributes: { id, body },
-              },
-            });
-          }
-          newTask = data?.createTask?.task as Partial<Task>;
-        },
-      });
-    }
-    enqueueSnackbar(t('Task saved successfully'), { variant: 'success' });
+    const { data } = await createTask({
+      variables: { accountListId, attributes },
+      update: (_cache, { data }) => {
+        if (data?.createTask?.task.id && body !== '') {
+          const id = uuidv4();
+          createTaskComment({
+            variables: {
+              accountListId,
+              taskId: data.createTask.task.id,
+              attributes: { id, body },
+            },
+          });
+        }
+      },
+    });
+    enqueueSnackbar(t('Task logged successfully'), { variant: 'success' });
     onClose();
     if (
       attributes.nextAction &&
@@ -189,9 +173,9 @@ const TaskModalLogForm = ({
         defaultValues: {
           activityType: attributes.nextAction as ActivityTypeEnum,
           // TODO: Use fragments to ensure all required fields are loaded
-          contacts: newTask?.contacts as ContactConnection,
-          user: newTask?.user as UserScopedToAccountList,
-          tagList: newTask?.tagList as string[],
+          contacts: data?.createTask?.task.contacts as ContactConnection,
+          user: data?.createTask?.task.user as UserScopedToAccountList,
+          tagList: data?.createTask?.task.tagList as string[],
         },
       });
     }
@@ -580,7 +564,7 @@ const TaskModalLogForm = ({
                   disabled={!isValid || isSubmitting}
                   type="submit"
                 >
-                  {(saving || creating) && (
+                  {creating && (
                     <>
                       <CircularProgress color="primary" size={20} />
                       &nbsp;
