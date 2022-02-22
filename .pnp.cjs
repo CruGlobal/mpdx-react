@@ -74,7 +74,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@testing-library/user-event", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:13.5.0"],
             ["@types/axios", "npm:0.14.0"],
             ["@types/css-mediaquery", "npm:0.1.0"],
-            ["@types/faker", "npm:5.1.6"],
+            ["@types/faker", "npm:6.6.8"],
             ["@types/isomorphic-fetch", "npm:0.0.35"],
             ["@types/jest", "npm:27.0.2"],
             ["@types/lodash", "npm:4.14.168"],
@@ -13290,10 +13290,11 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]
       ]],
       ["@types/faker", [
-        ["npm:5.1.6", {
-          "packageLocation": "./.yarn/cache/@types-faker-npm-5.1.6-8254c3c94e-b02d2c94b4.zip/node_modules/@types/faker/",
+        ["npm:6.6.8", {
+          "packageLocation": "./.yarn/cache/@types-faker-npm-6.6.8-33134c5b48-21267dcb16.zip/node_modules/@types/faker/",
           "packageDependencies": [
-            ["@types/faker", "npm:5.1.6"]
+            ["@types/faker", "npm:6.6.8"],
+            ["faker", "npm:6.6.6"]
           ],
           "linkType": "HARD",
         }]
@@ -21374,6 +21375,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD",
         }]
       ]],
+      ["faker", [
+        ["npm:6.6.6", {
+          "packageLocation": "./.yarn/cache/faker-npm-6.6.6-555f97fca7-bfb0d581ab.zip/node_modules/faker/",
+          "packageDependencies": [
+            ["faker", "npm:6.6.6"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
       ["fast-deep-equal", [
         ["npm:2.0.1", {
           "packageLocation": "./.yarn/cache/fast-deep-equal-npm-2.0.1-9c01e08a62-b701835a87.zip/node_modules/fast-deep-equal/",
@@ -28034,7 +28044,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@testing-library/user-event", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:13.5.0"],
             ["@types/axios", "npm:0.14.0"],
             ["@types/css-mediaquery", "npm:0.1.0"],
-            ["@types/faker", "npm:5.1.6"],
+            ["@types/faker", "npm:6.6.8"],
             ["@types/isomorphic-fetch", "npm:0.0.35"],
             ["@types/jest", "npm:27.0.2"],
             ["@types/lodash", "npm:4.14.168"],
