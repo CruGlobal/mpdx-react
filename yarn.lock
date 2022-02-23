@@ -7474,10 +7474,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/faker@npm:^5.1.6":
-  version: 5.1.6
-  resolution: "@types/faker@npm:5.1.6"
-  checksum: b02d2c94b4f202c186c0238af1c84ee333db67c9deab3ab6dfd59d071bdfc292c4c3ea280193e2a2a3bfeb50c1962a993de90e0599918c366d3fb8c0d669b69c
+"@types/faker@npm:^6.0.0":
+  version: 6.6.8
+  resolution: "@types/faker@npm:6.6.8"
+  dependencies:
+    faker: "*"
+  checksum: 21267dcb169acc9e424018d692c8eb60ff97c5d81d2c02de8f68f3a1f0397d7b7e28117c8b089760cb278ccb313c0d6c28b5a5673bcd56dc81a92e864f31f19d
   languageName: node
   linkType: hard
 
@@ -14181,6 +14183,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"faker@npm:*":
+  version: 6.6.6
+  resolution: "faker@npm:6.6.6"
+  checksum: bfb0d581ab4d76095f2c6bff213fe1735ce077f0f8df849c144ad26035e105bce1b7a704cc030366338c52e25b636ac097a712426a78c9b8804af78f6f2bffe7
+  languageName: node
+  linkType: hard
+
 "fast-deep-equal@npm:^2.0.1":
   version: 2.0.1
   resolution: "fast-deep-equal@npm:2.0.1"
@@ -19894,7 +19903,7 @@ fsevents@~2.3.2:
     "@testing-library/user-event": ^13.5.0
     "@types/axios": ^0.14.0
     "@types/css-mediaquery": ^0.1.0
-    "@types/faker": ^5.1.6
+    "@types/faker": ^6.0.0
     "@types/isomorphic-fetch": ^0.0.35
     "@types/jest": ^27.0.0
     "@types/lodash": ^4.14.168
