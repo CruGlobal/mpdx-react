@@ -41,8 +41,6 @@ import {
   TaskCreateInput,
   TaskUpdateInput,
   ResultEnum,
-  ContactConnection,
-  UserScopedToAccountList,
 } from '../../../../../../graphql/types.generated';
 import { GetTaskForTaskDrawerQuery } from '../../../Drawer/TaskDrawerTask.generated';
 import { GetTasksForTaskListDocument } from '../../../List/TaskList.generated';
@@ -97,7 +95,7 @@ interface Props {
   accountListId: string;
   task?: GetTaskForTaskDrawerQuery['task'];
   onClose: () => void;
-  defaultValues?: Partial<GetTaskForTaskDrawerQuery['task']>;
+  defaultValues?: Partial<TaskCreateInput>;
   filter?: TaskFilter;
   rowsPerPage: number;
 }
@@ -171,11 +169,14 @@ const TaskModalLogForm = ({
     ) {
       openTaskModal({
         defaultValues: {
-          activityType: attributes.nextAction as ActivityTypeEnum,
+          activityType: attributes.nextAction,
           // TODO: Use fragments to ensure all required fields are loaded
-          contacts: data?.createTask?.task.contacts as ContactConnection,
-          user: data?.createTask?.task.user as UserScopedToAccountList,
-          tagList: data?.createTask?.task.tagList as string[],
+          contactIds:
+            data?.createTask?.task?.contacts?.nodes.map(
+              (contact) => contact.id,
+            ) || [],
+          userId: data?.createTask?.task.user?.id,
+          tagList: data?.createTask?.task.tagList,
         },
       });
     }

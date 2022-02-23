@@ -14,7 +14,10 @@ import { useTranslation } from 'react-i18next';
 
 import { AnimatePresence, motion } from 'framer-motion';
 import Loading from '../../Loading';
-import { Task } from '../../../../graphql/types.generated';
+import {
+  TaskCreateInput,
+  TaskUpdateInput,
+} from '../../../../graphql/types.generated';
 import { TaskFilter } from '../List/List';
 import { useAccountListId } from '../../../hooks/useAccountListId';
 import { useGetTaskForTaskModalQuery } from '../Modal/TaskModalTask.generated';
@@ -31,16 +34,12 @@ const StyledModal = styled(Modal)(() => ({
   overflow: 'auto',
 }));
 
-export interface ContactIds {
-  contactIds?: string[];
-}
-
 export interface TaskModalProps {
   taskId?: string;
   onClose?: () => void;
   view?: 'comments' | 'log' | 'add' | 'complete' | 'edit';
   showCompleteForm?: boolean;
-  defaultValues?: Partial<Task> & ContactIds;
+  defaultValues?: Partial<TaskCreateInput & TaskUpdateInput>;
   filter?: TaskFilter;
   rowsPerPage?: number;
 }
