@@ -31,12 +31,16 @@ const StyledModal = styled(Modal)(() => ({
   overflow: 'auto',
 }));
 
+export interface ContactIds {
+  contactIds?: string[];
+}
+
 export interface TaskModalProps {
   taskId?: string;
   onClose?: () => void;
   view?: 'comments' | 'log' | 'add' | 'complete' | 'edit';
   showCompleteForm?: boolean;
-  defaultValues?: Partial<Task>;
+  defaultValues?: Partial<Task> & ContactIds;
   filter?: TaskFilter;
   rowsPerPage?: number;
 }
