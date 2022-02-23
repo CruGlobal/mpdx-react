@@ -51,7 +51,6 @@ import {
 } from '../../Drawer/Form/TaskDrawer.generated';
 import theme from '../../../../../src/theme';
 import { useCreateTaskCommentMutation } from '../../Drawer/CommentList/Form/CreateTaskComment.generated';
-import { ContactIds } from '../TaskModal';
 import { TasksDocument } from 'pages/accountLists/[accountListId]/tasks/Tasks.generated';
 
 export const ActionButton = styled(Button)(() => ({
@@ -90,7 +89,7 @@ interface Props {
   accountListId: string;
   task?: GetTaskForTaskDrawerQuery['task'];
   onClose: () => void;
-  defaultValues?: Partial<GetTaskForTaskDrawerQuery['task']> & ContactIds;
+  defaultValues?: Partial<TaskCreateInput & TaskUpdateInput>;
   filter?: TaskFilter;
   rowsPerPage: number;
 }
@@ -116,11 +115,8 @@ const TaskModalForm = ({
         startAt: DateTime.local().plus({ hours: 1 }).startOf('hour').toISO(),
         completedAt: null,
         tagList: defaultValues?.tagList || [],
-        contactIds:
-          defaultValues?.contacts?.nodes.map((contact) => contact.id) ||
-          defaultValues?.contactIds ||
-          [],
-        userId: defaultValues?.user?.id || null,
+        contactIds: defaultValues?.contactIds || [],
+        userId: defaultValues?.userId || null,
         notificationTimeBefore: null,
         notificationType: null,
         notificationTimeUnit: null,

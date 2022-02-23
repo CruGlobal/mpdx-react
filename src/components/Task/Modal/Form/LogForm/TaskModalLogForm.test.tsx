@@ -297,10 +297,7 @@ describe('TaskModalLogForm', () => {
       <MuiPickersUtilsProvider utils={LuxonUtils}>
         <SnackbarProvider>
           <TestRouter router={router}>
-            <GqlMockedProvider<CreateTaskMutation>
-              addTypename={false}
-              onCall={mutationSpy}
-            >
+            <GqlMockedProvider<CreateTaskMutation> onCall={mutationSpy}>
               <TaskModalLogForm
                 accountListId={accountListId}
                 filter={mockFilter}
@@ -330,9 +327,9 @@ describe('TaskModalLogForm', () => {
     expect(openTaskModal).toHaveBeenCalledWith({
       defaultValues: {
         activityType: ActivityTypeEnum.Call,
-        contacts: undefined,
-        user: undefined,
-        tagList: undefined,
+        contactIds: ['9535112'],
+        userId: '5667620',
+        tagList: ['Ice-cream', 'Star Bridge Garden', 'Rock Pants'],
       },
     });
   }, 10000);
