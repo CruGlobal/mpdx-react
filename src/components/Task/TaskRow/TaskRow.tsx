@@ -120,6 +120,7 @@ export const TaskRow: React.FC<TaskRowProps> = ({
   const handleSubjectPressed = () => {
     openTaskModal({
       taskId,
+      view: 'edit',
     });
   };
 

@@ -34,7 +34,7 @@ const StyledModal = styled(Modal)(() => ({
 export interface TaskModalProps {
   taskId?: string;
   onClose?: () => void;
-  view?: 'comments' | 'log' | 'add' | 'complete';
+  view?: 'comments' | 'log' | 'add' | 'complete' | 'edit';
   showCompleteForm?: boolean;
   defaultValues?: Partial<Task>;
   filter?: TaskFilter;
@@ -82,6 +82,8 @@ const TaskModal = ({
         return t('Task Comments');
       case 'log':
         return t('Log Task');
+      case 'edit':
+        return t('Edit Task');
       default:
         return t('Add Task');
     }
