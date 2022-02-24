@@ -119,7 +119,12 @@ export const ContactFlow: React.FC<Props> = ({
     });
     console.log(id);
     if (status.id && taskStatuses[status.id]) {
-      openTaskModal({});
+      openTaskModal({
+        defaultValues: {
+          activityType: taskStatuses[status.id],
+          contactIds: [id],
+        },
+      });
     }
   };
 
