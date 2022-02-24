@@ -3,7 +3,7 @@ import { TaskModalProviderContext } from './TaskModalProvider';
 
 const TaskModalContext = createContext<TaskModalProviderContext>({
   openTaskModal: () => undefined,
-  taskModals: [],
+  taskModal: { id: '' },
 });
 
 export default TaskModalContext;
