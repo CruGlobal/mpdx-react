@@ -8,15 +8,14 @@ import {
   ActivityTypeEnum,
   ResultEnum,
 } from '../../../../../../graphql/types.generated';
-import useTaskDrawer from '../../../../../hooks/useTaskDrawer';
 import theme from '../../../../../theme';
 import { StarredItemIcon } from '../../../../common/StarredItemIcon/StarredItemIcon';
-import { TaskDrawerTabsEnum } from '../../../../Task/Drawer/Drawer';
 import { TaskRowFragment } from '../../../../Task/TaskRow/TaskRow.generated';
 import { StarTaskIconButton } from '../StarTaskIconButton/StarTaskIconButton';
 import { TaskCommentsButton } from './TaskCommentsButton/TaskCommentsButton';
 import { TaskCompleteButton } from './TaskCompleteButton/TaskCompleteButton';
 import { TaskDueDate } from './TaskDueDate/TaskDueDate';
+import useTaskModal from 'src/hooks/useTaskModal';
 
 const TaskRowWrap = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -134,20 +133,20 @@ export const ContactTaskRow: React.FC<ContactTaskRowProps> = ({
 }) => {
   const { t } = useTranslation();
 
-  const { openTaskDrawer } = useTaskDrawer();
+  const { openTaskModal } = useTaskModal();
 
   const handleContactCheckPressed = () => {
     //select contact for actions
   };
 
   const handleCompleteButtonPressed = () => {
-    openTaskDrawer({ taskId: task?.id, showCompleteForm: true });
+    openTaskModal({ taskId: task?.id, showCompleteForm: true });
   };
 
   const handleCommentButtonPressed = () => {
-    openTaskDrawer({
+    openTaskModal({
       taskId: task?.id,
-      specificTab: TaskDrawerTabsEnum.comments,
+      view: 'comments',
     });
   };
 

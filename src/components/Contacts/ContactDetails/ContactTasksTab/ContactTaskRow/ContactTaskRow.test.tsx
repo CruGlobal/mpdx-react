@@ -10,9 +10,8 @@ import {
   gqlMock,
   GqlMockedProvider,
 } from '../../../../../../__tests__/util/graphqlMocking';
-import useTaskDrawer from '../../../../../hooks/useTaskDrawer';
+import useTaskModal from '../../../../../hooks/useTaskModal';
 import theme from '../../../../../theme';
-import { TaskDrawerTabsEnum } from '../../../../Task/Drawer/Drawer';
 import {
   TaskRowFragment,
   TaskRowFragmentDoc,
@@ -22,13 +21,13 @@ import { ContactTaskRow } from './ContactTaskRow';
 const accountListId = 'abc';
 const startAt = '2021-04-12';
 
-jest.mock('../../../../../hooks/useTaskDrawer');
+jest.mock('../../../../../hooks/useTaskModal');
 
-const openTaskDrawer = jest.fn();
+const openTaskModal = jest.fn();
 
 beforeEach(() => {
-  (useTaskDrawer as jest.Mock).mockReturnValue({
-    openTaskDrawer,
+  (useTaskModal as jest.Mock).mockReturnValue({
+    openTaskModal,
   });
 });
 
@@ -87,7 +86,7 @@ describe('ContactTaskRow', () => {
 
       expect(await findByText(task.subject)).toBeVisible();
       userEvent.click(getByRole('img', { hidden: true, name: 'Check Icon' }));
-      expect(openTaskDrawer).toHaveBeenCalledWith({
+      expect(openTaskModal).toHaveBeenCalledWith({
         taskId: task.id,
         showCompleteForm: true,
       });
@@ -111,9 +110,9 @@ describe('ContactTaskRow', () => {
 
       expect(await findByText(task.subject)).toBeVisible();
       userEvent.click(getByRole('img', { hidden: true, name: 'Comment Icon' }));
-      expect(openTaskDrawer).toHaveBeenCalledWith({
+      expect(openTaskModal).toHaveBeenCalledWith({
         taskId: task.id,
-        specificTab: TaskDrawerTabsEnum.comments,
+        view: 'comments',
       });
     });
   });

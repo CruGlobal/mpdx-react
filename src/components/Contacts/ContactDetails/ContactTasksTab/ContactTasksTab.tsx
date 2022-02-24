@@ -12,9 +12,9 @@ import { useTranslation } from 'react-i18next';
 import { DateTime } from 'luxon';
 import { StarredItemIcon } from '../../../common/StarredItemIcon/StarredItemIcon';
 import { SearchBox } from '../../../common/SearchBox/SearchBox';
-import useTaskDrawer from '../../../../hooks/useTaskDrawer';
 import { ContactTaskRow } from './ContactTaskRow/ContactTaskRow';
 import { useContactTasksTabQuery } from './ContactTasksTab.generated';
+import useTaskModal from 'src/hooks/useTaskModal';
 
 const ContactDetailsTabContainer = styled(Box)(() => ({
   width: '100%',
@@ -100,7 +100,7 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
     variables: { accountListId, contactId, searchTerm },
   });
 
-  const { openTaskDrawer } = useTaskDrawer();
+  const { openTaskModal } = useTaskModal();
 
   const { t } = useTranslation();
 
@@ -110,13 +110,13 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
         <HeaderRow>
           <TasksTitle>{t('Tasks')}</TasksTitle>
           <HeaderItemsWrap>
-            <TaskButton onClick={() => openTaskDrawer({})}>
+            <TaskButton onClick={() => openTaskModal({})}>
               <AddTaskButtonIcon />
               <TaskButtonText>{t('add task')}</TaskButtonText>
             </TaskButton>
             <TaskButton
               onClick={() =>
-                openTaskDrawer({
+                openTaskModal({
                   defaultValues: { completedAt: DateTime.local().toISO() },
                 })
               }
