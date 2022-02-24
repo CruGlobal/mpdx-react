@@ -117,7 +117,6 @@ export const ContactFlow: React.FC<Props> = ({
     enqueueSnackbar(t('Contact status info updated!'), {
       variant: 'success',
     });
-    console.log(id);
     if (status.id && taskStatuses[status.id]) {
       openTaskModal({
         defaultValues: {
