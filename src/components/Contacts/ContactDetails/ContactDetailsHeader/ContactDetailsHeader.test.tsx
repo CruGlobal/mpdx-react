@@ -54,6 +54,7 @@ describe('ContactDetails', () => {
             contact: {
               name: 'Lname, Fname',
               primaryPerson: null,
+              pledgeCurrency: 'USD',
             },
           },
         }}

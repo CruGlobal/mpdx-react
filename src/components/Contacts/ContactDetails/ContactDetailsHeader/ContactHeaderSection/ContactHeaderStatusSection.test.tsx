@@ -1,7 +1,10 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import { I18nextProvider } from 'react-i18next';
-import { StatusEnum as ContactPartnershipStatusEnum } from '../../../../../../graphql/types.generated';
+import {
+  PledgeFrequencyEnum,
+  StatusEnum as ContactPartnershipStatusEnum,
+} from '../../../../../../graphql/types.generated';
 import { gqlMock } from '../../../../../../__tests__/util/graphqlMocking';
 import {
   ContactDetailsHeaderFragment,
@@ -13,7 +16,15 @@ import { ContactHeaderStatusSection } from './ContactHeaderStatusSection';
 const contactMock = (status: ContactPartnershipStatusEnum) => {
   return gqlMock<ContactDetailsHeaderFragment>(
     ContactDetailsHeaderFragmentDoc,
-    { mocks: { status } },
+    {
+      mocks: {
+        status,
+        pledgeCurrency: 'USD',
+        pledgeAmount: 500,
+        pledgeFrequency: PledgeFrequencyEnum.Monthly,
+        pledgeReceived: true,
+      },
+    },
   );
 };
 
