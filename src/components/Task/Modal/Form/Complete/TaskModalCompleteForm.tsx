@@ -28,10 +28,8 @@ import { v4 as uuidv4 } from 'uuid';
 import { dateFormat } from '../../../../../lib/intlFormat/intlFormat';
 import {
   ActivityTypeEnum,
-  ContactConnection,
   ResultEnum,
   TaskUpdateInput,
-  UserScopedToAccountList,
 } from '../../../../../../graphql/types.generated';
 import { GetTaskForTaskDrawerQuery } from '../../../Drawer/TaskDrawerTask.generated';
 import { GetThisWeekDocument } from '../../../../Dashboard/ThisWeek/GetThisWeek.generated';
@@ -128,11 +126,11 @@ const TaskModalCompleteForm = ({
     ) {
       openTaskModal({
         defaultValues: {
-          activityType: attributes.nextAction as ActivityTypeEnum,
+          activityType: attributes.nextAction,
           // TODO: Use fragments to ensure all required fields are loaded
-          contacts: task.contacts as ContactConnection,
-          user: task.user as UserScopedToAccountList,
-          tagList: task.tagList as string[],
+          contactIds: task.contacts.nodes.map((contact) => contact.id),
+          userId: task.user?.id,
+          tagList: task.tagList,
         },
       });
     }
