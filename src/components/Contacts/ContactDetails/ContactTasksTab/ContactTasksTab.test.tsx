@@ -86,7 +86,11 @@ describe('ContactTasksTab', () => {
     );
 
     userEvent.click(getByText('add task'));
-    expect(openTaskModal).toHaveBeenCalledWith({});
+    expect(openTaskModal).toHaveBeenCalledWith({
+      defaultValues: {
+        contactIds: [contactId],
+      },
+    });
   });
 
   it('handles log task click', async () => {
@@ -114,7 +118,10 @@ describe('ContactTasksTab', () => {
     );
     userEvent.click(getByText('log task'));
     expect(openTaskModal).toHaveBeenCalledWith({
-      defaultValues: { completedAt: DateTime.local().toISO() },
+      defaultValues: {
+        completedAt: DateTime.local().toISO(),
+        contactIds: [contactId],
+      },
     });
   });
 });

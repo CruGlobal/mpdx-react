@@ -110,14 +110,21 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
         <HeaderRow>
           <TasksTitle>{t('Tasks')}</TasksTitle>
           <HeaderItemsWrap>
-            <TaskButton onClick={() => openTaskModal({})}>
+            <TaskButton
+              onClick={() =>
+                openTaskModal({ defaultValues: { contactIds: [contactId] } })
+              }
+            >
               <AddTaskButtonIcon />
               <TaskButtonText>{t('add task')}</TaskButtonText>
             </TaskButton>
             <TaskButton
               onClick={() =>
                 openTaskModal({
-                  defaultValues: { completedAt: DateTime.local().toISO() },
+                  defaultValues: {
+                    completedAt: DateTime.local().toISO(),
+                    contactIds: [contactId],
+                  },
                 })
               }
             >
