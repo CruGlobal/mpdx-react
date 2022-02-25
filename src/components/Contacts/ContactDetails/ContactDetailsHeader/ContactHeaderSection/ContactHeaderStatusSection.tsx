@@ -1,5 +1,5 @@
 import { Box, IconButton, styled, Typography } from '@material-ui/core';
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Skeleton } from '@material-ui/lab';
 import { DateTime } from 'luxon';
 import CreateIcon from '@material-ui/icons/Create';
@@ -10,6 +10,7 @@ import {
   ContactLateStatusLabel,
 } from '../../../ContactPartnershipStatus/ContactLateStatusLabel/ContactLateStatusLabel';
 import { StatusEnum } from '../../../../../../graphql/types.generated';
+import { EditPartnershipInfoModal } from '../../ContactDontationsTab/PartnershipInfo/EditPartnershipInfoModal/EditPartnershipInfoModal';
 import { ContactHeaderSection } from './ContactHeaderSection';
 import { ContactHeaderStatusFragment } from './ContactHeaderStatus.generated';
 import { HandshakeIcon } from './HandshakeIcon';
@@ -32,7 +33,9 @@ export const ContactHeaderStatusSection: React.FC<Props> = ({
   contact,
 }) => {
   const status = contact?.status;
-
+  const [editPartnershipModalOpen, setEditPartnershipModalOpen] = useState(
+    false,
+  );
   const lateStatusEnum: number | undefined = useMemo(() => {
     if (contact?.lateAt) {
       const diff = DateTime.now().diff(DateTime.fromISO(contact.lateAt), 'days')
@@ -73,19 +76,21 @@ export const ContactHeaderStatusSection: React.FC<Props> = ({
                   {statusText}
                   {status === StatusEnum.PartnerFinancial ? (
                     <>
-                      <Typography variant="subtitle1">
-                        {`${
-                          contact?.pledgeAmount && contact?.pledgeCurrency
-                            ? currencyFormat(
-                                contact?.pledgeAmount,
-                                contact?.pledgeCurrency,
-                              )
-                            : contact?.pledgeAmount
-                        } ${
-                          contact?.pledgeFrequency &&
-                          `- ${PledgeFrequencyEnum[contact?.pledgeFrequency]}`
-                        }`}
-                      </Typography>
+                      {contact?.pledgeAmount && contact?.pledgeFrequency ? (
+                        <Typography variant="subtitle1">
+                          {`${
+                            contact.pledgeAmount && contact?.pledgeCurrency
+                              ? currencyFormat(
+                                  contact.pledgeAmount,
+                                  contact.pledgeCurrency,
+                                )
+                              : contact.pledgeAmount
+                          } ${`- ${
+                            PledgeFrequencyEnum[contact.pledgeFrequency]
+                          }`}`}
+                        </Typography>
+                      ) : null}
+
                       <Typography variant="subtitle1">
                         {lateStatusEnum !== undefined && (
                           <ContactLateStatusLabel
@@ -98,18 +103,30 @@ export const ContactHeaderStatusSection: React.FC<Props> = ({
                   ) : null}
                 </Typography>
               </>
-              <IconButton style={{ padding: 0 }}>
+              <IconButton
+                onClick={() => setEditPartnershipModalOpen(true)}
+                style={{ padding: 0 }}
+              >
                 <CreateIcon />
               </IconButton>
             </Box>
           </ContactHeaderSection>
         ) : (
           <Box display="flex" justifyContent="flex-end">
-            <IconButton style={{ padding: 12 }}>
+            <IconButton
+              onClick={() => setEditPartnershipModalOpen(true)}
+              style={{ padding: 12 }}
+            >
               <CreateIcon />
             </IconButton>
           </Box>
         )}
+        {contact && editPartnershipModalOpen ? (
+          <EditPartnershipInfoModal
+            contact={contact}
+            handleClose={() => setEditPartnershipModalOpen(false)}
+          />
+        ) : null}
       </>
     );
   }

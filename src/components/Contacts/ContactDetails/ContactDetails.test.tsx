@@ -27,6 +27,7 @@ describe('ContactDetails', () => {
             pledgeAmount: 500,
             pledgeFrequency: PledgeFrequencyEnum.Monthly,
             pledgeReceived: true,
+            lastDonation: null,
           },
         }}
       >
@@ -50,6 +51,7 @@ describe('ContactDetails', () => {
           GetContactDetailsHeader: {
             contact: {
               pledgeCurrency: 'USD',
+              lastDonation: null,
               primaryPerson: { firstName: 'Fname', lastName: 'Lname' },
             },
           },

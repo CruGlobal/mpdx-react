@@ -9,6 +9,7 @@ import { ContactHeaderEmailSection } from './ContactHeaderEmailSection';
 
 const contact = gqlMock<ContactDetailsHeaderFragment>(
   ContactDetailsHeaderFragmentDoc,
+  { mocks: { lastDonation: null } },
 );
 
 describe('ContactHeaderEmailSection', () => {

@@ -2,8 +2,5 @@ fragment ContactHeaderStatus on Contact {
   id
   status
   lateAt
-  pledgeAmount
-  pledgeCurrency
-  pledgeFrequency
-  pledgeReceived
+  ...ContactDonorAccounts
 }
