@@ -35,7 +35,7 @@ import { EditContactMailingModal } from './Mailing/EditContactMailingModal/EditC
 
 const ContactDetailsTabContainer = styled(Box)(() => ({
   width: '100%',
-  padding: '0 5%',
+  padding: '0 1%',
 }));
 
 const ContactDetailSectionContainer = styled(Box)(({ theme }) => ({
