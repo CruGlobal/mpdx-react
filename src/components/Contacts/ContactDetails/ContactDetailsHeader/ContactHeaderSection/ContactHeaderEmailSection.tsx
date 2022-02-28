@@ -40,7 +40,9 @@ export const ContactHeaderEmailSection = ({
   } else if (email) {
     return (
       <ContactHeaderSection icon={<EmailIcon />}>
-        <Typography variant="subtitle1">{email}</Typography>
+        <Typography variant="subtitle1" component="a" href={`mailto:${email}`}>
+          {email}
+        </Typography>
       </ContactHeaderSection>
     );
   }
