@@ -10,11 +10,12 @@ import {
 import { Add, CheckCircleOutline } from '@material-ui/icons';
 import { useTranslation } from 'react-i18next';
 import { DateTime } from 'luxon';
-import { StarredItemIcon } from '../../../common/StarredItemIcon/StarredItemIcon';
+import { TaskFilterSetInput } from '../../../../../graphql/types.generated';
 import { SearchBox } from '../../../common/SearchBox/SearchBox';
 import useTaskDrawer from '../../../../hooks/useTaskDrawer';
 import { ContactTaskRow } from './ContactTaskRow/ContactTaskRow';
 import { useContactTasksTabQuery } from './ContactTasksTab.generated';
+import { StarFilterButton } from 'src/components/Shared/Header/StarFilterButton/StarFilterButton';
 
 const ContactDetailsTabContainer = styled(Box)(() => ({
   width: '100%',
@@ -81,10 +82,6 @@ const PlaceholderActionBar = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.background.paper,
 }));
 
-const StarIconWrap = styled(Box)(({ theme }) => ({
-  margin: theme.spacing(1),
-}));
-
 interface ContactTasksTabProps {
   accountListId: string;
   contactId: string;
@@ -95,9 +92,17 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
   contactId,
 }) => {
   const [searchTerm, setSearchTerm] = useState<string | undefined>(undefined);
+  const [starredFilter, setStarredFilter] = useState<TaskFilterSetInput>({});
 
   const { data, loading } = useContactTasksTabQuery({
-    variables: { accountListId, contactId, searchTerm },
+    variables: {
+      accountListId,
+      tasksFilter: {
+        contactIds: [contactId],
+        ...starredFilter,
+        wildcardSearch: searchTerm as string,
+      },
+    },
   });
 
   const { openTaskDrawer } = useTaskDrawer();
@@ -137,9 +142,10 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
           </HeaderItemsWrap>
           <HeaderItemsWrap>
             <PlaceholderActionBar />
-            <StarIconWrap>
-              <StarredItemIcon isStarred={false} />
-            </StarIconWrap>
+            <StarFilterButton
+              starredFilter={starredFilter}
+              toggleStarredFilter={setStarredFilter}
+            />
           </HeaderItemsWrap>
         </HeaderRow>
       </ContactTasksHeaderContainer>
