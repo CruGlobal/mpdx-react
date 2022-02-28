@@ -2,6 +2,10 @@ import { MuiThemeProvider } from '@material-ui/core';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
+import {
+  PledgeFrequencyEnum,
+  StatusEnum,
+} from '../../../../graphql/types.generated';
 import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
 import theme from '../../../theme';
 import { ContactDetails } from './ContactDetails';
@@ -15,7 +19,17 @@ describe('ContactDetails', () => {
   it('should show loading state', async () => {
     const { getByTestId } = render(
       <GqlMockedProvider<GetContactDetailsHeaderQuery>
-        mocks={{ contact: { id: contactId } }}
+        mocks={{
+          contact: {
+            id: contactId,
+            status: StatusEnum.PartnerFinancial,
+            pledgeCurrency: 'USD',
+            pledgeAmount: 500,
+            pledgeFrequency: PledgeFrequencyEnum.Monthly,
+            pledgeReceived: true,
+            lastDonation: null,
+          },
+        }}
       >
         <MuiThemeProvider theme={theme}>
           <ContactDetails
@@ -36,6 +50,8 @@ describe('ContactDetails', () => {
         mocks={{
           GetContactDetailsHeader: {
             contact: {
+              pledgeCurrency: 'USD',
+              lastDonation: null,
               primaryPerson: { firstName: 'Fname', lastName: 'Lname' },
             },
           },

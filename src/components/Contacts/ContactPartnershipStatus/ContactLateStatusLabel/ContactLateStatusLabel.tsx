@@ -12,10 +12,12 @@ export enum ContactLateStatusEnum {
 
 interface ContactLateStatusProps {
   lateStatusEnum: ContactLateStatusEnum;
+  isDetail?: boolean;
 }
 
 export const ContactLateStatusLabel: React.FC<ContactLateStatusProps> = ({
   lateStatusEnum,
+  isDetail,
 }) => {
   const theme = useTheme<Theme>();
   const { t } = useTranslation();
@@ -49,7 +51,7 @@ export const ContactLateStatusLabel: React.FC<ContactLateStatusProps> = ({
             : undefined,
       }}
     >
-      ({lateStatusLabel})
+      {isDetail ? lateStatusLabel : `(${lateStatusLabel})`}
     </Typography>
   );
 };
