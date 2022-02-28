@@ -33,9 +33,10 @@ import { EditContactDetailsModal } from './People/Items/EditContactDetailsModal/
 import { EditContactOtherModal } from './Other/EditContactOtherModal/EditContactOtherModal';
 import { EditContactMailingModal } from './Mailing/EditContactMailingModal/EditContactMailingModal';
 
-const ContactDetailsTabContainer = styled(Box)(() => ({
+const ContactDetailsTabContainer = styled(Box)(({ theme }) => ({
   width: '100%',
-  padding: '0 1%',
+  padding: theme.spacing(0),
+  border: '1px solid blue',
 }));
 
 const ContactDetailSectionContainer = styled(Box)(({ theme }) => ({
