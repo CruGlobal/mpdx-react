@@ -99,6 +99,7 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
       accountListId,
       tasksFilter: {
         contactIds: [contactId],
+        ...starredFilter,
         wildcardSearch: searchTerm as string,
       },
     },
