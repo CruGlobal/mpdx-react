@@ -14,6 +14,7 @@ const IconWrap = styled(Box)(({}) => ({
   justifyContent: 'center',
 }));
 const DetailWrap = styled(Box)(({}) => ({
+  width: '100%',
   display: 'flex',
   padding: 8,
   flexDirection: 'column',
