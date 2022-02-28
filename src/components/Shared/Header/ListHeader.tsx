@@ -15,11 +15,11 @@ import FilterList from '@material-ui/icons/FilterList';
 import { useTranslation } from 'react-i18next';
 import ArrowDropDown from '@material-ui/icons/ArrowDropDown';
 import { SearchBox } from '../../common/SearchBox/SearchBox';
-import { StarredItemIcon } from '../../common/StarredItemIcon/StarredItemIcon';
 import {
   ContactFilterSetInput,
   TaskFilterSetInput,
 } from '../../../../graphql/types.generated';
+import { StarFilterButton } from './StarFilterButton/StarFilterButton';
 
 const HeaderWrap = styled(Box)(({ theme }) => ({
   height: 96,
@@ -77,11 +77,6 @@ const ActionsButton = styled(Button)(({ theme }) => ({
   height: 48,
   margin: theme.spacing(1),
   border: '1px solid #383F43',
-}));
-
-const StarIconWrap = styled(Box)(({ theme }) => ({
-  marginLeft: theme.spacing(4),
-  marginRight: theme.spacing(1),
 }));
 
 export enum TableViewModeEnum {
@@ -270,18 +265,10 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
       )}
 
       <Hidden smDown>
-        <StarIconWrap>
-          <IconButton
-            data-testid="star-filter-button"
-            onClick={() =>
-              toggleStarredFilter(
-                starredFilter.starred ? {} : { starred: true },
-              )
-            }
-          >
-            <StarredItemIcon isStarred={starredFilter.starred || false} />
-          </IconButton>
-        </StarIconWrap>
+        <StarFilterButton
+          starredFilter={starredFilter}
+          toggleStarredFilter={toggleStarredFilter}
+        />
       </Hidden>
     </HeaderWrap>
   );
