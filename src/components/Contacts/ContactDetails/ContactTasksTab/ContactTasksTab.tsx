@@ -19,12 +19,13 @@ import { useContactTasksTabQuery } from './ContactTasksTab.generated';
 const ContactDetailsTabContainer = styled(Box)(({ theme }) => ({
   width: '100%',
   padding: theme.spacing(0),
+  marginTop: theme.spacing(-1.5),
 }));
 
 const ContactTasksHeaderContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
-  margin: theme.spacing(1),
+  margin: theme.spacing(0),
   padding: theme.spacing(0),
 }));
 

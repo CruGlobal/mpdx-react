@@ -36,7 +36,6 @@ import { EditContactMailingModal } from './Mailing/EditContactMailingModal/EditC
 const ContactDetailsTabContainer = styled(Box)(({ theme }) => ({
   width: '100%',
   padding: theme.spacing(0),
-  border: '1px solid blue',
 }));
 
 const ContactDetailSectionContainer = styled(Box)(({ theme }) => ({
@@ -196,7 +195,7 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
         {
           // Tag Section
         }
-        <ContactDetailHeadingContainer>
+        <ContactDetailHeadingContainer mt={-3}>
           {loading || !data ? (
             <ContactDetailLoadingPlaceHolder variant="rect" />
           ) : (
