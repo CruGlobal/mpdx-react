@@ -16,15 +16,16 @@ import useTaskDrawer from '../../../../hooks/useTaskDrawer';
 import { ContactTaskRow } from './ContactTaskRow/ContactTaskRow';
 import { useContactTasksTabQuery } from './ContactTasksTab.generated';
 
-const ContactDetailsTabContainer = styled(Box)(() => ({
+const ContactDetailsTabContainer = styled(Box)(({ theme }) => ({
   width: '100%',
-  padding: '0 5%',
+  padding: theme.spacing(0),
 }));
 
 const ContactTasksHeaderContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
   margin: theme.spacing(1),
+  padding: theme.spacing(0),
 }));
 
 const HeaderRow = styled(Box)(({ theme }) => ({
@@ -32,7 +33,7 @@ const HeaderRow = styled(Box)(({ theme }) => ({
   flexDirection: 'row',
   alignItems: 'center',
   justifyContent: 'space-between',
-  margin: theme.spacing(1),
+  padding: theme.spacing(0),
 }));
 
 const HeaderItemsWrap = styled(Box)(({}) => ({
@@ -126,7 +127,7 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
             </TaskButton>
           </HeaderItemsWrap>
         </HeaderRow>
-        <HeaderRow>
+        <HeaderRow mb={2}>
           <HeaderItemsWrap>
             <Checkbox />
             <SearchBox
