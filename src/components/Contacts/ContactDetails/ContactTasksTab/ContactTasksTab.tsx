@@ -12,9 +12,9 @@ import { useTranslation } from 'react-i18next';
 import { DateTime } from 'luxon';
 import { TaskFilterSetInput } from '../../../../../graphql/types.generated';
 import { SearchBox } from '../../../common/SearchBox/SearchBox';
-import useTaskDrawer from '../../../../hooks/useTaskDrawer';
 import { ContactTaskRow } from './ContactTaskRow/ContactTaskRow';
 import { useContactTasksTabQuery } from './ContactTasksTab.generated';
+import useTaskModal from 'src/hooks/useTaskModal';
 import { StarFilterButton } from 'src/components/Shared/Header/StarFilterButton/StarFilterButton';
 
 const ContactDetailsTabContainer = styled(Box)(({ theme }) => ({
@@ -107,7 +107,7 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
     },
   });
 
-  const { openTaskDrawer } = useTaskDrawer();
+  const { openTaskModal } = useTaskModal();
 
   const { t } = useTranslation();
 
@@ -117,14 +117,21 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
         <HeaderRow>
           <TasksTitle>{t('Tasks')}</TasksTitle>
           <HeaderItemsWrap>
-            <TaskButton onClick={() => openTaskDrawer({})}>
+            <TaskButton
+              onClick={() =>
+                openTaskModal({ defaultValues: { contactIds: [contactId] } })
+              }
+            >
               <AddTaskButtonIcon />
               <TaskButtonText>{t('add task')}</TaskButtonText>
             </TaskButton>
             <TaskButton
               onClick={() =>
-                openTaskDrawer({
-                  defaultValues: { completedAt: DateTime.local().toISO() },
+                openTaskModal({
+                  defaultValues: {
+                    completedAt: DateTime.local().toISO(),
+                    contactIds: [contactId],
+                  },
                 })
               }
             >
