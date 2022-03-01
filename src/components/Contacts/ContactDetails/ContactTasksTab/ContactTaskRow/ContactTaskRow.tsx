@@ -45,6 +45,16 @@ const TaskDescription = styled(Typography)(({ theme }) => ({
   marginLeft: theme.spacing(0.5),
 }));
 
+const SubjectWrap = styled(Box)(({}) => ({
+  width: '100%',
+  display: 'flex',
+  alignItems: 'center',
+  '&:hover': {
+    textDecoration: 'underline',
+    cursor: 'pointer',
+  },
+}));
+
 const ContactName = styled(Typography)(({ theme }) => ({
   fontSize: 14,
   color: theme.palette.text.primary,
@@ -140,13 +150,24 @@ export const ContactTaskRow: React.FC<ContactTaskRowProps> = ({
   };
 
   const handleCompleteButtonPressed = () => {
-    openTaskModal({ taskId: task?.id, showCompleteForm: true });
+    openTaskModal({
+      taskId: task?.id,
+      showCompleteForm: true,
+      view: 'complete',
+    });
   };
 
   const handleCommentButtonPressed = () => {
     openTaskModal({
       taskId: task?.id,
       view: 'comments',
+    });
+  };
+
+  const handleSubjectPressed = () => {
+    openTaskModal({
+      taskId: task?.id,
+      view: 'edit',
     });
   };
 
@@ -186,8 +207,18 @@ export const ContactTaskRow: React.FC<ContactTaskRowProps> = ({
           isComplete={isComplete}
           onClick={handleCompleteButtonPressed}
         />
-        <TaskType>{getLocalizedTaskType(t, activityType)}</TaskType>
-        <TaskDescription>{subject}</TaskDescription>
+        <SubjectWrap
+          style={{
+            width: '100%',
+            display: 'flex',
+            alignItems: 'center',
+          }}
+          onClick={handleSubjectPressed}
+          data-testid="subject-wrap"
+        >
+          <TaskType>{getLocalizedTaskType(t, activityType)}</TaskType>
+          <TaskDescription>{subject}</TaskDescription>
+        </SubjectWrap>
       </TaskItemWrap>
       <TaskItemWrap>
         <ContactName>{contactName}</ContactName>
