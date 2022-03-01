@@ -39,7 +39,7 @@ describe('ContactTasksTab', () => {
     );
     const { operation, response } = querySpy.mock.calls[0][0];
     expect(operation.variables.accountListId).toEqual(accountListId);
-    expect(operation.variables.contactId).toEqual(contactId);
+    expect(operation.variables.tasksFilter.contactIds).toEqual([contactId]);
     await waitFor(() =>
       expect(
         getByText(response.data.tasks.nodes[0].subject),
@@ -78,7 +78,7 @@ describe('ContactTasksTab', () => {
     );
     const { operation, response } = querySpy.mock.calls[0][0];
     expect(operation.variables.accountListId).toEqual(accountListId);
-    expect(operation.variables.contactId).toEqual(contactId);
+    expect(operation.variables.tasksFilter.contactIds).toEqual([contactId]);
     await waitFor(() =>
       expect(
         getByText(response.data.tasks.nodes[0].subject),
@@ -110,7 +110,7 @@ describe('ContactTasksTab', () => {
     );
     const { operation, response } = querySpy.mock.calls[0][0];
     expect(operation.variables.accountListId).toEqual(accountListId);
-    expect(operation.variables.contactId).toEqual(contactId);
+    expect(operation.variables.tasksFilter.contactIds).toEqual([contactId]);
     await waitFor(() =>
       expect(
         getByText(response.data.tasks.nodes[0].subject),

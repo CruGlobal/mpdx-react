@@ -1,12 +1,5 @@
-query ContactTasksTab(
-  $accountListId: ID!
-  $contactId: ID!
-  $searchTerm: String
-) {
-  tasks(
-    accountListId: $accountListId
-    tasksFilter: { contactIds: [$contactId], wildcardSearch: $searchTerm }
-  ) {
+query ContactTasksTab($accountListId: ID!, $tasksFilter: TaskFilterSetInput) {
+  tasks(accountListId: $accountListId, tasksFilter: $tasksFilter) {
     nodes {
       ...TaskRow
     }
