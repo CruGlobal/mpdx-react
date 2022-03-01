@@ -87,6 +87,7 @@ describe('ContactTaskRow', () => {
       expect(await findByText(task.subject)).toBeVisible();
       userEvent.click(getByRole('img', { hidden: true, name: 'Check Icon' }));
       expect(openTaskModal).toHaveBeenCalledWith({
+        view: 'complete',
         taskId: task.id,
         showCompleteForm: true,
       });
