@@ -20,7 +20,8 @@ import Modal from 'src/components/common/Modal/Modal';
 import { CreateMultipleContacts } from 'src/components/Layouts/Primary/TopBar/Items/AddMenu/Items/CreateMultipleContacts/CreateMultipleContacts';
 
 const ContactReferralContainer = styled(Box)(({ theme }) => ({
-  margin: theme.spacing(1),
+  padding: theme.spacing(0),
+  marginTop: theme.spacing(-1),
 }));
 
 const ContactReferralLoadingPlaceHolder = styled(Skeleton)(({ theme }) => ({
