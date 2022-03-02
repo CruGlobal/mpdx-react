@@ -207,15 +207,7 @@ export const ContactTaskRow: React.FC<ContactTaskRowProps> = ({
           isComplete={isComplete}
           onClick={handleCompleteButtonPressed}
         />
-        <SubjectWrap
-          style={{
-            width: '100%',
-            display: 'flex',
-            alignItems: 'center',
-          }}
-          onClick={handleSubjectPressed}
-          data-testid="subject-wrap"
-        >
+        <SubjectWrap onClick={handleSubjectPressed}>
           <TaskType>{getLocalizedTaskType(t, activityType)}</TaskType>
           <TaskDescription>{subject}</TaskDescription>
         </SubjectWrap>
