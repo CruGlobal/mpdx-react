@@ -23,6 +23,7 @@ import { ContactMailingFragment } from '../ContactMailing.generated';
 import { AddressUpdateInput } from '../../../../../../../graphql/types.generated';
 import Modal from '../../../../../common/Modal/Modal';
 import { useUpdateContactAddressMutation } from './EditContactAddress.generated';
+import { ActionButton } from 'src/components/Task/Modal/Form/TaskModalForm';
 
 const ContactEditContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -35,6 +36,11 @@ const ContactInputWrapper = styled(Box)(({ theme }) => ({
   position: 'relative',
   padding: theme.spacing(0, 6),
   margin: theme.spacing(2, 0),
+}));
+
+const DeleteButton = styled(Button)(({ theme }) => ({
+  fontWeight: 550,
+  color: theme.palette.error.main,
 }));
 
 const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
@@ -249,22 +255,34 @@ export const EditContactAddressModal: React.FC<EditContactAddressModalProps> = (
               </ContactEditContainer>
             </DialogContent>
             <DialogActions>
-              <Button
-                onClick={handleClose}
-                disabled={isSubmitting}
-                variant="text"
+              <Box
+                justifyContent={address ? 'space-between' : 'end'}
+                display="flex"
+                alignItems="center"
+                width="100%"
               >
-                {t('Cancel')}
-              </Button>
-              <Button
-                color="primary"
-                type="submit"
-                variant="contained"
-                disabled={!isValid || isSubmitting}
-              >
-                {updating && <LoadingIndicator color="primary" size={20} />}
-                {t('Save')}
-              </Button>
+                {address && (
+                  <DeleteButton onClick={handleClose} variant="text">
+                    {t('Delete')}
+                  </DeleteButton>
+                )}
+                <Box>
+                  <ActionButton
+                    onClick={handleClose}
+                    disabled={isSubmitting}
+                    variant="text"
+                  >
+                    {t('Cancel')}
+                  </ActionButton>
+                  <ActionButton
+                    type="submit"
+                    disabled={!isValid || isSubmitting}
+                  >
+                    {updating && <LoadingIndicator color="primary" size={20} />}
+                    {t('Save')}
+                  </ActionButton>
+                </Box>
+              </Box>
             </DialogActions>
           </form>
         )}
