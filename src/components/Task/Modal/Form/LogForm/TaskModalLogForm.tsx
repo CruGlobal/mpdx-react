@@ -54,6 +54,8 @@ import {
 import theme from '../../../../../../src/theme';
 import { useCreateTaskCommentMutation } from '../../../Drawer/CommentList/Form/CreateTaskComment.generated';
 import useTaskModal from 'src/hooks/useTaskModal';
+import { ContactTasksTabDocument } from 'src/components/Contacts/ContactDetails/ContactTasksTab/ContactTasksTab.generated';
+import { TasksDocument } from 'pages/accountLists/[accountListId]/tasks/Tasks.generated';
 
 export const ActionButton = styled(Button)(() => ({
   color: theme.palette.info.main,
@@ -160,6 +162,27 @@ const TaskModalLogForm = ({
           });
         }
       },
+      refetchQueries: [
+        {
+          query: GetTasksForTaskListDocument,
+          variables: { accountListId, first: rowsPerPage, ...filter },
+        },
+        {
+          query: TasksDocument,
+          variables: { accountListId },
+        },
+        {
+          query: ContactTasksTabDocument,
+          variables: {
+            accountListId,
+            tasksFilter: {
+              contactIds: [
+                defaultValues?.contactIds ? defaultValues.contactIds[0] : '',
+              ],
+            },
+          },
+        },
+      ],
     });
     enqueueSnackbar(t('Task logged successfully'), { variant: 'success' });
     onClose();

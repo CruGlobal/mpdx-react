@@ -118,6 +118,7 @@ describe('ContactTasksTab', () => {
     );
     userEvent.click(getByText('log task'));
     expect(openTaskModal).toHaveBeenCalledWith({
+      view: 'log',
       defaultValues: {
         completedAt: DateTime.local().toISO(),
         contactIds: [contactId],

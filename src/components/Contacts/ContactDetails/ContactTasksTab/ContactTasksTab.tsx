@@ -128,6 +128,7 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
             <TaskButton
               onClick={() =>
                 openTaskModal({
+                  view: 'log',
                   defaultValues: {
                     completedAt: DateTime.local().toISO(),
                     contactIds: [contactId],
