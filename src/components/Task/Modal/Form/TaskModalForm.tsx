@@ -52,6 +52,7 @@ import {
 import theme from '../../../../../src/theme';
 import { useCreateTaskCommentMutation } from '../../Drawer/CommentList/Form/CreateTaskComment.generated';
 import { TasksDocument } from 'pages/accountLists/[accountListId]/tasks/Tasks.generated';
+import { ContactTasksTabDocument } from 'src/components/Contacts/ContactDetails/ContactTasksTab/ContactTasksTab.generated';
 
 export const ActionButton = styled(Button)(() => ({
   color: theme.palette.info.main,
@@ -149,6 +150,10 @@ const TaskModalForm = ({
             query: TasksDocument,
             variables: { accountListId },
           },
+          {
+            query: ContactTasksTabDocument,
+            variables: { accountListId },
+          },
         ],
       });
     } else {
@@ -175,6 +180,17 @@ const TaskModalForm = ({
           {
             query: TasksDocument,
             variables: { accountListId },
+          },
+          {
+            query: ContactTasksTabDocument,
+            variables: {
+              accountListId,
+              tasksFilter: {
+                contactIds: [
+                  defaultValues?.contactIds ? defaultValues.contactIds[0] : '',
+                ],
+              },
+            },
           },
         ],
       });

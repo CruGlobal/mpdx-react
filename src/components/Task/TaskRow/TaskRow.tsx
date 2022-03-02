@@ -185,11 +185,6 @@ export const TaskRow: React.FC<TaskRowProps> = ({
               ))}
             </Box>
             <SubjectWrap
-              style={{
-                width: '100%',
-                display: 'flex',
-                alignItems: 'center',
-              }}
               onClick={handleSubjectPressed}
               data-testid="subject-wrap"
             >
