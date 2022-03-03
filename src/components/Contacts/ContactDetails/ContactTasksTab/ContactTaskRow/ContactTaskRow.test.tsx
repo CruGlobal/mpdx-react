@@ -87,8 +87,33 @@ describe('ContactTaskRow', () => {
       expect(await findByText(task.subject)).toBeVisible();
       userEvent.click(getByRole('img', { hidden: true, name: 'Check Icon' }));
       expect(openTaskModal).toHaveBeenCalledWith({
+        view: 'complete',
         taskId: task.id,
         showCompleteForm: true,
+      });
+    });
+
+    it('handles subject click', async () => {
+      const task = gqlMock<TaskRowFragment>(TaskRowFragmentDoc, {
+        mocks: {
+          startAt,
+          result: ResultEnum.None,
+        },
+      });
+
+      const { findByText, getByText } = render(
+        <GqlMockedProvider>
+          <MuiThemeProvider theme={theme}>
+            <ContactTaskRow accountListId={accountListId} task={task} />
+          </MuiThemeProvider>
+        </GqlMockedProvider>,
+      );
+
+      expect(await findByText(task.subject)).toBeVisible();
+      userEvent.click(getByText(task.subject));
+      expect(openTaskModal).toHaveBeenCalledWith({
+        view: 'edit',
+        taskId: task.id,
       });
     });
 
