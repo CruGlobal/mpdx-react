@@ -19,8 +19,8 @@ const TaskRowWrap = styled(Button)(
     width: small ? 48 : 58,
     borderRadius: 4,
     border: `1px solid ${theme.palette.text.secondary}`,
-    margin: theme.spacing(detailsPage ? 0 : 2),
-    marginTop: small ? 0 : theme.spacing(detailsPage ? 0 : 2),
+    margin: theme.spacing(detailsPage ? 1 : 2),
+    marginTop: small ? 0 : theme.spacing(detailsPage ? 1 : 2),
   }),
 );
 

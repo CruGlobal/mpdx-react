@@ -1,4 +1,4 @@
-import { Box, Checkbox, Grid, styled, Typography } from '@material-ui/core';
+import { Box, Checkbox, styled, Typography } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
 import { TFunction } from 'i18next';
 import { DateTime } from 'luxon';
@@ -30,9 +30,7 @@ const TaskItemWrap = styled(Box)(({ theme }) => ({
   display: 'flex',
   flexDirection: 'row',
   alignItems: 'center',
-  justifyContent: 'space-between',
   margin: theme.spacing(0),
-  width: '100%',
   height: '100%',
 }));
 
@@ -211,58 +209,33 @@ export const ContactTaskRow: React.FC<ContactTaskRowProps> = ({
 
   return (
     <TaskRowWrap>
-      <Grid container style={{ height: '100%' }}>
-        <Grid item xs={2}>
-          <TaskItemWrap>
-            <Checkbox onChange={handleContactCheckPressed} />
-            <TaskCompleteButton
-              isComplete={isComplete}
-              onClick={handleCompleteButtonPressed}
-            />
-          </TaskItemWrap>
-        </Grid>
-        <Grid
-          item
-          xs={5}
-          style={{
-            height: '100%',
-          }}
-        >
-          <SubjectWrap onClick={handleSubjectPressed}>
-            <TaskType>{getLocalizedTaskType(t, activityType)}</TaskType>
-            <TaskDescription>{subject}</TaskDescription>
-          </SubjectWrap>
-        </Grid>
-        <Grid item xs={3}>
-          <Grid container style={{ height: '100%' }}>
-            <Grid item xs={6}>
-              <TaskItemWrap>
-                <AssigneeName noWrap>{assigneeName}</AssigneeName>
-              </TaskItemWrap>
-            </Grid>
-            <Grid item xs={6}>
-              <TaskItemWrap>
-                <TaskDueDate isComplete={isComplete} dueDate={dueDate} />
-              </TaskItemWrap>
-            </Grid>
-          </Grid>
-        </Grid>
-        <Grid item xs={2}>
-          <TaskItemWrap>
-            <TaskCommentsButton
-              isComplete={isComplete}
-              numberOfComments={comments?.totalCount}
-              onClick={handleCommentButtonPressed}
-              detailsPage
-            />
-            <StarTaskIconButton
-              accountListId={accountListId}
-              taskId={task.id}
-              isStarred={task.starred}
-            />
-          </TaskItemWrap>
-        </Grid>
-      </Grid>
+      <TaskItemWrap width={theme.spacing(20)} justifyContent="space-between">
+        <Checkbox onChange={handleContactCheckPressed} />
+        <TaskCompleteButton
+          isComplete={isComplete}
+          onClick={handleCompleteButtonPressed}
+        />
+      </TaskItemWrap>
+      <SubjectWrap onClick={handleSubjectPressed}>
+        <TaskType>{getLocalizedTaskType(t, activityType)}</TaskType>
+        <TaskDescription>{subject}</TaskDescription>
+      </SubjectWrap>
+
+      <TaskItemWrap width={theme.spacing(100)} justifyContent="end">
+        <AssigneeName noWrap>{assigneeName}</AssigneeName>
+        <TaskDueDate isComplete={isComplete} dueDate={dueDate} />
+        <TaskCommentsButton
+          isComplete={isComplete}
+          numberOfComments={comments?.totalCount}
+          onClick={handleCommentButtonPressed}
+          detailsPage
+        />
+        <StarTaskIconButton
+          accountListId={accountListId}
+          taskId={task.id}
+          isStarred={task.starred}
+        />
+      </TaskItemWrap>
     </TaskRowWrap>
   );
 };
