@@ -239,6 +239,7 @@ export const ContactDetailsTabMailing: React.FC<MailingProp> = ({
       </Box>
       {selectedAddress ? (
         <EditContactAddressModal
+          contactId={id}
           accountListId={accountListId}
           address={selectedAddress}
           handleClose={() => setEditingAddressId(undefined)}
