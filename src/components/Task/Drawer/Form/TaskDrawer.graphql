@@ -21,6 +21,18 @@ query GetDataForTaskDrawer($accountListId: ID!) {
   }
 }
 
+query GetTaskModalContactsFiltered(
+  $accountListId: ID!
+  $contactsFilters: ContactFilterSetInput
+) {
+  contacts(accountListId: $accountListId, contactsFilter: $contactsFilters) {
+    nodes {
+      id
+      name
+    }
+  }
+}
+
 mutation CreateTask($accountListId: ID!, $attributes: TaskCreateInput!) {
   createTask(
     input: { accountListId: $accountListId, attributes: $attributes }
