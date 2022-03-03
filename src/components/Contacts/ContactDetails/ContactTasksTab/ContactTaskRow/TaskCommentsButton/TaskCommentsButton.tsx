@@ -3,7 +3,15 @@ import { ChatBubbleOutline } from '@material-ui/icons';
 import React from 'react';
 
 const TaskRowWrap = styled(Button)(
-  ({ theme, small }: { theme: Theme; small: boolean }) => ({
+  ({
+    theme,
+    small,
+    detailsPage,
+  }: {
+    theme: Theme;
+    small: boolean;
+    detailsPage: boolean;
+  }) => ({
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
@@ -11,8 +19,8 @@ const TaskRowWrap = styled(Button)(
     width: small ? 48 : 58,
     borderRadius: 4,
     border: `1px solid ${theme.palette.text.secondary}`,
-    margin: theme.spacing(2),
-    marginTop: small ? 0 : theme.spacing(2),
+    margin: theme.spacing(detailsPage ? 0 : 2),
+    marginTop: small ? 0 : theme.spacing(detailsPage ? 0 : 2),
   }),
 );
 
@@ -37,6 +45,7 @@ interface TaskCommentsButtonProps {
   numberOfComments: number;
   onClick: () => void;
   small?: boolean;
+  detailsPage?: boolean;
 }
 
 export const TaskCommentsButton: React.FC<TaskCommentsButtonProps> = ({
@@ -44,9 +53,14 @@ export const TaskCommentsButton: React.FC<TaskCommentsButtonProps> = ({
   numberOfComments = 0,
   onClick,
   small,
+  detailsPage,
 }) => {
   return (
-    <TaskRowWrap onClick={() => onClick()} small={small || false}>
+    <TaskRowWrap
+      onClick={() => onClick()}
+      small={small || false}
+      detailsPage={detailsPage || false}
+    >
       <TaskCommentIcon titleAccess="Comment Icon" small={small || false} />
       <TaskCommentNumber isComplete={isComplete}>
         {numberOfComments}
