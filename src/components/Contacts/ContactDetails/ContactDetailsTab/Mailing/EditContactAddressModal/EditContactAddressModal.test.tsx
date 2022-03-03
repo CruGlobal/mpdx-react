@@ -18,6 +18,7 @@ import { UpdateContactAddressMutation } from './EditContactAddress.generated';
 const handleClose = jest.fn();
 const mock = gqlMock<ContactMailingFragment>(ContactMailingFragmentDoc);
 const accountListId = 'abc';
+const contactId = '123';
 
 const mockEnqueue = jest.fn();
 
@@ -54,6 +55,7 @@ describe('EditContactAddressModal', () => {
         <ThemeProvider theme={theme}>
           <GqlMockedProvider<UpdateContactAddressMutation>>
             <EditContactAddressModal
+              contactId={contactId}
               accountListId={accountListId}
               handleClose={handleClose}
               address={mockContact.addresses.nodes[0]}
@@ -72,6 +74,7 @@ describe('EditContactAddressModal', () => {
         <ThemeProvider theme={theme}>
           <GqlMockedProvider<UpdateContactAddressMutation>>
             <EditContactAddressModal
+              contactId={contactId}
               accountListId={accountListId}
               handleClose={handleClose}
               address={mockContact.addresses.nodes[0]}
@@ -92,6 +95,7 @@ describe('EditContactAddressModal', () => {
         <ThemeProvider theme={theme}>
           <GqlMockedProvider<UpdateContactAddressMutation>>
             <EditContactAddressModal
+              contactId={contactId}
               accountListId={accountListId}
               handleClose={handleClose}
               address={mockContact.addresses.nodes[0]}
@@ -120,6 +124,7 @@ describe('EditContactAddressModal', () => {
         <ThemeProvider theme={theme}>
           <GqlMockedProvider<UpdateContactAddressMutation> onCall={mutationSpy}>
             <EditContactAddressModal
+              contactId={contactId}
               accountListId={accountListId}
               handleClose={handleClose}
               address={mockContact.addresses.nodes[0]}
