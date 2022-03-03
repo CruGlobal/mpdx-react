@@ -1,4 +1,4 @@
-import { Box, Checkbox, styled, Typography } from '@material-ui/core';
+import { Box, Checkbox, Grid, styled, Typography } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
 import { TFunction } from 'i18next';
 import { DateTime } from 'luxon';
@@ -22,7 +22,8 @@ const TaskRowWrap = styled(Box)(({ theme }) => ({
   flexDirection: 'row',
   alignItems: 'center',
   justifyContent: 'space-between',
-  margin: theme.spacing(1),
+  margin: theme.spacing(0),
+  height: theme.spacing(8),
 }));
 
 const TaskItemWrap = styled(Box)(({ theme }) => ({
@@ -30,7 +31,9 @@ const TaskItemWrap = styled(Box)(({ theme }) => ({
   flexDirection: 'row',
   alignItems: 'center',
   justifyContent: 'space-between',
-  margin: theme.spacing(1),
+  margin: theme.spacing(0),
+  width: '100%',
+  height: '100%',
 }));
 
 const TaskType = styled(Typography)(({ theme }) => ({
@@ -43,11 +46,16 @@ const TaskDescription = styled(Typography)(({ theme }) => ({
   fontSize: 14,
   color: theme.palette.text.primary,
   marginLeft: theme.spacing(0.5),
+  overflow: 'hidden',
+  display: '-webkit-box',
+  WebkitLineClamp: 2,
+  WebkitBoxOrient: 'vertical',
 }));
 
 const SubjectWrap = styled(Box)(({}) => ({
   width: '100%',
   display: 'flex',
+  height: '100%',
   alignItems: 'center',
   '&:hover': {
     textDecoration: 'underline',
@@ -55,10 +63,12 @@ const SubjectWrap = styled(Box)(({}) => ({
   },
 }));
 
-const ContactName = styled(Typography)(({ theme }) => ({
+const AssigneeName = styled(Typography)(({ theme }) => ({
   fontSize: 14,
   color: theme.palette.text.primary,
   margin: theme.spacing(1),
+  overflow: 'hidden',
+  textOverflow: 'ellipses',
 }));
 
 const StarIconWrap = styled(Box)(({ theme }) => ({
@@ -191,41 +201,68 @@ export const ContactTaskRow: React.FC<ContactTaskRowProps> = ({
     );
   }
 
-  const { activityType, contacts, comments, result, startAt, subject } = task;
+  const { activityType, comments, result, startAt, subject, user } = task;
 
   const dueDate = (startAt && DateTime.fromISO(startAt)) || null;
 
-  const contactName = contacts.nodes[0].name;
+  const assigneeName = user ? `${user.firstName} ${user.lastName}` : '';
 
   const isComplete = result === ResultEnum.Completed;
 
   return (
     <TaskRowWrap>
-      <TaskItemWrap>
-        <Checkbox onChange={handleContactCheckPressed} />
-        <TaskCompleteButton
-          isComplete={isComplete}
-          onClick={handleCompleteButtonPressed}
-        />
-        <SubjectWrap onClick={handleSubjectPressed}>
-          <TaskType>{getLocalizedTaskType(t, activityType)}</TaskType>
-          <TaskDescription>{subject}</TaskDescription>
-        </SubjectWrap>
-      </TaskItemWrap>
-      <TaskItemWrap>
-        <ContactName>{contactName}</ContactName>
-        <TaskDueDate isComplete={isComplete} dueDate={dueDate} />
-        <TaskCommentsButton
-          isComplete={isComplete}
-          numberOfComments={comments?.totalCount}
-          onClick={handleCommentButtonPressed}
-        />
-        <StarTaskIconButton
-          accountListId={accountListId}
-          taskId={task.id}
-          isStarred={task.starred}
-        />
-      </TaskItemWrap>
+      <Grid container style={{ height: '100%' }}>
+        <Grid item xs={2}>
+          <TaskItemWrap>
+            <Checkbox onChange={handleContactCheckPressed} />
+            <TaskCompleteButton
+              isComplete={isComplete}
+              onClick={handleCompleteButtonPressed}
+            />
+          </TaskItemWrap>
+        </Grid>
+        <Grid
+          item
+          xs={5}
+          style={{
+            height: '100%',
+          }}
+        >
+          <SubjectWrap onClick={handleSubjectPressed}>
+            <TaskType>{getLocalizedTaskType(t, activityType)}</TaskType>
+            <TaskDescription>{subject}</TaskDescription>
+          </SubjectWrap>
+        </Grid>
+        <Grid item xs={3}>
+          <Grid container style={{ height: '100%' }}>
+            <Grid item xs={6}>
+              <TaskItemWrap>
+                <AssigneeName noWrap>{assigneeName}</AssigneeName>
+              </TaskItemWrap>
+            </Grid>
+            <Grid item xs={6}>
+              <TaskItemWrap>
+                <TaskDueDate isComplete={isComplete} dueDate={dueDate} />
+              </TaskItemWrap>
+            </Grid>
+          </Grid>
+        </Grid>
+        <Grid item xs={2}>
+          <TaskItemWrap>
+            <TaskCommentsButton
+              isComplete={isComplete}
+              numberOfComments={comments?.totalCount}
+              onClick={handleCommentButtonPressed}
+              detailsPage
+            />
+            <StarTaskIconButton
+              accountListId={accountListId}
+              taskId={task.id}
+              isStarred={task.starred}
+            />
+          </TaskItemWrap>
+        </Grid>
+      </Grid>
     </TaskRowWrap>
   );
 };
