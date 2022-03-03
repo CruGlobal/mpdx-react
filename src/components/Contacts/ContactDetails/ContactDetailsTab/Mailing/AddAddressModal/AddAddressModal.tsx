@@ -21,6 +21,10 @@ import {
 } from '@material-ui/core';
 import { AddressCreateInput } from '../../../../../../../graphql/types.generated';
 import Modal from '../../../../../common/Modal/Modal';
+import {
+  ContactDetailsTabDocument,
+  ContactDetailsTabQuery,
+} from '../../ContactDetailsTab.generated';
 import { useCreateContactAddressMutation } from './CreateContactAddress.generated';
 
 const ContactEditContainer = styled(Box)(({ theme }) => ({
@@ -91,10 +95,38 @@ export const AddAddressModal: React.FC<EditContactAddressModalProps> = ({
         accountListId,
         attributes,
       },
+      update: (cache, { data: createdAddressData }) => {
+        const query = {
+          query: ContactDetailsTabDocument,
+          variables: {
+            accountListId,
+            contactId,
+          },
+        };
+        const dataFromCache = cache.readQuery<ContactDetailsTabQuery>(query);
+
+        if (dataFromCache) {
+          const data = {
+            ...dataFromCache,
+            contact: {
+              ...dataFromCache.contact,
+              addresses: {
+                ...dataFromCache.contact.addresses,
+                nodes: [
+                  ...dataFromCache.contact.addresses.nodes,
+                  { ...createdAddressData?.createAddress?.address },
+                ],
+              },
+            },
+          };
+          cache.writeQuery({ ...query, data });
+        }
+        enqueueSnackbar(t('Address added successfully'), {
+          variant: 'success',
+        });
+      },
     });
-    enqueueSnackbar(t('Address added successfully'), {
-      variant: 'success',
-    });
+    handleClose();
   };
 
   return (
