@@ -6,6 +6,7 @@ import {
   IconButton,
   Link,
   styled,
+  Button,
   Typography,
 } from '@material-ui/core';
 import LocationOn from '@material-ui/icons/LocationOn';
@@ -13,10 +14,15 @@ import CreateIcon from '@material-ui/icons/Create';
 import AddIcon from '@material-ui/icons/Add';
 import { ContactMailingFragment } from './ContactMailing.generated';
 import { EditContactAddressModal } from './EditContactAddressModal/EditContactAddressModal';
+import { AddAddressModal } from './AddAddressModal/AddAddressModal';
 
 const ContactDetailsMailingMainContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
   marginTop: theme.spacing(1),
+}));
+
+const AddAddressButton = styled(Button)(({ theme }) => ({
+  margin: theme.spacing(1),
 }));
 
 const ContactDetailsMailingIcon = styled(LocationOn)(({ theme }) => ({
@@ -83,8 +89,9 @@ export const ContactDetailsTabMailing: React.FC<MailingProp> = ({
   accountListId,
 }) => {
   const { t } = useTranslation();
-  const { addresses, greeting, sendNewsletter } = data;
+  const { addresses, greeting, sendNewsletter, id } = data;
   const [editingAddressId, setEditingAddressId] = useState<string>();
+  const [addAddressModalOpen, setAddAddressModalOpen] = useState(false);
   const primaryAddress = addresses.nodes.filter(
     (address) => address.primaryMailingAddress === true,
   )[0];
@@ -221,19 +228,28 @@ export const ContactDetailsTabMailing: React.FC<MailingProp> = ({
         </ContactDetailsMailingMainContainer>
         <Box m={2}>
           <Grid container alignItems="center">
-            <AddressAddIcon />
-
-            <AddressAddText variant="subtitle1">
-              {t('Add Address')}
-            </AddressAddText>
+            <AddAddressButton onClick={() => setAddAddressModalOpen(true)}>
+              <AddressAddIcon />
+              <AddressAddText variant="subtitle1">
+                {t('Add Address')}
+              </AddressAddText>
+            </AddAddressButton>
           </Grid>
         </Box>
       </Box>
       {selectedAddress ? (
         <EditContactAddressModal
+          contactId={id}
           accountListId={accountListId}
           address={selectedAddress}
           handleClose={() => setEditingAddressId(undefined)}
+        />
+      ) : null}
+      {addAddressModalOpen ? (
+        <AddAddressModal
+          contactId={id}
+          accountListId={accountListId}
+          handleClose={() => setAddAddressModalOpen(false)}
         />
       ) : null}
     </>
