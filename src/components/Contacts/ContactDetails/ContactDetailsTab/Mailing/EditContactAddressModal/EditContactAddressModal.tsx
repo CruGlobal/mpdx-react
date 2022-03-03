@@ -151,11 +151,10 @@ export const EditContactAddressModal: React.FC<EditContactAddressModalProps> = (
               },
             };
             cache.writeQuery({ ...query, data });
-
-            enqueueSnackbar(t('Address deleted successfully'), {
-              variant: 'success',
-            });
           }
+          enqueueSnackbar(t('Address deleted successfully'), {
+            variant: 'success',
+          });
         },
         refetchQueries: [
           {

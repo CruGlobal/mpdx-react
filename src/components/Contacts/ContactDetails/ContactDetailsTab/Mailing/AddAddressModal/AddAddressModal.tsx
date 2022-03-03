@@ -121,7 +121,7 @@ export const AddAddressModal: React.FC<EditContactAddressModalProps> = ({
           };
           cache.writeQuery({ ...query, data });
         }
-        enqueueSnackbar(t('Person created successfully'), {
+        enqueueSnackbar(t('Address added successfully'), {
           variant: 'success',
         });
       },
@@ -131,9 +131,6 @@ export const AddAddressModal: React.FC<EditContactAddressModalProps> = ({
           variables: { accountListId, contactId },
         },
       ],
-    });
-    enqueueSnackbar(t('Address added successfully'), {
-      variant: 'success',
     });
     handleClose();
   };
