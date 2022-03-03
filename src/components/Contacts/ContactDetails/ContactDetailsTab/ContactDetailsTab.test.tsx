@@ -310,7 +310,7 @@ describe('ContactDetailTab', () => {
   });
 
   it('should open create address modal', async () => {
-    const { queryByText, getByText } = render(
+    const { queryByText, getByText, getAllByText } = render(
       <SnackbarProvider>
         <TestRouter router={router}>
           <MuiPickersUtilsProvider utils={LuxonUtils}>
@@ -328,14 +328,13 @@ describe('ContactDetailTab', () => {
       </SnackbarProvider>,
     );
     await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());
+    await waitFor(() => expect(getAllByText('Add Address').length).toBe(1));
     userEvent.click(getByText('Add Address'));
-    await waitFor(() =>
-      expect(queryByText('Create Address')).toBeInTheDocument(),
-    );
+    await waitFor(() => expect(getAllByText('Add Address').length).toBe(2));
   });
 
   it('should close create address modal', async () => {
-    const { queryByText, getByText, getByLabelText } = render(
+    const { queryByText, getByText, getByLabelText, getAllByText } = render(
       <SnackbarProvider>
         <TestRouter router={router}>
           <MuiPickersUtilsProvider utils={LuxonUtils}>
@@ -354,13 +353,9 @@ describe('ContactDetailTab', () => {
     );
     await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());
     userEvent.click(getByText('Add Address'));
-    await waitFor(() =>
-      expect(queryByText('Create Address')).toBeInTheDocument(),
-    );
+    await waitFor(() => expect(getAllByText('Add Address').length).toBe(2));
     userEvent.click(getByLabelText('Close'));
-    await waitFor(() =>
-      expect(queryByText('Create Address')).not.toBeInTheDocument(),
-    );
+    await waitFor(() => expect(getAllByText('Add Address').length).toBe(1));
   });
 
   it('should open edit contact mailing modal', async () => {

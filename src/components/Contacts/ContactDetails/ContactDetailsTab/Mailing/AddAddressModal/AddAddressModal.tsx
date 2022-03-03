@@ -106,7 +106,7 @@ export const AddAddressModal: React.FC<EditContactAddressModalProps> = ({
   };
 
   return (
-    <Modal isOpen={true} title={t('Create Address')} handleClose={handleClose}>
+    <Modal isOpen={true} title={t('Add Address')} handleClose={handleClose}>
       <Formik
         initialValues={{
           contactId,
