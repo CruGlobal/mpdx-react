@@ -40,7 +40,12 @@ export const ContactHeaderPhoneSection = ({
   } else if (number) {
     return (
       <ContactHeaderSection icon={<PhoneIcon />}>
-        <Typography variant="subtitle1" component="a" href={`tel:${number}`}>
+        <Typography
+          style={{ width: 'fit-content' }}
+          variant="subtitle1"
+          component="a"
+          href={`tel:${number}`}
+        >
           {number}
         </Typography>
       </ContactHeaderSection>
