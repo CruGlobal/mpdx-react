@@ -125,12 +125,6 @@ export const AddAddressModal: React.FC<EditContactAddressModalProps> = ({
           variant: 'success',
         });
       },
-      refetchQueries: [
-        {
-          query: ContactDetailsTabDocument,
-          variables: { accountListId, contactId },
-        },
-      ],
     });
     handleClose();
   };

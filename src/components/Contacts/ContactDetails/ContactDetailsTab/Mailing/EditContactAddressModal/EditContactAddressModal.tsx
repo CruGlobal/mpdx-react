@@ -156,17 +156,8 @@ export const EditContactAddressModal: React.FC<EditContactAddressModalProps> = (
             variant: 'success',
           });
         },
-        refetchQueries: [
-          {
-            query: ContactDetailsTabDocument,
-            variables: { accountListId, contactId },
-          },
-        ],
       });
     }
-    // enqueueSnackbar(t('Address deleted successfully'), {
-    //   variant: 'success',
-    // });
     handleClose();
   };
 
