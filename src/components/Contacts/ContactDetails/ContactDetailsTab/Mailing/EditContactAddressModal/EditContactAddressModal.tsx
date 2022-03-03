@@ -22,7 +22,10 @@ import {
 import { ContactMailingFragment } from '../ContactMailing.generated';
 import { AddressUpdateInput } from '../../../../../../../graphql/types.generated';
 import Modal from '../../../../../common/Modal/Modal';
-import { ContactDetailsTabDocument } from '../../ContactDetailsTab.generated';
+import {
+  ContactDetailsTabDocument,
+  ContactDetailsTabQuery,
+} from '../../ContactDetailsTab.generated';
 import {
   useDeleteContactAddressMutation,
   useUpdateContactAddressMutation,
@@ -122,6 +125,38 @@ export const EditContactAddressModal: React.FC<EditContactAddressModalProps> = (
           id: address.id,
           accountListId,
         },
+        update: (cache, { data: deletedContactAddress }) => {
+          const deletedAddressId = deletedContactAddress?.deleteAddress?.id;
+          const query = {
+            query: ContactDetailsTabDocument,
+            variables: {
+              accountListId,
+              contactId,
+            },
+          };
+
+          const dataFromCache = cache.readQuery<ContactDetailsTabQuery>(query);
+
+          if (dataFromCache) {
+            const data = {
+              ...dataFromCache,
+              contact: {
+                ...dataFromCache.contact,
+                addresses: {
+                  ...dataFromCache.contact.addresses,
+                  nodes: dataFromCache.contact.addresses.nodes.filter(
+                    (address) => address.id !== deletedAddressId,
+                  ),
+                },
+              },
+            };
+            cache.writeQuery({ ...query, data });
+
+            enqueueSnackbar(t('Address deleted successfully'), {
+              variant: 'success',
+            });
+          }
+        },
         refetchQueries: [
           {
             query: ContactDetailsTabDocument,
@@ -130,9 +165,9 @@ export const EditContactAddressModal: React.FC<EditContactAddressModalProps> = (
         ],
       });
     }
-    enqueueSnackbar(t('Address deleted successfully'), {
-      variant: 'success',
-    });
+    // enqueueSnackbar(t('Address deleted successfully'), {
+    //   variant: 'success',
+    // });
     handleClose();
   };
 
