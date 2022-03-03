@@ -41,7 +41,7 @@ describe('AddAddressModal', () => {
       </SnackbarProvider>,
     );
 
-    expect(getByText('Add Address')).toBeInTheDocument();
+    expect(getByText('Create Address')).toBeInTheDocument();
   });
 
   it('should close edit contact other modal', () => {
@@ -59,7 +59,7 @@ describe('AddAddressModal', () => {
       </SnackbarProvider>,
     );
 
-    expect(getByText('Add Address')).toBeInTheDocument();
+    expect(getByText('Create Address')).toBeInTheDocument();
     userEvent.click(getByLabelText('Close'));
     expect(handleClose).toHaveBeenCalled();
   });
@@ -79,7 +79,7 @@ describe('AddAddressModal', () => {
       </SnackbarProvider>,
     );
 
-    expect(getByText('Add Address')).toBeInTheDocument();
+    expect(getByText('Create Address')).toBeInTheDocument();
     userEvent.click(getByText('Cancel'));
     expect(handleClose).toHaveBeenCalled();
   });
