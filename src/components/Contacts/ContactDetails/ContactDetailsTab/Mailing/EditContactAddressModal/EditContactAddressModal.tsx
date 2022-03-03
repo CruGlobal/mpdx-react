@@ -22,7 +22,11 @@ import {
 import { ContactMailingFragment } from '../ContactMailing.generated';
 import { AddressUpdateInput } from '../../../../../../../graphql/types.generated';
 import Modal from '../../../../../common/Modal/Modal';
-import { useUpdateContactAddressMutation } from './EditContactAddress.generated';
+import { ContactDetailsTabDocument } from '../../ContactDetailsTab.generated';
+import {
+  useDeleteContactAddressMutation,
+  useUpdateContactAddressMutation,
+} from './EditContactAddress.generated';
 import { ActionButton } from 'src/components/Task/Modal/Form/TaskModalForm';
 
 const ContactEditContainer = styled(Box)(({ theme }) => ({
@@ -50,6 +54,7 @@ const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
 interface EditContactAddressModalProps {
   accountListId: string;
   address: ContactMailingFragment['addresses']['nodes'][0];
+  contactId: string;
   handleClose: () => void;
 }
 
@@ -66,6 +71,7 @@ enum AddressLocationEnum {
 export const EditContactAddressModal: React.FC<EditContactAddressModalProps> = ({
   accountListId,
   address,
+  contactId,
   handleClose,
 }): ReactElement<EditContactAddressModalProps> => {
   const { t } = useTranslation();
@@ -74,6 +80,10 @@ export const EditContactAddressModal: React.FC<EditContactAddressModalProps> = (
     updateContactAddress,
     { loading: updating },
   ] = useUpdateContactAddressMutation();
+  const [
+    deleteAddress,
+    { loading: deleting },
+  ] = useDeleteContactAddressMutation();
 
   const contactAddressSchema: yup.SchemaOf<
     Omit<AddressUpdateInput, 'validValues'>
@@ -102,10 +112,32 @@ export const EditContactAddressModal: React.FC<EditContactAddressModalProps> = (
     enqueueSnackbar(t('Address updated successfully'), {
       variant: 'success',
     });
+    handleClose();
+  };
+
+  const deleteContactAddress = async (): Promise<void> => {
+    if (address) {
+      await deleteAddress({
+        variables: {
+          id: address.id,
+          accountListId,
+        },
+        refetchQueries: [
+          {
+            query: ContactDetailsTabDocument,
+            variables: { accountListId, contactId },
+          },
+        ],
+      });
+    }
+    enqueueSnackbar(t('Address deleted successfully'), {
+      variant: 'success',
+    });
+    handleClose();
   };
 
   return (
-    <Modal isOpen={true} title={t('Edit Address')} handleClose={handleClose}>
+    <Modal isOpen={true} title={address.id} handleClose={handleClose}>
       <Formik
         initialValues={{
           id: address.id,
@@ -262,7 +294,7 @@ export const EditContactAddressModal: React.FC<EditContactAddressModalProps> = (
                 width="100%"
               >
                 {address && (
-                  <DeleteButton onClick={handleClose} variant="text">
+                  <DeleteButton onClick={deleteContactAddress} variant="text">
                     {t('Delete')}
                   </DeleteButton>
                 )}
@@ -278,7 +310,9 @@ export const EditContactAddressModal: React.FC<EditContactAddressModalProps> = (
                     type="submit"
                     disabled={!isValid || isSubmitting}
                   >
-                    {updating && <LoadingIndicator color="primary" size={20} />}
+                    {(updating || deleting) && (
+                      <LoadingIndicator color="primary" size={20} />
+                    )}
                     {t('Save')}
                   </ActionButton>
                 </Box>
