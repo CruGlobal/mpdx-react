@@ -171,4 +171,30 @@ describe('EditContactAddressModal', () => {
     expect(operation.variables.attributes.metroArea).toEqual(newMetroArea);
     expect(operation.variables.attributes.historic).toEqual(false);
   });
+
+  it('should handle delete click', async () => {
+    const { getByText } = render(
+      <SnackbarProvider>
+        <ThemeProvider theme={theme}>
+          <GqlMockedProvider<UpdateContactAddressMutation>>
+            <EditContactAddressModal
+              contactId={contactId}
+              accountListId={accountListId}
+              handleClose={handleClose}
+              address={mockContact.addresses.nodes[0]}
+            />
+          </GqlMockedProvider>
+        </ThemeProvider>
+      </SnackbarProvider>,
+    );
+
+    expect(getByText('Edit Address')).toBeInTheDocument();
+    userEvent.click(getByText('Delete'));
+    await waitFor(() =>
+      expect(mockEnqueue).toHaveBeenCalledWith('Address deleted successfully', {
+        variant: 'success',
+      }),
+    );
+    expect(handleClose).toHaveBeenCalled();
+  });
 });
