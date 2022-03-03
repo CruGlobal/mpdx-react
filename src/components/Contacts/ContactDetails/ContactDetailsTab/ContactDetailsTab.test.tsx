@@ -309,6 +309,60 @@ describe('ContactDetailTab', () => {
     );
   });
 
+  it('should open create address modal', async () => {
+    const { queryByText, getByText } = render(
+      <SnackbarProvider>
+        <TestRouter router={router}>
+          <MuiPickersUtilsProvider utils={LuxonUtils}>
+            <ThemeProvider theme={theme}>
+              <GqlMockedProvider<ContactDetailsTabQuery>>
+                <ContactDetailsTab
+                  accountListId={accountListId}
+                  contactId={contactId}
+                  onClose={onClose}
+                />
+              </GqlMockedProvider>
+            </ThemeProvider>
+          </MuiPickersUtilsProvider>
+        </TestRouter>
+      </SnackbarProvider>,
+    );
+    await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());
+    userEvent.click(getByText('Add Address'));
+    await waitFor(() =>
+      expect(queryByText('Create Address')).toBeInTheDocument(),
+    );
+  });
+
+  it('should close create address modal', async () => {
+    const { queryByText, getByText, getByLabelText } = render(
+      <SnackbarProvider>
+        <TestRouter router={router}>
+          <MuiPickersUtilsProvider utils={LuxonUtils}>
+            <ThemeProvider theme={theme}>
+              <GqlMockedProvider<ContactDetailsTabQuery>>
+                <ContactDetailsTab
+                  accountListId={accountListId}
+                  contactId={contactId}
+                  onClose={onClose}
+                />
+              </GqlMockedProvider>
+            </ThemeProvider>
+          </MuiPickersUtilsProvider>
+        </TestRouter>
+      </SnackbarProvider>,
+    );
+    await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());
+    userEvent.click(getByText('Add Address'));
+    await waitFor(() =>
+      expect(queryByText('Create Address')).toBeInTheDocument(),
+    );
+    userEvent.click(getByLabelText('Close'));
+    await waitFor(() =>
+      expect(queryByText('Create Address')).not.toBeInTheDocument(),
+    );
+  });
+
   it('should open edit contact mailing modal', async () => {
     const { queryByText, getAllByLabelText } = render(
       <SnackbarProvider>
