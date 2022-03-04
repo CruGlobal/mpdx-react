@@ -1,16 +1,38 @@
 # MPDX
 
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/zeit/next.js/tree/canary/packages/create-next-app).
+The project uses node version 16.x.
 
 ## Getting Started
 
-First, run the development server:
+Before you start, make sure you get the environment variables necessary for this project from another developer.
+
+Once you have these variables you can install the dependencies:
+
+```bash
+yarn
+```
+
+Next, generate types for REST -> GraphQL:
+
+```bash
+yarn gql:server
+```
+
+Then, run create GraphQL generated files:
+
+```bash
+yarn gql
+```
+
+Lastly, run the development server:
 
 ```bash
 yarn start
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Note: there is a test account you can use. Get this from another developer if you want to use it.
 
 ## Learn More
 
