@@ -46,3 +46,10 @@ yarn-error.log*
 # GraphQL Codegen
 /graphql
 *.generated.ts
+
+# IntelliJ
+.idea
+*.iml
+
+# asdf
+.tool-versions
