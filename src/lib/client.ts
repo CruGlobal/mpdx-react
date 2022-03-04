@@ -4,6 +4,7 @@ import {
   InMemoryCache,
   NormalizedCacheObject,
 } from '@apollo/client';
+import { BatchHttpLink } from '@apollo/client/link/batch-http';
 import { onError } from '@apollo/client/link/error';
 import { persistCache, LocalStorageWrapper } from 'apollo3-cache-persist';
 import fetch from 'isomorphic-fetch';
@@ -33,8 +34,11 @@ export const cache = new InMemoryCache({
   },
 });
 
-const httpLink = createHttpLink({
+const httpLink = new BatchHttpLink({
   uri: `${process.env.SITE_URL}/api/graphql`,
+  batchMax: 25,
+  batchDebounce: true,
+  batchInterval: 20,
   fetch,
 });
 
