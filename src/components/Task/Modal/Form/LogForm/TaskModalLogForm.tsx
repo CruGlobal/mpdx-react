@@ -248,6 +248,7 @@ const TaskModalLogForm = ({
           )
       : dataFilteredById?.contacts.nodes ||
         dataFilteredByName?.contacts.nodes ||
+        data?.contacts.nodes ||
         [];
 
   const onDeleteTask = async (): Promise<void> => {
