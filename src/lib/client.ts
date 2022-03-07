@@ -45,8 +45,8 @@ const httpLink = new BatchHttpLink({
 
 const errorLink = onError(({ graphQLErrors, networkError }) => {
   if (graphQLErrors) {
-    graphQLErrors.map(({ message }) => {
-      if (message === 'permission denied') {
+    graphQLErrors.map(({ message, extensions }) => {
+      if (extensions?.code === 'AUTHENTICATION_ERROR') {
         signOut({ redirect: true });
       }
       snackNotifications.error(message);
