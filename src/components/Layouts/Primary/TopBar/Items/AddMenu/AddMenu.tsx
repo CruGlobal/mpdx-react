@@ -117,18 +117,26 @@ export const renderDialog = (
         );
     }
   };
+  const modalSize = () => {
+    switch (selectedMenuItem) {
+      case 0:
+      case 2:
+        return 'sm';
+      case 1:
+        return 'xl';
+      default:
+        return 'md';
+    }
+  };
+
   return (
     <Modal
       isOpen={dialogOpen}
       handleClose={handleDialogClose}
       title={modalTitle()}
-      aria-labelledby={
-        selectedMenuItem === 0
-          ? t('Create Contact Dialog')
-          : t('Create Multiple Contacts Dialog')
-      }
+      aria-labelledby={modalTitle()}
       fullWidth
-      size={'sm'} // TODO: Expand logic as more menu modals are added
+      size={modalSize()} // TODO: Expand logic as more menu modals are added
     >
       {renderDialogContent()}
     </Modal>
