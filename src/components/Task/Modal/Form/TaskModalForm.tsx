@@ -135,7 +135,9 @@ const TaskModalForm = ({
   const [deleteTask, { loading: deleting }] = useDeleteTaskMutation();
   const [createTaskComment] = useCreateTaskCommentMutation();
   const [selectedIds, setSelectedIds] = useState(
-    task?.contacts.nodes.map((contact) => contact.id) || [],
+    task?.contacts.nodes.map((contact) => contact.id) ||
+      defaultValues?.contactIds ||
+      [],
   );
 
   const [searchTerm, setSearchTerm] = useState('');
@@ -184,6 +186,7 @@ const TaskModalForm = ({
           )
       : dataFilteredById?.contacts.nodes ||
         dataFilteredByName?.contacts.nodes ||
+        data?.contacts.nodes ||
         [];
 
   const onSubmit = async (
