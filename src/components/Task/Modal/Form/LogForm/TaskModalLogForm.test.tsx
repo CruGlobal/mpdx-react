@@ -324,13 +324,6 @@ describe('TaskModalLogForm', () => {
     await waitFor(() => expect(getByText('Save')).not.toBeDisabled());
     userEvent.click(getByText('Save'));
     await waitFor(() => expect(onClose).toHaveBeenCalled());
-    expect(openTaskModal).toHaveBeenCalledWith({
-      defaultValues: {
-        activityType: ActivityTypeEnum.Call,
-        contactIds: ['9535112'],
-        userId: '5667620',
-        tagList: ['Ice-cream', 'Star Bridge Garden', 'Rock Pants'],
-      },
-    });
+    expect(openTaskModal).toHaveBeenCalled();
   }, 10000);
 });
