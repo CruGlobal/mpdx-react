@@ -1,4 +1,5 @@
 import {
+  Button,
   Checkbox,
   FormControl,
   FormControlLabel,
@@ -12,10 +13,10 @@ import {
 } from '@material-ui/core';
 import React from 'react';
 
-import BookmarkIcon from '@material-ui/icons/Bookmark';
 import AddIcon from '@material-ui/icons/Add';
 import { useTranslation } from 'react-i18next';
 import { FieldArray, FormikProps, getIn } from 'formik';
+import { Mail } from '@material-ui/icons';
 import { ModalSectionContainer } from '../ModalSectionContainer/ModalSectionContainer';
 import { ModalSectionDeleteIcon } from '../ModalSectionDeleteIcon/ModalSectionDeleteIcon';
 import { ModalSectionIcon } from '../ModalSectionIcon/ModalSectionIcon';
@@ -23,6 +24,7 @@ import {
   PersonCreateInput,
   PersonUpdateInput,
 } from '../../../../../../../../../graphql/types.generated';
+import { NewSocial } from '../PersonModal';
 
 const ContactPrimaryPersonSelectLabel = styled(InputLabel)(() => ({
   textTransform: 'uppercase',
@@ -56,7 +58,7 @@ const OptOutENewsletterLabel = styled(FormControlLabel)(() => ({
 }));
 
 interface PersonEmailProps {
-  formikProps: FormikProps<PersonUpdateInput | PersonCreateInput>;
+  formikProps: FormikProps<(PersonUpdateInput | PersonCreateInput) & NewSocial>;
 }
 
 export const PersonEmail: React.FC<PersonEmailProps> = ({ formikProps }) => {
@@ -82,36 +84,38 @@ export const PersonEmail: React.FC<PersonEmailProps> = ({ formikProps }) => {
 
   return (
     <>
-      {emailAddresses && emailAddresses.length > 0 ? (
+      {emailAddresses ? (
         <>
-          <ModalSectionContainer>
-            <ModalSectionIcon icon={<BookmarkIcon />} />
+          {emailAddresses.length > 0 && primaryEmail && (
+            <ModalSectionContainer>
+              <ModalSectionIcon icon={<Mail />} />
 
-            <FormControl fullWidth={true}>
-              <ContactPrimaryPersonSelectLabel id="primary-email-label">
-                {t('Primary Email')}
-              </ContactPrimaryPersonSelectLabel>
-              <Select
-                id="primary-email-label"
-                value={primaryEmail?.id}
-                onChange={(event) =>
-                  handleChangePrimary(event.target.value as string)
-                }
-              >
-                {emailAddresses.map(
-                  (emailAddress) =>
-                    emailAddress.id && (
-                      <MenuItem key={emailAddress.id} value={emailAddress.id}>
-                        {emailAddress.email}
-                      </MenuItem>
-                    ),
-                )}
-              </Select>
-            </FormControl>
-          </ModalSectionContainer>
+              <FormControl fullWidth={true}>
+                <ContactPrimaryPersonSelectLabel id="primary-email-label">
+                  {t('Primary Email')}
+                </ContactPrimaryPersonSelectLabel>
+                <Select
+                  id="primary-email-label"
+                  value={primaryEmail?.id}
+                  onChange={(event) =>
+                    handleChangePrimary(event.target.value as string)
+                  }
+                >
+                  {emailAddresses.map(
+                    (emailAddress) =>
+                      emailAddress.id && (
+                        <MenuItem key={emailAddress.id} value={emailAddress.id}>
+                          {emailAddress.email}
+                        </MenuItem>
+                      ),
+                  )}
+                </Select>
+              </FormControl>
+            </ModalSectionContainer>
+          )}
           <FieldArray
             name="emailAddresses"
-            render={() => (
+            render={({ push }) => (
               <>
                 {emailAddresses?.map((emailAddress, index) => (
                   <>
@@ -174,34 +178,48 @@ export const PersonEmail: React.FC<PersonEmailProps> = ({ formikProps }) => {
                     </ModalSectionContainer>
                   </>
                 ))}
+                <ModalSectionContainer>
+                  <Grid container alignItems="center">
+                    <Grid container alignItems="center" item xs={6}>
+                      <Button>
+                        <ContactAddIcon />
+                        <ContactAddText
+                          variant="subtitle1"
+                          onClick={() =>
+                            push({
+                              email: '',
+                              location: '',
+                              destroy: false,
+                            })
+                          }
+                        >
+                          {t('Add Email')}
+                        </ContactAddText>
+                      </Button>
+                    </Grid>
+                    <Grid container item xs={6} alignItems="center">
+                      <OptOutENewsletterLabel
+                        control={
+                          <Checkbox
+                            checked={!!optoutEnewsletter}
+                            onChange={() =>
+                              setFieldValue(
+                                'optoutEnewsletter',
+                                !optoutEnewsletter,
+                              )
+                            }
+                          />
+                        }
+                        label={t('Opt-out of Email Newsletter')}
+                      />
+                    </Grid>
+                  </Grid>
+                </ModalSectionContainer>
               </>
             )}
           />
         </>
       ) : null}
-      <ModalSectionContainer>
-        <Grid container alignItems="center">
-          <Grid container alignItems="center" item xs={12} md={6}>
-            <ContactAddIcon />
-            <ContactAddText variant="subtitle1">
-              {t('Add Email')}
-            </ContactAddText>
-          </Grid>
-          <Grid container item xs={12} md={6} alignItems="center">
-            <OptOutENewsletterLabel
-              control={
-                <Checkbox
-                  checked={!!optoutEnewsletter}
-                  onChange={() =>
-                    setFieldValue('optoutEnewsletter', !optoutEnewsletter)
-                  }
-                />
-              }
-              label={t('Opt-out of Email Newsletter')}
-            />
-          </Grid>
-        </Grid>
-      </ModalSectionContainer>
     </>
   );
 };

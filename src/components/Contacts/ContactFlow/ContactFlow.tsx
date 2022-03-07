@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { ContactsDocument } from '../../../../pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import Loading from '../../Loading';
 import {
+  ActivityTypeEnum,
   ContactFilterSetInput,
   ContactFilterStatusEnum,
   IdValue,
@@ -14,6 +15,7 @@ import theme from '../../../theme';
 import { useUpdateContactOtherMutation } from '../ContactDetails/ContactDetailsTab/Other/EditContactOtherModal/EditContactOther.generated';
 import { ContactFlowColumn } from './ContactFlowColumn/ContactFlowColumn';
 import { useGetUserOptionsQuery } from './GetUserOptions.generated';
+import useTaskModal from 'src/hooks/useTaskModal';
 
 interface Props {
   accountListId: string;
@@ -48,6 +50,12 @@ export const statusMap: { [key: string]: string } = {
   'Expired Referral': 'EXPIRED_REFERRAL',
 };
 
+const taskStatuses: { [key: string]: ActivityTypeEnum } = {
+  APPOINTMENT_SCHEDULED: ActivityTypeEnum.Appointment,
+  CONTACT_FOR_APPOINTMENT: ActivityTypeEnum.Call,
+  CALL_FOR_DECISION: ActivityTypeEnum.Call,
+};
+
 export const colorMap: { [key: string]: string } = {
   'color-danger': theme.palette.error.main,
   'color-warning': theme.palette.progressBarYellow.main,
@@ -68,6 +76,7 @@ export const ContactFlow: React.FC<Props> = ({
 
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
+  const { openTaskModal } = useTaskModal();
 
   const flowOptions: ContactFlowOption[] = JSON.parse(
     userOptions?.userOptions.find((option) => option.key === 'flows')?.value ||
@@ -108,6 +117,14 @@ export const ContactFlow: React.FC<Props> = ({
     enqueueSnackbar(t('Contact status info updated!'), {
       variant: 'success',
     });
+    if (status.id && taskStatuses[status.id]) {
+      openTaskModal({
+        defaultValues: {
+          activityType: taskStatuses[status.id],
+          contactIds: [id],
+        },
+      });
+    }
   };
 
   return (

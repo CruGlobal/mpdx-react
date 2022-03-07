@@ -1,4 +1,5 @@
 import {
+  Button,
   FormControl,
   Grid,
   InputLabel,
@@ -9,10 +10,10 @@ import {
   Typography,
 } from '@material-ui/core';
 import React from 'react';
-import BookmarkIcon from '@material-ui/icons/Bookmark';
 import AddIcon from '@material-ui/icons/Add';
 import { useTranslation } from 'react-i18next';
 import { FormikProps, FieldArray, getIn } from 'formik';
+import { Phone } from '@material-ui/icons';
 import { ModalSectionContainer } from '../ModalSectionContainer/ModalSectionContainer';
 import { ModalSectionDeleteIcon } from '../ModalSectionDeleteIcon/ModalSectionDeleteIcon';
 import { ModalSectionIcon } from '../ModalSectionIcon/ModalSectionIcon';
@@ -20,6 +21,7 @@ import {
   PersonCreateInput,
   PersonUpdateInput,
 } from '../../../../../../../../../graphql/types.generated';
+import { NewSocial } from '../PersonModal';
 
 const ContactPrimaryPersonSelectLabel = styled(InputLabel)(() => ({
   textTransform: 'uppercase',
@@ -51,7 +53,7 @@ const ContactAddText = styled(Typography)(({ theme }) => ({
 }));
 
 interface PersonPhoneNumberProps {
-  formikProps: FormikProps<PersonUpdateInput | PersonCreateInput>;
+  formikProps: FormikProps<(PersonUpdateInput | PersonCreateInput) & NewSocial>;
 }
 
 export const PersonPhoneNumber: React.FC<PersonPhoneNumberProps> = ({
@@ -82,36 +84,38 @@ export const PersonPhoneNumber: React.FC<PersonPhoneNumberProps> = ({
 
   return (
     <>
-      {phoneNumbers && phoneNumbers.length > 0 ? (
+      {phoneNumbers ? (
         <>
-          <ModalSectionContainer>
-            <ModalSectionIcon icon={<BookmarkIcon />} />
+          {phoneNumbers.length > 0 && primaryPhoneNumber && (
+            <ModalSectionContainer>
+              <ModalSectionIcon icon={<Phone />} />
 
-            <FormControl fullWidth={true}>
-              <ContactPrimaryPersonSelectLabel id="primary-phone-number-label">
-                {t('Primary Phone')}
-              </ContactPrimaryPersonSelectLabel>
-              <Select
-                id="primary-phone-number-label"
-                value={primaryPhoneNumber?.id}
-                onChange={(event) =>
-                  handleChangePrimary(event.target.value as string)
-                }
-              >
-                {phoneNumbers.map(
-                  (phoneNumber) =>
-                    phoneNumber.id && (
-                      <MenuItem key={phoneNumber.id} value={phoneNumber.id}>
-                        {phoneNumber.number}
-                      </MenuItem>
-                    ),
-                )}
-              </Select>
-            </FormControl>
-          </ModalSectionContainer>
+              <FormControl fullWidth={true}>
+                <ContactPrimaryPersonSelectLabel id="primary-phone-number-label">
+                  {t('Primary Phone')}
+                </ContactPrimaryPersonSelectLabel>
+                <Select
+                  id="primary-phone-number-label"
+                  value={primaryPhoneNumber?.id}
+                  onChange={(event) =>
+                    handleChangePrimary(event.target.value as string)
+                  }
+                >
+                  {phoneNumbers.map(
+                    (phoneNumber) =>
+                      phoneNumber.id && (
+                        <MenuItem key={phoneNumber.id} value={phoneNumber.id}>
+                          {phoneNumber.number}
+                        </MenuItem>
+                      ),
+                  )}
+                </Select>
+              </FormControl>
+            </ModalSectionContainer>
+          )}
           <FieldArray
             name="phoneNumbers"
-            render={() => (
+            render={({ push }) => (
               <>
                 {phoneNumbers?.map((phoneNumber, index) => (
                   <>
@@ -174,17 +178,30 @@ export const PersonPhoneNumber: React.FC<PersonPhoneNumberProps> = ({
                     </ModalSectionContainer>
                   </>
                 ))}
+                <ModalSectionContainer>
+                  <Grid container alignItems="center">
+                    <Button>
+                      <ContactAddIcon />
+                      <ContactAddText
+                        variant="subtitle1"
+                        onClick={() =>
+                          push({
+                            number: '',
+                            location: '',
+                            destroy: false,
+                          })
+                        }
+                      >
+                        {t('Add Phone')}
+                      </ContactAddText>
+                    </Button>
+                  </Grid>
+                </ModalSectionContainer>
               </>
             )}
           />
         </>
       ) : null}
-      <ModalSectionContainer>
-        <Grid container alignItems="center">
-          <ContactAddIcon />
-          <ContactAddText variant="subtitle1">{t('Add Phone')}</ContactAddText>
-        </Grid>
-      </ModalSectionContainer>
     </>
   );
 };

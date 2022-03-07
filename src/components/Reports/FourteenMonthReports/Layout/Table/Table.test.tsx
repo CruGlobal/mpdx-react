@@ -1,6 +1,7 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import { ThemeProvider } from '@material-ui/core';
+import { GqlMockedProvider } from '../../../../../../__tests__/util/graphqlMocking';
 import { FourteenMonthReportTable } from './Table';
 import theme from 'src/theme';
 
@@ -179,25 +180,27 @@ describe('FourteenMonthReportTable', () => {
   it('default', async () => {
     const { getAllByTestId, getByRole, queryByTestId } = render(
       <ThemeProvider theme={theme}>
-        <FourteenMonthReportTable
-          isExpanded={true}
-          order="asc"
-          orderBy={null}
-          orderedContacts={
-            mocks.FourteenMonthReport.fourteenMonthReport.currencyGroups[0]
-              .contacts
-          }
-          salaryCurrency={
-            mocks.FourteenMonthReport.fourteenMonthReport.currencyGroups[0]
-              .currency
-          }
-          onRequestSort={onRequestSort}
-          ref={null}
-          totals={
-            mocks.FourteenMonthReport.fourteenMonthReport.currencyGroups[0]
-              .totals
-          }
-        />
+        <GqlMockedProvider>
+          <FourteenMonthReportTable
+            isExpanded={true}
+            order="asc"
+            orderBy={null}
+            orderedContacts={
+              mocks.FourteenMonthReport.fourteenMonthReport.currencyGroups[0]
+                .contacts
+            }
+            salaryCurrency={
+              mocks.FourteenMonthReport.fourteenMonthReport.currencyGroups[0]
+                .currency
+            }
+            onRequestSort={onRequestSort}
+            ref={null}
+            totals={
+              mocks.FourteenMonthReport.fourteenMonthReport.currencyGroups[0]
+                .totals
+            }
+          />
+        </GqlMockedProvider>
       </ThemeProvider>,
     );
 
@@ -215,25 +218,27 @@ describe('FourteenMonthReportTable', () => {
   it('should order by name', async () => {
     const { getAllByTestId, queryByTestId } = render(
       <ThemeProvider theme={theme}>
-        <FourteenMonthReportTable
-          isExpanded={true}
-          order="asc"
-          orderBy="name"
-          orderedContacts={
-            mocks.FourteenMonthReport.fourteenMonthReport.currencyGroups[0]
-              .contacts
-          }
-          salaryCurrency={
-            mocks.FourteenMonthReport.fourteenMonthReport.currencyGroups[0]
-              .currency
-          }
-          onRequestSort={onRequestSort}
-          ref={null}
-          totals={
-            mocks.FourteenMonthReport.fourteenMonthReport.currencyGroups[0]
-              .totals
-          }
-        />
+        <GqlMockedProvider>
+          <FourteenMonthReportTable
+            isExpanded={true}
+            order="asc"
+            orderBy="name"
+            orderedContacts={
+              mocks.FourteenMonthReport.fourteenMonthReport.currencyGroups[0]
+                .contacts
+            }
+            salaryCurrency={
+              mocks.FourteenMonthReport.fourteenMonthReport.currencyGroups[0]
+                .currency
+            }
+            onRequestSort={onRequestSort}
+            ref={null}
+            totals={
+              mocks.FourteenMonthReport.fourteenMonthReport.currencyGroups[0]
+                .totals
+            }
+          />
+        </GqlMockedProvider>
       </ThemeProvider>,
     );
 

@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import {
+  Button,
   FormControl,
   Grid,
   InputLabel,
@@ -13,6 +14,7 @@ import {
 import SocialIcon from '@material-ui/icons/Language';
 import AddIcon from '@material-ui/icons/Add';
 import { FormikProps, FieldArray, getIn } from 'formik';
+import { Facebook, LinkedIn, Twitter } from '@material-ui/icons';
 import { ModalSectionContainer } from '../ModalSectionContainer/ModalSectionContainer';
 import { ModalSectionDeleteIcon } from '../ModalSectionDeleteIcon/ModalSectionDeleteIcon';
 import { ModalSectionIcon } from '../ModalSectionIcon/ModalSectionIcon';
@@ -20,6 +22,7 @@ import {
   PersonCreateInput,
   PersonUpdateInput,
 } from '../../../../../../../../../graphql/types.generated';
+import { NewSocial } from '../PersonModal';
 
 const ContactAddIcon = styled(AddIcon)(({ theme }) => ({
   color: theme.palette.info.main,
@@ -44,14 +47,20 @@ const SocialSelect = styled(Select)(
 );
 
 interface PersonSocialProps {
-  formikProps: FormikProps<PersonUpdateInput | PersonCreateInput>;
+  formikProps: FormikProps<(PersonUpdateInput | PersonCreateInput) & NewSocial>;
 }
 
 export const PersonSocial: React.FC<PersonSocialProps> = ({ formikProps }) => {
   const { t } = useTranslation();
 
   const {
-    values: { facebookAccounts, twitterAccounts, linkedinAccounts, websites },
+    values: {
+      facebookAccounts,
+      twitterAccounts,
+      linkedinAccounts,
+      websites,
+      newSocials,
+    },
     setFieldValue,
     errors,
   } = formikProps;
@@ -64,9 +73,7 @@ export const PersonSocial: React.FC<PersonSocialProps> = ({ formikProps }) => {
           <>
             {facebookAccounts?.map((account, index) => (
               <ModalSectionContainer key={index}>
-                {index === 0 ? (
-                  <ModalSectionIcon icon={<SocialIcon />} />
-                ) : null}
+                {index === 0 ? <ModalSectionIcon icon={<Facebook />} /> : null}
                 <Grid container spacing={3}>
                   <Grid item xs={6}>
                     <SocialsTextField
@@ -126,9 +133,7 @@ export const PersonSocial: React.FC<PersonSocialProps> = ({ formikProps }) => {
           <>
             {twitterAccounts?.map((account, index) => (
               <ModalSectionContainer key={index}>
-                {index === 0 ? (
-                  <ModalSectionIcon icon={<SocialIcon />} />
-                ) : null}
+                {index === 0 ? <ModalSectionIcon icon={<Twitter />} /> : null}
                 <Grid container spacing={3}>
                   <Grid item xs={6}>
                     <SocialsTextField
@@ -188,9 +193,7 @@ export const PersonSocial: React.FC<PersonSocialProps> = ({ formikProps }) => {
           <>
             {linkedinAccounts?.map((account, index) => (
               <ModalSectionContainer key={index}>
-                {index === 0 ? (
-                  <ModalSectionIcon icon={<SocialIcon />} />
-                ) : null}
+                {index === 0 ? <ModalSectionIcon icon={<LinkedIn />} /> : null}
                 <Grid container spacing={3}>
                   <Grid item xs={6}>
                     <SocialsTextField
@@ -309,12 +312,98 @@ export const PersonSocial: React.FC<PersonSocialProps> = ({ formikProps }) => {
           </>
         )}
       />
-      <ModalSectionContainer>
-        <Grid container alignItems="center">
-          <ContactAddIcon />
-          <ContactAddText variant="subtitle1">{t('Add Social')}</ContactAddText>
-        </Grid>
-      </ModalSectionContainer>
+      <FieldArray
+        name="newSocials"
+        render={({ push }) => (
+          <>
+            {newSocials?.map((social, index) => (
+              <>
+                {social.destroy ? <ModalSectionDeleteIcon /> : null}
+                <ModalSectionContainer key={index}>
+                  {index === 0 ? (
+                    <ModalSectionIcon icon={<SocialIcon />} />
+                  ) : null}
+                  <Grid container spacing={3}>
+                    <Grid item xs={6}>
+                      <SocialsTextField
+                        destroyed={social.destroy ?? false}
+                        label={t('Username/URL')}
+                        value={social.value}
+                        onChange={(event) =>
+                          setFieldValue(
+                            `newSocials.${index}.value`,
+                            event.target.value,
+                          )
+                        }
+                        inputProps={{ 'aria-label': t('New Social') }}
+                        error={getIn(errors, `newSocials.${index}`)}
+                        helperText={
+                          getIn(errors, `newSocials.${index}`) &&
+                          t('Field is required')
+                        }
+                        disabled={!!social.destroy}
+                        fullWidth
+                      />
+                    </Grid>
+                    <Grid item xs={6}>
+                      <FormControl fullWidth>
+                        <InputLabel id="social-type-label">
+                          {t('Type')}
+                        </InputLabel>
+                        <SocialSelect
+                          destroyed={social.destroy ?? false}
+                          labelId="social-type-label"
+                          value={social.type}
+                          disabled={!!social.destroy}
+                          fullWidth
+                          onChange={(event) =>
+                            setFieldValue(
+                              `newSocials.${index}.type`,
+                              event.target.value,
+                            )
+                          }
+                        >
+                          <MenuItem value={'facebook'}>
+                            {t('Facebook')}
+                          </MenuItem>
+                          <MenuItem value={'twitter'}>{t('Twitter')}</MenuItem>
+                          <MenuItem value={'linkedin'}>
+                            {t('LinkedIn')}
+                          </MenuItem>
+                          <MenuItem value={'website'}>{t('Website')}</MenuItem>
+                        </SocialSelect>
+                      </FormControl>
+                      <ModalSectionDeleteIcon
+                        handleClick={() =>
+                          setFieldValue(
+                            `newSocials.${index}.destroy`,
+                            !social.destroy,
+                          )
+                        }
+                      />
+                    </Grid>
+                  </Grid>
+                </ModalSectionContainer>
+              </>
+            ))}
+            <ModalSectionContainer>
+              <Grid container alignItems="center">
+                <Button>
+                  <ContactAddIcon />
+                  <ContactAddText
+                    variant="subtitle1"
+                    onClick={() =>
+                      push({ value: '', type: '', destroy: false })
+                    }
+                  >
+                    {t('Add Social')}
+                  </ContactAddText>
+                </Button>
+              </Grid>
+            </ModalSectionContainer>
+          </>
+        )}
+      />
     </>
   );
 };

@@ -49,11 +49,13 @@ import { GetThisWeekDocument } from '../../../../Dashboard/ThisWeek/GetThisWeek.
 import {
   useGetDataForTaskDrawerQuery,
   useCreateTaskMutation,
-  useUpdateTaskMutation,
   useDeleteTaskMutation,
 } from '../../../Drawer/Form/TaskDrawer.generated';
 import theme from '../../../../../../src/theme';
 import { useCreateTaskCommentMutation } from '../../../Drawer/CommentList/Form/CreateTaskComment.generated';
+import useTaskModal from 'src/hooks/useTaskModal';
+import { ContactTasksTabDocument } from 'src/components/Contacts/ContactDetails/ContactTasksTab/ContactTasksTab.generated';
+import { TasksDocument } from 'pages/accountLists/[accountListId]/tasks/Tasks.generated';
 
 export const ActionButton = styled(Button)(() => ({
   color: theme.palette.info.main,
@@ -95,7 +97,7 @@ interface Props {
   accountListId: string;
   task?: GetTaskForTaskDrawerQuery['task'];
   onClose: () => void;
-  defaultValues?: Partial<GetTaskForTaskDrawerQuery['task']>;
+  defaultValues?: Partial<TaskCreateInput>;
   filter?: TaskFilter;
   rowsPerPage: number;
 }
@@ -108,7 +110,7 @@ const TaskModalLogForm = ({
   filter,
   rowsPerPage,
 }: Props): ReactElement => {
-  const initialTask: TaskCreateInput | TaskUpdateInput = task
+  const initialTask: TaskCreateInput = task
     ? {
         ...(({ user: _user, contacts: _contacts, ...task }) => task)(task),
         contactIds: task.contacts.nodes.map(({ id }) => id),
@@ -136,45 +138,71 @@ const TaskModalLogForm = ({
   const [showMore, setShowMore] = useState(false);
   const [removeDialogOpen, setRemoveDialogOpen] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
+  const { openTaskModal } = useTaskModal();
 
   const { data, loading } = useGetDataForTaskDrawerQuery({
     variables: { accountListId },
   });
   const [createTask, { loading: creating }] = useCreateTaskMutation();
-  const [updateTask, { loading: saving }] = useUpdateTaskMutation();
   const [deleteTask, { loading: deleting }] = useDeleteTaskMutation();
   const [createTaskComment] = useCreateTaskCommentMutation();
-  const onSubmit = async (
-    attributes: TaskCreateInput | TaskUpdateInput,
-  ): Promise<void> => {
-    const isUpdate = (
-      attributes: TaskCreateInput | TaskUpdateInput,
-    ): attributes is TaskUpdateInput => !!task;
+  const onSubmit = async (attributes: TaskCreateInput): Promise<void> => {
     const body = commentBody.trim();
-    if (isUpdate(attributes)) {
-      await updateTask({
-        variables: { accountListId, attributes },
-      });
-    } else {
-      await createTask({
-        variables: { accountListId, attributes },
-        update: (_cache, { data }) => {
-          if (data?.createTask?.task.id && body !== '') {
-            const id = uuidv4();
-
-            createTaskComment({
-              variables: {
-                accountListId,
-                taskId: data.createTask.task.id,
-                attributes: { id, body },
-              },
-            });
-          }
+    const { data } = await createTask({
+      variables: { accountListId, attributes },
+      update: (_cache, { data }) => {
+        if (data?.createTask?.task.id && body !== '') {
+          const id = uuidv4();
+          createTaskComment({
+            variables: {
+              accountListId,
+              taskId: data.createTask.task.id,
+              attributes: { id, body },
+            },
+          });
+        }
+      },
+      refetchQueries: [
+        {
+          query: GetTasksForTaskListDocument,
+          variables: { accountListId, first: rowsPerPage, ...filter },
+        },
+        {
+          query: TasksDocument,
+          variables: { accountListId },
+        },
+        {
+          query: ContactTasksTabDocument,
+          variables: {
+            accountListId,
+            tasksFilter: {
+              contactIds: [
+                defaultValues?.contactIds ? defaultValues.contactIds[0] : '',
+              ],
+            },
+          },
+        },
+      ],
+    });
+    enqueueSnackbar(t('Task logged successfully'), { variant: 'success' });
+    onClose();
+    if (
+      attributes.nextAction &&
+      attributes.nextAction !== ActivityTypeEnum.None
+    ) {
+      openTaskModal({
+        defaultValues: {
+          activityType: attributes.nextAction,
+          // TODO: Use fragments to ensure all required fields are loaded
+          contactIds:
+            data?.createTask?.task?.contacts?.nodes.map(
+              (contact) => contact.id,
+            ) || [],
+          userId: data?.createTask?.task.user?.id,
+          tagList: data?.createTask?.task.tagList,
         },
       });
     }
-    enqueueSnackbar(t('Task saved successfully'), { variant: 'success' });
-    onClose();
   };
 
   const onDeleteTask = async (): Promise<void> => {
@@ -560,7 +588,7 @@ const TaskModalLogForm = ({
                   disabled={!isValid || isSubmitting}
                   type="submit"
                 >
-                  {(saving || creating) && (
+                  {creating && (
                     <>
                       <CircularProgress color="primary" size={20} />
                       &nbsp;

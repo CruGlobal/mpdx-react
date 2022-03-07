@@ -12,6 +12,8 @@ import { useTranslation } from 'react-i18next';
 import { Formik } from 'formik';
 import * as yup from 'yup';
 import { useSnackbar } from 'notistack';
+import _ from 'lodash';
+import Delete from '@material-ui/icons/Delete';
 import {
   ContactDetailsTabDocument,
   ContactDetailsTabQuery,
@@ -28,6 +30,7 @@ import { PersonBirthday } from './PersonBirthday/PersonBirthday';
 import { PersonShowMore } from './PersonShowMore/PersonShowMore';
 import {
   useCreatePersonMutation,
+  useDeletePersonMutation,
   useUpdatePersonMutation,
 } from './PersonModal.generated';
 
@@ -53,6 +56,15 @@ const ContactEditModalFooterButton = styled(Button)(({ theme }) => ({
   fontWeight: 'bold',
 }));
 
+const ContactEditModalDeleteButton = styled(Button)(({ theme }) => ({
+  color: theme.palette.common.white,
+  backgroundColor: theme.palette.error.main,
+  fontWeight: 'bold',
+  '&:hover': {
+    backgroundColor: theme.palette.error.dark,
+  },
+}));
+
 const ShowExtraText = styled(Typography)(({ theme }) => ({
   color: theme.palette.info.main,
   textTransform: 'uppercase',
@@ -70,6 +82,14 @@ interface PersonModalProps {
   handleClose: () => void;
 }
 
+export interface NewSocial {
+  newSocials: {
+    value: string;
+    type: 'facebook' | 'twitter' | 'linkedin' | 'website';
+    destroy: boolean;
+  }[];
+}
+
 export const PersonModal: React.FC<PersonModalProps> = ({
   person,
   contactId,
@@ -81,6 +101,7 @@ export const PersonModal: React.FC<PersonModalProps> = ({
   const [personEditShowMore, setPersonEditShowMore] = useState(false);
   const [updatePerson, { loading: updating }] = useUpdatePersonMutation();
   const [createPerson, { loading: creating }] = useCreatePersonMutation();
+  const [deletePerson, { loading: deleting }] = useDeletePersonMutation();
 
   // grabbed from https://stackoverflow.com/a/62039270
   const phoneRegex = RegExp(
@@ -142,6 +163,12 @@ export const PersonModal: React.FC<PersonModalProps> = ({
         id: yup.string().nullable(),
         destroy: yup.boolean().default(false),
         url: yup.string().required(),
+      }),
+    ),
+    newSocials: yup.array().of(
+      yup.object({
+        value: yup.string().required(),
+        type: yup.string().required(),
       }),
     ),
     optoutEnewsletter: yup.boolean().default(false),
@@ -210,7 +237,8 @@ export const PersonModal: React.FC<PersonModalProps> = ({
     destroy: false,
   }));
 
-  const initialPerson: PersonCreateInput | PersonUpdateInput = person
+  const initialPerson: (PersonCreateInput | PersonUpdateInput) &
+    NewSocial = person
     ? {
         id: person.id,
         firstName: person.firstName,
@@ -237,6 +265,7 @@ export const PersonModal: React.FC<PersonModalProps> = ({
         websites: personWebsites,
         legalFirstName: person.legalFirstName,
         deceased: person.deceased,
+        newSocials: [],
       }
     : {
         contactId,
@@ -265,11 +294,45 @@ export const PersonModal: React.FC<PersonModalProps> = ({
         websites: [],
         legalFirstName: null,
         deceased: false,
+        newSocials: [],
       };
 
   const onSubmit = async (
-    attributes: PersonCreateInput | PersonUpdateInput,
+    fields: (PersonCreateInput | PersonUpdateInput) & NewSocial,
   ): Promise<void> => {
+    const { newSocials, ...existingSocials } = fields;
+    const attributes: PersonCreateInput | PersonUpdateInput = {
+      ...existingSocials,
+      facebookAccounts: fields.facebookAccounts?.concat(
+        newSocials
+          .filter((social) => social.type === 'facebook' && !social.destroy)
+          .map((social) => ({
+            username: social.value,
+          })),
+      ),
+      twitterAccounts: fields.twitterAccounts?.concat(
+        newSocials
+          .filter((social) => social.type === 'twitter' && !social.destroy)
+          .map((social) => ({
+            screenName: social.value,
+          })),
+      ),
+      linkedinAccounts: fields.linkedinAccounts?.concat(
+        newSocials
+          .filter((social) => social.type === 'linkedin' && !social.destroy)
+          .map((social) => ({
+            publicUrl: social.value,
+          })),
+      ),
+      websites: fields.websites?.concat(
+        newSocials
+          .filter((social) => social.type === 'website' && !social.destroy)
+          .map((social) => ({
+            url: social.value,
+          })),
+      ),
+    };
+
     const isUpdate = (
       attributes: PersonCreateInput | PersonUpdateInput,
     ): attributes is PersonUpdateInput => !!person;
@@ -325,6 +388,23 @@ export const PersonModal: React.FC<PersonModalProps> = ({
     handleClose();
   };
 
+  const deletePersonFromContact = async (): Promise<void> => {
+    if (person) {
+      await deletePerson({
+        variables: {
+          id: person.id,
+          accountListId,
+        },
+        refetchQueries: [
+          {
+            query: ContactDetailsTabDocument,
+            variables: { accountListId, contactId },
+          },
+        ],
+      });
+    }
+  };
+
   return (
     <Modal
       isOpen={true}
@@ -352,12 +432,14 @@ export const PersonModal: React.FC<PersonModalProps> = ({
                   {/* Show More Section */}
                   {!personEditShowMore && (
                     <ShowExtraContainer>
-                      <ShowExtraText
-                        variant="subtitle1"
-                        onClick={() => setPersonEditShowMore(true)}
-                      >
-                        {t('Show More')}
-                      </ShowExtraText>
+                      <Button>
+                        <ShowExtraText
+                          variant="subtitle1"
+                          onClick={() => setPersonEditShowMore(true)}
+                        >
+                          {t('Show More')}
+                        </ShowExtraText>
+                      </Button>
                     </ShowExtraContainer>
                   )}
                   {/* Start Show More Content */}
@@ -369,34 +451,54 @@ export const PersonModal: React.FC<PersonModalProps> = ({
                   {/* Show Less Section */}
                   {personEditShowMore && (
                     <ShowExtraContainer>
-                      <ShowExtraText
-                        variant="subtitle1"
-                        onClick={() => setPersonEditShowMore(false)}
-                      >
-                        {t('Show Less')}
-                      </ShowExtraText>
+                      <Button>
+                        <ShowExtraText
+                          variant="subtitle1"
+                          onClick={() => setPersonEditShowMore(false)}
+                        >
+                          {t('Show Less')}
+                        </ShowExtraText>
+                      </Button>
                     </ShowExtraContainer>
                   )}
                 </ContactPersonContainer>
               </ContactEditContainer>
             </DialogContent>
             <DialogActions>
-              <ContactEditModalFooterButton
-                onClick={handleClose}
-                variant="text"
+              <Box
+                justifyContent={person ? 'space-between' : 'end'}
+                display="flex"
+                alignItems="center"
+                width="100%"
               >
-                {t('Cancel')}
-              </ContactEditModalFooterButton>
-              <ContactEditModalFooterButton
-                type="submit"
-                disabled={!formikProps.isValid || formikProps.isSubmitting}
-                variant="text"
-              >
-                {(updating || creating) && (
-                  <LoadingIndicator color="primary" size={20} />
+                {person && (
+                  <ContactEditModalDeleteButton
+                    onClick={deletePersonFromContact}
+                    variant="text"
+                  >
+                    <Delete />
+                    {t('Delete')}
+                  </ContactEditModalDeleteButton>
                 )}
-                {t('Save')}
-              </ContactEditModalFooterButton>
+                <Box>
+                  <ContactEditModalFooterButton
+                    onClick={handleClose}
+                    variant="text"
+                  >
+                    {t('Cancel')}
+                  </ContactEditModalFooterButton>
+                  <ContactEditModalFooterButton
+                    type="submit"
+                    disabled={!formikProps.isValid || formikProps.isSubmitting}
+                    variant="text"
+                  >
+                    {(updating || creating || deleting) && (
+                      <LoadingIndicator color="primary" size={20} />
+                    )}
+                    {t('Save')}
+                  </ContactEditModalFooterButton>
+                </Box>
+              </Box>
             </DialogActions>
           </form>
         )}
