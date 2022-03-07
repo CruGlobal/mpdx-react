@@ -41,7 +41,10 @@ export const AddMenuPanel = (): ReactElement => {
     {
       text: 'Add Donation',
       icon: CardGiftcardIcon,
-      onClick: () => console.log('add donation'),
+      onClick: () => {
+        changeSelectedMenuItem(2);
+        changeDialogOpen(true);
+      },
     },
     {
       text: 'Add Task',

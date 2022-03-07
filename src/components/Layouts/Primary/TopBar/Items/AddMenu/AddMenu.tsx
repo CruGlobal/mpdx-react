@@ -13,6 +13,7 @@ import { useAccountListId } from '../../../../../../hooks/useAccountListId';
 import Modal from '../../../../../common/Modal/Modal';
 import CreateContact from './Items/CreateContact/CreateContact';
 import { CreateMultipleContacts } from './Items/CreateMultipleContacts/CreateMultipleContacts';
+import { AddDonation } from './Items/AddDonation/AddDonation';
 
 interface AddMenuProps {
   isInDrawer?: boolean;
@@ -80,6 +81,8 @@ export const renderDialog = (
         return t('New Contact');
       case 1:
         return t('Add Multiple Contacts');
+      case 2:
+        return t('Add Donation');
       default:
         return t('Add Contact');
     }
@@ -105,6 +108,13 @@ export const renderDialog = (
             handleClose={handleDialogClose}
           />
         );
+      case 2:
+        return (
+          <AddDonation
+            accountListId={accountListId ?? ''}
+            handleClose={handleDialogClose}
+          />
+        );
     }
   };
   return (
@@ -118,7 +128,7 @@ export const renderDialog = (
           : t('Create Multiple Contacts Dialog')
       }
       fullWidth
-      size={selectedMenuItem === 0 ? 'sm' : 'xl'} // TODO: Expand logic as more menu modals are added
+      size={'sm'} // TODO: Expand logic as more menu modals are added
     >
       {renderDialogContent()}
     </Modal>
@@ -171,7 +181,11 @@ const AddMenu = ({ isInDrawer = false }: AddMenuProps): ReactElement => {
     {
       text: 'Add Donation',
       icon: <CardGiftcardIcon />,
-      onClick: () => console.log('add donation'),
+      onClick: () => {
+        changeSelectedMenuItem(2);
+        changeDialogOpen(true);
+        setAnchorEl(undefined);
+      },
     },
     {
       text: 'Add Task',

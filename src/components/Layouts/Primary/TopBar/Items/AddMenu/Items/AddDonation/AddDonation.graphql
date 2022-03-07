@@ -1,0 +1,28 @@
+query GetDonationModal($accountListId: ID!) {
+  accountList(id: $accountListId) {
+    id
+    currency
+    appeals {
+      active
+      name
+      id
+    }
+  }
+  designationAccounts(accountListId: $accountListId) {
+    designationAccounts {
+      id
+      name
+      active
+    }
+  }
+}
+
+mutation AddDonation($accountListId: ID!, $attributes: DonationCreateInput!) {
+  createDonation(
+    input: { accountListId: $accountListId, attributes: $attributes }
+  ) {
+    donation {
+      id
+    }
+  }
+}
