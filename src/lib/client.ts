@@ -8,6 +8,7 @@ import { BatchHttpLink } from '@apollo/client/link/batch-http';
 import { onError } from '@apollo/client/link/error';
 import { persistCache, LocalStorageWrapper } from 'apollo3-cache-persist';
 import fetch from 'isomorphic-fetch';
+import { signOut } from 'next-auth/react';
 import generatedIntrospection from '../../graphql/possibleTypes.generated';
 import snackNotifications from '../components/Snackbar/Snackbar';
 import { relayStylePaginationWithNodes } from './relayStylePaginationWithNodes';
@@ -44,7 +45,12 @@ const httpLink = new BatchHttpLink({
 
 const errorLink = onError(({ graphQLErrors, networkError }) => {
   if (graphQLErrors) {
-    graphQLErrors.map(({ message }) => snackNotifications.error(message));
+    graphQLErrors.map(({ message, extensions }) => {
+      if (extensions?.code === 'AUTHENTICATION_ERROR') {
+        signOut({ redirect: true });
+      }
+      snackNotifications.error(message);
+    });
   }
 
   if (networkError) snackNotifications.error(networkError.message);
