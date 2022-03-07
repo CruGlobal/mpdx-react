@@ -370,9 +370,7 @@ const TaskModalForm = ({
                           ...params.InputProps,
                           endAdornment: (
                             <>
-                              {(loading ||
-                                loadingFilteredByName ||
-                                loadingFilteredById) && (
+                              {loading && (
                                 <CircularProgress color="primary" size={20} />
                               )}
                               {params.InputProps.endAdornment}
@@ -536,7 +534,9 @@ const TaskModalForm = ({
                       mergedContacts.find(({ id }) => id === contactId)?.name ??
                       ''
                     }
-                    loading={loading}
+                    loading={
+                      loading || loadingFilteredById || loadingFilteredByName
+                    }
                     renderInput={(params): ReactElement => {
                       return !loadingFilteredById ? (
                         <TextField
