@@ -222,15 +222,13 @@ describe('TaskModalLogForm', () => {
       hidden: true,
       name: 'Contacts',
     });
-    userEvent.type(contactsElement, 'Smith');
+
     userEvent.click(contactsElement);
     await waitFor(() => expect(getByText('Smith, John')).toBeInTheDocument());
-
-    userEvent.type(contactsElement, '');
-    userEvent.click(contactsElement);
     userEvent.click(
       await within(getByRole('presentation')).findByText('Anderson, Robert'),
     );
+    userEvent.type(contactsElement, 'Smith');
     userEvent.click(contactsElement);
     userEvent.click(within(getByRole('presentation')).getByText('Smith, John'));
   }, 25000);
