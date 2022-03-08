@@ -407,10 +407,9 @@ export const AddDonation = ({
                                 {...params}
                                 size="small"
                                 variant="outlined"
-                                onChange={(e) => {
-                                  console.log(e);
-                                  handleDonorAccountSearch(e.target.value);
-                                }}
+                                onChange={(e) =>
+                                  handleDonorAccountSearch(e.target.value)
+                                }
                                 InputProps={{
                                   ...params.InputProps,
                                   'aria-labelledby': 'partner-account-label',
