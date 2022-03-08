@@ -47,12 +47,12 @@ const donationSchema: yup.SchemaOf<
     .test(
       'Is amount in valid currency format?',
       'Amount must be in valid currency format',
-      (amount) => /\$?[0-9][0-9.,]*/.test(amount?.toString() ?? ''),
+      (amount) => /\$?[0-9][0-9.,]*/.test((amount as unknown) as string),
     )
     .test(
       'Is positive?',
       'Must use a positive number for amount',
-      (value) => typeof value === 'number' && value > 0,
+      (value) => parseFloat((value as unknown) as string) > 0,
     ),
   appealAmount: yup
     .number()
@@ -61,12 +61,12 @@ const donationSchema: yup.SchemaOf<
     .test(
       'Is appeal amount in valid currency format?',
       'Appeal amount must be in valid currency format',
-      (amount) => /\$?[0-9][0-9.,]*/.test(amount?.toString() ?? ''),
+      (amount) => /\$?[0-9][0-9.,]*/.test((amount as unknown) as string),
     )
     .test(
       'Is positive?',
       'Must use a positive number for appeal amount',
-      (value) => typeof value === 'number' && value > 0,
+      (value) => parseFloat((value as unknown) as string) > 0,
     ),
   appealId: yup.string().nullable(),
   currency: yup.string().required(),
