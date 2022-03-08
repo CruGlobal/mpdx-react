@@ -9,6 +9,7 @@ import userEvent from '@testing-library/user-event';
 import { InMemoryCache } from '@apollo/client';
 import { ActivityTypeEnum } from '../../../../../graphql/types.generated';
 import { GetTasksForTaskListDocument } from '../../List/TaskList.generated';
+import { getDataForTaskDrawerMock } from '../../Drawer/Form/Form.mock';
 import {
   getDataForTaskModalMock,
   createTaskMutationMock,
@@ -149,6 +150,62 @@ describe('TaskModalForm', () => {
         'BOTH',
       ),
     );
+  }, 25000);
+
+  it('should load and show data for task', async () => {
+    const onClose = jest.fn();
+    const { getByRole, getByLabelText, getByText, queryByTestId } = render(
+      <MuiPickersUtilsProvider utils={LuxonUtils}>
+        <SnackbarProvider>
+          <MockedProvider
+            mocks={[getDataForTaskDrawerMock(accountListId)]}
+            addTypename={false}
+          >
+            <TaskModalForm
+              accountListId={accountListId}
+              filter={mockFilter}
+              rowsPerPage={100}
+              onClose={onClose}
+              task={mockTask}
+            />
+          </MockedProvider>
+        </SnackbarProvider>
+      </MuiPickersUtilsProvider>,
+    );
+
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    const tagsElement = getByLabelText('Tags');
+    userEvent.click(tagsElement);
+    expect(queryByTestId('loading')).not.toBeInTheDocument();
+    await waitFor(() => expect(getByText('tag-1')).toBeInTheDocument());
+    await waitFor(() => expect(getByText('tag-2')).toBeInTheDocument());
+    userEvent.click(
+      await within(getByRole('presentation')).findByText('tag-1'),
+    );
+    userEvent.click(tagsElement);
+
+    const assigneeElement = getByRole('textbox', {
+      hidden: true,
+      name: 'Assignee',
+    });
+    userEvent.click(assigneeElement);
+
+    await waitFor(() =>
+      expect(getByText('Robert Anderson')).toBeInTheDocument(),
+    );
+
+    const contactsElement = getByRole('textbox', {
+      hidden: true,
+      name: 'Contacts',
+    });
+
+    userEvent.click(contactsElement);
+    await waitFor(() => expect(getByText('Smith, John')).toBeInTheDocument());
+    userEvent.click(
+      await within(getByRole('presentation')).findByText('Anderson, Robert'),
+    );
+    userEvent.type(contactsElement, 'Smith');
+    userEvent.click(contactsElement);
   }, 25000);
 
   it('deletes a task', async () => {
