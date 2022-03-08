@@ -4,10 +4,7 @@ import { TFunction } from 'i18next';
 import { DateTime } from 'luxon';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  ActivityTypeEnum,
-  ResultEnum,
-} from '../../../../../../graphql/types.generated';
+import { ActivityTypeEnum } from '../../../../../../graphql/types.generated';
 import theme from '../../../../../theme';
 import { StarredItemIcon } from '../../../../common/StarredItemIcon/StarredItemIcon';
 import { TaskRowFragment } from '../../../../Task/TaskRow/TaskRow.generated';
@@ -191,13 +188,13 @@ export const ContactTaskRow: React.FC<ContactTaskRowProps> = ({
     );
   }
 
-  const { activityType, contacts, comments, result, startAt, subject } = task;
+  const { activityType, contacts, comments, startAt, subject } = task;
 
   const dueDate = (startAt && DateTime.fromISO(startAt)) || null;
 
   const contactName = contacts.nodes[0].name;
 
-  const isComplete = result === ResultEnum.Completed;
+  const isComplete = !!task.completedAt;
 
   return (
     <TaskRowWrap>
