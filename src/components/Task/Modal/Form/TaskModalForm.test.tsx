@@ -49,7 +49,13 @@ describe('TaskModalForm', () => {
 
   it('default', async () => {
     const onClose = jest.fn();
-    const { getByText, findByText, queryByText, getByLabelText } = render(
+    const {
+      getByText,
+      findByText,
+      queryByText,
+      getByLabelText,
+      getByRole,
+    } = render(
       <MuiPickersUtilsProvider utils={LuxonUtils}>
         <SnackbarProvider>
           <MockedProvider
@@ -76,6 +82,13 @@ describe('TaskModalForm', () => {
     expect(await findByText('Field is required')).toBeInTheDocument();
     expect(await queryByText('Delete')).not.toBeInTheDocument();
     userEvent.type(getByLabelText('Subject'), accountListId);
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    const contactsElement = getByRole('textbox', {
+      hidden: true,
+      name: 'Contacts',
+    });
+
+    userEvent.type(contactsElement, 'Smith');
     await waitFor(() => expect(getByText('Save')).not.toBeDisabled());
     userEvent.click(getByText('Save'));
     await waitFor(() => expect(onClose).toHaveBeenCalled());
