@@ -55,6 +55,9 @@ const SubjectWrap = styled(Box)(({}) => ({
   display: 'flex',
   height: '100%',
   alignItems: 'center',
+  justifyContent: 'start',
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
   '&:hover': {
     textDecoration: 'underline',
     cursor: 'pointer',
@@ -221,9 +224,11 @@ export const ContactTaskRow: React.FC<ContactTaskRowProps> = ({
         <TaskDescription>{subject}</TaskDescription>
       </SubjectWrap>
 
-      <TaskItemWrap width={theme.spacing(100)} justifyContent="end">
+      <TaskItemWrap justifyContent="end" maxWidth={theme.spacing(45)}>
         <AssigneeName noWrap>{assigneeName}</AssigneeName>
-        <TaskDueDate isComplete={isComplete} dueDate={dueDate} />
+        <Box width={theme.spacing(12)}>
+          <TaskDueDate isComplete={isComplete} dueDate={dueDate} />
+        </Box>
         <TaskCommentsButton
           isComplete={isComplete}
           numberOfComments={comments?.totalCount}
