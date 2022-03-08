@@ -50,6 +50,7 @@ import {
   UpdateCommentResponse,
   UpdateComment,
 } from './Schema/Tasks/Comments/UpdateComments/datahandler';
+import { getAccountListDonorAccounts } from './Schema/AccountListDonorAccounts/dataHandler';
 
 class MpdxRestApi extends RESTDataSource {
   constructor() {
@@ -190,6 +191,14 @@ class MpdxRestApi extends RESTDataSource {
       `reports/expected_monthly_totals?filter[account_list_id]=${accountListId}`,
     );
     return mapExpectedMonthlyTotalReport(data);
+  }
+
+  async getAccountListDonorAccounts(accountListId: string, searchTerm: string) {
+    const { data } = await this.get(
+      `account_lists/${accountListId}/donor_accounts?fields[donor_accounts]=display_name,account_number&filter[wildcard_search]=${searchTerm}&per_page=6`,
+    );
+
+    return getAccountListDonorAccounts(data);
   }
 
   async getDesignationAccounts(accountListId: string) {

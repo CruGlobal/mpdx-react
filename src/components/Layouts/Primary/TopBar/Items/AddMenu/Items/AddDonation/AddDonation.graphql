@@ -17,6 +17,17 @@ query GetDonationModal($accountListId: ID!) {
   }
 }
 
+query GetAccountListDonorAccounts($accountListId: ID!, $searchTerm: String!) {
+  accountListDonorAccounts(
+    accountListId: $accountListId
+    searchTerm: $searchTerm
+  ) {
+    id
+    accountNumber
+    displayName
+  }
+}
+
 mutation AddDonation($accountListId: ID!, $attributes: DonationCreateInput!) {
   createDonation(
     input: { accountListId: $accountListId, attributes: $attributes }

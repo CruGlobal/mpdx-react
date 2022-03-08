@@ -23,9 +23,14 @@ import {
 import { DateTime } from 'luxon';
 import { KeyboardDatePicker } from '@material-ui/pickers';
 import { Autocomplete } from '@material-ui/lab';
+import debounce from 'lodash/debounce';
 import { DonationCreateInput } from '../../../../../../../../../graphql/types.generated';
 import { useApiConstants } from '../../../../../../../Constants/UseApiConstants';
-import { useGetDonationModalQuery } from './AddDonation.generated';
+import {
+  useAddDonationMutation,
+  useGetAccountListDonorAccountsLazyQuery,
+  useGetDonationModalQuery,
+} from './AddDonation.generated';
 
 interface AddDonationProps {
   accountListId: string;
@@ -37,13 +42,32 @@ const donationSchema: yup.SchemaOf<
 > = yup.object({
   amount: yup
     .number()
+    .typeError('Amount must be a valid number')
     .required()
+    .test(
+      'Is amount in valid currency format?',
+      'Amount must be in valid currency format',
+      (amount) => /\$?[0-9][0-9.,]*/.test(amount?.toString() ?? ''),
+    )
     .test(
       'Is positive?',
       'Must use a positive number for amount',
       (value) => typeof value === 'number' && value > 0,
     ),
-  appealAmount: yup.number().nullable(),
+  appealAmount: yup
+    .number()
+    .typeError('Appeal amount must be a valid number')
+    .nullable()
+    .test(
+      'Is appeal amount in valid currency format?',
+      'Appeal amount must be in valid currency format',
+      (amount) => /\$?[0-9][0-9.,]*/.test(amount?.toString() ?? ''),
+    )
+    .test(
+      'Is positive?',
+      'Must use a positive number for appeal amount',
+      (value) => typeof value === 'number' && value > 0,
+    ),
   appealId: yup.string().nullable(),
   currency: yup.string().required(),
   designationAccountId: yup.string().required(),
@@ -86,6 +110,13 @@ export const AddDonation = ({
     },
   });
 
+  const [addDonation, { loading: adding }] = useAddDonationMutation();
+
+  const [
+    searchForDonorAccounts,
+    { loading: loadingDonorAccounts, data: donorAccountData },
+  ] = useGetAccountListDonorAccountsLazyQuery();
+
   const pledgeCurrencies = constants?.pledgeCurrencies;
 
   const initialDonation: Omit<DonationCreateInput, 'id'> = {
@@ -102,12 +133,31 @@ export const AddDonation = ({
   };
 
   const onSubmit = async (attributes: Omit<DonationCreateInput, 'id'>) => {
-    console.log(attributes);
-    enqueueSnackbar(t('Donation successfully added'), {
-      variant: 'success',
+    const { data } = await addDonation({
+      variables: {
+        accountListId,
+        attributes: {
+          ...attributes,
+          amount: parseFloat((attributes.amount as unknown) as string),
+          appealAmount: parseFloat(
+            (attributes.appealAmount as unknown) as string,
+          ),
+        },
+      },
     });
+    if (data?.createDonation?.donation.id) {
+      enqueueSnackbar(t('Donation successfully added'), {
+        variant: 'success',
+      });
+    }
     handleClose();
   };
+
+  const handleDonorAccountSearch = debounce(
+    (searchTerm: string) =>
+      searchForDonorAccounts({ variables: { accountListId, searchTerm } }),
+    1000,
+  );
 
   if (loading) {
     return (
@@ -127,8 +177,7 @@ export const AddDonation = ({
       validateOnMount
     >
       {({
-        values,
-        handleChange,
+        values: { appealId },
         setFieldValue,
         isSubmitting,
         isValid,
@@ -146,7 +195,13 @@ export const AddDonation = ({
                     fullWidth
                     error={!!errors.amount && touched.amount}
                   >
-                    <LogFormLabel required>{t('Amount')}</LogFormLabel>
+                    <LogFormLabel
+                      htmlFor="amount-input"
+                      id="amount-input-label"
+                      required
+                    >
+                      {t('Amount')}
+                    </LogFormLabel>
                     <FastField name="amount">
                       {({ field, meta }: FieldProps) => (
                         <Box width="100%">
@@ -156,8 +211,11 @@ export const AddDonation = ({
                             variant="outlined"
                             fullWidth
                             type="text"
+                            inputProps={{
+                              'aria-labelledby': 'amount-input-label',
+                            }}
+                            id="amount-input"
                             error={!!errors.amount && touched.amount}
-                            inputProps={{ 'aria-label': t('Amount') }}
                           />
                           <FormHelperText>
                             {meta.touched && meta.error}
@@ -173,7 +231,11 @@ export const AddDonation = ({
                     fullWidth
                     error={!!errors.currency && touched.currency}
                   >
-                    <LogFormLabel required id="currency-select-label">
+                    <LogFormLabel
+                      htmlFor="currency-select"
+                      required
+                      id="currency-select-label"
+                    >
                       {t('Currency')}
                     </LogFormLabel>
                     {pledgeCurrencies && (
@@ -183,8 +245,12 @@ export const AddDonation = ({
                             <Select
                               {...field}
                               fullWidth
+                              id="currency-select"
                               variant="outlined"
                               labelId="currency-select-label"
+                              inputProps={{
+                                'aria-labelledby': 'currency-select-label',
+                              }}
                               value={field.value}
                               MenuProps={{
                                 anchorOrigin: {
@@ -230,7 +296,9 @@ export const AddDonation = ({
                     fullWidth
                     error={!!errors.donationDate && touched.donationDate}
                   >
-                    <LogFormLabel required>{t('Date')}</LogFormLabel>
+                    <LogFormLabel htmlFor="date-input" id="date-label" required>
+                      {t('Date')}
+                    </LogFormLabel>
                     <FastField name="donationDate">
                       {({ field }: FieldProps) => (
                         <Box width="100%">
@@ -238,6 +306,7 @@ export const AddDonation = ({
                             {...field}
                             fullWidth
                             size="small"
+                            id="date-input"
                             inputVariant="outlined"
                             onChange={(date) =>
                               !date ? null : setFieldValue('donationDate', date)
@@ -250,10 +319,10 @@ export const AddDonation = ({
                             format="MM/dd/yyyy"
                             clearable
                             inputProps={{
-                              'aria-label': t('Donation date'),
+                              'aria-labelledby': 'date-label',
                             }}
                             KeyboardButtonProps={{
-                              'aria-label': 'Donation date',
+                              'aria-labelledby': 'date-label',
                             }}
                           />
                         </Box>
@@ -268,18 +337,26 @@ export const AddDonation = ({
                     disabled
                     error={!!errors.motivation && touched.motivation}
                   >
-                    <LogFormLabel>{t('Motivation')}</LogFormLabel>
+                    <LogFormLabel
+                      htmlFor="motivation-input"
+                      id="motivation-label"
+                    >
+                      {t('Motivation')}
+                    </LogFormLabel>
                     <Field name="motivation">
                       {({ field }: FieldProps) => (
                         <Box width="100%">
                           <FormTextField
                             {...field}
                             size="small"
+                            id="motivation-input"
                             variant="outlined"
                             fullWidth
                             type="text"
                             disabled
-                            inputProps={{ 'aria-label': t('Motivation') }}
+                            inputProps={{
+                              'aria-labelledby': 'motivation-label',
+                            }}
                           />
                         </Box>
                       )}
@@ -295,24 +372,73 @@ export const AddDonation = ({
                     fullWidth
                     error={!!errors.donorAccountId && touched.donorAccountId}
                   >
-                    <LogFormLabel required>{t('Partner Account')}</LogFormLabel>
-                    <FastField name="donorAccountId">
+                    <LogFormLabel
+                      htmlFor="partner-account-input"
+                      id="partner-account-label"
+                      required
+                    >
+                      {t('Partner Account')}
+                    </LogFormLabel>
+                    <Field name="donorAccountId">
                       {({ field }: FieldProps) => (
                         <Box width="100%">
-                          <FormTextField
+                          <Autocomplete
                             {...field}
-                            size="small"
-                            variant="outlined"
-                            fullWidth
-                            type="text"
-                            error={
-                              !!errors.donorAccountId && touched.donorAccountId
+                            id="partner-account-input"
+                            loading={loadingDonorAccounts}
+                            options={
+                              (donorAccountData?.accountListDonorAccounts &&
+                                donorAccountData.accountListDonorAccounts.map(
+                                  ({ id }) => id,
+                                )) ??
+                              []
                             }
-                            inputProps={{ 'aria-label': t('Partner Account') }}
+                            getOptionLabel={(donorAccountId): string => {
+                              const donorAccount =
+                                donorAccountData?.accountListDonorAccounts &&
+                                donorAccountData.accountListDonorAccounts.find(
+                                  ({ id }) => donorAccountId === id,
+                                );
+
+                              return donorAccount?.displayName ?? '';
+                            }}
+                            renderInput={(params): ReactElement => (
+                              <TextField
+                                {...params}
+                                size="small"
+                                variant="outlined"
+                                onChange={(e) => {
+                                  console.log(e);
+                                  handleDonorAccountSearch(e.target.value);
+                                }}
+                                InputProps={{
+                                  ...params.InputProps,
+                                  'aria-labelledby': 'partner-account-label',
+                                  endAdornment: (
+                                    <>
+                                      {loadingDonorAccounts && (
+                                        <CircularProgress
+                                          color="primary"
+                                          size={20}
+                                        />
+                                      )}
+                                      {params.InputProps.endAdornment}
+                                    </>
+                                  ),
+                                }}
+                              />
+                            )}
+                            value={field.value}
+                            onChange={(_, donorAccountId): void =>
+                              setFieldValue('donorAccountId', donorAccountId)
+                            }
+                            getOptionSelected={(option, value): boolean =>
+                              option === value
+                            }
                           />
                         </Box>
                       )}
-                    </FastField>
+                    </Field>
                   </FormControl>
                 </Grid>
                 <Grid item xs={isMobile ? 12 : 6}>
@@ -324,7 +450,11 @@ export const AddDonation = ({
                       touched.designationAccountId
                     }
                   >
-                    <LogFormLabel required>
+                    <LogFormLabel
+                      htmlFor="designation-account-input"
+                      id="designation-account-label"
+                      required
+                    >
                       {t('Designation Account')}
                     </LogFormLabel>
                     <FastField name="designationAccountId">
@@ -332,6 +462,7 @@ export const AddDonation = ({
                         <Box width="100%">
                           <Autocomplete
                             {...field}
+                            id="designation-account-input"
                             loading={loading}
                             options={
                               (data?.designationAccounts &&
@@ -355,7 +486,8 @@ export const AddDonation = ({
                                 variant="outlined"
                                 InputProps={{
                                   ...params.InputProps,
-                                  'aria-label': t('Designation Account'),
+                                  'aria-labelledby':
+                                    'designation-account-label',
                                   endAdornment: (
                                     <>
                                       {loading && (
@@ -370,7 +502,7 @@ export const AddDonation = ({
                                 }}
                               />
                             )}
-                            value={values.designationAccountId}
+                            value={field.value}
                             onChange={(_, designationAccountId): void =>
                               setFieldValue(
                                 'designationAccountId',
@@ -395,12 +527,15 @@ export const AddDonation = ({
                     fullWidth
                     error={!!errors.appealId && touched.appealId}
                   >
-                    <LogFormLabel required>{t('Appeal')}</LogFormLabel>
+                    <LogFormLabel htmlFor="appeal-input" id="appeal-label">
+                      {t('Appeal')}
+                    </LogFormLabel>
                     <FastField name="appealId">
                       {({ field }: FieldProps) => (
                         <Box width="100%">
                           <Autocomplete
                             {...field}
+                            id="appeal-input"
                             loading={loading}
                             options={
                               (data?.accountList.appeals &&
@@ -422,7 +557,7 @@ export const AddDonation = ({
                                 variant="outlined"
                                 InputProps={{
                                   ...params.InputProps,
-                                  'aria-label': t('Designation Account'),
+                                  'aria-labelledby': 'appeal-label',
                                   endAdornment: (
                                     <>
                                       {loading && (
@@ -437,7 +572,7 @@ export const AddDonation = ({
                                 }}
                               />
                             )}
-                            value={values.appealId}
+                            value={field.value}
                             onChange={(_, appealId): void =>
                               setFieldValue('appealId', appealId)
                             }
@@ -456,12 +591,18 @@ export const AddDonation = ({
                     fullWidth
                     error={!!errors.appealAmount && touched.appealAmount}
                   >
-                    <LogFormLabel>{t('Appeal Amount')}</LogFormLabel>
+                    <LogFormLabel
+                      htmlFor="appeal-amount-input"
+                      id="appeal-amount-label"
+                    >
+                      {t('Appeal Amount')}
+                    </LogFormLabel>
                     <Field name="appealAmount">
                       {({ field }: FieldProps) => (
                         <Box width="100%">
                           <FormTextField
                             {...field}
+                            id="appeal-amount-input"
                             size="small"
                             variant="outlined"
                             fullWidth
@@ -469,12 +610,12 @@ export const AddDonation = ({
                             placeholder={t(
                               'Leave empty to use full donation amount',
                             )}
-                            disabled={!values.appealId}
+                            disabled={!appealId}
                             error={
                               !!errors.appealAmount && touched.appealAmount
                             }
                             inputProps={{
-                              'aria-label': t('Appeal Amount'),
+                              'aria-labelledby': 'appeal-amount-label',
                             }}
                           />
                         </Box>
@@ -487,34 +628,44 @@ export const AddDonation = ({
               <Grid container item xs={12} spacing={1}>
                 <Grid item xs={12}>
                   <FormControl fullWidth size="small">
-                    <LogFormLabel>{t('Memo')}</LogFormLabel>
-                    <TextField
-                      size="small"
-                      value={values.memo}
-                      onChange={handleChange('memo')}
-                      fullWidth
-                      inputProps={{ 'aria-label': t('Memo') }}
-                      error={!!errors.memo && touched.memo}
-                      variant="outlined"
-                    />
+                    <LogFormLabel htmlFor="memo-input" id="memo-label">
+                      {t('Memo')}
+                    </LogFormLabel>
+                    <FastField name="memo">
+                      {({ field }: FieldProps) => (
+                        <Box width="100%">
+                          <FormTextField
+                            {...field}
+                            id="memo-input"
+                            size="small"
+                            variant="outlined"
+                            fullWidth
+                            type="text"
+                            error={!!errors.memo && touched.memo}
+                            inputProps={{
+                              'aria-labelledby': 'memo-label',
+                            }}
+                          />
+                        </Box>
+                      )}
+                    </FastField>
                   </FormControl>
                 </Grid>
               </Grid>
             </Grid>
           </DialogContent>
           <DialogActions>
-            <Button disabled={isSubmitting} onClick={handleClose}>
+            <Button disabled={isSubmitting || adding} onClick={handleClose}>
               {t('Cancel')}
             </Button>
             <Button
               size="large"
               variant="contained"
               color="primary"
-              disabled={!isValid || isSubmitting}
+              disabled={!isValid || isSubmitting || adding}
               type="submit"
             >
-              {/* TODO */}
-              {false && <CircularProgress size={20} />}
+              {adding && <CircularProgress size={20} />}
               {t('Save')}
             </Button>
           </DialogActions>
