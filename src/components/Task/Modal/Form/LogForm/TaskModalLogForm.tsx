@@ -377,7 +377,11 @@ const TaskModalLogForm = ({
                             endAdornment: (
                               <>
                                 {loading && (
-                                  <CircularProgress color="primary" size={20} />
+                                  <CircularProgress
+                                    color="primary"
+                                    size={20}
+                                    data-testid="loading"
+                                  />
                                 )}
                                 {params.InputProps.endAdornment}
                               </>

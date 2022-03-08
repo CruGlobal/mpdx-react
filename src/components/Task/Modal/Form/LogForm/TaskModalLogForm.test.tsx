@@ -174,7 +174,7 @@ describe('TaskModalLogForm', () => {
 
   it('should load and show data for task', async () => {
     const onClose = jest.fn();
-    const { getByRole, getByLabelText, getByText } = render(
+    const { getByRole, getByLabelText, getByText, queryByTestId } = render(
       <MuiPickersUtilsProvider utils={LuxonUtils}>
         <SnackbarProvider>
           <MockedProvider
@@ -200,6 +200,7 @@ describe('TaskModalLogForm', () => {
     userEvent.click(tagsElement);
 
     await new Promise((resolve) => setTimeout(resolve, 0));
+    expect(queryByTestId('loading')).not.toBeInTheDocument();
     await waitFor(() => expect(getByText('tag-1')).toBeInTheDocument());
     await waitFor(() => expect(getByText('tag-2')).toBeInTheDocument());
     userEvent.click(
@@ -221,8 +222,12 @@ describe('TaskModalLogForm', () => {
       hidden: true,
       name: 'Contacts',
     });
+    userEvent.type(contactsElement, 'Smith');
     userEvent.click(contactsElement);
     await waitFor(() => expect(getByText('Smith, John')).toBeInTheDocument());
+
+    userEvent.type(contactsElement, '');
+    userEvent.click(contactsElement);
     userEvent.click(
       await within(getByRole('presentation')).findByText('Anderson, Robert'),
     );
