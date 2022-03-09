@@ -176,6 +176,7 @@ const ContactsPage: React.FC = () => {
           pathname,
           query: {
             ...oldQuery,
+            accountListId,
             ...(searchTerm && { searchTerm }),
           },
         });
@@ -184,11 +185,12 @@ const ContactsPage: React.FC = () => {
           pathname,
           query: {
             ...oldQuery,
+            accountListId,
           },
         });
       }
     }, 500),
-    [],
+    [accountListId],
   );
 
   const [flowsViewEnabled, setflowsViewEnabled] = useState<boolean>(false);
