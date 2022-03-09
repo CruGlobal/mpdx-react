@@ -69,7 +69,7 @@ const AssigneeName = styled(Typography)(({ theme }) => ({
   color: theme.palette.text.primary,
   margin: theme.spacing(1),
   overflow: 'hidden',
-  textOverflow: 'ellipses',
+  textOverflow: 'ellipsis',
 }));
 
 const StarIconWrap = styled(Box)(({ theme }) => ({
