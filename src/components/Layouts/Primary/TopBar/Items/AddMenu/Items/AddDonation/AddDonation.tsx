@@ -61,12 +61,13 @@ const donationSchema: yup.SchemaOf<
     .test(
       'Is appeal amount in valid currency format?',
       'Appeal amount must be in valid currency format',
-      (amount) => /\$?[0-9][0-9.,]*/.test((amount as unknown) as string),
+      (amount) =>
+        !amount || /\$?[0-9][0-9.,]*/.test((amount as unknown) as string),
     )
     .test(
       'Is positive?',
       'Must use a positive number for appeal amount',
-      (value) => parseFloat((value as unknown) as string) > 0,
+      (value) => !value || parseFloat((value as unknown) as string) > 0,
     ),
   appealId: yup.string().nullable(),
   currency: yup.string().required(),
@@ -133,12 +134,17 @@ export const AddDonation = ({
   };
 
   const onSubmit = async (attributes: Omit<DonationCreateInput, 'id'>) => {
+    const amount = ((attributes.amount as unknown) as string).replace(
+      /[^\d.-]/g,
+      '',
+    );
+
     const { data } = await addDonation({
       variables: {
         accountListId,
         attributes: {
           ...attributes,
-          amount: parseFloat((attributes.amount as unknown) as string),
+          amount: parseFloat(amount),
           appealAmount: parseFloat(
             (attributes.appealAmount as unknown) as string,
           ),
