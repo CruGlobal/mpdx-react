@@ -52,6 +52,7 @@ import {
 import theme from '../../../../../src/theme';
 import { useCreateTaskCommentMutation } from '../../Drawer/CommentList/Form/CreateTaskComment.generated';
 import { TasksDocument } from 'pages/accountLists/[accountListId]/tasks/Tasks.generated';
+import { ContactTasksTabDocument } from 'src/components/Contacts/ContactDetails/ContactTasksTab/ContactTasksTab.generated';
 
 export const ActionButton = styled(Button)(() => ({
   color: theme.palette.info.main,
@@ -89,7 +90,7 @@ interface Props {
   accountListId: string;
   task?: GetTaskForTaskDrawerQuery['task'];
   onClose: () => void;
-  defaultValues?: Partial<GetTaskForTaskDrawerQuery['task']>;
+  defaultValues?: Partial<TaskCreateInput & TaskUpdateInput>;
   filter?: TaskFilter;
   rowsPerPage: number;
 }
@@ -115,9 +116,8 @@ const TaskModalForm = ({
         startAt: DateTime.local().plus({ hours: 1 }).startOf('hour').toISO(),
         completedAt: null,
         tagList: defaultValues?.tagList || [],
-        contactIds:
-          defaultValues?.contacts?.nodes.map((contact) => contact.id) || [],
-        userId: defaultValues?.user?.id || null,
+        contactIds: defaultValues?.contactIds || [],
+        userId: defaultValues?.userId || null,
         notificationTimeBefore: null,
         notificationType: null,
         notificationTimeUnit: null,
@@ -150,6 +150,10 @@ const TaskModalForm = ({
             query: TasksDocument,
             variables: { accountListId },
           },
+          {
+            query: ContactTasksTabDocument,
+            variables: { accountListId },
+          },
         ],
       });
     } else {
@@ -176,6 +180,17 @@ const TaskModalForm = ({
           {
             query: TasksDocument,
             variables: { accountListId },
+          },
+          {
+            query: ContactTasksTabDocument,
+            variables: {
+              accountListId,
+              tasksFilter: {
+                contactIds: [
+                  defaultValues?.contactIds ? defaultValues.contactIds[0] : '',
+                ],
+              },
+            },
           },
         ],
       });

@@ -8,15 +8,14 @@ import {
   ActivityTypeEnum,
   ResultEnum,
 } from '../../../../../../graphql/types.generated';
-import useTaskDrawer from '../../../../../hooks/useTaskDrawer';
 import theme from '../../../../../theme';
 import { StarredItemIcon } from '../../../../common/StarredItemIcon/StarredItemIcon';
-import { TaskDrawerTabsEnum } from '../../../../Task/Drawer/Drawer';
 import { TaskRowFragment } from '../../../../Task/TaskRow/TaskRow.generated';
 import { StarTaskIconButton } from '../StarTaskIconButton/StarTaskIconButton';
 import { TaskCommentsButton } from './TaskCommentsButton/TaskCommentsButton';
 import { TaskCompleteButton } from './TaskCompleteButton/TaskCompleteButton';
 import { TaskDueDate } from './TaskDueDate/TaskDueDate';
+import useTaskModal from 'src/hooks/useTaskModal';
 
 const TaskRowWrap = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -44,6 +43,16 @@ const TaskDescription = styled(Typography)(({ theme }) => ({
   fontSize: 14,
   color: theme.palette.text.primary,
   marginLeft: theme.spacing(0.5),
+}));
+
+const SubjectWrap = styled(Box)(({}) => ({
+  width: '100%',
+  display: 'flex',
+  alignItems: 'center',
+  '&:hover': {
+    textDecoration: 'underline',
+    cursor: 'pointer',
+  },
 }));
 
 const ContactName = styled(Typography)(({ theme }) => ({
@@ -134,20 +143,31 @@ export const ContactTaskRow: React.FC<ContactTaskRowProps> = ({
 }) => {
   const { t } = useTranslation();
 
-  const { openTaskDrawer } = useTaskDrawer();
+  const { openTaskModal } = useTaskModal();
 
   const handleContactCheckPressed = () => {
     //select contact for actions
   };
 
   const handleCompleteButtonPressed = () => {
-    openTaskDrawer({ taskId: task?.id, showCompleteForm: true });
+    openTaskModal({
+      taskId: task?.id,
+      showCompleteForm: true,
+      view: 'complete',
+    });
   };
 
   const handleCommentButtonPressed = () => {
-    openTaskDrawer({
+    openTaskModal({
       taskId: task?.id,
-      specificTab: TaskDrawerTabsEnum.comments,
+      view: 'comments',
+    });
+  };
+
+  const handleSubjectPressed = () => {
+    openTaskModal({
+      taskId: task?.id,
+      view: 'edit',
     });
   };
 
@@ -187,8 +207,10 @@ export const ContactTaskRow: React.FC<ContactTaskRowProps> = ({
           isComplete={isComplete}
           onClick={handleCompleteButtonPressed}
         />
-        <TaskType>{getLocalizedTaskType(t, activityType)}</TaskType>
-        <TaskDescription>{subject}</TaskDescription>
+        <SubjectWrap onClick={handleSubjectPressed}>
+          <TaskType>{getLocalizedTaskType(t, activityType)}</TaskType>
+          <TaskDescription>{subject}</TaskDescription>
+        </SubjectWrap>
       </TaskItemWrap>
       <TaskItemWrap>
         <ContactName>{contactName}</ContactName>

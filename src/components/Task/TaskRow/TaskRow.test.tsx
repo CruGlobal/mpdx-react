@@ -297,6 +297,7 @@ describe('TaskRow', () => {
       userEvent.click(getByTestId('subject-wrap'));
       expect(openTaskModal).toHaveBeenCalledWith({
         taskId: task.id,
+        view: 'edit',
       });
     });
   });

@@ -3,18 +3,18 @@ import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { DateTime } from 'luxon';
 import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
-import useTaskDrawer from '../../../../hooks/useTaskDrawer';
+import useTaskModal from '../../../../hooks/useTaskModal';
 import theme from '../../../../theme';
 import { ContactTasksTab } from './ContactTasksTab';
 import { ContactTasksTabQuery } from './ContactTasksTab.generated';
 
-jest.mock('../../../../hooks/useTaskDrawer');
+jest.mock('../../../../hooks/useTaskModal');
 
-const openTaskDrawer = jest.fn();
+const openTaskModal = jest.fn();
 
 beforeEach(() => {
-  (useTaskDrawer as jest.Mock).mockReturnValue({
-    openTaskDrawer,
+  (useTaskModal as jest.Mock).mockReturnValue({
+    openTaskModal,
   });
 });
 
@@ -39,7 +39,7 @@ describe('ContactTasksTab', () => {
     );
     const { operation, response } = querySpy.mock.calls[0][0];
     expect(operation.variables.accountListId).toEqual(accountListId);
-    expect(operation.variables.contactId).toEqual(contactId);
+    expect(operation.variables.tasksFilter.contactIds).toEqual([contactId]);
     await waitFor(() =>
       expect(
         getByText(response.data.tasks.nodes[0].subject),
@@ -78,7 +78,7 @@ describe('ContactTasksTab', () => {
     );
     const { operation, response } = querySpy.mock.calls[0][0];
     expect(operation.variables.accountListId).toEqual(accountListId);
-    expect(operation.variables.contactId).toEqual(contactId);
+    expect(operation.variables.tasksFilter.contactIds).toEqual([contactId]);
     await waitFor(() =>
       expect(
         getByText(response.data.tasks.nodes[0].subject),
@@ -86,7 +86,11 @@ describe('ContactTasksTab', () => {
     );
 
     userEvent.click(getByText('add task'));
-    expect(openTaskDrawer).toHaveBeenCalledWith({});
+    expect(openTaskModal).toHaveBeenCalledWith({
+      defaultValues: {
+        contactIds: [contactId],
+      },
+    });
   });
 
   it('handles log task click', async () => {
@@ -106,15 +110,19 @@ describe('ContactTasksTab', () => {
     );
     const { operation, response } = querySpy.mock.calls[0][0];
     expect(operation.variables.accountListId).toEqual(accountListId);
-    expect(operation.variables.contactId).toEqual(contactId);
+    expect(operation.variables.tasksFilter.contactIds).toEqual([contactId]);
     await waitFor(() =>
       expect(
         getByText(response.data.tasks.nodes[0].subject),
       ).toBeInTheDocument(),
     );
     userEvent.click(getByText('log task'));
-    expect(openTaskDrawer).toHaveBeenCalledWith({
-      defaultValues: { completedAt: DateTime.local().toISO() },
+    expect(openTaskModal).toHaveBeenCalledWith({
+      view: 'log',
+      defaultValues: {
+        completedAt: DateTime.local().toISO(),
+        contactIds: [contactId],
+      },
     });
   });
 });

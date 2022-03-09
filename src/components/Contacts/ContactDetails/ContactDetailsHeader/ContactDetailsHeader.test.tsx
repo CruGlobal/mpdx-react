@@ -29,6 +29,8 @@ describe('ContactDetails', () => {
           GetContactDetailsHeader: {
             contact: {
               primaryPerson: { firstName: 'Fname', lastName: 'Lname' },
+              lastDonation: null,
+              pledgeCurrency: 'USD',
             },
           },
         }}
@@ -54,6 +56,8 @@ describe('ContactDetails', () => {
             contact: {
               name: 'Lname, Fname',
               primaryPerson: null,
+              pledgeCurrency: 'USD',
+              lastDonation: null,
             },
           },
         }}

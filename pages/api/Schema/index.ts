@@ -25,6 +25,8 @@ import DeleteCommentTypeDefs from './Tasks/Comments/DeleteComments/deleteComment
 import { DeleteCommentResolvers } from './Tasks/Comments/DeleteComments/resolvers';
 import UpdateCommentTypeDefs from './Tasks/Comments/UpdateComments/updateComments.graphql';
 import { UpdateCommentResolvers } from './Tasks/Comments/UpdateComments/resolvers';
+import AccountListDonorAccountsTypeDefs from './AccountListDonorAccounts/accountListDonorAccounts.graphql';
+import { AccountListDonorAccountsResolvers } from './AccountListDonorAccounts/resolvers';
 
 const schema = buildFederatedSchema([
   {
@@ -36,6 +38,10 @@ const schema = buildFederatedSchema([
   {
     typeDefs: AccountListAnalyticsTypeDefs,
     resolvers: AccountListAnalyticsResolvers,
+  },
+  {
+    typeDefs: AccountListDonorAccountsTypeDefs,
+    resolvers: AccountListDonorAccountsResolvers,
   },
   {
     typeDefs: AppointmentResultsTypeDefs,

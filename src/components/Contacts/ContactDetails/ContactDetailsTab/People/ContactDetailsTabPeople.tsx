@@ -124,7 +124,11 @@ export const ContactDetailsTabPeople: React.FC<ContactDetailsPeopleProp> = ({
               <ContactPersonIconContainer>
                 <Phone color="disabled" />
               </ContactPersonIconContainer>
-              <Typography variant="subtitle1">
+              <Typography
+                variant="subtitle1"
+                component="a"
+                href={`tel:${person.primaryPhoneNumber?.number}`}
+              >
                 {person.primaryPhoneNumber?.number}
               </Typography>
               {person.primaryPhoneNumber?.location ? (
@@ -140,7 +144,11 @@ export const ContactDetailsTabPeople: React.FC<ContactDetailsPeopleProp> = ({
               <ContactPersonIconContainer>
                 <Email color="disabled" />
               </ContactPersonIconContainer>
-              <Typography variant="subtitle1">
+              <Typography
+                variant="subtitle1"
+                component="a"
+                href={`mailto:${person.primaryEmailAddress?.email}`}
+              >
                 {person.primaryEmailAddress?.email}
               </Typography>
             </ContactPersonRowContainer>

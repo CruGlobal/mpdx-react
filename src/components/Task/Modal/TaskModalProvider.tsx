@@ -1,8 +1,7 @@
 import { ReactElement, ReactNode, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import theme from '../../../theme';
 import TaskModal, { TaskModalProps } from '../Modal/TaskModal';
-import TaskDrawerContext from './TaskModalContext';
+import TaskModalContext from './TaskModalContext';
 
 interface Props {
   children: ReactNode;
@@ -10,59 +9,55 @@ interface Props {
 
 export interface TaskModalProviderContext {
   openTaskModal: (props: TaskModalProps) => void;
-  taskModals: TaskModalPropsWithId[];
+  taskModal: TaskModalPropsWithId;
 }
 
 interface TaskModalPropsWithId extends TaskModalProps {
   id: string;
 }
 
-const TaskDrawerProvider = ({ children }: Props): ReactElement => {
-  const [taskModals, setTaskModals] = useState<TaskModalPropsWithId[]>([]);
+const TaskModalProvider = ({ children }: Props): ReactElement => {
+  const [taskModal, setTaskModal] = useState<TaskModalPropsWithId>({ id: '' });
   const openTaskModal = (taskModalProps: TaskModalProps): void => {
     const id = uuidv4();
     if (
       !taskModalProps.taskId ||
-      !taskModals.find(
-        ({ taskId, showCompleteForm }) =>
-          taskId === taskModalProps.taskId &&
-          showCompleteForm === taskModalProps.showCompleteForm,
+      !(
+        taskModal.taskId === taskModalProps.taskId &&
+        taskModal.showCompleteForm === taskModalProps.showCompleteForm
       )
     ) {
-      setTaskModals([
-        ...taskModals,
-        {
-          id,
-          ...taskModalProps,
-          onClose: (): void => {
-            taskModalProps.onClose && taskModalProps.onClose();
-            setTimeout(
-              () =>
-                setTaskModals((taskModals) =>
-                  taskModals.filter(({ id: taskId }) => taskId !== id),
-                ),
-              theme.transitions.duration.leavingScreen,
-            );
-          },
+      setTaskModal({
+        id,
+        ...taskModalProps,
+        onClose: (): void => {
+          taskModalProps.onClose && taskModalProps.onClose();
+          setTaskModal({ id: '' });
         },
-      ]);
+      });
     }
   };
   const value: TaskModalProviderContext = {
     openTaskModal,
-    taskModals,
+    taskModal,
   };
 
   return (
-    <TaskDrawerContext.Provider value={value}>
+    <TaskModalContext.Provider value={value}>
       {children}
-      {taskModals.map((props: TaskModalPropsWithId) => {
-        const { id, ...taskModalProps } = props;
-
-        return <TaskModal key={id} {...taskModalProps} />;
-      })}
-    </TaskDrawerContext.Provider>
+      {taskModal.id && (
+        <TaskModal
+          taskId={taskModal.taskId}
+          onClose={taskModal.onClose}
+          view={taskModal.view}
+          showCompleteForm={taskModal.showCompleteForm}
+          defaultValues={taskModal.defaultValues}
+          filter={taskModal.filter}
+          rowsPerPage={taskModal.rowsPerPage}
+        />
+      )}
+    </TaskModalContext.Provider>
   );
 };
 
-export default TaskDrawerProvider;
+export default TaskModalProvider;

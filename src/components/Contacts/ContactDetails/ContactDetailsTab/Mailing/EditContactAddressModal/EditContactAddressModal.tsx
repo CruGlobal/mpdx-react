@@ -22,7 +22,15 @@ import {
 import { ContactMailingFragment } from '../ContactMailing.generated';
 import { AddressUpdateInput } from '../../../../../../../graphql/types.generated';
 import Modal from '../../../../../common/Modal/Modal';
-import { useUpdateContactAddressMutation } from './EditContactAddress.generated';
+import {
+  ContactDetailsTabDocument,
+  ContactDetailsTabQuery,
+} from '../../ContactDetailsTab.generated';
+import {
+  useDeleteContactAddressMutation,
+  useUpdateContactAddressMutation,
+} from './EditContactAddress.generated';
+import { ActionButton } from 'src/components/Task/Modal/Form/TaskModalForm';
 
 const ContactEditContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -37,6 +45,11 @@ const ContactInputWrapper = styled(Box)(({ theme }) => ({
   margin: theme.spacing(2, 0),
 }));
 
+const DeleteButton = styled(Button)(({ theme }) => ({
+  fontWeight: 550,
+  color: theme.palette.error.main,
+}));
+
 const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
   margin: theme.spacing(0, 1, 0, 0),
 }));
@@ -44,6 +57,7 @@ const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
 interface EditContactAddressModalProps {
   accountListId: string;
   address: ContactMailingFragment['addresses']['nodes'][0];
+  contactId: string;
   handleClose: () => void;
 }
 
@@ -60,6 +74,7 @@ enum AddressLocationEnum {
 export const EditContactAddressModal: React.FC<EditContactAddressModalProps> = ({
   accountListId,
   address,
+  contactId,
   handleClose,
 }): ReactElement<EditContactAddressModalProps> => {
   const { t } = useTranslation();
@@ -68,6 +83,10 @@ export const EditContactAddressModal: React.FC<EditContactAddressModalProps> = (
     updateContactAddress,
     { loading: updating },
   ] = useUpdateContactAddressMutation();
+  const [
+    deleteAddress,
+    { loading: deleting },
+  ] = useDeleteContactAddressMutation();
 
   const contactAddressSchema: yup.SchemaOf<
     Omit<AddressUpdateInput, 'validValues'>
@@ -96,6 +115,50 @@ export const EditContactAddressModal: React.FC<EditContactAddressModalProps> = (
     enqueueSnackbar(t('Address updated successfully'), {
       variant: 'success',
     });
+    handleClose();
+  };
+
+  const deleteContactAddress = async (): Promise<void> => {
+    if (address) {
+      await deleteAddress({
+        variables: {
+          id: address.id,
+          accountListId,
+        },
+        update: (cache, { data: deletedContactAddress }) => {
+          const deletedAddressId = deletedContactAddress?.deleteAddress?.id;
+          const query = {
+            query: ContactDetailsTabDocument,
+            variables: {
+              accountListId,
+              contactId,
+            },
+          };
+
+          const dataFromCache = cache.readQuery<ContactDetailsTabQuery>(query);
+
+          if (dataFromCache) {
+            const data = {
+              ...dataFromCache,
+              contact: {
+                ...dataFromCache.contact,
+                addresses: {
+                  ...dataFromCache.contact.addresses,
+                  nodes: dataFromCache.contact.addresses.nodes.filter(
+                    (address) => address.id !== deletedAddressId,
+                  ),
+                },
+              },
+            };
+            cache.writeQuery({ ...query, data });
+          }
+          enqueueSnackbar(t('Address deleted successfully'), {
+            variant: 'success',
+          });
+        },
+      });
+    }
+    handleClose();
   };
 
   return (
@@ -249,22 +312,36 @@ export const EditContactAddressModal: React.FC<EditContactAddressModalProps> = (
               </ContactEditContainer>
             </DialogContent>
             <DialogActions>
-              <Button
-                onClick={handleClose}
-                disabled={isSubmitting}
-                variant="text"
+              <Box
+                justifyContent={address ? 'space-between' : 'end'}
+                display="flex"
+                alignItems="center"
+                width="100%"
               >
-                {t('Cancel')}
-              </Button>
-              <Button
-                color="primary"
-                type="submit"
-                variant="contained"
-                disabled={!isValid || isSubmitting}
-              >
-                {updating && <LoadingIndicator color="primary" size={20} />}
-                {t('Save')}
-              </Button>
+                {address && (
+                  <DeleteButton onClick={deleteContactAddress} variant="text">
+                    {t('Delete')}
+                  </DeleteButton>
+                )}
+                <Box>
+                  <ActionButton
+                    onClick={handleClose}
+                    disabled={isSubmitting}
+                    variant="text"
+                  >
+                    {t('Cancel')}
+                  </ActionButton>
+                  <ActionButton
+                    type="submit"
+                    disabled={!isValid || isSubmitting}
+                  >
+                    {(updating || deleting) && (
+                      <LoadingIndicator color="primary" size={20} />
+                    )}
+                    {t('Save')}
+                  </ActionButton>
+                </Box>
+              </Box>
             </DialogActions>
           </form>
         )}

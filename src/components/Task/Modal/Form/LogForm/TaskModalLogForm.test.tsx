@@ -9,6 +9,7 @@ import { InMemoryCache } from '@apollo/client';
 import { MockedProvider } from '@apollo/client/testing';
 import { ActivityTypeEnum } from '../../../../../../graphql/types.generated';
 import { GetTasksForTaskListDocument } from '../../../List/TaskList.generated';
+import useTaskModal from '../../../../../hooks/useTaskModal';
 import TaskModalLogForm from './TaskModalLogForm';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import TestRouter from '__tests__/util/TestRouter';
@@ -25,11 +26,20 @@ import {
 const accountListId = 'abc';
 
 const mockEnqueue = jest.fn();
+jest.mock('../../../../../hooks/useTaskModal');
+
+const openTaskModal = jest.fn();
 
 const router = {
   query: { accountListId },
   isReady: true,
 };
+
+beforeEach(() => {
+  (useTaskModal as jest.Mock).mockReturnValue({
+    openTaskModal,
+  });
+});
 
 jest.mock('notistack', () => ({
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -104,6 +114,7 @@ describe('TaskModalLogForm', () => {
     await waitFor(() => expect(onClose).toHaveBeenCalled());
     const { operation } = mutationSpy.mock.calls[0][0];
     expect(operation.variables.accountListId).toEqual(accountListId);
+    expect(openTaskModal).not.toHaveBeenCalled();
   }, 10000);
 
   it('persisted', async () => {
@@ -272,4 +283,54 @@ describe('TaskModalLogForm', () => {
       }),
     );
   });
+
+  it('opens the next action modal', async () => {
+    const mutationSpy = jest.fn();
+    const onClose = jest.fn();
+    const {
+      findByText,
+      queryByText,
+      getByText,
+      getByRole,
+      getByLabelText,
+    } = render(
+      <MuiPickersUtilsProvider utils={LuxonUtils}>
+        <SnackbarProvider>
+          <TestRouter router={router}>
+            <GqlMockedProvider<CreateTaskMutation> onCall={mutationSpy}>
+              <TaskModalLogForm
+                accountListId={accountListId}
+                filter={mockFilter}
+                rowsPerPage={100}
+                onClose={onClose}
+              />
+            </GqlMockedProvider>
+          </TestRouter>
+        </SnackbarProvider>
+      </MuiPickersUtilsProvider>,
+    );
+
+    userEvent.click(getByLabelText('Show More'));
+    userEvent.click(getByLabelText('Next Action'));
+    userEvent.click(
+      within(
+        getByRole('listbox', { hidden: true, name: 'Next Action' }),
+      ).getByText(ActivityTypeEnum.Call),
+    );
+    userEvent.click(getByText('Save'));
+    expect(await findByText('Field is required')).toBeInTheDocument();
+    expect(await queryByText('Delete')).not.toBeInTheDocument();
+    userEvent.type(getByLabelText('Subject'), accountListId);
+    await waitFor(() => expect(getByText('Save')).not.toBeDisabled());
+    userEvent.click(getByText('Save'));
+    await waitFor(() => expect(onClose).toHaveBeenCalled());
+    expect(openTaskModal).toHaveBeenCalledWith({
+      defaultValues: {
+        activityType: ActivityTypeEnum.Call,
+        contactIds: ['9535112'],
+        userId: '5667620',
+        tagList: ['Ice-cream', 'Star Bridge Garden', 'Rock Pants'],
+      },
+    });
+  }, 10000);
 });
