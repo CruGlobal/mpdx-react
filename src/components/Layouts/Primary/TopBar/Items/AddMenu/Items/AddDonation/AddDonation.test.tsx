@@ -31,7 +31,7 @@ describe('AddDonation', () => {
     await waitFor(() => expect(queryByText('Amount')).toBeInTheDocument());
   });
 
-  it('close menu', async () => {
+  it('closes add donation modal', async () => {
     const { queryByText, getByText } = render(
       <MuiPickersUtilsProvider utils={LuxonUtils}>
         <MuiThemeProvider theme={theme}>
