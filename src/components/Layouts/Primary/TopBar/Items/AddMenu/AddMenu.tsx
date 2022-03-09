@@ -26,6 +26,12 @@ type AddMenuItem = {
   onClick: () => void;
 };
 
+export enum AddMenuItemsEnum {
+  'NEW_CONTACT',
+  'MULTIPLE_CONTACTS',
+  'ADD_DONATION',
+}
+
 const HoverAddIcon = styled(AddIcon)(({ theme }) => ({
   textTransform: 'none',
   color: theme.palette.common.white,
@@ -77,11 +83,11 @@ export const renderDialog = (
 
   const modalTitle = () => {
     switch (selectedMenuItem) {
-      case 0:
+      case AddMenuItemsEnum.NEW_CONTACT:
         return t('New Contact');
-      case 1:
+      case AddMenuItemsEnum.MULTIPLE_CONTACTS:
         return t('Add Multiple Contacts');
-      case 2:
+      case AddMenuItemsEnum.ADD_DONATION:
         return t('Add Donation');
       default:
         return t('Add Contact');
@@ -94,21 +100,21 @@ export const renderDialog = (
 
   const renderDialogContent = () => {
     switch (selectedMenuItem) {
-      case 0:
+      case AddMenuItemsEnum.NEW_CONTACT:
         return (
           <CreateContact
             accountListId={accountListId ?? ''}
             handleClose={handleDialogClose}
           />
         );
-      case 1:
+      case AddMenuItemsEnum.MULTIPLE_CONTACTS:
         return (
           <CreateMultipleContacts
             accountListId={accountListId ?? ''}
             handleClose={handleDialogClose}
           />
         );
-      case 2:
+      case AddMenuItemsEnum.ADD_DONATION:
         return (
           <AddDonation
             accountListId={accountListId ?? ''}
@@ -119,10 +125,10 @@ export const renderDialog = (
   };
   const modalSize = () => {
     switch (selectedMenuItem) {
-      case 0:
-      case 2:
+      case AddMenuItemsEnum.NEW_CONTACT:
+      case AddMenuItemsEnum.ADD_DONATION:
         return 'sm';
-      case 1:
+      case AddMenuItemsEnum.MULTIPLE_CONTACTS:
         return 'xl';
       default:
         return 'md';
@@ -172,7 +178,7 @@ const AddMenu = ({ isInDrawer = false }: AddMenuProps): ReactElement => {
       text: 'Add Contact',
       icon: <PersonIcon />,
       onClick: () => {
-        changeSelectedMenuItem(0);
+        changeSelectedMenuItem(AddMenuItemsEnum.NEW_CONTACT);
         changeDialogOpen(true);
         setAnchorEl(undefined);
       },
@@ -181,7 +187,7 @@ const AddMenu = ({ isInDrawer = false }: AddMenuProps): ReactElement => {
       text: 'Multiple Contacts',
       icon: <PeopleIcon />,
       onClick: () => {
-        changeSelectedMenuItem(1);
+        changeSelectedMenuItem(AddMenuItemsEnum.MULTIPLE_CONTACTS);
         changeDialogOpen(true);
         setAnchorEl(undefined);
       },
@@ -190,7 +196,7 @@ const AddMenu = ({ isInDrawer = false }: AddMenuProps): ReactElement => {
       text: 'Add Donation',
       icon: <CardGiftcardIcon />,
       onClick: () => {
-        changeSelectedMenuItem(2);
+        changeSelectedMenuItem(AddMenuItemsEnum.ADD_DONATION);
         changeDialogOpen(true);
         setAnchorEl(undefined);
       },
