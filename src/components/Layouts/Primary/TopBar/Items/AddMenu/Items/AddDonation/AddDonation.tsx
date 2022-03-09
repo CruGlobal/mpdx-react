@@ -193,7 +193,7 @@ export const AddDonation = ({
         <Form>
           <DialogContent dividers>
             <Grid container spacing={1}>
-              {/* First Row */}
+              {/* Amount and Currency Row */}
               <Grid container item xs={12} spacing={1}>
                 <Grid item xs={isMobile ? 12 : 8}>
                   <FormControl
@@ -294,7 +294,7 @@ export const AddDonation = ({
                   </FormControl>
                 </Grid>
               </Grid>
-              {/* Second Row */}
+              {/* Donation Date and Motivation Row */}
               <Grid container item xs={12} spacing={1}>
                 <Grid item xs={isMobile ? 12 : 6}>
                   <FormControl
@@ -370,7 +370,7 @@ export const AddDonation = ({
                   </FormControl>
                 </Grid>
               </Grid>
-              {/* Third Row */}
+              {/* Partner and Designation Account Row */}
               <Grid container item xs={12} spacing={1}>
                 <Grid item xs={isMobile ? 12 : 6}>
                   <FormControl
@@ -524,7 +524,7 @@ export const AddDonation = ({
                   </FormControl>
                 </Grid>
               </Grid>
-              {/* Fourth Row */}
+              {/* Appeal and Appeal Amount Row */}
               <Grid container item xs={12} spacing={1}>
                 <Grid item xs={isMobile ? 12 : 6}>
                   <FormControl
@@ -629,7 +629,7 @@ export const AddDonation = ({
                   </FormControl>
                 </Grid>
               </Grid>
-              {/* Fifth Row */}
+              {/* Memo Row */}
               <Grid container item xs={12} spacing={1}>
                 <Grid item xs={12}>
                   <FormControl fullWidth size="small">
