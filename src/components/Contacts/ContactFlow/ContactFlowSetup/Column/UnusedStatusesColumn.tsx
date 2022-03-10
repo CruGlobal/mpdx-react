@@ -75,7 +75,11 @@ export const UnusedStatusesColumn: React.FC<Props> = ({
                 padding: theme.spacing(2.5),
               }}
             >
-              <IconButton>
+              <IconButton
+                style={{
+                  padding: 0,
+                }}
+              >
                 <FiberManualRecord
                   style={{
                     color: theme.palette.cruGrayMedium.main,
