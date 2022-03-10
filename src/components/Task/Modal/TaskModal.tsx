@@ -8,6 +8,7 @@ import {
   Card,
   CardHeader,
   CardContent,
+  useMediaQuery,
 } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
 import { useTranslation } from 'react-i18next';
@@ -25,6 +26,7 @@ import TaskModalForm from './Form/TaskModalForm';
 import TaskModalCompleteForm from './Form/Complete/TaskModalCompleteForm';
 import TaskModalCommentsList from './Comments/TaskModalCommentsList';
 import TaskModalLogForm from './Form/LogForm/TaskModalLogForm';
+import theme from 'src/theme';
 
 const StyledModal = styled(Modal)(() => ({
   display: 'flex',
@@ -59,6 +61,7 @@ const TaskModal = ({
   rowsPerPage,
 }: TaskModalProps): ReactElement => {
   const accountListId = useAccountListId();
+  const smallScreen = useMediaQuery(theme.breakpoints.down('sm'));
   const [open, setOpen] = useState(!taskId);
   const { t } = useTranslation();
   const { data, loading } = useGetTaskForTaskModalQuery({
@@ -143,7 +146,7 @@ const TaskModal = ({
         <Loading loading />
       ) : (
         <StyledModal open={open} onClose={onModalClose}>
-          <Card>
+          <Card style={{ width: smallScreen ? '100%' : 480 }}>
             <CardHeader
               title={
                 <Box
