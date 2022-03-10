@@ -200,7 +200,10 @@ const ProfileMenu = (): ReactElement => {
                     pathname: accountListId
                       ? router.pathname
                       : '/accountLists/[accountListId]/',
-                    query: { accountListId: accountList.id },
+                    query: {
+                      ...router.query,
+                      accountListId: accountList.id,
+                    },
                   })
                 }
               >

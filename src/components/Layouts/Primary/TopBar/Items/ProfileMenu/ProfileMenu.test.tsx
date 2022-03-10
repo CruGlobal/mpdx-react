@@ -67,6 +67,36 @@ describe('ProfileMenu', () => {
     });
   });
 
+  it('should change account list in the router and persist query parameters', async () => {
+    const { getByTestId, getByText } = render(
+      <ThemeProvider theme={theme}>
+        <TestWrapper mocks={[getTopBarMock()]}>
+          <TestRouter
+            router={{
+              ...router,
+              pathname: '/accountLists/[accountListId]/test?searchTerm=Cool',
+              query: { ...router.query, searchTerm: 'Cool' },
+            }}
+          >
+            <ProfileMenu />
+          </TestRouter>
+        </TestWrapper>
+      </ThemeProvider>,
+    );
+    await waitFor(() => expect(getByText('John Smith')).toBeInTheDocument());
+    userEvent.click(getByTestId('profileMenuButton'));
+    userEvent.click(getByTestId('accountListSelector'));
+    userEvent.click(getByTestId('accountListButton-1'));
+    await waitFor(() => expect(router.push).toHaveBeenCalled());
+    expect(router.push).toHaveBeenCalledWith({
+      pathname: '/accountLists/[accountListId]/test?searchTerm=Cool',
+      query: {
+        searchTerm: 'Cool',
+        accountListId: '1',
+      },
+    });
+  });
+
   it('should route to path with account list', async () => {
     const { getByTestId, getByText, queryByTestId } = render(
       <ThemeProvider theme={theme}>
