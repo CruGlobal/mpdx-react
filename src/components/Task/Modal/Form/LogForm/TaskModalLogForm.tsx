@@ -55,6 +55,7 @@ import {
 } from '../../../Drawer/Form/TaskDrawer.generated';
 import theme from '../../../../../../src/theme';
 import { useCreateTaskCommentMutation } from '../../../Drawer/CommentList/Form/CreateTaskComment.generated';
+import { FormFieldsWrapper } from '../TaskModalForm';
 import useTaskModal from 'src/hooks/useTaskModal';
 import { ContactTasksTabDocument } from 'src/components/Contacts/ContactDetails/ContactTasksTab/ContactTasksTab.generated';
 import { TasksDocument } from 'pages/accountLists/[accountListId]/tasks/Tasks.generated';
@@ -313,17 +314,7 @@ const TaskModalLogForm = ({
           touched,
         }): ReactElement => (
           <form onSubmit={handleSubmit} noValidate>
-            <Box
-              p={2}
-              pb={4}
-              width="100%"
-              margin="auto"
-              maxHeight="80vh"
-              display="flex"
-              flexDirection="column"
-              alignItems="center"
-              style={{ overflowY: 'auto' }}
-            >
+            <FormFieldsWrapper>
               <Grid
                 container
                 direction="column"
@@ -627,7 +618,7 @@ const TaskModalLogForm = ({
                   </AnimatePresence>
                 </Grid>
               </Grid>
-            </Box>
+            </FormFieldsWrapper>
             <Divider />
             <Box
               display="flex"

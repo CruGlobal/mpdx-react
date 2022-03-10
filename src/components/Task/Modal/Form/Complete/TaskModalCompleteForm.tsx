@@ -40,6 +40,7 @@ import { possibleNextActions } from '../PossibleNextActions';
 import { possibleResults } from '../PossibleResults';
 import { useCompleteTaskMutation } from '../../../../../../src/components/Task/Drawer/CompleteForm/CompleteTask.generated';
 import useTaskModal from '../../../../../../src/hooks/useTaskModal';
+import { FormFieldsWrapper } from '../TaskModalForm';
 
 const ActionButton = styled(Button)(() => ({
   color: theme.palette.info.main,
@@ -155,17 +156,7 @@ const TaskModalCompleteForm = ({
           isValid,
         }): ReactElement => (
           <form onSubmit={handleSubmit} noValidate>
-            <Box
-              p={2}
-              pb={4}
-              width="100%"
-              margin="auto"
-              maxHeight="80vh"
-              display="flex"
-              flexDirection="column"
-              alignItems="center"
-              style={{ overflowY: 'auto' }}
-            >
+            <FormFieldsWrapper>
               <Grid
                 container
                 direction="column"
@@ -324,7 +315,7 @@ const TaskModalCompleteForm = ({
                   />
                 </Grid>
               </Grid>
-            </Box>
+            </FormFieldsWrapper>
             <Divider />
             <Box
               display="flex"

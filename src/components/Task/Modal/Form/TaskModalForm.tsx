@@ -61,6 +61,18 @@ export const ActionButton = styled(Button)(() => ({
   fontWeight: 550,
 }));
 
+export const FormFieldsWrapper = styled(Box)(() => ({
+  padding: theme.spacing(2),
+  paddingBottom: theme.spacing(4),
+  width: '100%',
+  margin: 'auto',
+  maxHeight: '80vh',
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  overflowY: 'auto',
+}));
+
 const DeleteButton = styled(Button)(() => ({
   fontWeight: 550,
   color: theme.palette.error.main,
@@ -313,17 +325,7 @@ const TaskModalForm = ({
           touched,
         }): ReactElement => (
           <form onSubmit={handleSubmit} noValidate>
-            <Box
-              p={2}
-              pb={4}
-              width="100%"
-              margin="auto"
-              maxHeight="80vh"
-              display="flex"
-              flexDirection="column"
-              alignItems="center"
-              style={{ overflowY: 'auto' }}
-            >
+            <FormFieldsWrapper>
               <Grid
                 container
                 direction="column"
@@ -659,7 +661,7 @@ const TaskModalForm = ({
                   />
                 </Grid>
               </Grid>
-            </Box>
+            </FormFieldsWrapper>
             <Divider />
             <Box
               display="flex"
