@@ -62,7 +62,9 @@ describe('ContactTaskRow', () => {
 
     expect(await findByText(task.subject)).toBeVisible();
 
-    expect(await findByText(task.contacts.nodes[0].name)).toBeVisible();
+    expect(
+      await findByText(`${task.user?.firstName} ${task.user?.lastName}`),
+    ).toBeVisible();
 
     expect(queryByTestId('loadingRow')).toBeNull();
   });

@@ -4,10 +4,7 @@ import { TFunction } from 'i18next';
 import { DateTime } from 'luxon';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  ActivityTypeEnum,
-  ResultEnum,
-} from '../../../../../../graphql/types.generated';
+import { ActivityTypeEnum } from '../../../../../../graphql/types.generated';
 import theme from '../../../../../theme';
 import { StarredItemIcon } from '../../../../common/StarredItemIcon/StarredItemIcon';
 import { TaskRowFragment } from '../../../../Task/TaskRow/TaskRow.generated';
@@ -22,15 +19,16 @@ const TaskRowWrap = styled(Box)(({ theme }) => ({
   flexDirection: 'row',
   alignItems: 'center',
   justifyContent: 'space-between',
-  margin: theme.spacing(1),
+  margin: theme.spacing(0),
+  height: theme.spacing(8),
 }));
 
 const TaskItemWrap = styled(Box)(({ theme }) => ({
   display: 'flex',
   flexDirection: 'row',
   alignItems: 'center',
-  justifyContent: 'space-between',
-  margin: theme.spacing(1),
+  margin: theme.spacing(0),
+  height: '100%',
 }));
 
 const TaskType = styled(Typography)(({ theme }) => ({
@@ -43,22 +41,32 @@ const TaskDescription = styled(Typography)(({ theme }) => ({
   fontSize: 14,
   color: theme.palette.text.primary,
   marginLeft: theme.spacing(0.5),
+  overflow: 'hidden',
+  display: '-webkit-box',
+  WebkitLineClamp: 2,
+  WebkitBoxOrient: 'vertical',
 }));
 
 const SubjectWrap = styled(Box)(({}) => ({
   width: '100%',
   display: 'flex',
+  height: '100%',
   alignItems: 'center',
+  justifyContent: 'start',
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
   '&:hover': {
     textDecoration: 'underline',
     cursor: 'pointer',
   },
 }));
 
-const ContactName = styled(Typography)(({ theme }) => ({
+const AssigneeName = styled(Typography)(({ theme }) => ({
   fontSize: 14,
   color: theme.palette.text.primary,
   margin: theme.spacing(1),
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
 }));
 
 const StarIconWrap = styled(Box)(({ theme }) => ({
@@ -191,34 +199,38 @@ export const ContactTaskRow: React.FC<ContactTaskRowProps> = ({
     );
   }
 
-  const { activityType, contacts, comments, result, startAt, subject } = task;
+  const { activityType, user, comments, startAt, subject } = task;
 
   const dueDate = (startAt && DateTime.fromISO(startAt)) || null;
 
-  const contactName = contacts.nodes[0].name;
+  const assigneeName = user ? `${user.firstName} ${user.lastName}` : '';
 
-  const isComplete = result === ResultEnum.Completed;
+  const isComplete = !!task.completedAt;
 
   return (
     <TaskRowWrap>
-      <TaskItemWrap>
+      <TaskItemWrap width={theme.spacing(20)} justifyContent="space-between">
         <Checkbox onChange={handleContactCheckPressed} />
         <TaskCompleteButton
           isComplete={isComplete}
           onClick={handleCompleteButtonPressed}
         />
-        <SubjectWrap onClick={handleSubjectPressed}>
-          <TaskType>{getLocalizedTaskType(t, activityType)}</TaskType>
-          <TaskDescription>{subject}</TaskDescription>
-        </SubjectWrap>
       </TaskItemWrap>
-      <TaskItemWrap>
-        <ContactName>{contactName}</ContactName>
-        <TaskDueDate isComplete={isComplete} dueDate={dueDate} />
+      <SubjectWrap onClick={handleSubjectPressed}>
+        <TaskType>{getLocalizedTaskType(t, activityType)}</TaskType>
+        <TaskDescription>{subject}</TaskDescription>
+      </SubjectWrap>
+
+      <TaskItemWrap justifyContent="end" maxWidth={theme.spacing(45)}>
+        <AssigneeName noWrap>{assigneeName}</AssigneeName>
+        <Box width={theme.spacing(12)}>
+          <TaskDueDate isComplete={isComplete} dueDate={dueDate} />
+        </Box>
         <TaskCommentsButton
           isComplete={isComplete}
           numberOfComments={comments?.totalCount}
           onClick={handleCommentButtonPressed}
+          detailsPage
         />
         <StarTaskIconButton
           accountListId={accountListId}

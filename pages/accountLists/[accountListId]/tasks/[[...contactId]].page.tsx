@@ -306,7 +306,7 @@ const TasksPage: React.FC = () => {
               )
             }
             rightOpen={contactDetailsOpen}
-            rightWidth="45%"
+            rightWidth="60%"
           />
         </WhiteBackground>
       ) : (

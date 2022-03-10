@@ -1,4 +1,4 @@
-import React, { ReactElement, useState } from 'react';
+import React, { ReactElement, useCallback, useState } from 'react';
 import {
   TextField,
   Select,
@@ -31,6 +31,7 @@ import { DateTime } from 'luxon';
 import { CalendarToday, Schedule } from '@material-ui/icons';
 import { v4 as uuidv4 } from 'uuid';
 import _ from 'lodash';
+import debounce from 'lodash/fp/debounce';
 import { dateFormat } from '../../../../lib/intlFormat/intlFormat';
 import {
   ActivityTypeEnum,
@@ -48,6 +49,7 @@ import {
   useCreateTaskMutation,
   useUpdateTaskMutation,
   useDeleteTaskMutation,
+  useGetTaskModalContactsFilteredQuery,
 } from '../../Drawer/Form/TaskDrawer.generated';
 import theme from '../../../../../src/theme';
 import { useCreateTaskCommentMutation } from '../../Drawer/CommentList/Form/CreateTaskComment.generated';
@@ -128,13 +130,65 @@ const TaskModalForm = ({
   const [removeDialogOpen, handleRemoveDialog] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
 
-  const { data, loading } = useGetDataForTaskDrawerQuery({
-    variables: { accountListId },
-  });
   const [createTask, { loading: creating }] = useCreateTaskMutation();
   const [updateTask, { loading: saving }] = useUpdateTaskMutation();
   const [deleteTask, { loading: deleting }] = useDeleteTaskMutation();
   const [createTaskComment] = useCreateTaskCommentMutation();
+  const [selectedIds, setSelectedIds] = useState(
+    task?.contacts.nodes.map((contact) => contact.id) ||
+      defaultValues?.contactIds ||
+      [],
+  );
+
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const handleSearchTermChange = useCallback(
+    debounce(500, (event) => {
+      setSearchTerm(event.target.value);
+    }),
+    [],
+  );
+
+  const { data, loading } = useGetDataForTaskDrawerQuery({
+    variables: {
+      accountListId,
+    },
+  });
+
+  const {
+    data: dataFilteredByName,
+    loading: loadingFilteredByName,
+  } = useGetTaskModalContactsFilteredQuery({
+    variables: {
+      accountListId,
+      contactsFilters: { wildcardSearch: searchTerm as string },
+    },
+  });
+
+  const {
+    data: dataFilteredById,
+    loading: loadingFilteredById,
+  } = useGetTaskModalContactsFilteredQuery({
+    variables: {
+      accountListId,
+      contactsFilters: { ids: selectedIds },
+    },
+  });
+
+  const mergedContacts =
+    dataFilteredByName && dataFilteredById
+      ? dataFilteredByName?.contacts.nodes
+          .concat(dataFilteredById?.contacts.nodes)
+          .filter(
+            (contact1, index, self) =>
+              self.findIndex((contact2) => contact2.id === contact1.id) ===
+              index,
+          )
+      : dataFilteredById?.contacts.nodes ||
+        dataFilteredByName?.contacts.nodes ||
+        data?.contacts.nodes ||
+        [];
+
   const onSubmit = async (
     attributes: TaskCreateInput | TaskUpdateInput,
   ): Promise<void> => {
@@ -473,38 +527,46 @@ const TaskModalForm = ({
                     multiple
                     options={
                       (
-                        data?.contacts?.nodes &&
-                        [...data.contacts.nodes].sort((a, b) =>
+                        mergedContacts &&
+                        [...mergedContacts].sort((a, b) =>
                           a.name.localeCompare(b.name),
                         )
                       )?.map(({ id }) => id) || []
                     }
                     getOptionLabel={(contactId) =>
-                      data?.contacts.nodes.find(({ id }) => id === contactId)
-                        ?.name ?? ''
+                      mergedContacts.find(({ id }) => id === contactId)?.name ??
+                      ''
                     }
-                    loading={loading}
-                    renderInput={(params): ReactElement => (
-                      <TextField
-                        {...params}
-                        label={t('Contacts')}
-                        InputProps={{
-                          ...params.InputProps,
-                          endAdornment: (
-                            <>
-                              {loading && (
-                                <CircularProgress color="primary" size={20} />
-                              )}
-                              {params.InputProps.endAdornment}
-                            </>
-                          ),
-                        }}
-                      />
-                    )}
+                    loading={
+                      loading || loadingFilteredById || loadingFilteredByName
+                    }
+                    renderInput={(params): ReactElement => {
+                      return !loadingFilteredById ? (
+                        <TextField
+                          {...params}
+                          onChange={handleSearchTermChange}
+                          label={t('Contacts')}
+                          InputProps={{
+                            ...params.InputProps,
+                            endAdornment: (
+                              <>
+                                {loading && (
+                                  <CircularProgress color="primary" size={20} />
+                                )}
+                                {params.InputProps.endAdornment}
+                              </>
+                            ),
+                          }}
+                        />
+                      ) : (
+                        <CircularProgress color="primary" size={20} />
+                      );
+                    }}
                     value={contactIds ?? undefined}
-                    onChange={(_, contactIds): void =>
-                      setFieldValue('contactIds', contactIds)
-                    }
+                    onChange={(_, contactIds): void => {
+                      setFieldValue('contactIds', contactIds);
+                      setSelectedIds(contactIds);
+                    }}
                     getOptionSelected={(option, value): boolean =>
                       option === value
                     }
