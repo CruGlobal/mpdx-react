@@ -13,8 +13,11 @@ import React, {
   useLayoutEffect,
   Dispatch,
   SetStateAction,
+  useState,
+  useCallback,
 } from 'react';
 import { DropTargetMonitor, useDrag, useDrop, XYCoord } from 'react-dnd';
+import debounce from 'lodash/fp/debounce';
 import theme from '../../../../../../src/theme';
 import { ContactFilterStatusEnum } from '../../../../../../graphql/types.generated';
 import { colorMap } from '../../../../../../src/components/Contacts/ContactFlow/ContactFlow';
@@ -100,6 +103,19 @@ export const ContactFlowSetupColumn: React.FC<Props> = ({
   setColumnWidth,
 }: Props) => {
   const CardContentRef = useRef<HTMLDivElement>();
+  const [localTitle, setLocalTitle] = useState(title);
+
+  const editTitle = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setLocalTitle(event.target.value);
+    onTitleChange(event, index);
+  };
+
+  const onTitleChange = useCallback(
+    debounce(200, (event, index) => {
+      changeTitle(event, index);
+    }),
+    [],
+  );
 
   useLayoutEffect(() => {
     if (CardContentRef.current) {
@@ -180,10 +196,8 @@ export const ContactFlowSetupColumn: React.FC<Props> = ({
             inputProps={{
               'data-testid': `column-title`,
             }}
-            value={title}
-            onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
-              changeTitle(event, index)
-            }
+            value={localTitle}
+            onChange={editTitle}
             style={{
               marginLeft: theme.spacing(1),
               marginRight: theme.spacing(1),

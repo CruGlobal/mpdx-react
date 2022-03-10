@@ -64,6 +64,8 @@ describe('ContactFlowSetupColumn', () => {
     );
     const columnTitle = getByTestId('column-title') as HTMLInputElement;
     expect(columnTitle.value).toBe(title);
+    userEvent.type(columnTitle, 'additional text');
+    expect(columnTitle.value).toBe(title + 'additional text');
   });
 
   it('should change attempt to change the color', async () => {
