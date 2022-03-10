@@ -13,7 +13,6 @@ import { Formik } from 'formik';
 import * as yup from 'yup';
 import { useSnackbar } from 'notistack';
 import _ from 'lodash';
-import Delete from '@material-ui/icons/Delete';
 import {
   ContactDetailsTabDocument,
   ContactDetailsTabQuery,
@@ -23,6 +22,7 @@ import {
   PersonCreateInput,
   PersonUpdateInput,
 } from '../../../../../../../../graphql/types.generated';
+import { DeleteButton } from '../../../Mailing/EditContactAddressModal/EditContactAddressModal';
 import { PersonName } from './PersonName/PersonName';
 import { PersonPhoneNumber } from './PersonPhoneNumber/PersonPhoneNumber';
 import { PersonEmail } from './PersonEmail/PersonEmail';
@@ -54,15 +54,6 @@ const ContactEditContainer = styled(Box)(({ theme }) => ({
 const ContactEditModalFooterButton = styled(Button)(({ theme }) => ({
   color: theme.palette.info.main,
   fontWeight: 'bold',
-}));
-
-const ContactEditModalDeleteButton = styled(Button)(({ theme }) => ({
-  color: theme.palette.common.white,
-  backgroundColor: theme.palette.error.main,
-  fontWeight: 'bold',
-  '&:hover': {
-    backgroundColor: theme.palette.error.dark,
-  },
 }));
 
 const ShowExtraText = styled(Typography)(({ theme }) => ({
@@ -472,13 +463,12 @@ export const PersonModal: React.FC<PersonModalProps> = ({
                 width="100%"
               >
                 {person && (
-                  <ContactEditModalDeleteButton
+                  <DeleteButton
                     onClick={deletePersonFromContact}
                     variant="text"
                   >
-                    <Delete />
                     {t('Delete')}
-                  </ContactEditModalDeleteButton>
+                  </DeleteButton>
                 )}
                 <Box>
                   <ContactEditModalFooterButton

@@ -45,7 +45,7 @@ const ContactInputWrapper = styled(Box)(({ theme }) => ({
   margin: theme.spacing(2, 0),
 }));
 
-const DeleteButton = styled(Button)(({ theme }) => ({
+export const DeleteButton = styled(Button)(({ theme }) => ({
   fontWeight: 550,
   color: theme.palette.error.main,
 }));
