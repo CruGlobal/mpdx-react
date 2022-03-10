@@ -11,7 +11,6 @@ import {
 import { useTranslation } from 'react-i18next';
 import { DateTime } from 'luxon';
 import { TaskCompleteButton } from '../../Contacts/ContactDetails/ContactTasksTab/ContactTaskRow/TaskCompleteButton/TaskCompleteButton';
-import { ResultEnum } from '../../../../graphql/types.generated';
 import { StarTaskIconButton } from '../../Contacts/ContactDetails/ContactTasksTab/StarTaskIconButton/StarTaskIconButton';
 import { TaskDueDate } from '../../Contacts/ContactDetails/ContactTasksTab/ContactTaskRow/TaskDueDate/TaskDueDate';
 import { TaskCommentsButton } from '../../Contacts/ContactDetails/ContactTasksTab/ContactTaskRow/TaskCommentsButton/TaskCommentsButton';
@@ -100,7 +99,7 @@ export const TaskRow: React.FC<TaskRowProps> = ({
     comments,
     contacts,
     id: taskId,
-    result,
+
     starred,
     startAt,
     subject,
@@ -124,7 +123,7 @@ export const TaskRow: React.FC<TaskRowProps> = ({
     });
   };
 
-  const isComplete = result === ResultEnum.Completed;
+  const isComplete = !!task.completedAt;
   const dueDate = (startAt && DateTime.fromISO(startAt)) || null;
   const assigneeName = `${task?.user?.firstName ?? ''} ${
     task.user?.lastName ?? ''
