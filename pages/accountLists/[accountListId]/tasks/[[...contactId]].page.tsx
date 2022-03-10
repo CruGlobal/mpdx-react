@@ -160,6 +160,7 @@ const TasksPage: React.FC = () => {
           pathname,
           query: {
             ...oldQuery,
+            accountListId,
             ...(searchTerm && { searchTerm }),
           },
         });
@@ -168,11 +169,12 @@ const TasksPage: React.FC = () => {
           pathname,
           query: {
             ...oldQuery,
+            accountListId,
           },
         });
       }
     }, 500),
-    [],
+    [accountListId],
   );
   //#endregion
 
