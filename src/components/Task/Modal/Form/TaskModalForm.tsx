@@ -313,8 +313,23 @@ const TaskModalForm = ({
           touched,
         }): ReactElement => (
           <form onSubmit={handleSubmit} noValidate>
-            <Box p={2} pb={4} width="75%" margin="auto">
-              <Grid container direction="column" spacing={2}>
+            <Box
+              p={2}
+              pb={4}
+              width="100%"
+              margin="auto"
+              maxHeight="80vh"
+              display="flex"
+              flexDirection="column"
+              alignItems="center"
+              style={{ overflowY: 'auto' }}
+            >
+              <Grid
+                container
+                direction="column"
+                spacing={2}
+                style={{ width: '75%' }}
+              >
                 <Grid item>
                   <TextField
                     label={t('Task Name')}
