@@ -8,7 +8,10 @@ import EditIcon from '@material-ui/icons/Edit';
 import { useTranslation } from 'react-i18next';
 import { LeafButton, LeafListItem, Title } from '../../NavItem/NavItem';
 import useTaskDrawer from 'src/hooks/useTaskDrawer';
-import { renderDialog } from 'src/components/Layouts/Primary/TopBar/Items/AddMenu/AddMenu';
+import {
+  AddMenuItemsEnum,
+  renderDialog,
+} from 'src/components/Layouts/Primary/TopBar/Items/AddMenu/AddMenu';
 
 type MenuContent = {
   text: string;
@@ -29,7 +32,7 @@ export const AddMenuPanel = (): ReactElement => {
       text: 'Add Contact',
       icon: PersonIcon,
       onClick: () => {
-        changeSelectedMenuItem(0);
+        changeSelectedMenuItem(AddMenuItemsEnum.NEW_CONTACT);
         changeDialogOpen(true);
       },
     },
@@ -41,7 +44,10 @@ export const AddMenuPanel = (): ReactElement => {
     {
       text: 'Add Donation',
       icon: CardGiftcardIcon,
-      onClick: () => console.log('add donation'),
+      onClick: () => {
+        changeSelectedMenuItem(AddMenuItemsEnum.ADD_DONATION);
+        changeDialogOpen(true);
+      },
     },
     {
       text: 'Add Task',

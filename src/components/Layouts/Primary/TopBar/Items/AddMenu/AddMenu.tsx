@@ -13,6 +13,7 @@ import { useAccountListId } from '../../../../../../hooks/useAccountListId';
 import Modal from '../../../../../common/Modal/Modal';
 import CreateContact from './Items/CreateContact/CreateContact';
 import { CreateMultipleContacts } from './Items/CreateMultipleContacts/CreateMultipleContacts';
+import { AddDonation } from './Items/AddDonation/AddDonation';
 
 interface AddMenuProps {
   isInDrawer?: boolean;
@@ -24,6 +25,12 @@ type AddMenuItem = {
   icon: any;
   onClick: () => void;
 };
+
+export enum AddMenuItemsEnum {
+  'NEW_CONTACT',
+  'MULTIPLE_CONTACTS',
+  'ADD_DONATION',
+}
 
 const HoverAddIcon = styled(AddIcon)(({ theme }) => ({
   textTransform: 'none',
@@ -76,10 +83,12 @@ export const renderDialog = (
 
   const modalTitle = () => {
     switch (selectedMenuItem) {
-      case 0:
+      case AddMenuItemsEnum.NEW_CONTACT:
         return t('New Contact');
-      case 1:
+      case AddMenuItemsEnum.MULTIPLE_CONTACTS:
         return t('Add Multiple Contacts');
+      case AddMenuItemsEnum.ADD_DONATION:
+        return t('Add Donation');
       default:
         return t('Add Contact');
     }
@@ -91,34 +100,49 @@ export const renderDialog = (
 
   const renderDialogContent = () => {
     switch (selectedMenuItem) {
-      case 0:
+      case AddMenuItemsEnum.NEW_CONTACT:
         return (
           <CreateContact
             accountListId={accountListId ?? ''}
             handleClose={handleDialogClose}
           />
         );
-      case 1:
+      case AddMenuItemsEnum.MULTIPLE_CONTACTS:
         return (
           <CreateMultipleContacts
             accountListId={accountListId ?? ''}
             handleClose={handleDialogClose}
           />
         );
+      case AddMenuItemsEnum.ADD_DONATION:
+        return (
+          <AddDonation
+            accountListId={accountListId ?? ''}
+            handleClose={handleDialogClose}
+          />
+        );
     }
   };
+  const modalSize = () => {
+    switch (selectedMenuItem) {
+      case AddMenuItemsEnum.NEW_CONTACT:
+      case AddMenuItemsEnum.ADD_DONATION:
+        return 'sm';
+      case AddMenuItemsEnum.MULTIPLE_CONTACTS:
+        return 'xl';
+      default:
+        return 'md';
+    }
+  };
+
   return (
     <Modal
       isOpen={dialogOpen}
       handleClose={handleDialogClose}
       title={modalTitle()}
-      aria-labelledby={
-        selectedMenuItem === 0
-          ? t('Create Contact Dialog')
-          : t('Create Multiple Contacts Dialog')
-      }
+      aria-labelledby={modalTitle()}
       fullWidth
-      size={selectedMenuItem === 0 ? 'sm' : 'xl'} // TODO: Expand logic as more menu modals are added
+      size={modalSize()} // TODO: Expand logic as more menu modals are added
     >
       {renderDialogContent()}
     </Modal>
@@ -154,7 +178,7 @@ const AddMenu = ({ isInDrawer = false }: AddMenuProps): ReactElement => {
       text: 'Add Contact',
       icon: <PersonIcon />,
       onClick: () => {
-        changeSelectedMenuItem(0);
+        changeSelectedMenuItem(AddMenuItemsEnum.NEW_CONTACT);
         changeDialogOpen(true);
         setAnchorEl(undefined);
       },
@@ -163,7 +187,7 @@ const AddMenu = ({ isInDrawer = false }: AddMenuProps): ReactElement => {
       text: 'Multiple Contacts',
       icon: <PeopleIcon />,
       onClick: () => {
-        changeSelectedMenuItem(1);
+        changeSelectedMenuItem(AddMenuItemsEnum.MULTIPLE_CONTACTS);
         changeDialogOpen(true);
         setAnchorEl(undefined);
       },
@@ -171,7 +195,11 @@ const AddMenu = ({ isInDrawer = false }: AddMenuProps): ReactElement => {
     {
       text: 'Add Donation',
       icon: <CardGiftcardIcon />,
-      onClick: () => console.log('add donation'),
+      onClick: () => {
+        changeSelectedMenuItem(AddMenuItemsEnum.ADD_DONATION);
+        changeDialogOpen(true);
+        setAnchorEl(undefined);
+      },
     },
     {
       text: 'Add Task',
