@@ -173,7 +173,7 @@ describe('EditContactAddressModal', () => {
   });
 
   it('should handle delete click', async () => {
-    const { getByText } = render(
+    const { getByText, getByTestId } = render(
       <SnackbarProvider>
         <ThemeProvider theme={theme}>
           <GqlMockedProvider<UpdateContactAddressMutation>>
@@ -189,7 +189,8 @@ describe('EditContactAddressModal', () => {
     );
 
     expect(getByText('Edit Address')).toBeInTheDocument();
-    userEvent.click(getByText('Delete'));
+    expect(getByTestId('modal-delete-button')).toBeInTheDocument();
+    userEvent.click(getByTestId('modal-delete-button'));
     await waitFor(() =>
       expect(mockEnqueue).toHaveBeenCalledWith('Address deleted successfully', {
         variant: 'success',

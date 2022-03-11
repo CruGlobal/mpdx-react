@@ -19,7 +19,12 @@ export const ModalDeleteButton: React.FC<ModalDeleteButtonProps> = ({
   const { t } = useTranslation();
 
   return (
-    <DeleteButton onClick={onClick} size={size} variant="text">
+    <DeleteButton
+      onClick={onClick}
+      size={size}
+      variant="text"
+      data-testid="modal-delete-button"
+    >
       {t('Delete')}
     </DeleteButton>
   );
