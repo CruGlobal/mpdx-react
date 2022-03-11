@@ -147,7 +147,7 @@ describe('SearchMenu', () => {
     expect(getByText('Create a new contact for "Cool"')).toBeVisible();
     userEvent.click(getByText('Cool, Guy'));
     await waitFor(() => expect(router.push).toHaveBeenCalled());
-  });
+  }, 25000);
 });
 
 it('handles creating a new contact', async () => {

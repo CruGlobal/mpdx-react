@@ -1,3 +1,4 @@
+import React from 'react';
 import { ThemeProvider } from '@material-ui/styles';
 import { render, waitFor } from '@testing-library/react';
 import { getSession } from 'next-auth/react';

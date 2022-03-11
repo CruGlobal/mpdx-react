@@ -38,7 +38,7 @@ describe('CreateMultipleContacts', () => {
     expect(queryByText('Address')).toBeInTheDocument();
     expect(queryByText('Phone')).toBeInTheDocument();
     expect(queryByText('Email')).toBeInTheDocument();
-  });
+  }, 25000);
 
   it('closes menu', () => {
     const { getByText } = render(
@@ -58,7 +58,7 @@ describe('CreateMultipleContacts', () => {
 
     userEvent.click(getByText('Cancel'));
     expect(handleClose).toHaveBeenCalled();
-  });
+  }, 25000);
 
   describe('Contact Creation', () => {
     const mutationSpy = jest.fn();
@@ -110,7 +110,7 @@ describe('CreateMultipleContacts', () => {
       expect(operation.variables.attributes.name).toEqual(
         `${last}, ${first} and ${spouse}`,
       );
-    });
+    }, 25000);
 
     it('creates multiple contacts', async () => {
       const { getByText, getAllByRole } = render(
@@ -184,6 +184,6 @@ describe('CreateMultipleContacts', () => {
       expect(operation3.variables.attributes.name).toEqual(
         `${last3}, ${first3}`,
       );
-    });
+    }, 25000);
   });
 });
