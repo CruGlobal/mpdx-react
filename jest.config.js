@@ -4,7 +4,7 @@ module.exports = {
   setupFilesAfterEnv: ['<rootDir>/__tests__/util/setup.ts'],
   transform: {
     // From https://github.com/vercel/next.js/issues/30811#issuecomment-963102661
-    '\\.[jt]sx?$': ['babel-jest', { presets: ['next/babel'] }],
+    '^.+\\.(t|j)sx?$': '@swc/jest',
     '\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$':
       '<rootDir>/__tests__/util/fileMock.js',
     '\\.(gql|graphql)$': 'jest-transform-graphql',
@@ -17,4 +17,5 @@ module.exports = {
     'pages/(.*)': '<rootDir>/pages/$1',
     '__tests__/(.*)': '<rootDir>/__tests__/$1',
   },
+  testEnvironment: 'jsdom',
 };

@@ -149,7 +149,7 @@ describe('PersonModal', () => {
     );
 
     expect(getByText('Edit Person')).toBeInTheDocument();
-  });
+  }, 25000);
 
   it('should close edit contact modal', () => {
     const { getByLabelText, getByText } = render(
@@ -171,7 +171,7 @@ describe('PersonModal', () => {
     expect(getByText('Edit Person')).toBeInTheDocument();
     userEvent.click(getByLabelText('Close'));
     expect(handleClose).toHaveBeenCalled();
-  });
+  }, 25000);
 
   it('should handle cancel click', () => {
     const { getByText } = render(
@@ -193,7 +193,7 @@ describe('PersonModal', () => {
     expect(getByText('Edit Person')).toBeInTheDocument();
     userEvent.click(getByText('Cancel'));
     expect(handleClose).toHaveBeenCalled();
-  });
+  }, 25000);
 
   it('should handle save click', async () => {
     const mutationSpy = jest.fn();
@@ -221,7 +221,7 @@ describe('PersonModal', () => {
     expect(mockEnqueue).toHaveBeenCalledWith('Person updated successfully', {
       variant: 'success',
     });
-  });
+  }, 25000);
 
   it('should handle Show More click', async () => {
     const { queryAllByText, getByText } = render(
@@ -243,7 +243,7 @@ describe('PersonModal', () => {
     expect(getByText('Edit Person')).toBeInTheDocument();
     userEvent.click(queryAllByText('Show More')[0]);
     await waitFor(() => expect(getByText('Show Less')).toBeInTheDocument());
-  });
+  }, 25000);
 
   it('should handle Show Less click', async () => {
     const { queryAllByText, getByText, queryByText } = render(
@@ -269,7 +269,7 @@ describe('PersonModal', () => {
     await waitFor(() =>
       expect(queryByText('Show Less')).not.toBeInTheDocument(),
     );
-  });
+  }, 25000);
   describe('Updating', () => {
     it('should handle editing person name section', async () => {
       const mutationSpy = jest.fn();
@@ -326,7 +326,7 @@ describe('PersonModal', () => {
       );
       expect(operation.variables.attributes.title).toEqual(newPersonTitle);
       expect(operation.variables.attributes.suffix).toEqual(newPersonSuffix);
-    });
+    }, 25000);
 
     it('should handle editing person phone number section', async () => {
       const mutationSpy = jest.fn();
@@ -382,7 +382,7 @@ describe('PersonModal', () => {
       expect(operation.variables.attributes.phoneNumbers[0].location).toEqual(
         'Work',
       );
-    });
+    }, 25000);
 
     it('handles deleting a phone number', async () => {
       const mutationSpy = jest.fn();
@@ -419,7 +419,7 @@ describe('PersonModal', () => {
       expect(operation.variables.attributes.phoneNumbers[1].destroy).toEqual(
         true,
       );
-    });
+    }, 25000);
 
     it('should handle editing person email section', async () => {
       const mutationSpy = jest.fn();
@@ -479,7 +479,7 @@ describe('PersonModal', () => {
         true,
       );
       expect(operation.variables.attributes.optoutEnewsletter).toEqual(true);
-    });
+    }, 25000);
 
     it('handles deleting an email address', async () => {
       const mutationSpy = jest.fn();
@@ -516,7 +516,7 @@ describe('PersonModal', () => {
       expect(operation.variables.attributes.emailAddresses[1].destroy).toEqual(
         true,
       );
-    });
+    }, 25000);
 
     it('should handle editing show more section', async () => {
       const mutationSpy = jest.fn();
@@ -588,7 +588,7 @@ describe('PersonModal', () => {
         newPersonLegalFirstName,
       );
       expect(operation.variables.attributes.deceased).toEqual(false);
-    });
+    }, 25000);
 
     it('should handle editing anniversary', async () => {
       const mutationSpy = jest.fn();
@@ -627,7 +627,7 @@ describe('PersonModal', () => {
       const { operation } = mutationSpy.mock.calls[0][0];
       expect(operation.variables.accountListId).toEqual(accountListId);
       expect(operation.variables.attributes.anniversaryDay).toEqual(30);
-    });
+    }, 25000);
 
     it('should handle editing birthday', async () => {
       const mutationSpy = jest.fn();
@@ -666,7 +666,7 @@ describe('PersonModal', () => {
       const { operation } = mutationSpy.mock.calls[0][0];
       expect(operation.variables.accountListId).toEqual(accountListId);
       expect(operation.variables.attributes.birthdayDay).toEqual(30);
-    });
+    }, 25000);
 
     it('should handle editing socials section', async () => {
       const mutationSpy = jest.fn();
@@ -735,7 +735,7 @@ describe('PersonModal', () => {
       expect(operation.variables.attributes.websites[0].url).toEqual(
         newPersonWebsite,
       );
-    });
+    }, 25000);
 
     it('should handle deleting socials', async () => {
       const mutationSpy = jest.fn();
@@ -783,7 +783,8 @@ describe('PersonModal', () => {
         operation.variables.attributes.linkedinAccounts[1].destroy,
       ).toEqual(true);
       expect(operation.variables.attributes.websites[1].destroy).toEqual(true);
-    });
+    }),
+      25000;
   });
 
   describe('Creating', () => {
@@ -950,6 +951,6 @@ describe('PersonModal', () => {
       );
       expect(operation.variables.attributes.title).toEqual(newPersonTitle);
       expect(operation.variables.attributes.suffix).toEqual(newPersonSuffix);
-    });
+    }, 25000);
   });
 });

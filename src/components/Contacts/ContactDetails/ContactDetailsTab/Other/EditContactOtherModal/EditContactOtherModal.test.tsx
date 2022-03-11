@@ -186,5 +186,5 @@ describe('EditContactOtherModal', () => {
     );
     expect(operation.variables.attributes.churchName).toEqual(newChurchName);
     expect(operation.variables.attributes.website).toEqual(newWebsite);
-  });
+  }, 250000);
 });
