@@ -25,7 +25,6 @@ import { useTranslation } from 'react-i18next';
 import { Autocomplete } from '@material-ui/lab';
 
 import { DatePicker, TimePicker } from '@material-ui/pickers';
-import DeleteIcon from '@material-ui/icons/Delete';
 import { Formik } from 'formik';
 import * as yup from 'yup';
 import { useSnackbar } from 'notistack';
@@ -58,19 +57,11 @@ import { useCreateTaskCommentMutation } from '../../../Drawer/CommentList/Form/C
 import useTaskModal from 'src/hooks/useTaskModal';
 import { ContactTasksTabDocument } from 'src/components/Contacts/ContactDetails/ContactTasksTab/ContactTasksTab.generated';
 import { TasksDocument } from 'pages/accountLists/[accountListId]/tasks/Tasks.generated';
+import { ModalDeleteButton } from 'src/components/common/Modal/DeleteButton/ModalDeleteButton';
 
 export const ActionButton = styled(Button)(() => ({
   color: theme.palette.info.main,
   fontWeight: 550,
-}));
-
-const DeleteButton = styled(Button)(() => ({
-  fontWeight: 550,
-  backgroundColor: theme.palette.error.main,
-  color: theme.palette.common.white,
-  '&:hover': {
-    backgroundColor: theme.palette.error.dark,
-  },
 }));
 
 const LoadingIndicator = styled(CircularProgress)(() => ({
@@ -623,14 +614,10 @@ const TaskModalLogForm = ({
             >
               <Box>
                 {task?.id ? (
-                  <DeleteButton
+                  <ModalDeleteButton
                     size="large"
-                    variant="contained"
                     onClick={() => setRemoveDialogOpen(true)}
-                  >
-                    <DeleteIcon style={{ marginRight: theme.spacing(1) }} />
-                    {t('Delete')}
-                  </DeleteButton>
+                  />
                 ) : null}
               </Box>
               <Box>

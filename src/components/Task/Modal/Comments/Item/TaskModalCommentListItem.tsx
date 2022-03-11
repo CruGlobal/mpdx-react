@@ -20,6 +20,7 @@ import { commentSchema } from '../Form/TaskModalCommentsListForm';
 import { useDeleteCommentMutation } from './DeleteTaskComment.generated';
 import { useUpdateCommentMutation } from './UpdateTaskComment.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
+import { ModalDeleteButton } from 'src/components/common/Modal/DeleteButton/ModalDeleteButton';
 
 interface Props {
   comment?: GetCommentsForTaskModalCommentListQuery['task']['comments']['nodes'][0];
@@ -182,9 +183,7 @@ const TaskModalCommentsListItem: React.FC<Props> = ({
                   {t('Edit')}
                 </ActionButtonSmall>
               )}
-              <ActionButtonSmall size="small" onClick={deleteTaskComment}>
-                {t('Delete')}
-              </ActionButtonSmall>
+              <ModalDeleteButton size="small" onClick={deleteTaskComment} />
             </Box>
           </Box>
         </>

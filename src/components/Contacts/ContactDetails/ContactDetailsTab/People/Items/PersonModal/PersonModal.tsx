@@ -22,7 +22,6 @@ import {
   PersonCreateInput,
   PersonUpdateInput,
 } from '../../../../../../../../graphql/types.generated';
-import { DeleteButton } from '../../../Mailing/EditContactAddressModal/EditContactAddressModal';
 import { PersonName } from './PersonName/PersonName';
 import { PersonPhoneNumber } from './PersonPhoneNumber/PersonPhoneNumber';
 import { PersonEmail } from './PersonEmail/PersonEmail';
@@ -33,6 +32,7 @@ import {
   useDeletePersonMutation,
   useUpdatePersonMutation,
 } from './PersonModal.generated';
+import { ModalDeleteButton } from 'src/components/common/Modal/DeleteButton/ModalDeleteButton';
 
 const ContactPersonContainer = styled(Box)(({ theme }) => ({
   margin: theme.spacing(2, 0),
@@ -463,12 +463,7 @@ export const PersonModal: React.FC<PersonModalProps> = ({
                 width="100%"
               >
                 {person && (
-                  <DeleteButton
-                    onClick={deletePersonFromContact}
-                    variant="text"
-                  >
-                    {t('Delete')}
-                  </DeleteButton>
+                  <ModalDeleteButton onClick={deletePersonFromContact} />
                 )}
                 <Box>
                   <ContactEditModalFooterButton

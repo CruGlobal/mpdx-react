@@ -5,7 +5,6 @@ import * as yup from 'yup';
 import { useSnackbar } from 'notistack';
 import {
   Box,
-  Button,
   Checkbox,
   CircularProgress,
   DialogActions,
@@ -31,6 +30,7 @@ import {
   useUpdateContactAddressMutation,
 } from './EditContactAddress.generated';
 import { ActionButton } from 'src/components/Task/Modal/Form/TaskModalForm';
+import { ModalDeleteButton } from 'src/components/common/Modal/DeleteButton/ModalDeleteButton';
 
 const ContactEditContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -43,11 +43,6 @@ const ContactInputWrapper = styled(Box)(({ theme }) => ({
   position: 'relative',
   padding: theme.spacing(0, 6),
   margin: theme.spacing(2, 0),
-}));
-
-export const DeleteButton = styled(Button)(({ theme }) => ({
-  fontWeight: 550,
-  color: theme.palette.error.main,
 }));
 
 const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
@@ -319,9 +314,7 @@ export const EditContactAddressModal: React.FC<EditContactAddressModalProps> = (
                 width="100%"
               >
                 {address && (
-                  <DeleteButton onClick={deleteContactAddress} variant="text">
-                    {t('Delete')}
-                  </DeleteButton>
+                  <ModalDeleteButton onClick={deleteContactAddress} />
                 )}
                 <Box>
                   <ActionButton
