@@ -56,6 +56,7 @@ import {
 import theme from '../../../../../../src/theme';
 import { useCreateTaskCommentMutation } from '../../../Drawer/CommentList/Form/CreateTaskComment.generated';
 import { FormFieldsWrapper } from '../TaskModalForm';
+import { FormFieldsGridContainer } from '../Container/FormFieldsGridContainer';
 import useTaskModal from 'src/hooks/useTaskModal';
 import { ContactTasksTabDocument } from 'src/components/Contacts/ContactDetails/ContactTasksTab/ContactTasksTab.generated';
 import { TasksDocument } from 'pages/accountLists/[accountListId]/tasks/Tasks.generated';
@@ -315,12 +316,7 @@ const TaskModalLogForm = ({
         }): ReactElement => (
           <form onSubmit={handleSubmit} noValidate>
             <FormFieldsWrapper>
-              <Grid
-                container
-                direction="column"
-                spacing={2}
-                style={{ width: '75%' }}
-              >
+              <FormFieldsGridContainer>
                 <Grid item>
                   <TextField
                     label={t('Task Name')}
@@ -617,7 +613,7 @@ const TaskModalLogForm = ({
                     )}
                   </AnimatePresence>
                 </Grid>
-              </Grid>
+              </FormFieldsGridContainer>
             </FormFieldsWrapper>
             <Divider />
             <Box

@@ -53,6 +53,7 @@ import {
 } from '../../Drawer/Form/TaskDrawer.generated';
 import theme from '../../../../../src/theme';
 import { useCreateTaskCommentMutation } from '../../Drawer/CommentList/Form/CreateTaskComment.generated';
+import { FormFieldsGridContainer } from './Container/FormFieldsGridContainer';
 import { TasksDocument } from 'pages/accountLists/[accountListId]/tasks/Tasks.generated';
 import { ContactTasksTabDocument } from 'src/components/Contacts/ContactDetails/ContactTasksTab/ContactTasksTab.generated';
 
@@ -326,12 +327,7 @@ const TaskModalForm = ({
         }): ReactElement => (
           <form onSubmit={handleSubmit} noValidate>
             <FormFieldsWrapper>
-              <Grid
-                container
-                direction="column"
-                spacing={2}
-                style={{ width: '75%' }}
-              >
+              <FormFieldsGridContainer>
                 <Grid item>
                   <TextField
                     label={t('Task Name')}
@@ -660,7 +656,7 @@ const TaskModalForm = ({
                     inputProps={{ 'aria-label': 'Comment' }}
                   />
                 </Grid>
-              </Grid>
+              </FormFieldsGridContainer>
             </FormFieldsWrapper>
             <Divider />
             <Box
