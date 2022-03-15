@@ -6,6 +6,7 @@ import { HTML5Backend } from 'react-dnd-html5-backend';
 import { Box } from '@material-ui/core';
 import { v4 as uuidv4 } from 'uuid';
 import { useSnackbar } from 'notistack';
+import _ from 'lodash';
 import { ContactFlowSetupDragLayer } from '../../../../../src/components/Contacts/ContactFlow/ContactFlowSetup/DragLayer/ContactFlowSetupDragLayer';
 import { UnusedStatusesColumn } from '../../../../../src/components/Contacts/ContactFlow/ContactFlowSetup/Column/UnusedStatusesColumn';
 import { ContactFilterStatusEnum } from '../../../../../graphql/types.generated';
@@ -156,10 +157,19 @@ const ContactFlowSetupPage: React.FC = () => {
       const temp = [...flowOptions];
       temp.splice(dragIndex, 1);
       temp.splice(hoverIndex, 0, draggedColumn);
-      updateOptions(temp);
+      setFlowOptions(temp);
     },
     [flowOptions],
   );
+
+  const updateColumns = () => {
+    const originalOptions = userOptions?.userOptions.find(
+      (option) => option.key === 'flows',
+    )?.value;
+    if (!_.isEqual(originalOptions, flowOptions)) {
+      updateOptions(flowOptions);
+    }
+  };
 
   return (
     <>
@@ -201,6 +211,7 @@ const ContactFlowSetupPage: React.FC = () => {
                       deleteColumn={deleteColumn}
                       moveStatus={moveStatus}
                       moveColumns={moveColumns}
+                      updateColumns={updateColumns}
                       columnWidth={columnWidth}
                       setColumnWidth={setColumnWidth}
                       statuses={column.statuses.map((status) => ({
