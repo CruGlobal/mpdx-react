@@ -103,6 +103,7 @@ const MenuWrapper = styled(Menu)(({ theme }) => ({
 const ProfileMenu = (): ReactElement => {
   const { t } = useTranslation();
   const router = useRouter();
+  const { contactId: _, ...queryWithoutContactId } = router.query;
   const accountListId = useAccountListId();
   const { data } = useGetTopBarQuery();
   const [
@@ -201,7 +202,7 @@ const ProfileMenu = (): ReactElement => {
                       ? router.pathname
                       : '/accountLists/[accountListId]/',
                     query: {
-                      ...router.query,
+                      ...queryWithoutContactId,
                       accountListId: accountList.id,
                     },
                   })

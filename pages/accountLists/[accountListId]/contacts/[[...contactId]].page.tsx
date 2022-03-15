@@ -71,6 +71,9 @@ const ContactsPage: React.FC = () => {
         setContactDetailsId(contactId[contactId.length - 1]);
         setContactDetailsOpen(true);
       }
+    } else if (isReady && !contactId) {
+      setContactDetailsId('');
+      setContactDetailsOpen(false);
     }
   }, [isReady, contactId]);
 
