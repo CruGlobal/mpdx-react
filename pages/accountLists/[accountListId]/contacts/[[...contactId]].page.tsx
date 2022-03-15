@@ -200,6 +200,7 @@ const ContactsPage: React.FC = () => {
     flowsView: boolean,
   ) => {
     updateOptions(flowsView ? 'flows' : 'list');
+    setContactDetailsOpen(false);
   };
   //#endregion
 
