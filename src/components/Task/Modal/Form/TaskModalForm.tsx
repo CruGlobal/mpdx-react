@@ -53,12 +53,25 @@ import {
 } from '../../Drawer/Form/TaskDrawer.generated';
 import theme from '../../../../../src/theme';
 import { useCreateTaskCommentMutation } from '../../Drawer/CommentList/Form/CreateTaskComment.generated';
+import { FormFieldsGridContainer } from './Container/FormFieldsGridContainer';
 import { TasksDocument } from 'pages/accountLists/[accountListId]/tasks/Tasks.generated';
 import { ContactTasksTabDocument } from 'src/components/Contacts/ContactDetails/ContactTasksTab/ContactTasksTab.generated';
 
 export const ActionButton = styled(Button)(() => ({
   color: theme.palette.info.main,
   fontWeight: 550,
+}));
+
+export const FormFieldsWrapper = styled(Box)(() => ({
+  padding: theme.spacing(2),
+  paddingBottom: theme.spacing(4),
+  width: '100%',
+  margin: 'auto',
+  maxHeight: '80vh',
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  overflowY: 'auto',
 }));
 
 const DeleteButton = styled(Button)(() => ({
@@ -313,8 +326,8 @@ const TaskModalForm = ({
           touched,
         }): ReactElement => (
           <form onSubmit={handleSubmit} noValidate>
-            <Box p={2} pb={4} width="75%" margin="auto">
-              <Grid container direction="column" spacing={2}>
+            <FormFieldsWrapper>
+              <FormFieldsGridContainer>
                 <Grid item>
                   <TextField
                     label={t('Task Name')}
@@ -643,8 +656,8 @@ const TaskModalForm = ({
                     inputProps={{ 'aria-label': 'Comment' }}
                   />
                 </Grid>
-              </Grid>
-            </Box>
+              </FormFieldsGridContainer>
+            </FormFieldsWrapper>
             <Divider />
             <Box
               display="flex"

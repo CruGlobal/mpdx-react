@@ -40,6 +40,8 @@ import { possibleNextActions } from '../PossibleNextActions';
 import { possibleResults } from '../PossibleResults';
 import { useCompleteTaskMutation } from '../../../../../../src/components/Task/Drawer/CompleteForm/CompleteTask.generated';
 import useTaskModal from '../../../../../../src/hooks/useTaskModal';
+import { FormFieldsWrapper } from '../TaskModalForm';
+import { FormFieldsGridContainer } from '../Container/FormFieldsGridContainer';
 
 const ActionButton = styled(Button)(() => ({
   color: theme.palette.info.main,
@@ -155,8 +157,8 @@ const TaskModalCompleteForm = ({
           isValid,
         }): ReactElement => (
           <form onSubmit={handleSubmit} noValidate>
-            <Box p={2} pb={4} width="75%" margin="auto">
-              <Grid container direction="column" spacing={2}>
+            <FormFieldsWrapper>
+              <FormFieldsGridContainer>
                 <Grid item>
                   <Typography style={{ fontWeight: 600 }} display="inline">
                     {task?.activityType}
@@ -308,8 +310,8 @@ const TaskModalCompleteForm = ({
                     inputProps={{ 'aria-label': 'Add New Comment' }}
                   />
                 </Grid>
-              </Grid>
-            </Box>
+              </FormFieldsGridContainer>
+            </FormFieldsWrapper>
             <Divider />
             <Box
               display="flex"
