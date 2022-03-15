@@ -54,6 +54,8 @@ import {
 } from '../../../Drawer/Form/TaskDrawer.generated';
 import theme from '../../../../../../src/theme';
 import { useCreateTaskCommentMutation } from '../../../Drawer/CommentList/Form/CreateTaskComment.generated';
+import { FormFieldsWrapper } from '../TaskModalForm';
+import { FormFieldsGridContainer } from '../Container/FormFieldsGridContainer';
 import useTaskModal from 'src/hooks/useTaskModal';
 import { ContactTasksTabDocument } from 'src/components/Contacts/ContactDetails/ContactTasksTab/ContactTasksTab.generated';
 import { TasksDocument } from 'pages/accountLists/[accountListId]/tasks/Tasks.generated';
@@ -304,8 +306,8 @@ const TaskModalLogForm = ({
           touched,
         }): ReactElement => (
           <form onSubmit={handleSubmit} noValidate>
-            <Box p={2} pb={4} width="75%" margin="auto">
-              <Grid container direction="column" spacing={2}>
+            <FormFieldsWrapper>
+              <FormFieldsGridContainer>
                 <Grid item>
                   <TextField
                     label={t('Task Name')}
@@ -602,8 +604,8 @@ const TaskModalLogForm = ({
                     )}
                   </AnimatePresence>
                 </Grid>
-              </Grid>
-            </Box>
+              </FormFieldsGridContainer>
+            </FormFieldsWrapper>
             <Divider />
             <Box
               display="flex"

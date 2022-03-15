@@ -6,12 +6,15 @@ import {
   IconButton,
   Link,
   styled,
-  Button,
   Typography,
 } from '@material-ui/core';
 import LocationOn from '@material-ui/icons/LocationOn';
 import CreateIcon from '@material-ui/icons/Create';
-import AddIcon from '@material-ui/icons/Add';
+import {
+  ContactDetailsAddButton,
+  ContactDetailsAddIcon,
+  ContactDetailsAddText,
+} from '../People/ContactDetailsTabPeople';
 import { ContactMailingFragment } from './ContactMailing.generated';
 import { EditContactAddressModal } from './EditContactAddressModal/EditContactAddressModal';
 import { AddAddressModal } from './AddAddressModal/AddAddressModal';
@@ -19,10 +22,6 @@ import { AddAddressModal } from './AddAddressModal/AddAddressModal';
 const ContactDetailsMailingMainContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
   marginTop: theme.spacing(1),
-}));
-
-const AddAddressButton = styled(Button)(({ theme }) => ({
-  margin: theme.spacing(1),
 }));
 
 const ContactDetailsMailingIcon = styled(LocationOn)(({ theme }) => ({
@@ -65,18 +64,8 @@ const AddressEditIcon = styled(CreateIcon)(({ theme }) => ({
   color: theme.palette.cruGrayMedium.main,
 }));
 
-const AddressAddText = styled(Typography)(({ theme }) => ({
-  color: theme.palette.info.main,
-  textTransform: 'uppercase',
-  fontWeight: 'bold',
-}));
-
 const AddressEditIconContainer = styled(IconButton)(({ theme }) => ({
   margin: theme.spacing(0, 1),
-}));
-
-const AddressAddIcon = styled(AddIcon)(({ theme }) => ({
-  color: theme.palette.info.main,
 }));
 
 interface MailingProp {
@@ -226,16 +215,14 @@ export const ContactDetailsTabMailing: React.FC<MailingProp> = ({
             </ContactDetailsMailingLabelTextContainer>
           </ContactDetailsMailingTextContainer>
         </ContactDetailsMailingMainContainer>
-        <Box m={2}>
-          <Grid container alignItems="center">
-            <AddAddressButton onClick={() => setAddAddressModalOpen(true)}>
-              <AddressAddIcon />
-              <AddressAddText variant="subtitle1">
-                {t('Add Address')}
-              </AddressAddText>
-            </AddAddressButton>
-          </Grid>
-        </Box>
+        <Grid container alignItems="center">
+          <ContactDetailsAddButton onClick={() => setAddAddressModalOpen(true)}>
+            <ContactDetailsAddIcon />
+            <ContactDetailsAddText variant="subtitle1">
+              {t('Add Address')}
+            </ContactDetailsAddText>
+          </ContactDetailsAddButton>
+        </Grid>
       </Box>
       {selectedAddress ? (
         <EditContactAddressModal
