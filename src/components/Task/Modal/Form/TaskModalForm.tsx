@@ -56,6 +56,7 @@ import { useCreateTaskCommentMutation } from '../../Drawer/CommentList/Form/Crea
 import { FormFieldsGridContainer } from './Container/FormFieldsGridContainer';
 import { TasksDocument } from 'pages/accountLists/[accountListId]/tasks/Tasks.generated';
 import { ContactTasksTabDocument } from 'src/components/Contacts/ContactDetails/ContactTasksTab/ContactTasksTab.generated';
+import { ModalDeleteButton } from 'src/components/common/Modal/DeleteButton/ModalDeleteButton';
 
 export const ActionButton = styled(Button)(() => ({
   color: theme.palette.info.main,
@@ -72,11 +73,6 @@ export const FormFieldsWrapper = styled(Box)(() => ({
   flexDirection: 'column',
   alignItems: 'center',
   overflowY: 'auto',
-}));
-
-const DeleteButton = styled(Button)(() => ({
-  fontWeight: 550,
-  color: theme.palette.error.main,
 }));
 
 const LoadingIndicator = styled(CircularProgress)(() => ({
@@ -668,12 +664,10 @@ const TaskModalForm = ({
             >
               <Box>
                 {task?.id ? (
-                  <DeleteButton
-                    size="large"
+                  <ModalDeleteButton
                     onClick={() => handleRemoveDialog(true)}
-                  >
-                    {t('Delete')}
-                  </DeleteButton>
+                    size="large"
+                  />
                 ) : null}
               </Box>
               <Box>
