@@ -15,6 +15,7 @@ export default {
 const accountListId = 'abc';
 const startAt = '2021-04-12';
 const lateStartAt = '2019-10-12';
+const onTaskCheckToggle = () => {};
 
 export const Default = (): ReactElement => {
   const task = gqlMock<TaskRowFragment>(TaskRowFragmentDoc, {
@@ -24,11 +25,25 @@ export const Default = (): ReactElement => {
     },
   });
 
-  return <ContactTaskRow accountListId={accountListId} task={task} />;
+  return (
+    <ContactTaskRow
+      accountListId={accountListId}
+      task={task}
+      isChecked={false}
+      onTaskCheckToggle={onTaskCheckToggle}
+    />
+  );
 };
 
 export const Loading = (): ReactElement => {
-  return <ContactTaskRow accountListId={accountListId} task={undefined} />;
+  return (
+    <ContactTaskRow
+      accountListId={accountListId}
+      task={undefined}
+      isChecked={false}
+      onTaskCheckToggle={onTaskCheckToggle}
+    />
+  );
 };
 
 export const Complete = (): ReactElement => {
@@ -39,7 +54,14 @@ export const Complete = (): ReactElement => {
     },
   });
 
-  return <ContactTaskRow accountListId={accountListId} task={task} />;
+  return (
+    <ContactTaskRow
+      accountListId={accountListId}
+      task={task}
+      isChecked={false}
+      onTaskCheckToggle={onTaskCheckToggle}
+    />
+  );
 };
 
 export const Late = (): ReactElement => {
@@ -50,5 +72,12 @@ export const Late = (): ReactElement => {
     },
   });
 
-  return <ContactTaskRow accountListId={accountListId} task={task} />;
+  return (
+    <ContactTaskRow
+      accountListId={accountListId}
+      task={task}
+      isChecked={false}
+      onTaskCheckToggle={onTaskCheckToggle}
+    />
+  );
 };
