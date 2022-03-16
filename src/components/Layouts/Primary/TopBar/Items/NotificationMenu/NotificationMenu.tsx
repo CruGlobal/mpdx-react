@@ -127,7 +127,7 @@ export const NotificationContent = ({
       {!loading && data?.userNotifications.nodes.length === 0 && (
         <ListItem className={classes.listItemEmpty}>
           <img src={illustration13} className={classes.img} alt="empty" />
-          {t('No notifications to show.')}
+          <Typography>{t('No notifications to show.')}</Typography>
         </ListItem>
       )}
       {loading && (
