@@ -31,10 +31,14 @@ const ContactRowButton = styled(Box)(({}) => ({
   textOverflow: 'ellipsis',
 }));
 
-const SubjectWrap = styled(Box)(({}) => ({
+const SubjectWrapOuter = styled(Box)(({}) => ({
   width: '100%',
   display: 'flex',
   alignItems: 'center',
+}));
+
+const SubjectWrapInner = styled(Box)(({}) => ({
+  display: 'flex',
   '&:hover': {
     textDecoration: 'underline',
   },
@@ -154,7 +158,7 @@ export const TaskRow: React.FC<TaskRowProps> = ({
               value={isChecked}
             />
           </Box>
-          <Box>
+          <Box onClick={(e) => e.stopPropagation()}>
             <TaskCompleteButton
               isComplete={isComplete}
               onClick={handleCompleteButtonPressed}
@@ -175,7 +179,10 @@ export const TaskRow: React.FC<TaskRowProps> = ({
               {contacts.nodes.map((contact, index) => (
                 <TaskContactName
                   key={contact.id}
-                  onClick={(e) => onClick(e, contact.id)}
+                  onClick={(e) => {
+                    onClick(e, contact.id);
+                    e.stopPropagation();
+                  }}
                 >
                   {index !== contacts.nodes.length - 1
                     ? `${contact.name},`
@@ -183,15 +190,19 @@ export const TaskRow: React.FC<TaskRowProps> = ({
                 </TaskContactName>
               ))}
             </Box>
-            <SubjectWrap
-              onClick={handleSubjectPressed}
-              data-testid="subject-wrap"
-            >
-              <TaskType>{activityType ? t(activityType) : ''}</TaskType>
-              <Tooltip title={subject}>
-                <ContactText>{subject}</ContactText>
-              </Tooltip>
-            </SubjectWrap>
+            <SubjectWrapOuter data-testid="subject-wrap">
+              <SubjectWrapInner
+                onClick={(e) => {
+                  handleSubjectPressed();
+                  e.stopPropagation();
+                }}
+              >
+                <TaskType>{activityType ? t(activityType) : ''}</TaskType>
+                <Tooltip title={subject}>
+                  <ContactText>{subject}</ContactText>
+                </Tooltip>
+              </SubjectWrapInner>
+            </SubjectWrapOuter>
             <Hidden smUp>
               <Button>
                 <ContactText>{assigneeName}</ContactText>
@@ -203,28 +214,34 @@ export const TaskRow: React.FC<TaskRowProps> = ({
           <Hidden xsDown>
             <ContactText>{assigneeName}</ContactText>
             <TaskDueDate isComplete={isComplete} dueDate={dueDate} />
-            <TaskCommentsButton
-              isComplete={isComplete}
-              numberOfComments={comments?.totalCount}
-              onClick={handleCommentButtonPressed}
-            />
-          </Hidden>
-          <Hidden smUp>
-            <Box>
-              <TaskDueDate isComplete={isComplete} dueDate={dueDate} small />
+            <Box onClick={(e) => e.stopPropagation()}>
               <TaskCommentsButton
                 isComplete={isComplete}
                 numberOfComments={comments?.totalCount}
                 onClick={handleCommentButtonPressed}
-                small
               />
             </Box>
           </Hidden>
-          <StarTaskIconButton
-            accountListId={accountListId}
-            taskId={taskId}
-            isStarred={starred}
-          />
+          <Hidden smUp>
+            <Box>
+              <TaskDueDate isComplete={isComplete} dueDate={dueDate} small />
+              <Box>
+                <TaskCommentsButton
+                  isComplete={isComplete}
+                  numberOfComments={comments?.totalCount}
+                  onClick={handleCommentButtonPressed}
+                  small
+                />
+              </Box>
+            </Box>
+          </Hidden>
+          <Box onClick={(e) => e.stopPropagation()}>
+            <StarTaskIconButton
+              accountListId={accountListId}
+              taskId={taskId}
+              isStarred={starred}
+            />
+          </Box>
         </Box>
       </ContactRowButton>
     </Box>
