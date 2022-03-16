@@ -8,6 +8,8 @@ import {
   useContactReferralTabQuery,
 } from './ContactReferralTab.generated';
 
+const onContactSelected = jest.fn();
+
 describe('ContactReferralTab', () => {
   it('test query', async () => {
     const { result, waitForNextUpdate } = renderHook(
@@ -55,6 +57,7 @@ describe('ContactReferralTab', () => {
         <ContactReferralTab
           accountListId="accountList-id"
           contactId="contact-id"
+          onContactSelected={onContactSelected}
         />
       </GqlMockedProvider>,
     );
