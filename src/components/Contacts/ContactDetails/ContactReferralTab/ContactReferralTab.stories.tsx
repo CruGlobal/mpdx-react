@@ -16,6 +16,8 @@ export default {
 const accountListId = '1111';
 const contactId = '2222';
 
+const onContactSelected = () => {};
+
 export const Default = (): ReactElement => {
   return (
     <Box m="2">
@@ -23,6 +25,7 @@ export const Default = (): ReactElement => {
         <ContactReferralTab
           accountListId={accountListId}
           contactId={contactId}
+          onContactSelected={onContactSelected}
         />
       </GqlMockedProvider>
     </Box>
@@ -46,7 +49,11 @@ export const Loading = (): ReactElement => {
         },
       ]}
     >
-      <ContactReferralTab accountListId={accountListId} contactId={contactId} />
+      <ContactReferralTab
+        accountListId={accountListId}
+        contactId={contactId}
+        onContactSelected={onContactSelected}
+      />
     </MockedProvider>
   );
 };
