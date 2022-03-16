@@ -190,8 +190,9 @@ export const TaskRow: React.FC<TaskRowProps> = ({
                 </TaskContactName>
               ))}
             </Box>
-            <SubjectWrapOuter data-testid="subject-wrap">
+            <SubjectWrapOuter>
               <SubjectWrapInner
+                data-testid="subject-wrap"
                 onClick={(e) => {
                   handleSubjectPressed();
                   e.stopPropagation();
