@@ -193,6 +193,9 @@ describe('TaskModalForm', () => {
     await waitFor(() =>
       expect(getByText('Robert Anderson')).toBeInTheDocument(),
     );
+    userEvent.click(
+      await within(getByRole('presentation')).findByText('Robert Anderson'),
+    );
 
     const contactsElement = getByRole('textbox', {
       hidden: true,
