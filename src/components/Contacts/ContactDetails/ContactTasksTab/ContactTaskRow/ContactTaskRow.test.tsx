@@ -80,6 +80,32 @@ describe('ContactTaskRow', () => {
     expect(queryByTestId('loadingRow')).toBeNull();
   });
 
+  it('handles task checkbox click', async () => {
+    const task = gqlMock<TaskRowFragment>(TaskRowFragmentDoc, {
+      mocks: {
+        startAt,
+        result: ResultEnum.None,
+      },
+    });
+
+    const { findByText, getByRole } = render(
+      <GqlMockedProvider>
+        <MuiThemeProvider theme={theme}>
+          <ContactTaskRow
+            accountListId={accountListId}
+            task={task}
+            onTaskCheckToggle={onTaskCheckToggle}
+            isChecked={false}
+          />
+        </MuiThemeProvider>
+      </GqlMockedProvider>,
+    );
+
+    expect(await findByText(task.subject)).toBeVisible();
+    userEvent.click(getByRole('checkbox', { hidden: true }));
+    expect(onTaskCheckToggle).toHaveBeenCalledWith(task.id);
+  });
+
   describe('task interactions', () => {
     it('handles complete button click', async () => {
       const task = gqlMock<TaskRowFragment>(TaskRowFragmentDoc, {
