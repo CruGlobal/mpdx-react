@@ -97,7 +97,7 @@ describe('ContactReferralTab', () => {
       </GqlMockedProvider>,
     );
     expect(await findByText('name-2')).toBeVisible();
-    expect(await findByText('2021-04-29')).toBeVisible();
+
     userEvent.click(getByText('name-2'));
     expect(onContactSelected).toHaveBeenCalledWith('contact-id-2');
   });
