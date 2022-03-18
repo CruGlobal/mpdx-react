@@ -14,6 +14,11 @@ interface Props {
   accountListId: string;
   contactId: string;
   onClose: () => void;
+  onContactSelected: (
+    contactId: string,
+    openDetails?: boolean,
+    flows?: boolean,
+  ) => void;
 }
 
 const ContactDetailsWrapper = styled(Box)(({}) => ({
@@ -62,6 +67,7 @@ export const ContactDetails: React.FC<Props> = ({
   accountListId,
   contactId,
   onClose,
+  onContactSelected,
 }: Props) => {
   const { t } = useTranslation();
 
@@ -113,6 +119,7 @@ export const ContactDetails: React.FC<Props> = ({
           <ContactReferralTab
             accountListId={accountListId}
             contactId={contactId}
+            onContactSelected={onContactSelected}
           />
         </TabPanel>
         <TabPanel value={TabKey.ContactDetails}>

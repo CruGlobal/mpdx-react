@@ -394,6 +394,7 @@ const ContactsPage: React.FC = () => {
                   <ContactDetails
                     accountListId={accountListId}
                     contactId={contactDetailsId}
+                    onContactSelected={setContactFocus}
                     onClose={() =>
                       setContactFocus(
                         undefined,

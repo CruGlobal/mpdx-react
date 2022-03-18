@@ -9,6 +9,7 @@ import {
   TableHead,
   TableRow,
   Button,
+  Typography,
 } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
 import { DateTime } from 'luxon';
@@ -30,6 +31,14 @@ const ContactReferralLoadingPlaceHolder = styled(Skeleton)(({ theme }) => ({
   margin: theme.spacing(2, 0),
 }));
 
+const ReferralName = styled(Typography)(() => ({
+  width: 'fit-content',
+  '&:hover': {
+    textDecoration: 'underline',
+    cursor: 'pointer',
+  },
+}));
+
 const AddButton = styled(Button)(({ theme }) => ({
   fontWeight: 600,
   margin: theme.spacing(0.5),
@@ -39,11 +48,17 @@ const AddButton = styled(Button)(({ theme }) => ({
 interface ContactReferralTabProps {
   accountListId: string;
   contactId: string;
+  onContactSelected: (
+    contactId: string,
+    openDetails?: boolean,
+    flows?: boolean,
+  ) => void;
 }
 
 export const ContactReferralTab: React.FC<ContactReferralTabProps> = ({
   accountListId,
   contactId,
+  onContactSelected,
 }) => {
   const { data, loading } = useContactReferralTabQuery({
     variables: {
@@ -93,9 +108,17 @@ export const ContactReferralTab: React.FC<ContactReferralTabProps> = ({
                   data?.contact.contactReferralsByMe.nodes.map(
                     ({ id, referredTo, createdAt }) => (
                       <TableRow key={id}>
-                        <TableCell>{referredTo.name}</TableCell>
                         <TableCell>
-                          {DateTime.fromISO(createdAt).toLocaleString()}
+                          <ReferralName
+                            onClick={() => onContactSelected(referredTo.id)}
+                          >
+                            {referredTo.name}
+                          </ReferralName>
+                        </TableCell>
+                        <TableCell>
+                          <Typography>
+                            {DateTime.fromISO(createdAt).toLocaleString()}
+                          </Typography>
                         </TableCell>
                       </TableRow>
                     ),
