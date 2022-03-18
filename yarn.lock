@@ -7695,6 +7695,7 @@ __metadata:
 "@swc/core-linux-x64-musl@npm:1.2.153":
   version: 1.2.153
   resolution: "@swc/core-linux-x64-musl@npm:1.2.153"
+  checksum: 7f5dbd1647fef454ac8007f8c171e74c313a52f1f69cb2552b23cfd3dae8a36bc3790c8ca6609f98ac0da83cd23f14f58434ddb58906cd34ae09ee657561afce
   conditions: os=linux & cpu=x64
   languageName: node
   linkType: hard
@@ -20816,6 +20817,7 @@ fsevents@~2.1.2:
     "@storybook/react": ^6.4.9
     "@swc/core": ^1.2.118
     "@swc/core-linux-x64-gnu": "npm:1.2.153"
+    "@swc/core-linux-x64-musl": "npm:1.2.153"
     "@swc/jest": ^0.2.12
     "@testing-library/dom": ^8.0.0
     "@testing-library/jest-dom": ^5.11.9
