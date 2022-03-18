@@ -30,9 +30,6 @@ const ItemWithBorders = styled(({ disableHover: _, ...props }) => (
     disableHover?: boolean;
   }) => ({
     padding: `${padding}px`,
-    '&:first-child': {
-      marginTop: '20px',
-    },
     borderBottom: `1px solid ${theme.palette.grey[200]}`,
     '&:last-child': {
       borderBottom: 'none',
