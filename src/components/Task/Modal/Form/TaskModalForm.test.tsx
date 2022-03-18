@@ -189,9 +189,12 @@ describe('TaskModalForm', () => {
       name: 'Assignee',
     });
     userEvent.click(assigneeElement);
-
+    userEvent.type(assigneeElement, 'Robert');
     await waitFor(() =>
       expect(getByText('Robert Anderson')).toBeInTheDocument(),
+    );
+    userEvent.click(
+      await within(getByRole('presentation')).findByText('Robert Anderson'),
     );
 
     const contactsElement = getByRole('textbox', {
