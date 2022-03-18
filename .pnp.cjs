@@ -2207,6 +2207,14 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@babel/types", "npm:7.12.12"]
           ],
           "linkType": "HARD",
+        }],
+        ["npm:7.17.7", {
+          "packageLocation": "./.yarn/cache/@babel-parser-npm-7.17.7-b6ad43381d-d2612c2597.zip/node_modules/@babel/parser/",
+          "packageDependencies": [
+            ["@babel/parser", "npm:7.17.7"],
+            ["@babel/types", "npm:7.12.12"]
+          ],
+          "linkType": "HARD",
         }]
       ]],
       ["@babel/plugin-bugfix-v8-spread-parameters-in-optional-chaining", [
@@ -26913,7 +26921,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [
             ["istanbul-lib-instrument", "npm:5.1.0"],
             ["@babel/core", "npm:7.17.5"],
-            ["@babel/parser", "npm:7.17.3"],
+            ["@babel/parser", "npm:7.17.7"],
             ["@istanbuljs/schema", "npm:0.1.2"],
             ["istanbul-lib-coverage", "npm:3.2.0"],
             ["semver", "npm:6.3.0"]
