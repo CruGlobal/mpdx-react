@@ -12,10 +12,12 @@ import { useTranslation } from 'react-i18next';
 import { DateTime } from 'luxon';
 import { TaskFilterSetInput } from '../../../../../graphql/types.generated';
 import { SearchBox } from '../../../common/SearchBox/SearchBox';
+import { useMassSelection } from '../../../../../src/hooks/useMassSelection';
 import { ContactTaskRow } from './ContactTaskRow/ContactTaskRow';
 import { useContactTasksTabQuery } from './ContactTasksTab.generated';
 import useTaskModal from 'src/hooks/useTaskModal';
 import { StarFilterButton } from 'src/components/Shared/Header/StarFilterButton/StarFilterButton';
+import { ListHeaderCheckBoxState } from 'src/components/Shared/Header/ListHeader';
 
 const ContactDetailsTabContainer = styled(Box)(({ theme }) => ({
   width: '100%',
@@ -107,6 +109,14 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
     },
   });
 
+  //#region Mass Actions
+  const {
+    selectionType,
+    isRowChecked,
+    toggleSelectAll,
+    toggleSelectionById,
+  } = useMassSelection(data?.tasks?.totalCount ?? 0);
+
   const { openTaskModal } = useTaskModal();
 
   const { t } = useTranslation();
@@ -143,7 +153,12 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
         </HeaderRow>
         <HeaderRow mb={2}>
           <HeaderItemsWrap>
-            <Checkbox />
+            <Checkbox
+              checked={selectionType === ListHeaderCheckBoxState.checked}
+              color="secondary"
+              indeterminate={selectionType === ListHeaderCheckBoxState.partial}
+              onChange={toggleSelectAll}
+            />
             <SearchBox
               page="task"
               onChange={setSearchTerm}
@@ -167,16 +182,22 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
               key="0"
               accountListId={accountListId}
               task={undefined}
+              isChecked={false}
+              onTaskCheckToggle={toggleSelectionById}
             />
             <ContactTaskRow
               key="1"
               accountListId={accountListId}
               task={undefined}
+              isChecked={false}
+              onTaskCheckToggle={toggleSelectionById}
             />
             <ContactTaskRow
               key="2"
               accountListId={accountListId}
               task={undefined}
+              isChecked={false}
+              onTaskCheckToggle={toggleSelectionById}
             />
           </>
         ) : (
@@ -185,6 +206,8 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
               key={task.id}
               accountListId={accountListId}
               task={task}
+              isChecked={isRowChecked(task.id)}
+              onTaskCheckToggle={toggleSelectionById}
             />
           ))
         )}

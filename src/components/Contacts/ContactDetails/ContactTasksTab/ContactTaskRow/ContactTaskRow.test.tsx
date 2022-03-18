@@ -24,6 +24,7 @@ const startAt = '2021-04-12';
 jest.mock('../../../../../hooks/useTaskModal');
 
 const openTaskModal = jest.fn();
+const onTaskCheckToggle = jest.fn();
 
 beforeEach(() => {
   (useTaskModal as jest.Mock).mockReturnValue({
@@ -36,7 +37,12 @@ describe('ContactTaskRow', () => {
     const { getByTestId } = render(
       <GqlMockedProvider>
         <MuiThemeProvider theme={theme}>
-          <ContactTaskRow accountListId={accountListId} task={undefined} />
+          <ContactTaskRow
+            accountListId={accountListId}
+            task={undefined}
+            isChecked={false}
+            onTaskCheckToggle={onTaskCheckToggle}
+          />
         </MuiThemeProvider>
       </GqlMockedProvider>,
     );
@@ -55,7 +61,12 @@ describe('ContactTaskRow', () => {
     const { findByText, queryByTestId } = render(
       <GqlMockedProvider>
         <MuiThemeProvider theme={theme}>
-          <ContactTaskRow accountListId={accountListId} task={task} />
+          <ContactTaskRow
+            accountListId={accountListId}
+            task={task}
+            isChecked={false}
+            onTaskCheckToggle={onTaskCheckToggle}
+          />
         </MuiThemeProvider>
       </GqlMockedProvider>,
     );
@@ -67,6 +78,32 @@ describe('ContactTaskRow', () => {
     ).toBeVisible();
 
     expect(queryByTestId('loadingRow')).toBeNull();
+  });
+
+  it('handles task checkbox click', async () => {
+    const task = gqlMock<TaskRowFragment>(TaskRowFragmentDoc, {
+      mocks: {
+        startAt,
+        result: ResultEnum.None,
+      },
+    });
+
+    const { findByText, getByRole } = render(
+      <GqlMockedProvider>
+        <MuiThemeProvider theme={theme}>
+          <ContactTaskRow
+            accountListId={accountListId}
+            task={task}
+            onTaskCheckToggle={onTaskCheckToggle}
+            isChecked={false}
+          />
+        </MuiThemeProvider>
+      </GqlMockedProvider>,
+    );
+
+    expect(await findByText(task.subject)).toBeVisible();
+    userEvent.click(getByRole('checkbox', { hidden: true }));
+    expect(onTaskCheckToggle).toHaveBeenCalledWith(task.id);
   });
 
   describe('task interactions', () => {
@@ -81,7 +118,12 @@ describe('ContactTaskRow', () => {
       const { findByText, getByRole } = render(
         <GqlMockedProvider>
           <MuiThemeProvider theme={theme}>
-            <ContactTaskRow accountListId={accountListId} task={task} />
+            <ContactTaskRow
+              accountListId={accountListId}
+              task={task}
+              isChecked={false}
+              onTaskCheckToggle={onTaskCheckToggle}
+            />
           </MuiThemeProvider>
         </GqlMockedProvider>,
       );
@@ -106,7 +148,12 @@ describe('ContactTaskRow', () => {
       const { findByText, getByText } = render(
         <GqlMockedProvider>
           <MuiThemeProvider theme={theme}>
-            <ContactTaskRow accountListId={accountListId} task={task} />
+            <ContactTaskRow
+              accountListId={accountListId}
+              task={task}
+              isChecked={false}
+              onTaskCheckToggle={onTaskCheckToggle}
+            />
           </MuiThemeProvider>
         </GqlMockedProvider>,
       );
@@ -130,7 +177,12 @@ describe('ContactTaskRow', () => {
       const { findByText, getByRole } = render(
         <GqlMockedProvider>
           <MuiThemeProvider theme={theme}>
-            <ContactTaskRow accountListId={accountListId} task={task} />
+            <ContactTaskRow
+              accountListId={accountListId}
+              task={task}
+              isChecked={false}
+              onTaskCheckToggle={onTaskCheckToggle}
+            />
           </MuiThemeProvider>
         </GqlMockedProvider>,
       );
@@ -155,7 +207,12 @@ describe('ContactTaskRow', () => {
       const { getByText } = render(
         <GqlMockedProvider>
           <MuiThemeProvider theme={theme}>
-            <ContactTaskRow accountListId={accountListId} task={task} />
+            <ContactTaskRow
+              accountListId={accountListId}
+              task={task}
+              isChecked={false}
+              onTaskCheckToggle={onTaskCheckToggle}
+            />
           </MuiThemeProvider>
         </GqlMockedProvider>,
       );
@@ -173,7 +230,12 @@ describe('ContactTaskRow', () => {
       const { getByText } = render(
         <GqlMockedProvider>
           <MuiThemeProvider theme={theme}>
-            <ContactTaskRow accountListId={accountListId} task={task} />
+            <ContactTaskRow
+              accountListId={accountListId}
+              task={task}
+              isChecked={false}
+              onTaskCheckToggle={onTaskCheckToggle}
+            />
           </MuiThemeProvider>
         </GqlMockedProvider>,
       );
@@ -191,7 +253,12 @@ describe('ContactTaskRow', () => {
       const { getByText } = render(
         <GqlMockedProvider>
           <MuiThemeProvider theme={theme}>
-            <ContactTaskRow accountListId={accountListId} task={task} />
+            <ContactTaskRow
+              accountListId={accountListId}
+              task={task}
+              isChecked={false}
+              onTaskCheckToggle={onTaskCheckToggle}
+            />
           </MuiThemeProvider>
         </GqlMockedProvider>,
       );
@@ -209,7 +276,12 @@ describe('ContactTaskRow', () => {
       const { getByText } = render(
         <GqlMockedProvider>
           <MuiThemeProvider theme={theme}>
-            <ContactTaskRow accountListId={accountListId} task={task} />
+            <ContactTaskRow
+              accountListId={accountListId}
+              task={task}
+              isChecked={false}
+              onTaskCheckToggle={onTaskCheckToggle}
+            />
           </MuiThemeProvider>
         </GqlMockedProvider>,
       );
@@ -227,7 +299,12 @@ describe('ContactTaskRow', () => {
       const { getByText } = render(
         <GqlMockedProvider>
           <MuiThemeProvider theme={theme}>
-            <ContactTaskRow accountListId={accountListId} task={task} />
+            <ContactTaskRow
+              accountListId={accountListId}
+              task={task}
+              isChecked={false}
+              onTaskCheckToggle={onTaskCheckToggle}
+            />
           </MuiThemeProvider>
         </GqlMockedProvider>,
       );
@@ -245,7 +322,12 @@ describe('ContactTaskRow', () => {
       const { getByText } = render(
         <GqlMockedProvider>
           <MuiThemeProvider theme={theme}>
-            <ContactTaskRow accountListId={accountListId} task={task} />
+            <ContactTaskRow
+              accountListId={accountListId}
+              task={task}
+              isChecked={false}
+              onTaskCheckToggle={onTaskCheckToggle}
+            />
           </MuiThemeProvider>
         </GqlMockedProvider>,
       );
@@ -263,7 +345,12 @@ describe('ContactTaskRow', () => {
       const { getByText } = render(
         <GqlMockedProvider>
           <MuiThemeProvider theme={theme}>
-            <ContactTaskRow accountListId={accountListId} task={task} />
+            <ContactTaskRow
+              accountListId={accountListId}
+              task={task}
+              isChecked={false}
+              onTaskCheckToggle={onTaskCheckToggle}
+            />
           </MuiThemeProvider>
         </GqlMockedProvider>,
       );
@@ -281,7 +368,12 @@ describe('ContactTaskRow', () => {
       const { getByText } = render(
         <GqlMockedProvider>
           <MuiThemeProvider theme={theme}>
-            <ContactTaskRow accountListId={accountListId} task={task} />
+            <ContactTaskRow
+              accountListId={accountListId}
+              task={task}
+              isChecked={false}
+              onTaskCheckToggle={onTaskCheckToggle}
+            />
           </MuiThemeProvider>
         </GqlMockedProvider>,
       );
@@ -299,7 +391,12 @@ describe('ContactTaskRow', () => {
       const { getByText } = render(
         <GqlMockedProvider>
           <MuiThemeProvider theme={theme}>
-            <ContactTaskRow accountListId={accountListId} task={task} />
+            <ContactTaskRow
+              accountListId={accountListId}
+              task={task}
+              isChecked={false}
+              onTaskCheckToggle={onTaskCheckToggle}
+            />
           </MuiThemeProvider>
         </GqlMockedProvider>,
       );
@@ -317,7 +414,12 @@ describe('ContactTaskRow', () => {
       const { getByText } = render(
         <GqlMockedProvider>
           <MuiThemeProvider theme={theme}>
-            <ContactTaskRow accountListId={accountListId} task={task} />
+            <ContactTaskRow
+              accountListId={accountListId}
+              task={task}
+              isChecked={false}
+              onTaskCheckToggle={onTaskCheckToggle}
+            />
           </MuiThemeProvider>
         </GqlMockedProvider>,
       );
@@ -335,7 +437,12 @@ describe('ContactTaskRow', () => {
       const { getByText } = render(
         <GqlMockedProvider>
           <MuiThemeProvider theme={theme}>
-            <ContactTaskRow accountListId={accountListId} task={task} />
+            <ContactTaskRow
+              accountListId={accountListId}
+              task={task}
+              isChecked={false}
+              onTaskCheckToggle={onTaskCheckToggle}
+            />
           </MuiThemeProvider>
         </GqlMockedProvider>,
       );
@@ -353,7 +460,12 @@ describe('ContactTaskRow', () => {
       const { getByText } = render(
         <GqlMockedProvider>
           <MuiThemeProvider theme={theme}>
-            <ContactTaskRow accountListId={accountListId} task={task} />
+            <ContactTaskRow
+              accountListId={accountListId}
+              task={task}
+              isChecked={false}
+              onTaskCheckToggle={onTaskCheckToggle}
+            />
           </MuiThemeProvider>
         </GqlMockedProvider>,
       );
@@ -371,7 +483,12 @@ describe('ContactTaskRow', () => {
       const { getByText } = render(
         <GqlMockedProvider>
           <MuiThemeProvider theme={theme}>
-            <ContactTaskRow accountListId={accountListId} task={task} />
+            <ContactTaskRow
+              accountListId={accountListId}
+              task={task}
+              isChecked={false}
+              onTaskCheckToggle={onTaskCheckToggle}
+            />
           </MuiThemeProvider>
         </GqlMockedProvider>,
       );
@@ -389,7 +506,12 @@ describe('ContactTaskRow', () => {
       const { getByText } = render(
         <GqlMockedProvider>
           <MuiThemeProvider theme={theme}>
-            <ContactTaskRow accountListId={accountListId} task={task} />
+            <ContactTaskRow
+              accountListId={accountListId}
+              task={task}
+              isChecked={false}
+              onTaskCheckToggle={onTaskCheckToggle}
+            />
           </MuiThemeProvider>
         </GqlMockedProvider>,
       );
@@ -407,7 +529,12 @@ describe('ContactTaskRow', () => {
       const { getByText } = render(
         <GqlMockedProvider>
           <MuiThemeProvider theme={theme}>
-            <ContactTaskRow accountListId={accountListId} task={task} />
+            <ContactTaskRow
+              accountListId={accountListId}
+              task={task}
+              isChecked={false}
+              onTaskCheckToggle={onTaskCheckToggle}
+            />
           </MuiThemeProvider>
         </GqlMockedProvider>,
       );
