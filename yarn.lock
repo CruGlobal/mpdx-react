@@ -7687,6 +7687,7 @@ __metadata:
 "@swc/core-linux-x64-gnu@npm:1.2.153":
   version: 1.2.153
   resolution: "@swc/core-linux-x64-gnu@npm:1.2.153"
+  checksum: 9314f97a6b2456ef9d2a3da8a3d7182626f310ff9eb74e357dcb4ab0b7fbe2dda69ff1ae76b421f9c0f91cc720b13eb4bc157616948f7f9a7bdb39423fc87071
   conditions: os=linux & cpu=x64
   languageName: node
   linkType: hard
@@ -9498,6 +9499,13 @@ __metadata:
   bin:
     acorn: bin/acorn
   checksum: e0f79409d68923fbf1aa6d4166f3eedc47955320d25c89a20cc822e6ba7c48c5963d5bc657bc242d68f7a4ac9faf96eef033e8f73656da6c640d4219935fdfd0
+  languageName: node
+  linkType: hard
+
+"add@npm:^2.0.6":
+  version: 2.0.6
+  resolution: "add@npm:2.0.6"
+  checksum: e2d23d40494565dfed4acd65e478570c444db5ac6c053551ed429c39ea0f2c99d83df63e7befec936df601827d2254d06a2fb6f7dcfd2022e810b25eab818b8c
   languageName: node
   linkType: hard
 
@@ -20807,6 +20815,7 @@ fsevents@~2.1.2:
     "@storybook/addon-viewport": ^6.4.9
     "@storybook/react": ^6.4.9
     "@swc/core": ^1.2.118
+    "@swc/core-linux-x64-gnu": "npm:1.2.153"
     "@swc/jest": ^0.2.12
     "@testing-library/dom": ^8.0.0
     "@testing-library/jest-dom": ^5.11.9
@@ -20831,6 +20840,7 @@ fsevents@~2.1.2:
     "@types/yup": ^0.29.11
     "@typescript-eslint/eslint-plugin": ^4.15.0
     "@typescript-eslint/parser": ^4.15.0
+    add: ^2.0.6
     apollo-datasource-rest: ^3.0.0
     apollo3-cache-persist: ^0.12.1
     axios: ^0.26.0
@@ -20906,6 +20916,7 @@ fsevents@~2.1.2:
     url-loader: 4.1.1
     uuid: ^8.3.2
     webpack: ^4.46.0
+    yarn: ^1.22.18
     yup: ^0.32.8
   languageName: unknown
   linkType: soft
@@ -29232,6 +29243,16 @@ typescript@^4.4.4:
     y18n: ^5.0.5
     yargs-parser: ^21.0.0
   checksum: 2b687338684bf9645e9389ffdbe813fc5a2ddfede299d46fbe5ac80eb9a391e558b97861ba44d2256936ebe9d7f8135f6a38af1c76a5685eac4061008b2df57a
+  languageName: node
+  linkType: hard
+
+"yarn@npm:^1.22.18":
+  version: 1.22.18
+  resolution: "yarn@npm:1.22.18"
+  bin:
+    yarn: bin/yarn.js
+    yarnpkg: bin/yarn.js
+  checksum: ffd9a4872caa5fce83e914592dd6a40bb978bf992d3dca839bc3853b9e6de951d7596f7e8c4a88bec3af3a049e46097f9139a51740d9074582fd923af8762f7a
   languageName: node
   linkType: hard
 
