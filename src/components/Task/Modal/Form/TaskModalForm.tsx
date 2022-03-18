@@ -359,46 +359,50 @@ const TaskModalForm = ({
                   </FormControl>
                 </Grid>
                 <Grid item>
-                  <Autocomplete
-                    loading={loading}
-                    options={
-                      (data?.accountListUsers?.nodes &&
-                        data.accountListUsers.nodes.map(
-                          ({ user }) => user.id,
-                        )) ||
-                      []
-                    }
-                    getOptionLabel={(userId): string => {
-                      const user = data?.accountListUsers?.nodes.find(
-                        ({ user }) => user.id === userId,
-                      )?.user;
-                      return `${user?.firstName} ${user?.lastName}`;
-                    }}
-                    renderInput={(params): ReactElement => (
-                      <TextField
-                        {...params}
-                        label={t('Assignee')}
-                        InputProps={{
-                          ...params.InputProps,
-                          endAdornment: (
-                            <>
-                              {loading && (
-                                <CircularProgress color="primary" size={20} />
-                              )}
-                              {params.InputProps.endAdornment}
-                            </>
-                          ),
-                        }}
-                      />
-                    )}
-                    value={userId}
-                    onChange={(_, userId): void =>
-                      setFieldValue('userId', userId)
-                    }
-                    getOptionSelected={(option, value): boolean =>
-                      option === value
-                    }
-                  />
+                  {!loading ? (
+                    <Autocomplete
+                      loading={loading}
+                      options={
+                        (data?.accountListUsers?.nodes &&
+                          data.accountListUsers.nodes.map(
+                            ({ user }) => user.id,
+                          )) ||
+                        []
+                      }
+                      getOptionLabel={(userId): string => {
+                        const user = data?.accountListUsers?.nodes.find(
+                          ({ user }) => user.id === userId,
+                        )?.user;
+                        return `${user?.firstName} ${user?.lastName}`;
+                      }}
+                      renderInput={(params): ReactElement => (
+                        <TextField
+                          {...params}
+                          label={t('Assignee')}
+                          InputProps={{
+                            ...params.InputProps,
+                            endAdornment: (
+                              <>
+                                {loading && (
+                                  <CircularProgress color="primary" size={20} />
+                                )}
+                                {params.InputProps.endAdornment}
+                              </>
+                            ),
+                          }}
+                        />
+                      )}
+                      value={userId}
+                      onChange={(_, userId): void =>
+                        setFieldValue('userId', userId)
+                      }
+                      getOptionSelected={(option, value): boolean =>
+                        option === value
+                      }
+                    />
+                  ) : (
+                    <CircularProgress color="primary" size={20} />
+                  )}
                 </Grid>
                 <Grid item>
                   <FormControl fullWidth>
