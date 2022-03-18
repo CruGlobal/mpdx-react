@@ -7,5 +7,6 @@ query ContactTasksTab($accountListId: ID!, $tasksFilter: TaskFilterSetInput) {
       endCursor
       hasNextPage
     }
+    totalCount
   }
 }

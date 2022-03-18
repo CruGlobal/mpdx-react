@@ -15,6 +15,7 @@ export default {
 const accountListId = 'abc';
 const contactId = 'contact-1';
 const onClose = () => {};
+const onContactSelected = () => {};
 
 export const Default = (): ReactElement => {
   return (
@@ -23,6 +24,7 @@ export const Default = (): ReactElement => {
         accountListId={accountListId}
         contactId={contactId}
         onClose={onClose}
+        onContactSelected={onContactSelected}
       />
     </GqlMockedProvider>
   );
@@ -49,6 +51,7 @@ export const Loading = (): ReactElement => {
         accountListId={accountListId}
         contactId={contactId}
         onClose={onClose}
+        onContactSelected={onContactSelected}
       />
     </MockedProvider>
   );

@@ -13,7 +13,6 @@ import { Formik } from 'formik';
 import * as yup from 'yup';
 import { useSnackbar } from 'notistack';
 import _ from 'lodash';
-import Delete from '@material-ui/icons/Delete';
 import {
   ContactDetailsTabDocument,
   ContactDetailsTabQuery,
@@ -33,6 +32,7 @@ import {
   useDeletePersonMutation,
   useUpdatePersonMutation,
 } from './PersonModal.generated';
+import { ModalDeleteButton } from 'src/components/common/Modal/DeleteButton/ModalDeleteButton';
 
 const ContactPersonContainer = styled(Box)(({ theme }) => ({
   margin: theme.spacing(2, 0),
@@ -54,15 +54,6 @@ const ContactEditContainer = styled(Box)(({ theme }) => ({
 const ContactEditModalFooterButton = styled(Button)(({ theme }) => ({
   color: theme.palette.info.main,
   fontWeight: 'bold',
-}));
-
-const ContactEditModalDeleteButton = styled(Button)(({ theme }) => ({
-  color: theme.palette.common.white,
-  backgroundColor: theme.palette.error.main,
-  fontWeight: 'bold',
-  '&:hover': {
-    backgroundColor: theme.palette.error.dark,
-  },
 }));
 
 const ShowExtraText = styled(Typography)(({ theme }) => ({
@@ -418,7 +409,7 @@ export const PersonModal: React.FC<PersonModalProps> = ({
       >
         {(formikProps): ReactElement => (
           <form onSubmit={formikProps.handleSubmit} noValidate>
-            <DialogContent dividers>
+            <DialogContent dividers style={{ maxHeight: '80vh' }}>
               <ContactEditContainer>
                 <ContactPersonContainer>
                   {/* Name Section */}
@@ -472,13 +463,7 @@ export const PersonModal: React.FC<PersonModalProps> = ({
                 width="100%"
               >
                 {person && (
-                  <ContactEditModalDeleteButton
-                    onClick={deletePersonFromContact}
-                    variant="text"
-                  >
-                    <Delete />
-                    {t('Delete')}
-                  </ContactEditModalDeleteButton>
+                  <ModalDeleteButton onClick={deletePersonFromContact} />
                 )}
                 <Box>
                   <ContactEditModalFooterButton

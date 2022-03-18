@@ -6,6 +6,7 @@ import {
   IconButton,
   styled,
   Typography,
+  Button,
 } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 import { Cake, Email, Phone } from '@material-ui/icons';
@@ -63,11 +64,15 @@ const ContactDetailEditIcon = styled(CreateIcon)(({ theme }) => ({
   color: theme.palette.cruGrayMedium.main,
 }));
 
-const ContactAddIcon = styled(AddIcon)(({ theme }) => ({
+export const ContactDetailsAddButton = styled(Button)(({ theme }) => ({
+  margin: theme.spacing(1),
+}));
+
+export const ContactDetailsAddIcon = styled(AddIcon)(({ theme }) => ({
   color: theme.palette.info.main,
 }));
 
-const ContactAddText = styled(Typography)(({ theme }) => ({
+export const ContactDetailsAddText = styled(Typography)(({ theme }) => ({
   color: theme.palette.info.main,
   textTransform: 'uppercase',
   fontWeight: 'bold',
@@ -200,12 +205,14 @@ export const ContactDetailsTabPeople: React.FC<ContactDetailsPeopleProp> = ({
       {people.nodes.map((person) =>
         person.id !== primaryPerson?.id ? personView(person) : null,
       )}
-      <Box m={2} onClick={() => setCreatePersonModalOpen(true)}>
+      <ContactDetailsAddButton onClick={() => setCreatePersonModalOpen(true)}>
         <Grid container alignItems="center">
-          <ContactAddIcon />
-          <ContactAddText variant="subtitle1">{t('Add Person')}</ContactAddText>
+          <ContactDetailsAddIcon />
+          <ContactDetailsAddText variant="subtitle1">
+            {t('Add Person')}
+          </ContactDetailsAddText>
         </Grid>
-      </Box>
+      </ContactDetailsAddButton>
       {createPersonModalOpen ? (
         <PersonModal
           person={undefined}

@@ -203,6 +203,7 @@ const ContactsPage: React.FC = () => {
     flowsView: boolean,
   ) => {
     updateOptions(flowsView ? 'flows' : 'list');
+    setContactDetailsOpen(false);
   };
   //#endregion
 
@@ -396,6 +397,7 @@ const ContactsPage: React.FC = () => {
                   <ContactDetails
                     accountListId={accountListId}
                     contactId={contactDetailsId}
+                    onContactSelected={setContactFocus}
                     onClose={() =>
                       setContactFocus(
                         undefined,

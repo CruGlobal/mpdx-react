@@ -80,6 +80,7 @@ interface Props {
   columnWidth: number;
   setColumnWidth: Dispatch<SetStateAction<number>>;
   moveColumns: (dragIndex: number, hoverIndex: number) => void;
+  updateColumns: () => void;
 }
 
 interface DragItem {
@@ -101,6 +102,7 @@ export const ContactFlowSetupColumn: React.FC<Props> = ({
   loading,
   columnWidth,
   setColumnWidth,
+  updateColumns,
 }: Props) => {
   const CardContentRef = useRef<HTMLDivElement>();
   const [localTitle, setLocalTitle] = useState(title);
@@ -166,6 +168,7 @@ export const ContactFlowSetupColumn: React.FC<Props> = ({
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
     }),
+    end: updateColumns,
   });
 
   drag(dragRef);

@@ -14,6 +14,7 @@ import { GetContactDetailsHeaderQuery } from './ContactDetailsHeader/ContactDeta
 const accountListId = 'account-list-1';
 const contactId = 'contact-1';
 const onClose = jest.fn();
+const onContactSelected = jest.fn();
 
 describe('ContactDetails', () => {
   it('should show loading state', async () => {
@@ -36,6 +37,7 @@ describe('ContactDetails', () => {
             accountListId={accountListId}
             contactId={contactId}
             onClose={onClose}
+            onContactSelected={onContactSelected}
           />
         </MuiThemeProvider>
       </GqlMockedProvider>,
@@ -62,6 +64,7 @@ describe('ContactDetails', () => {
             accountListId={accountListId}
             contactId={contactId}
             onClose={onClose}
+            onContactSelected={onContactSelected}
           />
         </MuiThemeProvider>
       </GqlMockedProvider>,
@@ -80,6 +83,7 @@ describe('ContactDetails', () => {
             accountListId={accountListId}
             contactId={contactId}
             onClose={onClose}
+            onContactSelected={onContactSelected}
           />
         </MuiThemeProvider>
       </GqlMockedProvider>,

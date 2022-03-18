@@ -53,17 +53,26 @@ import {
 } from '../../Drawer/Form/TaskDrawer.generated';
 import theme from '../../../../../src/theme';
 import { useCreateTaskCommentMutation } from '../../Drawer/CommentList/Form/CreateTaskComment.generated';
+import { FormFieldsGridContainer } from './Container/FormFieldsGridContainer';
 import { TasksDocument } from 'pages/accountLists/[accountListId]/tasks/Tasks.generated';
 import { ContactTasksTabDocument } from 'src/components/Contacts/ContactDetails/ContactTasksTab/ContactTasksTab.generated';
+import { ModalDeleteButton } from 'src/components/common/Modal/DeleteButton/ModalDeleteButton';
 
 export const ActionButton = styled(Button)(() => ({
   color: theme.palette.info.main,
   fontWeight: 550,
 }));
 
-const DeleteButton = styled(Button)(() => ({
-  fontWeight: 550,
-  color: theme.palette.error.main,
+export const FormFieldsWrapper = styled(Box)(() => ({
+  padding: theme.spacing(2),
+  paddingBottom: theme.spacing(4),
+  width: '100%',
+  margin: 'auto',
+  maxHeight: '80vh',
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  overflowY: 'auto',
 }));
 
 const LoadingIndicator = styled(CircularProgress)(() => ({
@@ -313,8 +322,8 @@ const TaskModalForm = ({
           touched,
         }): ReactElement => (
           <form onSubmit={handleSubmit} noValidate>
-            <Box p={2} pb={4} width="75%" margin="auto">
-              <Grid container direction="column" spacing={2}>
+            <FormFieldsWrapper>
+              <FormFieldsGridContainer>
                 <Grid item>
                   <TextField
                     label={t('Task Name')}
@@ -350,46 +359,50 @@ const TaskModalForm = ({
                   </FormControl>
                 </Grid>
                 <Grid item>
-                  <Autocomplete
-                    loading={loading}
-                    options={
-                      (data?.accountListUsers?.nodes &&
-                        data.accountListUsers.nodes.map(
-                          ({ user }) => user.id,
-                        )) ||
-                      []
-                    }
-                    getOptionLabel={(userId): string => {
-                      const user = data?.accountListUsers?.nodes.find(
-                        ({ user }) => user.id === userId,
-                      )?.user;
-                      return `${user?.firstName} ${user?.lastName}`;
-                    }}
-                    renderInput={(params): ReactElement => (
-                      <TextField
-                        {...params}
-                        label={t('Assignee')}
-                        InputProps={{
-                          ...params.InputProps,
-                          endAdornment: (
-                            <>
-                              {loading && (
-                                <CircularProgress color="primary" size={20} />
-                              )}
-                              {params.InputProps.endAdornment}
-                            </>
-                          ),
-                        }}
-                      />
-                    )}
-                    value={userId}
-                    onChange={(_, userId): void =>
-                      setFieldValue('userId', userId)
-                    }
-                    getOptionSelected={(option, value): boolean =>
-                      option === value
-                    }
-                  />
+                  {!loading ? (
+                    <Autocomplete
+                      loading={loading}
+                      options={
+                        (data?.accountListUsers?.nodes &&
+                          data.accountListUsers.nodes.map(
+                            ({ user }) => user.id,
+                          )) ||
+                        []
+                      }
+                      getOptionLabel={(userId): string => {
+                        const user = data?.accountListUsers?.nodes.find(
+                          ({ user }) => user.id === userId,
+                        )?.user;
+                        return `${user?.firstName} ${user?.lastName}`;
+                      }}
+                      renderInput={(params): ReactElement => (
+                        <TextField
+                          {...params}
+                          label={t('Assignee')}
+                          InputProps={{
+                            ...params.InputProps,
+                            endAdornment: (
+                              <>
+                                {loading && (
+                                  <CircularProgress color="primary" size={20} />
+                                )}
+                                {params.InputProps.endAdornment}
+                              </>
+                            ),
+                          }}
+                        />
+                      )}
+                      value={userId}
+                      onChange={(_, userId): void =>
+                        setFieldValue('userId', userId)
+                      }
+                      getOptionSelected={(option, value): boolean =>
+                        option === value
+                      }
+                    />
+                  ) : (
+                    <CircularProgress color="primary" size={20} />
+                  )}
                 </Grid>
                 <Grid item>
                   <FormControl fullWidth>
@@ -643,8 +656,8 @@ const TaskModalForm = ({
                     inputProps={{ 'aria-label': 'Comment' }}
                   />
                 </Grid>
-              </Grid>
-            </Box>
+              </FormFieldsGridContainer>
+            </FormFieldsWrapper>
             <Divider />
             <Box
               display="flex"
@@ -655,12 +668,10 @@ const TaskModalForm = ({
             >
               <Box>
                 {task?.id ? (
-                  <DeleteButton
-                    size="large"
+                  <ModalDeleteButton
                     onClick={() => handleRemoveDialog(true)}
-                  >
-                    {t('Delete')}
-                  </DeleteButton>
+                    size="large"
+                  />
                 ) : null}
               </Box>
               <Box>
