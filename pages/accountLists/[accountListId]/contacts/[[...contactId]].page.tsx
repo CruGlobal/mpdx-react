@@ -65,6 +65,52 @@ const ContactsPage: React.FC = () => {
     throw new Error('contactId should be an array or undefined');
   }
 
+  //#region Filters
+  const urlFilters =
+    query?.filters && JSON.parse(decodeURI(query.filters as string));
+
+  const [filterPanelOpen, setFilterPanelOpen] = useState<boolean>(false);
+  const [activeFilters, setActiveFilters] = useState<ContactFilterSetInput>(
+    urlFilters ?? {},
+  );
+  const [starredFilter, setStarredFilter] = useState<ContactFilterSetInput>({});
+
+  //User options for display view
+  const {
+    data: userOptions,
+    loading: userOptionsLoading,
+  } = useGetUserOptionsQuery({
+    onCompleted: () => {
+      if (!userOptionsLoading) {
+        const view = userOptions?.userOptions.find(
+          (option) => option.key === 'contacts_view',
+        )?.value;
+        setflowsViewEnabled(view === 'flows');
+        if (view === 'flows') {
+          if (!contactId?.includes('flows')) {
+            setContactFocus(undefined, false, true);
+          }
+        } else {
+          if (contactId?.includes('flows')) {
+            setContactFocus(undefined, false);
+          }
+        }
+      }
+    },
+  });
+
+  const { data, loading, fetchMore } = useContactsQuery({
+    variables: {
+      accountListId: accountListId ?? '',
+      contactsFilters: {
+        ...activeFilters,
+        wildcardSearch: searchTerm as string,
+        ...starredFilter,
+      },
+    },
+    skip: !accountListId,
+  });
+
   useEffect(() => {
     if (isReady && contactId) {
       if (contactId[contactId.length - 1] !== 'flows') {
@@ -77,15 +123,23 @@ const ContactsPage: React.FC = () => {
     }
   }, [isReady, contactId]);
 
-  //#region Filters
-  const urlFilters =
-    query?.filters && JSON.parse(decodeURI(query.filters as string));
-
-  const [filterPanelOpen, setFilterPanelOpen] = useState<boolean>(false);
-  const [activeFilters, setActiveFilters] = useState<ContactFilterSetInput>(
-    urlFilters ?? {},
-  );
-  const [starredFilter, setStarredFilter] = useState<ContactFilterSetInput>({});
+  useEffect(() => {
+    if (!userOptionsLoading) {
+      const view = userOptions?.userOptions.find(
+        (option) => option.key === 'contacts_view',
+      )?.value;
+      setflowsViewEnabled(view === 'flows');
+      if (view === 'flows') {
+        if (!contactId?.includes('flows')) {
+          setContactFocus(undefined, false, true);
+        }
+      } else {
+        if (contactId?.includes('flows')) {
+          setContactFocus(undefined, false);
+        }
+      }
+    }
+  }, [loading]);
 
   useEffect(() => {
     const { filters: _, ...oldQuery } = query;
@@ -108,18 +162,6 @@ const ContactsPage: React.FC = () => {
   const toggleFilterPanel = () => {
     setFilterPanelOpen(!filterPanelOpen);
   };
-
-  const { data, loading, fetchMore } = useContactsQuery({
-    variables: {
-      accountListId: accountListId ?? '',
-      contactsFilters: {
-        ...activeFilters,
-        wildcardSearch: searchTerm as string,
-        ...starredFilter,
-      },
-    },
-    skip: !accountListId,
-  });
 
   const isFiltered =
     Object.keys(activeFilters).length > 0 ||
@@ -209,25 +251,6 @@ const ContactsPage: React.FC = () => {
 
   //#region JSX
 
-  //User options for display view
-  const { data: userOptions } = useGetUserOptionsQuery({
-    onCompleted: () => {
-      const view = userOptions?.userOptions.find(
-        (option) => option.key === 'contacts_view',
-      )?.value;
-      setflowsViewEnabled(view === 'flows');
-      if (view === 'flows') {
-        if (!contactId?.includes('flows')) {
-          setContactFocus(undefined, false, true);
-        }
-      } else {
-        if (contactId?.includes('flows')) {
-          setContactFocus(undefined, false);
-        }
-      }
-    },
-  });
-
   const [updateUserOptions] = useUpdateUserOptionsMutation();
 
   const updateOptions = async (view: string): Promise<void> => {
@@ -271,7 +294,7 @@ const ContactsPage: React.FC = () => {
           MPDX | {flowsViewEnabled ? t('Contact Flows') : t('Contacts')}
         </title>
       </Head>
-      {accountListId ? (
+      {accountListId && !userOptionsLoading ? (
         <DndProvider backend={HTML5Backend}>
           <ContactFlowDragLayer />
           <WhiteBackground>
