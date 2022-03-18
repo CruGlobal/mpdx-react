@@ -143,19 +143,19 @@ const getLocalizedTaskType = (
 interface ContactTaskRowProps {
   accountListId: string;
   task?: TaskRowFragment;
+  isChecked: boolean;
+  onTaskCheckToggle: (contactId: string) => void;
 }
 
 export const ContactTaskRow: React.FC<ContactTaskRowProps> = ({
   accountListId,
   task,
+  isChecked,
+  onTaskCheckToggle,
 }) => {
   const { t } = useTranslation();
 
   const { openTaskModal } = useTaskModal();
-
-  const handleContactCheckPressed = () => {
-    //select contact for actions
-  };
 
   const handleCompleteButtonPressed = () => {
     openTaskModal({
@@ -210,7 +210,12 @@ export const ContactTaskRow: React.FC<ContactTaskRowProps> = ({
   return (
     <TaskRowWrap>
       <TaskItemWrap width={theme.spacing(20)} justifyContent="space-between">
-        <Checkbox onChange={handleContactCheckPressed} />
+        <Checkbox
+          checked={isChecked}
+          color="secondary"
+          onChange={() => onTaskCheckToggle(task.id)}
+          value={isChecked}
+        />
         <TaskCompleteButton
           isComplete={isComplete}
           onClick={handleCompleteButtonPressed}
