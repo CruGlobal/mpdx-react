@@ -302,6 +302,7 @@ const TasksPage: React.FC = () => {
                   accountListId={accountListId}
                   contactId={contactDetailsId}
                   onClose={() => setContactFocus(undefined)}
+                  onContactSelected={setContactFocus}
                 />
               ) : (
                 <></>
