@@ -392,7 +392,7 @@ const ContactsPage: React.FC = () => {
                 </>
               }
               rightPanel={
-                contactDetailsId ? (
+                contactDetailsId && contactId ? (
                   <ContactDetails
                     accountListId={accountListId}
                     contactId={contactDetailsId}
