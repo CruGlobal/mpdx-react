@@ -17,20 +17,6 @@ import { TaskCommentsButton } from '../../Contacts/ContactDetails/ContactTasksTa
 import useTaskModal from '../../../hooks/useTaskModal';
 import { TaskRowFragment } from './TaskRow.generated';
 
-const ContactRowButton = styled(Box)(({}) => ({
-  height: '56px',
-  width: '100%',
-  display: 'flex',
-  flexDirection: 'row',
-  justifyContent: 'space-evenly',
-  alignItems: 'center',
-  alignContent: 'center',
-  cursor: 'pointer',
-  whiteSpace: 'nowrap',
-  overflow: 'hidden',
-  textOverflow: 'ellipsis',
-}));
-
 const SubjectWrapOuter = styled(Box)(({}) => ({
   width: '100%',
   display: 'flex',
@@ -77,6 +63,7 @@ interface TaskRowProps {
   isChecked: boolean;
   onContactSelected: (taskId: string) => void;
   onTaskCheckToggle: (taskId: string) => void;
+  useTopMargin?: boolean;
 }
 
 export const TaskRow: React.FC<TaskRowProps> = ({
@@ -85,8 +72,24 @@ export const TaskRow: React.FC<TaskRowProps> = ({
   isChecked,
   onContactSelected,
   onTaskCheckToggle,
+  useTopMargin,
 }) => {
   const { t } = useTranslation();
+
+  const ContactRowButton = styled(Box)(({}) => ({
+    height: '56px',
+    width: '100%',
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    alignItems: 'center',
+    alignContent: 'center',
+    cursor: 'pointer',
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    marginTop: useTopMargin ? '20px' : '0',
+  }));
 
   const { openTaskModal } = useTaskModal();
   const onClick = (
