@@ -355,6 +355,7 @@ const ContactsPage: React.FC = () => {
                           onContactSelected={setContactFocus}
                           onContactCheckToggle={toggleSelectionById}
                           contactDetailsOpen={contactDetailsOpen}
+                          useTopMargin={index === 0}
                         />
                       )}
                       groupBy={(item) => item.name[0].toUpperCase()}

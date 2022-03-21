@@ -249,6 +249,7 @@ const TasksPage: React.FC = () => {
                         onContactSelected={setContactFocus}
                         onTaskCheckToggle={toggleSelectionById}
                         isChecked={isRowChecked(task.id)}
+                        useTopMargin={index === 0}
                       />
                     </Box>
                   )}

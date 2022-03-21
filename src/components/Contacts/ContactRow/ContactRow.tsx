@@ -17,11 +17,6 @@ import { StarContactIconButton } from '../StarContactIconButton/StarContactIconB
 import { ContactUncompletedTasksCount } from '../ContactUncompletedTasksCount/ContactUncompletedTasksCount';
 import { ContactRowFragment } from './ContactRow.generated';
 
-const ListItemButton = styled(ButtonBase)(() => ({
-  flex: '1 1 auto',
-  textAlign: 'left',
-}));
-
 interface Props {
   accountListId: string;
   contact: ContactRowFragment;
@@ -33,6 +28,7 @@ interface Props {
   ) => void;
   contactDetailsOpen: boolean;
   onContactCheckToggle: (contactId: string) => void;
+  useTopMargin?: boolean;
 }
 
 export const ContactRow: React.FC<Props> = ({
@@ -42,7 +38,14 @@ export const ContactRow: React.FC<Props> = ({
   contactDetailsOpen,
   onContactSelected,
   onContactCheckToggle,
+  useTopMargin,
 }) => {
+  const ListItemButton = styled(ButtonBase)(() => ({
+    flex: '1 1 auto',
+    textAlign: 'left',
+    marginTop: useTopMargin ? '20px' : '0',
+  }));
+
   const onClick = () => {
     onContactSelected(contact.id);
   };
