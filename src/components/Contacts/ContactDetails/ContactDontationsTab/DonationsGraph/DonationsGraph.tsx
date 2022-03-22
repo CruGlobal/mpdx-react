@@ -86,8 +86,8 @@ export const DonationsGraph: React.FC<DonationsGraphProps> = ({
           )} (${convertedCurrency})`}</LegendText>
           <BarChart width={600} height={300} data={months}>
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="month" />
-            <YAxis />
+            <XAxis dataKey="month" fontFamily={theme.typography.fontFamily} />
+            <YAxis fontFamily={theme.typography.fontFamily} />
             <Tooltip />
             <Legend />
             <Bar
