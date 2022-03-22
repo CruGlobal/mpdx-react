@@ -33,6 +33,7 @@ import {
   useUpdatePersonMutation,
 } from './PersonModal.generated';
 import { ModalDeleteButton } from 'src/components/common/Modal/DeleteButton/ModalDeleteButton';
+import { DeleteConfirmation } from 'src/components/common/Modal/DeleteConfirmation/DeleteConfirmation';
 
 const ContactPersonContainer = styled(Box)(({ theme }) => ({
   margin: theme.spacing(2, 0),
@@ -90,6 +91,7 @@ export const PersonModal: React.FC<PersonModalProps> = ({
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
   const [personEditShowMore, setPersonEditShowMore] = useState(false);
+  const [removeDialogOpen, handleRemoveDialogOpen] = useState(false);
   const [updatePerson, { loading: updating }] = useUpdatePersonMutation();
   const [createPerson, { loading: creating }] = useCreatePersonMutation();
   const [deletePerson, { loading: deleting }] = useDeletePersonMutation();
@@ -394,6 +396,9 @@ export const PersonModal: React.FC<PersonModalProps> = ({
         ],
       });
     }
+    enqueueSnackbar(t('Person deleted successfully'), {
+      variant: 'success',
+    });
   };
 
   return (
@@ -463,7 +468,9 @@ export const PersonModal: React.FC<PersonModalProps> = ({
                 width="100%"
               >
                 {person && (
-                  <ModalDeleteButton onClick={deletePersonFromContact} />
+                  <ModalDeleteButton
+                    onClick={() => handleRemoveDialogOpen(true)}
+                  />
                 )}
                 <Box>
                   <ContactEditModalFooterButton
@@ -488,6 +495,13 @@ export const PersonModal: React.FC<PersonModalProps> = ({
           </form>
         )}
       </Formik>
+      <DeleteConfirmation
+        deleteType="person"
+        open={removeDialogOpen}
+        deleting={deleting}
+        onClickConfirm={deletePersonFromContact}
+        onClickDecline={handleRemoveDialogOpen}
+      />
     </Modal>
   );
 };
