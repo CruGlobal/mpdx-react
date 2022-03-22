@@ -196,7 +196,9 @@ export const PartnershipInfo: React.FC<PartnershipInfoProp> = ({ contact }) => {
           {t('Next Increase Ask')}
         </LabelsAndText>
         <LabelsAndText variant="subtitle1" role="textbox">
-          {DateTime.fromISO(contact?.nextAsk ?? '').toLocaleString()}
+          {contact?.nextAsk
+            ? DateTime.fromISO(contact.nextAsk).toLocaleString()
+            : t('')}
         </LabelsAndText>
       </IconAndTextContainerCenter>
       <Divider />
