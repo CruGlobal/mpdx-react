@@ -8,6 +8,7 @@ import {
   makeStyles,
   Menu,
   Theme,
+  Typography,
 } from '@material-ui/core';
 import React, { ReactElement, useState } from 'react';
 import NotificationsNoneIcon from '@material-ui/icons/NotificationsNone';
@@ -84,7 +85,9 @@ export const NotificationContent = ({
     <>
       <ListSubheader className={classes.listSubheader}>
         <Box display="flex" flexDirection="row" justifyContent="center">
-          <Box flexGrow={1}>{t('Notifications')}</Box>
+          <Box flexGrow={1} display="flex" alignItems="center">
+            <Typography>{t('Notifications')}</Typography>
+          </Box>
           <Box>
             <Button
               size="small"
@@ -124,7 +127,7 @@ export const NotificationContent = ({
       {!loading && data?.userNotifications.nodes.length === 0 && (
         <ListItem className={classes.listItemEmpty}>
           <img src={illustration13} className={classes.img} alt="empty" />
-          {t('No notifications to show.')}
+          <Typography>{t('No notifications to show.')}</Typography>
         </ListItem>
       )}
       {loading && (
