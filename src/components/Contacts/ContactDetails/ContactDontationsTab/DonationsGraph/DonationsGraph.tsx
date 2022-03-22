@@ -72,7 +72,7 @@ export const DonationsGraph: React.FC<DonationsGraphProps> = ({
   );
 
   return (
-    <GraphContainer>
+    <GraphContainer fontFamily={theme.typography.fontFamily}>
       {loading ? (
         <Box style={{ width: '100%' }} role="alert">
           <GraphLoadingPlaceHolder />
@@ -86,8 +86,8 @@ export const DonationsGraph: React.FC<DonationsGraphProps> = ({
           )} (${convertedCurrency})`}</LegendText>
           <BarChart width={600} height={300} data={months}>
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="month" fontFamily={theme.typography.fontFamily} />
-            <YAxis fontFamily={theme.typography.fontFamily} />
+            <XAxis dataKey="month" />
+            <YAxis />
             <Tooltip />
             <Legend />
             <Bar
