@@ -28,6 +28,7 @@ interface Props {
   title: string;
   color: string;
   accountListId: string;
+  searchTerm?: string | string[];
   onContactSelected: (
     contactId: string,
     openDetails: boolean,
@@ -54,6 +55,7 @@ export const ContactFlowColumn: React.FC<Props> = ({
   title,
   color,
   accountListId,
+  searchTerm,
   onContactSelected,
   changeContactStatus,
 }: Props) => {
@@ -63,6 +65,7 @@ export const ContactFlowColumn: React.FC<Props> = ({
       contactsFilters: {
         ...selectedFilters,
         status: statuses,
+        wildcardSearch: searchTerm as string,
       },
     },
     skip: !accountListId || statuses.length === 0,

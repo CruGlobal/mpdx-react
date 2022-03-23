@@ -27,7 +27,10 @@ import { SidePanelsLayout } from '../../../../src/components/Layouts/SidePanelsL
 import { useAccountListId } from '../../../../src/hooks/useAccountListId';
 import { ContactFilterSetInput } from '../../../../graphql/types.generated';
 import { ContactRow } from '../../../../src/components/Contacts/ContactRow/ContactRow';
-import { ListHeader } from '../../../../src/components/Shared/Header/ListHeader';
+import {
+  ListHeader,
+  TableViewModeEnum,
+} from '../../../../src/components/Shared/Header/ListHeader';
 import { FilterPanel } from '../../../../src/components/Shared/Filters/FilterPanel';
 import { useMassSelection } from '../../../../src/hooks/useMassSelection';
 import { UserOptionFragment } from '../../../../src/components/Shared/Filters/FilterPanel.generated';
@@ -297,6 +300,11 @@ const ContactsPage: React.FC = () => {
                     toggleFilterPanel={toggleFilterPanel}
                     contactDetailsOpen={contactDetailsOpen}
                     onCheckAllItems={toggleSelectAll}
+                    contactsView={
+                      flowsViewEnabled
+                        ? TableViewModeEnum.Flows
+                        : TableViewModeEnum.List
+                    }
                     onSearchTermChanged={setSearchTerm}
                     searchTerm={searchTerm}
                     totalItems={data?.contacts?.totalCount}
@@ -385,6 +393,7 @@ const ContactsPage: React.FC = () => {
                         ...activeFilters,
                         ...starredFilter,
                       }}
+                      searchTerm={searchTerm}
                       onContactSelected={setContactFocus}
                     />
                   )}
