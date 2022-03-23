@@ -4,7 +4,11 @@ import userEvent from '@testing-library/user-event';
 import { ThemeProvider } from '@material-ui/core';
 import theme from '../../../theme';
 
-import { ListHeader, ListHeaderCheckBoxState } from './ListHeader';
+import {
+  ListHeader,
+  ListHeaderCheckBoxState,
+  TableViewModeEnum,
+} from './ListHeader';
 
 const toggleFilterPanel = jest.fn();
 const onSearchTermChanged = jest.fn();
@@ -333,5 +337,46 @@ describe('ListHeader', () => {
     userEvent.click(starFilterButton);
 
     expect(toggleStarredFilter).toHaveBeenCalledWith({});
+  });
+
+  it('renders the total count', async () => {
+    const { getByText } = render(
+      <ThemeProvider theme={theme}>
+        <ListHeader
+          page="contact"
+          activeFilters={true}
+          headerCheckboxState={ListHeaderCheckBoxState.unchecked}
+          starredFilter={{ starred: true }}
+          toggleStarredFilter={toggleStarredFilter}
+          filterPanelOpen={false}
+          contactDetailsOpen={false}
+          toggleFilterPanel={toggleFilterPanel}
+          onCheckAllItems={onCheckAllItems}
+          onSearchTermChanged={onSearchTermChanged}
+        />
+      </ThemeProvider>,
+    );
+    expect(getByText('Showing {{count}}')).toBeInTheDocument();
+  });
+
+  it('does not renders the total count', async () => {
+    const { queryByText } = render(
+      <ThemeProvider theme={theme}>
+        <ListHeader
+          page="contact"
+          activeFilters={true}
+          contactsView={TableViewModeEnum.Flows}
+          headerCheckboxState={ListHeaderCheckBoxState.unchecked}
+          starredFilter={{ starred: true }}
+          toggleStarredFilter={toggleStarredFilter}
+          filterPanelOpen={false}
+          contactDetailsOpen={false}
+          toggleFilterPanel={toggleFilterPanel}
+          onCheckAllItems={onCheckAllItems}
+          onSearchTermChanged={onSearchTermChanged}
+        />
+      </ThemeProvider>,
+    );
+    expect(queryByText('Showing {{count}}')).not.toBeInTheDocument();
   });
 });
