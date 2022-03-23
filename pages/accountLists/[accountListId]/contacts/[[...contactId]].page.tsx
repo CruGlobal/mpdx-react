@@ -385,6 +385,7 @@ const ContactsPage: React.FC = () => {
                         ...activeFilters,
                         ...starredFilter,
                       }}
+                      searchTerm={searchTerm}
                       onContactSelected={setContactFocus}
                     />
                   )}
