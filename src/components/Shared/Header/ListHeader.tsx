@@ -95,6 +95,7 @@ interface ListHeaderProps {
   activeFilters: boolean;
   headerCheckboxState: ListHeaderCheckBoxState;
   filterPanelOpen: boolean;
+  contactsView?: TableViewModeEnum;
   toggleFilterPanel: () => void;
   contactDetailsOpen: boolean;
   onCheckAllItems: (event: React.ChangeEvent<HTMLInputElement>) => void;
@@ -122,6 +123,7 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
   buttonGroup,
   starredFilter,
   toggleStarredFilter,
+  contactsView,
 }) => {
   const { t } = useTranslation();
 
@@ -162,8 +164,11 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
           page === 'contact' ? t('Search Contacts') : t('Search Tasks')
         }
       />
+
       <ItemsShowingText>
-        {t('Showing {{count}}', { count: totalItems })}
+        {contactsView !== TableViewModeEnum.Flows
+          ? t('Showing {{count}}', { count: totalItems })
+          : ''}
       </ItemsShowingText>
 
       {page === 'contact' ? (
