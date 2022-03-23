@@ -20,6 +20,7 @@ import useTaskModal from 'src/hooks/useTaskModal';
 interface Props {
   accountListId: string;
   selectedFilters: ContactFilterSetInput;
+  searchTerm?: string | string[];
   onContactSelected: (
     contactId: string,
     openDetails: boolean,
@@ -68,6 +69,7 @@ export const ContactFlow: React.FC<Props> = ({
   accountListId,
   selectedFilters,
   onContactSelected,
+  searchTerm,
 }: Props) => {
   const {
     data: userOptions,
@@ -166,6 +168,7 @@ export const ContactFlow: React.FC<Props> = ({
                       (status) => statusMap[status] as ContactFilterStatusEnum,
                     )}
                     changeContactStatus={changeContactStatus}
+                    searchTerm={searchTerm}
                   />
                 </Box>
               ))}
