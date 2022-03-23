@@ -588,10 +588,10 @@ const TaskModalForm = ({
                 <Grid item>
                   <Typography>Notifications</Typography>
                   <Grid container spacing={2}>
-                    <Grid xs={4} item>
+                    <Grid xs={12} item>
                       <FormControl fullWidth>
                         <InputLabel id="notificationType">
-                          {t('Type')}
+                          {t('Notify me before due date by')}
                         </InputLabel>
                         <Select
                           labelId="notificationType"
@@ -607,7 +607,7 @@ const TaskModalForm = ({
                         </Select>
                       </FormControl>
                     </Grid>
-                    <Grid xs={3} item>
+                    <Grid xs={5} item>
                       <TextField
                         label={t('Period')}
                         fullWidth
@@ -619,10 +619,10 @@ const TaskModalForm = ({
                         }}
                       />
                     </Grid>
-                    <Grid xs={5} item>
+                    <Grid xs={7} item>
                       <FormControl fullWidth>
                         <InputLabel id="notificationTimeUnit">
-                          {t('Unit')}
+                          {t('Unit of time')}
                         </InputLabel>
                         <Select
                           labelId="notificationTimeUnit"
