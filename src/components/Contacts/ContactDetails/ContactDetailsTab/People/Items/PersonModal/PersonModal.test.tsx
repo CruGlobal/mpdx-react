@@ -784,6 +784,37 @@ describe('PersonModal', () => {
       ).toEqual(true);
       expect(operation.variables.attributes.websites[1].destroy).toEqual(true);
     });
+
+    it('should handle deleting a person', async () => {
+      const { getByRole, getByText } = render(
+        <SnackbarProvider>
+          <MuiPickersUtilsProvider utils={LuxonUtils}>
+            <ThemeProvider theme={theme}>
+              <GqlMockedProvider<UpdatePersonMutation>>
+                <PersonModal
+                  contactId={contactId}
+                  accountListId={accountListId}
+                  handleClose={handleClose}
+                  person={mockPerson}
+                />
+              </GqlMockedProvider>
+            </ThemeProvider>
+          </MuiPickersUtilsProvider>
+        </SnackbarProvider>,
+      );
+      userEvent.click(getByRole('button', { hidden: true, name: 'Delete' }));
+      expect(getByText('Confirm')).toBeInTheDocument();
+
+      userEvent.click(getByRole('button', { hidden: true, name: 'Yes' }));
+      await waitFor(() =>
+        expect(mockEnqueue).toHaveBeenCalledWith(
+          'Person deleted successfully',
+          {
+            variant: 'success',
+          },
+        ),
+      );
+    });
   });
 
   describe('Creating', () => {
