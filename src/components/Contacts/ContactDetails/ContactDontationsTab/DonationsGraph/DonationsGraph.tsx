@@ -72,7 +72,7 @@ export const DonationsGraph: React.FC<DonationsGraphProps> = ({
   );
 
   return (
-    <GraphContainer>
+    <GraphContainer fontFamily={theme.typography.fontFamily}>
       {loading ? (
         <Box style={{ width: '100%' }} role="alert">
           <GraphLoadingPlaceHolder />
