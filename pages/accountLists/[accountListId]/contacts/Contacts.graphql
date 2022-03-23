@@ -10,6 +10,7 @@ query Contacts(
   ) {
     nodes {
       id
+      avatar
       ...ContactRow
     }
     totalCount
