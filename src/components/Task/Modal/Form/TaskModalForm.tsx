@@ -12,11 +12,6 @@ import {
   CircularProgress,
   Button,
   Divider,
-  DialogTitle,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  Dialog,
   InputAdornment,
   Typography,
 } from '@material-ui/core';
@@ -57,6 +52,7 @@ import { FormFieldsGridContainer } from './Container/FormFieldsGridContainer';
 import { TasksDocument } from 'pages/accountLists/[accountListId]/tasks/Tasks.generated';
 import { ContactTasksTabDocument } from 'src/components/Contacts/ContactDetails/ContactTasksTab/ContactTasksTab.generated';
 import { ModalDeleteButton } from 'src/components/common/Modal/DeleteButton/ModalDeleteButton';
+import { DeleteConfirmation } from 'src/components/common/Modal/DeleteConfirmation/DeleteConfirmation';
 
 export const ActionButton = styled(Button)(() => ({
   color: theme.palette.info.main,
@@ -73,11 +69,6 @@ export const FormFieldsWrapper = styled(Box)(() => ({
   flexDirection: 'column',
   alignItems: 'center',
   overflowY: 'auto',
-}));
-
-const LoadingIndicator = styled(CircularProgress)(() => ({
-  display: 'flex',
-  margin: 'auto',
 }));
 
 const taskSchema: yup.SchemaOf<
@@ -696,36 +687,13 @@ const TaskModalForm = ({
                   {t('Save')}
                 </ActionButton>
               </Box>
-
-              <Dialog
+              <DeleteConfirmation
+                deleteType="task"
                 open={removeDialogOpen}
-                aria-labelledby={t('Remove task confirmation')}
-                fullWidth
-                maxWidth="sm"
-              >
-                <DialogTitle>{t('Confirm')}</DialogTitle>
-                <DialogContent dividers>
-                  {deleting ? (
-                    <LoadingIndicator color="primary" size={50} />
-                  ) : (
-                    <DialogContentText>
-                      {t('Are you sure you wish to delete the selected task?')}
-                    </DialogContentText>
-                  )}
-                </DialogContent>
-                <DialogActions>
-                  <Button onClick={() => handleRemoveDialog(false)}>
-                    {t('No')}
-                  </Button>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={onDeleteTask}
-                  >
-                    {t('Yes')}
-                  </Button>
-                </DialogActions>
-              </Dialog>
+                deleting={deleting}
+                onClickConfirm={onDeleteTask}
+                onClickDecline={handleRemoveDialog}
+              />
             </Box>
           </form>
         )}
