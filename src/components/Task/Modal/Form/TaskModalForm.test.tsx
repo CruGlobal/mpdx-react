@@ -253,9 +253,7 @@ describe('TaskModalForm', () => {
       </MuiPickersUtilsProvider>,
     );
     userEvent.click(getByRole('button', { hidden: true, name: 'Delete' }));
-    expect(
-      getByText('Are you sure you wish to delete the selected task?'),
-    ).toBeInTheDocument();
+    expect(getByText('Confirm')).toBeInTheDocument();
 
     userEvent.click(getByRole('button', { hidden: true, name: 'Yes' }));
   });

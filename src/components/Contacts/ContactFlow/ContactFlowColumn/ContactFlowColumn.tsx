@@ -161,6 +161,7 @@ export const ContactFlowColumn: React.FC<Props> = ({
                     starred={contact.starred}
                     onContactSelected={onContactSelected}
                     columnWidth={CardContentRef.current?.offsetWidth}
+                    avatar={contact.avatar}
                   />
                 )}
                 endReached={() =>
