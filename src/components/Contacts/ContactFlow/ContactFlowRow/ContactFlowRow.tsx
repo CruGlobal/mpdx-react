@@ -20,6 +20,7 @@ interface Props {
     flows: boolean,
   ) => void;
   columnWidth?: number;
+  avatar?: string;
 }
 
 const ContactLink = styled(Typography)(() => ({
@@ -61,6 +62,7 @@ export const ContactFlowRow: React.FC<Props> = ({
   starred,
   onContactSelected,
   columnWidth,
+  avatar,
 }: Props) => {
   const [{ isDragging }, drag, preview] = useDrag(() => ({
     type: 'contact',
@@ -94,7 +96,7 @@ export const ContactFlowRow: React.FC<Props> = ({
       <DraggableBox>
         <Box display="flex" alignItems="center" width="100%">
           <Avatar
-            src=""
+            src={avatar || ''}
             style={{
               width: theme.spacing(4),
               height: theme.spacing(4),
