@@ -81,23 +81,23 @@ const ContactsPage: React.FC = () => {
     loading: userOptionsLoading,
   } = useGetUserOptionsQuery({
     onCompleted: () => {
-      if (!userOptionsLoading) {
-        const view = userOptions?.userOptions.find(
-          (option) => option.key === 'contacts_view',
-        )?.value;
-        setflowsViewEnabled(view === 'flows');
-        if (view === 'flows') {
-          if (!contactId?.includes('flows')) {
-            setContactFocus(undefined, false, true);
-          }
-        } else {
-          if (contactId?.includes('flows')) {
-            setContactFocus(undefined, false);
-          }
-        }
-      }
+      utilizeViewOption();
     },
   });
+
+  const utilizeViewOption = () => {
+    if (userOptionsLoading) return;
+
+    const view = userOptions?.userOptions.find(
+      (option) => option.key === 'contacts_view',
+    )?.value;
+    setflowsViewEnabled(view === 'flows');
+    if (view === 'flows' && !contactId?.includes('flows')) {
+      setContactFocus(undefined, false, true);
+    } else if (view !== 'flows' && contactId?.includes('flows')) {
+      setContactFocus(undefined, false);
+    }
+  };
 
   const { data, loading, fetchMore } = useContactsQuery({
     variables: {
@@ -124,21 +124,7 @@ const ContactsPage: React.FC = () => {
   }, [isReady, contactId]);
 
   useEffect(() => {
-    if (!userOptionsLoading) {
-      const view = userOptions?.userOptions.find(
-        (option) => option.key === 'contacts_view',
-      )?.value;
-      setflowsViewEnabled(view === 'flows');
-      if (view === 'flows') {
-        if (!contactId?.includes('flows')) {
-          setContactFocus(undefined, false, true);
-        }
-      } else {
-        if (contactId?.includes('flows')) {
-          setContactFocus(undefined, false);
-        }
-      }
-    }
+    utilizeViewOption();
   }, [loading]);
 
   useEffect(() => {
