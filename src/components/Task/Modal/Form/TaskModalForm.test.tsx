@@ -138,17 +138,20 @@ describe('TaskModalForm', () => {
     const tagsElement = getByLabelText('Tags');
     userEvent.click(tagsElement);
     userEvent.type(getByLabelText('Period'), '20');
-    userEvent.click(getByLabelText('Unit'));
+    userEvent.click(getByLabelText(/unit of time/i));
     userEvent.click(
-      within(getByRole('listbox', { hidden: true, name: 'Unit' })).getByText(
-        'HOURS',
-      ),
+      within(
+        getByRole('listbox', { hidden: true, name: 'Unit of time' }),
+      ).getByText('HOURS'),
     );
-    userEvent.click(getByLabelText('Type'));
+    userEvent.click(getByLabelText(/notify me before due date by/i));
     userEvent.click(
-      within(getByRole('listbox', { hidden: true, name: 'Type' })).getByText(
-        'BOTH',
-      ),
+      within(
+        getByRole('listbox', {
+          hidden: true,
+          name: 'Notify me before due date by',
+        }),
+      ).getByText('BOTH'),
     );
   }, 25000);
 
