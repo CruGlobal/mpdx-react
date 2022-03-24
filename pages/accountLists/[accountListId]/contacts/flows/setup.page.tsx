@@ -134,6 +134,7 @@ const ContactFlowSetupPage: React.FC = () => {
       temp[destinationIndex].statuses.push(draggedStatus);
     }
     updateOptions(temp);
+    setFlowOptions(temp);
   };
 
   const changeTitle = (
