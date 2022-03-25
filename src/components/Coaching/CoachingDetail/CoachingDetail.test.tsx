@@ -1,5 +1,10 @@
 import React from 'react';
-import { LoadCoachingDetailQuery } from './LoadCoachingDetail.generated';
+import { renderHook } from '@testing-library/react-hooks';
+import {
+  LoadCoachingDetailQuery,
+  useGetAccountListUsersQuery,
+  useGetAccountListCoachUsersQuery,
+} from './LoadCoachingDetail.generated';
 import { CoachingDetail } from './CoachingDetail';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { render } from '__tests__/util/testingLibraryReactMock';
@@ -90,5 +95,35 @@ describe('LoadCoachingDetail', () => {
     expect(await findByText('John Doe')).toBeVisible();
     expect(await findByText('Monthly $0')).toBeVisible();
     expect(await findByText('Monthly Activity')).toBeVisible();
+  });
+  it('query Users', async () => {
+    const { result, waitForNextUpdate } = renderHook(
+      () =>
+        useGetAccountListCoachUsersQuery({
+          variables: { accountListId: 'account-list-id' },
+        }),
+      {
+        wrapper: GqlMockedProvider,
+      },
+    );
+    await waitForNextUpdate();
+    expect(
+      result.current.data?.getAccountListCoachUsers?.length,
+    ).toMatchInlineSnapshot(`2`);
+  });
+  it('query Coach Users', async () => {
+    const { result, waitForNextUpdate } = renderHook(
+      () =>
+        useGetAccountListUsersQuery({
+          variables: { accountListId: 'account-list-id' },
+        }),
+      {
+        wrapper: GqlMockedProvider,
+      },
+    );
+    await waitForNextUpdate();
+    expect(
+      result.current.data?.accountListUsers.nodes.length,
+    ).toMatchInlineSnapshot(`1`);
   });
 });
