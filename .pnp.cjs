@@ -114,6 +114,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["framer-motion", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:3.3.0"],
             ["full-icu", "npm:1.3.1"],
             ["glob", "npm:7.1.6"],
+            ["google-map-react", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:2.1.10"],
             ["graphql", "npm:15.5.3"],
             ["graphql-ergonomock", "npm:1.2.0"],
             ["graphql-tag", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:2.12.5"],
@@ -9252,6 +9253,16 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD",
         }]
       ]],
+      ["@googlemaps/js-api-loader", [
+        ["npm:1.13.10", {
+          "packageLocation": "./.yarn/cache/@googlemaps-js-api-loader-npm-1.13.10-9bc9a3c385-32d6fd4f90.zip/node_modules/@googlemaps/js-api-loader/",
+          "packageDependencies": [
+            ["@googlemaps/js-api-loader", "npm:1.13.10"],
+            ["fast-deep-equal", "npm:3.1.3"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
       ["@graphql-codegen/add", [
         ["npm:3.1.1", {
           "packageLocation": "./.yarn/cache/@graphql-codegen-add-npm-3.1.1-8d5408e766-293ed4b679.zip/node_modules/@graphql-codegen/add/",
@@ -11239,6 +11250,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@jridgewell/trace-mapping", "npm:0.3.4"],
             ["@jridgewell/resolve-uri", "npm:3.0.5"],
             ["@jridgewell/sourcemap-codec", "npm:1.4.11"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
+      ["@mapbox/point-geometry", [
+        ["npm:0.1.0", {
+          "packageLocation": "./.yarn/cache/@mapbox-point-geometry-npm-0.1.0-d0fd1852be-ed41c1ce01.zip/node_modules/@mapbox/point-geometry/",
+          "packageDependencies": [
+            ["@mapbox/point-geometry", "npm:0.1.0"]
           ],
           "linkType": "HARD",
         }]
@@ -23955,6 +23975,36 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD",
         }]
       ]],
+      ["google-map-react", [
+        ["npm:2.1.10", {
+          "packageLocation": "./.yarn/cache/google-map-react-npm-2.1.10-658aa20a1d-0e0d0639e8.zip/node_modules/google-map-react/",
+          "packageDependencies": [
+            ["google-map-react", "npm:2.1.10"]
+          ],
+          "linkType": "SOFT",
+        }],
+        ["virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:2.1.10", {
+          "packageLocation": "./.yarn/__virtual__/google-map-react-virtual-e3d1213e3a/0/cache/google-map-react-npm-2.1.10-658aa20a1d-0e0d0639e8.zip/node_modules/google-map-react/",
+          "packageDependencies": [
+            ["google-map-react", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:2.1.10"],
+            ["@googlemaps/js-api-loader", "npm:1.13.10"],
+            ["@mapbox/point-geometry", "npm:0.1.0"],
+            ["@types/react", "npm:17.0.1"],
+            ["@types/react-dom", null],
+            ["eventemitter3", "npm:4.0.7"],
+            ["prop-types", "npm:15.7.2"],
+            ["react", "npm:17.0.2"],
+            ["react-dom", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:17.0.2"]
+          ],
+          "packagePeers": [
+            "@types/react-dom",
+            "@types/react",
+            "react-dom",
+            "react"
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
       ["got", [
         ["npm:9.6.0", {
           "packageLocation": "./.yarn/cache/got-npm-9.6.0-80edc15fd0-941807bd97.zip/node_modules/got/",
@@ -29229,6 +29279,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["framer-motion", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:3.3.0"],
             ["full-icu", "npm:1.3.1"],
             ["glob", "npm:7.1.6"],
+            ["google-map-react", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:2.1.10"],
             ["graphql", "npm:15.5.3"],
             ["graphql-ergonomock", "npm:1.2.0"],
             ["graphql-tag", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:2.12.5"],

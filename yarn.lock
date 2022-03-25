@@ -4584,6 +4584,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@googlemaps/js-api-loader@npm:^1.7.0":
+  version: 1.13.10
+  resolution: "@googlemaps/js-api-loader@npm:1.13.10"
+  dependencies:
+    fast-deep-equal: ^3.1.3
+  checksum: 32d6fd4f9042f77edb73638152c32abd6c83eabd6244a136686f2057c24c7f7575b556104456417616d0525cab89bf1f6297cb8049eee6d29e624c9a18b1bd3d
+  languageName: node
+  linkType: hard
+
 "@graphql-codegen/add@npm:^3.1.1":
   version: 3.1.1
   resolution: "@graphql-codegen/add@npm:3.1.1"
@@ -5841,6 +5850,13 @@ __metadata:
     "@jridgewell/resolve-uri": ^3.0.3
     "@jridgewell/sourcemap-codec": ^1.4.10
   checksum: ab8bce84bbbc8c34f3ba8325ed926f8f2d3098983c10442a80c55764c4eb6e47d5b92d8ff20a0dd868c3e76a3535651fd8a0138182c290dbfc8396195685c37b
+  languageName: node
+  linkType: hard
+
+"@mapbox/point-geometry@npm:^0.1.0":
+  version: 0.1.0
+  resolution: "@mapbox/point-geometry@npm:0.1.0"
+  checksum: ed41c1ce0140de81039424415d9a199abba72cdb2287314e1b8c3e295da3224f7e8c1b0ae99a9b097703e7abe63e1978a518e29896989cc8bba3d482360bc22f
   languageName: node
   linkType: hard
 
@@ -14448,7 +14464,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eventemitter3@npm:^4.0.1":
+"eventemitter3@npm:^4.0.1, eventemitter3@npm:^4.0.4":
   version: 4.0.7
   resolution: "eventemitter3@npm:4.0.7"
   checksum: 1875311c42fcfe9c707b2712c32664a245629b42bb0a5a84439762dd0fd637fc54d078155ea83c2af9e0323c9ac13687e03cfba79b03af9f40c89b4960099374
@@ -15970,6 +15986,21 @@ fsevents@~2.3.2:
   dependencies:
     delegate: ^3.1.2
   checksum: f39fb82c4e41524f56104cfd2d7aef1a88e72f3f75139115fbdf98cc7d844e0c1b39218b2e83438c6188727bf904ed78c7f0f2feff67b32833bc3af7f0202b33
+  languageName: node
+  linkType: hard
+
+"google-map-react@npm:^2.1.10":
+  version: 2.1.10
+  resolution: "google-map-react@npm:2.1.10"
+  dependencies:
+    "@googlemaps/js-api-loader": ^1.7.0
+    "@mapbox/point-geometry": ^0.1.0
+    eventemitter3: ^4.0.4
+    prop-types: ^15.7.2
+  peerDependencies:
+    react: ^16.0.0 || ^17.0.0
+    react-dom: ^16.0.0 || ^17.0.0
+  checksum: 0e0d0639e83eda3f14bd0bc946e0bfccd65f053aed790f6113d8625e7a70d428d10ad68f374feafb6787f5dfcf9d785c67ab4b9d2315d2860a6f9db02a230f97
   languageName: node
   linkType: hard
 
@@ -20538,6 +20569,7 @@ fsevents@~2.3.2:
     framer-motion: ^3.3.0
     full-icu: ^1.3.1
     glob: ^7.1.6
+    google-map-react: ^2.1.10
     graphql: ^15.5.3
     graphql-ergonomock: ^1.2.0
     graphql-tag: ^2.12.5
