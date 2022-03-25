@@ -205,7 +205,7 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
               </MenuItem>
 
               <MenuItem>
-                <ListItemText>{t('Eidt Fields')}</ListItemText>
+                <ListItemText>{t('Edit Fields')}</ListItemText>
               </MenuItem>
               <MenuItem>
                 <ListItemText>{t('Hide Contacts')}</ListItemText>
