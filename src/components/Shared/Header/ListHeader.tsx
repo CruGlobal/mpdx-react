@@ -20,6 +20,8 @@ import {
   TaskFilterSetInput,
 } from '../../../../graphql/types.generated';
 import { StarFilterButton } from './StarFilterButton/StarFilterButton';
+import { ContactsMap } from '../../../../pages/accountLists/[accountListId]/contacts/map/map';
+import Modal from '../../common/Modal/Modal';
 
 const HeaderWrap = styled(Box)(({ theme }) => ({
   height: 96,
@@ -137,6 +139,13 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
     setAnchorEl(null);
   };
 
+  const [contactIds, setContactIds] = useState<string[]>([]);
+  const [mapModalOpen, setMapModalOpen] = useState(false);
+  const mapContactsClick = () => {
+    setContactIds(['contact-id-1']);
+    setMapModalOpen(true);
+  };
+
   return (
     <HeaderWrap>
       <Hidden xsUp={contactDetailsOpen}>
@@ -210,7 +219,15 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
               <MenuItem>
                 <ListItemText>{t('Hide Contacts')}</ListItemText>
               </MenuItem>
-              <MenuItem divider>
+
+              <Modal
+                isOpen={mapModalOpen}
+                title={t('Map of Contacts')}
+                handleClose={() => setMapModalOpen(false)}
+              >
+                <ContactsMap selectedIds={contactIds}/>
+              </Modal>
+              <MenuItem divider onClick={mapContactsClick}>
                 <ListItemText>{t('Map Contacts')}</ListItemText>
               </MenuItem>
 
