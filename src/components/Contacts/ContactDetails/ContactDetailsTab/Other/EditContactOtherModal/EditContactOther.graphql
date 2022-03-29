@@ -13,6 +13,15 @@ mutation UpdateContactOther(
       preferredContactMethod
       timezone
       website
+      contactReferralsToMe {
+        nodes {
+          id
+          referredBy {
+            id
+            name
+          }
+        }
+      }
     }
   }
 }
