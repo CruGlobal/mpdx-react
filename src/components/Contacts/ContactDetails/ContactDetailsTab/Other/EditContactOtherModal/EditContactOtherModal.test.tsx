@@ -20,6 +20,13 @@ const handleClose = jest.fn();
 const mock = gqlMock<ContactOtherFragment>(ContactOtherFragmentDoc);
 const contactId = '123';
 const accountListId = 'abc';
+const referral = {
+  id: '456',
+  referredBy: {
+    id: '789',
+    name: 'def',
+  },
+};
 
 const mockEnqueue = jest.fn();
 
@@ -47,6 +54,7 @@ const mockContact: ContactOtherFragment = {
   preferredContactMethod: PreferredContactMethodEnum.PhoneCall,
   churchName: mock.churchName,
   website: mock.website,
+  contactReferralsToMe: mock.contactReferralsToMe,
 };
 
 describe('EditContactOtherModal', () => {
@@ -60,6 +68,7 @@ describe('EditContactOtherModal', () => {
               isOpen={true}
               handleClose={handleClose}
               contact={mockContact}
+              referral={referral}
             />
           </GqlMockedProvider>
         </ThemeProvider>
@@ -79,6 +88,7 @@ describe('EditContactOtherModal', () => {
               isOpen={true}
               handleClose={handleClose}
               contact={mockContact}
+              referral={referral}
             />
           </GqlMockedProvider>
         </ThemeProvider>
@@ -100,6 +110,7 @@ describe('EditContactOtherModal', () => {
               isOpen={true}
               handleClose={handleClose}
               contact={mockContact}
+              referral={referral}
             />
           </GqlMockedProvider>
         </ThemeProvider>
@@ -150,6 +161,7 @@ describe('EditContactOtherModal', () => {
               isOpen={true}
               handleClose={handleClose}
               contact={mockContact}
+              referral={referral}
             />
           </GqlMockedProvider>
         </ThemeProvider>
