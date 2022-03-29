@@ -3,6 +3,7 @@ import { initReactI18next } from 'react-i18next';
 import Backend from 'i18next-http-backend';
 import LanguageDetector from 'i18next-browser-languagedetector';
 import { currencyFormat, numberFormat } from './intlFormat';
+import * as english from 'public/locales/en/translation.json';
 
 i18next
   .use(Backend)
@@ -29,6 +30,11 @@ i18next
     react: {
       wait: true,
       useSuspense: false,
+    },
+    resources: {
+      en: {
+        translation: english,
+      },
     },
   });
 
