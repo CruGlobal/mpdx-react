@@ -374,12 +374,11 @@ export const PersonSocial: React.FC<PersonSocialProps> = ({ formikProps }) => {
                         </SocialSelect>
                       </FormControl>
                       <ModalSectionDeleteIcon
-                        handleClick={() =>
-                          setFieldValue(
-                            `newSocials.${index}.destroy`,
-                            !social.destroy,
-                          )
-                        }
+                        handleClick={() => {
+                          const temp = newSocials;
+                          temp.splice(index, 1);
+                          setFieldValue('newSocials', temp);
+                        }}
                       />
                     </Grid>
                   </Grid>
