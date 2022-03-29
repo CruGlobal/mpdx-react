@@ -115,11 +115,13 @@ export const ContactRow: React.FC<Props> = ({
         </Grid>
       </Grid>
       <Hidden xsUp={contactDetailsOpen}>
-        {uncompletedTasksCount > 0 && (
+        <Box
+          style={uncompletedTasksCount === 0 ? { visibility: 'hidden' } : {}}
+        >
           <ContactUncompletedTasksCount
             uncompletedTasksCount={uncompletedTasksCount}
           />
-        )}
+        </Box>
         <ListItemSecondaryAction
           style={{ position: 'static', top: 0, transform: 'none' }}
         >
