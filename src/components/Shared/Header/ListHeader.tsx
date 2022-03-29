@@ -70,6 +70,7 @@ const ItemsShowingText = styled('p')(({ theme }) => ({
   flexBasis: 0,
   margin: theme.spacing(1),
   color: theme.palette.text.secondary,
+  fontFamily: theme.typography.fontFamily,
 }));
 
 const ActionsButton = styled(Button)(({ theme }) => ({
