@@ -186,7 +186,7 @@ describe('EditContactOtherModal', () => {
       }),
     );
 
-    const { operation } = mutationSpy.mock.calls[1][0];
+    const { operation } = mutationSpy.mock.calls[3][0];
 
     expect(operation.variables.accountListId).toEqual(accountListId);
     expect(operation.variables.attributes.preferredContactMethod).toEqual(
