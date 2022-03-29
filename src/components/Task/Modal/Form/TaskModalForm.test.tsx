@@ -144,12 +144,12 @@ describe('TaskModalForm', () => {
         getByRole('listbox', { hidden: true, name: 'Unit of time' }),
       ).getByText('HOURS'),
     );
-    userEvent.click(getByLabelText(/notify me before due date by/i));
+    userEvent.click(getByLabelText(/Before Due Date & Time by/i));
     userEvent.click(
       within(
         getByRole('listbox', {
           hidden: true,
-          name: 'Notify me before due date by',
+          name: 'Before Due Date & Time by',
         }),
       ).getByText('BOTH'),
     );

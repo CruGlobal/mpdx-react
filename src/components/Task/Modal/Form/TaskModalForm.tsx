@@ -19,6 +19,7 @@ import {
   Dialog,
   InputAdornment,
   Typography,
+  Tooltip,
 } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { Autocomplete } from '@material-ui/lab';
@@ -32,6 +33,7 @@ import { CalendarToday, Schedule } from '@material-ui/icons';
 import { v4 as uuidv4 } from 'uuid';
 import _ from 'lodash';
 import debounce from 'lodash/fp/debounce';
+import InfoIcon from '@material-ui/icons/InfoOutlined';
 import { dateFormat } from '../../../../lib/intlFormat/intlFormat';
 import {
   ActivityTypeEnum,
@@ -586,28 +588,23 @@ const TaskModalForm = ({
                   />
                 </Grid>
                 <Grid item>
-                  <Typography>Notifications</Typography>
+                  <Box alignItems="center" display="flex">
+                    <Typography style={{ marginRight: '5px' }}>
+                      Notifications
+                    </Typography>
+                    <Tooltip
+                      title={
+                        <Typography>
+                          {t('If blank you will not be notified')}
+                        </Typography>
+                      }
+                    >
+                      <InfoIcon />
+                    </Tooltip>
+                  </Box>
+
                   <Grid container spacing={2}>
-                    <Grid xs={12} item>
-                      <FormControl fullWidth>
-                        <InputLabel id="notificationType">
-                          {t('Notify me before due date by')}
-                        </InputLabel>
-                        <Select
-                          labelId="notificationType"
-                          value={notificationType}
-                          onChange={handleChange('notificationType')}
-                        >
-                          <MenuItem value={undefined}>{t('None')}</MenuItem>
-                          {Object.values(NotificationTypeEnum).map((val) => (
-                            <MenuItem key={val} value={val}>
-                              {t(val) /* manually added to translation file */}
-                            </MenuItem>
-                          ))}
-                        </Select>
-                      </FormControl>
-                    </Grid>
-                    <Grid xs={5} item>
+                    <Grid xs={6} item>
                       <TextField
                         label={t('Period')}
                         fullWidth
@@ -619,7 +616,7 @@ const TaskModalForm = ({
                         }}
                       />
                     </Grid>
-                    <Grid xs={7} item>
+                    <Grid xs={6} item>
                       <FormControl fullWidth>
                         <InputLabel id="notificationTimeUnit">
                           {t('Unit of time')}
@@ -641,6 +638,25 @@ const TaskModalForm = ({
                               </MenuItem>
                             ),
                           )}
+                        </Select>
+                      </FormControl>
+                    </Grid>
+                    <Grid xs={12} item>
+                      <FormControl fullWidth>
+                        <InputLabel id="notificationType">
+                          {t('Before Due Date & Time by')}
+                        </InputLabel>
+                        <Select
+                          labelId="notificationType"
+                          value={notificationType}
+                          onChange={handleChange('notificationType')}
+                        >
+                          <MenuItem value={undefined}>{t('None')}</MenuItem>
+                          {Object.values(NotificationTypeEnum).map((val) => (
+                            <MenuItem key={val} value={val}>
+                              {t(val) /* manually added to translation file */}
+                            </MenuItem>
+                          ))}
                         </Select>
                       </FormControl>
                     </Grid>
