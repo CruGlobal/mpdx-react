@@ -15,6 +15,7 @@ import {
 } from '../ContactOther.generated';
 import { UpdateContactOtherMutation } from './EditContactOther.generated';
 import { EditContactOtherModal } from './EditContactOtherModal';
+import { GetTaskModalContactsFilteredQuery } from 'src/components/Task/Drawer/Form/TaskDrawer.generated';
 
 const handleClose = jest.fn();
 const mock = gqlMock<ContactOtherFragment>(ContactOtherFragmentDoc);
@@ -76,6 +77,52 @@ describe('EditContactOtherModal', () => {
     );
 
     expect(getByText('Edit Contact Other Details')).toBeInTheDocument();
+  });
+
+  it('should load contact data', async () => {
+    const { getByText, getByRole } = render(
+      <SnackbarProvider>
+        <ThemeProvider theme={theme}>
+          <GqlMockedProvider<GetTaskModalContactsFilteredQuery>
+            mocks={{
+              GetTaskModalContactsFiltered: {
+                contacts: {
+                  nodes: [
+                    {
+                      id: '111',
+                      name: 'Aaa Bbb',
+                    },
+                    {
+                      id: '222',
+                      name: 'Ccc Ddd',
+                    },
+                  ],
+                },
+              },
+            }}
+          >
+            <EditContactOtherModal
+              accountListId={accountListId}
+              isOpen={true}
+              handleClose={handleClose}
+              contact={mockContact}
+              referral={referral}
+            />
+          </GqlMockedProvider>
+        </ThemeProvider>
+      </SnackbarProvider>,
+    );
+
+    expect(getByText('Edit Contact Other Details')).toBeInTheDocument();
+    const referredByElement = getByRole('textbox', {
+      hidden: true,
+      name: 'Referred By',
+    });
+    userEvent.click(referredByElement);
+    await waitFor(() => expect(getByText('Ccc Ddd')).toBeInTheDocument());
+    userEvent.type(referredByElement, 'Aa');
+    await waitFor(() => expect(getByText('Aaa Bbb')).toBeInTheDocument());
+    userEvent.click(getByText('Aaa Bbb'));
   });
 
   it('should close edit contact other modal', () => {
@@ -198,5 +245,6 @@ describe('EditContactOtherModal', () => {
     );
     expect(operation.variables.attributes.churchName).toEqual(newChurchName);
     expect(operation.variables.attributes.website).toEqual(newWebsite);
+    expect(operation.variables.attributes.contactReferralsToMe).toEqual([{}]);
   });
 });
