@@ -30,10 +30,6 @@ const useStyles = makeStyles(() => ({
     [theme.breakpoints.down('md')]: {
       display: 'none',
     },
-    '&:focus-within': {
-      backgroundColor: theme.palette.cruGrayMedium.main,
-      backgroundBlendMode: 'multiply',
-    },
   },
   expand: {
     transform: 'rotate(0deg)',
@@ -58,13 +54,6 @@ const useStyles = makeStyles(() => ({
   menuItemSelected: {
     backgroundBlendMode: 'multiply',
     backgroundColor: theme.palette.cruGrayMedium.main,
-  },
-  menuLink: {
-    color: 'white',
-    textDecoration: 'none',
-    '&:focus': {
-      outline: 'none',
-    },
   },
   needsAttention: {
     backgroundImage: `linear-gradient(0deg, ${theme.palette.mpdxYellow.main}, ${theme.palette.mpdxYellow.main})`,
@@ -170,42 +159,28 @@ const NavMenu = (): ReactElement => {
         <Grid container item alignItems="center" xs="auto">
           <Grid item className={classes.navListItem}>
             <NextLink href={`/accountLists/${accountListId}`}>
-              <a
-                className={classes.menuLink}
-                href={`/accountLists/${accountListId}`}
-              >
-                <MenuItem>
-                  <ListItemText primary={t('Dashboard')} />
-                </MenuItem>
-              </a>
+              <MenuItem tabIndex={0}>
+                <ListItemText primary={t('Dashboard')} />
+              </MenuItem>
             </NextLink>
           </Grid>
           <Grid item className={classes.navListItem}>
             <NextLink href={`/accountLists/${accountListId}/contacts`}>
-              <a
-                className={classes.menuLink}
-                href={`/accountLists/${accountListId}/contacts`}
-              >
-                <MenuItem>
-                  <ListItemText primary={t('Contacts')} />
-                </MenuItem>
-              </a>
+              <MenuItem tabIndex={0}>
+                <ListItemText primary={t('Contacts')} />
+              </MenuItem>
             </NextLink>
           </Grid>
           <Grid item className={classes.navListItem}>
             <NextLink href={`/accountLists/${accountListId}/tasks`}>
-              <a
-                className={classes.menuLink}
-                href={`/accountLists/${accountListId}/tasks`}
-              >
-                <MenuItem>
-                  <ListItemText primary={t('Tasks')} />
-                </MenuItem>
-              </a>
+              <MenuItem tabIndex={0}>
+                <ListItemText primary={t('Tasks')} />
+              </MenuItem>
             </NextLink>
           </Grid>
           <Grid item className={classes.navListItem}>
             <MenuItem
+              tabIndex={0}
               ref={anchorRef}
               aria-controls={reportsMenuOpen ? 'menu-list-grow' : undefined}
               aria-haspopup="true"
@@ -267,6 +242,7 @@ const NavMenu = (): ReactElement => {
           </Grid>
           <Grid item className={classes.navListItem}>
             <MenuItem
+              tabIndex={0}
               ref={anchorRefTools}
               aria-controls={toolsMenuOpen ? 'menu-list-grow' : undefined}
               aria-haspopup="true"
@@ -381,14 +357,9 @@ const NavMenu = (): ReactElement => {
           </Grid>
           <Grid item className={classes.navListItem}>
             <NextLink href={`/accountLists/${accountListId}/coaching`}>
-              <a
-                className={classes.menuLink}
-                href={`/accountLists/${accountListId}/coaching`}
-              >
-                <MenuItem>
-                  <ListItemText primary={t('Coaches')} />
-                </MenuItem>
-              </a>
+              <MenuItem tabIndex={0}>
+                <ListItemText primary={t('Coaches')} />
+              </MenuItem>
             </NextLink>
           </Grid>
         </Grid>
