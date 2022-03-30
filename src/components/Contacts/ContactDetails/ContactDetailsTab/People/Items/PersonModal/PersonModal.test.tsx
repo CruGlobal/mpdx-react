@@ -421,6 +421,32 @@ describe('PersonModal', () => {
       );
     });
 
+    it('handles deleting a new phone number', async () => {
+      const mutationSpy = jest.fn();
+      const { getByText, getAllByLabelText, getByLabelText } = render(
+        <SnackbarProvider>
+          <MuiPickersUtilsProvider utils={LuxonUtils}>
+            <ThemeProvider theme={theme}>
+              <GqlMockedProvider<UpdatePersonMutation> onCall={mutationSpy}>
+                <PersonModal
+                  contactId={contactId}
+                  accountListId={accountListId}
+                  handleClose={handleClose}
+                  person={mockPerson}
+                />
+              </GqlMockedProvider>
+            </ThemeProvider>
+          </MuiPickersUtilsProvider>
+        </SnackbarProvider>,
+      );
+      expect(getByText('Edit Person')).toBeInTheDocument();
+      expect(getAllByLabelText('Modal Section Delete Icon')).toHaveLength(5);
+      userEvent.click(getByLabelText('Add Phone Number'));
+      expect(getAllByLabelText('Modal Section Delete Icon')).toHaveLength(6);
+      userEvent.click(getAllByLabelText('Modal Section Delete Icon')[3]);
+      expect(getAllByLabelText('Modal Section Delete Icon')).toHaveLength(5);
+    });
+
     it('should handle editing person email section', async () => {
       const mutationSpy = jest.fn();
       const newPersonEmailAddress = 'testguy@fake.com';
@@ -516,6 +542,32 @@ describe('PersonModal', () => {
       expect(operation.variables.attributes.emailAddresses[1].destroy).toEqual(
         true,
       );
+    });
+
+    it('handles deleting a new email address', async () => {
+      const mutationSpy = jest.fn();
+      const { getByText, getAllByLabelText, getByLabelText } = render(
+        <SnackbarProvider>
+          <MuiPickersUtilsProvider utils={LuxonUtils}>
+            <ThemeProvider theme={theme}>
+              <GqlMockedProvider<UpdatePersonMutation> onCall={mutationSpy}>
+                <PersonModal
+                  contactId={contactId}
+                  accountListId={accountListId}
+                  handleClose={handleClose}
+                  person={mockPerson}
+                />
+              </GqlMockedProvider>
+            </ThemeProvider>
+          </MuiPickersUtilsProvider>
+        </SnackbarProvider>,
+      );
+      expect(getByText('Edit Person')).toBeInTheDocument();
+      expect(getAllByLabelText('Modal Section Delete Icon')).toHaveLength(5);
+      userEvent.click(getByLabelText('Add Email Address'));
+      expect(getAllByLabelText('Modal Section Delete Icon')).toHaveLength(6);
+      userEvent.click(getAllByLabelText('Modal Section Delete Icon')[5]);
+      expect(getAllByLabelText('Modal Section Delete Icon')).toHaveLength(5);
     });
 
     it('should handle editing show more section', async () => {
@@ -783,6 +835,33 @@ describe('PersonModal', () => {
         operation.variables.attributes.linkedinAccounts[1].destroy,
       ).toEqual(true);
       expect(operation.variables.attributes.websites[1].destroy).toEqual(true);
+    });
+
+    it('handles deleting a new social', async () => {
+      const mutationSpy = jest.fn();
+      const { getByText, getAllByLabelText, getByLabelText } = render(
+        <SnackbarProvider>
+          <MuiPickersUtilsProvider utils={LuxonUtils}>
+            <ThemeProvider theme={theme}>
+              <GqlMockedProvider<UpdatePersonMutation> onCall={mutationSpy}>
+                <PersonModal
+                  contactId={contactId}
+                  accountListId={accountListId}
+                  handleClose={handleClose}
+                  person={mockPerson}
+                />
+              </GqlMockedProvider>
+            </ThemeProvider>
+          </MuiPickersUtilsProvider>
+        </SnackbarProvider>,
+      );
+      expect(getByText('Edit Person')).toBeInTheDocument();
+      userEvent.click(getByText('Show More'));
+      expect(getAllByLabelText('Modal Section Delete Icon')).toHaveLength(13);
+      userEvent.click(getByLabelText('Add Social'));
+      expect(getAllByLabelText('Modal Section Delete Icon')).toHaveLength(14);
+      userEvent.click(getAllByLabelText('Modal Section Delete Icon')[13]);
+      expect(getAllByLabelText('Modal Section Delete Icon')).toHaveLength(13);
     });
 
     it('should handle deleting a person', async () => {

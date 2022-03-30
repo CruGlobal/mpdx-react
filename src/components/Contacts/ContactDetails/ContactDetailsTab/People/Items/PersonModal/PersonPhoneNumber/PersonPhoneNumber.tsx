@@ -167,11 +167,18 @@ export const PersonPhoneNumber: React.FC<PersonPhoneNumberProps> = ({
                           </PhoneNumberSelect>
                         </Grid>
                         <ModalSectionDeleteIcon
-                          handleClick={() =>
-                            setFieldValue(
-                              `phoneNumbers.${index}.destroy`,
-                              !phoneNumber.destroy,
-                            )
+                          handleClick={
+                            phoneNumber.id
+                              ? () =>
+                                  setFieldValue(
+                                    `phoneNumbers.${index}.destroy`,
+                                    !phoneNumber.destroy,
+                                  )
+                              : () => {
+                                  const temp = phoneNumbers;
+                                  temp.splice(index, 1);
+                                  setFieldValue('phoneNumbers', temp);
+                                }
                           }
                         />
                       </Grid>
@@ -184,6 +191,7 @@ export const PersonPhoneNumber: React.FC<PersonPhoneNumberProps> = ({
                       <ContactAddIcon />
                       <ContactAddText
                         variant="subtitle1"
+                        aria-label={t('Add Phone Number')}
                         onClick={() =>
                           push({
                             number: '',
