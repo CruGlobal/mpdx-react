@@ -15,6 +15,7 @@ import { SearchBox } from '../../../common/SearchBox/SearchBox';
 import { useMassSelection } from '../../../../../src/hooks/useMassSelection';
 import { ContactTaskRow } from './ContactTaskRow/ContactTaskRow';
 import { useContactTasksTabQuery } from './ContactTasksTab.generated';
+import { ContactTasksTabNullState } from './NullState/ContactTasksTabNullState';
 import useTaskModal from 'src/hooks/useTaskModal';
 import { StarFilterButton } from 'src/components/Shared/Header/StarFilterButton/StarFilterButton';
 import { ListHeaderCheckBoxState } from 'src/components/Shared/Header/ListHeader';
@@ -200,7 +201,7 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
               onTaskCheckToggle={toggleSelectionById}
             />
           </>
-        ) : (
+        ) : data.tasks.nodes.length > 0 ? (
           data.tasks.nodes.map((task) => (
             <ContactTaskRow
               key={task.id}
@@ -210,6 +211,8 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
               onTaskCheckToggle={toggleSelectionById}
             />
           ))
+        ) : (
+          <ContactTasksTabNullState contactId={contactId} />
         )}
       </Box>
     </ContactDetailsTabContainer>
