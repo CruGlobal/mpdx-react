@@ -23,6 +23,7 @@ const router = {
   push: jest.fn(),
 };
 const onClose = jest.fn();
+const onContactSelected = jest.fn();
 
 const mocks = {
   ContactDetailsTab: {
@@ -94,6 +95,7 @@ describe('ContactDetailTab', () => {
                 accountListId={accountListId}
                 contactId={contactId}
                 onClose={onClose}
+                onContactSelected={onContactSelected}
               />
             </GqlMockedProvider>
           </ThemeProvider>
@@ -113,6 +115,7 @@ describe('ContactDetailTab', () => {
                 accountListId={accountListId}
                 contactId={contactId}
                 onClose={onClose}
+                onContactSelected={onContactSelected}
               />
             </GqlMockedProvider>
           </ThemeProvider>
@@ -137,6 +140,7 @@ describe('ContactDetailTab', () => {
                 accountListId={accountListId}
                 contactId={contactId}
                 onClose={onClose}
+                onContactSelected={onContactSelected}
               />
             </GqlMockedProvider>
           </ThemeProvider>
@@ -162,6 +166,7 @@ describe('ContactDetailTab', () => {
                   accountListId={accountListId}
                   contactId={contactId}
                   onClose={onClose}
+                  onContactSelected={onContactSelected}
                 />
               </GqlMockedProvider>
             </ThemeProvider>
@@ -187,6 +192,7 @@ describe('ContactDetailTab', () => {
                   accountListId={accountListId}
                   contactId={contactId}
                   onClose={onClose}
+                  onContactSelected={onContactSelected}
                 />
               </GqlMockedProvider>
             </ThemeProvider>
@@ -216,6 +222,7 @@ describe('ContactDetailTab', () => {
                   accountListId={accountListId}
                   contactId={contactId}
                   onClose={onClose}
+                  onContactSelected={onContactSelected}
                 />
               </GqlMockedProvider>
             </ThemeProvider>
@@ -239,6 +246,7 @@ describe('ContactDetailTab', () => {
                   accountListId={accountListId}
                   contactId={contactId}
                   onClose={onClose}
+                  onContactSelected={onContactSelected}
                 />
               </GqlMockedProvider>
             </ThemeProvider>
@@ -266,6 +274,7 @@ describe('ContactDetailTab', () => {
                   accountListId={accountListId}
                   contactId={contactId}
                   onClose={onClose}
+                  onContactSelected={onContactSelected}
                 />
               </GqlMockedProvider>
             </ThemeProvider>
@@ -291,6 +300,7 @@ describe('ContactDetailTab', () => {
                   accountListId={accountListId}
                   contactId={contactId}
                   onClose={onClose}
+                  onContactSelected={onContactSelected}
                 />
               </GqlMockedProvider>
             </ThemeProvider>
@@ -320,6 +330,7 @@ describe('ContactDetailTab', () => {
                   accountListId={accountListId}
                   contactId={contactId}
                   onClose={onClose}
+                  onContactSelected={onContactSelected}
                 />
               </GqlMockedProvider>
             </ThemeProvider>
@@ -344,6 +355,7 @@ describe('ContactDetailTab', () => {
                   accountListId={accountListId}
                   contactId={contactId}
                   onClose={onClose}
+                  onContactSelected={onContactSelected}
                 />
               </GqlMockedProvider>
             </ThemeProvider>
@@ -369,6 +381,7 @@ describe('ContactDetailTab', () => {
                   accountListId={accountListId}
                   contactId={contactId}
                   onClose={onClose}
+                  onContactSelected={onContactSelected}
                 />
               </GqlMockedProvider>
             </ThemeProvider>
@@ -394,6 +407,7 @@ describe('ContactDetailTab', () => {
                   accountListId={accountListId}
                   contactId={contactId}
                   onClose={onClose}
+                  onContactSelected={onContactSelected}
                 />
               </GqlMockedProvider>
             </ThemeProvider>
@@ -425,6 +439,7 @@ describe('ContactDetailTab', () => {
                   accountListId={accountListId}
                   contactId={contactId}
                   onClose={onClose}
+                  onContactSelected={onContactSelected}
                 />
               </GqlMockedProvider>
             </ThemeProvider>
@@ -450,6 +465,7 @@ describe('ContactDetailTab', () => {
                   accountListId={accountListId}
                   contactId={contactId}
                   onClose={onClose}
+                  onContactSelected={onContactSelected}
                 />
               </GqlMockedProvider>
             </ThemeProvider>
@@ -479,6 +495,7 @@ describe('ContactDetailTab', () => {
                   accountListId={accountListId}
                   contactId={contactId}
                   onClose={onClose}
+                  onContactSelected={onContactSelected}
                 />
               </GqlMockedProvider>
             </ThemeProvider>
@@ -504,6 +521,7 @@ describe('ContactDetailTab', () => {
                   accountListId={accountListId}
                   contactId={contactId}
                   onClose={onClose}
+                  onContactSelected={onContactSelected}
                 />
               </GqlMockedProvider>
             </ThemeProvider>
@@ -533,6 +551,7 @@ describe('ContactDetailTab', () => {
                   accountListId={accountListId}
                   contactId={contactId}
                   onClose={onClose}
+                  onContactSelected={onContactSelected}
                 />
               </GqlMockedProvider>
             </ThemeProvider>
@@ -562,6 +581,7 @@ describe('ContactDetailTab', () => {
                   accountListId={accountListId}
                   contactId={contactId}
                   onClose={onClose}
+                  onContactSelected={onContactSelected}
                 />
               </GqlMockedProvider>
             </ThemeProvider>
@@ -587,6 +607,7 @@ describe('ContactDetailTab', () => {
                   accountListId={accountListId}
                   contactId={contactId}
                   onClose={onClose}
+                  onContactSelected={onContactSelected}
                 />
               </GqlMockedProvider>
             </ThemeProvider>
@@ -699,6 +720,7 @@ describe('ContactDetailTab', () => {
                 accountListId={accountListId}
                 contactId={contactId}
                 onClose={onClose}
+                onContactSelected={onContactSelected}
               />
             </GqlMockedProvider>
           </ThemeProvider>

@@ -26,6 +26,7 @@ export const Default = (): ReactElement => {
           accountListId={accountListId}
           contactId={contactId}
           onClose={() => {}}
+          onContactSelected={() => {}}
         />
       </GqlMockedProvider>
     </MuiThemeProvider>
@@ -53,6 +54,7 @@ export const Loading = (): ReactElement => {
         accountListId={accountListId}
         contactId={contactId}
         onClose={() => {}}
+        onContactSelected={() => {}}
       />
     </MockedProvider>
   );
