@@ -192,6 +192,7 @@ export const PersonEmail: React.FC<PersonEmailProps> = ({ formikProps }) => {
                         <ContactAddIcon />
                         <ContactAddText
                           variant="subtitle1"
+                          aria-label={t('Add Email Address')}
                           onClick={() =>
                             push({
                               email: '',

@@ -191,6 +191,7 @@ export const PersonPhoneNumber: React.FC<PersonPhoneNumberProps> = ({
                       <ContactAddIcon />
                       <ContactAddText
                         variant="subtitle1"
+                        aria-label={t('Add Phone Number')}
                         onClick={() =>
                           push({
                             number: '',

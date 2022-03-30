@@ -391,6 +391,7 @@ export const PersonSocial: React.FC<PersonSocialProps> = ({ formikProps }) => {
                   <ContactAddIcon />
                   <ContactAddText
                     variant="subtitle1"
+                    aria-label={t('Add Social')}
                     onClick={() =>
                       push({ value: '', type: '', destroy: false })
                     }
