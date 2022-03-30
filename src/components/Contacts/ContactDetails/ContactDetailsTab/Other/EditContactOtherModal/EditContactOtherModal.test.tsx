@@ -15,11 +15,19 @@ import {
 } from '../ContactOther.generated';
 import { UpdateContactOtherMutation } from './EditContactOther.generated';
 import { EditContactOtherModal } from './EditContactOtherModal';
+import { GetTaskModalContactsFilteredQuery } from 'src/components/Task/Drawer/Form/TaskDrawer.generated';
 
 const handleClose = jest.fn();
 const mock = gqlMock<ContactOtherFragment>(ContactOtherFragmentDoc);
 const contactId = '123';
 const accountListId = 'abc';
+const referral = {
+  id: '456',
+  referredBy: {
+    id: '789',
+    name: 'def',
+  },
+};
 
 const mockEnqueue = jest.fn();
 
@@ -47,6 +55,7 @@ const mockContact: ContactOtherFragment = {
   preferredContactMethod: PreferredContactMethodEnum.PhoneCall,
   churchName: mock.churchName,
   website: mock.website,
+  contactReferralsToMe: mock.contactReferralsToMe,
 };
 
 describe('EditContactOtherModal', () => {
@@ -60,6 +69,7 @@ describe('EditContactOtherModal', () => {
               isOpen={true}
               handleClose={handleClose}
               contact={mockContact}
+              referral={referral}
             />
           </GqlMockedProvider>
         </ThemeProvider>
@@ -67,6 +77,52 @@ describe('EditContactOtherModal', () => {
     );
 
     expect(getByText('Edit Contact Other Details')).toBeInTheDocument();
+  });
+
+  it('should load contact data', async () => {
+    const { getByText, getByRole } = render(
+      <SnackbarProvider>
+        <ThemeProvider theme={theme}>
+          <GqlMockedProvider<GetTaskModalContactsFilteredQuery>
+            mocks={{
+              GetTaskModalContactsFiltered: {
+                contacts: {
+                  nodes: [
+                    {
+                      id: '111',
+                      name: 'Aaa Bbb',
+                    },
+                    {
+                      id: '222',
+                      name: 'Ccc Ddd',
+                    },
+                  ],
+                },
+              },
+            }}
+          >
+            <EditContactOtherModal
+              accountListId={accountListId}
+              isOpen={true}
+              handleClose={handleClose}
+              contact={mockContact}
+              referral={referral}
+            />
+          </GqlMockedProvider>
+        </ThemeProvider>
+      </SnackbarProvider>,
+    );
+
+    expect(getByText('Edit Contact Other Details')).toBeInTheDocument();
+    const referredByElement = getByRole('textbox', {
+      hidden: true,
+      name: 'Referred By',
+    });
+    userEvent.click(referredByElement);
+    await waitFor(() => expect(getByText('Ccc Ddd')).toBeInTheDocument());
+    userEvent.type(referredByElement, 'Aa');
+    await waitFor(() => expect(getByText('Aaa Bbb')).toBeInTheDocument());
+    userEvent.click(getByText('Aaa Bbb'));
   });
 
   it('should close edit contact other modal', () => {
@@ -79,6 +135,7 @@ describe('EditContactOtherModal', () => {
               isOpen={true}
               handleClose={handleClose}
               contact={mockContact}
+              referral={referral}
             />
           </GqlMockedProvider>
         </ThemeProvider>
@@ -100,6 +157,7 @@ describe('EditContactOtherModal', () => {
               isOpen={true}
               handleClose={handleClose}
               contact={mockContact}
+              referral={referral}
             />
           </GqlMockedProvider>
         </ThemeProvider>
@@ -150,6 +208,7 @@ describe('EditContactOtherModal', () => {
               isOpen={true}
               handleClose={handleClose}
               contact={mockContact}
+              referral={referral}
             />
           </GqlMockedProvider>
         </ThemeProvider>
@@ -174,7 +233,7 @@ describe('EditContactOtherModal', () => {
       }),
     );
 
-    const { operation } = mutationSpy.mock.calls[1][0];
+    const { operation } = mutationSpy.mock.calls[3][0];
 
     expect(operation.variables.accountListId).toEqual(accountListId);
     expect(operation.variables.attributes.preferredContactMethod).toEqual(
@@ -186,5 +245,6 @@ describe('EditContactOtherModal', () => {
     );
     expect(operation.variables.attributes.churchName).toEqual(newChurchName);
     expect(operation.variables.attributes.website).toEqual(newWebsite);
+    expect(operation.variables.attributes.contactReferralsToMe).toEqual([{}]);
   });
 });

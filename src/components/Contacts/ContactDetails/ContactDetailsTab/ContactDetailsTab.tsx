@@ -90,12 +90,18 @@ interface ContactDetailTabProps {
   accountListId: string;
   contactId: string;
   onClose: () => void;
+  onContactSelected: (
+    contactId: string,
+    openDetails?: boolean,
+    flows?: boolean,
+  ) => void;
 }
 
 export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
   accountListId,
   contactId,
   onClose,
+  onContactSelected,
 }) => {
   const { data, loading } = useContactDetailsTabQuery({
     variables: { accountListId, contactId },
@@ -293,7 +299,10 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
               <ContactDetailLoadingPlaceHolder variant="rect" />
             </>
           ) : (
-            <ContactDetailsOther contact={data.contact} />
+            <ContactDetailsOther
+              contact={data.contact}
+              onContactSelected={onContactSelected}
+            />
           )}
         </ContactDetailSectionContainer>
         <Divider />
@@ -320,6 +329,7 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
             accountListId={accountListId}
             contact={data.contact}
             isOpen={editOtherModalOpen}
+            referral={data.contact.contactReferralsToMe?.nodes[0]}
             handleClose={() => setEditOtherModalOpen(false)}
           />
           <EditContactMailingModal
