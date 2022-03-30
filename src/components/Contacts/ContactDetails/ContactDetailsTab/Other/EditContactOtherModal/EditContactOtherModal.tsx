@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react';
+import React, { ReactElement, useCallback, useState } from 'react';
 import { Formik } from 'formik';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
@@ -19,6 +19,8 @@ import {
   Theme,
   useMediaQuery,
 } from '@material-ui/core';
+import { Autocomplete } from '@material-ui/lab';
+import debounce from 'lodash/fp/debounce';
 import {
   ContactUpdateInput,
   PreferredContactMethodEnum,
@@ -28,7 +30,12 @@ import { useApiConstants } from '../../../../../Constants/UseApiConstants';
 import { useGetTimezones } from '../../../../../../hooks/useGetTimezones';
 import { localizedContactMethod } from '../ContactDetailsOther';
 import { ContactOtherFragment } from '../ContactOther.generated';
+import {
+  ContactDetailsTabDocument,
+  ContactDetailsTabQuery,
+} from '../../ContactDetailsTab.generated';
 import { useUpdateContactOtherMutation } from './EditContactOther.generated';
+import { useGetTaskModalContactsFilteredQuery } from 'src/components/Task/Drawer/Form/TaskDrawer.generated';
 
 const ContactEditContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -49,6 +56,7 @@ const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
 
 interface EditContactOtherModalProps {
   contact: ContactOtherFragment;
+  referral: { id: string; referredBy: { id: string; name: string } };
   accountListId: string;
   isOpen: boolean;
   handleClose: () => void;
@@ -57,6 +65,7 @@ interface EditContactOtherModalProps {
 export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
   accountListId,
   contact,
+  referral,
   isOpen,
   handleClose,
 }): ReactElement<EditContactOtherModalProps> => {
@@ -75,6 +84,50 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
   const languages = constants?.languages ?? [];
   const timezones = useGetTimezones();
 
+  const [selectedId, setSelectedId] = useState(referral?.referredBy?.id || '');
+  const [searchTerm, setSearchTerm] = useState(
+    referral?.referredBy?.name || '',
+  );
+  const handleSearchTermChange = useCallback(
+    debounce(500, (event) => {
+      setSearchTerm(event.target.value);
+    }),
+    [],
+  );
+
+  const {
+    data: dataFilteredByName,
+    loading: loadingFilteredByName,
+  } = useGetTaskModalContactsFilteredQuery({
+    variables: {
+      accountListId,
+      contactsFilters: { wildcardSearch: searchTerm as string },
+    },
+  });
+
+  const {
+    data: dataFilteredById,
+    loading: loadingFilteredById,
+  } = useGetTaskModalContactsFilteredQuery({
+    variables: {
+      accountListId,
+      contactsFilters: { ids: [selectedId] },
+    },
+  });
+
+  const mergedContacts =
+    dataFilteredByName && dataFilteredById
+      ? dataFilteredByName?.contacts.nodes
+          .concat(dataFilteredById?.contacts.nodes)
+          .filter(
+            (contact1, index, self) =>
+              self.findIndex((contact2) => contact2.id === contact1.id) ===
+              index,
+          )
+      : dataFilteredById?.contacts.nodes ||
+        dataFilteredByName?.contacts.nodes ||
+        [];
+
   const contactOtherSchema: yup.SchemaOf<
     Pick<
       ContactUpdateInput,
@@ -84,7 +137,7 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
       | 'locale'
       | 'timezone'
       | 'website'
-    >
+    > & { referredById: string | undefined }
   > = yup.object({
     id: yup.string().required(),
     churchName: yup.string().nullable(),
@@ -95,9 +148,24 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
     locale: yup.string().nullable(),
     timezone: yup.string().nullable(),
     website: yup.string().nullable(),
+    referredById: yup.string(),
   });
 
-  const onSubmit = async (attributes: ContactUpdateInput) => {
+  const onSubmit = async (
+    attributes: ContactUpdateInput & { referredById: string },
+  ) => {
+    const referralsInput =
+      referral.referredBy.id !== selectedId
+        ? [
+            {
+              id: referral.id,
+              destroy: true,
+            },
+            {
+              referredById: attributes.referredById,
+            },
+          ]
+        : [{}];
     await updateContactOther({
       variables: {
         accountListId,
@@ -108,12 +176,38 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
           locale: attributes.locale,
           timezone: attributes.timezone,
           website: attributes.website,
+          contactReferralsToMe: referralsInput,
         },
+      },
+      update: (cache, { data: updatedContact }) => {
+        const updatedContactReferrals =
+          updatedContact?.updateContact?.contact.contactReferralsToMe;
+        const query = {
+          query: ContactDetailsTabDocument,
+          variables: {
+            accountListId,
+            contactId: contact.id,
+          },
+        };
+
+        const dataFromCache = cache.readQuery<ContactDetailsTabQuery>(query);
+
+        if (dataFromCache) {
+          const data = {
+            ...dataFromCache,
+            contact: {
+              ...dataFromCache.contact,
+              contactReferralsToMe: updatedContactReferrals,
+            },
+          };
+          cache.writeQuery({ ...query, data });
+        }
       },
     });
     enqueueSnackbar(t('Contact updated successfully'), {
       variant: 'success',
     });
+    handleClose();
   };
 
   return (
@@ -130,6 +224,8 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
           locale: contact.locale,
           timezone: contact.timezone,
           website: contact.website,
+          referredById:
+            contact.contactReferralsToMe?.nodes[0]?.referredBy.id || '',
         }}
         validationSchema={contactOtherSchema}
         onSubmit={onSubmit}
@@ -141,7 +237,9 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
             locale,
             timezone,
             website,
+            referredById,
           },
+          setFieldValue,
           handleChange,
           handleSubmit,
           isSubmitting,
@@ -150,6 +248,52 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
           <form onSubmit={handleSubmit}>
             <DialogContent dividers>
               <ContactEditContainer>
+                <ContactInputWrapper>
+                  <Grid item>
+                    <Autocomplete
+                      loading={loadingFilteredById || loadingFilteredByName}
+                      options={
+                        (
+                          mergedContacts &&
+                          [...mergedContacts].sort((a, b) =>
+                            a.name.localeCompare(b.name),
+                          )
+                        )?.map(({ id }) => id) || []
+                      }
+                      getOptionLabel={(contactId) =>
+                        mergedContacts.find(({ id }) => id === contactId)
+                          ?.name ?? ''
+                      }
+                      renderInput={(params): ReactElement => (
+                        <TextField
+                          {...params}
+                          onChange={handleSearchTermChange}
+                          label={t('Referred By')}
+                          InputProps={{
+                            ...params.InputProps,
+                            endAdornment: (
+                              <>
+                                {(loadingFilteredById ||
+                                  loadingFilteredByName) && (
+                                  <CircularProgress color="primary" size={20} />
+                                )}
+                                {params.InputProps.endAdornment}
+                              </>
+                            ),
+                          }}
+                        />
+                      )}
+                      value={referredById}
+                      onChange={(_, referredBy): void => {
+                        setFieldValue('referredById', referredBy);
+                        setSelectedId(referredBy || '');
+                      }}
+                      getOptionSelected={(option, value): boolean =>
+                        option === value
+                      }
+                    />
+                  </Grid>
+                </ContactInputWrapper>
                 <ContactInputWrapper>
                   <FormControl fullWidth={true}>
                     <InputLabel

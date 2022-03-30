@@ -19,8 +19,21 @@ const ContactOtherTextLabel = styled(Typography)(({ theme }) => ({
   marginRight: '5px',
 }));
 
+const ReferralName = styled(Typography)(() => ({
+  width: 'fit-content',
+  '&:hover': {
+    textDecoration: 'underline',
+    cursor: 'pointer',
+  },
+}));
+
 interface ContactDetailsOtherProp {
   contact: ContactOtherFragment;
+  onContactSelected: (
+    contactId: string,
+    openDetails?: boolean,
+    flows?: boolean,
+  ) => void;
 }
 
 export const localizedContactMethod = (method?: string | null): string => {
@@ -46,6 +59,7 @@ export const localizedContactMethod = (method?: string | null): string => {
 
 export const ContactDetailsOther: React.FC<ContactDetailsOtherProp> = ({
   contact,
+  onContactSelected,
 }) => {
   const { t } = useTranslation();
   const {
@@ -55,7 +69,10 @@ export const ContactDetailsOther: React.FC<ContactDetailsOtherProp> = ({
     timezone,
     churchName,
     website,
+    contactReferralsToMe,
   } = contact;
+
+  const referredBy = contactReferralsToMe?.nodes[0]?.referredBy;
 
   return (
     <Box>
@@ -66,6 +83,21 @@ export const ContactDetailsOther: React.FC<ContactDetailsOtherProp> = ({
           </ContactOtherTextLabel>
           <Typography variant="subtitle1">{name}</Typography>
         </ContactOtherTextContainer>
+
+        <ContactOtherTextContainer>
+          <ContactOtherTextLabel variant="subtitle1">
+            {t('Referred By')}
+          </ContactOtherTextLabel>
+          {referredBy && (
+            <ReferralName
+              variant="subtitle1"
+              onClick={() => onContactSelected(referredBy.id)}
+            >
+              {referredBy.name}
+            </ReferralName>
+          )}
+        </ContactOtherTextContainer>
+
         <ContactOtherTextContainer>
           <ContactOtherTextLabel variant="subtitle1">
             {t('Preferred Contact Method')}

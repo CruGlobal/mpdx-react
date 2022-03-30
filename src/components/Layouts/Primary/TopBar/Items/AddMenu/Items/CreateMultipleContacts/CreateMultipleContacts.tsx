@@ -24,6 +24,7 @@ import {
   ContactReferralTabDocument,
   useUpdateContactReferralMutation,
 } from 'src/components/Contacts/ContactDetails/ContactReferralTab/ContactReferralTab.generated';
+import { ContactsDocument } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
 
 const InputRow = styled(TableRow)(() => ({
   '&:nth-child(odd)': {
@@ -113,6 +114,12 @@ export const CreateMultipleContacts = ({
                   : `${contact.firstName}`,
               },
             },
+            refetchQueries: [
+              {
+                query: ContactsDocument,
+                variables: { accountListId },
+              },
+            ],
           });
           return data?.createContact?.contact.id;
         }),

@@ -16,7 +16,7 @@ export const Default = (): ReactElement => {
   const mock = gqlMock<ContactOtherFragment>(ContactOtherFragmentDoc);
   return (
     <Box m={2}>
-      <ContactDetailsOther contact={mock} />
+      <ContactDetailsOther contact={mock} onContactSelected={() => {}} />
     </Box>
   );
 };

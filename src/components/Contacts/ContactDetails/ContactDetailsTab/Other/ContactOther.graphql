@@ -6,4 +6,13 @@ fragment ContactOther on Contact {
   timezone
   churchName
   website
+  contactReferralsToMe {
+    nodes {
+      id
+      referredBy {
+        id
+        name
+      }
+    }
+  }
 }
