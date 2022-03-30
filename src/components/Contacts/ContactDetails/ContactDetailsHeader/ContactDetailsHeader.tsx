@@ -1,5 +1,5 @@
 import { Avatar, Box, IconButton, styled, Typography } from '@material-ui/core';
-import { Close, MoreVert } from '@material-ui/icons';
+import { Close } from '@material-ui/icons';
 import { Skeleton } from '@material-ui/lab';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -11,6 +11,7 @@ import { ContactHeaderAddressSection } from './ContactHeaderSection/ContactHeade
 import { ContactHeaderPhoneSection } from './ContactHeaderSection/ContactHeaderPhoneSection';
 import { ContactHeaderEmailSection } from './ContactHeaderSection/ContactHeaderEmailSection';
 import { ContactHeaderStatusSection } from './ContactHeaderSection/ContactHeaderStatusSection';
+import { ContactDetailsMoreAcitions } from './ContactDetailsMoreActions/ContactDetailsMoreActions';
 
 interface Props {
   accountListId: string;
@@ -44,11 +45,6 @@ const PrimaryContactName = styled(Typography)(({}) => ({
 const PrimaryText = styled(Typography)(({}) => ({
   display: 'inline',
   marginRight: 8,
-}));
-const MoreButtonIcon = styled(MoreVert)(({}) => ({
-  width: 16,
-  height: 16,
-  color: theme.palette.text.primary,
 }));
 const CloseButtonIcon = styled(Close)(({}) => ({
   width: 14,
@@ -105,9 +101,7 @@ export const ContactDetailsHeader: React.FC<Props> = ({
             contactId={contactId}
             isStarred={data?.contact?.starred || false}
           />
-          <IconButton>
-            <MoreButtonIcon titleAccess={t('More')} />
-          </IconButton>
+          <ContactDetailsMoreAcitions contactId={contactId} />
           <IconButton onClick={onClose}>
             <CloseButtonIcon titleAccess={t('Close')} />
           </IconButton>
