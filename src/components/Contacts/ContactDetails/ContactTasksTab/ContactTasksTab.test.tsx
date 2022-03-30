@@ -125,4 +125,31 @@ describe('ContactTasksTab', () => {
       },
     });
   });
+
+  it('load null state', async () => {
+    const { getByText, queryByTestId } = render(
+      <ThemeProvider theme={theme}>
+        <GqlMockedProvider<ContactTasksTabQuery>
+          mocks={{
+            ContactTasksTab: {
+              tasks: {
+                nodes: [],
+              },
+            },
+          }}
+        >
+          <ContactTasksTab
+            accountListId={accountListId}
+            contactId={contactId}
+          />
+        </GqlMockedProvider>
+      </ThemeProvider>,
+    );
+    await waitFor(() =>
+      expect(queryByTestId('loadingRow')).not.toBeInTheDocument(),
+    );
+    expect(
+      getByText('No tasks can be found for this contact'),
+    ).toBeInTheDocument();
+  });
 });
