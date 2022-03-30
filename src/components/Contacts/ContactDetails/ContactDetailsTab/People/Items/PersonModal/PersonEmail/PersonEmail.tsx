@@ -167,11 +167,18 @@ export const PersonEmail: React.FC<PersonEmailProps> = ({ formikProps }) => {
                           </EmailSelect>
                         </Grid>
                         <ModalSectionDeleteIcon
-                          handleClick={() =>
-                            setFieldValue(
-                              `emailAddresses.${index}.destroy`,
-                              !emailAddress.destroy,
-                            )
+                          handleClick={
+                            emailAddress.id
+                              ? () =>
+                                  setFieldValue(
+                                    `emailAddresses.${index}.destroy`,
+                                    !emailAddress.destroy,
+                                  )
+                              : () => {
+                                  const temp = emailAddresses;
+                                  temp.splice(index, 1);
+                                  setFieldValue('emailAddresses', temp);
+                                }
                           }
                         />
                       </Grid>
@@ -185,6 +192,7 @@ export const PersonEmail: React.FC<PersonEmailProps> = ({ formikProps }) => {
                         <ContactAddIcon />
                         <ContactAddText
                           variant="subtitle1"
+                          aria-label={t('Add Email Address')}
                           onClick={() =>
                             push({
                               email: '',
