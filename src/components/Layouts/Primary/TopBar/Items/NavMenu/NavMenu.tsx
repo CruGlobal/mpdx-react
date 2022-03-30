@@ -30,6 +30,10 @@ const useStyles = makeStyles(() => ({
     [theme.breakpoints.down('md')]: {
       display: 'none',
     },
+    '&:focus-within': {
+      backgroundColor: theme.palette.cruGrayMedium.main,
+      backgroundBlendMode: 'multiply',
+    },
   },
   expand: {
     transform: 'rotate(0deg)',
@@ -47,6 +51,10 @@ const useStyles = makeStyles(() => ({
   menuItem: {
     color: 'white',
     '&:hover': {
+      backgroundColor: theme.palette.cruGrayMedium.main,
+      backgroundBlendMode: 'multiply',
+    },
+    '&:focus': {
       backgroundColor: theme.palette.cruGrayMedium.main,
       backgroundBlendMode: 'multiply',
     },
@@ -220,7 +228,10 @@ const NavMenu = (): ReactElement => {
                             key={reportItem.id}
                             href={`/accountLists/${accountListId}/reports/${reportItem.id}`}
                           >
-                            <MenuItem onClick={handleReportsMenuClose}>
+                            <MenuItem
+                              onClick={handleReportsMenuClose}
+                              tabIndex={0}
+                            >
                               <ListItemText
                                 primary={t(
                                   `${reportItem.title}${
@@ -248,6 +259,7 @@ const NavMenu = (): ReactElement => {
               aria-haspopup="true"
               onClick={handleToolsMenuToggle}
               data-testid="ToolsMenuToggle"
+              className={classes.menuItem}
             >
               <ListItemText primary={t('Tools')} />
               {sum > 0 && (
@@ -299,6 +311,7 @@ const NavMenu = (): ReactElement => {
                                   href={`/accountLists/${accountListId}/tools/${tool.id}`}
                                 >
                                   <MenuItem
+                                    tabIndex={0}
                                     onClick={handleToolsMenuClose}
                                     data-testid={`${tool.id}-${
                                       currentToolId === tool.id
