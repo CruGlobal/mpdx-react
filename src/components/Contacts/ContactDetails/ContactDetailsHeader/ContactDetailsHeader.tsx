@@ -101,7 +101,7 @@ export const ContactDetailsHeader: React.FC<Props> = ({
             contactId={contactId}
             isStarred={data?.contact?.starred || false}
           />
-          <ContactDetailsMoreAcitions contactId={contactId} />
+          <ContactDetailsMoreAcitions contactId={contactId} onClose={onClose} />
           <IconButton onClick={onClose}>
             <CloseButtonIcon titleAccess={t('Close')} />
           </IconButton>

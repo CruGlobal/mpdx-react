@@ -8,10 +8,20 @@ import EditIcon from '@material-ui/icons/Edit';
 import { useTranslation } from 'react-i18next';
 
 import { MoreVert } from '@material-ui/icons';
+import { useRouter } from 'next/router';
+import { useSnackbar } from 'notistack';
+import { StatusEnum } from '../../../../../../graphql/types.generated';
 import useTaskModal from '../../../../../hooks/useTaskModal';
 import { useAccountListId } from '../../../../../hooks/useAccountListId';
 import Modal from '../../../../common/Modal/Modal';
+import { useDeleteContactMutation } from '../../ContactDetailsTab/ContactDetailsTab.generated';
+import { DeleteContactModal } from '../DeleteContactModal/DeleteContactModal';
+import { useUpdateContactOtherMutation } from '../../ContactDetailsTab/Other/EditContactOtherModal/EditContactOther.generated';
 import { CreateMultipleContacts } from 'src/components/Layouts/Primary/TopBar/Items/AddMenu/Items/CreateMultipleContacts/CreateMultipleContacts';
+import {
+  ContactsDocument,
+  ContactsQuery,
+} from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
 
 type AddMenuItem = {
   text: string;
@@ -63,66 +73,6 @@ const MenuItemText = styled(ListItemText)(({ theme }) => ({
   padding: theme.spacing(0, 1),
 }));
 
-export const renderDialog = (
-  contactId: string,
-  selectedMenuItem: number,
-  modalOpen: boolean,
-  onModalOpen: (status: boolean) => void,
-): ReactElement => {
-  const { t } = useTranslation();
-  const accountListId = useAccountListId();
-
-  const modalTitle = () => {
-    switch (selectedMenuItem) {
-      case AddMenuItemsEnum.ADD_REFERRALS:
-        return t('Add Referrals');
-      default:
-        return t('Add Referrals');
-    }
-  };
-
-  const handleModalClose = () => {
-    onModalOpen(false);
-  };
-
-  const renderDialogContent = (contactId?: string) => {
-    switch (selectedMenuItem) {
-      case AddMenuItemsEnum.ADD_REFERRALS:
-        return (
-          <CreateMultipleContacts
-            accountListId={accountListId ?? ''}
-            handleClose={handleModalClose}
-            referrals
-            contactId={contactId}
-          />
-        );
-    }
-  };
-  const modalSize = () => {
-    switch (selectedMenuItem) {
-      case AddMenuItemsEnum.ADD_REFERRALS:
-        return 'xl';
-      case AddMenuItemsEnum.ADD_DONATION:
-        return 'sm';
-      default:
-        return 'md';
-    }
-  };
-
-  return (
-    <Modal
-      isOpen={modalOpen}
-      handleClose={handleModalClose}
-      title={modalTitle()}
-      aria-labelledby={modalTitle()}
-      fullWidth
-      size={modalSize()} // TODO: Expand logic as more menu modals are added
-    >
-      {renderDialogContent(contactId)}
-    </Modal>
-  );
-};
-
 const ActionPanel = ({
   actionContent,
 }: {
@@ -144,22 +94,99 @@ const ActionPanel = ({
 
 interface ContactDetailsMoreAcitionsProps {
   contactId: string;
+  onClose: () => void;
 }
 
 export const ContactDetailsMoreAcitions: React.FC<ContactDetailsMoreAcitionsProps> = ({
   contactId,
+  onClose,
 }) => {
   const { openTaskModal } = useTaskModal();
-  const accountListId = useAccountListId();
-  const [modalOpen, setModalOpen] = useState(false);
+  const accountListId = useAccountListId() || '';
+  const [referralsModalOpen, setReferralsModalOpen] = useState(false);
   const { t } = useTranslation();
+  const { push, query } = useRouter();
+  const { contactId: _, searchTerm, ...queryWithoutContactId } = query;
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [deleteContact, { loading: deleting }] = useDeleteContactMutation();
+  const { enqueueSnackbar } = useSnackbar();
+
+  const [updateContactOther] = useUpdateContactOtherMutation();
+
+  const hideContact = async (): Promise<void> => {
+    const attributes = {
+      id: contactId,
+      status: StatusEnum.NeverAsk,
+    };
+    await updateContactOther({
+      variables: {
+        accountListId,
+        attributes,
+      },
+      refetchQueries: [
+        {
+          query: ContactsDocument,
+          variables: { accountListId },
+        },
+      ],
+    });
+    enqueueSnackbar(t('Contact status info updated!'), {
+      variant: 'success',
+    });
+    onClose();
+  };
+
+  const handleDeleteContact = () => {
+    deleteContact({
+      variables: {
+        accountListId,
+        contactId,
+      },
+      update: (cache, { data: deletedContactData }) => {
+        const deletedContactId = deletedContactData?.deleteContact?.id;
+        const query = {
+          query: ContactsDocument,
+          variables: {
+            accountListId,
+            searchTerm,
+          },
+        };
+
+        const dataFromCache = cache.readQuery<ContactsQuery>(query);
+
+        if (dataFromCache) {
+          const data = {
+            ...dataFromCache,
+            contacts: {
+              ...dataFromCache.contacts,
+              nodes: dataFromCache.contacts.nodes.filter(
+                (contact) => contact.id !== deletedContactId,
+              ),
+              totalCount: dataFromCache.contacts.totalCount - 1,
+            },
+          };
+          cache.writeQuery({ ...query, data });
+
+          push({
+            pathname: '/accountLists/[accountListId]/contacts',
+            query: { searchTerm, ...queryWithoutContactId },
+          });
+          enqueueSnackbar(t('Contact successfully deleted'), {
+            variant: 'success',
+          });
+        }
+      },
+    });
+    setDeleteModalOpen(false);
+    onClose();
+  };
 
   const actionContent = [
     {
       text: 'Add Referrals',
       icon: <PersonIcon />,
       onClick: () => {
-        setModalOpen(true);
+        setReferralsModalOpen(true);
         setAnchorEl(undefined);
       },
     },
@@ -186,6 +213,7 @@ export const ContactDetailsMoreAcitions: React.FC<ContactDetailsMoreAcitionsProp
       text: 'Hide Contact',
       icon: <VisibilityOffIcon />,
       onClick: () => {
+        hideContact();
         setAnchorEl(undefined);
       },
     },
@@ -193,6 +221,7 @@ export const ContactDetailsMoreAcitions: React.FC<ContactDetailsMoreAcitionsProp
       text: 'Delete Contact',
       icon: <DeleteIcon />,
       onClick: () => {
+        setDeleteModalOpen(true);
         setAnchorEl(undefined);
       },
     },
@@ -201,7 +230,7 @@ export const ContactDetailsMoreAcitions: React.FC<ContactDetailsMoreAcitionsProp
   const [anchorEl, setAnchorEl] = useState<EventTarget & HTMLButtonElement>();
 
   const handleModalClose = () => {
-    setModalOpen(false);
+    setReferralsModalOpen(false);
   };
 
   return (
@@ -226,7 +255,7 @@ export const ContactDetailsMoreAcitions: React.FC<ContactDetailsMoreAcitionsProp
         <ActionPanel actionContent={actionContent} />
       </MenuContainer>
       <Modal
-        isOpen={modalOpen}
+        isOpen={referralsModalOpen}
         handleClose={handleModalClose}
         title={t('Add Referrals')}
         aria-labelledby={t('Create Referral Dialog')}
@@ -242,6 +271,12 @@ export const ContactDetailsMoreAcitions: React.FC<ContactDetailsMoreAcitionsProp
           />
         }
       </Modal>
+      <DeleteContactModal
+        open={deleteModalOpen}
+        setOpen={setDeleteModalOpen}
+        deleting={deleting}
+        deleteContact={handleDeleteContact}
+      />
     </>
   );
 };
