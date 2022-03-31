@@ -17,6 +17,7 @@ import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import NextLink from 'next/link';
 import { useTranslation } from 'react-i18next';
 import Icon from '@mdi/react';
+import { useRouter } from 'next/router';
 import { ReportNavItems } from '../../../../../Reports/NavReportsList/ReportNavItems';
 import { ToolsList } from '../../../../../Tool/Home/ToolList';
 import { useCurrentToolId } from '../../../../../../hooks/useCurrentToolId';
@@ -30,7 +31,11 @@ const useStyles = makeStyles(() => ({
     [theme.breakpoints.down('md')]: {
       display: 'none',
     },
-    '&:focus-within': {
+    '&:focus': {
+      backgroundColor: theme.palette.cruGrayMedium.main,
+      backgroundBlendMode: 'multiply',
+    },
+    '&[aria-current=page]': {
       backgroundColor: theme.palette.cruGrayMedium.main,
       backgroundBlendMode: 'multiply',
     },
@@ -160,26 +165,45 @@ const NavMenu = (): ReactElement => {
   const handleToolsMenuClose = () => {
     setToolsMenuOpen(false);
   };
-
+  const router = useRouter();
   return (
     <>
       {accountListId ? (
         <Grid container item alignItems="center" xs="auto">
-          <Grid item className={classes.navListItem}>
+          <Grid
+            item
+            className={classes.navListItem}
+            aria-current={
+              router.asPath === `/accountLists/${accountListId}` && 'page'
+            }
+          >
             <NextLink href={`/accountLists/${accountListId}`}>
               <MenuItem tabIndex={0}>
                 <ListItemText primary={t('Dashboard')} />
               </MenuItem>
             </NextLink>
           </Grid>
-          <Grid item className={classes.navListItem}>
+          <Grid
+            item
+            className={classes.navListItem}
+            aria-current={
+              router.asPath === `/accountLists/${accountListId}/contacts` &&
+              'page'
+            }
+          >
             <NextLink href={`/accountLists/${accountListId}/contacts`}>
               <MenuItem tabIndex={0}>
                 <ListItemText primary={t('Contacts')} />
               </MenuItem>
             </NextLink>
           </Grid>
-          <Grid item className={classes.navListItem}>
+          <Grid
+            item
+            className={classes.navListItem}
+            aria-current={
+              router.asPath === `/accountLists/${accountListId}/tasks` && 'page'
+            }
+          >
             <NextLink href={`/accountLists/${accountListId}/tasks`}>
               <MenuItem tabIndex={0}>
                 <ListItemText primary={t('Tasks')} />
@@ -231,6 +255,16 @@ const NavMenu = (): ReactElement => {
                             <MenuItem
                               onClick={handleReportsMenuClose}
                               tabIndex={0}
+                              aria-current={
+                                router.asPath ===
+                                  `/accountLists/${accountListId}/reports/${reportItem.id}` &&
+                                'page'
+                              }
+                              className={clsx(
+                                router.asPath ===
+                                  `/accountLists/${accountListId}/reports/${reportItem.id}` &&
+                                  classes.menuItemSelected,
+                              )}
                             >
                               <ListItemText
                                 primary={t(
@@ -316,10 +350,18 @@ const NavMenu = (): ReactElement => {
                                     data-testid={`${tool.id}-${
                                       currentToolId === tool.id
                                     }`}
+                                    aria-current={
+                                      router.asPath ===
+                                        `/accountLists/${accountListId}/tools/${tool.id}` &&
+                                      'page'
+                                    }
                                     className={clsx(
                                       classes.menuItem,
                                       needsAttention && classes.needsAttention,
                                       currentToolId === tool.id &&
+                                        classes.menuItemSelected,
+                                      router.asPath ===
+                                        `/accountLists/${accountListId}/tools/${tool.id}` &&
                                         classes.menuItemSelected,
                                     )}
                                   >
@@ -368,7 +410,14 @@ const NavMenu = (): ReactElement => {
               )}
             </Popper>
           </Grid>
-          <Grid item className={classes.navListItem}>
+          <Grid
+            item
+            className={classes.navListItem}
+            aria-current={
+              router.asPath === `/accountLists/${accountListId}/coaching` &&
+              'page'
+            }
+          >
             <NextLink href={`/accountLists/${accountListId}/coaching`}>
               <MenuItem tabIndex={0}>
                 <ListItemText primary={t('Coaches')} />
