@@ -130,7 +130,7 @@ export const ContactDetailsMoreAcitions: React.FC<ContactDetailsMoreAcitionsProp
         },
       ],
     });
-    enqueueSnackbar(t('Contact status info updated!'), {
+    enqueueSnackbar(t('Contact hidden successfully!'), {
       variant: 'success',
     });
     onClose();
