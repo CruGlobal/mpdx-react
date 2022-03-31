@@ -122,30 +122,6 @@ describe('ContactDetailTab', () => {
     expect(queryByText('123 Sesame Street')).toBeInTheDocument();
   });
 
-  it('should close delete modal', async () => {
-    const { queryByText, queryAllByText, getByLabelText } = render(
-      <SnackbarProvider>
-        <TestRouter router={router}>
-          <ThemeProvider theme={theme}>
-            <GqlMockedProvider<ContactDetailsTabQuery>>
-              <ContactDetailsTab
-                accountListId={accountListId}
-                contactId={contactId}
-                onContactSelected={onContactSelected}
-              />
-            </GqlMockedProvider>
-          </ThemeProvider>
-        </TestRouter>
-      </SnackbarProvider>,
-    );
-    await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());
-    userEvent.click(queryAllByText('delete contact')[0]);
-    userEvent.click(getByLabelText('Close'));
-    await waitFor(() =>
-      expect(queryByText('Delete Contact')).not.toBeInTheDocument(),
-    );
-  });
-
   it('should open edit contact details modal', async () => {
     const { queryByText, getAllByLabelText } = render(
       <SnackbarProvider>
