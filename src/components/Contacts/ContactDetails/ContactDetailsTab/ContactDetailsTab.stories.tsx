@@ -25,7 +25,6 @@ export const Default = (): ReactElement => {
         <ContactDetailsTab
           accountListId={accountListId}
           contactId={contactId}
-          onClose={() => {}}
           onContactSelected={() => {}}
         />
       </GqlMockedProvider>
@@ -53,7 +52,6 @@ export const Loading = (): ReactElement => {
       <ContactDetailsTab
         accountListId={accountListId}
         contactId={contactId}
-        onClose={() => {}}
         onContactSelected={() => {}}
       />
     </MockedProvider>
