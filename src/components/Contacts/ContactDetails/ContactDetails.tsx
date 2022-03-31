@@ -126,7 +126,6 @@ export const ContactDetails: React.FC<Props> = ({
           <ContactDetailsTab
             accountListId={accountListId}
             contactId={contactId}
-            onClose={onClose}
             onContactSelected={onContactSelected}
           />
         </TabPanel>
