@@ -15,10 +15,13 @@ const ContactCard: React.FC<ContactCardProps> = () => {
     <div>
       <strong>Contact Name</strong>
       <p>
-        Address Line 1<br/>
-        City State<br/>
-        Postal<br/>
-        Country<br/>
+        Address Line 1<br />
+        City State
+        <br />
+        Postal
+        <br />
+        Country
+        <br />
       </p>
       <a className="btn btn-primary">Show Contact</a>
     </div>
@@ -32,10 +35,11 @@ interface MapMarkerProps {
 
 const MapMarker: React.FC<MapMarkerProps> = () => {
   return (
-    <div></div>
+    <div>
+      <img src={'/images/pin.png'} alt={'pin'} />
+    </div>
   );
 };
-
 
 export const ContactsMap: React.FC<ContactsMapProps> = () => {
   return (
@@ -46,7 +50,7 @@ export const ContactsMap: React.FC<ContactsMapProps> = () => {
         defaultCenter={{ lat: 59.95, lng: 30.33 }}
         defaultZoom={11}
       >
-        <MapMarker latitude={59.955413} longitude={30.337844}/>
+        <MapMarker latitude={59.955413} longitude={30.337844} />
       </GoogleMapReact>
     </div>
   );
