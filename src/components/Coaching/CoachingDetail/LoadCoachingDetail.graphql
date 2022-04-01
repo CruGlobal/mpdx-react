@@ -41,3 +41,33 @@ query LoadAccountListCoachingDetail($coachingId: ID!) {
     totalPledges
   }
 }
+
+query GetAccountListCoachUsers($accountListId: ID!) {
+  getAccountListCoachUsers(accountListId: $accountListId) {
+    id
+    firstName
+    lastName
+    createdAt
+    updatedAt
+    updatedInDbAt
+  }
+}
+
+query GetAccountListUsers($accountListId: ID!) {
+  accountListUsers(accountListId: $accountListId) {
+    pageInfo {
+      endCursor
+      startCursor
+      hasNextPage
+      hasPreviousPage
+    }
+    nodes {
+      id
+      user {
+        id
+        firstName
+        lastName
+      }
+    }
+  }
+}
