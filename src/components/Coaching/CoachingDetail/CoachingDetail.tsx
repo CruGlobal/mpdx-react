@@ -12,11 +12,13 @@ import { useTranslation } from 'react-i18next';
 import { Skeleton } from '@material-ui/lab';
 import { AppealProgress } from '../AppealProgress/AppealProgress';
 import {
+  useGetAccountListCoachUsersQuery,
   useLoadAccountListCoachingDetailQuery,
   useLoadCoachingDetailQuery,
 } from './LoadCoachingDetail.generated';
 import theme from 'src/theme';
 import { MonthlyActivitySection } from 'src/components/Reports/DonationsReport/MonthlyActivity/MonthlyActivitySection';
+import { currencyFormat } from 'src/lib/intlFormat';
 
 interface CoachingDetailProps {
   coachingId: string;
@@ -96,6 +98,13 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
     skip: isAccountListId,
   });
 
+  const {
+    data: coachingUsersData,
+    loading: coachingUsersLoading,
+  } = useGetAccountListCoachUsersQuery({
+    variables: { accountListId: coachingId },
+  });
+
   const data = isAccountListId
     ? accountListData?.accountList
     : coachingData?.coachingAccountList;
@@ -153,12 +162,36 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
           {t('End Date:') /* TODO: Add Value */}
         </SideContainerText>
         <SideContainerText>
-          {t('Commitment Goal:') /* TODO: Add Value */}
+          {t('Commitment Goal:') +
+            ' ' +
+            currencyFormat(
+              data?.monthlyGoal ? data?.monthlyGoal : 0,
+              data?.currency,
+            )}
         </SideContainerText>
         <Divider style={{ background: theme.palette.primary.contrastText }} />
         <SideContainerText variant="h6">{t('Users')}</SideContainerText>
         <Divider style={{ background: theme.palette.primary.contrastText }} />
         <SideContainerText variant="h6">{t('Coaches')}</SideContainerText>
+        {coachingUsersLoading ? (
+          <>
+            <CoachingLoadingSkeleton />
+            <CoachingLoadingSkeleton />
+            <CoachingLoadingSkeleton />
+            <CoachingLoadingSkeleton />
+          </>
+        ) : (
+          coachingUsersData?.getAccountListCoachUsers?.map((user, _index) => {
+            return (
+              <>
+                <SideContainerText>
+                  {user?.firstName + ' ' + user?.lastName}
+                </SideContainerText>
+                <Divider />
+              </>
+            );
+          })
+        )}
       </CoachingSideContainer>
       <CoachingMainContainer>
         {loading || coachingLoading ? (
