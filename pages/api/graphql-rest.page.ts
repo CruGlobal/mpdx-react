@@ -51,6 +51,7 @@ import {
   UpdateComment,
 } from './Schema/Tasks/Comments/UpdateComments/datahandler';
 import { getAccountListDonorAccounts } from './Schema/AccountListDonorAccounts/dataHandler';
+import { getAccountListCoachUsers } from './Schema/AccountListCoachUser/dataHandler';
 
 class MpdxRestApi extends RESTDataSource {
   constructor() {
@@ -126,6 +127,11 @@ class MpdxRestApi extends RESTDataSource {
     );
 
     return getAccountListAnalytics(data);
+  }
+
+  async getAccountListCoachUsers(accountListId: string) {
+    const { data } = await this.get(`account_lists/${accountListId}/coaches`);
+    return getAccountListCoachUsers(data);
   }
 
   async getAppointmentResults(

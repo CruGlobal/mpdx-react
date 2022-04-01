@@ -1,0 +1,11 @@
+extend type Query {
+  getAccountListCoachUsers(accountListId: ID!): [AccountListCoachUser]
+}
+type AccountListCoachUser {
+  id: ID!
+  createdAt: ISO8601DateTime
+  firstName: String
+  lastName: String
+  updatedAt: ISO8601DateTime
+  updatedInDbAt: ISO8601DateTime
+}
