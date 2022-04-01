@@ -29,8 +29,6 @@ import AccountListDonorAccountsTypeDefs from './AccountListDonorAccounts/account
 import { AccountListDonorAccountsResolvers } from './AccountListDonorAccounts/resolvers';
 import AccountListCoachUserTypeDefs from './AccountListCoachUser/accountListCoachUser.graphql';
 import { AccountListCoachUserResolvers } from './AccountListCoachUser/resolvers';
-import AccountListCoachesTypeDefs from './AccountListCoaches/accountListCoaches.graphql';
-import { AccountListCoachesResolvers } from './AccountListCoaches/resolvers';
 
 const schema = buildFederatedSchema([
   {
@@ -39,10 +37,6 @@ const schema = buildFederatedSchema([
   },
   { typeDefs: ScalarTypeDefs, resolvers: ScalarResolvers },
   { typeDefs: TaskAnalyticsTypeDefs, resolvers: TaskAnalyticsResolvers },
-  {
-    typeDefs: AccountListCoachesTypeDefs,
-    resolvers: AccountListCoachesResolvers,
-  },
   {
     typeDefs: AccountListAnalyticsTypeDefs,
     resolvers: AccountListAnalyticsResolvers,

@@ -70,6 +70,11 @@ const CoachingMonthYearButtonGroup = styled(ButtonGroup)(({ theme }) => ({
   color: theme.palette.primary.contrastText,
 }));
 
+const SideContainerText = styled(Typography)(({ theme }) => ({
+  color: theme.palette.primary.contrastText,
+  margin: theme.spacing(1),
+}));
+
 export const CoachingDetail: React.FC<CoachingDetailProps> = ({
   coachingId,
   isAccountListId = false,
@@ -107,16 +112,9 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
               margin: theme.spacing(1),
             }}
           />
-          <Typography
-            variant="h5"
-            display="block"
-            style={{
-              color: theme.palette.primary.contrastText,
-              margin: theme.spacing(1),
-            }}
-          >
+          <SideContainerText variant="h5" display="block">
             {t('Coaching')}
-          </Typography>
+          </SideContainerText>
         </CoachingSideTitleContainer>
         <Divider style={{ background: theme.palette.primary.contrastText }} />
         <CoachingMonthYearButtonGroup
@@ -138,6 +136,29 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
             {t('Yearly')}
           </Button>
         </CoachingMonthYearButtonGroup>
+        <SideContainerText>{t('Staff IDs:')}</SideContainerText>
+        <SideContainerText>None</SideContainerText>
+        <SideContainerText>
+          {t('Last Prayer Letter:') /* TODO: Add value */}
+        </SideContainerText>
+        <Divider style={{ background: theme.palette.primary.contrastText }} />
+        <SideContainerText variant="h6">{t('MPD Info')}</SideContainerText>
+        <SideContainerText>
+          {t('Week on MPD:') /* TODO: Add Value */}
+        </SideContainerText>
+        <SideContainerText>
+          {t('Start Date:') /* TODO: Add Value */}
+        </SideContainerText>
+        <SideContainerText>
+          {t('End Date:') /* TODO: Add Value */}
+        </SideContainerText>
+        <SideContainerText>
+          {t('Commitment Goal:') /* TODO: Add Value */}
+        </SideContainerText>
+        <Divider style={{ background: theme.palette.primary.contrastText }} />
+        <SideContainerText variant="h6">{t('Users')}</SideContainerText>
+        <Divider style={{ background: theme.palette.primary.contrastText }} />
+        <SideContainerText variant="h6">{t('Coaches')}</SideContainerText>
       </CoachingSideContainer>
       <CoachingMainContainer>
         {loading || coachingLoading ? (
