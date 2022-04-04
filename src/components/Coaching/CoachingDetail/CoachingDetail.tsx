@@ -7,12 +7,13 @@ import {
   styled,
   Typography,
 } from '@material-ui/core';
-import { EcoOutlined } from '@material-ui/icons';
+import { AccountCircle, EcoOutlined } from '@material-ui/icons';
 import { useTranslation } from 'react-i18next';
 import { Skeleton } from '@material-ui/lab';
 import { AppealProgress } from '../AppealProgress/AppealProgress';
 import {
   useGetAccountListCoachUsersQuery,
+  useGetAccountListUsersQuery,
   useLoadAccountListCoachingDetailQuery,
   useLoadCoachingDetailQuery,
 } from './LoadCoachingDetail.generated';
@@ -74,7 +75,12 @@ const CoachingMonthYearButtonGroup = styled(ButtonGroup)(({ theme }) => ({
 
 const SideContainerText = styled(Typography)(({ theme }) => ({
   color: theme.palette.primary.contrastText,
-  margin: theme.spacing(1),
+  margin: theme.spacing(0, 1),
+}));
+
+const SideContainerIcon = styled(AccountCircle)(({ theme }) => ({
+  color: theme.palette.primary.contrastText,
+  margin: theme.spacing(0, 1),
 }));
 
 export const CoachingDetail: React.FC<CoachingDetailProps> = ({
@@ -102,6 +108,13 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
     data: coachingUsersData,
     loading: coachingUsersLoading,
   } = useGetAccountListCoachUsersQuery({
+    variables: { accountListId: coachingId },
+  });
+
+  const {
+    data: accountListUsersData,
+    loading: accountListUsersLoading,
+  } = useGetAccountListUsersQuery({
     variables: { accountListId: coachingId },
   });
 
@@ -151,7 +164,9 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
           {t('Last Prayer Letter:') /* TODO: Add value */}
         </SideContainerText>
         <Divider style={{ background: theme.palette.primary.contrastText }} />
-        <SideContainerText variant="h6">{t('MPD Info')}</SideContainerText>
+        <SideContainerText variant="h5" style={{ margin: theme.spacing(1) }}>
+          {t('MPD Info')}
+        </SideContainerText>
         <SideContainerText>
           {t('Week on MPD:') /* TODO: Add Value */}
         </SideContainerText>
@@ -170,9 +185,37 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
             )}
         </SideContainerText>
         <Divider style={{ background: theme.palette.primary.contrastText }} />
-        <SideContainerText variant="h6">{t('Users')}</SideContainerText>
+        <SideContainerText variant="h5" style={{ margin: theme.spacing(1) }}>
+          {t('Users')}
+        </SideContainerText>
+        {accountListUsersLoading ? (
+          <>
+            <CoachingLoadingSkeleton />
+            <CoachingLoadingSkeleton />
+            <CoachingLoadingSkeleton />
+            <CoachingLoadingSkeleton />
+          </>
+        ) : (
+          accountListUsersData?.accountListUsers.nodes.map(
+            (accountList, _index) => {
+              return (
+                <>
+                  <SideContainerIcon />
+                  <SideContainerText>
+                    {accountList.user.firstName +
+                      ' ' +
+                      accountList.user.lastName}
+                  </SideContainerText>
+                  <Divider style={{ margin: theme.spacing(1) }} />
+                </>
+              );
+            },
+          )
+        )}
         <Divider style={{ background: theme.palette.primary.contrastText }} />
-        <SideContainerText variant="h6">{t('Coaches')}</SideContainerText>
+        <SideContainerText variant="h5" style={{ margin: theme.spacing(1) }}>
+          {t('Coaches')}
+        </SideContainerText>
         {coachingUsersLoading ? (
           <>
             <CoachingLoadingSkeleton />
@@ -184,10 +227,11 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
           coachingUsersData?.getAccountListCoachUsers?.map((user, _index) => {
             return (
               <>
+                <SideContainerIcon />
                 <SideContainerText>
                   {user?.firstName + ' ' + user?.lastName}
                 </SideContainerText>
-                <Divider />
+                <Divider style={{ margin: theme.spacing(1) }} />
               </>
             );
           })
