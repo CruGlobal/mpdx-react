@@ -218,6 +218,11 @@ const NavMenu = (): ReactElement => {
               aria-haspopup="true"
               onClick={handleReportsMenuToggle}
               data-testid="ReportMenuToggle"
+              aria-expanded={reportsMenuOpen}
+              className={clsx(
+                reportsMenuOpen && classes.menuItemSelected,
+                router.asPath.includes('reports') && classes.menuItemSelected,
+              )}
             >
               <ListItemText primary={t('Reports')} />
               <ArrowDropDownIcon
@@ -293,7 +298,12 @@ const NavMenu = (): ReactElement => {
               aria-haspopup="true"
               onClick={handleToolsMenuToggle}
               data-testid="ToolsMenuToggle"
-              className={classes.menuItem}
+              className={clsx(
+                classes.menuItem,
+                toolsMenuOpen && classes.menuItemSelected,
+                router.asPath.includes('tools') && classes.menuItemSelected,
+              )}
+              aria-expanded={toolsMenuOpen}
             >
               <ListItemText primary={t('Tools')} />
               {sum > 0 && (
