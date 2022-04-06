@@ -162,6 +162,39 @@ describe('ContactDetailsMoreActions', () => {
     expect(onClose).toHaveBeenCalled();
   });
 
+  it('should close referral modal', async () => {
+    const {
+      queryByText,
+      queryAllByText,
+      getByLabelText,
+      getByText,
+      getByRole,
+    } = render(
+      <SnackbarProvider>
+        <TestRouter router={router}>
+          <ThemeProvider theme={theme}>
+            <GqlMockedProvider<DeleteContactMutation>>
+              <ContactDetailsMoreAcitions
+                contactId={contactId}
+                onClose={onClose}
+              />
+            </GqlMockedProvider>
+          </ThemeProvider>
+        </TestRouter>
+      </SnackbarProvider>,
+    );
+    await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());
+    userEvent.click(
+      getByRole('button', { hidden: true, name: 'More Actions' }),
+    );
+    expect(getByText('Add Referrals')).toBeInTheDocument();
+    expect(queryByText('Cancel')).not.toBeInTheDocument();
+    userEvent.click(queryAllByText('Add Referrals')[0]);
+    expect(getByText('Cancel')).toBeInTheDocument();
+    userEvent.click(getByLabelText('Close'));
+    await waitFor(() => expect(queryByText('Cancel')).not.toBeInTheDocument());
+  });
+
   it('should close delete modal', async () => {
     const {
       queryByText,
