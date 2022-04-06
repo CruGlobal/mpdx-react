@@ -1,5 +1,12 @@
 import React, { ReactElement, useState } from 'react';
-import { Box, IconButton, ListItemText, Menu, styled } from '@material-ui/core';
+import {
+  Box,
+  IconButton,
+  ListItemText,
+  Menu,
+  MenuItem,
+  styled,
+} from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 import PersonIcon from '@material-ui/icons/Person';
 import PeopleIcon from '@material-ui/icons/People';
@@ -57,7 +64,7 @@ const MenuContainer = styled(Menu)(({ theme }) => ({
   },
 }));
 
-const RowContainer = styled(Box)(({ theme }) => ({
+const RowContainer = styled(MenuItem)(({ theme }) => ({
   padding: theme.spacing(1),
   borderBottom: '1px solid',
   borderBottomColor: theme.palette.divider,
@@ -159,7 +166,7 @@ const AddMenuPanel = ({
   return (
     <Box display="flex" flexDirection="column" justifyContent="center">
       {addMenuContent.map(({ text, icon, onClick }, index) => (
-        <RowContainer key={index} display="flex" onClick={onClick}>
+        <RowContainer key={index} onClick={onClick}>
           {icon}
           <MenuItemText primary={t(`${text}`)} />
         </RowContainer>
@@ -220,6 +227,7 @@ const AddMenu = ({ isInDrawer = false }: AddMenuProps): ReactElement => {
   ];
 
   const [anchorEl, setAnchorEl] = useState<EventTarget & HTMLButtonElement>();
+  const { t } = useTranslation();
 
   if (isInDrawer) {
     return <AddMenuPanel addMenuContent={addMenuContent} />;
@@ -244,7 +252,12 @@ const AddMenu = ({ isInDrawer = false }: AddMenuProps): ReactElement => {
         anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
         transformOrigin={{ vertical: 'top', horizontal: 'center' }}
       >
-        <AddMenuPanel addMenuContent={addMenuContent} />
+        {addMenuContent.map(({ text, icon, onClick }, index) => (
+          <RowContainer key={index} onClick={onClick}>
+            {icon}
+            <MenuItemText primary={t(`${text}`)} />
+          </RowContainer>
+        ))}
       </MenuContainer>
       {renderDialog(selectedMenuItem, dialogOpen, changeDialogOpen)}
     </>
