@@ -7,16 +7,19 @@ import {
   styled,
   Typography,
 } from '@material-ui/core';
-import { EcoOutlined } from '@material-ui/icons';
+import { AccountCircle, EcoOutlined } from '@material-ui/icons';
 import { useTranslation } from 'react-i18next';
 import { Skeleton } from '@material-ui/lab';
 import { AppealProgress } from '../AppealProgress/AppealProgress';
 import {
+  useGetAccountListCoachUsersQuery,
+  useGetAccountListUsersQuery,
   useLoadAccountListCoachingDetailQuery,
   useLoadCoachingDetailQuery,
 } from './LoadCoachingDetail.generated';
 import theme from 'src/theme';
 import { MonthlyActivitySection } from 'src/components/Reports/DonationsReport/MonthlyActivity/MonthlyActivitySection';
+import { currencyFormat } from 'src/lib/intlFormat';
 
 interface CoachingDetailProps {
   coachingId: string;
@@ -70,6 +73,16 @@ const CoachingMonthYearButtonGroup = styled(ButtonGroup)(({ theme }) => ({
   color: theme.palette.primary.contrastText,
 }));
 
+const SideContainerText = styled(Typography)(({ theme }) => ({
+  color: theme.palette.primary.contrastText,
+  margin: theme.spacing(0, 1),
+}));
+
+const SideContainerIcon = styled(AccountCircle)(({ theme }) => ({
+  color: theme.palette.primary.contrastText,
+  margin: theme.spacing(0, 1),
+}));
+
 export const CoachingDetail: React.FC<CoachingDetailProps> = ({
   coachingId,
   isAccountListId = false,
@@ -91,6 +104,20 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
     skip: isAccountListId,
   });
 
+  const {
+    data: coachingUsersData,
+    loading: coachingUsersLoading,
+  } = useGetAccountListCoachUsersQuery({
+    variables: { accountListId: coachingId },
+  });
+
+  const {
+    data: accountListUsersData,
+    loading: accountListUsersLoading,
+  } = useGetAccountListUsersQuery({
+    variables: { accountListId: coachingId },
+  });
+
   const data = isAccountListId
     ? accountListData?.accountList
     : coachingData?.coachingAccountList;
@@ -107,16 +134,9 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
               margin: theme.spacing(1),
             }}
           />
-          <Typography
-            variant="h5"
-            display="block"
-            style={{
-              color: theme.palette.primary.contrastText,
-              margin: theme.spacing(1),
-            }}
-          >
+          <SideContainerText variant="h5" display="block">
             {t('Coaching')}
-          </Typography>
+          </SideContainerText>
         </CoachingSideTitleContainer>
         <Divider style={{ background: theme.palette.primary.contrastText }} />
         <CoachingMonthYearButtonGroup
@@ -138,6 +158,84 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
             {t('Yearly')}
           </Button>
         </CoachingMonthYearButtonGroup>
+        <SideContainerText>{t('Staff IDs:')}</SideContainerText>
+        <SideContainerText>None</SideContainerText>
+        <SideContainerText>
+          {t('Last Prayer Letter:') /* TODO: Add value */}
+        </SideContainerText>
+        <Divider style={{ background: theme.palette.primary.contrastText }} />
+        <SideContainerText variant="h5" style={{ margin: theme.spacing(1) }}>
+          {t('MPD Info')}
+        </SideContainerText>
+        <SideContainerText>
+          {t('Week on MPD:') /* TODO: Add Value */}
+        </SideContainerText>
+        <SideContainerText>
+          {t('Start Date:') /* TODO: Add Value */}
+        </SideContainerText>
+        <SideContainerText>
+          {t('End Date:') /* TODO: Add Value */}
+        </SideContainerText>
+        <SideContainerText>
+          {t('Commitment Goal:') +
+            ' ' +
+            currencyFormat(
+              data?.monthlyGoal ? data?.monthlyGoal : 0,
+              data?.currency,
+            )}
+        </SideContainerText>
+        <Divider style={{ background: theme.palette.primary.contrastText }} />
+        <SideContainerText variant="h5" style={{ margin: theme.spacing(1) }}>
+          {t('Users')}
+        </SideContainerText>
+        {accountListUsersLoading ? (
+          <>
+            <CoachingLoadingSkeleton />
+            <CoachingLoadingSkeleton />
+            <CoachingLoadingSkeleton />
+            <CoachingLoadingSkeleton />
+          </>
+        ) : (
+          accountListUsersData?.accountListUsers.nodes.map(
+            (accountList, _index) => {
+              return (
+                <>
+                  <SideContainerIcon />
+                  <SideContainerText>
+                    {accountList.user.firstName +
+                      ' ' +
+                      accountList.user.lastName}
+                  </SideContainerText>
+                  <Divider style={{ margin: theme.spacing(1) }} />
+                </>
+              );
+            },
+          )
+        )}
+        <Divider style={{ background: theme.palette.primary.contrastText }} />
+        <SideContainerText variant="h5" style={{ margin: theme.spacing(1) }}>
+          {t('Coaches')}
+        </SideContainerText>
+        {coachingUsersLoading ? (
+          <>
+            <CoachingLoadingSkeleton />
+            <CoachingLoadingSkeleton />
+            <CoachingLoadingSkeleton />
+            <CoachingLoadingSkeleton />
+          </>
+        ) : (
+          coachingUsersData?.getAccountListCoachUsers?.map((user, _index) => {
+            return (
+              <>
+                <SideContainerIcon />
+                <SideContainerText>
+                  {user?.firstName + ' ' + user?.lastName}
+                </SideContainerText>
+                <Divider style={{ margin: theme.spacing(1) }} />
+              </>
+            );
+          })
+        )}
       </CoachingSideContainer>
       <CoachingMainContainer>
         {loading || coachingLoading ? (
