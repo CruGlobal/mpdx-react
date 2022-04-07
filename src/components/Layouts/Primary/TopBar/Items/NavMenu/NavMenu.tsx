@@ -187,8 +187,7 @@ const NavMenu = (): ReactElement => {
             item
             className={classes.navListItem}
             aria-current={
-              router.asPath === `/accountLists/${accountListId}/contacts` &&
-              'page'
+              router.asPath.includes(`${accountListId}/contacts`) && 'page'
             }
           >
             <NextLink href={`/accountLists/${accountListId}/contacts`}>
@@ -261,13 +260,11 @@ const NavMenu = (): ReactElement => {
                               onClick={handleReportsMenuClose}
                               tabIndex={0}
                               aria-current={
-                                router.asPath ===
-                                  `/accountLists/${accountListId}/reports/${reportItem.id}` &&
+                                router.asPath.includes(`/${reportItem.id}`) &&
                                 'page'
                               }
                               className={clsx(
-                                router.asPath ===
-                                  `/accountLists/${accountListId}/reports/${reportItem.id}` &&
+                                router.asPath.includes(`/${reportItem.id}`) &&
                                   classes.menuItemSelected,
                               )}
                             >
@@ -361,8 +358,7 @@ const NavMenu = (): ReactElement => {
                                       currentToolId === tool.id
                                     }`}
                                     aria-current={
-                                      router.asPath ===
-                                        `/accountLists/${accountListId}/tools/${tool.id}` &&
+                                      router.asPath.includes(`/${tool.id}`) &&
                                       'page'
                                     }
                                     className={clsx(
@@ -370,8 +366,7 @@ const NavMenu = (): ReactElement => {
                                       needsAttention && classes.needsAttention,
                                       currentToolId === tool.id &&
                                         classes.menuItemSelected,
-                                      router.asPath ===
-                                        `/accountLists/${accountListId}/tools/${tool.id}` &&
+                                      router.asPath.includes(`/${tool.id}`) &&
                                         classes.menuItemSelected,
                                     )}
                                   >
@@ -423,10 +418,7 @@ const NavMenu = (): ReactElement => {
           <Grid
             item
             className={classes.navListItem}
-            aria-current={
-              router.asPath === `/accountLists/${accountListId}/coaching` &&
-              'page'
-            }
+            aria-current={router.asPath.includes(`/coaching`) && 'page'}
           >
             <NextLink href={`/accountLists/${accountListId}/coaching`}>
               <MenuItem tabIndex={0}>
