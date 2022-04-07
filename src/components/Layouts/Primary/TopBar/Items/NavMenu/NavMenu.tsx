@@ -251,29 +251,25 @@ const NavMenu = (): ReactElement => {
                         autoFocusItem={reportsMenuOpen}
                         id="menu-list-grow"
                       >
-                        {ReportNavItems.map((reportItem) => (
+                        {ReportNavItems.map(({ id, title, subTitle }) => (
                           <NextLink
-                            key={reportItem.id}
-                            href={`/accountLists/${accountListId}/reports/${reportItem.id}`}
+                            key={id}
+                            href={`/accountLists/${accountListId}/reports/${id}`}
                           >
                             <MenuItem
                               onClick={handleReportsMenuClose}
                               tabIndex={0}
                               aria-current={
-                                r.asPath.includes(`${reportItem.id}`) && 'page'
+                                r.asPath.includes(`${id}`) && 'page'
                               }
                               className={clsx(
-                                r.asPath.includes(`/${reportItem.id}`) &&
+                                r.asPath.includes(`/${id}`) &&
                                   classes.menuItemSelected,
                               )}
                             >
                               <ListItemText
                                 primary={t(
-                                  `${reportItem.title}${
-                                    reportItem.subTitle
-                                      ? ` (${reportItem.subTitle})`
-                                      : ''
-                                  }`,
+                                  `${title}${subTitle ? ` (${subTitle})` : ''}`,
                                 )}
                               />
                             </MenuItem>
@@ -363,8 +359,6 @@ const NavMenu = (): ReactElement => {
                                       classes.menuItem,
                                       needsAttention && classes.needsAttention,
                                       currentToolId === tool.id &&
-                                        classes.menuItemSelected,
-                                      r.asPath.includes(`/${tool.id}`) &&
                                         classes.menuItemSelected,
                                     )}
                                   >
