@@ -165,7 +165,7 @@ const NavMenu = (): ReactElement => {
   const handleToolsMenuClose = () => {
     setToolsMenuOpen(false);
   };
-  const router = useRouter();
+  const r = useRouter();
   return (
     <>
       {accountListId ? (
@@ -174,7 +174,7 @@ const NavMenu = (): ReactElement => {
             item
             className={classes.navListItem}
             aria-current={
-              router.asPath === `/accountLists/${accountListId}` && 'page'
+              r.asPath === `/accountLists/${accountListId}` && 'page'
             }
           >
             <NextLink href={`/accountLists/${accountListId}`}>
@@ -187,7 +187,7 @@ const NavMenu = (): ReactElement => {
             item
             className={classes.navListItem}
             aria-current={
-              router.asPath.includes(`${accountListId}/contacts`) && 'page'
+              r.asPath.includes(`${accountListId}/contacts`) && 'page'
             }
           >
             <NextLink href={`/accountLists/${accountListId}/contacts`}>
@@ -200,7 +200,7 @@ const NavMenu = (): ReactElement => {
             item
             className={classes.navListItem}
             aria-current={
-              router.asPath === `/accountLists/${accountListId}/tasks` && 'page'
+              r.asPath === `/accountLists/${accountListId}/tasks` && 'page'
             }
           >
             <NextLink href={`/accountLists/${accountListId}/tasks`}>
@@ -220,7 +220,7 @@ const NavMenu = (): ReactElement => {
               aria-expanded={reportsMenuOpen}
               className={clsx(
                 reportsMenuOpen && classes.menuItemSelected,
-                router.asPath.includes('reports') && classes.menuItemSelected,
+                r.asPath.includes('reports') && classes.menuItemSelected,
               )}
             >
               <ListItemText primary={t('Reports')} />
@@ -260,11 +260,10 @@ const NavMenu = (): ReactElement => {
                               onClick={handleReportsMenuClose}
                               tabIndex={0}
                               aria-current={
-                                router.asPath.includes(`/${reportItem.id}`) &&
-                                'page'
+                                r.asPath.includes(`${reportItem.id}`) && 'page'
                               }
                               className={clsx(
-                                router.asPath.includes(`/${reportItem.id}`) &&
+                                r.asPath.includes(`/${reportItem.id}`) &&
                                   classes.menuItemSelected,
                               )}
                             >
@@ -298,7 +297,7 @@ const NavMenu = (): ReactElement => {
               className={clsx(
                 classes.menuItem,
                 toolsMenuOpen && classes.menuItemSelected,
-                router.asPath.includes('tools') && classes.menuItemSelected,
+                r.asPath.includes('tools') && classes.menuItemSelected,
               )}
               aria-expanded={toolsMenuOpen}
             >
@@ -358,15 +357,14 @@ const NavMenu = (): ReactElement => {
                                       currentToolId === tool.id
                                     }`}
                                     aria-current={
-                                      router.asPath.includes(`/${tool.id}`) &&
-                                      'page'
+                                      r.asPath.includes(`/${tool.id}`) && 'page'
                                     }
                                     className={clsx(
                                       classes.menuItem,
                                       needsAttention && classes.needsAttention,
                                       currentToolId === tool.id &&
                                         classes.menuItemSelected,
-                                      router.asPath.includes(`/${tool.id}`) &&
+                                      r.asPath.includes(`/${tool.id}`) &&
                                         classes.menuItemSelected,
                                     )}
                                   >
@@ -418,7 +416,7 @@ const NavMenu = (): ReactElement => {
           <Grid
             item
             className={classes.navListItem}
-            aria-current={router.asPath.includes(`/coaching`) && 'page'}
+            aria-current={r.asPath.includes(`/coaching`) && 'page'}
           >
             <NextLink href={`/accountLists/${accountListId}/coaching`}>
               <MenuItem tabIndex={0}>
