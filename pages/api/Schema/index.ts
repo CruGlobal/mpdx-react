@@ -31,6 +31,8 @@ import AccountListCoachUserTypeDefs from './AccountListCoachUser/accountListCoac
 import { AccountListCoachUserResolvers } from './AccountListCoachUser/resolvers';
 import AccountListCoachesTypeDefs from './AccountListCoaches/accountListCoaches.graphql';
 import { AccountListCoachesResolvers } from './AccountListCoaches/resolvers';
+import ReportsPledgeHistoriesTyeDefs from './reports/pledgeHistories/pledgeHistories.graphql';
+import { ReportsPledgeHistoriesResolvers } from './reports/pledgeHistories/resolvers';
 
 const schema = buildFederatedSchema([
   {
@@ -71,6 +73,10 @@ const schema = buildFederatedSchema([
   {
     typeDefs: DesignationAccountsTypeDefs,
     resolvers: DesignationAccountsResolvers,
+  },
+  {
+    typeDefs: ReportsPledgeHistoriesTyeDefs,
+    resolvers: ReportsPledgeHistoriesResolvers,
   },
   {
     typeDefs: FinancialAccountsTypeDefs,
