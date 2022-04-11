@@ -4,6 +4,7 @@ import Backend from 'i18next-http-backend';
 import LanguageDetector from 'i18next-browser-languagedetector';
 import { currencyFormat, numberFormat } from './intlFormat';
 import * as english from 'public/locales/en/translation.json';
+import * as englishUS from 'public/locales/en-US/translation.json';
 
 i18next
   .use(Backend)
@@ -34,6 +35,9 @@ i18next
     resources: {
       en: {
         translation: english,
+      },
+      'en-US': {
+        translation: englishUS,
       },
     },
   });
