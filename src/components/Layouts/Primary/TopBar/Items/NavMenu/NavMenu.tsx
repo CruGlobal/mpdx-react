@@ -68,6 +68,10 @@ const useStyles = makeStyles(() => ({
     backgroundBlendMode: 'multiply',
     backgroundColor: theme.palette.cruGrayMedium.main,
   },
+  focus: {
+    backgroundBlendMode: 'multiply',
+    backgroundColor: theme.palette.cruGrayMedium.main,
+  },
   needsAttention: {
     backgroundImage: `linear-gradient(0deg, ${theme.palette.mpdxYellow.main}, ${theme.palette.mpdxYellow.main})`,
   },
@@ -263,8 +267,7 @@ const NavMenu = (): ReactElement => {
                                 r.asPath.includes(`${id}`) && 'page'
                               }
                               className={clsx(
-                                r.asPath.includes(`/${id}`) &&
-                                  classes.menuItemSelected,
+                                r.asPath.includes(`/${id}`) && classes.focus,
                               )}
                             >
                               <ListItemText
