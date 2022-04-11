@@ -30,6 +30,8 @@ export const MonthlyCommitment: React.FC<MonthlyCommitmentProps> = ({
   goal = 0,
   currencyCode = 'USD',
 }) => {
+  const { t } = useTranslation();
+
   const { data, loading } = useGetReportsPledgeHistoriesQuery({
     variables: { coachingId },
   });
@@ -44,13 +46,15 @@ export const MonthlyCommitment: React.FC<MonthlyCommitmentProps> = ({
       startDate: DateTime.fromISO(
         pledge?.startDate ? pledge.startDate : '',
       ).toFormat('LLL yy'),
-      received: pledge?.recieved ? pledge.recieved : 0,
-      committed: pledge?.pledged ? pledge.pledged : 0,
+      received: Math.round(pledge?.recieved ?? 0),
+      committed: Math.round(pledge?.pledged ?? 0),
     };
     return pledgeData;
   });
 
-  const { t } = useTranslation();
+  const averageCommitments =
+    (pledges?.reduce((sum, pledge) => sum + pledge.committed, 0) ?? 0) /
+    (pledges?.length ?? 0);
 
   const domainMax = Math.max(
     ...(pledges?.map((pledge) => pledge.received) || []),
@@ -63,10 +67,11 @@ export const MonthlyCommitment: React.FC<MonthlyCommitmentProps> = ({
         title={
           <Box>
             <Typography>
-              {t('Monthly Commitment') +
-                ' | ' +
-                t('Monthly Commitment Goal') +
-                ': '}
+              {t('Monthly Commitment Average') + ' '}
+              <strong style={{ color: theme.palette.progressBarOrange.main }}>
+                {currencyFormat(averageCommitments, currencyCode)}
+              </strong>
+              {' | ' + t('Monthly Commitment Goal') + ': '}
               <strong style={{ color: theme.palette.mpdxBlue.main }}>
                 {currencyFormat(goal, currencyCode)}
               </strong>
@@ -115,11 +120,16 @@ export const MonthlyCommitment: React.FC<MonthlyCommitmentProps> = ({
                   strokeWidth={3}
                 />
               )}
+              <ReferenceLine
+                y={averageCommitments}
+                stroke={theme.palette.progressBarOrange.main}
+                strokeWidth={2}
+              />
               <XAxis tickLine={false} dataKey="startDate" />
               <Bar
                 dataKey="committed"
                 barSize={30}
-                fill={theme.palette.cruYellow.main}
+                fill={theme.palette.progressBarOrange.main}
               />
               <Bar
                 dataKey="received"
