@@ -109,7 +109,7 @@ describe('LoadCoachingDetail', () => {
     await waitForNextUpdate();
     expect(
       result.current.data?.getAccountListCoachUsers?.length,
-    ).toMatchInlineSnapshot(`2`);
+    ).toMatchInlineSnapshot(`3`);
   });
   it('query Coach Users', async () => {
     const { result, waitForNextUpdate } = renderHook(
@@ -124,6 +124,6 @@ describe('LoadCoachingDetail', () => {
     await waitForNextUpdate();
     expect(
       result.current.data?.accountListUsers.nodes.length,
-    ).toMatchInlineSnapshot(`1`);
+    ).toMatchInlineSnapshot(`3`);
   });
 });
