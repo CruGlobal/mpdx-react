@@ -18,6 +18,7 @@ import { Box, CardContent, CardHeader, Typography } from '@material-ui/core';
 import { useGetReportsPledgeHistoriesQuery } from './MonthlyCommitment.generated';
 import AnimatedCard from 'src/components/AnimatedCard';
 import { currencyFormat } from 'src/lib/intlFormat';
+import theme from 'src/theme';
 
 interface MonthlyCommitmentProps {
   coachingId: string;
@@ -65,8 +66,10 @@ export const MonthlyCommitment: React.FC<MonthlyCommitmentProps> = ({
               {t('Monthly Commitment') +
                 ' | ' +
                 t('Monthly Commitment Goal') +
-                ': ' +
-                currencyFormat(goal, currencyCode)}
+                ': '}
+              <strong style={{ color: theme.palette.mpdxBlue.main }}>
+                {currencyFormat(goal, currencyCode)}
+              </strong>
             </Typography>
           </Box>
         }
@@ -106,11 +109,23 @@ export const MonthlyCommitment: React.FC<MonthlyCommitmentProps> = ({
               <Legend />
               <CartesianGrid vertical={false} />
               {goal && (
-                <ReferenceLine y={goal} stroke="#17AEBF" strokeWidth={3} />
+                <ReferenceLine
+                  y={goal}
+                  stroke={theme.palette.mpdxBlue.main}
+                  strokeWidth={3}
+                />
               )}
               <XAxis tickLine={false} dataKey="startDate" />
-              <Bar dataKey="committed" barSize={30} fill="#DDE52F" />
-              <Bar dataKey="received" barSize={30} fill="#4E885C" />
+              <Bar
+                dataKey="committed"
+                barSize={30}
+                fill={theme.palette.cruYellow.main}
+              />
+              <Bar
+                dataKey="received"
+                barSize={30}
+                fill={theme.palette.mpdxGreen.main}
+              />
             </BarChart>
           )}
         </ResponsiveContainer>
