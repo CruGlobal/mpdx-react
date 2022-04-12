@@ -5,12 +5,10 @@ import {
   Chip,
   CircularProgress,
   Menu,
-  MenuItem,
   styled,
   Typography,
 } from '@material-ui/core';
 import TagIcon from '@material-ui/icons/LocalOfferOutlined';
-import * as yup from 'yup';
 import { useSnackbar } from 'notistack';
 import {
   ContactDetailsAddButton,
@@ -90,7 +88,6 @@ export const ContactTags: React.FC<ContactTagsProps> = ({
     updateContactTags,
     { loading: updating },
   ] = useUpdateContactTagsMutation();
-  const [currentTags, setCurrentTags] = useState<string[]>(contactTags);
   const [anchorEl, setAnchorEl] = useState<EventTarget & HTMLButtonElement>();
 
   const { data: contactTagsList, loading } = useGetContactTagListQuery({
@@ -101,7 +98,7 @@ export const ContactTags: React.FC<ContactTagsProps> = ({
 
   const unusedTags =
     contactTagsList?.accountList.contactTagList?.filter(
-      (tag) => !currentTags.includes(tag),
+      (tag) => !contactTags.includes(tag),
     ) || [];
 
   const handleTagDelete = async (tag: string) => {
@@ -110,7 +107,6 @@ export const ContactTags: React.FC<ContactTagsProps> = ({
     if (index > -1) {
       const tagList = [...contactTags];
       tagList.splice(index, 1);
-      setCurrentTags(tagList);
 
       const { data } = await updateContactTags({
         variables: {
@@ -146,8 +142,6 @@ export const ContactTags: React.FC<ContactTagsProps> = ({
         },
       },
     });
-
-    setCurrentTags([...currentTags, tag]);
 
     if (data?.updateContact?.contact.tagList) {
       enqueueSnackbar(t('Tag successfully added'), {
