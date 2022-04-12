@@ -39,6 +39,10 @@ const useStyles = makeStyles(() => ({
       backgroundColor: theme.palette.cruGrayMedium.main,
       backgroundBlendMode: 'multiply',
     },
+    '&:hover': {
+      backgroundColor: theme.palette.cruGrayMedium.main,
+      backgroundBlendMode: 'multiply',
+    },
   },
   expand: {
     transform: 'rotate(0deg)',
@@ -52,17 +56,6 @@ const useStyles = makeStyles(() => ({
   },
   subMenu: {
     backgroundImage: `linear-gradient(0deg, ${theme.palette.cruGrayDark.main}, ${theme.palette.cruGrayDark.main})`,
-  },
-  menuItem: {
-    color: 'white',
-    '&:hover': {
-      backgroundColor: theme.palette.cruGrayMedium.main,
-      backgroundBlendMode: 'multiply',
-    },
-    '&:focus': {
-      backgroundColor: theme.palette.cruGrayMedium.main,
-      backgroundBlendMode: 'multiply',
-    },
   },
   menuItemSelected: {
     backgroundBlendMode: 'multiply',
@@ -169,7 +162,7 @@ const NavMenu = (): ReactElement => {
   const handleToolsMenuClose = () => {
     setToolsMenuOpen(false);
   };
-  const r = useRouter();
+  const router = useRouter();
   return (
     <>
       {accountListId ? (
@@ -178,7 +171,7 @@ const NavMenu = (): ReactElement => {
             item
             className={classes.navListItem}
             aria-current={
-              r.asPath === `/accountLists/${accountListId}` && 'page'
+              router.asPath === `/accountLists/${accountListId}` && 'page'
             }
           >
             <NextLink href={`/accountLists/${accountListId}`}>
@@ -191,7 +184,7 @@ const NavMenu = (): ReactElement => {
             item
             className={classes.navListItem}
             aria-current={
-              r.asPath.includes(`${accountListId}/contacts`) && 'page'
+              router.asPath.includes(`${accountListId}/contacts`) && 'page'
             }
           >
             <NextLink href={`/accountLists/${accountListId}/contacts`}>
@@ -204,7 +197,7 @@ const NavMenu = (): ReactElement => {
             item
             className={classes.navListItem}
             aria-current={
-              r.asPath === `/accountLists/${accountListId}/tasks` && 'page'
+              router.asPath === `/accountLists/${accountListId}/tasks` && 'page'
             }
           >
             <NextLink href={`/accountLists/${accountListId}/tasks`}>
@@ -224,7 +217,7 @@ const NavMenu = (): ReactElement => {
               aria-expanded={reportsMenuOpen}
               className={clsx(
                 reportsMenuOpen && classes.menuItemSelected,
-                r.asPath.includes('reports') && classes.menuItemSelected,
+                router.asPath.includes('reports') && classes.menuItemSelected,
               )}
             >
               <ListItemText primary={t('Reports')} />
@@ -264,10 +257,11 @@ const NavMenu = (): ReactElement => {
                               onClick={handleReportsMenuClose}
                               tabIndex={0}
                               aria-current={
-                                r.asPath.includes(`${id}`) && 'page'
+                                router.asPath.includes(`${id}`) && 'page'
                               }
                               className={clsx(
-                                r.asPath.includes(`/${id}`) && classes.focus,
+                                router.asPath.includes(`/${id}`) &&
+                                  classes.focus,
                               )}
                             >
                               <ListItemText
@@ -294,9 +288,8 @@ const NavMenu = (): ReactElement => {
               onClick={handleToolsMenuToggle}
               data-testid="ToolsMenuToggle"
               className={clsx(
-                classes.menuItem,
                 toolsMenuOpen && classes.menuItemSelected,
-                r.asPath.includes('tools') && classes.menuItemSelected,
+                router.asPath.includes('tools') && classes.menuItemSelected,
               )}
               aria-expanded={toolsMenuOpen}
             >
@@ -356,10 +349,10 @@ const NavMenu = (): ReactElement => {
                                       currentToolId === tool.id
                                     }`}
                                     aria-current={
-                                      r.asPath.includes(`/${tool.id}`) && 'page'
+                                      router.asPath.includes(`/${tool.id}`) &&
+                                      'page'
                                     }
                                     className={clsx(
-                                      classes.menuItem,
                                       needsAttention && classes.needsAttention,
                                       currentToolId === tool.id &&
                                         classes.menuItemSelected,
@@ -413,7 +406,7 @@ const NavMenu = (): ReactElement => {
           <Grid
             item
             className={classes.navListItem}
-            aria-current={r.asPath.includes(`/coaching`) && 'page'}
+            aria-current={router.asPath.includes(`/coaching`) && 'page'}
           >
             <NextLink href={`/accountLists/${accountListId}/coaching`}>
               <MenuItem tabIndex={0}>
