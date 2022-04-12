@@ -1,20 +1,18 @@
-import React, { useState } from 'react';
+import React, { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Box,
+  Button,
   Chip,
   CircularProgress,
-  Menu,
   styled,
-  Typography,
+  TextField,
 } from '@material-ui/core';
 import TagIcon from '@material-ui/icons/LocalOfferOutlined';
 import { useSnackbar } from 'notistack';
-import {
-  ContactDetailsAddButton,
-  ContactDetailsAddIcon,
-  ContactDetailsAddText,
-} from '../People/ContactDetailsTabPeople';
+import * as yup from 'yup';
+import { Autocomplete } from '@material-ui/lab';
+import { Formik, FormikHelpers } from 'formik';
 import {
   useGetContactTagListQuery,
   useUpdateContactTagsMutation,
@@ -38,33 +36,35 @@ const ContactTagIcon = styled(TagIcon)(({ theme }) => ({
   marginRight: theme.spacing(1),
 }));
 
-const MenuContainer = styled(Menu)(({ theme }) => ({
-  '& .MuiPaper-root': {
-    width: '35ch',
-    maxHeight: theme.spacing(20),
-    overflowY: 'auto',
-    [theme.breakpoints.down('xs')]: {
-      width: '100%',
-    },
+const ContactTagInput = styled(TextField)(({ theme }) => ({
+  '&& .MuiInput-underline:before ': {
+    borderBottom: `2px solid ${theme.palette.divider}`,
   },
-  '& .MuiMenu-list': {
-    padding: 0,
+  '&& .MuiInput-underline:after ': {
+    borderBottom: `2px solid ${theme.palette.divider}`,
   },
-  '& .MuiListItemText-root': {
-    margin: 0,
+  '&& .MuiInputBase-input': {
+    minWidth: '200px',
   },
+  '& ::placeholder': {
+    color: theme.palette.info.main,
+    opacity: 1,
+  },
+  '& :hover::placeholder': {
+    textDecoration: 'underline',
+  },
+  '& :focus::placeholder': {
+    textDecoration: 'none',
+    color: theme.palette.cruGrayMedium.main,
+  },
+  margin: theme.spacing(1),
+  marginLeft: '0',
 }));
 
-const RowContainer = styled(Box)(({ theme }) => ({
-  padding: theme.spacing(1),
-  borderBottom: '1px solid',
-  borderBottomColor: theme.palette.divider,
-  '&:hover': {
-    backgroundColor: theme.palette.grey[100],
-  },
-  '&:last-child': {
-    borderBottom: 'none',
-  },
+const SaveButton = styled(Button)(({ theme }) => ({
+  color: theme.palette.info.main,
+  height: theme.spacing(4),
+  fontWeight: 550,
 }));
 
 const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
@@ -88,12 +88,15 @@ export const ContactTags: React.FC<ContactTagsProps> = ({
     updateContactTags,
     { loading: updating },
   ] = useUpdateContactTagsMutation();
-  const [anchorEl, setAnchorEl] = useState<EventTarget & HTMLButtonElement>();
 
   const { data: contactTagsList, loading } = useGetContactTagListQuery({
     variables: {
       accountListId,
     },
+  });
+
+  const tagSchema = yup.object({
+    tagList: yup.array().of(yup.string()).default([]),
   });
 
   const unusedTags =
@@ -124,12 +127,18 @@ export const ContactTags: React.FC<ContactTagsProps> = ({
     }
   };
 
-  const addTag = async (tag: string): Promise<void> => {
+  const onSubmit = async (
+    { tagList }: { tagList: string[] & never[] },
+    { resetForm }: FormikHelpers<{ tagList: string[] & never[] }>,
+  ): Promise<void> => {
+    resetForm();
+    if (tagList.length === 0) return;
+
     const { data } = await updateContactTags({
       variables: {
         accountListId,
         contactId,
-        tagList: [...contactTags, tag],
+        tagList: [...contactTags, ...tagList],
       },
       optimisticResponse: {
         updateContact: {
@@ -137,7 +146,7 @@ export const ContactTags: React.FC<ContactTagsProps> = ({
           contact: {
             __typename: 'Contact',
             id: contactId,
-            tagList: [...contactTags, tag],
+            tagList: [...contactTags, ...tagList],
           },
         },
       },
@@ -149,54 +158,59 @@ export const ContactTags: React.FC<ContactTagsProps> = ({
       });
     }
   };
+
   return (
-    <>
-      {!loading ? (
-        <ContactTagsContainer display="flex" alignItems="center">
-          <ContactTagIcon />
-          {contactTags.map((tag) => (
-            <ContactTagChip
-              key={tag}
-              label={tag}
-              disabled={updating}
-              onDelete={() => handleTagDelete(tag)}
-              title={t('Delete Icon')}
-            />
-          ))}
-          <ContactDetailsAddButton
-            aria-controls="add-tag"
-            aria-haspopup="true"
-            onClick={(event) => setAnchorEl(event.currentTarget)}
-          >
-            <ContactDetailsAddIcon />
-            <ContactDetailsAddText>{t('Add Tag')}</ContactDetailsAddText>
-          </ContactDetailsAddButton>
-          <MenuContainer
-            id="add-menu"
-            keepMounted
-            open={Boolean(anchorEl)}
-            onClose={() => setAnchorEl(undefined)}
-            anchorEl={anchorEl}
-            getContentAnchorEl={null}
-            anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-            transformOrigin={{ vertical: 'top', horizontal: 'center' }}
-          >
-            {unusedTags.length > 0 ? (
-              unusedTags.map((tag) => (
-                <RowContainer key={tag} onClick={() => addTag(tag)}>
-                  <Typography>{tag}</Typography>
-                </RowContainer>
-              ))
-            ) : (
-              <RowContainer>
-                <Typography>{t('You have no unused tags.')}</Typography>
-              </RowContainer>
-            )}
-          </MenuContainer>
-        </ContactTagsContainer>
-      ) : (
-        <LoadingIndicator size={40} />
-      )}
-    </>
+    <ContactTagsContainer display="flex" alignItems="center">
+      <ContactTagIcon />
+      {contactTags.map((tag) => (
+        <ContactTagChip
+          key={tag}
+          label={tag}
+          disabled={updating}
+          onDelete={() => handleTagDelete(tag)}
+          title={t('Delete Icon')}
+        />
+      ))}
+      <Formik
+        initialValues={{ tagList: [] }}
+        validationSchema={tagSchema}
+        onSubmit={onSubmit}
+      >
+        {({
+          values: { tagList },
+          handleSubmit,
+          isSubmitting,
+          setFieldValue,
+        }): ReactElement => (
+          <form onSubmit={handleSubmit} noValidate>
+            <Box display="flex" alignItems="center">
+              <Autocomplete
+                multiple
+                freeSolo
+                fullWidth
+                loading={loading}
+                popupIcon={<ContactTagIcon />}
+                filterSelectedOptions
+                value={tagList}
+                options={unusedTags || []}
+                renderInput={(params): ReactElement => (
+                  <ContactTagInput
+                    {...params}
+                    placeholder={t('add tag')}
+                    disabled={isSubmitting || updating}
+                  />
+                )}
+                onChange={(_, tagList): void =>
+                  setFieldValue('tagList', tagList)
+                }
+              />
+              {tagList.length > 0 && (
+                <SaveButton type="submit">{t('save')}</SaveButton>
+              )}
+            </Box>
+          </form>
+        )}
+      </Formik>
+    </ContactTagsContainer>
   );
 };
