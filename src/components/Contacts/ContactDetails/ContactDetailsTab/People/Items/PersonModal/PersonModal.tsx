@@ -428,11 +428,8 @@ export const PersonModal: React.FC<PersonModalProps> = ({
                   {/* Show More Section */}
                   {!personEditShowMore && (
                     <ShowExtraContainer>
-                      <Button>
-                        <ShowExtraText
-                          variant="subtitle1"
-                          onClick={() => setPersonEditShowMore(true)}
-                        >
+                      <Button onClick={() => setPersonEditShowMore(true)}>
+                        <ShowExtraText variant="subtitle1">
                           {t('Show More')}
                         </ShowExtraText>
                       </Button>
@@ -447,11 +444,8 @@ export const PersonModal: React.FC<PersonModalProps> = ({
                   {/* Show Less Section */}
                   {personEditShowMore && (
                     <ShowExtraContainer>
-                      <Button>
-                        <ShowExtraText
-                          variant="subtitle1"
-                          onClick={() => setPersonEditShowMore(false)}
-                        >
+                      <Button onClick={() => setPersonEditShowMore(false)}>
+                        <ShowExtraText variant="subtitle1">
                           {t('Show Less')}
                         </ShowExtraText>
                       </Button>
