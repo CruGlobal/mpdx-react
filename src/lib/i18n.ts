@@ -3,15 +3,12 @@ import { initReactI18next } from 'react-i18next';
 import Backend from 'i18next-http-backend';
 import LanguageDetector from 'i18next-browser-languagedetector';
 import { currencyFormat, numberFormat } from './intlFormat';
-import * as english from 'public/locales/en/translation.json';
-import * as englishUS from 'public/locales/en-US/translation.json';
 
 i18next
   .use(Backend)
   .use(initReactI18next)
   .use(LanguageDetector)
   .init({
-    lng: 'en',
     nsSeparator: false,
     keySeparator: false,
     fallbackLng: 'en',
@@ -32,13 +29,11 @@ i18next
       wait: true,
       useSuspense: false,
     },
-    resources: {
-      en: {
-        translation: english,
-      },
-      'en-US': {
-        translation: englishUS,
-      },
+    detection: {
+      order: ['navigator', 'htmlTag'],
+    },
+    backend: {
+      loadPath: '../../locales/{{lng}}/translation.json',
     },
   });
 
