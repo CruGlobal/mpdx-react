@@ -31,15 +31,7 @@ const useStyles = makeStyles(() => ({
     [theme.breakpoints.down('md')]: {
       display: 'none',
     },
-    '&:focus': {
-      backgroundColor: theme.palette.cruGrayMedium.main,
-      backgroundBlendMode: 'multiply',
-    },
     '&[aria-current=page]': {
-      backgroundColor: theme.palette.cruGrayMedium.main,
-      backgroundBlendMode: 'multiply',
-    },
-    '&:hover': {
       backgroundColor: theme.palette.cruGrayMedium.main,
       backgroundBlendMode: 'multiply',
     },
@@ -58,10 +50,6 @@ const useStyles = makeStyles(() => ({
     backgroundImage: `linear-gradient(0deg, ${theme.palette.cruGrayDark.main}, ${theme.palette.cruGrayDark.main})`,
   },
   menuItemSelected: {
-    backgroundBlendMode: 'multiply',
-    backgroundColor: theme.palette.cruGrayMedium.main,
-  },
-  focus: {
     backgroundBlendMode: 'multiply',
     backgroundColor: theme.palette.cruGrayMedium.main,
   },
@@ -86,6 +74,12 @@ const useStyles = makeStyles(() => ({
   },
   whiteText: {
     color: 'white',
+  },
+  menuItem: {
+    '&:focus-visible, &:hover, &[aria-current=page]': {
+      backgroundColor: theme.palette.cruGrayMedium.main,
+      backgroundBlendMode: 'multiply',
+    },
   },
 }));
 
@@ -167,41 +161,42 @@ const NavMenu = (): ReactElement => {
     <>
       {accountListId ? (
         <Grid container item alignItems="center" xs="auto">
-          <Grid
-            item
-            className={classes.navListItem}
-            aria-current={
-              router.asPath === `/accountLists/${accountListId}` && 'page'
-            }
-          >
+          <Grid item className={classes.navListItem}>
             <NextLink href={`/accountLists/${accountListId}`}>
-              <MenuItem tabIndex={0}>
+              <MenuItem
+                tabIndex={0}
+                className={classes.menuItem}
+                aria-current={
+                  router.asPath === `/accountLists/${accountListId}` && 'page'
+                }
+              >
                 <ListItemText primary={t('Dashboard')} />
               </MenuItem>
             </NextLink>
           </Grid>
-          <Grid
-            item
-            className={classes.navListItem}
-            aria-current={
-              router.asPath.includes(`${accountListId}/contacts`) && 'page'
-            }
-          >
+          <Grid item className={classes.navListItem}>
             <NextLink href={`/accountLists/${accountListId}/contacts`}>
-              <MenuItem tabIndex={0}>
+              <MenuItem
+                tabIndex={0}
+                className={classes.menuItem}
+                aria-current={
+                  router.asPath.includes(`${accountListId}/contacts`) && 'page'
+                }
+              >
                 <ListItemText primary={t('Contacts')} />
               </MenuItem>
             </NextLink>
           </Grid>
-          <Grid
-            item
-            className={classes.navListItem}
-            aria-current={
-              router.asPath === `/accountLists/${accountListId}/tasks` && 'page'
-            }
-          >
+          <Grid item className={classes.navListItem}>
             <NextLink href={`/accountLists/${accountListId}/tasks`}>
-              <MenuItem tabIndex={0}>
+              <MenuItem
+                tabIndex={0}
+                className={classes.menuItem}
+                aria-current={
+                  router.asPath === `/accountLists/${accountListId}/tasks` &&
+                  'page'
+                }
+              >
                 <ListItemText primary={t('Tasks')} />
               </MenuItem>
             </NextLink>
@@ -216,6 +211,7 @@ const NavMenu = (): ReactElement => {
               data-testid="ReportMenuToggle"
               aria-expanded={reportsMenuOpen}
               className={clsx(
+                classes.menuItem,
                 reportsMenuOpen && classes.menuItemSelected,
                 router.asPath.includes('reports') && classes.menuItemSelected,
               )}
@@ -261,7 +257,7 @@ const NavMenu = (): ReactElement => {
                               }
                               className={clsx(
                                 router.asPath.includes(`/${id}`) &&
-                                  classes.focus,
+                                  classes.menuItemSelected,
                               )}
                             >
                               <ListItemText
@@ -288,6 +284,7 @@ const NavMenu = (): ReactElement => {
               onClick={handleToolsMenuToggle}
               data-testid="ToolsMenuToggle"
               className={clsx(
+                classes.menuItem,
                 toolsMenuOpen && classes.menuItemSelected,
                 router.asPath.includes('tools') && classes.menuItemSelected,
               )}
@@ -353,9 +350,8 @@ const NavMenu = (): ReactElement => {
                                       'page'
                                     }
                                     className={clsx(
+                                      classes.menuItem,
                                       needsAttention && classes.needsAttention,
-                                      currentToolId === tool.id &&
-                                        classes.menuItemSelected,
                                     )}
                                   >
                                     <Icon
@@ -403,13 +399,13 @@ const NavMenu = (): ReactElement => {
               )}
             </Popper>
           </Grid>
-          <Grid
-            item
-            className={classes.navListItem}
-            aria-current={router.asPath.includes(`/coaching`) && 'page'}
-          >
+          <Grid item className={classes.navListItem}>
             <NextLink href={`/accountLists/${accountListId}/coaching`}>
-              <MenuItem tabIndex={0}>
+              <MenuItem
+                tabIndex={0}
+                className={classes.menuItem}
+                aria-current={router.asPath.includes(`/coaching`) && 'page'}
+              >
                 <ListItemText primary={t('Coaches')} />
               </MenuItem>
             </NextLink>
