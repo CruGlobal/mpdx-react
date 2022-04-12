@@ -255,10 +255,6 @@ const NavMenu = (): ReactElement => {
                               aria-current={
                                 router.asPath.includes(`${id}`) && 'page'
                               }
-                              className={clsx(
-                                router.asPath.includes(`/${id}`) &&
-                                  classes.menuItemSelected,
-                              )}
                             >
                               <ListItemText
                                 primary={t(
