@@ -179,9 +179,7 @@ const NavMenu = (): ReactElement => {
               <MenuItem
                 tabIndex={0}
                 className={classes.menuItem}
-                aria-current={
-                  router.asPath.includes(`${accountListId}/contacts`) && 'page'
-                }
+                aria-current={router.asPath.includes('contacts') && 'page'}
               >
                 <ListItemText primary={t('Contacts')} />
               </MenuItem>
@@ -192,10 +190,7 @@ const NavMenu = (): ReactElement => {
               <MenuItem
                 tabIndex={0}
                 className={classes.menuItem}
-                aria-current={
-                  router.asPath === `/accountLists/${accountListId}/tasks` &&
-                  'page'
-                }
+                aria-current={router.asPath.includes('tasks') && 'page'}
               >
                 <ListItemText primary={t('Tasks')} />
               </MenuItem>
@@ -342,8 +337,7 @@ const NavMenu = (): ReactElement => {
                                       currentToolId === tool.id
                                     }`}
                                     aria-current={
-                                      router.asPath.includes(`/${tool.id}`) &&
-                                      'page'
+                                      router.asPath.includes(tool.id) && 'page'
                                     }
                                     className={clsx(
                                       classes.menuItem,
