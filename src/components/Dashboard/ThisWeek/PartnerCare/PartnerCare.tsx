@@ -32,6 +32,7 @@ import illustration4 from '../../../../images/drawkit/grape/drawkit-grape-pack-i
 import illustration7 from '../../../../images/drawkit/grape/drawkit-grape-pack-illustration-7.svg';
 import { GetThisWeekQuery } from '../GetThisWeek.generated';
 import useTaskDrawer from '../../../../hooks/useTaskDrawer';
+import theme from 'src/theme';
 
 const CardContainer = styled(AnimatedCard)(({ theme }) => ({
   flex: 'flex',
@@ -313,6 +314,7 @@ const PartnerCare = ({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
+          style={{ height: theme.spacing(27) }}
         >
           {loading && (
             <CardList data-testid="PartnerCareCelebrationListLoading">
