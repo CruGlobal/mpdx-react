@@ -1,11 +1,11 @@
 import React, { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Box, Chip, styled, TextField } from '@material-ui/core';
+import { Box, Button, Chip, styled, TextField } from '@material-ui/core';
 import TagIcon from '@material-ui/icons/LocalOfferOutlined';
-import * as yup from 'yup';
-import { Formik, FormikHelpers } from 'formik';
 import { useSnackbar } from 'notistack';
+import * as yup from 'yup';
 import { Autocomplete } from '@material-ui/lab';
+import { Formik, FormikHelpers } from 'formik';
 import {
   useGetContactTagListQuery,
   useUpdateContactTagsMutation,
@@ -31,7 +31,7 @@ const ContactTagIcon = styled(TagIcon)(({ theme }) => ({
 
 const ContactTagInput = styled(TextField)(({ theme }) => ({
   '&& .MuiInput-underline:before ': {
-    borderBottom: 'none',
+    borderBottom: `2px solid ${theme.palette.divider}`,
   },
   '&& .MuiInput-underline:after ': {
     borderBottom: `2px solid ${theme.palette.divider}`,
@@ -54,6 +54,12 @@ const ContactTagInput = styled(TextField)(({ theme }) => ({
   marginLeft: '0',
 }));
 
+const SaveButton = styled(Button)(({ theme }) => ({
+  color: theme.palette.info.main,
+  height: theme.spacing(4),
+  fontWeight: 550,
+}));
+
 interface ContactTagsProps {
   accountListId: string;
   contactId: string;
@@ -72,7 +78,7 @@ export const ContactTags: React.FC<ContactTagsProps> = ({
     { loading: updating },
   ] = useUpdateContactTagsMutation();
 
-  const { data, loading } = useGetContactTagListQuery({
+  const { data: contactTagsList, loading } = useGetContactTagListQuery({
     variables: {
       accountListId,
     },
@@ -81,6 +87,11 @@ export const ContactTags: React.FC<ContactTagsProps> = ({
   const tagSchema = yup.object({
     tagList: yup.array().of(yup.string()).default([]),
   });
+
+  const unusedTags =
+    contactTagsList?.accountList.contactTagList?.filter(
+      (tag) => !contactTags.includes(tag),
+    ) || [];
 
   const handleTagDelete = async (tag: string) => {
     const index = contactTags.indexOf(tag);
@@ -161,24 +172,31 @@ export const ContactTags: React.FC<ContactTagsProps> = ({
           setFieldValue,
         }): ReactElement => (
           <form onSubmit={handleSubmit} noValidate>
-            <Autocomplete
-              multiple
-              freeSolo
-              fullWidth
-              loading={loading}
-              popupIcon={<ContactTagIcon />}
-              filterSelectedOptions
-              value={tagList}
-              options={data?.accountList?.contactTagList || []}
-              renderInput={(params): ReactElement => (
-                <ContactTagInput
-                  {...params}
-                  placeholder={t('add tag')}
-                  disabled={isSubmitting || updating}
-                />
+            <Box display="flex" alignItems="center">
+              <Autocomplete
+                multiple
+                freeSolo
+                fullWidth
+                loading={loading}
+                popupIcon={<ContactTagIcon />}
+                filterSelectedOptions
+                value={tagList}
+                options={unusedTags || []}
+                renderInput={(params): ReactElement => (
+                  <ContactTagInput
+                    {...params}
+                    placeholder={t('add tag')}
+                    disabled={isSubmitting || updating}
+                  />
+                )}
+                onChange={(_, tagList): void =>
+                  setFieldValue('tagList', tagList)
+                }
+              />
+              {tagList.length > 0 && (
+                <SaveButton type="submit">{t('save')}</SaveButton>
               )}
-              onChange={(_, tagList): void => setFieldValue('tagList', tagList)}
-            />
+            </Box>
           </form>
         )}
       </Formik>
