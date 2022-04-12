@@ -166,7 +166,7 @@ const AddMenuPanel = ({
   return (
     <Box display="flex" flexDirection="column" justifyContent="center">
       {addMenuContent.map(({ text, icon, onClick }, index) => (
-        <RowContainer key={index} onClick={onClick}>
+        <RowContainer tabIndex={0} key={index} onClick={onClick}>
           {icon}
           <MenuItemText primary={t(`${text}`)} />
         </RowContainer>
@@ -227,7 +227,6 @@ const AddMenu = ({ isInDrawer = false }: AddMenuProps): ReactElement => {
   ];
 
   const [anchorEl, setAnchorEl] = useState<EventTarget & HTMLButtonElement>();
-  const { t } = useTranslation();
 
   if (isInDrawer) {
     return <AddMenuPanel addMenuContent={addMenuContent} />;
@@ -237,7 +236,7 @@ const AddMenu = ({ isInDrawer = false }: AddMenuProps): ReactElement => {
     <>
       <IconButton
         aria-controls="add-menu"
-        aria-haspopup="true"
+        aria-expanded={Boolean(anchorEl)}
         onClick={(event) => setAnchorEl(event.currentTarget)}
       >
         <HoverAddIcon titleAccess="Add Button" />
@@ -252,12 +251,7 @@ const AddMenu = ({ isInDrawer = false }: AddMenuProps): ReactElement => {
         anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
         transformOrigin={{ vertical: 'top', horizontal: 'center' }}
       >
-        {addMenuContent.map(({ text, icon, onClick }, index) => (
-          <RowContainer key={index} onClick={onClick}>
-            {icon}
-            <MenuItemText primary={t(`${text}`)} />
-          </RowContainer>
-        ))}
+        <AddMenuPanel addMenuContent={addMenuContent} />
       </MenuContainer>
       {renderDialog(selectedMenuItem, dialogOpen, changeDialogOpen)}
     </>
