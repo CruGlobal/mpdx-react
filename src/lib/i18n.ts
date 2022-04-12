@@ -9,7 +9,6 @@ i18next
   .use(initReactI18next)
   .use(LanguageDetector)
   .init({
-    lng: 'en',
     nsSeparator: false,
     keySeparator: false,
     fallbackLng: 'en',
@@ -29,6 +28,12 @@ i18next
     react: {
       wait: true,
       useSuspense: false,
+    },
+    detection: {
+      order: ['navigator', 'htmlTag'],
+    },
+    backend: {
+      loadPath: '../../locales/{{lng}}/translation.json',
     },
   });
 
