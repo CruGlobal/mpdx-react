@@ -1,13 +1,6 @@
 import React, { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  Box,
-  Button,
-  Chip,
-  CircularProgress,
-  styled,
-  TextField,
-} from '@material-ui/core';
+import { Box, Button, Chip, styled, TextField } from '@material-ui/core';
 import TagIcon from '@material-ui/icons/LocalOfferOutlined';
 import { useSnackbar } from 'notistack';
 import * as yup from 'yup';
@@ -65,10 +58,6 @@ const SaveButton = styled(Button)(({ theme }) => ({
   color: theme.palette.info.main,
   height: theme.spacing(4),
   fontWeight: 550,
-}));
-
-const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
-  margin: theme.spacing(2),
 }));
 
 interface ContactTagsProps {
