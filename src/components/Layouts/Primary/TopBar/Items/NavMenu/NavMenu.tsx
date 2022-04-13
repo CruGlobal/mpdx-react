@@ -17,6 +17,7 @@ import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import NextLink from 'next/link';
 import { useTranslation } from 'react-i18next';
 import Icon from '@mdi/react';
+import { useRouter } from 'next/router';
 import { ReportNavItems } from '../../../../../Reports/NavReportsList/ReportNavItems';
 import { ToolsList } from '../../../../../Tool/Home/ToolList';
 import { useCurrentToolId } from '../../../../../../hooks/useCurrentToolId';
@@ -29,6 +30,10 @@ const useStyles = makeStyles(() => ({
     order: 2,
     [theme.breakpoints.down('md')]: {
       display: 'none',
+    },
+    '&[aria-current=page]': {
+      backgroundColor: theme.palette.cruGrayMedium.main,
+      backgroundBlendMode: 'multiply',
     },
   },
   expand: {
@@ -43,13 +48,6 @@ const useStyles = makeStyles(() => ({
   },
   subMenu: {
     backgroundImage: `linear-gradient(0deg, ${theme.palette.cruGrayDark.main}, ${theme.palette.cruGrayDark.main})`,
-  },
-  menuItem: {
-    color: 'white',
-    '&:hover': {
-      backgroundColor: theme.palette.cruGrayMedium.main,
-      backgroundBlendMode: 'multiply',
-    },
   },
   menuItemSelected: {
     backgroundBlendMode: 'multiply',
@@ -76,6 +74,12 @@ const useStyles = makeStyles(() => ({
   },
   whiteText: {
     color: 'white',
+  },
+  menuItem: {
+    '&:focus-visible, &:hover, &[aria-current=page]': {
+      backgroundColor: theme.palette.cruGrayMedium.main,
+      backgroundBlendMode: 'multiply',
+    },
   },
 }));
 
@@ -152,39 +156,60 @@ const NavMenu = (): ReactElement => {
   const handleToolsMenuClose = () => {
     setToolsMenuOpen(false);
   };
-
+  const router = useRouter();
   return (
     <>
       {accountListId ? (
         <Grid container item alignItems="center" xs="auto">
           <Grid item className={classes.navListItem}>
             <NextLink href={`/accountLists/${accountListId}`}>
-              <MenuItem>
+              <MenuItem
+                tabIndex={0}
+                className={classes.menuItem}
+                aria-current={
+                  router.asPath === `/accountLists/${accountListId}` && 'page'
+                }
+              >
                 <ListItemText primary={t('Dashboard')} />
               </MenuItem>
             </NextLink>
           </Grid>
           <Grid item className={classes.navListItem}>
             <NextLink href={`/accountLists/${accountListId}/contacts`}>
-              <MenuItem>
+              <MenuItem
+                tabIndex={0}
+                className={classes.menuItem}
+                aria-current={router.asPath.includes('contacts') && 'page'}
+              >
                 <ListItemText primary={t('Contacts')} />
               </MenuItem>
             </NextLink>
           </Grid>
           <Grid item className={classes.navListItem}>
             <NextLink href={`/accountLists/${accountListId}/tasks`}>
-              <MenuItem>
+              <MenuItem
+                tabIndex={0}
+                className={classes.menuItem}
+                aria-current={router.asPath.includes('tasks') && 'page'}
+              >
                 <ListItemText primary={t('Tasks')} />
               </MenuItem>
             </NextLink>
           </Grid>
           <Grid item className={classes.navListItem}>
             <MenuItem
+              tabIndex={0}
               ref={anchorRef}
               aria-controls={reportsMenuOpen ? 'menu-list-grow' : undefined}
               aria-haspopup="true"
               onClick={handleReportsMenuToggle}
               data-testid="ReportMenuToggle"
+              aria-expanded={reportsMenuOpen}
+              className={clsx(
+                classes.menuItem,
+                reportsMenuOpen && classes.menuItemSelected,
+                router.asPath.includes('reports') && classes.menuItemSelected,
+              )}
             >
               <ListItemText primary={t('Reports')} />
               <ArrowDropDownIcon
@@ -214,19 +239,21 @@ const NavMenu = (): ReactElement => {
                         autoFocusItem={reportsMenuOpen}
                         id="menu-list-grow"
                       >
-                        {ReportNavItems.map((reportItem) => (
+                        {ReportNavItems.map(({ id, title, subTitle }) => (
                           <NextLink
-                            key={reportItem.id}
-                            href={`/accountLists/${accountListId}/reports/${reportItem.id}`}
+                            key={id}
+                            href={`/accountLists/${accountListId}/reports/${id}`}
                           >
-                            <MenuItem onClick={handleReportsMenuClose}>
+                            <MenuItem
+                              onClick={handleReportsMenuClose}
+                              tabIndex={0}
+                              aria-current={
+                                router.asPath.includes(`${id}`) && 'page'
+                              }
+                            >
                               <ListItemText
                                 primary={t(
-                                  `${reportItem.title}${
-                                    reportItem.subTitle
-                                      ? ` (${reportItem.subTitle})`
-                                      : ''
-                                  }`,
+                                  `${title}${subTitle ? ` (${subTitle})` : ''}`,
                                 )}
                               />
                             </MenuItem>
@@ -241,11 +268,18 @@ const NavMenu = (): ReactElement => {
           </Grid>
           <Grid item className={classes.navListItem}>
             <MenuItem
+              tabIndex={0}
               ref={anchorRefTools}
               aria-controls={toolsMenuOpen ? 'menu-list-grow' : undefined}
               aria-haspopup="true"
               onClick={handleToolsMenuToggle}
               data-testid="ToolsMenuToggle"
+              className={clsx(
+                classes.menuItem,
+                toolsMenuOpen && classes.menuItemSelected,
+                router.asPath.includes('tools') && classes.menuItemSelected,
+              )}
+              aria-expanded={toolsMenuOpen}
             >
               <ListItemText primary={t('Tools')} />
               {sum > 0 && (
@@ -297,15 +331,17 @@ const NavMenu = (): ReactElement => {
                                   href={`/accountLists/${accountListId}/tools/${tool.id}`}
                                 >
                                   <MenuItem
+                                    tabIndex={0}
                                     onClick={handleToolsMenuClose}
                                     data-testid={`${tool.id}-${
                                       currentToolId === tool.id
                                     }`}
+                                    aria-current={
+                                      router.asPath.includes(tool.id) && 'page'
+                                    }
                                     className={clsx(
                                       classes.menuItem,
                                       needsAttention && classes.needsAttention,
-                                      currentToolId === tool.id &&
-                                        classes.menuItemSelected,
                                     )}
                                   >
                                     <Icon
@@ -355,7 +391,11 @@ const NavMenu = (): ReactElement => {
           </Grid>
           <Grid item className={classes.navListItem}>
             <NextLink href={`/accountLists/${accountListId}/coaching`}>
-              <MenuItem component="a">
+              <MenuItem
+                tabIndex={0}
+                className={classes.menuItem}
+                aria-current={router.asPath.includes(`/coaching`) && 'page'}
+              >
                 <ListItemText primary={t('Coaches')} />
               </MenuItem>
             </NextLink>
