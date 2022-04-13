@@ -1,5 +1,12 @@
 import React, { ReactElement, useState } from 'react';
-import { Box, IconButton, ListItemText, Menu, styled } from '@material-ui/core';
+import {
+  Box,
+  IconButton,
+  ListItemText,
+  Menu,
+  MenuItem,
+  styled,
+} from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 import PersonIcon from '@material-ui/icons/Person';
 import PeopleIcon from '@material-ui/icons/People';
@@ -57,7 +64,7 @@ const MenuContainer = styled(Menu)(({ theme }) => ({
   },
 }));
 
-const RowContainer = styled(Box)(({ theme }) => ({
+const RowContainer = styled(MenuItem)(({ theme }) => ({
   padding: theme.spacing(1),
   borderBottom: '1px solid',
   borderBottomColor: theme.palette.divider,
@@ -159,7 +166,7 @@ const AddMenuPanel = ({
   return (
     <Box display="flex" flexDirection="column" justifyContent="center">
       {addMenuContent.map(({ text, icon, onClick }, index) => (
-        <RowContainer key={index} display="flex" onClick={onClick}>
+        <RowContainer tabIndex={0} key={index} onClick={onClick}>
           {icon}
           <MenuItemText primary={t(`${text}`)} />
         </RowContainer>
@@ -229,7 +236,7 @@ const AddMenu = ({ isInDrawer = false }: AddMenuProps): ReactElement => {
     <>
       <IconButton
         aria-controls="add-menu"
-        aria-haspopup="true"
+        aria-expanded={Boolean(anchorEl)}
         onClick={(event) => setAnchorEl(event.currentTarget)}
       >
         <HoverAddIcon titleAccess="Add Button" />
