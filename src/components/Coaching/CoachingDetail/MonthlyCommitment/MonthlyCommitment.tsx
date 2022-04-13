@@ -54,7 +54,7 @@ export const MonthlyCommitment: React.FC<MonthlyCommitmentProps> = ({
 
   const averageCommitments =
     (pledges?.reduce((sum, pledge) => sum + pledge.committed, 0) ?? 0) /
-    (pledges?.length ?? 0);
+      (pledges?.length ?? 1) ?? 0;
 
   const domainMax = Math.max(
     ...(pledges?.map((pledge) => pledge.received) || []),
