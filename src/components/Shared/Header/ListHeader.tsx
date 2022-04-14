@@ -19,9 +19,12 @@ import {
   ContactFilterSetInput,
   TaskFilterSetInput,
 } from '../../../../graphql/types.generated';
-import { StarFilterButton } from './StarFilterButton/StarFilterButton';
 import { ContactsMap } from '../../../../pages/accountLists/[accountListId]/contacts/map/map';
 import Modal from '../../common/Modal/Modal';
+import { useMassSelection } from '../../../hooks/useMassSelection';
+import { useContactsQuery } from '../../../../pages/accountLists/[accountListId]/contacts/Contacts.generated';
+import { useAccountListId } from '../../../hooks/useAccountListId';
+import { StarFilterButton } from './StarFilterButton/StarFilterButton';
 
 const HeaderWrap = styled(Box)(({ theme }) => ({
   height: 96,
@@ -85,6 +88,7 @@ const ActionsButton = styled(Button)(({ theme }) => ({
 export enum TableViewModeEnum {
   List = 'list',
   Flows = 'flows',
+  Map = 'map',
 }
 
 export enum ListHeaderCheckBoxState {
@@ -141,8 +145,21 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
 
   const [contactIds, setContactIds] = useState<string[]>([]);
   const [mapModalOpen, setMapModalOpen] = useState(false);
+  const accountListId = useAccountListId();
+  const { data, loading, fetchMore } = useContactsQuery({
+    variables: {
+      accountListId: accountListId ?? '',
+      contactsFilters: {
+        ...activeFilters,
+        wildcardSearch: searchTerm as string,
+        ...starredFilter,
+      },
+    },
+    skip: !accountListId,
+  });
+  const { ids } = useMassSelection(data?.contacts?.totalCount ?? 0);
   const mapContactsClick = () => {
-    setContactIds(['contact-id-1']);
+    setContactIds(ids);
     setMapModalOpen(true);
   };
 
@@ -225,7 +242,7 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
                 title={t('Map of Contacts')}
                 handleClose={() => setMapModalOpen(false)}
               >
-                <ContactsMap selectedIds={contactIds}/>
+                <ContactsMap selectedIds={contactIds} />
               </Modal>
               <MenuItem divider onClick={mapContactsClick}>
                 <ListItemText>{t('Map Contacts')}</ListItemText>

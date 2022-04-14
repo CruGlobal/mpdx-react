@@ -7,6 +7,7 @@ import { Box, Button, Hidden, styled } from '@material-ui/core';
 import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
 import FormatListBulleted from '@material-ui/icons/FormatListBulleted';
 import ViewColumn from '@material-ui/icons/ViewColumn';
+import LocationSearching from '@material-ui/icons/LocationSearching';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { Settings } from '@material-ui/icons';
@@ -35,6 +36,7 @@ import { FilterPanel } from '../../../../src/components/Shared/Filters/FilterPan
 import { useMassSelection } from '../../../../src/hooks/useMassSelection';
 import { UserOptionFragment } from '../../../../src/components/Shared/Filters/FilterPanel.generated';
 import { useContactFiltersQuery, useContactsQuery } from './Contacts.generated';
+import { ContactsMap } from './map/map';
 
 const WhiteBackground = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.common.white,
@@ -94,10 +96,15 @@ const ContactsPage: React.FC = () => {
     const view = userOptions?.userOptions.find(
       (option) => option.key === 'contacts_view',
     )?.value;
-    setflowsViewEnabled(view === 'flows');
     if (view === 'flows' && !contactId?.includes('flows')) {
       setContactFocus(undefined, false, true);
-    } else if (view !== 'flows' && contactId?.includes('flows')) {
+    } else if (view === 'map' && !contactId?.includes('map')) {
+      setContactFocus(undefined, false, false, true);
+    } else if (
+      view !== 'flows' &&
+      view !== 'map' &&
+      (contactId?.includes('flows') || contactId?.includes('map'))
+    ) {
       setContactFocus(undefined, false);
     }
   };
@@ -176,7 +183,12 @@ const ContactsPage: React.FC = () => {
   //#endregion
 
   //#region User Actions
-  const setContactFocus = (id?: string, openDetails = true, flows = false) => {
+  const setContactFocus = (
+    id?: string,
+    openDetails = true,
+    flows = false,
+    map = false,
+  ) => {
     const {
       accountListId: _accountListId,
       contactId: _contactId,
@@ -186,7 +198,7 @@ const ContactsPage: React.FC = () => {
       id
         ? {
             pathname: `/accountLists/${accountListId}/contacts${
-              flows ? '/flows' : ''
+              flows ? '/flows' : map ? '/map' : ''
             }/${id}`,
             query: filteredQuery,
           }
@@ -227,13 +239,15 @@ const ContactsPage: React.FC = () => {
     [accountListId],
   );
 
-  const [flowsViewEnabled, setflowsViewEnabled] = useState<boolean>(false);
+  const [viewMode, setViewMode] = useState<TableViewModeEnum>(
+    TableViewModeEnum.List,
+  );
 
   const handleViewModeChange = (
     event: React.MouseEvent<HTMLElement>,
-    flowsView: boolean,
+    view: string,
   ) => {
-    updateOptions(flowsView ? 'flows' : 'list');
+    updateOptions(view);
     setContactDetailsOpen(false);
   };
   //#endregion
@@ -280,7 +294,12 @@ const ContactsPage: React.FC = () => {
     <>
       <Head>
         <title>
-          MPDX | {flowsViewEnabled ? t('Contact Flows') : t('Contacts')}
+          MPDX |{' '}
+          {viewMode === TableViewModeEnum.Flows
+            ? t('Contact Flows')
+            : viewMode === TableViewModeEnum.Map
+            ? t('Contacts Map')
+            : t('Contacts')}
         </title>
       </Head>
       {accountListId && !userOptionsLoading ? (
@@ -312,11 +331,7 @@ const ContactsPage: React.FC = () => {
                     toggleFilterPanel={toggleFilterPanel}
                     contactDetailsOpen={contactDetailsOpen}
                     onCheckAllItems={toggleSelectAll}
-                    contactsView={
-                      flowsViewEnabled
-                        ? TableViewModeEnum.Flows
-                        : TableViewModeEnum.List
-                    }
+                    contactsView={viewMode}
                     onSearchTermChanged={setSearchTerm}
                     searchTerm={searchTerm}
                     totalItems={data?.contacts?.totalCount}
@@ -326,7 +341,7 @@ const ContactsPage: React.FC = () => {
                     buttonGroup={
                       <Hidden xsDown>
                         <Box display="flex" alignItems="center">
-                          {flowsViewEnabled && (
+                          {viewMode === TableViewModeEnum.Flows && (
                             <NextLink
                               href={`/accountLists/${accountListId}/contacts/flows/setup`}
                             >
@@ -338,29 +353,35 @@ const ContactsPage: React.FC = () => {
                           )}
                           <ToggleButtonGroup
                             exclusive
-                            value={flowsViewEnabled}
+                            value={viewMode}
                             onChange={handleViewModeChange}
                           >
                             <ToggleButton
-                              value={false}
-                              disabled={!flowsViewEnabled}
+                              value={TableViewModeEnum.List}
+                              disabled={viewMode === TableViewModeEnum.List}
                             >
                               <BulletedListIcon titleAccess={t('List View')} />
                             </ToggleButton>
                             <ToggleButton
-                              value={true}
-                              disabled={flowsViewEnabled}
+                              value={TableViewModeEnum.Flows}
+                              disabled={viewMode === TableViewModeEnum.Flows}
                             >
                               <ViewColumnIcon
                                 titleAccess={t('Column Workflow View')}
                               />
+                            </ToggleButton>
+                            <ToggleButton
+                              value={TableViewModeEnum.Map}
+                              disabled={viewMode === TableViewModeEnum.Map}
+                            >
+                              <LocationSearching />
                             </ToggleButton>
                           </ToggleButtonGroup>
                         </Box>
                       </Hidden>
                     }
                   />
-                  {!flowsViewEnabled ? (
+                  {viewMode !== TableViewModeEnum.Flows ? (
                     <InfiniteList
                       loading={loading}
                       data={data?.contacts?.nodes}
@@ -398,7 +419,7 @@ const ContactsPage: React.FC = () => {
                         </Box>
                       }
                     />
-                  ) : (
+                  ) : viewMode === TableViewModeEnum.Flows ? (
                     <ContactFlow
                       accountListId={accountListId}
                       selectedFilters={{
@@ -408,6 +429,8 @@ const ContactsPage: React.FC = () => {
                       searchTerm={searchTerm}
                       onContactSelected={setContactFocus}
                     />
+                  ) : (
+                    <ContactsMap selectedIds={[]} />
                   )}
                 </>
               }
@@ -421,7 +444,8 @@ const ContactsPage: React.FC = () => {
                       setContactFocus(
                         undefined,
                         true,
-                        flowsViewEnabled ? true : false,
+                        viewMode === TableViewModeEnum.Flows,
+                        viewMode === TableViewModeEnum.Map,
                       )
                     }
                   />
