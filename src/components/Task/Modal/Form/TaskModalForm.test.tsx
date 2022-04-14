@@ -137,7 +137,7 @@ describe('TaskModalForm', () => {
 
     const tagsElement = getByLabelText('Tags');
     userEvent.click(tagsElement);
-    userEvent.type(getByLabelText('Period'), '20');
+    userEvent.type(getByLabelText('Time'), '20');
     userEvent.click(getByLabelText('Unit'));
     userEvent.click(
       within(getByRole('listbox', { hidden: true, name: 'Unit' })).getByText(
