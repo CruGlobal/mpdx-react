@@ -96,11 +96,6 @@ export const PersonModal: React.FC<PersonModalProps> = ({
   const [createPerson, { loading: creating }] = useCreatePersonMutation();
   const [deletePerson, { loading: deleting }] = useDeletePersonMutation();
 
-  // grabbed from https://stackoverflow.com/a/62039270
-  const phoneRegex = RegExp(
-    /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/,
-  );
-
   const personSchema: yup.SchemaOf<
     Omit<PersonUpdateInput, 'familyRelationships' | 'id'>
   > = yup.object({
@@ -111,10 +106,7 @@ export const PersonModal: React.FC<PersonModalProps> = ({
     phoneNumbers: yup.array().of(
       yup.object({
         id: yup.string().nullable(),
-        number: yup
-          .string()
-          .matches(phoneRegex, t('Invalid phone number'))
-          .required(t('This field is required')),
+        number: yup.string().required(t('This field is required')),
         destroy: yup.boolean().default(false),
         primary: yup.boolean().default(false),
       }),
