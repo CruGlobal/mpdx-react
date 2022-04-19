@@ -2,7 +2,7 @@ query GetThisWeek(
   $accountListId: ID!
   $endOfDay: ISO8601DateTime!
   $today: ISO8601Date!
-  $twoWeeksFromNow: ISO8601Date!
+  $threeWeeksFromNow: ISO8601Date!
   $twoWeeksAgo: ISO8601Date!
 ) {
   accountList(id: $accountListId) {
@@ -74,7 +74,7 @@ query GetThisWeek(
   reportsPeopleWithBirthdays(
     accountListId: $accountListId
     range: "4w"
-    endDate: $twoWeeksFromNow
+    endDate: $threeWeeksFromNow
   ) {
     periods {
       people {
@@ -93,7 +93,7 @@ query GetThisWeek(
   reportsPeopleWithAnniversaries(
     accountListId: $accountListId
     range: "4w"
-    endDate: $twoWeeksFromNow
+    endDate: $threeWeeksFromNow
   ) {
     periods {
       people {
