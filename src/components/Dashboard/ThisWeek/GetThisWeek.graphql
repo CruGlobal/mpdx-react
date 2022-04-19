@@ -73,7 +73,7 @@ query GetThisWeek(
   }
   reportsPeopleWithBirthdays(
     accountListId: $accountListId
-    range: "1m"
+    range: "4w"
     endDate: $twoWeeksFromNow
   ) {
     periods {
@@ -92,7 +92,7 @@ query GetThisWeek(
   }
   reportsPeopleWithAnniversaries(
     accountListId: $accountListId
-    range: "1m"
+    range: "4w"
     endDate: $twoWeeksFromNow
   ) {
     periods {
