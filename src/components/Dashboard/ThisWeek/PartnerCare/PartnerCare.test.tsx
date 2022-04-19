@@ -8,16 +8,16 @@ import {
 import { GetThisWeekQuery } from '../GetThisWeek.generated';
 import { ActivityTypeEnum } from '../../../../../graphql/types.generated';
 import theme from '../../../../theme';
-import useTaskDrawer from '../../../../hooks/useTaskDrawer';
+import useTaskModal from '../../../../hooks/useTaskModal';
 import PartnerCare from './PartnerCare';
 
-jest.mock('../../../../hooks/useTaskDrawer');
+jest.mock('../../../../hooks/useTaskModal');
 
-const openTaskDrawer = jest.fn();
+const openTaskModal = jest.fn();
 
 beforeEach(() => {
-  (useTaskDrawer as jest.Mock).mockReturnValue({
-    openTaskDrawer,
+  (useTaskModal as jest.Mock).mockReturnValue({
+    openTaskModal,
   });
 });
 const prayerRequestTasks: GetThisWeekQuery['prayerRequestTasks'] = {
@@ -196,7 +196,7 @@ describe('PartnerCare', () => {
       'Roger Smith, Sarah Smiththe quick brown fox jumps over the lazy dog',
     );
     userEvent.click(task1Element);
-    expect(openTaskDrawer).toHaveBeenCalledWith({ taskId: 'task_1' });
+    expect(openTaskModal).toHaveBeenCalledWith({ taskId: 'task_1' });
     expect(getByTestId('PartnerCarePrayerListItem-task_2').textContent).toEqual(
       'Roger Parker, Sarah Parkeron the boat to see uncle johnny',
     );
@@ -240,13 +240,13 @@ describe('PartnerCare', () => {
     userEvent.click(
       queryAllByRole('button', { hidden: true, name: 'Complete Button' })[0],
     );
-    expect(openTaskDrawer).toHaveBeenCalledWith({
+    expect(openTaskModal).toHaveBeenCalledWith({
       taskId: 'task_1',
       showCompleteForm: true,
     });
   });
 
-  it('Opens task drawer to create a new task for celebration | Birthday', () => {
+  it('Opens task modal to create a new task for celebration | Birthday', () => {
     const { getByTestId, queryAllByRole } = render(
       <ThemeProvider theme={theme}>
         <PartnerCare
@@ -269,14 +269,14 @@ describe('PartnerCare', () => {
     userEvent.click(
       queryAllByRole('button', { hidden: true, name: 'Complete Button' })[0],
     );
-    expect(openTaskDrawer).toHaveBeenCalledWith({
+    expect(openTaskModal).toHaveBeenCalledWith({
       defaultValues: {
         subject: "John Doe's Birthday",
       },
     });
   });
 
-  it('Opens task drawer to create a new task for celebration | Anniversary', () => {
+  it('Opens task modal to create a new task for celebration | Anniversary', () => {
     const { getByTestId, queryAllByRole, queryByTestId } = render(
       <ThemeProvider theme={theme}>
         <PartnerCare
@@ -299,7 +299,7 @@ describe('PartnerCare', () => {
     userEvent.click(
       queryAllByRole('button', { hidden: true, name: 'Complete Button' })[2],
     );
-    expect(openTaskDrawer).toHaveBeenCalledWith({
+    expect(openTaskModal).toHaveBeenCalledWith({
       defaultValues: {
         subject: "John and Sarah, Doe's Anniversary",
       },
