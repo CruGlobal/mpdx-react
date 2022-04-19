@@ -176,6 +176,13 @@ const PartnerCare = ({
     openTaskModal({ taskId, showCompleteForm: true });
   };
 
+  const mergedBirthdays = reportsPeopleWithBirthdays?.periods
+    .map((period) => period.people)
+    .flat();
+  const mergedAnniversaries = reportsPeopleWithAnniversaries?.periods
+    .map((period) => period.people)
+    .flat();
+
   return (
     <CardContainer>
       <CardHeader title={t('Partner Care')} />
@@ -333,20 +340,17 @@ const PartnerCare = ({
           )}
           {!loading && (
             <>
-              {(!reportsPeopleWithBirthdays ||
-                (reportsPeopleWithBirthdays.periods[0].people &&
-                  reportsPeopleWithBirthdays.periods[0].people.length === 0)) &&
+              {(!mergedBirthdays ||
+                (mergedBirthdays && mergedBirthdays.length === 0)) &&
               (!reportsPeopleWithAnniversaries ||
-                (reportsPeopleWithAnniversaries.periods[0].people &&
-                  reportsPeopleWithAnniversaries.periods[0].people.length ===
-                    0)) ? (
+                (mergedAnniversaries && mergedAnniversaries.length === 0)) ? (
                 <CardContentContainer data-testid="PartnerCareCelebrationCardContentEmpty">
                   <img src={illustration7} alt="No partner care celebrations" />
                   {t('No celebrations to show.')}
                 </CardContentContainer>
               ) : (
                 <CardList data-testid="PartnerCareCelebrationList">
-                  {reportsPeopleWithBirthdays?.periods[1].people.map(
+                  {mergedBirthdays?.map(
                     (person) =>
                       person.birthdayDay &&
                       person.birthdayMonth && (
@@ -406,7 +410,7 @@ const PartnerCare = ({
                   )}
                   {uniqBy(
                     ({ parentContact: id }) => id,
-                    reportsPeopleWithAnniversaries?.periods[0].people,
+                    mergedAnniversaries,
                   ).map(
                     (person) =>
                       person.anniversaryDay &&
