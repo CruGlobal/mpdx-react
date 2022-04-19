@@ -195,8 +195,8 @@ const PartnerCare = ({
         <Tab
           label={t('Celebrations ({{ totalCount, number }})', {
             totalCount:
-              (reportsPeopleWithBirthdays?.periods[0]?.people?.length || 0) +
-              (reportsPeopleWithAnniversaries?.periods[0]?.people?.length || 0),
+              (mergedAnniversaries?.length || 0) +
+              (mergedBirthdays?.length || 0),
           })}
           data-testid="PartnerCareTabCelebrations"
         />
