@@ -31,8 +31,8 @@ import AnimatedCard from '../../../AnimatedCard';
 import illustration4 from '../../../../images/drawkit/grape/drawkit-grape-pack-illustration-4.svg';
 import illustration7 from '../../../../images/drawkit/grape/drawkit-grape-pack-illustration-7.svg';
 import { GetThisWeekQuery } from '../GetThisWeek.generated';
-import useTaskDrawer from '../../../../hooks/useTaskDrawer';
 import theme from 'src/theme';
+import useTaskModal from 'src/hooks/useTaskModal';
 
 const CardContainer = styled(AnimatedCard)(({ theme }) => ({
   flex: 'flex',
@@ -140,12 +140,12 @@ const PartnerCare = ({
 }: Props): ReactElement => {
   const { t } = useTranslation();
   const [value, setValue] = useState(0);
-  const { openTaskDrawer } = useTaskDrawer();
+  const { openTaskModal } = useTaskModal();
 
   const handleClick = ({
     id: taskId,
   }: GetThisWeekQuery['prayerRequestTasks']['nodes'][0]): void => {
-    openTaskDrawer({ taskId });
+    openTaskModal({ taskId });
   };
 
   const handleChange = (
@@ -160,7 +160,7 @@ const PartnerCare = ({
     person: GetThisWeekQuery['reportsPeopleWithAnniversaries']['periods'][0]['people'][0] &
       GetThisWeekQuery['reportsPeopleWithBirthdays']['periods'][0]['people'][0],
   ) => {
-    openTaskDrawer({
+    openTaskModal({
       defaultValues: {
         subject:
           celebrationType === CelebrationTypeEnum.birthday
@@ -173,7 +173,7 @@ const PartnerCare = ({
   const handleCompleteClick = ({
     id: taskId,
   }: GetThisWeekQuery['prayerRequestTasks']['nodes'][0]): void => {
-    openTaskDrawer({ taskId, showCompleteForm: true });
+    openTaskModal({ taskId, showCompleteForm: true });
   };
 
   return (
@@ -346,7 +346,7 @@ const PartnerCare = ({
                 </CardContentContainer>
               ) : (
                 <CardList data-testid="PartnerCareCelebrationList">
-                  {reportsPeopleWithBirthdays?.periods[0].people.map(
+                  {reportsPeopleWithBirthdays?.periods[1].people.map(
                     (person) =>
                       person.birthdayDay &&
                       person.birthdayMonth && (
