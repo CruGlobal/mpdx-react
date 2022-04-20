@@ -95,7 +95,8 @@ const ContactsPage: React.FC = () => {
 
     const view = userOptions?.userOptions.find(
       (option) => option.key === 'contacts_view',
-    )?.value;
+    )?.value as TableViewModeEnum;
+    setViewMode(view);
     if (view === 'flows' && !contactId?.includes('flows')) {
       setContactFocus(undefined, false, true);
     } else if (view === 'map' && !contactId?.includes('map')) {
@@ -247,6 +248,7 @@ const ContactsPage: React.FC = () => {
     event: React.MouseEvent<HTMLElement>,
     view: string,
   ) => {
+    console.log(view);
     updateOptions(view);
     setContactDetailsOpen(false);
   };
@@ -257,6 +259,7 @@ const ContactsPage: React.FC = () => {
   const [updateUserOptions] = useUpdateUserOptionsMutation();
 
   const updateOptions = async (view: string): Promise<void> => {
+    console.log(view);
     await updateUserOptions({
       variables: {
         key: 'contacts_view',
@@ -381,7 +384,7 @@ const ContactsPage: React.FC = () => {
                       </Hidden>
                     }
                   />
-                  {viewMode !== TableViewModeEnum.Flows ? (
+                  {viewMode === TableViewModeEnum.List ? (
                     <InfiniteList
                       loading={loading}
                       data={data?.contacts?.nodes}
