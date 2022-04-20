@@ -12,7 +12,7 @@ query GetDashboard($accountListId: ID!) {
   }
   contacts(
     accountListId: $accountListId
-    contactsFilter: { pledgeReceived: false, status: PARTNER_FINANCIAL }
+    contactsFilter: { pledgeReceived: FALSE, status: PARTNER_FINANCIAL }
   ) {
     totalCount
   }
