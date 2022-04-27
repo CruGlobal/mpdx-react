@@ -11,6 +11,7 @@ import { AccountCircle, EcoOutlined } from '@material-ui/icons';
 import { useTranslation } from 'react-i18next';
 import { Skeleton } from '@material-ui/lab';
 import { AppealProgress } from '../AppealProgress/AppealProgress';
+import { MonthlyCommitment } from './MonthlyCommitment/MonthlyCommitment';
 import {
   useGetAccountListCoachUsersQuery,
   useGetAccountListUsersQuery,
@@ -278,6 +279,13 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
                 work with coaching.
               */}
               <MonthlyActivitySection accountListId={coachingId} />
+              <Box style={{ margin: theme.spacing(3, 0) }}>
+                <MonthlyCommitment
+                  coachingId={coachingId}
+                  currencyCode={data?.currency}
+                  goal={data?.monthlyGoal ? data.monthlyGoal : 0}
+                />
+              </Box>
             </CoachingItemContainer>
           </>
         )}
