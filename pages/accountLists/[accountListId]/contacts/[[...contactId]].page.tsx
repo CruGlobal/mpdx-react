@@ -248,7 +248,6 @@ const ContactsPage: React.FC = () => {
     event: React.MouseEvent<HTMLElement>,
     view: string,
   ) => {
-    console.log(view);
     updateOptions(view);
     setContactDetailsOpen(false);
   };
