@@ -76,7 +76,7 @@ const MonthlyGoal = ({
               <Button
                 href={`/accountLists/${accountListId}/contacts?filters=${encodeURIComponent(
                   JSON.stringify({
-                    pledgeReceived: ContactFilterPledgeReceivedEnum.False,
+                    pledgeReceived: ContactFilterPledgeReceivedEnum.NotReceived,
                     status: [StatusEnum.PartnerFinancial],
                   }),
                 )}`}
