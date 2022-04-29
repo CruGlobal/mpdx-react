@@ -42,6 +42,7 @@
     "@material-ui/styles": "^4.11.4",
     "@mdi/js": "^6.0.0",
     "@mdi/react": "^1.5.0",
+    "@react-google-maps/api": "^2.10.2",
     "@saeris/apollo-server-vercel": "^1.0.0",
     "@types/luxon": "^1.26.2",
     "@types/react-csv": "^1.1.1",
