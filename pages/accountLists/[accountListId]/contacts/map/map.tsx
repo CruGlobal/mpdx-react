@@ -31,15 +31,6 @@ interface ContactsMapProps {
   ) => void;
 }
 
-interface ContactCardProps {
-  contactId: string;
-  contactName: string;
-  contactAddress: {
-    id: string;
-    street: string;
-  };
-}
-
 interface Coordinates {
   id: string;
   name: string;
@@ -55,7 +46,7 @@ interface Coordinates {
 Geocode.setApiKey(process.env.GOOGLE_GEOCODE_API_KEY);
 
 const mapContainerStyle = {
-  height: '100vh',
+  height: '100%',
   width: '100vw',
 };
 
@@ -69,31 +60,13 @@ const center = {
   lng: -79.3832,
 };
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const ContactCard: React.FC<ContactCardProps> = () => {
-  return (
-    <div>
-      <strong>Contact Name</strong>
-      <p>
-        Address Line 1<br />
-        City State
-        <br />
-        Postal
-        <br />
-        Country
-        <br />
-      </p>
-    </div>
-  );
-};
-
 export const ContactsMap: React.FC<ContactsMapProps> = ({
   onContactSelected,
   selectedFilters,
   searchTerm,
 }) => {
   const accountListId = useAccountListId();
-  const [contactData, setCcc] = useState<Coordinates[]>([]);
+  const [contactData, setContactData] = useState<Coordinates[]>([]);
   const [selected, setSelected] = useState<Coordinates | null>(null);
   const { data, loading, fetchMore } = useContactsQuery({
     variables: {
@@ -146,7 +119,7 @@ export const ContactsMap: React.FC<ContactsMapProps> = ({
         },
       );
     }
-    setCcc(coords);
+    setContactData(coords);
   };
 
   useEffect(() => {
@@ -167,7 +140,7 @@ export const ContactsMap: React.FC<ContactsMapProps> = ({
     // Important! Always set the container height explicitly
     <>
       {!loadError && isLoaded && (
-        <div style={{ height: '100vh', width: '100%' }}>
+        <div style={{ height: 'calc(100vh - 156px)', width: '100%' }}>
           <GoogleMap
             id="map"
             mapContainerStyle={mapContainerStyle}
@@ -186,8 +159,8 @@ export const ContactsMap: React.FC<ContactsMapProps> = ({
                 icon={{
                   url: '/images/pin.png',
                   origin: new window.google.maps.Point(0, 0),
-                  anchor: new window.google.maps.Point(15, 15),
-                  scaledSize: new window.google.maps.Size(30, 30),
+                  anchor: new window.google.maps.Point(15, 48),
+                  scaledSize: new window.google.maps.Size(30, 48),
                 }}
               />
             ))}
