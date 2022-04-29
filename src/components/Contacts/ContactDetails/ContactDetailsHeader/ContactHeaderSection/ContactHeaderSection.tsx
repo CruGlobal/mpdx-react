@@ -10,7 +10,7 @@ interface Props {
 const IconWrap = styled(Box)(({}) => ({
   display: 'flex',
   width: 64,
-  padding: 0,
+  padding: 8,
   justifyContent: 'center',
 }));
 const DetailWrap = styled(Box)(({}) => ({
@@ -25,7 +25,7 @@ export const ContactHeaderSection = ({
   children,
 }: Props): ReactElement => {
   return (
-    <Box display="flex" alignItems="center">
+    <Box display="flex" alignItems="start">
       <IconWrap>{icon}</IconWrap>
       <DetailWrap>{children}</DetailWrap>
     </Box>
