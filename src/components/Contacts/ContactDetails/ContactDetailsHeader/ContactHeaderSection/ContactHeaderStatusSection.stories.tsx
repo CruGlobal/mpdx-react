@@ -11,14 +11,28 @@ import { ContactHeaderStatusSection } from './ContactHeaderStatusSection';
 
 export default {
   title: 'Contacts/ContactDetails/Header/StatusSection',
+  argTypes: {
+    statusType: {
+      options: [
+        StatusEnum.PartnerFinancial,
+        StatusEnum.AppointmentScheduled,
+        StatusEnum.NeverAsk,
+      ],
+      control: { type: 'radio' },
+    },
+  },
 };
 
-export const Default = (): ReactElement => {
+export const Default = ({
+  statusType,
+}: {
+  statusType: StatusEnum;
+}): ReactElement => {
   const contact = gqlMock<ContactDetailsHeaderFragment>(
     ContactDetailsHeaderFragmentDoc,
     {
       mocks: {
-        status: StatusEnum.PartnerFinancial,
+        status: statusType,
         pledgeCurrency: 'USD',
         lastDonation: {
           donationDate: DateTime.now().plus({ month: 5 }).toISO(),
@@ -33,4 +47,8 @@ export const Default = (): ReactElement => {
 
 export const Loading = (): ReactElement => {
   return <ContactHeaderStatusSection loading={true} contact={undefined} />;
+};
+
+Default.args = {
+  statusType: StatusEnum.PartnerFinancial,
 };
