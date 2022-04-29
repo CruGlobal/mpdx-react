@@ -432,7 +432,15 @@ const ContactsPage: React.FC = () => {
                       onContactSelected={setContactFocus}
                     />
                   ) : (
-                    <ContactsMap selectedIds={[]} />
+                    <ContactsMap
+                      selectedIds={[]}
+                      selectedFilters={{
+                        ...activeFilters,
+                        ...starredFilter,
+                      }}
+                      searchTerm={searchTerm}
+                      onContactSelected={setContactFocus}
+                    />
                   )}
                 </>
               }
