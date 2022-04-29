@@ -14,7 +14,7 @@
     "build-storybook": "build-storybook -c .storybook -s ./public",
     "test": "cross-env NODE_ICU_DATA=$(yarn bin node-full-icu-path) jest --silent",
     "test:watch": "cross-env NODE_ICU_DATA=$(yarn bin node-full-icu-path) jest --watch",
-    "localtest": "yarn test --runInBand",
+    "localtest": "yarn test --runInBand --verbose",
     "localtest:watch": "yarn test:watch --runInBand",
     "test:coverage": "cross-env NODE_ICU_DATA=$(yarn bin node-full-icu-path) jest --coverage",
     "chromatic": "chromatic",
