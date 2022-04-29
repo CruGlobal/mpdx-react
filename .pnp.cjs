@@ -76,6 +76,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/axios", "npm:0.14.0"],
             ["@types/css-mediaquery", "npm:0.1.0"],
             ["@types/faker", "npm:6.6.8"],
+            ["@types/google.maps", "npm:3.48.7"],
             ["@types/isomorphic-fetch", "npm:0.0.35"],
             ["@types/jest", "npm:27.0.2"],
             ["@types/lodash", "npm:4.14.168"],
@@ -14308,6 +14309,13 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/@types-google.maps-npm-3.48.6-8f0cfc025b-db9512dfe3.zip/node_modules/@types/google.maps/",
           "packageDependencies": [
             ["@types/google.maps", "npm:3.48.6"]
+          ],
+          "linkType": "HARD",
+        }],
+        ["npm:3.48.7", {
+          "packageLocation": "./.yarn/cache/@types-google.maps-npm-3.48.7-2ef7d5db61-0a3dfca431.zip/node_modules/@types/google.maps/",
+          "packageDependencies": [
+            ["@types/google.maps", "npm:3.48.7"]
           ],
           "linkType": "HARD",
         }]
@@ -29340,6 +29348,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/axios", "npm:0.14.0"],
             ["@types/css-mediaquery", "npm:0.1.0"],
             ["@types/faker", "npm:6.6.8"],
+            ["@types/google.maps", "npm:3.48.7"],
             ["@types/isomorphic-fetch", "npm:0.0.35"],
             ["@types/jest", "npm:27.0.2"],
             ["@types/lodash", "npm:4.14.168"],
