@@ -1,3 +1,4 @@
+import { StatusEnum } from 'graphql/types.generated';
 import { DateTime } from 'luxon';
 import React, { ReactElement } from 'react';
 import { gqlMock } from '../../../../../../__tests__/util/graphqlMocking';
@@ -17,9 +18,12 @@ export const Default = (): ReactElement => {
     ContactDetailsHeaderFragmentDoc,
     {
       mocks: {
+        status: StatusEnum.PartnerFinancial,
+        pledgeCurrency: 'USD',
         lastDonation: {
           donationDate: DateTime.now().plus({ month: 5 }).toISO(),
         },
+        lateAt: DateTime.now().minus({ month: 5 }).toISO(),
       },
     },
   );
