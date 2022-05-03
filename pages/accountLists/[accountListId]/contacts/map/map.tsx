@@ -11,6 +11,7 @@ import { ContactFilterSetInput } from '../../../../../graphql/types.generated';
 import { useContactsQuery } from '../Contacts.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import theme from 'src/theme';
+import Loading from 'src/components/Loading';
 
 const ContactLink = styled(Typography)(({ theme }) => ({
   color: theme.palette.mpdxBlue.main,
@@ -68,6 +69,7 @@ export const ContactsMap: React.FC<ContactsMapProps> = ({
   const accountListId = useAccountListId();
   const [contactData, setContactData] = useState<Coordinates[]>([]);
   const [selected, setSelected] = useState<Coordinates | null>(null);
+  const [loadingAll, setLoadingAll] = useState(true);
   const { data, loading, fetchMore } = useContactsQuery({
     variables: {
       accountListId: accountListId ?? '',
@@ -132,14 +134,15 @@ export const ContactsMap: React.FC<ContactsMapProps> = ({
         });
       } else {
         getCoords();
+        setLoadingAll(false);
       }
     }
   }, [loading]);
 
   return (
-    // Important! Always set the container height explicitly
     <>
-      {!loadError && isLoaded && (
+      {!loadError && isLoaded && !loadingAll ? (
+        // Important! Always set the container height explicitly
         <div style={{ height: 'calc(100vh - 156px)', width: '100%' }}>
           <GoogleMap
             id="map"
@@ -195,6 +198,8 @@ export const ContactsMap: React.FC<ContactsMapProps> = ({
             ) : null}
           </GoogleMap>
         </div>
+      ) : (
+        <Loading loading={loadingAll || contactData.length === 0 || loading} />
       )}
     </>
   );

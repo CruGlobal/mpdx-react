@@ -7,7 +7,7 @@ import { Box, Button, Hidden, styled } from '@material-ui/core';
 import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
 import FormatListBulleted from '@material-ui/icons/FormatListBulleted';
 import ViewColumn from '@material-ui/icons/ViewColumn';
-import LocationSearching from '@material-ui/icons/LocationSearching';
+import Map from '@material-ui/icons/Map';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { Settings } from '@material-ui/icons';
@@ -46,6 +46,9 @@ const BulletedListIcon = styled(FormatListBulleted)(({ theme }) => ({
   color: theme.palette.primary.dark,
 }));
 const ViewColumnIcon = styled(ViewColumn)(({ theme }) => ({
+  color: theme.palette.primary.dark,
+}));
+const MapIcon = styled(Map)(({ theme }) => ({
   color: theme.palette.primary.dark,
 }));
 
@@ -376,7 +379,7 @@ const ContactsPage: React.FC = () => {
                               value={TableViewModeEnum.Map}
                               disabled={viewMode === TableViewModeEnum.Map}
                             >
-                              <LocationSearching />
+                              <MapIcon titleAccess={t('Map View')} />
                             </ToggleButton>
                           </ToggleButtonGroup>
                         </Box>
