@@ -60,7 +60,7 @@ query GetThisWeek(
     contactsFilter: {
       lateAt: { max: $today }
       status: PARTNER_FINANCIAL
-      pledgeReceived: true
+      pledgeReceived: RECEIVED
     }
     sortBy: ACTIVE_STATUS_AND_NAME
   ) {
