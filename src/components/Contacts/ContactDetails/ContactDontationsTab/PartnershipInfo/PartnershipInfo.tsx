@@ -156,12 +156,12 @@ export const PartnershipInfo: React.FC<PartnershipInfoProp> = ({ contact }) => {
           {t('Last Gift Amount')}
         </LabelsAndText>
         <LabelsAndText variant="subtitle1">
-          {contact?.lastDonation?.donationDate
-            ? currencyFormat(
-                contact.lastDonation.amount.amount,
-                contact.lastDonation.amount.currency,
-              )
-            : t('No Gift Available')}
+          {contact &&
+            contact.lastDonation &&
+            currencyFormat(
+              contact.lastDonation.amount.amount,
+              contact.lastDonation.amount.currency,
+            )}
         </LabelsAndText>
       </IconAndTextContainerCenter>
       <IconAndTextContainerCenter>
