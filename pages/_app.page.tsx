@@ -20,6 +20,7 @@ import TaskModalProvider from '../src/components/Task/Modal/TaskModalProvider';
 import { SnackbarUtilsConfigurator } from '../src/components/Snackbar/Snackbar';
 import { GlobalStyles } from '../src/components/GlobalStyles/GlobalStyles';
 import { RouterGuard } from '../src/components/RouterGuard/RouterGuard';
+import HelpscoutBeacon from '../src/components/Helpscout/HelpscoutBeacon';
 
 const handleExitComplete = (): void => {
   if (typeof window !== 'undefined') {
@@ -112,6 +113,7 @@ const App = ({ Component, pageProps, router }: AppProps): ReactElement => {
           </ApolloProvider>
         </SessionProvider>
       </I18nextProvider>
+      <HelpscoutBeacon />
     </>
   );
 };

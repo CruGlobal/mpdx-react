@@ -42,6 +42,17 @@ const Footer = (): ReactElement => {
             </Grid>
             <Grid xs={12} sm="auto" item>
               <Link
+                onClick={() => {
+                  (window as any).Beacon('open', process.env.BEACON_TOKEN);
+                }}
+                className={classes.link}
+                data-testid="help-link"
+              >
+                {t('Help')}
+              </Link>
+            </Grid>
+            <Grid xs={12} sm="auto" item>
+              <Link
                 href="https://get.mpdx.org/privacy-policy/"
                 className={classes.link}
                 data-testid="privacy"
