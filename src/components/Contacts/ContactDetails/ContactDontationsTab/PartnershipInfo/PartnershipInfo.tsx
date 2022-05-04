@@ -67,6 +67,11 @@ const PartnershipEditIcon = styled(CreateIcon)(({ theme }) => ({
   color: theme.palette.cruGrayMedium.main,
 }));
 
+const ClearIcon = styled(Clear)(({ theme }) => ({
+  color: 'transparent',
+  margin: theme.spacing(1),
+}));
+
 interface PartnershipInfoProp {
   contact: ContactDonorAccountsFragment | null;
 }
@@ -138,7 +143,7 @@ export const PartnershipInfo: React.FC<PartnershipInfoProp> = ({ contact }) => {
           <DateRangeOutlined color="disabled" style={{ margin: 8 }} />
         </IconContainer>
         <LabelsAndText variant="subtitle1" color="textSecondary">
-          {t('Last Gift')}
+          {t('Last Gift Date')}
         </LabelsAndText>
         <LabelsAndText variant="subtitle1">
           {contact?.lastDonation?.donationDate
@@ -150,7 +155,34 @@ export const PartnershipInfo: React.FC<PartnershipInfoProp> = ({ contact }) => {
       </IconAndTextContainerCenter>
       <IconAndTextContainerCenter>
         <IconContainer>
-          <Clear style={{ color: 'transparent', margin: 8 }} />
+          <ClearIcon />
+        </IconContainer>
+        <LabelsAndText variant="subtitle1" color="textSecondary">
+          {t('Last Gift Amount')}
+        </LabelsAndText>
+        <LabelsAndText variant="subtitle1">
+          {contact &&
+            contact.lastDonation &&
+            currencyFormat(
+              contact.lastDonation.amount.amount,
+              contact.lastDonation.amount.currency,
+            )}
+        </LabelsAndText>
+      </IconAndTextContainerCenter>
+      <IconAndTextContainerCenter>
+        <IconContainer>
+          <ClearIcon />
+        </IconContainer>
+        <LabelsAndText variant="subtitle1" color="textSecondary">
+          {t('Method')}
+        </LabelsAndText>
+        <LabelsAndText variant="subtitle1">
+          {contact?.lastDonation?.paymentMethod}
+        </LabelsAndText>
+      </IconAndTextContainerCenter>
+      <IconAndTextContainerCenter>
+        <IconContainer>
+          <ClearIcon />
         </IconContainer>
         <LabelsAndText variant="subtitle1" color="textSecondary">
           {t('Lifetime Gifts')}
@@ -164,7 +196,7 @@ export const PartnershipInfo: React.FC<PartnershipInfoProp> = ({ contact }) => {
       </IconAndTextContainerCenter>
       <IconAndTextContainerCenter>
         <IconContainer>
-          <Clear style={{ color: 'transparent', margin: 8 }} />
+          <ClearIcon />
         </IconContainer>
         <LabelsAndText variant="subtitle1" color="textSecondary">
           {t('Referred by ')}
@@ -179,7 +211,7 @@ export const PartnershipInfo: React.FC<PartnershipInfoProp> = ({ contact }) => {
       </IconAndTextContainerCenter>
       <IconAndTextContainerCenter>
         <IconContainer>
-          <Clear style={{ color: 'transparent', margin: 8 }} />
+          <ClearIcon />
         </IconContainer>
         <LabelsAndText variant="subtitle1" color="textSecondary">
           {t('Send Appeals')}
@@ -190,7 +222,7 @@ export const PartnershipInfo: React.FC<PartnershipInfoProp> = ({ contact }) => {
       </IconAndTextContainerCenter>
       <IconAndTextContainerCenter>
         <IconContainer>
-          <Clear style={{ color: 'transparent', margin: 8 }} />
+          <ClearIcon />
         </IconContainer>
         <LabelsAndText variant="subtitle1" color="textSecondary">
           {t('Next Increase Ask')}
