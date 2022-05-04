@@ -138,7 +138,7 @@ export const PartnershipInfo: React.FC<PartnershipInfoProp> = ({ contact }) => {
           <DateRangeOutlined color="disabled" style={{ margin: 8 }} />
         </IconContainer>
         <LabelsAndText variant="subtitle1" color="textSecondary">
-          {t('Last Gift')}
+          {t('Last Gift Date')}
         </LabelsAndText>
         <LabelsAndText variant="subtitle1">
           {contact?.lastDonation?.donationDate
@@ -146,6 +146,33 @@ export const PartnershipInfo: React.FC<PartnershipInfoProp> = ({ contact }) => {
                 contact?.lastDonation.donationDate,
               ).toLocaleString()
             : t('No Date Available')}
+        </LabelsAndText>
+      </IconAndTextContainerCenter>
+      <IconAndTextContainerCenter>
+        <IconContainer>
+          <Clear style={{ color: 'transparent', margin: 8 }} />
+        </IconContainer>
+        <LabelsAndText variant="subtitle1" color="textSecondary">
+          {t('Last Gift Amount')}
+        </LabelsAndText>
+        <LabelsAndText variant="subtitle1">
+          {contact?.lastDonation?.donationDate
+            ? currencyFormat(
+                contact.lastDonation.amount.amount,
+                contact.lastDonation.amount.currency,
+              )
+            : t('No Gift Available')}
+        </LabelsAndText>
+      </IconAndTextContainerCenter>
+      <IconAndTextContainerCenter>
+        <IconContainer>
+          <Clear style={{ color: 'transparent', margin: 8 }} />
+        </IconContainer>
+        <LabelsAndText variant="subtitle1" color="textSecondary">
+          {t('Method')}
+        </LabelsAndText>
+        <LabelsAndText variant="subtitle1">
+          {contact?.lastDonation?.paymentMethod}
         </LabelsAndText>
       </IconAndTextContainerCenter>
       <IconAndTextContainerCenter>
