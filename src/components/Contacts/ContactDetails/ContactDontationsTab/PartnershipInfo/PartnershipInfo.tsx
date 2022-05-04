@@ -67,6 +67,11 @@ const PartnershipEditIcon = styled(CreateIcon)(({ theme }) => ({
   color: theme.palette.cruGrayMedium.main,
 }));
 
+const ClearIcon = styled(Clear)(({ theme }) => ({
+  color: 'transparent',
+  margin: theme.spacing(1),
+}));
+
 interface PartnershipInfoProp {
   contact: ContactDonorAccountsFragment | null;
 }
@@ -150,7 +155,7 @@ export const PartnershipInfo: React.FC<PartnershipInfoProp> = ({ contact }) => {
       </IconAndTextContainerCenter>
       <IconAndTextContainerCenter>
         <IconContainer>
-          <Clear style={{ color: 'transparent', margin: 8 }} />
+          <ClearIcon />
         </IconContainer>
         <LabelsAndText variant="subtitle1" color="textSecondary">
           {t('Last Gift Amount')}
@@ -166,7 +171,7 @@ export const PartnershipInfo: React.FC<PartnershipInfoProp> = ({ contact }) => {
       </IconAndTextContainerCenter>
       <IconAndTextContainerCenter>
         <IconContainer>
-          <Clear style={{ color: 'transparent', margin: 8 }} />
+          <ClearIcon />
         </IconContainer>
         <LabelsAndText variant="subtitle1" color="textSecondary">
           {t('Method')}
@@ -177,7 +182,7 @@ export const PartnershipInfo: React.FC<PartnershipInfoProp> = ({ contact }) => {
       </IconAndTextContainerCenter>
       <IconAndTextContainerCenter>
         <IconContainer>
-          <Clear style={{ color: 'transparent', margin: 8 }} />
+          <ClearIcon />
         </IconContainer>
         <LabelsAndText variant="subtitle1" color="textSecondary">
           {t('Lifetime Gifts')}
@@ -191,7 +196,7 @@ export const PartnershipInfo: React.FC<PartnershipInfoProp> = ({ contact }) => {
       </IconAndTextContainerCenter>
       <IconAndTextContainerCenter>
         <IconContainer>
-          <Clear style={{ color: 'transparent', margin: 8 }} />
+          <ClearIcon />
         </IconContainer>
         <LabelsAndText variant="subtitle1" color="textSecondary">
           {t('Referred by ')}
@@ -206,7 +211,7 @@ export const PartnershipInfo: React.FC<PartnershipInfoProp> = ({ contact }) => {
       </IconAndTextContainerCenter>
       <IconAndTextContainerCenter>
         <IconContainer>
-          <Clear style={{ color: 'transparent', margin: 8 }} />
+          <ClearIcon />
         </IconContainer>
         <LabelsAndText variant="subtitle1" color="textSecondary">
           {t('Send Appeals')}
@@ -217,7 +222,7 @@ export const PartnershipInfo: React.FC<PartnershipInfoProp> = ({ contact }) => {
       </IconAndTextContainerCenter>
       <IconAndTextContainerCenter>
         <IconContainer>
-          <Clear style={{ color: 'transparent', margin: 8 }} />
+          <ClearIcon />
         </IconContainer>
         <LabelsAndText variant="subtitle1" color="textSecondary">
           {t('Next Increase Ask')}
