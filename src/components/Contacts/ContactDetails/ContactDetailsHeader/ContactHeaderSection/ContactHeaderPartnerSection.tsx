@@ -1,4 +1,4 @@
-import { Box, styled, Typography } from '@material-ui/core';
+import { styled, Typography } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -29,7 +29,7 @@ export const ContactHeaderPartnerSection: React.FC<Props> = ({
       </ContactHeaderSection>
     );
   } else {
-    if (contact != null && contact.contactDonorAccounts.nodes.length > 0) {
+    if (contact !== null && (contact?.contactDonorAccounts.nodes.length ?? 0) > 0) {
       return (
         <ContactHeaderSection>
           <Typography variant="h5">{t('Partner Account')}</Typography>

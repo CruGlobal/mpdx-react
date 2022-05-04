@@ -1,9 +1,9 @@
-import { DateTime } from 'luxon';
 import React, { ReactElement } from 'react';
-import { gqlMock } from '__tests__/util/graphqlMocking';
 import { ContactDetailsHeaderFragmentDoc } from '../ContactDetailsHeader.generated';
 import { ContactHeaderPartnerSection } from './ContactHeaderPartnerSection';
 import { ContactHeaderStatusFragment } from './ContactHeaderStatus.generated';
+import { gqlMock } from '__tests__/util/graphqlMocking';
+import { DateTime } from 'luxon';
 
 export default {
   title: 'Contacts/ContactDetails/Header/PartnerSection',
