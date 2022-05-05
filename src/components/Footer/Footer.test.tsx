@@ -1,10 +1,28 @@
 import React from 'react';
 import { ThemeProvider } from '@material-ui/core';
+import userEvent from '@testing-library/user-event';
 import { render } from '../../../__tests__/util/testingLibraryReactMock';
 import theme from '../../theme';
 import Footer from '.';
 
 describe('Footer', () => {
+  it('contains the Helpscout beacon', () => {
+    const { getByTestId } = render(
+      <ThemeProvider theme={theme}>
+        <Footer />
+      </ThemeProvider>,
+    );
+
+    const helpLink = getByTestId('help-link');
+    expect(helpLink.textContent).toEqual('Help');
+
+    const beacon = jest.fn();
+    (window as any).Beacon = beacon;
+    userEvent.click(helpLink);
+
+    expect(beacon).toHaveBeenCalled();
+  });
+
   it('contains privacy link', () => {
     const { getByTestId } = render(
       <ThemeProvider theme={theme}>

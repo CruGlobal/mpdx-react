@@ -1,6 +1,5 @@
 import React, { ReactElement, ReactNode, useState } from 'react';
 import { Hidden, styled } from '@material-ui/core';
-import AddFab from './AddFab';
 import TopBar from './TopBar/TopBar';
 import BottomBar from './BottomBar';
 import { useAccountListId } from 'src/hooks/useAccountListId';
@@ -66,7 +65,6 @@ const Primary = ({ children, navBar }: Props): ReactElement => {
       <Hidden mdUp>
         <BottomBar />
       </Hidden>
-      <AddFab />
     </>
   );
 };

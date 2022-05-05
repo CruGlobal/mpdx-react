@@ -36,7 +36,6 @@ import {
   StatusEnum,
 } from '../../../../../../../graphql/types.generated';
 import { useApiConstants } from '../../../../../Constants/UseApiConstants';
-import { currencyFormat } from '../../../../../../lib/intlFormat';
 import {
   useUpdateContactPartnershipMutation,
   useGetDataForPartnershipInfoModalQuery,
@@ -91,16 +90,6 @@ export const EditPartnershipInfoModal: React.FC<EditPartnershipInfoModalProps> =
     { loading: updating },
   ] = useUpdateContactPartnershipMutation();
   const pledgeCurrencies = constants?.pledgeCurrencies;
-  const method = contact.lastDonation
-    ? contact.lastDonation.paymentMethod
-    : t('None');
-
-  const lastGift = contact.lastDonation
-    ? `${currencyFormat(
-        contact.lastDonation.amount.amount,
-        contact.lastDonation.amount.currency,
-      )}`
-    : '';
 
   const contactPartnershipSchema: yup.SchemaOf<
     Pick<
@@ -569,34 +558,6 @@ export const EditPartnershipInfoModal: React.FC<EditPartnershipInfoModalProps> =
                   }
                   label={t('Send Appeals')}
                 />
-              </ContactInputWrapper>
-              <ContactInputWrapper>
-                <FormControl fullWidth>
-                  <TextField
-                    label={t('Method')}
-                    value={method}
-                    aria-readonly
-                    fullWidth
-                    InputProps={{
-                      readOnly: true,
-                      'aria-label': t('Method'),
-                    }}
-                  />
-                </FormControl>
-              </ContactInputWrapper>
-              <ContactInputWrapper>
-                <FormControl fullWidth>
-                  <TextField
-                    label={t('Last Gift')}
-                    value={lastGift}
-                    aria-readonly
-                    fullWidth
-                    InputProps={{
-                      readOnly: true,
-                      'aria-label': t('Last Gift'),
-                    }}
-                  />
-                </FormControl>
               </ContactInputWrapper>
             </DialogContent>
             <DialogActions>
