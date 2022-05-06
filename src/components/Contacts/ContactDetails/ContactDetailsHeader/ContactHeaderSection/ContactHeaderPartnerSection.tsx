@@ -29,7 +29,10 @@ export const ContactHeaderPartnerSection: React.FC<Props> = ({
       </ContactHeaderSection>
     );
   } else {
-    if (contact !== null && (contact?.contactDonorAccounts.nodes.length ?? 0) > 0) {
+    if (
+      contact !== null &&
+      (contact?.contactDonorAccounts.nodes.length ?? 0) > 0
+    ) {
       return (
         <ContactHeaderSection>
           <Typography variant="h5">{t('Partner Account')}</Typography>
