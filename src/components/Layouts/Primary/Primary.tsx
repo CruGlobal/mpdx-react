@@ -1,7 +1,6 @@
 import React, { ReactElement, ReactNode, useState } from 'react';
-import { Hidden, styled } from '@material-ui/core';
+import { styled } from '@material-ui/core';
 import TopBar from './TopBar/TopBar';
-import BottomBar from './BottomBar';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { NavBar } from 'src/components/Layouts/Primary/NavBar/NavBar';
 
@@ -62,9 +61,6 @@ const Primary = ({ children, navBar }: Props): ReactElement => {
           </ContentContainer>
         </Wrapper>
       </RootContainer>
-      <Hidden mdUp>
-        <BottomBar />
-      </Hidden>
     </>
   );
 };
