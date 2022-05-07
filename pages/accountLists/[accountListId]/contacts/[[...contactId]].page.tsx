@@ -204,35 +204,37 @@ const ContactsPage: React.FC = () => {
   //#endregion
 
   //#region User Actions
-  const setContactFocus = useCallback(
-    (id?: string, openDetails = true, flows = false, map = false) => {
-      const {
-        accountListId: _accountListId,
-        contactId: _contactId,
-        ...filteredQuery
-      } = query;
-      push(
-        id
-          ? {
-              pathname: `/accountLists/${accountListId}/contacts${
-                flows ? '/flows' : map ? '/map' : ''
-              }/${id}`,
-              query: filteredQuery,
-            }
-          : {
-              pathname: `/accountLists/${accountListId}/contacts/${
-                flows ? 'flows/' : map ? '/map' : ''
-              }`,
-              query: filteredQuery,
-            },
-      );
-      if (openDetails) {
-        id && setContactDetailsId(id);
-        setContactDetailsOpen(!!id);
-      }
-    },
-    [],
-  );
+  const setContactFocus = (
+    id?: string,
+    openDetails = true,
+    flows = false,
+    map = false,
+  ) => {
+    const {
+      accountListId: _accountListId,
+      contactId: _contactId,
+      ...filteredQuery
+    } = query;
+    push(
+      id
+        ? {
+            pathname: `/accountLists/${accountListId}/contacts${
+              flows ? '/flows' : map ? '/map' : ''
+            }/${id}`,
+            query: filteredQuery,
+          }
+        : {
+            pathname: `/accountLists/${accountListId}/contacts/${
+              flows ? 'flows/' : map ? '/map' : ''
+            }`,
+            query: filteredQuery,
+          },
+    );
+    if (openDetails) {
+      id && setContactDetailsId(id);
+      setContactDetailsOpen(!!id);
+    }
+  };
   const setSearchTerm = useCallback(
     debounce((searchTerm: string) => {
       const { searchTerm: _, ...oldQuery } = query;
@@ -450,7 +452,6 @@ const ContactsPage: React.FC = () => {
                     />
                   ) : (
                     <ContactsMap
-                      loadingAll={loadingAll}
                       data={data?.contacts?.nodes.map((contact) => {
                         if (!contact.primaryAddress?.geo) {
                           return;

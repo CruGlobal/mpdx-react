@@ -29,7 +29,6 @@ const MapLoading = styled(CircularProgress)(() => ({
 }));
 
 interface ContactsMapProps {
-  loadingAll: boolean;
   data: (Coordinates | undefined)[] | undefined;
   onContactSelected: (
     contactId: string,
@@ -69,7 +68,6 @@ const center = {
 export const ContactsMap: React.FC<ContactsMapProps> = ({
   onContactSelected,
   data,
-  loadingAll,
 }) => {
   const [selected, setSelected] = useState<Coordinates | null>(null);
 
