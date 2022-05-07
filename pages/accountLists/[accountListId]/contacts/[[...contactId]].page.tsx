@@ -140,7 +140,6 @@ const ContactsPage: React.FC = () => {
     }
   }, [isReady, contactId]);
 
-  const [loadingAll, setLoadingAll] = useState(true);
   useEffect(() => {
     utilizeViewOption();
     if (!loading && viewMode === TableViewModeEnum.Map) {
@@ -150,11 +149,7 @@ const ContactsPage: React.FC = () => {
             after: data.contacts?.pageInfo.endCursor,
           },
         });
-      } else {
-        setLoadingAll(false);
       }
-    } else {
-      setLoadingAll(true);
     }
   }, [loading]);
 
