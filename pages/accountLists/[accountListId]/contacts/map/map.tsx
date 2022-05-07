@@ -12,7 +12,6 @@ import {
   styled,
   Typography,
 } from '@material-ui/core';
-import { Contact } from '../../../../../graphql/types.generated';
 import theme from 'src/theme';
 
 const ContactLink = styled(Typography)(({ theme }) => ({
@@ -31,24 +30,25 @@ const MapLoading = styled(CircularProgress)(() => ({
 
 interface ContactsMapProps {
   loadingAll: boolean;
-  data: Contact[] | undefined;
+  data: (Coordinates | undefined)[] | undefined;
   onContactSelected: (
     contactId: string,
     openDetails: boolean,
     flows: boolean,
+    map: boolean,
   ) => void;
 }
 
 interface Coordinates {
-  id: string;
-  name: string;
-  avatar: string;
-  lat: number;
-  lng: number;
-  street: string;
-  city: string;
-  country: string;
-  postal: string;
+  id: string | undefined | null;
+  name: string | undefined | null;
+  avatar: string | undefined | null;
+  lat: number | undefined | null;
+  lng: number | undefined | null;
+  street: string | undefined | null;
+  city: string | undefined | null;
+  country: string | undefined | null;
+  postal: string | undefined | null;
 }
 
 const mapContainerStyle = {
@@ -79,9 +79,7 @@ export const ContactsMap: React.FC<ContactsMapProps> = ({
 
   return (
     <>
-      {loadError || !isLoaded || loadingAll ? (
-        <MapLoading />
-      ) : (
+      {!loadError && isLoaded ? (
         // Important! Always set the container height explicitly
         <div style={{ height: 'calc(100vh - 156px)', width: '100%' }}>
           <GoogleMap
@@ -92,26 +90,27 @@ export const ContactsMap: React.FC<ContactsMapProps> = ({
           >
             {data &&
               data.map((contact) => {
-                if (!contact.primaryAddress?.geo) {
+                if (!contact) {
                   return;
                 }
-                const coords = contact.primaryAddress?.geo?.split(',');
-                const [lat, lng] = coords;
                 return (
                   <Marker
-                    key={contact.id}
-                    position={{ lat: Number(lat), lng: Number(lng) }}
+                    key={contact?.id}
+                    position={{
+                      lat: contact?.lat || 0,
+                      lng: contact?.lng || 0,
+                    }}
                     onClick={() => {
                       setSelected({
-                        name: contact.name,
-                        lat: Number(lat),
-                        lng: Number(lng),
-                        avatar: contact.avatar,
-                        id: contact.id,
-                        street: contact.primaryAddress?.street || '',
-                        city: contact.primaryAddress?.city || '',
-                        country: contact.primaryAddress?.country || '',
-                        postal: contact.primaryAddress?.postalCode || '',
+                        name: contact?.name,
+                        lat: contact?.lat,
+                        lng: contact?.lng,
+                        avatar: contact?.avatar,
+                        id: contact?.id,
+                        street: contact?.street || '',
+                        city: contact?.city || '',
+                        country: contact?.country || '',
+                        postal: contact?.postal || '',
                       });
                     }}
                     icon={{
@@ -126,7 +125,7 @@ export const ContactsMap: React.FC<ContactsMapProps> = ({
 
             {selected ? (
               <InfoWindow
-                position={{ lat: selected.lat, lng: selected.lng }}
+                position={{ lat: selected.lat || 0, lng: selected.lng || 0 }}
                 onCloseClick={() => {
                   setSelected(null);
                 }}
@@ -145,7 +144,10 @@ export const ContactsMap: React.FC<ContactsMapProps> = ({
                   <Typography variant="body2">{selected.postal}</Typography>
                   <Typography variant="body2">{selected.country}</Typography>
                   <ContactLink
-                    onClick={() => onContactSelected(selected.id, true, true)}
+                    onClick={() =>
+                      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                      onContactSelected(selected.id!, true, false, true)
+                    }
                   >
                     Show Contact
                   </ContactLink>
@@ -154,6 +156,8 @@ export const ContactsMap: React.FC<ContactsMapProps> = ({
             ) : null}
           </GoogleMap>
         </div>
+      ) : (
+        <MapLoading />
       )}
     </>
   );
