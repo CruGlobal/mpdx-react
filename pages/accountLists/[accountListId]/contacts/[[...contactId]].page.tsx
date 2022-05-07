@@ -127,7 +127,10 @@ const ContactsPage: React.FC = () => {
 
   useEffect(() => {
     if (isReady && contactId) {
-      if (contactId[contactId.length - 1] !== 'flows') {
+      if (
+        contactId[contactId.length - 1] !== 'flows' &&
+        contactId[contactId.length - 1] !== 'map'
+      ) {
         setContactDetailsId(contactId[contactId.length - 1]);
         setContactDetailsOpen(true);
       }
@@ -201,37 +204,35 @@ const ContactsPage: React.FC = () => {
   //#endregion
 
   //#region User Actions
-  const setContactFocus = (
-    id?: string,
-    openDetails = true,
-    flows = false,
-    map = false,
-  ) => {
-    const {
-      accountListId: _accountListId,
-      contactId: _contactId,
-      ...filteredQuery
-    } = query;
-    push(
-      id
-        ? {
-            pathname: `/accountLists/${accountListId}/contacts${
-              flows ? '/flows' : map ? '/map' : ''
-            }/${id}`,
-            query: filteredQuery,
-          }
-        : {
-            pathname: `/accountLists/${accountListId}/contacts/${
-              flows ? 'flows/' : ''
-            }`,
-            query: filteredQuery,
-          },
-    );
-    if (openDetails) {
-      id && setContactDetailsId(id);
-      setContactDetailsOpen(!!id);
-    }
-  };
+  const setContactFocus = useCallback(
+    (id?: string, openDetails = true, flows = false, map = false) => {
+      const {
+        accountListId: _accountListId,
+        contactId: _contactId,
+        ...filteredQuery
+      } = query;
+      push(
+        id
+          ? {
+              pathname: `/accountLists/${accountListId}/contacts${
+                flows ? '/flows' : map ? '/map' : ''
+              }/${id}`,
+              query: filteredQuery,
+            }
+          : {
+              pathname: `/accountLists/${accountListId}/contacts/${
+                flows ? 'flows/' : map ? '/map' : ''
+              }`,
+              query: filteredQuery,
+            },
+      );
+      if (openDetails) {
+        id && setContactDetailsId(id);
+        setContactDetailsOpen(!!id);
+      }
+    },
+    [],
+  );
   const setSearchTerm = useCallback(
     debounce((searchTerm: string) => {
       const { searchTerm: _, ...oldQuery } = query;
@@ -275,7 +276,6 @@ const ContactsPage: React.FC = () => {
   const [updateUserOptions] = useUpdateUserOptionsMutation();
 
   const updateOptions = async (view: string): Promise<void> => {
-    console.log(view);
     await updateUserOptions({
       variables: {
         key: 'contacts_view',
@@ -451,7 +451,24 @@ const ContactsPage: React.FC = () => {
                   ) : (
                     <ContactsMap
                       loadingAll={loadingAll}
-                      data={data?.contacts?.nodes}
+                      data={data?.contacts?.nodes.map((contact) => {
+                        if (!contact.primaryAddress?.geo) {
+                          return;
+                        }
+                        const coords = contact.primaryAddress?.geo?.split(',');
+                        const [lat, lng] = coords;
+                        return {
+                          id: contact.id,
+                          name: contact.name,
+                          avatar: contact.avatar,
+                          lat: Number(lat),
+                          lng: Number(lng),
+                          street: contact.primaryAddress.street,
+                          city: contact.primaryAddress.city,
+                          country: contact.primaryAddress.country,
+                          postal: contact.primaryAddress.postalCode,
+                        };
+                      })}
                       onContactSelected={setContactFocus}
                     />
                   )}
