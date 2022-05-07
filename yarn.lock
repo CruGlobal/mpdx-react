@@ -20689,7 +20689,6 @@ fsevents@~2.3.2:
     react-dnd: ^14.0.4
     react-dnd-html5-backend: ^14.0.2
     react-dom: 17.0.2
-    react-geocode: ^0.2.3
     react-i18next: ^11.8.11
     react-to-print: ^2.12.6
     react-virtuoso: ^2.3.4
@@ -23375,15 +23374,6 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"react-geocode@npm:^0.2.3":
-  version: 0.2.3
-  resolution: "react-geocode@npm:0.2.3"
-  dependencies:
-    regenerator-runtime: ^0.13.3
-  checksum: b49ab3125c24ff02b7b3f6146e50b0fc3584bf25d20b8f3021584c51c3843e32542dd8f221701fdfc524e61869862b36121f5784b2414c52cfae6129ccfa6f47
-  languageName: node
-  linkType: hard
-
 "react-helmet-async@npm:^1.0.2":
   version: 1.0.7
   resolution: "react-helmet-async@npm:1.0.7"
@@ -24021,13 +24011,6 @@ fsevents@~2.3.2:
   version: 1.4.1
   resolution: "regenerate@npm:1.4.1"
   checksum: a7e8f78b5431ab53ee779c95fe85cd7fad9e411ce7ee0c009ef1cb9e8a3f21aa4d55ade76bcb6c41363a500c45d9298b9ec3451a450a65616a4c1829cdfe84cc
-  languageName: node
-  linkType: hard
-
-"regenerator-runtime@npm:^0.13.3":
-  version: 0.13.9
-  resolution: "regenerator-runtime@npm:0.13.9"
-  checksum: 65ed455fe5afd799e2897baf691ca21c2772e1a969d19bb0c4695757c2d96249eb74ee3553ea34a91062b2a676beedf630b4c1551cc6299afb937be1426ec55e
   languageName: node
   linkType: hard
 

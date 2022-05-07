@@ -155,7 +155,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["react-dnd", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:14.0.4"],
             ["react-dnd-html5-backend", "npm:14.0.2"],
             ["react-dom", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:17.0.2"],
-            ["react-geocode", "npm:0.2.3"],
             ["react-i18next", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:11.8.11"],
             ["react-to-print", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:2.12.6"],
             ["react-virtuoso", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:2.3.4"],
@@ -29427,7 +29426,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["react-dnd", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:14.0.4"],
             ["react-dnd-html5-backend", "npm:14.0.2"],
             ["react-dom", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:17.0.2"],
-            ["react-geocode", "npm:0.2.3"],
             ["react-i18next", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:11.8.11"],
             ["react-to-print", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:2.12.6"],
             ["react-virtuoso", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:2.3.4"],
@@ -32627,16 +32625,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD",
         }]
       ]],
-      ["react-geocode", [
-        ["npm:0.2.3", {
-          "packageLocation": "./.yarn/cache/react-geocode-npm-0.2.3-db1bd68104-b49ab3125c.zip/node_modules/react-geocode/",
-          "packageDependencies": [
-            ["react-geocode", "npm:0.2.3"],
-            ["regenerator-runtime", "npm:0.13.9"]
-          ],
-          "linkType": "HARD",
-        }]
-      ]],
       ["react-helmet-async", [
         ["npm:1.0.7", {
           "packageLocation": "./.yarn/cache/react-helmet-async-npm-1.0.7-88583cc6d5-4dd074aa25.zip/node_modules/react-helmet-async/",
@@ -33602,13 +33590,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/regenerator-runtime-npm-0.13.7-41bcbe64ea-52b66e6669.zip/node_modules/regenerator-runtime/",
           "packageDependencies": [
             ["regenerator-runtime", "npm:0.13.7"]
-          ],
-          "linkType": "HARD",
-        }],
-        ["npm:0.13.9", {
-          "packageLocation": "./.yarn/cache/regenerator-runtime-npm-0.13.9-6d02340eec-65ed455fe5.zip/node_modules/regenerator-runtime/",
-          "packageDependencies": [
-            ["regenerator-runtime", "npm:0.13.9"]
           ],
           "linkType": "HARD",
         }]
