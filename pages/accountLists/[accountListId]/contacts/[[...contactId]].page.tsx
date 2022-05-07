@@ -137,8 +137,22 @@ const ContactsPage: React.FC = () => {
     }
   }, [isReady, contactId]);
 
+  const [loadingAll, setLoadingAll] = useState(true);
   useEffect(() => {
     utilizeViewOption();
+    if (!loading && viewMode === TableViewModeEnum.Map) {
+      if (data?.contacts.pageInfo.hasNextPage) {
+        fetchMore({
+          variables: {
+            after: data.contacts?.pageInfo.endCursor,
+          },
+        });
+      } else {
+        setLoadingAll(false);
+      }
+    } else {
+      setLoadingAll(true);
+    }
   }, [loading]);
 
   useEffect(() => {
@@ -436,12 +450,8 @@ const ContactsPage: React.FC = () => {
                     />
                   ) : (
                     <ContactsMap
-                      selectedIds={[]}
-                      selectedFilters={{
-                        ...activeFilters,
-                        ...starredFilter,
-                      }}
-                      searchTerm={searchTerm}
+                      loadingAll={loadingAll}
+                      data={data?.contacts?.nodes}
                       onContactSelected={setContactFocus}
                     />
                   )}

@@ -1,17 +1,19 @@
-import React, { useEffect, useState, useRef } from 'react';
-import Geocode from 'react-geocode';
+import React, { useState } from 'react';
 import {
   GoogleMap,
   useLoadScript,
   Marker,
   InfoWindow,
 } from '@react-google-maps/api';
-import { Avatar, Box, styled, Typography } from '@material-ui/core';
-import { ContactFilterSetInput } from '../../../../../graphql/types.generated';
-import { useContactsQuery } from '../Contacts.generated';
-import { useAccountListId } from 'src/hooks/useAccountListId';
+import {
+  Avatar,
+  Box,
+  CircularProgress,
+  styled,
+  Typography,
+} from '@material-ui/core';
+import { Contact } from '../../../../../graphql/types.generated';
 import theme from 'src/theme';
-import Loading from 'src/components/Loading';
 
 const ContactLink = styled(Typography)(({ theme }) => ({
   color: theme.palette.mpdxBlue.main,
@@ -21,10 +23,15 @@ const ContactLink = styled(Typography)(({ theme }) => ({
   },
 }));
 
+const MapLoading = styled(CircularProgress)(() => ({
+  position: 'fixed',
+  top: '50%',
+  left: '50%',
+}));
+
 interface ContactsMapProps {
-  selectedIds: string[];
-  selectedFilters: ContactFilterSetInput;
-  searchTerm?: string | string[];
+  loadingAll: boolean;
+  data: Contact[] | undefined;
   onContactSelected: (
     contactId: string,
     openDetails: boolean,
@@ -44,8 +51,6 @@ interface Coordinates {
   postal: string;
 }
 
-Geocode.setApiKey(process.env.GOOGLE_GEOCODE_API_KEY);
-
 const mapContainerStyle = {
   height: '100%',
   width: '100vw',
@@ -63,110 +68,61 @@ const center = {
 
 export const ContactsMap: React.FC<ContactsMapProps> = ({
   onContactSelected,
-  selectedFilters,
-  searchTerm,
+  data,
+  loadingAll,
 }) => {
-  const accountListId = useAccountListId();
-  const [contactData, setContactData] = useState<Coordinates[]>([]);
   const [selected, setSelected] = useState<Coordinates | null>(null);
-  const [loadingAll, setLoadingAll] = useState(true);
-  const { data, loading, fetchMore } = useContactsQuery({
-    variables: {
-      accountListId: accountListId ?? '',
-      contactsFilters: {
-        ...selectedFilters,
-        wildcardSearch: searchTerm as string,
-      },
-    },
-    skip: !accountListId,
-  });
-
-  const mapRef = useRef();
-  const onMapLoad = React.useCallback((map) => {
-    mapRef.current = map;
-  }, []);
 
   const { isLoaded, loadError } = useLoadScript({
     googleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY || '',
   });
 
-  const getCoords = async () => {
-    const coords: Coordinates[] = [];
-    if (!data) {
-      return;
-    }
-    for (const contact of data?.contacts.nodes) {
-      if (!contact.primaryAddress?.street) {
-        continue;
-      }
-      await Geocode.fromAddress(`${contact.primaryAddress.street}`).then(
-        (response: {
-          results: { geometry: { location: { lat: any; lng: any } } }[];
-        }) => {
-          const { lat, lng } = response.results[0].geometry.location;
-          coords.push({
-            id: contact.id,
-            name: contact.name,
-            avatar: contact.avatar,
-            lat,
-            lng,
-            street: contact.primaryAddress?.street || '',
-            city: contact.primaryAddress?.city || '',
-            country: contact.primaryAddress?.country || '',
-            postal: contact.primaryAddress?.postalCode || '',
-          });
-        },
-        (error: any) => {
-          console.error(error);
-        },
-      );
-    }
-    setContactData(coords);
-  };
-
-  useEffect(() => {
-    if (!loading) {
-      if (data?.contacts.pageInfo.hasNextPage) {
-        fetchMore({
-          variables: {
-            after: data.contacts?.pageInfo.endCursor,
-          },
-        });
-      } else {
-        getCoords();
-        setLoadingAll(false);
-      }
-    }
-  }, [loading]);
-
   return (
     <>
-      {!loadError && isLoaded && !loadingAll ? (
+      {loadError || !isLoaded || loadingAll ? (
+        <MapLoading />
+      ) : (
         // Important! Always set the container height explicitly
         <div style={{ height: 'calc(100vh - 156px)', width: '100%' }}>
           <GoogleMap
-            id="map"
             mapContainerStyle={mapContainerStyle}
             zoom={8}
             center={center}
-            onLoad={onMapLoad}
             options={options}
           >
-            {contactData.map((coord) => (
-              <Marker
-                key={`${coord.lat}-${coord.lng}`}
-                position={{ lat: coord.lat, lng: coord.lng }}
-                onClick={() => {
-                  setSelected(coord);
-                }}
-                icon={{
-                  url: '/images/pin.png',
-                  origin: new window.google.maps.Point(0, 0),
-                  anchor: new window.google.maps.Point(15, 48),
-                  scaledSize: new window.google.maps.Size(30, 48),
-                }}
-              />
-            ))}
+            {data &&
+              data.map((contact) => {
+                if (!contact.primaryAddress?.geo) {
+                  return;
+                }
+                const coords = contact.primaryAddress?.geo?.split(',');
+                const [lat, lng] = coords;
+                return (
+                  <Marker
+                    key={contact.id}
+                    position={{ lat: Number(lat), lng: Number(lng) }}
+                    onClick={() => {
+                      setSelected({
+                        name: contact.name,
+                        lat: Number(lat),
+                        lng: Number(lng),
+                        avatar: contact.avatar,
+                        id: contact.id,
+                        street: contact.primaryAddress?.street || '',
+                        city: contact.primaryAddress?.city || '',
+                        country: contact.primaryAddress?.country || '',
+                        postal: contact.primaryAddress?.postalCode || '',
+                      });
+                    }}
+                    icon={{
+                      url: '/images/pin.png',
+                      origin: new window.google.maps.Point(0, 0),
+                      anchor: new window.google.maps.Point(15, 48),
+                      scaledSize: new window.google.maps.Size(30, 48),
+                    }}
+                  />
+                );
+              })}
 
             {selected ? (
               <InfoWindow
@@ -198,8 +154,6 @@ export const ContactsMap: React.FC<ContactsMapProps> = ({
             ) : null}
           </GoogleMap>
         </div>
-      ) : (
-        <Loading loading={loadingAll || contactData.length === 0 || loading} />
       )}
     </>
   );
