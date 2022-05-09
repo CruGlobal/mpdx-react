@@ -1,0 +1,9 @@
+.BeaconFabButtonFrame {
+  right: 20px !important;
+  bottom: 10px !important;
+}
+.BeaconContainer {
+  right: 20px !important;
+  bottom: 90px !important;
+  z-index: 1350 !important;
+}
