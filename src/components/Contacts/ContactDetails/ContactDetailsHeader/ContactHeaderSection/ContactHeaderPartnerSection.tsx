@@ -38,12 +38,15 @@ export const ContactHeaderPartnerSection: React.FC<Props> = ({
           <Typography variant="h5">{t('Partner Account')}</Typography>
           {contact?.contactDonorAccounts.nodes.map((donorAccount) => {
             return (
-              <Typography variant="caption">
-                {donorAccount.donorAccount.displayName +
-                  ' (' +
-                  donorAccount.donorAccount.accountNumber +
-                  ')   '}
-              </Typography>
+              <>
+                <span key={donorAccount.id} />
+                <Typography variant="caption">
+                  {donorAccount.donorAccount.displayName +
+                    ' (' +
+                    donorAccount.donorAccount.accountNumber +
+                    ')   '}
+                </Typography>
+              </>
             );
           })}
         </ContactHeaderSection>
