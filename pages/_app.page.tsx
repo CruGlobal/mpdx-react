@@ -11,6 +11,7 @@ import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import LuxonUtils from '@date-io/luxon';
 import { SnackbarProvider } from 'notistack';
 import theme from '../src/theme';
+import './helpscout.css';
 import client from '../src/lib/client';
 import PrimaryLayout from '../src/components/Layouts/Primary';
 import Loading from '../src/components/Loading';
@@ -20,6 +21,7 @@ import TaskModalProvider from '../src/components/Task/Modal/TaskModalProvider';
 import { SnackbarUtilsConfigurator } from '../src/components/Snackbar/Snackbar';
 import { GlobalStyles } from '../src/components/GlobalStyles/GlobalStyles';
 import { RouterGuard } from '../src/components/RouterGuard/RouterGuard';
+import HelpscoutBeacon from '../src/components/Helpscout/HelpscoutBeacon';
 
 const handleExitComplete = (): void => {
   if (typeof window !== 'undefined') {
@@ -112,6 +114,7 @@ const App = ({ Component, pageProps, router }: AppProps): ReactElement => {
           </ApolloProvider>
         </SessionProvider>
       </I18nextProvider>
+      <HelpscoutBeacon />
     </>
   );
 };
