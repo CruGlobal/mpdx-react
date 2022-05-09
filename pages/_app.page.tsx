@@ -11,6 +11,7 @@ import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import LuxonUtils from '@date-io/luxon';
 import { SnackbarProvider } from 'notistack';
 import theme from '../src/theme';
+import './helpscout.css';
 import client from '../src/lib/client';
 import PrimaryLayout from '../src/components/Layouts/Primary';
 import Loading from '../src/components/Loading';
