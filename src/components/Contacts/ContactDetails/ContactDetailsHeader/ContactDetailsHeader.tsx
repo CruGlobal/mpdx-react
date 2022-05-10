@@ -12,6 +12,7 @@ import { ContactHeaderPhoneSection } from './ContactHeaderSection/ContactHeaderP
 import { ContactHeaderEmailSection } from './ContactHeaderSection/ContactHeaderEmailSection';
 import { ContactHeaderStatusSection } from './ContactHeaderSection/ContactHeaderStatusSection';
 import { ContactDetailsMoreAcitions } from './ContactDetailsMoreActions/ContactDetailsMoreActions';
+import { ContactHeaderPartnerSection } from './ContactHeaderSection/ContactHeaderPartnerSection';
 
 interface Props {
   accountListId: string;
@@ -123,6 +124,10 @@ export const ContactDetailsHeader: React.FC<Props> = ({
           />
         </Box>
         <Box flex={1}>
+          <ContactHeaderPartnerSection
+            loading={loading}
+            contact={data?.contact}
+          />
           <ContactHeaderStatusSection
             loading={loading}
             contact={data?.contact}
