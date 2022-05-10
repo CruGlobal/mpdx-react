@@ -92,6 +92,15 @@ export const GetThisWeekDefaultMocks = (): MockedResponse[] => {
             { ...personWithBirthday, id: 'person_2' },
           ],
         },
+        {
+          people: [],
+        },
+        {
+          people: [],
+        },
+        {
+          people: [],
+        },
       ],
     },
     reportsPeopleWithAnniversaries: {
@@ -101,6 +110,15 @@ export const GetThisWeekDefaultMocks = (): MockedResponse[] => {
             { ...personWithAnniversary, id: 'person_3' },
             { ...personWithAnniversary, id: 'person_4' },
           ],
+        },
+        {
+          people: [],
+        },
+        {
+          people: [],
+        },
+        {
+          people: [],
         },
       ],
     },
@@ -129,7 +147,7 @@ export const GetThisWeekDefaultMocks = (): MockedResponse[] => {
           accountListId: 'abc',
           endOfDay: endOfDay.toISO(),
           today: endOfDay.toISODate(),
-          twoWeeksFromNow: endOfDay.plus({ weeks: 2 }).toISODate(),
+          threeWeeksFromNow: endOfDay.plus({ weeks: 3 }).toISODate(),
           twoWeeksAgo: endOfDay.minus({ weeks: 2 }).toISODate(),
         },
       },
@@ -164,7 +182,7 @@ export const GetThisWeekEmptyMocks = (): MockedResponse[] => {
           accountListId: 'abc',
           endOfDay: endOfDay.toISO(),
           today: endOfDay.toISODate(),
-          twoWeeksFromNow: endOfDay.plus({ weeks: 2 }).toISODate(),
+          threeWeeksFromNow: endOfDay.plus({ weeks: 3 }).toISODate(),
           twoWeeksAgo: endOfDay.minus({ weeks: 2 }).toISODate(),
         },
       },
