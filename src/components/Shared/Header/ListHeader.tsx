@@ -19,11 +19,6 @@ import {
   ContactFilterSetInput,
   TaskFilterSetInput,
 } from '../../../../graphql/types.generated';
-import { ContactsMap } from '../../../../pages/accountLists/[accountListId]/contacts/map/map';
-import Modal from '../../common/Modal/Modal';
-import { useMassSelection } from '../../../hooks/useMassSelection';
-import { useContactsQuery } from '../../../../pages/accountLists/[accountListId]/contacts/Contacts.generated';
-import { useAccountListId } from '../../../hooks/useAccountListId';
 import { StarFilterButton } from './StarFilterButton/StarFilterButton';
 
 const HeaderWrap = styled(Box)(({ theme }) => ({
@@ -143,26 +138,6 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
     setAnchorEl(null);
   };
 
-  const [contactIds, setContactIds] = useState<string[]>([]);
-  const [mapModalOpen, setMapModalOpen] = useState(false);
-  const accountListId = useAccountListId();
-  const { data, loading, fetchMore } = useContactsQuery({
-    variables: {
-      accountListId: accountListId ?? '',
-      contactsFilters: {
-        ...activeFilters,
-        wildcardSearch: searchTerm as string,
-        ...starredFilter,
-      },
-    },
-    skip: !accountListId,
-  });
-  const { ids } = useMassSelection(data?.contacts?.totalCount ?? 0);
-  const mapContactsClick = () => {
-    setContactIds(ids);
-    setMapModalOpen(true);
-  };
-
   return (
     <HeaderWrap>
       <Hidden xsUp={contactDetailsOpen}>
@@ -235,17 +210,6 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
               </MenuItem>
               <MenuItem>
                 <ListItemText>{t('Hide Contacts')}</ListItemText>
-              </MenuItem>
-
-              <Modal
-                isOpen={mapModalOpen}
-                title={t('Map of Contacts')}
-                handleClose={() => setMapModalOpen(false)}
-              >
-                <ContactsMap selectedIds={contactIds} />
-              </Modal>
-              <MenuItem divider onClick={mapContactsClick}>
-                <ListItemText>{t('Map Contacts')}</ListItemText>
               </MenuItem>
 
               <MenuItem>
