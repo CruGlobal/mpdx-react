@@ -168,7 +168,7 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
       />
 
       <ItemsShowingText>
-        {contactsView !== TableViewModeEnum.Flows
+        {contactsView === TableViewModeEnum.List
           ? t('Showing {{count}}', { count: totalItems })
           : ''}
       </ItemsShowingText>
