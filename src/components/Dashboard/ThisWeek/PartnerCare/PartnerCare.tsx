@@ -31,8 +31,8 @@ import AnimatedCard from '../../../AnimatedCard';
 import illustration4 from '../../../../images/drawkit/grape/drawkit-grape-pack-illustration-4.svg';
 import illustration7 from '../../../../images/drawkit/grape/drawkit-grape-pack-illustration-7.svg';
 import { GetThisWeekQuery } from '../GetThisWeek.generated';
-import useTaskDrawer from '../../../../hooks/useTaskDrawer';
 import theme from 'src/theme';
+import useTaskModal from 'src/hooks/useTaskModal';
 
 const CardContainer = styled(AnimatedCard)(({ theme }) => ({
   flex: 'flex',
@@ -140,12 +140,12 @@ const PartnerCare = ({
 }: Props): ReactElement => {
   const { t } = useTranslation();
   const [value, setValue] = useState(0);
-  const { openTaskDrawer } = useTaskDrawer();
+  const { openTaskModal } = useTaskModal();
 
   const handleClick = ({
     id: taskId,
   }: GetThisWeekQuery['prayerRequestTasks']['nodes'][0]): void => {
-    openTaskDrawer({ taskId });
+    openTaskModal({ taskId });
   };
 
   const handleChange = (
@@ -160,7 +160,7 @@ const PartnerCare = ({
     person: GetThisWeekQuery['reportsPeopleWithAnniversaries']['periods'][0]['people'][0] &
       GetThisWeekQuery['reportsPeopleWithBirthdays']['periods'][0]['people'][0],
   ) => {
-    openTaskDrawer({
+    openTaskModal({
       defaultValues: {
         subject:
           celebrationType === CelebrationTypeEnum.birthday
@@ -173,8 +173,15 @@ const PartnerCare = ({
   const handleCompleteClick = ({
     id: taskId,
   }: GetThisWeekQuery['prayerRequestTasks']['nodes'][0]): void => {
-    openTaskDrawer({ taskId, showCompleteForm: true });
+    openTaskModal({ taskId, showCompleteForm: true });
   };
+
+  const mergedBirthdays = reportsPeopleWithBirthdays?.periods
+    .map((period) => period.people)
+    .flat();
+  const mergedAnniversaries = reportsPeopleWithAnniversaries?.periods
+    .map((period) => period.people)
+    .flat();
 
   return (
     <CardContainer>
@@ -195,8 +202,8 @@ const PartnerCare = ({
         <Tab
           label={t('Celebrations ({{ totalCount, number }})', {
             totalCount:
-              (reportsPeopleWithBirthdays?.periods[0]?.people?.length || 0) +
-              (reportsPeopleWithAnniversaries?.periods[0]?.people?.length || 0),
+              (mergedAnniversaries?.length || 0) +
+              (mergedBirthdays?.length || 0),
           })}
           data-testid="PartnerCareTabCelebrations"
         />
@@ -333,20 +340,17 @@ const PartnerCare = ({
           )}
           {!loading && (
             <>
-              {(!reportsPeopleWithBirthdays ||
-                (reportsPeopleWithBirthdays.periods[0].people &&
-                  reportsPeopleWithBirthdays.periods[0].people.length === 0)) &&
+              {(!mergedBirthdays ||
+                (mergedBirthdays && mergedBirthdays.length === 0)) &&
               (!reportsPeopleWithAnniversaries ||
-                (reportsPeopleWithAnniversaries.periods[0].people &&
-                  reportsPeopleWithAnniversaries.periods[0].people.length ===
-                    0)) ? (
+                (mergedAnniversaries && mergedAnniversaries.length === 0)) ? (
                 <CardContentContainer data-testid="PartnerCareCelebrationCardContentEmpty">
                   <img src={illustration7} alt="No partner care celebrations" />
                   {t('No celebrations to show.')}
                 </CardContentContainer>
               ) : (
                 <CardList data-testid="PartnerCareCelebrationList">
-                  {reportsPeopleWithBirthdays?.periods[0].people.map(
+                  {mergedBirthdays?.map(
                     (person) =>
                       person.birthdayDay &&
                       person.birthdayMonth && (
@@ -406,7 +410,7 @@ const PartnerCare = ({
                   )}
                   {uniqBy(
                     ({ parentContact: id }) => id,
-                    reportsPeopleWithAnniversaries?.periods[0].people,
+                    mergedAnniversaries,
                   ).map(
                     (person) =>
                       person.anniversaryDay &&

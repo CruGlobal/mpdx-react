@@ -53,6 +53,7 @@ import {
 import { getAccountListDonorAccounts } from './Schema/AccountListDonorAccounts/dataHandler';
 import { getAccountListCoachUsers } from './Schema/AccountListCoachUser/dataHandler';
 import { getAccountListCoaches } from './Schema/AccountListCoaches/dataHandler';
+import { getReportsPledgeHistories } from './Schema/reports/pledgeHistories/dataHandler';
 
 class MpdxRestApi extends RESTDataSource {
   constructor() {
@@ -145,6 +146,13 @@ class MpdxRestApi extends RESTDataSource {
     );
 
     return getAppointmentResults(data);
+  }
+
+  async getReportPldegeHistories(accountListId: string) {
+    const { data } = await this.get(
+      `reports/pledge_histories?filter%5Baccount_list_id%5D=${accountListId}`,
+    );
+    return getReportsPledgeHistories(data);
   }
 
   async getTaskAnalytics(accountListId: string) {

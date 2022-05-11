@@ -14,16 +14,22 @@ import {
   Divider,
   InputAdornment,
   Typography,
+  Tooltip,
 } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { Autocomplete } from '@material-ui/lab';
-
+import InfoIcon from '@material-ui/icons/InfoOutlined';
 import { DatePicker, TimePicker } from '@material-ui/pickers';
 import { Formik } from 'formik';
 import * as yup from 'yup';
 import { useSnackbar } from 'notistack';
 import { DateTime } from 'luxon';
-import { CalendarToday, Schedule } from '@material-ui/icons';
+import {
+  CalendarToday,
+  MobileFriendly,
+  Schedule,
+  QueryBuilder,
+} from '@material-ui/icons';
 import { v4 as uuidv4 } from 'uuid';
 import _ from 'lodash';
 import debounce from 'lodash/fp/debounce';
@@ -577,52 +583,41 @@ const TaskModalForm = ({
                   />
                 </Grid>
                 <Grid item>
-                  <Typography>Notifications</Typography>
+                  <Tooltip
+                    title={
+                      <Typography>
+                        {t('If blank you will not be notified')}
+                      </Typography>
+                    }
+                  >
+                    <Typography style={{ display: 'flex' }}>
+                      Notifications <InfoIcon style={{ marginLeft: '5px' }} />{' '}
+                    </Typography>
+                  </Tooltip>
                   <Grid container spacing={2}>
                     <Grid xs={4} item>
                       <FormControl fullWidth>
-                        <InputLabel id="notificationType">
+                        <InputLabel
+                          style={{ display: 'flex', alignItems: 'center' }}
+                          id="notificationType"
+                        >
+                          <MobileFriendly fontSize="small" />
                           {t('Type')}
                         </InputLabel>
-                        <Select
-                          labelId="notificationType"
-                          value={notificationType}
-                          onChange={handleChange('notificationType')}
+                        <Tooltip
+                          title={
+                            <Typography>
+                              {t('How the notification will be sent')}
+                            </Typography>
+                          }
                         >
-                          <MenuItem value={undefined}>{t('None')}</MenuItem>
-                          {Object.values(NotificationTypeEnum).map((val) => (
-                            <MenuItem key={val} value={val}>
-                              {t(val) /* manually added to translation file */}
-                            </MenuItem>
-                          ))}
-                        </Select>
-                      </FormControl>
-                    </Grid>
-                    <Grid xs={3} item>
-                      <TextField
-                        label={t('Period')}
-                        fullWidth
-                        value={notificationTimeBefore}
-                        onChange={handleChange('notificationTimeBefore')}
-                        inputProps={{
-                          'aria-label': 'Period',
-                          type: 'number',
-                        }}
-                      />
-                    </Grid>
-                    <Grid xs={5} item>
-                      <FormControl fullWidth>
-                        <InputLabel id="notificationTimeUnit">
-                          {t('Unit')}
-                        </InputLabel>
-                        <Select
-                          labelId="notificationTimeUnit"
-                          value={notificationTimeUnit}
-                          onChange={handleChange('notificationTimeUnit')}
-                        >
-                          <MenuItem value={undefined}>{t('None')}</MenuItem>
-                          {Object.values(NotificationTimeUnitEnum).map(
-                            (val) => (
+                          <Select
+                            labelId="notificationType"
+                            value={notificationType}
+                            onChange={handleChange('notificationType')}
+                          >
+                            <MenuItem value={undefined}>{t('None')}</MenuItem>
+                            {Object.values(NotificationTypeEnum).map((val) => (
                               <MenuItem key={val} value={val}>
                                 {
                                   t(
@@ -630,9 +625,73 @@ const TaskModalForm = ({
                                   ) /* manually added to translation file */
                                 }
                               </MenuItem>
-                            ),
-                          )}
-                        </Select>
+                            ))}
+                          </Select>
+                        </Tooltip>
+                      </FormControl>
+                    </Grid>
+                    <Grid xs={3} item>
+                      <Tooltip
+                        title={
+                          <Typography>
+                            {t('Amount of time before notification')}
+                          </Typography>
+                        }
+                      >
+                        <TextField
+                          label={
+                            <Typography
+                              style={{ display: 'flex', alignItems: 'center' }}
+                            >
+                              <QueryBuilder fontSize="small" /> {t(' Time')}
+                            </Typography>
+                          }
+                          fullWidth
+                          value={notificationTimeBefore}
+                          onChange={handleChange('notificationTimeBefore')}
+                          inputProps={{
+                            'aria-label': 'Time',
+                            type: 'number',
+                            min: 0,
+                          }}
+                        />
+                      </Tooltip>
+                    </Grid>
+                    <Grid xs={5} item>
+                      <FormControl fullWidth>
+                        <InputLabel id="notificationTimeUnit">
+                          <Typography
+                            style={{ display: 'flex', alignItems: 'center' }}
+                          >
+                            <QueryBuilder fontSize="small" /> {t(' Unit')}
+                          </Typography>
+                        </InputLabel>
+                        <Tooltip
+                          title={
+                            <Typography>
+                              {t('Days, hours, or minutes')}
+                            </Typography>
+                          }
+                        >
+                          <Select
+                            labelId="notificationTimeUnit"
+                            value={notificationTimeUnit}
+                            onChange={handleChange('notificationTimeUnit')}
+                          >
+                            <MenuItem value={undefined}>{t('None')}</MenuItem>
+                            {Object.values(NotificationTimeUnitEnum).map(
+                              (val) => (
+                                <MenuItem key={val} value={val}>
+                                  {
+                                    t(
+                                      val,
+                                    ) /* manually added to translation file */
+                                  }
+                                </MenuItem>
+                              ),
+                            )}
+                          </Select>
+                        </Tooltip>
                       </FormControl>
                     </Grid>
                   </Grid>
