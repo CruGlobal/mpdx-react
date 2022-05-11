@@ -60,9 +60,10 @@ const options = {
   zoomControl: true,
 };
 
+// TODO: Determine how default center
 const center = {
-  lat: 43.6532,
-  lng: -79.3832,
+  lat: 44.967243,
+  lng: -103.771556,
 };
 
 export const ContactsMap: React.FC<ContactsMapProps> = ({
@@ -82,7 +83,7 @@ export const ContactsMap: React.FC<ContactsMapProps> = ({
         <div style={{ height: 'calc(100vh - 156px)', width: '100%' }}>
           <GoogleMap
             mapContainerStyle={mapContainerStyle}
-            zoom={8}
+            zoom={5}
             center={center}
             options={options}
           >
