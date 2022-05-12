@@ -41,10 +41,7 @@ export const ContactHeaderPartnerSection: React.FC<Props> = ({
               <>
                 <span key={donorAccount.id} />
                 <Typography variant="caption">
-                  {donorAccount.donorAccount.displayName +
-                    ' (' +
-                    donorAccount.donorAccount.accountNumber +
-                    ')   '}
+                  {donorAccount.donorAccount.displayName}
                 </Typography>
               </>
             );
