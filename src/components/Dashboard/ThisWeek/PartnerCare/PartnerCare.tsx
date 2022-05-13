@@ -20,12 +20,15 @@ import CakeIcon from '@material-ui/icons/Cake';
 import FavoriteIcon from '@material-ui/icons/Favorite';
 import { Skeleton } from '@material-ui/lab';
 import { motion } from 'framer-motion';
-import uniqBy from 'lodash/fp/uniqBy';
 import { useTranslation } from 'react-i18next';
 import Link from 'next/link';
 import Brightness1Outlined from '@material-ui/icons/Brightness1Outlined';
 import DoneIcon from '@material-ui/icons/Done';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
+import {
+  Contact,
+  PersonWithParentContact,
+} from '../../../../../graphql/types.generated';
 import { dayMonthFormat } from '../../../../lib/intlFormat';
 import AnimatedCard from '../../../AnimatedCard';
 import illustration4 from '../../../../images/drawkit/grape/drawkit-grape-pack-illustration-4.svg';
@@ -176,12 +179,58 @@ const PartnerCare = ({
     openTaskModal({ taskId, showCompleteForm: true });
   };
 
-  const mergedBirthdays = reportsPeopleWithBirthdays?.periods
-    .map((period) => period.people)
-    .flat();
-  const mergedAnniversaries = reportsPeopleWithAnniversaries?.periods
-    .map((period) => period.people)
-    .flat();
+  const mergedBirthdays =
+    reportsPeopleWithBirthdays?.periods.map((period) => period.people).flat() ||
+    [];
+  const mergedAnniversaries =
+    reportsPeopleWithAnniversaries?.periods
+      .map((period) => period.people)
+      .flat() || [];
+  const celebrations: (Pick<
+    PersonWithParentContact,
+    | 'id'
+    | 'birthdayDay'
+    | 'birthdayMonth'
+    | 'firstName'
+    | 'lastName'
+    | 'anniversaryMonth'
+    | 'anniversaryDay'
+  > & {
+    parentContact: Pick<Contact, 'id' | 'name'>;
+  })[] = mergedAnniversaries
+    .concat(mergedBirthdays)
+    .sort(
+      (
+        a: Pick<
+          PersonWithParentContact,
+          | 'id'
+          | 'anniversaryDay'
+          | 'anniversaryMonth'
+          | 'birthdayDay'
+          | 'birthdayMonth'
+        >,
+        b: Pick<
+          PersonWithParentContact,
+          | 'id'
+          | 'anniversaryDay'
+          | 'anniversaryMonth'
+          | 'birthdayDay'
+          | 'birthdayMonth'
+        >,
+      ) => {
+        const month1 = a.birthdayMonth || a.anniversaryMonth || 0;
+        const month2 = b.birthdayMonth || b.anniversaryMonth || 0;
+        const day1 = a.birthdayDay || a.anniversaryDay || 0;
+        const day2 = b.birthdayDay || b.anniversaryDay || 0;
+
+        if (month1 === month2) {
+          return day1 - day2;
+        }
+        return month1 - month2;
+      },
+    );
+
+  console.log(celebrations);
 
   return (
     <CardContainer>
@@ -340,33 +389,36 @@ const PartnerCare = ({
           )}
           {!loading && (
             <>
-              {(!mergedBirthdays ||
-                (mergedBirthdays && mergedBirthdays.length === 0)) &&
-              (!reportsPeopleWithAnniversaries ||
-                (mergedAnniversaries && mergedAnniversaries.length === 0)) ? (
+              {!celebrations || (celebrations && celebrations.length === 0) ? (
                 <CardContentContainer data-testid="PartnerCareCelebrationCardContentEmpty">
                   <img src={illustration7} alt="No partner care celebrations" />
                   {t('No celebrations to show.')}
                 </CardContentContainer>
               ) : (
                 <CardList data-testid="PartnerCareCelebrationList">
-                  {mergedBirthdays?.map(
-                    (person) =>
-                      person.birthdayDay &&
-                      person.birthdayMonth && (
+                  {celebrations?.map(
+                    (person, index) =>
+                      (person.birthdayDay || person.anniversaryDay) &&
+                      (person.birthdayMonth || person.anniversaryMonth) && (
                         <ListItem
                           key={person.id}
                           button
-                          data-testid={`PartnerCareBirthdayListItem-${person.id}`}
+                          data-testid={`CelebrationItem-${index}`}
                         >
                           <ListItemIcon>
-                            <CakeIcon />
+                            {person.birthdayDay ? (
+                              <CakeIcon />
+                            ) : (
+                              <FavoriteIcon />
+                            )}
                           </ListItemIcon>
                           <ListItemText
                             disableTypography={true}
                             primary={
                               <Typography variant="body1">
-                                {person.firstName} {person.lastName}
+                                {person.birthdayDay
+                                  ? `${person.firstName} ${person.lastName}`
+                                  : person.parentContact.name}
                               </Typography>
                             }
                             secondary={
@@ -381,10 +433,15 @@ const PartnerCare = ({
                                     variant="body2"
                                     color="textSecondary"
                                   >
-                                    {dayMonthFormat(
-                                      person.birthdayDay,
-                                      person.birthdayMonth,
-                                    )}
+                                    {person.birthdayDay
+                                      ? dayMonthFormat(
+                                          person.birthdayDay,
+                                          person.birthdayMonth || 0,
+                                        )
+                                      : dayMonthFormat(
+                                          person.anniversaryDay || 0,
+                                          person.anniversaryMonth || 0,
+                                        )}
                                   </Typography>
                                 </Box>
                               </Box>
@@ -396,68 +453,9 @@ const PartnerCare = ({
                               aria-label="Complete Button"
                               onClick={() =>
                                 handleCreateClick(
-                                  CelebrationTypeEnum.birthday,
-                                  person,
-                                )
-                              }
-                            >
-                              <Brightness1Outlined name="Circle Icon" />
-                              <AddHoverIcon name="Add Icon" />
-                            </CompleteButton>
-                          </ListItemSecondaryAction>
-                        </ListItem>
-                      ),
-                  )}
-                  {uniqBy(
-                    ({ parentContact: id }) => id,
-                    mergedAnniversaries,
-                  ).map(
-                    (person) =>
-                      person.anniversaryDay &&
-                      person.anniversaryMonth && (
-                        <ListItem
-                          key={person.id}
-                          data-testid={`PartnerCareAnniversaryListItem-${person.id}`}
-                          button
-                        >
-                          <ListItemIcon>
-                            <FavoriteIcon />
-                          </ListItemIcon>
-                          <ListItemText
-                            disableTypography={true}
-                            primary={
-                              <Typography variant="body1">
-                                {person.parentContact.name}
-                              </Typography>
-                            }
-                            secondary={
-                              <Box style={{ whiteSpace: 'nowrap' }}>
-                                <Box
-                                  component="div"
-                                  textOverflow="ellipsis"
-                                  overflow="hidden"
-                                >
-                                  <Typography
-                                    component="span"
-                                    variant="body2"
-                                    color="textSecondary"
-                                  >
-                                    {dayMonthFormat(
-                                      person.anniversaryDay,
-                                      person.anniversaryMonth,
-                                    )}
-                                  </Typography>
-                                </Box>
-                              </Box>
-                            }
-                          />
-                          <ListItemSecondaryAction>
-                            <CompleteButton
-                              role="button"
-                              aria-label="Complete Button"
-                              onClick={() =>
-                                handleCreateClick(
-                                  CelebrationTypeEnum.anniversary,
+                                  person.birthdayDay
+                                    ? CelebrationTypeEnum.birthday
+                                    : CelebrationTypeEnum.anniversary,
                                   person,
                                 )
                               }
