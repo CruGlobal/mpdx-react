@@ -207,18 +207,16 @@ describe('PartnerCare', () => {
       queryByTestId('PartnerCareCelebrationCardContentEmpty'),
     ).not.toBeInTheDocument();
     expect(getByTestId('PartnerCareCelebrationList')).toBeInTheDocument();
-    expect(
-      getByTestId('PartnerCareBirthdayListItem-person_1').textContent,
-    ).toEqual('John DoeJan 1');
-    expect(
-      getByTestId('PartnerCareBirthdayListItem-person_2').textContent,
-    ).toEqual('John DoeJan 1');
-    expect(
-      getByTestId('PartnerCareAnniversaryListItem-person_3').textContent,
-    ).toEqual('John and Sarah, DoeOct 5');
-    expect(
-      queryByTestId('PartnerCareAnniversaryListItem-person_4'),
-    ).not.toBeInTheDocument();
+    expect(getByTestId('CelebrationItem-0').textContent).toEqual(
+      'John DoeJan 1',
+    );
+    expect(getByTestId('CelebrationItem-1').textContent).toEqual(
+      'John DoeJan 1',
+    );
+    expect(getByTestId('CelebrationItem-2').textContent).toEqual(
+      'John and Sarah, DoeOct 5',
+    );
+    expect(queryByTestId('CelebrationItem-3')).toBeInTheDocument();
   });
 
   it('Opens complete task form for prayer request', () => {
@@ -260,12 +258,12 @@ describe('PartnerCare', () => {
     const CelebrationsTab = getByTestId('PartnerCareTabCelebrations');
     expect(CelebrationsTab.textContent).toEqual('Celebrations (4)');
     fireEvent.click(CelebrationsTab);
-    expect(
-      getByTestId('PartnerCareBirthdayListItem-person_1').textContent,
-    ).toEqual('John DoeJan 1');
-    expect(
-      getByTestId('PartnerCareBirthdayListItem-person_2').textContent,
-    ).toEqual('John DoeJan 1');
+    expect(getByTestId('CelebrationItem-0').textContent).toEqual(
+      'John DoeJan 1',
+    );
+    expect(getByTestId('CelebrationItem-1').textContent).toEqual(
+      'John DoeJan 1',
+    );
     userEvent.click(
       queryAllByRole('button', { hidden: true, name: 'Complete Button' })[0],
     );
@@ -290,12 +288,10 @@ describe('PartnerCare', () => {
     const CelebrationsTab = getByTestId('PartnerCareTabCelebrations');
     expect(CelebrationsTab.textContent).toEqual('Celebrations (4)');
     fireEvent.click(CelebrationsTab);
-    expect(
-      getByTestId('PartnerCareAnniversaryListItem-person_3').textContent,
-    ).toEqual('John and Sarah, DoeOct 5');
-    expect(
-      queryByTestId('PartnerCareAnniversaryListItem-person_4'),
-    ).not.toBeInTheDocument();
+    expect(getByTestId('CelebrationItem-2').textContent).toEqual(
+      'John and Sarah, DoeOct 5',
+    );
+    expect(queryByTestId('CelebrationItem-3')).toBeInTheDocument();
     userEvent.click(
       queryAllByRole('button', { hidden: true, name: 'Complete Button' })[2],
     );
