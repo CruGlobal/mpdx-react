@@ -37,7 +37,9 @@ import useTaskModal from 'src/hooks/useTaskModal';
 const CardContainer = styled(AnimatedCard)(({ theme }) => ({
   flex: 'flex',
   flexDirection: 'column',
-  height: '322px',
+  height: 'auto',
+  minHeight: '322px',
+  maxBlockSize: '400',
   [theme.breakpoints.down('xs')]: {
     height: 'auto',
   },
