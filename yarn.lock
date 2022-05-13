@@ -16831,12 +16831,12 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"husky@npm:^7.0.2":
-  version: 7.0.2
-  resolution: "husky@npm:7.0.2"
+"husky@npm:>=6":
+  version: 8.0.1
+  resolution: "husky@npm:8.0.1"
   bin:
     husky: lib/bin.js
-  checksum: 2ccfe6ddc51dc05ae8ea1e2fbb893344e93a813e00c595d6b5f5e704b7b998d6b0e2adda7c57f99b5e46a60dc07c7d860269a2ea91661c6bacef0eca8e0b8e96
+  checksum: 943a73a13d0201318fd30e83d299bb81d866bd245b69e6277804c3b462638dc1921694cb94c2b8c920a4a187060f7d6058d3365152865406352e934c5fff70dc
   languageName: node
   linkType: hard
 
@@ -19301,9 +19301,9 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"lint-staged@npm:^10.5.4":
-  version: 10.5.4
-  resolution: "lint-staged@npm:10.5.4"
+"lint-staged@npm:>=10":
+  version: 12.4.1
+  resolution: "lint-staged@npm:12.4.1"
   dependencies:
     chalk: ^4.1.0
     cli-truncate: ^2.1.0
@@ -20541,7 +20541,7 @@ fsevents@~2.3.2:
     graphql: ^15.5.3
     graphql-ergonomock: ^1.2.0
     graphql-tag: ^2.12.5
-    husky: ^7.0.2
+    husky: ">=6"
     i18next: ^20.1.0
     i18next-browser-languagedetector: ^6.1.0
     i18next-http-backend: ^1.2.1
@@ -20553,7 +20553,7 @@ fsevents@~2.3.2:
     jest: ^26.6.3
     jest-environment-jsdom-sixteen: ^1.0.3
     jest-transform-graphql: ^2.1.0
-    lint-staged: ^10.5.4
+    lint-staged: ">=10"
     lit-html: ^1.3.0
     lodash: ^4.17.20
     luxon: ^1.26.0
