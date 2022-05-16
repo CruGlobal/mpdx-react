@@ -37,7 +37,8 @@ import useTaskModal from 'src/hooks/useTaskModal';
 const CardContainer = styled(AnimatedCard)(({ theme }) => ({
   flex: 'flex',
   flexDirection: 'column',
-  height: '322px',
+  height: 'auto',
+  minHeight: '322px',
   [theme.breakpoints.down('xs')]: {
     height: 'auto',
   },
@@ -250,7 +251,10 @@ const PartnerCare = ({
               )}
               {prayerRequestTasks && prayerRequestTasks.nodes.length > 0 && (
                 <>
-                  <CardList data-testid="PartnerCarePrayerList">
+                  <CardList
+                    data-testid="PartnerCarePrayerList"
+                    style={{ minHeight: '165px', alignItems: 'start' }}
+                  >
                     {prayerRequestTasks.nodes.map((task) => (
                       <ListItem
                         key={task.id}
@@ -300,7 +304,7 @@ const PartnerCare = ({
                   </CardList>
                   <CardActions>
                     <Link
-                      href={`/accountLists/${accountListId}/tasks?activityType=PRAYER_REQUEST&completed=false`}
+                      href={`/accountLists/${accountListId}/tasks?filters={"activityType":["PRAYER_REQUEST"]}&completed=false`}
                       passHref
                     >
                       <Button size="small" color="primary">
