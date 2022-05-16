@@ -77,21 +77,6 @@ export const PersPrefInfo: React.FC = () => {
     setProfileOpen(true);
   };
 
-  const months = [
-    'Jan',
-    'Feb',
-    'Mar',
-    'Apr',
-    'May',
-    'Jun',
-    'Jul',
-    'Aug',
-    'Sep',
-    'Oct',
-    'Nov',
-    'Dec',
-  ];
-
   return (
     <Card style={{ position: 'relative' }}>
       <CardContent>
@@ -110,7 +95,7 @@ export const PersPrefInfo: React.FC = () => {
           <PersPrefContacts contacts={info.phone} />
           <PersPrefAnniversary
             marital_status={t(info.marital_status)}
-            anniversary_month={t(months[info.anniversary_month - 1])}
+            anniversary_month={info.anniversary_month}
             anniversary_day={info.anniversary_day}
           />
           <PersPrefSocials
