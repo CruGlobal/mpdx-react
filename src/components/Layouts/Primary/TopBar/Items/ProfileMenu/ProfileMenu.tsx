@@ -25,7 +25,6 @@ import { useAccountListId } from '../../../../../../hooks/useAccountListId';
 import HandoffLink from '../../../../../HandoffLink';
 import { useGetTopBarQuery } from '../../GetTopBar.generated';
 import theme from '../../../../../../theme';
-import { useAccountListId } from '../../../../../../hooks/useAccountListId';
 
 const AccountName = styled(Typography)(({ theme }) => ({
   color: theme.palette.common.white,
@@ -119,8 +118,6 @@ const ProfileMenu = (): ReactElement => {
   const handleProfileMenuClose = () => {
     setProfileMenuAnchorEl(undefined);
   };
-
-  const accountListId = useAccountListId();
 
   return (
     <>
