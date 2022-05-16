@@ -164,16 +164,8 @@
     "url-loader": "4.1.1",
     "webpack": "^4.46.0"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "tsc --noEmit && lint-staged"
-    }
-  },
   "lint-staged": {
-    "*.{js,ts,tsx}": [
-      "eslint --fix",
-      "git add"
-    ]
+    "*.{js,ts,tsx}": "eslint --cache --fix"
   },
   "packageManager": "yarn@3.2.0-rc.6"
 }
