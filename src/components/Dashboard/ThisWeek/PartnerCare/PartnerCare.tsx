@@ -251,7 +251,10 @@ const PartnerCare = ({
               )}
               {prayerRequestTasks && prayerRequestTasks.nodes.length > 0 && (
                 <>
-                  <CardList data-testid="PartnerCarePrayerList">
+                  <CardList
+                    data-testid="PartnerCarePrayerList"
+                    style={{ minHeight: '165px', alignItems: 'start' }}
+                  >
                     {prayerRequestTasks.nodes.map((task) => (
                       <ListItem
                         key={task.id}
