@@ -39,7 +39,6 @@ const CardContainer = styled(AnimatedCard)(({ theme }) => ({
   flexDirection: 'column',
   height: 'auto',
   minHeight: '322px',
-  maxBlockSize: '400',
   [theme.breakpoints.down('xs')]: {
     height: 'auto',
   },
