@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Grid, MenuItem, styled } from '@material-ui/core';
+import { Info } from 'luxon';
 import {
   PersPrefFieldWrapper,
   StyledOutlinedInput,
@@ -16,28 +17,15 @@ const StyledGridContainerMobile = styled(Grid)(({ theme }) => ({
 }));
 
 interface DateSelectionProps {
-  month: string;
-  day: string;
-  year: string;
+  month: number;
+  day: number;
+  year: number;
 }
 
 const DateSelection: React.FC<DateSelectionProps> = ({ month, day, year }) => {
   const { t } = useTranslation();
 
-  const months = [
-    'January',
-    'February',
-    'March',
-    'April',
-    'May',
-    'June',
-    'July',
-    'August',
-    'September',
-    'October',
-    'November',
-    'December',
-  ];
+  const months = Info.monthsFormat('long');
 
   return (
     <StyledGridContainer container spacing={2}>
