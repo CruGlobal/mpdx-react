@@ -4,53 +4,51 @@ import { Typography } from '@material-ui/core';
 
 interface AnniversaryProps {
   marital_status: string;
-  anniversary_day: string;
-  anniversary_month: string;
+  anniversary_day: number;
+  anniversary_month: number;
+  anniversary_year: number;
 }
 
 export const PersPrefAnniversary: React.FC<AnniversaryProps> = ({
   marital_status,
   anniversary_day,
   anniversary_month,
+  anniversary_year,
 }) => {
   const { t } = useTranslation();
-  const anniversary = anniversary_month || anniversary_day ? true : false;
+  const anniversary = Boolean(
+    anniversary_month && (anniversary_day || anniversary_year),
+  );
 
   const months = [
-    'Jan',
-    'Feb',
-    'Mar',
-    'Apr',
-    'May',
-    'Jun',
-    'Jul',
-    'Aug',
-    'Sep',
-    'Oct',
-    'Nov',
-    'Dec',
+    t('Jan'),
+    t('Feb'),
+    t('Mar'),
+    t('Apr'),
+    t('May'),
+    t('Jun'),
+    t('Jul'),
+    t('Aug'),
+    t('Sep'),
+    t('Oct'),
+    t('Nov'),
+    t('Dec'),
   ];
 
-  let output = '';
-
-  if (marital_status) {
-    output += marital_status;
-  } else if (anniversary) {
-    output += 'Anniversary';
-  }
-
-  if (anniversary) {
-    output += ': ';
-    if (anniversary_month) {
-      output += `${t(months[parseInt(anniversary_month) - 1])} `;
-    }
-    if (anniversary_day) {
-      output += anniversary_day;
-    }
-  }
-
-  if (output !== '') {
-    return <Typography gutterBottom>{output}</Typography>;
+  if (marital_status || anniversary) {
+    return (
+      <Typography gutterBottom>
+        {marital_status ? marital_status : anniversary ? t('Anniversary') : ''}
+        {anniversary && (
+          <>
+            {`: ${months[anniversary_month]}.`}
+            {anniversary_day ? ` ${anniversary_day}` : ''}
+            {anniversary_day && anniversary_year ? `, ${anniversary_year}` : ''}
+            {!anniversary_day && anniversary_year ? ` ${anniversary_year}` : ''}
+          </>
+        )}
+      </Typography>
+    );
   }
 
   return null;

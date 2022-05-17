@@ -95,8 +95,9 @@ export const PersPrefInfo: React.FC = () => {
           <PersPrefContacts contacts={info.phone} />
           <PersPrefAnniversary
             marital_status={t(info.marital_status)}
-            anniversary_month={info.anniversary_month}
             anniversary_day={info.anniversary_day}
+            anniversary_month={info.anniversary_month}
+            anniversary_year={info.anniversary_year}
           />
           <PersPrefSocials
             facebook_accounts={info.facebook_accounts}
