@@ -457,6 +457,7 @@ const ContactsPage: React.FC = () => {
                           id: contact.id,
                           name: contact.name,
                           avatar: contact.avatar,
+                          status: contact.status,
                           lat: Number(lat),
                           lng: Number(lng),
                           street: contact.primaryAddress.street,
