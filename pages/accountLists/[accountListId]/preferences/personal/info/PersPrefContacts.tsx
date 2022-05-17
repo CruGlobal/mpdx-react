@@ -10,7 +10,6 @@ import {
 } from '@material-ui/core';
 import { ExpandMore } from '@material-ui/icons';
 import { accordionShared } from '../shared/PersPrefShared';
-// import PersPrefContact from './PersPrefContact';
 
 const StyledAccordion = styled(Accordion)({
   backgroundColor: 'transparent',
