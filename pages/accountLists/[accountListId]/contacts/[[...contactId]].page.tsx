@@ -220,7 +220,7 @@ const ContactsPage: React.FC = () => {
           }
         : {
             pathname: `/accountLists/${accountListId}/contacts/${
-              flows ? 'flows/' : map ? '/map' : ''
+              flows ? 'flows/' : map ? 'map/' : ''
             }`,
             query: filteredQuery,
           },
