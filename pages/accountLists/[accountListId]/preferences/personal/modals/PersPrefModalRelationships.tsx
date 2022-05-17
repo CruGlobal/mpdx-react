@@ -48,10 +48,15 @@ const RelationshipModal: React.FC<RelationshipModalProps> = ({
   };
 
   return (
-    <Modal isOpen={isOpen} title="Person" handleClose={handleClose} size={'md'}>
+    <Modal
+      isOpen={isOpen}
+      title={t('Person')}
+      handleClose={handleClose}
+      size={'md'}
+    >
       <form>
         <DialogContent dividers>
-          <PersPrefFieldWrapper labelText="Select Person">
+          <PersPrefFieldWrapper labelText={t('Select Person')}>
             <StyledOutlinedInput startAdornment={<Search />} />
           </PersPrefFieldWrapper>
         </DialogContent>
