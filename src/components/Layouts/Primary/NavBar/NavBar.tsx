@@ -125,22 +125,22 @@ export const NavBar: FC<NavBarProps> = ({ onMobileClose, openMobile }) => {
   const sections: Section[] = [
     {
       title: t('Dashboard'),
-      href: '/accountLists/[accountListId]',
+      href: `/accountLists/${accountListId}`,
     },
     {
       title: t('Contacts'),
-      href: '/accountLists/[accountListId]/contacts',
+      href: `/accountLists/${accountListId}/contacts`,
     },
     {
       title: t('Tasks'),
-      href: '/accountLists/[accountListId]/tasks',
+      href: `/accountLists/${accountListId}/tasks`,
     },
     {
       title: t('Reports'),
       items: ReportNavItems.map((item) => ({
         ...item,
         title: item.subTitle ? `${item.title} (${item.subTitle})` : item.title,
-        href: `/accountLists/[accountListId]/reports/${item.id}`,
+        href: `/accountLists/${accountListId}/reports/${item.id}`,
       })),
     },
     {
@@ -148,13 +148,13 @@ export const NavBar: FC<NavBarProps> = ({ onMobileClose, openMobile }) => {
       items: ToolsList.flatMap((toolsGroup) => [
         ...toolsGroup.items.map((tool) => ({
           title: tool.tool,
-          href: `/accountLists/[accountListId]/reports/${tool.id}`,
+          href: `/accountLists/${accountListId}/reports/${tool.id}`,
         })),
       ]),
     },
     {
       title: t('Coaches'),
-      href: '/coaches',
+      href: `/accountLists/${accountListId}/coaching`,
     },
   ];
 
