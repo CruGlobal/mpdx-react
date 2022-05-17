@@ -96,24 +96,24 @@ const AddRelationship: React.FC<AddRelationshipProps> = ({
   };
 
   const relationships = [
-    'Husband',
-    'Son',
-    'Father',
-    'Brother',
-    'Uncle',
-    'Newphew',
-    'Cousin Male',
-    'Grandfather',
-    'Grandson',
-    'Wife',
-    'Daughter',
-    'Mother',
-    'Sister',
-    'Aunt',
-    'Niece',
-    'Cousin Female',
-    'Grandmother',
-    'Granddaughter',
+    t('Husband'),
+    t('Son'),
+    t('Father'),
+    t('Brother'),
+    t('Uncle'),
+    t('Newphew'),
+    t('Cousin Male'),
+    t('Grandfather'),
+    t('Grandson'),
+    t('Wife'),
+    t('Daughter'),
+    t('Mother'),
+    t('Sister'),
+    t('Aunt'),
+    t('Niece'),
+    t('Cousin Female'),
+    t('Grandmother'),
+    t('Granddaughter'),
   ];
 
   return (
@@ -162,12 +162,12 @@ export const PersPrefModalRelationships: React.FC = () => {
   const { t } = useTranslation();
 
   const statuses = [
-    'Single',
-    'Engaged',
-    'Married',
-    'Separated',
-    'Divorced',
-    'Widowed',
+    t('Single'),
+    t('Engaged'),
+    t('Married'),
+    t('Separated'),
+    t('Divorced'),
+    t('Widowed'),
   ];
 
   return (
