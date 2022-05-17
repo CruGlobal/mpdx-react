@@ -254,10 +254,10 @@ export const PersPrefField: React.FC<PersPrefFieldProps> = ({
       {/* Select field */}
       {type === 'select' && (
         <StyledSelect value={selectValueState} onChange={handleChange}>
-          {options.map((current, index) => {
+          {options.map(([optionVal, optionLabel], index) => {
             return (
-              <MenuItem value={current[0]} key={index}>
-                {current[1]}
+              <MenuItem value={optionVal} key={index}>
+                {optionLabel}
               </MenuItem>
             );
           })}
@@ -266,7 +266,7 @@ export const PersPrefField: React.FC<PersPrefFieldProps> = ({
 
       {/* Checkboxes or Radios */}
       {(type === 'checkbox' || type === 'radio') &&
-        options.map((current, index) => {
+        options.map(([optionVal, optionLabel], index) => {
           const icon =
             type === 'checkbox' ? (
               <Checkbox icon={checkboxIcon} checkedIcon={checkboxCheckedIcon} />
@@ -278,13 +278,13 @@ export const PersPrefField: React.FC<PersPrefFieldProps> = ({
               />
             );
 
-          const val = type === 'checkbox' ? current[0] : radioValue;
+          const val = type === 'checkbox' ? optionVal : radioValue;
 
           return (
             <FormControlLabel
               control={icon}
               value={val}
-              label={current[1]}
+              label={optionLabel}
               labelPlacement={labelPlacement}
               checked={checked}
               key={index}

@@ -96,9 +96,9 @@ const AddContact: React.FC<AddContactProps> = ({
       <StyledGridItem item xs={12} sm={4}>
         <PersPrefFieldWrapper>
           <StyledSelect value={category ? category : 'other'}>
-            {contactTypes.map((current, index) => (
-              <MenuItem value={current[0]} key={index}>
-                {t(current[1])}
+            {contactTypes.map(([contactVal, contactLabel], index) => (
+              <MenuItem value={contactVal} key={index}>
+                {t(contactLabel)}
               </MenuItem>
             ))}
           </StyledSelect>
