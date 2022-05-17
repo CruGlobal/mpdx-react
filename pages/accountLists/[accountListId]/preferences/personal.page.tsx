@@ -63,9 +63,9 @@ const PersonalPreferences: React.FC = () => {
                 )}
               >
                 <StyledSelect value="en-US">
-                  {language.map((current, index) => (
-                    <MenuItem value={current[0]} key={index}>
-                      {t(current[1])}
+                  {language.map(([languageCode, languageName], index) => (
+                    <MenuItem value={languageCode} key={index}>
+                      {t(languageName)}
                     </MenuItem>
                   ))}
                 </StyledSelect>
@@ -88,9 +88,9 @@ const PersonalPreferences: React.FC = () => {
                 )}
               >
                 <StyledSelect value="en">
-                  {locale.map((current, index) => (
-                    <MenuItem value={current[0]} key={index}>
-                      {t(current[1])}
+                  {locale.map(([localeCode, localeName], index) => (
+                    <MenuItem value={localeCode} key={index}>
+                      {t(localeName)}
                     </MenuItem>
                   ))}
                 </StyledSelect>
@@ -113,9 +113,9 @@ const PersonalPreferences: React.FC = () => {
                 )}
               >
                 <StyledSelect value="opt1">
-                  {options.map((current, index) => (
-                    <MenuItem value={current[0]} key={index}>
-                      {t(current[1])}
+                  {options.map(([optionVal, optionLabel], index) => (
+                    <MenuItem value={optionVal} key={index}>
+                      {t(optionLabel)}
                     </MenuItem>
                   ))}
                 </StyledSelect>
@@ -138,9 +138,9 @@ const PersonalPreferences: React.FC = () => {
                 )}
               >
                 <StyledSelect value="opt1">
-                  {options.map((current, index) => (
-                    <MenuItem value={current[0]} key={index}>
-                      {t(current[1])}
+                  {options.map(([optionVal, optionLabel], index) => (
+                    <MenuItem value={optionVal} key={index}>
+                      {t(optionLabel)}
                     </MenuItem>
                   ))}
                 </StyledSelect>
@@ -163,9 +163,9 @@ const PersonalPreferences: React.FC = () => {
                 )}
               >
                 <StyledSelect value="opt1">
-                  {options.map((current, index) => (
-                    <MenuItem value={current[0]} key={index}>
-                      {t(current[1])}
+                  {options.map(([optionVal, optionLabel], index) => (
+                    <MenuItem value={optionVal} key={index}>
+                      {t(optionLabel)}
                     </MenuItem>
                   ))}
                 </StyledSelect>
@@ -228,9 +228,9 @@ const PersonalPreferences: React.FC = () => {
                 )}
               >
                 <StyledSelect value="opt1">
-                  {options.map((current, index) => (
-                    <MenuItem value={current[0]} key={index}>
-                      {t(current[1])}
+                  {options.map(([optionVal, optionLabel], index) => (
+                    <MenuItem value={optionVal} key={index}>
+                      {t(optionLabel)}
                     </MenuItem>
                   ))}
                 </StyledSelect>
@@ -248,9 +248,9 @@ const PersonalPreferences: React.FC = () => {
             <PersPrefFormWrapper>
               <PersPrefFieldWrapper labelText={t('Default Currency')}>
                 <StyledSelect value="opt1">
-                  {options.map((current, index) => (
-                    <MenuItem value={current[0]} key={index}>
-                      {t(current[1])}
+                  {options.map(([optionVal, optionLabel], index) => (
+                    <MenuItem value={optionVal} key={index}>
+                      {t(optionLabel)}
                     </MenuItem>
                   ))}
                 </StyledSelect>
