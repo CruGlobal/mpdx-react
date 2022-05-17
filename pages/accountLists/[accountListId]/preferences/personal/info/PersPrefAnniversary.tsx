@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Typography } from '@material-ui/core';
+import { Info } from 'luxon';
 
 interface AnniversaryProps {
   marital_status: string;
@@ -20,20 +21,7 @@ export const PersPrefAnniversary: React.FC<AnniversaryProps> = ({
     anniversary_month && (anniversary_day || anniversary_year),
   );
 
-  const months = [
-    t('Jan'),
-    t('Feb'),
-    t('Mar'),
-    t('Apr'),
-    t('May'),
-    t('Jun'),
-    t('Jul'),
-    t('Aug'),
-    t('Sep'),
-    t('Oct'),
-    t('Nov'),
-    t('Dec'),
-  ];
+  const months = Info.monthsFormat('short');
 
   if (marital_status || anniversary) {
     return (
