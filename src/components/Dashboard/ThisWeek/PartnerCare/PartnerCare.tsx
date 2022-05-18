@@ -163,6 +163,7 @@ const PartnerCare = ({
   ) => {
     openTaskModal({
       defaultValues: {
+        contactIds: [person.parentContact.id],
         subject:
           celebrationType === CelebrationTypeEnum.birthday
             ? `${person.firstName} ${person.lastName}'s Birthday`
