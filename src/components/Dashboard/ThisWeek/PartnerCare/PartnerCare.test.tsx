@@ -271,6 +271,7 @@ describe('PartnerCare', () => {
     );
     expect(openTaskModal).toHaveBeenCalledWith({
       defaultValues: {
+        contactIds: ['contact'],
         subject: "John Doe's Birthday",
       },
     });
@@ -301,6 +302,7 @@ describe('PartnerCare', () => {
     );
     expect(openTaskModal).toHaveBeenCalledWith({
       defaultValues: {
+        contactIds: ['contact'],
         subject: "John and Sarah, Doe's Anniversary",
       },
     });
