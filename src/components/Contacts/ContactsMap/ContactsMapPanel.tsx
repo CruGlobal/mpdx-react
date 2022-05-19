@@ -111,6 +111,14 @@ export const ContactsMapPanel: React.FC<ContactMapsPanelProps> = ({ data }) => {
           contact?.lat && contact?.status === StatusEnum.CultivateRelationship,
       ),
     },
+    NeverContacted: {
+      title: t('Never Contacted'),
+      imgUrl: '/images/pin_never_contacted.png',
+      data: data?.filter(
+        (contact) =>
+          contact?.lat && contact?.status === StatusEnum.NeverContacted,
+      ),
+    },
     PartnerFinancial: {
       title: t('Partner - Financial'),
       imgUrl: '/images/pin_partner_financial.png',
@@ -142,7 +150,6 @@ export const ContactsMapPanel: React.FC<ContactMapsPanelProps> = ({ data }) => {
           contact?.lat &&
           (contact?.status === StatusEnum.ExpiredReferral ||
             contact?.status === StatusEnum.NeverAsk ||
-            contact?.status === StatusEnum.NeverContacted ||
             contact?.status === StatusEnum.NotInterested ||
             contact?.status === StatusEnum.ResearchAbandoned ||
             contact?.status === StatusEnum.Unresponsive ||
