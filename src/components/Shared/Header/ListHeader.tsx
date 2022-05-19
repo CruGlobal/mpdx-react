@@ -140,16 +140,18 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
 
   return (
     <HeaderWrap>
-      <Hidden xsUp={contactDetailsOpen}>
-        <Checkbox
-          checked={headerCheckboxState === ListHeaderCheckBoxState.checked}
-          color="secondary"
-          indeterminate={
-            headerCheckboxState === ListHeaderCheckBoxState.partial
-          }
-          onChange={onCheckAllItems}
-        />
-      </Hidden>
+      {contactsView !== TableViewModeEnum.Map && (
+        <Hidden xsUp={contactDetailsOpen}>
+          <Checkbox
+            checked={headerCheckboxState === ListHeaderCheckBoxState.checked}
+            color="secondary"
+            indeterminate={
+              headerCheckboxState === ListHeaderCheckBoxState.partial
+            }
+            onChange={onCheckAllItems}
+          />
+        </Hidden>
+      )}
 
       <FilterButton
         activeFilters={activeFilters}
@@ -175,55 +177,57 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
 
       {page === 'contact' ? (
         <>
-          <Hidden lgDown={contactDetailsOpen}>
-            <ActionsButton
-              aria-haspopup
-              aria-expanded={open}
-              onClick={handleClick}
-              endIcon={<ArrowDropDown />}
-            >
-              {t('Actions')}
-            </ActionsButton>
-            <Menu
-              open={open}
-              onClose={handleClose}
-              anchorEl={anchorEl}
-              getContentAnchorEl={null}
-              anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-              transformOrigin={{ vertical: 'top', horizontal: 'center' }}
-            >
-              <MenuItem>
-                <ListItemText>{t('Add Tags')}</ListItemText>
-              </MenuItem>
-              <MenuItem divider>
-                <ListItemText>{t('Remove Tags')}</ListItemText>
-              </MenuItem>
-              <MenuItem>
-                <ListItemText>{t('Add Task')}</ListItemText>
-              </MenuItem>
-              <MenuItem divider>
-                <ListItemText>{t('Log Task')}</ListItemText>
-              </MenuItem>
+          {contactsView !== TableViewModeEnum.Map && (
+            <Hidden lgDown={contactDetailsOpen}>
+              <ActionsButton
+                aria-haspopup
+                aria-expanded={open}
+                onClick={handleClick}
+                endIcon={<ArrowDropDown />}
+              >
+                {t('Actions')}
+              </ActionsButton>
+              <Menu
+                open={open}
+                onClose={handleClose}
+                anchorEl={anchorEl}
+                getContentAnchorEl={null}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+                transformOrigin={{ vertical: 'top', horizontal: 'center' }}
+              >
+                <MenuItem>
+                  <ListItemText>{t('Add Tags')}</ListItemText>
+                </MenuItem>
+                <MenuItem divider>
+                  <ListItemText>{t('Remove Tags')}</ListItemText>
+                </MenuItem>
+                <MenuItem>
+                  <ListItemText>{t('Add Task')}</ListItemText>
+                </MenuItem>
+                <MenuItem divider>
+                  <ListItemText>{t('Log Task')}</ListItemText>
+                </MenuItem>
 
-              <MenuItem>
-                <ListItemText>{t('Edit Fields')}</ListItemText>
-              </MenuItem>
-              <MenuItem>
-                <ListItemText>{t('Hide Contacts')}</ListItemText>
-              </MenuItem>
+                <MenuItem>
+                  <ListItemText>{t('Edit Fields')}</ListItemText>
+                </MenuItem>
+                <MenuItem>
+                  <ListItemText>{t('Hide Contacts')}</ListItemText>
+                </MenuItem>
 
-              <MenuItem>
-                <ListItemText>{t('Add to Appeal')}</ListItemText>
-              </MenuItem>
-              <MenuItem divider>
-                <ListItemText>{t('Add to new Appeal')}</ListItemText>
-              </MenuItem>
+                <MenuItem>
+                  <ListItemText>{t('Add to Appeal')}</ListItemText>
+                </MenuItem>
+                <MenuItem divider>
+                  <ListItemText>{t('Add to new Appeal')}</ListItemText>
+                </MenuItem>
 
-              <MenuItem>
-                <ListItemText>{t('Export Emails')}</ListItemText>
-              </MenuItem>
-            </Menu>
-          </Hidden>
+                <MenuItem>
+                  <ListItemText>{t('Export Emails')}</ListItemText>
+                </MenuItem>
+              </Menu>
+            </Hidden>
+          )}
 
           {buttonGroup}
         </>
