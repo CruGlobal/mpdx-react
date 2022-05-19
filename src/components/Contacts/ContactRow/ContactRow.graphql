@@ -2,6 +2,7 @@ fragment ContactRow on Contact {
   id
   name
   primaryAddress {
+    id
     street
     city
     state
