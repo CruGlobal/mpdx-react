@@ -12,6 +12,7 @@ import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { Settings } from '@material-ui/icons';
 import debounce from 'lodash/debounce';
+import _ from 'lodash';
 import {
   GetUserOptionsDocument,
   GetUserOptionsQuery,
@@ -37,6 +38,7 @@ import { useMassSelection } from '../../../../src/hooks/useMassSelection';
 import { UserOptionFragment } from '../../../../src/components/Shared/Filters/FilterPanel.generated';
 import { useContactFiltersQuery, useContactsQuery } from './Contacts.generated';
 import { ContactsMap } from './map/map';
+import { ContactsMapPanel } from 'src/components/Contacts/ContactsMap/ContactsMapPanel';
 
 const WhiteBackground = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.common.white,
@@ -66,6 +68,9 @@ const ContactsPage: React.FC = () => {
 
   const [contactDetailsOpen, setContactDetailsOpen] = useState(false);
   const [contactDetailsId, setContactDetailsId] = useState<string>();
+  const [viewMode, setViewMode] = useState<TableViewModeEnum>(
+    TableViewModeEnum.List,
+  );
 
   const { contactId, searchTerm } = query;
 
@@ -81,6 +86,7 @@ const ContactsPage: React.FC = () => {
   const [activeFilters, setActiveFilters] = useState<ContactFilterSetInput>(
     urlFilters ?? {},
   );
+
   const [starredFilter, setStarredFilter] = useState<ContactFilterSetInput>({});
 
   //User options for display view
@@ -120,10 +126,24 @@ const ContactsPage: React.FC = () => {
         ...activeFilters,
         wildcardSearch: searchTerm as string,
         ...starredFilter,
+        ids:
+          viewMode === TableViewModeEnum.Map && urlFilters
+            ? urlFilters.ids
+            : [],
       },
     },
     skip: !accountListId,
   });
+
+  //#region Mass Actions
+  const {
+    ids,
+    selectionType,
+    isRowChecked,
+    toggleSelectAll,
+    toggleSelectionById,
+  } = useMassSelection(data?.contacts?.totalCount ?? 0);
+  //#endregion
 
   useEffect(() => {
     if (isReady && contactId) {
@@ -148,10 +168,26 @@ const ContactsPage: React.FC = () => {
           variables: {
             after: data.contacts?.pageInfo.endCursor,
           },
+          // updateQuery: (prev, { fetchMoreResult }) => {
+          //   if (!fetchMoreResult) {
+          //     return prev;
+          //   }
+          //   return {
+          //     ...fetchMoreResult,
+          //     contacts: {
+          //       ...fetchMoreResult.contacts,
+          //       pageInfo: fetchMoreResult.contacts.pageInfo,
+          //       nodes: [
+          //         ...prev.contacts.nodes,
+          //         ...fetchMoreResult.contacts.nodes,
+          //       ],
+          //     },
+          //   };
+          // },
         });
       }
     }
-  }, [loading]);
+  }, [loading, viewMode]);
 
   useEffect(() => {
     const { filters: _, ...oldQuery } = query;
@@ -189,15 +225,6 @@ const ContactsPage: React.FC = () => {
     ) ?? [];
   //#endregion
 
-  //#region Mass Actions
-  const {
-    selectionType,
-    isRowChecked,
-    toggleSelectAll,
-    toggleSelectionById,
-  } = useMassSelection(data?.contacts?.totalCount ?? 0);
-  //#endregion
-
   //#region User Actions
   const setContactFocus = (
     id?: string,
@@ -210,6 +237,17 @@ const ContactsPage: React.FC = () => {
       contactId: _contactId,
       ...filteredQuery
     } = query;
+    if (map && ids.length > 0) {
+      filteredQuery.filters = encodeURI(JSON.stringify({ ids }));
+    }
+    if (!map && urlFilters && urlFilters.ids) {
+      const newFilters = _.omit(activeFilters, 'ids');
+      if (Object.keys(newFilters).length > 0) {
+        filteredQuery.filters = encodeURI(JSON.stringify(newFilters));
+      } else {
+        delete filteredQuery['filters'];
+      }
+    }
     push(
       id
         ? {
@@ -253,10 +291,6 @@ const ContactsPage: React.FC = () => {
       }
     }, 500),
     [accountListId],
-  );
-
-  const [viewMode, setViewMode] = useState<TableViewModeEnum>(
-    TableViewModeEnum.List,
   );
 
   const handleViewModeChange = (
@@ -306,6 +340,30 @@ const ContactsPage: React.FC = () => {
     });
   };
 
+  const mapData = data?.contacts?.nodes.map((contact) => {
+    if (!contact.primaryAddress?.geo) {
+      return {
+        id: contact.id,
+        name: contact.name,
+        avatar: contact.avatar,
+      };
+    }
+    const coords = contact.primaryAddress?.geo?.split(',');
+    const [lat, lng] = coords;
+    return {
+      id: contact.id,
+      name: contact.name,
+      avatar: contact.avatar,
+      status: contact.status,
+      lat: Number(lat),
+      lng: Number(lng),
+      street: contact.primaryAddress.street,
+      city: contact.primaryAddress.city,
+      country: contact.primaryAddress.country,
+      postal: contact.primaryAddress.postalCode,
+    };
+  });
+
   return (
     <>
       <Head>
@@ -324,16 +382,20 @@ const ContactsPage: React.FC = () => {
           <WhiteBackground>
             <SidePanelsLayout
               leftPanel={
-                filterData && !filtersLoading ? (
-                  <FilterPanel
-                    filters={filterData?.accountList.contactFilterGroups}
-                    savedFilters={savedFilters}
-                    selectedFilters={activeFilters}
-                    onClose={toggleFilterPanel}
-                    onSelectedFiltersChanged={setActiveFilters}
-                  />
+                viewMode !== TableViewModeEnum.Map ? (
+                  filterData && !filtersLoading ? (
+                    <FilterPanel
+                      filters={filterData?.accountList.contactFilterGroups}
+                      savedFilters={savedFilters}
+                      selectedFilters={activeFilters}
+                      onClose={toggleFilterPanel}
+                      onSelectedFiltersChanged={setActiveFilters}
+                    />
+                  ) : (
+                    <></>
+                  )
                 ) : (
-                  <></>
+                  <ContactsMapPanel data={mapData} />
                 )
               }
               leftOpen={filterPanelOpen}
@@ -447,25 +509,7 @@ const ContactsPage: React.FC = () => {
                     />
                   ) : (
                     <ContactsMap
-                      data={data?.contacts?.nodes.map((contact) => {
-                        if (!contact.primaryAddress?.geo) {
-                          return;
-                        }
-                        const coords = contact.primaryAddress?.geo?.split(',');
-                        const [lat, lng] = coords;
-                        return {
-                          id: contact.id,
-                          name: contact.name,
-                          avatar: contact.avatar,
-                          status: contact.status,
-                          lat: Number(lat),
-                          lng: Number(lng),
-                          street: contact.primaryAddress.street,
-                          city: contact.primaryAddress.city,
-                          country: contact.primaryAddress.country,
-                          postal: contact.primaryAddress.postalCode,
-                        };
-                      })}
+                      data={mapData}
                       onContactSelected={setContactFocus}
                     />
                   )}
