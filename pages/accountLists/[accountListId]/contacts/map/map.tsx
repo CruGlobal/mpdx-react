@@ -5,13 +5,7 @@ import {
   Marker,
   InfoWindow,
 } from '@react-google-maps/api';
-import {
-  Avatar,
-  Box,
-  CircularProgress,
-  styled,
-  Typography,
-} from '@material-ui/core';
+import { Box, CircularProgress, styled, Typography } from '@material-ui/core';
 import { StatusEnum } from '../../../../../graphql/types.generated';
 import theme from 'src/theme';
 
@@ -159,19 +153,15 @@ export const ContactsMap: React.FC<ContactsMapProps> = ({
                   setSelected(null);
                 }}
               >
-                <Box>
-                  <Avatar
-                    src={selected.avatar || ''}
-                    style={{
-                      width: theme.spacing(4),
-                      height: theme.spacing(4),
-                    }}
-                  />
-                  <Typography variant="h6">{selected.name}</Typography>
-                  <Typography variant="body2">{selected.street}</Typography>
-                  <Typography variant="body2">{selected.city}</Typography>
-                  <Typography variant="body2">{selected.postal}</Typography>
-                  <Typography variant="body2">{selected.country}</Typography>
+                {/*Box width the same size as old app (224px)*/}
+                <Box width={theme.spacing(28)}>
+                  <Typography style={{ fontWeight: 550 }}>
+                    {selected.name}
+                  </Typography>
+                  <Typography>{selected.street}</Typography>
+                  <Typography>{selected.city}</Typography>
+                  <Typography>{selected.postal}</Typography>
+                  <Typography>{selected.country}</Typography>
                   <ContactLink
                     onClick={() =>
                       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
