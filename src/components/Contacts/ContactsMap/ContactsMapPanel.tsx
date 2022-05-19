@@ -5,7 +5,6 @@ import {
   Box,
   Typography,
   styled,
-  Avatar,
 } from '@material-ui/core';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -198,42 +197,28 @@ export const ContactsMapPanel: React.FC<ContactMapsPanelProps> = ({ data }) => {
                       }}
                     >
                       <ContactWrapper>
-                        <Box display="flex" alignItems="center" width="100%">
-                          <Avatar
-                            src={contact?.avatar || ''}
-                            style={{
-                              width: theme.spacing(4),
-                              height: theme.spacing(4),
-                            }}
-                          />
-                          <Box
-                            display="flex"
-                            flexDirection="column"
-                            ml={2}
-                            width="100%"
-                          >
-                            <Typography style={{ fontWeight: 550 }}>
-                              {contact?.name}
+                        <Box display="flex" flexDirection="column" width="100%">
+                          <Typography style={{ fontWeight: 550 }}>
+                            {contact?.name}
+                          </Typography>
+                          <Typography>{contact?.street}</Typography>
+                          <Typography>{`${contact?.city} ${contact?.state} ${contact?.postal}`}</Typography>
+                          <Box>
+                            <Typography
+                              display="inline"
+                              style={{ marginRight: theme.spacing(0.5) }}
+                            >
+                              {t('Source:')}
                             </Typography>
-                            <Typography>{contact?.street}</Typography>
-                            <Typography>{`${contact?.city} ${contact?.state} ${contact?.postal}`}</Typography>
-                            <Box>
-                              <Typography
-                                display="inline"
-                                style={{ marginRight: theme.spacing(0.5) }}
-                              >
-                                {t('Source:')}
-                              </Typography>
-                              <Typography
-                                display="inline"
-                                style={{ marginRight: theme.spacing(0.5) }}
-                              >
-                                {contact?.source}
-                              </Typography>
-                              <Typography display="inline">
-                                {contact?.date}
-                              </Typography>
-                            </Box>
+                            <Typography
+                              display="inline"
+                              style={{ marginRight: theme.spacing(0.5) }}
+                            >
+                              {contact?.source}
+                            </Typography>
+                            <Typography display="inline">
+                              {contact?.date}
+                            </Typography>
                           </Box>
                         </Box>
                       </ContactWrapper>
