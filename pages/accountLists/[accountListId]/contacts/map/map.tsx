@@ -39,17 +39,17 @@ interface ContactsMapProps {
   ) => void;
 }
 
-interface Coordinates {
+export interface Coordinates {
   id: string | undefined | null;
   name: string | undefined | null;
   avatar: string | undefined | null;
-  status: StatusEnum | undefined | null;
-  lat: number | undefined | null;
-  lng: number | undefined | null;
-  street: string | undefined | null;
-  city: string | undefined | null;
-  country: string | undefined | null;
-  postal: string | undefined | null;
+  status?: StatusEnum | undefined | null;
+  lat?: number | undefined | null;
+  lng?: number | undefined | null;
+  street?: string | undefined | null;
+  city?: string | undefined | null;
+  country?: string | undefined | null;
+  postal?: string | undefined | null;
 }
 
 const mapContainerStyle = {
@@ -68,6 +68,31 @@ const center = {
   lng: -103.771556,
 };
 
+const getStatusPin = (status: StatusEnum | null | undefined): string => {
+  switch (status) {
+    case StatusEnum.AppointmentScheduled:
+      return '_appt_scheduled';
+    case StatusEnum.AskInFuture:
+      return '_ask_in_future';
+    case StatusEnum.CallForDecision:
+      return '_call_for_decision';
+    case StatusEnum.ContactForAppointment:
+      return '_contact_for_appt';
+    case StatusEnum.CultivateRelationship:
+      return '_cultivate_relationship';
+    case StatusEnum.NeverContacted:
+      return '_never_contacted';
+    case StatusEnum.PartnerFinancial:
+      return '_partner_financial';
+    case StatusEnum.PartnerPray:
+      return '_partner_pray';
+    case StatusEnum.PartnerSpecial:
+      return '_partner_special';
+    default:
+      return '_grey';
+  }
+};
+
 export const ContactsMap: React.FC<ContactsMapProps> = ({
   onContactSelected,
   data,
@@ -77,31 +102,6 @@ export const ContactsMap: React.FC<ContactsMapProps> = ({
   const { isLoaded, loadError } = useLoadScript({
     googleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY || '',
   });
-
-  const getStatusPin = (status: StatusEnum | null | undefined) => {
-    switch (status) {
-      case StatusEnum.AppointmentScheduled:
-        return '_appt_scheduled';
-      case StatusEnum.AskInFuture:
-        return '_ask_in_future';
-      case StatusEnum.CallForDecision:
-        return '_call_for_decision';
-      case StatusEnum.ContactForAppointment:
-        return '_contact_for_appt';
-      case StatusEnum.CultivateRelationship:
-        return '_cultivate_relationship';
-      case StatusEnum.NeverContacted:
-        return '_never_contacted';
-      case StatusEnum.PartnerFinancial:
-        return '_partner_financial';
-      case StatusEnum.PartnerPray:
-        return '_partner_pray';
-      case StatusEnum.PartnerSpecial:
-        return '_partner_special';
-      default:
-        return '_grey';
-    }
-  };
 
   return (
     <>
