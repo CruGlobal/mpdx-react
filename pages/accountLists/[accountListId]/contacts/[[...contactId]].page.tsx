@@ -13,6 +13,7 @@ import { HTML5Backend } from 'react-dnd-html5-backend';
 import { Settings } from '@material-ui/icons';
 import debounce from 'lodash/debounce';
 import _ from 'lodash';
+import { DateTime } from 'luxon';
 import {
   GetUserOptionsDocument,
   GetUserOptionsQuery,
@@ -359,8 +360,13 @@ const ContactsPage: React.FC = () => {
       lng: Number(lng),
       street: contact.primaryAddress.street,
       city: contact.primaryAddress.city,
+      state: contact.primaryAddress.state,
       country: contact.primaryAddress.country,
       postal: contact.primaryAddress.postalCode,
+      source: contact.primaryAddress.source,
+      date: `(${DateTime.fromISO(
+        contact.primaryAddress.updatedAt,
+      ).toLocaleString(DateTime.DATE_SHORT)})`,
     };
   });
 

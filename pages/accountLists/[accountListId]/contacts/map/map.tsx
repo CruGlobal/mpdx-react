@@ -6,6 +6,7 @@ import {
   InfoWindow,
 } from '@react-google-maps/api';
 import { Box, CircularProgress, styled, Typography } from '@material-ui/core';
+import { useTranslation } from 'react-i18next';
 import { StatusEnum } from '../../../../../graphql/types.generated';
 import theme from 'src/theme';
 
@@ -42,8 +43,11 @@ export interface Coordinates {
   lng?: number | undefined | null;
   street?: string | undefined | null;
   city?: string | undefined | null;
+  state?: string | undefined | null;
   country?: string | undefined | null;
   postal?: string | undefined | null;
+  source?: string;
+  date?: string;
 }
 
 const mapContainerStyle = {
@@ -93,6 +97,8 @@ export const ContactsMap: React.FC<ContactsMapProps> = ({
 }) => {
   const [selected, setSelected] = useState<Coordinates | null>(null);
 
+  const { t } = useTranslation();
+
   const { isLoaded, loadError } = useLoadScript({
     googleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY || '',
   });
@@ -123,18 +129,7 @@ export const ContactsMap: React.FC<ContactsMapProps> = ({
                       lng: contact?.lng || 0,
                     }}
                     onClick={() => {
-                      setSelected({
-                        name: contact?.name,
-                        lat: contact?.lat,
-                        lng: contact?.lng,
-                        avatar: contact?.avatar,
-                        status: contact?.status,
-                        id: contact?.id,
-                        street: contact?.street || '',
-                        city: contact?.city || '',
-                        country: contact?.country || '',
-                        postal: contact?.postal || '',
-                      });
+                      setSelected(contact);
                     }}
                     icon={{
                       url: `/images/pin${statusPin}.png`,
@@ -154,14 +149,25 @@ export const ContactsMap: React.FC<ContactsMapProps> = ({
                 }}
               >
                 {/*Box width the same size as old app (224px)*/}
-                <Box width={theme.spacing(28)}>
+                <Box minWidth={theme.spacing(28)}>
                   <Typography style={{ fontWeight: 550 }}>
                     {selected.name}
                   </Typography>
                   <Typography>{selected.street}</Typography>
-                  <Typography>{selected.city}</Typography>
-                  <Typography>{selected.postal}</Typography>
-                  <Typography>{selected.country}</Typography>
+                  <Typography>{`${selected.city} ${selected.state} ${selected.postal}`}</Typography>
+                  <Typography
+                    display="inline"
+                    style={{ marginRight: theme.spacing(0.5) }}
+                  >
+                    {t('Source:')}
+                  </Typography>
+                  <Typography
+                    display="inline"
+                    style={{ marginRight: theme.spacing(0.5) }}
+                  >
+                    {selected.source}
+                  </Typography>
+                  <Typography display="inline">{selected.date}</Typography>
                   <ContactLink
                     onClick={() =>
                       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion

@@ -212,24 +212,28 @@ export const ContactsMapPanel: React.FC<ContactMapsPanelProps> = ({ data }) => {
                             ml={2}
                             width="100%"
                           >
-                            <Typography
-                              variant="body2"
-                              style={{ fontWeight: 550 }}
-                            >
+                            <Typography style={{ fontWeight: 550 }}>
                               {contact?.name}
                             </Typography>
-                            <Typography variant="body2">
-                              {contact?.street}
-                            </Typography>
-                            <Typography variant="body2">
-                              {contact?.city}
-                            </Typography>
-                            <Typography variant="body2">
-                              {contact?.postal}
-                            </Typography>
-                            <Typography variant="body2">
-                              {contact?.country}
-                            </Typography>
+                            <Typography>{contact?.street}</Typography>
+                            <Typography>{`${contact?.city} ${contact?.state} ${contact?.postal}`}</Typography>
+                            <Box>
+                              <Typography
+                                display="inline"
+                                style={{ marginRight: theme.spacing(0.5) }}
+                              >
+                                {t('Source:')}
+                              </Typography>
+                              <Typography
+                                display="inline"
+                                style={{ marginRight: theme.spacing(0.5) }}
+                              >
+                                {contact?.source}
+                              </Typography>
+                              <Typography display="inline">
+                                {contact?.date}
+                              </Typography>
+                            </Box>
                           </Box>
                         </Box>
                       </ContactWrapper>

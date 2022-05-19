@@ -9,6 +9,8 @@ fragment ContactRow on Contact {
     postalCode
     country
     geo
+    source
+    updatedAt
   }
   status
   pledgeAmount
