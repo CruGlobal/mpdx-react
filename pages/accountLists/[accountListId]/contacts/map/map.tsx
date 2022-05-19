@@ -3,6 +3,7 @@ import {
   GoogleMap,
   useLoadScript,
   Marker,
+  MarkerClusterer,
   InfoWindow,
 } from '@react-google-maps/api';
 import { Box, CircularProgress, styled, Typography } from '@material-ui/core';
@@ -56,7 +57,7 @@ const mapContainerStyle = {
 };
 
 const options = {
-  disableDefaultUI: true,
+  disableDefaultUI: false,
   zoomControl: true,
 };
 
@@ -95,10 +96,11 @@ export const ContactsMap: React.FC<ContactsMapProps> = ({
   onContactSelected,
   data,
 }) => {
-  const [selected, setSelected] = useState<Coordinates | null>(null);
+  const [selected, setSelected] = useState<Coordinates | null | undefined>(
+    null,
+  );
 
   const { t } = useTranslation();
-
   const { isLoaded, loadError } = useLoadScript({
     googleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY || '',
   });
@@ -115,31 +117,35 @@ export const ContactsMap: React.FC<ContactsMapProps> = ({
             options={options}
             onClick={() => setSelected(null)}
           >
-            {data &&
-              data.map((contact) => {
-                if (!contact?.lat) {
-                  return;
+            {data && (
+              <MarkerClusterer>
+                {(clusterer) =>
+                  data
+                    .filter((contact) => contact?.lat)
+                    .map((contact) => (
+                      <Marker
+                        key={contact?.id}
+                        clusterer={clusterer}
+                        position={{
+                          lat: contact?.lat || 0,
+                          lng: contact?.lng || 0,
+                        }}
+                        onClick={() => {
+                          setSelected(contact);
+                        }}
+                        icon={{
+                          url: `/images/pin${getStatusPin(
+                            contact?.status,
+                          )}.png`,
+                          origin: new window.google.maps.Point(0, 0),
+                          anchor: new window.google.maps.Point(15, 48),
+                          scaledSize: new window.google.maps.Size(30, 48),
+                        }}
+                      />
+                    ))
                 }
-                const statusPin = getStatusPin(contact.status);
-                return (
-                  <Marker
-                    key={contact?.id}
-                    position={{
-                      lat: contact?.lat || 0,
-                      lng: contact?.lng || 0,
-                    }}
-                    onClick={() => {
-                      setSelected(contact);
-                    }}
-                    icon={{
-                      url: `/images/pin${statusPin}.png`,
-                      origin: new window.google.maps.Point(0, 0),
-                      anchor: new window.google.maps.Point(15, 48),
-                      scaledSize: new window.google.maps.Size(30, 48),
-                    }}
-                  />
-                );
-              })}
+              </MarkerClusterer>
+            )}
 
             {selected ? (
               <InfoWindow
