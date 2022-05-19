@@ -113,10 +113,11 @@ export const ContactsMap: React.FC<ContactsMapProps> = ({
             zoom={5}
             center={center}
             options={options}
+            onClick={() => setSelected(null)}
           >
             {data &&
               data.map((contact) => {
-                if (!contact) {
+                if (!contact?.lat) {
                   return;
                 }
                 const statusPin = getStatusPin(contact.status);
