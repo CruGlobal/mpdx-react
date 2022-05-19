@@ -4584,12 +4584,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@googlemaps/js-api-loader@npm:1.14.1":
-  version: 1.14.1
-  resolution: "@googlemaps/js-api-loader@npm:1.14.1"
+"@googlemaps/js-api-loader@npm:1.12.8":
+  version: 1.12.8
+  resolution: "@googlemaps/js-api-loader@npm:1.12.8"
   dependencies:
     fast-deep-equal: ^3.1.3
-  checksum: 67a908396863d590cbb0d92627ee249aa270d566bd706370e8758cb97a95cefbd854e3264368d7918163d62c891d157ca91ea2a00e529facf3baf5dfb6f6ec18
+  checksum: c14fce9eee3a1b37cdc15910f5aacc3d9d6546f55fd591d1be62e453fd089ea637110edd47f1ad520f9ee4f90ec6ee390633241874f0a517b0c7f9fb4dae98b8
   languageName: node
   linkType: hard
 
@@ -4602,14 +4602,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@googlemaps/markerclusterer@npm:2.0.4":
-  version: 2.0.4
-  resolution: "@googlemaps/markerclusterer@npm:2.0.4"
+"@googlemaps/markerclusterer@npm:1.0.12":
+  version: 1.0.12
+  resolution: "@googlemaps/markerclusterer@npm:1.0.12"
   dependencies:
+    "@turf/clusters-dbscan": ^6.4.0
+    "@turf/clusters-kmeans": ^6.4.0
     fast-deep-equal: ^3.1.3
-    fast-equals: ^3.0.0
     supercluster: ^7.1.3
-  checksum: 98a979ad08d70881e9c871aa31b50dab6ce9920ac4d35e4243c964a33c44d9a40178bcc39150ff582288e7c242b5866cc421107666d5ed42ed3f3d1ff299e2a7
+  checksum: 64b71db18e91685076ec1156be7950664d9e64fa09f4233a9e68a0ac9e69cef992c92a5194c96dace93900833a607b18eca81b9d912d8b3c0ce7d0b4a9c44793
   languageName: node
   linkType: hard
 
@@ -6499,34 +6500,34 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-google-maps/api@npm:^2.10.2":
-  version: 2.10.2
-  resolution: "@react-google-maps/api@npm:2.10.2"
+"@react-google-maps/api@npm:2.7.0":
+  version: 2.7.0
+  resolution: "@react-google-maps/api@npm:2.7.0"
   dependencies:
-    "@googlemaps/js-api-loader": 1.14.1
-    "@googlemaps/markerclusterer": 2.0.4
-    "@react-google-maps/infobox": 2.10.0
-    "@react-google-maps/marker-clusterer": 2.10.0
-    "@types/google.maps": 3.48.6
+    "@googlemaps/js-api-loader": 1.12.8
+    "@googlemaps/markerclusterer": 1.0.12
+    "@react-google-maps/infobox": 2.6.0
+    "@react-google-maps/marker-clusterer": 2.6.0
+    "@types/google.maps": 3.46.1
     invariant: 2.2.4
   peerDependencies:
-    react: ^16.8 || ^17 || ^18
-    react-dom: ^16.8 || ^17 || ^18
-  checksum: c63c546a367e622f8398a7a20cf354e63d6f14c35977bdfad3ef256e89dad5085ebe4ddd713d3dea950982671fa032cad75c92a02eb5cac0b2d90c41bc37e7ba
+    react: ^16.6.3 || ^17.0.0
+    react-dom: ^16.6.3 || ^17.0.0
+  checksum: 931a7da7d9704fbecdbd067cc0f634bc8e156441e6b5cdd8ed39ab945c39b72abafff98d45057b25c8bf4f8bd1a76daf4193ed0e18dd1caa8ecee308c09d0ee4
   languageName: node
   linkType: hard
 
-"@react-google-maps/infobox@npm:2.10.0":
-  version: 2.10.0
-  resolution: "@react-google-maps/infobox@npm:2.10.0"
-  checksum: eb780f3c996724e516192eec3a3aac59f1379e15940dbb0c5b6dc45458104fbbc04b8127c3a4e4a9a5f3f23a98e7d08f278feab0259a68e550b1e2f00d26da7b
+"@react-google-maps/infobox@npm:2.6.0":
+  version: 2.6.0
+  resolution: "@react-google-maps/infobox@npm:2.6.0"
+  checksum: af82b05b672fa1eb3575cc838d2b5fe7f027f6fa0c455519e03f123c9b3eea3a589f2dce4cb5e7ad0487b511dca2dc7d57e8c16617381a5df6c478584b140e0b
   languageName: node
   linkType: hard
 
-"@react-google-maps/marker-clusterer@npm:2.10.0":
-  version: 2.10.0
-  resolution: "@react-google-maps/marker-clusterer@npm:2.10.0"
-  checksum: 5281678d51a6d07c57e26c7a33bac646533c669892a57d938afe068da5224e40dbb66b90f15a87ad2af3a7f31b5d9a82676e0f4b4501981d0a4e4a7bc56cc381
+"@react-google-maps/marker-clusterer@npm:2.6.0":
+  version: 2.6.0
+  resolution: "@react-google-maps/marker-clusterer@npm:2.6.0"
+  checksum: 92b38f695399070f7e47ff6113736586b70d2f6084c254d4c02be4a79ad119aa9ecad95ff8ca4f5bba334aa0211f515224e22bc41345aa2679853b401543b0c6
   languageName: node
   linkType: hard
 
@@ -7754,6 +7755,76 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@turf/clone@npm:^6.5.0":
+  version: 6.5.0
+  resolution: "@turf/clone@npm:6.5.0"
+  dependencies:
+    "@turf/helpers": ^6.5.0
+  checksum: 8ef6f6ba8876bb32b35691b62554a74b1e8e2b9d04a1c4f7bcba9348163b4ae4cde774b9e8e9f63211e5eb816517d94b94c3d54e5f855691a84cd3556d3157e4
+  languageName: node
+  linkType: hard
+
+"@turf/clusters-dbscan@npm:^6.4.0":
+  version: 6.5.0
+  resolution: "@turf/clusters-dbscan@npm:6.5.0"
+  dependencies:
+    "@turf/clone": ^6.5.0
+    "@turf/distance": ^6.5.0
+    "@turf/helpers": ^6.5.0
+    "@turf/meta": ^6.5.0
+    density-clustering: 1.3.0
+  checksum: 827758408521be45033fb0fcadce6b6bf19efda4afc04e27652a1e1eb0e839e92448f3125079d7abe000cd2d5c1da14db615b1e4e9c11095320001133ce99c64
+  languageName: node
+  linkType: hard
+
+"@turf/clusters-kmeans@npm:^6.4.0":
+  version: 6.5.0
+  resolution: "@turf/clusters-kmeans@npm:6.5.0"
+  dependencies:
+    "@turf/clone": ^6.5.0
+    "@turf/helpers": ^6.5.0
+    "@turf/invariant": ^6.5.0
+    "@turf/meta": ^6.5.0
+    skmeans: 0.9.7
+  checksum: 036647f74cd7baebf46918e466a357db237f0ea06836e6112822bd9ae359af5d0a8fc5dd1701e78a33953cb6038286d3acbbffe1dc1edf70a06f959defb0f42f
+  languageName: node
+  linkType: hard
+
+"@turf/distance@npm:^6.5.0":
+  version: 6.5.0
+  resolution: "@turf/distance@npm:6.5.0"
+  dependencies:
+    "@turf/helpers": ^6.5.0
+    "@turf/invariant": ^6.5.0
+  checksum: f311e19a5d489a11e2033f218723f6c2fae207cb03fbdd5dc64a44724d36851f5bb44d07ae31d479532db5f1df019845e19e2117c1948d9e832a6769f6bf0448
+  languageName: node
+  linkType: hard
+
+"@turf/helpers@npm:^6.5.0":
+  version: 6.5.0
+  resolution: "@turf/helpers@npm:6.5.0"
+  checksum: d57f746351357838c654e0a9b98be3285a14b447504fd6d59753d90c6d437410bb24805d61c65b612827f07f6c2ade823bb7e56e41a1a946217abccfbd64c117
+  languageName: node
+  linkType: hard
+
+"@turf/invariant@npm:^6.5.0":
+  version: 6.5.0
+  resolution: "@turf/invariant@npm:6.5.0"
+  dependencies:
+    "@turf/helpers": ^6.5.0
+  checksum: f45109ee41429d4aab49db9cfcc68f832cadf18b16c1b2c7031f0a6e52545bc4d64d0efd0a980f4d05f22532ed89d6e915aeaab9db44865898d4d030221d968e
+  languageName: node
+  linkType: hard
+
+"@turf/meta@npm:^6.5.0":
+  version: 6.5.0
+  resolution: "@turf/meta@npm:6.5.0"
+  dependencies:
+    "@turf/helpers": ^6.5.0
+  checksum: c6bb936aa92bf3365e87a50dc65f248e070c5767a36fac390754c00c89bf2d1583418686ab19a10332bfa9340b8cac6aaf2c55dad7f5fcf77f1a2dda75ccf363
+  languageName: node
+  linkType: hard
+
 "@types/accepts@npm:*":
   version: 1.3.5
   resolution: "@types/accepts@npm:1.3.5"
@@ -7968,10 +8039,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/google.maps@npm:3.48.6":
-  version: 3.48.6
-  resolution: "@types/google.maps@npm:3.48.6"
-  checksum: db9512dfe3e024c3acba97e78f3c6ce9ca0dfc6633fa11f46c3146e58e456b0e874175753a26b52768e416b20c213cfc8bcfe34d2022e06f9b9c166f37c6c298
+"@types/google.maps@npm:3.46.1":
+  version: 3.46.1
+  resolution: "@types/google.maps@npm:3.46.1"
+  checksum: 5f4b0ea195323ebd2f78eece8fea67635e7869109ea1f4ac691ac3fb1e10d23442f0392f866cd9cf580aee1422bf7a3a99103c139a534ef136afdaa3a059c306
   languageName: node
   linkType: hard
 
@@ -13289,6 +13360,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"density-clustering@npm:1.3.0":
+  version: 1.3.0
+  resolution: "density-clustering@npm:1.3.0"
+  checksum: 4f3d42df1cdba0a26f46d9144fc1e246dd810a7f797dfc3b42ae334d7cb512fc80332ff5a595df86119ff9d3a6946a125c646e65af2f5093e657b07a31aaf204
+  languageName: node
+  linkType: hard
+
 "depd@npm:^1.1.0, depd@npm:^1.1.2, depd@npm:~1.1.2":
   version: 1.1.2
   resolution: "depd@npm:1.1.2"
@@ -14799,13 +14877,6 @@ __metadata:
   version: 1.2.0
   resolution: "fast-diff@npm:1.2.0"
   checksum: 1b5306eaa9e826564d9e5ffcd6ebd881eb5f770b3f977fcbf38f05c824e42172b53c79920e8429c54eb742ce15a0caf268b0fdd5b38f6de52234c4a8368131ae
-  languageName: node
-  linkType: hard
-
-"fast-equals@npm:^3.0.0":
-  version: 3.0.1
-  resolution: "fast-equals@npm:3.0.1"
-  checksum: d030206d1da71d1b9928e5a374cb70dd4a97ba962a8b944e9abd91766ff2d0f470b0b30ac9a44ae15a409514075c7fde51483fa638a186f68d54e0e8097f7f67
   languageName: node
   linkType: hard
 
@@ -20596,7 +20667,7 @@ fsevents@~2.3.2:
     "@next/bundle-analyzer": ^11.1.2
     "@next/eslint-plugin-next": ^11.1.2
     "@react-dnd/invariant": ^2.0.0
-    "@react-google-maps/api": ^2.10.2
+    "@react-google-maps/api": 2.7.0
     "@saeris/apollo-server-vercel": ^1.0.0
     "@storybook/addon-actions": ^6.4.9
     "@storybook/addon-controls": ^6.4.9
@@ -25228,6 +25299,13 @@ resolve@^1.18.1:
   version: 1.0.5
   resolution: "sisteransi@npm:1.0.5"
   checksum: aba6438f46d2bfcef94cf112c835ab395172c75f67453fe05c340c770d3c402363018ae1ab4172a1026a90c47eaccf3af7b6ff6fa749a680c2929bd7fa2b37a4
+  languageName: node
+  linkType: hard
+
+"skmeans@npm:0.9.7":
+  version: 0.9.7
+  resolution: "skmeans@npm:0.9.7"
+  checksum: f46bb155ee0cd5ad7d3d2b32626bf7cf53edb1f22b2251ffe4a3a98da8f6d50d558c4fba61c4f2641b5c8eed347a17103bda252e96af52c77783f8eadfa86f46
   languageName: node
   linkType: hard
 
