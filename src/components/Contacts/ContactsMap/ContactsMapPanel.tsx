@@ -9,12 +9,18 @@ import {
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ExpandMore } from '@material-ui/icons';
+import Image from 'next/image';
 import { StatusEnum } from '../../../../graphql/types.generated';
 import { Coordinates } from 'pages/accountLists/[accountListId]/contacts/map/map';
 import theme from 'src/theme';
+import { ActionButton } from 'src/components/Task/Modal/Form/TaskModalForm';
 
 interface ContactMapsPanelProps {
   data: (Coordinates | undefined)[] | undefined;
+  panTo: (coords: {
+    lat: number | null | undefined;
+    lng: number | null | undefined;
+  }) => void;
 }
 
 const StatusAccordion = styled(Accordion)(() => ({
@@ -52,14 +58,17 @@ const ContactWrapper = styled(Box)(() => ({
   },
 }));
 
-export const ContactsMapPanel: React.FC<ContactMapsPanelProps> = ({ data }) => {
+export const ContactsMapPanel: React.FC<ContactMapsPanelProps> = ({
+  data,
+  panTo,
+}) => {
   const { t } = useTranslation();
 
   const [statusOpen, setStatusOpen] = useState(-1);
 
   const handleExpansionChange = (panel: React.SetStateAction<number>) => (
-    _event: any,
-    newExpanded: any,
+    event: React.ChangeEvent<Record<string, unknown>>,
+    newExpanded: boolean,
   ) => {
     setStatusOpen(newExpanded ? panel : -1);
   };
@@ -174,7 +183,12 @@ export const ContactsMapPanel: React.FC<ContactMapsPanelProps> = ({ data }) => {
             >
               <StatusHeader expandIcon={<ExpandMore />}>
                 <Box display="flex" justifyContent="center" alignItems="center">
-                  <img alt={`${entry} Pin`} src={entry.imgUrl} />
+                  <Image
+                    alt={`${entry} Pin`}
+                    src={entry.imgUrl}
+                    width={21}
+                    height={34}
+                  />
                   <Typography
                     style={{ marginLeft: theme.spacing(1), fontWeight: 550 }}
                   >
@@ -201,25 +215,39 @@ export const ContactsMapPanel: React.FC<ContactMapsPanelProps> = ({ data }) => {
                           <Typography style={{ fontWeight: 550 }}>
                             {contact?.name}
                           </Typography>
-                          <Typography>{contact?.street}</Typography>
-                          <Typography>{`${contact?.city} ${contact?.state} ${contact?.postal}`}</Typography>
-                          <Box>
-                            <Typography
-                              display="inline"
-                              style={{ marginRight: theme.spacing(0.5) }}
-                            >
-                              {t('Source:')}
-                            </Typography>
-                            <Typography
-                              display="inline"
-                              style={{ marginRight: theme.spacing(0.5) }}
-                            >
-                              {contact?.source}
-                            </Typography>
-                            <Typography display="inline">
-                              {contact?.date}
-                            </Typography>
-                          </Box>
+                          {contact?.lat && contact?.lng && (
+                            <>
+                              <Typography>{contact?.street}</Typography>
+                              <Typography>{`${contact?.city} ${contact?.state} ${contact?.postal}`}</Typography>
+                              <Box>
+                                <Typography
+                                  display="inline"
+                                  style={{ marginRight: theme.spacing(0.5) }}
+                                >
+                                  {t('Source:')}
+                                </Typography>
+                                <Typography
+                                  display="inline"
+                                  style={{ marginRight: theme.spacing(0.5) }}
+                                >
+                                  {contact?.source}
+                                </Typography>
+                                <Typography display="inline">
+                                  {contact?.date}
+                                </Typography>
+                              </Box>
+                              <ActionButton
+                                onClick={() =>
+                                  panTo({
+                                    lat: contact?.lat,
+                                    lng: contact?.lng,
+                                  })
+                                }
+                              >
+                                Show Contact
+                              </ActionButton>
+                            </>
+                          )}
                         </Box>
                       </ContactWrapper>
                     </Box>

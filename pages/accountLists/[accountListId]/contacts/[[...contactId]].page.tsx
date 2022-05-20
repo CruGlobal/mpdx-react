@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Head from 'next/head';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'next/router';
@@ -341,6 +341,16 @@ const ContactsPage: React.FC = () => {
     });
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const mapRef = useRef<any>({});
+
+  const panTo = React.useCallback(({ lat, lng }) => {
+    if (mapRef) {
+      mapRef?.current?.panTo({ lat, lng });
+      mapRef?.current?.setZoom(14);
+    }
+  }, []);
+
   const mapData = data?.contacts?.nodes.map((contact) => {
     if (!contact.primaryAddress?.geo) {
       return {
@@ -401,7 +411,7 @@ const ContactsPage: React.FC = () => {
                     <></>
                   )
                 ) : (
-                  <ContactsMapPanel data={mapData} />
+                  <ContactsMapPanel data={mapData} panTo={panTo} />
                 )
               }
               leftOpen={filterPanelOpen}
@@ -516,6 +526,7 @@ const ContactsPage: React.FC = () => {
                   ) : (
                     <ContactsMap
                       data={mapData}
+                      mapRef={mapRef}
                       onContactSelected={setContactFocus}
                     />
                   )}

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { RefObject, useCallback, useState } from 'react';
 import {
   GoogleMap,
   useLoadScript,
@@ -27,6 +27,7 @@ const MapLoading = styled(CircularProgress)(() => ({
 
 interface ContactsMapProps {
   data: (Coordinates | undefined)[] | undefined;
+  mapRef: RefObject<Record<string, unknown>>;
   onContactSelected: (
     contactId: string,
     openDetails: boolean,
@@ -95,12 +96,19 @@ const getStatusPin = (status: StatusEnum | null | undefined): string => {
 export const ContactsMap: React.FC<ContactsMapProps> = ({
   onContactSelected,
   data,
+  mapRef,
 }) => {
   const [selected, setSelected] = useState<Coordinates | null | undefined>(
     null,
   );
 
   const { t } = useTranslation();
+  const onMapLoad = useCallback((map) => {
+    // eslint-disable-next-line
+    // @ts-ignore
+    mapRef.current = map;
+  }, []);
+
   const { isLoaded, loadError } = useLoadScript({
     googleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY || '',
   });
@@ -112,9 +120,11 @@ export const ContactsMap: React.FC<ContactsMapProps> = ({
         <div style={{ height: 'calc(100vh - 156px)', width: '100%' }}>
           <GoogleMap
             mapContainerStyle={mapContainerStyle}
+            id="map"
             zoom={5}
             center={center}
             options={options}
+            onLoad={onMapLoad}
             onClick={() => setSelected(null)}
           >
             {data && (
