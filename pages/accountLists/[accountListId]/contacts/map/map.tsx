@@ -1,4 +1,4 @@
-import React, { RefObject, useCallback, useState } from 'react';
+import React, { Dispatch, RefObject, SetStateAction, useCallback } from 'react';
 import {
   GoogleMap,
   useLoadScript,
@@ -28,6 +28,8 @@ const MapLoading = styled(CircularProgress)(() => ({
 interface ContactsMapProps {
   data: (Coordinates | undefined)[] | undefined;
   mapRef: RefObject<Record<string, unknown>>;
+  selected: Coordinates | null | undefined;
+  setSelected: Dispatch<SetStateAction<Coordinates | null | undefined>>;
   onContactSelected: (
     contactId: string,
     openDetails: boolean,
@@ -97,11 +99,9 @@ export const ContactsMap: React.FC<ContactsMapProps> = ({
   onContactSelected,
   data,
   mapRef,
+  selected,
+  setSelected,
 }) => {
-  const [selected, setSelected] = useState<Coordinates | null | undefined>(
-    null,
-  );
-
   const { t } = useTranslation();
   const onMapLoad = useCallback((map) => {
     // eslint-disable-next-line

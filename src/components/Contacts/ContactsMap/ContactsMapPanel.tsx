@@ -5,8 +5,15 @@ import {
   Box,
   Typography,
   styled,
+  Theme,
 } from '@material-ui/core';
-import React, { useState } from 'react';
+import React, {
+  Dispatch,
+  SetStateAction,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { useTranslation } from 'react-i18next';
 import { ExpandMore } from '@material-ui/icons';
 import Image from 'next/image';
@@ -17,6 +24,8 @@ import { ActionButton } from 'src/components/Task/Modal/Form/TaskModalForm';
 
 interface ContactMapsPanelProps {
   data: (Coordinates | undefined)[] | undefined;
+  selected: Coordinates | null | undefined;
+  setSelected: Dispatch<SetStateAction<Coordinates | null | undefined>>;
   panTo: (coords: {
     lat: number | null | undefined;
     lng: number | null | undefined;
@@ -45,22 +54,26 @@ const ContactList = styled(AccordionDetails)(() => ({
   width: '100%',
 }));
 
-const ContactWrapper = styled(Box)(() => ({
-  display: 'flex',
-  justifyContent: 'space-between',
-  borderBottom: `1px solid ${theme.palette.cruGrayMedium.main}`,
-  alignItems: 'center',
-  width: '100%',
-  padding: theme.spacing(1),
-  paddingLeft: theme.spacing(2),
-  '&:hover': {
-    backgroundColor: theme.palette.mpdxYellow.main,
-  },
-}));
+const ContactWrapper = styled(Box)(
+  ({ theme, current }: { theme: Theme; current: boolean }) => ({
+    display: 'flex',
+    justifyContent: 'space-between',
+    borderBottom: `1px solid ${theme.palette.cruGrayMedium.main}`,
+    alignItems: 'center',
+    width: '100%',
+    padding: theme.spacing(1),
+    paddingLeft: theme.spacing(2),
+    backgroundColor: current
+      ? theme.palette.mpdxYellow.main
+      : theme.palette.common.white,
+  }),
+);
 
 export const ContactsMapPanel: React.FC<ContactMapsPanelProps> = ({
   data,
   panTo,
+  selected,
+  setSelected,
 }) => {
   const { t } = useTranslation();
 
@@ -171,6 +184,26 @@ export const ContactsMapPanel: React.FC<ContactMapsPanelProps> = ({
     },
   };
 
+  const cardRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    if (selected) {
+      setStatusOpen(
+        Object.values(panelData).findIndex((status) =>
+          status.data?.find((contact) => contact?.id === selected.id),
+        ),
+      );
+      setTimeout(
+        () =>
+          cardRef?.current?.scrollIntoView({
+            behavior: 'smooth',
+            block: 'center',
+          }),
+        statusOpen < 0 ? 1000 : 0,
+      );
+    }
+  }, [selected]);
+
   return (
     <Box>
       {Object.entries(panelData).map(([status, entry], index) => (
@@ -210,7 +243,12 @@ export const ContactsMapPanel: React.FC<ContactMapsPanelProps> = ({
                         background: 'white',
                       }}
                     >
-                      <ContactWrapper>
+                      <ContactWrapper
+                        current={selected?.id === contact?.id}
+                        {...{
+                          ref: selected?.id === contact?.id ? cardRef : null,
+                        }}
+                      >
                         <Box display="flex" flexDirection="column" width="100%">
                           <Typography style={{ fontWeight: 550 }}>
                             {contact?.name}
@@ -237,12 +275,13 @@ export const ContactsMapPanel: React.FC<ContactMapsPanelProps> = ({
                                 </Typography>
                               </Box>
                               <ActionButton
-                                onClick={() =>
+                                onClick={() => {
+                                  setSelected(contact);
                                   panTo({
                                     lat: contact?.lat,
                                     lng: contact?.lng,
-                                  })
-                                }
+                                  });
+                                }}
                               >
                                 Show Contact
                               </ActionButton>

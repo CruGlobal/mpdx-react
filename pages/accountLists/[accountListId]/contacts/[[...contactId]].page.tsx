@@ -38,7 +38,7 @@ import { FilterPanel } from '../../../../src/components/Shared/Filters/FilterPan
 import { useMassSelection } from '../../../../src/hooks/useMassSelection';
 import { UserOptionFragment } from '../../../../src/components/Shared/Filters/FilterPanel.generated';
 import { useContactFiltersQuery, useContactsQuery } from './Contacts.generated';
-import { ContactsMap } from './map/map';
+import { ContactsMap, Coordinates } from './map/map';
 import { ContactsMapPanel } from 'src/components/Contacts/ContactsMap/ContactsMapPanel';
 
 const WhiteBackground = styled(Box)(({ theme }) => ({
@@ -341,6 +341,11 @@ const ContactsPage: React.FC = () => {
     });
   };
 
+  // map states and functions
+  const [selected, setSelected] = useState<Coordinates | null | undefined>(
+    null,
+  );
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const mapRef = useRef<any>({});
 
@@ -411,7 +416,12 @@ const ContactsPage: React.FC = () => {
                     <></>
                   )
                 ) : (
-                  <ContactsMapPanel data={mapData} panTo={panTo} />
+                  <ContactsMapPanel
+                    data={mapData}
+                    panTo={panTo}
+                    selected={selected}
+                    setSelected={setSelected}
+                  />
                 )
               }
               leftOpen={filterPanelOpen}
@@ -527,6 +537,8 @@ const ContactsPage: React.FC = () => {
                     <ContactsMap
                       data={mapData}
                       mapRef={mapRef}
+                      selected={selected}
+                      setSelected={setSelected}
                       onContactSelected={setContactFocus}
                     />
                   )}
