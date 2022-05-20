@@ -20,7 +20,6 @@ import Image from 'next/image';
 import { StatusEnum } from '../../../../graphql/types.generated';
 import { Coordinates } from 'pages/accountLists/[accountListId]/contacts/map/map';
 import theme from 'src/theme';
-import { ActionButton } from 'src/components/Task/Modal/Form/TaskModalForm';
 
 interface ContactMapsPanelProps {
   data: (Coordinates | undefined)[] | undefined;
@@ -64,8 +63,12 @@ const ContactWrapper = styled(Box)(
     padding: theme.spacing(1),
     paddingLeft: theme.spacing(2),
     backgroundColor: current
-      ? theme.palette.mpdxYellow.main
+      ? theme.palette.cruGrayLight.main
       : theme.palette.common.white,
+    '&:hover': {
+      backgroundColor: theme.palette.cruGrayLight.main,
+      cursor: 'pointer',
+    },
   }),
 );
 
@@ -248,6 +251,13 @@ export const ContactsMapPanel: React.FC<ContactMapsPanelProps> = ({
                         {...{
                           ref: selected?.id === contact?.id ? cardRef : null,
                         }}
+                        onClick={() => {
+                          setSelected(contact);
+                          panTo({
+                            lat: contact?.lat,
+                            lng: contact?.lng,
+                          });
+                        }}
                       >
                         <Box display="flex" flexDirection="column" width="100%">
                           <Typography style={{ fontWeight: 550 }}>
@@ -274,17 +284,6 @@ export const ContactsMapPanel: React.FC<ContactMapsPanelProps> = ({
                                   {contact?.date}
                                 </Typography>
                               </Box>
-                              <ActionButton
-                                onClick={() => {
-                                  setSelected(contact);
-                                  panTo({
-                                    lat: contact?.lat,
-                                    lng: contact?.lng,
-                                  });
-                                }}
-                              >
-                                Show Contact
-                              </ActionButton>
                             </>
                           )}
                         </Box>
