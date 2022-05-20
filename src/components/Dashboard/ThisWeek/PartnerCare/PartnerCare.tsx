@@ -230,8 +230,6 @@ const PartnerCare = ({
       },
     );
 
-  console.log(celebrations);
-
   return (
     <CardContainer>
       <CardHeader title={t('Partner Care')} />
