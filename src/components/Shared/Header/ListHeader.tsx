@@ -14,6 +14,7 @@ import {
 import FilterList from '@material-ui/icons/FilterList';
 import { useTranslation } from 'react-i18next';
 import ArrowDropDown from '@material-ui/icons/ArrowDropDown';
+import { ViewList } from '@material-ui/icons';
 import { SearchBox } from '../../common/SearchBox/SearchBox';
 import {
   ContactFilterSetInput,
@@ -158,7 +159,11 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
         panelOpen={filterPanelOpen}
         onClick={toggleFilterPanel}
       >
-        <FilterIcon titleAccess={t('Toggle Filter Panel')} />
+        {contactsView === TableViewModeEnum.Map ? (
+          <ViewList titleAccess={t('Toggle Contact List')} />
+        ) : (
+          <FilterIcon titleAccess={t('Toggle Filter Panel')} />
+        )}
       </FilterButton>
       <SearchBox
         page={page}
