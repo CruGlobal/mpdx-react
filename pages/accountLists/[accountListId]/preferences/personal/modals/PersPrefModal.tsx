@@ -64,10 +64,10 @@ export const PersPrefModal: React.FC<PersPrefModalProps> = ({
   };
 
   const tabData = [
-    { label: 'Contact Info', data: <PersPrefModalContact /> },
-    { label: 'Details', data: <PersPrefModalDetails /> },
-    { label: 'Social', data: <PersPrefModalSocial /> },
-    { label: 'Relationships', data: <PersPrefModalRelationships /> },
+    { label: t('Contact Info'), data: <PersPrefModalContact /> },
+    { label: t('Details'), data: <PersPrefModalDetails /> },
+    { label: t('Social'), data: <PersPrefModalSocial /> },
+    { label: t('Relationships'), data: <PersPrefModalRelationships /> },
   ];
 
   return (
@@ -83,7 +83,7 @@ export const PersPrefModal: React.FC<PersPrefModalProps> = ({
           <StyledAppBar position="static">
             <StyledTabs value={openTab} onChange={handleChange}>
               {tabData.map((current, index) => (
-                <StyledTab label={t(current.label)} disableRipple key={index} />
+                <StyledTab label={current.label} disableRipple key={index} />
               ))}
             </StyledTabs>
           </StyledAppBar>
