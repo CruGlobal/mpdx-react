@@ -94,9 +94,9 @@ export const PersPrefContacts = ({
             <PersPrefContact contact={validContacts[primaryContactIndex]} />
           </StyledAccordionSummary>
           <StyledAccordionDetails>
-            {validContactsSansPrimary.map((contact) => {
-              return <PersPrefContact contact={contact} key={contact.value} />;
-            })}
+            {validContactsSansPrimary.map((contact) => (
+              <PersPrefContact contact={contact} key={contact.value} />
+            ))}
           </StyledAccordionDetails>
         </StyledAccordion>
       )}
