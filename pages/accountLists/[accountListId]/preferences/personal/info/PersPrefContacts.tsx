@@ -75,25 +75,27 @@ interface PersPrefContactsProps {
 export const PersPrefContacts = ({
   contacts,
 }: PersPrefContactsProps): ReactElement<PersPrefContactsProps> => {
-  const dataValid = contacts.filter((current) => current.invalid !== true);
-  const primaryIndex = dataValid.findIndex(
-    (current) => current.primary === true,
+  const validContacts = contacts.filter((contact) => contact.invalid !== true);
+  const primaryContactIndex = validContacts.findIndex(
+    (contact) => contact.primary === true,
   );
-  const dataSansPrimary = dataValid.filter(
-    (current, index) => index !== primaryIndex,
+  const validContactsSansPrimary = validContacts.filter(
+    (contact, index) => index !== primaryContactIndex,
   );
 
   return (
     <>
-      {dataValid.length === 1 && <PersPrefContact contact={dataValid[0]} />}
-      {dataValid.length > 1 && (
+      {validContacts.length === 1 && (
+        <PersPrefContact contact={validContacts[0]} />
+      )}
+      {validContacts.length > 1 && (
         <StyledAccordion>
           <StyledAccordionSummary expandIcon={<ExpandMore />}>
-            <PersPrefContact contact={dataValid[primaryIndex]} />
+            <PersPrefContact contact={validContacts[primaryContactIndex]} />
           </StyledAccordionSummary>
           <StyledAccordionDetails>
-            {dataSansPrimary.map((current) => {
-              return <PersPrefContact contact={current} key={current.value} />;
+            {validContactsSansPrimary.map((contact) => {
+              return <PersPrefContact contact={contact} key={contact.value} />;
             })}
           </StyledAccordionDetails>
         </StyledAccordion>
