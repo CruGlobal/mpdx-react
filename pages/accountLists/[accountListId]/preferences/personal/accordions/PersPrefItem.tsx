@@ -30,10 +30,18 @@ const StyledAccordionSummary = styled(AccordionSummary)(({ theme }) => ({
 const StyledAccordionColumn = styled(Box)(({ theme }) => ({
   paddingRight: theme.spacing(2),
   boxSizing: 'border-box',
+  flexBasis: '100%',
   [theme.breakpoints.down('xs')]: {
-    flexBasis: '100% !important',
     '&:nth-child(2)': {
       fontStyle: 'italic',
+    },
+  },
+  [theme.breakpoints.up('sm')]: {
+    '&:first-child:not(:last-child)': {
+      width: '33.33%',
+    },
+    '&:nth-child(2)': {
+      width: '66.66%',
     },
   },
 }));
@@ -60,7 +68,6 @@ export const PersPrefItem: React.FC<PersPrefItemProps> = ({
   children,
 }) => {
   const { t } = useTranslation();
-  const firstCol = value !== '' ? '33.33%' : '100%';
 
   return (
     <Box marginTop={1}>
@@ -69,15 +76,11 @@ export const PersPrefItem: React.FC<PersPrefItemProps> = ({
         expanded={expandedPanel === label}
       >
         <StyledAccordionSummary expandIcon={<ExpandMore />}>
-          <StyledAccordionColumn
-            style={{
-              flexBasis: firstCol,
-            }}
-          >
+          <StyledAccordionColumn>
             <Typography component="span">{t(label)}</Typography>
           </StyledAccordionColumn>
           {value !== '' && (
-            <StyledAccordionColumn style={{ flexBasis: '66.66%' }}>
+            <StyledAccordionColumn>
               <Typography component="span">{t(value)}</Typography>
             </StyledAccordionColumn>
           )}
