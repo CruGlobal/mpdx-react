@@ -13,7 +13,7 @@ import { Edit } from '@material-ui/icons';
 import { info } from '../DemoContent';
 import { PersPrefModal } from '../modals/PersPrefModal';
 import { PersPrefWork } from './PersPrefWork';
-import { PersPrefContacts } from './PersPrefContacts';
+import { PersPrefContactMethods } from './PersPrefContactMethods';
 import { PersPrefAnniversary } from './PersPrefAnniversary';
 import { PersPrefSocials } from './PersPrefSocials';
 
@@ -91,8 +91,8 @@ export const PersPrefInfo: React.FC = () => {
         </StyledContactTop>
         <StyledContactBottom>
           <PersPrefWork employer={info.employer} occupation={info.occupation} />
-          <PersPrefContacts contacts={info.email} />
-          <PersPrefContacts contacts={info.phone} />
+          <PersPrefContactMethods methods={info.email} />
+          <PersPrefContactMethods methods={info.phone} />
           <PersPrefAnniversary
             marital_status={t(info.marital_status)}
             anniversary_day={info.anniversary_day}

@@ -40,7 +40,7 @@ const StyledAccordionDetails = styled(AccordionDetails)({
   padding: 0,
 });
 
-interface ContactData {
+interface ContactMethodData {
   value: string;
   type: string;
   primary: boolean;
@@ -49,53 +49,57 @@ interface ContactData {
 
 // Single contact phone/email
 
-interface PersPrefContactProps {
-  contact: ContactData;
+interface PersPrefContactMethodProps {
+  method: ContactMethodData;
 }
 
-const PersPrefContact: React.FC<PersPrefContactProps> = ({ contact }) => {
+const PersPrefContactMethod: React.FC<PersPrefContactMethodProps> = ({
+  method,
+}) => {
   const { t } = useTranslation();
-  const prefix = 'address' in contact ? 'mailto' : 'tel';
-  const value = contact.value;
+  const prefix = 'address' in method ? 'mailto' : 'tel';
+  const value = method.value;
 
   return (
     <Typography gutterBottom>
       <Link href={`${prefix}:${value}`}>{value}</Link>{' '}
-      <span style={{ textTransform: 'capitalize' }}>- {t(contact.type)} </span>
+      <span style={{ textTransform: 'capitalize' }}>- {t(method.type)}</span>
     </Typography>
   );
 };
 
 // List of phone/email contacts
 
-interface PersPrefContactsProps {
-  contacts: ContactData[];
+interface PersPrefContactMethodsProps {
+  methods: ContactMethodData[];
 }
 
-export const PersPrefContacts = ({
-  contacts,
-}: PersPrefContactsProps): ReactElement<PersPrefContactsProps> => {
-  const validContacts = contacts.filter((contact) => contact.invalid !== true);
+export const PersPrefContactMethods = ({
+  methods,
+}: PersPrefContactMethodsProps): ReactElement<PersPrefContactMethodsProps> => {
+  const validContacts = methods.filter((method) => method.invalid !== true);
   const primaryContactIndex = validContacts.findIndex(
-    (contact) => contact.primary === true,
+    (method) => method.primary === true,
   );
   const validContactsSansPrimary = validContacts.filter(
-    (contact, index) => index !== primaryContactIndex,
+    (method, index) => index !== primaryContactIndex,
   );
 
   return (
     <>
       {validContacts.length === 1 && (
-        <PersPrefContact contact={validContacts[0]} />
+        <PersPrefContactMethod method={validContacts[0]} />
       )}
       {validContacts.length > 1 && (
         <StyledAccordion>
           <StyledAccordionSummary expandIcon={<ExpandMore />}>
-            <PersPrefContact contact={validContacts[primaryContactIndex]} />
+            <PersPrefContactMethod
+              method={validContacts[primaryContactIndex]}
+            />
           </StyledAccordionSummary>
           <StyledAccordionDetails>
             {validContactsSansPrimary.map((contact) => (
-              <PersPrefContact contact={contact} key={contact.value} />
+              <PersPrefContactMethod method={contact} key={contact.value} />
             ))}
           </StyledAccordionDetails>
         </StyledAccordion>
