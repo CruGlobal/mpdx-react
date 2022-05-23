@@ -77,28 +77,26 @@ interface PersPrefContactMethodsProps {
 export const PersPrefContactMethods = ({
   methods,
 }: PersPrefContactMethodsProps): ReactElement<PersPrefContactMethodsProps> => {
-  const validContacts = methods.filter((method) => method.invalid !== true);
-  const primaryContactIndex = validContacts.findIndex(
+  const validMethods = methods.filter((method) => method.invalid !== true);
+  const primaryMethodIndex = validMethods.findIndex(
     (method) => method.primary === true,
   );
-  const validContactsSansPrimary = validContacts.filter(
-    (method, index) => index !== primaryContactIndex,
+  const validMethodsSansPrimary = validMethods.filter(
+    (method, index) => index !== primaryMethodIndex,
   );
 
   return (
     <>
-      {validContacts.length === 1 && (
-        <PersPrefContactMethod method={validContacts[0]} />
+      {validMethods.length === 1 && (
+        <PersPrefContactMethod method={validMethods[0]} />
       )}
-      {validContacts.length > 1 && (
+      {validMethods.length > 1 && (
         <StyledAccordion>
           <StyledAccordionSummary expandIcon={<ExpandMore />}>
-            <PersPrefContactMethod
-              method={validContacts[primaryContactIndex]}
-            />
+            <PersPrefContactMethod method={validMethods[primaryMethodIndex]} />
           </StyledAccordionSummary>
           <StyledAccordionDetails>
-            {validContactsSansPrimary.map((contact) => (
+            {validMethodsSansPrimary.map((contact) => (
               <PersPrefContactMethod method={contact} key={contact.value} />
             ))}
           </StyledAccordionDetails>
