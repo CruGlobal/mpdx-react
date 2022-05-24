@@ -146,7 +146,7 @@ const PartnerCare = ({
   const handleClick = ({
     id: taskId,
   }: GetThisWeekQuery['prayerRequestTasks']['nodes'][0]): void => {
-    openTaskModal({ taskId });
+    openTaskModal({ taskId, view: 'edit' });
   };
 
   const handleChange = (
@@ -175,7 +175,7 @@ const PartnerCare = ({
   const handleCompleteClick = ({
     id: taskId,
   }: GetThisWeekQuery['prayerRequestTasks']['nodes'][0]): void => {
-    openTaskModal({ taskId, showCompleteForm: true });
+    openTaskModal({ taskId, showCompleteForm: true, view: 'complete' });
   };
 
   const mergedBirthdays = reportsPeopleWithBirthdays?.periods
