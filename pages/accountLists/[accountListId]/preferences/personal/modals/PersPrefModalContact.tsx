@@ -144,11 +144,8 @@ const ContactMethods: React.FC<{ type: string }> = ({ type }) => {
   const isPhone = type === 'phone' ? true : false;
   const data = isPhone ? info.phone : info.email;
 
-  data.forEach((item, i) => {
-    if (item.primary === true) {
-      data.splice(i, 1);
-      data.unshift(item);
-    }
+  data.sort((x, y) => {
+    return x.primary === true ? -1 : y.primary === true ? 1 : 0;
   });
 
   return (

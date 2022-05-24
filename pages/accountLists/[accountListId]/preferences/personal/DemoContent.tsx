@@ -12,14 +12,14 @@ export const info = {
     {
       value: 'personal@test.com',
       type: 'personal',
-      primary: true,
-      invalid: false,
+      primary: false,
+      invalid: true,
     },
     {
       value: 'work@test.com',
       type: 'work',
-      primary: false,
-      invalid: true,
+      primary: true,
+      invalid: false,
     },
   ],
   employer: 'Disney',
@@ -48,7 +48,7 @@ export const info = {
       value: '1234567890',
       type: 'home',
       primary: false,
-      invalid: false,
+      invalid: true,
     },
     {
       value: '0987654321',
