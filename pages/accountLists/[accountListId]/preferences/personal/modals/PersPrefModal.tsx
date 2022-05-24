@@ -40,15 +40,7 @@ export const PersPrefModal: React.FC<PersPrefModalProps> = ({
   handleClose,
 }) => {
   const { t } = useTranslation();
-
-  const tabData = [
-    { label: t('Contact Info'), data: <PersPrefModalContact /> },
-    { label: t('Details'), data: <PersPrefModalDetails /> },
-    { label: t('Social'), data: <PersPrefModalSocial /> },
-    { label: t('Relationships'), data: <PersPrefModalRelationships /> },
-  ];
-
-  const [openTab, setOpenTab] = useState(tabData[0].label);
+  const [openTab, setOpenTab] = useState('0');
 
   const handleChange = (
     event: React.ChangeEvent<Record<string, unknown>>,
@@ -69,20 +61,23 @@ export const PersPrefModal: React.FC<PersPrefModalProps> = ({
           <PersPrefModalName />
           <TabContext value={openTab}>
             <StyledTabList onChange={handleChange}>
-              {tabData.map((tab, index) => (
-                <StyledTab
-                  value={tab.label}
-                  label={tab.label}
-                  disableRipple
-                  key={index}
-                />
-              ))}
+              <StyledTab value="0" label={t('Contact Info')} disableRipple />
+              <StyledTab value="1" label={t('Details')} disableRipple />
+              <StyledTab value="2" label={t('Social')} disableRipple />
+              <StyledTab value="3" label={t('Relationships')} disableRipple />
             </StyledTabList>
-            {tabData.map((tab, index) => (
-              <TabPanel value={tab.label} key={index}>
-                {tab.data}
-              </TabPanel>
-            ))}
+            <TabPanel value="0">
+              <PersPrefModalContact />
+            </TabPanel>
+            <TabPanel value="1">
+              <PersPrefModalDetails />
+            </TabPanel>
+            <TabPanel value="2">
+              <PersPrefModalSocial />
+            </TabPanel>
+            <TabPanel value="3">
+              <PersPrefModalRelationships />
+            </TabPanel>
           </TabContext>
         </DialogContent>
         <StyledDialogActions>
