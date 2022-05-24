@@ -1,14 +1,7 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  AppBar,
-  Box,
-  Button,
-  DialogContent,
-  Tab,
-  Tabs,
-  styled,
-} from '@material-ui/core';
+import { Button, DialogContent, Tab, styled } from '@material-ui/core';
+import { TabContext, TabList, TabPanel } from '@material-ui/lab';
 import Modal from '../../../../../../src/components/common/Modal/Modal';
 import { StyledDialogActions } from './PersPrefModalShared';
 import { PersPrefModalContact } from './PersPrefModalContact';
@@ -17,14 +10,7 @@ import { PersPrefModalSocial } from './PersPrefModalSocial';
 import { PersPrefModalRelationships } from './PersPrefModalRelationships';
 import { PersPrefModalName } from './PersPrefModalName';
 
-const StyledAppBar = styled(AppBar)(({ theme }) => ({
-  boxShadow: 'none',
-  backgroundColor: 'transparent',
-  color: theme.palette.text.primary,
-  marginBottom: theme.spacing(2),
-}));
-
-const StyledTabs = styled(Tabs)(({ theme }) => ({
+const StyledTabList = styled(TabList)(({ theme }) => ({
   '& .MuiTabs-flexContainer > *': {
     flexGrow: 1,
   },
@@ -54,14 +40,6 @@ export const PersPrefModal: React.FC<PersPrefModalProps> = ({
   handleClose,
 }) => {
   const { t } = useTranslation();
-  const [openTab, setOpenTab] = useState(0);
-
-  const handleChange = (
-    event: React.ChangeEvent<Record<string, unknown>>,
-    newValue: number,
-  ) => {
-    setOpenTab(newValue);
-  };
 
   const tabData = [
     { label: t('Contact Info'), data: <PersPrefModalContact /> },
@@ -69,6 +47,15 @@ export const PersPrefModal: React.FC<PersPrefModalProps> = ({
     { label: t('Social'), data: <PersPrefModalSocial /> },
     { label: t('Relationships'), data: <PersPrefModalRelationships /> },
   ];
+
+  const [openTab, setOpenTab] = useState(tabData[0].label);
+
+  const handleChange = (
+    event: React.ChangeEvent<Record<string, unknown>>,
+    newValue: string,
+  ) => {
+    setOpenTab(newValue);
+  };
 
   return (
     <Modal
@@ -80,23 +67,23 @@ export const PersPrefModal: React.FC<PersPrefModalProps> = ({
       <form>
         <DialogContent dividers>
           <PersPrefModalName />
-          <StyledAppBar position="static">
-            <StyledTabs value={openTab} onChange={handleChange}>
-              {tabData.map((current, index) => (
-                <StyledTab label={current.label} disableRipple key={index} />
+          <TabContext value={openTab}>
+            <StyledTabList onChange={handleChange}>
+              {tabData.map((tab, index) => (
+                <StyledTab
+                  value={tab.label}
+                  label={tab.label}
+                  disableRipple
+                  key={index}
+                />
               ))}
-            </StyledTabs>
-          </StyledAppBar>
-          {tabData.map((current, index) => (
-            <div
-              role="tabpanel"
-              hidden={openTab !== index}
-              id={`tabpanel-${index}`}
-              key={index}
-            >
-              {openTab === index && <Box>{current.data}</Box>}
-            </div>
-          ))}
+            </StyledTabList>
+            {tabData.map((tab, index) => (
+              <TabPanel value={tab.label} key={index}>
+                {tab.data}
+              </TabPanel>
+            ))}
+          </TabContext>
         </DialogContent>
         <StyledDialogActions>
           <Button onClick={handleClose} disableElevation disableRipple>
