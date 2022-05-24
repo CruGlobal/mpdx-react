@@ -31,7 +31,7 @@ import {
 } from './PersPrefModalShared';
 
 const SharedFieldHoverStyles = ({ theme }: { theme: Theme }) => ({
-  '&&:hover': {
+  '&:hover': {
     backgroundColor: theme.palette.action.hover,
   },
 });
