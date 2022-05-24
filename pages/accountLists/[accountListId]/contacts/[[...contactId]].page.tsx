@@ -169,22 +169,6 @@ const ContactsPage: React.FC = () => {
           variables: {
             after: data.contacts?.pageInfo.endCursor,
           },
-          // updateQuery: (prev, { fetchMoreResult }) => {
-          //   if (!fetchMoreResult) {
-          //     return prev;
-          //   }
-          //   return {
-          //     ...fetchMoreResult,
-          //     contacts: {
-          //       ...fetchMoreResult.contacts,
-          //       pageInfo: fetchMoreResult.contacts.pageInfo,
-          //       nodes: [
-          //         ...prev.contacts.nodes,
-          //         ...fetchMoreResult.contacts.nodes,
-          //       ],
-          //     },
-          //   };
-          // },
         });
       }
     }
