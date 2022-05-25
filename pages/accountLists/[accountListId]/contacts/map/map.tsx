@@ -117,6 +117,7 @@ export const ContactsMap: React.FC<ContactsMapProps> = ({
     <>
       {!loadError && isLoaded ? (
         // Important! Always set the container height explicitly
+        // Top bar is 96px + header is 60px = 156px
         <div style={{ height: 'calc(100vh - 156px)', width: '100%' }}>
           <GoogleMap
             mapContainerStyle={mapContainerStyle}
