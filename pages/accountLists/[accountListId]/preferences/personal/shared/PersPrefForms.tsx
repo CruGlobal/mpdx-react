@@ -87,14 +87,8 @@ export const PersPrefField: React.FC<PersPrefFieldProps> = ({
   inputValue = '',
   inputPlaceholder = '',
   inputStartIcon = false,
-  options = [
-    ['option1', 'Option 1'],
-    ['option2', 'Option 2'],
-    ['option3', 'Option 3'],
-    ['option4', 'Option 4'],
-    ['option5', 'Option 5'],
-  ],
-  selectValue = options[0][0],
+  options = [],
+  selectValue = '',
   labelPlacement = 'end',
   checkboxIcon = <CheckBoxOutlineBlank />,
   checkboxCheckedIcon = <CheckBox />,
@@ -143,7 +137,7 @@ export const PersPrefField: React.FC<PersPrefFieldProps> = ({
       )}
 
       {/* Select field */}
-      {type === 'select' && (
+      {type === 'select' && options.length > 0 && (
         <StyledSelect value={selectValueState} onChange={handleChange}>
           {options.map(([optionVal, optionLabel], index) => {
             return (
