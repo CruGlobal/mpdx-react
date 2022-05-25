@@ -83,8 +83,6 @@ const inactiveStatuses: (StatusEnum | null | undefined)[] = [
   StatusEnum.NotInterested,
   StatusEnum.ResearchAbandoned,
   StatusEnum.Unresponsive,
-  null,
-  undefined,
 ];
 
 export const ContactsMapPanel: React.FC<ContactMapsPanelProps> = ({
@@ -185,7 +183,9 @@ export const ContactsMapPanel: React.FC<ContactMapsPanelProps> = ({
       title: t('All Inactive'),
       imgUrl: '/images/pin_grey.png',
       data: data?.filter(
-        (contact) => contact?.lat && inactiveStatuses.includes(contact?.status),
+        (contact) =>
+          contact?.lat &&
+          (inactiveStatuses.includes(contact?.status) || !contact.status),
       ),
     },
     NoAddress: {
