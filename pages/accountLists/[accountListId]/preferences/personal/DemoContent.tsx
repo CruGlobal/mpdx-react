@@ -48,7 +48,7 @@ export const info = {
       value: '1234567890',
       type: 'home',
       primary: false,
-      invalid: true,
+      invalid: false,
     },
     {
       value: '0987654321',

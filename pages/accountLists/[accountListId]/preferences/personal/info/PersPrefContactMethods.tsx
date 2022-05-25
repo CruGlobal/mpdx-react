@@ -50,14 +50,16 @@ interface ContactMethodData {
 // Single contact phone/email
 
 interface PersPrefContactMethodProps {
+  type: string;
   method: ContactMethodData;
 }
 
 const PersPrefContactMethod: React.FC<PersPrefContactMethodProps> = ({
+  type,
   method,
 }) => {
   const { t } = useTranslation();
-  const prefix = 'address' in method ? 'mailto' : 'tel';
+  const prefix = type === 'email' ? 'mailto' : 'tel';
   const value = method.value;
 
   return (
@@ -71,10 +73,12 @@ const PersPrefContactMethod: React.FC<PersPrefContactMethodProps> = ({
 // List of phone/email contacts
 
 interface PersPrefContactMethodsProps {
+  type: string;
   methods: ContactMethodData[];
 }
 
 export const PersPrefContactMethods = ({
+  type,
   methods,
 }: PersPrefContactMethodsProps): ReactElement<PersPrefContactMethodsProps> => {
   const validMethods = methods.filter((method) => method.invalid !== true);
@@ -88,16 +92,23 @@ export const PersPrefContactMethods = ({
   return (
     <>
       {validMethods.length === 1 && (
-        <PersPrefContactMethod method={validMethods[0]} />
+        <PersPrefContactMethod type={type} method={validMethods[0]} />
       )}
       {validMethods.length > 1 && (
         <StyledAccordion>
           <StyledAccordionSummary expandIcon={<ExpandMore />}>
-            <PersPrefContactMethod method={validMethods[primaryMethodIndex]} />
+            <PersPrefContactMethod
+              type={type}
+              method={validMethods[primaryMethodIndex]}
+            />
           </StyledAccordionSummary>
           <StyledAccordionDetails>
             {validMethodsSansPrimary.map((contact) => (
-              <PersPrefContactMethod method={contact} key={contact.value} />
+              <PersPrefContactMethod
+                type={type}
+                method={contact}
+                key={contact.value}
+              />
             ))}
           </StyledAccordionDetails>
         </StyledAccordion>

@@ -91,8 +91,8 @@ export const PersPrefInfo: React.FC = () => {
         </StyledContactTop>
         <StyledContactBottom>
           <PersPrefWork employer={info.employer} occupation={info.occupation} />
-          <PersPrefContactMethods methods={info.email} />
-          <PersPrefContactMethods methods={info.phone} />
+          <PersPrefContactMethods type="email" methods={info.email} />
+          <PersPrefContactMethods type="phone" methods={info.phone} />
           <PersPrefAnniversary
             marital_status={t(info.marital_status)}
             anniversary_day={info.anniversary_day}
