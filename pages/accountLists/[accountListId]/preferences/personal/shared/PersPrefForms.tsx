@@ -73,7 +73,6 @@ interface PersPrefFieldProps {
   radioCheckedIcon?: ReactElement;
   checked?: boolean;
   required?: boolean;
-  // onChange?: () => void;
   className?: string;
   disabled?: boolean;
 }
@@ -98,7 +97,6 @@ export const PersPrefField: React.FC<PersPrefFieldProps> = ({
   radioCheckedIcon = <RadioButtonChecked />,
   checked = false,
   required = false,
-  // onChange,
   className = '',
   disabled = false,
 }) => {
@@ -184,8 +182,6 @@ export const PersPrefField: React.FC<PersPrefFieldProps> = ({
     </FormControl>
   );
 };
-
-// New version
 
 interface PersPrefFormWrapperProps {
   formAttrs?: { action?: string; method?: string };
