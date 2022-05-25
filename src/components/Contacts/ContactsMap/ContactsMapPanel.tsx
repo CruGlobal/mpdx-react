@@ -252,11 +252,13 @@ export const ContactsMapPanel: React.FC<ContactMapsPanelProps> = ({
                           ref: selected?.id === contact?.id ? cardRef : null,
                         }}
                         onClick={() => {
-                          setSelected(contact);
-                          panTo({
-                            lat: contact?.lat,
-                            lng: contact?.lng,
-                          });
+                          if (contact?.lat) {
+                            setSelected(contact);
+                            panTo({
+                              lat: contact?.lat,
+                              lng: contact?.lng,
+                            });
+                          }
                         }}
                       >
                         <Box display="flex" flexDirection="column" width="100%">
