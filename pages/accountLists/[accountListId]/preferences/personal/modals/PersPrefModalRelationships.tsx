@@ -79,14 +79,14 @@ const RelationshipModal: React.FC<RelationshipModalProps> = ({
 };
 
 interface AddRelationshipProps {
-  current?: {
+  relationship?: {
     name: string;
     relation: string;
   };
 }
 
 const AddRelationship: React.FC<AddRelationshipProps> = ({
-  current = null,
+  relationship = null,
 }) => {
   const { t } = useTranslation();
   const [relationshipOpen, setRelationshipOpen] = useState(false);
@@ -95,7 +95,7 @@ const AddRelationship: React.FC<AddRelationshipProps> = ({
     setRelationshipOpen(true);
   };
 
-  const relationships = [
+  const relations = [
     t('Husband'),
     t('Son'),
     t('Father'),
@@ -119,7 +119,7 @@ const AddRelationship: React.FC<AddRelationshipProps> = ({
   return (
     <StyledGridContainer container spacing={2}>
       <Grid item xs={12} sm={7}>
-        {!current ? (
+        {!relationship ? (
           <>
             <AddRelationshipButton
               variant="outlined"
@@ -136,16 +136,16 @@ const AddRelationship: React.FC<AddRelationshipProps> = ({
           </>
         ) : (
           <PersPrefFieldWrapper formControlDisabled={true}>
-            <StyledOutlinedInput value={current.name} />
+            <StyledOutlinedInput value={relationship.name} />
           </PersPrefFieldWrapper>
         )}
       </Grid>
       <Grid item xs={12} sm={4}>
         <PersPrefFieldWrapper>
-          <StyledSelect value={current ? current.relation : ''}>
-            {relationships.map((current2) => (
-              <MenuItem value={current2} key={current2}>
-                {t(current2)}
+          <StyledSelect value={relationship ? relationship.relation : ''}>
+            {relations.map((relation) => (
+              <MenuItem value={relation} key={relation}>
+                {relation}
               </MenuItem>
             ))}
           </StyledSelect>
@@ -186,9 +186,9 @@ export const PersPrefModalRelationships: React.FC = () => {
         <Grid item xs={12} sm={4}>
           <PersPrefFieldWrapper labelText={t('Relationship Status')}>
             <StyledSelect value={info.marital_status}>
-              {statuses.map((current) => (
-                <MenuItem value={current} key={current}>
-                  {t(current)}
+              {statuses.map((status) => (
+                <MenuItem value={status} key={status}>
+                  {status}
                 </MenuItem>
               ))}
             </StyledSelect>
@@ -206,8 +206,8 @@ export const PersPrefModalRelationships: React.FC = () => {
           <OptionHeadings smallCols={1}>{t('Delete')}</OptionHeadings>
         </Hidden>
       </Grid>
-      {info.family_relationships.map((current, index) => (
-        <AddRelationship current={current} key={index} />
+      {info.family_relationships.map((relationship, index) => (
+        <AddRelationship relationship={relationship} key={index} />
       ))}
       <AddRelationship />
       <AddButtonBox>
