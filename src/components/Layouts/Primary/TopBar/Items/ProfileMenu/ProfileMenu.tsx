@@ -217,14 +217,14 @@ const ProfileMenu = (): ReactElement => {
           component="a"
           href={`/accountLists/${accountListId}/preferences/personal`}
         >
-          {/* <Link href="/preferences/personal">{t('Preferences')}</Link> */}
           <ListItemText primary={t('Preferences')} />
         </MenuItem>
-        <HandoffLink path="/preferences/personal">
+        {/* Keeping the original Preferences link because I'm not certain I've set the new one up properly */}
+        {/* <HandoffLink path="/preferences/personal">
           <MenuItem onClick={handleProfileMenuClose} component="a">
             <ListItemText primary={t('Preferences')} />
           </MenuItem>
-        </HandoffLink>
+        </HandoffLink> */}
         <HandoffLink path="/preferences/notifications">
           <MenuItem onClick={handleProfileMenuClose} component="a">
             <ListItemText primary={t('Notifications')} />
