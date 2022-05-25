@@ -77,6 +77,16 @@ const CruFocus = styled(Typography)(({ theme }) => ({
   display: 'inline',
 }));
 
+const inactiveStatuses: (StatusEnum | null | undefined)[] = [
+  StatusEnum.ExpiredReferral,
+  StatusEnum.NeverAsk,
+  StatusEnum.NotInterested,
+  StatusEnum.ResearchAbandoned,
+  StatusEnum.Unresponsive,
+  null,
+  undefined,
+];
+
 export const ContactsMapPanel: React.FC<ContactMapsPanelProps> = ({
   data,
   panTo,
@@ -175,14 +185,7 @@ export const ContactsMapPanel: React.FC<ContactMapsPanelProps> = ({
       title: t('All Inactive'),
       imgUrl: '/images/pin_grey.png',
       data: data?.filter(
-        (contact) =>
-          contact?.lat &&
-          (contact?.status === StatusEnum.ExpiredReferral ||
-            contact?.status === StatusEnum.NeverAsk ||
-            contact?.status === StatusEnum.NotInterested ||
-            contact?.status === StatusEnum.ResearchAbandoned ||
-            contact?.status === StatusEnum.Unresponsive ||
-            !contact?.status),
+        (contact) => contact?.lat && inactiveStatuses.includes(contact?.status),
       ),
     },
     NoAddress: {
