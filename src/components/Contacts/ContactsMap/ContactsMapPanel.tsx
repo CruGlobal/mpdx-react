@@ -72,6 +72,11 @@ const ContactWrapper = styled(Box)(
   }),
 );
 
+const CruFocus = styled(Typography)(({ theme }) => ({
+  marginRight: theme.spacing(0.5),
+  display: 'inline',
+}));
+
 export const ContactsMapPanel: React.FC<ContactMapsPanelProps> = ({
   data,
   panTo,
@@ -270,18 +275,8 @@ export const ContactsMapPanel: React.FC<ContactMapsPanelProps> = ({
                               <Typography>{contact?.street}</Typography>
                               <Typography>{`${contact?.city} ${contact?.state} ${contact?.postal}`}</Typography>
                               <Box>
-                                <Typography
-                                  display="inline"
-                                  style={{ marginRight: theme.spacing(0.5) }}
-                                >
-                                  {t('Source:')}
-                                </Typography>
-                                <Typography
-                                  display="inline"
-                                  style={{ marginRight: theme.spacing(0.5) }}
-                                >
-                                  {contact?.source}
-                                </Typography>
+                                <CruFocus>{t('Source:')}</CruFocus>
+                                <CruFocus>{contact?.source}</CruFocus>
                                 <Typography display="inline">
                                   {contact?.date}
                                 </Typography>
