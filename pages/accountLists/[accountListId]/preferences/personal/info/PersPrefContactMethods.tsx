@@ -82,11 +82,11 @@ export const PersPrefContactMethods = ({
   methods,
 }: PersPrefContactMethodsProps): ReactElement<PersPrefContactMethodsProps> => {
   const validMethods = methods.filter((method) => method.invalid !== true);
-  const primaryMethodIndex = validMethods.findIndex(
+  const validMethodsPrimary = validMethods.filter(
     (method) => method.primary === true,
   );
-  const validMethodsSansPrimary = validMethods.filter(
-    (method, index) => index !== primaryMethodIndex,
+  const validMethodsSecondary = validMethods.filter(
+    (method) => method.primary === false,
   );
 
   return (
@@ -99,11 +99,11 @@ export const PersPrefContactMethods = ({
           <StyledAccordionSummary expandIcon={<ExpandMore />}>
             <PersPrefContactMethod
               type={type}
-              method={validMethods[primaryMethodIndex]}
+              method={validMethodsPrimary[0]}
             />
           </StyledAccordionSummary>
           <StyledAccordionDetails>
-            {validMethodsSansPrimary.map((contact) => (
+            {validMethodsSecondary.map((contact) => (
               <PersPrefContactMethod
                 type={type}
                 method={contact}
