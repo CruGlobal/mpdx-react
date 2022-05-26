@@ -241,16 +241,18 @@ export const PersPrefFieldWrapper: React.FC<PersPrefFieldWrapperProps> = ({
   children,
 }) => {
   const { t } = useTranslation();
-  const labelOutput =
-    labelText !== '' ? <StyledFormLabel>{t(labelText)}</StyledFormLabel> : '';
-  const helperTextOutput =
-    helperText !== '' ? (
-      <StyledFormHelperText {...formHelperTextProps}>
-        {t(helperText)}
-      </StyledFormHelperText>
-    ) : (
-      ''
-    );
+  const labelOutput = labelText ? (
+    <StyledFormLabel>{t(labelText)}</StyledFormLabel>
+  ) : (
+    ''
+  );
+  const helperTextOutput = helperText ? (
+    <StyledFormHelperText {...formHelperTextProps}>
+      {t(helperText)}
+    </StyledFormHelperText>
+  ) : (
+    ''
+  );
 
   return (
     <FormControl
