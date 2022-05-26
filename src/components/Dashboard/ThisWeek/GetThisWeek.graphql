@@ -37,7 +37,7 @@ query GetThisWeek(
   }
   prayerRequestTasks: tasks(
     accountListId: $accountListId
-    first: 3
+    first: 2
     tasksFilter: { activityType: PRAYER_REQUEST, completed: false }
   ) {
     nodes {
