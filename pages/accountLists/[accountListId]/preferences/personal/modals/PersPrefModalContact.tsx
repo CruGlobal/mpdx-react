@@ -55,7 +55,7 @@ const AddContact: React.FC<AddContactProps> = ({
   current,
   isPhone,
   type,
-  index = 1000,
+  index,
 }) => {
   const { t } = useTranslation();
   const theme = useTheme();
@@ -174,7 +174,7 @@ const ContactMethods: React.FC<{ type: string }> = ({ type }) => {
           key={index}
         />
       ))}
-      <AddContact isPhone={isPhone} type={type} />
+      <AddContact isPhone={isPhone} type={type} index={data.length} />
       <AddButtonBox>
         <Button
           variant="outlined"
