@@ -9,7 +9,6 @@ import {
   Radio,
   Theme,
   styled,
-  useTheme,
 } from '@material-ui/core';
 import { AddCircle, Cancel, Check } from '@material-ui/icons';
 import {
@@ -39,6 +38,14 @@ const SharedFieldHoverStyles = ({ theme }: { theme: Theme }) => ({
 const StyledRadio = styled(Radio)(SharedFieldHoverStyles);
 const StyledCheckbox = styled(Checkbox)(SharedFieldHoverStyles);
 
+const GreenCheck = styled(Check)(({ theme }) => ({
+  color: theme.palette.mpdxGreen.main,
+}));
+
+const RedCancel = styled(Cancel)(({ theme }) => ({
+  color: theme.palette.mpdxRed.main,
+}));
+
 interface AddContactProps {
   current?: {
     value: string;
@@ -58,7 +65,6 @@ const AddContact: React.FC<AddContactProps> = ({
   index,
 }) => {
   const { t } = useTranslation();
-  const theme = useTheme();
 
   const contactTypes = isPhone
     ? [
@@ -112,9 +118,7 @@ const AddContact: React.FC<AddContactProps> = ({
           name={`primary-${type}`}
           value={`primary${index}`}
           icon={<EmptyIcon />}
-          checkedIcon={
-            <Check style={{ color: theme.palette.mpdxGreen.main }} />
-          }
+          checkedIcon={<GreenCheck />}
           checked={primary}
           disableRipple
         />
@@ -125,7 +129,7 @@ const AddContact: React.FC<AddContactProps> = ({
         <HiddenSmLabel>{t('Invalid')}</HiddenSmLabel>
         <StyledCheckbox
           icon={<EmptyIcon />}
-          checkedIcon={<Cancel style={{ color: theme.palette.mpdxRed.main }} />}
+          checkedIcon={<RedCancel />}
           checked={invalid}
           disableRipple
         />

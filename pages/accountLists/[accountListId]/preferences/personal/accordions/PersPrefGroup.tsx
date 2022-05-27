@@ -1,9 +1,8 @@
 import React from 'react';
-import { useTranslation } from 'react-i18next';
 import { Box, Typography, styled } from '@material-ui/core';
 
 const StyledGroupWrapper = styled(Box)(({ theme }) => ({
-  marginBottom: theme.spacing(3),
+  marginTop: theme.spacing(3),
 }));
 
 interface PersPrefGroupProps {
@@ -14,12 +13,10 @@ export const PersPrefGroup: React.FC<PersPrefGroupProps> = ({
   title,
   children,
 }) => {
-  const { t } = useTranslation();
-
   return (
-    <StyledGroupWrapper>
+    <StyledGroupWrapper component="section">
       <Typography component="h3" variant="h5">
-        {t(title)}
+        {title}
       </Typography>
       {children}
     </StyledGroupWrapper>

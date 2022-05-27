@@ -4,7 +4,7 @@ import { Button, DialogContent, Tab, styled } from '@material-ui/core';
 import { TabContext, TabList, TabPanel } from '@material-ui/lab';
 import Modal from '../../../../../../src/components/common/Modal/Modal';
 import { StyledDialogActions } from './PersPrefModalShared';
-import { PersPrefModalContact } from './PersPrefModalContact';
+import { PersPrefModalContact } from './PersPrefModalContactInfo';
 import { PersPrefModalDetails } from './PersPrefModalDetails';
 import { PersPrefModalSocial } from './PersPrefModalSocial';
 import { PersPrefModalRelationships } from './PersPrefModalRelationships';

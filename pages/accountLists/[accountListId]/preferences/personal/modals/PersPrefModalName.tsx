@@ -1,7 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Grid, styled } from '@material-ui/core';
-import { useTheme } from '@material-ui/core/styles';
 import { PersPrefField } from '../shared/PersPrefForms';
 import { info } from '../DemoContent';
 
@@ -13,12 +12,15 @@ const StyledGridItem = styled(Grid)(({ theme }) => ({
   },
 }));
 
+const StyledGrid = styled(Grid)(({ theme }) => ({
+  marginBottom: theme.spacing(2),
+}));
+
 export const PersPrefModalName: React.FC = () => {
   const { t } = useTranslation();
-  const theme = useTheme();
 
   return (
-    <Grid container spacing={2} style={{ marginBottom: theme.spacing(2) }}>
+    <StyledGrid container spacing={2}>
       <StyledGridItem item xs={12} sm={2}>
         <PersPrefField label={t('Title')} inputValue={info.title} />
       </StyledGridItem>
@@ -39,6 +41,6 @@ export const PersPrefModalName: React.FC = () => {
       <StyledGridItem item xs={12} sm={2}>
         <PersPrefField label={t('Suffix')} inputValue={info.suffix} />
       </StyledGridItem>
-    </Grid>
+    </StyledGrid>
   );
 };

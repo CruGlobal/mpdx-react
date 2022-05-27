@@ -18,7 +18,6 @@ import {
   Select,
   Theme,
   styled,
-  useTheme,
 } from '@material-ui/core';
 import {
   CheckBox,
@@ -183,6 +182,10 @@ export const PersPrefField: React.FC<PersPrefFieldProps> = ({
   );
 };
 
+const StyledButton = styled(Button)(({ theme }) => ({
+  marginTop: theme.spacing(2),
+}));
+
 interface PersPrefFormWrapperProps {
   formAttrs?: { action?: string; method?: string };
   formButtonText?: string;
@@ -198,20 +201,18 @@ export const PersPrefFormWrapper: React.FC<PersPrefFormWrapperProps> = ({
   children,
 }) => {
   const { t } = useTranslation();
-  const theme = useTheme();
 
   return (
     <form {...formAttrs}>
       {children}
-      <Button
-        style={{ marginTop: theme.spacing(2) }}
+      <StyledButton
         variant={formButtonVariant}
         color={formButtonColor}
         disableElevation
         disableRipple
       >
         {t(formButtonText)}
-      </Button>
+      </StyledButton>
     </form>
   );
 };

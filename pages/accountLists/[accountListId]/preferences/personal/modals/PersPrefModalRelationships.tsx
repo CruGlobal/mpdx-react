@@ -158,6 +158,10 @@ const AddRelationship: React.FC<AddRelationshipProps> = ({
   );
 };
 
+const StyledGrid = styled(Grid)(({ theme }) => ({
+  marginTop: theme.spacing(1),
+}));
+
 export const PersPrefModalRelationships: React.FC = () => {
   const { t } = useTranslation();
 
@@ -196,9 +200,9 @@ export const PersPrefModalRelationships: React.FC = () => {
         </Grid>
       </Grid>
       <Grid container spacing={2}>
-        <Grid item xs={12} sm={7} style={{ marginTop: 8 }}>
+        <StyledGrid item xs={12} sm={7}>
           <SectionHeading>{t('Relationships')}</SectionHeading>
-        </Grid>
+        </StyledGrid>
         <Hidden xsDown>
           <OptionHeadings smallCols={4} align="flex-start">
             {t('Type')}

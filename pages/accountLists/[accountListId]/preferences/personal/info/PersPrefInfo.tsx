@@ -68,6 +68,10 @@ const StyledContactEdit = styled(Box)(({ theme }) => ({
   },
 }));
 
+const StyledCard = styled(Card)(() => ({
+  position: 'relative',
+}));
+
 export const PersPrefInfo: React.FC = () => {
   const { t } = useTranslation();
 
@@ -78,7 +82,7 @@ export const PersPrefInfo: React.FC = () => {
   };
 
   return (
-    <Card style={{ position: 'relative' }}>
+    <StyledCard component="section">
       <CardContent>
         <StyledContactTop>
           <StyledAvatar
@@ -115,6 +119,6 @@ export const PersPrefInfo: React.FC = () => {
           ) : null}
         </StyledContactEdit>
       </CardContent>
-    </Card>
+    </StyledCard>
   );
 };

@@ -1,5 +1,4 @@
 import React from 'react';
-import { useTranslation } from 'react-i18next';
 import {
   Accordion,
   AccordionDetails,
@@ -11,12 +10,13 @@ import {
 import { ExpandMore } from '@material-ui/icons';
 import { accordionShared } from '../shared/PersPrefShared';
 
-const StyledAccordion = styled(Accordion)({
+const StyledAccordion = styled(Accordion)(({ theme }) => ({
+  marginTop: theme.spacing(1),
   '& .MuiAccordionSummary-content.Mui-expanded': {
     margin: '12px 0',
   },
   ...accordionShared,
-});
+}));
 
 const StyledAccordionSummary = styled(AccordionSummary)(({ theme }) => ({
   '& .MuiAccordionSummary-content': {
@@ -47,6 +47,7 @@ const StyledAccordionColumn = styled(Box)(({ theme }) => ({
 }));
 
 const StyledAccordionDetails = styled(Box)(({ theme }) => ({
+  flexGrow: 1,
   [theme.breakpoints.up('sm')]: {
     width: 'calc((100% - 36px) * 0.6666)',
     marginLeft: 'calc((100% - 36px) * 0.3333)',
@@ -67,30 +68,24 @@ export const PersPrefItem: React.FC<PersPrefItemProps> = ({
   value,
   children,
 }) => {
-  const { t } = useTranslation();
-
   return (
-    <Box marginTop={1}>
-      <StyledAccordion
-        onChange={() => onAccordionChange(label)}
-        expanded={expandedPanel === label}
-      >
-        <StyledAccordionSummary expandIcon={<ExpandMore />}>
+    <StyledAccordion
+      onChange={() => onAccordionChange(label)}
+      expanded={expandedPanel === label}
+    >
+      <StyledAccordionSummary expandIcon={<ExpandMore />}>
+        <StyledAccordionColumn>
+          <Typography component="span">{label}</Typography>
+        </StyledAccordionColumn>
+        {value !== '' && (
           <StyledAccordionColumn>
-            <Typography component="span">{t(label)}</Typography>
+            <Typography component="span">{value}</Typography>
           </StyledAccordionColumn>
-          {value !== '' && (
-            <StyledAccordionColumn>
-              <Typography component="span">{t(value)}</Typography>
-            </StyledAccordionColumn>
-          )}
-        </StyledAccordionSummary>
-        <AccordionDetails>
-          <StyledAccordionDetails style={{ flexGrow: 1 }}>
-            {children}
-          </StyledAccordionDetails>
-        </AccordionDetails>
-      </StyledAccordion>
-    </Box>
+        )}
+      </StyledAccordionSummary>
+      <AccordionDetails>
+        <StyledAccordionDetails>{children}</StyledAccordionDetails>
+      </AccordionDetails>
+    </StyledAccordion>
   );
 };
