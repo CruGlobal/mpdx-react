@@ -17,17 +17,16 @@ export const FilterListItemShowAll: React.FC<Props> = ({
   return (
     <ListItem button onClick={onToggle} data-testid="FilterListItemShowAll">
       <ListItemText
-        color="primary"
         primary={showAll ? t('See Fewer Filters') : t('See More Filters')}
         primaryTypographyProps={{
-          color: 'primary',
           variant: 'subtitle1',
         }}
+        style={{ color: '#2196F3' }}
       />
       {showAll ? (
-        <ExpandLess color="primary" />
+        <ExpandLess style={{ color: '#2196F3' }} />
       ) : (
-        <ExpandMore color="primary" />
+        <ExpandMore style={{ color: '#2196F3' }} />
       )}
     </ListItem>
   );
