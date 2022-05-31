@@ -65,9 +65,12 @@ const FilterList = styled(List)(({ theme }) => ({
   },
 }));
 
-const LinkButton = styled(Button)(() => ({
+const LinkButton = styled(Button)(({ theme }) => ({
   minWidth: 0,
   textTransform: 'none',
+  fontSize: 16,
+  color: theme.palette.info.main,
+  fontWeight: 'bold',
 }));
 
 interface FilterPanelProps {
@@ -428,7 +431,6 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
                 </IconButton>
               </Box>
               <LinkButton
-                color="primary"
                 style={{ marginInlineStart: theme.spacing(-1) }}
                 disabled={Object.keys(selectedFilters).length === 0}
                 onClick={() => setSaveFilterModalOpen(true)}
@@ -436,7 +438,6 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
                 {t('Save')}
               </LinkButton>
               <LinkButton
-                color="primary"
                 style={{ marginInlineStart: theme.spacing(2) }}
                 disabled={Object.keys(selectedFilters).length === 0}
                 onClick={clearSelectedFilter}
