@@ -1,4 +1,4 @@
-import { ListItem, ListItemText } from '@material-ui/core';
+import { ListItem, ListItemText, useTheme } from '@material-ui/core';
 import { ExpandLess, ExpandMore } from '@material-ui/icons';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -13,6 +13,7 @@ export const FilterListItemShowAll: React.FC<Props> = ({
   onToggle,
 }: Props) => {
   const { t } = useTranslation();
+  const theme = useTheme();
 
   return (
     <ListItem button onClick={onToggle} data-testid="FilterListItemShowAll">
@@ -21,12 +22,12 @@ export const FilterListItemShowAll: React.FC<Props> = ({
         primaryTypographyProps={{
           variant: 'subtitle1',
         }}
-        style={{ color: '#2196F3' }}
+        style={{ color: theme.palette.info.main }}
       />
       {showAll ? (
-        <ExpandLess style={{ color: '#2196F3' }} />
+        <ExpandLess style={{ color: theme.palette.info.main }} />
       ) : (
-        <ExpandMore style={{ color: '#2196F3' }} />
+        <ExpandMore style={{ color: theme.palette.info.main }} />
       )}
     </ListItem>
   );

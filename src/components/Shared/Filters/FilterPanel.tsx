@@ -65,11 +65,11 @@ const FilterList = styled(List)(({ theme }) => ({
   },
 }));
 
-const LinkButton = styled(Button)(() => ({
+const LinkButton = styled(Button)(({ theme }) => ({
   minWidth: 0,
   textTransform: 'none',
   fontSize: 16,
-  color: '#2196F3',
+  color: theme.palette.info.main,
   fontWeight: 'bold',
 }));
 
