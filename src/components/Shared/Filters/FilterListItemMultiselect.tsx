@@ -1,9 +1,5 @@
-import {
-  Checkbox,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-} from '@material-ui/core';
+import { ListItem, ListItemText, TextField } from '@material-ui/core';
+import { Autocomplete } from '@material-ui/lab';
 import React from 'react';
 import { MultiselectFilter } from '../../../../graphql/types.generated';
 
@@ -18,15 +14,8 @@ export const FilterListItemMultiselect: React.FC<Props> = ({
   selected,
   onUpdate,
 }: Props) => {
-  const isChecked = (value?: string | null) =>
-    selected && selected.some((it) => it === value);
-
-  const toggleValue = (value?: string | null) => {
-    if (value && !isChecked(value)) {
-      onUpdate(selected ? [...selected, value] : [value]);
-    } else {
-      onUpdate(selected?.filter((it) => it !== value));
-    }
+  const toggleValue = (value?: string[]) => {
+    onUpdate(value);
   };
 
   return (
@@ -37,23 +26,24 @@ export const FilterListItemMultiselect: React.FC<Props> = ({
           primaryTypographyProps={{ variant: 'subtitle1' }}
         />
       </ListItem>
-      {filter.options?.map(({ value, name }) => (
-        <ListItem key={value} button onClick={() => toggleValue(value)}>
-          <ListItemIcon data-testid="MultiSelectOption">
-            <Checkbox
-              data-testid="CheckboxIcon"
-              edge="start"
-              color="secondary"
-              checked={isChecked(value)}
-              disableRipple
-            />
-          </ListItemIcon>
-          <ListItemText
-            primary={name}
-            primaryTypographyProps={{ variant: 'subtitle1' }}
-          />
-        </ListItem>
-      ))}
+      <ListItem>
+        <Autocomplete
+          multiple
+          value={selected || []}
+          onChange={(_, value) => toggleValue(value)}
+          options={filter.options?.map(({ value }) => value) || []}
+          getOptionLabel={(option) =>
+            filter.options?.find(
+              ({ value }) => String(value) === String(option),
+            )?.name ?? ''
+          }
+          filterSelectedOptions
+          fullWidth
+          renderInput={(params) => (
+            <TextField {...params} placeholder={filter.title} />
+          )}
+        />
+      </ListItem>
     </div>
   );
 };
