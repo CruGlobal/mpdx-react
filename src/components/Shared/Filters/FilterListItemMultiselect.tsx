@@ -40,7 +40,11 @@ export const FilterListItemMultiselect: React.FC<Props> = ({
           filterSelectedOptions
           fullWidth
           renderInput={(params) => (
-            <TextField {...params} placeholder={filter.title} />
+            <TextField
+              {...params}
+              placeholder={filter.title}
+              data-testid="multiSelectFilter"
+            />
           )}
         />
       </ListItem>
