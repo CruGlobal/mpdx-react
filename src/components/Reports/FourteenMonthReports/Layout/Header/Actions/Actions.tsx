@@ -18,6 +18,8 @@ interface FourteenMonthReportActionsProps {
   onPrint: (event: React.MouseEvent<unknown>) => void;
 }
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 const DownloadCsvLink = styled(CSVLink)(({}) => ({
   color: 'inherit',
   textDecoration: 'none',
