@@ -56,3 +56,6 @@ yarn-error.log*
 
 # Compiled OneSky files
 /onesky/*.js
+
+# Lint cache
+.eslintcache
