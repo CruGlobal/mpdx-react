@@ -59,6 +59,12 @@ const download = async (): Promise<void> => {
   });
 };
 
-download();
+download()
+  .then(() => {
+    console.log('Finished downloading translations from OneSky.');
+  })
+  .catch((e) => {
+    console.error(e);
+  });
 
 export {};
