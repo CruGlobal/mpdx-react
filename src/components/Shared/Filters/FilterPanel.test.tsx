@@ -8,10 +8,7 @@ import {
   gqlMock,
   GqlMockedProvider,
 } from '../../../../__tests__/util/graphqlMocking';
-import {
-  ContactFilterStatusEnum,
-  MultiselectFilter,
-} from '../../../../graphql/types.generated';
+import { ContactFilterStatusEnum } from '../../../../graphql/types.generated';
 import {
   mockDateRangeFilter,
   mockMultiselectFilter,
@@ -178,18 +175,7 @@ describe('FilterPanel', () => {
       userEvent.click(getByText(filterPanelDefaultMock.name));
       expect(getByText(filterPanelDefaultMock.filters[0].title)).toBeVisible();
       expect(getByText(filterPanelDefaultMock.filters[1].title)).toBeVisible();
-
-      const option1 =
-        (filterPanelDefaultMock.filters[1] as MultiselectFilter)?.options &&
-        getByText(
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          (filterPanelDefaultMock.filters[1] as MultiselectFilter)?.options[0]
-            .name,
-        );
-      expect(option1).toBeVisible();
-      userEvent.click(queryAllByTestId('CheckboxIcon')[0]);
-      expect(option1).toBeVisible();
+      expect(getByTestId('multiSelectFilter')).toBeInTheDocument();
       await waitFor(() =>
         userEvent.click(getByTestId('CloseFilterGroupButton')),
       );
@@ -199,7 +185,7 @@ describe('FilterPanel', () => {
     });
 
     it('should display a selected filter', async () => {
-      const { getByText, queryByTestId, getAllByTestId, getAllByRole } = render(
+      const { getByText, queryByTestId, getAllByTestId, getByTestId } = render(
         <MuiPickersUtilsProvider utils={LuxonUtils}>
           <GqlMockedProvider<SaveFilterMutation>>
             <FilterPanel
@@ -223,10 +209,8 @@ describe('FilterPanel', () => {
       userEvent.click(getByText('Group 1 (1)'));
       expect(getByText(filterPanelDefaultMock.filters[0].title)).toBeVisible();
       expect(getByText(filterPanelDefaultMock.filters[1].title)).toBeVisible();
-
+      expect(getByTestId('multiSelectFilter')).toBeInTheDocument();
       expect(getByText('Group 1 (1)')).toBeVisible();
-
-      expect(getAllByRole('checkbox')[0]).toBeChecked();
     });
 
     it('opens and selects a saved filter', async () => {
@@ -473,17 +457,7 @@ describe('FilterPanel', () => {
       userEvent.click(getByText(filterPanelDefaultMock.name));
       expect(getByText(filterPanelDefaultMock.filters[0].title)).toBeVisible();
       expect(getByText(filterPanelDefaultMock.filters[1].title)).toBeVisible();
-      const option1 =
-        (filterPanelDefaultMock.filters[1] as MultiselectFilter)?.options &&
-        getByText(
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          (filterPanelDefaultMock.filters[1] as MultiselectFilter).options[0]
-            .name,
-        );
-      expect(option1).toBeVisible();
-      userEvent.click(queryAllByTestId('CheckboxIcon')[0]);
-      expect(option1).toBeVisible();
+      expect(getByTestId('multiSelectFilter')).toBeInTheDocument();
       await waitFor(() =>
         userEvent.click(getByTestId('CloseFilterGroupButton')),
       );
