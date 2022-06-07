@@ -40,6 +40,7 @@ const contactMock = {
     postalCode: 'Test',
     state: 'TT',
     street: '1111 Test Street',
+    updatedAt: new Date('2021-06-21T03:40:05-06:00').toISOString(),
   },
   starred: false,
   status: null,

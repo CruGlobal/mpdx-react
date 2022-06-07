@@ -14,6 +14,7 @@ import {
 import FilterList from '@material-ui/icons/FilterList';
 import { useTranslation } from 'react-i18next';
 import ArrowDropDown from '@material-ui/icons/ArrowDropDown';
+import { ViewList } from '@material-ui/icons';
 import { SearchBox } from '../../common/SearchBox/SearchBox';
 import {
   ContactFilterSetInput,
@@ -83,6 +84,7 @@ const ActionsButton = styled(Button)(({ theme }) => ({
 export enum TableViewModeEnum {
   List = 'list',
   Flows = 'flows',
+  Map = 'map',
 }
 
 export enum ListHeaderCheckBoxState {
@@ -139,23 +141,29 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
 
   return (
     <HeaderWrap>
-      <Hidden xsUp={contactDetailsOpen}>
-        <Checkbox
-          checked={headerCheckboxState === ListHeaderCheckBoxState.checked}
-          color="secondary"
-          indeterminate={
-            headerCheckboxState === ListHeaderCheckBoxState.partial
-          }
-          onChange={onCheckAllItems}
-        />
-      </Hidden>
+      {contactsView !== TableViewModeEnum.Map && (
+        <Hidden xsUp={contactDetailsOpen}>
+          <Checkbox
+            checked={headerCheckboxState === ListHeaderCheckBoxState.checked}
+            color="secondary"
+            indeterminate={
+              headerCheckboxState === ListHeaderCheckBoxState.partial
+            }
+            onChange={onCheckAllItems}
+          />
+        </Hidden>
+      )}
 
       <FilterButton
         activeFilters={activeFilters}
         panelOpen={filterPanelOpen}
         onClick={toggleFilterPanel}
       >
-        <FilterIcon titleAccess={t('Toggle Filter Panel')} />
+        {contactsView === TableViewModeEnum.Map ? (
+          <ViewList titleAccess={t('Toggle Contact List')} />
+        ) : (
+          <FilterIcon titleAccess={t('Toggle Filter Panel')} />
+        )}
       </FilterButton>
       <SearchBox
         page={page}
@@ -167,65 +175,64 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
       />
 
       <ItemsShowingText>
-        {contactsView !== TableViewModeEnum.Flows
+        {contactsView === TableViewModeEnum.List
           ? t('Showing {{count}}', { count: totalItems })
           : ''}
       </ItemsShowingText>
 
       {page === 'contact' ? (
         <>
-          <Hidden lgDown={contactDetailsOpen}>
-            <ActionsButton
-              aria-haspopup
-              aria-expanded={open}
-              onClick={handleClick}
-              endIcon={<ArrowDropDown />}
-            >
-              {t('Actions')}
-            </ActionsButton>
-            <Menu
-              open={open}
-              onClose={handleClose}
-              anchorEl={anchorEl}
-              getContentAnchorEl={null}
-              anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-              transformOrigin={{ vertical: 'top', horizontal: 'center' }}
-            >
-              <MenuItem>
-                <ListItemText>{t('Add Tags')}</ListItemText>
-              </MenuItem>
-              <MenuItem divider>
-                <ListItemText>{t('Remove Tags')}</ListItemText>
-              </MenuItem>
-              <MenuItem>
-                <ListItemText>{t('Add Task')}</ListItemText>
-              </MenuItem>
-              <MenuItem divider>
-                <ListItemText>{t('Log Task')}</ListItemText>
-              </MenuItem>
+          {contactsView !== TableViewModeEnum.Map && (
+            <Hidden lgDown={contactDetailsOpen}>
+              <ActionsButton
+                aria-haspopup
+                aria-expanded={open}
+                onClick={handleClick}
+                endIcon={<ArrowDropDown />}
+              >
+                {t('Actions')}
+              </ActionsButton>
+              <Menu
+                open={open}
+                onClose={handleClose}
+                anchorEl={anchorEl}
+                getContentAnchorEl={null}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+                transformOrigin={{ vertical: 'top', horizontal: 'center' }}
+              >
+                <MenuItem>
+                  <ListItemText>{t('Add Tags')}</ListItemText>
+                </MenuItem>
+                <MenuItem divider>
+                  <ListItemText>{t('Remove Tags')}</ListItemText>
+                </MenuItem>
+                <MenuItem>
+                  <ListItemText>{t('Add Task')}</ListItemText>
+                </MenuItem>
+                <MenuItem divider>
+                  <ListItemText>{t('Log Task')}</ListItemText>
+                </MenuItem>
 
-              <MenuItem>
-                <ListItemText>{t('Edit Fields')}</ListItemText>
-              </MenuItem>
-              <MenuItem>
-                <ListItemText>{t('Hide Contacts')}</ListItemText>
-              </MenuItem>
-              <MenuItem divider>
-                <ListItemText>{t('Map Contacts')}</ListItemText>
-              </MenuItem>
+                <MenuItem>
+                  <ListItemText>{t('Edit Fields')}</ListItemText>
+                </MenuItem>
+                <MenuItem>
+                  <ListItemText>{t('Hide Contacts')}</ListItemText>
+                </MenuItem>
 
-              <MenuItem>
-                <ListItemText>{t('Add to Appeal')}</ListItemText>
-              </MenuItem>
-              <MenuItem divider>
-                <ListItemText>{t('Add to new Appeal')}</ListItemText>
-              </MenuItem>
+                <MenuItem>
+                  <ListItemText>{t('Add to Appeal')}</ListItemText>
+                </MenuItem>
+                <MenuItem divider>
+                  <ListItemText>{t('Add to new Appeal')}</ListItemText>
+                </MenuItem>
 
-              <MenuItem>
-                <ListItemText>{t('Export Emails')}</ListItemText>
-              </MenuItem>
-            </Menu>
-          </Hidden>
+                <MenuItem>
+                  <ListItemText>{t('Export Emails')}</ListItemText>
+                </MenuItem>
+              </Menu>
+            </Hidden>
+          )}
 
           {buttonGroup}
         </>

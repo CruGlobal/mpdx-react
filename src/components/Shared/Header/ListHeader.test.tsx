@@ -350,6 +350,7 @@ describe('ListHeader', () => {
           toggleStarredFilter={toggleStarredFilter}
           filterPanelOpen={false}
           contactDetailsOpen={false}
+          contactsView={TableViewModeEnum.List}
           toggleFilterPanel={toggleFilterPanel}
           onCheckAllItems={onCheckAllItems}
           onSearchTermChanged={onSearchTermChanged}
