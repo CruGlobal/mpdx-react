@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Head from 'next/head';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'next/router';
@@ -7,10 +7,13 @@ import { Box, Button, Hidden, styled } from '@material-ui/core';
 import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
 import FormatListBulleted from '@material-ui/icons/FormatListBulleted';
 import ViewColumn from '@material-ui/icons/ViewColumn';
+import Map from '@material-ui/icons/Map';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { Settings } from '@material-ui/icons';
 import debounce from 'lodash/debounce';
+import _ from 'lodash';
+import { DateTime } from 'luxon';
 import {
   GetUserOptionsDocument,
   GetUserOptionsQuery,
@@ -35,6 +38,8 @@ import { FilterPanel } from '../../../../src/components/Shared/Filters/FilterPan
 import { useMassSelection } from '../../../../src/hooks/useMassSelection';
 import { UserOptionFragment } from '../../../../src/components/Shared/Filters/FilterPanel.generated';
 import { useContactFiltersQuery, useContactsQuery } from './Contacts.generated';
+import { ContactsMap, Coordinates } from './map/map';
+import { ContactsMapPanel } from 'src/components/Contacts/ContactsMap/ContactsMapPanel';
 
 const WhiteBackground = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.common.white,
@@ -44,6 +49,9 @@ const BulletedListIcon = styled(FormatListBulleted)(({ theme }) => ({
   color: theme.palette.primary.dark,
 }));
 const ViewColumnIcon = styled(ViewColumn)(({ theme }) => ({
+  color: theme.palette.primary.dark,
+}));
+const MapIcon = styled(Map)(({ theme }) => ({
   color: theme.palette.primary.dark,
 }));
 
@@ -61,6 +69,9 @@ const ContactsPage: React.FC = () => {
 
   const [contactDetailsOpen, setContactDetailsOpen] = useState(false);
   const [contactDetailsId, setContactDetailsId] = useState<string>();
+  const [viewMode, setViewMode] = useState<TableViewModeEnum>(
+    TableViewModeEnum.List,
+  );
 
   const { contactId, searchTerm } = query;
 
@@ -76,6 +87,7 @@ const ContactsPage: React.FC = () => {
   const [activeFilters, setActiveFilters] = useState<ContactFilterSetInput>(
     urlFilters ?? {},
   );
+
   const [starredFilter, setStarredFilter] = useState<ContactFilterSetInput>({});
 
   //User options for display view
@@ -93,11 +105,17 @@ const ContactsPage: React.FC = () => {
 
     const view = userOptions?.userOptions.find(
       (option) => option.key === 'contacts_view',
-    )?.value;
-    setflowsViewEnabled(view === 'flows');
+    )?.value as TableViewModeEnum;
+    setViewMode(view);
     if (view === 'flows' && !contactId?.includes('flows')) {
       setContactFocus(undefined, false, true);
-    } else if (view !== 'flows' && contactId?.includes('flows')) {
+    } else if (view === 'map' && !contactId?.includes('map')) {
+      setContactFocus(undefined, false, false, true);
+    } else if (
+      view !== 'flows' &&
+      view !== 'map' &&
+      (contactId?.includes('flows') || contactId?.includes('map'))
+    ) {
       setContactFocus(undefined, false);
     }
   };
@@ -109,14 +127,31 @@ const ContactsPage: React.FC = () => {
         ...activeFilters,
         wildcardSearch: searchTerm as string,
         ...starredFilter,
+        ids:
+          viewMode === TableViewModeEnum.Map && urlFilters
+            ? urlFilters.ids
+            : [],
       },
     },
     skip: !accountListId,
   });
 
+  //#region Mass Actions
+  const {
+    ids,
+    selectionType,
+    isRowChecked,
+    toggleSelectAll,
+    toggleSelectionById,
+  } = useMassSelection(data?.contacts?.totalCount ?? 0);
+  //#endregion
+
   useEffect(() => {
     if (isReady && contactId) {
-      if (contactId[contactId.length - 1] !== 'flows') {
+      if (
+        contactId[contactId.length - 1] !== 'flows' &&
+        contactId[contactId.length - 1] !== 'map'
+      ) {
         setContactDetailsId(contactId[contactId.length - 1]);
         setContactDetailsOpen(true);
       }
@@ -128,7 +163,16 @@ const ContactsPage: React.FC = () => {
 
   useEffect(() => {
     utilizeViewOption();
-  }, [loading]);
+    if (!loading && viewMode === TableViewModeEnum.Map) {
+      if (data?.contacts.pageInfo.hasNextPage) {
+        fetchMore({
+          variables: {
+            after: data.contacts?.pageInfo.endCursor,
+          },
+        });
+      }
+    }
+  }, [loading, viewMode]);
 
   useEffect(() => {
     const { filters: _, ...oldQuery } = query;
@@ -166,33 +210,40 @@ const ContactsPage: React.FC = () => {
     ) ?? [];
   //#endregion
 
-  //#region Mass Actions
-  const {
-    selectionType,
-    isRowChecked,
-    toggleSelectAll,
-    toggleSelectionById,
-  } = useMassSelection(data?.contacts?.totalCount ?? 0);
-  //#endregion
-
   //#region User Actions
-  const setContactFocus = (id?: string, openDetails = true, flows = false) => {
+  const setContactFocus = (
+    id?: string,
+    openDetails = true,
+    flows = false,
+    map = false,
+  ) => {
     const {
       accountListId: _accountListId,
       contactId: _contactId,
       ...filteredQuery
     } = query;
+    if (map && ids.length > 0) {
+      filteredQuery.filters = encodeURI(JSON.stringify({ ids }));
+    }
+    if (!map && urlFilters && urlFilters.ids) {
+      const newFilters = _.omit(activeFilters, 'ids');
+      if (Object.keys(newFilters).length > 0) {
+        filteredQuery.filters = encodeURI(JSON.stringify(newFilters));
+      } else {
+        delete filteredQuery['filters'];
+      }
+    }
     push(
       id
         ? {
             pathname: `/accountLists/${accountListId}/contacts${
-              flows ? '/flows' : ''
+              flows ? '/flows' : map ? '/map' : ''
             }/${id}`,
             query: filteredQuery,
           }
         : {
             pathname: `/accountLists/${accountListId}/contacts/${
-              flows ? 'flows/' : ''
+              flows ? 'flows/' : map ? 'map/' : ''
             }`,
             query: filteredQuery,
           },
@@ -227,13 +278,11 @@ const ContactsPage: React.FC = () => {
     [accountListId],
   );
 
-  const [flowsViewEnabled, setflowsViewEnabled] = useState<boolean>(false);
-
   const handleViewModeChange = (
     event: React.MouseEvent<HTMLElement>,
-    flowsView: boolean,
+    view: string,
   ) => {
-    updateOptions(flowsView ? 'flows' : 'list');
+    updateOptions(view);
     setContactDetailsOpen(false);
   };
   //#endregion
@@ -276,11 +325,60 @@ const ContactsPage: React.FC = () => {
     });
   };
 
+  // map states and functions
+  const [selected, setSelected] = useState<Coordinates | null | undefined>(
+    null,
+  );
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const mapRef = useRef<any>({});
+
+  const panTo = React.useCallback(({ lat, lng }) => {
+    if (mapRef) {
+      mapRef?.current?.panTo({ lat, lng });
+      mapRef?.current?.setZoom(14);
+    }
+  }, []);
+
+  const mapData = data?.contacts?.nodes.map((contact) => {
+    if (!contact.primaryAddress?.geo) {
+      return {
+        id: contact.id,
+        name: contact.name,
+        avatar: contact.avatar,
+      };
+    }
+    const coords = contact.primaryAddress?.geo?.split(',');
+    const [lat, lng] = coords;
+    return {
+      id: contact.id,
+      name: contact.name,
+      avatar: contact.avatar,
+      status: contact.status,
+      lat: Number(lat),
+      lng: Number(lng),
+      street: contact.primaryAddress.street,
+      city: contact.primaryAddress.city,
+      state: contact.primaryAddress.state,
+      country: contact.primaryAddress.country,
+      postal: contact.primaryAddress.postalCode,
+      source: contact.primaryAddress.source,
+      date: `(${DateTime.fromISO(
+        contact.primaryAddress.updatedAt,
+      ).toLocaleString(DateTime.DATE_SHORT)})`,
+    };
+  });
+
   return (
     <>
       <Head>
         <title>
-          MPDX | {flowsViewEnabled ? t('Contact Flows') : t('Contacts')}
+          MPDX |{' '}
+          {viewMode === TableViewModeEnum.Flows
+            ? t('Contact Flows')
+            : viewMode === TableViewModeEnum.Map
+            ? t('Contacts Map')
+            : t('Contacts')}
         </title>
       </Head>
       {accountListId && !userOptionsLoading ? (
@@ -289,16 +387,25 @@ const ContactsPage: React.FC = () => {
           <WhiteBackground>
             <SidePanelsLayout
               leftPanel={
-                filterData && !filtersLoading ? (
-                  <FilterPanel
-                    filters={filterData?.accountList.contactFilterGroups}
-                    savedFilters={savedFilters}
-                    selectedFilters={activeFilters}
-                    onClose={toggleFilterPanel}
-                    onSelectedFiltersChanged={setActiveFilters}
-                  />
+                viewMode !== TableViewModeEnum.Map ? (
+                  filterData && !filtersLoading ? (
+                    <FilterPanel
+                      filters={filterData?.accountList.contactFilterGroups}
+                      savedFilters={savedFilters}
+                      selectedFilters={activeFilters}
+                      onClose={toggleFilterPanel}
+                      onSelectedFiltersChanged={setActiveFilters}
+                    />
+                  ) : (
+                    <></>
+                  )
                 ) : (
-                  <></>
+                  <ContactsMapPanel
+                    data={mapData}
+                    panTo={panTo}
+                    selected={selected}
+                    setSelected={setSelected}
+                  />
                 )
               }
               leftOpen={filterPanelOpen}
@@ -312,11 +419,7 @@ const ContactsPage: React.FC = () => {
                     toggleFilterPanel={toggleFilterPanel}
                     contactDetailsOpen={contactDetailsOpen}
                     onCheckAllItems={toggleSelectAll}
-                    contactsView={
-                      flowsViewEnabled
-                        ? TableViewModeEnum.Flows
-                        : TableViewModeEnum.List
-                    }
+                    contactsView={viewMode}
                     onSearchTermChanged={setSearchTerm}
                     searchTerm={searchTerm}
                     totalItems={data?.contacts?.totalCount}
@@ -326,7 +429,7 @@ const ContactsPage: React.FC = () => {
                     buttonGroup={
                       <Hidden xsDown>
                         <Box display="flex" alignItems="center">
-                          {flowsViewEnabled && (
+                          {viewMode === TableViewModeEnum.Flows && (
                             <NextLink
                               href={`/accountLists/${accountListId}/contacts/flows/setup`}
                             >
@@ -338,29 +441,35 @@ const ContactsPage: React.FC = () => {
                           )}
                           <ToggleButtonGroup
                             exclusive
-                            value={flowsViewEnabled}
+                            value={viewMode}
                             onChange={handleViewModeChange}
                           >
                             <ToggleButton
-                              value={false}
-                              disabled={!flowsViewEnabled}
+                              value={TableViewModeEnum.List}
+                              disabled={viewMode === TableViewModeEnum.List}
                             >
                               <BulletedListIcon titleAccess={t('List View')} />
                             </ToggleButton>
                             <ToggleButton
-                              value={true}
-                              disabled={flowsViewEnabled}
+                              value={TableViewModeEnum.Flows}
+                              disabled={viewMode === TableViewModeEnum.Flows}
                             >
                               <ViewColumnIcon
                                 titleAccess={t('Column Workflow View')}
                               />
+                            </ToggleButton>
+                            <ToggleButton
+                              value={TableViewModeEnum.Map}
+                              disabled={viewMode === TableViewModeEnum.Map}
+                            >
+                              <MapIcon titleAccess={t('Map View')} />
                             </ToggleButton>
                           </ToggleButtonGroup>
                         </Box>
                       </Hidden>
                     }
                   />
-                  {!flowsViewEnabled ? (
+                  {viewMode === TableViewModeEnum.List ? (
                     <InfiniteList
                       loading={loading}
                       data={data?.contacts?.nodes}
@@ -398,7 +507,7 @@ const ContactsPage: React.FC = () => {
                         </Box>
                       }
                     />
-                  ) : (
+                  ) : viewMode === TableViewModeEnum.Flows ? (
                     <ContactFlow
                       accountListId={accountListId}
                       selectedFilters={{
@@ -406,6 +515,14 @@ const ContactsPage: React.FC = () => {
                         ...starredFilter,
                       }}
                       searchTerm={searchTerm}
+                      onContactSelected={setContactFocus}
+                    />
+                  ) : (
+                    <ContactsMap
+                      data={mapData}
+                      mapRef={mapRef}
+                      selected={selected}
+                      setSelected={setSelected}
                       onContactSelected={setContactFocus}
                     />
                   )}
@@ -421,7 +538,8 @@ const ContactsPage: React.FC = () => {
                       setContactFocus(
                         undefined,
                         true,
-                        flowsViewEnabled ? true : false,
+                        viewMode === TableViewModeEnum.Flows,
+                        viewMode === TableViewModeEnum.Map,
                       )
                     }
                   />
