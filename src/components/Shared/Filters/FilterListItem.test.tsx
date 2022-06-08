@@ -132,7 +132,7 @@ describe('FilterListItem', () => {
   });
 
   it('MultiSelectFilter blank', () => {
-    const { getByText, getByTestId } = render(
+    const { getAllByText, getByTestId } = render(
       <FilterListItem
         filter={multiselectFilter}
         value={undefined}
@@ -140,7 +140,7 @@ describe('FilterListItem', () => {
       />,
     );
 
-    expect(getByText(multiselectFilter.title)).toBeInTheDocument();
+    expect(getAllByText(multiselectFilter.title)).toHaveLength(2);
     expect(getByTestId('multiSelectFilter')).toBeInTheDocument();
   });
 
