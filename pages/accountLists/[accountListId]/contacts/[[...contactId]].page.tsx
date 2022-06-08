@@ -100,12 +100,20 @@ const ContactsPage: React.FC = () => {
     },
   });
 
+  const processView = () => {
+    if (contactId?.includes('list')) {
+      return TableViewModeEnum.List;
+    } else {
+      return userOptions?.userOptions.find(
+        (option) => option.key === 'contacts_view',
+      )?.value as TableViewModeEnum;
+    }
+  };
+
   const utilizeViewOption = () => {
     if (userOptionsLoading) return;
 
-    const view = userOptions?.userOptions.find(
-      (option) => option.key === 'contacts_view',
-    )?.value as TableViewModeEnum;
+    const view = processView();
     setViewMode(view);
     if (view === 'flows' && !contactId?.includes('flows')) {
       setContactFocus(undefined, false, true);
@@ -150,7 +158,8 @@ const ContactsPage: React.FC = () => {
     if (isReady && contactId) {
       if (
         contactId[contactId.length - 1] !== 'flows' &&
-        contactId[contactId.length - 1] !== 'map'
+        contactId[contactId.length - 1] !== 'map' &&
+        contactId[contactId.length - 1] !== 'list'
       ) {
         setContactDetailsId(contactId[contactId.length - 1]);
         setContactDetailsOpen(true);
