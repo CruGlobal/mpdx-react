@@ -12,6 +12,7 @@ import { useTranslation } from 'react-i18next';
 import { DateTime } from 'luxon';
 import { TaskCompleteButton } from '../../Contacts/ContactDetails/ContactTasksTab/ContactTaskRow/TaskCompleteButton/TaskCompleteButton';
 import { StarTaskIconButton } from '../../Contacts/ContactDetails/ContactTasksTab/StarTaskIconButton/StarTaskIconButton';
+import { DeleteTaskIconButton } from '../../Contacts/ContactDetails/ContactTasksTab/DeleteTaskIconButton/DeleteTaskIconButton';
 import { TaskDueDate } from '../../Contacts/ContactDetails/ContactTasksTab/ContactTaskRow/TaskDueDate/TaskDueDate';
 import { TaskCommentsButton } from '../../Contacts/ContactDetails/ContactTasksTab/ContactTaskRow/TaskCommentsButton/TaskCommentsButton';
 import useTaskModal from '../../../hooks/useTaskModal';
@@ -226,6 +227,7 @@ export const TaskRow: React.FC<TaskRowProps> = ({
               />
             </Box>
           </Hidden>
+          <DeleteTaskIconButton />
           <Hidden smUp>
             <Box>
               <TaskDueDate isComplete={isComplete} dueDate={dueDate} small />
