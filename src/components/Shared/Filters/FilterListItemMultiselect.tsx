@@ -43,6 +43,7 @@ export const FilterListItemMultiselect: React.FC<Props> = ({
             <TextField
               {...params}
               placeholder={filter.title}
+              label={filter.title}
               data-testid="multiSelectFilter"
             />
           )}
