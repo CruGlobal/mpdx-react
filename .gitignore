@@ -53,3 +53,6 @@ yarn-error.log*
 
 # asdf
 .tool-versions
+
+# Lint cache
+.eslintcache

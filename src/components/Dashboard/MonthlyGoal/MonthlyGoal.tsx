@@ -74,7 +74,7 @@ const MonthlyGoal = ({
             <Box display="flex">
               <Box flexGrow={1}>{t('Monthly Goal')}</Box>
               <Button
-                href={`/accountLists/${accountListId}/contacts?filters=${encodeURIComponent(
+                href={`/accountLists/${accountListId}/contacts/list?filters=${encodeURIComponent(
                   JSON.stringify({
                     pledgeReceived: ContactFilterPledgeReceivedEnum.NotReceived,
                     status: [StatusEnum.PartnerFinancial],
