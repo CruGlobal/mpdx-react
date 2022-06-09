@@ -2,11 +2,13 @@ query Contacts(
   $accountListId: ID!
   $contactsFilters: ContactFilterSetInput
   $after: String
+  $first: Int
 ) {
   contacts(
     accountListId: $accountListId
     contactsFilter: $contactsFilters
     after: $after
+    first: $first
   ) {
     nodes {
       id
