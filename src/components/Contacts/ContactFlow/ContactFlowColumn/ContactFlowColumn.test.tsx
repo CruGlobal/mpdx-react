@@ -16,7 +16,15 @@ const accountListId = 'abc';
 const title = 'Test Column';
 const onContactSelected = jest.fn();
 const changeContactStatus = jest.fn();
-const contact = { id: '123', name: 'Test Person', status: 'PARTNER_FINANCIAL' };
+const contact = {
+  id: '123',
+  name: 'Test Person',
+  status: 'PARTNER_FINANCIAL',
+  primaryAddress: {
+    id: 'address',
+    updatedAt: new Date('2021-06-21T03:40:05-06:00').toISOString(),
+  },
+};
 const router = {
   query: { accountListId },
   isReady: true,

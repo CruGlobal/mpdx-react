@@ -104,7 +104,7 @@ const TaskDrawerCompleteForm = ({
             accountListId,
             endOfDay: endOfDay.toISO(),
             today: endOfDay.toISODate(),
-            twoWeeksFromNow: endOfDay.plus({ weeks: 2 }).toISODate(),
+            threeWeeksFromNow: endOfDay.plus({ weeks: 3 }).toISODate(),
             twoWeeksAgo: endOfDay.minus({ weeks: 2 }).toISODate(),
           },
         },

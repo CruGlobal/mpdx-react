@@ -196,7 +196,10 @@ describe('PartnerCare', () => {
       'Roger Smith, Sarah Smiththe quick brown fox jumps over the lazy dog',
     );
     userEvent.click(task1Element);
-    expect(openTaskModal).toHaveBeenCalledWith({ taskId: 'task_1' });
+    expect(openTaskModal).toHaveBeenCalledWith({
+      taskId: 'task_1',
+      view: 'edit',
+    });
     expect(getByTestId('PartnerCarePrayerListItem-task_2').textContent).toEqual(
       'Roger Parker, Sarah Parkeron the boat to see uncle johnny',
     );
@@ -241,6 +244,7 @@ describe('PartnerCare', () => {
     expect(openTaskModal).toHaveBeenCalledWith({
       taskId: 'task_1',
       showCompleteForm: true,
+      view: 'complete',
     });
   });
 
