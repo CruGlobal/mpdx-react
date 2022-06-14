@@ -140,6 +140,7 @@ const ContactsPage: React.FC = () => {
             ? urlFilters.ids
             : [],
       },
+      first: contactId?.includes('map') ? 20000 : 25,
     },
     skip: !accountListId,
   });
