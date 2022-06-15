@@ -148,7 +148,7 @@ export const NavBar: FC<NavBarProps> = ({ onMobileClose, openMobile }) => {
       items: ToolsList.flatMap((toolsGroup) => [
         ...toolsGroup.items.map((tool) => ({
           title: tool.tool,
-          href: `/accountLists/${accountListId}/reports/${tool.id}`,
+          href: `/accountLists/${accountListId}/tools/${tool.id}`,
         })),
       ]),
     },
