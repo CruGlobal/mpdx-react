@@ -20,16 +20,13 @@ import {
   useGetUserOptionsQuery,
 } from '../../../../src/components/Contacts/ContactFlow/GetUserOptions.generated';
 import { useUpdateUserOptionsMutation } from '../../../../src/components/Contacts/ContactFlow/ContactFlowSetup/UpdateUserOptions.generated';
-import NullState from '../../../../src/components/Shared/Filters/NullState/NullState';
 import { ContactFlowDragLayer } from '../../../../src/components/Contacts/ContactFlow/ContactFlowDragLayer/ContactFlowDragLayer';
 import { ContactFlow } from '../../../../src/components/Contacts/ContactFlow/ContactFlow';
-import { InfiniteList } from '../../../../src/components/InfiniteList/InfiniteList';
 import { ContactDetails } from '../../../../src/components/Contacts/ContactDetails/ContactDetails';
 import Loading from '../../../../src/components/Loading';
 import { SidePanelsLayout } from '../../../../src/components/Layouts/SidePanelsLayout';
 import { useAccountListId } from '../../../../src/hooks/useAccountListId';
 import { ContactFilterSetInput } from '../../../../graphql/types.generated';
-import { ContactRow } from '../../../../src/components/Contacts/ContactRow/ContactRow';
 import {
   ListHeader,
   TableViewModeEnum,
@@ -40,6 +37,7 @@ import { UserOptionFragment } from '../../../../src/components/Shared/Filters/Fi
 import { useContactFiltersQuery, useContactsQuery } from './Contacts.generated';
 import { ContactsMap, Coordinates } from './map/map';
 import { ContactsMapPanel } from 'src/components/Contacts/ContactsMap/ContactsMapPanel';
+import { ContactsList } from 'src/components/Contacts/ContactsList/ContactsList';
 
 const WhiteBackground = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.common.white,
@@ -205,10 +203,6 @@ const ContactsPage: React.FC = () => {
   const toggleFilterPanel = () => {
     setFilterPanelOpen(!filterPanelOpen);
   };
-
-  const isFiltered =
-    Object.keys(activeFilters).length > 0 ||
-    Object.values(activeFilters).some((filter) => filter !== []);
 
   const savedFilters: UserOptionFragment[] =
     filterData?.userOptions.filter(
@@ -480,42 +474,13 @@ const ContactsPage: React.FC = () => {
                     }
                   />
                   {viewMode === TableViewModeEnum.List ? (
-                    <InfiniteList
-                      loading={loading}
-                      data={data?.contacts?.nodes}
-                      totalCount={data?.contacts?.totalCount}
-                      style={{ height: 'calc(100vh - 160px)' }}
-                      itemContent={(index, contact) => (
-                        <ContactRow
-                          accountListId={accountListId}
-                          key={index}
-                          contact={contact}
-                          isChecked={isRowChecked(contact.id)}
-                          onContactSelected={setContactFocus}
-                          onContactCheckToggle={toggleSelectionById}
-                          contactDetailsOpen={contactDetailsOpen}
-                          useTopMargin={index === 0}
-                        />
-                      )}
-                      groupBy={(item) => item.name[0].toUpperCase()}
-                      endReached={() =>
-                        data?.contacts?.pageInfo.hasNextPage &&
-                        fetchMore({
-                          variables: {
-                            after: data.contacts?.pageInfo.endCursor,
-                          },
-                        })
-                      }
-                      EmptyPlaceholder={
-                        <Box width="75%" margin="auto" mt={2}>
-                          <NullState
-                            page="contact"
-                            totalCount={data?.allContacts.totalCount || 0}
-                            filtered={isFiltered}
-                            changeFilters={setActiveFilters}
-                          />
-                        </Box>
-                      }
+                    <ContactsList
+                      accountListId={accountListId}
+                      contactDetailsOpen={contactDetailsOpen}
+                      starredFilter={starredFilter}
+                      toggleSelectionById={toggleSelectionById}
+                      isRowChecked={isRowChecked}
+                      setContactFocus={setContactFocus}
                     />
                   ) : viewMode === TableViewModeEnum.Flows ? (
                     <ContactFlow
