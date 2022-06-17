@@ -138,6 +138,7 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
     [key: string]: PersonEmailAddresses;
   }>({});
 
+  // Create a mutable copy of the query data and store in the state
   useEffect(
     () =>
       setDataState(
@@ -181,6 +182,7 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
     setDeleteModalState(defaultDeleteModalState);
   };
 
+  // Update the state with the textfield's value
   const handleChange = (
     personId: string,
     numberIndex: number,
@@ -191,6 +193,7 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
     setDataState(temp);
   };
 
+  // Delete function called after confirming with the delete modal
   const handleDelete = (): void => {
     const temp = { ...dataState };
     const deleting = temp[deleteModalState.personId].emailAddresses.splice(
@@ -209,6 +212,7 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
     handleDeleteModalClose();
   };
 
+  // Add a new email address to the state
   const handleAdd = (personId: string, email: string): void => {
     const temp = { ...dataState };
     temp[personId].emailAddresses.push({
@@ -220,6 +224,7 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
     setDataState(temp);
   };
 
+  // Change the primary address in the state
   const handleChangePrimary = (personId: string, emailIndex: number): void => {
     const temp = { ...dataState };
     temp[personId].emailAddresses = temp[personId].emailAddresses.map(
