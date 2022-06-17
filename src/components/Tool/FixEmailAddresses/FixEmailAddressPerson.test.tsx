@@ -1,6 +1,7 @@
 import { ThemeProvider } from '@material-ui/core';
 import React from 'react';
 import userEvent from '@testing-library/user-event';
+import { DateTime } from 'luxon';
 import { render } from '../../../../__tests__/util/testingLibraryReactMock';
 import TestWrapper from '../../../../__tests__/util/TestWrapper';
 import theme from '../../../theme';
@@ -12,13 +13,13 @@ const testData = {
   emails: [
     {
       source: 'DonorHub',
-      updatedAt: '06/21/2021',
+      updatedAt: DateTime.fromISO('2021-06-21').toString(),
       email: 'test1@test1.com',
       primary: true,
     },
     {
       source: 'MPDX',
-      updatedAt: '06/22/2021',
+      updatedAt: DateTime.fromISO('2021-06-22').toString(),
       email: 'test2@test1.com',
       primary: false,
     },
@@ -51,10 +52,10 @@ describe('FixEmailAddresses-Contact', () => {
     );
 
     expect(getByText(testData.name)).toBeInTheDocument();
-    expect(getByText('DonorHub (06/21/2021)')).toBeInTheDocument();
+    expect(getByText('DonorHub (2021-06-21)')).toBeInTheDocument();
     expect(getByTestId('textfield-testid-0')).toBeInTheDocument();
     expect(getByDisplayValue('test1@test1.com')).toBeInTheDocument();
-    expect(getByText('MPDX (06/22/2021)')).toBeInTheDocument();
+    expect(getByText('MPDX (2021-06-22)')).toBeInTheDocument();
     expect(getByTestId('textfield-testid-1')).toBeInTheDocument();
     expect(getByDisplayValue('test2@test1.com')).toBeInTheDocument();
   });
