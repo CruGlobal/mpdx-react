@@ -66,9 +66,12 @@ const ConfirmButton = styled(Button)(({ theme }) => ({
     marginTop: theme.spacing(1),
     marginBottom: theme.spacing(2),
   },
+  '&:hover': {
+    backgroundColor: theme.palette.mpdxBlue.main,
+  },
 }));
 
-const ConfirmButtonIcon = styled(Icon)(({ theme }) => ({
+export const ConfirmButtonIcon = styled(Icon)(({ theme }) => ({
   marginRight: theme.spacing(1),
 }));
 
