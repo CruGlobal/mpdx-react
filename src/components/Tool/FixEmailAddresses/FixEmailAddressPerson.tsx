@@ -16,7 +16,9 @@ import { Icon } from '@mdi/react';
 import { mdiCheckboxMarkedCircle, mdiLock, mdiPlus, mdiDelete } from '@mdi/js';
 import StarIcon from '@material-ui/icons/Star';
 import StarOutlineIcon from '@material-ui/icons/StarOutline';
+import { PersonEmailAddressInput } from '../../../../graphql/types.generated';
 import theme from '../../../theme';
+import { EmailAddressData } from './FixEmailAddresses';
 
 const useStyles = makeStyles((theme: Theme) => ({
   left: {
@@ -105,24 +107,25 @@ export interface email {
   primary: boolean;
 }
 
-interface Props {
+interface FixEmailAddressPersonProps {
   name: string;
-  emails: email[];
-  contactIndex: number;
+  emails: EmailAddressData[];
+  personId: string;
+  toDelete: PersonEmailAddressInput[];
   handleChange: (
-    contactIndex: number,
-    emailIndex: number,
+    personId: string,
+    numberIndex: number,
     event: React.ChangeEvent<HTMLInputElement>,
   ) => void;
-  handleDelete: (contactIndex: number, emailIndex: number) => void;
-  handleAdd: (contactIndex: number, address: string) => void;
-  handleChangePrimary: (contactIndex: number, emailIndex: number) => void;
+  handleDelete: (personId: string, emailAddress: number) => void;
+  handleAdd: (personId: string, email: string) => void;
+  handleChangePrimary: (personId: string, emailIndex: number) => void;
 }
 
-const Contact: React.FC<Props> = ({
+export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
   name,
   emails,
-  contactIndex,
+  personId,
   handleChange,
   handleDelete,
   handleAdd,
@@ -142,7 +145,7 @@ const Contact: React.FC<Props> = ({
 
   const addNewEmailAddress = (): void => {
     if (newEmailAddress) {
-      handleAdd(contactIndex, newEmailAddress);
+      handleAdd(personId, newEmailAddress);
       setNewEmailAddress('');
     }
   };
@@ -211,21 +214,21 @@ const Contact: React.FC<Props> = ({
                               </Typography>
                             </Hidden>
                             <Typography display="inline">
-                              {`${email.source} (${email.date})`}
+                              {`${email.source} (${email.updatedAt})`}
                             </Typography>
                           </Box>
                           <Typography>
                             {email.primary ? (
                               <StarIcon
-                                data-testid={`starIcon-${contactIndex}-${index}`}
+                                data-testid={`starIcon-${personId}-${index}`}
                                 className={classes.hoverHighlight}
                               />
                             ) : (
                               <StarOutlineIcon
-                                data-testid={`starOutlineIcon-${contactIndex}-${index}`}
+                                data-testid={`starOutlineIcon-${personId}-${index}`}
                                 className={classes.hoverHighlight}
                                 onClick={() =>
-                                  handleChangePrimary(contactIndex, index)
+                                  handleChangePrimary(personId, index)
                                 }
                               />
                             )}
@@ -243,18 +246,20 @@ const Contact: React.FC<Props> = ({
                         >
                           <TextField
                             style={{ width: '100%' }}
-                            data-testid={`textfield-${contactIndex}-${index}`}
+                            inputProps={{
+                              'data-testid': `textfield-${personId}-${index}`,
+                            }}
                             onChange={(
                               event: React.ChangeEvent<HTMLInputElement>,
-                            ) => handleChange(contactIndex, index, event)}
-                            value={email.address}
+                            ) => handleChange(personId, index, event)}
+                            value={email.email}
                             disabled={email.source !== 'MPDX'}
                           />
 
                           {email.source === 'MPDX' ? (
                             <Box
-                              data-testid={`delete-${contactIndex}-${index}`}
-                              onClick={() => handleDelete(contactIndex, index)}
+                              data-testid={`delete-${personId}-${index}`}
+                              onClick={() => handleDelete(personId, index)}
                             >
                               <Icon
                                 path={mdiDelete}
@@ -306,13 +311,13 @@ const Contact: React.FC<Props> = ({
                           event: React.ChangeEvent<HTMLInputElement>,
                         ) => updateNewEmailAddress(event)}
                         inputProps={{
-                          'data-testid': `addNewEmailInput-${contactIndex}`,
+                          'data-testid': `addNewEmailInput-${personId}`,
                         }}
                         value={newEmailAddress}
                       />
                       <Box
                         onClick={() => addNewEmailAddress()}
-                        data-testid={`addButton-${contactIndex}`}
+                        data-testid={`addButton-${personId}`}
                       >
                         <Icon
                           path={mdiPlus}
@@ -349,5 +354,3 @@ const Contact: React.FC<Props> = ({
     </Grid>
   );
 };
-
-export default Contact;
