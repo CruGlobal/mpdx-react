@@ -9,91 +9,84 @@ import {
   Hidden,
   TextField,
   Theme,
+  styled,
 } from '@material-ui/core';
-import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { Icon } from '@mdi/react';
-import { mdiCheckboxMarkedCircle, mdiLock, mdiPlus, mdiDelete } from '@mdi/js';
-import StarIcon from '@material-ui/icons/Star';
-import StarOutlineIcon from '@material-ui/icons/StarOutline';
+import {
+  mdiCheckboxMarkedCircle,
+  mdiLock,
+  mdiPlus,
+  mdiDelete,
+  mdiStarOutline,
+  mdiStar,
+} from '@mdi/js';
+import { DateTime } from 'luxon';
 import { PersonEmailAddressInput } from '../../../../graphql/types.generated';
 import theme from '../../../theme';
-import { EmailAddressData } from './FixEmailAddresses';
+import { ConfirmButtonIcon, EmailAddressData } from './FixEmailAddresses';
+
+const PersonCard = styled(Box)(({ theme }) => ({
+  [theme.breakpoints.up('md')]: {
+    border: `1px solid ${theme.palette.cruGrayMedium.main}`,
+  },
+}));
+
+const Container = styled(Grid)(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  marginBottom: theme.spacing(2),
+  [theme.breakpoints.down('sm')]: {
+    border: `1px solid ${theme.palette.cruGrayMedium.main}`,
+  },
+}));
+
+const EmailAddressListWrapper = styled(Grid)(({ theme }) => ({
+  backgroundColor: theme.palette.cruGrayLight.main,
+  width: '100%',
+  [theme.breakpoints.down('xs')]: {
+    paddingTop: theme.spacing(2),
+  },
+}));
+
+const ConfirmButtonWrapper = styled(Box)(({ theme }) => ({
+  marginLeft: theme.spacing(2),
+  [theme.breakpoints.down('sm')]: {
+    marginLeft: theme.spacing(1),
+    marginRight: theme.spacing(2),
+    marginTop: theme.spacing(2),
+    marginBottom: theme.spacing(2),
+  },
+  '& .MuiButton-root': {
+    backgroundColor: theme.palette.mpdxBlue.main,
+    color: 'white',
+  },
+}));
+
+const BoxWithResponsiveBorder = styled(Box)(({ theme }) => ({
+  [theme.breakpoints.down('xs')]: {
+    paddingBottom: theme.spacing(2),
+    borderBottom: `1px solid ${theme.palette.cruGrayMedium.main}`,
+  },
+}));
+
+const ColumnHeaderWrapper = styled(Grid)(({ theme }) => ({
+  paddingTop: theme.spacing(2),
+  paddingBottom: theme.spacing(2),
+}));
+
+const RowWrapper = styled(Grid)(({ theme }) => ({
+  paddingBottom: theme.spacing(2),
+}));
+
+const HoverableIcon = styled(Icon)(({ theme }) => ({
+  '&:hover': {
+    color: theme.palette.mpdxBlue.main,
+    cursor: 'pointer',
+  },
+}));
 
 const useStyles = makeStyles((theme: Theme) => ({
-  left: {
-    [theme.breakpoints.up('md')]: {
-      border: `1px solid ${theme.palette.cruGrayMedium.main}`,
-    },
-  },
-  container: {
-    display: 'flex',
-    alignItems: 'center',
-    marginBottom: theme.spacing(2),
-    [theme.breakpoints.down('sm')]: {
-      border: `1px solid ${theme.palette.cruGrayMedium.main}`,
-    },
-  },
-  boxBottom: {
-    backgroundColor: theme.palette.cruGrayLight.main,
-    width: '100%',
-    [theme.breakpoints.down('xs')]: {
-      paddingTop: theme.spacing(2),
-    },
-  },
-  buttonTop: {
-    marginLeft: theme.spacing(2),
-    [theme.breakpoints.down('sm')]: {
-      marginLeft: theme.spacing(1),
-      marginRight: theme.spacing(2),
-      marginTop: theme.spacing(2),
-      marginBottom: theme.spacing(2),
-    },
-    '& .MuiButton-root': {
-      backgroundColor: theme.palette.mpdxBlue.main,
-      color: 'white',
-    },
-  },
-  buttonIcon: {
-    marginRight: theme.spacing(1),
-  },
-  rowChangeResponsive: {
-    flexDirection: 'column',
-    [theme.breakpoints.down('xs')]: {
-      marginTop: -20,
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-    },
-  },
-  responsiveBorder: {
-    [theme.breakpoints.down('xs')]: {
-      paddingBottom: theme.spacing(2),
-      borderBottom: `1px solid ${theme.palette.cruGrayMedium.main}`,
-    },
-  },
-  paddingX: {
-    paddingLeft: theme.spacing(2),
-    paddingRight: theme.spacing(2),
-  },
-  paddingY: {
-    paddingTop: theme.spacing(2),
-    paddingBottom: theme.spacing(2),
-  },
-  paddingB2: {
-    paddingBottom: theme.spacing(2),
-  },
-  address: {
-    borderBottom: '1px solid gray',
-    width: '100%',
-    cursor: 'text',
-  },
-  hoverHighlight: {
-    '&:hover': {
-      color: theme.palette.mpdxBlue.main,
-      cursor: 'pointer',
-    },
-  },
   avatar: {
     width: theme.spacing(7),
     height: theme.spacing(7),
@@ -151,10 +144,10 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
   };
 
   return (
-    <Grid container className={classes.container}>
+    <Container container>
       <Grid container>
         <Grid item md={10} xs={12}>
-          <Box display="flex" alignItems="center" className={classes.left}>
+          <PersonCard display="flex" alignItems="center">
             <Grid container>
               <Grid item xs={12}>
                 <Box
@@ -170,15 +163,11 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
                 </Box>
               </Grid>
 
-              <Grid item xs={12} className={classes.boxBottom}>
+              <EmailAddressListWrapper item xs={12}>
                 <Grid container>
                   <Hidden xsDown>
-                    <Grid item xs={12} sm={6} className={classes.paddingY}>
-                      <Box
-                        display="flex"
-                        justifyContent="space-between"
-                        className={classes.paddingX}
-                      >
+                    <ColumnHeaderWrapper item xs={12} sm={6}>
+                      <Box display="flex" justifyContent="space-between" px={2}>
                         <Typography>
                           <strong>{t('Source')}</strong>
                         </Typography>
@@ -186,26 +175,22 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
                           <strong>{t('Primary')}</strong>
                         </Typography>
                       </Box>
-                    </Grid>
-                    <Grid item xs={12} sm={6} className={classes.paddingY}>
-                      <Box
-                        display="flex"
-                        justifyContent="flex-start"
-                        className={classes.paddingX}
-                      >
+                    </ColumnHeaderWrapper>
+                    <ColumnHeaderWrapper item xs={12} sm={6}>
+                      <Box display="flex" justifyContent="flex-start" px={2}>
                         <Typography>
                           <strong>{t('Address')}</strong>
                         </Typography>
                       </Box>
-                    </Grid>
+                    </ColumnHeaderWrapper>
                   </Hidden>
                   {emails.map((email, index) => (
                     <Fragment key={index}>
-                      <Grid item xs={12} sm={6} className={classes.paddingB2}>
+                      <RowWrapper item xs={12} sm={6}>
                         <Box
                           display="flex"
                           justifyContent="space-between"
-                          className={classes.paddingX}
+                          px={2}
                         >
                           <Box>
                             <Hidden smUp>
@@ -214,35 +199,36 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
                               </Typography>
                             </Hidden>
                             <Typography display="inline">
-                              {`${email.source} (${email.updatedAt})`}
+                              {`${email.source} (${DateTime.fromISO(
+                                email.updatedAt,
+                              ).toLocaleString(DateTime.DATE_SHORT)})`}
                             </Typography>
                           </Box>
                           <Typography>
                             {email.primary ? (
-                              <StarIcon
+                              <Box
                                 data-testid={`starIcon-${personId}-${index}`}
-                                className={classes.hoverHighlight}
-                              />
+                              >
+                                <HoverableIcon path={mdiStar} size={1} />
+                              </Box>
                             ) : (
-                              <StarOutlineIcon
+                              <Box
                                 data-testid={`starOutlineIcon-${personId}-${index}`}
-                                className={classes.hoverHighlight}
                                 onClick={() =>
                                   handleChangePrimary(personId, index)
                                 }
-                              />
+                              >
+                                <HoverableIcon path={mdiStarOutline} size={1} />
+                              </Box>
                             )}
                           </Typography>
                         </Box>
-                      </Grid>
-                      <Grid item xs={12} sm={6} className={classes.paddingB2}>
-                        <Box
+                      </RowWrapper>
+                      <RowWrapper item xs={12} sm={6}>
+                        <BoxWithResponsiveBorder
                           display="flex"
+                          px={2}
                           justifyContent="flex-start"
-                          className={clsx(
-                            classes.responsiveBorder,
-                            classes.paddingX,
-                          )}
                         >
                           <TextField
                             style={{ width: '100%' }}
@@ -261,11 +247,7 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
                               data-testid={`delete-${personId}-${index}`}
                               onClick={() => handleDelete(personId, index)}
                             >
-                              <Icon
-                                path={mdiDelete}
-                                size={1}
-                                className={classes.hoverHighlight}
-                              />
+                              <HoverableIcon path={mdiDelete} size={1} />
                             </Box>
                           ) : (
                             <Icon
@@ -276,16 +258,12 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
                               }}
                             />
                           )}
-                        </Box>
-                      </Grid>
+                        </BoxWithResponsiveBorder>
+                      </RowWrapper>
                     </Fragment>
                   ))}
-                  <Grid item xs={12} sm={6} className={classes.paddingB2}>
-                    <Box
-                      display="flex"
-                      justifyContent="space-between"
-                      className={classes.paddingX}
-                    >
+                  <RowWrapper item xs={12} sm={6}>
+                    <Box display="flex" justifyContent="space-between" px={2}>
                       <Box>
                         <Hidden smUp>
                           <Typography display="inline">
@@ -295,15 +273,12 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
                         <Typography display="inline">MPDX</Typography>
                       </Box>
                     </Box>
-                  </Grid>
-                  <Grid item xs={12} sm={6} className={classes.paddingB2}>
-                    <Box
+                  </RowWrapper>
+                  <RowWrapper item xs={12} sm={6}>
+                    <BoxWithResponsiveBorder
                       display="flex"
                       justifyContent="flex-start"
-                      className={clsx(
-                        classes.responsiveBorder,
-                        classes.paddingX,
-                      )}
+                      px={2}
                     >
                       <TextField
                         style={{ width: '100%' }}
@@ -319,18 +294,14 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
                         onClick={() => addNewEmailAddress()}
                         data-testid={`addButton-${personId}`}
                       >
-                        <Icon
-                          path={mdiPlus}
-                          size={1}
-                          className={classes.hoverHighlight}
-                        />
+                        <HoverableIcon path={mdiPlus} size={1} />
                       </Box>
-                    </Box>
-                  </Grid>
+                    </BoxWithResponsiveBorder>
+                  </RowWrapper>
                 </Grid>
-              </Grid>
+              </EmailAddressListWrapper>
             </Grid>
-          </Box>
+          </PersonCard>
         </Grid>
         <Grid item xs={12} md={2}>
           <Box
@@ -338,19 +309,15 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
             flexDirection="column"
             style={{ paddingLeft: theme.spacing(1) }}
           >
-            <Box className={classes.buttonTop}>
+            <ConfirmButtonWrapper>
               <Button variant="contained" style={{ width: '100%' }}>
-                <Icon
-                  path={mdiCheckboxMarkedCircle}
-                  size={0.8}
-                  className={classes.buttonIcon}
-                />
+                <ConfirmButtonIcon path={mdiCheckboxMarkedCircle} size={0.8} />
                 {t('Confirm')}
               </Button>
-            </Box>
+            </ConfirmButtonWrapper>
           </Box>
         </Grid>
       </Grid>
-    </Grid>
+    </Container>
   );
 };
