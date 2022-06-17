@@ -88,53 +88,6 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-// Temporary date for desting, structure most likely isn't accurate
-// but making adjustments should be easy in the future
-// const testData = [
-//   {
-//     name: 'Test Contact',
-//     id: 'testid',
-//     emails: [
-//       {
-//         source: 'DonorHub',
-//         date: '06/21/2021',
-//         address: 'test1@test1.com',
-//         primary: true,
-//       },
-//       {
-//         source: 'DonorHub',
-//         date: '06/21/2021',
-//         address: 'test.email@gmail.com',
-//         primary: false,
-//       },
-//       {
-//         source: 'MPDX',
-//         date: '06/21/2021',
-//         address: 'test1@test1.com',
-//         primary: false,
-//       },
-//     ],
-//   },
-//   {
-//     name: 'Simba Lion',
-//     id: 'testid2',
-//     emails: [
-//       {
-//         source: 'DonorHub',
-//         date: '06/21/2021',
-//         address: 'test1@test1.com',
-//         primary: true,
-//       },
-//       {
-//         source: 'MPDX',
-//         date: '06/22/2021',
-//         address: 'test2@test1.com',
-//         primary: false,
-//       },
-//     ],
-//   },
-// ];
-
 export interface ModalState {
   open: boolean;
   personId: string;
