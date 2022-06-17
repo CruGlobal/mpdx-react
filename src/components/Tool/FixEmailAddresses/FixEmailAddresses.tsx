@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import {
-  makeStyles,
   Box,
   Typography,
   Grid,
   Divider,
   Button,
   NativeSelect,
+  styled,
   CircularProgress,
 } from '@material-ui/core';
 
@@ -22,69 +22,65 @@ import DeleteModal from './DeleteModal';
 import { useGetInvalidEmailAddressesQuery } from './GetInvalidEmailAddresses.generated';
 import { FixEmailAddressPerson } from './FixEmailAddressPerson';
 
-const useStyles = makeStyles(() => ({
-  container: {
-    padding: theme.spacing(3),
-    overflow: 'auto',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  outer: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'end',
-    width: '70%',
-    [theme.breakpoints.down('sm')]: {
-      width: '100%',
-    },
-  },
-  divider: {
-    marginTop: theme.spacing(2),
-    marginBottom: theme.spacing(2),
-  },
-  descriptionBox: {
-    marginBottom: theme.spacing(2),
-  },
-  footer: {
+const Container = styled(Box)(() => ({
+  padding: theme.spacing(3),
+  overflow: 'auto',
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+}));
+
+const FixEmailAddressesWrapper = styled(Grid)(() => ({
+  display: 'flex',
+  flexDirection: 'row',
+  justifyContent: 'end',
+  width: '70%',
+  [theme.breakpoints.down('sm')]: {
     width: '100%',
-    display: 'flex',
-    justifyContent: 'center',
   },
-  buttonBlue: {
-    backgroundColor: theme.palette.mpdxBlue.main,
-    paddingRight: theme.spacing(1.5),
-    color: 'white',
-    [theme.breakpoints.down('xs')]: {
-      marginTop: theme.spacing(1),
-      marginBottom: theme.spacing(2),
-    },
-  },
-  buttonIcon: {
-    marginRight: theme.spacing(1),
-  },
-  defaultBox: {
-    display: 'flex',
-    justifyContent: 'flex-start',
-    alignItems: 'center',
-    flexWrap: 'wrap',
+}));
+
+const SourceSelect = styled(NativeSelect)(() => ({
+  minWidth: theme.spacing(20),
+  width: '10%',
+  marginLeft: theme.spacing(2),
+  marginRight: theme.spacing(2),
+  [theme.breakpoints.down('xs')]: {
+    marginLeft: theme.spacing(0),
+    marginRight: theme.spacing(0),
     marginTop: theme.spacing(1),
-    [theme.breakpoints.down('xs')]: {
-      flexDirection: 'column',
-      alignItems: 'start',
-    },
+    marginBottom: theme.spacing(1),
   },
-  nativeSelect: {
-    minWidth: theme.spacing(20),
-    width: '10%',
-    marginLeft: theme.spacing(2),
-    marginRight: theme.spacing(2),
-    [theme.breakpoints.down('xs')]: {
-      marginLeft: theme.spacing(0),
-      marginRight: theme.spacing(0),
-      marginTop: theme.spacing(1),
-      marginBottom: theme.spacing(1),
-    },
+}));
+
+const ContentDivider = styled(Divider)(() => ({
+  marginTop: theme.spacing(2),
+  marginBottom: theme.spacing(2),
+}));
+
+const ConfirmButton = styled(Button)(({ theme }) => ({
+  backgroundColor: theme.palette.mpdxBlue.main,
+  paddingRight: theme.spacing(1.5),
+  color: 'white',
+  [theme.breakpoints.down('xs')]: {
+    marginTop: theme.spacing(1),
+    marginBottom: theme.spacing(2),
+  },
+}));
+
+const ConfirmButtonIcon = styled(Icon)(({ theme }) => ({
+  marginRight: theme.spacing(1),
+}));
+
+const DefaultSourceWrapper = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  justifyContent: 'flex-start',
+  alignItems: 'center',
+  flexWrap: 'wrap',
+  marginTop: theme.spacing(1),
+  [theme.breakpoints.down('xs')]: {
+    flexDirection: 'column',
+    alignItems: 'start',
   },
 }));
 
@@ -123,7 +119,6 @@ interface FixEmailAddressesProps {
 export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
   accountListId,
 }) => {
-  const classes = useStyles();
   const [defaultSource, setDefaultSource] = useState('MPDX');
   const [deleteModalState, setDeleteModalState] = useState<ModalState>(
     defaultDeleteModalState,
@@ -244,13 +239,13 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
 
   return (
     <>
-      <Box className={classes.container}>
+      <Container>
         {!loading && data && dataState ? (
-          <Grid container className={classes.outer}>
+          <FixEmailAddressesWrapper container>
             <Grid item xs={12}>
               <Typography variant="h4">{t('Fix Email Addresses')}</Typography>
-              <Divider className={classes.divider} />
-              <Box className={classes.descriptionBox}>
+              <ContentDivider />
+              <Box mb={2}>
                 {data.people.nodes.length > 0 && (
                   <>
                     <Typography>
@@ -265,12 +260,11 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
                         'Choose below which email address will be set as primary.',
                       )}
                     </Typography>
-                    <Box className={classes.defaultBox}>
+                    <DefaultSourceWrapper>
                       <Typography>{t('Default Primary Source:')}</Typography>
 
-                      <NativeSelect
+                      <SourceSelect
                         input={<StyledInput />}
-                        className={classes.nativeSelect}
                         value={defaultSource}
                         onChange={(
                           event: React.ChangeEvent<HTMLSelectElement>,
@@ -278,19 +272,18 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
                       >
                         <option value="MPDX">MPDX</option>
                         <option value="DataServer">DataServer</option>
-                      </NativeSelect>
-                      <Button className={classes.buttonBlue}>
-                        <Icon
+                      </SourceSelect>
+                      <ConfirmButton>
+                        <ConfirmButtonIcon
                           path={mdiCheckboxMarkedCircle}
                           size={0.8}
-                          className={classes.buttonIcon}
                         />
                         {t('Confirm {{amount}} as {{source}}', {
                           amount: data.people.nodes.length,
                           source: defaultSource,
                         })}
-                      </Button>
-                    </Box>
+                      </ConfirmButton>
+                    </DefaultSourceWrapper>
                   </>
                 )}
               </Box>
@@ -313,7 +306,7 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
                   ))}
                 </Grid>
                 <Grid item xs={12}>
-                  <Box className={classes.footer}>
+                  <Box width="100%" display="flex" justifyContent="center">
                     <Typography>
                       <Trans
                         defaults="Showing <bold>{{value}}</bold> of <bold>{{value}}</bold>"
@@ -327,7 +320,7 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
             ) : (
               <NoData tool="fixEmailAddresses" />
             )}
-          </Grid>
+          </FixEmailAddressesWrapper>
         ) : (
           <CircularProgress style={{ marginTop: theme.spacing(3) }} />
         )}
@@ -336,7 +329,7 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
           handleClose={handleDeleteModalClose}
           handleDelete={handleDelete}
         />
-      </Box>
+      </Container>
     </>
   );
 };
