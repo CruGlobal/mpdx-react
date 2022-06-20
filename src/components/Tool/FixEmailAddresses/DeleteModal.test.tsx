@@ -7,7 +7,7 @@ import DeleteModal from './DeleteModal';
 
 const testState = {
   open: true,
-  contactIndex: 0,
+  personId: '',
   emailIndex: 0,
   emailAddress: 'test@test.com',
 };

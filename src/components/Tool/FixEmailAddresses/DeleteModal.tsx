@@ -17,7 +17,7 @@ import React from 'react';
 import { mdiCloseThick } from '@mdi/js';
 import { useTranslation } from 'react-i18next';
 import theme from '../../../theme';
-import { ModalState } from './FixEmailAddreses';
+import { ModalState } from './FixEmailAddresses';
 
 const useStyles = makeStyles((theme: Theme) => ({
   modal: {

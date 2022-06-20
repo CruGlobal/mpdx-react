@@ -1,0 +1,29 @@
+query GetInvalidEmailAddresses($accountListId: ID!) {
+  people(
+    accountListId: $accountListId
+    peopleFilter: { emailAddressValid: false }
+  ) {
+    nodes {
+      ...PersonInvalidEmail
+    }
+  }
+}
+
+fragment PersonInvalidEmail on Person {
+  id
+  firstName
+  lastName
+  emailAddresses {
+    nodes {
+      ...PersonEmailAddress
+    }
+  }
+}
+
+fragment PersonEmailAddress on EmailAddress {
+  id
+  primary
+  email
+  updatedAt
+  source
+}
