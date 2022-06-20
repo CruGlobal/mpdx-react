@@ -23,6 +23,7 @@ import { ToolsList } from '../../../../../Tool/Home/ToolList';
 import { useCurrentToolId } from '../../../../../../hooks/useCurrentToolId';
 import theme from '../../../../../../theme';
 import { useAccountListId } from '../../../../../../hooks/useAccountListId';
+import { importRoutes } from '../../../NavBar/NavBar';
 import { useGetToolNotificationsQuery } from './GetToolNotifcations.generated';
 
 const useStyles = makeStyles(() => ({
@@ -328,7 +329,13 @@ const NavMenu = (): ReactElement => {
                               return (
                                 <NextLink
                                   key={tool.id}
-                                  href={`/accountLists/${accountListId}/tools/${tool.id}`}
+                                  href={
+                                    tool.tool.includes('Import')
+                                      ? `https://mpdx.org/tools/import/${
+                                          importRoutes[tool.tool]
+                                        }`
+                                      : `/accountLists/${accountListId}/tools/${tool.id}`
+                                  }
                                 >
                                   <MenuItem
                                     tabIndex={0}
