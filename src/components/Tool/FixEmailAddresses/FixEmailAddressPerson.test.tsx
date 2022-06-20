@@ -1,10 +1,11 @@
 import { ThemeProvider } from '@material-ui/core';
 import React from 'react';
 import userEvent from '@testing-library/user-event';
+import { DateTime } from 'luxon';
 import { render } from '../../../../__tests__/util/testingLibraryReactMock';
 import TestWrapper from '../../../../__tests__/util/TestWrapper';
 import theme from '../../../theme';
-import Contact from './Contact';
+import { FixEmailAddressPerson } from './FixEmailAddressPerson';
 
 const testData = {
   name: 'Test Contact',
@@ -12,14 +13,14 @@ const testData = {
   emails: [
     {
       source: 'DonorHub',
-      date: '06/21/2021',
-      address: 'test1@test1.com',
+      updatedAt: DateTime.fromISO('2021-06-21').toString(),
+      email: 'test1@test1.com',
       primary: true,
     },
     {
       source: 'MPDX',
-      date: '06/22/2021',
-      address: 'test2@test1.com',
+      updatedAt: DateTime.fromISO('2021-06-22').toString(),
+      email: 'test2@test1.com',
       primary: false,
     },
   ],
@@ -35,10 +36,11 @@ describe('FixEmailAddresses-Contact', () => {
     const { getByText, getByTestId, getByDisplayValue } = render(
       <ThemeProvider theme={theme}>
         <TestWrapper>
-          <Contact
+          <FixEmailAddressPerson
+            toDelete={[]}
             name={testData.name}
             key={testData.name}
-            contactIndex={0}
+            personId={testData.id}
             emails={testData.emails}
             handleChange={handleChangeMock}
             handleDelete={handleDeleteModalOpenMock}
@@ -50,11 +52,11 @@ describe('FixEmailAddresses-Contact', () => {
     );
 
     expect(getByText(testData.name)).toBeInTheDocument();
-    expect(getByText('DonorHub (06/21/2021)')).toBeInTheDocument();
-    expect(getByTestId('textfield-0-0')).toBeInTheDocument();
+    expect(getByText('DonorHub (6/21/2021)')).toBeInTheDocument();
+    expect(getByTestId('textfield-testid-0')).toBeInTheDocument();
     expect(getByDisplayValue('test1@test1.com')).toBeInTheDocument();
-    expect(getByText('MPDX (06/22/2021)')).toBeInTheDocument();
-    expect(getByTestId('textfield-0-1')).toBeInTheDocument();
+    expect(getByText('MPDX (6/22/2021)')).toBeInTheDocument();
+    expect(getByTestId('textfield-testid-1')).toBeInTheDocument();
     expect(getByDisplayValue('test2@test1.com')).toBeInTheDocument();
   });
 
@@ -67,10 +69,11 @@ describe('FixEmailAddresses-Contact', () => {
     const { getByTestId } = render(
       <ThemeProvider theme={theme}>
         <TestWrapper>
-          <Contact
+          <FixEmailAddressPerson
+            toDelete={[]}
             name={testData.name}
             key={testData.name}
-            contactIndex={0}
+            personId={testData.id}
             emails={testData.emails}
             handleChange={handleChangeMock}
             handleDelete={handleDeleteModalOpenMock}
@@ -81,8 +84,8 @@ describe('FixEmailAddresses-Contact', () => {
       </ThemeProvider>,
     );
 
-    const addInput = getByTestId('addNewEmailInput-0') as HTMLInputElement;
-    const addButton = getByTestId('addButton-0');
+    const addInput = getByTestId('addNewEmailInput-testid') as HTMLInputElement;
+    const addButton = getByTestId('addButton-testid');
 
     userEvent.type(addInput, 'new@new.com');
     expect(addInput.value).toBe('new@new.com');
