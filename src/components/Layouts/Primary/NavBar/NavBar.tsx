@@ -116,6 +116,12 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
+export const importRoutes: { [key: string]: string } = {
+  'Import from Google': 'google',
+  'Import from TntConnect': 'tnt',
+  'Import from CSV': 'csv/upload',
+};
+
 export const NavBar: FC<NavBarProps> = ({ onMobileClose, openMobile }) => {
   const classes = useStyles();
   const accountListId = useAccountListId();
@@ -148,7 +154,9 @@ export const NavBar: FC<NavBarProps> = ({ onMobileClose, openMobile }) => {
       items: ToolsList.flatMap((toolsGroup) => [
         ...toolsGroup.items.map((tool) => ({
           title: tool.tool,
-          href: `/accountLists/${accountListId}/reports/${tool.id}`,
+          href: tool.tool.includes('Import')
+            ? `https://mpdx.org/tools/import/${importRoutes[tool.tool]}`
+            : `/accountLists/${accountListId}/tools/${tool.id}`,
         })),
       ]),
     },
