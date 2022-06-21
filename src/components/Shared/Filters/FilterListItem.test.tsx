@@ -132,7 +132,7 @@ describe('FilterListItem', () => {
   });
 
   it('MultiSelectFilter blank', () => {
-    const { getByText, getAllByTestId } = render(
+    const { getAllByText, getByTestId } = render(
       <FilterListItem
         filter={multiselectFilter}
         value={undefined}
@@ -140,39 +140,8 @@ describe('FilterListItem', () => {
       />,
     );
 
-    expect(getByText(multiselectFilter.title)).toBeInTheDocument();
-    expect(getAllByTestId('MultiSelectOption').length).toEqual(3);
-    expect(
-      getAllByTestId('CheckboxIcon')[0].getAttribute('class'),
-    ).not.toContain('Mui-checked');
-    expect(
-      getAllByTestId('CheckboxIcon')[1].getAttribute('class'),
-    ).not.toContain('Mui-checked');
-    expect(
-      getAllByTestId('CheckboxIcon')[2].getAttribute('class'),
-    ).not.toContain('Mui-checked');
-  });
-
-  it('MultiSelectFilter filled', () => {
-    const { getByText, getAllByTestId } = render(
-      <FilterListItem
-        filter={multiselectFilter}
-        value={['1', '2']}
-        onUpdate={() => {}}
-      />,
-    );
-
-    expect(getByText(multiselectFilter.title)).toBeInTheDocument();
-    expect(getAllByTestId('MultiSelectOption').length).toEqual(3);
-    expect(getAllByTestId('CheckboxIcon')[0].getAttribute('class')).toContain(
-      'Mui-checked',
-    );
-    expect(getAllByTestId('CheckboxIcon')[1].getAttribute('class')).toContain(
-      'Mui-checked',
-    );
-    expect(
-      getAllByTestId('CheckboxIcon')[2].getAttribute('class'),
-    ).not.toContain('Mui-checked');
+    expect(getAllByText(multiselectFilter.title)).toHaveLength(2);
+    expect(getByTestId('multiSelectFilter')).toBeInTheDocument();
   });
 
   it('NumericRangeFilter blank', async () => {
