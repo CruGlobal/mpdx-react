@@ -36,6 +36,7 @@ import { useMassSelection } from '../../../../src/hooks/useMassSelection';
 import { UserOptionFragment } from '../../../../src/components/Shared/Filters/FilterPanel.generated';
 import { useContactFiltersQuery, useContactsQuery } from './Contacts.generated';
 import { ContactsMap, Coordinates } from './map/map';
+import { ContactsPageProvider } from './ContactsPageContext';
 import { ContactsMapPanel } from 'src/components/Contacts/ContactsMap/ContactsMapPanel';
 import { ContactsList } from 'src/components/Contacts/ContactsList/ContactsList';
 
@@ -374,7 +375,7 @@ const ContactsPage: React.FC = () => {
   });
 
   return (
-    <>
+    <ContactsPageProvider>
       <Head>
         <title>
           MPDX |{' '}
@@ -476,7 +477,6 @@ const ContactsPage: React.FC = () => {
                   {viewMode === TableViewModeEnum.List ? (
                     <ContactsList
                       accountListId={accountListId}
-                      contactDetailsOpen={contactDetailsOpen}
                       starredFilter={starredFilter}
                       toggleSelectionById={toggleSelectionById}
                       isRowChecked={isRowChecked}
@@ -530,7 +530,7 @@ const ContactsPage: React.FC = () => {
       ) : (
         <Loading loading />
       )}
-    </>
+    </ContactsPageProvider>
   );
   //#endregion
 };
