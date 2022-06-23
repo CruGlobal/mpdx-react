@@ -1,8 +1,6 @@
 import { Box } from '@material-ui/core';
-import { useRouter } from 'next/router';
-import React, { useState } from 'react';
+import React from 'react';
 import { ContactRow } from '../ContactRow/ContactRow';
-import { ContactFilterSetInput } from '../../../../graphql/types.generated';
 import { useContactsQuery } from '../../../../pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import { InfiniteList } from 'src/components/InfiniteList/InfiniteList';
 import NullState from 'src/components/Shared/Filters/NullState/NullState';
@@ -11,49 +9,32 @@ import {
   ContactsPageProvider,
   ContactsPageType,
 } from 'pages/accountLists/[accountListId]/contacts/ContactsPageContext';
+import { TableViewModeEnum } from 'src/components/Shared/Header/ListHeader';
 
-interface ContactsListProps {
-  accountListId: string;
-  starredFilter: ContactFilterSetInput;
-  toggleSelectionById: (contactId: string) => void;
-  isRowChecked: (id: string) => boolean;
-  setContactFocus: () => void;
-}
-
-export const ContactsList: React.FC<ContactsListProps> = ({
-  accountListId,
-  starredFilter,
-  toggleSelectionById,
-  isRowChecked,
-  setContactFocus,
-}: ContactsListProps) => {
-  const { query } = useRouter();
-
-  const { contactDetailsOpen } = React.useContext(
-    ContactsPageContext,
-  ) as ContactsPageType;
-  //#region Filters
-  const { contactId, searchTerm, filters } = query;
-
-  const urlFilters = filters && JSON.parse(decodeURI(filters as string));
-
-  const [_activeFilters, setActiveFilters] = useState<ContactFilterSetInput>(
-    urlFilters ?? {},
-  );
-
-  const isFiltered =
-    Object.keys(urlFilters ?? {}).length > 0 ||
-    Object.values(urlFilters ?? {}).some((filter) => filter !== []);
-
-  //#endregion Filters
+export const ContactsList: React.FC = () => {
+  const {
+    contactId,
+    accountListId,
+    activeFilters,
+    searchTerm,
+    starredFilter,
+    viewMode,
+    urlFilters,
+    isFiltered,
+    setActiveFilters,
+  } = React.useContext(ContactsPageContext) as ContactsPageType;
 
   const { data, loading, fetchMore } = useContactsQuery({
     variables: {
       accountListId: accountListId ?? '',
       contactsFilters: {
-        ...urlFilters,
+        ...activeFilters,
         wildcardSearch: searchTerm as string,
         ...starredFilter,
+        ids:
+          viewMode === TableViewModeEnum.Map && urlFilters
+            ? urlFilters.ids
+            : [],
       },
       first: contactId?.includes('map') ? 20000 : 25,
     },
@@ -69,13 +50,8 @@ export const ContactsList: React.FC<ContactsListProps> = ({
         style={{ height: 'calc(100vh - 160px)' }}
         itemContent={(index, contact) => (
           <ContactRow
-            accountListId={accountListId}
             key={index}
             contact={contact}
-            isChecked={isRowChecked(contact.id)}
-            onContactSelected={setContactFocus}
-            onContactCheckToggle={toggleSelectionById}
-            contactDetailsOpen={contactDetailsOpen}
             useTopMargin={index === 0}
           />
         )}
