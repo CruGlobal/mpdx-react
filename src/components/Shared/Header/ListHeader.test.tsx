@@ -18,7 +18,7 @@ const toggleStarredFilter = jest.fn();
 describe('ListHeader', () => {
   describe('Contact', () => {
     it('renders contact header', () => {
-      const { getByPlaceholderText } = render(
+      const { getByPlaceholderText, getByTestId } = render(
         <ThemeProvider theme={theme}>
           <ListHeader
             page="contact"
@@ -36,6 +36,31 @@ describe('ListHeader', () => {
       );
 
       expect(getByPlaceholderText('Search Contacts')).toBeInTheDocument();
+      expect(getByTestId('star-filter-button')).toBeInTheDocument();
+      expect(getByTestId('showing-text')).toBeInTheDocument();
+    });
+
+    it('renders contact header with contact card open', () => {
+      const { getByPlaceholderText, queryByTestId } = render(
+        <ThemeProvider theme={theme}>
+          <ListHeader
+            page="contact"
+            activeFilters={false}
+            starredFilter={{}}
+            toggleStarredFilter={toggleStarredFilter}
+            headerCheckboxState={ListHeaderCheckBoxState.unchecked}
+            filterPanelOpen={false}
+            contactDetailsOpen={true}
+            toggleFilterPanel={toggleFilterPanel}
+            onCheckAllItems={onCheckAllItems}
+            onSearchTermChanged={onSearchTermChanged}
+          />
+        </ThemeProvider>,
+      );
+
+      expect(getByPlaceholderText('Search Contacts')).toBeInTheDocument();
+      expect(queryByTestId('star-filter-button')).not.toBeInTheDocument();
+      expect(queryByTestId('showing-text')).not.toBeInTheDocument();
     });
   });
 
