@@ -183,13 +183,11 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
         }
       />
 
-      {!contactDetailsOpen && (
-        <ItemsShowingText data-testid="showing-text">
-          {contactsView === TableViewModeEnum.List
-            ? t('Showing {{count}}', { count: totalItems })
-            : ''}
-        </ItemsShowingText>
-      )}
+      <ItemsShowingText data-testid="showing-text">
+        {contactsView === TableViewModeEnum.List && !contactDetailsOpen
+          ? t('Showing {{count}}', { count: totalItems })
+          : ''}
+      </ItemsShowingText>
 
       {page === 'contact' ? (
         <>
