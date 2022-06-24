@@ -12,8 +12,8 @@ import {
   ContactRowFragmentDoc,
 } from './ContactRow.generated';
 import theme from 'src/theme';
+import { ContactsPageProvider } from 'pages/accountLists/[accountListId]/contacts/ContactsPageContext';
 
-const accountListId = 'abc';
 const onContactCheckToggle = jest.fn();
 const onContactSelected = jest.fn();
 
@@ -56,14 +56,9 @@ describe('ContactsRow', () => {
     const { getByText } = render(
       <GqlMockedProvider>
         <ThemeProvider theme={theme}>
-          <ContactRow
-            accountListId={accountListId}
-            contact={contact}
-            isChecked={false}
-            contactDetailsOpen={false}
-            onContactCheckToggle={onContactCheckToggle}
-            onContactSelected={onContactSelected}
-          />
+          <ContactsPageProvider>
+            <ContactRow contact={contact} />
+          </ContactsPageProvider>
         </ThemeProvider>
       </GqlMockedProvider>,
     );
@@ -84,14 +79,9 @@ describe('ContactsRow', () => {
     const { getByRole } = render(
       <GqlMockedProvider>
         <ThemeProvider theme={theme}>
-          <ContactRow
-            accountListId={accountListId}
-            contact={contact}
-            isChecked={false}
-            contactDetailsOpen={false}
-            onContactCheckToggle={onContactCheckToggle}
-            onContactSelected={onContactSelected}
-          />
+          <ContactsPageProvider>
+            <ContactRow contact={contact} />
+          </ContactsPageProvider>
         </ThemeProvider>
       </GqlMockedProvider>,
     );
@@ -106,14 +96,9 @@ describe('ContactsRow', () => {
     const { getByTestId } = render(
       <GqlMockedProvider>
         <ThemeProvider theme={theme}>
-          <ContactRow
-            accountListId={accountListId}
-            contact={contact}
-            isChecked={false}
-            contactDetailsOpen={false}
-            onContactCheckToggle={onContactCheckToggle}
-            onContactSelected={onContactSelected}
-          />
+          <ContactsPageProvider>
+            <ContactRow contact={contact} />
+          </ContactsPageProvider>
         </ThemeProvider>
       </GqlMockedProvider>,
     );

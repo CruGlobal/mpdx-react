@@ -8,21 +8,11 @@ export default {
   title: 'Contacts/List',
 };
 
-const accountListId = 'account-list-1';
-
 export const Default = (): ReactElement => {
   return (
     <GqlMockedProvider<ContactsQuery>>
       <ContactsPageProvider>
-        <ContactsList
-          accountListId={accountListId}
-          toggleSelectionById={function (_contactId: string): void {}}
-          setContactFocus={function (): void {}}
-          isRowChecked={function (_id: string) {
-            return true;
-          }}
-          starredFilter={{}}
-        />
+        <ContactsList />
       </ContactsPageProvider>
     </GqlMockedProvider>
   );
