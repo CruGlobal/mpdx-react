@@ -402,7 +402,7 @@ export const ContactsPageProvider: React.FC<React.ReactNode> = ({
   return (
     <ContactsPageContext.Provider
       value={{
-        accountListId: accountListId,
+        accountListId: accountListId ?? '',
         contactId: contactId,
         searchTerm: searchTerm,
         loading: loading,
