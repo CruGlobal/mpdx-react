@@ -6,16 +6,25 @@ import {
   gqlMock,
   GqlMockedProvider,
 } from '../../../../__tests__/util/graphqlMocking';
+import { ContactsPageProvider } from '../../../../pages/accountLists/[accountListId]/contacts/ContactsPageContext';
+import { ContactsQuery } from '../../../../pages/accountLists/[accountListId]/contacts/Contacts.generated';
+import TestRouter from '../../../../__tests__/util/TestRouter';
 import { ContactRow } from './ContactRow';
 import {
   ContactRowFragment,
   ContactRowFragmentDoc,
 } from './ContactRow.generated';
 import theme from 'src/theme';
-import { ContactsPageProvider } from 'pages/accountLists/[accountListId]/contacts/ContactsPageContext';
 
 const onContactCheckToggle = jest.fn();
 const onContactSelected = jest.fn();
+
+const accountListId = 'account-list-1';
+
+const router = {
+  query: { accountListId },
+  isReady: true,
+};
 
 const contactMock = {
   id: 'test-id',
@@ -54,13 +63,15 @@ const contact = gqlMock<ContactRowFragment>(ContactRowFragmentDoc, {
 describe('ContactsRow', () => {
   it('default', () => {
     const { getByText } = render(
-      <GqlMockedProvider>
-        <ThemeProvider theme={theme}>
-          <ContactsPageProvider>
-            <ContactRow contact={contact} />
-          </ContactsPageProvider>
-        </ThemeProvider>
-      </GqlMockedProvider>,
+      <TestRouter router={router}>
+        <GqlMockedProvider<ContactsQuery>>
+          <ThemeProvider theme={theme}>
+            <ContactsPageProvider>
+              <ContactRow contact={contact} />
+            </ContactsPageProvider>
+          </ThemeProvider>
+        </GqlMockedProvider>
+      </TestRouter>,
     );
 
     expect(
@@ -77,13 +88,15 @@ describe('ContactsRow', () => {
 
   it('should render check event', async () => {
     const { getByRole } = render(
-      <GqlMockedProvider>
-        <ThemeProvider theme={theme}>
-          <ContactsPageProvider>
-            <ContactRow contact={contact} />
-          </ContactsPageProvider>
-        </ThemeProvider>
-      </GqlMockedProvider>,
+      <TestRouter router={router}>
+        <GqlMockedProvider<ContactsQuery>>
+          <ThemeProvider theme={theme}>
+            <ContactsPageProvider>
+              <ContactRow contact={contact} />
+            </ContactsPageProvider>
+          </ThemeProvider>
+        </GqlMockedProvider>
+      </TestRouter>,
     );
 
     const checkbox = getByRole('checkbox');
@@ -94,7 +107,7 @@ describe('ContactsRow', () => {
 
   it('should render contact select event', () => {
     const { getByTestId } = render(
-      <GqlMockedProvider>
+      <GqlMockedProvider<ContactsQuery>>
         <ThemeProvider theme={theme}>
           <ContactsPageProvider>
             <ContactRow contact={contact} />
