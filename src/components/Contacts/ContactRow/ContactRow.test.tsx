@@ -107,13 +107,15 @@ describe('ContactsRow', () => {
 
   it('should render contact select event', () => {
     const { getByTestId } = render(
-      <GqlMockedProvider<ContactsQuery>>
-        <ThemeProvider theme={theme}>
-          <ContactsPageProvider>
-            <ContactRow contact={contact} />
-          </ContactsPageProvider>
-        </ThemeProvider>
-      </GqlMockedProvider>,
+      <TestRouter router={router}>
+        <GqlMockedProvider<ContactsQuery>>
+          <ThemeProvider theme={theme}>
+            <ContactsPageProvider>
+              <ContactRow contact={contact} />
+            </ContactsPageProvider>
+          </ThemeProvider>
+        </GqlMockedProvider>
+      </TestRouter>,
     );
 
     const rowButton = getByTestId('rowButton');
