@@ -135,7 +135,7 @@ export const ContactDetailsMoreAcitions: React.FC<ContactDetailsMoreAcitionsProp
     };
     await updateContactOther({
       variables: {
-        accountListId,
+        accountListId: accountListId ?? '',
         attributes,
       },
       refetchQueries: [
@@ -154,7 +154,7 @@ export const ContactDetailsMoreAcitions: React.FC<ContactDetailsMoreAcitionsProp
   const handleDeleteContact = () => {
     deleteContact({
       variables: {
-        accountListId,
+        accountListId: accountListId ?? '',
         contactId,
       },
       update: (cache, { data: deletedContactData }) => {

@@ -32,7 +32,7 @@ import {
 import { Coordinates } from './map/map';
 
 export type ContactsPageType = {
-  accountListId: string;
+  accountListId: string | undefined;
   contactId: string | string[] | undefined;
   searchTerm: string | string[] | undefined;
   loading: boolean;

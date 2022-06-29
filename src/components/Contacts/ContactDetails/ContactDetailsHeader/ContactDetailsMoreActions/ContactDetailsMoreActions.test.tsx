@@ -16,7 +16,7 @@ import { ContactsPageProvider } from 'pages/accountLists/[accountListId]/contact
 const accountListId = '111';
 const contactId = 'contact-1';
 const router = {
-  query: { searchTerm: undefined, accountListId },
+  query: { searchTerm: undefined, accountListId: accountListId },
   push: jest.fn(),
 };
 const onClose = jest.fn();
