@@ -1,4 +1,5 @@
 import React from 'react';
+import { ContactDetailProvider } from '../ContactDetails/ContactDetailContext';
 import { ContactsRightPanel } from './ContactsRightPanel';
 import { ContactsPageProvider } from 'pages/accountLists/[accountListId]/contacts/ContactsPageContext';
 
@@ -9,7 +10,9 @@ export default {
 export const Default = (): React.ReactElement => {
   return (
     <ContactsPageProvider>
-      <ContactsRightPanel />
+      <ContactDetailProvider>
+        <ContactsRightPanel />
+      </ContactDetailProvider>
     </ContactsPageProvider>
   );
 };

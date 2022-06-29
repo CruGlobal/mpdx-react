@@ -11,12 +11,12 @@ import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
 import theme from '../../../theme';
 import { ContactDetails } from './ContactDetails';
 import { GetContactDetailsHeaderQuery } from './ContactDetailsHeader/ContactDetailsHeader.generated';
+import { ContactDetailProvider } from './ContactDetailContext';
 import TestRouter from '__tests__/util/TestRouter';
+import { ContactsPageProvider } from 'pages/accountLists/[accountListId]/contacts/ContactsPageContext';
 
 const accountListId = 'account-list-1';
 const contactId = 'contact-1';
-const onClose = jest.fn();
-const onContactSelected = jest.fn();
 
 const router = {
   query: { accountListId },
@@ -41,12 +41,11 @@ describe('ContactDetails', () => {
             }}
           >
             <MuiThemeProvider theme={theme}>
-              <ContactDetails
-                accountListId={accountListId}
-                contactId={contactId}
-                onClose={onClose}
-                onContactSelected={onContactSelected}
-              />
+              <ContactsPageProvider>
+                <ContactDetailProvider>
+                  <ContactDetails />
+                </ContactDetailProvider>
+              </ContactsPageProvider>
             </MuiThemeProvider>
           </GqlMockedProvider>
         </TestRouter>
@@ -72,12 +71,11 @@ describe('ContactDetails', () => {
             }}
           >
             <MuiThemeProvider theme={theme}>
-              <ContactDetails
-                accountListId={accountListId}
-                contactId={contactId}
-                onClose={onClose}
-                onContactSelected={onContactSelected}
-              />
+              <ContactsPageProvider>
+                <ContactDetailProvider>
+                  <ContactDetails />
+                </ContactDetailProvider>
+              </ContactsPageProvider>
             </MuiThemeProvider>
           </GqlMockedProvider>
         </TestRouter>
@@ -95,12 +93,11 @@ describe('ContactDetails', () => {
         <TestRouter router={router}>
           <GqlMockedProvider>
             <MuiThemeProvider theme={theme}>
-              <ContactDetails
-                accountListId={accountListId}
-                contactId={contactId}
-                onClose={onClose}
-                onContactSelected={onContactSelected}
-              />
+              <ContactsPageProvider>
+                <ContactDetailProvider>
+                  <ContactDetails />
+                </ContactDetailProvider>
+              </ContactsPageProvider>
             </MuiThemeProvider>
           </GqlMockedProvider>
         </TestRouter>

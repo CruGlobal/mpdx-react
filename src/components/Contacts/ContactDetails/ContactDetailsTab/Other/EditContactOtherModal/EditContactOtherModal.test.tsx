@@ -13,6 +13,7 @@ import {
   ContactOtherFragment,
   ContactOtherFragmentDoc,
 } from '../ContactOther.generated';
+import { ContactDetailProvider } from '../../../ContactDetailContext';
 import { UpdateContactOtherMutation } from './EditContactOther.generated';
 import { EditContactOtherModal } from './EditContactOtherModal';
 import { GetTaskModalContactsFilteredQuery } from 'src/components/Task/Drawer/Form/TaskDrawer.generated';
@@ -64,13 +65,15 @@ describe('EditContactOtherModal', () => {
       <SnackbarProvider>
         <ThemeProvider theme={theme}>
           <GqlMockedProvider<UpdateContactOtherMutation>>
-            <EditContactOtherModal
-              accountListId={accountListId}
-              isOpen={true}
-              handleClose={handleClose}
-              contact={mockContact}
-              referral={referral}
-            />
+            <ContactDetailProvider>
+              <EditContactOtherModal
+                accountListId={accountListId}
+                isOpen={true}
+                handleClose={handleClose}
+                contact={mockContact}
+                referral={referral}
+              />
+            </ContactDetailProvider>
           </GqlMockedProvider>
         </ThemeProvider>
       </SnackbarProvider>,
