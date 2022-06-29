@@ -227,9 +227,6 @@ export const TaskRow: React.FC<TaskRowProps> = ({
               />
             </Box>
           </Hidden>
-          <Box onClick={(e) => e.stopPropagation()}>
-            <DeleteTaskIconButton />
-          </Box>
           <Hidden smUp>
             <Box>
               <TaskDueDate isComplete={isComplete} dueDate={dueDate} small />
@@ -243,6 +240,9 @@ export const TaskRow: React.FC<TaskRowProps> = ({
               </Box>
             </Box>
           </Hidden>
+          <Box onClick={(e) => e.stopPropagation()}>
+            <DeleteTaskIconButton />
+          </Box>
           <Box onClick={(e) => e.stopPropagation()}>
             <StarTaskIconButton
               accountListId={accountListId}
