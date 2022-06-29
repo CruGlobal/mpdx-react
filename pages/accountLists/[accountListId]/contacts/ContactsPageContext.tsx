@@ -1,3 +1,4 @@
+import { ParsedUrlQuery } from 'querystring';
 import _, { debounce } from 'lodash';
 import { DateTime } from 'luxon';
 import { useRouter } from 'next/router';
@@ -31,10 +32,11 @@ import {
 import { Coordinates } from './map/map';
 
 export type ContactsPageType = {
-  accountListId: string | undefined;
+  accountListId: string;
   contactId: string | string[] | undefined;
   searchTerm: string | string[] | undefined;
   loading: boolean;
+  query: ParsedUrlQuery;
   selectionType: ListHeaderCheckBoxState;
   isRowChecked: (id: string) => boolean;
   toggleSelectAll: () => void;
@@ -406,6 +408,7 @@ export const ContactsPageProvider: React.FC<React.ReactNode> = ({
         contactId: contactId,
         searchTerm: searchTerm,
         loading: loading,
+        query: query,
         selectionType: selectionType,
         isRowChecked: isRowChecked,
         toggleSelectAll: toggleSelectAll,

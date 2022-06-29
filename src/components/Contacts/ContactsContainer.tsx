@@ -16,7 +16,6 @@ import { ContactsMainPanel } from './ContactsMainPanel/ContactsMainPanel';
 import { ContactsLeftPanel } from './ContactsLeftPanel/ContactsLeftPanel';
 import { ContactsRightPanel } from './ContactsRightPanel/ContactsRightPanel';
 import { ContactFlowDragLayer } from './ContactFlow/ContactFlowDragLayer/ContactFlowDragLayer';
-import { useAccountListId } from 'src/hooks/useAccountListId';
 
 const WhiteBackground = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.common.white,
@@ -24,10 +23,12 @@ const WhiteBackground = styled(Box)(({ theme }) => ({
 
 export const ContactsContainer: React.FC = ({}) => {
   const { t } = useTranslation();
-  const accountListId = useAccountListId();
-  const { filterPanelOpen, contactDetailsOpen, viewMode } = useContext(
-    ContactsPageContext,
-  ) as ContactsPageType;
+  const {
+    accountListId,
+    filterPanelOpen,
+    contactDetailsOpen,
+    viewMode,
+  } = useContext(ContactsPageContext) as ContactsPageType;
 
   return (
     <>
