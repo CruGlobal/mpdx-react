@@ -46,22 +46,20 @@ const panTo = jest.fn();
 describe('ContactsMapPanel', () => {
   it('should list the contacts sorted by properly', async () => {
     const { getByText, queryByText } = render(
-      <TestRouter router={router}>
-        <ThemeProvider theme={theme}>
-          <TestRouter router={router}>
-            <GqlMockedProvider<ContactsQuery>>
-              <ContactsPageProvider>
-                <ContactsMapPanel
-                  data={data}
-                  selected={selected}
-                  setSelected={setSelected}
-                  panTo={panTo}
-                />
-              </ContactsPageProvider>
-            </GqlMockedProvider>
-          </TestRouter>
-        </ThemeProvider>
-      </TestRouter>,
+      <ThemeProvider theme={theme}>
+        <TestRouter router={router}>
+          <GqlMockedProvider<ContactsQuery>>
+            <ContactsPageProvider>
+              <ContactsMapPanel
+                data={data}
+                selected={selected}
+                setSelected={setSelected}
+                panTo={panTo}
+              />
+            </ContactsPageProvider>
+          </GqlMockedProvider>
+        </TestRouter>
+      </ThemeProvider>,
     );
     await waitFor(() =>
       expect(getByText('Partner - Financial')).toBeInTheDocument(),
