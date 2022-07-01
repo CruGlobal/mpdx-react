@@ -39,7 +39,7 @@ const StyledModal = styled(Modal)(() => ({
 export interface TaskModalProps {
   taskId?: string;
   onClose?: () => void;
-  view?: 'comments' | 'log' | 'add' | 'complete' | 'edit' | 'delete';
+  view?: 'comments' | 'log' | 'add' | 'complete' | 'edit';
   showCompleteForm?: boolean;
   defaultValues?: Partial<TaskCreateInput & TaskUpdateInput>;
   filter?: TaskFilter;
@@ -88,8 +88,6 @@ const TaskModal = ({
         return t('Task Comments');
       case 'log':
         return t('Log Task');
-      case 'delete':
-        return t('Delete Task');
       case 'edit':
         return t('Edit Task');
       default:
@@ -128,8 +126,6 @@ const TaskModal = ({
             rowsPerPage={rowsPerPage || 100}
           />
         );
-      case 'delete':
-        return <p>Delete modal content</p>;
       default:
         return (
           <TaskModalForm
