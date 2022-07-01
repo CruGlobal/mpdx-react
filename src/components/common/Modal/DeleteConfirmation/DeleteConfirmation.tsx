@@ -39,7 +39,7 @@ export const DeleteConfirmation: React.FC<DeleteConfirmationProps> = ({
   return (
     <Dialog
       open={open}
-      aria-labelledby={t('Remove task confirmation')}
+      aria-labelledby={t(`Remove ${deleteType} confirmation`)}
       fullWidth
       maxWidth="sm"
     >
