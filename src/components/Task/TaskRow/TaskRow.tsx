@@ -241,7 +241,10 @@ export const TaskRow: React.FC<TaskRowProps> = ({
             </Box>
           </Hidden>
           <Box onClick={(e) => e.stopPropagation()}>
-            <DeleteTaskIconButton />
+            <DeleteTaskIconButton
+              accountListId={accountListId}
+              taskId={taskId}
+            />
           </Box>
           <Box onClick={(e) => e.stopPropagation()}>
             <StarTaskIconButton

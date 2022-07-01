@@ -10,6 +10,11 @@ import {
 } from '@material-ui/core';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { DateTime } from 'luxon';
+import { useSnackbar } from 'notistack';
+import { useDeleteTaskMutation } from '../../../Task/Drawer/Form/TaskDrawer.generated';
+import { GetTasksForTaskListDocument } from '../../../Task/List/TaskList.generated';
+import { GetThisWeekDocument } from '../../../Dashboard/ThisWeek/GetThisWeek.generated';
 
 const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
   margin: theme.spacing(0, 1, 0, 0),
@@ -23,9 +28,11 @@ const ActionButton = styled(Button)(({ theme }) => ({
 interface DeleteConfirmationProps {
   deleteType: string;
   open: boolean;
-  deleting: boolean;
+  deleting?: boolean;
   onClickDecline: (decline: boolean) => void;
-  onClickConfirm: () => void;
+  onClickConfirm?: () => void;
+  accountListId?: string;
+  taskId?: string;
 }
 
 export const DeleteConfirmation: React.FC<DeleteConfirmationProps> = ({
@@ -34,8 +41,44 @@ export const DeleteConfirmation: React.FC<DeleteConfirmationProps> = ({
   deleting,
   onClickConfirm,
   onClickDecline,
+  accountListId,
+  taskId,
 }) => {
   const { t } = useTranslation();
+  const { enqueueSnackbar } = useSnackbar();
+  const [deleteTask, { loading: deletingTask }] = useDeleteTaskMutation();
+
+  const onDeleteTask = async (): Promise<void> => {
+    if (taskId) {
+      const endOfDay = DateTime.local().endOf('day');
+      await deleteTask({
+        variables: {
+          accountListId,
+          id: taskId,
+        },
+        refetchQueries: [
+          {
+            query: GetTasksForTaskListDocument,
+            variables: { accountListId, first: rowsPerPage, ...filter },
+          },
+          {
+            query: GetThisWeekDocument,
+            variables: {
+              accountListId,
+              endOfDay: endOfDay.toISO(),
+              today: endOfDay.toISODate(),
+              twoWeeksFromNow: endOfDay.plus({ weeks: 2 }).toISODate(),
+              twoWeeksAgo: endOfDay.minus({ weeks: 2 }).toISODate(),
+            },
+          },
+        ],
+      });
+      enqueueSnackbar(t('Task deleted successfully'), { variant: 'success' });
+      onClickDecline(false);
+      onClose();
+    }
+  };
+
   return (
     <Dialog
       open={open}
@@ -45,7 +88,7 @@ export const DeleteConfirmation: React.FC<DeleteConfirmationProps> = ({
     >
       <DialogTitle>{t('Confirm')}</DialogTitle>
       <DialogContent dividers>
-        {deleting ? (
+        {deleting || (taskId && deletingTask) ? (
           <LoadingIndicator color="primary" size={50} />
         ) : (
           <DialogContentText>
@@ -59,7 +102,11 @@ export const DeleteConfirmation: React.FC<DeleteConfirmationProps> = ({
         <ActionButton onClick={() => onClickDecline(false)}>
           {t('No')}
         </ActionButton>
-        <ActionButton onClick={onClickConfirm}>{t('Yes')}</ActionButton>
+        <ActionButton
+          onClick={deleteType === 'task' ? onDeleteTask : onClickConfirm}
+        >
+          {t('Yes')}
+        </ActionButton>
       </DialogActions>
     </Dialog>
   );
