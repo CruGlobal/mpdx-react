@@ -28,7 +28,7 @@ describe('NavReportsList', () => {
     );
 
     expect(getByText('Donations')).toBeInTheDocument();
-    expect(queryAllByText('Month Report')[0]).toBeInTheDocument();
+    expect(queryAllByText('14 Month Report')[0]).toBeInTheDocument();
     expect(getByText('Designation Accounts')).toBeInTheDocument();
     expect(getByText('Responsibility Centers')).toBeInTheDocument();
     expect(getByText('Expected Monthly Total')).toBeInTheDocument();
