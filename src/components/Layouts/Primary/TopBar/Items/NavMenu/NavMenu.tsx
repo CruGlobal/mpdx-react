@@ -26,6 +26,10 @@ import { useAccountListId } from '../../../../../../hooks/useAccountListId';
 import { importRoutes } from '../../../NavBar/NavBar';
 import { useGetToolNotificationsQuery } from './GetToolNotifcations.generated';
 
+export const filteredReportNavItems = ReportNavItems.filter(
+  (item) => item.id !== 'partnerCurrency',
+);
+
 const useStyles = makeStyles(() => ({
   navListItem: {
     order: 2,
@@ -240,7 +244,7 @@ const NavMenu = (): ReactElement => {
                         autoFocusItem={reportsMenuOpen}
                         id="menu-list-grow"
                       >
-                        {ReportNavItems.map(({ id, title, subTitle }) => (
+                        {filteredReportNavItems.map(({ id, title }) => (
                           <NextLink
                             key={id}
                             href={`/accountLists/${accountListId}/reports/${id}`}
@@ -252,11 +256,7 @@ const NavMenu = (): ReactElement => {
                                 router.asPath.includes(`${id}`) && 'page'
                               }
                             >
-                              <ListItemText
-                                primary={t(
-                                  `${title}${subTitle ? ` (${subTitle})` : ''}`,
-                                )}
-                              />
+                              <ListItemText primary={t(title)} />
                             </MenuItem>
                           </NextLink>
                         ))}
