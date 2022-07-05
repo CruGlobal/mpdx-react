@@ -9,7 +9,7 @@ on:
 
 env:
   # Use production API for codegen to make sure production is compatible with the code to be merged
-  API_URL: 'https://api.mpdx.org/graphql'
+  API_URL: 'https://next.mpdx.org/api/graphql'
 
 jobs:
   split-tests:
