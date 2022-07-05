@@ -32,7 +32,7 @@ interface DeleteConfirmationProps {
   deleting?: boolean;
   onClickDecline: (decline: boolean) => void;
   onClickConfirm?: () => void;
-  accountListId: string;
+  accountListId?: string;
   taskId?: string;
   onClose?: () => void;
 }
@@ -56,7 +56,7 @@ export const DeleteConfirmation: React.FC<DeleteConfirmationProps> = ({
       const endOfDay = DateTime.local().endOf('day');
       await deleteTask({
         variables: {
-          accountListId,
+          accountListId: accountListId ?? '',
           id: taskId,
         },
         refetchQueries: [
