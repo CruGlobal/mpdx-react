@@ -713,9 +713,12 @@ const TaskModalForm = ({
                 </ActionButton>
               </Box>
               <DeleteConfirmation
+                accountListId={accountListId}
                 deleteType="task"
                 open={removeDialogOpen}
                 onClickDecline={handleRemoveDialog}
+                onClose={onClose}
+                taskId={task?.id}
               />
             </Box>
           </form>
