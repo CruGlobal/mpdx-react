@@ -15,6 +15,7 @@ import { useSnackbar } from 'notistack';
 import { useDeleteTaskMutation } from '../../../Task/Drawer/Form/TaskDrawer.generated';
 import { GetTasksForTaskListDocument } from '../../../Task/List/TaskList.generated';
 import { GetThisWeekDocument } from '../../../Dashboard/ThisWeek/GetThisWeek.generated';
+import { ContactTasksTabDocument } from 'src/components/Contacts/ContactDetails/ContactTasksTab/ContactTasksTab.generated';
 
 const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
   margin: theme.spacing(0, 1, 0, 0),
@@ -33,6 +34,7 @@ interface DeleteConfirmationProps {
   onClickConfirm?: () => void;
   accountListId: string;
   taskId?: string;
+  onClose?: () => void;
 }
 
 export const DeleteConfirmation: React.FC<DeleteConfirmationProps> = ({
@@ -43,6 +45,7 @@ export const DeleteConfirmation: React.FC<DeleteConfirmationProps> = ({
   onClickDecline,
   accountListId,
   taskId,
+  onClose,
 }) => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
@@ -59,7 +62,11 @@ export const DeleteConfirmation: React.FC<DeleteConfirmationProps> = ({
         refetchQueries: [
           {
             query: GetTasksForTaskListDocument,
-            variables: { accountListId, first: rowsPerPage, ...filter },
+            variables: { accountListId },
+          },
+          {
+            query: ContactTasksTabDocument,
+            variables: { accountListId },
           },
           {
             query: GetThisWeekDocument,
@@ -67,7 +74,7 @@ export const DeleteConfirmation: React.FC<DeleteConfirmationProps> = ({
               accountListId,
               endOfDay: endOfDay.toISO(),
               today: endOfDay.toISODate(),
-              twoWeeksFromNow: endOfDay.plus({ weeks: 2 }).toISODate(),
+              threeWeeksFromNow: endOfDay.plus({ weeks: 3 }).toISODate(),
               twoWeeksAgo: endOfDay.minus({ weeks: 2 }).toISODate(),
             },
           },
@@ -75,7 +82,7 @@ export const DeleteConfirmation: React.FC<DeleteConfirmationProps> = ({
       });
       enqueueSnackbar(t('Task deleted successfully'), { variant: 'success' });
       onClickDecline(false);
-      onClose();
+      onClose && onClose();
     }
   };
 
