@@ -14,7 +14,7 @@ import {
 import FilterList from '@material-ui/icons/FilterList';
 import { useTranslation } from 'react-i18next';
 import ArrowDropDown from '@material-ui/icons/ArrowDropDown';
-import { ViewList } from '@material-ui/icons';
+import { MoreHoriz, ViewList } from '@material-ui/icons';
 import { SearchBox } from '../../common/SearchBox/SearchBox';
 import {
   ContactFilterSetInput,
@@ -22,16 +22,25 @@ import {
 } from '../../../../graphql/types.generated';
 import { StarFilterButton } from './StarFilterButton/StarFilterButton';
 
-const HeaderWrap = styled(Box)(({ theme }) => ({
-  height: 96,
-  padding: theme.spacing(1, 0),
-  display: 'flex',
-  flexDirection: 'row',
-  justifyContent: 'space-evenly',
-  alignItems: 'center',
-  backgroundColor: theme.palette.common.white,
-  borderBottom: `1px solid ${theme.palette.grey[200]}`,
-}));
+const HeaderWrap = styled(Box)(
+  ({
+    theme,
+    contactDetailsOpen,
+  }: {
+    theme: Theme;
+    contactDetailsOpen: boolean;
+  }) => ({
+    height: 96,
+    padding: theme.spacing(1, 0),
+    paddingRight: !contactDetailsOpen ? 0 : theme.spacing(2),
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    alignItems: 'center',
+    backgroundColor: theme.palette.common.white,
+    borderBottom: `1px solid ${theme.palette.grey[200]}`,
+  }),
+);
 
 const FilterButton = styled(
   ({ activeFilters: _activeFilters, panelOpen: _panelOpen, ...props }) => (
@@ -140,7 +149,7 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
   };
 
   return (
-    <HeaderWrap>
+    <HeaderWrap contactDetailsOpen={contactDetailsOpen}>
       {contactsView !== TableViewModeEnum.Map && (
         <Hidden xsUp={contactDetailsOpen}>
           <Checkbox
@@ -174,8 +183,8 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
         }
       />
 
-      <ItemsShowingText>
-        {contactsView === TableViewModeEnum.List
+      <ItemsShowingText data-testid="showing-text">
+        {contactsView === TableViewModeEnum.List && !contactDetailsOpen
           ? t('Showing {{count}}', { count: totalItems })
           : ''}
       </ItemsShowingText>
@@ -190,7 +199,11 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
                 onClick={handleClick}
                 endIcon={<ArrowDropDown />}
               >
-                {t('Actions')}
+                {filterPanelOpen && contactDetailsOpen ? (
+                  <MoreHoriz />
+                ) : (
+                  t('Actions')
+                )}
               </ActionsButton>
               <Menu
                 open={open}
@@ -278,10 +291,12 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
       )}
 
       <Hidden smDown>
-        <StarFilterButton
-          starredFilter={starredFilter}
-          toggleStarredFilter={toggleStarredFilter}
-        />
+        {!contactDetailsOpen && (
+          <StarFilterButton
+            starredFilter={starredFilter}
+            toggleStarredFilter={toggleStarredFilter}
+          />
+        )}
       </Hidden>
     </HeaderWrap>
   );
