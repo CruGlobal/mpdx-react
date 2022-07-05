@@ -3,7 +3,9 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
+  TextField,
 } from '@material-ui/core';
+import { Autocomplete } from '@material-ui/lab';
 import React from 'react';
 import { MultiselectFilter } from '../../../../graphql/types.generated';
 
@@ -18,10 +20,14 @@ export const FilterListItemMultiselect: React.FC<Props> = ({
   selected,
   onUpdate,
 }: Props) => {
+  const toggleValue = (value?: string[]) => {
+    onUpdate(value);
+  };
+
   const isChecked = (value?: string | null) =>
     selected && selected.some((it) => it === value);
 
-  const toggleValue = (value?: string | null) => {
+  const toggleCheckValue = (value?: string | null) => {
     if (value && !isChecked(value)) {
       onUpdate(selected ? [...selected, value] : [value]);
     } else {
@@ -37,23 +43,49 @@ export const FilterListItemMultiselect: React.FC<Props> = ({
           primaryTypographyProps={{ variant: 'subtitle1' }}
         />
       </ListItem>
-      {filter.options?.map(({ value, name }) => (
-        <ListItem key={value} button onClick={() => toggleValue(value)}>
-          <ListItemIcon data-testid="MultiSelectOption">
-            <Checkbox
-              data-testid="CheckboxIcon"
-              edge="start"
-              color="secondary"
-              checked={isChecked(value)}
-              disableRipple
-            />
-          </ListItemIcon>
-          <ListItemText
-            primary={name}
-            primaryTypographyProps={{ variant: 'subtitle1' }}
+      {filter.filterKey !== 'pledge_amount' ? (
+        <ListItem>
+          <Autocomplete
+            multiple
+            value={selected || []}
+            onChange={(_, value) => toggleValue(value)}
+            options={filter.options?.map(({ value }) => value) || []}
+            getOptionLabel={(option) =>
+              filter.options?.find(
+                ({ value }) => String(value) === String(option),
+              )?.name ?? ''
+            }
+            filterSelectedOptions
+            fullWidth
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                placeholder={filter.title}
+                label={filter.title}
+                data-testid="multiSelectFilter"
+              />
+            )}
           />
         </ListItem>
-      ))}
+      ) : (
+        filter.options?.map(({ value, name }) => (
+          <ListItem key={value} button onClick={() => toggleCheckValue(value)}>
+            <ListItemIcon data-testid="MultiSelectOption">
+              <Checkbox
+                data-testid="CheckboxIcon"
+                edge="start"
+                color="secondary"
+                checked={isChecked(value)}
+                disableRipple
+              />
+            </ListItemIcon>
+            <ListItemText
+              primary={name}
+              primaryTypographyProps={{ variant: 'subtitle1' }}
+            />
+          </ListItem>
+        ))
+      )}
     </div>
   );
 };
