@@ -31,7 +31,7 @@ interface DeleteConfirmationProps {
   deleting?: boolean;
   onClickDecline: (decline: boolean) => void;
   onClickConfirm?: () => void;
-  accountListId?: string;
+  accountListId: string;
   taskId?: string;
 }
 
