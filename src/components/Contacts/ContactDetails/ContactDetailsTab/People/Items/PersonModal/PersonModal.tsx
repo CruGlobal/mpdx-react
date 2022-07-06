@@ -1,4 +1,4 @@
-import React, { ReactElement, useState } from 'react';
+import React, { ReactElement } from 'react';
 import {
   Box,
   Button,
@@ -22,6 +22,8 @@ import {
   PersonCreateInput,
   PersonUpdateInput,
 } from '../../../../../../../../graphql/types.generated';
+import { ModalDeleteButton } from '../../../../../../../../src/components/common/Modal/DeleteButton/ModalDeleteButton';
+import { DeleteConfirmation } from '../../../../../../../../src/components/common/Modal/DeleteConfirmation/DeleteConfirmation';
 import { PersonName } from './PersonName/PersonName';
 import { PersonPhoneNumber } from './PersonPhoneNumber/PersonPhoneNumber';
 import { PersonEmail } from './PersonEmail/PersonEmail';
@@ -32,8 +34,10 @@ import {
   useDeletePersonMutation,
   useUpdatePersonMutation,
 } from './PersonModal.generated';
-import { ModalDeleteButton } from 'src/components/common/Modal/DeleteButton/ModalDeleteButton';
-import { DeleteConfirmation } from 'src/components/common/Modal/DeleteConfirmation/DeleteConfirmation';
+import {
+  ContactDetailContext,
+  ContactDetailsType,
+} from 'src/components/Contacts/ContactDetails/ContactDetailContext';
 
 const ContactPersonContainer = styled(Box)(({ theme }) => ({
   margin: theme.spacing(2, 0),
@@ -90,8 +94,13 @@ export const PersonModal: React.FC<PersonModalProps> = ({
 }) => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
-  const [personEditShowMore, setPersonEditShowMore] = useState(false);
-  const [removeDialogOpen, handleRemoveDialogOpen] = useState(false);
+  const {
+    personEditShowMore,
+    setPersonEditShowMore,
+    removeDialogOpen,
+    handleRemoveDialogOpen,
+  } = React.useContext(ContactDetailContext) as ContactDetailsType;
+
   const [updatePerson, { loading: updating }] = useUpdatePersonMutation();
   const [createPerson, { loading: creating }] = useCreatePersonMutation();
   const [deletePerson, { loading: deleting }] = useDeletePersonMutation();

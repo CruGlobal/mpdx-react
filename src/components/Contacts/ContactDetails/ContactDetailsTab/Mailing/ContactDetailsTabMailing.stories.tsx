@@ -1,6 +1,7 @@
 import { Box } from '@material-ui/core';
 import React, { ReactElement } from 'react';
 import { gqlMock } from '../../../../../../__tests__/util/graphqlMocking';
+import { ContactDetailProvider } from '../../ContactDetailContext';
 import { ContactDetailsTabMailing } from './ContactDetailsTabMailing';
 import {
   ContactMailingFragment,
@@ -15,7 +16,9 @@ export const Default = (): ReactElement => {
   const mock = gqlMock<ContactMailingFragment>(ContactMailingFragmentDoc);
   return (
     <Box m={2}>
-      <ContactDetailsTabMailing accountListId={'123'} data={mock} />
+      <ContactDetailProvider>
+        <ContactDetailsTabMailing accountListId={'123'} data={mock} />
+      </ContactDetailProvider>
     </Box>
   );
 };

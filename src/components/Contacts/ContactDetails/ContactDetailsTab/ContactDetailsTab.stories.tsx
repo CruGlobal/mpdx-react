@@ -3,6 +3,7 @@ import { CssBaseline, MuiThemeProvider } from '@material-ui/core';
 import React, { ReactElement } from 'react';
 import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
 import theme from '../../../../theme';
+import { ContactDetailProvider } from '../ContactDetailContext';
 import { ContactDetailsTab } from './ContactDetailsTab';
 import {
   ContactDetailsTabDocument,
@@ -22,11 +23,13 @@ export const Default = (): ReactElement => {
     <MuiThemeProvider theme={theme}>
       <CssBaseline />
       <GqlMockedProvider<ContactDetailsTabQuery>>
-        <ContactDetailsTab
-          accountListId={accountListId}
-          contactId={contactId}
-          onContactSelected={() => {}}
-        />
+        <ContactDetailProvider>
+          <ContactDetailsTab
+            accountListId={accountListId}
+            contactId={contactId}
+            onContactSelected={() => {}}
+          />
+        </ContactDetailProvider>
       </GqlMockedProvider>
     </MuiThemeProvider>
   );
@@ -49,11 +52,13 @@ export const Loading = (): ReactElement => {
         },
       ]}
     >
-      <ContactDetailsTab
-        accountListId={accountListId}
-        contactId={contactId}
-        onContactSelected={() => {}}
-      />
+      <ContactDetailProvider>
+        <ContactDetailsTab
+          accountListId={accountListId}
+          contactId={contactId}
+          onContactSelected={() => {}}
+        />
+      </ContactDetailProvider>
     </MockedProvider>
   );
 };

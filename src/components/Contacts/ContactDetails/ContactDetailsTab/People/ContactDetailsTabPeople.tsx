@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   Avatar,
   Box,
@@ -13,6 +13,10 @@ import { Cake, Email, Phone } from '@material-ui/icons';
 import CreateIcon from '@material-ui/icons/Create';
 import { useTranslation } from 'react-i18next';
 import { RingIcon } from '../../../RingIcon';
+import {
+  ContactDetailContext,
+  ContactDetailsType,
+} from '../../ContactDetailContext';
 import {
   ContactPeopleFragment,
   ContactPersonFragment,
@@ -92,8 +96,13 @@ export const ContactDetailsTabPeople: React.FC<ContactDetailsPeopleProp> = ({
   accountListId,
 }) => {
   const { t } = useTranslation();
-  const [editPersonModalOpen, setEditPersonModalOpen] = useState<string>();
-  const [createPersonModalOpen, setCreatePersonModalOpen] = useState(false);
+
+  const {
+    editPersonModalOpen,
+    setEditPersonModalOpen,
+    createPersonModalOpen,
+    setCreatePersonModalOpen,
+  } = React.useContext(ContactDetailContext) as ContactDetailsType;
 
   const { primaryPerson, people, id } = data;
 

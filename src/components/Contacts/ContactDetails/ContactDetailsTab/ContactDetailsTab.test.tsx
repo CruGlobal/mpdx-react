@@ -8,8 +8,10 @@ import LuxonUtils from '@date-io/luxon';
 import TestRouter from '../../../../../__tests__/util/TestRouter';
 import theme from '../../../../theme';
 import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
+import { ContactDetailProvider } from '../ContactDetailContext';
 import { ContactDetailsTab } from './ContactDetailsTab';
 import { ContactDetailsTabQuery } from './ContactDetailsTab.generated';
+import { ContactsPageProvider } from 'pages/accountLists/[accountListId]/contacts/ContactsPageContext';
 
 const accountListId = '111';
 const contactId = 'contact-1';
@@ -85,11 +87,15 @@ describe('ContactDetailTab', () => {
         <TestRouter router={router}>
           <ThemeProvider theme={theme}>
             <GqlMockedProvider<ContactDetailsTabQuery>>
-              <ContactDetailsTab
-                accountListId={accountListId}
-                contactId={contactId}
-                onContactSelected={onContactSelected}
-              />
+              <ContactsPageProvider>
+                <ContactDetailProvider>
+                  <ContactDetailsTab
+                    accountListId={accountListId}
+                    contactId={contactId}
+                    onContactSelected={onContactSelected}
+                  />
+                </ContactDetailProvider>
+              </ContactsPageProvider>
             </GqlMockedProvider>
           </ThemeProvider>
         </TestRouter>
@@ -104,11 +110,15 @@ describe('ContactDetailTab', () => {
         <TestRouter router={router}>
           <ThemeProvider theme={theme}>
             <GqlMockedProvider<ContactDetailsTabQuery> mocks={mocks}>
-              <ContactDetailsTab
-                accountListId={accountListId}
-                contactId={contactId}
-                onContactSelected={onContactSelected}
-              />
+              <ContactsPageProvider>
+                <ContactDetailProvider>
+                  <ContactDetailsTab
+                    accountListId={accountListId}
+                    contactId={contactId}
+                    onContactSelected={onContactSelected}
+                  />
+                </ContactDetailProvider>
+              </ContactsPageProvider>
             </GqlMockedProvider>
           </ThemeProvider>
         </TestRouter>
@@ -129,11 +139,15 @@ describe('ContactDetailTab', () => {
           <MuiPickersUtilsProvider utils={LuxonUtils}>
             <ThemeProvider theme={theme}>
               <GqlMockedProvider<ContactDetailsTabQuery>>
-                <ContactDetailsTab
-                  accountListId={accountListId}
-                  contactId={contactId}
-                  onContactSelected={onContactSelected}
-                />
+                <ContactsPageProvider>
+                  <ContactDetailProvider>
+                    <ContactDetailsTab
+                      accountListId={accountListId}
+                      contactId={contactId}
+                      onContactSelected={onContactSelected}
+                    />
+                  </ContactDetailProvider>
+                </ContactsPageProvider>
               </GqlMockedProvider>
             </ThemeProvider>
           </MuiPickersUtilsProvider>
@@ -154,11 +168,15 @@ describe('ContactDetailTab', () => {
           <MuiPickersUtilsProvider utils={LuxonUtils}>
             <ThemeProvider theme={theme}>
               <GqlMockedProvider<ContactDetailsTabQuery>>
-                <ContactDetailsTab
-                  accountListId={accountListId}
-                  contactId={contactId}
-                  onContactSelected={onContactSelected}
-                />
+                <ContactsPageProvider>
+                  <ContactDetailProvider>
+                    <ContactDetailsTab
+                      accountListId={accountListId}
+                      contactId={contactId}
+                      onContactSelected={onContactSelected}
+                    />
+                  </ContactDetailProvider>
+                </ContactsPageProvider>
               </GqlMockedProvider>
             </ThemeProvider>
           </MuiPickersUtilsProvider>
@@ -183,11 +201,15 @@ describe('ContactDetailTab', () => {
           <MuiPickersUtilsProvider utils={LuxonUtils}>
             <ThemeProvider theme={theme}>
               <GqlMockedProvider<ContactDetailsTabQuery>>
-                <ContactDetailsTab
-                  accountListId={accountListId}
-                  contactId={contactId}
-                  onContactSelected={onContactSelected}
-                />
+                <ContactsPageProvider>
+                  <ContactDetailProvider>
+                    <ContactDetailsTab
+                      accountListId={accountListId}
+                      contactId={contactId}
+                      onContactSelected={onContactSelected}
+                    />
+                  </ContactDetailProvider>
+                </ContactsPageProvider>
               </GqlMockedProvider>
             </ThemeProvider>
           </MuiPickersUtilsProvider>
@@ -206,11 +228,15 @@ describe('ContactDetailTab', () => {
           <MuiPickersUtilsProvider utils={LuxonUtils}>
             <ThemeProvider theme={theme}>
               <GqlMockedProvider<ContactDetailsTabQuery>>
-                <ContactDetailsTab
-                  accountListId={accountListId}
-                  contactId={contactId}
-                  onContactSelected={onContactSelected}
-                />
+                <ContactsPageProvider>
+                  <ContactDetailProvider>
+                    <ContactDetailsTab
+                      accountListId={accountListId}
+                      contactId={contactId}
+                      onContactSelected={onContactSelected}
+                    />
+                  </ContactDetailProvider>
+                </ContactsPageProvider>
               </GqlMockedProvider>
             </ThemeProvider>
           </MuiPickersUtilsProvider>
@@ -233,11 +259,15 @@ describe('ContactDetailTab', () => {
           <MuiPickersUtilsProvider utils={LuxonUtils}>
             <ThemeProvider theme={theme}>
               <GqlMockedProvider<ContactDetailsTabQuery>>
-                <ContactDetailsTab
-                  accountListId={accountListId}
-                  contactId={contactId}
-                  onContactSelected={onContactSelected}
-                />
+                <ContactsPageProvider>
+                  <ContactDetailProvider>
+                    <ContactDetailsTab
+                      accountListId={accountListId}
+                      contactId={contactId}
+                      onContactSelected={onContactSelected}
+                    />
+                  </ContactDetailProvider>
+                </ContactsPageProvider>
               </GqlMockedProvider>
             </ThemeProvider>
           </MuiPickersUtilsProvider>
@@ -258,11 +288,15 @@ describe('ContactDetailTab', () => {
           <MuiPickersUtilsProvider utils={LuxonUtils}>
             <ThemeProvider theme={theme}>
               <GqlMockedProvider<ContactDetailsTabQuery>>
-                <ContactDetailsTab
-                  accountListId={accountListId}
-                  contactId={contactId}
-                  onContactSelected={onContactSelected}
-                />
+                <ContactsPageProvider>
+                  <ContactDetailProvider>
+                    <ContactDetailsTab
+                      accountListId={accountListId}
+                      contactId={contactId}
+                      onContactSelected={onContactSelected}
+                    />
+                  </ContactDetailProvider>
+                </ContactsPageProvider>
               </GqlMockedProvider>
             </ThemeProvider>
           </MuiPickersUtilsProvider>
@@ -287,11 +321,15 @@ describe('ContactDetailTab', () => {
           <MuiPickersUtilsProvider utils={LuxonUtils}>
             <ThemeProvider theme={theme}>
               <GqlMockedProvider<ContactDetailsTabQuery>>
-                <ContactDetailsTab
-                  accountListId={accountListId}
-                  contactId={contactId}
-                  onContactSelected={onContactSelected}
-                />
+                <ContactsPageProvider>
+                  <ContactDetailProvider>
+                    <ContactDetailsTab
+                      accountListId={accountListId}
+                      contactId={contactId}
+                      onContactSelected={onContactSelected}
+                    />
+                  </ContactDetailProvider>
+                </ContactsPageProvider>
               </GqlMockedProvider>
             </ThemeProvider>
           </MuiPickersUtilsProvider>
@@ -311,11 +349,15 @@ describe('ContactDetailTab', () => {
           <MuiPickersUtilsProvider utils={LuxonUtils}>
             <ThemeProvider theme={theme}>
               <GqlMockedProvider<ContactDetailsTabQuery>>
-                <ContactDetailsTab
-                  accountListId={accountListId}
-                  contactId={contactId}
-                  onContactSelected={onContactSelected}
-                />
+                <ContactsPageProvider>
+                  <ContactDetailProvider>
+                    <ContactDetailsTab
+                      accountListId={accountListId}
+                      contactId={contactId}
+                      onContactSelected={onContactSelected}
+                    />
+                  </ContactDetailProvider>
+                </ContactsPageProvider>
               </GqlMockedProvider>
             </ThemeProvider>
           </MuiPickersUtilsProvider>
@@ -336,11 +378,15 @@ describe('ContactDetailTab', () => {
           <MuiPickersUtilsProvider utils={LuxonUtils}>
             <ThemeProvider theme={theme}>
               <GqlMockedProvider<ContactDetailsTabQuery> mocks={mocks}>
-                <ContactDetailsTab
-                  accountListId={accountListId}
-                  contactId={contactId}
-                  onContactSelected={onContactSelected}
-                />
+                <ContactsPageProvider>
+                  <ContactDetailProvider>
+                    <ContactDetailsTab
+                      accountListId={accountListId}
+                      contactId={contactId}
+                      onContactSelected={onContactSelected}
+                    />
+                  </ContactDetailProvider>
+                </ContactsPageProvider>
               </GqlMockedProvider>
             </ThemeProvider>
           </MuiPickersUtilsProvider>
@@ -361,11 +407,15 @@ describe('ContactDetailTab', () => {
           <MuiPickersUtilsProvider utils={LuxonUtils}>
             <ThemeProvider theme={theme}>
               <GqlMockedProvider<ContactDetailsTabQuery> mocks={mocks}>
-                <ContactDetailsTab
-                  accountListId={accountListId}
-                  contactId={contactId}
-                  onContactSelected={onContactSelected}
-                />
+                <ContactsPageProvider>
+                  <ContactDetailProvider>
+                    <ContactDetailsTab
+                      accountListId={accountListId}
+                      contactId={contactId}
+                      onContactSelected={onContactSelected}
+                    />
+                  </ContactDetailProvider>
+                </ContactsPageProvider>
               </GqlMockedProvider>
             </ThemeProvider>
           </MuiPickersUtilsProvider>
@@ -392,11 +442,15 @@ describe('ContactDetailTab', () => {
           <MuiPickersUtilsProvider utils={LuxonUtils}>
             <ThemeProvider theme={theme}>
               <GqlMockedProvider<ContactDetailsTabQuery> mocks={mocks}>
-                <ContactDetailsTab
-                  accountListId={accountListId}
-                  contactId={contactId}
-                  onContactSelected={onContactSelected}
-                />
+                <ContactsPageProvider>
+                  <ContactDetailProvider>
+                    <ContactDetailsTab
+                      accountListId={accountListId}
+                      contactId={contactId}
+                      onContactSelected={onContactSelected}
+                    />
+                  </ContactDetailProvider>
+                </ContactsPageProvider>
               </GqlMockedProvider>
             </ThemeProvider>
           </MuiPickersUtilsProvider>
@@ -417,11 +471,15 @@ describe('ContactDetailTab', () => {
           <MuiPickersUtilsProvider utils={LuxonUtils}>
             <ThemeProvider theme={theme}>
               <GqlMockedProvider<ContactDetailsTabQuery> mocks={mocks}>
-                <ContactDetailsTab
-                  accountListId={accountListId}
-                  contactId={contactId}
-                  onContactSelected={onContactSelected}
-                />
+                <ContactsPageProvider>
+                  <ContactDetailProvider>
+                    <ContactDetailsTab
+                      accountListId={accountListId}
+                      contactId={contactId}
+                      onContactSelected={onContactSelected}
+                    />
+                  </ContactDetailProvider>
+                </ContactsPageProvider>
               </GqlMockedProvider>
             </ThemeProvider>
           </MuiPickersUtilsProvider>
@@ -446,11 +504,15 @@ describe('ContactDetailTab', () => {
           <MuiPickersUtilsProvider utils={LuxonUtils}>
             <ThemeProvider theme={theme}>
               <GqlMockedProvider<ContactDetailsTabQuery> mocks={mocks}>
-                <ContactDetailsTab
-                  accountListId={accountListId}
-                  contactId={contactId}
-                  onContactSelected={onContactSelected}
-                />
+                <ContactsPageProvider>
+                  <ContactDetailProvider>
+                    <ContactDetailsTab
+                      accountListId={accountListId}
+                      contactId={contactId}
+                      onContactSelected={onContactSelected}
+                    />
+                  </ContactDetailProvider>
+                </ContactsPageProvider>
               </GqlMockedProvider>
             </ThemeProvider>
           </MuiPickersUtilsProvider>
@@ -471,11 +533,15 @@ describe('ContactDetailTab', () => {
           <MuiPickersUtilsProvider utils={LuxonUtils}>
             <ThemeProvider theme={theme}>
               <GqlMockedProvider<ContactDetailsTabQuery> mocks={mocks}>
-                <ContactDetailsTab
-                  accountListId={accountListId}
-                  contactId={contactId}
-                  onContactSelected={onContactSelected}
-                />
+                <ContactsPageProvider>
+                  <ContactDetailProvider>
+                    <ContactDetailsTab
+                      accountListId={accountListId}
+                      contactId={contactId}
+                      onContactSelected={onContactSelected}
+                    />
+                  </ContactDetailProvider>
+                </ContactsPageProvider>
               </GqlMockedProvider>
             </ThemeProvider>
           </MuiPickersUtilsProvider>
@@ -500,11 +566,15 @@ describe('ContactDetailTab', () => {
           <MuiPickersUtilsProvider utils={LuxonUtils}>
             <ThemeProvider theme={theme}>
               <GqlMockedProvider<ContactDetailsTabQuery> mocks={mocks}>
-                <ContactDetailsTab
-                  accountListId={accountListId}
-                  contactId={contactId}
-                  onContactSelected={onContactSelected}
-                />
+                <ContactsPageProvider>
+                  <ContactDetailProvider>
+                    <ContactDetailsTab
+                      accountListId={accountListId}
+                      contactId={contactId}
+                      onContactSelected={onContactSelected}
+                    />
+                  </ContactDetailProvider>
+                </ContactsPageProvider>
               </GqlMockedProvider>
             </ThemeProvider>
           </MuiPickersUtilsProvider>
@@ -529,11 +599,15 @@ describe('ContactDetailTab', () => {
           <MuiPickersUtilsProvider utils={LuxonUtils}>
             <ThemeProvider theme={theme}>
               <GqlMockedProvider<ContactDetailsTabQuery> mocks={mocks}>
-                <ContactDetailsTab
-                  accountListId={accountListId}
-                  contactId={contactId}
-                  onContactSelected={onContactSelected}
-                />
+                <ContactsPageProvider>
+                  <ContactDetailProvider>
+                    <ContactDetailsTab
+                      accountListId={accountListId}
+                      contactId={contactId}
+                      onContactSelected={onContactSelected}
+                    />
+                  </ContactDetailProvider>
+                </ContactsPageProvider>
               </GqlMockedProvider>
             </ThemeProvider>
           </MuiPickersUtilsProvider>
@@ -554,11 +628,15 @@ describe('ContactDetailTab', () => {
           <MuiPickersUtilsProvider utils={LuxonUtils}>
             <ThemeProvider theme={theme}>
               <GqlMockedProvider<ContactDetailsTabQuery> mocks={mocks}>
-                <ContactDetailsTab
-                  accountListId={accountListId}
-                  contactId={contactId}
-                  onContactSelected={onContactSelected}
-                />
+                <ContactsPageProvider>
+                  <ContactDetailProvider>
+                    <ContactDetailsTab
+                      accountListId={accountListId}
+                      contactId={contactId}
+                      onContactSelected={onContactSelected}
+                    />
+                  </ContactDetailProvider>
+                </ContactsPageProvider>
               </GqlMockedProvider>
             </ThemeProvider>
           </MuiPickersUtilsProvider>

@@ -1,4 +1,4 @@
-import React, { Dispatch, RefObject, SetStateAction, useCallback } from 'react';
+import React, { useCallback } from 'react';
 import {
   GoogleMap,
   useLoadScript,
@@ -9,6 +9,7 @@ import {
 import { Box, CircularProgress, styled, Typography } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { StatusEnum } from '../../../../../graphql/types.generated';
+import { ContactsPageContext, ContactsPageType } from '../ContactsPageContext';
 import theme from 'src/theme';
 
 const ContactLink = styled(Typography)(({ theme }) => ({
@@ -24,19 +25,6 @@ const MapLoading = styled(CircularProgress)(() => ({
   top: '50%',
   left: '50%',
 }));
-
-interface ContactsMapProps {
-  data: (Coordinates | undefined)[] | undefined;
-  mapRef: RefObject<Record<string, unknown>>;
-  selected: Coordinates | null | undefined;
-  setSelected: Dispatch<SetStateAction<Coordinates | null | undefined>>;
-  onContactSelected: (
-    contactId: string,
-    openDetails: boolean,
-    flows: boolean,
-    map: boolean,
-  ) => void;
-}
 
 export interface Coordinates {
   id: string | undefined | null;
@@ -96,14 +84,16 @@ const getStatusPin = (status: StatusEnum | null | undefined): string => {
   }
 };
 
-export const ContactsMap: React.FC<ContactsMapProps> = ({
-  onContactSelected,
-  data,
-  mapRef,
-  selected,
-  setSelected,
-}) => {
+export const ContactsMap: React.FC = ({}) => {
   const { t } = useTranslation();
+  const {
+    mapData: data,
+    mapRef,
+    selected,
+    setSelected,
+    setContactFocus: onContactSelected,
+  } = React.useContext(ContactsPageContext) as ContactsPageType;
+
   const onMapLoad = useCallback((map) => {
     // eslint-disable-next-line
     // @ts-ignore
