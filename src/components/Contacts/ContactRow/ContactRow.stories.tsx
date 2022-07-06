@@ -8,6 +8,7 @@ import {
   ContactRowFragment,
   ContactRowFragmentDoc,
 } from './ContactRow.generated';
+import { ContactsPageProvider } from 'pages/accountLists/[accountListId]/contacts/ContactsPageContext';
 
 export default {
   title: 'Contacts/ContactRow',
@@ -15,20 +16,13 @@ export default {
   decorators: [withDesign],
 } as Meta;
 
-const accountListId = 'abc';
-
 export const Default: Story = () => {
   const contact = gqlMock<ContactRowFragment>(ContactRowFragmentDoc);
 
   return (
-    <ContactRow
-      accountListId={accountListId}
-      contact={contact}
-      isChecked={false}
-      contactDetailsOpen={false}
-      onContactCheckToggle={() => {}}
-      onContactSelected={() => {}}
-    />
+    <ContactsPageProvider>
+      <ContactRow contact={contact} />
+    </ContactsPageProvider>
   );
 };
 

@@ -1,53 +1,40 @@
 import { Box } from '@material-ui/core';
-import { useRouter } from 'next/router';
-import React, { useState } from 'react';
+import React from 'react';
 import { ContactRow } from '../ContactRow/ContactRow';
-import { ContactFilterSetInput } from '../../../../graphql/types.generated';
 import { useContactsQuery } from '../../../../pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import { InfiniteList } from 'src/components/InfiniteList/InfiniteList';
 import NullState from 'src/components/Shared/Filters/NullState/NullState';
+import {
+  ContactsPageContext,
+  ContactsPageProvider,
+  ContactsPageType,
+} from 'pages/accountLists/[accountListId]/contacts/ContactsPageContext';
+import { TableViewModeEnum } from 'src/components/Shared/Header/ListHeader';
 
-interface ContactsListProps {
-  accountListId: string;
-  contactDetailsOpen: boolean;
-  starredFilter: ContactFilterSetInput;
-  toggleSelectionById: (contactId: string) => void;
-  isRowChecked: (id: string) => boolean;
-  setContactFocus: () => void;
-}
-
-export const ContactsList: React.FC<ContactsListProps> = ({
-  accountListId,
-  contactDetailsOpen,
-  starredFilter,
-  toggleSelectionById,
-  isRowChecked,
-  setContactFocus,
-}: ContactsListProps) => {
-  const { query } = useRouter();
-
-  //#region Filters
-  const { contactId, searchTerm, filters } = query;
-
-  const urlFilters = filters && JSON.parse(decodeURI(filters as string));
-
-  const [_activeFilters, setActiveFilters] = useState<ContactFilterSetInput>(
-    urlFilters ?? {},
-  );
-
-  const isFiltered =
-    Object.keys(urlFilters ?? {}).length > 0 ||
-    Object.values(urlFilters ?? {}).some((filter) => filter !== []);
-
-  //#endregion Filters
+export const ContactsList: React.FC = () => {
+  const {
+    contactId,
+    accountListId,
+    activeFilters,
+    searchTerm,
+    starredFilter,
+    viewMode,
+    urlFilters,
+    isFiltered,
+    setActiveFilters,
+  } = React.useContext(ContactsPageContext) as ContactsPageType;
 
   const { data, loading, fetchMore } = useContactsQuery({
     variables: {
       accountListId: accountListId ?? '',
       contactsFilters: {
-        ...urlFilters,
+        ...activeFilters,
         wildcardSearch: searchTerm as string,
         ...starredFilter,
+        ids:
+          viewMode === TableViewModeEnum.Map && urlFilters
+            ? urlFilters.ids
+            : [],
       },
       first: contactId?.includes('map') ? 20000 : 25,
     },
@@ -55,42 +42,39 @@ export const ContactsList: React.FC<ContactsListProps> = ({
   });
 
   return (
-    <InfiniteList
-      loading={loading}
-      data={data?.contacts?.nodes ?? []}
-      totalCount={data?.contacts?.totalCount ?? 0}
-      style={{ height: 'calc(100vh - 160px)' }}
-      itemContent={(index, contact) => (
-        <ContactRow
-          accountListId={accountListId}
-          key={index}
-          contact={contact}
-          isChecked={isRowChecked(contact.id)}
-          onContactSelected={setContactFocus}
-          onContactCheckToggle={toggleSelectionById}
-          contactDetailsOpen={contactDetailsOpen}
-          useTopMargin={index === 0}
-        />
-      )}
-      groupBy={(item) => item.name[0].toUpperCase()}
-      endReached={() =>
-        data?.contacts?.pageInfo.hasNextPage &&
-        fetchMore({
-          variables: {
-            after: data.contacts?.pageInfo.endCursor,
-          },
-        })
-      }
-      EmptyPlaceholder={
-        <Box width="75%" margin="auto" mt={2}>
-          <NullState
-            page="contact"
-            totalCount={data?.allContacts.totalCount || 0}
-            filtered={isFiltered}
-            changeFilters={setActiveFilters}
+    <ContactsPageProvider>
+      <InfiniteList
+        loading={loading}
+        data={data?.contacts?.nodes ?? []}
+        totalCount={data?.contacts?.totalCount ?? 0}
+        style={{ height: 'calc(100vh - 160px)' }}
+        itemContent={(index, contact) => (
+          <ContactRow
+            key={contact.id}
+            contact={contact}
+            useTopMargin={index === 0}
           />
-        </Box>
-      }
-    />
+        )}
+        groupBy={(item) => item.name[0].toUpperCase()}
+        endReached={() =>
+          data?.contacts?.pageInfo.hasNextPage &&
+          fetchMore({
+            variables: {
+              after: data.contacts?.pageInfo.endCursor,
+            },
+          })
+        }
+        EmptyPlaceholder={
+          <Box width="75%" margin="auto" mt={2}>
+            <NullState
+              page="contact"
+              totalCount={data?.allContacts.totalCount || 0}
+              filtered={isFiltered}
+              changeFilters={setActiveFilters}
+            />
+          </Box>
+        }
+      />
+    </ContactsPageProvider>
   );
 };

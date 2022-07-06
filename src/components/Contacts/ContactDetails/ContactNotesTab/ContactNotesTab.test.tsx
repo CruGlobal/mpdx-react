@@ -3,6 +3,7 @@ import { SnackbarProvider } from 'notistack';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
+import { ContactDetailProvider } from '../ContactDetailContext';
 import { UpdateContactNotesMutation } from './ContactNotesTab.generated';
 import { ContactNotesTab } from './ContactNotesTab';
 
@@ -24,7 +25,9 @@ describe('ContactNotesTab', () => {
     const { queryByPlaceholderText } = render(
       <SnackbarProvider>
         <GqlMockedProvider<UpdateContactNotesMutation>>
-          <ContactNotesTab accountListId="123" contactId="abc" />
+          <ContactDetailProvider>
+            <ContactNotesTab accountListId="123" contactId="abc" />
+          </ContactDetailProvider>
         </GqlMockedProvider>
       </SnackbarProvider>,
     );
@@ -37,7 +40,9 @@ describe('ContactNotesTab', () => {
     const { queryByPlaceholderText, getByText } = render(
       <SnackbarProvider>
         <GqlMockedProvider<UpdateContactNotesMutation> onCall={mutationSpy}>
-          <ContactNotesTab accountListId="123" contactId="abc" />
+          <ContactDetailProvider>
+            <ContactNotesTab accountListId="123" contactId="abc" />
+          </ContactDetailProvider>
         </GqlMockedProvider>
       </SnackbarProvider>,
     );

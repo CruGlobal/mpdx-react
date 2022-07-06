@@ -3,10 +3,12 @@ import { render } from '@testing-library/react';
 import React from 'react';
 import { SnackbarProvider } from 'notistack';
 import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
+import { ContactDetailProvider } from '../ContactDetailContext';
 import { ContactDetailsHeader } from './ContactDetailsHeader';
 import { GetContactDetailsHeaderQuery } from './ContactDetailsHeader.generated';
 import TestRouter from '__tests__/util/TestRouter';
 import theme from 'src/theme';
+import { ContactsPageProvider } from 'pages/accountLists/[accountListId]/contacts/ContactsPageContext';
 
 const accountListId = 'abc';
 const contactId = 'contact-1';
@@ -22,11 +24,15 @@ describe('ContactDetails', () => {
         <TestRouter router={router}>
           <ThemeProvider theme={theme}>
             <GqlMockedProvider<GetContactDetailsHeaderQuery>>
-              <ContactDetailsHeader
-                accountListId={accountListId}
-                contactId={contactId}
-                onClose={() => {}}
-              />
+              <ContactsPageProvider>
+                <ContactDetailProvider>
+                  <ContactDetailsHeader
+                    accountListId={accountListId}
+                    contactId={contactId}
+                    onClose={() => {}}
+                  />
+                </ContactDetailProvider>
+              </ContactsPageProvider>
             </GqlMockedProvider>
           </ThemeProvider>
         </TestRouter>
@@ -52,11 +58,15 @@ describe('ContactDetails', () => {
                 },
               }}
             >
-              <ContactDetailsHeader
-                accountListId={accountListId}
-                contactId={contactId}
-                onClose={() => {}}
-              />
+              <ContactsPageProvider>
+                <ContactDetailProvider>
+                  <ContactDetailsHeader
+                    accountListId={accountListId}
+                    contactId={contactId}
+                    onClose={() => {}}
+                  />
+                </ContactDetailProvider>
+              </ContactsPageProvider>
             </GqlMockedProvider>
           </ThemeProvider>
         </TestRouter>
@@ -85,11 +95,15 @@ describe('ContactDetails', () => {
                 },
               }}
             >
-              <ContactDetailsHeader
-                accountListId={accountListId}
-                contactId={contactId}
-                onClose={() => {}}
-              />
+              <ContactsPageProvider>
+                <ContactDetailProvider>
+                  <ContactDetailsHeader
+                    accountListId={accountListId}
+                    contactId={contactId}
+                    onClose={() => {}}
+                  />
+                </ContactDetailProvider>
+              </ContactsPageProvider>
             </GqlMockedProvider>
           </ThemeProvider>
         </TestRouter>

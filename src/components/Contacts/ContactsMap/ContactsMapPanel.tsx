@@ -96,7 +96,7 @@ export const ContactsMapPanel: React.FC<ContactMapsPanelProps> = ({
   const [statusOpen, setStatusOpen] = useState(-1);
 
   const handleExpansionChange = (panel: React.SetStateAction<number>) => (
-    event: React.ChangeEvent<Record<string, unknown>>,
+    _event: React.ChangeEvent<Record<string, unknown>>,
     newExpanded: boolean,
   ) => {
     setStatusOpen(newExpanded ? panel : -1);

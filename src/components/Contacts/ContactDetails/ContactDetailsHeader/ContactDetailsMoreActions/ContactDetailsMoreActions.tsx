@@ -1,4 +1,4 @@
-import React, { ReactElement, useState } from 'react';
+import React, { ReactElement } from 'react';
 import { Box, IconButton, ListItemText, Menu, styled } from '@material-ui/core';
 import PersonIcon from '@material-ui/icons/Person';
 import VisibilityOffIcon from '@material-ui/icons/VisibilityOff';
@@ -12,16 +12,23 @@ import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
 import { StatusEnum } from '../../../../../../graphql/types.generated';
 import useTaskModal from '../../../../../hooks/useTaskModal';
-import { useAccountListId } from '../../../../../hooks/useAccountListId';
 import Modal from '../../../../common/Modal/Modal';
 import { useDeleteContactMutation } from '../../ContactDetailsTab/ContactDetailsTab.generated';
 import { DeleteContactModal } from '../DeleteContactModal/DeleteContactModal';
 import { useUpdateContactOtherMutation } from '../../ContactDetailsTab/Other/EditContactOtherModal/EditContactOther.generated';
+import {
+  ContactDetailContext,
+  ContactDetailsType,
+} from '../../ContactDetailContext';
 import { CreateMultipleContacts } from 'src/components/Layouts/Primary/TopBar/Items/AddMenu/Items/CreateMultipleContacts/CreateMultipleContacts';
 import {
   ContactsDocument,
   ContactsQuery,
 } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
+import {
+  ContactsPageContext,
+  ContactsPageType,
+} from 'pages/accountLists/[accountListId]/contacts/ContactsPageContext';
 
 type AddMenuItem = {
   text: string;
@@ -102,12 +109,20 @@ export const ContactDetailsMoreAcitions: React.FC<ContactDetailsMoreAcitionsProp
   onClose,
 }) => {
   const { openTaskModal } = useTaskModal();
-  const accountListId = useAccountListId() || '';
-  const [referralsModalOpen, setReferralsModalOpen] = useState(false);
   const { t } = useTranslation();
-  const { push, query } = useRouter();
-  const { contactId: _, searchTerm, ...queryWithoutContactId } = query;
-  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const { accountListId, searchTerm, contactId: _, query } = React.useContext(
+    ContactsPageContext,
+  ) as ContactsPageType;
+  const { ...queryWithoutContactId } = query;
+  const { push } = useRouter();
+  const {
+    referralsModalOpen,
+    setReferralsModalOpen,
+    deleteModalOpen,
+    setDeleteModalOpen,
+    anchorEl,
+    setAnchorEl,
+  } = React.useContext(ContactDetailContext) as ContactDetailsType;
   const [deleteContact, { loading: deleting }] = useDeleteContactMutation();
   const { enqueueSnackbar } = useSnackbar();
 
@@ -120,7 +135,7 @@ export const ContactDetailsMoreAcitions: React.FC<ContactDetailsMoreAcitionsProp
     };
     await updateContactOther({
       variables: {
-        accountListId,
+        accountListId: accountListId ?? '',
         attributes,
       },
       refetchQueries: [
@@ -139,7 +154,7 @@ export const ContactDetailsMoreAcitions: React.FC<ContactDetailsMoreAcitionsProp
   const handleDeleteContact = () => {
     deleteContact({
       variables: {
-        accountListId,
+        accountListId: accountListId ?? '',
         contactId,
       },
       update: (cache, { data: deletedContactData }) => {
@@ -226,8 +241,6 @@ export const ContactDetailsMoreAcitions: React.FC<ContactDetailsMoreAcitionsProp
       },
     },
   ];
-
-  const [anchorEl, setAnchorEl] = useState<EventTarget & HTMLButtonElement>();
 
   const handleModalClose = () => {
     setReferralsModalOpen(false);
