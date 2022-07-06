@@ -3,23 +3,21 @@ import { TabContext, TabList, TabPanel } from '@material-ui/lab';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import theme from '../../../theme';
+import {
+  ContactsPageContext,
+  ContactsPageType,
+} from '../../../../pages/accountLists/[accountListId]/contacts/ContactsPageContext';
+import { TableViewModeEnum } from '../../../../src/components/Shared/Header/ListHeader';
 import { ContactDetailsHeader } from './ContactDetailsHeader/ContactDetailsHeader';
 import { ContactTasksTab } from './ContactTasksTab/ContactTasksTab';
 import { ContactDetailsTab } from './ContactDetailsTab/ContactDetailsTab';
 import { ContactDonationsTab } from './ContactDontationsTab/ContactDonationsTab';
 import { ContactReferralTab } from './ContactReferralTab/ContactReferralTab';
 import { ContactNotesTab } from './ContactNotesTab/ContactNotesTab';
-
-interface Props {
-  accountListId: string;
-  contactId: string;
-  onClose: () => void;
-  onContactSelected: (
-    contactId: string,
-    openDetails?: boolean,
-    flows?: boolean,
-  ) => void;
-}
+import {
+  ContactDetailContext,
+  ContactDetailsType,
+} from './ContactDetailContext';
 
 const ContactDetailsWrapper = styled(Box)(({}) => ({
   width: '100%',
@@ -55,7 +53,7 @@ const ContactTab = styled(Tab)(({}) => ({
   '&:hover': { opacity: 1 },
 }));
 
-enum TabKey {
+export enum TabKey {
   Tasks = 'Tasks',
   Donations = 'Donations',
   Referrals = 'Referrals',
@@ -63,29 +61,33 @@ enum TabKey {
   Notes = 'Notes',
 }
 
-export const ContactDetails: React.FC<Props> = ({
-  accountListId,
-  contactId,
-  onClose,
-  onContactSelected,
-}: Props) => {
+export const ContactDetails: React.FC = () => {
   const { t } = useTranslation();
 
-  const [selectedTabKey, setSelectedTabKey] = React.useState(TabKey.Tasks);
+  const {
+    accountListId,
+    contactDetailsId: contactId,
+    setContactFocus,
+    viewMode,
+  } = React.useContext(ContactsPageContext) as ContactsPageType;
 
-  const handleChange = (
-    _event: React.ChangeEvent<Record<string, unknown>>,
-    newKey: TabKey,
-  ) => {
-    setSelectedTabKey(newKey);
-  };
+  const { selectedTabKey, handleTabChange: handleChange } = React.useContext(
+    ContactDetailContext,
+  ) as ContactDetailsType;
 
   return (
     <ContactDetailsWrapper>
       <ContactDetailsHeader
-        accountListId={accountListId}
-        contactId={contactId}
-        onClose={onClose}
+        accountListId={accountListId ?? ''}
+        contactId={contactId ?? ''}
+        onClose={() =>
+          setContactFocus(
+            undefined,
+            true,
+            viewMode === TableViewModeEnum.Flows,
+            viewMode === TableViewModeEnum.Map,
+          )
+        }
       />
       <TabContext value={selectedTabKey}>
         <ContactTabsWrapper>
@@ -105,34 +107,34 @@ export const ContactDetails: React.FC<Props> = ({
         </ContactTabsWrapper>
         <TabPanel value={TabKey.Tasks}>
           <ContactTasksTab
-            accountListId={accountListId}
-            contactId={contactId}
+            accountListId={accountListId ?? ''}
+            contactId={contactId ?? ''}
           />
         </TabPanel>
         <TabPanel value={TabKey.Donations}>
           <ContactDonationsTab
-            accountListId={accountListId}
-            contactId={contactId}
+            accountListId={accountListId ?? ''}
+            contactId={contactId ?? ''}
           />
         </TabPanel>
         <TabPanel value={TabKey.Referrals}>
           <ContactReferralTab
-            accountListId={accountListId}
-            contactId={contactId}
-            onContactSelected={onContactSelected}
+            accountListId={accountListId ?? ''}
+            contactId={contactId ?? ''}
+            onContactSelected={setContactFocus}
           />
         </TabPanel>
         <TabPanel value={TabKey.ContactDetails}>
           <ContactDetailsTab
-            accountListId={accountListId}
-            contactId={contactId}
-            onContactSelected={onContactSelected}
+            accountListId={accountListId ?? ''}
+            contactId={contactId ?? ''}
+            onContactSelected={setContactFocus}
           />
         </TabPanel>
         <TabPanel value={TabKey.Notes}>
           <ContactNotesTab
-            accountListId={accountListId}
-            contactId={contactId}
+            accountListId={accountListId ?? ''}
+            contactId={contactId ?? ''}
           />
         </TabPanel>
       </TabContext>

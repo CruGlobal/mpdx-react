@@ -2,11 +2,14 @@ import { MockedProvider } from '@apollo/client/testing';
 import React, { ReactElement } from 'react';
 
 import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
+import { ContactDetailProvider } from './ContactDetailContext';
 import { ContactDetails } from './ContactDetails';
 import {
   GetContactDetailsHeaderDocument,
   GetContactDetailsHeaderQuery,
 } from './ContactDetailsHeader/ContactDetailsHeader.generated';
+import TestRouter from '__tests__/util/TestRouter';
+import { ContactsPageProvider } from 'pages/accountLists/[accountListId]/contacts/ContactsPageContext';
 
 export default {
   title: 'Contacts/ContactDetails',
@@ -14,45 +17,50 @@ export default {
 
 const accountListId = 'abc';
 const contactId = 'contact-1';
-const onClose = () => {};
-const onContactSelected = () => {};
+
+const router = {
+  query: { searchTerm: undefined, accountListId },
+  push: jest.fn(),
+};
 
 export const Default = (): ReactElement => {
   return (
-    <GqlMockedProvider<GetContactDetailsHeaderQuery>>
-      <ContactDetails
-        accountListId={accountListId}
-        contactId={contactId}
-        onClose={onClose}
-        onContactSelected={onContactSelected}
-      />
-    </GqlMockedProvider>
+    <TestRouter router={router}>
+      <GqlMockedProvider<GetContactDetailsHeaderQuery>>
+        <ContactsPageProvider>
+          <ContactDetailProvider>
+            <ContactDetails />
+          </ContactDetailProvider>
+        </ContactsPageProvider>
+      </GqlMockedProvider>
+    </TestRouter>
   );
 };
 
 export const Loading = (): ReactElement => {
   return (
-    <MockedProvider
-      mocks={[
-        {
-          request: {
-            query: GetContactDetailsHeaderDocument,
-            variables: {
-              accountListId,
-              contactId,
+    <TestRouter router={router}>
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: GetContactDetailsHeaderDocument,
+              variables: {
+                accountListId,
+                contactId,
+              },
             },
+            result: {},
+            delay: 100931731455,
           },
-          result: {},
-          delay: 100931731455,
-        },
-      ]}
-    >
-      <ContactDetails
-        accountListId={accountListId}
-        contactId={contactId}
-        onClose={onClose}
-        onContactSelected={onContactSelected}
-      />
-    </MockedProvider>
+        ]}
+      >
+        <ContactsPageProvider>
+          <ContactDetailProvider>
+            <ContactDetails />
+          </ContactDetailProvider>
+        </ContactsPageProvider>
+      </MockedProvider>
+    </TestRouter>
   );
 };

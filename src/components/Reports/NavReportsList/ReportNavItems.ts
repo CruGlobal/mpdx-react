@@ -5,12 +5,12 @@ export const ReportNavItems = [
   },
   {
     id: 'partnerCurrency',
-    title: 'Month Report',
+    title: '14 Month Report',
     subTitle: 'Partner Currency',
   },
   {
     id: 'salaryCurrency',
-    title: 'Month Report',
+    title: '14 Month Report',
     subTitle: 'Salary Currency',
   },
   {

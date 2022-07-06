@@ -2,11 +2,15 @@ fragment ContactRow on Contact {
   id
   name
   primaryAddress {
+    id
     street
     city
     state
     postalCode
     country
+    geo
+    source
+    updatedAt
   }
   status
   pledgeAmount

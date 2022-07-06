@@ -23,7 +23,12 @@ import { ToolsList } from '../../../../../Tool/Home/ToolList';
 import { useCurrentToolId } from '../../../../../../hooks/useCurrentToolId';
 import theme from '../../../../../../theme';
 import { useAccountListId } from '../../../../../../hooks/useAccountListId';
+import { importRoutes } from '../../../NavBar/NavBar';
 import { useGetToolNotificationsQuery } from './GetToolNotifcations.generated';
+
+export const filteredReportNavItems = ReportNavItems.filter(
+  (item) => item.id !== 'partnerCurrency',
+);
 
 const useStyles = makeStyles(() => ({
   navListItem: {
@@ -239,7 +244,7 @@ const NavMenu = (): ReactElement => {
                         autoFocusItem={reportsMenuOpen}
                         id="menu-list-grow"
                       >
-                        {ReportNavItems.map(({ id, title, subTitle }) => (
+                        {filteredReportNavItems.map(({ id, title }) => (
                           <NextLink
                             key={id}
                             href={`/accountLists/${accountListId}/reports/${id}`}
@@ -251,11 +256,7 @@ const NavMenu = (): ReactElement => {
                                 router.asPath.includes(`${id}`) && 'page'
                               }
                             >
-                              <ListItemText
-                                primary={t(
-                                  `${title}${subTitle ? ` (${subTitle})` : ''}`,
-                                )}
-                              />
+                              <ListItemText primary={t(title)} />
                             </MenuItem>
                           </NextLink>
                         ))}
@@ -328,7 +329,13 @@ const NavMenu = (): ReactElement => {
                               return (
                                 <NextLink
                                   key={tool.id}
-                                  href={`/accountLists/${accountListId}/tools/${tool.id}`}
+                                  href={
+                                    tool.tool.includes('Import')
+                                      ? `https://mpdx.org/tools/import/${
+                                          importRoutes[tool.tool]
+                                        }`
+                                      : `/accountLists/${accountListId}/tools/${tool.id}`
+                                  }
                                 >
                                   <MenuItem
                                     tabIndex={0}

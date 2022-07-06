@@ -2,6 +2,10 @@ import { Box, styled, Tab } from '@material-ui/core';
 import { Skeleton, TabContext, TabList, TabPanel } from '@material-ui/lab';
 import React from 'react';
 import { useTranslation } from 'react-i18next/';
+import {
+  ContactDetailContext,
+  ContactDetailsType,
+} from '../ContactDetailContext';
 import { ContactDonationsList } from './ContactDonationsList/ContactDonationsList';
 import {
   GetContactDonationsQueryVariables,
@@ -53,7 +57,7 @@ export type ContactDonationsFilter = Omit<
   'accountListId'
 >;
 
-enum DonationTabKey {
+export enum DonationTabKey {
   Donations = 'Donations',
   PartnershipInfo = 'Partnership Info',
 }
@@ -71,9 +75,10 @@ export const ContactDonationsTab: React.FC<ContactDontationsProp> = ({
 
   const { t } = useTranslation();
 
-  const [selectedDonationTabKey, setSelectedDonationTabKey] = React.useState(
-    DonationTabKey.Donations,
-  );
+  const {
+    selectedDonationTabKey,
+    setSelectedDonationTabKey,
+  } = React.useContext(ContactDetailContext) as ContactDetailsType;
 
   const handleDonationTabChange = (
     _event: React.ChangeEvent<Record<string, unknown>>,

@@ -8,7 +8,6 @@ import CheckCircleOutlineIcon from '@material-ui/icons/CheckCircleOutline';
 import debounce from 'lodash/debounce';
 import { DateTime } from 'luxon';
 import { InfiniteList } from '../../../../src/components/InfiniteList/InfiniteList';
-import { ContactDetails } from '../../../../src/components/Contacts/ContactDetails/ContactDetails';
 import Loading from '../../../../src/components/Loading';
 import { SidePanelsLayout } from '../../../../src/components/Layouts/SidePanelsLayout';
 import { useAccountListId } from '../../../../src/hooks/useAccountListId';
@@ -21,6 +20,7 @@ import { useMassSelection } from '../../../../src/hooks/useMassSelection';
 import { UserOptionFragment } from '../../../../src/components/Shared/Filters/FilterPanel.generated';
 import { useTaskFiltersQuery, useTasksQuery } from './Tasks.generated';
 import useTaskModal from 'src/hooks/useTaskModal';
+import { ContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/ContactsRightPanel';
 
 const WhiteBackground = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.common.white,
@@ -297,18 +297,7 @@ const TasksPage: React.FC = () => {
                 />
               </>
             }
-            rightPanel={
-              contactDetailsId ? (
-                <ContactDetails
-                  accountListId={accountListId}
-                  contactId={contactDetailsId}
-                  onClose={() => setContactFocus(undefined)}
-                  onContactSelected={setContactFocus}
-                />
-              ) : (
-                <></>
-              )
-            }
+            rightPanel={contactDetailsId ? <ContactsRightPanel /> : <></>}
             rightOpen={contactDetailsOpen}
             rightWidth="60%"
           />

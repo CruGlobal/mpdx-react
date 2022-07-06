@@ -15,6 +15,10 @@ import {
   ContactDetailsAddIcon,
   ContactDetailsAddText,
 } from '../People/ContactDetailsTabPeople';
+import {
+  ContactDetailContext,
+  ContactDetailsType,
+} from '../../ContactDetailContext';
 import { ContactMailingFragment } from './ContactMailing.generated';
 import { EditContactAddressModal } from './EditContactAddressModal/EditContactAddressModal';
 import { AddAddressModal } from './AddAddressModal/AddAddressModal';
@@ -79,8 +83,12 @@ export const ContactDetailsTabMailing: React.FC<MailingProp> = ({
 }) => {
   const { t } = useTranslation();
   const { addresses, greeting, sendNewsletter, id } = data;
-  const [editingAddressId, setEditingAddressId] = useState<string>();
-  const [addAddressModalOpen, setAddAddressModalOpen] = useState(false);
+  const {
+    editingAddressId,
+    setEditingAddressId,
+    addAddressModalOpen,
+    setAddAddressModalOpen,
+  } = React.useContext(ContactDetailContext) as ContactDetailsType;
   const primaryAddress = addresses.nodes.filter(
     (address) => address.primaryMailingAddress === true,
   )[0];

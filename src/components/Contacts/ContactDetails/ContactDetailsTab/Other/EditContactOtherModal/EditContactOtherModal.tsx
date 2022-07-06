@@ -1,4 +1,4 @@
-import React, { ReactElement, useCallback, useState } from 'react';
+import React, { ReactElement, useCallback, useEffect } from 'react';
 import { Formik } from 'formik';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
@@ -34,6 +34,10 @@ import {
   ContactDetailsTabDocument,
   ContactDetailsTabQuery,
 } from '../../ContactDetailsTab.generated';
+import {
+  ContactDetailContext,
+  ContactDetailsType,
+} from '../../../ContactDetailContext';
 import { useUpdateContactOtherMutation } from './EditContactOther.generated';
 import { useGetTaskModalContactsFilteredQuery } from 'src/components/Task/Drawer/Form/TaskDrawer.generated';
 
@@ -84,10 +88,18 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
   const languages = constants?.languages ?? [];
   const timezones = useGetTimezones();
 
-  const [selectedId, setSelectedId] = useState(referral?.referredBy?.id || '');
-  const [searchTerm, setSearchTerm] = useState(
-    referral?.referredBy?.name || '',
-  );
+  const {
+    selectedReferralId: selectedId,
+    setSelectedReferralId: setSelectedId,
+    searchReferrelName: searchTerm,
+    setSearchReferralName: setSearchTerm,
+  } = React.useContext(ContactDetailContext) as ContactDetailsType;
+
+  useEffect(() => {
+    setSelectedId(referral?.referredBy.id);
+    setSearchTerm(referral?.referredBy.name);
+  }, []);
+
   const handleSearchTermChange = useCallback(
     debounce(500, (event) => {
       setSearchTerm(event.target.value);

@@ -14,6 +14,7 @@ import {
 import FilterList from '@material-ui/icons/FilterList';
 import { useTranslation } from 'react-i18next';
 import ArrowDropDown from '@material-ui/icons/ArrowDropDown';
+import { MoreHoriz, ViewList } from '@material-ui/icons';
 import { SearchBox } from '../../common/SearchBox/SearchBox';
 import {
   ContactFilterSetInput,
@@ -21,16 +22,25 @@ import {
 } from '../../../../graphql/types.generated';
 import { StarFilterButton } from './StarFilterButton/StarFilterButton';
 
-const HeaderWrap = styled(Box)(({ theme }) => ({
-  height: 96,
-  padding: theme.spacing(1, 0),
-  display: 'flex',
-  flexDirection: 'row',
-  justifyContent: 'space-evenly',
-  alignItems: 'center',
-  backgroundColor: theme.palette.common.white,
-  borderBottom: `1px solid ${theme.palette.grey[200]}`,
-}));
+const HeaderWrap = styled(Box)(
+  ({
+    theme,
+    contactDetailsOpen,
+  }: {
+    theme: Theme;
+    contactDetailsOpen: boolean;
+  }) => ({
+    height: 96,
+    padding: theme.spacing(1, 0),
+    paddingRight: !contactDetailsOpen ? 0 : theme.spacing(2),
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    alignItems: 'center',
+    backgroundColor: theme.palette.common.white,
+    borderBottom: `1px solid ${theme.palette.grey[200]}`,
+  }),
+);
 
 const FilterButton = styled(
   ({ activeFilters: _activeFilters, panelOpen: _panelOpen, ...props }) => (
@@ -83,6 +93,7 @@ const ActionsButton = styled(Button)(({ theme }) => ({
 export enum TableViewModeEnum {
   List = 'list',
   Flows = 'flows',
+  Map = 'map',
 }
 
 export enum ListHeaderCheckBoxState {
@@ -138,24 +149,30 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
   };
 
   return (
-    <HeaderWrap>
-      <Hidden xsUp={contactDetailsOpen}>
-        <Checkbox
-          checked={headerCheckboxState === ListHeaderCheckBoxState.checked}
-          color="secondary"
-          indeterminate={
-            headerCheckboxState === ListHeaderCheckBoxState.partial
-          }
-          onChange={onCheckAllItems}
-        />
-      </Hidden>
+    <HeaderWrap contactDetailsOpen={contactDetailsOpen}>
+      {contactsView !== TableViewModeEnum.Map && (
+        <Hidden xsUp={contactDetailsOpen}>
+          <Checkbox
+            checked={headerCheckboxState === ListHeaderCheckBoxState.checked}
+            color="secondary"
+            indeterminate={
+              headerCheckboxState === ListHeaderCheckBoxState.partial
+            }
+            onChange={onCheckAllItems}
+          />
+        </Hidden>
+      )}
 
       <FilterButton
         activeFilters={activeFilters}
         panelOpen={filterPanelOpen}
         onClick={toggleFilterPanel}
       >
-        <FilterIcon titleAccess={t('Toggle Filter Panel')} />
+        {contactsView === TableViewModeEnum.Map ? (
+          <ViewList titleAccess={t('Toggle Contact List')} />
+        ) : (
+          <FilterIcon titleAccess={t('Toggle Filter Panel')} />
+        )}
       </FilterButton>
       <SearchBox
         page={page}
@@ -166,66 +183,69 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
         }
       />
 
-      <ItemsShowingText>
-        {contactsView !== TableViewModeEnum.Flows
+      <ItemsShowingText data-testid="showing-text">
+        {contactsView === TableViewModeEnum.List && !contactDetailsOpen
           ? t('Showing {{count}}', { count: totalItems })
           : ''}
       </ItemsShowingText>
 
       {page === 'contact' ? (
         <>
-          <Hidden lgDown={contactDetailsOpen}>
-            <ActionsButton
-              aria-haspopup
-              aria-expanded={open}
-              onClick={handleClick}
-              endIcon={<ArrowDropDown />}
-            >
-              {t('Actions')}
-            </ActionsButton>
-            <Menu
-              open={open}
-              onClose={handleClose}
-              anchorEl={anchorEl}
-              getContentAnchorEl={null}
-              anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-              transformOrigin={{ vertical: 'top', horizontal: 'center' }}
-            >
-              <MenuItem>
-                <ListItemText>{t('Add Tags')}</ListItemText>
-              </MenuItem>
-              <MenuItem divider>
-                <ListItemText>{t('Remove Tags')}</ListItemText>
-              </MenuItem>
-              <MenuItem>
-                <ListItemText>{t('Add Task')}</ListItemText>
-              </MenuItem>
-              <MenuItem divider>
-                <ListItemText>{t('Log Task')}</ListItemText>
-              </MenuItem>
+          {contactsView !== TableViewModeEnum.Map && (
+            <Hidden lgDown={contactDetailsOpen}>
+              <ActionsButton
+                aria-haspopup
+                aria-expanded={open}
+                onClick={handleClick}
+                endIcon={<ArrowDropDown />}
+              >
+                {filterPanelOpen && contactDetailsOpen ? (
+                  <MoreHoriz />
+                ) : (
+                  t('Actions')
+                )}
+              </ActionsButton>
+              <Menu
+                open={open}
+                onClose={handleClose}
+                anchorEl={anchorEl}
+                getContentAnchorEl={null}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+                transformOrigin={{ vertical: 'top', horizontal: 'center' }}
+              >
+                <MenuItem>
+                  <ListItemText>{t('Add Tags')}</ListItemText>
+                </MenuItem>
+                <MenuItem divider>
+                  <ListItemText>{t('Remove Tags')}</ListItemText>
+                </MenuItem>
+                <MenuItem>
+                  <ListItemText>{t('Add Task')}</ListItemText>
+                </MenuItem>
+                <MenuItem divider>
+                  <ListItemText>{t('Log Task')}</ListItemText>
+                </MenuItem>
 
-              <MenuItem>
-                <ListItemText>{t('Edit Fields')}</ListItemText>
-              </MenuItem>
-              <MenuItem>
-                <ListItemText>{t('Hide Contacts')}</ListItemText>
-              </MenuItem>
-              <MenuItem divider>
-                <ListItemText>{t('Map Contacts')}</ListItemText>
-              </MenuItem>
+                <MenuItem>
+                  <ListItemText>{t('Edit Fields')}</ListItemText>
+                </MenuItem>
+                <MenuItem>
+                  <ListItemText>{t('Hide Contacts')}</ListItemText>
+                </MenuItem>
 
-              <MenuItem>
-                <ListItemText>{t('Add to Appeal')}</ListItemText>
-              </MenuItem>
-              <MenuItem divider>
-                <ListItemText>{t('Add to new Appeal')}</ListItemText>
-              </MenuItem>
+                <MenuItem>
+                  <ListItemText>{t('Add to Appeal')}</ListItemText>
+                </MenuItem>
+                <MenuItem divider>
+                  <ListItemText>{t('Add to new Appeal')}</ListItemText>
+                </MenuItem>
 
-              <MenuItem>
-                <ListItemText>{t('Export Emails')}</ListItemText>
-              </MenuItem>
-            </Menu>
-          </Hidden>
+                <MenuItem>
+                  <ListItemText>{t('Export Emails')}</ListItemText>
+                </MenuItem>
+              </Menu>
+            </Hidden>
+          )}
 
           {buttonGroup}
         </>
@@ -271,10 +291,12 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
       )}
 
       <Hidden smDown>
-        <StarFilterButton
-          starredFilter={starredFilter}
-          toggleStarredFilter={toggleStarredFilter}
-        />
+        {!contactDetailsOpen && (
+          <StarFilterButton
+            starredFilter={starredFilter}
+            toggleStarredFilter={toggleStarredFilter}
+          />
+        )}
       </Hidden>
     </HeaderWrap>
   );
