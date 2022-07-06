@@ -18,6 +18,7 @@ import NullState from '../../../../src/components/Shared/Filters/NullState/NullS
 import { FilterPanel } from '../../../../src/components/Shared/Filters/FilterPanel';
 import { useMassSelection } from '../../../../src/hooks/useMassSelection';
 import { UserOptionFragment } from '../../../../src/components/Shared/Filters/FilterPanel.generated';
+import { ContactsPageProvider } from '../contacts/ContactsPageContext';
 import { useTaskFiltersQuery, useTasksQuery } from './Tasks.generated';
 import useTaskModal from 'src/hooks/useTaskModal';
 import { ContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/ContactsRightPanel';
@@ -297,7 +298,15 @@ const TasksPage: React.FC = () => {
                 />
               </>
             }
-            rightPanel={contactDetailsId ? <ContactsRightPanel /> : <></>}
+            rightPanel={
+              contactDetailsId ? (
+                <ContactsPageProvider>
+                  <ContactsRightPanel />
+                </ContactsPageProvider>
+              ) : (
+                <></>
+              )
+            }
             rightOpen={contactDetailsOpen}
             rightWidth="60%"
           />
