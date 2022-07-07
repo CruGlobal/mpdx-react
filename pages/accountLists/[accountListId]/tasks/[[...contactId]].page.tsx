@@ -301,7 +301,9 @@ const TasksPage: React.FC = () => {
             rightPanel={
               contactDetailsId ? (
                 <ContactsPageProvider>
-                  <ContactsRightPanel />
+                  <ContactsRightPanel
+                    onClose={() => setContactFocus(undefined)}
+                  />
                 </ContactsPageProvider>
               ) : (
                 <></>
