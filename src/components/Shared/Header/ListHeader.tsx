@@ -1,4 +1,4 @@
-import React, { ReactElement, useState } from 'react';
+import React, { ReactElement, useContext, useState } from 'react';
 import {
   Box,
   Button,
@@ -21,6 +21,11 @@ import {
   TaskFilterSetInput,
 } from '../../../../graphql/types.generated';
 import { StarFilterButton } from './StarFilterButton/StarFilterButton';
+import useTaskModal from 'src/hooks/useTaskModal';
+import {
+  ContactsPageContext,
+  ContactsPageType,
+} from 'pages/accountLists/[accountListId]/contacts/ContactsPageContext';
 
 const HeaderWrap = styled(Box)(
   ({
@@ -148,6 +153,10 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
     setAnchorEl(null);
   };
 
+  const { openTaskModal } = useTaskModal();
+
+  const { selectedIds } = useContext(ContactsPageContext) as ContactsPageType;
+
   return (
     <HeaderWrap contactDetailsOpen={contactDetailsOpen}>
       {contactsView !== TableViewModeEnum.Map && (
@@ -219,7 +228,14 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
                 <MenuItem divider>
                   <ListItemText>{t('Remove Tags')}</ListItemText>
                 </MenuItem>
-                <MenuItem>
+                <MenuItem
+                  onClick={() => {
+                    openTaskModal({
+                      defaultValues: { contactIds: selectedIds },
+                    });
+                    handleClose();
+                  }}
+                >
                   <ListItemText>{t('Add Task')}</ListItemText>
                 </MenuItem>
                 <MenuItem divider>
