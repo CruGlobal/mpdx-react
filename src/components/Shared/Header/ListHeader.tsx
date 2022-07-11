@@ -1,4 +1,4 @@
-import React, { ReactElement, useContext, useState } from 'react';
+import React, { ReactElement, useState } from 'react';
 import {
   Box,
   Button,
@@ -22,10 +22,6 @@ import {
 } from '../../../../graphql/types.generated';
 import { StarFilterButton } from './StarFilterButton/StarFilterButton';
 import useTaskModal from 'src/hooks/useTaskModal';
-import {
-  ContactsPageContext,
-  ContactsPageType,
-} from 'pages/accountLists/[accountListId]/contacts/ContactsPageContext';
 
 const HeaderWrap = styled(Box)(
   ({
@@ -124,6 +120,7 @@ interface ListHeaderProps {
   toggleStarredFilter: (
     filter: ContactFilterSetInput | TaskFilterSetInput,
   ) => void;
+  selectedIds: string[];
 }
 
 export const ListHeader: React.FC<ListHeaderProps> = ({
@@ -141,6 +138,7 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
   starredFilter,
   toggleStarredFilter,
   contactsView,
+  selectedIds,
 }) => {
   const { t } = useTranslation();
 
@@ -154,8 +152,6 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
   };
 
   const { openTaskModal } = useTaskModal();
-
-  const { selectedIds } = useContext(ContactsPageContext) as ContactsPageType;
 
   return (
     <HeaderWrap contactDetailsOpen={contactDetailsOpen}>
