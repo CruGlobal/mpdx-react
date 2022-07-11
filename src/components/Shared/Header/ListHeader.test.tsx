@@ -66,7 +66,6 @@ describe('ListHeader', () => {
       expect(getByPlaceholderText('Search Contacts')).toBeInTheDocument();
       expect(queryByText('Actions')).not.toBeInTheDocument();
       expect(queryByTestId('star-filter-button')).not.toBeInTheDocument();
-      expect(queryByTestId('showing-text')).not.toBeInTheDocument();
     });
   });
 
