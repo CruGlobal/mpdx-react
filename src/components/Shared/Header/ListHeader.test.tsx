@@ -14,6 +14,7 @@ const toggleFilterPanel = jest.fn();
 const onSearchTermChanged = jest.fn();
 const onCheckAllItems = jest.fn();
 const toggleStarredFilter = jest.fn();
+const selectedIds: string[] = [];
 
 describe('ListHeader', () => {
   describe('Contact', () => {
@@ -21,6 +22,7 @@ describe('ListHeader', () => {
       const { getByPlaceholderText, getByTestId, getByText } = render(
         <ThemeProvider theme={theme}>
           <ListHeader
+            selectedIds={selectedIds}
             page="contact"
             activeFilters={false}
             starredFilter={{}}
@@ -45,6 +47,7 @@ describe('ListHeader', () => {
       const { getByPlaceholderText, queryByTestId, queryByText } = render(
         <ThemeProvider theme={theme}>
           <ListHeader
+            selectedIds={selectedIds}
             page="contact"
             activeFilters={false}
             starredFilter={{}}
@@ -72,6 +75,7 @@ describe('ListHeader', () => {
       const { getByPlaceholderText } = render(
         <ThemeProvider theme={theme}>
           <ListHeader
+            selectedIds={selectedIds}
             page="task"
             activeFilters={false}
             headerCheckboxState={ListHeaderCheckBoxState.unchecked}
@@ -94,6 +98,7 @@ describe('ListHeader', () => {
     const { getByRole } = render(
       <ThemeProvider theme={theme}>
         <ListHeader
+          selectedIds={selectedIds}
           page="contact"
           activeFilters={false}
           headerCheckboxState={ListHeaderCheckBoxState.unchecked}
@@ -126,6 +131,7 @@ describe('ListHeader', () => {
     const { getByRole } = render(
       <ThemeProvider theme={theme}>
         <ListHeader
+          selectedIds={selectedIds}
           page="contact"
           activeFilters={false}
           headerCheckboxState={ListHeaderCheckBoxState.unchecked}
@@ -151,6 +157,7 @@ describe('ListHeader', () => {
     const { getByRole } = render(
       <ThemeProvider theme={theme}>
         <ListHeader
+          selectedIds={selectedIds}
           page="contact"
           activeFilters={false}
           headerCheckboxState={ListHeaderCheckBoxState.unchecked}
@@ -178,6 +185,7 @@ describe('ListHeader', () => {
     const { getByRole } = render(
       <ThemeProvider theme={theme}>
         <ListHeader
+          selectedIds={selectedIds}
           page="contact"
           activeFilters={false}
           headerCheckboxState={ListHeaderCheckBoxState.unchecked}
@@ -207,6 +215,7 @@ describe('ListHeader', () => {
     const { getByRole } = render(
       <ThemeProvider theme={theme}>
         <ListHeader
+          selectedIds={selectedIds}
           page="contact"
           activeFilters={true}
           headerCheckboxState={ListHeaderCheckBoxState.unchecked}
@@ -236,6 +245,7 @@ describe('ListHeader', () => {
     const { getByRole } = render(
       <ThemeProvider theme={theme}>
         <ListHeader
+          selectedIds={selectedIds}
           page="contact"
           activeFilters={true}
           headerCheckboxState={ListHeaderCheckBoxState.unchecked}
@@ -265,6 +275,7 @@ describe('ListHeader', () => {
     const { getByRole } = render(
       <ThemeProvider theme={theme}>
         <ListHeader
+          selectedIds={selectedIds}
           page="contact"
           activeFilters={false}
           headerCheckboxState={ListHeaderCheckBoxState.unchecked}
@@ -295,6 +306,7 @@ describe('ListHeader', () => {
     const { getByRole } = render(
       <ThemeProvider theme={theme}>
         <ListHeader
+          selectedIds={selectedIds}
           page="contact"
           activeFilters={true}
           headerCheckboxState={ListHeaderCheckBoxState.unchecked}
@@ -323,6 +335,7 @@ describe('ListHeader', () => {
     const { getByTestId } = render(
       <ThemeProvider theme={theme}>
         <ListHeader
+          selectedIds={selectedIds}
           page="contact"
           activeFilters={true}
           headerCheckboxState={ListHeaderCheckBoxState.unchecked}
@@ -347,6 +360,7 @@ describe('ListHeader', () => {
     const { getByTestId } = render(
       <ThemeProvider theme={theme}>
         <ListHeader
+          selectedIds={selectedIds}
           page="contact"
           activeFilters={true}
           headerCheckboxState={ListHeaderCheckBoxState.unchecked}
@@ -371,6 +385,7 @@ describe('ListHeader', () => {
     const { getByText } = render(
       <ThemeProvider theme={theme}>
         <ListHeader
+          selectedIds={selectedIds}
           page="contact"
           activeFilters={true}
           headerCheckboxState={ListHeaderCheckBoxState.unchecked}
@@ -392,6 +407,7 @@ describe('ListHeader', () => {
     const { queryByText } = render(
       <ThemeProvider theme={theme}>
         <ListHeader
+          selectedIds={selectedIds}
           page="contact"
           activeFilters={true}
           contactsView={TableViewModeEnum.Flows}
