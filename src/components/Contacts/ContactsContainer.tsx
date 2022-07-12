@@ -28,6 +28,7 @@ export const ContactsContainer: React.FC = ({}) => {
     filterPanelOpen,
     contactDetailsOpen,
     viewMode,
+    setContactFocus,
   } = useContext(ContactsPageContext) as ContactsPageType;
 
   return (
@@ -51,7 +52,18 @@ export const ContactsContainer: React.FC = ({}) => {
               leftOpen={filterPanelOpen}
               leftWidth="290px"
               mainContent={<ContactsMainPanel />}
-              rightPanel={<ContactsRightPanel />}
+              rightPanel={
+                <ContactsRightPanel
+                  onClose={() =>
+                    setContactFocus(
+                      undefined,
+                      true,
+                      viewMode === TableViewModeEnum.Flows,
+                      viewMode === TableViewModeEnum.Map,
+                    )
+                  }
+                />
+              }
               rightOpen={contactDetailsOpen}
               rightWidth="60%"
             />

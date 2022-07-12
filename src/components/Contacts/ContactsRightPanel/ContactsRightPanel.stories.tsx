@@ -11,7 +11,7 @@ export const Default = (): React.ReactElement => {
   return (
     <ContactsPageProvider>
       <ContactDetailProvider>
-        <ContactsRightPanel />
+        <ContactsRightPanel onClose={() => {}} />
       </ContactDetailProvider>
     </ContactsPageProvider>
   );

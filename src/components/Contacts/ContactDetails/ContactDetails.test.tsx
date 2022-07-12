@@ -43,7 +43,7 @@ describe('ContactDetails', () => {
             <MuiThemeProvider theme={theme}>
               <ContactsPageProvider>
                 <ContactDetailProvider>
-                  <ContactDetails />
+                  <ContactDetails onClose={() => {}} />
                 </ContactDetailProvider>
               </ContactsPageProvider>
             </MuiThemeProvider>
@@ -73,7 +73,7 @@ describe('ContactDetails', () => {
             <MuiThemeProvider theme={theme}>
               <ContactsPageProvider>
                 <ContactDetailProvider>
-                  <ContactDetails />
+                  <ContactDetails onClose={() => {}} />
                 </ContactDetailProvider>
               </ContactsPageProvider>
             </MuiThemeProvider>
@@ -95,7 +95,7 @@ describe('ContactDetails', () => {
             <MuiThemeProvider theme={theme}>
               <ContactsPageProvider>
                 <ContactDetailProvider>
-                  <ContactDetails />
+                  <ContactDetails onClose={() => {}} />
                 </ContactDetailProvider>
               </ContactsPageProvider>
             </MuiThemeProvider>
