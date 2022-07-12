@@ -93,7 +93,7 @@ export const DonationsReportTable: React.FC<Props> = ({ accountListId }) => {
       foreignCurrency: data.amount.currency,
       convertedAmount: data.amount.convertedAmount,
       foreignAmount: data.amount.amount,
-      designation: '', //Designation not currently in the Donation endpoint in GraphQL
+      designation: `${data.designationAccount.name} (${data.designationAccount.accountNumber})`,
       method: data.paymentMethod || null,
       id: data.id,
     };
@@ -125,16 +125,9 @@ export const DonationsReportTable: React.FC<Props> = ({ accountListId }) => {
     );
   };
 
-  const foreignAmount = (params: GridCellParams) => {
+  const designation = (params: GridCellParams) => {
     const donation = params.row as Donation;
-
-    return (
-      <Typography>
-        {`${Math.round(donation.foreignAmount * 100) / 100} ${
-          donation.foreignCurrency
-        }`}
-      </Typography>
-    );
+    return <Typography>{donation.designation}</Typography>;
   };
 
   const button = () => (
@@ -166,6 +159,7 @@ export const DonationsReportTable: React.FC<Props> = ({ accountListId }) => {
       field: 'designation',
       headerName: t('Designation'),
       width: 256,
+      renderCell: designation,
     },
     {
       field: 'method',
