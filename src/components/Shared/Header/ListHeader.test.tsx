@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { ThemeProvider } from '@material-ui/core';
 import theme from '../../../theme';
 
+import useTaskModal from '../../../hooks/useTaskModal';
 import {
   ListHeader,
   ListHeaderCheckBoxState,
@@ -15,6 +16,16 @@ const onSearchTermChanged = jest.fn();
 const onCheckAllItems = jest.fn();
 const toggleStarredFilter = jest.fn();
 const selectedIds: string[] = [];
+
+jest.mock('../../../hooks/useTaskModal');
+
+const openTaskModal = jest.fn();
+
+beforeEach(() => {
+  (useTaskModal as jest.Mock).mockReturnValue({
+    openTaskModal,
+  });
+});
 
 describe('ListHeader', () => {
   describe('Contact', () => {
@@ -67,6 +78,43 @@ describe('ListHeader', () => {
       expect(queryByText('Actions')).not.toBeInTheDocument();
       expect(queryByTestId('star-filter-button')).not.toBeInTheDocument();
     });
+  });
+
+  it('opens the more actions menu and clicks the add task action', () => {
+    const {
+      getByPlaceholderText,
+      getByTestId,
+      getByText,
+      queryByText,
+    } = render(
+      <ThemeProvider theme={theme}>
+        <ListHeader
+          selectedIds={selectedIds}
+          page="contact"
+          activeFilters={false}
+          starredFilter={{}}
+          toggleStarredFilter={toggleStarredFilter}
+          headerCheckboxState={ListHeaderCheckBoxState.unchecked}
+          filterPanelOpen={false}
+          contactDetailsOpen={false}
+          toggleFilterPanel={toggleFilterPanel}
+          onCheckAllItems={onCheckAllItems}
+          onSearchTermChanged={onSearchTermChanged}
+        />
+      </ThemeProvider>,
+    );
+
+    expect(getByPlaceholderText('Search Contacts')).toBeInTheDocument();
+    expect(queryByText('Add Task')).not.toBeInTheDocument();
+    const actionsButton = getByText('Actions');
+    userEvent.click(actionsButton);
+    expect(getByText('Add Task')).toBeInTheDocument();
+    userEvent.click(getByText('Add Task'));
+    expect(openTaskModal).toHaveBeenCalledWith({
+      defaultValues: { contactIds: selectedIds },
+    });
+    expect(getByTestId('star-filter-button')).toBeInTheDocument();
+    expect(getByTestId('showing-text')).toBeInTheDocument();
   });
 
   describe('Task', () => {
