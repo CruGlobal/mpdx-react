@@ -51,6 +51,7 @@ export const ContactsMainPanelHeader: React.FC = () => {
     viewMode,
     urlFilters,
     handleViewModeChange,
+    selectedIds,
   } = React.useContext(ContactsPageContext) as ContactsPageType;
 
   const { data } = useContactsQuery({
@@ -86,6 +87,7 @@ export const ContactsMainPanelHeader: React.FC = () => {
       starredFilter={starredFilter}
       toggleStarredFilter={setStarredFilter}
       headerCheckboxState={selectionType}
+      selectedIds={selectedIds}
       buttonGroup={
         <Hidden xsDown>
           <Box display="flex" alignItems="center">

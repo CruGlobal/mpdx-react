@@ -18,6 +18,7 @@ export const Default = (): ReactElement => {
       toggleFilterPanel={() => {}}
       onCheckAllItems={() => {}}
       onSearchTermChanged={() => {}}
+      selectedIds={[]}
     />
   );
 };
@@ -35,6 +36,7 @@ export const Task = (): ReactElement => {
       toggleFilterPanel={() => {}}
       onCheckAllItems={() => {}}
       onSearchTermChanged={() => {}}
+      selectedIds={[]}
     />
   );
 };
@@ -52,6 +54,7 @@ export const ActiveFilters = (): ReactElement => {
       toggleFilterPanel={() => {}}
       onCheckAllItems={() => {}}
       onSearchTermChanged={() => {}}
+      selectedIds={[]}
     />
   );
 };
@@ -69,6 +72,7 @@ export const FilterPanelOpen = (): ReactElement => {
       toggleFilterPanel={() => {}}
       onCheckAllItems={() => {}}
       onSearchTermChanged={() => {}}
+      selectedIds={[]}
     />
   );
 };
@@ -86,6 +90,7 @@ export const ActiveFiltersAndFilterPanelOpen = (): ReactElement => {
       toggleFilterPanel={() => {}}
       onCheckAllItems={() => {}}
       onSearchTermChanged={() => {}}
+      selectedIds={[]}
     />
   );
 };

@@ -124,6 +124,7 @@ const TasksPage: React.FC = () => {
 
   //#region Mass Actions
   const {
+    ids,
     selectionType,
     isRowChecked,
     toggleSelectAll,
@@ -236,6 +237,7 @@ const TasksPage: React.FC = () => {
                       </TaskHeaderButton>
                     </Hidden>
                   }
+                  selectedIds={ids}
                 />
                 <InfiniteList
                   loading={loading}

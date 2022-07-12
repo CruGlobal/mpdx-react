@@ -78,6 +78,7 @@ export type ContactsPageType = {
   setViewMode: (mode: TableViewModeEnum) => void;
   urlFilters: any;
   isFiltered: boolean;
+  selectedIds: string[];
 };
 
 export const ContactsPageContext = React.createContext<ContactsPageType | null>(
@@ -401,6 +402,7 @@ export const ContactsPageProvider: React.FC<React.ReactNode> = ({
       ).toLocaleString(DateTime.DATE_SHORT)})`,
     };
   });
+
   return (
     <ContactsPageContext.Provider
       value={{
@@ -439,6 +441,7 @@ export const ContactsPageProvider: React.FC<React.ReactNode> = ({
         setViewMode: setViewMode,
         urlFilters: urlFilters,
         isFiltered: isFiltered,
+        selectedIds: ids,
       }}
     >
       {children}

@@ -21,6 +21,7 @@ import {
   TaskFilterSetInput,
 } from '../../../../graphql/types.generated';
 import { StarFilterButton } from './StarFilterButton/StarFilterButton';
+import useTaskModal from 'src/hooks/useTaskModal';
 
 const HeaderWrap = styled(Box)(
   ({
@@ -119,6 +120,7 @@ interface ListHeaderProps {
   toggleStarredFilter: (
     filter: ContactFilterSetInput | TaskFilterSetInput,
   ) => void;
+  selectedIds: string[];
 }
 
 export const ListHeader: React.FC<ListHeaderProps> = ({
@@ -136,6 +138,7 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
   starredFilter,
   toggleStarredFilter,
   contactsView,
+  selectedIds,
 }) => {
   const { t } = useTranslation();
 
@@ -147,6 +150,8 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
   const handleClose = () => {
     setAnchorEl(null);
   };
+
+  const { openTaskModal } = useTaskModal();
 
   return (
     <HeaderWrap contactDetailsOpen={contactDetailsOpen}>
@@ -219,7 +224,14 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
                 <MenuItem divider>
                   <ListItemText>{t('Remove Tags')}</ListItemText>
                 </MenuItem>
-                <MenuItem>
+                <MenuItem
+                  onClick={() => {
+                    openTaskModal({
+                      defaultValues: { contactIds: selectedIds },
+                    });
+                    handleClose();
+                  }}
+                >
                   <ListItemText>{t('Add Task')}</ListItemText>
                 </MenuItem>
                 <MenuItem divider>
