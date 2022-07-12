@@ -32,6 +32,11 @@ fragment ExpectedDonationData on Donation {
     displayName
     id
   }
+  designationAccount {
+    name
+    id
+    accountNumber
+  }
   id
   paymentMethod
 }
