@@ -2,10 +2,13 @@ import React from 'react';
 import { ContactDetails } from '../ContactDetails/ContactDetails';
 import { ContactDetailProvider } from '../ContactDetails/ContactDetailContext';
 
-export const ContactsRightPanel: React.FC = () => {
+interface Props {
+  onClose: () => void;
+}
+export const ContactsRightPanel: React.FC<Props> = ({ onClose }) => {
   return (
     <ContactDetailProvider>
-      <ContactDetails />
+      <ContactDetails onClose={onClose} />
     </ContactDetailProvider>
   );
 };

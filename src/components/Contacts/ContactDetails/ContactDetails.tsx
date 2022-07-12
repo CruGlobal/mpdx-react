@@ -7,7 +7,6 @@ import {
   ContactsPageContext,
   ContactsPageType,
 } from '../../../../pages/accountLists/[accountListId]/contacts/ContactsPageContext';
-import { TableViewModeEnum } from '../../../../src/components/Shared/Header/ListHeader';
 import { ContactDetailsHeader } from './ContactDetailsHeader/ContactDetailsHeader';
 import { ContactTasksTab } from './ContactTasksTab/ContactTasksTab';
 import { ContactDetailsTab } from './ContactDetailsTab/ContactDetailsTab';
@@ -18,6 +17,10 @@ import {
   ContactDetailContext,
   ContactDetailsType,
 } from './ContactDetailContext';
+
+interface Props {
+  onClose: () => void;
+}
 
 const ContactDetailsWrapper = styled(Box)(({}) => ({
   width: '100%',
@@ -61,14 +64,13 @@ export enum TabKey {
   Notes = 'Notes',
 }
 
-export const ContactDetails: React.FC = () => {
+export const ContactDetails: React.FC<Props> = ({ onClose }) => {
   const { t } = useTranslation();
 
   const {
     accountListId,
     contactDetailsId: contactId,
     setContactFocus,
-    viewMode,
   } = React.useContext(ContactsPageContext) as ContactsPageType;
 
   const { selectedTabKey, handleTabChange: handleChange } = React.useContext(
@@ -80,14 +82,7 @@ export const ContactDetails: React.FC = () => {
       <ContactDetailsHeader
         accountListId={accountListId ?? ''}
         contactId={contactId ?? ''}
-        onClose={() =>
-          setContactFocus(
-            undefined,
-            true,
-            viewMode === TableViewModeEnum.Flows,
-            viewMode === TableViewModeEnum.Map,
-          )
-        }
+        onClose={onClose}
       />
       <TabContext value={selectedTabKey}>
         <ContactTabsWrapper>
