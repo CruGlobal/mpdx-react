@@ -29,7 +29,7 @@ export const Default = (): ReactElement => {
       <GqlMockedProvider<GetContactDetailsHeaderQuery>>
         <ContactsPageProvider>
           <ContactDetailProvider>
-            <ContactDetails />
+            <ContactDetails onClose={() => {}} />
           </ContactDetailProvider>
         </ContactsPageProvider>
       </GqlMockedProvider>
@@ -57,7 +57,7 @@ export const Loading = (): ReactElement => {
       >
         <ContactsPageProvider>
           <ContactDetailProvider>
-            <ContactDetails />
+            <ContactDetails onClose={() => {}} />
           </ContactDetailProvider>
         </ContactsPageProvider>
       </MockedProvider>
