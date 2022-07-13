@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import _ from 'lodash';
 import { ContactFlow } from '../ContactFlow/ContactFlow';
 import { ContactsList } from '../ContactsList/ContactsList';
@@ -7,7 +7,6 @@ import {
   ContactsPageContext,
   ContactsPageType,
 } from '../../../../pages/accountLists/[accountListId]/contacts/ContactsPageContext';
-import { MassActionsEditFieldsModal } from '../MassActions/EditFields/MassActionsEditFieldsModal';
 import { ContactsMainPanelHeader } from './ContactsMainPanelHeader';
 import { TableViewModeEnum } from 'src/components/Shared/Header/ListHeader';
 
@@ -19,10 +18,7 @@ export const ContactsMainPanel: React.FC = () => {
     searchTerm,
     setContactFocus,
     viewMode,
-    selectedIds,
   } = React.useContext(ContactsPageContext) as ContactsPageType;
-
-  const [editFieldsModalOpen, setEditFieldsModalOpen] = useState(false);
 
   return (
     <>
@@ -30,13 +26,6 @@ export const ContactsMainPanel: React.FC = () => {
       {viewMode === TableViewModeEnum.List ? (
         <>
           <ContactsList />
-          {editFieldsModalOpen ? (
-            <MassActionsEditFieldsModal
-              ids={selectedIds}
-              accountListId={accountListId ?? ''}
-              handleClose={() => setEditFieldsModalOpen(false)}
-            />
-          ) : null}
         </>
       ) : viewMode === TableViewModeEnum.Flows ? (
         <ContactFlow
