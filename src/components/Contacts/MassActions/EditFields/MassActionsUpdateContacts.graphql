@@ -1,0 +1,12 @@
+mutation MassActionsUpdateContactFields(
+  $accountListId: ID!
+  $attributes: ContactsUpdateInput!
+) {
+  updateContacts(
+    input: { accountListId: $accountListId, attributes: $attributes }
+  ) {
+    contacts {
+      id
+    }
+  }
+}
