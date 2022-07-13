@@ -17,16 +17,19 @@ import { Formik } from 'formik';
 import React, { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
+import { useSnackbar } from 'notistack';
 import {
   LikelyToGiveEnum,
   SendNewsletterEnum,
   StatusEnum,
 } from '../../../../../graphql/types.generated';
 import Modal from '../../../common/Modal/Modal';
+import { useMassActionsUpdateContactFieldsMutation } from './MassActionsUpdateContacts.generated';
 import theme from 'src/theme';
 import { dateFormat } from 'src/lib/intlFormat/intlFormat';
 import { useLoadConstantsQuery } from 'src/components/Constants/LoadConstants.generated';
 import { useGetDataForTaskDrawerQuery } from 'src/components/Task/Drawer/Form/TaskDrawer.generated';
+import { ContactsDocument } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
 
 interface MassActionsEditFieldsModalProps {
   ids: string[];
@@ -66,11 +69,43 @@ const MassActionsEditFieldsSchema = yup.object({
 export const MassActionsEditFieldsModal: React.FC<MassActionsEditFieldsModalProps> = ({
   handleClose,
   accountListId,
+  ids,
 }) => {
   const { t } = useTranslation();
 
-  const onSubmit = async () => {
-    //
+  const [updateContacts] = useMassActionsUpdateContactFieldsMutation();
+
+  const { enqueueSnackbar } = useSnackbar();
+
+  const onSubmit = async (fields: any) => {
+    const attributes: { [key: string]: any } = {};
+    for (const [key, value] of Object.entries(fields)) {
+      if (value) {
+        attributes[key] =
+          key === 'starred' || key === 'noAppeals' || key === 'pledgeReceived'
+            ? value === 'true'
+            : value;
+      }
+    }
+    await updateContacts({
+      variables: {
+        accountListId,
+        attributes: {
+          ids,
+          ...attributes,
+        },
+      },
+      refetchQueries: [
+        {
+          query: ContactsDocument,
+          variables: { accountListId },
+        },
+      ],
+    });
+    enqueueSnackbar(t('Contacts updated!'), {
+      variant: 'success',
+    });
+    handleClose();
   };
 
   const { data, loading } = useGetDataForTaskDrawerQuery({
@@ -170,9 +205,9 @@ export const MassActionsEditFieldsModal: React.FC<MassActionsEditFieldsModalProp
                       onChange={handleChange('starred')}
                     >
                       <MenuItem value={undefined}>{t('None')}</MenuItem>
-                      {Object.keys(StarredMap).map((val) => (
-                        <MenuItem key={val} value={val}>
-                          {t(val) /* manually added to translation file */}
+                      {Object.entries(StarredMap).map(([key, val]) => (
+                        <MenuItem key={key} value={String(val)}>
+                          {t(key) /* manually added to translation file */}
                         </MenuItem>
                       ))}
                     </Select>
@@ -187,9 +222,9 @@ export const MassActionsEditFieldsModal: React.FC<MassActionsEditFieldsModalProp
                       onChange={handleChange('noAppeals')}
                     >
                       <MenuItem value={undefined}>{t('None')}</MenuItem>
-                      {Object.keys(NoAppealsMap).map((val) => (
-                        <MenuItem key={val} value={val}>
-                          {t(val) /* manually added to translation file */}
+                      {Object.entries(NoAppealsMap).map(([key, val]) => (
+                        <MenuItem key={key} value={String(val)}>
+                          {t(key) /* manually added to translation file */}
                         </MenuItem>
                       ))}
                     </Select>
@@ -255,9 +290,9 @@ export const MassActionsEditFieldsModal: React.FC<MassActionsEditFieldsModalProp
                       onChange={handleChange('pledgeReceived')}
                     >
                       <MenuItem value={undefined}>{t('None')}</MenuItem>
-                      {Object.keys(PledgeReceivedMap).map((val) => (
-                        <MenuItem key={val} value={val}>
-                          {t(val) /* manually added to translation file */}
+                      {Object.entries(PledgeReceivedMap).map(([key, val]) => (
+                        <MenuItem key={key} value={String(val)}>
+                          {t(key) /* manually added to translation file */}
                         </MenuItem>
                       ))}
                     </Select>
@@ -298,7 +333,7 @@ export const MassActionsEditFieldsModal: React.FC<MassActionsEditFieldsModalProp
                       <MenuItem value={undefined}>{t('None')}</MenuItem>
                       {!loadingConstants &&
                         constants?.constant?.languages?.map((val) => (
-                          <MenuItem key={val.id} value={val.value || ''}>
+                          <MenuItem key={val.id} value={val.id || ''}>
                             {
                               t(
                                 val.value || '',
@@ -331,15 +366,17 @@ export const MassActionsEditFieldsModal: React.FC<MassActionsEditFieldsModalProp
                       style={{ marginBottom: theme.spacing(2) }}
                     >
                       {!loading ? (
-                        <>
-                          <MenuItem value={undefined}>{t('None')}</MenuItem>
-                          {data?.accountListUsers?.nodes &&
+                        [
+                          <MenuItem key="" value={undefined}>
+                            {t('None')}
+                          </MenuItem>,
+                          data?.accountListUsers?.nodes &&
                             data.accountListUsers.nodes.map((val) => (
-                              <MenuItem key={val.id} value={val.id}>
+                              <MenuItem key={val.id} value={val.user.id}>
                                 {`${val.user?.firstName} ${val.user?.lastName}`}
                               </MenuItem>
-                            ))}
-                        </>
+                            )),
+                        ]
                       ) : (
                         <CircularProgress size={20} />
                       )}
