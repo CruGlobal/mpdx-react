@@ -121,6 +121,7 @@ interface ListHeaderProps {
     filter: ContactFilterSetInput | TaskFilterSetInput,
   ) => void;
   selectedIds: string[];
+  openAddToAppealModal?: (open: boolean) => void;
 }
 
 export const ListHeader: React.FC<ListHeaderProps> = ({
@@ -139,6 +140,7 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
   toggleStarredFilter,
   contactsView,
   selectedIds,
+  openAddToAppealModal,
 }) => {
   const { t } = useTranslation();
 
@@ -245,7 +247,12 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
                   <ListItemText>{t('Hide Contacts')}</ListItemText>
                 </MenuItem>
 
-                <MenuItem>
+                <MenuItem
+                  onClick={() => {
+                    openAddToAppealModal(true);
+                    handleClose();
+                  }}
+                >
                   <ListItemText>{t('Add to Appeal')}</ListItemText>
                 </MenuItem>
                 <MenuItem divider>
