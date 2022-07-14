@@ -121,6 +121,7 @@ interface ListHeaderProps {
     filter: ContactFilterSetInput | TaskFilterSetInput,
   ) => void;
   selectedIds: string[];
+  openAddTagsModal?: (open: boolean) => void;
 }
 
 export const ListHeader: React.FC<ListHeaderProps> = ({
@@ -139,6 +140,7 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
   toggleStarredFilter,
   contactsView,
   selectedIds,
+  openAddTagsModal,
 }) => {
   const { t } = useTranslation();
 
@@ -196,7 +198,7 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
 
       {page === 'contact' ? (
         <>
-          {contactsView !== TableViewModeEnum.Map && (
+          {contactsView !== TableViewModeEnum.Map && openAddTagsModal && (
             <Hidden lgDown={contactDetailsOpen}>
               <ActionsButton
                 aria-haspopup
@@ -218,7 +220,12 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
                 anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
                 transformOrigin={{ vertical: 'top', horizontal: 'center' }}
               >
-                <MenuItem>
+                <MenuItem
+                  onClick={() => {
+                    openAddTagsModal(true);
+                    handleClose();
+                  }}
+                >
                   <ListItemText>{t('Add Tags')}</ListItemText>
                 </MenuItem>
                 <MenuItem divider>
