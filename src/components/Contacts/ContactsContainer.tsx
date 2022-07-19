@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import _ from 'lodash';
-import { SidePanelsLayout } from '../Layouts/SidePanelsLayout';
+// import { SidePanelsLayout } from '../Layouts/SidePanelsLayout';
 import {
   ContactsPageContext,
   ContactsPageType,
@@ -21,12 +21,53 @@ const WhiteBackground = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.common.white,
 }));
 
+const OuterWrapper = styled(Box)(({ theme }) => ({
+  position: 'relative',
+  overflowX: 'hidden',
+  '& > div': {
+    height: '100%',
+  },
+  '& .left, & .right': {
+    position: 'absolute',
+    top: 0,
+    transition: 'left ease-in-out 225ms',
+    backgroundColor: theme.palette.common.white,
+    borderColor: '#EBECEC',
+    borderStyle: 'solid',
+  },
+  '&.leftOpen .left, &.rightOpen .right': {
+    left: 0,
+  },
+  '&.rightOpen .right': {
+    [theme.breakpoints.up('md')]: {
+      left: 'calc(100% - 900px)',
+    },
+  },
+}));
+
+const LeftWrapper = styled(Box)(() => ({
+  zIndex: 30,
+  left: '-290px',
+  width: '290px',
+  borderWidth: '0 1px 0 0',
+}));
+
+const RightWrapper = styled(Box)(({ theme }) => ({
+  zIndex: 20,
+  width: '100%',
+  left: '100%',
+  [theme.breakpoints.up('md')]: {
+    width: '900px',
+    borderWidth: '0 0 0 1px',
+  },
+}));
+
 export const ContactsContainer: React.FC = ({}) => {
   const { t } = useTranslation();
   const {
     accountListId,
-    filterPanelOpen,
-    contactDetailsOpen,
+    // filterPanelOpen,
+    // contactDetailsOpen,
     viewMode,
     setContactFocus,
   } = useContext(ContactsPageContext) as ContactsPageType;
@@ -47,7 +88,27 @@ export const ContactsContainer: React.FC = ({}) => {
         <DndProvider backend={HTML5Backend}>
           <ContactFlowDragLayer />
           <WhiteBackground>
-            <SidePanelsLayout
+            <OuterWrapper className="leftOpen rightOpen">
+              <LeftWrapper className="left">
+                <ContactsLeftPanel />
+              </LeftWrapper>
+              <Box className="center">
+                <ContactsMainPanel />
+              </Box>
+              <RightWrapper className="right">
+                <ContactsRightPanel
+                  onClose={() =>
+                    setContactFocus(
+                      undefined,
+                      true,
+                      viewMode === TableViewModeEnum.Flows,
+                      viewMode === TableViewModeEnum.Map,
+                    )
+                  }
+                />
+              </RightWrapper>
+            </OuterWrapper>
+            {/* <SidePanelsLayout
               leftPanel={<ContactsLeftPanel />}
               leftOpen={filterPanelOpen}
               leftWidth="290px"
@@ -66,7 +127,7 @@ export const ContactsContainer: React.FC = ({}) => {
               }
               rightOpen={contactDetailsOpen}
               rightWidth="60%"
-            />
+            /> */}
           </WhiteBackground>
         </DndProvider>
       ) : (
