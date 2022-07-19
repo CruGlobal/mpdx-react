@@ -6,6 +6,7 @@ import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import _ from 'lodash';
 // import { SidePanelsLayout } from '../Layouts/SidePanelsLayout';
+import clsx from 'clsx';
 import {
   ContactsPageContext,
   ContactsPageType,
@@ -70,6 +71,8 @@ export const ContactsContainer: React.FC = ({}) => {
     // contactDetailsOpen,
     viewMode,
     setContactFocus,
+    filterPanelOpen,
+    contactDetailsOpen,
   } = useContext(ContactsPageContext) as ContactsPageType;
 
   return (
@@ -88,7 +91,12 @@ export const ContactsContainer: React.FC = ({}) => {
         <DndProvider backend={HTML5Backend}>
           <ContactFlowDragLayer />
           <WhiteBackground>
-            <OuterWrapper className="leftOpen rightOpen">
+            <OuterWrapper
+              className={clsx(
+                filterPanelOpen && 'leftOpen',
+                contactDetailsOpen && 'rightOpen',
+              )}
+            >
               <LeftWrapper className="left">
                 <ContactsLeftPanel />
               </LeftWrapper>
