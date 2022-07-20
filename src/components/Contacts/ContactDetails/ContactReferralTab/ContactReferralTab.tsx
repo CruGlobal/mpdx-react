@@ -68,14 +68,16 @@ export const ContactReferralTab: React.FC<ContactReferralTabProps> = ({
   });
 
   const { t } = useTranslation();
-  const [modalOpen, setModalOpen] = useState(false);
+  const [modalContactReferralOpen, setModalContactReferralOpen] = useState(
+    false,
+  );
 
   const handleModalOpen = () => {
-    setModalOpen(true);
+    setModalContactReferralOpen(true);
   };
 
   const handleModalClose = () => {
-    setModalOpen(false);
+    setModalContactReferralOpen(false);
   };
 
   return (
@@ -132,7 +134,7 @@ export const ContactReferralTab: React.FC<ContactReferralTabProps> = ({
             </Table>
           </TableContainer>
           <Modal
-            isOpen={modalOpen}
+            isOpen={modalContactReferralOpen}
             handleClose={handleModalClose}
             title={t('Add Referrals')}
             aria-labelledby={t('Create Referral Dialog')}
