@@ -8,7 +8,6 @@ import EditIcon from '@material-ui/icons/Edit';
 import { useTranslation } from 'react-i18next';
 
 import { MoreVert } from '@material-ui/icons';
-import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
 import { StatusEnum } from '../../../../../../graphql/types.generated';
 import useTaskModal from '../../../../../hooks/useTaskModal';
@@ -110,11 +109,15 @@ export const ContactDetailsMoreAcitions: React.FC<ContactDetailsMoreAcitionsProp
 }) => {
   const { openTaskModal } = useTaskModal();
   const { t } = useTranslation();
-  const { accountListId, searchTerm, contactId: _, query } = React.useContext(
-    ContactsPageContext,
-  ) as ContactsPageType;
+  const {
+    accountListId,
+    searchTerm,
+    contactId: _,
+    query,
+    router,
+  } = React.useContext(ContactsPageContext) as ContactsPageType;
   const { ...queryWithoutContactId } = query;
-  const { push } = useRouter();
+  const { push } = router;
   const {
     referralsModalOpen,
     setReferralsModalOpen,

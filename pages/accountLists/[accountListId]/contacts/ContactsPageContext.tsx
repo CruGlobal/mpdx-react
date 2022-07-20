@@ -1,7 +1,7 @@
 import { ParsedUrlQuery } from 'querystring';
 import _, { debounce } from 'lodash';
 import { DateTime } from 'luxon';
-import { useRouter } from 'next/router';
+import { NextRouter, useRouter } from 'next/router';
 import React, {
   Dispatch,
   SetStateAction,
@@ -36,6 +36,7 @@ export type ContactsPageType = {
   contactId: string | string[] | undefined;
   searchTerm: string | string[] | undefined;
   loading: boolean;
+  router: NextRouter;
   query: ParsedUrlQuery;
   selectionType: ListHeaderCheckBoxState;
   isRowChecked: (id: string) => boolean;
@@ -89,7 +90,8 @@ export const ContactsPageProvider: React.FC<React.ReactNode> = ({
   children,
 }) => {
   const accountListId = useAccountListId();
-  const { query, push, replace, isReady, pathname } = useRouter();
+  const router = useRouter();
+  const { query, push, replace, isReady, pathname } = router;
 
   const [contactDetailsOpen, setContactDetailsOpen] = useState(false);
   const [contactDetailsId, setContactDetailsId] = useState<string>();
@@ -411,6 +413,7 @@ export const ContactsPageProvider: React.FC<React.ReactNode> = ({
         searchTerm: searchTerm,
         loading: loading,
         query: query,
+        router: router,
         selectionType: selectionType,
         isRowChecked: isRowChecked,
         toggleSelectAll: toggleSelectAll,
