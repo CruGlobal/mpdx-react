@@ -5,7 +5,6 @@ import { useTranslation } from 'react-i18next';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import _ from 'lodash';
-// import { SidePanelsLayout } from '../Layouts/SidePanelsLayout';
 import clsx from 'clsx';
 import {
   ContactsPageContext,
@@ -114,26 +113,6 @@ export const ContactsContainer: React.FC = ({}) => {
                 />
               </RightWrapper>
             </OuterWrapper>
-            {/* <SidePanelsLayout
-              leftPanel={<ContactsLeftPanel />}
-              leftOpen={filterPanelOpen}
-              leftWidth="290px"
-              mainContent={<ContactsMainPanel />}
-              rightPanel={
-                <ContactsRightPanel
-                  onClose={() =>
-                    setContactFocus(
-                      undefined,
-                      true,
-                      viewMode === TableViewModeEnum.Flows,
-                      viewMode === TableViewModeEnum.Map,
-                    )
-                  }
-                />
-              }
-              rightOpen={contactDetailsOpen}
-              rightWidth="60%"
-            /> */}
           </WhiteBackground>
         </DndProvider>
       ) : (
