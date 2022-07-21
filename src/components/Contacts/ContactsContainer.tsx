@@ -56,6 +56,7 @@ const RightWrapper = styled(Box)(({ theme }) => ({
   zIndex: 20,
   width: '100%',
   left: '100%',
+  borderWidth: 0,
   [theme.breakpoints.up('md')]: {
     width: '900px',
     borderWidth: '0 0 0 1px',
