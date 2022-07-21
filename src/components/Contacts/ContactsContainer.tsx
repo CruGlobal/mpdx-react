@@ -67,12 +67,10 @@ export const ContactsContainer: React.FC = ({}) => {
   const { t } = useTranslation();
   const {
     accountListId,
-    // filterPanelOpen,
-    // contactDetailsOpen,
-    viewMode,
-    setContactFocus,
     filterPanelOpen,
     contactDetailsOpen,
+    viewMode,
+    setContactFocus,
   } = useContext(ContactsPageContext) as ContactsPageType;
 
   return (
