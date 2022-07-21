@@ -9,6 +9,7 @@ import theme from '../../../../../theme';
 import { StarredItemIcon } from '../../../../common/StarredItemIcon/StarredItemIcon';
 import { TaskRowFragment } from '../../../../Task/TaskRow/TaskRow.generated';
 import { StarTaskIconButton } from '../StarTaskIconButton/StarTaskIconButton';
+import { DeleteTaskIconButton } from '../DeleteTaskIconButton/DeleteTaskIconButton';
 import { TaskCommentsButton } from './TaskCommentsButton/TaskCommentsButton';
 import { TaskCompleteButton } from './TaskCompleteButton/TaskCompleteButton';
 import { TaskDueDate } from './TaskDueDate/TaskDueDate';
@@ -237,6 +238,8 @@ export const ContactTaskRow: React.FC<ContactTaskRowProps> = ({
           onClick={handleCommentButtonPressed}
           detailsPage
         />
+
+        <DeleteTaskIconButton accountListId={accountListId} taskId={task.id} />
         <StarTaskIconButton
           accountListId={accountListId}
           taskId={task.id}
