@@ -3,7 +3,6 @@ import {
   MenuItem,
   Select,
   styled,
-  TextField,
   Checkbox,
   FormControlLabel,
 } from '@material-ui/core';
@@ -18,7 +17,7 @@ import {
   PersonPhoneNumberInput,
   PersonUpdateInput,
 } from '../../../../../../../../../graphql/types.generated';
-import { NewSocial } from '../PersonModal';
+import { ContactInputField, NewSocial } from '../PersonModal';
 
 interface Props {
   phoneNumber: PersonPhoneNumberInput;
@@ -33,15 +32,6 @@ interface Props {
   errors: FormikErrors<(PersonUpdateInput | PersonCreateInput) & NewSocial>;
   handleChangePrimary: (numberId: string) => void;
 }
-
-const ContactInputField = styled(TextField)(
-  ({ destroyed }: { destroyed: boolean }) => ({
-    '&& > label': {
-      textTransform: 'uppercase',
-    },
-    textDecoration: destroyed ? 'line-through' : 'none',
-  }),
-);
 
 const PhoneNumberSelect = styled(Select)(
   ({ destroyed }: { destroyed: boolean }) => ({
