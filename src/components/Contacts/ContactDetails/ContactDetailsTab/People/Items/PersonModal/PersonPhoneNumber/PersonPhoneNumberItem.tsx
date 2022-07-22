@@ -61,9 +61,6 @@ export const PersonPhoneNumberItem: React.FC<Props> = ({
   const { t } = useTranslation();
 
   const [isPrimaryChecked, setIsPrimaryChecked] = React.useState(false);
-  // React.useEffect(() => {
-  //     setIsPrimaryChecked(phoneNumber.id === primaryPhoneNumber?.id);
-  // }, []);
 
   React.useEffect(() => {
     setIsPrimaryChecked(phoneNumber.id === primaryPhoneNumber?.id);
