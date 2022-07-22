@@ -1,10 +1,19 @@
-import { Grid, MenuItem, Select, styled, TextField } from '@material-ui/core';
+import {
+  Grid,
+  MenuItem,
+  Select,
+  styled,
+  TextField,
+  Checkbox,
+  FormControlLabel,
+} from '@material-ui/core';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { FormikProps, getIn } from 'formik';
+import { FormikErrors, getIn } from 'formik';
 import { ModalSectionContainer } from '../ModalSectionContainer/ModalSectionContainer';
 import { ModalSectionDeleteIcon } from '../ModalSectionDeleteIcon/ModalSectionDeleteIcon';
 import {
+  InputMaybe,
   PersonCreateInput,
   PersonPhoneNumberInput,
   PersonUpdateInput,
@@ -14,7 +23,15 @@ import { NewSocial } from '../PersonModal';
 interface Props {
   phoneNumber: PersonPhoneNumberInput;
   index: number;
-  formikProps: FormikProps<(PersonUpdateInput | PersonCreateInput) & NewSocial>;
+  primaryPhoneNumber: PersonPhoneNumberInput | undefined;
+  phoneNumbers: InputMaybe<PersonPhoneNumberInput[]> | undefined;
+  setFieldValue: (
+    field: string,
+    value: any,
+    shouldValidate?: boolean | undefined,
+  ) => void;
+  errors: FormikErrors<(PersonUpdateInput | PersonCreateInput) & NewSocial>;
+  handleChangePrimary: (numberId: string) => void;
 }
 
 const ContactInputField = styled(TextField)(
@@ -35,14 +52,27 @@ const PhoneNumberSelect = styled(Select)(
 export const PersonPhoneNumberItem: React.FC<Props> = ({
   phoneNumber,
   index,
-  formikProps,
+  primaryPhoneNumber,
+  phoneNumbers,
+  setFieldValue,
+  errors,
+  handleChangePrimary,
 }) => {
   const { t } = useTranslation();
-  const {
-    values: { phoneNumbers },
-    setFieldValue,
-    errors,
-  } = formikProps;
+
+  const [isPrimaryChecked, setIsPrimaryChecked] = React.useState(false);
+  // React.useEffect(() => {
+  //     setIsPrimaryChecked(phoneNumber.id === primaryPhoneNumber?.id);
+  // }, []);
+
+  React.useEffect(() => {
+    setIsPrimaryChecked(phoneNumber.id === primaryPhoneNumber?.id);
+  }, [primaryPhoneNumber]);
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    handleChangePrimary(event.target.value as string);
+  };
+
   return (
     <>
       <ModalSectionContainer key={index}>
@@ -108,6 +138,16 @@ export const PersonPhoneNumberItem: React.FC<Props> = ({
             }
           />
         </Grid>
+        <FormControlLabel
+          label={t('Primary')}
+          control={
+            <Checkbox
+              value={phoneNumber.id}
+              checked={isPrimaryChecked}
+              onChange={handleChange}
+            />
+          }
+        />
       </ModalSectionContainer>
     </>
   );

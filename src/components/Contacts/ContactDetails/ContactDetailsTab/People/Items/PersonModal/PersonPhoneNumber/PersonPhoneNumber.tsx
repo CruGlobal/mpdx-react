@@ -45,13 +45,14 @@ export const PersonPhoneNumber: React.FC<PersonPhoneNumberProps> = ({
   const {
     values: { phoneNumbers },
     setFieldValue,
+    errors,
   } = formikProps;
 
   const primaryPhoneNumber = phoneNumbers?.filter(
     (phoneNumber) => phoneNumber.primary,
   )[0];
 
-  const _handleChangePrimary = (numberId: string) => {
+  const handleChangePrimary = (numberId: string) => {
     const index = phoneNumbers?.findIndex(
       (phoneNumber) => phoneNumber.id === numberId,
     );
@@ -66,7 +67,7 @@ export const PersonPhoneNumber: React.FC<PersonPhoneNumberProps> = ({
     <>
       {phoneNumbers ? (
         <>
-          {phoneNumbers.length > 0 && primaryPhoneNumber && (
+          {phoneNumbers.length > 0 && (
             <ModalSectionContainer>
               <ModalSectionIcon icon={<Phone />} />
               <ContactPrimaryPersonSelectLabel id="primary-phone-number-label">
@@ -84,7 +85,11 @@ export const PersonPhoneNumber: React.FC<PersonPhoneNumberProps> = ({
                     <PersonPhoneNumberItem
                       phoneNumber={phoneNumber}
                       index={index}
-                      formikProps={formikProps}
+                      primaryPhoneNumber={primaryPhoneNumber}
+                      phoneNumbers={phoneNumbers}
+                      setFieldValue={setFieldValue}
+                      errors={errors}
+                      handleChangePrimary={handleChangePrimary}
                     />
                   </>
                 ))}
