@@ -498,8 +498,7 @@ describe('PersonModal', () => {
       );
       userEvent.click(getAllByLabelText('Email Address Type')[0]);
       userEvent.click(getByLabelText('Mobile'));
-      userEvent.click(getByLabelText('Primary Email'));
-      userEvent.click(getByText(mockPerson.emailAddresses.nodes[1].email));
+      userEvent.click(getAllByLabelText('Primary')[1]);
       userEvent.click(getByLabelText('Opt-out of Email Newsletter'));
 
       userEvent.click(getByText('Save'));
