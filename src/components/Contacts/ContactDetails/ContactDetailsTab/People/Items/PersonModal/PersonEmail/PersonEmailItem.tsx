@@ -31,6 +31,8 @@ interface Props {
     shouldValidate?: boolean | undefined,
   ) => void;
   errors: FormikErrors<(PersonUpdateInput | PersonCreateInput) & NewSocial>;
+  primaryEmail: PersonEmailAddressInput | undefined;
+  handleChangePrimary: (emailId: string) => void;
 }
 
 const ContactInputField = styled(TextField)(
@@ -52,8 +54,22 @@ export const PersonEmailItem: React.FC<Props> = ({
   emailAddresses,
   setFieldValue,
   errors,
+  primaryEmail,
+  handleChangePrimary,
 }) => {
   const { t } = useTranslation();
+
+  const [isEmailPrimaryChecked, setIsEmailPrimaryChecked] = React.useState(
+    false,
+  );
+
+  React.useEffect(() => {
+    setIsEmailPrimaryChecked(emailAddress.id === primaryEmail?.id ?? '');
+  }, [primaryEmail]);
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    handleChangePrimary(event.target.value as string);
+  };
 
   return (
     <>
@@ -104,7 +120,16 @@ export const PersonEmailItem: React.FC<Props> = ({
               </MenuItem>
             </EmailSelect>
           </Grid>
-          <FormControlLabel label={t('Primary')} control={<Checkbox />} />
+          <FormControlLabel
+            label={t('Primary')}
+            control={
+              <Checkbox
+                value={emailAddress.id}
+                checked={isEmailPrimaryChecked}
+                onChange={handleChange}
+              />
+            }
+          />
           <ModalSectionDeleteIcon
             handleClick={
               emailAddress.id

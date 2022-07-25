@@ -112,6 +112,8 @@ export const PersonEmail: React.FC<PersonEmailProps> = ({ formikProps }) => {
                       emailAddresses={emailAddresses}
                       setFieldValue={setFieldValue}
                       errors={errors}
+                      handleChangePrimary={handleChangePrimary}
+                      primaryEmail={primaryEmail}
                     />
                   </>
                 ))}
