@@ -1,12 +1,9 @@
 import {
   Button,
   Checkbox,
-  FormControl,
   FormControlLabel,
   Grid,
   InputLabel,
-  MenuItem,
-  Select,
   styled,
   Typography,
 } from '@material-ui/core';
@@ -75,28 +72,9 @@ export const PersonEmail: React.FC<PersonEmailProps> = ({ formikProps }) => {
           {emailAddresses.length > 0 && primaryEmail && (
             <ModalSectionContainer>
               <ModalSectionIcon icon={<Mail />} />
-
-              <FormControl fullWidth={true}>
-                <ContactPrimaryPersonSelectLabel id="primary-email-label">
-                  {t('Primary Email')}
-                </ContactPrimaryPersonSelectLabel>
-                <Select
-                  id="primary-email-label"
-                  value={primaryEmail?.id}
-                  onChange={(event) =>
-                    handleChangePrimary(event.target.value as string)
-                  }
-                >
-                  {emailAddresses.map(
-                    (emailAddress) =>
-                      emailAddress.id && (
-                        <MenuItem key={emailAddress.id} value={emailAddress.id}>
-                          {emailAddress.email}
-                        </MenuItem>
-                      ),
-                  )}
-                </Select>
-              </FormControl>
+              <ContactPrimaryPersonSelectLabel id="primary-email-label">
+                {t('Email')}
+              </ContactPrimaryPersonSelectLabel>
             </ModalSectionContainer>
           )}
           <FieldArray
