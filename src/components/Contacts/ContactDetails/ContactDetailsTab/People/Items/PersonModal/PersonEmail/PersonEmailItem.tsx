@@ -1,4 +1,12 @@
-import { Grid, MenuItem, Select, styled, TextField } from '@material-ui/core';
+import {
+  Checkbox,
+  FormControlLabel,
+  Grid,
+  MenuItem,
+  Select,
+  styled,
+  TextField,
+} from '@material-ui/core';
 import React from 'react';
 
 import { useTranslation } from 'react-i18next';
@@ -96,6 +104,7 @@ export const PersonEmailItem: React.FC<Props> = ({
               </MenuItem>
             </EmailSelect>
           </Grid>
+          <FormControlLabel label={t('Primary')} control={<Checkbox />} />
           <ModalSectionDeleteIcon
             handleClick={
               emailAddress.id
