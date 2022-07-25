@@ -32,6 +32,7 @@ const Welcome = ({ firstName }: Props): ReactElement => {
       heading={greeting}
       subheading={t("Welcome back to MPDX. Here's what's been happening.")}
       imgSrc={illustration9}
+      height={180}
     />
   );
 };
