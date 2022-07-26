@@ -1,18 +1,21 @@
-import { DialogContent, Typography } from '@material-ui/core';
+import { DialogActions, DialogContent, Typography } from '@material-ui/core';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import Modal from '../../common/Modal/Modal';
+import { ActionButton } from 'src/components/Task/Modal/Form/TaskModalForm';
 
 interface HideContactsModalProps {
-  multi: boolean;
+  multi?: boolean;
   open: boolean;
   setOpen: (open: boolean) => void;
+  onConfirm: () => void;
 }
 
 export const HideContactsModal: React.FC<HideContactsModalProps> = ({
   multi = false,
   open,
   setOpen,
+  onConfirm,
 }) => {
   const { t } = useTranslation();
 
@@ -30,6 +33,10 @@ export const HideContactsModal: React.FC<HideContactsModalProps> = ({
           )}
         </Typography>
       </DialogContent>
+      <DialogActions>
+        <ActionButton onClick={() => setOpen(false)}>{t('No')}</ActionButton>
+        <ActionButton onClick={onConfirm}>{t('Yes')}</ActionButton>
+      </DialogActions>
     </Modal>
   );
 };
