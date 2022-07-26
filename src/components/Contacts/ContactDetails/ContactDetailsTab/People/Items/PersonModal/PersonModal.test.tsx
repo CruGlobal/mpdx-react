@@ -520,10 +520,10 @@ describe('PersonModal', () => {
         'Mobile',
       );
       expect(operation.variables.attributes.emailAddresses[0].primary).toEqual(
-        false,
+        true,
       );
       expect(operation.variables.attributes.emailAddresses[1].primary).toEqual(
-        true,
+        false,
       );
       expect(operation.variables.attributes.optoutEnewsletter).toEqual(true);
     });
