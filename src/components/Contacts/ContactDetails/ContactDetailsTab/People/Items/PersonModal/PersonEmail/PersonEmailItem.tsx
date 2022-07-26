@@ -5,7 +5,6 @@ import {
   MenuItem,
   Select,
   styled,
-  TextField,
 } from '@material-ui/core';
 import React from 'react';
 
@@ -18,7 +17,7 @@ import {
   PersonEmailAddressInput,
   PersonUpdateInput,
 } from '../../../../../../../../../graphql/types.generated';
-import { NewSocial } from '../PersonModal';
+import { ContactInputField, NewSocial } from '../PersonModal';
 import { InputMaybe } from 'pages/api/graphql-rest.page.generated';
 
 interface Props {
@@ -34,15 +33,6 @@ interface Props {
   primaryEmail: PersonEmailAddressInput | undefined;
   handleChangePrimary: (emailId: string) => void;
 }
-
-const ContactInputField = styled(TextField)(
-  ({ destroyed }: { destroyed: boolean }) => ({
-    '&& > label': {
-      textTransform: 'uppercase',
-    },
-    textDecoration: destroyed ? 'line-through' : 'none',
-  }),
-);
 
 const EmailSelect = styled(Select)(({ destroyed }: { destroyed: boolean }) => ({
   textDecoration: destroyed ? 'line-through' : 'none',
