@@ -15,13 +15,19 @@ import FilterList from '@material-ui/icons/FilterList';
 import { useTranslation } from 'react-i18next';
 import ArrowDropDown from '@material-ui/icons/ArrowDropDown';
 import { MoreHoriz, ViewList } from '@material-ui/icons';
+import { useSnackbar } from 'notistack';
 import { SearchBox } from '../../common/SearchBox/SearchBox';
 import {
   ContactFilterSetInput,
+  StatusEnum,
   TaskFilterSetInput,
 } from '../../../../graphql/types.generated';
+import { HideContactsModal } from '../HideContactsModal/HideConatctsModal';
 import { StarFilterButton } from './StarFilterButton/StarFilterButton';
 import useTaskModal from 'src/hooks/useTaskModal';
+import { useMassActionsUpdateContactsMutation } from 'src/components/Contacts/MassActions/MassActionsUpdateContacts.generated';
+import { useAccountListId } from 'src/hooks/useAccountListId';
+import { ContactsDocument } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
 
 const HeaderWrap = styled(Box)(
   ({
@@ -143,6 +149,7 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
   const { t } = useTranslation();
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [openHideContactsModal, setOpenHideContactsModal] = useState(false);
   const open = Boolean(anchorEl);
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -151,7 +158,36 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
     setAnchorEl(null);
   };
 
+  const accountListId = useAccountListId() ?? '';
+  const { enqueueSnackbar } = useSnackbar();
+
   const { openTaskModal } = useTaskModal();
+
+  const [updateContacts] = useMassActionsUpdateContactsMutation();
+
+  const hideContacts = async () => {
+    await updateContacts({
+      variables: {
+        accountListId,
+        attributes: {
+          ids: selectedIds,
+          status: StatusEnum.NeverAsk,
+        },
+      },
+      onCompleted: () => {
+        enqueueSnackbar(t('Contact(s) hidden successfully'), {
+          variant: 'success',
+        });
+      },
+      refetchQueries: [
+        {
+          query: ContactsDocument,
+          variables: { accountListId },
+        },
+      ],
+    });
+    setOpenHideContactsModal(false);
+  };
 
   return (
     <HeaderWrap contactDetailsOpen={contactDetailsOpen}>
@@ -241,7 +277,12 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
                 <MenuItem>
                   <ListItemText>{t('Edit Fields')}</ListItemText>
                 </MenuItem>
-                <MenuItem>
+                <MenuItem
+                  onClick={() => {
+                    setOpenHideContactsModal(true);
+                    handleClose();
+                  }}
+                >
                   <ListItemText>{t('Hide Contacts')}</ListItemText>
                 </MenuItem>
 
@@ -310,6 +351,13 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
           />
         )}
       </Hidden>
+
+      <HideContactsModal
+        open={openHideContactsModal}
+        setOpen={setOpenHideContactsModal}
+        onConfirm={hideContacts}
+        multi={selectedIds.length > 1}
+      />
     </HeaderWrap>
   );
 };
