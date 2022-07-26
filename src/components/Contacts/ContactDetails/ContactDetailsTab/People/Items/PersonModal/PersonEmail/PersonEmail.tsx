@@ -8,7 +8,6 @@ import {
   MenuItem,
   Select,
   styled,
-  TextField,
   Typography,
 } from '@material-ui/core';
 import React from 'react';
@@ -24,20 +23,11 @@ import {
   PersonCreateInput,
   PersonUpdateInput,
 } from '../../../../../../../../../graphql/types.generated';
-import { NewSocial } from '../PersonModal';
+import { ContactInputField, NewSocial } from '../PersonModal';
 
 const ContactPrimaryPersonSelectLabel = styled(InputLabel)(() => ({
   textTransform: 'uppercase',
 }));
-
-const ContactInputField = styled(TextField)(
-  ({ destroyed }: { destroyed: boolean }) => ({
-    '&& > label': {
-      textTransform: 'uppercase',
-    },
-    textDecoration: destroyed ? 'line-through' : 'none',
-  }),
-);
 
 const EmailSelect = styled(Select)(({ destroyed }: { destroyed: boolean }) => ({
   textDecoration: destroyed ? 'line-through' : 'none',
