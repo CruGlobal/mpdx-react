@@ -372,8 +372,7 @@ describe('PersonModal', () => {
       );
       userEvent.click(getAllByLabelText('Phone Number Type')[0]);
       userEvent.click(getByLabelText('Work'));
-      userEvent.click(getByLabelText('Primary Phone'));
-      userEvent.click(getByText(mockPerson.phoneNumbers.nodes[1].number));
+      userEvent.click(getAllByLabelText('Primary')[1]);
       userEvent.click(getByText('Save'));
 
       await waitFor(() =>
