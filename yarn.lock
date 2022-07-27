@@ -13348,6 +13348,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"d3-array@npm:2":
+  version: 2.12.1
+  resolution: "d3-array@npm:2.12.1"
+  dependencies:
+    internmap: ^1.0.0
+  checksum: 97853b7b523aded17078f37c67742f45d81e88dda2107ae9994c31b9e36c5fa5556c4c4cf39650436f247813602dfe31bf7ad067ff80f127a16903827f10c6eb
+  languageName: node
+  linkType: hard
+
 "d3-array@npm:^2.3.0":
   version: 2.11.0
   resolution: "d3-array@npm:2.11.0"
@@ -13371,7 +13380,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"d3-interpolate@npm:1.2.0 - 2, d3-interpolate@npm:^2.0.1":
+"d3-interpolate@npm:1.2.0 - 2, d3-interpolate@npm:^2.0.0":
   version: 2.0.1
   resolution: "d3-interpolate@npm:2.0.1"
   dependencies:
@@ -13387,16 +13396,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"d3-scale@npm:^3.2.3":
-  version: 3.2.3
-  resolution: "d3-scale@npm:3.2.3"
+"d3-scale@npm:^3.0.0":
+  version: 3.3.0
+  resolution: "d3-scale@npm:3.3.0"
   dependencies:
     d3-array: ^2.3.0
     d3-format: 1 - 2
     d3-interpolate: 1.2.0 - 2
-    d3-time: 1 - 2
+    d3-time: ^2.1.1
     d3-time-format: 2 - 3
-  checksum: 8d5a75079676eada4cd4026170670900349cae624ea9872e489135367ccdbd540767c543ec5fd5c4e74e0e4835261609f082a1647e2a26fe0c6d142ebe950784
+  checksum: f77e73f0fb422292211d0687914c30d26e29011a936ad2a535a868ae92f306c3545af1fe7ea5db1b3e67dbce7a6c6cd952e53d02d1d557543e7e5d30e30e52f2
   languageName: node
   linkType: hard
 
@@ -13422,6 +13431,15 @@ __metadata:
   version: 2.0.0
   resolution: "d3-time@npm:2.0.0"
   checksum: 9d1c1510b1c2569b2f87100a376eea18d322644a89360eadfb558c12e7c7f15cd1aebb5e60778cba3088edaffb6ee285334e735de8dfc1ea9f255f855e21d04b
+  languageName: node
+  linkType: hard
+
+"d3-time@npm:^2.1.1":
+  version: 2.1.1
+  resolution: "d3-time@npm:2.1.1"
+  dependencies:
+    d3-array: 2
+  checksum: d1c7b9658c20646e46c3dd19e11c38e02dec098e8baa7d2cd868af8eb01953668f5da499fa33dc63541cf74a26e788786f8828c4381dbbf475a76b95972979a6
   languageName: node
   linkType: hard
 
@@ -15288,6 +15306,13 @@ __metadata:
   version: 1.2.0
   resolution: "fast-diff@npm:1.2.0"
   checksum: 1b5306eaa9e826564d9e5ffcd6ebd881eb5f770b3f977fcbf38f05c824e42172b53c79920e8429c54eb742ce15a0caf268b0fdd5b38f6de52234c4a8368131ae
+  languageName: node
+  linkType: hard
+
+"fast-equals@npm:^2.0.0":
+  version: 2.0.4
+  resolution: "fast-equals@npm:2.0.4"
+  checksum: 1aac8a2e16b33e5e402bb5cd46be65f1ca331903c2c44e3bd75324e8472ee04f0acdbc6889e45fc28f9707ca3964f2a86789b32305d4d8b85dc97f61e446ef4b
   languageName: node
   linkType: hard
 
@@ -20282,7 +20307,7 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"lodash@npm:^4.15.0, lodash@npm:^4.17.14, lodash@npm:^4.17.15, lodash@npm:^4.17.19, lodash@npm:~4.17.4":
+"lodash@npm:^4.15.0, lodash@npm:^4.17.14, lodash@npm:^4.17.15, lodash@npm:^4.17.19":
   version: 4.17.20
   resolution: "lodash@npm:4.17.20"
   checksum: b31afa09739b7292a88ec49ffdb2fcaeb41f690def010f7a067eeedffece32da6b6847bfe4d38a77e6f41778b9b2bca75eeab91209936518173271f0b69376ea
@@ -21249,7 +21274,7 @@ fsevents@~2.3.2:
     react-i18next: ^11.8.11
     react-to-print: ^2.12.6
     react-virtuoso: ^2.3.4
-    recharts: ^2.0.6
+    recharts: 2.1.12
     regenerator-runtime: ^0.13.7
     storybook-addon-designs: ^6.3.1
     storybook-addon-i18next: ^1.3.0
@@ -23610,14 +23635,7 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"raf-schd@npm:^4.0.2":
-  version: 4.0.2
-  resolution: "raf-schd@npm:4.0.2"
-  checksum: 9af6e00e36b2844371c61da071cf1fa0d6093dc20eadc654fbb3d940a713df61f037c2e24287eebe8201a41b6acc910b865a4e24010b3a09aba7f4a9616b975a
-  languageName: node
-  linkType: hard
-
-"raf@npm:^3.2.0, raf@npm:^3.4.0":
+"raf@npm:^3.2.0":
   version: 3.4.1
   resolution: "raf@npm:3.4.1"
   dependencies:
@@ -23977,7 +23995,7 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"react-is@npm:^16.12.0, react-is@npm:^16.7.0, react-is@npm:^16.8.1":
+"react-is@npm:^16.10.2, react-is@npm:^16.12.0, react-is@npm:^16.7.0, react-is@npm:^16.8.1":
   version: 16.13.1
   resolution: "react-is@npm:16.13.1"
   checksum: f7a19ac3496de32ca9ae12aa030f00f14a3d45374f1ceca0af707c831b2a6098ef0d6bdae51bd437b0a306d7f01d4677fcc8de7c0d331eb47ad0f46130e53c5f
@@ -24035,33 +24053,29 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"react-resize-detector@npm:^5.2.0":
-  version: 5.2.0
-  resolution: "react-resize-detector@npm:5.2.0"
+"react-resize-detector@npm:^7.1.2":
+  version: 7.1.2
+  resolution: "react-resize-detector@npm:7.1.2"
   dependencies:
-    lodash: ^4.17.20
-    prop-types: ^15.7.2
-    raf-schd: ^4.0.2
-    resize-observer-polyfill: ^1.5.1
+    lodash: ^4.17.21
   peerDependencies:
-    react: ^16.0.0
-    react-dom: ^16.0.0
-  checksum: 25f96523f0433502be937f6b43f81c69d47292bae4c16c23b7fba3f4268c85f3792a1187038b8c352334d40bd8fc671b17ca2b6db087f4b35d1addeaaf7920df
+    react: ^16.0.0 || ^17.0.0 || ^18.0.0
+    react-dom: ^16.0.0 || ^17.0.0 || ^18.0.0
+  checksum: 55f4abad7f7523d16b081b5ab20f75c539a54a08253ce7e9df473d48386f42ceca6c31584ba9fa26e3528b498ef6685ec77fb9a22cffc97df05fb326d0bf1b26
   languageName: node
   linkType: hard
 
-"react-smooth@npm:^1.0.6":
-  version: 1.0.6
-  resolution: "react-smooth@npm:1.0.6"
+"react-smooth@npm:^2.0.1":
+  version: 2.0.1
+  resolution: "react-smooth@npm:2.0.1"
   dependencies:
-    lodash: ~4.17.4
-    prop-types: ^15.6.0
-    raf: ^3.4.0
-    react-transition-group: ^2.5.0
+    fast-equals: ^2.0.0
+    react-transition-group: 2.9.0
   peerDependencies:
-    react: ^15.0.0 || ^16.0.0
-    react-dom: ^15.0.0 || ^16.0.0
-  checksum: ade69a9e120a275a0b67b7c8335168d3f7c74be4a3f1c60d099ab1c565cfa7bbf30dd49279214e7e847d86720f57bafce986d43814d17cbc13e8217fdac018f5
+    prop-types: ^15.6.0
+    react: ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0
+    react-dom: ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0
+  checksum: 65678491cbd506573f2dba82778ebf8259714d68dd227e0ee7c0e204bcbc7839cf97401620b4223814066581f1dce0493f97162a03dc2a68058b5a7ad2b41085
   languageName: node
   linkType: hard
 
@@ -24150,7 +24164,7 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"react-transition-group@npm:^2.5.0":
+"react-transition-group@npm:2.9.0":
   version: 2.9.0
   resolution: "react-transition-group@npm:2.9.0"
   dependencies:
@@ -24361,33 +24375,34 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"recharts-scale@npm:^0.4.2":
-  version: 0.4.3
-  resolution: "recharts-scale@npm:0.4.3"
+"recharts-scale@npm:^0.4.4":
+  version: 0.4.5
+  resolution: "recharts-scale@npm:0.4.5"
   dependencies:
     decimal.js-light: ^2.4.1
-  checksum: da6b566edec34f48812f9b4c97bf6533b7e2dc3a90bd8b49c675635571ef99349c1697e1fc7c1bfa8dc971d102daabe73c5c024bebe9828d447f297dc5029dd4
+  checksum: e970377190a610e684a32c7461c7684ac3603c2e0ac0020bbba1eea9d099b38138143a8e80bf769bb49c0b7cecf22a2f5c6854885efed2d56f4540d4aa7052bd
   languageName: node
   linkType: hard
 
-"recharts@npm:^2.0.6":
-  version: 2.0.6
-  resolution: "recharts@npm:2.0.6"
+"recharts@npm:2.1.12":
+  version: 2.1.12
+  resolution: "recharts@npm:2.1.12"
   dependencies:
     classnames: ^2.2.5
-    d3-interpolate: ^2.0.1
-    d3-scale: ^3.2.3
+    d3-interpolate: ^2.0.0
+    d3-scale: ^3.0.0
     d3-shape: ^2.0.0
     eventemitter3: ^4.0.1
     lodash: ^4.17.19
-    react-resize-detector: ^5.2.0
-    react-smooth: ^1.0.6
-    recharts-scale: ^0.4.2
-    reduce-css-calc: ^2.1.7
+    react-is: ^16.10.2
+    react-resize-detector: ^7.1.2
+    react-smooth: ^2.0.1
+    recharts-scale: ^0.4.4
+    reduce-css-calc: ^2.1.8
   peerDependencies:
-    react: ^16.0.0 || ^17.0.0
-    react-dom: ^16.0.0 || ^17.0.0
-  checksum: 1181fa5612fd409a6ec8dfc4c4ce6d9d2047c232ee71ee4beba801bc3c0b116faee0467c18322ddef3c44d9e46cc9df956b355d8783c05cec5c34ba7e89e1f2a
+    react: ^16.0.0 || ^17.0.0 || ^18.0.0
+    react-dom: ^16.0.0 || ^17.0.0 || ^18.0.0
+  checksum: 610917e2dd491ba863283d32ab38af2d2e2c51fbbd86a6d32bac37209d8eff29c51290864fbaa4279b80445b51286798e9ad9c337de74c2e3615ebac384ca8fa
   languageName: node
   linkType: hard
 
@@ -24411,7 +24426,7 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"reduce-css-calc@npm:^2.1.7":
+"reduce-css-calc@npm:^2.1.8":
   version: 2.1.8
   resolution: "reduce-css-calc@npm:2.1.8"
   dependencies:
