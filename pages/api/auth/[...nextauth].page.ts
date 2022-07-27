@@ -23,7 +23,7 @@ declare module 'next-auth' {
   }
 }
 
-if (!process.env.OKTA_CLIENT_ID || !process.env.OKTA_CLIENT_SECRET) {
+if (!process.env.OKTA_CLIENT_ID || !process.env.secrets.OKTA_CLIENT_SECRET) {
   throw new Error('OKTA_CLIENT_ID or OKTA_CLIENT_SECRET envs not defined');
 }
 
@@ -31,7 +31,7 @@ const options: NextAuthOptions = {
   providers: [
     OktaProvider({
       clientId: process.env.OKTA_CLIENT_ID,
-      clientSecret: process.env.OKTA_CLIENT_SECRET,
+      clientSecret: process.env.secrets.OKTA_CLIENT_SECRET,
       issuer: process.env.OKTA_ISSUER,
       authorization: { params: { scope: 'openid email profile' } },
       token: { params: { scope: 'openid email profile' } },
@@ -74,7 +74,7 @@ const options: NextAuthOptions = {
       };
     },
   },
-  secret: process.env.JWT_SECRET,
+  secret: process.env.secrets.JWT_SECRET,
 };
 
 const Auth = (req: NextApiRequest, res: NextApiResponse): Promise<void> =>

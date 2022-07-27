@@ -33,7 +33,7 @@ const gateway = new ApolloGateway({
   },
 });
 
-if (!process.env.JWT_SECRET) {
+if (!process.env.secrets.JWT_SECRET) {
   throw new Error('JWT_SECRET env var is not set');
 }
 
@@ -49,7 +49,7 @@ const server = new ApolloServer({
   context: async ({ req }: { req: NextApiRequest }) => {
     const jwtToken = (await getToken({
       req,
-      secret: process.env.JWT_SECRET as string,
+      secret: process.env.secrets.JWT_SECRET as string,
     })) as { apiToken: string } | null;
 
     return { apiToken: jwtToken?.apiToken };

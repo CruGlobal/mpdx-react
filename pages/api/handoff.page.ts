@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { getToken } from 'next-auth/jwt';
 
-if (!process.env.JWT_SECRET) {
+if (!process.env.secrets.JWT_SECRET) {
   throw new Error('JWT_SECRET env var is not set');
 }
 
@@ -11,7 +11,7 @@ const handoff = async (
 ): Promise<void> => {
   const jwtToken = (await getToken({
     req,
-    secret: process.env.JWT_SECRET as string,
+    secret: process.env.secrets.JWT_SECRET as string,
   })) as { apiToken: string } | null;
   if (
     jwtToken &&
