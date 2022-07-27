@@ -7,8 +7,6 @@ frontend:
         - nvm use 16.16.0
         - echo $secrets
         - echo $secrets | grep -o '"OKTA_CLIENT_SECRET":"[^"]*' | grep -o '[^"]*$'
-        - echo "AWS_ACCESS_KEY_ID=''" >> .env
-        - echo "AWS_SECRET_ACCESS_KEY=''" >> .env
         - echo "OKTA_CLIENT_SECRET=$secrets | grep -o '"OKTA_CLIENT_SECRET":"[^"]*' | grep -o '[^"]*$'" >> .env
         - echo "JWT_SECRET=$secrets | grep -o '"JWT_SECRET":"[^"]*' | grep -o '[^"]*$'" >> .env
         - npm install --legacy-peer-deps
