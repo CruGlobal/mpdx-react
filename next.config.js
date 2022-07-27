@@ -6,7 +6,7 @@ require('dotenv').config();
 
 const prod = process.env.NODE_ENV === 'production';
 
-if (prod && !process.env.secrets.JWT_SECRET) {
+if (prod && !process.env.JWT_SECRET) {
   throw new Error('JWT_SECRET environment variable is not set');
 }
 
@@ -41,7 +41,7 @@ module.exports = withPlugins([
       NEXTAUTH_URL: siteUrl,
     },
     env: {
-      JWT_SECRET: process.env.secrets.JWT_SECRET ?? 'development-key',
+      JWT_SECRET: process.env.JWT_SECRET ?? 'development-key',
       API_URL: process.env.API_URL ?? 'https://api.stage.mpdx.org/graphql',
       REST_API_URL:
         process.env.REST_API_URL ?? 'https://api.stage.mpdx.org/api/v2/',
@@ -51,7 +51,7 @@ module.exports = withPlugins([
       BEACON_TOKEN:
         process.env.BEACON_TOKEN ?? '01b4f5f0-7fff-492a-b5ec-d536f3657d10',
       OKTA_CLIENT_ID: process.env.OKTA_CLIENT_ID ?? '0oa1n0gjoy3j5Ycdg0h8',
-      OKTA_CLIENT_SECRET: process.env.secrets.OKTA_CLIENT_SECRET,
+      OKTA_CLIENT_SECRET: process.env.OKTA_CLIENT_SECRET,
       OKTA_ISSUER: process.env.OKTA_ISSUER ?? 'https://signon.okta.com',
       GOOGLE_MAPS_API_KEY: process.env.GOOGLE_MAPS_API_KEY,
       GOOGLE_GEOCODE_API_KEY: process.env.GOOGLE_GEOCODE_API_KEY,
