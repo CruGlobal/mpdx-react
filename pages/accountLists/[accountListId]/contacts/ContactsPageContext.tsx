@@ -88,7 +88,7 @@ export const ContactsPageContext = React.createContext<ContactsPageType | null>(
 export const ContactsPageProvider: React.FC<React.ReactNode> = ({
   children,
 }) => {
-  const accountListId = useAccountListId();
+  const accountListId = useAccountListId() ?? '';
   const { query, push, replace, isReady, pathname } = useRouter();
 
   const [contactDetailsOpen, setContactDetailsOpen] = useState(false);
@@ -176,7 +176,7 @@ export const ContactsPageProvider: React.FC<React.ReactNode> = ({
     isRowChecked,
     toggleSelectAll,
     toggleSelectionById,
-  } = useMassSelection(data?.contacts?.totalCount ?? 0);
+  } = useMassSelection(data?.allContacts?.totalCount ?? 0);
   //#endregion
 
   useEffect(() => {

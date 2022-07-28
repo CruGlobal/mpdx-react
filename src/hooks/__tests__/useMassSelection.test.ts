@@ -129,8 +129,6 @@ describe('useMassSelection', () => {
 
       expect(result.current.isRowChecked(id)).toBe(false);
 
-      expect(result.current.reverseIds).toEqual([id]);
-
       // Retoggle back to selected
       result.current.toggleSelectionById(id);
 

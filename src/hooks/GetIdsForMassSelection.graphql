@@ -1,0 +1,7 @@
+query GetIdsForMassSelection($accountListId: ID!, $first: Int!) {
+  contacts(accountListId: $accountListId, first: $first) {
+    nodes {
+      id
+    }
+  }
+}

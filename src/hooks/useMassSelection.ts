@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
 import { ListHeaderCheckBoxState } from '../components/Shared/Header/ListHeader';
+import { useGetIdsForMassSelectionLazyQuery } from './GetIdsForMassSelection.generated';
+import { useAccountListId } from './useAccountListId';
 
 export const useMassSelection = (
   totalCount: number,
 ): {
   ids: string[];
-  reverseIds: string[];
   selectionType: ListHeaderCheckBoxState;
   isRowChecked: (id: string) => boolean;
   toggleSelectAll: () => void;
@@ -15,29 +16,12 @@ export const useMassSelection = (
     ListHeaderCheckBoxState.unchecked,
   );
   const [ids, setIds] = useState<string[]>([]);
-  const [reverseIds, setReverseIds] = useState<string[]>([]);
 
   useEffect(() => {
-    if (selectionType === ListHeaderCheckBoxState.partial && ids.length === 0) {
-      setSelectionType(ListHeaderCheckBoxState.unchecked);
+    if (selectionType === ListHeaderCheckBoxState.checked) {
+      setIds(contactIds?.contacts.nodes.map((contact) => contact.id) || []);
     }
-
-    if (
-      selectionType === ListHeaderCheckBoxState.checked &&
-      reverseIds.length === totalCount
-    ) {
-      setSelectionType(ListHeaderCheckBoxState.unchecked);
-      setReverseIds([]);
-    }
-
-    if (
-      selectionType === ListHeaderCheckBoxState.partial &&
-      ids.length === totalCount
-    ) {
-      setSelectionType(ListHeaderCheckBoxState.checked);
-      setIds([]);
-    }
-  }, [ids, reverseIds]);
+  }, [selectionType]);
 
   const toggleSelectionById = (id: string) => {
     switch (selectionType) {
@@ -46,54 +30,68 @@ export const useMassSelection = (
           setIds((previousIds) =>
             previousIds.filter((selectedIds) => selectedIds !== id),
           );
+          if (ids.length - 1 === 0) {
+            setSelectionType(ListHeaderCheckBoxState.unchecked);
+          }
+        } else {
+          setIds((previousIds) => [...previousIds, id]);
+          if (ids.length + 1 === totalCount) {
+            setSelectionType(ListHeaderCheckBoxState.checked);
+          }
+        }
+        break;
+      case ListHeaderCheckBoxState.checked:
+        if (ids.includes(id)) {
+          setIds((previousIds) =>
+            previousIds.filter((previousId) => previousId !== id),
+          );
+          setSelectionType(
+            ids.length - 1 === 0
+              ? ListHeaderCheckBoxState.unchecked
+              : ListHeaderCheckBoxState.partial,
+          );
         } else {
           setIds((previousIds) => [...previousIds, id]);
         }
         break;
-      case ListHeaderCheckBoxState.checked:
-        if (reverseIds.includes(id)) {
-          setReverseIds((previousIds) =>
-            previousIds.filter((previousId) => previousId !== id),
-          );
-        } else {
-          setReverseIds((previousIds) => [...previousIds, id]);
-        }
-        break;
       case ListHeaderCheckBoxState.unchecked:
         setIds((previousIds) => [...previousIds, id]);
-        setSelectionType(ListHeaderCheckBoxState.partial);
+        setSelectionType(
+          ids.length + 1 === totalCount
+            ? ListHeaderCheckBoxState.checked
+            : ListHeaderCheckBoxState.partial,
+        );
         break;
     }
   };
 
-  const toggleSelectAll = () => {
-    switch (selectionType) {
-      case ListHeaderCheckBoxState.partial:
-        setSelectionType(ListHeaderCheckBoxState.checked);
-        setIds([]);
-        setReverseIds([]);
-        break;
-      case ListHeaderCheckBoxState.checked:
-        setSelectionType(ListHeaderCheckBoxState.unchecked);
-        setIds([]);
-        setReverseIds([]);
-        break;
-      case ListHeaderCheckBoxState.unchecked:
-        setIds([]);
-        setReverseIds([]);
-        setSelectionType(ListHeaderCheckBoxState.checked);
-        break;
+  const [
+    getContactIds,
+    { data: contactIds, loading: _loadingIds },
+  ] = useGetIdsForMassSelectionLazyQuery();
+  const accountListId = useAccountListId() ?? '';
+
+  const toggleSelectAll = async () => {
+    if (selectionType === ListHeaderCheckBoxState.checked) {
+      setSelectionType(ListHeaderCheckBoxState.unchecked);
+      setIds([]);
+    } else {
+      await getContactIds({
+        variables: {
+          accountListId,
+          first: totalCount,
+        },
+      });
+      setSelectionType(ListHeaderCheckBoxState.checked);
     }
   };
 
   const isRowChecked = (id: string) =>
     (selectionType === ListHeaderCheckBoxState.partial && ids.includes(id)) ||
-    (selectionType === ListHeaderCheckBoxState.checked &&
-      !reverseIds.includes(id));
+    (selectionType === ListHeaderCheckBoxState.checked && ids.includes(id));
 
   return {
     ids,
-    reverseIds,
     selectionType,
     isRowChecked,
     toggleSelectAll,
