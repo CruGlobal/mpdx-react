@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
+import { ContactFilterSetInput } from '../../graphql/types.generated';
 import { ListHeaderCheckBoxState } from '../components/Shared/Header/ListHeader';
 import { useGetIdsForMassSelectionLazyQuery } from './GetIdsForMassSelection.generated';
 import { useAccountListId } from './useAccountListId';
 
 export const useMassSelection = (
   totalCount: number,
+  activeFilters?: ContactFilterSetInput,
 ): {
   ids: string[];
   selectionType: ListHeaderCheckBoxState;
@@ -22,6 +24,16 @@ export const useMassSelection = (
       setIds(contactIds?.contacts.nodes.map((contact) => contact.id) || []);
     }
   }, [selectionType]);
+
+  useEffect(() => {
+    getContactIds({
+      variables: {
+        accountListId,
+        first: totalCount,
+        contactsFilters: activeFilters,
+      },
+    });
+  }, []);
 
   const toggleSelectionById = (id: string) => {
     switch (selectionType) {
@@ -67,19 +79,20 @@ export const useMassSelection = (
 
   const [
     getContactIds,
-    { data: contactIds, loading: _loadingIds },
+    { data: contactIds },
   ] = useGetIdsForMassSelectionLazyQuery();
   const accountListId = useAccountListId() ?? '';
 
-  const toggleSelectAll = async () => {
+  const toggleSelectAll = () => {
     if (selectionType === ListHeaderCheckBoxState.checked) {
       setSelectionType(ListHeaderCheckBoxState.unchecked);
       setIds([]);
     } else {
-      await getContactIds({
+      getContactIds({
         variables: {
           accountListId,
           first: totalCount,
+          contactsFilters: activeFilters,
         },
       });
       setSelectionType(ListHeaderCheckBoxState.checked);
