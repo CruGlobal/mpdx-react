@@ -19,22 +19,6 @@ export const useMassSelection = (
   );
   const [ids, setIds] = useState<string[]>([]);
 
-  useEffect(() => {
-    if (selectionType === ListHeaderCheckBoxState.checked) {
-      setIds(contactIds?.contacts.nodes.map((contact) => contact.id) || []);
-    }
-  }, [selectionType]);
-
-  useEffect(() => {
-    getContactIds({
-      variables: {
-        accountListId,
-        first: totalCount,
-        contactsFilters: activeFilters,
-      },
-    });
-  }, []);
-
   const toggleSelectionById = (id: string) => {
     switch (selectionType) {
       case ListHeaderCheckBoxState.partial:
@@ -79,9 +63,16 @@ export const useMassSelection = (
 
   const [
     getContactIds,
-    { data: contactIds },
+    { data: contactIds, loading },
   ] = useGetIdsForMassSelectionLazyQuery();
   const accountListId = useAccountListId() ?? '';
+
+  useEffect(() => {
+    if (!loading && contactIds?.contacts.nodes) {
+      setIds(contactIds?.contacts.nodes.map((contact) => contact.id));
+      setSelectionType(ListHeaderCheckBoxState.checked);
+    }
+  }, [loading]);
 
   const toggleSelectAll = () => {
     if (selectionType === ListHeaderCheckBoxState.checked) {
@@ -95,7 +86,6 @@ export const useMassSelection = (
           contactsFilters: activeFilters,
         },
       });
-      setSelectionType(ListHeaderCheckBoxState.checked);
     }
   };
 
