@@ -158,7 +158,7 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
   return (
     <HeaderWrap contactDetailsOpen={contactDetailsOpen}>
       {contactsView !== TableViewModeEnum.Map && (
-        <Hidden xsUp={contactDetailsOpen}>
+        <Hidden xsUp={contactDetailsOpen && page === 'task'}>
           <Checkbox
             checked={headerCheckboxState === ListHeaderCheckBoxState.checked}
             color="secondary"
@@ -191,7 +191,7 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
       />
 
       <ItemsShowingText data-testid="showing-text">
-        {contactsView === TableViewModeEnum.List && !contactDetailsOpen
+        {contactsView === TableViewModeEnum.List
           ? t('Showing {{count}}', { count: totalItems })
           : ''}
       </ItemsShowingText>
@@ -310,12 +310,10 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
       )}
 
       <Hidden smDown>
-        {!contactDetailsOpen && (
-          <StarFilterButton
-            starredFilter={starredFilter}
-            toggleStarredFilter={toggleStarredFilter}
-          />
-        )}
+        <StarFilterButton
+          starredFilter={starredFilter}
+          toggleStarredFilter={toggleStarredFilter}
+        />
       </Hidden>
     </HeaderWrap>
   );
