@@ -20,8 +20,6 @@ export const useMassSelection = (
   );
   const [ids, setIds] = useState<string[]>([]);
 
-  //console.log(idsList);
-
   const toggleSelectionById = (id: string) => {
     switch (selectionType) {
       case ListHeaderCheckBoxState.partial:
