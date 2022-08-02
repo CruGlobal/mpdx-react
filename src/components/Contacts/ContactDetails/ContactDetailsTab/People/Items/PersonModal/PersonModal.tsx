@@ -5,6 +5,7 @@ import {
   CircularProgress,
   DialogActions,
   DialogContent,
+  FormControlLabel,
   styled,
   TextField,
   Typography,
@@ -45,6 +46,12 @@ export const ContactInputField = styled(TextField)(
     '&& > label': {
       textTransform: 'uppercase',
     },
+    textDecoration: destroyed ? 'line-through' : 'none',
+  }),
+);
+
+export const PrimaryControlLabel = styled(FormControlLabel)(
+  ({ destroyed }: { destroyed: boolean }) => ({
     textDecoration: destroyed ? 'line-through' : 'none',
   }),
 );
