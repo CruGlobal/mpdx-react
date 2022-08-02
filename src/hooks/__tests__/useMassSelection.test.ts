@@ -6,7 +6,7 @@ const id = '123';
 describe('useMassSelection', () => {
   //#region Default Tests
   it('should return selectionType', () => {
-    const { result } = renderHook(() => useMassSelection(10), {});
+    const { result } = renderHook(() => useMassSelection(10, []), {});
 
     expect(result.current.selectionType).toEqual(
       ListHeaderCheckBoxState.unchecked,
@@ -17,7 +17,7 @@ describe('useMassSelection', () => {
   //#region ToggleSelectionById Tests
   describe('toggleSelectionById', () => {
     it('should toggle a row as selected', () => {
-      const { result } = renderHook(() => useMassSelection(10), {});
+      const { result } = renderHook(() => useMassSelection(10, []), {});
 
       expect(result.current.selectionType).toEqual(
         ListHeaderCheckBoxState.unchecked,
@@ -33,7 +33,10 @@ describe('useMassSelection', () => {
     });
 
     it('should unselect a selected row', () => {
-      const { result, rerender } = renderHook(() => useMassSelection(10), {});
+      const { result, rerender } = renderHook(
+        () => useMassSelection(10, []),
+        {},
+      );
 
       expect(result.current.selectionType).toEqual(
         ListHeaderCheckBoxState.unchecked,
@@ -60,7 +63,10 @@ describe('useMassSelection', () => {
     });
 
     it('should switch to All if all ids selected', () => {
-      const { result, rerender } = renderHook(() => useMassSelection(3), {});
+      const { result, rerender } = renderHook(
+        () => useMassSelection(3, []),
+        {},
+      );
 
       expect(result.current.selectionType).toEqual(
         ListHeaderCheckBoxState.unchecked,
@@ -79,11 +85,14 @@ describe('useMassSelection', () => {
       expect(result.current.selectionType).toEqual(
         ListHeaderCheckBoxState.checked,
       );
-      expect(result.current.ids).toEqual([]);
+      expect(result.current.ids).toEqual(['123', '321', '231']);
     });
 
     it('should switch to None if all ids are unselected', () => {
-      const { result, rerender } = renderHook(() => useMassSelection(3), {});
+      const { result, rerender } = renderHook(
+        () => useMassSelection(3, ['123', '321', '231']),
+        {},
+      );
 
       expect(result.current.selectionType).toEqual(
         ListHeaderCheckBoxState.unchecked,
@@ -112,7 +121,10 @@ describe('useMassSelection', () => {
     });
 
     it('should retoggled an id that was previously selected', () => {
-      const { result, rerender } = renderHook(() => useMassSelection(3), {});
+      const { result, rerender } = renderHook(
+        () => useMassSelection(3, ['123', '321', '231']),
+        {},
+      );
 
       expect(result.current.selectionType).toEqual(
         ListHeaderCheckBoxState.unchecked,
@@ -128,8 +140,6 @@ describe('useMassSelection', () => {
       result.current.toggleSelectionById(id);
 
       expect(result.current.isRowChecked(id)).toBe(false);
-
-      expect(result.current.reverseIds).toEqual([id]);
 
       // Retoggle back to selected
       result.current.toggleSelectionById(id);
@@ -148,7 +158,7 @@ describe('useMassSelection', () => {
   //#region ToggleSelectAll Tests
   describe('toggleSelectAll', () => {
     it('Partial', () => {
-      const { result } = renderHook(() => useMassSelection(10), {});
+      const { result } = renderHook(() => useMassSelection(10, []), {});
 
       expect(result.current.selectionType).toEqual(
         ListHeaderCheckBoxState.unchecked,
@@ -167,7 +177,7 @@ describe('useMassSelection', () => {
       );
     });
     it('None', () => {
-      const { result } = renderHook(() => useMassSelection(10), {});
+      const { result } = renderHook(() => useMassSelection(10, []), {});
 
       expect(result.current.selectionType).toEqual(
         ListHeaderCheckBoxState.unchecked,
@@ -181,7 +191,7 @@ describe('useMassSelection', () => {
     });
 
     it('All', () => {
-      const { result } = renderHook(() => useMassSelection(10), {});
+      const { result } = renderHook(() => useMassSelection(10, []), {});
 
       expect(result.current.selectionType).toEqual(
         ListHeaderCheckBoxState.unchecked,

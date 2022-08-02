@@ -32,6 +32,19 @@ beforeEach(() => {
   });
 });
 
+const mockEnqueue = jest.fn();
+
+jest.mock('notistack', () => ({
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  ...jest.requireActual('notistack'),
+  useSnackbar: () => {
+    return {
+      enqueueSnackbar: mockEnqueue,
+    };
+  },
+}));
+
 describe('ContactTaskRow', () => {
   it('should render loading', () => {
     const { getByTestId } = render(
