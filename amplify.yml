@@ -6,9 +6,6 @@ frontend:
         - nvm install 16.16.0
         - nvm use 16.16.0
         - echo $secrets
-        - echo $secrets | grep -o '"OKTA_CLIENT_SECRET":"[^"]*' | grep -o '[^"]*$'
-        - echo "OKTA_CLIENT_SECRET=$secrets | grep -o '"OKTA_CLIENT_SECRET":"[^"]*' | grep -o '[^"]*$'" >> .env
-        - echo "JWT_SECRET=$secrets | grep -o '"JWT_SECRET":"[^"]*' | grep -o '[^"]*$'" >> .env
         - npm install --legacy-peer-deps
         - npm run gql:server
         - npm run gql
