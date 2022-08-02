@@ -134,7 +134,7 @@ jobs:
           CHROMATIC_PROJECT_TOKEN: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
       - name: 📗 Upload to Chromatic accepting changes
         if: ${{ github.event_name != 'pull_request' }}
-        run: yarn chromatic --auto-accept-changes --skip 'dependabot/**' --exit-once-uploaded
+        run: yarn chromatic --ci --auto-accept-changes --skip 'dependabot/**' --exit-once-uploaded
         env:
           CHROMATIC_PROJECT_TOKEN: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
   yarn-check-cache:
