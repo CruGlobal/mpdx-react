@@ -30,6 +30,7 @@ import {
   useContactsQuery,
 } from './Contacts.generated';
 import { Coordinates } from './map/map';
+import { useGetIdsForMassSelectionLazyQuery } from 'src/hooks/GetIdsForMassSelection.generated';
 
 export type ContactsPageType = {
   accountListId: string | undefined;
@@ -170,6 +171,30 @@ export const ContactsPageProvider: React.FC<React.ReactNode> = ({
   });
 
   //#region Mass Actions
+  const [
+    getContactIds,
+    { data: contactIds, loading: loadingContactIds },
+  ] = useGetIdsForMassSelectionLazyQuery();
+
+  // Only query when the filters or total count change and store data in state
+  const [allContactIds, setAllContactIds] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (!loadingContactIds && contactIds?.contacts.nodes) {
+      setAllContactIds(contactIds?.contacts.nodes.map((contact) => contact.id));
+    }
+  }, [loadingContactIds]);
+
+  useEffect(() => {
+    getContactIds({
+      variables: {
+        accountListId,
+        first: data?.contacts?.totalCount ?? 0,
+        contactsFilters: activeFilters,
+      },
+    });
+  }, [activeFilters, searchTerm, starredFilter, data]);
+
   const {
     ids,
     selectionType,
@@ -178,6 +203,7 @@ export const ContactsPageProvider: React.FC<React.ReactNode> = ({
     toggleSelectionById,
   } = useMassSelection(
     data?.contacts?.totalCount ?? 0,
+    allContactIds,
     activeFilters,
     searchTerm as string,
     starredFilter,

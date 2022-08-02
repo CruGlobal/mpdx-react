@@ -1,11 +1,10 @@
 import { useEffect, useState } from 'react';
 import { ContactFilterSetInput } from '../../graphql/types.generated';
 import { ListHeaderCheckBoxState } from '../components/Shared/Header/ListHeader';
-import { useGetIdsForMassSelectionLazyQuery } from './GetIdsForMassSelection.generated';
-import { useAccountListId } from './useAccountListId';
 
 export const useMassSelection = (
   totalCount: number,
+  idsList: string[],
   activeFilters?: ContactFilterSetInput,
   wildcardSearch?: string,
   starredFilter?: ContactFilterSetInput,
@@ -20,6 +19,8 @@ export const useMassSelection = (
     ListHeaderCheckBoxState.unchecked,
   );
   const [ids, setIds] = useState<string[]>([]);
+
+  //console.log(idsList);
 
   const toggleSelectionById = (id: string) => {
     switch (selectionType) {
@@ -63,43 +64,17 @@ export const useMassSelection = (
     }
   };
 
-  const [
-    getContactIds,
-    { data: contactIds, loading },
-  ] = useGetIdsForMassSelectionLazyQuery();
-  const accountListId = useAccountListId() ?? '';
-
-  useEffect(() => {
-    if (!loading && contactIds?.contacts.nodes) {
-      setAllContactIds(contactIds?.contacts.nodes.map((contact) => contact.id));
-    }
-  }, [loading]);
-
   const toggleSelectAll = () => {
     if (selectionType === ListHeaderCheckBoxState.checked) {
       setSelectionType(ListHeaderCheckBoxState.unchecked);
       setIds([]);
     } else {
       setSelectionType(ListHeaderCheckBoxState.checked);
-      setIds(allContactIds);
+      setIds(idsList);
     }
   };
 
-  // Only query when the filters or total count change and store data in state
-  const [allContactIds, setAllContactIds] = useState<string[]>([]);
-
   useEffect(() => {
-    getContactIds({
-      variables: {
-        accountListId,
-        first: totalCount,
-        contactsFilters: {
-          ...activeFilters,
-          wildcardSearch,
-          ...starredFilter,
-        },
-      },
-    });
     switch (selectionType) {
       case ListHeaderCheckBoxState.checked:
         if (ids.length < totalCount) {
@@ -112,7 +87,7 @@ export const useMassSelection = (
         }
         break;
     }
-  }, [activeFilters, totalCount]);
+  }, [activeFilters, totalCount, starredFilter, wildcardSearch]);
 
   const isRowChecked = (id: string) =>
     (selectionType === ListHeaderCheckBoxState.partial && ids.includes(id)) ||
