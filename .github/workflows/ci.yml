@@ -129,14 +129,20 @@ jobs:
           yarn gql:server
       - name: 📙 Upload to Chromatic
         if: ${{ github.event_name == 'pull_request' }}
-        run: yarn chromatic --ci --exit-zero-on-changes --skip 'dependabot/**' --exit-once-uploaded
-        env:
-          CHROMATIC_PROJECT_TOKEN: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+        uses: chromaui/action@v1
+        with:
+          projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+          exitZeroOnChanges: 'Positive exit of action even when there are changes: boolean or branchname'
+          exitOnceUploaded: 'Exit with 0 once the built version has been sent to chromatic: boolean or branchname'
+          skip: 'dependabot/**'
       - name: 📗 Upload to Chromatic accepting changes
         if: ${{ github.event_name != 'pull_request' }}
-        run: yarn chromatic --ci --auto-accept-changes --skip 'dependabot/**' --exit-once-uploaded
-        env:
-          CHROMATIC_PROJECT_TOKEN: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+        uses: chromaui/action@v1
+        with:
+          projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+          autoAcceptChanges: 'Automatically accept all changes in chromatic: boolean or branchname'
+          exitOnceUploaded: 'Exit with 0 once the built version has been sent to chromatic: boolean or branchname'
+          skip: 'dependabot/**'
   yarn-check-cache:
     runs-on: ubuntu-latest
     steps:
