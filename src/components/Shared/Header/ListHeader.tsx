@@ -121,6 +121,7 @@ interface ListHeaderProps {
     filter: ContactFilterSetInput | TaskFilterSetInput,
   ) => void;
   selectedIds: string[];
+  openRemoveTagsModal?: (open: boolean) => void;
 }
 
 export const ListHeader: React.FC<ListHeaderProps> = ({
@@ -139,6 +140,7 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
   toggleStarredFilter,
   contactsView,
   selectedIds,
+  openRemoveTagsModal,
 }) => {
   const { t } = useTranslation();
 
@@ -196,7 +198,7 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
 
       {page === 'contact' ? (
         <>
-          {contactsView !== TableViewModeEnum.Map && (
+          {contactsView !== TableViewModeEnum.Map && openRemoveTagsModal && (
             <Hidden lgDown={contactDetailsOpen}>
               <ActionsButton
                 aria-haspopup
@@ -221,7 +223,13 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
                 <MenuItem>
                   <ListItemText>{t('Add Tags')}</ListItemText>
                 </MenuItem>
-                <MenuItem divider>
+                <MenuItem
+                  divider
+                  onClick={() => {
+                    openRemoveTagsModal(true);
+                    handleClose();
+                  }}
+                >
                   <ListItemText>{t('Remove Tags')}</ListItemText>
                 </MenuItem>
                 <MenuItem
