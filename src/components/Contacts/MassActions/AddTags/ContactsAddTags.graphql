@@ -1,12 +1,24 @@
 mutation ContactsAddTags(
   $accountListId: ID!
-  $attributes: ContactsUpdateInput!
+  $attributes: [ContactUpdateInput!]!
 ) {
   updateContacts(
     input: { accountListId: $accountListId, attributes: $attributes }
   ) {
     contacts {
       id
+    }
+  }
+}
+
+query GetContactsForAddingTags(
+  $accountListId: ID!
+  $contactsFilters: ContactFilterSetInput
+) {
+  contacts(accountListId: $accountListId, contactsFilter: $contactsFilters) {
+    nodes {
+      id
+      tagList
     }
   }
 }
