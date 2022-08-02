@@ -40,11 +40,14 @@ export const MassActionsAddToAppealModal: React.FC<MassActionsAddToAppealModalPr
   const { enqueueSnackbar } = useSnackbar();
 
   const onSubmit = async (field: { appeal: string }) => {
+    const existingIds =
+      appeals?.appeals.nodes.find((appeal) => appeal.id === field.appeal)
+        ?.contactIds ?? [];
     await addToAppeal({
       variables: {
         accountListId,
         attributes: {
-          contactIds: ids,
+          contactIds: [...ids, ...existingIds],
           id: field.appeal,
         },
       },
