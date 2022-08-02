@@ -176,7 +176,12 @@ export const ContactsPageProvider: React.FC<React.ReactNode> = ({
     isRowChecked,
     toggleSelectAll,
     toggleSelectionById,
-  } = useMassSelection(data?.contacts?.totalCount ?? 0, activeFilters);
+  } = useMassSelection(
+    data?.contacts?.totalCount ?? 0,
+    activeFilters,
+    searchTerm as string,
+    starredFilter,
+  );
   //#endregion
 
   useEffect(() => {

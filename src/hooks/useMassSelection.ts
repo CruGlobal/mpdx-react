@@ -7,6 +7,8 @@ import { useAccountListId } from './useAccountListId';
 export const useMassSelection = (
   totalCount: number,
   activeFilters?: ContactFilterSetInput,
+  wildcardSearch?: string,
+  starredFilter?: ContactFilterSetInput,
 ): {
   ids: string[];
   selectionType: ListHeaderCheckBoxState;
@@ -91,7 +93,11 @@ export const useMassSelection = (
       variables: {
         accountListId,
         first: totalCount,
-        contactsFilters: activeFilters,
+        contactsFilters: {
+          ...activeFilters,
+          wildcardSearch,
+          ...starredFilter,
+        },
       },
     });
     switch (selectionType) {
