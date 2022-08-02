@@ -117,12 +117,12 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 16
-      - name: 💥 Force older version of yarn
-        # 3.2.0-rc.6 currently used to fix Next.js imports breaks `yarn build-storybook`
-        # Without this, it throws `TypeError [ERR_INVALID_ARG_TYPE]: The "id" argument must be of type string. Received null` at /workspaces/mpdx-react/.yarn/cache/jest-worker-npm-26.6.2-46cbcd449f-f9afa3b88e.zip/node_modules/jest-worker/build/workers/processChild.js:97:16
-        run: yarn set version 3.1.1
+      # - name: 💥 Force older version of yarn
+      #   # 3.2.0-rc.6 currently used to fix Next.js imports breaks `yarn build-storybook`
+      #   # Without this, it throws `TypeError [ERR_INVALID_ARG_TYPE]: The "id" argument must be of type string. Received null` at /workspaces/mpdx-react/.yarn/cache/jest-worker-npm-26.6.2-46cbcd449f-f9afa3b88e.zip/node_modules/jest-worker/build/workers/processChild.js:97:16
+      #   run: yarn set version 3.1.1
       - name: 📦 Install Dependencies
-        run: yarn install --immutable --immutable-cache
+        run: yarn 
       - name: 📈 Run GraphQL Codegen
         run: |
           yarn gql
