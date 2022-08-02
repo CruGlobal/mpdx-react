@@ -14,14 +14,17 @@ import React, { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSnackbar } from 'notistack';
 import { Add } from '@material-ui/icons';
-import { ContactsUpdateInput } from '../../../../../graphql/types.generated';
+import { ContactUpdateInput } from '../../../../../graphql/types.generated';
 import Modal from '../../../common/Modal/Modal';
 import {
   ContactTagIcon,
   ContactTagInput,
 } from '../../ContactDetails/ContactDetailsTab/Tags/ContactTags';
 import { useGetContactTagListQuery } from '../../ContactDetails/ContactDetailsTab/Tags/ContactTags.generated';
-import { useContactsAddTagsMutation } from './ContactsAddTags.generated';
+import {
+  useContactsAddTagsMutation,
+  useGetContactsForAddingTagsQuery,
+} from './ContactsAddTags.generated';
 import theme from 'src/theme';
 import { ContactsDocument } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
 
@@ -47,7 +50,6 @@ const AddTagIcon = styled(Add)(() => ({
 
 const tagSchema = yup.object({
   tagList: yup.array().of(yup.string()).default([]).nullable(),
-  ids: yup.array().of(yup.string()).default([]),
 });
 
 export const MassActionsAddTagsModal: React.FC<MassActionsAddTagsModalProps> = ({
@@ -61,7 +63,22 @@ export const MassActionsAddTagsModal: React.FC<MassActionsAddTagsModalProps> = (
 
   const [contactsAddTags, { loading: updating }] = useContactsAddTagsMutation();
 
-  const onSubmit = async (attributes: ContactsUpdateInput) => {
+  const { data: contactsForTags } = useGetContactsForAddingTagsQuery({
+    variables: {
+      accountListId,
+      contactsFilters: {
+        ids,
+      },
+    },
+  });
+
+  const onSubmit = async (fields: Partial<ContactUpdateInput>) => {
+    const tags = fields.tagList ?? [];
+    const attributes =
+      contactsForTags?.contacts.nodes.map((contact) => ({
+        id: contact.id,
+        tagList: [...new Set([...tags, ...contact.tagList])],
+      })) ?? [];
     await contactsAddTags({
       variables: {
         accountListId,
@@ -80,15 +97,6 @@ export const MassActionsAddTagsModal: React.FC<MassActionsAddTagsModalProps> = (
     handleClose();
   };
 
-  //   const {
-  //     data: appeals,
-  //     loading: loadingAppeals,
-  //   } = useGetAppealsForMassActionQuery({
-  //     variables: {
-  //       accountListId,
-  //     },
-  //   });
-
   const { data: contactTagsList, loading } = useGetContactTagListQuery({
     variables: {
       accountListId,
@@ -100,7 +108,6 @@ export const MassActionsAddTagsModal: React.FC<MassActionsAddTagsModalProps> = (
       <Formik
         initialValues={{
           tagList: [],
-          ids: ids,
         }}
         onSubmit={onSubmit}
         validationSchema={tagSchema}
