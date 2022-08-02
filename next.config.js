@@ -4,6 +4,11 @@ const withOptimizedImages = require('next-optimized-images');
 const withGraphql = require('next-plugin-graphql');
 require('dotenv').config();
 
+process.env.JWT_SECRET = JSON.parse(process.env.secrets).JWT_SECRET;
+process.env.OKTA_CLIENT_SECRET = JSON.parse(
+  process.env.secrets,
+).OKTA_CLIENT_SECRET;
+
 const prod = process.env.NODE_ENV === 'production';
 
 if (prod && !process.env.JWT_SECRET) {
