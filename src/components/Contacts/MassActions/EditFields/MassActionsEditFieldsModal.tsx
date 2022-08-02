@@ -78,22 +78,23 @@ export const MassActionsEditFieldsModal: React.FC<MassActionsEditFieldsModalProp
   const { enqueueSnackbar } = useSnackbar();
 
   const onSubmit = async (fields: any) => {
-    const attributes: { [key: string]: any } = {};
+    const formattedFields: { [key: string]: any } = {};
     for (const [key, value] of Object.entries(fields)) {
       if (value) {
-        attributes[key] =
+        formattedFields[key] =
           key === 'starred' || key === 'noAppeals' || key === 'pledgeReceived'
             ? value === 'true'
             : value;
       }
     }
+    const attributes = ids.map((id) => ({
+      id,
+      ...formattedFields,
+    }));
     await updateContacts({
       variables: {
         accountListId,
-        attributes: {
-          ids,
-          ...attributes,
-        },
+        attributes,
       },
       refetchQueries: [
         {

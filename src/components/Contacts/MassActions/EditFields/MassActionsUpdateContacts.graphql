@@ -1,6 +1,6 @@
 mutation MassActionsUpdateContactFields(
   $accountListId: ID!
-  $attributes: ContactsUpdateInput!
+  $attributes: [ContactUpdateInput!]!
 ) {
   updateContacts(
     input: { accountListId: $accountListId, attributes: $attributes }
