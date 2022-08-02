@@ -129,7 +129,7 @@ jobs:
           yarn gql:server
       - name: 📙 Upload to Chromatic
         if: ${{ github.event_name == 'pull_request' }}
-        run: yarn chromatic --exit-zero-on-changes --skip 'dependabot/**' --exit-once-uploaded
+        run: yarn chromatic --ci --exit-zero-on-changes --skip 'dependabot/**' --exit-once-uploaded
         env:
           CHROMATIC_PROJECT_TOKEN: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
       - name: 📗 Upload to Chromatic accepting changes
