@@ -4,21 +4,38 @@ import { ThemeProvider } from '@material-ui/styles';
 import userEvent from '@testing-library/user-event';
 import { DeleteConfirmation } from './DeleteConfirmation';
 import theme from 'src/theme';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { DeleteTaskMutation } from 'src/components/Task/Modal/Form/TaskModal.generated';
 
 const onClickConfirm = jest.fn();
 const onClickDecline = jest.fn();
+
+const mockEnqueue = jest.fn();
+
+jest.mock('notistack', () => ({
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  ...jest.requireActual('notistack'),
+  useSnackbar: () => {
+    return {
+      enqueueSnackbar: mockEnqueue,
+    };
+  },
+}));
 
 describe('DeleteConfirmation', () => {
   it('should do basic rendering', async () => {
     const { getByText } = render(
       <ThemeProvider theme={theme}>
-        <DeleteConfirmation
-          open={true}
-          deleting={false}
-          deleteType={'person'}
-          onClickConfirm={onClickConfirm}
-          onClickDecline={onClickDecline}
-        />
+        <GqlMockedProvider<DeleteTaskMutation>>
+          <DeleteConfirmation
+            open={true}
+            deleting={false}
+            deleteType={'person'}
+            onClickConfirm={onClickConfirm}
+            onClickDecline={onClickDecline}
+          />
+        </GqlMockedProvider>
       </ThemeProvider>,
     );
     await waitFor(() => expect(getByText('Confirm')).toBeInTheDocument());
@@ -30,13 +47,15 @@ describe('DeleteConfirmation', () => {
   it('should call the onClick function for declining', async () => {
     const { getByText, getByRole } = render(
       <ThemeProvider theme={theme}>
-        <DeleteConfirmation
-          open={true}
-          deleting={false}
-          deleteType={'person'}
-          onClickConfirm={onClickConfirm}
-          onClickDecline={onClickDecline}
-        />
+        <GqlMockedProvider<DeleteTaskMutation>>
+          <DeleteConfirmation
+            open={true}
+            deleting={false}
+            deleteType={'person'}
+            onClickConfirm={onClickConfirm}
+            onClickDecline={onClickDecline}
+          />
+        </GqlMockedProvider>
       </ThemeProvider>,
     );
     await waitFor(() => expect(getByText('No')).toBeInTheDocument());
@@ -47,13 +66,15 @@ describe('DeleteConfirmation', () => {
   it('should call the onClick function for confirming', async () => {
     const { getByText, getByRole } = render(
       <ThemeProvider theme={theme}>
-        <DeleteConfirmation
-          open={true}
-          deleting={false}
-          deleteType={'person'}
-          onClickConfirm={onClickConfirm}
-          onClickDecline={onClickDecline}
-        />
+        <GqlMockedProvider<DeleteTaskMutation>>
+          <DeleteConfirmation
+            open={true}
+            deleting={false}
+            deleteType={'person'}
+            onClickConfirm={onClickConfirm}
+            onClickDecline={onClickDecline}
+          />
+        </GqlMockedProvider>
       </ThemeProvider>,
     );
     await waitFor(() => expect(getByText('Yes')).toBeInTheDocument());

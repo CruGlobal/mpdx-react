@@ -1,6 +1,7 @@
 import React from 'react';
 import { Box, Typography, styled, Button } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
+import LocalAtmIcon from '@material-ui/icons/LocalAtm';
 
 interface Props {
   title: string;
@@ -19,6 +20,10 @@ const BoxWrapper = styled(Box)(({ theme }) => ({
   alignItems: 'center',
 }));
 
+const StyledLocalAtmIcon = styled(LocalAtmIcon)(({ theme }) => ({
+  color: theme.palette.cruGrayDark.main,
+}));
+
 export const EmptyDonationsTable: React.FC<Props> = ({ title }) => {
   const { t } = useTranslation();
 
@@ -32,7 +37,7 @@ export const EmptyDonationsTable: React.FC<Props> = ({ title }) => {
 
   return (
     <BoxWrapper boxShadow={3}>
-      <img src="bill.jpg" alt="bill" style={{ padding: 4 }}></img>
+      <StyledLocalAtmIcon fontSize="large" />
       <Typography variant="h5">{t(title)}</Typography>
       <Typography>
         {t(

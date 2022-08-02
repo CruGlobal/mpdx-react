@@ -4,7 +4,6 @@ import {
   ButtonBase,
   Checkbox,
   Grid,
-  Hidden,
   ListItemIcon,
   ListItemSecondaryAction,
   ListItemText,
@@ -61,17 +60,15 @@ export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
 
   return (
     <ListItemButton focusRipple onClick={onClick} data-testid="rowButton">
-      <Hidden xsUp={contactDetailsOpen}>
-        <ListItemIcon>
-          <Checkbox
-            checked={isChecked(contact.id)}
-            color="secondary"
-            onClick={(event) => event.stopPropagation()}
-            onChange={() => onContactCheckToggle(contact.id)}
-            value={isChecked}
-          />
-        </ListItemIcon>
-      </Hidden>
+      <ListItemIcon>
+        <Checkbox
+          checked={isChecked(contact.id)}
+          color="secondary"
+          onClick={(event) => event.stopPropagation()}
+          onChange={() => onContactCheckToggle(contact.id)}
+          value={isChecked}
+        />
+      </ListItemIcon>
       <Grid container alignItems="center">
         <Grid item xs={6}>
           <ListItemText
@@ -109,24 +106,20 @@ export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
           />
         </Grid>
       </Grid>
-      <Hidden xsUp={contactDetailsOpen}>
-        <Box
-          style={uncompletedTasksCount === 0 ? { visibility: 'hidden' } : {}}
-        >
-          <ContactUncompletedTasksCount
-            uncompletedTasksCount={uncompletedTasksCount}
-          />
-        </Box>
-        <ListItemSecondaryAction
-          style={{ position: 'static', top: 0, transform: 'none' }}
-        >
-          <StarContactIconButton
-            accountListId={accountListId ?? ''}
-            contactId={contactId}
-            isStarred={starred || false}
-          />
-        </ListItemSecondaryAction>
-      </Hidden>
+      <Box style={uncompletedTasksCount === 0 ? { visibility: 'hidden' } : {}}>
+        <ContactUncompletedTasksCount
+          uncompletedTasksCount={uncompletedTasksCount}
+        />
+      </Box>
+      <ListItemSecondaryAction
+        style={{ position: 'static', top: 0, transform: 'none' }}
+      >
+        <StarContactIconButton
+          accountListId={accountListId ?? ''}
+          contactId={contactId}
+          isStarred={starred || false}
+        />
+      </ListItemSecondaryAction>
     </ListItemButton>
   );
 };

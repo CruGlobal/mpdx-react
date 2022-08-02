@@ -1,46 +1,29 @@
 import {
   Button,
   Checkbox,
-  FormControl,
   FormControlLabel,
   Grid,
   InputLabel,
-  MenuItem,
-  Select,
   styled,
-  TextField,
   Typography,
 } from '@material-ui/core';
 import React from 'react';
 
 import AddIcon from '@material-ui/icons/Add';
 import { useTranslation } from 'react-i18next';
-import { FieldArray, FormikProps, getIn } from 'formik';
+import { FieldArray, FormikProps } from 'formik';
 import { Mail } from '@material-ui/icons';
 import { ModalSectionContainer } from '../ModalSectionContainer/ModalSectionContainer';
-import { ModalSectionDeleteIcon } from '../ModalSectionDeleteIcon/ModalSectionDeleteIcon';
 import { ModalSectionIcon } from '../ModalSectionIcon/ModalSectionIcon';
 import {
   PersonCreateInput,
   PersonUpdateInput,
 } from '../../../../../../../../../graphql/types.generated';
 import { NewSocial } from '../PersonModal';
+import { PersonEmailItem } from './PersonEmailItem';
 
 const ContactPrimaryPersonSelectLabel = styled(InputLabel)(() => ({
   textTransform: 'uppercase',
-}));
-
-const ContactInputField = styled(TextField)(
-  ({ destroyed }: { destroyed: boolean }) => ({
-    '&& > label': {
-      textTransform: 'uppercase',
-    },
-    textDecoration: destroyed ? 'line-through' : 'none',
-  }),
-);
-
-const EmailSelect = styled(Select)(({ destroyed }: { destroyed: boolean }) => ({
-  textDecoration: destroyed ? 'line-through' : 'none',
 }));
 
 const ContactAddIcon = styled(AddIcon)(({ theme }) => ({
@@ -89,28 +72,9 @@ export const PersonEmail: React.FC<PersonEmailProps> = ({ formikProps }) => {
           {emailAddresses.length > 0 && primaryEmail && (
             <ModalSectionContainer>
               <ModalSectionIcon icon={<Mail />} />
-
-              <FormControl fullWidth={true}>
-                <ContactPrimaryPersonSelectLabel id="primary-email-label">
-                  {t('Primary Email')}
-                </ContactPrimaryPersonSelectLabel>
-                <Select
-                  id="primary-email-label"
-                  value={primaryEmail?.id}
-                  onChange={(event) =>
-                    handleChangePrimary(event.target.value as string)
-                  }
-                >
-                  {emailAddresses.map(
-                    (emailAddress) =>
-                      emailAddress.id && (
-                        <MenuItem key={emailAddress.id} value={emailAddress.id}>
-                          {emailAddress.email}
-                        </MenuItem>
-                      ),
-                  )}
-                </Select>
-              </FormControl>
+              <ContactPrimaryPersonSelectLabel id="primary-email-label">
+                {t('Email')}
+              </ContactPrimaryPersonSelectLabel>
             </ModalSectionContainer>
           )}
           <FieldArray
@@ -119,70 +83,16 @@ export const PersonEmail: React.FC<PersonEmailProps> = ({ formikProps }) => {
               <>
                 {emailAddresses?.map((emailAddress, index) => (
                   <>
-                    <ModalSectionContainer key={index}>
-                      <Grid container spacing={3}>
-                        <Grid item xs={12} md={6}>
-                          <ContactInputField
-                            destroyed={emailAddress.destroy ?? false}
-                            value={emailAddress.email}
-                            onChange={(event) =>
-                              setFieldValue(
-                                `emailAddresses.${index}.email`,
-                                event.target.value,
-                              )
-                            }
-                            disabled={!!emailAddress.destroy}
-                            inputProps={{ 'aria-label': t('Email Address') }}
-                            error={getIn(errors, `emailAddresses.${index}`)}
-                            helperText={
-                              getIn(errors, `emailAddresses.${index}`) &&
-                              getIn(errors, `emailAddresses.${index}`).email
-                            }
-                            fullWidth
-                          />
-                        </Grid>
-                        <Grid item xs={12} md={6}>
-                          <EmailSelect
-                            destroyed={emailAddress.destroy ?? false}
-                            value={emailAddress.location ?? ''}
-                            onChange={(event) =>
-                              setFieldValue(
-                                `emailAddresses.${index}.location`,
-                                event.target.value,
-                              )
-                            }
-                            disabled={!!emailAddress.destroy}
-                            inputProps={{
-                              'aria-label': t('Email Address Type'),
-                            }}
-                            fullWidth
-                          >
-                            <MenuItem selected value=""></MenuItem>
-                            <MenuItem value="Mobile" aria-label={t('Mobile')}>
-                              {t('Mobile')}
-                            </MenuItem>
-                            <MenuItem value="Work" aria-label={t('Work')}>
-                              {t('Work')}
-                            </MenuItem>
-                          </EmailSelect>
-                        </Grid>
-                        <ModalSectionDeleteIcon
-                          handleClick={
-                            emailAddress.id
-                              ? () =>
-                                  setFieldValue(
-                                    `emailAddresses.${index}.destroy`,
-                                    !emailAddress.destroy,
-                                  )
-                              : () => {
-                                  const temp = emailAddresses;
-                                  temp.splice(index, 1);
-                                  setFieldValue('emailAddresses', temp);
-                                }
-                          }
-                        />
-                      </Grid>
-                    </ModalSectionContainer>
+                    <span key={index} />
+                    <PersonEmailItem
+                      emailAddress={emailAddress}
+                      index={index}
+                      emailAddresses={emailAddresses}
+                      setFieldValue={setFieldValue}
+                      errors={errors}
+                      handleChangePrimary={handleChangePrimary}
+                      primaryEmail={primaryEmail}
+                    />
                   </>
                 ))}
                 <ModalSectionContainer>
