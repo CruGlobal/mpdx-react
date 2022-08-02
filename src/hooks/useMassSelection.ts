@@ -94,6 +94,18 @@ export const useMassSelection = (
         contactsFilters: activeFilters,
       },
     });
+    switch (selectionType) {
+      case ListHeaderCheckBoxState.checked:
+        if (ids.length < totalCount) {
+          setSelectionType(ListHeaderCheckBoxState.partial);
+        }
+        break;
+      case ListHeaderCheckBoxState.partial:
+        if (ids.length === totalCount) {
+          setSelectionType(ListHeaderCheckBoxState.checked);
+        }
+        break;
+    }
   }, [activeFilters, totalCount]);
 
   const isRowChecked = (id: string) =>
