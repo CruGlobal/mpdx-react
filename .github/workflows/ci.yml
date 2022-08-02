@@ -129,7 +129,7 @@ jobs:
           yarn gql:server
       - name: 📙 Upload to Chromatic
         if: ${{ github.event_name == 'pull_request' }}
-        uses: chromaui/action@v1
+        uses: chromaui/action-next@v1
         with:
           projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
           exitZeroOnChanges: 'Positive exit of action even when there are changes: boolean or branchname'
@@ -137,7 +137,7 @@ jobs:
           skip: 'dependabot/**'
       - name: 📗 Upload to Chromatic accepting changes
         if: ${{ github.event_name != 'pull_request' }}
-        uses: chromaui/action@v1
+        uses: chromaui/action-next@v1
         with:
           projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
           autoAcceptChanges: 'Automatically accept all changes in chromatic: boolean or branchname'
