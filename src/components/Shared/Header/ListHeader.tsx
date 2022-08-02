@@ -169,15 +169,10 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
     await updateContacts({
       variables: {
         accountListId,
-        attributes: {
-          ids: selectedIds,
+        attributes: selectedIds.map((id) => ({
+          id,
           status: StatusEnum.NeverAsk,
-        },
-      },
-      onCompleted: () => {
-        enqueueSnackbar(t('Contact(s) hidden successfully'), {
-          variant: 'success',
-        });
+        })),
       },
       refetchQueries: [
         {
@@ -185,6 +180,9 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
           variables: { accountListId },
         },
       ],
+    });
+    enqueueSnackbar(t('Contact(s) hidden successfully'), {
+      variant: 'success',
     });
     setOpenHideContactsModal(false);
   };
