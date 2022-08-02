@@ -69,8 +69,7 @@ export const useMassSelection = (
 
   useEffect(() => {
     if (!loading && contactIds?.contacts.nodes) {
-      setIds(contactIds?.contacts.nodes.map((contact) => contact.id));
-      setSelectionType(ListHeaderCheckBoxState.checked);
+      setAllContactIds(contactIds?.contacts.nodes.map((contact) => contact.id));
     }
   }, [loading]);
 
@@ -79,15 +78,23 @@ export const useMassSelection = (
       setSelectionType(ListHeaderCheckBoxState.unchecked);
       setIds([]);
     } else {
-      getContactIds({
-        variables: {
-          accountListId,
-          first: totalCount,
-          contactsFilters: activeFilters,
-        },
-      });
+      setSelectionType(ListHeaderCheckBoxState.checked);
+      setIds(allContactIds);
     }
   };
+
+  // Only query when the filters or total count change and store data in state
+  const [allContactIds, setAllContactIds] = useState<string[]>([]);
+
+  useEffect(() => {
+    getContactIds({
+      variables: {
+        accountListId,
+        first: totalCount,
+        contactsFilters: activeFilters,
+      },
+    });
+  }, [activeFilters, totalCount]);
 
   const isRowChecked = (id: string) =>
     (selectionType === ListHeaderCheckBoxState.partial && ids.includes(id)) ||
