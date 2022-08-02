@@ -15,7 +15,6 @@ import { useSnackbar } from 'notistack';
 import Modal from '../../../common/Modal/Modal';
 import { useGetAppealsForMassActionQuery } from './GetAppealsForMassAction.generated';
 import { useAddToAppealMutation } from './AddToAppealMutation.generated';
-//import theme from 'src/theme';
 import { ContactsDocument } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
 
 interface MassActionsAddToAppealModalProps {
