@@ -3,9 +3,6 @@ schema:
   - ${API_URL:https://api.stage.mpdx.org/graphql}
   - ./pages/api/Schema/**/*.graphql
 documents: '**/*.graphql'
-hooks:
-  afterOneFileWrite:
-    - prettier --write
 generates:
   ./graphql/types.generated.ts:
     plugins:

@@ -1,7 +1,4 @@
 overwrite: true
-hooks:
-  afterOneFileWrite:
-    - prettier --write
 generates:
   ./pages/api/graphql-rest.page.generated.ts:
     schema: ./pages/api/Schema/**/*.graphql
