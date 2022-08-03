@@ -4,10 +4,12 @@ const withOptimizedImages = require('next-optimized-images');
 const withGraphql = require('next-plugin-graphql');
 require('dotenv').config();
 
-process.env.JWT_SECRET = JSON.parse(process.env.secrets).JWT_SECRET;
-process.env.OKTA_CLIENT_SECRET = JSON.parse(
-  process.env.secrets,
-).OKTA_CLIENT_SECRET;
+if (process.env.secrets) {
+  process.env.JWT_SECRET = JSON.parse(process.env.secrets).JWT_SECRET;
+  process.env.OKTA_CLIENT_SECRET = JSON.parse(
+    process.env.secrets,
+  ).OKTA_CLIENT_SECRET;
+}
 
 const prod = process.env.NODE_ENV === 'production';
 
@@ -15,14 +17,7 @@ if (prod && !process.env.JWT_SECRET) {
   throw new Error('JWT_SECRET environment variable is not set');
 }
 
-const siteUrl =
-  process.env.VERCEL_GIT_COMMIT_REF === 'main'
-    ? 'https://next.mpdx.org'
-    : process.env.VERCEL_GIT_COMMIT_REF === 'staging'
-    ? 'https://next.stage.mpdx.org'
-    : process.env.SITE_URL
-    ? process.env.SITE_URL
-    : 'http://localhost:3000';
+const siteUrl = process.env.SITE_URL ?? 'http://localhost:3000';
 
 const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true',
@@ -70,5 +65,6 @@ module.exports = withPlugins([
     typescript: {
       ignoreBuildErrors: true,
     },
+    webpack5: false,
   },
 ]);
