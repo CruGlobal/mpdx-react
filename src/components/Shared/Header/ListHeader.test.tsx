@@ -117,6 +117,37 @@ describe('ListHeader', () => {
     expect(getByTestId('showing-text')).toBeInTheDocument();
   });
 
+  it('opens the more actions menu and clicks the log task action', () => {
+    const { getByPlaceholderText, getByText, queryByText } = render(
+      <ThemeProvider theme={theme}>
+        <ListHeader
+          selectedIds={selectedIds}
+          page="contact"
+          activeFilters={false}
+          starredFilter={{}}
+          toggleStarredFilter={toggleStarredFilter}
+          headerCheckboxState={ListHeaderCheckBoxState.unchecked}
+          filterPanelOpen={false}
+          contactDetailsOpen={false}
+          toggleFilterPanel={toggleFilterPanel}
+          onCheckAllItems={onCheckAllItems}
+          onSearchTermChanged={onSearchTermChanged}
+        />
+      </ThemeProvider>,
+    );
+
+    expect(getByPlaceholderText('Search Contacts')).toBeInTheDocument();
+    expect(queryByText('Log Task')).not.toBeInTheDocument();
+    const actionsButton = getByText('Actions');
+    userEvent.click(actionsButton);
+    expect(getByText('Log Task')).toBeInTheDocument();
+    userEvent.click(getByText('Log Task'));
+    expect(openTaskModal).toHaveBeenCalledWith({
+      view: 'log',
+      defaultValues: { contactIds: selectedIds },
+    });
+  });
+
   describe('Task', () => {
     it('renders task header', () => {
       const { getByPlaceholderText } = render(
