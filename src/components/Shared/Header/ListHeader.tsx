@@ -234,7 +234,16 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
                 >
                   <ListItemText>{t('Add Task')}</ListItemText>
                 </MenuItem>
-                <MenuItem divider>
+                <MenuItem
+                  divider
+                  onClick={() => {
+                    openTaskModal({
+                      view: 'log',
+                      defaultValues: { contactIds: selectedIds },
+                    });
+                    handleClose();
+                  }}
+                >
                   <ListItemText>{t('Log Task')}</ListItemText>
                 </MenuItem>
 
