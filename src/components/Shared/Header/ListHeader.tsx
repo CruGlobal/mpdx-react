@@ -24,24 +24,21 @@ import { StarFilterButton } from './StarFilterButton/StarFilterButton';
 import useTaskModal from 'src/hooks/useTaskModal';
 
 const HeaderWrap = styled(Box)(
-  ({
-    theme,
-    contactDetailsOpen,
-  }: {
-    theme: Theme;
-    contactDetailsOpen: boolean;
-  }) => ({
-    height: 96,
-    padding: theme.spacing(1, 0),
-    paddingRight: !contactDetailsOpen ? 0 : theme.spacing(2),
+  ({ theme }: { theme: Theme; contactDetailsOpen: boolean }) => ({
+    padding: theme.spacing(3, 0.5),
     display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-evenly',
     alignItems: 'center',
-    backgroundColor: theme.palette.common.white,
     borderBottom: `1px solid ${theme.palette.grey[200]}`,
   }),
 );
+
+const StyledCheckbox = styled(Checkbox)(({ theme }) => ({
+  padding: theme.spacing(1.5),
+  marginRight: theme.spacing(0.5),
+  '&:hover': {
+    backgroundColor: 'rgba(0, 0, 0, 0.04)',
+  },
+}));
 
 const FilterButton = styled(
   ({ activeFilters: _activeFilters, panelOpen: _panelOpen, ...props }) => (
@@ -51,21 +48,14 @@ const FilterButton = styled(
   ({
     theme,
     activeFilters,
-    panelOpen,
   }: {
     theme: Theme;
     activeFilters: boolean;
     panelOpen: boolean;
   }) => ({
-    display: 'inline-block',
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    margin: theme.spacing(1),
+    marginRight: theme.spacing(2),
     backgroundColor: activeFilters
       ? theme.palette.cruYellow.main
-      : panelOpen
-      ? theme.palette.secondary.dark
       : 'transparent',
   }),
 );
@@ -77,17 +67,15 @@ const FilterIcon = styled(FilterList)(({ theme }) => ({
 }));
 
 const ItemsShowingText = styled('p')(({ theme }) => ({
-  flexGrow: 4,
-  flexBasis: 0,
-  margin: theme.spacing(1),
+  marginLeft: theme.spacing(2),
+  marginRight: 'auto',
   color: theme.palette.text.secondary,
   fontFamily: theme.typography.fontFamily,
 }));
 
-const ActionsButton = styled(Button)(({ theme }) => ({
+const ActionsButton = styled(Button)(() => ({
   width: 114,
   height: 48,
-  margin: theme.spacing(1),
   border: '1px solid #383F43',
 }));
 
@@ -157,7 +145,7 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
     <HeaderWrap contactDetailsOpen={contactDetailsOpen}>
       {contactsView !== TableViewModeEnum.Map && (
         <Hidden xsUp={contactDetailsOpen && page === 'task'}>
-          <Checkbox
+          <StyledCheckbox
             checked={headerCheckboxState === ListHeaderCheckBoxState.checked}
             color="secondary"
             indeterminate={
@@ -167,7 +155,6 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
           />
         </Hidden>
       )}
-
       <FilterButton
         activeFilters={activeFilters}
         panelOpen={filterPanelOpen}
@@ -193,11 +180,11 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
           ? t('Showing {{count}}', { count: totalItems })
           : ''}
       </ItemsShowingText>
-
       {page === 'contact' ? (
         <>
           {contactsView !== TableViewModeEnum.Map && (
-            <Hidden lgDown={contactDetailsOpen}>
+            <>
+              {/* <Hidden lgDown={contactDetailsOpen}> */}
               <ActionsButton
                 aria-haspopup
                 aria-expanded={open}
@@ -256,7 +243,8 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
                   <ListItemText>{t('Export Emails')}</ListItemText>
                 </MenuItem>
               </Menu>
-            </Hidden>
+              {/* </Hidden> */}
+            </>
           )}
 
           {buttonGroup}
@@ -302,12 +290,12 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
         </>
       )}
 
-      <Hidden smDown>
-        <StarFilterButton
-          starredFilter={starredFilter}
-          toggleStarredFilter={toggleStarredFilter}
-        />
-      </Hidden>
+      {/* <Hidden smDown> */}
+      <StarFilterButton
+        starredFilter={starredFilter}
+        toggleStarredFilter={toggleStarredFilter}
+      />
+      {/* </Hidden> */}
     </HeaderWrap>
   );
 };
