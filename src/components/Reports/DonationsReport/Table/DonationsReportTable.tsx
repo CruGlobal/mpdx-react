@@ -199,6 +199,20 @@ export const DonationsReportTable: React.FC<Props> = ({ accountListId }) => {
     },
   ];
 
+  // Remove foreign amount column if both of these conditions are met:
+  // 1.) There only one type of currency.
+  // 2.) The type of currency is the same as the account currency.
+  const currencyList = [
+    ...new Set(donations.map((donation) => donation.foreignCurrency)),
+  ];
+
+  if (currencyList.length === 1 && currencyList.includes(accountCurrency)) {
+    columns.splice(3, 1);
+    columns.forEach(
+      (column) => (column.width = column.width ? column.width + 36 : 0),
+    );
+  }
+
   const isEmpty = nodes?.length === 0;
 
   const title = `${time.monthLong} ${time.year}`;
