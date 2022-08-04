@@ -22,6 +22,7 @@ import { EmptyDonationsTable } from '../../../common/EmptyDonationsTable/EmptyDo
 import {
   useGetDonationsTableQuery,
   ExpectedDonationDataFragment,
+  useGetAccountListCurrencyQuery,
 } from '../GetDonationsTable.generated';
 
 interface Props {
@@ -80,9 +81,16 @@ export const DonationsReportTable: React.FC<Props> = ({ accountListId }) => {
     variables: { accountListId, startDate, endDate },
   });
 
+  const {
+    data: accountListData,
+    loading: loadingAccountListData,
+  } = useGetAccountListCurrencyQuery({
+    variables: { accountListId },
+  });
+
   const nodes = data?.donations.nodes || [];
 
-  const accountCurrency = nodes[0]?.amount?.currency || 'USD';
+  const accountCurrency = accountListData?.accountList.currency || 'USD';
 
   const createData = (data: ExpectedDonationDataFragment): Donation => {
     return {
@@ -285,7 +293,7 @@ export const DonationsReportTable: React.FC<Props> = ({ accountListId }) => {
             </TableRow>
           </Table>
         </DataTable>
-      ) : loading ? (
+      ) : loading || loadingAccountListData ? (
         <LoadingBox>
           <LoadingIndicator color="primary" size={50} />
         </LoadingBox>
