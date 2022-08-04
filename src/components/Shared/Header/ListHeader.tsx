@@ -27,10 +27,18 @@ const HeaderWrap = styled(Box)(
   ({ theme }: { theme: Theme; contactDetailsOpen: boolean }) => ({
     padding: theme.spacing(3, 0.5),
     display: 'flex',
-    alignItems: 'center',
+    justifyContent: 'space-between',
     borderBottom: `1px solid ${theme.palette.grey[200]}`,
+    [theme.breakpoints.down('sm')]: {
+      paddingRight: theme.spacing(2),
+    },
   }),
 );
+
+const HeaderWrapInner = styled(Box)(() => ({
+  display: 'flex',
+  alignItems: 'center',
+}));
 
 const StyledCheckbox = styled(Checkbox)(({ theme }) => ({
   padding: theme.spacing(1.5),
@@ -68,7 +76,6 @@ const FilterIcon = styled(FilterList)(({ theme }) => ({
 
 const ItemsShowingText = styled('p')(({ theme }) => ({
   marginLeft: theme.spacing(2),
-  marginRight: 'auto',
   color: theme.palette.text.secondary,
   fontFamily: theme.typography.fontFamily,
 }));
@@ -143,59 +150,128 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
 
   return (
     <HeaderWrap contactDetailsOpen={contactDetailsOpen}>
-      {contactsView !== TableViewModeEnum.Map && (
-        <Hidden xsUp={contactDetailsOpen && page === 'task'}>
-          <StyledCheckbox
-            checked={headerCheckboxState === ListHeaderCheckBoxState.checked}
-            color="secondary"
-            indeterminate={
-              headerCheckboxState === ListHeaderCheckBoxState.partial
-            }
-            onChange={onCheckAllItems}
-          />
-        </Hidden>
-      )}
-      <FilterButton
-        activeFilters={activeFilters}
-        panelOpen={filterPanelOpen}
-        onClick={toggleFilterPanel}
-      >
-        {contactsView === TableViewModeEnum.Map ? (
-          <ViewList titleAccess={t('Toggle Contact List')} />
-        ) : (
-          <FilterIcon titleAccess={t('Toggle Filter Panel')} />
+      <HeaderWrapInner style={{ marginRight: 8 }}>
+        {contactsView !== TableViewModeEnum.Map && (
+          <Hidden xsDown>
+            <StyledCheckbox
+              checked={headerCheckboxState === ListHeaderCheckBoxState.checked}
+              color="secondary"
+              indeterminate={
+                headerCheckboxState === ListHeaderCheckBoxState.partial
+              }
+              onChange={onCheckAllItems}
+            />
+          </Hidden>
         )}
-      </FilterButton>
-      <SearchBox
-        page={page}
-        searchTerm={searchTerm}
-        onChange={onSearchTermChanged}
-        placeholder={
-          page === 'contact' ? t('Search Contacts') : t('Search Tasks')
-        }
-      />
+        <FilterButton
+          activeFilters={activeFilters}
+          panelOpen={filterPanelOpen}
+          onClick={toggleFilterPanel}
+        >
+          {contactsView === TableViewModeEnum.Map ? (
+            <ViewList titleAccess={t('Toggle Contact List')} />
+          ) : (
+            <FilterIcon titleAccess={t('Toggle Filter Panel')} />
+          )}
+        </FilterButton>
+        <SearchBox
+          page={page}
+          searchTerm={searchTerm}
+          onChange={onSearchTermChanged}
+          placeholder={
+            page === 'contact' ? t('Search Contacts') : t('Search Tasks')
+          }
+        />
 
-      <ItemsShowingText data-testid="showing-text">
-        {contactsView === TableViewModeEnum.List
-          ? t('Showing {{count}}', { count: totalItems })
-          : ''}
-      </ItemsShowingText>
-      {page === 'contact' ? (
-        <>
-          {contactsView !== TableViewModeEnum.Map && (
-            <>
-              {/* <Hidden lgDown={contactDetailsOpen}> */}
+        <Hidden smDown>
+          <ItemsShowingText data-testid="showing-text">
+            {contactsView === TableViewModeEnum.List
+              ? t('Showing {{count}}', { count: totalItems })
+              : ''}
+          </ItemsShowingText>
+        </Hidden>
+      </HeaderWrapInner>
+      <HeaderWrapInner style={{ marginLeft: 8 }}>
+        {page === 'contact' ? (
+          <>
+            {contactsView !== TableViewModeEnum.Map && (
+              <>
+                <Hidden xsDown>
+                  <ActionsButton
+                    aria-haspopup
+                    aria-expanded={open}
+                    onClick={handleClick}
+                    endIcon={<ArrowDropDown />}
+                  >
+                    {filterPanelOpen && contactDetailsOpen ? (
+                      <MoreHoriz />
+                    ) : (
+                      t('Actions')
+                    )}
+                  </ActionsButton>
+                  <Menu
+                    open={open}
+                    onClose={handleClose}
+                    anchorEl={anchorEl}
+                    getContentAnchorEl={null}
+                    anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+                    transformOrigin={{ vertical: 'top', horizontal: 'center' }}
+                  >
+                    <MenuItem>
+                      <ListItemText>{t('Add Tags')}</ListItemText>
+                    </MenuItem>
+                    <MenuItem divider>
+                      <ListItemText>{t('Remove Tags')}</ListItemText>
+                    </MenuItem>
+                    <MenuItem
+                      onClick={() => {
+                        openTaskModal({
+                          defaultValues: { contactIds: selectedIds },
+                        });
+                        handleClose();
+                      }}
+                    >
+                      <ListItemText>{t('Add Task')}</ListItemText>
+                    </MenuItem>
+                    <MenuItem divider>
+                      <ListItemText>{t('Log Task')}</ListItemText>
+                    </MenuItem>
+
+                    <MenuItem>
+                      <ListItemText>{t('Edit Fields')}</ListItemText>
+                    </MenuItem>
+                    <MenuItem>
+                      <ListItemText>{t('Hide Contacts')}</ListItemText>
+                    </MenuItem>
+
+                    <MenuItem>
+                      <ListItemText>{t('Add to Appeal')}</ListItemText>
+                    </MenuItem>
+                    <MenuItem divider>
+                      <ListItemText>{t('Add to new Appeal')}</ListItemText>
+                    </MenuItem>
+
+                    <MenuItem>
+                      <ListItemText>{t('Export Emails')}</ListItemText>
+                    </MenuItem>
+                  </Menu>
+                </Hidden>
+              </>
+            )}
+
+            {buttonGroup}
+          </>
+        ) : (
+          <>
+            {buttonGroup}
+            <Hidden xsDown>
               <ActionsButton
                 aria-haspopup
                 aria-expanded={open}
                 onClick={handleClick}
                 endIcon={<ArrowDropDown />}
               >
-                {filterPanelOpen && contactDetailsOpen ? (
-                  <MoreHoriz />
-                ) : (
-                  t('Actions')
-                )}
+                {t('Actions')}
               </ActionsButton>
               <Menu
                 open={open}
@@ -206,96 +282,33 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
                 transformOrigin={{ vertical: 'top', horizontal: 'center' }}
               >
                 <MenuItem>
-                  <ListItemText>{t('Add Tags')}</ListItemText>
+                  <ListItemText>{t('Complete Tasks')}</ListItemText>
                 </MenuItem>
                 <MenuItem divider>
-                  <ListItemText>{t('Remove Tags')}</ListItemText>
+                  <ListItemText>{t('Edit Tasks')}</ListItemText>
                 </MenuItem>
-                <MenuItem
-                  onClick={() => {
-                    openTaskModal({
-                      defaultValues: { contactIds: selectedIds },
-                    });
-                    handleClose();
-                  }}
-                >
-                  <ListItemText>{t('Add Task')}</ListItemText>
+                <MenuItem>
+                  <ListItemText>{t('Add Tag(s)')}</ListItemText>
                 </MenuItem>
                 <MenuItem divider>
-                  <ListItemText>{t('Log Task')}</ListItemText>
+                  <ListItemText>{t('Remove Tag(s)')}</ListItemText>
                 </MenuItem>
 
                 <MenuItem>
-                  <ListItemText>{t('Edit Fields')}</ListItemText>
-                </MenuItem>
-                <MenuItem>
-                  <ListItemText>{t('Hide Contacts')}</ListItemText>
-                </MenuItem>
-
-                <MenuItem>
-                  <ListItemText>{t('Add to Appeal')}</ListItemText>
-                </MenuItem>
-                <MenuItem divider>
-                  <ListItemText>{t('Add to new Appeal')}</ListItemText>
-                </MenuItem>
-
-                <MenuItem>
-                  <ListItemText>{t('Export Emails')}</ListItemText>
+                  <ListItemText>{t('Delete Tasks')}</ListItemText>
                 </MenuItem>
               </Menu>
-              {/* </Hidden> */}
-            </>
-          )}
+            </Hidden>
+          </>
+        )}
 
-          {buttonGroup}
-        </>
-      ) : (
-        <>
-          {buttonGroup}
-          <Hidden smDown>
-            <ActionsButton
-              aria-haspopup
-              aria-expanded={open}
-              onClick={handleClick}
-              endIcon={<ArrowDropDown />}
-            >
-              {t('Actions')}
-            </ActionsButton>
-            <Menu
-              open={open}
-              onClose={handleClose}
-              anchorEl={anchorEl}
-              getContentAnchorEl={null}
-              anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-              transformOrigin={{ vertical: 'top', horizontal: 'center' }}
-            >
-              <MenuItem>
-                <ListItemText>{t('Complete Tasks')}</ListItemText>
-              </MenuItem>
-              <MenuItem divider>
-                <ListItemText>{t('Edit Tasks')}</ListItemText>
-              </MenuItem>
-              <MenuItem>
-                <ListItemText>{t('Add Tag(s)')}</ListItemText>
-              </MenuItem>
-              <MenuItem divider>
-                <ListItemText>{t('Remove Tag(s)')}</ListItemText>
-              </MenuItem>
-
-              <MenuItem>
-                <ListItemText>{t('Delete Tasks')}</ListItemText>
-              </MenuItem>
-            </Menu>
-          </Hidden>
-        </>
-      )}
-
-      {/* <Hidden smDown> */}
-      <StarFilterButton
-        starredFilter={starredFilter}
-        toggleStarredFilter={toggleStarredFilter}
-      />
-      {/* </Hidden> */}
+        <Hidden smDown>
+          <StarFilterButton
+            starredFilter={starredFilter}
+            toggleStarredFilter={toggleStarredFilter}
+          />
+        </Hidden>
+      </HeaderWrapInner>
     </HeaderWrap>
   );
 };
