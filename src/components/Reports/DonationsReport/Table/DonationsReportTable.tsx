@@ -133,6 +133,17 @@ export const DonationsReportTable: React.FC<Props> = ({ accountListId }) => {
     );
   };
 
+  const foreignAmount = (params: GridCellParams) => {
+    const donation = params.row as Donation;
+    return (
+      <Typography>
+        {`${Math.round(donation.foreignAmount * 100) / 100} ${
+          donation.foreignCurrency
+        }`}
+      </Typography>
+    );
+  };
+
   const designation = (params: GridCellParams) => {
     const donation = params.row as Donation;
     return <Typography>{donation.designation}</Typography>;
@@ -149,30 +160,36 @@ export const DonationsReportTable: React.FC<Props> = ({ accountListId }) => {
       field: 'date',
       headerName: t('Date'),
       type: 'date',
-      width: 176,
+      width: 140,
     },
     {
       field: 'partner',
       headerName: t('Partner'),
-      width: 296,
+      width: 260,
       renderCell: link,
     },
     {
       field: 'convertedAmount',
       headerName: t('Amount'),
-      width: 186,
+      width: 150,
       renderCell: amount,
+    },
+    {
+      field: 'foreignAmount',
+      headerName: t('Foreign Amount'),
+      width: 180,
+      renderCell: foreignAmount,
     },
     {
       field: 'designation',
       headerName: t('Designation'),
-      width: 256,
+      width: 220,
       renderCell: designation,
     },
     {
       field: 'method',
       headerName: t('Method'),
-      width: 191,
+      width: 155,
     },
     {
       field: 'appeal',
