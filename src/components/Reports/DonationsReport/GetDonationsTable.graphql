@@ -40,3 +40,9 @@ fragment ExpectedDonationData on Donation {
   id
   paymentMethod
 }
+
+query GetAccountListCurrency($accountListId: ID!) {
+  accountList(id: $accountListId) {
+    currency
+  }
+}
