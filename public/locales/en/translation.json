@@ -20,7 +20,6 @@
   "Late Commitments": "Late Commitments",
   "View All ({{ totalCount, number }})": "View All ({{ totalCount, number }})",
   "No late commitments to show.": "No late commitments to show.",
-  "Their gift is {{ daysLate, number }} day late.": "Their gift is {{ daysLate, number }} day late.",
   "Their gift is {{ daysLate, number }} day late._plural": "Their gift is {{ daysLate, number }} days late.",
   "Partner Care": "Partner Care",
   "Prayer ({{ totalCount, number }})": "Prayer ({{ totalCount, number }})",
