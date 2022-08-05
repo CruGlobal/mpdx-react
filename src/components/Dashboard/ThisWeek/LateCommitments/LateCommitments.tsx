@@ -110,7 +110,7 @@ const LateCommitments = ({
                   if (!contact.lateAt) {
                     return null;
                   }
-                  const count = Math.round(
+                  const daysLate = Math.round(
                     DateTime.local().diff(
                       DateTime.fromISO(contact.lateAt),
                       'days',
@@ -130,9 +130,9 @@ const LateCommitments = ({
                         <ListItemText
                           primary={contact.name}
                           secondary={t(
-                            'Their gift is {{ count, number }} day late.',
+                            'Their gift is {{ daysLate, number }} day late.',
                             {
-                              count,
+                              daysLate,
                             },
                           )}
                         />
