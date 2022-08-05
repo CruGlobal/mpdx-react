@@ -109,15 +109,12 @@ export const ContactDetailsMoreAcitions: React.FC<ContactDetailsMoreAcitionsProp
 }) => {
   const { openTaskModal } = useTaskModal();
   const { t } = useTranslation();
-  const {
-    accountListId,
-    searchTerm,
-    contactId: _,
-    query,
-    router,
-  } = React.useContext(ContactsPageContext) as ContactsPageType;
+  const { accountListId, searchTerm, router } = React.useContext(
+    ContactsPageContext,
+  ) as ContactsPageType;
+  const { query, push } = router;
   const { ...queryWithoutContactId } = query;
-  const { push } = router;
+
   const {
     referralsModalOpen,
     setReferralsModalOpen,
