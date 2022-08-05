@@ -1,4 +1,3 @@
-import { ParsedUrlQuery } from 'querystring';
 import _, { debounce } from 'lodash';
 import { DateTime } from 'luxon';
 import { NextRouter, useRouter } from 'next/router';
@@ -38,7 +37,6 @@ export type ContactsPageType = {
   searchTerm: string | string[] | undefined;
   loading: boolean;
   router: NextRouter;
-  query: ParsedUrlQuery;
   selectionType: ListHeaderCheckBoxState;
   isRowChecked: (id: string) => boolean;
   toggleSelectAll: () => void;
@@ -443,7 +441,6 @@ export const ContactsPageProvider: React.FC<React.ReactNode> = ({
         contactId: contactId,
         searchTerm: searchTerm,
         loading: loading,
-        query: query,
         router: router,
         selectionType: selectionType,
         isRowChecked: isRowChecked,
