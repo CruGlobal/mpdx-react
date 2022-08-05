@@ -44,12 +44,10 @@ import {
 import { GetTaskForTaskDrawerQuery } from '../../Drawer/TaskDrawerTask.generated';
 import { GetTasksForTaskListDocument } from '../../List/TaskList.generated';
 import { TaskFilter } from '../../List/List';
-import { GetThisWeekDocument } from '../../../Dashboard/ThisWeek/GetThisWeek.generated';
 import {
   useGetDataForTaskDrawerQuery,
   useCreateTaskMutation,
   useUpdateTaskMutation,
-  useDeleteTaskMutation,
   useGetTaskModalContactsFilteredQuery,
 } from '../../Drawer/Form/TaskDrawer.generated';
 import theme from '../../../../../src/theme';
@@ -138,7 +136,6 @@ const TaskModalForm = ({
 
   const [createTask, { loading: creating }] = useCreateTaskMutation();
   const [updateTask, { loading: saving }] = useUpdateTaskMutation();
-  const [deleteTask, { loading: deleting }] = useDeleteTaskMutation();
   const [createTaskComment] = useCreateTaskCommentMutation();
   const [selectedIds, setSelectedIds] = useState(
     task?.contacts.nodes.map((contact) => contact.id) ||
@@ -257,37 +254,6 @@ const TaskModalForm = ({
     }
     enqueueSnackbar(t('Task saved successfully'), { variant: 'success' });
     onClose();
-  };
-
-  const onDeleteTask = async (): Promise<void> => {
-    if (task) {
-      const endOfDay = DateTime.local().endOf('day');
-      await deleteTask({
-        variables: {
-          accountListId,
-          id: task.id,
-        },
-        refetchQueries: [
-          {
-            query: GetTasksForTaskListDocument,
-            variables: { accountListId, first: rowsPerPage, ...filter },
-          },
-          {
-            query: GetThisWeekDocument,
-            variables: {
-              accountListId,
-              endOfDay: endOfDay.toISO(),
-              today: endOfDay.toISODate(),
-              threeWeeksFromNow: endOfDay.plus({ weeks: 3 }).toISODate(),
-              twoWeeksAgo: endOfDay.minus({ weeks: 2 }).toISODate(),
-            },
-          },
-        ],
-      });
-      enqueueSnackbar(t('Task deleted successfully'), { variant: 'success' });
-      handleRemoveDialog(false);
-      onClose();
-    }
   };
 
   return (
@@ -747,11 +713,12 @@ const TaskModalForm = ({
                 </ActionButton>
               </Box>
               <DeleteConfirmation
+                accountListId={accountListId}
                 deleteType="task"
                 open={removeDialogOpen}
-                deleting={deleting}
-                onClickConfirm={onDeleteTask}
                 onClickDecline={handleRemoveDialog}
+                onClose={onClose}
+                taskId={task?.id}
               />
             </Box>
           </form>
