@@ -311,6 +311,7 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
         </>
       )}
 
+      {/* This hidden doesn't remove from document */}
       <Hidden smDown>
         <StarFilterButton
           starredFilter={starredFilter}
