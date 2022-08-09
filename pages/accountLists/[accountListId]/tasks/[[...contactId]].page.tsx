@@ -11,7 +11,10 @@ import { InfiniteList } from '../../../../src/components/InfiniteList/InfiniteLi
 import Loading from '../../../../src/components/Loading';
 import { SidePanelsLayout } from '../../../../src/components/Layouts/SidePanelsLayout';
 import { useAccountListId } from '../../../../src/hooks/useAccountListId';
-import { TaskFilterSetInput } from '../../../../graphql/types.generated';
+import {
+  ResultEnum,
+  TaskFilterSetInput,
+} from '../../../../graphql/types.generated';
 import { TaskRow } from '../../../../src/components/Task/TaskRow/TaskRow';
 import { ListHeader } from '../../../../src/components/Shared/Header/ListHeader';
 import NullState from '../../../../src/components/Shared/Filters/NullState/NullState';
@@ -58,12 +61,6 @@ const TasksPage: React.FC = () => {
 
   const { contactId, searchTerm } = query;
 
-  const [isCurrent, setIsCurrent] = React.useState(true);
-
-  function setCurrentFilter(current: boolean): void {
-    setIsCurrent(current);
-  }
-
   if (contactId !== undefined && !Array.isArray(contactId)) {
     throw new Error('contactId should be an array or undefined');
   }
@@ -84,6 +81,34 @@ const TasksPage: React.FC = () => {
     urlFilters ?? {},
   );
   const [starredFilter, setStarredFilter] = useState<TaskFilterSetInput>({});
+
+  const [isCurrent, setIsCurrent] = React.useState(
+    (activeFilters.result?.find((result) => result === ResultEnum.Completed)
+      ?.length ?? 0) < 1,
+  );
+
+  useEffect(() => {
+    console.log('Testing Switch');
+    console.log(activeFilters.result);
+    setIsCurrent(
+      (activeFilters.result?.find((result) => result === ResultEnum.Completed)
+        ?.length ?? 0) < 1,
+    );
+  }, [activeFilters]);
+
+  function setCurrentFilter(current: boolean): void {
+    if (current) {
+      setActiveFilters({
+        ...urlFilters,
+        result: [],
+      });
+    } else {
+      setActiveFilters({
+        ...urlFilters,
+        result: [ResultEnum.Completed],
+      });
+    }
+  }
 
   const { data, loading, fetchMore } = useTasksQuery({
     variables: {
