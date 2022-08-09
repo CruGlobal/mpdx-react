@@ -34,6 +34,11 @@ const TaskHeaderButton = styled(Button)(({ theme }) => ({
   marginLeft: theme.spacing(1),
 }));
 
+const TaskCurrentHistoryButtonGroup = styled(ButtonGroup)(({ theme }) => ({
+  margin: theme.spacing(1),
+  color: theme.palette.primary.contrastText,
+}));
+
 const TaskCheckIcon = styled(CheckCircleOutlineIcon)(({ theme }) => ({
   color: theme.palette.info.main,
 }));
@@ -52,6 +57,12 @@ const TasksPage: React.FC = () => {
   const [contactDetailsId, setContactDetailsId] = useState<string>();
 
   const { contactId, searchTerm } = query;
+
+  const [isCurrent, setIsCurrent] = React.useState(true);
+
+  function setCurrentFilter(current: boolean): void {
+    setIsCurrent(current);
+  }
 
   if (contactId !== undefined && !Array.isArray(contactId)) {
     throw new Error('contactId should be an array or undefined');
@@ -240,10 +251,23 @@ const TasksPage: React.FC = () => {
                   selectedIds={ids}
                 />
                 <Box>
-                  <ButtonGroup>
-                    <Button>{t('Current')}</Button>
-                    <Button>{t('Historic')}</Button>
-                  </ButtonGroup>
+                  <TaskCurrentHistoryButtonGroup
+                    variant="outlined"
+                    size="large"
+                  >
+                    <Button
+                      variant={isCurrent ? 'contained' : 'outlined'}
+                      onClick={() => setCurrentFilter(true)}
+                    >
+                      {t('Current')}
+                    </Button>
+                    <Button
+                      variant={isCurrent ? 'outlined' : 'contained'}
+                      onClick={() => setCurrentFilter(false)}
+                    >
+                      {t('Historic')}
+                    </Button>
+                  </TaskCurrentHistoryButtonGroup>
                   <InfiniteList
                     loading={loading}
                     data={data?.tasks?.nodes}
