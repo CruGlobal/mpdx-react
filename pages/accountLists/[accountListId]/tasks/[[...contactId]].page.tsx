@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import Head from 'next/head';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'next/router';
-import { Box, Button, Hidden, styled } from '@material-ui/core';
+import { Box, Button, ButtonGroup, Hidden, styled } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 import CheckCircleOutlineIcon from '@material-ui/icons/CheckCircleOutline';
 import debounce from 'lodash/debounce';
@@ -239,65 +239,71 @@ const TasksPage: React.FC = () => {
                   }
                   selectedIds={ids}
                 />
-                <InfiniteList
-                  loading={loading}
-                  data={data?.tasks?.nodes}
-                  totalCount={data?.tasks?.totalCount}
-                  style={{ height: 'calc(100vh - 160px)' }}
-                  itemContent={(index, task) => (
-                    <Box key={index} flexDirection="row" width="100%">
-                      <TaskRow
-                        accountListId={accountListId}
-                        task={task}
-                        onContactSelected={setContactFocus}
-                        onTaskCheckToggle={toggleSelectionById}
-                        isChecked={isRowChecked(task.id)}
-                        useTopMargin={index === 0}
-                      />
-                    </Box>
-                  )}
-                  groupBy={(item) => {
-                    if (item.completedAt) {
-                      return t('Completed');
-                    } else if (!item.startAt) {
+                <Box>
+                  <ButtonGroup>
+                    <Button>{t('Current')}</Button>
+                    <Button>{t('Historic')}</Button>
+                  </ButtonGroup>
+                  <InfiniteList
+                    loading={loading}
+                    data={data?.tasks?.nodes}
+                    totalCount={data?.tasks?.totalCount}
+                    style={{ height: 'calc(100vh - 160px)' }}
+                    itemContent={(index, task) => (
+                      <Box key={index} flexDirection="row" width="100%">
+                        <TaskRow
+                          accountListId={accountListId}
+                          task={task}
+                          onContactSelected={setContactFocus}
+                          onTaskCheckToggle={toggleSelectionById}
+                          isChecked={isRowChecked(task.id)}
+                          useTopMargin={index === 0}
+                        />
+                      </Box>
+                    )}
+                    groupBy={(item) => {
+                      if (item.completedAt) {
+                        return t('Completed');
+                      } else if (!item.startAt) {
+                        return t('No Due Date');
+                      } else if (
+                        DateTime.fromISO(item.startAt).hasSame(
+                          DateTime.now(),
+                          'day',
+                        )
+                      ) {
+                        return t('Today');
+                      } else if (
+                        DateTime.now().startOf('day') >
+                        DateTime.fromISO(item.startAt).startOf('day')
+                      ) {
+                        return t('Overdue');
+                      } else if (
+                        DateTime.now().startOf('day') <
+                        DateTime.fromISO(item.startAt).startOf('day')
+                      ) {
+                        return t('Upcoming');
+                      }
                       return t('No Due Date');
-                    } else if (
-                      DateTime.fromISO(item.startAt).hasSame(
-                        DateTime.now(),
-                        'day',
-                      )
-                    ) {
-                      return t('Today');
-                    } else if (
-                      DateTime.now().startOf('day') >
-                      DateTime.fromISO(item.startAt).startOf('day')
-                    ) {
-                      return t('Overdue');
-                    } else if (
-                      DateTime.now().startOf('day') <
-                      DateTime.fromISO(item.startAt).startOf('day')
-                    ) {
-                      return t('Upcoming');
+                    }}
+                    endReached={() =>
+                      data?.tasks?.pageInfo.hasNextPage &&
+                      fetchMore({
+                        variables: { after: data.tasks?.pageInfo.endCursor },
+                      })
                     }
-                    return t('No Due Date');
-                  }}
-                  endReached={() =>
-                    data?.tasks?.pageInfo.hasNextPage &&
-                    fetchMore({
-                      variables: { after: data.tasks?.pageInfo.endCursor },
-                    })
-                  }
-                  EmptyPlaceholder={
-                    <Box width="75%" margin="auto" mt={2}>
-                      <NullState
-                        page="task"
-                        totalCount={data?.allTasks?.totalCount || 0}
-                        filtered={isFiltered}
-                        changeFilters={setActiveFilters}
-                      />
-                    </Box>
-                  }
-                />
+                    EmptyPlaceholder={
+                      <Box width="75%" margin="auto" mt={2}>
+                        <NullState
+                          page="task"
+                          totalCount={data?.allTasks?.totalCount || 0}
+                          filtered={isFiltered}
+                          changeFilters={setActiveFilters}
+                        />
+                      </Box>
+                    }
+                  />
+                </Box>
               </>
             }
             rightPanel={
