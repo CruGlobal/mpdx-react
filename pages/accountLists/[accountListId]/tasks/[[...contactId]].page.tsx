@@ -88,8 +88,6 @@ const TasksPage: React.FC = () => {
   );
 
   useEffect(() => {
-    console.log('Testing Switch');
-    console.log(activeFilters.result);
     setIsCurrent(
       (activeFilters.result?.find((result) => result === ResultEnum.Completed)
         ?.length ?? 0) < 1,
