@@ -198,7 +198,7 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
 
       {page === 'contact' ? (
         <>
-          {contactsView !== TableViewModeEnum.Map && (
+          {contactsView !== TableViewModeEnum.Map && openAddToAppealModal && (
             <Hidden lgDown={contactDetailsOpen}>
               <ActionsButton
                 aria-haspopup
