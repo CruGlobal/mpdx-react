@@ -144,3 +144,28 @@ it('should open add task panel', async () => {
   await waitFor(() => userEvent.click(getByText('Add Task')));
   await waitFor(() => expect(openTaskModal).toHaveBeenCalled());
 });
+
+it('should show Completed', async () => {
+  const { getByText } = render(
+    <ThemeProvider theme={theme}>
+      <TestRouter router={router}>
+        <GqlMockedProvider<TasksQuery>
+          mocks={{
+            Tasks: {
+              tasks: {
+                nodes: [task],
+                pageInfo: { endCursor: 'Mg', hasNextPage: false },
+              },
+            },
+          }}
+        >
+          <Tasks />
+        </GqlMockedProvider>
+      </TestRouter>
+    </ThemeProvider>,
+  );
+
+  await waitFor(() => expect(getByText('Historic')).toBeInTheDocument());
+  await waitFor(() => expect(getByText('Current')).toBeInTheDocument());
+  await waitFor(() => userEvent.click(getByText('Historic')));
+});
