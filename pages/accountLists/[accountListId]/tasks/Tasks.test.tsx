@@ -168,4 +168,15 @@ it('should show Completed', async () => {
   await waitFor(() => expect(getByText('Historic')).toBeInTheDocument());
   await waitFor(() => expect(getByText('Current')).toBeInTheDocument());
   await waitFor(() => userEvent.click(getByText('Historic')));
+  await waitFor(() => userEvent.click(getByText('Current')));
+  await waitFor(() =>
+    expect(router).toMatchInlineSnapshot(`
+      Object {
+        "isReady": true,
+        "query": Object {
+          "accountListId": "account-list-1",
+        },
+      }
+    `),
+  );
 });
