@@ -11,10 +11,7 @@ import { InfiniteList } from '../../../../src/components/InfiniteList/InfiniteLi
 import Loading from '../../../../src/components/Loading';
 import { SidePanelsLayout } from '../../../../src/components/Layouts/SidePanelsLayout';
 import { useAccountListId } from '../../../../src/hooks/useAccountListId';
-import {
-  ResultEnum,
-  TaskFilterSetInput,
-} from '../../../../graphql/types.generated';
+import { TaskFilterSetInput } from '../../../../graphql/types.generated';
 import { TaskRow } from '../../../../src/components/Task/TaskRow/TaskRow';
 import { ListHeader } from '../../../../src/components/Shared/Header/ListHeader';
 import NullState from '../../../../src/components/Shared/Filters/NullState/NullState';
@@ -82,28 +79,22 @@ const TasksPage: React.FC = () => {
   );
   const [starredFilter, setStarredFilter] = useState<TaskFilterSetInput>({});
 
-  const [isCurrent, setIsCurrent] = React.useState(
-    (activeFilters.result?.find((result) => result === ResultEnum.Completed)
-      ?.length ?? 0) < 1,
-  );
+  const [isCurrent, setIsCurrent] = React.useState(!activeFilters.completed);
 
   useEffect(() => {
-    setIsCurrent(
-      (activeFilters.result?.find((result) => result === ResultEnum.Completed)
-        ?.length ?? 0) < 1,
-    );
+    setIsCurrent(!activeFilters.completed);
   }, [activeFilters]);
 
   function setCurrentFilter(current: boolean): void {
     if (current) {
       setActiveFilters({
         ...urlFilters,
-        result: undefined,
+        completed: false,
       });
     } else {
       setActiveFilters({
         ...urlFilters,
-        result: [ResultEnum.Completed],
+        completed: true,
       });
     }
   }
