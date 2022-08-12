@@ -98,7 +98,7 @@ const TasksPage: React.FC = () => {
     if (current) {
       setActiveFilters({
         ...urlFilters,
-        result: [],
+        result: undefined,
       });
     } else {
       setActiveFilters({
