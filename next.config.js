@@ -54,6 +54,8 @@ module.exports = withPlugins([
     typescript: {
       ignoreBuildErrors: true,
     },
+    reactStrictMode: false,
+    styledComponents: true,
     webpack: (config) => {
       config.experiments = {
         ...config.experiments,
@@ -61,7 +63,7 @@ module.exports = withPlugins([
           topLevelAwait: true,
         },
       };
-      config.modu1le.rules.push({
+      config.module.rules.push({
         test: /\.(graphql|gql)$/,
         include: path.resolve(__dirname, '../'),
         exclude: /node_modules/,
