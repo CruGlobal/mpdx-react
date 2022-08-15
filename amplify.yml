@@ -3,10 +3,11 @@ frontend:
   phases:
     preBuild:
       commands:
-        - nvm install 14.20.0
-        - nvm use 14.20.0
+        - nvm install 16.16.0
+        - nvm use 16.16.0
         - echo $secrets
-        - npm install --legacy-peer-deps
+        - echo "NEXTAUTH_URL=$NEXTAUTH_URL" >> .env
+        - npm install --force
         - npm run gql:server
         - npm run gql
     build:
