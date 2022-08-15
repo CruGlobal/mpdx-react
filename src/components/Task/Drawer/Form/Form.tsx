@@ -557,8 +557,8 @@ const TaskDrawerForm = ({
           </Box>
           <Divider />
           <Box m={2}>
-            <Grid container spacing={1} justify="flex-end">
-              <Grid container item xs={8} justify="flex-start">
+            <Grid container spacing={1} justifyContent="flex-end">
+              <Grid container item xs={8} justifyContent="flex-start">
                 {task?.id ? (
                   <Button
                     size="large"

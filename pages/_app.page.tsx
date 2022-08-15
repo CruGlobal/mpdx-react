@@ -78,10 +78,6 @@ const App = ({ Component, pageProps, router }: AppProps): ReactElement => {
           href="/icons/apple-touch-icon-ipad-retina-152x152.png"
         />
         <meta name="apple-mobile-web-app-status-bar-style" content="black" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;700&display=swap"
-          rel="stylesheet"
-        />
       </Head>
       <I18nextProvider i18n={i18n}>
         <SessionProvider session={session}>

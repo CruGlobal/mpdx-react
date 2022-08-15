@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { useTheme, Typography } from '@material-ui/core';
-import type { Theme } from '@material-ui/core/styles/createMuiTheme';
+import type { Theme } from '@material-ui/core/styles/createTheme';
 import { useTranslation } from 'react-i18next';
 
 export enum ContactLateStatusEnum {

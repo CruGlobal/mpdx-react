@@ -60,9 +60,8 @@ const NotificationMenuItem = ({
   }
 
   const amount = item.notification.donation?.amount;
-  const [
-    acknoweldgeUserNotification,
-  ] = useAcknowledgeUserNotificationMutation();
+  const [acknoweldgeUserNotification] =
+    useAcknowledgeUserNotificationMutation();
   const handleClick = async () => {
     let optimisticResponse = true;
     if (!item.read) {
@@ -224,7 +223,7 @@ const NotificationMenuItem = ({
             <Badge
               color="secondary"
               variant="dot"
-              overlap="circle"
+              overlap="circular"
               invisible={item.read}
               data-testid="NotificationMenuItemBadge"
             >

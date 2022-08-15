@@ -1,7 +1,8 @@
-import { ApolloServer } from '@saeris/apollo-server-vercel';
+import { ApolloServer } from 'apollo-server-micro';
+import { PageConfig, NextApiRequest } from 'next';
+import Cors from 'micro-cors';
 import { ApolloGateway, RemoteGraphQLDataSource } from '@apollo/gateway';
 import { getToken } from 'next-auth/jwt';
-import { NextApiRequest } from 'next';
 
 class AuthenticatedDataSource extends RemoteGraphQLDataSource {
   willSendRequest({
@@ -37,7 +38,12 @@ if (!process.env.JWT_SECRET) {
   throw new Error('JWT_SECRET env var is not set');
 }
 
-const server = new ApolloServer({
+const cors = Cors({
+  origin: 'https://studio.apollographql.com',
+  allowCredentials: true,
+});
+
+const apolloServer = new ApolloServer({
   gateway,
   playground: {
     settings: {
@@ -55,5 +61,21 @@ const server = new ApolloServer({
     return { apiToken: jwtToken?.apiToken };
   },
 });
+const startServer = apolloServer.start();
 
-export default server.createHandler();
+export default cors(async (req, res) => {
+  if (req.method === 'OPTIONS') {
+    res.end();
+    return false;
+  }
+  await startServer;
+  await apolloServer.createHandler({
+    path: '/api/graphql',
+  })(req, res);
+});
+// Apollo Server Micro takes care of body parsing
+export const config: PageConfig = {
+  api: {
+    bodyParser: false,
+  },
+};

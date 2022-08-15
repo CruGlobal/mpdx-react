@@ -9,7 +9,7 @@ import {
   useTheme,
   styled,
 } from '@material-ui/core';
-import type { Theme } from '@material-ui/core/styles/createMuiTheme';
+import type { Theme } from '@material-ui/core/styles/createTheme';
 import {
   ReferenceLine,
   BarChart,
@@ -62,7 +62,7 @@ export const AccountListItemChart: FC<AccountListItemChartProps> = ({
           <CardHeader
             title={
               <Box display={{ xs: 'none', sm: 'block' }}>
-                <Grid container spacing={2} justify="center">
+                <Grid container spacing={2} justifyContent="center">
                   <Grid item>
                     <LegendIdentifier color={theme.palette.secondary.dark} />
                     <Typography variant="body1" component="span">

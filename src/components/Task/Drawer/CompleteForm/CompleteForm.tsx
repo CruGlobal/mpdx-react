@@ -322,7 +322,7 @@ const TaskDrawerCompleteForm = ({
           </Box>
           <Divider />
           <Box m={2}>
-            <Grid container spacing={1} justify="flex-end">
+            <Grid container spacing={1} justifyContent="flex-end">
               <Grid item>
                 <Button size="large" disabled={isSubmitting} onClick={onClose}>
                   {t('Cancel')}

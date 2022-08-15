@@ -1,5 +1,5 @@
+const path = require('path');
 const withPlugins = require('next-compose-plugins');
-const withPWA = require('next-pwa');
 const withOptimizedImages = require('next-optimized-images');
 const withGraphql = require('next-plugin-graphql');
 require('dotenv').config();
@@ -24,23 +24,12 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
 });
 
 module.exports = withPlugins([
-  [
-    withPWA,
-    {
-      pwa: {
-        dest: 'public',
-        disable: !prod,
-      },
-    },
-  ],
   withOptimizedImages,
   withGraphql,
   withBundleAnalyzer,
   {
-    serverRuntimeConfig: {
-      NEXTAUTH_URL: siteUrl,
-    },
     env: {
+      NEXTAUTH_URL: process.env.NEXTAUTH_URL,
       JWT_SECRET: process.env.JWT_SECRET ?? 'development-key',
       API_URL: process.env.API_URL ?? 'https://api.stage.mpdx.org/graphql',
       REST_API_URL:
@@ -65,6 +54,55 @@ module.exports = withPlugins([
     typescript: {
       ignoreBuildErrors: true,
     },
-    webpack5: false,
+    webpack: (config) => {
+      config.experiments = {
+        ...config.experiments,
+        ...{
+          topLevelAwait: true,
+        },
+      };
+      config.modu1le.rules.push({
+        test: /\.(graphql|gql)$/,
+        include: path.resolve(__dirname, '../'),
+        exclude: /node_modules/,
+        use: [
+          {
+            loader: 'graphql-tag/loader',
+          },
+        ],
+      });
+
+      const fileLoaderRule = config.module.rules.find(
+        (rule) => rule.test && rule.test.test('.svg'),
+      );
+      fileLoaderRule.exclude = /\.svg$/;
+
+      config.module.rules.push(
+        {
+          test: /\.(png|jpg|gif|woff|woff2|otf|ttf|svg)$/i,
+          use: [
+            {
+              loader: 'url-loader',
+              options: {
+                limit: 100000,
+              },
+            },
+          ],
+        },
+        {
+          test: /\.(png|jpe?g|gif|mp3|aif)$/i,
+          use: [
+            {
+              loader: 'file-loader',
+              options: {
+                name: 'static/media/[name].[hash:8].[ext]',
+              },
+            },
+          ],
+        },
+      );
+
+      return config;
+    },
   },
 ]);

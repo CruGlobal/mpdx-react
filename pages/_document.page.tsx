@@ -17,6 +17,10 @@ class MyDocument extends Document {
       <Html lang="en">
         <Head>
           <meta name="theme-color" content={theme.palette.mpdxBlue.main} />
+          <link
+            href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;700&display=swap"
+            rel="stylesheet"
+          />
         </Head>
         <body>
           <Main />
@@ -56,8 +60,10 @@ class MyDocument extends Document {
 
     ctx.renderPage = (): RenderPageResult | Promise<RenderPageResult> =>
       originalRenderPage({
-        enhanceApp: (App) => (props): ReactElement =>
-          sheets.collect(<App {...props} />),
+        enhanceApp:
+          (App) =>
+          (props): ReactElement =>
+            sheets.collect(<App {...props} />),
       });
 
     const initialProps = await Document.getInitialProps(ctx);

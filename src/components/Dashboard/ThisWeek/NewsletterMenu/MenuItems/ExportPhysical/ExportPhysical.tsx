@@ -103,7 +103,7 @@ const ExportPhysical: React.FC<Props> = ({
       </ExportPhysicalTitle>
       <DialogContent dividers>
         <>
-          <Grid container alignItems="center" justify="space-between">
+          <Grid container alignItems="center" justifyContent="space-between">
             {isExportingPdf ? (
               <>
                 <Grid item xs={12}>

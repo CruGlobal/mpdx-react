@@ -1,6 +1,6 @@
-import { createMuiTheme } from '@material-ui/core/styles';
+import { createTheme } from '@material-ui/core/styles';
 
-const defaultTheme = createMuiTheme();
+const defaultTheme = createTheme();
 
 // https://www.cru.org/brand/color/
 const cruColors = {
@@ -52,7 +52,7 @@ declare module '@material-ui/core/styles/createPalette' {
   }
 }
 
-const theme = createMuiTheme({
+const theme = createTheme({
   typography: {
     fontFamily: "'Source Sans Pro', sans-serif",
   },

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTheme } from '@material-ui/core';
-import type { Theme } from '@material-ui/core/styles/createMuiTheme';
+import type { Theme } from '@material-ui/core/styles/createTheme';
 import ErrorIcon from '@material-ui/icons/Error';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import { useTranslation } from 'react-i18next';
@@ -9,9 +9,9 @@ interface ContactPledgeReceivedIconProps {
   pledgeReceived: boolean;
 }
 
-export const ContactPledgeReceivedIcon: React.FC<ContactPledgeReceivedIconProps> = ({
-  pledgeReceived,
-}) => {
+export const ContactPledgeReceivedIcon: React.FC<
+  ContactPledgeReceivedIconProps
+> = ({ pledgeReceived }) => {
   const theme = useTheme<Theme>();
   const { t } = useTranslation();
 

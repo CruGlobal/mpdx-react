@@ -137,7 +137,7 @@ const DonationHistories = ({
               className={classes.cardHeader}
               title={
                 <Box display={{ xs: 'none', sm: 'block' }}>
-                  <Grid container spacing={2} justify="center">
+                  <Grid container spacing={2} justifyContent="center">
                     {goal ? (
                       <>
                         <Grid item>
@@ -231,7 +231,7 @@ const DonationHistories = ({
                 {loading ? (
                   <Grid
                     container
-                    justify="space-between"
+                    justifyContent="space-between"
                     alignItems="flex-end"
                     data-testid="DonationHistoriesGridLoading"
                   >
@@ -317,7 +317,11 @@ const DonationHistories = ({
                 style={{ height: '150px' }}
               >
                 {loading ? (
-                  <Grid container justify="space-between" alignItems="flex-end">
+                  <Grid
+                    container
+                    justifyContent="space-between"
+                    alignItems="flex-end"
+                  >
                     <Skeleton variant="rect" width={10} height={40} />
                     <Skeleton variant="rect" width={10} height={50} />
                     <Skeleton variant="rect" width={10} height={60} />

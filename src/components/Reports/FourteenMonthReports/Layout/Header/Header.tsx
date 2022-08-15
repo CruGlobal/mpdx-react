@@ -69,7 +69,7 @@ export const FourteenMonthReportHeader: FC<FourteenMonthReportHeaderProps> = ({
     <StickyHeader p={2} data-testid="FourteenMonthReportHeader">
       <Grid
         container
-        justify={isMobile ? 'center' : 'space-between'}
+        justifyContent={isMobile ? 'center' : 'space-between'}
         spacing={2}
         {...rest}
       >
