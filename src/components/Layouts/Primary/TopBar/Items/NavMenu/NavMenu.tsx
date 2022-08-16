@@ -23,8 +23,8 @@ import { ToolsList } from '../../../../../Tool/Home/ToolList';
 import { useCurrentToolId } from '../../../../../../hooks/useCurrentToolId';
 import theme from '../../../../../../theme';
 import { useAccountListId } from '../../../../../../hooks/useAccountListId';
-import { importRoutes } from '../../../NavBar/NavBar';
 import { useGetToolNotificationsQuery } from './GetToolNotifcations.generated';
+import HandoffLink from 'src/components/HandoffLink';
 
 export const filteredReportNavItems = ReportNavItems.filter(
   (item) => item.id !== 'partnerCurrency',
@@ -107,6 +107,9 @@ export const toolsRedirectLinks: { [key: string]: string } = {
   fixMailingAddresses: 'fix/addresses',
   mergePeople: 'merge/people',
   mergeContacts: 'merge/contacts',
+  google: 'import/google',
+  tntConnect: 'import/tnt',
+  csv: 'import/csv/upload',
 };
 
 const NavMenu = (): ReactElement => {
@@ -338,17 +341,11 @@ const NavMenu = (): ReactElement => {
                                 ? toolData[tool.id]?.totalCount > 0
                                 : false;
                               return (
-                                <NextLink
+                                <HandoffLink
                                   key={tool.id}
-                                  href={
-                                    tool.tool.includes('Import')
-                                      ? `https://mpdx.org/tools/import/${
-                                          importRoutes[tool.tool]
-                                        }`
-                                      : `https://mpdx.org/tools/${
-                                          toolsRedirectLinks[tool.id]
-                                        }`
-                                  }
+                                  path={`https://mpdx.org/tools/${
+                                    toolsRedirectLinks[tool.id]
+                                  }`}
                                 >
                                   <MenuItem
                                     tabIndex={0}
@@ -397,7 +394,7 @@ const NavMenu = (): ReactElement => {
                                       </Box>
                                     )}
                                   </MenuItem>
-                                </NextLink>
+                                </HandoffLink>
                               );
                             })}
                           </Box>

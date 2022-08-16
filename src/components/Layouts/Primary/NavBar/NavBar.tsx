@@ -119,12 +119,6 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-export const importRoutes: { [key: string]: string } = {
-  'Import from Google': 'google',
-  'Import from TntConnect': 'tnt',
-  'Import from CSV': 'csv/upload',
-};
-
 export const NavBar: FC<NavBarProps> = ({ onMobileClose, openMobile }) => {
   const classes = useStyles();
   const accountListId = useAccountListId();
@@ -157,9 +151,7 @@ export const NavBar: FC<NavBarProps> = ({ onMobileClose, openMobile }) => {
       items: ToolsList.flatMap((toolsGroup) => [
         ...toolsGroup.items.map((tool) => ({
           title: tool.tool,
-          href: tool.tool.includes('Import')
-            ? `https://mpdx.org/tools/import/${importRoutes[tool.tool]}`
-            : `https://mpdx.org/tools/${toolsRedirectLinks[tool.id]}`,
+          href: `https://mpdx.org/tools/${toolsRedirectLinks[tool.id]}`,
         })),
       ]),
     },
