@@ -98,6 +98,17 @@ enum ToolName {
   mergePeople = 'mergePeople',
 }
 
+export const toolsRedirectLinks: { [key: string]: string } = {
+  appeals: 'appeals',
+  fixCommitmentInfo: 'fix/commitment-info',
+  fixEmailAddresses: 'fix/email-addresses',
+  fixPhoneNumbers: 'fix/phone-numbers',
+  fixSendNewsletter: 'fix/send-newsletter',
+  fixMailingAddresses: 'fix/addresses',
+  mergePeople: 'merge/people',
+  mergeContacts: 'merge/contacts',
+};
+
 const NavMenu = (): ReactElement => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
@@ -334,7 +345,9 @@ const NavMenu = (): ReactElement => {
                                       ? `https://mpdx.org/tools/import/${
                                           importRoutes[tool.tool]
                                         }`
-                                      : `/accountLists/${accountListId}/tools/${tool.id}`
+                                      : `https://mpdx.org/tools/${
+                                          toolsRedirectLinks[tool.id]
+                                        }`
                                   }
                                 >
                                   <MenuItem
