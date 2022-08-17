@@ -48,9 +48,9 @@ const PageHeading = ({
 
   return (
     <motion.div
-      initial={{ y: -250 }}
+      initial={{ y: -height }}
       animate={{ y: 0, transition: { ease: 'easeInOut' } }}
-      exit={{ y: -250, transition: { ease: 'easeInOut', delay: 0.75 } }}
+      exit={{ y: -height, transition: { ease: 'easeInOut', delay: 0.75 } }}
       className={classes.div}
       style={{ marginBottom: -overlap, height }}
       data-testid="PageHeading"
@@ -87,14 +87,14 @@ const PageHeading = ({
           )}
         </Box>
         {image && (
-          <Box display={{ xs: 'none', sm: 'block' }}>
+          <Box display={{ xs: 'none', sm: 'block' }} fontSize={0}>
             <motion.img
               initial={{ x: 20, opacity: 0 }}
               animate={{ x: 0, opacity: 1, transition: { delay: 1.2 } }}
               exit={{ x: 20, opacity: 0 }}
               data-testid="PageHeadingImg"
               src={imgSrc || illustration20}
-              height={230 - overlap}
+              height={height - 20 - overlap}
               alt="heading"
             />
           </Box>

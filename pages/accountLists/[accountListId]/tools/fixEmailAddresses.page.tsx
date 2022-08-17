@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import Head from 'next/head';
-import FixEmailAddresses from '../../../../src/components/Tool/FixEmailAddresses/FixEmailAddreses';
+import { FixEmailAddresses } from '../../../../src/components/Tool/FixEmailAddresses/FixEmailAddresses';
 import Loading from '../../../../src/components/Loading';
 import { useAccountListId } from '../../../../src/hooks/useAccountListId';
 

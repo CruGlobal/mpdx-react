@@ -4,7 +4,6 @@ import {
   ButtonBase,
   Checkbox,
   Grid,
-  Hidden,
   ListItemIcon,
   ListItemSecondaryAction,
   ListItemText,
@@ -16,30 +15,25 @@ import { ContactPartnershipStatus } from '../ContactPartnershipStatus/ContactPar
 import { StarContactIconButton } from '../StarContactIconButton/StarContactIconButton';
 import { ContactUncompletedTasksCount } from '../ContactUncompletedTasksCount/ContactUncompletedTasksCount';
 import { ContactRowFragment } from './ContactRow.generated';
+import {
+  ContactsPageContext,
+  ContactsPageType,
+} from 'pages/accountLists/[accountListId]/contacts/ContactsPageContext';
 
 interface Props {
-  accountListId: string;
   contact: ContactRowFragment;
-  isChecked: boolean;
-  onContactSelected: (
-    contactId: string,
-    openDetails?: boolean,
-    flows?: boolean,
-  ) => void;
-  contactDetailsOpen: boolean;
-  onContactCheckToggle: (contactId: string) => void;
   useTopMargin?: boolean;
 }
 
-export const ContactRow: React.FC<Props> = ({
-  accountListId,
-  contact,
-  isChecked,
-  contactDetailsOpen,
-  onContactSelected,
-  onContactCheckToggle,
-  useTopMargin,
-}) => {
+export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
+  const {
+    accountListId,
+    isRowChecked: isChecked,
+    contactDetailsOpen,
+    setContactFocus: onContactSelected,
+    toggleSelectionById: onContactCheckToggle,
+  } = React.useContext(ContactsPageContext) as ContactsPageType;
+
   const ListItemButton = styled(ButtonBase)(() => ({
     flex: '1 1 auto',
     textAlign: 'left',
@@ -66,17 +60,15 @@ export const ContactRow: React.FC<Props> = ({
 
   return (
     <ListItemButton focusRipple onClick={onClick} data-testid="rowButton">
-      <Hidden xsUp={contactDetailsOpen}>
-        <ListItemIcon>
-          <Checkbox
-            checked={isChecked}
-            color="secondary"
-            onClick={(event) => event.stopPropagation()}
-            onChange={() => onContactCheckToggle(contact.id)}
-            value={isChecked}
-          />
-        </ListItemIcon>
-      </Hidden>
+      <ListItemIcon>
+        <Checkbox
+          checked={isChecked(contact.id)}
+          color="secondary"
+          onClick={(event) => event.stopPropagation()}
+          onChange={() => onContactCheckToggle(contact.id)}
+          value={isChecked}
+        />
+      </ListItemIcon>
       <Grid container alignItems="center">
         <Grid item xs={6}>
           <ListItemText
@@ -114,24 +106,20 @@ export const ContactRow: React.FC<Props> = ({
           />
         </Grid>
       </Grid>
-      <Hidden xsUp={contactDetailsOpen}>
-        <Box
-          style={uncompletedTasksCount === 0 ? { visibility: 'hidden' } : {}}
-        >
-          <ContactUncompletedTasksCount
-            uncompletedTasksCount={uncompletedTasksCount}
-          />
-        </Box>
-        <ListItemSecondaryAction
-          style={{ position: 'static', top: 0, transform: 'none' }}
-        >
-          <StarContactIconButton
-            accountListId={accountListId}
-            contactId={contactId}
-            isStarred={starred || false}
-          />
-        </ListItemSecondaryAction>
-      </Hidden>
+      <Box style={uncompletedTasksCount === 0 ? { visibility: 'hidden' } : {}}>
+        <ContactUncompletedTasksCount
+          uncompletedTasksCount={uncompletedTasksCount}
+        />
+      </Box>
+      <ListItemSecondaryAction
+        style={{ position: 'static', top: 0, transform: 'none' }}
+      >
+        <StarContactIconButton
+          accountListId={accountListId ?? ''}
+          contactId={contactId}
+          isStarred={starred || false}
+        />
+      </ListItemSecondaryAction>
     </ListItemButton>
   );
 };

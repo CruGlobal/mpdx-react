@@ -22,6 +22,7 @@ import { EmptyDonationsTable } from '../../../common/EmptyDonationsTable/EmptyDo
 import {
   useGetDonationsTableQuery,
   ExpectedDonationDataFragment,
+  useGetAccountListCurrencyQuery,
 } from '../GetDonationsTable.generated';
 
 interface Props {
@@ -80,9 +81,16 @@ export const DonationsReportTable: React.FC<Props> = ({ accountListId }) => {
     variables: { accountListId, startDate, endDate },
   });
 
+  const {
+    data: accountListData,
+    loading: loadingAccountListData,
+  } = useGetAccountListCurrencyQuery({
+    variables: { accountListId },
+  });
+
   const nodes = data?.donations.nodes || [];
 
-  const accountCurrency = nodes[0]?.amount?.currency || 'USD';
+  const accountCurrency = accountListData?.accountList.currency || 'USD';
 
   const createData = (data: ExpectedDonationDataFragment): Donation => {
     return {
@@ -93,7 +101,7 @@ export const DonationsReportTable: React.FC<Props> = ({ accountListId }) => {
       foreignCurrency: data.amount.currency,
       convertedAmount: data.amount.convertedAmount,
       foreignAmount: data.amount.amount,
-      designation: '', //Designation not currently in the Donation endpoint in GraphQL
+      designation: `${data.designationAccount.name} (${data.designationAccount.accountNumber})`,
       method: data.paymentMethod || null,
       id: data.id,
     };
@@ -127,7 +135,6 @@ export const DonationsReportTable: React.FC<Props> = ({ accountListId }) => {
 
   const foreignAmount = (params: GridCellParams) => {
     const donation = params.row as Donation;
-
     return (
       <Typography>
         {`${Math.round(donation.foreignAmount * 100) / 100} ${
@@ -135,6 +142,11 @@ export const DonationsReportTable: React.FC<Props> = ({ accountListId }) => {
         }`}
       </Typography>
     );
+  };
+
+  const designation = (params: GridCellParams) => {
+    const donation = params.row as Donation;
+    return <Typography>{donation.designation}</Typography>;
   };
 
   const button = () => (
@@ -172,6 +184,7 @@ export const DonationsReportTable: React.FC<Props> = ({ accountListId }) => {
       field: 'designation',
       headerName: t('Designation'),
       width: 220,
+      renderCell: designation,
     },
     {
       field: 'method',
@@ -185,6 +198,20 @@ export const DonationsReportTable: React.FC<Props> = ({ accountListId }) => {
       renderCell: button,
     },
   ];
+
+  // Remove foreign amount column if both of these conditions are met:
+  // 1.) There only one type of currency.
+  // 2.) The type of currency is the same as the account currency.
+  const currencyList = [
+    ...new Set(donations.map((donation) => donation.foreignCurrency)),
+  ];
+
+  if (currencyList.length === 1 && currencyList.includes(accountCurrency)) {
+    columns.splice(3, 1);
+    columns.forEach(
+      (column) => (column.width = column.width ? column.width + 36 : 0),
+    );
+  }
 
   const isEmpty = nodes?.length === 0;
 
@@ -297,7 +324,7 @@ export const DonationsReportTable: React.FC<Props> = ({ accountListId }) => {
             </TableRow>
           </Table>
         </DataTable>
-      ) : loading ? (
+      ) : loading || loadingAccountListData ? (
         <LoadingBox>
           <LoadingIndicator color="primary" size={50} />
         </LoadingBox>

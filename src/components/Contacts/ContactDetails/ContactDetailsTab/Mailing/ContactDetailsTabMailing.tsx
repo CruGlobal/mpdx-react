@@ -15,6 +15,10 @@ import {
   ContactDetailsAddIcon,
   ContactDetailsAddText,
 } from '../People/ContactDetailsTabPeople';
+import {
+  ContactDetailContext,
+  ContactDetailsType,
+} from '../../ContactDetailContext';
 import { ContactMailingFragment } from './ContactMailing.generated';
 import { EditContactAddressModal } from './EditContactAddressModal/EditContactAddressModal';
 import { AddAddressModal } from './AddAddressModal/AddAddressModal';
@@ -79,8 +83,12 @@ export const ContactDetailsTabMailing: React.FC<MailingProp> = ({
 }) => {
   const { t } = useTranslation();
   const { addresses, greeting, sendNewsletter, id } = data;
-  const [editingAddressId, setEditingAddressId] = useState<string>();
-  const [addAddressModalOpen, setAddAddressModalOpen] = useState(false);
+  const {
+    editingAddressId,
+    setEditingAddressId,
+    addAddressModalOpen,
+    setAddAddressModalOpen,
+  } = React.useContext(ContactDetailContext) as ContactDetailsType;
   const primaryAddress = addresses.nodes.filter(
     (address) => address.primaryMailingAddress === true,
   )[0];
@@ -92,7 +100,10 @@ export const ContactDetailsTabMailing: React.FC<MailingProp> = ({
     editingAddressId &&
     addresses.nodes.filter((address) => address.id === editingAddressId)[0];
 
-  const [showMoreOpen, setShowMoreOpen] = useState(false);
+  const [
+    showContactDetailTabMoreOpen,
+    setShowContactDetailTabMoreOpen,
+  ] = useState(false);
   return (
     <>
       <Box>
@@ -150,14 +161,20 @@ export const ContactDetailsTabMailing: React.FC<MailingProp> = ({
                 <Link href="#">
                   <ContactMailingShowMoreLabel
                     variant="subtitle1"
-                    onClick={() => setShowMoreOpen(!showMoreOpen)}
+                    onClick={() =>
+                      setShowContactDetailTabMoreOpen(
+                        !showContactDetailTabMoreOpen,
+                      )
+                    }
                   >
-                    {showMoreOpen ? t('Show Less') : t('Show More')}
+                    {showContactDetailTabMoreOpen
+                      ? t('Show Less')
+                      : t('Show More')}
                   </ContactMailingShowMoreLabel>
                 </Link>
               </ContactDetailsMailingLabelTextContainer>
             ) : null}
-            {showMoreOpen
+            {showContactDetailTabMoreOpen
               ? nonPrimaryAddresses.map((address) => (
                   <ContactDetailsMailingTextContainer
                     key={address.id}

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   Box,
   IconButton,
@@ -9,6 +9,10 @@ import {
 import CreateIcon from '@material-ui/icons/Create';
 import { Skeleton } from '@material-ui/lab';
 import { useTranslation } from 'react-i18next';
+import {
+  ContactDetailContext,
+  ContactDetailsType,
+} from '../ContactDetailContext';
 import { useContactDetailsTabQuery } from './ContactDetailsTab.generated';
 import { ContactDetailsTabMailing } from './Mailing/ContactDetailsTabMailing';
 import { ContactDetailsOther } from './Other/ContactDetailsOther';
@@ -73,9 +77,15 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
   });
 
   const { t } = useTranslation();
-  const [editModalOpen, setEditModalOpen] = useState(false);
-  const [editOtherModalOpen, setEditOtherModalOpen] = useState(false);
-  const [editMailingModalOpen, setEditMailingModalOpen] = useState(false);
+
+  const {
+    editModalOpen,
+    setEditModalOpen,
+    editOtherModalOpen,
+    setEditOtherModalOpen,
+    editMailingModalOpen,
+    setEditMailingModalOpen,
+  } = React.useContext(ContactDetailContext) as ContactDetailsType;
 
   return (
     <>

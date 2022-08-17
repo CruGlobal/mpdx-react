@@ -2,13 +2,12 @@ import React, { useCallback, useEffect, useState } from 'react';
 import Head from 'next/head';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'next/router';
-import { Box, Button, Hidden, styled } from '@material-ui/core';
+import { Box, Button, ButtonGroup, Hidden, styled } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 import CheckCircleOutlineIcon from '@material-ui/icons/CheckCircleOutline';
 import debounce from 'lodash/debounce';
 import { DateTime } from 'luxon';
 import { InfiniteList } from '../../../../src/components/InfiniteList/InfiniteList';
-import { ContactDetails } from '../../../../src/components/Contacts/ContactDetails/ContactDetails';
 import Loading from '../../../../src/components/Loading';
 import { SidePanelsLayout } from '../../../../src/components/Layouts/SidePanelsLayout';
 import { useAccountListId } from '../../../../src/hooks/useAccountListId';
@@ -19,8 +18,10 @@ import NullState from '../../../../src/components/Shared/Filters/NullState/NullS
 import { FilterPanel } from '../../../../src/components/Shared/Filters/FilterPanel';
 import { useMassSelection } from '../../../../src/hooks/useMassSelection';
 import { UserOptionFragment } from '../../../../src/components/Shared/Filters/FilterPanel.generated';
+import { ContactsPageProvider } from '../contacts/ContactsPageContext';
 import { useTaskFiltersQuery, useTasksQuery } from './Tasks.generated';
 import useTaskModal from 'src/hooks/useTaskModal';
+import { ContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/ContactsRightPanel';
 
 const WhiteBackground = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.common.white,
@@ -31,6 +32,11 @@ const TaskHeaderButton = styled(Button)(({ theme }) => ({
   fontWeight: 600,
   marginRight: theme.spacing(1),
   marginLeft: theme.spacing(1),
+}));
+
+const TaskCurrentHistoryButtonGroup = styled(ButtonGroup)(({ theme }) => ({
+  margin: theme.spacing(1),
+  color: theme.palette.primary.contrastText,
 }));
 
 const TaskCheckIcon = styled(CheckCircleOutlineIcon)(({ theme }) => ({
@@ -72,6 +78,26 @@ const TasksPage: React.FC = () => {
     urlFilters ?? {},
   );
   const [starredFilter, setStarredFilter] = useState<TaskFilterSetInput>({});
+
+  const [isCurrent, setIsCurrent] = React.useState(!activeFilters.completed);
+
+  useEffect(() => {
+    setIsCurrent(!activeFilters.completed);
+  }, [activeFilters]);
+
+  function setCurrentFilter(current: boolean): void {
+    if (current) {
+      setActiveFilters({
+        ...urlFilters,
+        completed: false,
+      });
+    } else {
+      setActiveFilters({
+        ...urlFilters,
+        completed: true,
+      });
+    }
+  }
 
   const { data, loading, fetchMore } = useTasksQuery({
     variables: {
@@ -123,11 +149,12 @@ const TasksPage: React.FC = () => {
 
   //#region Mass Actions
   const {
+    ids,
     selectionType,
     isRowChecked,
     toggleSelectAll,
     toggleSelectionById,
-  } = useMassSelection(data?.tasks?.totalCount ?? 0);
+  } = useMassSelection(data?.tasks?.totalCount ?? 0, []);
   //#endregion
 
   //#region User Actions
@@ -235,76 +262,95 @@ const TasksPage: React.FC = () => {
                       </TaskHeaderButton>
                     </Hidden>
                   }
+                  selectedIds={ids}
                 />
-                <InfiniteList
-                  loading={loading}
-                  data={data?.tasks?.nodes}
-                  totalCount={data?.tasks?.totalCount}
-                  style={{ height: 'calc(100vh - 160px)' }}
-                  itemContent={(index, task) => (
-                    <Box key={index} flexDirection="row" width="100%">
-                      <TaskRow
-                        accountListId={accountListId}
-                        task={task}
-                        onContactSelected={setContactFocus}
-                        onTaskCheckToggle={toggleSelectionById}
-                        isChecked={isRowChecked(task.id)}
-                        useTopMargin={index === 0}
-                      />
-                    </Box>
-                  )}
-                  groupBy={(item) => {
-                    if (item.completedAt) {
-                      return t('Completed');
-                    } else if (!item.startAt) {
+                <Box>
+                  <TaskCurrentHistoryButtonGroup
+                    variant="outlined"
+                    size="large"
+                  >
+                    <Button
+                      variant={isCurrent ? 'contained' : 'outlined'}
+                      onClick={() => setCurrentFilter(true)}
+                    >
+                      {t('Current')}
+                    </Button>
+                    <Button
+                      variant={isCurrent ? 'outlined' : 'contained'}
+                      onClick={() => setCurrentFilter(false)}
+                    >
+                      {t('Historic')}
+                    </Button>
+                  </TaskCurrentHistoryButtonGroup>
+                  <InfiniteList
+                    loading={loading}
+                    data={data?.tasks?.nodes}
+                    totalCount={data?.tasks?.totalCount}
+                    style={{ height: 'calc(100vh - 160px)' }}
+                    itemContent={(index, task) => (
+                      <Box key={index} flexDirection="row" width="100%">
+                        <TaskRow
+                          accountListId={accountListId}
+                          task={task}
+                          onContactSelected={setContactFocus}
+                          onTaskCheckToggle={toggleSelectionById}
+                          isChecked={isRowChecked(task.id)}
+                          useTopMargin={index === 0}
+                        />
+                      </Box>
+                    )}
+                    groupBy={(item) => {
+                      if (item.completedAt) {
+                        return t('Completed');
+                      } else if (!item.startAt) {
+                        return t('No Due Date');
+                      } else if (
+                        DateTime.fromISO(item.startAt).hasSame(
+                          DateTime.now(),
+                          'day',
+                        )
+                      ) {
+                        return t('Today');
+                      } else if (
+                        DateTime.now().startOf('day') >
+                        DateTime.fromISO(item.startAt).startOf('day')
+                      ) {
+                        return t('Overdue');
+                      } else if (
+                        DateTime.now().startOf('day') <
+                        DateTime.fromISO(item.startAt).startOf('day')
+                      ) {
+                        return t('Upcoming');
+                      }
                       return t('No Due Date');
-                    } else if (
-                      DateTime.fromISO(item.startAt).hasSame(
-                        DateTime.now(),
-                        'day',
-                      )
-                    ) {
-                      return t('Today');
-                    } else if (
-                      DateTime.now().startOf('day') >
-                      DateTime.fromISO(item.startAt).startOf('day')
-                    ) {
-                      return t('Overdue');
-                    } else if (
-                      DateTime.now().startOf('day') <
-                      DateTime.fromISO(item.startAt).startOf('day')
-                    ) {
-                      return t('Upcoming');
+                    }}
+                    endReached={() =>
+                      data?.tasks?.pageInfo.hasNextPage &&
+                      fetchMore({
+                        variables: { after: data.tasks?.pageInfo.endCursor },
+                      })
                     }
-                    return t('No Due Date');
-                  }}
-                  endReached={() =>
-                    data?.tasks?.pageInfo.hasNextPage &&
-                    fetchMore({
-                      variables: { after: data.tasks?.pageInfo.endCursor },
-                    })
-                  }
-                  EmptyPlaceholder={
-                    <Box width="75%" margin="auto" mt={2}>
-                      <NullState
-                        page="task"
-                        totalCount={data?.allTasks?.totalCount || 0}
-                        filtered={isFiltered}
-                        changeFilters={setActiveFilters}
-                      />
-                    </Box>
-                  }
-                />
+                    EmptyPlaceholder={
+                      <Box width="75%" margin="auto" mt={2}>
+                        <NullState
+                          page="task"
+                          totalCount={data?.allTasks?.totalCount || 0}
+                          filtered={isFiltered}
+                          changeFilters={setActiveFilters}
+                        />
+                      </Box>
+                    }
+                  />
+                </Box>
               </>
             }
             rightPanel={
               contactDetailsId ? (
-                <ContactDetails
-                  accountListId={accountListId}
-                  contactId={contactDetailsId}
-                  onClose={() => setContactFocus(undefined)}
-                  onContactSelected={setContactFocus}
-                />
+                <ContactsPageProvider>
+                  <ContactsRightPanel
+                    onClose={() => setContactFocus(undefined)}
+                  />
+                </ContactsPageProvider>
               ) : (
                 <></>
               )

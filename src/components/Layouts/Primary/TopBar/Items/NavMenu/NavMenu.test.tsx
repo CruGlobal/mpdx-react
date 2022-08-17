@@ -65,13 +65,7 @@ describe('NavMenu', () => {
     expect(
       getByRole('menuitem', {
         hidden: true,
-        name: 'Month Report (Partner Currency)',
-      }),
-    ).toBeInTheDocument();
-    expect(
-      getByRole('menuitem', {
-        hidden: true,
-        name: 'Month Report (Salary Currency)',
+        name: '14 Month Report',
       }),
     ).toBeInTheDocument();
     expect(
@@ -129,13 +123,7 @@ describe('NavMenu', () => {
     expect(
       getByRole('menuitem', {
         hidden: true,
-        name: 'Month Report (Partner Currency)',
-      }),
-    ).not.toBeVisible();
-    expect(
-      getByRole('menuitem', {
-        hidden: true,
-        name: 'Month Report (Salary Currency)',
+        name: '14 Month Report',
       }),
     ).not.toBeVisible();
     expect(

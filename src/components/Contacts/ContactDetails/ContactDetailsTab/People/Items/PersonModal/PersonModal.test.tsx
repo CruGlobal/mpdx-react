@@ -21,6 +21,7 @@ import {
 } from '../../../ContactDetailsTab.generated';
 import { PersonModal } from './PersonModal';
 import { UpdatePersonMutation } from './PersonModal.generated';
+import { ContactDetailProvider } from 'src/components/Contacts/ContactDetails/ContactDetailContext';
 
 const handleClose = jest.fn();
 const accountListId = '123';
@@ -136,12 +137,14 @@ describe('PersonModal', () => {
         <MuiPickersUtilsProvider utils={LuxonUtils}>
           <ThemeProvider theme={theme}>
             <GqlMockedProvider<UpdatePersonMutation>>
-              <PersonModal
-                contactId={contactId}
-                accountListId={accountListId}
-                handleClose={handleClose}
-                person={mockPerson}
-              />
+              <ContactDetailProvider>
+                <PersonModal
+                  contactId={contactId}
+                  accountListId={accountListId}
+                  handleClose={handleClose}
+                  person={mockPerson}
+                />
+              </ContactDetailProvider>
             </GqlMockedProvider>
           </ThemeProvider>
         </MuiPickersUtilsProvider>
@@ -157,12 +160,14 @@ describe('PersonModal', () => {
         <MuiPickersUtilsProvider utils={LuxonUtils}>
           <ThemeProvider theme={theme}>
             <GqlMockedProvider<UpdatePersonMutation>>
-              <PersonModal
-                contactId={contactId}
-                accountListId={accountListId}
-                handleClose={handleClose}
-                person={mockPerson}
-              />
+              <ContactDetailProvider>
+                <PersonModal
+                  contactId={contactId}
+                  accountListId={accountListId}
+                  handleClose={handleClose}
+                  person={mockPerson}
+                />
+              </ContactDetailProvider>
             </GqlMockedProvider>
           </ThemeProvider>
         </MuiPickersUtilsProvider>
@@ -179,12 +184,14 @@ describe('PersonModal', () => {
         <MuiPickersUtilsProvider utils={LuxonUtils}>
           <ThemeProvider theme={theme}>
             <GqlMockedProvider<UpdatePersonMutation>>
-              <PersonModal
-                contactId={contactId}
-                accountListId={accountListId}
-                handleClose={handleClose}
-                person={mockPerson}
-              />
+              <ContactDetailProvider>
+                <PersonModal
+                  contactId={contactId}
+                  accountListId={accountListId}
+                  handleClose={handleClose}
+                  person={mockPerson}
+                />
+              </ContactDetailProvider>
             </GqlMockedProvider>
           </ThemeProvider>
         </MuiPickersUtilsProvider>
@@ -202,12 +209,14 @@ describe('PersonModal', () => {
         <MuiPickersUtilsProvider utils={LuxonUtils}>
           <ThemeProvider theme={theme}>
             <GqlMockedProvider<UpdatePersonMutation> onCall={mutationSpy}>
-              <PersonModal
-                contactId={contactId}
-                accountListId={accountListId}
-                handleClose={handleClose}
-                person={mockPerson}
-              />
+              <ContactDetailProvider>
+                <PersonModal
+                  contactId={contactId}
+                  accountListId={accountListId}
+                  handleClose={handleClose}
+                  person={mockPerson}
+                />
+              </ContactDetailProvider>
             </GqlMockedProvider>
           </ThemeProvider>
         </MuiPickersUtilsProvider>
@@ -229,12 +238,14 @@ describe('PersonModal', () => {
         <MuiPickersUtilsProvider utils={LuxonUtils}>
           <ThemeProvider theme={theme}>
             <GqlMockedProvider<UpdatePersonMutation>>
-              <PersonModal
-                contactId={contactId}
-                accountListId={accountListId}
-                handleClose={handleClose}
-                person={mockPerson}
-              />
+              <ContactDetailProvider>
+                <PersonModal
+                  contactId={contactId}
+                  accountListId={accountListId}
+                  handleClose={handleClose}
+                  person={mockPerson}
+                />
+              </ContactDetailProvider>
             </GqlMockedProvider>
           </ThemeProvider>
         </MuiPickersUtilsProvider>
@@ -251,12 +262,14 @@ describe('PersonModal', () => {
         <MuiPickersUtilsProvider utils={LuxonUtils}>
           <ThemeProvider theme={theme}>
             <GqlMockedProvider<UpdatePersonMutation>>
-              <PersonModal
-                contactId={contactId}
-                accountListId={accountListId}
-                handleClose={handleClose}
-                person={mockPerson}
-              />
+              <ContactDetailProvider>
+                <PersonModal
+                  contactId={contactId}
+                  accountListId={accountListId}
+                  handleClose={handleClose}
+                  person={mockPerson}
+                />
+              </ContactDetailProvider>
             </GqlMockedProvider>
           </ThemeProvider>
         </MuiPickersUtilsProvider>
@@ -283,12 +296,14 @@ describe('PersonModal', () => {
           <MuiPickersUtilsProvider utils={LuxonUtils}>
             <ThemeProvider theme={theme}>
               <GqlMockedProvider<UpdatePersonMutation> onCall={mutationSpy}>
-                <PersonModal
-                  contactId={contactId}
-                  accountListId={accountListId}
-                  handleClose={handleClose}
-                  person={mockPerson}
-                />
+                <ContactDetailProvider>
+                  <PersonModal
+                    contactId={contactId}
+                    accountListId={accountListId}
+                    handleClose={handleClose}
+                    person={mockPerson}
+                  />
+                </ContactDetailProvider>
               </GqlMockedProvider>
             </ThemeProvider>
           </MuiPickersUtilsProvider>
@@ -336,12 +351,14 @@ describe('PersonModal', () => {
           <MuiPickersUtilsProvider utils={LuxonUtils}>
             <ThemeProvider theme={theme}>
               <GqlMockedProvider<UpdatePersonMutation> onCall={mutationSpy}>
-                <PersonModal
-                  contactId={contactId}
-                  accountListId={accountListId}
-                  handleClose={handleClose}
-                  person={mockPerson}
-                />
+                <ContactDetailProvider>
+                  <PersonModal
+                    contactId={contactId}
+                    accountListId={accountListId}
+                    handleClose={handleClose}
+                    person={mockPerson}
+                  />
+                </ContactDetailProvider>
               </GqlMockedProvider>
             </ThemeProvider>
           </MuiPickersUtilsProvider>
@@ -355,8 +372,7 @@ describe('PersonModal', () => {
       );
       userEvent.click(getAllByLabelText('Phone Number Type')[0]);
       userEvent.click(getByLabelText('Work'));
-      userEvent.click(getByLabelText('Primary Phone'));
-      userEvent.click(getByText(mockPerson.phoneNumbers.nodes[1].number));
+      userEvent.click(getAllByLabelText('Primary')[1]);
       userEvent.click(getByText('Save'));
 
       await waitFor(() =>
@@ -391,12 +407,14 @@ describe('PersonModal', () => {
           <MuiPickersUtilsProvider utils={LuxonUtils}>
             <ThemeProvider theme={theme}>
               <GqlMockedProvider<UpdatePersonMutation> onCall={mutationSpy}>
-                <PersonModal
-                  contactId={contactId}
-                  accountListId={accountListId}
-                  handleClose={handleClose}
-                  person={mockPerson}
-                />
+                <ContactDetailProvider>
+                  <PersonModal
+                    contactId={contactId}
+                    accountListId={accountListId}
+                    handleClose={handleClose}
+                    person={mockPerson}
+                  />
+                </ContactDetailProvider>
               </GqlMockedProvider>
             </ThemeProvider>
           </MuiPickersUtilsProvider>
@@ -428,12 +446,14 @@ describe('PersonModal', () => {
           <MuiPickersUtilsProvider utils={LuxonUtils}>
             <ThemeProvider theme={theme}>
               <GqlMockedProvider<UpdatePersonMutation> onCall={mutationSpy}>
-                <PersonModal
-                  contactId={contactId}
-                  accountListId={accountListId}
-                  handleClose={handleClose}
-                  person={mockPerson}
-                />
+                <ContactDetailProvider>
+                  <PersonModal
+                    contactId={contactId}
+                    accountListId={accountListId}
+                    handleClose={handleClose}
+                    person={mockPerson}
+                  />
+                </ContactDetailProvider>
               </GqlMockedProvider>
             </ThemeProvider>
           </MuiPickersUtilsProvider>
@@ -455,12 +475,14 @@ describe('PersonModal', () => {
           <MuiPickersUtilsProvider utils={LuxonUtils}>
             <ThemeProvider theme={theme}>
               <GqlMockedProvider<UpdatePersonMutation> onCall={mutationSpy}>
-                <PersonModal
-                  contactId={contactId}
-                  accountListId={accountListId}
-                  handleClose={handleClose}
-                  person={mockPerson}
-                />
+                <ContactDetailProvider>
+                  <PersonModal
+                    contactId={contactId}
+                    accountListId={accountListId}
+                    handleClose={handleClose}
+                    person={mockPerson}
+                  />
+                </ContactDetailProvider>
               </GqlMockedProvider>
             </ThemeProvider>
           </MuiPickersUtilsProvider>
@@ -475,8 +497,7 @@ describe('PersonModal', () => {
       );
       userEvent.click(getAllByLabelText('Email Address Type')[0]);
       userEvent.click(getByLabelText('Mobile'));
-      userEvent.click(getByLabelText('Primary Email'));
-      userEvent.click(getByText(mockPerson.emailAddresses.nodes[1].email));
+      userEvent.click(getAllByLabelText('Primary')[1]);
       userEvent.click(getByLabelText('Opt-out of Email Newsletter'));
 
       userEvent.click(getByText('Save'));
@@ -499,10 +520,10 @@ describe('PersonModal', () => {
         'Mobile',
       );
       expect(operation.variables.attributes.emailAddresses[0].primary).toEqual(
-        false,
+        true,
       );
       expect(operation.variables.attributes.emailAddresses[1].primary).toEqual(
-        true,
+        false,
       );
       expect(operation.variables.attributes.optoutEnewsletter).toEqual(true);
     });
@@ -514,12 +535,14 @@ describe('PersonModal', () => {
           <MuiPickersUtilsProvider utils={LuxonUtils}>
             <ThemeProvider theme={theme}>
               <GqlMockedProvider<UpdatePersonMutation> onCall={mutationSpy}>
-                <PersonModal
-                  contactId={contactId}
-                  accountListId={accountListId}
-                  handleClose={handleClose}
-                  person={mockPerson}
-                />
+                <ContactDetailProvider>
+                  <PersonModal
+                    contactId={contactId}
+                    accountListId={accountListId}
+                    handleClose={handleClose}
+                    person={mockPerson}
+                  />
+                </ContactDetailProvider>
               </GqlMockedProvider>
             </ThemeProvider>
           </MuiPickersUtilsProvider>
@@ -551,12 +574,14 @@ describe('PersonModal', () => {
           <MuiPickersUtilsProvider utils={LuxonUtils}>
             <ThemeProvider theme={theme}>
               <GqlMockedProvider<UpdatePersonMutation> onCall={mutationSpy}>
-                <PersonModal
-                  contactId={contactId}
-                  accountListId={accountListId}
-                  handleClose={handleClose}
-                  person={mockPerson}
-                />
+                <ContactDetailProvider>
+                  <PersonModal
+                    contactId={contactId}
+                    accountListId={accountListId}
+                    handleClose={handleClose}
+                    person={mockPerson}
+                  />
+                </ContactDetailProvider>
               </GqlMockedProvider>
             </ThemeProvider>
           </MuiPickersUtilsProvider>
@@ -581,12 +606,14 @@ describe('PersonModal', () => {
           <MuiPickersUtilsProvider utils={LuxonUtils}>
             <ThemeProvider theme={theme}>
               <GqlMockedProvider<UpdatePersonMutation> onCall={mutationSpy}>
-                <PersonModal
-                  contactId={contactId}
-                  accountListId={accountListId}
-                  handleClose={handleClose}
-                  person={mockPerson}
-                />
+                <ContactDetailProvider>
+                  <PersonModal
+                    contactId={contactId}
+                    accountListId={accountListId}
+                    handleClose={handleClose}
+                    person={mockPerson}
+                  />
+                </ContactDetailProvider>
               </GqlMockedProvider>
             </ThemeProvider>
           </MuiPickersUtilsProvider>
@@ -649,12 +676,14 @@ describe('PersonModal', () => {
           <MuiPickersUtilsProvider utils={LuxonUtils}>
             <ThemeProvider theme={theme}>
               <GqlMockedProvider<UpdatePersonMutation> onCall={mutationSpy}>
-                <PersonModal
-                  contactId={contactId}
-                  accountListId={accountListId}
-                  handleClose={handleClose}
-                  person={mockPerson}
-                />
+                <ContactDetailProvider>
+                  <PersonModal
+                    contactId={contactId}
+                    accountListId={accountListId}
+                    handleClose={handleClose}
+                    person={mockPerson}
+                  />
+                </ContactDetailProvider>
               </GqlMockedProvider>
             </ThemeProvider>
           </MuiPickersUtilsProvider>
@@ -688,12 +717,14 @@ describe('PersonModal', () => {
           <MuiPickersUtilsProvider utils={LuxonUtils}>
             <ThemeProvider theme={theme}>
               <GqlMockedProvider<UpdatePersonMutation> onCall={mutationSpy}>
-                <PersonModal
-                  contactId={contactId}
-                  accountListId={accountListId}
-                  handleClose={handleClose}
-                  person={mockPerson}
-                />
+                <ContactDetailProvider>
+                  <PersonModal
+                    contactId={contactId}
+                    accountListId={accountListId}
+                    handleClose={handleClose}
+                    person={mockPerson}
+                  />
+                </ContactDetailProvider>
               </GqlMockedProvider>
             </ThemeProvider>
           </MuiPickersUtilsProvider>
@@ -731,12 +762,14 @@ describe('PersonModal', () => {
           <MuiPickersUtilsProvider utils={LuxonUtils}>
             <ThemeProvider theme={theme}>
               <GqlMockedProvider<UpdatePersonMutation> onCall={mutationSpy}>
-                <PersonModal
-                  contactId={contactId}
-                  accountListId={accountListId}
-                  handleClose={handleClose}
-                  person={mockPerson}
-                />
+                <ContactDetailProvider>
+                  <PersonModal
+                    contactId={contactId}
+                    accountListId={accountListId}
+                    handleClose={handleClose}
+                    person={mockPerson}
+                  />
+                </ContactDetailProvider>
               </GqlMockedProvider>
             </ThemeProvider>
           </MuiPickersUtilsProvider>
@@ -796,12 +829,14 @@ describe('PersonModal', () => {
           <MuiPickersUtilsProvider utils={LuxonUtils}>
             <ThemeProvider theme={theme}>
               <GqlMockedProvider<UpdatePersonMutation> onCall={mutationSpy}>
-                <PersonModal
-                  contactId={contactId}
-                  accountListId={accountListId}
-                  handleClose={handleClose}
-                  person={mockPerson}
-                />
+                <ContactDetailProvider>
+                  <PersonModal
+                    contactId={contactId}
+                    accountListId={accountListId}
+                    handleClose={handleClose}
+                    person={mockPerson}
+                  />
+                </ContactDetailProvider>
               </GqlMockedProvider>
             </ThemeProvider>
           </MuiPickersUtilsProvider>
@@ -844,12 +879,14 @@ describe('PersonModal', () => {
           <MuiPickersUtilsProvider utils={LuxonUtils}>
             <ThemeProvider theme={theme}>
               <GqlMockedProvider<UpdatePersonMutation> onCall={mutationSpy}>
-                <PersonModal
-                  contactId={contactId}
-                  accountListId={accountListId}
-                  handleClose={handleClose}
-                  person={mockPerson}
-                />
+                <ContactDetailProvider>
+                  <PersonModal
+                    contactId={contactId}
+                    accountListId={accountListId}
+                    handleClose={handleClose}
+                    person={mockPerson}
+                  />
+                </ContactDetailProvider>
               </GqlMockedProvider>
             </ThemeProvider>
           </MuiPickersUtilsProvider>
@@ -870,12 +907,14 @@ describe('PersonModal', () => {
           <MuiPickersUtilsProvider utils={LuxonUtils}>
             <ThemeProvider theme={theme}>
               <GqlMockedProvider<UpdatePersonMutation>>
-                <PersonModal
-                  contactId={contactId}
-                  accountListId={accountListId}
-                  handleClose={handleClose}
-                  person={mockPerson}
-                />
+                <ContactDetailProvider>
+                  <PersonModal
+                    contactId={contactId}
+                    accountListId={accountListId}
+                    handleClose={handleClose}
+                    person={mockPerson}
+                  />
+                </ContactDetailProvider>
               </GqlMockedProvider>
             </ThemeProvider>
           </MuiPickersUtilsProvider>
@@ -1030,12 +1069,14 @@ describe('PersonModal', () => {
                 cache={cache}
                 onCall={mutationSpy}
               >
-                <PersonModal
-                  contactId={contactId}
-                  accountListId={accountListId}
-                  handleClose={handleClose}
-                  person={undefined}
-                />
+                <ContactDetailProvider>
+                  <PersonModal
+                    contactId={contactId}
+                    accountListId={accountListId}
+                    handleClose={handleClose}
+                    person={undefined}
+                  />
+                </ContactDetailProvider>
               </GqlMockedProvider>
             </ThemeProvider>
           </MuiPickersUtilsProvider>

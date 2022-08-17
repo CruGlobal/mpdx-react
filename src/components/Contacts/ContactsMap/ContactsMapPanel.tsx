@@ -93,13 +93,13 @@ export const ContactsMapPanel: React.FC<ContactMapsPanelProps> = ({
 }) => {
   const { t } = useTranslation();
 
-  const [statusOpen, setStatusOpen] = useState(-1);
+  const [statusContactsMapOpen, setStatusContactsMapOpen] = useState(-1);
 
   const handleExpansionChange = (panel: React.SetStateAction<number>) => (
-    event: React.ChangeEvent<Record<string, unknown>>,
+    _event: React.ChangeEvent<Record<string, unknown>>,
     newExpanded: boolean,
   ) => {
-    setStatusOpen(newExpanded ? panel : -1);
+    setStatusContactsMapOpen(newExpanded ? panel : -1);
   };
 
   const panelData: {
@@ -199,7 +199,7 @@ export const ContactsMapPanel: React.FC<ContactMapsPanelProps> = ({
 
   useEffect(() => {
     if (selected) {
-      setStatusOpen(
+      setStatusContactsMapOpen(
         Object.values(panelData).findIndex((status) =>
           status.data?.find((contact) => contact?.id === selected.id),
         ),
@@ -210,7 +210,7 @@ export const ContactsMapPanel: React.FC<ContactMapsPanelProps> = ({
             behavior: 'smooth',
             block: 'center',
           }),
-        statusOpen < 0 ? 1000 : 0,
+        statusContactsMapOpen < 0 ? 1000 : 0,
       );
     }
   }, [selected]);
@@ -222,7 +222,7 @@ export const ContactsMapPanel: React.FC<ContactMapsPanelProps> = ({
           {entry.data && entry.data?.length > 0 && (
             <StatusAccordion
               key={status}
-              expanded={statusOpen === index}
+              expanded={statusContactsMapOpen === index}
               onChange={handleExpansionChange(index)}
             >
               <StatusHeader expandIcon={<ExpandMore />}>

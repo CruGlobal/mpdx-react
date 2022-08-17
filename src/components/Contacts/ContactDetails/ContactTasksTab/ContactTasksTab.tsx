@@ -116,7 +116,7 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
     isRowChecked,
     toggleSelectAll,
     toggleSelectionById,
-  } = useMassSelection(data?.tasks?.totalCount ?? 0);
+  } = useMassSelection(data?.tasks?.totalCount ?? 0, []);
 
   const { openTaskModal } = useTaskModal();
 

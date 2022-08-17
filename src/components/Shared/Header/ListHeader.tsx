@@ -14,24 +14,34 @@ import {
 import FilterList from '@material-ui/icons/FilterList';
 import { useTranslation } from 'react-i18next';
 import ArrowDropDown from '@material-ui/icons/ArrowDropDown';
-import { ViewList } from '@material-ui/icons';
+import { MoreHoriz, ViewList } from '@material-ui/icons';
 import { SearchBox } from '../../common/SearchBox/SearchBox';
 import {
   ContactFilterSetInput,
   TaskFilterSetInput,
 } from '../../../../graphql/types.generated';
 import { StarFilterButton } from './StarFilterButton/StarFilterButton';
+import useTaskModal from 'src/hooks/useTaskModal';
 
-const HeaderWrap = styled(Box)(({ theme }) => ({
-  height: 96,
-  padding: theme.spacing(1, 0),
-  display: 'flex',
-  flexDirection: 'row',
-  justifyContent: 'space-evenly',
-  alignItems: 'center',
-  backgroundColor: theme.palette.common.white,
-  borderBottom: `1px solid ${theme.palette.grey[200]}`,
-}));
+const HeaderWrap = styled(Box)(
+  ({
+    theme,
+    contactDetailsOpen,
+  }: {
+    theme: Theme;
+    contactDetailsOpen: boolean;
+  }) => ({
+    height: 96,
+    padding: theme.spacing(1, 0),
+    paddingRight: !contactDetailsOpen ? 0 : theme.spacing(2),
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    alignItems: 'center',
+    backgroundColor: theme.palette.common.white,
+    borderBottom: `1px solid ${theme.palette.grey[200]}`,
+  }),
+);
 
 const FilterButton = styled(
   ({ activeFilters: _activeFilters, panelOpen: _panelOpen, ...props }) => (
@@ -110,6 +120,7 @@ interface ListHeaderProps {
   toggleStarredFilter: (
     filter: ContactFilterSetInput | TaskFilterSetInput,
   ) => void;
+  selectedIds: string[];
 }
 
 export const ListHeader: React.FC<ListHeaderProps> = ({
@@ -127,6 +138,7 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
   starredFilter,
   toggleStarredFilter,
   contactsView,
+  selectedIds,
 }) => {
   const { t } = useTranslation();
 
@@ -139,10 +151,12 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
     setAnchorEl(null);
   };
 
+  const { openTaskModal } = useTaskModal();
+
   return (
-    <HeaderWrap>
+    <HeaderWrap contactDetailsOpen={contactDetailsOpen}>
       {contactsView !== TableViewModeEnum.Map && (
-        <Hidden xsUp={contactDetailsOpen}>
+        <Hidden xsUp={contactDetailsOpen && page === 'task'}>
           <Checkbox
             checked={headerCheckboxState === ListHeaderCheckBoxState.checked}
             color="secondary"
@@ -174,7 +188,7 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
         }
       />
 
-      <ItemsShowingText>
+      <ItemsShowingText data-testid="showing-text">
         {contactsView === TableViewModeEnum.List
           ? t('Showing {{count}}', { count: totalItems })
           : ''}
@@ -190,7 +204,11 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
                 onClick={handleClick}
                 endIcon={<ArrowDropDown />}
               >
-                {t('Actions')}
+                {filterPanelOpen && contactDetailsOpen ? (
+                  <MoreHoriz />
+                ) : (
+                  t('Actions')
+                )}
               </ActionsButton>
               <Menu
                 open={open}
@@ -206,10 +224,26 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
                 <MenuItem divider>
                   <ListItemText>{t('Remove Tags')}</ListItemText>
                 </MenuItem>
-                <MenuItem>
+                <MenuItem
+                  onClick={() => {
+                    openTaskModal({
+                      defaultValues: { contactIds: selectedIds },
+                    });
+                    handleClose();
+                  }}
+                >
                   <ListItemText>{t('Add Task')}</ListItemText>
                 </MenuItem>
-                <MenuItem divider>
+                <MenuItem
+                  divider
+                  onClick={() => {
+                    openTaskModal({
+                      view: 'log',
+                      defaultValues: { contactIds: selectedIds },
+                    });
+                    handleClose();
+                  }}
+                >
                   <ListItemText>{t('Log Task')}</ListItemText>
                 </MenuItem>
 
@@ -277,6 +311,7 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
         </>
       )}
 
+      {/* This hidden doesn't remove from document */}
       <Hidden smDown>
         <StarFilterButton
           starredFilter={starredFilter}

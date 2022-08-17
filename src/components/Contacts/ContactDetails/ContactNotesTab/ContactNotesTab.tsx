@@ -1,10 +1,14 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback } from 'react';
 import { TextField } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { DateTime } from 'luxon';
 
 import debounce from 'lodash/debounce';
 import { useSnackbar } from 'notistack';
+import {
+  ContactDetailContext,
+  ContactDetailsType,
+} from '../ContactDetailContext';
 import {
   useGetContactNotesQuery,
   useUpdateContactNotesMutation,
@@ -29,7 +33,13 @@ export const ContactNotesTab: React.FC<Props> = ({
       accountListId,
     },
   });
-  const [notes, setNotes] = useState(data?.contact.notes ?? '');
+  const { notes, setNotes } = React.useContext(
+    ContactDetailContext,
+  ) as ContactDetailsType;
+
+  React.useEffect(() => {
+    setNotes(data?.contact.notes ?? '');
+  }, [data?.contact.notes]);
 
   const handleSetNotes = useCallback(
     debounce(async (notes) => {

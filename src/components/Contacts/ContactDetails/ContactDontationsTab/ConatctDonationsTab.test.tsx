@@ -3,6 +3,7 @@ import { DateTime } from 'luxon';
 import React from 'react';
 import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
 import { render } from '../../../../../__tests__/util/testingLibraryReactMock';
+import { ContactDetailProvider } from '../ContactDetailContext';
 import { ContactDonationsTab } from './ContactDonationsTab';
 import {
   GetContactDonationsQuery,
@@ -51,10 +52,12 @@ describe('ContactDonationsTab', () => {
           },
         }}
       >
-        <ContactDonationsTab
-          accountListId={accountListId}
-          contactId={contactId}
-        />
+        <ContactDetailProvider>
+          <ContactDonationsTab
+            accountListId={accountListId}
+            contactId={contactId}
+          />
+        </ContactDetailProvider>
       </GqlMockedProvider>,
     );
     expect(await findByRole('region')).toBeVisible();

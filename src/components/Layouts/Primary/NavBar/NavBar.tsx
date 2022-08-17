@@ -11,10 +11,13 @@ import {
 import { useRouter } from 'next/router';
 import NextLink, { LinkProps } from 'next/link';
 import { useTranslation } from 'react-i18next';
+import {
+  filteredReportNavItems,
+  toolsRedirectLinks,
+} from '../TopBar/Items/NavMenu/NavMenu';
 import { NavItem } from './NavItem/NavItem';
 import { NavTools } from './NavTools/NavTools';
 import logo from 'src/images/logo.svg';
-import { ReportNavItems } from 'src/components/Reports/NavReportsList/ReportNavItems';
 import { ToolsList } from 'src/components/Tool/Home/ToolList';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 
@@ -137,9 +140,9 @@ export const NavBar: FC<NavBarProps> = ({ onMobileClose, openMobile }) => {
     },
     {
       title: t('Reports'),
-      items: ReportNavItems.map((item) => ({
+      items: filteredReportNavItems.map((item) => ({
         ...item,
-        title: item.subTitle ? `${item.title} (${item.subTitle})` : item.title,
+        title: item.title,
         href: `/accountLists/${accountListId}/reports/${item.id}`,
       })),
     },
@@ -148,7 +151,7 @@ export const NavBar: FC<NavBarProps> = ({ onMobileClose, openMobile }) => {
       items: ToolsList.flatMap((toolsGroup) => [
         ...toolsGroup.items.map((tool) => ({
           title: tool.tool,
-          href: `/accountLists/${accountListId}/tools/${tool.id}`,
+          href: `https://mpdx.org/tools/${toolsRedirectLinks[tool.id]}`,
         })),
       ]),
     },
