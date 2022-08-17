@@ -38,6 +38,29 @@ describe('LateCommitments', () => {
       nodes: [],
       totalCount: 0,
     };
+    emptyCheck(latePledgeContacts);
+  });
+
+  it('should show empty if all of the late pledges are under 7 days late', () => {
+    const latePledgeContacts = {
+      nodes: [
+        {
+          id: 'contact1',
+          name: 'Smith, Sarah',
+          lateAt: '2019-12-31',
+        },
+        {
+          id: 'contact2',
+          name: 'Smith, John',
+          lateAt: '2019-12-30',
+        },
+      ],
+      totalCount: 2,
+    };
+    emptyCheck(latePledgeContacts);
+  });
+
+  const emptyCheck = (latePledgeContacts: any) => {
     const { getByTestId, queryByTestId } = render(
       <LateCommitments latePledgeContacts={latePledgeContacts} />,
     );
@@ -46,7 +69,7 @@ describe('LateCommitments', () => {
     expect(
       queryByTestId('LateCommitmentsListContacts'),
     ).not.toBeInTheDocument();
-  });
+  };
 
   it('props', () => {
     const latePledgeContacts = {
@@ -99,5 +122,80 @@ describe('LateCommitments', () => {
     expect(contact2Element.textContent).toEqual(
       'Smith, JohnTheir gift is 1,492 days late.',
     );
+  });
+
+  it('should not show a late commitment that is less than 7 days late', () => {
+    const latePledgeContacts = {
+      nodes: [
+        {
+          id: 'contact1',
+          name: 'Smith, Sarah',
+          lateAt: '2019-12-31',
+        },
+        {
+          id: 'contact2',
+          name: 'Smith, John',
+          lateAt: '2015-12-01',
+        },
+      ],
+      totalCount: 2,
+    };
+    const { getByTestId, queryByTestId } = render(
+      <GqlMockedProvider>
+        <LateCommitments latePledgeContacts={latePledgeContacts} />
+      </GqlMockedProvider>,
+    );
+    const contact1Element = queryByTestId(
+      'LateCommitmentsListItemContact-contact1',
+    );
+    expect(contact1Element).not.toBeInTheDocument();
+
+    const contact2Element = getByTestId(
+      'LateCommitmentsListItemContact-contact2',
+    );
+    expect(contact2Element).toHaveAttribute(
+      'href',
+      'https://stage.mpdx.org/contacts/contact2',
+    );
+    expect(contact2Element.textContent).toEqual(
+      'Smith, JohnTheir gift is 1,492 days late.',
+    );
+  });
+
+  it('should not show a late commitment if it has no lateAt property', () => {
+    const latePledgeContacts = {
+      nodes: [
+        {
+          id: 'contact1',
+          name: 'Smith, Sarah',
+          lateAt: '2012-10-01',
+        },
+        {
+          id: 'contact2',
+          name: 'Smith, John',
+        },
+      ],
+      totalCount: 2,
+    };
+    const { getByTestId, queryByTestId } = render(
+      <GqlMockedProvider>
+        <LateCommitments latePledgeContacts={latePledgeContacts} />
+      </GqlMockedProvider>,
+    );
+    const contact1Element = getByTestId(
+      'LateCommitmentsListItemContact-contact1',
+    );
+    expect(contact1Element).toHaveAttribute(
+      'href',
+      'https://stage.mpdx.org/contacts/contact1',
+    );
+    expect(contact1Element.textContent).toEqual(
+      'Smith, SarahTheir gift is 2,648 days late.',
+    );
+
+    const contact2Element = queryByTestId(
+      'LateCommitmentsListItemContact-contact2',
+    );
+    expect(contact2Element).not.toBeInTheDocument();
   });
 });

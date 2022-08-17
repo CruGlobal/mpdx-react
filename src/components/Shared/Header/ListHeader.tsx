@@ -236,7 +236,16 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
                 >
                   <ListItemText>{t('Add Task')}</ListItemText>
                 </MenuItem>
-                <MenuItem divider>
+                <MenuItem
+                  divider
+                  onClick={() => {
+                    openTaskModal({
+                      view: 'log',
+                      defaultValues: { contactIds: selectedIds },
+                    });
+                    handleClose();
+                  }}
+                >
                   <ListItemText>{t('Log Task')}</ListItemText>
                 </MenuItem>
 
@@ -309,6 +318,7 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
         </>
       )}
 
+      {/* This hidden doesn't remove from document */}
       <Hidden smDown>
         <StarFilterButton
           starredFilter={starredFilter}
