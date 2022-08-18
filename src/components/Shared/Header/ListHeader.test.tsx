@@ -175,6 +175,7 @@ describe('ListHeader', () => {
           onCheckAllItems={onCheckAllItems}
           onSearchTermChanged={onSearchTermChanged}
           openEditFieldsModal={openEditFieldsModal}
+          openAddToAppealModal={openAddToAppealModal}
         />
       </ThemeProvider>,
     );
