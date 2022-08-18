@@ -154,6 +154,35 @@ describe('ListHeader', () => {
     });
   });
 
+  it('opens the more actions menu and clicks the add to appeal action', () => {
+    const { getByPlaceholderText, getByText, queryByText } = render(
+      <ThemeProvider theme={theme}>
+        <ListHeader
+          selectedIds={selectedIds}
+          page="contact"
+          activeFilters={false}
+          starredFilter={{}}
+          toggleStarredFilter={toggleStarredFilter}
+          headerCheckboxState={ListHeaderCheckBoxState.unchecked}
+          filterPanelOpen={false}
+          contactDetailsOpen={false}
+          toggleFilterPanel={toggleFilterPanel}
+          onCheckAllItems={onCheckAllItems}
+          onSearchTermChanged={onSearchTermChanged}
+          openAddToAppealModal={openAddToAppealModal}
+        />
+      </ThemeProvider>,
+    );
+
+    expect(getByPlaceholderText('Search Contacts')).toBeInTheDocument();
+    expect(queryByText('Add to Appeal')).not.toBeInTheDocument();
+    const actionsButton = getByText('Actions');
+    userEvent.click(actionsButton);
+    expect(getByText('Add to Appeal')).toBeInTheDocument();
+    userEvent.click(getByText('Add to Appeal'));
+    expect(openAddToAppealModal).toHaveBeenCalled();
+  });
+
   describe('Task', () => {
     it('renders task header', () => {
       const { getByPlaceholderText } = render(
