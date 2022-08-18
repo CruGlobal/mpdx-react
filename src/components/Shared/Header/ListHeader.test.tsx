@@ -1,7 +1,7 @@
 import React from 'react';
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { ThemeProvider } from '@material-ui/core';
+import { Button, ThemeProvider } from '@material-ui/core';
 import theme from '../../../theme';
 
 import useTaskModal from '../../../hooks/useTaskModal';
@@ -10,6 +10,14 @@ import {
   ListHeaderCheckBoxState,
   TableViewModeEnum,
 } from './ListHeader';
+import {
+  ContactsPageContext,
+  ContactsPageProvider,
+  ContactsPageType,
+} from 'pages/accountLists/[accountListId]/contacts/ContactsPageContext';
+import TestRouter from '__tests__/util/TestRouter';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { GetUserOptionsQuery } from 'src/components/Contacts/ContactFlow/GetUserOptions.generated';
 
 const toggleFilterPanel = jest.fn();
 const onSearchTermChanged = jest.fn();
@@ -27,6 +35,38 @@ beforeEach(() => {
     openTaskModal,
   });
 });
+
+const push = jest.fn();
+
+const router = {
+  query: { accountListId: '123' },
+  isReady: true,
+  push,
+};
+
+const routerWithContact = {
+  query: { accountListId: '123', contactId: ['map', 'abc'] },
+  isReady: true,
+  push,
+};
+
+const ButtonGroup: React.FC = () => {
+  const { handleViewModeChange } = React.useContext(
+    ContactsPageContext,
+  ) as ContactsPageType;
+  return (
+    <>
+      <Button
+        data-testid="list-button"
+        onClick={(event) => handleViewModeChange(event, TableViewModeEnum.List)}
+      />
+      <Button
+        data-testid="map-button"
+        onClick={(event) => handleViewModeChange(event, TableViewModeEnum.Map)}
+      />
+    </>
+  );
+};
 
 describe('ListHeader', () => {
   describe('Contact', () => {
@@ -81,6 +121,96 @@ describe('ListHeader', () => {
       expect(queryByText('Actions')).not.toBeInTheDocument();
       // TODO: The star button is still present in the document. Redo test to support not visable but in document.
       expect(queryByTestId('star-filter-button')).toBeInTheDocument();
+    });
+
+    it('renders a button group and switches views', async () => {
+      const { getByTestId } = render(
+        <ThemeProvider theme={theme}>
+          <TestRouter router={router}>
+            <GqlMockedProvider>
+              <ContactsPageProvider>
+                <ListHeader
+                  selectedIds={selectedIds}
+                  page="contact"
+                  activeFilters={false}
+                  starredFilter={{}}
+                  contactsView={TableViewModeEnum.List}
+                  toggleStarredFilter={toggleStarredFilter}
+                  headerCheckboxState={ListHeaderCheckBoxState.unchecked}
+                  filterPanelOpen={true}
+                  contactDetailsOpen={true}
+                  toggleFilterPanel={toggleFilterPanel}
+                  onCheckAllItems={onCheckAllItems}
+                  onSearchTermChanged={onSearchTermChanged}
+                  openEditFieldsModal={openEditFieldsModal}
+                  buttonGroup={<ButtonGroup />}
+                />
+              </ContactsPageProvider>
+            </GqlMockedProvider>
+          </TestRouter>
+        </ThemeProvider>,
+      );
+
+      expect(getByTestId('list-button')).toBeInTheDocument();
+      userEvent.click(getByTestId('list-button'));
+
+      await waitFor(() =>
+        expect(router.push).toBeCalledWith({
+          pathname: '/accountLists/123/contacts/',
+          query: {},
+        }),
+      );
+    });
+
+    it('renders a button group, clicks flows button, and has a contact id', async () => {
+      const { getByTestId } = render(
+        <ThemeProvider theme={theme}>
+          <TestRouter router={routerWithContact}>
+            <GqlMockedProvider<GetUserOptionsQuery>
+              mocks={{
+                GetUserOptions: {
+                  userOptions: [
+                    {
+                      id: 'abc',
+                      key: 'contacts_view',
+                      value: 'map',
+                    },
+                  ],
+                },
+              }}
+            >
+              <ContactsPageProvider>
+                <ListHeader
+                  selectedIds={selectedIds}
+                  page="contact"
+                  activeFilters={false}
+                  starredFilter={{}}
+                  contactsView={TableViewModeEnum.List}
+                  toggleStarredFilter={toggleStarredFilter}
+                  headerCheckboxState={ListHeaderCheckBoxState.unchecked}
+                  filterPanelOpen={true}
+                  contactDetailsOpen={true}
+                  toggleFilterPanel={toggleFilterPanel}
+                  onCheckAllItems={onCheckAllItems}
+                  onSearchTermChanged={onSearchTermChanged}
+                  openEditFieldsModal={openEditFieldsModal}
+                  buttonGroup={<ButtonGroup />}
+                />
+              </ContactsPageProvider>
+            </GqlMockedProvider>
+          </TestRouter>
+        </ThemeProvider>,
+      );
+
+      expect(getByTestId('map-button')).toBeInTheDocument();
+      userEvent.click(getByTestId('map-button'));
+
+      await waitFor(() =>
+        expect(router.push).toBeCalledWith({
+          pathname: '/accountLists/123/contacts/map/abc',
+          query: {},
+        }),
+      );
     });
   });
 
