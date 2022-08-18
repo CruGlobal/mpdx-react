@@ -123,7 +123,7 @@ export const ContactsPageProvider: React.FC<React.ReactNode> = ({
           (option) => option.key === 'contacts_view',
         )?.value as TableViewModeEnum) || TableViewModeEnum.List,
       );
-      setContactFocus(undefined, false);
+      setContactFocus(contactId ? contactId[0] : undefined, false);
     },
   });
 
@@ -203,7 +203,7 @@ export const ContactsPageProvider: React.FC<React.ReactNode> = ({
   useEffect(() => {
     if (userOptionsLoading) return;
 
-    setContactFocus(undefined, false);
+    setContactFocus(contactId ? contactId[0] : undefined, false);
     if (!loading && viewMode === TableViewModeEnum.Map) {
       if (data?.contacts.pageInfo.hasNextPage) {
         fetchMore({
