@@ -24,7 +24,9 @@ export const ContactsMainPanel: React.FC = () => {
     <>
       <ContactsMainPanelHeader />
       {viewMode === TableViewModeEnum.List ? (
-        <ContactsList />
+        <>
+          <ContactsList />
+        </>
       ) : viewMode === TableViewModeEnum.Flows ? (
         <ContactFlow
           accountListId={accountListId ?? ''}

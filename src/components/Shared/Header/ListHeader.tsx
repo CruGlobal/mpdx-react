@@ -121,6 +121,7 @@ interface ListHeaderProps {
     filter: ContactFilterSetInput | TaskFilterSetInput,
   ) => void;
   selectedIds: string[];
+  openEditFieldsModal?: (open: boolean) => void;
 }
 
 export const ListHeader: React.FC<ListHeaderProps> = ({
@@ -139,6 +140,7 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
   toggleStarredFilter,
   contactsView,
   selectedIds,
+  openEditFieldsModal,
 }) => {
   const { t } = useTranslation();
 
@@ -196,7 +198,7 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
 
       {page === 'contact' ? (
         <>
-          {contactsView !== TableViewModeEnum.Map && (
+          {contactsView !== TableViewModeEnum.Map && openEditFieldsModal && (
             <Hidden lgDown={contactDetailsOpen}>
               <ActionsButton
                 aria-haspopup
@@ -247,7 +249,12 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
                   <ListItemText>{t('Log Task')}</ListItemText>
                 </MenuItem>
 
-                <MenuItem>
+                <MenuItem
+                  onClick={() => {
+                    openEditFieldsModal(true);
+                    handleClose();
+                  }}
+                >
                   <ListItemText>{t('Edit Fields')}</ListItemText>
                 </MenuItem>
                 <MenuItem>

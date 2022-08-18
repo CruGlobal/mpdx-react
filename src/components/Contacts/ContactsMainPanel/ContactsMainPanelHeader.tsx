@@ -1,6 +1,6 @@
 import { Box, Button, Hidden, styled } from '@material-ui/core';
 import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
-import React from 'react';
+import React, { useState } from 'react';
 import NextLink from 'next/link';
 import { useTranslation } from 'react-i18next';
 import { FormatListBulleted, Settings, ViewColumn } from '@material-ui/icons';
@@ -10,6 +10,7 @@ import {
   ContactsPageContext,
   ContactsPageType,
 } from '../../../../pages/accountLists/[accountListId]/contacts/ContactsPageContext';
+import { MassActionsEditFieldsModal } from '../MassActions/EditFields/MassActionsEditFieldsModal';
 import {
   ListHeader,
   TableViewModeEnum,
@@ -54,6 +55,8 @@ export const ContactsMainPanelHeader: React.FC = () => {
     selectedIds,
   } = React.useContext(ContactsPageContext) as ContactsPageType;
 
+  const [editFieldsModalOpen, setEditFieldsModalOpen] = useState(false);
+
   const { data } = useContactsQuery({
     variables: {
       accountListId: accountListId ?? '',
@@ -73,61 +76,71 @@ export const ContactsMainPanelHeader: React.FC = () => {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return (
-    <ListHeader
-      page="contact"
-      activeFilters={Object.keys(activeFilters).length > 0}
-      filterPanelOpen={filterPanelOpen}
-      toggleFilterPanel={toggleFilterPanel}
-      contactDetailsOpen={contactDetailsOpen}
-      onCheckAllItems={toggleSelectAll}
-      contactsView={viewMode}
-      onSearchTermChanged={setSearchTerm}
-      searchTerm={searchTerm}
-      totalItems={data?.contacts?.totalCount}
-      starredFilter={starredFilter}
-      toggleStarredFilter={setStarredFilter}
-      headerCheckboxState={selectionType}
-      selectedIds={selectedIds}
-      buttonGroup={
-        <Hidden xsDown>
-          <Box display="flex" alignItems="center">
-            {viewMode === TableViewModeEnum.Flows && (
-              <NextLink
-                href={`/accountLists/${accountListId}/contacts/flows/setup`}
+    <>
+      <ListHeader
+        page="contact"
+        activeFilters={Object.keys(activeFilters).length > 0}
+        filterPanelOpen={filterPanelOpen}
+        toggleFilterPanel={toggleFilterPanel}
+        contactDetailsOpen={contactDetailsOpen}
+        onCheckAllItems={toggleSelectAll}
+        contactsView={viewMode}
+        onSearchTermChanged={setSearchTerm}
+        searchTerm={searchTerm}
+        totalItems={data?.contacts?.totalCount}
+        starredFilter={starredFilter}
+        toggleStarredFilter={setStarredFilter}
+        headerCheckboxState={selectionType}
+        selectedIds={selectedIds}
+        openEditFieldsModal={setEditFieldsModalOpen}
+        buttonGroup={
+          <Hidden xsDown>
+            <Box display="flex" alignItems="center">
+              {viewMode === TableViewModeEnum.Flows && (
+                <NextLink
+                  href={`/accountLists/${accountListId}/contacts/flows/setup`}
+                >
+                  <ViewSettingsButton variant="outlined">
+                    <Settings style={{ marginRight: 8 }} />
+                    {t('View Settings')}
+                  </ViewSettingsButton>
+                </NextLink>
+              )}
+              <ToggleButtonGroup
+                exclusive
+                value={viewMode}
+                onChange={handleViewModeChange}
               >
-                <ViewSettingsButton variant="outlined">
-                  <Settings style={{ marginRight: 8 }} />
-                  {t('View Settings')}
-                </ViewSettingsButton>
-              </NextLink>
-            )}
-            <ToggleButtonGroup
-              exclusive
-              value={viewMode}
-              onChange={handleViewModeChange}
-            >
-              <ToggleButton
-                value={TableViewModeEnum.List}
-                disabled={viewMode === TableViewModeEnum.List}
-              >
-                <BulletedListIcon titleAccess={t('List View')} />
-              </ToggleButton>
-              <ToggleButton
-                value={TableViewModeEnum.Flows}
-                disabled={viewMode === TableViewModeEnum.Flows}
-              >
-                <ViewColumnIcon titleAccess={t('Column Workflow View')} />
-              </ToggleButton>
-              <ToggleButton
-                value={TableViewModeEnum.Map}
-                disabled={viewMode === TableViewModeEnum.Map}
-              >
-                <MapIcon titleAccess={t('Map View')} />
-              </ToggleButton>
-            </ToggleButtonGroup>
-          </Box>
-        </Hidden>
-      }
-    />
+                <ToggleButton
+                  value={TableViewModeEnum.List}
+                  disabled={viewMode === TableViewModeEnum.List}
+                >
+                  <BulletedListIcon titleAccess={t('List View')} />
+                </ToggleButton>
+                <ToggleButton
+                  value={TableViewModeEnum.Flows}
+                  disabled={viewMode === TableViewModeEnum.Flows}
+                >
+                  <ViewColumnIcon titleAccess={t('Column Workflow View')} />
+                </ToggleButton>
+                <ToggleButton
+                  value={TableViewModeEnum.Map}
+                  disabled={viewMode === TableViewModeEnum.Map}
+                >
+                  <MapIcon titleAccess={t('Map View')} />
+                </ToggleButton>
+              </ToggleButtonGroup>
+            </Box>
+          </Hidden>
+        }
+      />
+      {editFieldsModalOpen ? (
+        <MassActionsEditFieldsModal
+          ids={selectedIds}
+          accountListId={accountListId ?? ''}
+          handleClose={() => setEditFieldsModalOpen(false)}
+        />
+      ) : null}
+    </>
   );
 };
