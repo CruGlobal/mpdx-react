@@ -11,11 +11,7 @@ import React, {
 } from 'react';
 import { ContactFilterSetInput } from '../../../../graphql/types.generated';
 import { useUpdateUserOptionsMutation } from '../../../../src/components/Contacts/ContactFlow/ContactFlowSetup/UpdateUserOptions.generated';
-import {
-  GetUserOptionsDocument,
-  GetUserOptionsQuery,
-  useGetUserOptionsQuery,
-} from '../../../../src/components/Contacts/ContactFlow/GetUserOptions.generated';
+import { useGetUserOptionsQuery } from '../../../../src/components/Contacts/ContactFlow/GetUserOptions.generated';
 import { UserOptionFragment } from '../../../../src/components/Shared/Filters/FilterPanel.generated';
 import {
   ListHeaderCheckBoxState,
@@ -79,6 +75,7 @@ export type ContactsPageType = {
   urlFilters: any;
   isFiltered: boolean;
   selectedIds: string[];
+  userOptionsLoading: boolean;
 };
 
 export const ContactsPageContext = React.createContext<ContactsPageType | null>(
@@ -121,37 +118,14 @@ export const ContactsPageProvider: React.FC<React.ReactNode> = ({
     loading: userOptionsLoading,
   } = useGetUserOptionsQuery({
     onCompleted: () => {
-      utilizeViewOption();
+      setViewMode(
+        (userOptions?.userOptions.find(
+          (option) => option.key === 'contacts_view',
+        )?.value as TableViewModeEnum) || TableViewModeEnum.List,
+      );
+      setContactFocus(undefined, false);
     },
   });
-
-  const processView = () => {
-    if (contactId?.includes('list')) {
-      return TableViewModeEnum.List;
-    } else {
-      return userOptions?.userOptions.find(
-        (option) => option.key === 'contacts_view',
-      )?.value as TableViewModeEnum;
-    }
-  };
-
-  const utilizeViewOption = () => {
-    if (userOptionsLoading) return;
-
-    const view = processView();
-    setViewMode(view);
-    if (view === 'flows' && !contactId?.includes('flows')) {
-      setContactFocus(undefined, false, true);
-    } else if (view === 'map' && !contactId?.includes('map')) {
-      setContactFocus(undefined, false, false, true);
-    } else if (
-      view !== 'flows' &&
-      view !== 'map' &&
-      (contactId?.includes('flows') || contactId?.includes('map'))
-    ) {
-      setContactFocus(undefined, false);
-    }
-  };
 
   const { data, loading, fetchMore } = useContactsQuery({
     variables: {
@@ -227,7 +201,9 @@ export const ContactsPageProvider: React.FC<React.ReactNode> = ({
   }, [isReady, contactId]);
 
   useEffect(() => {
-    utilizeViewOption();
+    if (userOptionsLoading) return;
+
+    setContactFocus(undefined, false);
     if (!loading && viewMode === TableViewModeEnum.Map) {
       if (data?.contacts.pageInfo.hasNextPage) {
         fetchMore({
@@ -276,21 +252,16 @@ export const ContactsPageProvider: React.FC<React.ReactNode> = ({
   //#endregion
 
   //#region User Actions
-  const setContactFocus = (
-    id?: string,
-    openDetails = true,
-    flows = false,
-    map = false,
-  ) => {
+  const setContactFocus = (id?: string, openDetails = true) => {
     const {
       accountListId: _accountListId,
       contactId: _contactId,
       ...filteredQuery
     } = query;
-    if (map && ids.length > 0) {
+    if (viewMode === TableViewModeEnum.Map && ids.length > 0) {
       filteredQuery.filters = encodeURI(JSON.stringify({ ids }));
     }
-    if (!map && urlFilters && urlFilters.ids) {
+    if (viewMode !== TableViewModeEnum.Map && urlFilters && urlFilters.ids) {
       const newFilters = _.omit(activeFilters, 'ids');
       if (Object.keys(newFilters).length > 0) {
         filteredQuery.filters = encodeURI(JSON.stringify(newFilters));
@@ -302,13 +273,21 @@ export const ContactsPageProvider: React.FC<React.ReactNode> = ({
       id
         ? {
             pathname: `/accountLists/${accountListId}/contacts${
-              flows ? '/flows' : map ? '/map' : ''
+              viewMode === TableViewModeEnum.List
+                ? ''
+                : viewMode === TableViewModeEnum.Flows
+                ? '/flows'
+                : 'map'
             }/${id}`,
             query: filteredQuery,
           }
         : {
             pathname: `/accountLists/${accountListId}/contacts/${
-              flows ? 'flows/' : map ? 'map/' : ''
+              viewMode === TableViewModeEnum.List
+                ? ''
+                : viewMode === TableViewModeEnum.Flows
+                ? '/flows'
+                : 'map'
             }`,
             query: filteredQuery,
           },
@@ -347,8 +326,22 @@ export const ContactsPageProvider: React.FC<React.ReactNode> = ({
     event: React.MouseEvent<HTMLElement>,
     view: string,
   ) => {
+    switch (view) {
+      case 'list':
+        setViewMode(TableViewModeEnum.List);
+        break;
+      case 'flows':
+        setViewMode(TableViewModeEnum.Flows);
+        break;
+      case 'map':
+        setViewMode(TableViewModeEnum.Map);
+        break;
+      default:
+        setViewMode(TableViewModeEnum.List);
+        break;
+    }
+
     updateOptions(view);
-    setContactDetailsOpen(false);
   };
   //#endregion
 
@@ -361,31 +354,6 @@ export const ContactsPageProvider: React.FC<React.ReactNode> = ({
       variables: {
         key: 'contacts_view',
         value: view,
-      },
-      update: (cache, { data: updatedUserOption }) => {
-        const query = {
-          query: GetUserOptionsDocument,
-        };
-        const dataFromCache = cache.readQuery<GetUserOptionsQuery>(query);
-
-        if (dataFromCache) {
-          const filteredOld = dataFromCache.userOptions.filter(
-            (option) => option.key !== 'contacts_view',
-          );
-          const userOptions = [
-            ...filteredOld,
-            {
-              __typename: 'Option',
-              id: updatedUserOption?.createOrUpdateUserOption?.option.id,
-              key: 'contacts_view',
-              value: view,
-            },
-          ];
-          const data = {
-            userOptions,
-          };
-          cache.writeQuery({ ...query, data });
-        }
       },
     });
   };
@@ -473,6 +441,7 @@ export const ContactsPageProvider: React.FC<React.ReactNode> = ({
         urlFilters: urlFilters,
         isFiltered: isFiltered,
         selectedIds: ids,
+        userOptionsLoading: userOptionsLoading,
       }}
     >
       {children}
