@@ -11,6 +11,7 @@ import {
   ContactsPageType,
 } from '../../../../pages/accountLists/[accountListId]/contacts/ContactsPageContext';
 import { MassActionsAddToAppealModal } from '../MassActions/AddToAppeal/MassActionsAddToAppealModal';
+import { MassActionsEditFieldsModal } from '../MassActions/EditFields/MassActionsEditFieldsModal';
 import {
   ListHeader,
   TableViewModeEnum,
@@ -56,6 +57,7 @@ export const ContactsMainPanelHeader: React.FC = () => {
   } = React.useContext(ContactsPageContext) as ContactsPageType;
 
   const [addToAppealModalOpen, setAddToAppealModalOpen] = useState(false);
+  const [editFieldsModalOpen, setEditFieldsModalOpen] = useState(false);
 
   const { data } = useContactsQuery({
     variables: {
@@ -93,6 +95,7 @@ export const ContactsMainPanelHeader: React.FC = () => {
         toggleStarredFilter={setStarredFilter}
         headerCheckboxState={selectionType}
         selectedIds={selectedIds}
+        openEditFieldsModal={setEditFieldsModalOpen}
         buttonGroup={
           <Hidden xsDown>
             <Box display="flex" alignItems="center">
@@ -134,13 +137,20 @@ export const ContactsMainPanelHeader: React.FC = () => {
           </Hidden>
         }
       />
-      {addToAppealModalOpen ? (
+      {addToAppealModalOpen && (
         <MassActionsAddToAppealModal
           ids={selectedIds}
           accountListId={accountListId ?? ''}
           handleClose={() => setAddToAppealModalOpen(false)}
         />
-      ) : null}
+      )}
+      {editFieldsModalOpen && (
+        <MassActionsEditFieldsModal
+          ids={selectedIds}
+          accountListId={accountListId ?? ''}
+          handleClose={() => setEditFieldsModalOpen(false)}
+        />
+      )}
     </>
   );
 };

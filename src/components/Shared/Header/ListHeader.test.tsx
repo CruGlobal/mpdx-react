@@ -17,6 +17,7 @@ const onCheckAllItems = jest.fn();
 const toggleStarredFilter = jest.fn();
 const selectedIds: string[] = [];
 const openAddToAppealModal = jest.fn();
+const openEditFieldsModal = jest.fn();
 
 jest.mock('../../../hooks/useTaskModal');
 
@@ -46,6 +47,7 @@ describe('ListHeader', () => {
             onCheckAllItems={onCheckAllItems}
             onSearchTermChanged={onSearchTermChanged}
             openAddToAppealModal={openAddToAppealModal}
+            openEditFieldsModal={openEditFieldsModal}
           />
         </ThemeProvider>,
       );
@@ -73,6 +75,7 @@ describe('ListHeader', () => {
             onCheckAllItems={onCheckAllItems}
             onSearchTermChanged={onSearchTermChanged}
             openAddToAppealModal={openAddToAppealModal}
+            openEditFieldsModal={openEditFieldsModal}
           />
         </ThemeProvider>,
       );
@@ -105,6 +108,7 @@ describe('ListHeader', () => {
           onCheckAllItems={onCheckAllItems}
           onSearchTermChanged={onSearchTermChanged}
           openAddToAppealModal={openAddToAppealModal}
+          openEditFieldsModal={openEditFieldsModal}
         />
       </ThemeProvider>,
     );
@@ -138,6 +142,7 @@ describe('ListHeader', () => {
           onCheckAllItems={onCheckAllItems}
           onSearchTermChanged={onSearchTermChanged}
           openAddToAppealModal={openAddToAppealModal}
+          openEditFieldsModal={openEditFieldsModal}
         />
       </ThemeProvider>,
     );
@@ -152,6 +157,35 @@ describe('ListHeader', () => {
       view: 'log',
       defaultValues: { contactIds: selectedIds },
     });
+  });
+
+  it('opens the more actions menu and clicks the edit fields action', () => {
+    const { getByPlaceholderText, getByText, queryByText } = render(
+      <ThemeProvider theme={theme}>
+        <ListHeader
+          selectedIds={selectedIds}
+          page="contact"
+          activeFilters={false}
+          starredFilter={{}}
+          toggleStarredFilter={toggleStarredFilter}
+          headerCheckboxState={ListHeaderCheckBoxState.unchecked}
+          filterPanelOpen={false}
+          contactDetailsOpen={false}
+          toggleFilterPanel={toggleFilterPanel}
+          onCheckAllItems={onCheckAllItems}
+          onSearchTermChanged={onSearchTermChanged}
+          openEditFieldsModal={openEditFieldsModal}
+        />
+      </ThemeProvider>,
+    );
+
+    expect(getByPlaceholderText('Search Contacts')).toBeInTheDocument();
+    expect(queryByText('Edit Fields')).not.toBeInTheDocument();
+    const actionsButton = getByText('Actions');
+    userEvent.click(actionsButton);
+    expect(getByText('Edit Fields')).toBeInTheDocument();
+    userEvent.click(getByText('Edit Fields'));
+    expect(openEditFieldsModal).toHaveBeenCalled();
   });
 
   it('opens the more actions menu and clicks the add to appeal action', () => {
@@ -170,6 +204,7 @@ describe('ListHeader', () => {
           onCheckAllItems={onCheckAllItems}
           onSearchTermChanged={onSearchTermChanged}
           openAddToAppealModal={openAddToAppealModal}
+          openEditFieldsModal={openEditFieldsModal}
         />
       </ThemeProvider>,
     );
@@ -200,6 +235,7 @@ describe('ListHeader', () => {
             onCheckAllItems={onCheckAllItems}
             onSearchTermChanged={onSearchTermChanged}
             openAddToAppealModal={openAddToAppealModal}
+            openEditFieldsModal={openEditFieldsModal}
           />
         </ThemeProvider>,
       );
@@ -224,6 +260,7 @@ describe('ListHeader', () => {
           onCheckAllItems={onCheckAllItems}
           onSearchTermChanged={onSearchTermChanged}
           openAddToAppealModal={openAddToAppealModal}
+          openEditFieldsModal={openEditFieldsModal}
         />
       </ThemeProvider>,
     );
@@ -258,6 +295,7 @@ describe('ListHeader', () => {
           onCheckAllItems={onCheckAllItems}
           onSearchTermChanged={onSearchTermChanged}
           openAddToAppealModal={openAddToAppealModal}
+          openEditFieldsModal={openEditFieldsModal}
         />
       </ThemeProvider>,
     );
@@ -285,6 +323,7 @@ describe('ListHeader', () => {
           onCheckAllItems={onCheckAllItems}
           onSearchTermChanged={onSearchTermChanged}
           openAddToAppealModal={openAddToAppealModal}
+          openEditFieldsModal={openEditFieldsModal}
         />
       </ThemeProvider>,
     );
@@ -314,6 +353,7 @@ describe('ListHeader', () => {
           onCheckAllItems={onCheckAllItems}
           onSearchTermChanged={onSearchTermChanged}
           openAddToAppealModal={openAddToAppealModal}
+          openEditFieldsModal={openEditFieldsModal}
         />
       </ThemeProvider>,
     );
@@ -345,6 +385,7 @@ describe('ListHeader', () => {
           onCheckAllItems={onCheckAllItems}
           onSearchTermChanged={onSearchTermChanged}
           openAddToAppealModal={openAddToAppealModal}
+          openEditFieldsModal={openEditFieldsModal}
         />
       </ThemeProvider>,
     );
@@ -376,6 +417,7 @@ describe('ListHeader', () => {
           onCheckAllItems={onCheckAllItems}
           onSearchTermChanged={onSearchTermChanged}
           openAddToAppealModal={openAddToAppealModal}
+          openEditFieldsModal={openEditFieldsModal}
         />
       </ThemeProvider>,
     );
@@ -407,6 +449,7 @@ describe('ListHeader', () => {
           onCheckAllItems={onCheckAllItems}
           onSearchTermChanged={onSearchTermChanged}
           openAddToAppealModal={openAddToAppealModal}
+          openEditFieldsModal={openEditFieldsModal}
         />
       </ThemeProvider>,
     );
@@ -439,6 +482,7 @@ describe('ListHeader', () => {
           onCheckAllItems={onCheckAllItems}
           onSearchTermChanged={onSearchTermChanged}
           openAddToAppealModal={openAddToAppealModal}
+          openEditFieldsModal={openEditFieldsModal}
         />
       </ThemeProvider>,
     );
@@ -469,6 +513,7 @@ describe('ListHeader', () => {
           onCheckAllItems={onCheckAllItems}
           onSearchTermChanged={onSearchTermChanged}
           openAddToAppealModal={openAddToAppealModal}
+          openEditFieldsModal={openEditFieldsModal}
         />
       </ThemeProvider>,
     );
@@ -495,6 +540,7 @@ describe('ListHeader', () => {
           onCheckAllItems={onCheckAllItems}
           onSearchTermChanged={onSearchTermChanged}
           openAddToAppealModal={openAddToAppealModal}
+          openEditFieldsModal={openEditFieldsModal}
         />
       </ThemeProvider>,
     );
@@ -522,6 +568,7 @@ describe('ListHeader', () => {
           onCheckAllItems={onCheckAllItems}
           onSearchTermChanged={onSearchTermChanged}
           openAddToAppealModal={openAddToAppealModal}
+          openEditFieldsModal={openEditFieldsModal}
         />
       </ThemeProvider>,
     );
@@ -545,6 +592,7 @@ describe('ListHeader', () => {
           onCheckAllItems={onCheckAllItems}
           onSearchTermChanged={onSearchTermChanged}
           openAddToAppealModal={openAddToAppealModal}
+          openEditFieldsModal={openEditFieldsModal}
         />
       </ThemeProvider>,
     );

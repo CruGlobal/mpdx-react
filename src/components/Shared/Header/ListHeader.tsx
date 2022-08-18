@@ -122,6 +122,7 @@ interface ListHeaderProps {
   ) => void;
   selectedIds: string[];
   openAddToAppealModal?: (open: boolean) => void;
+  openEditFieldsModal?: (open: boolean) => void;
 }
 
 export const ListHeader: React.FC<ListHeaderProps> = ({
@@ -141,6 +142,7 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
   contactsView,
   selectedIds,
   openAddToAppealModal,
+  openEditFieldsModal,
 }) => {
   const { t } = useTranslation();
 
@@ -198,82 +200,89 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
 
       {page === 'contact' ? (
         <>
-          {contactsView !== TableViewModeEnum.Map && openAddToAppealModal && (
-            <Hidden lgDown={contactDetailsOpen}>
-              <ActionsButton
-                aria-haspopup
-                aria-expanded={open}
-                onClick={handleClick}
-                endIcon={<ArrowDropDown />}
-              >
-                {filterPanelOpen && contactDetailsOpen ? (
-                  <MoreHoriz />
-                ) : (
-                  t('Actions')
-                )}
-              </ActionsButton>
-              <Menu
-                open={open}
-                onClose={handleClose}
-                anchorEl={anchorEl}
-                getContentAnchorEl={null}
-                anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-                transformOrigin={{ vertical: 'top', horizontal: 'center' }}
-              >
-                <MenuItem>
-                  <ListItemText>{t('Add Tags')}</ListItemText>
-                </MenuItem>
-                <MenuItem divider>
-                  <ListItemText>{t('Remove Tags')}</ListItemText>
-                </MenuItem>
-                <MenuItem
-                  onClick={() => {
-                    openTaskModal({
-                      defaultValues: { contactIds: selectedIds },
-                    });
-                    handleClose();
-                  }}
+          {contactsView !== TableViewModeEnum.Map &&
+            openEditFieldsModal &&
+            openAddToAppealModal && (
+              <Hidden lgDown={contactDetailsOpen}>
+                <ActionsButton
+                  aria-haspopup
+                  aria-expanded={open}
+                  onClick={handleClick}
+                  endIcon={<ArrowDropDown />}
                 >
-                  <ListItemText>{t('Add Task')}</ListItemText>
-                </MenuItem>
-                <MenuItem
-                  divider
-                  onClick={() => {
-                    openTaskModal({
-                      view: 'log',
-                      defaultValues: { contactIds: selectedIds },
-                    });
-                    handleClose();
-                  }}
+                  {filterPanelOpen && contactDetailsOpen ? (
+                    <MoreHoriz />
+                  ) : (
+                    t('Actions')
+                  )}
+                </ActionsButton>
+                <Menu
+                  open={open}
+                  onClose={handleClose}
+                  anchorEl={anchorEl}
+                  getContentAnchorEl={null}
+                  anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+                  transformOrigin={{ vertical: 'top', horizontal: 'center' }}
                 >
-                  <ListItemText>{t('Log Task')}</ListItemText>
-                </MenuItem>
+                  <MenuItem>
+                    <ListItemText>{t('Add Tags')}</ListItemText>
+                  </MenuItem>
+                  <MenuItem divider>
+                    <ListItemText>{t('Remove Tags')}</ListItemText>
+                  </MenuItem>
+                  <MenuItem
+                    onClick={() => {
+                      openTaskModal({
+                        defaultValues: { contactIds: selectedIds },
+                      });
+                      handleClose();
+                    }}
+                  >
+                    <ListItemText>{t('Add Task')}</ListItemText>
+                  </MenuItem>
+                  <MenuItem
+                    divider
+                    onClick={() => {
+                      openTaskModal({
+                        view: 'log',
+                        defaultValues: { contactIds: selectedIds },
+                      });
+                      handleClose();
+                    }}
+                  >
+                    <ListItemText>{t('Log Task')}</ListItemText>
+                  </MenuItem>
 
-                <MenuItem>
-                  <ListItemText>{t('Edit Fields')}</ListItemText>
-                </MenuItem>
-                <MenuItem>
-                  <ListItemText>{t('Hide Contacts')}</ListItemText>
-                </MenuItem>
+                  <MenuItem
+                    onClick={() => {
+                      openEditFieldsModal(true);
+                      handleClose();
+                    }}
+                  >
+                    <ListItemText>{t('Edit Fields')}</ListItemText>
+                  </MenuItem>
+                  <MenuItem>
+                    <ListItemText>{t('Hide Contacts')}</ListItemText>
+                  </MenuItem>
 
-                <MenuItem
-                  onClick={() => {
-                    openAddToAppealModal(true);
-                    handleClose();
-                  }}
-                >
-                  <ListItemText>{t('Add to Appeal')}</ListItemText>
-                </MenuItem>
-                <MenuItem divider>
-                  <ListItemText>{t('Add to new Appeal')}</ListItemText>
-                </MenuItem>
+                  <MenuItem
+                    onClick={() => {
+                      openAddToAppealModal(true);
+                      handleClose();
+                    }}
+                  >
+                    <ListItemText>{t('Add to Appeal')}</ListItemText>
+                  </MenuItem>
+                  <MenuItem divider>
+                    <ListItemText>{t('Add to new Appeal')}</ListItemText>
+                  </MenuItem>
 
-                <MenuItem>
-                  <ListItemText>{t('Export Emails')}</ListItemText>
-                </MenuItem>
-              </Menu>
-            </Hidden>
-          )}
+                  <MenuItem>
+                    <ListItemText>{t('Export Emails')}</ListItemText>
+                  </MenuItem>
+                </Menu>
+              </Hidden>
+            )}
 
           {buttonGroup}
         </>
