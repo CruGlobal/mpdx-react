@@ -154,7 +154,7 @@ describe('ListHeader', () => {
     });
   });
 
-  it('opens the more actions menu and clicks the eidt fields action', () => {
+  it('opens the more actions menu and clicks the edit fields action', () => {
     const { getByPlaceholderText, getByText, queryByText } = render(
       <ThemeProvider theme={theme}>
         <ListHeader
