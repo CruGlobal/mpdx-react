@@ -32,7 +32,7 @@ export type ContactsPageType = {
   contactId: string | string[] | undefined;
   searchTerm: string | string[] | undefined;
   loading: boolean;
-  router: NextRouter;
+  router: NextRouter | null;
   selectionType: ListHeaderCheckBoxState;
   isRowChecked: (id: string) => boolean;
   toggleSelectAll: () => void;
@@ -269,7 +269,7 @@ export const ContactsPageProvider: React.FC<React.ReactNode> = ({
       contactId: _contactId,
       ...filteredQuery
     } = query;
-    if (viewMode === TableViewModeEnum.Map && ids.length > 0) {
+    if (viewMode === TableViewModeEnum.Map && ids && ids.length > 0) {
       filteredQuery.filters = encodeURI(JSON.stringify({ ids }));
     }
     if (viewMode !== TableViewModeEnum.Map && urlFilters && urlFilters.ids) {
