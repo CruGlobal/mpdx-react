@@ -70,7 +70,7 @@ export type ContactsPageType = {
   setContactDetailsOpen: (open: boolean) => void;
   contactDetailsId: string | undefined;
   setContactDetailsId: (id: string) => void;
-  viewMode: TableViewModeEnum;
+  viewMode: TableViewModeEnum | undefined;
   setViewMode: (mode: TableViewModeEnum) => void;
   urlFilters: any;
   isFiltered: boolean;
@@ -91,8 +91,8 @@ export const ContactsPageProvider: React.FC<React.ReactNode> = ({
 
   const [contactDetailsOpen, setContactDetailsOpen] = useState(false);
   const [contactDetailsId, setContactDetailsId] = useState<string>();
-  const [viewMode, setViewMode] = useState<TableViewModeEnum>(
-    TableViewModeEnum.List,
+  const [viewMode, setViewMode] = useState<TableViewModeEnum | undefined>(
+    undefined,
   );
 
   const { contactId, searchTerm } = query;
@@ -118,12 +118,15 @@ export const ContactsPageProvider: React.FC<React.ReactNode> = ({
     loading: userOptionsLoading,
   } = useGetUserOptionsQuery({
     onCompleted: () => {
-      setViewMode(
-        (userOptions?.userOptions.find(
-          (option) => option.key === 'contacts_view',
-        )?.value as TableViewModeEnum) || TableViewModeEnum.List,
-      );
-      setContactFocus(contactId ? contactId[0] : undefined, false);
+      if (contactId?.includes('list')) {
+        setViewMode(TableViewModeEnum.List);
+      } else {
+        setViewMode(
+          (userOptions?.userOptions.find(
+            (option) => option.key === 'contacts_view',
+          )?.value as TableViewModeEnum) || TableViewModeEnum.List,
+        );
+      }
     },
   });
 
@@ -203,7 +206,15 @@ export const ContactsPageProvider: React.FC<React.ReactNode> = ({
   useEffect(() => {
     if (userOptionsLoading) return;
 
-    setContactFocus(contactId ? contactId[0] : undefined, false);
+    setContactFocus(
+      contactId &&
+        contactId[contactId.length - 1] !== 'flows' &&
+        contactId[contactId.length - 1] !== 'map' &&
+        contactId[contactId.length - 1] !== 'list'
+        ? contactId[contactId.length - 1]
+        : undefined,
+      contactId ? true : false,
+    );
     if (!loading && viewMode === TableViewModeEnum.Map) {
       if (data?.contacts.pageInfo.hasNextPage) {
         fetchMore({
@@ -277,7 +288,7 @@ export const ContactsPageProvider: React.FC<React.ReactNode> = ({
                 ? ''
                 : viewMode === TableViewModeEnum.Flows
                 ? '/flows'
-                : 'map'
+                : '/map'
             }/${id}`,
             query: filteredQuery,
           }
@@ -287,7 +298,7 @@ export const ContactsPageProvider: React.FC<React.ReactNode> = ({
                 ? ''
                 : viewMode === TableViewModeEnum.Flows
                 ? '/flows'
-                : 'map'
+                : '/map'
             }`,
             query: filteredQuery,
           },
