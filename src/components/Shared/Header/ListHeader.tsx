@@ -127,6 +127,7 @@ interface ListHeaderProps {
     filter: ContactFilterSetInput | TaskFilterSetInput,
   ) => void;
   selectedIds: string[];
+  openEditFieldsModal?: (open: boolean) => void;
 }
 
 export const ListHeader: React.FC<ListHeaderProps> = ({
@@ -145,6 +146,7 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
   toggleStarredFilter,
   contactsView,
   selectedIds,
+  openEditFieldsModal,
 }) => {
   const { t } = useTranslation();
 
@@ -190,7 +192,7 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
   return (
     <HeaderWrap contactDetailsOpen={contactDetailsOpen}>
       {contactsView !== TableViewModeEnum.Map && (
-        <Hidden xsUp={contactDetailsOpen}>
+        <Hidden xsUp={contactDetailsOpen && page === 'task'}>
           <Checkbox
             checked={headerCheckboxState === ListHeaderCheckBoxState.checked}
             color="secondary"
@@ -223,14 +225,14 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
       />
 
       <ItemsShowingText data-testid="showing-text">
-        {contactsView === TableViewModeEnum.List && !contactDetailsOpen
+        {contactsView === TableViewModeEnum.List
           ? t('Showing {{count}}', { count: totalItems })
           : ''}
       </ItemsShowingText>
 
       {page === 'contact' ? (
         <>
-          {contactsView !== TableViewModeEnum.Map && (
+          {contactsView !== TableViewModeEnum.Map && openEditFieldsModal && (
             <Hidden lgDown={contactDetailsOpen}>
               <ActionsButton
                 aria-haspopup
@@ -268,11 +270,25 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
                 >
                   <ListItemText>{t('Add Task')}</ListItemText>
                 </MenuItem>
-                <MenuItem divider>
+                <MenuItem
+                  divider
+                  onClick={() => {
+                    openTaskModal({
+                      view: 'log',
+                      defaultValues: { contactIds: selectedIds },
+                    });
+                    handleClose();
+                  }}
+                >
                   <ListItemText>{t('Log Task')}</ListItemText>
                 </MenuItem>
 
-                <MenuItem>
+                <MenuItem
+                  onClick={() => {
+                    openEditFieldsModal(true);
+                    handleClose();
+                  }}
+                >
                   <ListItemText>{t('Edit Fields')}</ListItemText>
                 </MenuItem>
                 <MenuItem
@@ -341,13 +357,12 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
         </>
       )}
 
+      {/* This hidden doesn't remove from document */}
       <Hidden smDown>
-        {!contactDetailsOpen && (
-          <StarFilterButton
-            starredFilter={starredFilter}
-            toggleStarredFilter={toggleStarredFilter}
-          />
-        )}
+        <StarFilterButton
+          starredFilter={starredFilter}
+          toggleStarredFilter={toggleStarredFilter}
+        />
       </Hidden>
 
       <HideContactsModal

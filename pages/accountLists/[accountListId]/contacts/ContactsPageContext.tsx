@@ -1,7 +1,6 @@
-import { ParsedUrlQuery } from 'querystring';
 import _, { debounce } from 'lodash';
 import { DateTime } from 'luxon';
-import { useRouter } from 'next/router';
+import { NextRouter, useRouter } from 'next/router';
 import React, {
   Dispatch,
   SetStateAction,
@@ -30,13 +29,14 @@ import {
   useContactsQuery,
 } from './Contacts.generated';
 import { Coordinates } from './map/map';
+import { useGetIdsForMassSelectionLazyQuery } from 'src/hooks/GetIdsForMassSelection.generated';
 
 export type ContactsPageType = {
   accountListId: string | undefined;
   contactId: string | string[] | undefined;
   searchTerm: string | string[] | undefined;
   loading: boolean;
-  query: ParsedUrlQuery;
+  router: NextRouter;
   selectionType: ListHeaderCheckBoxState;
   isRowChecked: (id: string) => boolean;
   toggleSelectAll: () => void;
@@ -88,8 +88,9 @@ export const ContactsPageContext = React.createContext<ContactsPageType | null>(
 export const ContactsPageProvider: React.FC<React.ReactNode> = ({
   children,
 }) => {
-  const accountListId = useAccountListId();
-  const { query, push, replace, isReady, pathname } = useRouter();
+  const accountListId = useAccountListId() ?? '';
+  const router = useRouter();
+  const { query, push, replace, isReady, pathname } = router;
 
   const [contactDetailsOpen, setContactDetailsOpen] = useState(false);
   const [contactDetailsId, setContactDetailsId] = useState<string>();
@@ -170,13 +171,43 @@ export const ContactsPageProvider: React.FC<React.ReactNode> = ({
   });
 
   //#region Mass Actions
+  const [
+    getContactIds,
+    { data: contactIds, loading: loadingContactIds },
+  ] = useGetIdsForMassSelectionLazyQuery();
+
+  // Only query when the filters or total count change and store data in state
+  const [allContactIds, setAllContactIds] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (!loadingContactIds && contactIds?.contacts.nodes) {
+      setAllContactIds(contactIds?.contacts.nodes.map((contact) => contact.id));
+    }
+  }, [loadingContactIds]);
+
+  useEffect(() => {
+    getContactIds({
+      variables: {
+        accountListId,
+        first: data?.contacts?.totalCount ?? 0,
+        contactsFilters: activeFilters,
+      },
+    });
+  }, [activeFilters, searchTerm, starredFilter, data]);
+
   const {
     ids,
     selectionType,
     isRowChecked,
     toggleSelectAll,
     toggleSelectionById,
-  } = useMassSelection(data?.contacts?.totalCount ?? 0);
+  } = useMassSelection(
+    data?.contacts?.totalCount ?? 0,
+    allContactIds,
+    activeFilters,
+    searchTerm as string,
+    starredFilter,
+  );
   //#endregion
 
   useEffect(() => {
@@ -410,7 +441,7 @@ export const ContactsPageProvider: React.FC<React.ReactNode> = ({
         contactId: contactId,
         searchTerm: searchTerm,
         loading: loading,
-        query: query,
+        router: router,
         selectionType: selectionType,
         isRowChecked: isRowChecked,
         toggleSelectAll: toggleSelectAll,

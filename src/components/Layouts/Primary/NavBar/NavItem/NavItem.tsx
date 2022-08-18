@@ -10,6 +10,7 @@ import {
 } from '@material-ui/core';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import HandoffLink from 'src/components/HandoffLink';
 
 interface NavItemProps {
   children?: ReactNode;
@@ -125,12 +126,21 @@ export const NavItem: FC<NavItemProps> = ({
 
   return (
     <LeafListItem button disableGutters key={title} {...rest}>
-      <NextLink href={href}>
-        <LeafButton style={style}>
-          {Icon && <Icon style={iconStyle} size="20" />}
-          <Title>{title}</Title>
-        </LeafButton>
-      </NextLink>
+      {(href as string).includes('tools') ? (
+        <HandoffLink key={title} path={href as string}>
+          <LeafButton style={style}>
+            {Icon && <Icon style={iconStyle} size="20" />}
+            <Title>{title}</Title>
+          </LeafButton>
+        </HandoffLink>
+      ) : (
+        <NextLink href={href}>
+          <LeafButton style={style}>
+            {Icon && <Icon style={iconStyle} size="20" />}
+            <Title>{title}</Title>
+          </LeafButton>
+        </NextLink>
+      )}
     </LeafListItem>
   );
 };

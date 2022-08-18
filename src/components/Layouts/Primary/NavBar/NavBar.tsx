@@ -11,7 +11,10 @@ import {
 import { useRouter } from 'next/router';
 import NextLink, { LinkProps } from 'next/link';
 import { useTranslation } from 'react-i18next';
-import { filteredReportNavItems } from '../TopBar/Items/NavMenu/NavMenu';
+import {
+  filteredReportNavItems,
+  toolsRedirectLinks,
+} from '../TopBar/Items/NavMenu/NavMenu';
 import { NavItem } from './NavItem/NavItem';
 import { NavTools } from './NavTools/NavTools';
 import logo from 'src/images/logo.svg';
@@ -116,12 +119,6 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-export const importRoutes: { [key: string]: string } = {
-  'Import from Google': 'google',
-  'Import from TntConnect': 'tnt',
-  'Import from CSV': 'csv/upload',
-};
-
 export const NavBar: FC<NavBarProps> = ({ onMobileClose, openMobile }) => {
   const classes = useStyles();
   const accountListId = useAccountListId();
@@ -154,9 +151,7 @@ export const NavBar: FC<NavBarProps> = ({ onMobileClose, openMobile }) => {
       items: ToolsList.flatMap((toolsGroup) => [
         ...toolsGroup.items.map((tool) => ({
           title: tool.tool,
-          href: tool.tool.includes('Import')
-            ? `https://mpdx.org/tools/import/${importRoutes[tool.tool]}`
-            : `/accountLists/${accountListId}/tools/${tool.id}`,
+          href: `https://mpdx.org/tools/${toolsRedirectLinks[tool.id]}`,
         })),
       ]),
     },

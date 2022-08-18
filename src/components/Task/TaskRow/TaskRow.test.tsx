@@ -25,15 +25,25 @@ jest.mock('../../../hooks/useTaskModal');
 const openTaskDrawer = jest.fn();
 const openTaskModal = jest.fn();
 
+const mockEnqueue = jest.fn();
+
+jest.mock('notistack', () => ({
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  ...jest.requireActual('notistack'),
+  useSnackbar: () => {
+    return {
+      enqueueSnackbar: mockEnqueue,
+    };
+  },
+}));
+
 beforeEach(() => {
   (useTaskModal as jest.Mock).mockReturnValue({
     openTaskModal,
   });
   (useTaskDrawer as jest.Mock).mockReturnValue({
     openTaskDrawer,
-  });
-  (useTaskModal as jest.Mock).mockReturnValue({
-    openTaskModal,
   });
 });
 

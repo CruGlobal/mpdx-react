@@ -5,7 +5,9 @@ import {
   CircularProgress,
   DialogActions,
   DialogContent,
+  FormControlLabel,
   styled,
+  TextField,
   Typography,
 } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
@@ -38,6 +40,21 @@ import {
   ContactDetailContext,
   ContactDetailsType,
 } from 'src/components/Contacts/ContactDetails/ContactDetailContext';
+
+export const ContactInputField = styled(TextField)(
+  ({ destroyed }: { destroyed: boolean }) => ({
+    '&& > label': {
+      textTransform: 'uppercase',
+    },
+    textDecoration: destroyed ? 'line-through' : 'none',
+  }),
+);
+
+export const PrimaryControlLabel = styled(FormControlLabel)(
+  ({ destroyed }: { destroyed: boolean }) => ({
+    textDecoration: destroyed ? 'line-through' : 'none',
+  }),
+);
 
 const ContactPersonContainer = styled(Box)(({ theme }) => ({
   margin: theme.spacing(2, 0),
