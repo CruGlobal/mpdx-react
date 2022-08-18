@@ -337,21 +337,7 @@ export const ContactsPageProvider: React.FC<React.ReactNode> = ({
     event: React.MouseEvent<HTMLElement>,
     view: string,
   ) => {
-    switch (view) {
-      case 'list':
-        setViewMode(TableViewModeEnum.List);
-        break;
-      case 'flows':
-        setViewMode(TableViewModeEnum.Flows);
-        break;
-      case 'map':
-        setViewMode(TableViewModeEnum.Map);
-        break;
-      default:
-        setViewMode(TableViewModeEnum.List);
-        break;
-    }
-
+    setViewMode(view as TableViewModeEnum);
     updateOptions(view);
   };
   //#endregion
