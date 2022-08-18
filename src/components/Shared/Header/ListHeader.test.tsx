@@ -16,6 +16,7 @@ const onSearchTermChanged = jest.fn();
 const onCheckAllItems = jest.fn();
 const toggleStarredFilter = jest.fn();
 const selectedIds: string[] = [];
+const openAddToAppealModal = jest.fn();
 
 jest.mock('../../../hooks/useTaskModal');
 
@@ -44,6 +45,7 @@ describe('ListHeader', () => {
             toggleFilterPanel={toggleFilterPanel}
             onCheckAllItems={onCheckAllItems}
             onSearchTermChanged={onSearchTermChanged}
+            openAddToAppealModal={openAddToAppealModal}
           />
         </ThemeProvider>,
       );
@@ -70,6 +72,7 @@ describe('ListHeader', () => {
             toggleFilterPanel={toggleFilterPanel}
             onCheckAllItems={onCheckAllItems}
             onSearchTermChanged={onSearchTermChanged}
+            openAddToAppealModal={openAddToAppealModal}
           />
         </ThemeProvider>,
       );
@@ -101,6 +104,7 @@ describe('ListHeader', () => {
           toggleFilterPanel={toggleFilterPanel}
           onCheckAllItems={onCheckAllItems}
           onSearchTermChanged={onSearchTermChanged}
+          openAddToAppealModal={openAddToAppealModal}
         />
       </ThemeProvider>,
     );
@@ -133,6 +137,7 @@ describe('ListHeader', () => {
           toggleFilterPanel={toggleFilterPanel}
           onCheckAllItems={onCheckAllItems}
           onSearchTermChanged={onSearchTermChanged}
+          openAddToAppealModal={openAddToAppealModal}
         />
       </ThemeProvider>,
     );
@@ -165,6 +170,7 @@ describe('ListHeader', () => {
             toggleFilterPanel={toggleFilterPanel}
             onCheckAllItems={onCheckAllItems}
             onSearchTermChanged={onSearchTermChanged}
+            openAddToAppealModal={openAddToAppealModal}
           />
         </ThemeProvider>,
       );
@@ -188,6 +194,7 @@ describe('ListHeader', () => {
           toggleFilterPanel={toggleFilterPanel}
           onCheckAllItems={onCheckAllItems}
           onSearchTermChanged={onSearchTermChanged}
+          openAddToAppealModal={openAddToAppealModal}
         />
       </ThemeProvider>,
     );
@@ -221,6 +228,7 @@ describe('ListHeader', () => {
           toggleFilterPanel={toggleFilterPanel}
           onCheckAllItems={onCheckAllItems}
           onSearchTermChanged={onSearchTermChanged}
+          openAddToAppealModal={openAddToAppealModal}
         />
       </ThemeProvider>,
     );
@@ -247,6 +255,7 @@ describe('ListHeader', () => {
           toggleFilterPanel={toggleFilterPanel}
           onCheckAllItems={onCheckAllItems}
           onSearchTermChanged={onSearchTermChanged}
+          openAddToAppealModal={openAddToAppealModal}
         />
       </ThemeProvider>,
     );
@@ -275,6 +284,7 @@ describe('ListHeader', () => {
           toggleFilterPanel={toggleFilterPanel}
           onCheckAllItems={onCheckAllItems}
           onSearchTermChanged={onSearchTermChanged}
+          openAddToAppealModal={openAddToAppealModal}
         />
       </ThemeProvider>,
     );
@@ -305,6 +315,7 @@ describe('ListHeader', () => {
           toggleFilterPanel={toggleFilterPanel}
           onCheckAllItems={onCheckAllItems}
           onSearchTermChanged={onSearchTermChanged}
+          openAddToAppealModal={openAddToAppealModal}
         />
       </ThemeProvider>,
     );
@@ -335,6 +346,7 @@ describe('ListHeader', () => {
           toggleFilterPanel={toggleFilterPanel}
           onCheckAllItems={onCheckAllItems}
           onSearchTermChanged={onSearchTermChanged}
+          openAddToAppealModal={openAddToAppealModal}
         />
       </ThemeProvider>,
     );
@@ -365,6 +377,7 @@ describe('ListHeader', () => {
           toggleFilterPanel={toggleFilterPanel}
           onCheckAllItems={onCheckAllItems}
           onSearchTermChanged={onSearchTermChanged}
+          openAddToAppealModal={openAddToAppealModal}
         />
       </ThemeProvider>,
     );
@@ -396,6 +409,7 @@ describe('ListHeader', () => {
           toggleFilterPanel={toggleFilterPanel}
           onCheckAllItems={onCheckAllItems}
           onSearchTermChanged={onSearchTermChanged}
+          openAddToAppealModal={openAddToAppealModal}
         />
       </ThemeProvider>,
     );
@@ -425,6 +439,7 @@ describe('ListHeader', () => {
           toggleFilterPanel={toggleFilterPanel}
           onCheckAllItems={onCheckAllItems}
           onSearchTermChanged={onSearchTermChanged}
+          openAddToAppealModal={openAddToAppealModal}
         />
       </ThemeProvider>,
     );
@@ -450,6 +465,7 @@ describe('ListHeader', () => {
           toggleFilterPanel={toggleFilterPanel}
           onCheckAllItems={onCheckAllItems}
           onSearchTermChanged={onSearchTermChanged}
+          openAddToAppealModal={openAddToAppealModal}
         />
       </ThemeProvider>,
     );
@@ -476,6 +492,7 @@ describe('ListHeader', () => {
           toggleFilterPanel={toggleFilterPanel}
           onCheckAllItems={onCheckAllItems}
           onSearchTermChanged={onSearchTermChanged}
+          openAddToAppealModal={openAddToAppealModal}
         />
       </ThemeProvider>,
     );
@@ -498,6 +515,7 @@ describe('ListHeader', () => {
           toggleFilterPanel={toggleFilterPanel}
           onCheckAllItems={onCheckAllItems}
           onSearchTermChanged={onSearchTermChanged}
+          openAddToAppealModal={openAddToAppealModal}
         />
       </ThemeProvider>,
     );
