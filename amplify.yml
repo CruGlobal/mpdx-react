@@ -9,6 +9,7 @@ frontend:
         - echo "NEXTAUTH_URL=$NEXTAUTH_URL" >> .env
         - echo "NODE_ENV=$NODE_ENV" >> .env
         - yarn set version 3.2.2
+        - yarn config set nodeLinker node-modules
         - yarn -v
         - yarn
         - yarn gql:server
