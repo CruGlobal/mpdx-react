@@ -1,5 +1,6 @@
 const path = require('path');
 const withPlugins = require('next-compose-plugins');
+const withPWA = require('next-pwa');
 const withOptimizedImages = require('next-optimized-images');
 const withGraphql = require('next-plugin-graphql');
 require('dotenv').config();
@@ -24,6 +25,15 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
 });
 
 module.exports = withPlugins([
+  [
+    withPWA,
+    {
+      pwa: {
+        dest: 'public',
+        disable: !prod,
+      },
+    },
+  ],
   withOptimizedImages,
   withGraphql,
   withBundleAnalyzer,

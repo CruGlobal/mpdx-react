@@ -7,17 +7,19 @@ frontend:
         - nvm use 16.16.0
         - echo $secrets
         - echo "NEXTAUTH_URL=$NEXTAUTH_URL" >> .env
-        - npm install --force
-        - npm run gql:server
-        - npm run gql
+        - echo "NODE_ENV=$NODE_ENV" >> .env
+        - yarn set version 3.2.2
+        - yarn -v
+        - yarn
+        - yarn gql:server
+        - yarn gql
     build:
       commands:
-        - npm run build:npm
+        - yarn build:amplify
   artifacts:
     baseDirectory: .next
     files:
       - '**/*'
   cache:
     paths:
-      - node_modules/**/*
       - '.next/cache/**/*'
