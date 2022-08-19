@@ -10,6 +10,7 @@ import {
   ContactsPageContext,
   ContactsPageType,
 } from '../../../../pages/accountLists/[accountListId]/contacts/ContactsPageContext';
+import { MassActionsAddToAppealModal } from '../MassActions/AddToAppeal/MassActionsAddToAppealModal';
 import { MassActionsEditFieldsModal } from '../MassActions/EditFields/MassActionsEditFieldsModal';
 import {
   ListHeader,
@@ -55,6 +56,7 @@ export const ContactsMainPanelHeader: React.FC = () => {
     selectedIds,
   } = React.useContext(ContactsPageContext) as ContactsPageType;
 
+  const [addToAppealModalOpen, setAddToAppealModalOpen] = useState(false);
   const [editFieldsModalOpen, setEditFieldsModalOpen] = useState(false);
 
   const { data } = useContactsQuery({
@@ -80,6 +82,7 @@ export const ContactsMainPanelHeader: React.FC = () => {
       <ListHeader
         page="contact"
         activeFilters={Object.keys(activeFilters).length > 0}
+        openAddToAppealModal={setAddToAppealModalOpen}
         filterPanelOpen={filterPanelOpen}
         toggleFilterPanel={toggleFilterPanel}
         contactDetailsOpen={contactDetailsOpen}
@@ -134,13 +137,20 @@ export const ContactsMainPanelHeader: React.FC = () => {
           </Hidden>
         }
       />
-      {editFieldsModalOpen ? (
+      {addToAppealModalOpen && (
+        <MassActionsAddToAppealModal
+          ids={selectedIds}
+          accountListId={accountListId ?? ''}
+          handleClose={() => setAddToAppealModalOpen(false)}
+        />
+      )}
+      {editFieldsModalOpen && (
         <MassActionsEditFieldsModal
           ids={selectedIds}
           accountListId={accountListId ?? ''}
           handleClose={() => setEditFieldsModalOpen(false)}
         />
-      ) : null}
+      )}
     </>
   );
 };
