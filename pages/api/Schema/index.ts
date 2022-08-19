@@ -1,4 +1,3 @@
-import { buildFederatedSchema } from '@apollo/federation';
 import { CoachingAnswerSetsResolvers } from './CoachingAnswerSets/resolvers';
 import CoachingAnswerSetsTypeDefs from './CoachingAnswerSets/coachingAnswerSets.graphql';
 import ScalarTypeDefs from './scalars.graphql';
@@ -33,8 +32,9 @@ import AccountListCoachesTypeDefs from './AccountListCoaches/accountListCoaches.
 import { AccountListCoachesResolvers } from './AccountListCoaches/resolvers';
 import ReportsPledgeHistoriesTyeDefs from './reports/pledgeHistories/pledgeHistories.graphql';
 import { ReportsPledgeHistoriesResolvers } from './reports/pledgeHistories/resolvers';
+import { buildSubgraphSchema } from '@apollo/subgraph';
 
-const schema = buildFederatedSchema([
+const schema = buildSubgraphSchema([
   {
     typeDefs: CoachingAnswerSetsTypeDefs,
     resolvers: CoachingAnswerSetsResolvers,

@@ -1,12 +1,3 @@
-import { ApolloServer } from 'apollo-server-micro';
-import { PageConfig, NextApiRequest } from 'next';
-import Cors from 'micro-cors';
-import {
-  RequestOptions,
-  Response,
-  RESTDataSource,
-} from 'apollo-datasource-rest';
-import { DateTime, Duration, Interval } from 'luxon';
 import {
   ExportFormatEnum,
   ExportLabelTypeEnum,
@@ -55,6 +46,15 @@ import { getAccountListDonorAccounts } from './Schema/AccountListDonorAccounts/d
 import { getAccountListCoachUsers } from './Schema/AccountListCoachUser/dataHandler';
 import { getAccountListCoaches } from './Schema/AccountListCoaches/dataHandler';
 import { getReportsPledgeHistories } from './Schema/reports/pledgeHistories/dataHandler';
+import { DateTime, Duration, Interval } from 'luxon';
+import {
+  RequestOptions,
+  Response,
+  RESTDataSource,
+} from 'apollo-datasource-rest';
+import Cors from 'micro-cors';
+import { PageConfig, NextApiRequest } from 'next';
+import { ApolloServer } from 'apollo-server-micro';
 
 class MpdxRestApi extends RESTDataSource {
   constructor() {
@@ -345,6 +345,7 @@ export default cors(async (req, res) => {
     path: '/api/graphql-rest',
   })(req, res);
 });
+
 // Apollo Server Micro takes care of body parsing
 export const config: PageConfig = {
   api: {

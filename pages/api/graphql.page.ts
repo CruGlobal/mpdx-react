@@ -1,7 +1,11 @@
 import { ApolloServer } from 'apollo-server-micro';
 import { PageConfig, NextApiRequest } from 'next';
 import Cors from 'micro-cors';
-import { ApolloGateway, RemoteGraphQLDataSource } from '@apollo/gateway';
+import {
+  ApolloGateway,
+  IntrospectAndCompose,
+  RemoteGraphQLDataSource,
+} from '@apollo/gateway';
 import { getToken } from 'next-auth/jwt';
 
 class AuthenticatedDataSource extends RemoteGraphQLDataSource {
@@ -25,10 +29,12 @@ class AuthenticatedDataSource extends RemoteGraphQLDataSource {
 }
 
 const gateway = new ApolloGateway({
-  serviceList: [
-    { name: 'graphql', url: process.env.API_URL },
-    { name: 'rest', url: `${process.env.SITE_URL}/api/graphql-rest` },
-  ],
+  supergraphSdl: new IntrospectAndCompose({
+    subgraphs: [
+      { name: 'graphql', url: process.env.API_URL },
+      { name: 'rest', url: `${process.env.SITE_URL}/api/graphql-rest` },
+    ],
+  }),
   buildService({ url }) {
     return new AuthenticatedDataSource({ url });
   },
@@ -61,6 +67,7 @@ const apolloServer = new ApolloServer({
     return { apiToken: jwtToken?.apiToken };
   },
 });
+
 const startServer = apolloServer.start();
 
 export default cors(async (req, res) => {
@@ -73,6 +80,7 @@ export default cors(async (req, res) => {
     path: '/api/graphql',
   })(req, res);
 });
+
 // Apollo Server Micro takes care of body parsing
 export const config: PageConfig = {
   api: {
