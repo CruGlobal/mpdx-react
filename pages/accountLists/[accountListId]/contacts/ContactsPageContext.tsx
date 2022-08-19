@@ -32,7 +32,7 @@ export type ContactsPageType = {
   contactId: string | string[] | undefined;
   searchTerm: string | string[] | undefined;
   loading: boolean;
-  router: NextRouter | null;
+  router: NextRouter;
   selectionType: ListHeaderCheckBoxState;
   isRowChecked: (id: string) => boolean;
   toggleSelectAll: () => void;
