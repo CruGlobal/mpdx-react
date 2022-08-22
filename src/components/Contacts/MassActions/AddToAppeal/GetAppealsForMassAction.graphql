@@ -1,0 +1,9 @@
+query GetAppealsForMassAction($accountListId: ID!) {
+  appeals(accountListId: $accountListId) {
+    nodes {
+      id
+      name
+      contactIds
+    }
+  }
+}
