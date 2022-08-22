@@ -17,7 +17,6 @@ import {
 } from 'pages/accountLists/[accountListId]/contacts/ContactsPageContext';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { GetUserOptionsQuery } from 'src/components/Contacts/ContactFlow/GetUserOptions.generated';
 
 const toggleFilterPanel = jest.fn();
 const onSearchTermChanged = jest.fn();
@@ -40,12 +39,6 @@ const push = jest.fn();
 
 const router = {
   query: { accountListId: '123' },
-  isReady: true,
-  push,
-};
-
-const routerWithContact = {
-  query: { accountListId: '123', contactId: ['map', 'abc'] },
   isReady: true,
   push,
 };
@@ -157,57 +150,6 @@ describe('ListHeader', () => {
       await waitFor(() =>
         expect(router.push).toBeCalledWith({
           pathname: '/accountLists/123/contacts/',
-          query: {},
-        }),
-      );
-    });
-
-    it('renders a button group, clicks flows button, and has a contact id', async () => {
-      const { getByTestId } = render(
-        <ThemeProvider theme={theme}>
-          <TestRouter router={routerWithContact}>
-            <GqlMockedProvider<GetUserOptionsQuery>
-              mocks={{
-                GetUserOptions: {
-                  userOptions: [
-                    {
-                      id: 'abc',
-                      key: 'contacts_view',
-                      value: 'map',
-                    },
-                  ],
-                },
-              }}
-            >
-              <ContactsPageProvider>
-                <ListHeader
-                  selectedIds={selectedIds}
-                  page="contact"
-                  activeFilters={false}
-                  starredFilter={{}}
-                  contactsView={TableViewModeEnum.List}
-                  toggleStarredFilter={toggleStarredFilter}
-                  headerCheckboxState={ListHeaderCheckBoxState.unchecked}
-                  filterPanelOpen={true}
-                  contactDetailsOpen={true}
-                  toggleFilterPanel={toggleFilterPanel}
-                  onCheckAllItems={onCheckAllItems}
-                  onSearchTermChanged={onSearchTermChanged}
-                  openEditFieldsModal={openEditFieldsModal}
-                  buttonGroup={<ButtonGroup />}
-                />
-              </ContactsPageProvider>
-            </GqlMockedProvider>
-          </TestRouter>
-        </ThemeProvider>,
-      );
-
-      expect(getByTestId('map-button')).toBeInTheDocument();
-      userEvent.click(getByTestId('map-button'));
-
-      await waitFor(() =>
-        expect(router.push).toBeCalledWith({
-          pathname: '/accountLists/123/contacts/map/abc',
           query: {},
         }),
       );
