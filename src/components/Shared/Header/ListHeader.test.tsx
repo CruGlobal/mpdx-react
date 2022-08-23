@@ -16,6 +16,7 @@ const onSearchTermChanged = jest.fn();
 const onCheckAllItems = jest.fn();
 const toggleStarredFilter = jest.fn();
 const selectedIds: string[] = [];
+const openAddToAppealModal = jest.fn();
 const openEditFieldsModal = jest.fn();
 const openHideContactsModal = jest.fn();
 
@@ -46,6 +47,7 @@ describe('ListHeader', () => {
             toggleFilterPanel={toggleFilterPanel}
             onCheckAllItems={onCheckAllItems}
             onSearchTermChanged={onSearchTermChanged}
+            openAddToAppealModal={openAddToAppealModal}
             openEditFieldsModal={openEditFieldsModal}
             openHideContactsModal={openHideContactsModal}
           />
@@ -74,6 +76,7 @@ describe('ListHeader', () => {
             toggleFilterPanel={toggleFilterPanel}
             onCheckAllItems={onCheckAllItems}
             onSearchTermChanged={onSearchTermChanged}
+            openAddToAppealModal={openAddToAppealModal}
             openEditFieldsModal={openEditFieldsModal}
             openHideContactsModal={openHideContactsModal}
           />
@@ -107,6 +110,7 @@ describe('ListHeader', () => {
           toggleFilterPanel={toggleFilterPanel}
           onCheckAllItems={onCheckAllItems}
           onSearchTermChanged={onSearchTermChanged}
+          openAddToAppealModal={openAddToAppealModal}
           openEditFieldsModal={openEditFieldsModal}
           openHideContactsModal={openHideContactsModal}
         />
@@ -141,6 +145,7 @@ describe('ListHeader', () => {
           toggleFilterPanel={toggleFilterPanel}
           onCheckAllItems={onCheckAllItems}
           onSearchTermChanged={onSearchTermChanged}
+          openAddToAppealModal={openAddToAppealModal}
           openEditFieldsModal={openEditFieldsModal}
           openHideContactsModal={openHideContactsModal}
         />
@@ -176,6 +181,7 @@ describe('ListHeader', () => {
           onSearchTermChanged={onSearchTermChanged}
           openEditFieldsModal={openEditFieldsModal}
           openHideContactsModal={openHideContactsModal}
+          openAddToAppealModal={openAddToAppealModal}
         />
       </ThemeProvider>,
     );
@@ -187,6 +193,37 @@ describe('ListHeader', () => {
     expect(getByText('Edit Fields')).toBeInTheDocument();
     userEvent.click(getByText('Edit Fields'));
     expect(openEditFieldsModal).toHaveBeenCalled();
+  });
+
+  it('opens the more actions menu and clicks the add to appeal action', () => {
+    const { getByPlaceholderText, getByText, queryByText } = render(
+      <ThemeProvider theme={theme}>
+        <ListHeader
+          selectedIds={selectedIds}
+          page="contact"
+          activeFilters={false}
+          starredFilter={{}}
+          toggleStarredFilter={toggleStarredFilter}
+          headerCheckboxState={ListHeaderCheckBoxState.unchecked}
+          filterPanelOpen={false}
+          contactDetailsOpen={false}
+          toggleFilterPanel={toggleFilterPanel}
+          onCheckAllItems={onCheckAllItems}
+          onSearchTermChanged={onSearchTermChanged}
+          openAddToAppealModal={openAddToAppealModal}
+          openEditFieldsModal={openEditFieldsModal}
+          openHideContactsModal={openHideContactsModal}
+        />
+      </ThemeProvider>,
+    );
+
+    expect(getByPlaceholderText('Search Contacts')).toBeInTheDocument();
+    expect(queryByText('Add to Appeal')).not.toBeInTheDocument();
+    const actionsButton = getByText('Actions');
+    userEvent.click(actionsButton);
+    expect(getByText('Add to Appeal')).toBeInTheDocument();
+    userEvent.click(getByText('Add to Appeal'));
+    expect(openAddToAppealModal).toHaveBeenCalled();
   });
 
   it('opens the more actions menu and clicks the hide contacts action', () => {
@@ -204,6 +241,7 @@ describe('ListHeader', () => {
           toggleFilterPanel={toggleFilterPanel}
           onCheckAllItems={onCheckAllItems}
           onSearchTermChanged={onSearchTermChanged}
+          openAddToAppealModal={openAddToAppealModal}
           openEditFieldsModal={openEditFieldsModal}
           openHideContactsModal={openHideContactsModal}
         />
@@ -235,6 +273,7 @@ describe('ListHeader', () => {
             toggleFilterPanel={toggleFilterPanel}
             onCheckAllItems={onCheckAllItems}
             onSearchTermChanged={onSearchTermChanged}
+            openAddToAppealModal={openAddToAppealModal}
             openEditFieldsModal={openEditFieldsModal}
             openHideContactsModal={openHideContactsModal}
           />
@@ -260,6 +299,7 @@ describe('ListHeader', () => {
           toggleFilterPanel={toggleFilterPanel}
           onCheckAllItems={onCheckAllItems}
           onSearchTermChanged={onSearchTermChanged}
+          openAddToAppealModal={openAddToAppealModal}
           openEditFieldsModal={openEditFieldsModal}
           openHideContactsModal={openHideContactsModal}
         />
@@ -295,6 +335,7 @@ describe('ListHeader', () => {
           toggleFilterPanel={toggleFilterPanel}
           onCheckAllItems={onCheckAllItems}
           onSearchTermChanged={onSearchTermChanged}
+          openAddToAppealModal={openAddToAppealModal}
           openEditFieldsModal={openEditFieldsModal}
           openHideContactsModal={openHideContactsModal}
         />
@@ -323,6 +364,7 @@ describe('ListHeader', () => {
           toggleFilterPanel={toggleFilterPanel}
           onCheckAllItems={onCheckAllItems}
           onSearchTermChanged={onSearchTermChanged}
+          openAddToAppealModal={openAddToAppealModal}
           openEditFieldsModal={openEditFieldsModal}
           openHideContactsModal={openHideContactsModal}
         />
@@ -353,6 +395,7 @@ describe('ListHeader', () => {
           toggleFilterPanel={toggleFilterPanel}
           onCheckAllItems={onCheckAllItems}
           onSearchTermChanged={onSearchTermChanged}
+          openAddToAppealModal={openAddToAppealModal}
           openEditFieldsModal={openEditFieldsModal}
           openHideContactsModal={openHideContactsModal}
         />
@@ -385,6 +428,7 @@ describe('ListHeader', () => {
           toggleFilterPanel={toggleFilterPanel}
           onCheckAllItems={onCheckAllItems}
           onSearchTermChanged={onSearchTermChanged}
+          openAddToAppealModal={openAddToAppealModal}
           openEditFieldsModal={openEditFieldsModal}
           openHideContactsModal={openHideContactsModal}
         />
@@ -417,6 +461,7 @@ describe('ListHeader', () => {
           toggleFilterPanel={toggleFilterPanel}
           onCheckAllItems={onCheckAllItems}
           onSearchTermChanged={onSearchTermChanged}
+          openAddToAppealModal={openAddToAppealModal}
           openEditFieldsModal={openEditFieldsModal}
           openHideContactsModal={openHideContactsModal}
         />
@@ -449,6 +494,7 @@ describe('ListHeader', () => {
           toggleFilterPanel={toggleFilterPanel}
           onCheckAllItems={onCheckAllItems}
           onSearchTermChanged={onSearchTermChanged}
+          openAddToAppealModal={openAddToAppealModal}
           openEditFieldsModal={openEditFieldsModal}
           openHideContactsModal={openHideContactsModal}
         />
@@ -482,6 +528,7 @@ describe('ListHeader', () => {
           toggleFilterPanel={toggleFilterPanel}
           onCheckAllItems={onCheckAllItems}
           onSearchTermChanged={onSearchTermChanged}
+          openAddToAppealModal={openAddToAppealModal}
           openEditFieldsModal={openEditFieldsModal}
           openHideContactsModal={openHideContactsModal}
         />
@@ -513,6 +560,7 @@ describe('ListHeader', () => {
           toggleFilterPanel={toggleFilterPanel}
           onCheckAllItems={onCheckAllItems}
           onSearchTermChanged={onSearchTermChanged}
+          openAddToAppealModal={openAddToAppealModal}
           openEditFieldsModal={openEditFieldsModal}
           openHideContactsModal={openHideContactsModal}
         />
@@ -540,6 +588,7 @@ describe('ListHeader', () => {
           toggleFilterPanel={toggleFilterPanel}
           onCheckAllItems={onCheckAllItems}
           onSearchTermChanged={onSearchTermChanged}
+          openAddToAppealModal={openAddToAppealModal}
           openEditFieldsModal={openEditFieldsModal}
           openHideContactsModal={openHideContactsModal}
         />
@@ -568,6 +617,7 @@ describe('ListHeader', () => {
           toggleFilterPanel={toggleFilterPanel}
           onCheckAllItems={onCheckAllItems}
           onSearchTermChanged={onSearchTermChanged}
+          openAddToAppealModal={openAddToAppealModal}
           openEditFieldsModal={openEditFieldsModal}
           openHideContactsModal={openHideContactsModal}
         />
@@ -592,6 +642,7 @@ describe('ListHeader', () => {
           toggleFilterPanel={toggleFilterPanel}
           onCheckAllItems={onCheckAllItems}
           onSearchTermChanged={onSearchTermChanged}
+          openAddToAppealModal={openAddToAppealModal}
           openEditFieldsModal={openEditFieldsModal}
           openHideContactsModal={openHideContactsModal}
         />

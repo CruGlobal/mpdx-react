@@ -121,6 +121,7 @@ interface ListHeaderProps {
     filter: ContactFilterSetInput | TaskFilterSetInput,
   ) => void;
   selectedIds: string[];
+  openAddToAppealModal?: (open: boolean) => void;
   openEditFieldsModal?: (open: boolean) => void;
   openHideContactsModal?: (open: boolean) => void;
 }
@@ -141,6 +142,7 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
   toggleStarredFilter,
   contactsView,
   selectedIds,
+  openAddToAppealModal,
   openEditFieldsModal,
   openHideContactsModal,
 }) => {
@@ -203,7 +205,8 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
         <>
           {contactsView !== TableViewModeEnum.Map &&
             openEditFieldsModal &&
-            openHideContactsModal && (
+            openHideContactsModal &&
+            openAddToAppealModal && (
               <Hidden lgDown={contactDetailsOpen}>
                 <ActionsButton
                   aria-haspopup
@@ -271,7 +274,12 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
                     <ListItemText>{t('Hide Contacts')}</ListItemText>
                   </MenuItem>
 
-                  <MenuItem>
+                  <MenuItem
+                    onClick={() => {
+                      openAddToAppealModal(true);
+                      handleClose();
+                    }}
+                  >
                     <ListItemText>{t('Add to Appeal')}</ListItemText>
                   </MenuItem>
                   <MenuItem divider>

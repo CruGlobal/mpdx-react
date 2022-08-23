@@ -12,6 +12,7 @@ import {
   ContactsPageContext,
   ContactsPageType,
 } from '../../../../pages/accountLists/[accountListId]/contacts/ContactsPageContext';
+import { MassActionsAddToAppealModal } from '../MassActions/AddToAppeal/MassActionsAddToAppealModal';
 import { MassActionsEditFieldsModal } from '../MassActions/EditFields/MassActionsEditFieldsModal';
 import { useMassActionsUpdateContactsMutation } from '../MassActions/MassActionsUpdateContacts.generated';
 import {
@@ -62,6 +63,7 @@ export const ContactsMainPanelHeader: React.FC = () => {
     selectedIds,
   } = React.useContext(ContactsPageContext) as ContactsPageType;
 
+  const [addToAppealModalOpen, setAddToAppealModalOpen] = useState(false);
   const [editFieldsModalOpen, setEditFieldsModalOpen] = useState(false);
   const [hideContactsModalOpen, setHideContactsModalOpen] = useState(false);
 
@@ -114,6 +116,7 @@ export const ContactsMainPanelHeader: React.FC = () => {
       <ListHeader
         page="contact"
         activeFilters={Object.keys(activeFilters).length > 0}
+        openAddToAppealModal={setAddToAppealModalOpen}
         filterPanelOpen={filterPanelOpen}
         toggleFilterPanel={toggleFilterPanel}
         contactDetailsOpen={contactDetailsOpen}
@@ -169,7 +172,14 @@ export const ContactsMainPanelHeader: React.FC = () => {
           </Hidden>
         }
       />
-      {editFieldsModalOpen ? (
+      {addToAppealModalOpen && (
+        <MassActionsAddToAppealModal
+          ids={selectedIds}
+          accountListId={accountListId ?? ''}
+          handleClose={() => setAddToAppealModalOpen(false)}
+        />
+      )}
+      {editFieldsModalOpen && (
         <MassActionsEditFieldsModal
           ids={selectedIds}
           accountListId={accountListId ?? ''}
