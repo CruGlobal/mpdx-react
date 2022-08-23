@@ -123,6 +123,7 @@ interface ListHeaderProps {
   selectedIds: string[];
   openAddToAppealModal?: (open: boolean) => void;
   openEditFieldsModal?: (open: boolean) => void;
+  openHideContactsModal?: (open: boolean) => void;
 }
 
 export const ListHeader: React.FC<ListHeaderProps> = ({
@@ -143,10 +144,12 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
   selectedIds,
   openAddToAppealModal,
   openEditFieldsModal,
+  openHideContactsModal,
 }) => {
   const { t } = useTranslation();
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+
   const open = Boolean(anchorEl);
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -202,6 +205,7 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
         <>
           {contactsView !== TableViewModeEnum.Map &&
             openEditFieldsModal &&
+            openHideContactsModal &&
             openAddToAppealModal && (
               <Hidden lgDown={contactDetailsOpen}>
                 <ActionsButton
@@ -261,7 +265,12 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
                   >
                     <ListItemText>{t('Edit Fields')}</ListItemText>
                   </MenuItem>
-                  <MenuItem>
+                  <MenuItem
+                    onClick={() => {
+                      openHideContactsModal(true);
+                      handleClose();
+                    }}
+                  >
                     <ListItemText>{t('Hide Contacts')}</ListItemText>
                   </MenuItem>
 
