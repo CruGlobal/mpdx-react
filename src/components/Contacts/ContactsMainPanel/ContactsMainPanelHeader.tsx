@@ -185,7 +185,7 @@ export const ContactsMainPanelHeader: React.FC = () => {
           accountListId={accountListId ?? ''}
           handleClose={() => setEditFieldsModalOpen(false)}
         />
-      ) : null}
+      )}
       {hideContactsModalOpen && (
         <HideContactsModal
           open={hideContactsModalOpen}
