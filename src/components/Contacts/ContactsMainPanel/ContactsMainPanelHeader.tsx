@@ -6,16 +6,25 @@ import { useTranslation } from 'react-i18next';
 import { FormatListBulleted, Settings, ViewColumn } from '@material-ui/icons';
 import Map from '@material-ui/icons/Map';
 import _ from 'lodash';
+import { useSnackbar } from 'notistack';
+import { StatusEnum } from '../../../../graphql/types.generated';
 import {
   ContactsPageContext,
   ContactsPageType,
 } from '../../../../pages/accountLists/[accountListId]/contacts/ContactsPageContext';
 import { MassActionsRemoveTagsModal } from '../MassActions/RemoveTags/MassActionsRemoveTagsModal';
+import { MassActionsAddToAppealModal } from '../MassActions/AddToAppeal/MassActionsAddToAppealModal';
+import { MassActionsEditFieldsModal } from '../MassActions/EditFields/MassActionsEditFieldsModal';
+import { useMassActionsUpdateContactsMutation } from '../MassActions/MassActionsUpdateContacts.generated';
 import {
   ListHeader,
   TableViewModeEnum,
 } from 'src/components/Shared/Header/ListHeader';
-import { useContactsQuery } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
+import {
+  ContactsDocument,
+  useContactsQuery,
+} from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
+import { HideContactsModal } from 'src/components/Shared/HideContactsModal/HideConatctsModal';
 
 const ViewSettingsButton = styled(Button)(({ theme }) => ({
   textTransform: 'none',
@@ -56,6 +65,9 @@ export const ContactsMainPanelHeader: React.FC = () => {
   } = React.useContext(ContactsPageContext) as ContactsPageType;
 
   const [openRemoveTagsModal, setOpenRemoveTagsModal] = useState(false);
+  const [addToAppealModalOpen, setAddToAppealModalOpen] = useState(false);
+  const [editFieldsModalOpen, setEditFieldsModalOpen] = useState(false);
+  const [hideContactsModalOpen, setHideContactsModalOpen] = useState(false);
 
   const { data } = useContactsQuery({
     variables: {
@@ -73,6 +85,32 @@ export const ContactsMainPanelHeader: React.FC = () => {
     },
     skip: !accountListId,
   });
+
+  const { enqueueSnackbar } = useSnackbar();
+
+  const [updateContacts] = useMassActionsUpdateContactsMutation();
+
+  const hideContacts = async () => {
+    await updateContacts({
+      variables: {
+        accountListId: accountListId ?? '',
+        attributes: selectedIds.map((id) => ({
+          id,
+          status: StatusEnum.NeverAsk,
+        })),
+      },
+      refetchQueries: [
+        {
+          query: ContactsDocument,
+          variables: { accountListId },
+        },
+      ],
+    });
+    enqueueSnackbar(t('Contact(s) hidden successfully'), {
+      variant: 'success',
+    });
+    setHideContactsModalOpen(false);
+  };
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return (
@@ -93,6 +131,9 @@ export const ContactsMainPanelHeader: React.FC = () => {
         headerCheckboxState={selectionType}
         selectedIds={selectedIds}
         openRemoveTagsModal={setOpenRemoveTagsModal}
+        openEditFieldsModal={setEditFieldsModalOpen}
+        openAddToAppealModal={setAddToAppealModalOpen}
+        openHideContactsModal={setHideContactsModalOpen}
         buttonGroup={
           <Hidden xsDown>
             <Box display="flex" alignItems="center">
@@ -134,13 +175,35 @@ export const ContactsMainPanelHeader: React.FC = () => {
           </Hidden>
         }
       />
-      {openRemoveTagsModal ? (
+      {openRemoveTagsModal && (
         <MassActionsRemoveTagsModal
           accountListId={accountListId ?? ''}
           ids={selectedIds}
           handleClose={() => setOpenRemoveTagsModal(false)}
         />
-      ) : null}
+      )}
+      {addToAppealModalOpen && (
+        <MassActionsAddToAppealModal
+          ids={selectedIds}
+          accountListId={accountListId ?? ''}
+          handleClose={() => setAddToAppealModalOpen(false)}
+        />
+      )}
+      {editFieldsModalOpen && (
+        <MassActionsEditFieldsModal
+          ids={selectedIds}
+          accountListId={accountListId ?? ''}
+          handleClose={() => setEditFieldsModalOpen(false)}
+        />
+      )}
+      {hideContactsModalOpen && (
+        <HideContactsModal
+          open={hideContactsModalOpen}
+          setOpen={setHideContactsModalOpen}
+          onConfirm={hideContacts}
+          multi={selectedIds.length > 1}
+        />
+      )}
     </>
   );
 };

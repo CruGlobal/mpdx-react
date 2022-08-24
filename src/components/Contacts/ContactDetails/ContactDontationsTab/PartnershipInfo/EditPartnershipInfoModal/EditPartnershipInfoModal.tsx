@@ -71,7 +71,7 @@ export const EditPartnershipInfoModal: React.FC<EditPartnershipInfoModalProps> =
   const referredContactIds = contact.contactReferralsToMe.nodes.map(
     (referral) => referral.referredBy.id,
   );
-  const [currentContactIds, setCurrentContactIds] = useState(
+  const [currentReferredContactIds, setCurrentReferredContactIds] = useState(
     referredContactIds,
   );
 
@@ -144,7 +144,8 @@ export const EditPartnershipInfoModal: React.FC<EditPartnershipInfoModalProps> =
   ) => {
     const removedReferrals = contact.contactReferralsToMe.nodes
       .filter(
-        (referral) => currentContactIds.indexOf(referral.referredBy.id) === -1,
+        (referral) =>
+          currentReferredContactIds.indexOf(referral.referredBy.id) === -1,
       )
       .map((referral) => ({
         id: referral.id,
@@ -207,7 +208,7 @@ export const EditPartnershipInfoModal: React.FC<EditPartnershipInfoModalProps> =
         .filter(
           (contact) =>
             ids.indexOf(contact.id) !== -1 &&
-            currentContactIds.indexOf(contact.id) === -1,
+            currentReferredContactIds.indexOf(contact.id) === -1,
         )
         .map(({ name, id }) => ({ name, id })) || [];
 
@@ -226,7 +227,7 @@ export const EditPartnershipInfoModal: React.FC<EditPartnershipInfoModalProps> =
     setFieldValue: (name: string, value: ContactReferralToMeInput[]) => void,
   ) => {
     // Set the ids currently selected
-    setCurrentContactIds(ids);
+    setCurrentReferredContactIds(ids);
     // Update array of current contacts based on currently selected ids
     updateCurrentContacts(ids);
 
