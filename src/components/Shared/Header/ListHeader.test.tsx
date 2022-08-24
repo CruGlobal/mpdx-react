@@ -19,6 +19,7 @@ const selectedIds: string[] = [];
 const openAddToAppealModal = jest.fn();
 const openEditFieldsModal = jest.fn();
 const openHideContactsModal = jest.fn();
+const openRemoveTagsModal = jest.fn();
 
 jest.mock('../../../hooks/useTaskModal');
 
@@ -50,6 +51,7 @@ describe('ListHeader', () => {
             openAddToAppealModal={openAddToAppealModal}
             openEditFieldsModal={openEditFieldsModal}
             openHideContactsModal={openHideContactsModal}
+            openRemoveTagsModal={openRemoveTagsModal}
           />
         </ThemeProvider>,
       );
@@ -79,6 +81,7 @@ describe('ListHeader', () => {
             openAddToAppealModal={openAddToAppealModal}
             openEditFieldsModal={openEditFieldsModal}
             openHideContactsModal={openHideContactsModal}
+            openRemoveTagsModal={openRemoveTagsModal}
           />
         </ThemeProvider>,
       );
@@ -113,6 +116,7 @@ describe('ListHeader', () => {
           openAddToAppealModal={openAddToAppealModal}
           openEditFieldsModal={openEditFieldsModal}
           openHideContactsModal={openHideContactsModal}
+          openRemoveTagsModal={openRemoveTagsModal}
         />
       </ThemeProvider>,
     );
@@ -148,6 +152,7 @@ describe('ListHeader', () => {
           openAddToAppealModal={openAddToAppealModal}
           openEditFieldsModal={openEditFieldsModal}
           openHideContactsModal={openHideContactsModal}
+          openRemoveTagsModal={openRemoveTagsModal}
         />
       </ThemeProvider>,
     );
@@ -181,6 +186,7 @@ describe('ListHeader', () => {
           onSearchTermChanged={onSearchTermChanged}
           openEditFieldsModal={openEditFieldsModal}
           openHideContactsModal={openHideContactsModal}
+          openRemoveTagsModal={openRemoveTagsModal}
           openAddToAppealModal={openAddToAppealModal}
         />
       </ThemeProvider>,
@@ -213,6 +219,7 @@ describe('ListHeader', () => {
           openAddToAppealModal={openAddToAppealModal}
           openEditFieldsModal={openEditFieldsModal}
           openHideContactsModal={openHideContactsModal}
+          openRemoveTagsModal={openRemoveTagsModal}
         />
       </ThemeProvider>,
     );
@@ -244,6 +251,7 @@ describe('ListHeader', () => {
           openAddToAppealModal={openAddToAppealModal}
           openEditFieldsModal={openEditFieldsModal}
           openHideContactsModal={openHideContactsModal}
+          openRemoveTagsModal={openRemoveTagsModal}
         />
       </ThemeProvider>,
     );
@@ -276,6 +284,7 @@ describe('ListHeader', () => {
             openAddToAppealModal={openAddToAppealModal}
             openEditFieldsModal={openEditFieldsModal}
             openHideContactsModal={openHideContactsModal}
+            openRemoveTagsModal={openRemoveTagsModal}
           />
         </ThemeProvider>,
       );
@@ -302,6 +311,7 @@ describe('ListHeader', () => {
           openAddToAppealModal={openAddToAppealModal}
           openEditFieldsModal={openEditFieldsModal}
           openHideContactsModal={openHideContactsModal}
+          openRemoveTagsModal={openRemoveTagsModal}
         />
       </ThemeProvider>,
     );
@@ -338,6 +348,7 @@ describe('ListHeader', () => {
           openAddToAppealModal={openAddToAppealModal}
           openEditFieldsModal={openEditFieldsModal}
           openHideContactsModal={openHideContactsModal}
+          openRemoveTagsModal={openRemoveTagsModal}
         />
       </ThemeProvider>,
     );
@@ -367,6 +378,7 @@ describe('ListHeader', () => {
           openAddToAppealModal={openAddToAppealModal}
           openEditFieldsModal={openEditFieldsModal}
           openHideContactsModal={openHideContactsModal}
+          openRemoveTagsModal={openRemoveTagsModal}
         />
       </ThemeProvider>,
     );
@@ -398,6 +410,7 @@ describe('ListHeader', () => {
           openAddToAppealModal={openAddToAppealModal}
           openEditFieldsModal={openEditFieldsModal}
           openHideContactsModal={openHideContactsModal}
+          openRemoveTagsModal={openRemoveTagsModal}
         />
       </ThemeProvider>,
     );
@@ -431,6 +444,7 @@ describe('ListHeader', () => {
           openAddToAppealModal={openAddToAppealModal}
           openEditFieldsModal={openEditFieldsModal}
           openHideContactsModal={openHideContactsModal}
+          openRemoveTagsModal={openRemoveTagsModal}
         />
       </ThemeProvider>,
     );
@@ -464,6 +478,7 @@ describe('ListHeader', () => {
           openAddToAppealModal={openAddToAppealModal}
           openEditFieldsModal={openEditFieldsModal}
           openHideContactsModal={openHideContactsModal}
+          openRemoveTagsModal={openRemoveTagsModal}
         />
       </ThemeProvider>,
     );
@@ -497,6 +512,7 @@ describe('ListHeader', () => {
           openAddToAppealModal={openAddToAppealModal}
           openEditFieldsModal={openEditFieldsModal}
           openHideContactsModal={openHideContactsModal}
+          openRemoveTagsModal={openRemoveTagsModal}
         />
       </ThemeProvider>,
     );
@@ -531,6 +547,7 @@ describe('ListHeader', () => {
           openAddToAppealModal={openAddToAppealModal}
           openEditFieldsModal={openEditFieldsModal}
           openHideContactsModal={openHideContactsModal}
+          openRemoveTagsModal={openRemoveTagsModal}
         />
       </ThemeProvider>,
     );
@@ -563,6 +580,7 @@ describe('ListHeader', () => {
           openAddToAppealModal={openAddToAppealModal}
           openEditFieldsModal={openEditFieldsModal}
           openHideContactsModal={openHideContactsModal}
+          openRemoveTagsModal={openRemoveTagsModal}
         />
       </ThemeProvider>,
     );
@@ -591,6 +609,7 @@ describe('ListHeader', () => {
           openAddToAppealModal={openAddToAppealModal}
           openEditFieldsModal={openEditFieldsModal}
           openHideContactsModal={openHideContactsModal}
+          openRemoveTagsModal={openRemoveTagsModal}
         />
       </ThemeProvider>,
     );
@@ -620,6 +639,7 @@ describe('ListHeader', () => {
           openAddToAppealModal={openAddToAppealModal}
           openEditFieldsModal={openEditFieldsModal}
           openHideContactsModal={openHideContactsModal}
+          openRemoveTagsModal={openRemoveTagsModal}
         />
       </ThemeProvider>,
     );
@@ -645,6 +665,7 @@ describe('ListHeader', () => {
           openAddToAppealModal={openAddToAppealModal}
           openEditFieldsModal={openEditFieldsModal}
           openHideContactsModal={openHideContactsModal}
+          openRemoveTagsModal={openRemoveTagsModal}
         />
       </ThemeProvider>,
     );
