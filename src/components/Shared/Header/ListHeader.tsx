@@ -205,7 +205,7 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
               openHideContactsModal &&
               openAddToAppealModal && (
                 <>
-                  <Hidden xsDown={contactDetailsOpen}>
+                  <Hidden xsDown>
                     <ActionsButton
                       aria-haspopup
                       aria-expanded={open}
@@ -303,7 +303,7 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
         ) : (
           <>
             {buttonGroup}
-            <Hidden smDown>
+            <Hidden xsDown>
               <ActionsButton
                 aria-haspopup
                 aria-expanded={open}
