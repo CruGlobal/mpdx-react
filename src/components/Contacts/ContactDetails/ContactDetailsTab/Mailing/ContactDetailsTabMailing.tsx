@@ -100,7 +100,10 @@ export const ContactDetailsTabMailing: React.FC<MailingProp> = ({
     editingAddressId &&
     addresses.nodes.filter((address) => address.id === editingAddressId)[0];
 
-  const [showMoreOpen, setShowMoreOpen] = useState(false);
+  const [
+    showContactDetailTabMoreOpen,
+    setShowContactDetailTabMoreOpen,
+  ] = useState(false);
   return (
     <>
       <Box>
@@ -158,14 +161,20 @@ export const ContactDetailsTabMailing: React.FC<MailingProp> = ({
                 <Link href="#">
                   <ContactMailingShowMoreLabel
                     variant="subtitle1"
-                    onClick={() => setShowMoreOpen(!showMoreOpen)}
+                    onClick={() =>
+                      setShowContactDetailTabMoreOpen(
+                        !showContactDetailTabMoreOpen,
+                      )
+                    }
                   >
-                    {showMoreOpen ? t('Show Less') : t('Show More')}
+                    {showContactDetailTabMoreOpen
+                      ? t('Show Less')
+                      : t('Show More')}
                   </ContactMailingShowMoreLabel>
                 </Link>
               </ContactDetailsMailingLabelTextContainer>
             ) : null}
-            {showMoreOpen
+            {showContactDetailTabMoreOpen
               ? nonPrimaryAddresses.map((address) => (
                   <ContactDetailsMailingTextContainer
                     key={address.id}

@@ -116,6 +116,9 @@ interface ListHeaderProps {
     filter: ContactFilterSetInput | TaskFilterSetInput,
   ) => void;
   selectedIds: string[];
+  openAddToAppealModal?: (open: boolean) => void;
+  openEditFieldsModal?: (open: boolean) => void;
+  openHideContactsModal?: (open: boolean) => void;
 }
 
 export const ListHeader: React.FC<ListHeaderProps> = ({
@@ -134,10 +137,14 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
   toggleStarredFilter,
   contactsView,
   selectedIds,
+  openAddToAppealModal,
+  openEditFieldsModal,
+  openHideContactsModal,
 }) => {
   const { t } = useTranslation();
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+
   const open = Boolean(anchorEl);
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -182,7 +189,6 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
             page === 'contact' ? t('Search Contacts') : t('Search Tasks')
           }
         />
-
         <Hidden smDown>
           <ItemsShowingText data-testid="showing-text">
             {contactsView === TableViewModeEnum.List
@@ -194,77 +200,110 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
       <HeaderWrapInner style={{ marginLeft: 8 }}>
         {page === 'contact' ? (
           <>
-            {contactsView !== TableViewModeEnum.Map && (
-              <>
-                <Hidden xsDown>
-                  <ActionsButton
-                    aria-haspopup
-                    aria-expanded={open}
-                    onClick={handleClick}
-                    endIcon={<ArrowDropDown />}
-                  >
-                    {filterPanelOpen && contactDetailsOpen ? (
-                      <MoreHoriz />
-                    ) : (
-                      t('Actions')
-                    )}
-                  </ActionsButton>
-                  <Menu
-                    open={open}
-                    onClose={handleClose}
-                    anchorEl={anchorEl}
-                    getContentAnchorEl={null}
-                    anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-                    transformOrigin={{ vertical: 'top', horizontal: 'center' }}
-                  >
-                    <MenuItem>
-                      <ListItemText>{t('Add Tags')}</ListItemText>
-                    </MenuItem>
-                    <MenuItem divider>
-                      <ListItemText>{t('Remove Tags')}</ListItemText>
-                    </MenuItem>
-                    <MenuItem
-                      onClick={() => {
-                        openTaskModal({
-                          defaultValues: { contactIds: selectedIds },
-                        });
-                        handleClose();
+            {contactsView !== TableViewModeEnum.Map &&
+              openEditFieldsModal &&
+              openHideContactsModal &&
+              openAddToAppealModal && (
+                <>
+                  <Hidden xsDown={contactDetailsOpen}>
+                    <ActionsButton
+                      aria-haspopup
+                      aria-expanded={open}
+                      onClick={handleClick}
+                      endIcon={<ArrowDropDown />}
+                    >
+                      {filterPanelOpen && contactDetailsOpen ? (
+                        <MoreHoriz />
+                      ) : (
+                        t('Actions')
+                      )}
+                    </ActionsButton>
+                    <Menu
+                      open={open}
+                      onClose={handleClose}
+                      anchorEl={anchorEl}
+                      getContentAnchorEl={null}
+                      anchorOrigin={{
+                        vertical: 'bottom',
+                        horizontal: 'center',
+                      }}
+                      transformOrigin={{
+                        vertical: 'top',
+                        horizontal: 'center',
                       }}
                     >
-                      <ListItemText>{t('Add Task')}</ListItemText>
-                    </MenuItem>
-                    <MenuItem divider>
-                      <ListItemText>{t('Log Task')}</ListItemText>
-                    </MenuItem>
+                      <MenuItem>
+                        <ListItemText>{t('Add Tags')}</ListItemText>
+                      </MenuItem>
+                      <MenuItem divider>
+                        <ListItemText>{t('Remove Tags')}</ListItemText>
+                      </MenuItem>
+                      <MenuItem
+                        onClick={() => {
+                          openTaskModal({
+                            defaultValues: { contactIds: selectedIds },
+                          });
+                          handleClose();
+                        }}
+                      >
+                        <ListItemText>{t('Add Task')}</ListItemText>
+                      </MenuItem>
+                      <MenuItem
+                        divider
+                        onClick={() => {
+                          openTaskModal({
+                            view: 'log',
+                            defaultValues: { contactIds: selectedIds },
+                          });
+                          handleClose();
+                        }}
+                      >
+                        <ListItemText>{t('Log Task')}</ListItemText>
+                      </MenuItem>
 
-                    <MenuItem>
-                      <ListItemText>{t('Edit Fields')}</ListItemText>
-                    </MenuItem>
-                    <MenuItem>
-                      <ListItemText>{t('Hide Contacts')}</ListItemText>
-                    </MenuItem>
+                      <MenuItem
+                        onClick={() => {
+                          openEditFieldsModal(true);
+                          handleClose();
+                        }}
+                      >
+                        <ListItemText>{t('Edit Fields')}</ListItemText>
+                      </MenuItem>
+                      <MenuItem
+                        onClick={() => {
+                          openHideContactsModal(true);
+                          handleClose();
+                        }}
+                      >
+                        <ListItemText>{t('Hide Contacts')}</ListItemText>
+                      </MenuItem>
 
-                    <MenuItem>
-                      <ListItemText>{t('Add to Appeal')}</ListItemText>
-                    </MenuItem>
-                    <MenuItem divider>
-                      <ListItemText>{t('Add to new Appeal')}</ListItemText>
-                    </MenuItem>
+                      <MenuItem
+                        onClick={() => {
+                          openAddToAppealModal(true);
+                          handleClose();
+                        }}
+                      >
+                        <ListItemText>{t('Add to Appeal')}</ListItemText>
+                      </MenuItem>
+                      <MenuItem divider>
+                        <ListItemText>{t('Add to new Appeal')}</ListItemText>
+                      </MenuItem>
 
-                    <MenuItem>
-                      <ListItemText>{t('Export Emails')}</ListItemText>
-                    </MenuItem>
-                  </Menu>
-                </Hidden>
-              </>
-            )}
+                      <MenuItem>
+                        <ListItemText>{t('Export Emails')}</ListItemText>
+                      </MenuItem>
+                    </Menu>
+                  </Hidden>
+                </>
+              )}
 
             {buttonGroup}
           </>
         ) : (
           <>
             {buttonGroup}
-            <Hidden xsDown>
+            <Hidden smDown>
               <ActionsButton
                 aria-haspopup
                 aria-expanded={open}
@@ -302,6 +341,7 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
           </>
         )}
 
+        {/* This hidden doesn't remove from document */}
         <Hidden smDown>
           <StarFilterButton
             starredFilter={starredFilter}

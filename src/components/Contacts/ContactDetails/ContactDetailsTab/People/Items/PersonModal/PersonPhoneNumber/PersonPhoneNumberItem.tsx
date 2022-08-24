@@ -1,11 +1,4 @@
-import {
-  Grid,
-  MenuItem,
-  Select,
-  styled,
-  Checkbox,
-  FormControlLabel,
-} from '@material-ui/core';
+import { Grid, MenuItem, Select, styled, Checkbox } from '@material-ui/core';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { FormikErrors, getIn } from 'formik';
@@ -17,7 +10,11 @@ import {
   PersonPhoneNumberInput,
   PersonUpdateInput,
 } from '../../../../../../../../../graphql/types.generated';
-import { ContactInputField, NewSocial } from '../PersonModal';
+import {
+  ContactInputField,
+  NewSocial,
+  PrimaryControlLabel,
+} from '../PersonModal';
 
 interface Props {
   phoneNumber: PersonPhoneNumberInput;
@@ -84,7 +81,7 @@ export const PersonPhoneNumberItem: React.FC<Props> = ({
               fullWidth
             />
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12} md={3}>
             <PhoneNumberSelect
               destroyed={phoneNumber.destroy ?? false}
               value={phoneNumber.location ?? ''}
@@ -109,6 +106,19 @@ export const PersonPhoneNumberItem: React.FC<Props> = ({
               </MenuItem>
             </PhoneNumberSelect>
           </Grid>
+          <Grid item xs={12} md={3}>
+            <PrimaryControlLabel
+              label={t('Primary')}
+              control={
+                <Checkbox
+                  value={phoneNumber.id}
+                  checked={isPrimaryChecked}
+                  onChange={handleChange}
+                />
+              }
+              destroyed={phoneNumber.destroy ?? false}
+            />
+          </Grid>
           <ModalSectionDeleteIcon
             handleClick={
               phoneNumber.id
@@ -125,16 +135,6 @@ export const PersonPhoneNumberItem: React.FC<Props> = ({
             }
           />
         </Grid>
-        <FormControlLabel
-          label={t('Primary')}
-          control={
-            <Checkbox
-              value={phoneNumber.id}
-              checked={isPrimaryChecked}
-              onChange={handleChange}
-            />
-          }
-        />
       </ModalSectionContainer>
     </>
   );

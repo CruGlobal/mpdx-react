@@ -1,11 +1,4 @@
-import {
-  Checkbox,
-  FormControlLabel,
-  Grid,
-  MenuItem,
-  Select,
-  styled,
-} from '@material-ui/core';
+import { Checkbox, Grid, MenuItem, Select, styled } from '@material-ui/core';
 import React from 'react';
 
 import { useTranslation } from 'react-i18next';
@@ -17,7 +10,11 @@ import {
   PersonEmailAddressInput,
   PersonUpdateInput,
 } from '../../../../../../../../../graphql/types.generated';
-import { ContactInputField, NewSocial } from '../PersonModal';
+import {
+  ContactInputField,
+  NewSocial,
+  PrimaryControlLabel,
+} from '../PersonModal';
 import { InputMaybe } from 'pages/api/graphql-rest.page.generated';
 
 interface Props {
@@ -85,7 +82,7 @@ export const PersonEmailItem: React.FC<Props> = ({
               fullWidth
             />
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12} md={3}>
             <EmailSelect
               destroyed={emailAddress.destroy ?? false}
               value={emailAddress.location ?? ''}
@@ -110,16 +107,19 @@ export const PersonEmailItem: React.FC<Props> = ({
               </MenuItem>
             </EmailSelect>
           </Grid>
-          <FormControlLabel
-            label={t('Primary')}
-            control={
-              <Checkbox
-                value={emailAddress.id}
-                checked={isEmailPrimaryChecked}
-                onChange={handleChange}
-              />
-            }
-          />
+          <Grid item xs={12} md={3}>
+            <PrimaryControlLabel
+              label={t('Primary')}
+              control={
+                <Checkbox
+                  value={emailAddress.id}
+                  checked={isEmailPrimaryChecked}
+                  onChange={handleChange}
+                />
+              }
+              destroyed={emailAddress.destroy ?? false}
+            />
+          </Grid>
           <ModalSectionDeleteIcon
             handleClick={
               emailAddress.id
