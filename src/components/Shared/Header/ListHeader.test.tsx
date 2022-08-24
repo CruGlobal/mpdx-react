@@ -265,6 +265,38 @@ describe('ListHeader', () => {
     expect(openHideContactsModal).toHaveBeenCalled();
   });
 
+  it('opens the more actions menu and clicks the remove tags action', () => {
+    const { getByPlaceholderText, getByText, queryByText } = render(
+      <ThemeProvider theme={theme}>
+        <ListHeader
+          selectedIds={selectedIds}
+          page="contact"
+          activeFilters={false}
+          starredFilter={{}}
+          toggleStarredFilter={toggleStarredFilter}
+          headerCheckboxState={ListHeaderCheckBoxState.unchecked}
+          filterPanelOpen={false}
+          contactDetailsOpen={false}
+          toggleFilterPanel={toggleFilterPanel}
+          onCheckAllItems={onCheckAllItems}
+          onSearchTermChanged={onSearchTermChanged}
+          openAddToAppealModal={openAddToAppealModal}
+          openEditFieldsModal={openEditFieldsModal}
+          openHideContactsModal={openHideContactsModal}
+          openRemoveTagsModal={openRemoveTagsModal}
+        />
+      </ThemeProvider>,
+    );
+
+    expect(getByPlaceholderText('Search Contacts')).toBeInTheDocument();
+    expect(queryByText('Remove Tags')).not.toBeInTheDocument();
+    const actionsButton = getByText('Actions');
+    userEvent.click(actionsButton);
+    expect(getByText('Remove Tags')).toBeInTheDocument();
+    userEvent.click(getByText('Remove Tags'));
+    expect(openRemoveTagsModal).toHaveBeenCalled();
+  });
+
   describe('Task', () => {
     it('renders task header', () => {
       const { getByPlaceholderText } = render(
