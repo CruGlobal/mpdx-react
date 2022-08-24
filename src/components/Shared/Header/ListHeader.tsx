@@ -205,50 +205,11 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
 
       {page === 'contact' ? (
         <>
-          {contactsView !== TableViewModeEnum.Map && openAddTagsModal && (
-            <Hidden lgDown={contactDetailsOpen}>
-              <ActionsButton
-                aria-haspopup
-                aria-expanded={open}
-                onClick={handleClick}
-                endIcon={<ArrowDropDown />}
-              >
-                {filterPanelOpen && contactDetailsOpen ? (
-                  <MoreHoriz />
-                ) : (
-                  t('Actions')
-                )}
-              </ActionsButton>
-              <Menu
-                open={open}
-                onClose={handleClose}
-                anchorEl={anchorEl}
-                getContentAnchorEl={null}
-                anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-                transformOrigin={{ vertical: 'top', horizontal: 'center' }}
-              >
-                <MenuItem
-                  onClick={() => {
-                    openAddTagsModal(true);
-                    handleClose();
-                  }}
-                >
-                  <ListItemText>{t('Add Tags')}</ListItemText>
-                </MenuItem>
-                <MenuItem divider>
-                  <ListItemText>{t('Remove Tags')}</ListItemText>
-                </MenuItem>
-                <MenuItem
-                  onClick={() => {
-                    openTaskModal({
-                      defaultValues: { contactIds: selectedIds },
-                    });
-                    handleClose();
-                  }}
           {contactsView !== TableViewModeEnum.Map &&
             openEditFieldsModal &&
             openHideContactsModal &&
-            openAddToAppealModal && (
+            openAddToAppealModal &&
+            openAddTagsModal && (
               <Hidden lgDown={contactDetailsOpen}>
                 <ActionsButton
                   aria-haspopup
@@ -270,7 +231,12 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
                   anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
                   transformOrigin={{ vertical: 'top', horizontal: 'center' }}
                 >
-                  <MenuItem>
+                  <MenuItem
+                    onClick={() => {
+                      openAddTagsModal(true);
+                      handleClose();
+                    }}
+                  >
                     <ListItemText>{t('Add Tags')}</ListItemText>
                   </MenuItem>
                   <MenuItem divider>
@@ -334,6 +300,7 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
                 </Menu>
               </Hidden>
             )}
+
           {buttonGroup}
         </>
       ) : (
