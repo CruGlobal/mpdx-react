@@ -69,6 +69,7 @@ const GroupLabel = styled(Typography)(({ theme }) => ({
   borderBottom: `1px solid ${theme.palette.grey[200]}`,
   background: theme.palette.common.white,
   marginTop: theme.spacing(2),
+  padding: theme.spacing(0, 2),
 }));
 
 interface InfiniteListProps<T> {
