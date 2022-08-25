@@ -29,7 +29,6 @@ const ViewSettingsButton = styled(Button)(({ theme }) => ({
   textTransform: 'none',
   height: theme.spacing(6),
   marginLeft: theme.spacing(1),
-  marginRight: theme.spacing(2),
 }));
 const MapIcon = styled(Map)(({ theme }) => ({
   color: theme.palette.primary.dark,
@@ -39,6 +38,9 @@ const ViewColumnIcon = styled(ViewColumn)(({ theme }) => ({
 }));
 const BulletedListIcon = styled(FormatListBulleted)(({ theme }) => ({
   color: theme.palette.primary.dark,
+}));
+const StyledToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
+  marginLeft: theme.spacing(1),
 }));
 
 export const ContactsMainPanelHeader: React.FC = () => {
@@ -144,7 +146,7 @@ export const ContactsMainPanelHeader: React.FC = () => {
                   </ViewSettingsButton>
                 </NextLink>
               )}
-              <ToggleButtonGroup
+              <StyledToggleButtonGroup
                 exclusive
                 value={viewMode}
                 onChange={handleViewModeChange}
@@ -167,7 +169,7 @@ export const ContactsMainPanelHeader: React.FC = () => {
                 >
                   <MapIcon titleAccess={t('Map View')} />
                 </ToggleButton>
-              </ToggleButtonGroup>
+              </StyledToggleButtonGroup>
             </Box>
           </Hidden>
         }
