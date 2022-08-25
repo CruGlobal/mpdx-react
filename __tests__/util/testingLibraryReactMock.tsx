@@ -1,3 +1,4 @@
+/* eslint-disable import/export */
 import React, { ReactElement } from 'react';
 import { render, RenderResult, RenderOptions } from '@testing-library/react';
 import { I18nextProvider } from 'react-i18next';

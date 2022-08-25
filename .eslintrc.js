@@ -7,21 +7,22 @@ module.exports = {
     'plugin:import/typescript',
     'plugin:react/recommended', // Uses the recommended rules from @eslint-plugin-react
     'plugin:@typescript-eslint/recommended', // Uses the recommended rules from the @typescript-eslint/eslint-plugin
-    'prettier', // Uses eslint-config-prettier to disable ESLint rules from @typescript-eslint/eslint-plugin that would conflict with prettier
     'plugin:jsx-a11y/recommended',
-    'plugin:prettier/recommended', // Enables eslint-plugin-prettier and eslint-config-prettier. This will display prettier errors as ESLint errors. Make sure this is always the last configuration in the extends array.
     'plugin:@next/next/recommended',
+    'prettier',
   ],
   rules: {
     '@typescript-eslint/camelcase': 'off',
     'import/no-duplicates': 'error',
     'import/extensions': 'error',
-    'import/order': 'error',
+    'import/order': ['error', { groups: ['external'] }],
     'import/newline-after-import': 'error',
     'import/no-named-default': 'error',
+    'import/no-named-as-default-member': 'off',
     'import/no-anonymous-default-export': 'error',
     'import/dynamic-import-chunkname': 'error',
     eqeqeq: 'error',
+    '@typescript-eslint/no-loss-of-precision': 'warn',
     '@typescript-eslint/no-unused-vars': [
       'error',
       { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
