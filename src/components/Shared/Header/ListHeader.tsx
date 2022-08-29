@@ -117,6 +117,7 @@ interface ListHeaderProps {
   ) => void;
   selectedIds: string[];
   openAddToAppealModal?: (open: boolean) => void;
+  openCreateAppealModal?: (open: boolean) => void;
   openEditFieldsModal?: (open: boolean) => void;
   openHideContactsModal?: (open: boolean) => void;
 }
@@ -138,6 +139,7 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
   contactsView,
   selectedIds,
   openAddToAppealModal,
+  openCreateAppealModal,
   openEditFieldsModal,
   openHideContactsModal,
 }) => {
@@ -203,7 +205,8 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
             {contactsView !== TableViewModeEnum.Map &&
               openEditFieldsModal &&
               openHideContactsModal &&
-              openAddToAppealModal && (
+              openAddToAppealModal &&
+              openCreateAppealModal && (
                 <>
                   <Hidden xsDown>
                     <ActionsButton
@@ -286,8 +289,14 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
                       >
                         <ListItemText>{t('Add to Appeal')}</ListItemText>
                       </MenuItem>
-                      <MenuItem divider>
-                        <ListItemText>{t('Add to new Appeal')}</ListItemText>
+                      <MenuItem
+                        divider
+                        onClick={() => {
+                          openCreateAppealModal(true);
+                          handleClose();
+                        }}
+                      >
+                        <ListItemText>{t('Add to New Appeal')}</ListItemText>
                       </MenuItem>
 
                       <MenuItem>
