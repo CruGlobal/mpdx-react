@@ -83,8 +83,8 @@ const App = ({ Component, pageProps, router }: AppProps): ReactElement => {
           rel="stylesheet"
         />
       </Head>
-      <SessionProvider session={session}>
-        <ApolloProvider client={client}>
+      <ApolloProvider client={client}>
+        <SessionProvider session={session}>
           <UserPreferenceProvider>
             <I18nextProvider i18n={i18n}>
               <ThemeProvider theme={theme}>
@@ -114,8 +114,8 @@ const App = ({ Component, pageProps, router }: AppProps): ReactElement => {
               </ThemeProvider>
             </I18nextProvider>
           </UserPreferenceProvider>
-        </ApolloProvider>
-      </SessionProvider>
+        </SessionProvider>
+      </ApolloProvider>
       <HelpscoutBeacon />
     </>
   );
