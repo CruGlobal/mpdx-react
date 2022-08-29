@@ -14,18 +14,7 @@ export const useUserPreferenceContext = (): UserPreferenceType =>
 
 export const UserPreferenceProvider: React.FC<ReactNode> = ({ children }) => {
   const { data: session } = useSession();
-  const { data: user, loading } = session
-    ? useGetUserQuery()
-    : {
-        data: {
-          user: {
-            preferences: {
-              locale: 'en',
-            },
-          },
-        },
-        loading: false,
-      };
+  const { data: user, loading } = useGetUserQuery({ skip: !session });
 
   if (!loading) {
     i18next.changeLanguage(user?.user.preferences?.locale ?? 'en');
