@@ -15,6 +15,7 @@ import {
 import { MassActionsAddToAppealModal } from '../MassActions/AddToAppeal/MassActionsAddToAppealModal';
 import { MassActionsEditFieldsModal } from '../MassActions/EditFields/MassActionsEditFieldsModal';
 import { useMassActionsUpdateContactsMutation } from '../MassActions/MassActionsUpdateContacts.generated';
+import { MassActionsCreateAppealModal } from '../MassActions/AddToAppeal/MassActionsCreateAppealModal';
 import {
   ListHeader,
   TableViewModeEnum,
@@ -66,6 +67,7 @@ export const ContactsMainPanelHeader: React.FC = () => {
   } = React.useContext(ContactsPageContext) as ContactsPageType;
 
   const [addToAppealModalOpen, setAddToAppealModalOpen] = useState(false);
+  const [createAppealModalOpen, setCreateAppealModalOpen] = useState(false);
   const [editFieldsModalOpen, setEditFieldsModalOpen] = useState(false);
   const [hideContactsModalOpen, setHideContactsModalOpen] = useState(false);
 
@@ -133,6 +135,7 @@ export const ContactsMainPanelHeader: React.FC = () => {
         selectedIds={selectedIds}
         openEditFieldsModal={setEditFieldsModalOpen}
         openHideContactsModal={setHideContactsModalOpen}
+        openCreateAppealModal={setCreateAppealModalOpen}
         buttonGroup={
           <Hidden xsDown>
             <Box display="flex" alignItems="center">
@@ -181,6 +184,13 @@ export const ContactsMainPanelHeader: React.FC = () => {
           handleClose={() => setAddToAppealModalOpen(false)}
         />
       )}
+      {createAppealModalOpen && (
+        <MassActionsCreateAppealModal
+          ids={selectedIds}
+          accountListId={accountListId ?? ''}
+          handleClose={() => setCreateAppealModalOpen(false)}
+        />
+      )}
       {editFieldsModalOpen && (
         <MassActionsEditFieldsModal
           ids={selectedIds}
@@ -188,6 +198,7 @@ export const ContactsMainPanelHeader: React.FC = () => {
           handleClose={() => setEditFieldsModalOpen(false)}
         />
       )}
+
       {hideContactsModalOpen && (
         <HideContactsModal
           open={hideContactsModalOpen}
