@@ -80,9 +80,9 @@ const App = ({ Component, pageProps, router }: AppProps): ReactElement => {
         <meta name="apple-mobile-web-app-status-bar-style" content="black" />
       </Head>
       <ApolloProvider client={client}>
-        <UserPreferenceProvider>
-          <I18nextProvider i18n={i18n}>
-            <SessionProvider session={session}>
+        <SessionProvider session={session}>
+          <UserPreferenceProvider>
+            <I18nextProvider i18n={i18n}>
               <ThemeProvider theme={theme}>
                 <StylesProvider>
                   <MuiPickersUtilsProvider utils={LuxonUtils}>
@@ -108,9 +108,9 @@ const App = ({ Component, pageProps, router }: AppProps): ReactElement => {
                   </MuiPickersUtilsProvider>
                 </StylesProvider>
               </ThemeProvider>
-            </SessionProvider>
-          </I18nextProvider>
-        </UserPreferenceProvider>
+            </I18nextProvider>
+          </UserPreferenceProvider>
+        </SessionProvider>
       </ApolloProvider>
       <HelpscoutBeacon />
     </>
