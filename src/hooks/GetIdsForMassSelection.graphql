@@ -13,3 +13,19 @@ query GetIdsForMassSelection(
     }
   }
 }
+
+query GetTaskIdsForMassSelection(
+  $accountListId: ID!
+  $first: Int!
+  $tasksFilters: TaskFilterSetInput
+) {
+  tasks(
+    accountListId: $accountListId
+    first: $first
+    tasksFilter: $tasksFilters
+  ) {
+    nodes {
+      id
+    }
+  }
+}
