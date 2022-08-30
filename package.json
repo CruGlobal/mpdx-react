@@ -51,7 +51,7 @@
     "apollo3-cache-persist": "^0.12.1",
     "axios": "^0.26.0",
     "clsx": "^1.1.1",
-    "dotenv": "^10.0.0",
+    "dotenv": "^16.0.0",
     "formik": "^2.2.6",
     "framer-motion": "^3.3.0",
     "google-map-react": "^2.1.10",

@@ -14344,13 +14344,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dotenv@npm:^10.0.0":
-  version: 10.0.0
-  resolution: "dotenv@npm:10.0.0"
-  checksum: f412c5fe8c24fbe313d302d2500e247ba8a1946492db405a4de4d30dd0eb186a88a43f13c958c5a7de303938949c4231c56994f97d05c4bc1f22478d631b4005
-  languageName: node
-  linkType: hard
-
 "dotenv@npm:^16.0.0":
   version: 16.0.0
   resolution: "dotenv@npm:16.0.0"
@@ -21427,7 +21420,7 @@ fsevents@~2.3.2:
     core-js: ^3.8.3
     cross-env: ^7.0.3
     css-mediaquery: ^0.1.2
-    dotenv: ^10.0.0
+    dotenv: ^16.0.0
     eslint: ^7.19.0
     eslint-config-prettier: ^7.2.0
     eslint-import-resolver-node: ^0.3.4
