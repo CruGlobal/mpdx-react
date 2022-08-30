@@ -9,6 +9,9 @@ query GetUser {
       id
       email
     }
+    preferences {
+      locale
+    }
     administrativeOrganizations {
       nodes {
         id

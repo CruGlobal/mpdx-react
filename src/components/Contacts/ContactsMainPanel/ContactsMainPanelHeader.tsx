@@ -16,6 +16,7 @@ import { MassActionsAddTagsModal } from '../MassActions/AddTags/MassActionsAddTa
 import { MassActionsAddToAppealModal } from '../MassActions/AddToAppeal/MassActionsAddToAppealModal';
 import { MassActionsEditFieldsModal } from '../MassActions/EditFields/MassActionsEditFieldsModal';
 import { useMassActionsUpdateContactsMutation } from '../MassActions/MassActionsUpdateContacts.generated';
+import { MassActionsCreateAppealModal } from '../MassActions/AddToAppeal/MassActionsCreateAppealModal';
 import {
   ListHeader,
   TableViewModeEnum,
@@ -30,7 +31,6 @@ const ViewSettingsButton = styled(Button)(({ theme }) => ({
   textTransform: 'none',
   height: theme.spacing(6),
   marginLeft: theme.spacing(1),
-  marginRight: theme.spacing(2),
 }));
 const MapIcon = styled(Map)(({ theme }) => ({
   color: theme.palette.primary.dark,
@@ -40,6 +40,9 @@ const ViewColumnIcon = styled(ViewColumn)(({ theme }) => ({
 }));
 const BulletedListIcon = styled(FormatListBulleted)(({ theme }) => ({
   color: theme.palette.primary.dark,
+}));
+const StyledToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
+  marginLeft: theme.spacing(1),
 }));
 
 export const ContactsMainPanelHeader: React.FC = () => {
@@ -66,6 +69,7 @@ export const ContactsMainPanelHeader: React.FC = () => {
 
   const [openAddTagsModal, setOpenAddTagsModal] = useState(false);
   const [addToAppealModalOpen, setAddToAppealModalOpen] = useState(false);
+  const [createAppealModalOpen, setCreateAppealModalOpen] = useState(false);
   const [editFieldsModalOpen, setEditFieldsModalOpen] = useState(false);
   const [hideContactsModalOpen, setHideContactsModalOpen] = useState(false);
 
@@ -134,6 +138,7 @@ export const ContactsMainPanelHeader: React.FC = () => {
         openEditFieldsModal={setEditFieldsModalOpen}
         openAddToAppealModal={setAddToAppealModalOpen}
         openHideContactsModal={setHideContactsModalOpen}
+        openCreateAppealModal={setCreateAppealModalOpen}
         buttonGroup={
           <Hidden xsDown>
             <Box display="flex" alignItems="center">
@@ -147,7 +152,7 @@ export const ContactsMainPanelHeader: React.FC = () => {
                   </ViewSettingsButton>
                 </NextLink>
               )}
-              <ToggleButtonGroup
+              <StyledToggleButtonGroup
                 exclusive
                 value={viewMode}
                 onChange={handleViewModeChange}
@@ -170,7 +175,7 @@ export const ContactsMainPanelHeader: React.FC = () => {
                 >
                   <MapIcon titleAccess={t('Map View')} />
                 </ToggleButton>
-              </ToggleButtonGroup>
+              </StyledToggleButtonGroup>
             </Box>
           </Hidden>
         }
@@ -189,6 +194,13 @@ export const ContactsMainPanelHeader: React.FC = () => {
           handleClose={() => setAddToAppealModalOpen(false)}
         />
       )}
+      {createAppealModalOpen && (
+        <MassActionsCreateAppealModal
+          ids={selectedIds}
+          accountListId={accountListId ?? ''}
+          handleClose={() => setCreateAppealModalOpen(false)}
+        />
+      )}
       {editFieldsModalOpen && (
         <MassActionsEditFieldsModal
           ids={selectedIds}
@@ -196,6 +208,7 @@ export const ContactsMainPanelHeader: React.FC = () => {
           handleClose={() => setEditFieldsModalOpen(false)}
         />
       )}
+
       {hideContactsModalOpen && (
         <HideContactsModal
           open={hideContactsModalOpen}

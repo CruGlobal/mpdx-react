@@ -251,14 +251,16 @@ const TasksPage: React.FC = () => {
                         variant="text"
                         startIcon={<TaskAddIcon />}
                       >
-                        {t('Add Task')}
+                        <Hidden mdUp>{t('Add')}</Hidden>
+                        <Hidden smDown>{t('Add Task')}</Hidden>
                       </TaskHeaderButton>
                       <TaskHeaderButton
                         onClick={() => openTaskModal({ view: 'log' })}
                         variant="text"
                         startIcon={<TaskCheckIcon />}
                       >
-                        {t('Log Task')}
+                        <Hidden mdUp>{t('Log')}</Hidden>
+                        <Hidden smDown>{t('Log Task')}</Hidden>
                       </TaskHeaderButton>
                     </Hidden>
                   }

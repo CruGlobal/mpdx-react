@@ -22,6 +22,7 @@ import { SnackbarUtilsConfigurator } from '../src/components/Snackbar/Snackbar';
 import { GlobalStyles } from '../src/components/GlobalStyles/GlobalStyles';
 import { RouterGuard } from '../src/components/RouterGuard/RouterGuard';
 import HelpscoutBeacon from '../src/components/Helpscout/HelpscoutBeacon';
+import { UserPreferenceProvider } from 'src/components/User/Preferences/UserPreferenceProvider';
 
 const handleExitComplete = (): void => {
   if (typeof window !== 'undefined') {
@@ -43,7 +44,6 @@ const App = ({ Component, pageProps, router }: AppProps): ReactElement => {
   //         jssStyles.parentElement.removeChild(jssStyles);
   //     }
   // }, []);
-
   return (
     <>
       <Head>
@@ -83,37 +83,39 @@ const App = ({ Component, pageProps, router }: AppProps): ReactElement => {
           rel="stylesheet"
         />
       </Head>
-      <I18nextProvider i18n={i18n}>
+      <ApolloProvider client={client}>
         <SessionProvider session={session}>
-          <ApolloProvider client={client}>
-            <ThemeProvider theme={theme}>
-              <StylesProvider>
-                <MuiPickersUtilsProvider utils={LuxonUtils}>
-                  <SnackbarProvider maxSnack={3}>
-                    <GlobalStyles />
-                    <AnimatePresence
-                      exitBeforeEnter
-                      onExitComplete={handleExitComplete}
-                    >
-                      <RouterGuard>
-                        <TaskModalProvider>
-                          <TaskDrawerProvider>
-                            <Layout>
-                              <SnackbarUtilsConfigurator />
-                              <Component {...pageProps} key={router.route} />
-                            </Layout>
-                          </TaskDrawerProvider>
-                        </TaskModalProvider>
-                      </RouterGuard>
-                    </AnimatePresence>
-                    <Loading />
-                  </SnackbarProvider>
-                </MuiPickersUtilsProvider>
-              </StylesProvider>
-            </ThemeProvider>
-          </ApolloProvider>
+          <UserPreferenceProvider>
+            <I18nextProvider i18n={i18n}>
+              <ThemeProvider theme={theme}>
+                <StylesProvider>
+                  <MuiPickersUtilsProvider utils={LuxonUtils}>
+                    <SnackbarProvider maxSnack={3}>
+                      <GlobalStyles />
+                      <AnimatePresence
+                        exitBeforeEnter
+                        onExitComplete={handleExitComplete}
+                      >
+                        <RouterGuard>
+                          <TaskModalProvider>
+                            <TaskDrawerProvider>
+                              <Layout>
+                                <SnackbarUtilsConfigurator />
+                                <Component {...pageProps} key={router.route} />
+                              </Layout>
+                            </TaskDrawerProvider>
+                          </TaskModalProvider>
+                        </RouterGuard>
+                      </AnimatePresence>
+                      <Loading />
+                    </SnackbarProvider>
+                  </MuiPickersUtilsProvider>
+                </StylesProvider>
+              </ThemeProvider>
+            </I18nextProvider>
+          </UserPreferenceProvider>
         </SessionProvider>
-      </I18nextProvider>
+      </ApolloProvider>
       <HelpscoutBeacon />
     </>
   );

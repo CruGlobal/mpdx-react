@@ -69,7 +69,7 @@ export const ContactPartnershipStatus: React.FC<ContactPartnershipStatusProps> =
           <ContactPledgeReceivedIcon pledgeReceived={pledgeReceived} />
         )}
       </Box>
-      <Hidden xsUp={contactDetailsOpen}>
+      <Hidden smDown>
         <Box display="flex" flexDirection="column" justifyContent="center">
           {status && <ContactPartnershipStatusLabel status={status} />}
           <Typography component="span">

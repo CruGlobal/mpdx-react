@@ -19,26 +19,33 @@ describe('useUser', () => {
           "nodes": Array [
             Object {
               "__typename": "Organization",
-              "id": "7480777",
+              "id": "2807863",
+            },
+            Object {
+              "__typename": "Organization",
+              "id": "2698416",
+            },
+            Object {
+              "__typename": "Organization",
+              "id": "7545127",
             },
           ],
         },
-        "developer": false,
-        "firstName": "Nail",
-        "id": "8591483",
+        "developer": true,
+        "firstName": "Dung Tapestry",
+        "id": "8071787",
         "keyAccounts": Array [
           Object {
             "__typename": "KeyAccount",
-            "email": "Surveyor",
-            "id": "8338182",
-          },
-          Object {
-            "__typename": "KeyAccount",
-            "email": "Tongue Videotape",
-            "id": "3799478",
+            "email": "Chair Library Bed",
+            "id": "1433814",
           },
         ],
-        "lastName": "Hammer Magnet Guitar",
+        "lastName": "Parachute",
+        "preferences": Object {
+          "__typename": "Preference",
+          "locale": "Circus Leg Slave",
+        },
       }
     `);
   });
