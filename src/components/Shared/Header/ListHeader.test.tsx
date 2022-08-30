@@ -270,6 +270,7 @@ describe('ListHeader', () => {
           openEditFieldsModal={openEditFieldsModal}
           openHideContactsModal={openHideContactsModal}
           openAddTagsModal={openAddTagsModal}
+          openCreateAppealModal={openCreateAppealModal}
         />
       </ThemeProvider>,
     );
