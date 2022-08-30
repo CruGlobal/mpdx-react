@@ -208,7 +208,8 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
               openEditFieldsModal &&
               openHideContactsModal &&
               openAddToAppealModal &&
-              openCreateAppealModal && (
+              openCreateAppealModal &&
+              openAddTagsModal && (
                 <>
                   <Hidden xsDown>
                     <ActionsButton
