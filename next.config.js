@@ -55,6 +55,7 @@ module.exports = withPlugins([
       OKTA_ISSUER: process.env.OKTA_ISSUER ?? 'https://signon.okta.com',
       GOOGLE_MAPS_API_KEY: process.env.GOOGLE_MAPS_API_KEY,
       GOOGLE_GEOCODE_API_KEY: process.env.GOOGLE_GEOCODE_API_KEY,
+      ROLLBAR_ACCESS_TOKEN: process.env.ROLLBAR_ACCESS_TOKEN,
     },
     // Force .page prefix on page files (ex. index.page.tsx) so generated files can be included in /pages directory without Next.js throwing build errors
     pageExtensions: ['page.tsx', 'page.ts', 'page.jsx', 'page.js'],
