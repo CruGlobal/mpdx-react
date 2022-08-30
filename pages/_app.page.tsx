@@ -1,6 +1,6 @@
 import React, { ReactElement } from 'react';
 import Rollbar from 'rollbar';
-import { Provider } from '@rollbar/react';
+import { ErrorBoundary, Provider } from '@rollbar/react';
 import { AppProps } from 'next/app';
 import { StylesProvider, ThemeProvider } from '@material-ui/core/styles';
 import { ApolloProvider } from '@apollo/client';
@@ -100,43 +100,45 @@ const App = ({ Component, pageProps, router }: AppProps): ReactElement => {
         />
       </Head>
       <Provider config={rollbarConfig}>
-        <ApolloProvider client={client}>
-          <SessionProvider session={session}>
-            <UserPreferenceProvider>
-              <I18nextProvider i18n={i18n}>
-                <ThemeProvider theme={theme}>
-                  <StylesProvider>
-                    <MuiPickersUtilsProvider utils={LuxonUtils}>
-                      <SnackbarProvider maxSnack={3}>
-                        <GlobalStyles />
-                        <AnimatePresence
-                          exitBeforeEnter
-                          onExitComplete={handleExitComplete}
-                        >
-                          <RouterGuard>
-                            <TaskModalProvider>
-                              <TaskDrawerProvider>
-                                <Layout>
-                                  <SnackbarUtilsConfigurator />
-                                  <Component
-                                    {...pageProps}
-                                    key={router.route}
-                                  />
-                                </Layout>
-                              </TaskDrawerProvider>
-                            </TaskModalProvider>
-                          </RouterGuard>
-                        </AnimatePresence>
-                        <Loading />
-                      </SnackbarProvider>
-                    </MuiPickersUtilsProvider>
-                  </StylesProvider>
-                </ThemeProvider>
-              </I18nextProvider>
-            </UserPreferenceProvider>
-          </SessionProvider>
-        </ApolloProvider>
-        <HelpscoutBeacon />
+        <ErrorBoundary>
+          <ApolloProvider client={client}>
+            <SessionProvider session={session}>
+              <UserPreferenceProvider>
+                <I18nextProvider i18n={i18n}>
+                  <ThemeProvider theme={theme}>
+                    <StylesProvider>
+                      <MuiPickersUtilsProvider utils={LuxonUtils}>
+                        <SnackbarProvider maxSnack={3}>
+                          <GlobalStyles />
+                          <AnimatePresence
+                            exitBeforeEnter
+                            onExitComplete={handleExitComplete}
+                          >
+                            <RouterGuard>
+                              <TaskModalProvider>
+                                <TaskDrawerProvider>
+                                  <Layout>
+                                    <SnackbarUtilsConfigurator />
+                                    <Component
+                                      {...pageProps}
+                                      key={router.route}
+                                    />
+                                  </Layout>
+                                </TaskDrawerProvider>
+                              </TaskModalProvider>
+                            </RouterGuard>
+                          </AnimatePresence>
+                          <Loading />
+                        </SnackbarProvider>
+                      </MuiPickersUtilsProvider>
+                    </StylesProvider>
+                  </ThemeProvider>
+                </I18nextProvider>
+              </UserPreferenceProvider>
+            </SessionProvider>
+          </ApolloProvider>
+          <HelpscoutBeacon />
+        </ErrorBoundary>
       </Provider>
     </>
   );
