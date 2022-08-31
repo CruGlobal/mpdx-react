@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Box, IconButton, styled, Theme, Typography } from '@mui/material';
-import { FilterList } from '@material-ui/icons';
+import { FilterList } from '@mui/icons-material';
 
 interface AccountsListHeaderProps {
   isNavListOpen: boolean;

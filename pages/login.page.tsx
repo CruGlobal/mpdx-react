@@ -1,7 +1,7 @@
 import React, { ReactElement } from 'react';
 import { signIn, getSession } from 'next-auth/react';
 import { Button } from '@mui/material';
-import SubjectIcon from '@material-ui/icons/Subject';
+import SubjectIcon from '@mui/icons-material/Subject';
 import { GetServerSideProps } from 'next';
 import Head from 'next/head';
 import Welcome from '../src/components/Welcome';

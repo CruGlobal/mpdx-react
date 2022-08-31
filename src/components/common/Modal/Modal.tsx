@@ -6,7 +6,7 @@ import {
   IconButton,
   styled,
 } from '@mui/material';
-import CloseIcon from '@material-ui/icons/Close';
+import CloseIcon from '@mui/icons-material/Close';
 import { useTranslation } from 'react-i18next';
 
 const ModalTitle = styled(DialogTitle)(({ theme }) => ({

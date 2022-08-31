@@ -11,10 +11,10 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import SocialIcon from '@material-ui/icons/Language';
-import AddIcon from '@material-ui/icons/Add';
+import SocialIcon from '@mui/icons-material/Language';
+import AddIcon from '@mui/icons-material/Add';
 import { FormikProps, FieldArray, getIn } from 'formik';
-import { Facebook, LinkedIn, Twitter } from '@material-ui/icons';
+import { Facebook, LinkedIn, Twitter } from '@mui/icons-material';
 import { ModalSectionContainer } from '../ModalSectionContainer/ModalSectionContainer';
 import { ModalSectionDeleteIcon } from '../ModalSectionDeleteIcon/ModalSectionDeleteIcon';
 import { ModalSectionIcon } from '../ModalSectionIcon/ModalSectionIcon';

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Typography } from '@mui/material';
-import InfoIcon from '@material-ui/icons/Info';
-import ErrorIcon from '@material-ui/icons/Error';
+import InfoIcon from '@mui/icons-material/Info';
+import ErrorIcon from '@mui/icons-material/Error';
 
 interface Props {
   message: string;

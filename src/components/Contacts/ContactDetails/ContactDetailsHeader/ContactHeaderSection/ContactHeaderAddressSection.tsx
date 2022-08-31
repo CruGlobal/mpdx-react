@@ -1,5 +1,5 @@
 import { Box, Link, styled, Typography } from '@mui/material';
-import { LocationOn } from '@material-ui/icons';
+import { LocationOn } from '@mui/icons-material';
 import { Skeleton } from '@material-ui/lab';
 
 import React, { ReactElement } from 'react';

@@ -8,7 +8,7 @@ import {
   Typography,
   styled,
 } from '@mui/material';
-import HelpIcon from '@material-ui/icons/Help';
+import HelpIcon from '@mui/icons-material/Help';
 
 export interface AccountListSubheaderProps {
   organizationName: string;

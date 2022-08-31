@@ -10,7 +10,7 @@ import {
   Hidden,
   styled,
 } from '@mui/material';
-import MenuIcon from '@material-ui/icons/Menu';
+import MenuIcon from '@mui/icons-material/Menu';
 import logo from '../../../../images/logo.svg';
 import NotificationMenu from './Items/NotificationMenu/NotificationMenu';
 import AddMenu from './Items/AddMenu/AddMenu';

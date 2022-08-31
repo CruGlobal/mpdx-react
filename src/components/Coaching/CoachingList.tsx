@@ -1,5 +1,5 @@
 import { Box, Divider, styled, Typography } from '@mui/material';
-import { EcoOutlined } from '@material-ui/icons';
+import { EcoOutlined } from '@mui/icons-material';
 import { Skeleton } from '@material-ui/lab';
 import React from 'react';
 import { useTranslation } from 'react-i18next';

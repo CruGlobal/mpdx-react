@@ -4,7 +4,7 @@ import { styled } from '@mui/material/styles';
 import Icon from '@mdi/react';
 import { mdiAccountSearch } from '@mdi/js';
 import { InputAdornment, TextField } from '@mui/material';
-import SearchIcon from '@material-ui/icons/Search';
+import SearchIcon from '@mui/icons-material/Search';
 
 export interface SearchBoxProps {
   onChange: (searchTerm: string) => void;

@@ -15,7 +15,7 @@ import React, {
   useState,
 } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ExpandMore } from '@material-ui/icons';
+import { ExpandMore } from '@mui/icons-material';
 import Image from 'next/image';
 import { StatusEnum } from '../../../../graphql/types.generated';
 import { Coordinates } from 'pages/accountLists/[accountListId]/contacts/map/map';

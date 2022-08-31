@@ -1,5 +1,5 @@
 import { styled, Typography } from '@mui/material';
-import { Email } from '@material-ui/icons';
+import { Email } from '@mui/icons-material';
 import { Skeleton } from '@material-ui/lab';
 
 import React, { ReactElement } from 'react';

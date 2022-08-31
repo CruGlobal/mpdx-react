@@ -17,12 +17,12 @@ import {
   CircularProgress,
 } from '@mui/material';
 import * as yup from 'yup';
-import CloseIcon from '@material-ui/icons/Close';
+import CloseIcon from '@mui/icons-material/Close';
 import { useTranslation } from 'react-i18next';
 import { Formik } from 'formik';
 import { DatePicker, TimePicker } from '@material-ui/pickers';
-import ClockIcon from '@material-ui/icons/AccessTime';
-import CalendarIcon from '@material-ui/icons/CalendarToday';
+import ClockIcon from '@mui/icons-material/AccessTime';
+import CalendarIcon from '@mui/icons-material/CalendarToday';
 import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
 import { v4 as uuidv4 } from 'uuid';

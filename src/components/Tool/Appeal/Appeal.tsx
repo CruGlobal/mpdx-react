@@ -1,7 +1,7 @@
 import { Box, CardContent, Typography, makeStyles } from '@mui/material';
 import React, { ReactElement } from 'react';
-import StarIcon from '@material-ui/icons/Star';
-import StarOutlineIcon from '@material-ui/icons/StarOutline';
+import StarIcon from '@mui/icons-material/Star';
+import StarOutlineIcon from '@mui/icons-material/StarOutline';
 import NextLink from 'next/link';
 import { useAccountListId } from '../../../../src/hooks/useAccountListId';
 import theme from '../../../../src/theme';

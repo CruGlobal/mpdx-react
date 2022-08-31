@@ -16,8 +16,8 @@ import {
 } from '@mui/material';
 import { motion } from 'framer-motion';
 import { DateTime, Interval } from 'luxon';
-import ArrowBackIcon from '@material-ui/icons/ArrowBack';
-import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import { Skeleton } from '@material-ui/lab';
 import { useTranslation } from 'react-i18next';
 import AnimatedCard from '../../../AnimatedCard';

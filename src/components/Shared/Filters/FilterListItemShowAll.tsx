@@ -1,5 +1,5 @@
 import { ListItem, ListItemText, useTheme } from '@mui/material';
-import { ExpandLess, ExpandMore } from '@material-ui/icons';
+import { ExpandLess, ExpandMore } from '@mui/icons-material';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 

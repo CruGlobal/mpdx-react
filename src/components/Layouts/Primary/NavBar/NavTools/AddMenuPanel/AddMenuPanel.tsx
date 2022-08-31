@@ -1,10 +1,10 @@
 import React, { ReactElement, useState } from 'react';
 import { List, useTheme } from '@mui/material';
-import PersonIcon from '@material-ui/icons/Person';
-import PeopleIcon from '@material-ui/icons/People';
-import CardGiftcardIcon from '@material-ui/icons/CardGiftcard';
-import ListIcon from '@material-ui/icons/FormatListBulleted';
-import EditIcon from '@material-ui/icons/Edit';
+import PersonIcon from '@mui/icons-material/Person';
+import PeopleIcon from '@mui/icons-material/People';
+import CardGiftcardIcon from '@mui/icons-material/CardGiftcard';
+import ListIcon from '@mui/icons-material/FormatListBulleted';
+import EditIcon from '@mui/icons-material/Edit';
 import { useTranslation } from 'react-i18next';
 import { LeafButton, LeafListItem, Title } from '../../NavItem/NavItem';
 import useTaskDrawer from 'src/hooks/useTaskDrawer';

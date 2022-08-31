@@ -11,7 +11,7 @@ import {
   Tab,
   Typography,
 } from '@mui/material';
-import CloseIcon from '@material-ui/icons/Close';
+import CloseIcon from '@mui/icons-material/Close';
 import { useTranslation } from 'react-i18next';
 import { TabContext, TabList, TabPanel } from '@material-ui/lab';
 import { AnimatePresence, motion } from 'framer-motion';

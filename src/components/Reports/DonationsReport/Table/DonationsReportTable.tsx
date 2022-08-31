@@ -12,9 +12,9 @@ import {
   CircularProgress,
 } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
-import EditIcon from '@material-ui/icons/Edit';
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import EditIcon from '@mui/icons-material/Edit';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { useTranslation } from 'react-i18next';
 import { DataGrid, GridColDef, GridCellParams } from '@material-ui/data-grid';
 import { DateTime } from 'luxon';

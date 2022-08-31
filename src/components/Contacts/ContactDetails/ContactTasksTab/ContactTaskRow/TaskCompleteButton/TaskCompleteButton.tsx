@@ -1,5 +1,5 @@
 import { Button, styled, Theme } from '@mui/material';
-import { Check } from '@material-ui/icons';
+import { Check } from '@mui/icons-material';
 import React from 'react';
 
 const ButtonWrap = styled(Button)(

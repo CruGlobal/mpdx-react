@@ -15,7 +15,7 @@ import { Skeleton } from '@material-ui/lab';
 import { DateTime } from 'luxon';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Add } from '@material-ui/icons';
+import { Add } from '@mui/icons-material';
 import { useContactReferralTabQuery } from './ContactReferralTab.generated';
 import Modal from 'src/components/common/Modal/Modal';
 import { CreateMultipleContacts } from 'src/components/Layouts/Primary/TopBar/Items/AddMenu/Items/CreateMultipleContacts/CreateMultipleContacts';

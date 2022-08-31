@@ -14,7 +14,7 @@ import {
   AccordionDetails,
   Link,
 } from '@mui/material';
-import { ExpandMore } from '@material-ui/icons';
+import { ExpandMore } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import theme from '../../../../theme';
 import { ExpectedDonationRowFragment } from 'pages/accountLists/[accountListId]/reports/GetExpectedMonthlyTotals.generated';

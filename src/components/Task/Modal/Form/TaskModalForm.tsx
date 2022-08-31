@@ -18,7 +18,7 @@ import {
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { Autocomplete } from '@material-ui/lab';
-import InfoIcon from '@material-ui/icons/InfoOutlined';
+import InfoIcon from '@mui/icons-material/InfoOutlined';
 import { DatePicker, TimePicker } from '@material-ui/pickers';
 import { Formik } from 'formik';
 import * as yup from 'yup';
@@ -29,7 +29,7 @@ import {
   MobileFriendly,
   Schedule,
   QueryBuilder,
-} from '@material-ui/icons';
+} from '@mui/icons-material';
 import { v4 as uuidv4 } from 'uuid';
 import _ from 'lodash';
 import debounce from 'lodash/fp/debounce';

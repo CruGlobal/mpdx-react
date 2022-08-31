@@ -12,7 +12,7 @@ import {
   DialogContent,
   CircularProgress,
 } from '@mui/material';
-import BookmarkIcon from '@material-ui/icons/Bookmark';
+import BookmarkIcon from '@mui/icons-material/Bookmark';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { useSnackbar } from 'notistack';

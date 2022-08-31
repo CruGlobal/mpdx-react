@@ -13,7 +13,7 @@ import {
   Typography,
 } from '@mui/material';
 import clsx from 'clsx';
-import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import NextLink from 'next/link';
 import { useTranslation } from 'react-i18next';
 import Icon from '@mdi/react';

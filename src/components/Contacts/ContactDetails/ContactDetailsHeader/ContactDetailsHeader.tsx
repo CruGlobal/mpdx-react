@@ -1,5 +1,5 @@
 import { Avatar, Box, IconButton, styled, Typography } from '@mui/material';
-import { Close } from '@material-ui/icons';
+import { Close } from '@mui/icons-material';
 import { Skeleton } from '@material-ui/lab';
 import React from 'react';
 import { useTranslation } from 'react-i18next';

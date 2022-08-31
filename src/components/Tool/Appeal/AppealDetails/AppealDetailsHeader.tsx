@@ -10,7 +10,7 @@ import {
   Grid,
 } from '@mui/material';
 import NextLink from 'next/link';
-import { ArrowBackIos, List, TableChart } from '@material-ui/icons';
+import { ArrowBackIos, List, TableChart } from '@mui/icons-material';
 import clsx from 'clsx';
 import { useAccountListId } from '../../../../../src/hooks/useAccountListId';
 import theme from '../../../../theme';

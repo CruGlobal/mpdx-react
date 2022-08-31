@@ -12,8 +12,8 @@ import {
   styled,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import SearchIcon from '@material-ui/icons/Search';
-import VisibilityOffIcon from '@material-ui/icons/VisibilityOff';
+import SearchIcon from '@mui/icons-material/Search';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { useRouter } from 'next/router';
 import NextLink from 'next/link';
 import { FilterOption } from '../../../../graphql/types.generated';

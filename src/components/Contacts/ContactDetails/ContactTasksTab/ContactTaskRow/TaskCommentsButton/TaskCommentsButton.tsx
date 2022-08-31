@@ -1,5 +1,5 @@
 import { Button, styled, Theme, Typography } from '@mui/material';
-import { ChatBubbleOutline } from '@material-ui/icons';
+import { ChatBubbleOutline } from '@mui/icons-material';
 import React from 'react';
 
 const TaskRowWrap = styled(Button)(

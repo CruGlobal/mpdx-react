@@ -14,7 +14,7 @@ import {
   useTheme,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { ArrowBackIos, ArrowForwardIos, Close } from '@material-ui/icons';
+import { ArrowBackIos, ArrowForwardIos, Close } from '@mui/icons-material';
 import { filter } from 'lodash';
 import {
   ContactFilterNewsletterEnum,

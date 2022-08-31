@@ -11,7 +11,7 @@ import {
   Theme,
   Typography,
 } from '@mui/material';
-import { Info as InfoIcon } from '@material-ui/icons';
+import { Info as InfoIcon } from '@mui/icons-material';
 import { numberFormat } from '../../../../../lib/intlFormat';
 import { useApiConstants } from '../../../../Constants/UseApiConstants';
 import {

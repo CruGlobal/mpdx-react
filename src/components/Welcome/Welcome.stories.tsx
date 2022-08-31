@@ -1,6 +1,6 @@
 import React, { ReactElement } from 'react';
 import { Button } from '@mui/material';
-import SubjectIcon from '@material-ui/icons/Subject';
+import SubjectIcon from '@mui/icons-material/Subject';
 import Welcome from '.';
 
 export default {

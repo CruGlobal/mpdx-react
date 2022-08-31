@@ -8,7 +8,7 @@ import {
   Typography,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { Add } from '@material-ui/icons';
+import { Add } from '@mui/icons-material';
 import illustration4 from '../../../../images/drawkit/grape/drawkit-grape-pack-illustration-4.svg';
 import TaskDrawerCommentListItem from '../../Drawer/CommentList/Item';
 import theme from '../../../../../src/theme';

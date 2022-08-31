@@ -2,7 +2,7 @@ import React from 'react';
 import { DatePicker } from '@material-ui/pickers';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
-import CakeIcon from '@material-ui/icons/Cake';
+import CakeIcon from '@mui/icons-material/Cake';
 import { FormikProps } from 'formik';
 import { ModalSectionContainer } from '../ModalSectionContainer/ModalSectionContainer';
 import { ModalSectionIcon } from '../ModalSectionIcon/ModalSectionIcon';

@@ -1,5 +1,5 @@
 import { Box, styled } from '@mui/material';
-import { Cake } from '@material-ui/icons';
+import { Cake } from '@mui/icons-material';
 import { DateTime, Interval } from 'luxon';
 import React from 'react';
 import { useTranslation } from 'react-i18next';

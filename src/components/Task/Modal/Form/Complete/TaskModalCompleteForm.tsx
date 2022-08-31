@@ -23,7 +23,7 @@ import { Formik } from 'formik';
 import * as yup from 'yup';
 import { useSnackbar } from 'notistack';
 import { DateTime } from 'luxon';
-import { CalendarToday, Schedule } from '@material-ui/icons';
+import { CalendarToday, Schedule } from '@mui/icons-material';
 import { v4 as uuidv4 } from 'uuid';
 import { dateFormat } from '../../../../../lib/intlFormat/intlFormat';
 import {

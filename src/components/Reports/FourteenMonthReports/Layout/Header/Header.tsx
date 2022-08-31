@@ -8,7 +8,7 @@ import {
   Theme,
   Typography,
 } from '@mui/material';
-import { FilterList } from '@material-ui/icons';
+import { FilterList } from '@mui/icons-material';
 import { FourteenMonthReportCurrencyType } from '../../../../../../graphql/types.generated';
 import { FourteenMonthReportActions } from './Actions/Actions';
 

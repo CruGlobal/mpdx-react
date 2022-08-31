@@ -7,7 +7,7 @@ import {
   styled,
   Typography,
 } from '@mui/material';
-import { Add, CheckCircleOutline } from '@material-ui/icons';
+import { Add, CheckCircleOutline } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import { DateTime } from 'luxon';
 import { TaskFilterSetInput } from '../../../../../graphql/types.generated';

@@ -8,8 +8,8 @@ import {
   styled,
   useTheme,
 } from '@material-ui/core';
-import ExpandLessIcon from '@material-ui/icons/ExpandLess';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import ExpandLessIcon from '@mui/icons-material/ExpandLess';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import HandoffLink from 'src/components/HandoffLink';
 
 interface NavItemProps {

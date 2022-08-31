@@ -11,7 +11,7 @@ import {
 import { Formik, FormikHelpers } from 'formik';
 import * as yup from 'yup';
 import { DateTime } from 'luxon';
-import SendIcon from '@material-ui/icons/Send';
+import SendIcon from '@mui/icons-material/Send';
 import { motion } from 'framer-motion';
 import reject from 'lodash/fp/reject';
 import { v4 as uuidv4 } from 'uuid';

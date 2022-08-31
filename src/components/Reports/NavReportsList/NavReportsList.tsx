@@ -9,7 +9,7 @@ import {
   Typography,
   makeStyles,
 } from '@mui/material';
-import { Close } from '@material-ui/icons';
+import { Close } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import { Item } from './Item/Item';
 import { ReportNavItems } from './ReportNavItems';

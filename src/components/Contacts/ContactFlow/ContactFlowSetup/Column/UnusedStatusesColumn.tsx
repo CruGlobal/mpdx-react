@@ -1,5 +1,5 @@
 import { Box, Card, CardContent, IconButton, Typography } from '@mui/material';
-import { FiberManualRecord } from '@material-ui/icons';
+import { FiberManualRecord } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import React, { useRef } from 'react';
 import theme from '../../../../../../src/theme';

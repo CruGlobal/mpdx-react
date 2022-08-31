@@ -1,6 +1,6 @@
 import React from 'react';
 import { IconButton, styled } from '@mui/material';
-import DeleteIcon from '@material-ui/icons/Delete';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { useTranslation } from 'react-i18next';
 
 const ContactEditDeleteIconButton = styled(IconButton)(({ theme }) => ({

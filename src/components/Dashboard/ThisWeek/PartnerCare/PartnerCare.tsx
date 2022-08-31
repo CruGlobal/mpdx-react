@@ -16,15 +16,15 @@ import {
   styled,
   IconButton,
 } from '@mui/material';
-import CakeIcon from '@material-ui/icons/Cake';
-import FavoriteIcon from '@material-ui/icons/Favorite';
+import CakeIcon from '@mui/icons-material/Cake';
+import FavoriteIcon from '@mui/icons-material/Favorite';
 import { Skeleton } from '@material-ui/lab';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import Link from 'next/link';
-import Brightness1Outlined from '@material-ui/icons/Brightness1Outlined';
-import DoneIcon from '@material-ui/icons/Done';
-import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
+import Brightness1Outlined from '@mui/icons-material/Brightness1Outlined';
+import DoneIcon from '@mui/icons-material/Done';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import {
   Contact,
   PersonWithParentContact,

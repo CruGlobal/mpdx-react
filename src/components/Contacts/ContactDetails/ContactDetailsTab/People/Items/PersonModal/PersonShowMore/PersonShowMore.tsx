@@ -13,8 +13,8 @@ import {
 import { useTranslation } from 'react-i18next';
 import { DatePicker } from '@material-ui/pickers';
 import { DateTime } from 'luxon';
-import SchoolIcon from '@material-ui/icons/School';
-import BusinessIcon from '@material-ui/icons/Business';
+import SchoolIcon from '@mui/icons-material/School';
+import BusinessIcon from '@mui/icons-material/Business';
 import { FormikProps } from 'formik';
 import { ModalSectionContainer } from '../ModalSectionContainer/ModalSectionContainer';
 import { RingIcon } from '../../../../../../RingIcon';

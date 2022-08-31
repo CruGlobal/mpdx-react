@@ -1,11 +1,11 @@
 import React, { ReactElement } from 'react';
 import { Tooltip, Theme, makeStyles, Fab, Avatar } from '@mui/material';
 import { DateTime } from 'luxon';
-import AssignmentLateIcon from '@material-ui/icons/AssignmentLate';
-import AssignmentIcon from '@material-ui/icons/Assignment';
-import AssignmentTurnedInIcon from '@material-ui/icons/AssignmentTurnedIn';
+import AssignmentLateIcon from '@mui/icons-material/AssignmentLate';
+import AssignmentIcon from '@mui/icons-material/Assignment';
+import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
 import { useTranslation } from 'react-i18next';
-import DoneIcon from '@material-ui/icons/Done';
+import DoneIcon from '@mui/icons-material/Done';
 import useTaskDrawer from '../../../hooks/useTaskDrawer';
 
 const useStyles = makeStyles((theme: Theme) => ({

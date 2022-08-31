@@ -2,7 +2,7 @@ import { Box, IconButton, styled, Typography } from '@mui/material';
 import React, { useMemo, useState } from 'react';
 import { Skeleton } from '@material-ui/lab';
 import { DateTime } from 'luxon';
-import CreateIcon from '@material-ui/icons/Create';
+import CreateIcon from '@mui/icons-material/Create';
 import { currencyFormat } from '../../../../../lib/intlFormat';
 import { PledgeFrequencyEnum } from '../../../ContactPartnershipStatus/ContactPartnershipStatus';
 import {

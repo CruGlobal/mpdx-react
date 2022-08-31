@@ -13,10 +13,10 @@ import {
   DateRangeOutlined,
   Delete,
   FiberManualRecordOutlined,
-} from '@material-ui/icons';
+} from '@mui/icons-material';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
-import CreateIcon from '@material-ui/icons/Create';
+import CreateIcon from '@mui/icons-material/Create';
 import { currencyFormat } from '../../../../../lib/intlFormat';
 import { HandshakeIcon } from '../../ContactDetailsHeader/ContactHeaderSection/HandshakeIcon';
 import { ContactDonorAccountsFragment } from '../ContactDonationsTab.generated';

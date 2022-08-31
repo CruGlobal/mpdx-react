@@ -8,8 +8,8 @@ import {
   TextField,
   styled,
 } from '@mui/material';
-import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
-import SearchIcon from '@material-ui/icons/Search';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+import SearchIcon from '@mui/icons-material/Search';
 
 interface PartnerGivingAnalysisReportActionsProps {
   query: string;

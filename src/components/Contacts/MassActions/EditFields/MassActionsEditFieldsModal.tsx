@@ -11,7 +11,7 @@ import {
   Select,
   TextField,
 } from '@mui/material';
-import { CalendarToday } from '@material-ui/icons';
+import { CalendarToday } from '@mui/icons-material';
 import { DatePicker } from '@material-ui/pickers';
 import { Formik } from 'formik';
 import React, { ReactElement } from 'react';

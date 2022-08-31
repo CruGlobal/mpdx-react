@@ -7,7 +7,7 @@ import {
   styled,
   Theme,
 } from '@mui/material';
-import { Menu, Clear, FiberManualRecord } from '@material-ui/icons';
+import { Menu, Clear, FiberManualRecord } from '@mui/icons-material';
 import React, {
   useRef,
   useLayoutEffect,

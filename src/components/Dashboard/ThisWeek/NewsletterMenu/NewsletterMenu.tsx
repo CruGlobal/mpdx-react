@@ -7,7 +7,7 @@ import {
   ListItemText,
   styled,
 } from '@mui/material';
-import ArrowDropDown from '@material-ui/icons/ArrowDropDown';
+import ArrowDropDown from '@mui/icons-material/ArrowDropDown';
 import { useTranslation } from 'react-i18next';
 import { DateTime } from 'luxon';
 import { Skeleton } from '@material-ui/lab';

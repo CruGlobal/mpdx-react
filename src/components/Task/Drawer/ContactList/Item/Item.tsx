@@ -19,10 +19,10 @@ import {
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { DateTime } from 'luxon';
-import CallIcon from '@material-ui/icons/Call';
-import TextsmsIcon from '@material-ui/icons/Textsms';
-import EmailIcon from '@material-ui/icons/Email';
-import LocationOnIcon from '@material-ui/icons/LocationOn';
+import CallIcon from '@mui/icons-material/Call';
+import TextsmsIcon from '@mui/icons-material/Textsms';
+import EmailIcon from '@mui/icons-material/Email';
+import LocationOnIcon from '@mui/icons-material/LocationOn';
 import { Skeleton } from '@material-ui/lab';
 import InfoBlock from '../../../../InfoBlock';
 import { currencyFormat } from '../../../../../lib/intlFormat';

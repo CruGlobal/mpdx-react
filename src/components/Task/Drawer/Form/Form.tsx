@@ -25,7 +25,7 @@ import { useTranslation } from 'react-i18next';
 import { Autocomplete } from '@material-ui/lab';
 
 import { DatePicker, TimePicker } from '@material-ui/pickers';
-import DeleteIcon from '@material-ui/icons/Delete';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Formik } from 'formik';
 import * as yup from 'yup';

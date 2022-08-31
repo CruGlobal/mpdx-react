@@ -17,8 +17,8 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
-import InfoIcon from '@material-ui/icons/InfoOutlined';
-import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
+import InfoIcon from '@mui/icons-material/InfoOutlined';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import { useTranslation } from 'react-i18next';
 import { Formik } from 'formik';
 import * as yup from 'yup';

@@ -19,8 +19,8 @@ import {
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'next/router';
 import { signOut } from 'next-auth/react';
-import AccountCircleIcon from '@material-ui/icons/AccountCircle';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { useAccountListId } from '../../../../../../hooks/useAccountListId';
 import HandoffLink from '../../../../../HandoffLink';
 import { useGetTopBarQuery } from '../../GetTopBar.generated';

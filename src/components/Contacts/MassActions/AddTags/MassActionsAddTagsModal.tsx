@@ -13,7 +13,7 @@ import { Formik } from 'formik';
 import React, { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSnackbar } from 'notistack';
-import { Add } from '@material-ui/icons';
+import { Add } from '@mui/icons-material';
 import { ContactUpdateInput } from '../../../../../graphql/types.generated';
 import Modal from '../../../common/Modal/Modal';
 import {

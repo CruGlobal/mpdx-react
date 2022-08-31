@@ -1,6 +1,6 @@
 import React from 'react';
 import { ListItem, ListItemText } from '@mui/material';
-import { ArrowForwardIos } from '@material-ui/icons';
+import { ArrowForwardIos } from '@mui/icons-material';
 import NextLink from 'next/link';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 

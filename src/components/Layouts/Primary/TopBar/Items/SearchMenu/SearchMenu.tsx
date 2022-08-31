@@ -8,12 +8,12 @@ import {
   Typography,
   Popper,
 } from '@mui/material';
-import SearchIcon from '@material-ui/icons/Search';
+import SearchIcon from '@mui/icons-material/Search';
 import { useTranslation } from 'react-i18next';
-import CompassIcon from '@material-ui/icons/Explore';
-import PersonIcon from '@material-ui/icons/Person';
-import PeopleIcon from '@material-ui/icons/People';
-import AddIcon from '@material-ui/icons/Add';
+import CompassIcon from '@mui/icons-material/Explore';
+import PersonIcon from '@mui/icons-material/Person';
+import PeopleIcon from '@mui/icons-material/People';
+import AddIcon from '@mui/icons-material/Add';
 import { Autocomplete, createFilterOptions } from '@material-ui/lab';
 import debounce from 'lodash/debounce';
 import NextLink from 'next/link';

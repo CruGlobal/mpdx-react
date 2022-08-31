@@ -11,8 +11,8 @@ import {
   Typography,
 } from '@mui/material';
 import React, { ReactElement, useState } from 'react';
-import NotificationsNoneIcon from '@material-ui/icons/NotificationsNone';
-import NotificationsIcon from '@material-ui/icons/Notifications';
+import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
+import NotificationsIcon from '@mui/icons-material/Notifications';
 import { useTranslation } from 'react-i18next';
 import illustration13 from '../../../../../../images/drawkit/grape/drawkit-grape-pack-illustration-13.svg';
 import { useAccountListId } from '../../../../../../hooks/useAccountListId';

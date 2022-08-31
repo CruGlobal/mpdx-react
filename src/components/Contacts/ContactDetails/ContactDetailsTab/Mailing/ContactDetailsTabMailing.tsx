@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Box, Grid, IconButton, Link, styled, Typography } from '@mui/material';
-import LocationOn from '@material-ui/icons/LocationOn';
-import CreateIcon from '@material-ui/icons/Create';
+import LocationOn from '@mui/icons-material/LocationOn';
+import CreateIcon from '@mui/icons-material/Create';
 import {
   ContactDetailsAddButton,
   ContactDetailsAddIcon,

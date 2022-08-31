@@ -8,9 +8,9 @@ import {
   Typography,
   Button,
 } from '@mui/material';
-import AddIcon from '@material-ui/icons/Add';
-import { Cake, Email, Phone } from '@material-ui/icons';
-import CreateIcon from '@material-ui/icons/Create';
+import AddIcon from '@mui/icons-material/Add';
+import { Cake, Email, Phone } from '@mui/icons-material';
+import CreateIcon from '@mui/icons-material/Create';
 import { useTranslation } from 'react-i18next';
 import { RingIcon } from '../../../RingIcon';
 import {

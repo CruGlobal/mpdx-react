@@ -1,5 +1,5 @@
 import { Avatar, Box, Typography } from '@mui/material';
-import { Star, StarBorder } from '@material-ui/icons';
+import { Star, StarBorder } from '@mui/icons-material';
 import React, { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { IdValue } from '../../../../../graphql/types.generated';

@@ -11,10 +11,10 @@ import {
   styled,
   Theme,
 } from '@mui/material';
-import FilterList from '@material-ui/icons/FilterList';
+import FilterList from '@mui/icons-material/FilterList';
 import { useTranslation } from 'react-i18next';
-import ArrowDropDown from '@material-ui/icons/ArrowDropDown';
-import { MoreHoriz, ViewList } from '@material-ui/icons';
+import ArrowDropDown from '@mui/icons-material/ArrowDropDown';
+import { MoreHoriz, ViewList } from '@mui/icons-material';
 import { SearchBox } from '../../common/SearchBox/SearchBox';
 import {
   ContactFilterSetInput,
