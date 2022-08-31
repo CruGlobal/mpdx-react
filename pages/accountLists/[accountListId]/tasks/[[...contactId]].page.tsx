@@ -8,6 +8,7 @@ import CheckCircleOutlineIcon from '@material-ui/icons/CheckCircleOutline';
 import debounce from 'lodash/debounce';
 import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
+import { useMassActionsUpdateTasksMutation } from '../../../../src/components/Contacts/Tasks/MassActions/MassActionsUpdateTasks.generated';
 import { InfiniteList } from '../../../../src/components/InfiniteList/InfiniteList';
 import Loading from '../../../../src/components/Loading';
 import { SidePanelsLayout } from '../../../../src/components/Layouts/SidePanelsLayout';
@@ -32,7 +33,7 @@ import useTaskModal from 'src/hooks/useTaskModal';
 import { ContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/ContactsRightPanel';
 import { useGetTaskIdsForMassSelectionLazyQuery } from 'src/hooks/GetIdsForMassSelection.generated';
 import { MassActionsTasksConfirmationModal } from 'src/components/Contacts/Tasks/MassActions/ConfirmationModal/MassActionsTasksConfirmationModal';
-import { useMassActionsUpdateTasksMutation } from 'src/components/Contacts/Tasks/MassActions/MassActionsUpdateTasks.generated';
+import { MassActionsEditTasksModal } from 'src/components/Task/MassActions/EditTasks/MassActionsEditTasksModal';
 
 const WhiteBackground = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.common.white,
@@ -250,6 +251,7 @@ const TasksPage: React.FC = () => {
   //#region mass actions
 
   const [completeTasksModalOpen, setCompleteTasksModalOpen] = useState(false);
+  const [editTasksModalOpen, setEditTasksModalOpen] = useState(false);
 
   const [updateTasks] = useMassActionsUpdateTasksMutation();
 
@@ -340,6 +342,7 @@ const TasksPage: React.FC = () => {
                   }
                   selectedIds={ids}
                   openCompleteTasksModal={setCompleteTasksModalOpen}
+                  openEditTasksModal={setEditTasksModalOpen}
                 />
                 {completeTasksModalOpen && (
                   <MassActionsTasksConfirmationModal
@@ -348,6 +351,13 @@ const TasksPage: React.FC = () => {
                     idsCount={ids.length}
                     setOpen={setCompleteTasksModalOpen}
                     onConfirm={completeTasks}
+                  />
+                )}
+                {editTasksModalOpen && (
+                  <MassActionsEditTasksModal
+                    ids={ids}
+                    accountListId={accountListId}
+                    handleClose={() => setEditTasksModalOpen(false)}
                   />
                 )}
                 <Box>
