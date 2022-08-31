@@ -12,6 +12,7 @@ import {
   ContactsPageContext,
   ContactsPageType,
 } from '../../../../pages/accountLists/[accountListId]/contacts/ContactsPageContext';
+import { MassActionsAddTagsModal } from '../MassActions/AddTags/MassActionsAddTagsModal';
 import { MassActionsAddToAppealModal } from '../MassActions/AddToAppeal/MassActionsAddToAppealModal';
 import { MassActionsEditFieldsModal } from '../MassActions/EditFields/MassActionsEditFieldsModal';
 import { useMassActionsUpdateContactsMutation } from '../MassActions/MassActionsUpdateContacts.generated';
@@ -66,6 +67,7 @@ export const ContactsMainPanelHeader: React.FC = () => {
     selectedIds,
   } = React.useContext(ContactsPageContext) as ContactsPageType;
 
+  const [openAddTagsModal, setOpenAddTagsModal] = useState(false);
   const [addToAppealModalOpen, setAddToAppealModalOpen] = useState(false);
   const [createAppealModalOpen, setCreateAppealModalOpen] = useState(false);
   const [editFieldsModalOpen, setEditFieldsModalOpen] = useState(false);
@@ -120,7 +122,6 @@ export const ContactsMainPanelHeader: React.FC = () => {
       <ListHeader
         page="contact"
         activeFilters={Object.keys(activeFilters).length > 0}
-        openAddToAppealModal={setAddToAppealModalOpen}
         filterPanelOpen={filterPanelOpen}
         toggleFilterPanel={toggleFilterPanel}
         contactDetailsOpen={contactDetailsOpen}
@@ -133,7 +134,9 @@ export const ContactsMainPanelHeader: React.FC = () => {
         toggleStarredFilter={setStarredFilter}
         headerCheckboxState={selectionType}
         selectedIds={selectedIds}
+        openAddTagsModal={setOpenAddTagsModal}
         openEditFieldsModal={setEditFieldsModalOpen}
+        openAddToAppealModal={setAddToAppealModalOpen}
         openHideContactsModal={setHideContactsModalOpen}
         openCreateAppealModal={setCreateAppealModalOpen}
         buttonGroup={
@@ -177,6 +180,13 @@ export const ContactsMainPanelHeader: React.FC = () => {
           </Hidden>
         }
       />
+      {openAddTagsModal && (
+        <MassActionsAddTagsModal
+          accountListId={accountListId ?? ''}
+          ids={selectedIds}
+          handleClose={() => setOpenAddTagsModal(false)}
+        />
+      )}
       {addToAppealModalOpen && (
         <MassActionsAddToAppealModal
           ids={selectedIds}
