@@ -7,8 +7,7 @@ import {
 import { StarredItemIcon } from '../../../common/StarredItemIcon/StarredItemIcon';
 
 const StarIconWrap = styled(Box)(({ theme }) => ({
-  marginLeft: theme.spacing(4),
-  marginRight: theme.spacing(1),
+  marginLeft: theme.spacing(2),
 }));
 
 interface StarFilterButtonProps {

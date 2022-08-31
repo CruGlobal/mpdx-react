@@ -24,12 +24,12 @@ const ContactTagChip = styled(Chip)(({ theme }) => ({
   marginLeft: '0',
 }));
 
-const ContactTagIcon = styled(TagIcon)(({ theme }) => ({
+export const ContactTagIcon = styled(TagIcon)(({ theme }) => ({
   color: theme.palette.cruGrayMedium.main,
   marginRight: theme.spacing(1),
 }));
 
-const ContactTagInput = styled(TextField)(({ theme }) => ({
+export const ContactTagInput = styled(TextField)(({ theme }) => ({
   '&& .MuiInput-underline:before ': {
     borderBottom: `2px solid ${theme.palette.divider}`,
   },
@@ -66,6 +66,10 @@ interface ContactTagsProps {
   contactTags: string[];
 }
 
+const tagSchema = yup.object({
+  tagList: yup.array().of(yup.string()).default([]),
+});
+
 export const ContactTags: React.FC<ContactTagsProps> = ({
   accountListId,
   contactId,
@@ -82,10 +86,6 @@ export const ContactTags: React.FC<ContactTagsProps> = ({
     variables: {
       accountListId,
     },
-  });
-
-  const tagSchema = yup.object({
-    tagList: yup.array().of(yup.string()).default([]),
   });
 
   const unusedTags =

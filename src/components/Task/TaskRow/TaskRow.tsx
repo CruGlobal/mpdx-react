@@ -154,14 +154,17 @@ export const TaskRow: React.FC<TaskRowProps> = ({
             textOverflow: 'ellipsis',
           }}
         >
-          <Box padding="checkbox">
-            <Checkbox
-              checked={isChecked}
-              color="default"
-              onChange={() => onTaskCheckToggle(taskId)}
-              value={isChecked}
-            />
-          </Box>
+          <Hidden xsDown>
+            <Box padding="checkbox">
+              <Checkbox
+                checked={isChecked}
+                color="default"
+                onClick={(event) => event.stopPropagation()}
+                onChange={() => onTaskCheckToggle(taskId)}
+                value={isChecked}
+              />
+            </Box>
+          </Hidden>
           <Box onClick={(e) => e.stopPropagation()}>
             <TaskCompleteButton
               isComplete={isComplete}
@@ -240,19 +243,21 @@ export const TaskRow: React.FC<TaskRowProps> = ({
               </Box>
             </Box>
           </Hidden>
-          <Box onClick={(e) => e.stopPropagation()}>
-            <DeleteTaskIconButton
-              accountListId={accountListId}
-              taskId={taskId}
-            />
-          </Box>
-          <Box onClick={(e) => e.stopPropagation()}>
-            <StarTaskIconButton
-              accountListId={accountListId}
-              taskId={taskId}
-              isStarred={starred}
-            />
-          </Box>
+          <Hidden xsDown>
+            <Box onClick={(e) => e.stopPropagation()}>
+              <DeleteTaskIconButton
+                accountListId={accountListId}
+                taskId={taskId}
+              />
+            </Box>
+            <Box onClick={(e) => e.stopPropagation()}>
+              <StarTaskIconButton
+                accountListId={accountListId}
+                taskId={taskId}
+                isStarred={starred}
+              />
+            </Box>
+          </Hidden>
         </Box>
       </ContactRowButton>
     </Box>

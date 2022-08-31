@@ -46,14 +46,20 @@ const OuterWrapper = styled(Box)(({ theme }) => ({
 }));
 
 const LeftWrapper = styled(Box)(() => ({
-  zIndex: 30,
+  zIndex: 20,
   left: '-290px',
   width: '290px',
   borderWidth: '0 1px 0 0',
+  overflowY: 'auto',
+}));
+
+const CenterWrapper = styled(Box)(() => ({
+  zIndex: 10,
+  position: 'relative',
 }));
 
 const RightWrapper = styled(Box)(({ theme }) => ({
-  zIndex: 20,
+  zIndex: 30,
   width: '100%',
   left: '100%',
   borderWidth: 0,
@@ -98,9 +104,9 @@ export const ContactsContainer: React.FC = ({}) => {
               <LeftWrapper className="left">
                 <ContactsLeftPanel />
               </LeftWrapper>
-              <Box className="center">
+              <CenterWrapper className="center">
                 <ContactsMainPanel />
-              </Box>
+              </CenterWrapper>
               <RightWrapper className="right">
                 <ContactsRightPanel
                   onClose={() =>
