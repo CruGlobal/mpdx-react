@@ -1,7 +1,7 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import { I18nextProvider } from 'react-i18next';
-import { ThemeProvider } from '@material-ui/styles';
+import { ThemeProvider } from '@mui/styles';
 import {
   PledgeFrequencyEnum,
   StatusEnum as ContactPartnershipStatusEnum,

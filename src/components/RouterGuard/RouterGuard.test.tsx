@@ -1,4 +1,4 @@
-import { ThemeProvider } from '@material-ui/styles';
+import { ThemeProvider } from '@mui/styles';
 import { render, waitFor } from '@testing-library/react';
 import { getSession } from 'next-auth/react';
 import { SnackbarProvider } from 'notistack';
@@ -24,9 +24,11 @@ describe('RouterGuard', () => {
   describe('authenticated', () => {
     beforeEach(() => {
       (getSession as jest.Mock).mockReturnValue(session);
-      (useRouter as jest.SpyInstance<
-        Pick<nextRouter.NextRouter, 'query' | 'isReady' | 'pathname' | 'push'>
-      >).mockImplementation(() => ({
+      (
+        useRouter as jest.SpyInstance<
+          Pick<nextRouter.NextRouter, 'query' | 'isReady' | 'pathname' | 'push'>
+        >
+      ).mockImplementation(() => ({
         pathname: '/authRoute',
         query: { accountListId: 'accountListId' },
         isReady: true,
@@ -52,9 +54,11 @@ describe('RouterGuard', () => {
 
     it('should render loading indicator while isReady is false', async () => {
       (getSession as jest.Mock).mockReturnValue(session);
-      (useRouter as jest.SpyInstance<
-        Pick<nextRouter.NextRouter, 'query' | 'isReady' | 'pathname' | 'push'>
-      >).mockImplementation(() => ({
+      (
+        useRouter as jest.SpyInstance<
+          Pick<nextRouter.NextRouter, 'query' | 'isReady' | 'pathname' | 'push'>
+        >
+      ).mockImplementation(() => ({
         pathname: '/authRoute',
         query: { accountListId: 'accountListId' },
         isReady: false,
@@ -79,9 +83,11 @@ describe('RouterGuard', () => {
 
     it('should render loading indicator while isAuthed is false', async () => {
       (getSession as jest.Mock).mockReturnValue(null);
-      (useRouter as jest.SpyInstance<
-        Pick<nextRouter.NextRouter, 'query' | 'isReady' | 'pathname' | 'push'>
-      >).mockImplementation(() => ({
+      (
+        useRouter as jest.SpyInstance<
+          Pick<nextRouter.NextRouter, 'query' | 'isReady' | 'pathname' | 'push'>
+        >
+      ).mockImplementation(() => ({
         pathname: '/authRoute',
         query: { accountListId: 'accountListId' },
         isReady: true,
@@ -108,9 +114,11 @@ describe('RouterGuard', () => {
   describe('unathenticated', () => {
     beforeEach(() => {
       (getSession as jest.Mock).mockReturnValue(null);
-      (useRouter as jest.SpyInstance<
-        Pick<nextRouter.NextRouter, 'query' | 'isReady' | 'pathname' | 'push'>
-      >).mockImplementation(() => ({
+      (
+        useRouter as jest.SpyInstance<
+          Pick<nextRouter.NextRouter, 'query' | 'isReady' | 'pathname' | 'push'>
+        >
+      ).mockImplementation(() => ({
         pathname: '/login',
         query: { accountListId: 'accountListId' },
         isReady: true,
