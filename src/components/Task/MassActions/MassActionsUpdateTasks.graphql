@@ -1,0 +1,12 @@
+mutation MassActionsUpdateTasks(
+  $accountListId: ID!
+  $attributes: [TaskUpdateInput!]!
+) {
+  updateTasks(
+    input: { accountListId: $accountListId, attributes: $attributes }
+  ) {
+    tasks {
+      id
+    }
+  }
+}

@@ -31,8 +31,8 @@ import {
 import useTaskModal from 'src/hooks/useTaskModal';
 import { ContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/ContactsRightPanel';
 import { useGetTaskIdsForMassSelectionLazyQuery } from 'src/hooks/GetIdsForMassSelection.generated';
-import { MassActionsTasksConfirmationModal } from 'src/components/Contacts/Tasks/MassActions/ConfirmationModal/MassActionsTasksConfirmationModal';
-import { useMassActionsUpdateTasksMutation } from 'src/components/Contacts/Tasks/MassActions/MassActionsUpdateTasks.generated';
+import { MassActionsTasksConfirmationModal } from 'src/components/Task/MassActions/ConfirmationModal/MassActionsTasksConfirmationModal';
+import { useMassActionsUpdateTasksMutation } from 'src/components/Task/MassActions/MassActionsUpdateTasks.generated';
 
 const WhiteBackground = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.common.white,
@@ -250,6 +250,7 @@ const TasksPage: React.FC = () => {
   //#region mass actions
 
   const [completeTasksModalOpen, setCompleteTasksModalOpen] = useState(false);
+  const [deleteTasksModalOpen, setDeleteTasksModalOpen] = useState(false);
 
   const [updateTasks] = useMassActionsUpdateTasksMutation();
 
@@ -272,6 +273,30 @@ const TasksPage: React.FC = () => {
       ],
     });
     enqueueSnackbar(t('Contact(s) completed successfully'), {
+      variant: 'success',
+    });
+    setCompleteTasksModalOpen(false);
+  };
+
+  const deleteTasks = async () => {
+    const completedAt = DateTime.local().toISO();
+    await updateTasks({
+      variables: {
+        accountListId: accountListId ?? '',
+        attributes: ids.map((id) => ({
+          id,
+          completedAt,
+          result: ResultEnum.Done,
+        })),
+      },
+      refetchQueries: [
+        {
+          query: TasksDocument,
+          variables: { accountListId },
+        },
+      ],
+    });
+    enqueueSnackbar(t('Contact(s) deleted successfully'), {
       variant: 'success',
     });
     setCompleteTasksModalOpen(false);
@@ -348,6 +373,15 @@ const TasksPage: React.FC = () => {
                     idsCount={ids.length}
                     setOpen={setCompleteTasksModalOpen}
                     onConfirm={completeTasks}
+                  />
+                )}
+                {deleteTasksModalOpen && (
+                  <MassActionsTasksConfirmationModal
+                    open={completeTasksModalOpen}
+                    action="delete"
+                    idsCount={ids.length}
+                    setOpen={setDeleteTasksModalOpen}
+                    onConfirm={deleteTasks}
                   />
                 )}
                 <Box>
