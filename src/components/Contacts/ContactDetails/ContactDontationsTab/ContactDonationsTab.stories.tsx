@@ -2,6 +2,7 @@ import { MockedProvider } from '@apollo/client/testing';
 import { DateTime } from 'luxon';
 import React, { ReactElement } from 'react';
 import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
+import { ContactDetailProvider } from '../ContactDetailContext';
 import { ContactDonationsTab } from './ContactDonationsTab';
 import {
   GetContactDonationsDocument,
@@ -18,49 +19,53 @@ const contactId = '222';
 
 export const Default = (): ReactElement => {
   return (
-    <GqlMockedProvider<GetContactDonationsQuery>
-      mocks={{
-        GetContactDonations: {
-          contact: {
-            nextAsk: DateTime.now().plus({ month: 5 }).toISO(),
-            pledgeStartDate: DateTime.now().minus({ month: 5 }).toISO(),
-            pledgeCurrency: 'USD',
-            lastDonation: {
-              donationDate: DateTime.now().toISO(),
+    <ContactDetailProvider>
+      <GqlMockedProvider<GetContactDonationsQuery>
+        mocks={{
+          GetContactDonations: {
+            contact: {
+              nextAsk: DateTime.now().plus({ month: 5 }).toISO(),
+              pledgeStartDate: DateTime.now().minus({ month: 5 }).toISO(),
+              pledgeCurrency: 'USD',
+              lastDonation: {
+                donationDate: DateTime.now().toISO(),
+              },
             },
           },
-        },
-      }}
-    >
-      <ContactDonationsTab
-        accountListId={accountListId}
-        contactId={contactId}
-      />
-    </GqlMockedProvider>
+        }}
+      >
+        <ContactDonationsTab
+          accountListId={accountListId}
+          contactId={contactId}
+        />
+      </GqlMockedProvider>
+    </ContactDetailProvider>
   );
 };
 
 export const Loading = (): ReactElement => {
   return (
-    <MockedProvider
-      mocks={[
-        {
-          request: {
-            query: GetContactDonationsDocument,
-            variables: {
-              accountListId: accountListId,
-              contactId: contactId,
+    <ContactDetailProvider>
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: GetContactDonationsDocument,
+              variables: {
+                accountListId: accountListId,
+                contactId: contactId,
+              },
             },
+            result: {},
+            delay: 8640000,
           },
-          result: {},
-          delay: 8640000,
-        },
-      ]}
-    >
-      <ContactDonationsTab
-        accountListId={accountListId}
-        contactId={contactId}
-      />
-    </MockedProvider>
+        ]}
+      >
+        <ContactDonationsTab
+          accountListId={accountListId}
+          contactId={contactId}
+        />
+      </MockedProvider>
+    </ContactDetailProvider>
   );
 };
