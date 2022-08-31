@@ -23,6 +23,7 @@ const onSearchTermChanged = jest.fn();
 const onCheckAllItems = jest.fn();
 const toggleStarredFilter = jest.fn();
 const selectedIds: string[] = [];
+const openAddTagsModal = jest.fn();
 const openAddToAppealModal = jest.fn();
 const openCreateAppealModal = jest.fn();
 const openEditFieldsModal = jest.fn();
@@ -84,6 +85,7 @@ describe('ListHeader', () => {
             openAddToAppealModal={openAddToAppealModal}
             openEditFieldsModal={openEditFieldsModal}
             openHideContactsModal={openHideContactsModal}
+            openAddTagsModal={openAddTagsModal}
             openCreateAppealModal={openCreateAppealModal}
           />
         </ThemeProvider>,
@@ -114,6 +116,7 @@ describe('ListHeader', () => {
             openAddToAppealModal={openAddToAppealModal}
             openEditFieldsModal={openEditFieldsModal}
             openHideContactsModal={openHideContactsModal}
+            openAddTagsModal={openAddTagsModal}
             openCreateAppealModal={openCreateAppealModal}
           />
         </ThemeProvider>,
@@ -188,6 +191,7 @@ describe('ListHeader', () => {
           openAddToAppealModal={openAddToAppealModal}
           openEditFieldsModal={openEditFieldsModal}
           openHideContactsModal={openHideContactsModal}
+          openAddTagsModal={openAddTagsModal}
           openCreateAppealModal={openCreateAppealModal}
         />
       </ThemeProvider>,
@@ -224,6 +228,7 @@ describe('ListHeader', () => {
           openAddToAppealModal={openAddToAppealModal}
           openEditFieldsModal={openEditFieldsModal}
           openHideContactsModal={openHideContactsModal}
+          openAddTagsModal={openAddTagsModal}
           openCreateAppealModal={openCreateAppealModal}
         />
       </ThemeProvider>,
@@ -239,6 +244,46 @@ describe('ListHeader', () => {
       view: 'log',
       defaultValues: { contactIds: selectedIds },
     });
+  });
+
+  it('opens the more actions menu and clicks the add tags action', () => {
+    const {
+      getByPlaceholderText,
+      getByTestId,
+      getByText,
+      queryByText,
+    } = render(
+      <ThemeProvider theme={theme}>
+        <ListHeader
+          selectedIds={selectedIds}
+          page="contact"
+          activeFilters={false}
+          starredFilter={{}}
+          toggleStarredFilter={toggleStarredFilter}
+          headerCheckboxState={ListHeaderCheckBoxState.unchecked}
+          filterPanelOpen={false}
+          contactDetailsOpen={false}
+          toggleFilterPanel={toggleFilterPanel}
+          onCheckAllItems={onCheckAllItems}
+          onSearchTermChanged={onSearchTermChanged}
+          openAddToAppealModal={openAddToAppealModal}
+          openEditFieldsModal={openEditFieldsModal}
+          openHideContactsModal={openHideContactsModal}
+          openAddTagsModal={openAddTagsModal}
+          openCreateAppealModal={openCreateAppealModal}
+        />
+      </ThemeProvider>,
+    );
+
+    expect(getByPlaceholderText('Search Contacts')).toBeInTheDocument();
+    expect(queryByText('Add Tags')).not.toBeInTheDocument();
+    const actionsButton = getByText('Actions');
+    userEvent.click(actionsButton);
+    expect(getByText('Add Tags')).toBeInTheDocument();
+    userEvent.click(getByText('Add Tags'));
+    expect(openAddTagsModal).toHaveBeenCalledWith(true);
+    expect(getByTestId('star-filter-button')).toBeInTheDocument();
+    expect(getByTestId('showing-text')).toBeInTheDocument();
   });
 
   it('opens the more actions menu and clicks the edit fields action', () => {
@@ -258,6 +303,7 @@ describe('ListHeader', () => {
           onSearchTermChanged={onSearchTermChanged}
           openEditFieldsModal={openEditFieldsModal}
           openHideContactsModal={openHideContactsModal}
+          openAddTagsModal={openAddTagsModal}
           openCreateAppealModal={openCreateAppealModal}
           openAddToAppealModal={openAddToAppealModal}
         />
@@ -291,6 +337,7 @@ describe('ListHeader', () => {
           openAddToAppealModal={openAddToAppealModal}
           openEditFieldsModal={openEditFieldsModal}
           openHideContactsModal={openHideContactsModal}
+          openAddTagsModal={openAddTagsModal}
           openCreateAppealModal={openCreateAppealModal}
         />
       </ThemeProvider>,
@@ -323,6 +370,7 @@ describe('ListHeader', () => {
           openAddToAppealModal={openAddToAppealModal}
           openEditFieldsModal={openEditFieldsModal}
           openHideContactsModal={openHideContactsModal}
+          openAddTagsModal={openAddTagsModal}
           openCreateAppealModal={openCreateAppealModal}
         />
       </ThemeProvider>,
@@ -355,6 +403,7 @@ describe('ListHeader', () => {
           openAddToAppealModal={openAddToAppealModal}
           openEditFieldsModal={openEditFieldsModal}
           openHideContactsModal={openHideContactsModal}
+          openAddTagsModal={openAddTagsModal}
           openCreateAppealModal={openCreateAppealModal}
         />
       </ThemeProvider>,
@@ -388,6 +437,7 @@ describe('ListHeader', () => {
             openAddToAppealModal={openAddToAppealModal}
             openEditFieldsModal={openEditFieldsModal}
             openHideContactsModal={openHideContactsModal}
+            openAddTagsModal={openAddTagsModal}
             openCreateAppealModal={openCreateAppealModal}
           />
         </ThemeProvider>,
@@ -415,6 +465,7 @@ describe('ListHeader', () => {
           openAddToAppealModal={openAddToAppealModal}
           openEditFieldsModal={openEditFieldsModal}
           openHideContactsModal={openHideContactsModal}
+          openAddTagsModal={openAddTagsModal}
           openCreateAppealModal={openCreateAppealModal}
         />
       </ThemeProvider>,
@@ -452,6 +503,7 @@ describe('ListHeader', () => {
           openAddToAppealModal={openAddToAppealModal}
           openEditFieldsModal={openEditFieldsModal}
           openHideContactsModal={openHideContactsModal}
+          openAddTagsModal={openAddTagsModal}
           openCreateAppealModal={openCreateAppealModal}
         />
       </ThemeProvider>,
@@ -482,6 +534,7 @@ describe('ListHeader', () => {
           openAddToAppealModal={openAddToAppealModal}
           openEditFieldsModal={openEditFieldsModal}
           openHideContactsModal={openHideContactsModal}
+          openAddTagsModal={openAddTagsModal}
           openCreateAppealModal={openCreateAppealModal}
         />
       </ThemeProvider>,
@@ -514,6 +567,7 @@ describe('ListHeader', () => {
           openAddToAppealModal={openAddToAppealModal}
           openEditFieldsModal={openEditFieldsModal}
           openHideContactsModal={openHideContactsModal}
+          openAddTagsModal={openAddTagsModal}
           openCreateAppealModal={openCreateAppealModal}
         />
       </ThemeProvider>,
@@ -548,6 +602,7 @@ describe('ListHeader', () => {
           openAddToAppealModal={openAddToAppealModal}
           openEditFieldsModal={openEditFieldsModal}
           openHideContactsModal={openHideContactsModal}
+          openAddTagsModal={openAddTagsModal}
           openCreateAppealModal={openCreateAppealModal}
         />
       </ThemeProvider>,
@@ -582,6 +637,7 @@ describe('ListHeader', () => {
           openAddToAppealModal={openAddToAppealModal}
           openEditFieldsModal={openEditFieldsModal}
           openHideContactsModal={openHideContactsModal}
+          openAddTagsModal={openAddTagsModal}
           openCreateAppealModal={openCreateAppealModal}
         />
       </ThemeProvider>,
@@ -616,6 +672,7 @@ describe('ListHeader', () => {
           openAddToAppealModal={openAddToAppealModal}
           openEditFieldsModal={openEditFieldsModal}
           openHideContactsModal={openHideContactsModal}
+          openAddTagsModal={openAddTagsModal}
           openCreateAppealModal={openCreateAppealModal}
         />
       </ThemeProvider>,
@@ -651,6 +708,7 @@ describe('ListHeader', () => {
           openAddToAppealModal={openAddToAppealModal}
           openEditFieldsModal={openEditFieldsModal}
           openHideContactsModal={openHideContactsModal}
+          openAddTagsModal={openAddTagsModal}
           openCreateAppealModal={openCreateAppealModal}
         />
       </ThemeProvider>,
@@ -684,6 +742,7 @@ describe('ListHeader', () => {
           openAddToAppealModal={openAddToAppealModal}
           openEditFieldsModal={openEditFieldsModal}
           openHideContactsModal={openHideContactsModal}
+          openAddTagsModal={openAddTagsModal}
           openCreateAppealModal={openCreateAppealModal}
         />
       </ThemeProvider>,
@@ -713,6 +772,7 @@ describe('ListHeader', () => {
           openAddToAppealModal={openAddToAppealModal}
           openEditFieldsModal={openEditFieldsModal}
           openHideContactsModal={openHideContactsModal}
+          openAddTagsModal={openAddTagsModal}
           openCreateAppealModal={openCreateAppealModal}
         />
       </ThemeProvider>,
@@ -743,6 +803,7 @@ describe('ListHeader', () => {
           openAddToAppealModal={openAddToAppealModal}
           openEditFieldsModal={openEditFieldsModal}
           openHideContactsModal={openHideContactsModal}
+          openAddTagsModal={openAddTagsModal}
           openCreateAppealModal={openCreateAppealModal}
         />
       </ThemeProvider>,
@@ -769,6 +830,7 @@ describe('ListHeader', () => {
           openAddToAppealModal={openAddToAppealModal}
           openEditFieldsModal={openEditFieldsModal}
           openHideContactsModal={openHideContactsModal}
+          openAddTagsModal={openAddTagsModal}
           openCreateAppealModal={openCreateAppealModal}
         />
       </ThemeProvider>,
