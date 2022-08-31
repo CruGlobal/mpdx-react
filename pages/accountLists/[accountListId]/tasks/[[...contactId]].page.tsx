@@ -298,7 +298,7 @@ const TasksPage: React.FC = () => {
     enqueueSnackbar(t('Contact(s) deleted successfully'), {
       variant: 'success',
     });
-    setCompleteTasksModalOpen(false);
+    setDeleteTasksModalOpen(false);
   };
 
   //#endregion
@@ -364,6 +364,7 @@ const TasksPage: React.FC = () => {
                   }
                   selectedIds={ids}
                   openCompleteTasksModal={setCompleteTasksModalOpen}
+                  openDeleteTasksModal={setDeleteTasksModalOpen}
                 />
                 {completeTasksModalOpen && (
                   <MassActionsTasksConfirmationModal
@@ -376,7 +377,7 @@ const TasksPage: React.FC = () => {
                 )}
                 {deleteTasksModalOpen && (
                   <MassActionsTasksConfirmationModal
-                    open={completeTasksModalOpen}
+                    open={deleteTasksModalOpen}
                     action="delete"
                     idsCount={ids.length}
                     setOpen={setDeleteTasksModalOpen}
