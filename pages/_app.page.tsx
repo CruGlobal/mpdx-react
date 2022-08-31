@@ -1,4 +1,6 @@
 import React, { ReactElement } from 'react';
+import Rollbar from 'rollbar';
+import { ErrorBoundary, Provider } from '@rollbar/react';
 import { AppProps } from 'next/app';
 import { StylesProvider, ThemeProvider } from '@material-ui/core/styles';
 import { ApolloProvider } from '@apollo/client';
@@ -37,6 +39,20 @@ export type PageWithLayout = NextPage & {
 const App = ({ Component, pageProps, router }: AppProps): ReactElement => {
   const Layout = (Component as PageWithLayout).layout || PrimaryLayout;
   const { session } = pageProps;
+  const rollbarConfig: Rollbar.Configuration = {
+    accessToken: process.env.ROLLBAR_ACCESS_TOKEN,
+    environment: 'react_' + process.env.NODE_ENV,
+    codeVersion: React.version,
+    captureUncaught: true,
+    captureUnhandledRejections: true,
+    payload: {
+      client: {
+        javascript: {
+          code_version: React.version,
+        },
+      },
+    },
+  };
   // useEffect(() => {
   //     // Remove the server-side injected CSS.
   //     const jssStyles = document.querySelector('#jss-server-side');
@@ -83,40 +99,47 @@ const App = ({ Component, pageProps, router }: AppProps): ReactElement => {
           rel="stylesheet"
         />
       </Head>
-      <ApolloProvider client={client}>
-        <SessionProvider session={session}>
-          <UserPreferenceProvider>
-            <I18nextProvider i18n={i18n}>
-              <ThemeProvider theme={theme}>
-                <StylesProvider>
-                  <MuiPickersUtilsProvider utils={LuxonUtils}>
-                    <SnackbarProvider maxSnack={3}>
-                      <GlobalStyles />
-                      <AnimatePresence
-                        exitBeforeEnter
-                        onExitComplete={handleExitComplete}
-                      >
-                        <RouterGuard>
-                          <TaskModalProvider>
-                            <TaskDrawerProvider>
-                              <Layout>
-                                <SnackbarUtilsConfigurator />
-                                <Component {...pageProps} key={router.route} />
-                              </Layout>
-                            </TaskDrawerProvider>
-                          </TaskModalProvider>
-                        </RouterGuard>
-                      </AnimatePresence>
-                      <Loading />
-                    </SnackbarProvider>
-                  </MuiPickersUtilsProvider>
-                </StylesProvider>
-              </ThemeProvider>
-            </I18nextProvider>
-          </UserPreferenceProvider>
-        </SessionProvider>
-      </ApolloProvider>
-      <HelpscoutBeacon />
+      <Provider config={rollbarConfig}>
+        <ErrorBoundary>
+          <ApolloProvider client={client}>
+            <SessionProvider session={session}>
+              <UserPreferenceProvider>
+                <I18nextProvider i18n={i18n}>
+                  <ThemeProvider theme={theme}>
+                    <StylesProvider>
+                      <MuiPickersUtilsProvider utils={LuxonUtils}>
+                        <SnackbarProvider maxSnack={3}>
+                          <GlobalStyles />
+                          <AnimatePresence
+                            exitBeforeEnter
+                            onExitComplete={handleExitComplete}
+                          >
+                            <RouterGuard>
+                              <TaskModalProvider>
+                                <TaskDrawerProvider>
+                                  <Layout>
+                                    <SnackbarUtilsConfigurator />
+                                    <Component
+                                      {...pageProps}
+                                      key={router.route}
+                                    />
+                                  </Layout>
+                                </TaskDrawerProvider>
+                              </TaskModalProvider>
+                            </RouterGuard>
+                          </AnimatePresence>
+                          <Loading />
+                        </SnackbarProvider>
+                      </MuiPickersUtilsProvider>
+                    </StylesProvider>
+                  </ThemeProvider>
+                </I18nextProvider>
+              </UserPreferenceProvider>
+            </SessionProvider>
+          </ApolloProvider>
+          <HelpscoutBeacon />
+        </ErrorBoundary>
+      </Provider>
     </>
   );
 };
