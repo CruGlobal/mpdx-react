@@ -22,6 +22,7 @@ import { ContactsPageProvider } from '../contacts/ContactsPageContext';
 import { useTaskFiltersQuery, useTasksQuery } from './Tasks.generated';
 import useTaskModal from 'src/hooks/useTaskModal';
 import { ContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/ContactsRightPanel';
+import { useGetTaskIdsForMassSelectionLazyQuery } from 'src/hooks/GetIdsForMassSelection.generated';
 
 const WhiteBackground = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.common.white,
@@ -49,7 +50,7 @@ const TaskAddIcon = styled(AddIcon)(({ theme }) => ({
 
 const TasksPage: React.FC = () => {
   const { t } = useTranslation();
-  const accountListId = useAccountListId();
+  const accountListId = useAccountListId() ?? '';
   const { query, push, replace, isReady, pathname } = useRouter();
   const { openTaskModal } = useTaskModal();
 
@@ -148,13 +149,43 @@ const TasksPage: React.FC = () => {
   //#endregion
 
   //#region Mass Actions
+  const [
+    getTaskIds,
+    { data: taskIds, loading: loadingTaskIds },
+  ] = useGetTaskIdsForMassSelectionLazyQuery();
+
+  // Only query when the filters or total count change and store data in state
+  const [allTaskIds, setAllTaskIds] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (!loadingTaskIds && taskIds?.tasks.nodes) {
+      setAllTaskIds(taskIds?.tasks.nodes.map((task) => task.id));
+    }
+  }, [loadingTaskIds]);
+
+  useEffect(() => {
+    getTaskIds({
+      variables: {
+        accountListId,
+        first: data?.tasks?.totalCount ?? 0,
+        tasksFilters: activeFilters,
+      },
+    });
+  }, [activeFilters, searchTerm, starredFilter, data]);
+
   const {
     ids,
     selectionType,
     isRowChecked,
     toggleSelectAll,
     toggleSelectionById,
-  } = useMassSelection(data?.tasks?.totalCount ?? 0, []);
+  } = useMassSelection(
+    data?.tasks?.totalCount ?? 0,
+    allTaskIds,
+    activeFilters,
+    searchTerm as string,
+    starredFilter,
+  );
   //#endregion
 
   //#region User Actions
