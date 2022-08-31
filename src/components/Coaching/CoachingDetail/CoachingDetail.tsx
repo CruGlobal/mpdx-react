@@ -9,7 +9,7 @@ import {
 } from '@mui/material';
 import { AccountCircle, EcoOutlined } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
-import { Skeleton } from '@material-ui/lab';
+import { Skeleton } from '@mui/lab';
 import { AppealProgress } from '../AppealProgress/AppealProgress';
 import { MonthlyCommitment } from './MonthlyCommitment/MonthlyCommitment';
 import {

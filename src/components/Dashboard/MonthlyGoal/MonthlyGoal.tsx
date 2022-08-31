@@ -9,7 +9,7 @@ import {
   Hidden,
   Button,
 } from '@mui/material';
-import { Skeleton } from '@material-ui/lab';
+import { Skeleton } from '@mui/lab';
 import { useTranslation } from 'react-i18next';
 import { currencyFormat, percentageFormat } from '../../../lib/intlFormat';
 import AnimatedCard from '../../AnimatedCard';

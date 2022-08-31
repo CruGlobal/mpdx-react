@@ -25,7 +25,7 @@ import * as yup from 'yup';
 import { KeyboardDatePicker } from '@material-ui/pickers';
 import { useSnackbar } from 'notistack';
 import { DateTime } from 'luxon';
-import { Autocomplete } from '@material-ui/lab';
+import { Autocomplete } from '@mui/lab';
 import { useAccountListId } from '../../../../../../hooks/useAccountListId';
 import Modal from '../../../../../common/Modal/Modal';
 import { ContactDonorAccountsFragment } from '../../ContactDonationsTab.generated';

@@ -9,7 +9,7 @@ import {
   styled,
   TextareaAutosize,
 } from '@mui/material';
-import { Skeleton } from '@material-ui/lab';
+import { Skeleton } from '@mui/lab';
 import CloseIcon from '@mui/icons-material/Close';
 import { useTranslation } from 'react-i18next';
 import { useGetEmailNewsletterContactsQuery } from './GetNewsletterContacts.generated';

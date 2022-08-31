@@ -1,6 +1,6 @@
 import { Avatar, Box, IconButton, styled, Typography } from '@mui/material';
 import { Close } from '@mui/icons-material';
-import { Skeleton } from '@material-ui/lab';
+import { Skeleton } from '@mui/lab';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import theme from '../../../../theme';

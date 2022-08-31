@@ -7,7 +7,7 @@ import {
   TableHead,
   TableRow,
 } from '@mui/material';
-import { Skeleton } from '@material-ui/lab';
+import { Skeleton } from '@mui/lab';
 import { DateTime } from 'luxon';
 import React from 'react';
 import { useTranslation } from 'react-i18next';

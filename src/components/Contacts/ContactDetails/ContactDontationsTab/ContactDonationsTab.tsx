@@ -1,5 +1,5 @@
 import { Box, styled, Tab } from '@mui/material';
-import { Skeleton, TabContext, TabList, TabPanel } from '@material-ui/lab';
+import { Skeleton, TabContext, TabList, TabPanel } from '@mui/lab';
 import React from 'react';
 import { useTranslation } from 'react-i18next/';
 import {

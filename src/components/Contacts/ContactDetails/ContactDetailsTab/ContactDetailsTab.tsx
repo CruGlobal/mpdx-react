@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, IconButton, Divider, styled, Typography } from '@mui/material';
 import CreateIcon from '@mui/icons-material/Create';
-import { Skeleton } from '@material-ui/lab';
+import { Skeleton } from '@mui/lab';
 import { useTranslation } from 'react-i18next';
 import {
   ContactDetailContext,

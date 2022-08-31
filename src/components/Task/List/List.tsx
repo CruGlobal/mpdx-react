@@ -1,3 +1,4 @@
+import { DatePicker } from '@material-ui/pickers';
 import React, { ReactElement, useState, useCallback } from 'react';
 import MUIDataTable, {
   MUIDataTableOptions,
@@ -19,8 +20,7 @@ import {
 import { DateTime } from 'luxon';
 import reduce from 'lodash/fp/reduce';
 import debounce from 'lodash/fp/debounce';
-import { Skeleton } from '@material-ui/lab';
-import { DatePicker } from '@material-ui/pickers';
+import { Skeleton } from '@mui/lab';
 import { dateFormat, dayMonthFormat } from '../../../lib/intlFormat/intlFormat';
 import TaskStatus from '../Status';
 import illustration15 from '../../../images/drawkit/grape/drawkit-grape-pack-illustration-15.svg';

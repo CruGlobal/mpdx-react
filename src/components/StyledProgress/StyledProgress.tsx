@@ -1,6 +1,6 @@
 import React, { ReactElement } from 'react';
 import { makeStyles, Theme, Box } from '@mui/material';
-import { Skeleton } from '@material-ui/lab';
+import { Skeleton } from '@mui/lab';
 import { percentageFormat } from '../../lib/intlFormat';
 
 const useStyles = makeStyles((theme: Theme) => ({

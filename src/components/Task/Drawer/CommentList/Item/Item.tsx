@@ -9,7 +9,7 @@ import {
   Slide,
 } from '@mui/material';
 import { DateTime } from 'luxon';
-import { Skeleton } from '@material-ui/lab';
+import { Skeleton } from '@mui/lab';
 import { GetCommentsForTaskDrawerCommentListQuery } from '../TaskListComments.generated';
 
 const useStyles = makeStyles((theme: Theme) => ({

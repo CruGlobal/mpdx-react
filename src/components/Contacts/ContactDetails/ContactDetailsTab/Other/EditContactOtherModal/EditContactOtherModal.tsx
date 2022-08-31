@@ -19,7 +19,7 @@ import {
   Theme,
   useMediaQuery,
 } from '@mui/material';
-import { Autocomplete } from '@material-ui/lab';
+import { Autocomplete } from '@mui/lab';
 import debounce from 'lodash/fp/debounce';
 import {
   ContactUpdateInput,

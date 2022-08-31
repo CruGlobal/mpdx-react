@@ -13,7 +13,7 @@ import {
   ListItemSecondaryAction,
   CardContent,
 } from '@mui/material';
-import { Skeleton } from '@material-ui/lab';
+import { Skeleton } from '@mui/lab';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import Link from 'next/link';

@@ -4,7 +4,7 @@ import { Box, Button, Chip, styled, TextField } from '@mui/material';
 import TagIcon from '@mui/icons-material/LocalOfferOutlined';
 import { useSnackbar } from 'notistack';
 import * as yup from 'yup';
-import { Autocomplete } from '@material-ui/lab';
+import { Autocomplete } from '@mui/lab';
 import { Formik, FormikHelpers } from 'formik';
 import {
   useGetContactTagListQuery,

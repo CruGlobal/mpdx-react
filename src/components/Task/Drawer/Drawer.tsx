@@ -13,7 +13,7 @@ import {
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { useTranslation } from 'react-i18next';
-import { TabContext, TabList, TabPanel } from '@material-ui/lab';
+import { TabContext, TabList, TabPanel } from '@mui/lab';
 import { AnimatePresence, motion } from 'framer-motion';
 import Loading from '../../Loading';
 import TaskStatus from '../Status';

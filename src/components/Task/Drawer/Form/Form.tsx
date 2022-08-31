@@ -22,7 +22,7 @@ import {
   Dialog,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { Autocomplete } from '@material-ui/lab';
+import { Autocomplete } from '@mui/lab';
 
 import { DatePicker, TimePicker } from '@material-ui/pickers';
 import DeleteIcon from '@mui/icons-material/Delete';

@@ -1,6 +1,6 @@
 import { styled, Typography } from '@mui/material';
 import { Phone } from '@mui/icons-material';
-import { Skeleton } from '@material-ui/lab';
+import { Skeleton } from '@mui/lab';
 
 import React, { ReactElement } from 'react';
 import theme from '../../../../../theme';

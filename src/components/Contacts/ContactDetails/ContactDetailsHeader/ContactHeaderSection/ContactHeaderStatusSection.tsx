@@ -1,6 +1,6 @@
 import { Box, IconButton, styled, Typography } from '@mui/material';
 import React, { useMemo, useState } from 'react';
-import { Skeleton } from '@material-ui/lab';
+import { Skeleton } from '@mui/lab';
 import { DateTime } from 'luxon';
 import CreateIcon from '@mui/icons-material/Create';
 import { currencyFormat } from '../../../../../lib/intlFormat';

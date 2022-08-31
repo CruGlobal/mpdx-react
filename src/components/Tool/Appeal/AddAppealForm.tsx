@@ -12,7 +12,7 @@ import {
   styled,
   FormControl,
 } from '@mui/material';
-import Autocomplete from '@material-ui/lab/Autocomplete';
+import Autocomplete from '@mui/lab/Autocomplete';
 import { Formik, Field, Form } from 'formik';
 import React, { ReactElement, useState } from 'react';
 import Icon from '@mdi/react';

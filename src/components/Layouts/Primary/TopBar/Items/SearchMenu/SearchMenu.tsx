@@ -14,7 +14,7 @@ import CompassIcon from '@mui/icons-material/Explore';
 import PersonIcon from '@mui/icons-material/Person';
 import PeopleIcon from '@mui/icons-material/People';
 import AddIcon from '@mui/icons-material/Add';
-import { Autocomplete, createFilterOptions } from '@material-ui/lab';
+import { Autocomplete, createFilterOptions } from '@mui/lab';
 import debounce from 'lodash/debounce';
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';

@@ -21,7 +21,7 @@ import {
   Text,
 } from 'recharts';
 import { DateTime } from 'luxon';
-import { Skeleton } from '@material-ui/lab';
+import { Skeleton } from '@mui/lab';
 import { useTranslation } from 'react-i18next';
 import { currencyFormat } from '../../../lib/intlFormat';
 import AnimatedCard from '../../AnimatedCard';
