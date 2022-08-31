@@ -32,7 +32,10 @@ import useTaskModal from 'src/hooks/useTaskModal';
 import { ContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/ContactsRightPanel';
 import { useGetTaskIdsForMassSelectionLazyQuery } from 'src/hooks/GetIdsForMassSelection.generated';
 import { MassActionsTasksConfirmationModal } from 'src/components/Task/MassActions/ConfirmationModal/MassActionsTasksConfirmationModal';
-import { useMassActionsUpdateTasksMutation } from 'src/components/Task/MassActions/MassActionsUpdateTasks.generated';
+import {
+  useMassActionsDeleteTasksMutation,
+  useMassActionsUpdateTasksMutation,
+} from 'src/components/Task/MassActions/MassActionsUpdateTasks.generated';
 
 const WhiteBackground = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.common.white,
@@ -252,11 +255,12 @@ const TasksPage: React.FC = () => {
   const [completeTasksModalOpen, setCompleteTasksModalOpen] = useState(false);
   const [deleteTasksModalOpen, setDeleteTasksModalOpen] = useState(false);
 
-  const [updateTasks] = useMassActionsUpdateTasksMutation();
+  const [updateTasksMutation] = useMassActionsUpdateTasksMutation();
+  const [deleteTasksMutation] = useMassActionsDeleteTasksMutation();
 
   const completeTasks = async () => {
     const completedAt = DateTime.local().toISO();
-    await updateTasks({
+    await updateTasksMutation({
       variables: {
         accountListId: accountListId ?? '',
         attributes: ids.map((id) => ({
@@ -279,15 +283,10 @@ const TasksPage: React.FC = () => {
   };
 
   const deleteTasks = async () => {
-    const completedAt = DateTime.local().toISO();
-    await updateTasks({
+    await deleteTasksMutation({
       variables: {
         accountListId: accountListId ?? '',
-        attributes: ids.map((id) => ({
-          id,
-          completedAt,
-          result: ResultEnum.Done,
-        })),
+        ids,
       },
       refetchQueries: [
         {
