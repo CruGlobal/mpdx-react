@@ -7,11 +7,15 @@ import AddIcon from '@material-ui/icons/Add';
 import CheckCircleOutlineIcon from '@material-ui/icons/CheckCircleOutline';
 import debounce from 'lodash/debounce';
 import { DateTime } from 'luxon';
+import { useSnackbar } from 'notistack';
 import { InfiniteList } from '../../../../src/components/InfiniteList/InfiniteList';
 import Loading from '../../../../src/components/Loading';
 import { SidePanelsLayout } from '../../../../src/components/Layouts/SidePanelsLayout';
 import { useAccountListId } from '../../../../src/hooks/useAccountListId';
-import { TaskFilterSetInput } from '../../../../graphql/types.generated';
+import {
+  ResultEnum,
+  TaskFilterSetInput,
+} from '../../../../graphql/types.generated';
 import { TaskRow } from '../../../../src/components/Task/TaskRow/TaskRow';
 import { ListHeader } from '../../../../src/components/Shared/Header/ListHeader';
 import NullState from '../../../../src/components/Shared/Filters/NullState/NullState';
@@ -19,9 +23,16 @@ import { FilterPanel } from '../../../../src/components/Shared/Filters/FilterPan
 import { useMassSelection } from '../../../../src/hooks/useMassSelection';
 import { UserOptionFragment } from '../../../../src/components/Shared/Filters/FilterPanel.generated';
 import { ContactsPageProvider } from '../contacts/ContactsPageContext';
-import { useTaskFiltersQuery, useTasksQuery } from './Tasks.generated';
+import {
+  TasksDocument,
+  useTaskFiltersQuery,
+  useTasksQuery,
+} from './Tasks.generated';
 import useTaskModal from 'src/hooks/useTaskModal';
 import { ContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/ContactsRightPanel';
+import { useGetTaskIdsForMassSelectionLazyQuery } from 'src/hooks/GetIdsForMassSelection.generated';
+import { MassActionsTasksConfirmationModal } from 'src/components/Contacts/Tasks/MassActions/ConfirmationModal/MassActionsTasksConfirmationModal';
+import { useMassActionsUpdateTasksMutation } from 'src/components/Contacts/Tasks/MassActions/MassActionsUpdateTasks.generated';
 
 const WhiteBackground = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.common.white,
@@ -49,7 +60,8 @@ const TaskAddIcon = styled(AddIcon)(({ theme }) => ({
 
 const TasksPage: React.FC = () => {
   const { t } = useTranslation();
-  const accountListId = useAccountListId();
+  const accountListId = useAccountListId() ?? '';
+  const { enqueueSnackbar } = useSnackbar();
   const { query, push, replace, isReady, pathname } = useRouter();
   const { openTaskModal } = useTaskModal();
 
@@ -148,13 +160,43 @@ const TasksPage: React.FC = () => {
   //#endregion
 
   //#region Mass Actions
+  const [
+    getTaskIds,
+    { data: taskIds, loading: loadingTaskIds },
+  ] = useGetTaskIdsForMassSelectionLazyQuery();
+
+  // Only query when the filters or total count change and store data in state
+  const [allTaskIds, setAllTaskIds] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (!loadingTaskIds && taskIds?.tasks.nodes) {
+      setAllTaskIds(taskIds?.tasks.nodes.map((task) => task.id));
+    }
+  }, [loadingTaskIds]);
+
+  useEffect(() => {
+    getTaskIds({
+      variables: {
+        accountListId,
+        first: data?.tasks?.totalCount ?? 0,
+        tasksFilters: activeFilters,
+      },
+    });
+  }, [activeFilters, searchTerm, starredFilter, data]);
+
   const {
     ids,
     selectionType,
     isRowChecked,
     toggleSelectAll,
     toggleSelectionById,
-  } = useMassSelection(data?.tasks?.totalCount ?? 0, []);
+  } = useMassSelection(
+    data?.tasks?.totalCount ?? 0,
+    allTaskIds,
+    activeFilters,
+    searchTerm as string,
+    starredFilter,
+  );
   //#endregion
 
   //#region User Actions
@@ -203,6 +245,38 @@ const TasksPage: React.FC = () => {
     }, 500),
     [accountListId],
   );
+  //#endregion
+
+  //#region mass actions
+
+  const [completeTasksModalOpen, setCompleteTasksModalOpen] = useState(false);
+
+  const [updateTasks] = useMassActionsUpdateTasksMutation();
+
+  const completeTasks = async () => {
+    const completedAt = DateTime.local().toISO();
+    await updateTasks({
+      variables: {
+        accountListId: accountListId ?? '',
+        attributes: ids.map((id) => ({
+          id,
+          completedAt,
+          result: ResultEnum.Done,
+        })),
+      },
+      refetchQueries: [
+        {
+          query: TasksDocument,
+          variables: { accountListId },
+        },
+      ],
+    });
+    enqueueSnackbar(t('Contact(s) completed successfully'), {
+      variant: 'success',
+    });
+    setCompleteTasksModalOpen(false);
+  };
+
   //#endregion
 
   //#region JSX
@@ -265,7 +339,17 @@ const TasksPage: React.FC = () => {
                     </Hidden>
                   }
                   selectedIds={ids}
+                  openCompleteTasksModal={setCompleteTasksModalOpen}
                 />
+                {completeTasksModalOpen && (
+                  <MassActionsTasksConfirmationModal
+                    open={completeTasksModalOpen}
+                    action="complete"
+                    idsCount={ids.length}
+                    setOpen={setCompleteTasksModalOpen}
+                    onConfirm={completeTasks}
+                  />
+                )}
                 <Box>
                   <TaskCurrentHistoryButtonGroup
                     variant="outlined"

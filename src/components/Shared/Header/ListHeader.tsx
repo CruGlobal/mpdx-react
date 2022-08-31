@@ -116,10 +116,12 @@ interface ListHeaderProps {
     filter: ContactFilterSetInput | TaskFilterSetInput,
   ) => void;
   selectedIds: string[];
+  openAddTagsModal?: (open: boolean) => void;
   openAddToAppealModal?: (open: boolean) => void;
   openCreateAppealModal?: (open: boolean) => void;
   openEditFieldsModal?: (open: boolean) => void;
   openHideContactsModal?: (open: boolean) => void;
+  openCompleteTasksModal?: (open: boolean) => void;
 }
 
 export const ListHeader: React.FC<ListHeaderProps> = ({
@@ -138,10 +140,12 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
   toggleStarredFilter,
   contactsView,
   selectedIds,
+  openAddTagsModal,
   openAddToAppealModal,
   openCreateAppealModal,
   openEditFieldsModal,
   openHideContactsModal,
+  openCompleteTasksModal,
 }) => {
   const { t } = useTranslation();
 
@@ -206,7 +210,8 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
               openEditFieldsModal &&
               openHideContactsModal &&
               openAddToAppealModal &&
-              openCreateAppealModal && (
+              openCreateAppealModal &&
+              openAddTagsModal && (
                 <>
                   <Hidden xsDown>
                     <ActionsButton
@@ -235,7 +240,12 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
                         horizontal: 'center',
                       }}
                     >
-                      <MenuItem>
+                      <MenuItem
+                        onClick={() => {
+                          openAddTagsModal(true);
+                          handleClose();
+                        }}
+                      >
                         <ListItemText>{t('Add Tags')}</ListItemText>
                       </MenuItem>
                       <MenuItem divider>
@@ -329,9 +339,16 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
                 anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
                 transformOrigin={{ vertical: 'top', horizontal: 'center' }}
               >
-                <MenuItem>
-                  <ListItemText>{t('Complete Tasks')}</ListItemText>
-                </MenuItem>
+                {openCompleteTasksModal && (
+                  <MenuItem
+                    onClick={() => {
+                      openCompleteTasksModal(true);
+                      handleClose();
+                    }}
+                  >
+                    <ListItemText>{t('Complete Tasks')}</ListItemText>
+                  </MenuItem>
+                )}
                 <MenuItem divider>
                   <ListItemText>{t('Edit Tasks')}</ListItemText>
                 </MenuItem>
