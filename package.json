@@ -62,7 +62,7 @@
     "luxon": "^1.26.0",
     "micro": "^9.4.1",
     "micro-cors": "^0.1.1",
-    "mui-datatables": "^3.7.6",
+    "mui-datatables": "^4.2.2",
     "next": "^12.2.5",
     "next-auth": "^4.10.3",
     "next-optimized-images": "^2.6.2",
