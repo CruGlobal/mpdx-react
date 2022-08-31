@@ -275,6 +275,7 @@ describe('ListHeader', () => {
           openAddToAppealModal={openAddToAppealModal}
           openEditFieldsModal={openEditFieldsModal}
           openHideContactsModal={openHideContactsModal}
+          openRemoveTagsModal={openRemoveTagsModal}
           openAddTagsModal={openAddTagsModal}
           openCreateAppealModal={openCreateAppealModal}
         />
@@ -307,12 +308,12 @@ describe('ListHeader', () => {
           toggleFilterPanel={toggleFilterPanel}
           onCheckAllItems={onCheckAllItems}
           onSearchTermChanged={onSearchTermChanged}
+          openAddToAppealModal={openAddToAppealModal}
           openEditFieldsModal={openEditFieldsModal}
           openHideContactsModal={openHideContactsModal}
           openRemoveTagsModal={openRemoveTagsModal}
           openAddTagsModal={openAddTagsModal}
           openCreateAppealModal={openCreateAppealModal}
-          openAddToAppealModal={openAddToAppealModal}
         />
       </ThemeProvider>,
     );
@@ -378,6 +379,7 @@ describe('ListHeader', () => {
           openAddToAppealModal={openAddToAppealModal}
           openEditFieldsModal={openEditFieldsModal}
           openHideContactsModal={openHideContactsModal}
+          openRemoveTagsModal={openRemoveTagsModal}
           openAddTagsModal={openAddTagsModal}
           openCreateAppealModal={openCreateAppealModal}
         />
@@ -446,6 +448,8 @@ describe('ListHeader', () => {
           openEditFieldsModal={openEditFieldsModal}
           openHideContactsModal={openHideContactsModal}
           openRemoveTagsModal={openRemoveTagsModal}
+          openAddTagsModal={openAddTagsModal}
+          openCreateAppealModal={openCreateAppealModal}
         />
       </ThemeProvider>,
     );
