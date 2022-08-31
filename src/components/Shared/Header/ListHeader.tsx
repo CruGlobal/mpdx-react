@@ -351,27 +351,27 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
                     <ListItemText>{t('Complete Tasks')}</ListItemText>
                   </MenuItem>
                 )}
-                {openDeleteTasksModal && (
-                  <MenuItem
-                    divider
-                    onClick={() => {
-                      openDeleteTasksModal(true);
-                      handleClose();
-                    }}
-                  >
-                    <ListItemText>{t('Edit Tasks')}</ListItemText>
-                  </MenuItem>
-                )}
+
+                <MenuItem divider>
+                  <ListItemText>{t('Edit Tasks')}</ListItemText>
+                </MenuItem>
+
                 <MenuItem>
                   <ListItemText>{t('Add Tag(s)')}</ListItemText>
                 </MenuItem>
                 <MenuItem divider>
                   <ListItemText>{t('Remove Tag(s)')}</ListItemText>
                 </MenuItem>
-
-                <MenuItem>
-                  <ListItemText>{t('Delete Tasks')}</ListItemText>
-                </MenuItem>
+                {openDeleteTasksModal && (
+                  <MenuItem
+                    onClick={() => {
+                      openDeleteTasksModal(true);
+                      handleClose();
+                    }}
+                  >
+                    <ListItemText>{t('Delete Tasks')}</ListItemText>
+                  </MenuItem>
+                )}
               </Menu>
             </Hidden>
           </>
