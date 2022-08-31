@@ -1,4 +1,4 @@
-import { MuiThemeProvider } from '@material-ui/core';
+import { MuiThemeProvider } from '@mui/material';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';

@@ -1,5 +1,5 @@
 import React, { ReactElement } from 'react';
-import { Grid, Box, Typography } from '@material-ui/core';
+import { Grid, Box, Typography } from '@mui/material';
 import { mdiSquareEditOutline, mdiDelete, mdiDotsVertical } from '@mdi/js';
 import Icon from '@mdi/react';
 import StarOutlineIcon from '@material-ui/icons/StarOutline';

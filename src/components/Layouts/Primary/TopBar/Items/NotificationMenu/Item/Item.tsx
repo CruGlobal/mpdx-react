@@ -8,7 +8,7 @@ import {
   ListItemText,
   ListSubheader,
   Typography,
-} from '@material-ui/core';
+} from '@mui/material';
 import { Skeleton } from '@material-ui/lab';
 import React, { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';

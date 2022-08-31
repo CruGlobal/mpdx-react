@@ -13,7 +13,7 @@ import {
   AccordionSummary,
   AccordionDetails,
   Link,
-} from '@material-ui/core';
+} from '@mui/material';
 import { ExpandMore } from '@material-ui/icons';
 import { useTranslation } from 'react-i18next';
 import theme from '../../../../theme';

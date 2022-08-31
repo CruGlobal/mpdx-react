@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { render, waitFor } from '@testing-library/react';
-import { Box, Button, ThemeProvider, Typography } from '@material-ui/core';
+import { Box, Button, ThemeProvider, Typography } from '@mui/material';
 import userEvent from '@testing-library/user-event';
 import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
 import TestRouter from '../../../../__tests__/util/TestRouter';

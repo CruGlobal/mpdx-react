@@ -1,15 +1,15 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Box, Typography } from '@material-ui/core';
+import { Box, Typography } from '@mui/material';
 import CheckCircleOutlineIcon from '@material-ui/icons/CheckCircleOutline';
 
 interface ContactUncompletedTasksCountProps {
   uncompletedTasksCount: number;
 }
 
-export const ContactUncompletedTasksCount: React.FC<ContactUncompletedTasksCountProps> = ({
-  uncompletedTasksCount,
-}) => {
+export const ContactUncompletedTasksCount: React.FC<
+  ContactUncompletedTasksCountProps
+> = ({ uncompletedTasksCount }) => {
   const { t } = useTranslation();
 
   return (

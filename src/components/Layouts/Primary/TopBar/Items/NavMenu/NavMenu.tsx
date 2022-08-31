@@ -11,7 +11,7 @@ import {
   Paper,
   Box,
   Typography,
-} from '@material-ui/core';
+} from '@mui/material';
 import clsx from 'clsx';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import NextLink from 'next/link';

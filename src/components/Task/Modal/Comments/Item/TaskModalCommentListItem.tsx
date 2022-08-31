@@ -5,7 +5,7 @@ import {
   Button,
   Tooltip,
   TextField,
-} from '@material-ui/core';
+} from '@mui/material';
 import React, { ReactElement, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Formik } from 'formik';

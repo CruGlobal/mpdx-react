@@ -1,4 +1,4 @@
-import { Grid, MenuItem, Select, styled, Checkbox } from '@material-ui/core';
+import { Grid, MenuItem, Select, styled, Checkbox } from '@mui/material';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { FormikErrors, getIn } from 'formik';

@@ -1,5 +1,5 @@
 import React from 'react';
-import { MuiThemeProvider } from '@material-ui/core';
+import { MuiThemeProvider } from '@mui/material';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import { GqlMockedProvider } from '../../../../../../__tests__/util/graphqlMocking';

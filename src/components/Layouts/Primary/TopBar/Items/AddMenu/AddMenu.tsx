@@ -6,7 +6,7 @@ import {
   Menu,
   MenuItem,
   styled,
-} from '@material-ui/core';
+} from '@mui/material';
 import AddIcon from '@material-ui/icons/Add';
 import PersonIcon from '@material-ui/icons/Person';
 import PeopleIcon from '@material-ui/icons/People';

@@ -10,8 +10,8 @@ import {
   TableCell,
   TableRow,
   CircularProgress,
-} from '@material-ui/core';
-import IconButton from '@material-ui/core/IconButton';
+} from '@mui/material';
+import IconButton from '@mui/material/IconButton';
 import EditIcon from '@material-ui/icons/Edit';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
@@ -81,12 +81,10 @@ export const DonationsReportTable: React.FC<Props> = ({ accountListId }) => {
     variables: { accountListId, startDate, endDate },
   });
 
-  const {
-    data: accountListData,
-    loading: loadingAccountListData,
-  } = useGetAccountListCurrencyQuery({
-    variables: { accountListId },
-  });
+  const { data: accountListData, loading: loadingAccountListData } =
+    useGetAccountListCurrencyQuery({
+      variables: { accountListId },
+    });
 
   const nodes = data?.donations.nodes || [];
 

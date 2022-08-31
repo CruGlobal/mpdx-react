@@ -12,7 +12,7 @@ import {
   styled,
   Typography,
   useTheme,
-} from '@material-ui/core';
+} from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { ArrowBackIos, ArrowForwardIos, Close } from '@material-ui/icons';
 import { filter } from 'lodash';
@@ -391,7 +391,7 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
             case 'wildcardSearch':
               return { ...acc, [key]: filter.value };
             case 'anyTags':
-              return { ...acc, [key]: (filter.value as unknown) as boolean };
+              return { ...acc, [key]: filter.value as unknown as boolean };
             default:
               return { ...acc };
           }
@@ -524,13 +524,17 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
             </FilterHeader>
             <FilterList dense>
               {savedFilters.map((filter) => {
-                const filterName = (filter.key?.includes('graphql_')
-                  ? filter.key.includes('graphql_saved_contacts_filter_')
-                    ? filter.key?.replace('graphql_saved_contacts_filter_', '')
-                    : filter.key?.replace('graphql_saved_tasks_filter_', '')
-                  : filter.key?.includes('saved_contacts_filter_')
-                  ? filter.key?.replace('saved_contacts_filter_', '')
-                  : filter.key?.replace('saved_tasks_filter_', '')
+                const filterName = (
+                  filter.key?.includes('graphql_')
+                    ? filter.key.includes('graphql_saved_contacts_filter_')
+                      ? filter.key?.replace(
+                          'graphql_saved_contacts_filter_',
+                          '',
+                        )
+                      : filter.key?.replace('graphql_saved_tasks_filter_', '')
+                    : filter.key?.includes('saved_contacts_filter_')
+                    ? filter.key?.replace('saved_contacts_filter_', '')
+                    : filter.key?.replace('saved_tasks_filter_', '')
                 )?.replaceAll('_', ' ');
 
                 return (

@@ -18,7 +18,7 @@ import {
   TextField,
   Theme,
   useMediaQuery,
-} from '@material-ui/core';
+} from '@mui/material';
 import { Autocomplete } from '@material-ui/lab';
 import debounce from 'lodash/fp/debounce';
 import {
@@ -75,10 +75,8 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
 }): ReactElement<EditContactOtherModalProps> => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
-  const [
-    updateContactOther,
-    { loading: updating },
-  ] = useUpdateContactOtherMutation();
+  const [updateContactOther, { loading: updating }] =
+    useUpdateContactOtherMutation();
 
   const isMobile = useMediaQuery((theme: Theme) =>
     theme.breakpoints.down('sm'),
@@ -107,25 +105,21 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
     [],
   );
 
-  const {
-    data: dataFilteredByName,
-    loading: loadingFilteredByName,
-  } = useGetTaskModalContactsFilteredQuery({
-    variables: {
-      accountListId,
-      contactsFilters: { wildcardSearch: searchTerm as string },
-    },
-  });
+  const { data: dataFilteredByName, loading: loadingFilteredByName } =
+    useGetTaskModalContactsFilteredQuery({
+      variables: {
+        accountListId,
+        contactsFilters: { wildcardSearch: searchTerm as string },
+      },
+    });
 
-  const {
-    data: dataFilteredById,
-    loading: loadingFilteredById,
-  } = useGetTaskModalContactsFilteredQuery({
-    variables: {
-      accountListId,
-      contactsFilters: { ids: [selectedId] },
-    },
-  });
+  const { data: dataFilteredById, loading: loadingFilteredById } =
+    useGetTaskModalContactsFilteredQuery({
+      variables: {
+        accountListId,
+        contactsFilters: { ids: [selectedId] },
+      },
+    });
 
   const mergedContacts =
     dataFilteredByName && dataFilteredById

@@ -5,7 +5,7 @@ import {
   DialogContent,
   DialogContentText,
   styled,
-} from '@material-ui/core';
+} from '@mui/material';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import Modal from 'src/components/common/Modal/Modal';

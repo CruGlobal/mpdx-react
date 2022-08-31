@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing';
-import { CssBaseline, MuiThemeProvider } from '@material-ui/core';
+import { CssBaseline, MuiThemeProvider } from '@mui/material';
 import React, { ReactElement } from 'react';
 import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
 import theme from '../../../../theme';

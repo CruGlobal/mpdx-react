@@ -13,7 +13,7 @@ import {
   CircularProgress,
   Button,
   Divider,
-} from '@material-ui/core';
+} from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { Autocomplete } from '@material-ui/lab';
 import { DatePicker, TimePicker } from '@material-ui/pickers';

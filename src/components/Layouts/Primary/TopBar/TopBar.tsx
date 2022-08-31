@@ -9,7 +9,7 @@ import {
   useScrollTrigger,
   Hidden,
   styled,
-} from '@material-ui/core';
+} from '@mui/material';
 import MenuIcon from '@material-ui/icons/Menu';
 import logo from '../../../../images/logo.svg';
 import NotificationMenu from './Items/NotificationMenu/NotificationMenu';

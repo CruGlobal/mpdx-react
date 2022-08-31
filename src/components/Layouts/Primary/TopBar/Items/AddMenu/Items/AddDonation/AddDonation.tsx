@@ -19,7 +19,7 @@ import {
   TextField,
   Theme,
   useMediaQuery,
-} from '@material-ui/core';
+} from '@mui/material';
 import { DateTime } from 'luxon';
 import { KeyboardDatePicker } from '@material-ui/pickers';
 import { Autocomplete } from '@material-ui/lab';
@@ -37,47 +37,46 @@ interface AddDonationProps {
   handleClose: () => void;
 }
 
-const donationSchema: yup.SchemaOf<
-  Omit<DonationCreateInput, 'id'>
-> = yup.object({
-  amount: yup
-    .number()
-    .typeError('Amount must be a valid number')
-    .required()
-    .test(
-      'Is amount in valid currency format?',
-      'Amount must be in valid currency format',
-      (amount) => /\$?[0-9][0-9.,]*/.test((amount as unknown) as string),
-    )
-    .test(
-      'Is positive?',
-      'Must use a positive number for amount',
-      (value) => parseFloat((value as unknown) as string) > 0,
-    ),
-  appealAmount: yup
-    .number()
-    .typeError('Appeal amount must be a valid number')
-    .nullable()
-    .test(
-      'Is appeal amount in valid currency format?',
-      'Appeal amount must be in valid currency format',
-      (amount) =>
-        !amount || /\$?[0-9][0-9.,]*/.test((amount as unknown) as string),
-    )
-    .test(
-      'Is positive?',
-      'Must use a positive number for appeal amount',
-      (value) => !value || parseFloat((value as unknown) as string) > 0,
-    ),
-  appealId: yup.string().nullable(),
-  currency: yup.string().required(),
-  designationAccountId: yup.string().required(),
-  donationDate: yup.string().required(),
-  donorAccountId: yup.string().required(),
-  memo: yup.string().nullable(),
-  motivation: yup.string().nullable(),
-  paymentMethod: yup.string().nullable(),
-});
+const donationSchema: yup.SchemaOf<Omit<DonationCreateInput, 'id'>> =
+  yup.object({
+    amount: yup
+      .number()
+      .typeError('Amount must be a valid number')
+      .required()
+      .test(
+        'Is amount in valid currency format?',
+        'Amount must be in valid currency format',
+        (amount) => /\$?[0-9][0-9.,]*/.test(amount as unknown as string),
+      )
+      .test(
+        'Is positive?',
+        'Must use a positive number for amount',
+        (value) => parseFloat(value as unknown as string) > 0,
+      ),
+    appealAmount: yup
+      .number()
+      .typeError('Appeal amount must be a valid number')
+      .nullable()
+      .test(
+        'Is appeal amount in valid currency format?',
+        'Appeal amount must be in valid currency format',
+        (amount) =>
+          !amount || /\$?[0-9][0-9.,]*/.test(amount as unknown as string),
+      )
+      .test(
+        'Is positive?',
+        'Must use a positive number for appeal amount',
+        (value) => !value || parseFloat(value as unknown as string) > 0,
+      ),
+    appealId: yup.string().nullable(),
+    currency: yup.string().required(),
+    designationAccountId: yup.string().required(),
+    donationDate: yup.string().required(),
+    donorAccountId: yup.string().required(),
+    memo: yup.string().nullable(),
+    motivation: yup.string().nullable(),
+    paymentMethod: yup.string().nullable(),
+  });
 
 const LogFormLabel = styled(FormLabel)(({ theme }) => ({
   margin: theme.spacing(1, 0),
@@ -134,7 +133,7 @@ export const AddDonation = ({
   };
 
   const onSubmit = async (attributes: Omit<DonationCreateInput, 'id'>) => {
-    const amount = ((attributes.amount as unknown) as string).replace(
+    const amount = (attributes.amount as unknown as string).replace(
       /[^\d.-]/g,
       '',
     );
@@ -146,7 +145,7 @@ export const AddDonation = ({
           ...attributes,
           amount: parseFloat(amount),
           appealAmount: parseFloat(
-            (attributes.appealAmount as unknown) as string,
+            attributes.appealAmount as unknown as string,
           ),
         },
       },

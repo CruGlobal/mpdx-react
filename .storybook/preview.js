@@ -1,7 +1,7 @@
 import React from 'react';
 import { configure } from '@storybook/react';
 import { addDecorator, addParameters } from '@storybook/react';
-import { ThemeProvider, CssBaseline } from '@material-ui/core';
+import { ThemeProvider, CssBaseline } from '@mui/material';
 import { withI18next } from 'storybook-addon-i18next';
 import { Settings } from 'luxon';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';

@@ -9,7 +9,7 @@ import {
   Hidden,
   TextField,
   Theme,
-} from '@material-ui/core';
+} from '@mui/material';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { Icon } from '@mdi/react';

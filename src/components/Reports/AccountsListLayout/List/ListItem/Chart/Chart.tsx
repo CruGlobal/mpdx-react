@@ -8,8 +8,8 @@ import {
   Typography,
   useTheme,
   styled,
-} from '@material-ui/core';
-import type { Theme } from '@material-ui/core/styles/createTheme';
+} from '@mui/material';
+import type { Theme } from '@mui/material/styles/createTheme';
 import {
   ReferenceLine,
   BarChart,

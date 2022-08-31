@@ -1,5 +1,5 @@
 import React from 'react';
-import { ThemeProvider } from '@material-ui/core';
+import { ThemeProvider } from '@mui/material';
 import TestWrapper from '../../../../__tests__/util/TestWrapper';
 import { getDataForTaskDrawerMock } from '../Drawer/Form/Form.mock';
 import { render } from '../../../../__tests__/util/testingLibraryReactMock';

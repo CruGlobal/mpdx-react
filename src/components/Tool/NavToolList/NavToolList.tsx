@@ -7,7 +7,7 @@ import {
   ListItem,
   ListItemText,
   ListItemIcon,
-} from '@material-ui/core';
+} from '@mui/material';
 import Icon from '@mdi/react';
 import { ToolsList } from '../Home/ToolList';
 import { Item } from './Item/Item';

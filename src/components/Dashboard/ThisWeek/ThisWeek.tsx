@@ -1,5 +1,5 @@
 import React, { ReactElement } from 'react';
-import { Box, Typography, Grid } from '@material-ui/core';
+import { Box, Typography, Grid } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { DateTime } from 'luxon';
 import AnimatedBox from '../../AnimatedBox';

@@ -10,7 +10,7 @@ import {
   ListItemText,
   styled,
   Typography,
-} from '@material-ui/core';
+} from '@mui/material';
 import { CelebrationIcons } from '../CelebrationIcons/CelebrationIcons';
 import { ContactPartnershipStatus } from '../ContactPartnershipStatus/ContactPartnershipStatus';
 import { StarContactIconButton } from '../StarContactIconButton/StarContactIconButton';

@@ -1,4 +1,4 @@
-import { ThemeProvider } from '@material-ui/core';
+import { ThemeProvider } from '@mui/material';
 import React from 'react';
 import userEvent from '@testing-library/user-event';
 import { render } from '../../../../__tests__/util/testingLibraryReactMock';

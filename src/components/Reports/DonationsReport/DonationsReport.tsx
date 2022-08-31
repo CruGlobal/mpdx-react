@@ -1,5 +1,5 @@
 import React from 'react';
-import { Container, Box } from '@material-ui/core';
+import { Container, Box } from '@mui/material';
 import { AccountsListHeader as Header } from '../AccountsListLayout/Header/Header';
 import { MonthlyActivitySection } from './MonthlyActivity/MonthlyActivitySection';
 import { DonationsReportTable } from './Table/DonationsReportTable';

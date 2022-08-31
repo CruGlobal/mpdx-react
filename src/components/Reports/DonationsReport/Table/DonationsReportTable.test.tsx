@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
-import { ThemeProvider } from '@material-ui/core';
+import { ThemeProvider } from '@mui/material';
 import { DateTime } from 'luxon';
 import theme from '../../../../theme';
 import { GetDonationsTableQuery } from '../GetDonationsTable.generated';

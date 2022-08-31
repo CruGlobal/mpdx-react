@@ -6,7 +6,7 @@ import {
   MarkerClusterer,
   InfoWindow,
 } from '@react-google-maps/api';
-import { Box, CircularProgress, styled, Typography } from '@material-ui/core';
+import { Box, CircularProgress, styled, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { StatusEnum } from '../../../../../graphql/types.generated';
 import { ContactsPageContext, ContactsPageType } from '../ContactsPageContext';

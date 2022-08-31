@@ -1,11 +1,5 @@
 import React, { ReactElement } from 'react';
-import {
-  ListItem,
-  ListItemText,
-  makeStyles,
-  Box,
-  Button,
-} from '@material-ui/core';
+import { ListItem, ListItemText, makeStyles, Box, Button } from '@mui/material';
 import theme from '../../../../../theme';
 
 const useStyles = makeStyles(() => ({

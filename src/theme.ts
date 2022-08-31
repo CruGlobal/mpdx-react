@@ -1,4 +1,4 @@
-import { createTheme } from '@material-ui/core/styles';
+import { createTheme } from '@mui/material/styles';
 
 const defaultTheme = createTheme();
 
@@ -23,7 +23,7 @@ const progressBarColors = {
   gray: '#808080',
 };
 // https://material-ui.com/customization/palette/#adding-new-colors
-declare module '@material-ui/core/styles/createPalette' {
+declare module '@mui/material/styles/createPalette' {
   interface Palette {
     cruYellow: Palette['primary'];
     cruGrayDark: Palette['primary'];

@@ -2,7 +2,7 @@ import React from 'react';
 import { render, waitFor, within } from '@testing-library/react';
 import { useSession } from 'next-auth/react';
 import userEvent from '@testing-library/user-event';
-import { MuiThemeProvider } from '@material-ui/core';
+import { MuiThemeProvider } from '@mui/material';
 import {
   ExportFormatEnum,
   ExportLabelTypeEnum,

@@ -1,6 +1,6 @@
 import React from 'react';
 import type { FC } from 'react';
-import { List } from '@material-ui/core';
+import { List } from '@mui/material';
 import SearchIcon from '@material-ui/icons/Search';
 import AddIcon from '@material-ui/icons/Add';
 import NotificationsIcon from '@material-ui/icons/Notifications';

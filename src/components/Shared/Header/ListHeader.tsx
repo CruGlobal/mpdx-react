@@ -10,7 +10,7 @@ import {
   MenuItem,
   styled,
   Theme,
-} from '@material-ui/core';
+} from '@mui/material';
 import FilterList from '@material-ui/icons/FilterList';
 import { useTranslation } from 'react-i18next';
 import ArrowDropDown from '@material-ui/icons/ArrowDropDown';

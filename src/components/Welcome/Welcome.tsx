@@ -6,7 +6,7 @@ import {
   makeStyles,
   Theme,
   Grid,
-} from '@material-ui/core';
+} from '@mui/material';
 import { motion } from 'framer-motion';
 import illustration2 from '../../images/drawkit/grape/drawkit-grape-pack-illustration-2.svg';
 

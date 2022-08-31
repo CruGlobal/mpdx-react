@@ -7,7 +7,7 @@ import {
   Divider,
   CircularProgress,
   Button,
-} from '@material-ui/core';
+} from '@mui/material';
 import { Icon } from '@mdi/react';
 import { mdiCheckboxMarkedCircle } from '@mdi/js';
 import { useTranslation, Trans } from 'react-i18next';
@@ -71,10 +71,8 @@ const FixSendNewsletter: React.FC<Props> = ({ accountListId }: Props) => {
   const { data, loading } = useGetInvalidNewsletterQuery({
     variables: { accountListId },
   });
-  const [
-    updateNewsletter,
-    { loading: updating },
-  ] = useUpdateContactNewsletterMutation();
+  const [updateNewsletter, { loading: updating }] =
+    useUpdateContactNewsletterMutation();
 
   //TODO: Add deceased to contact filters
   const updateContact = async (

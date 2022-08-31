@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { Button, ThemeProvider } from '@material-ui/core';
+import { Button, ThemeProvider } from '@mui/material';
 import theme from '../../../theme';
 
 import useTaskModal from '../../../hooks/useTaskModal';
@@ -170,33 +170,29 @@ describe('ListHeader', () => {
   });
 
   it('opens the more actions menu and clicks the add task action', () => {
-    const {
-      getByPlaceholderText,
-      getByTestId,
-      getByText,
-      queryByText,
-    } = render(
-      <ThemeProvider theme={theme}>
-        <ListHeader
-          selectedIds={selectedIds}
-          page="contact"
-          activeFilters={false}
-          starredFilter={{}}
-          toggleStarredFilter={toggleStarredFilter}
-          headerCheckboxState={ListHeaderCheckBoxState.unchecked}
-          filterPanelOpen={false}
-          contactDetailsOpen={false}
-          toggleFilterPanel={toggleFilterPanel}
-          onCheckAllItems={onCheckAllItems}
-          onSearchTermChanged={onSearchTermChanged}
-          openAddToAppealModal={openAddToAppealModal}
-          openEditFieldsModal={openEditFieldsModal}
-          openHideContactsModal={openHideContactsModal}
-          openAddTagsModal={openAddTagsModal}
-          openCreateAppealModal={openCreateAppealModal}
-        />
-      </ThemeProvider>,
-    );
+    const { getByPlaceholderText, getByTestId, getByText, queryByText } =
+      render(
+        <ThemeProvider theme={theme}>
+          <ListHeader
+            selectedIds={selectedIds}
+            page="contact"
+            activeFilters={false}
+            starredFilter={{}}
+            toggleStarredFilter={toggleStarredFilter}
+            headerCheckboxState={ListHeaderCheckBoxState.unchecked}
+            filterPanelOpen={false}
+            contactDetailsOpen={false}
+            toggleFilterPanel={toggleFilterPanel}
+            onCheckAllItems={onCheckAllItems}
+            onSearchTermChanged={onSearchTermChanged}
+            openAddToAppealModal={openAddToAppealModal}
+            openEditFieldsModal={openEditFieldsModal}
+            openHideContactsModal={openHideContactsModal}
+            openAddTagsModal={openAddTagsModal}
+            openCreateAppealModal={openCreateAppealModal}
+          />
+        </ThemeProvider>,
+      );
 
     expect(getByPlaceholderText('Search Contacts')).toBeInTheDocument();
     expect(queryByText('Add Task')).not.toBeInTheDocument();
@@ -248,33 +244,29 @@ describe('ListHeader', () => {
   });
 
   it('opens the more actions menu and clicks the add tags action', () => {
-    const {
-      getByPlaceholderText,
-      getByTestId,
-      getByText,
-      queryByText,
-    } = render(
-      <ThemeProvider theme={theme}>
-        <ListHeader
-          selectedIds={selectedIds}
-          page="contact"
-          activeFilters={false}
-          starredFilter={{}}
-          toggleStarredFilter={toggleStarredFilter}
-          headerCheckboxState={ListHeaderCheckBoxState.unchecked}
-          filterPanelOpen={false}
-          contactDetailsOpen={false}
-          toggleFilterPanel={toggleFilterPanel}
-          onCheckAllItems={onCheckAllItems}
-          onSearchTermChanged={onSearchTermChanged}
-          openAddToAppealModal={openAddToAppealModal}
-          openEditFieldsModal={openEditFieldsModal}
-          openHideContactsModal={openHideContactsModal}
-          openAddTagsModal={openAddTagsModal}
-          openCreateAppealModal={openCreateAppealModal}
-        />
-      </ThemeProvider>,
-    );
+    const { getByPlaceholderText, getByTestId, getByText, queryByText } =
+      render(
+        <ThemeProvider theme={theme}>
+          <ListHeader
+            selectedIds={selectedIds}
+            page="contact"
+            activeFilters={false}
+            starredFilter={{}}
+            toggleStarredFilter={toggleStarredFilter}
+            headerCheckboxState={ListHeaderCheckBoxState.unchecked}
+            filterPanelOpen={false}
+            contactDetailsOpen={false}
+            toggleFilterPanel={toggleFilterPanel}
+            onCheckAllItems={onCheckAllItems}
+            onSearchTermChanged={onSearchTermChanged}
+            openAddToAppealModal={openAddToAppealModal}
+            openEditFieldsModal={openEditFieldsModal}
+            openHideContactsModal={openHideContactsModal}
+            openAddTagsModal={openAddTagsModal}
+            openCreateAppealModal={openCreateAppealModal}
+          />
+        </ThemeProvider>,
+      );
 
     expect(getByPlaceholderText('Search Contacts')).toBeInTheDocument();
     expect(queryByText('Add Tags')).not.toBeInTheDocument();

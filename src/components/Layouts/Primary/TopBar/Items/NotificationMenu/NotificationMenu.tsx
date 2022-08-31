@@ -9,7 +9,7 @@ import {
   Menu,
   Theme,
   Typography,
-} from '@material-ui/core';
+} from '@mui/material';
 import React, { ReactElement, useState } from 'react';
 import NotificationsNoneIcon from '@material-ui/icons/NotificationsNone';
 import NotificationsIcon from '@material-ui/icons/Notifications';
@@ -156,9 +156,8 @@ const NotificationMenu = ({
     notifyOnNetworkStatusChange: true,
   });
 
-  const [
-    acknoweldgeAllUserNotifications,
-  ] = useAcknowledgeAllUserNotificationsMutation();
+  const [acknoweldgeAllUserNotifications] =
+    useAcknowledgeAllUserNotificationsMutation();
 
   const handleAcknowledgeAllClick = () => {
     const optimisticResponse = true;

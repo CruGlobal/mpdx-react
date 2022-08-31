@@ -7,13 +7,14 @@ import {
   TableHead,
   TableRow,
   Typography,
-} from '@material-ui/core';
+} from '@mui/material';
 // eslint-disable-next-line import/extensions
 import { FourteenMonthReportQuery } from '../../../GetFourteenMonthReport.generated';
 import type { Order, Unarray } from '../../../../Reports.type';
 import { TableHeadCell } from './TableHeadCell/TableHeadCell';
 
-export type Contacts = FourteenMonthReportQuery['fourteenMonthReport']['currencyGroups'][0]['contacts'];
+export type Contacts =
+  FourteenMonthReportQuery['fourteenMonthReport']['currencyGroups'][0]['contacts'];
 export type Contact = Contacts[0];
 export type Months = Contact['months'];
 export type Month = Unarray<Months>;
@@ -43,21 +44,15 @@ const YearTypography = styled(Typography)(({ theme }) => ({
   borderLeft: `1px solid ${theme.palette.cruGrayLight.main}`,
 }));
 
-export const FourteenMonthReportTableHead: FC<FourteenMonthReportTableHeadProps> = ({
-  isExpanded,
-  totals,
-  salaryCurrency,
-  order,
-  orderBy,
-  onRequestSort,
-}) => {
+export const FourteenMonthReportTableHead: FC<
+  FourteenMonthReportTableHeadProps
+> = ({ isExpanded, totals, salaryCurrency, order, orderBy, onRequestSort }) => {
   const { t } = useTranslation();
 
-  const createSortHandler = (property: OrderBy | number) => (
-    event: React.MouseEvent<unknown>,
-  ) => {
-    onRequestSort(event, property);
-  };
+  const createSortHandler =
+    (property: OrderBy | number) => (event: React.MouseEvent<unknown>) => {
+      onRequestSort(event, property);
+    };
 
   const allYears = useMemo(() => {
     return totals?.months.map((month) => month.month.split('-')[0]);

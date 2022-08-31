@@ -1,4 +1,4 @@
-import { Box, Divider, styled, Typography } from '@material-ui/core';
+import { Box, Divider, styled, Typography } from '@mui/material';
 import { EcoOutlined } from '@material-ui/icons';
 import { Skeleton } from '@material-ui/lab';
 import React from 'react';

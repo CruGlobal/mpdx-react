@@ -1,4 +1,4 @@
-import { Box, styled } from '@material-ui/core';
+import { Box, styled } from '@mui/material';
 import React, { useContext } from 'react';
 import Head from 'next/head';
 import { useTranslation } from 'react-i18next';

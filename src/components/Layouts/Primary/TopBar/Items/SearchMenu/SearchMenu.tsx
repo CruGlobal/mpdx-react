@@ -7,7 +7,7 @@ import {
   TextField,
   Typography,
   Popper,
-} from '@material-ui/core';
+} from '@mui/material';
 import SearchIcon from '@material-ui/icons/Search';
 import { useTranslation } from 'react-i18next';
 import CompassIcon from '@material-ui/icons/Explore';
@@ -67,10 +67,8 @@ const SearchMenu = (): ReactElement => {
   //#region Search
   const [wildcardSearch, setWildcardSearch] = useState('');
 
-  const [
-    searchForContacts,
-    { loading, data },
-  ] = useGetSearchMenuContactsLazyQuery();
+  const [searchForContacts, { loading, data }] =
+    useGetSearchMenuContactsLazyQuery();
 
   const [createContact] = useCreateContactMutation();
 

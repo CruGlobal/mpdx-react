@@ -8,7 +8,7 @@ import {
   Box,
   Hidden,
   Button,
-} from '@material-ui/core';
+} from '@mui/material';
 import { Skeleton } from '@material-ui/lab';
 import { useTranslation } from 'react-i18next';
 import { currencyFormat, percentageFormat } from '../../../lib/intlFormat';

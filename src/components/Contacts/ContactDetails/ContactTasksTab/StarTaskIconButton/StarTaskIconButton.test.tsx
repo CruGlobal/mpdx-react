@@ -1,5 +1,5 @@
 import React from 'react';
-import { MuiThemeProvider } from '@material-ui/core';
+import { MuiThemeProvider } from '@mui/material';
 import { render } from '@testing-library/react';
 import theme from '../../../../../theme';
 import { GqlMockedProvider } from '../../../../../../__tests__/util/graphqlMocking';

@@ -1,4 +1,4 @@
-import { Box, IconButton, styled, Typography } from '@material-ui/core';
+import { Box, IconButton, styled, Typography } from '@mui/material';
 import React, { useMemo, useState } from 'react';
 import { Skeleton } from '@material-ui/lab';
 import { DateTime } from 'luxon';
@@ -33,13 +33,14 @@ export const ContactHeaderStatusSection: React.FC<Props> = ({
   contact,
 }) => {
   const status = contact?.status;
-  const [editPartnershipModalOpen, setEditPartnershipModalOpen] = useState(
-    false,
-  );
+  const [editPartnershipModalOpen, setEditPartnershipModalOpen] =
+    useState(false);
   const lateStatusEnum: number | undefined = useMemo(() => {
     if (contact?.lateAt) {
-      const diff = DateTime.now().diff(DateTime.fromISO(contact.lateAt), 'days')
-        ?.days;
+      const diff = DateTime.now().diff(
+        DateTime.fromISO(contact.lateAt),
+        'days',
+      )?.days;
 
       if (diff < 0) {
         return ContactLateStatusEnum.OnTime;

@@ -1,5 +1,5 @@
 import React from 'react';
-import { styled, Box, Button } from '@material-ui/core';
+import { styled, Box, Button } from '@mui/material';
 import { ChevronLeft, Add } from '@material-ui/icons';
 import NextLink from 'next/link';
 import { useTranslation } from 'react-i18next';

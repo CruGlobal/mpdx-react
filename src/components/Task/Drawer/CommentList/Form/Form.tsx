@@ -7,7 +7,7 @@ import {
   IconButton,
   Grid,
   Divider,
-} from '@material-ui/core';
+} from '@mui/material';
 import { Formik, FormikHelpers } from 'formik';
 import * as yup from 'yup';
 import { DateTime } from 'luxon';
@@ -41,11 +41,10 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-const commentSchema: yup.SchemaOf<
-  Omit<TaskCommentCreateInput, 'id'>
-> = yup.object({
-  body: yup.string().trim().required(),
-});
+const commentSchema: yup.SchemaOf<Omit<TaskCommentCreateInput, 'id'>> =
+  yup.object({
+    body: yup.string().trim().required(),
+  });
 
 interface Props {
   accountListId: string;
@@ -90,9 +89,8 @@ const Form = ({ accountListId, taskId }: Props): ReactElement => {
             taskId,
           },
         };
-        const dataFromCache = cache.readQuery<GetCommentsForTaskDrawerCommentListQuery>(
-          query,
-        );
+        const dataFromCache =
+          cache.readQuery<GetCommentsForTaskDrawerCommentListQuery>(query);
         const data = {
           task: {
             ...dataFromCache?.task,

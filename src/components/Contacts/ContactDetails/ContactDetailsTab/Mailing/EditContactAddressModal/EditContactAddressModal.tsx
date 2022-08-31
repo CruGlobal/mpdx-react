@@ -17,7 +17,7 @@ import {
   Select,
   styled,
   TextField,
-} from '@material-ui/core';
+} from '@mui/material';
 import { ContactMailingFragment } from '../ContactMailing.generated';
 import { AddressUpdateInput } from '../../../../../../../graphql/types.generated';
 import Modal from '../../../../../common/Modal/Modal';
@@ -66,7 +66,9 @@ enum AddressLocationEnum {
   RepAddress = 'Rep Address',
 }
 
-export const EditContactAddressModal: React.FC<EditContactAddressModalProps> = ({
+export const EditContactAddressModal: React.FC<
+  EditContactAddressModalProps
+> = ({
   accountListId,
   address,
   contactId,
@@ -74,14 +76,10 @@ export const EditContactAddressModal: React.FC<EditContactAddressModalProps> = (
 }): ReactElement<EditContactAddressModalProps> => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
-  const [
-    updateContactAddress,
-    { loading: updating },
-  ] = useUpdateContactAddressMutation();
-  const [
-    deleteAddress,
-    { loading: deleting },
-  ] = useDeleteContactAddressMutation();
+  const [updateContactAddress, { loading: updating }] =
+    useUpdateContactAddressMutation();
+  const [deleteAddress, { loading: deleting }] =
+    useDeleteContactAddressMutation();
 
   const contactAddressSchema: yup.SchemaOf<
     Omit<AddressUpdateInput, 'validValues'>

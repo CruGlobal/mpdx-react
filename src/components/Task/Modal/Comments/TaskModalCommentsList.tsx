@@ -6,7 +6,7 @@ import {
   Divider,
   styled,
   Typography,
-} from '@material-ui/core';
+} from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { Add } from '@material-ui/icons';
 import illustration4 from '../../../../images/drawkit/grape/drawkit-grape-pack-illustration-4.svg';
@@ -76,9 +76,8 @@ const TaskModalCommentsList = ({
 
   const nodes = data?.task.comments.nodes;
 
-  const [showNewCommentInput, setShowNewCommentInput] = useState<boolean>(
-    false,
-  );
+  const [showNewCommentInput, setShowNewCommentInput] =
+    useState<boolean>(false);
 
   return (
     <>

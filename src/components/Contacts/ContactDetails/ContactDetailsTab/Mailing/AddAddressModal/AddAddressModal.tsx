@@ -18,7 +18,7 @@ import {
   Select,
   styled,
   TextField,
-} from '@material-ui/core';
+} from '@mui/material';
 import { AddressCreateInput } from '../../../../../../../graphql/types.generated';
 import Modal from '../../../../../common/Modal/Modal';
 import {
@@ -67,25 +67,22 @@ export const AddAddressModal: React.FC<EditContactAddressModalProps> = ({
 }): ReactElement<EditContactAddressModalProps> => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
-  const [
-    createContactAddress,
-    { loading: updating },
-  ] = useCreateContactAddressMutation();
+  const [createContactAddress, { loading: updating }] =
+    useCreateContactAddressMutation();
 
-  const contactAddressSchema: yup.SchemaOf<
-    Omit<AddressCreateInput, 'id'>
-  > = yup.object({
-    contactId: yup.string().required(),
-    city: yup.string().nullable(),
-    country: yup.string().nullable(),
-    historic: yup.boolean().nullable(),
-    location: yup.string().nullable(),
-    metroArea: yup.string().nullable(),
-    postalCode: yup.string().nullable(),
-    region: yup.string().nullable(),
-    state: yup.string().nullable(),
-    street: yup.string().required(),
-  });
+  const contactAddressSchema: yup.SchemaOf<Omit<AddressCreateInput, 'id'>> =
+    yup.object({
+      contactId: yup.string().required(),
+      city: yup.string().nullable(),
+      country: yup.string().nullable(),
+      historic: yup.boolean().nullable(),
+      location: yup.string().nullable(),
+      metroArea: yup.string().nullable(),
+      postalCode: yup.string().nullable(),
+      region: yup.string().nullable(),
+      state: yup.string().nullable(),
+      street: yup.string().required(),
+    });
 
   const onSubmit = async (
     attributes: Omit<AddressCreateInput, 'validValues' | 'id'>,

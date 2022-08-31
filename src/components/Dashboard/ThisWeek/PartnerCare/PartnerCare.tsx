@@ -15,7 +15,7 @@ import {
   CardContent,
   styled,
   IconButton,
-} from '@material-ui/core';
+} from '@mui/material';
 import CakeIcon from '@material-ui/icons/Cake';
 import FavoriteIcon from '@material-ui/icons/Favorite';
 import { Skeleton } from '@material-ui/lab';

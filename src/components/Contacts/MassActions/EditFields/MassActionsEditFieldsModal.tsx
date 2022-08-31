@@ -10,7 +10,7 @@ import {
   MenuItem,
   Select,
   TextField,
-} from '@material-ui/core';
+} from '@mui/material';
 import { CalendarToday } from '@material-ui/icons';
 import { DatePicker } from '@material-ui/pickers';
 import { Formik } from 'formik';
@@ -66,11 +66,9 @@ const MassActionsEditFieldsSchema = yup.object({
   userId: yup.string().nullable(),
 });
 
-export const MassActionsEditFieldsModal: React.FC<MassActionsEditFieldsModalProps> = ({
-  handleClose,
-  accountListId,
-  ids,
-}) => {
+export const MassActionsEditFieldsModal: React.FC<
+  MassActionsEditFieldsModalProps
+> = ({ handleClose, accountListId, ids }) => {
   const { t } = useTranslation();
 
   const [updateContacts] = useMassActionsUpdateContactFieldsMutation();
@@ -114,10 +112,8 @@ export const MassActionsEditFieldsModal: React.FC<MassActionsEditFieldsModalProp
       accountListId,
     },
   });
-  const {
-    data: constants,
-    loading: loadingConstants,
-  } = useLoadConstantsQuery();
+  const { data: constants, loading: loadingConstants } =
+    useLoadConstantsQuery();
 
   return (
     <Modal title={t('Edit Fields')} isOpen={true} handleClose={handleClose}>

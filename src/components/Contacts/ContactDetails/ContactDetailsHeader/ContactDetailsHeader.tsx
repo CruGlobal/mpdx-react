@@ -1,4 +1,4 @@
-import { Avatar, Box, IconButton, styled, Typography } from '@material-ui/core';
+import { Avatar, Box, IconButton, styled, Typography } from '@mui/material';
 import { Close } from '@material-ui/icons';
 import { Skeleton } from '@material-ui/lab';
 import React from 'react';

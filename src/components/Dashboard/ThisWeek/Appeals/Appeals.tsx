@@ -9,7 +9,7 @@ import {
   Typography,
   Grid,
   Box,
-} from '@material-ui/core';
+} from '@mui/material';
 import { Skeleton } from '@material-ui/lab';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';

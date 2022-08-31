@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Box, CircularProgress, styled } from '@material-ui/core';
+import { Box, CircularProgress, styled } from '@mui/material';
 import { useGetExpectedMonthlyTotalsQuery } from '../../../../pages/accountLists/[accountListId]/reports/GetExpectedMonthlyTotals.generated';
 import { EmptyDonationsTable } from '../../../../src/components/common/EmptyDonationsTable/EmptyDonationsTable';
 import { ExpectedMonthlyTotalReportHeader } from './Header/ExpectedMonthlyTotalReportHeader';

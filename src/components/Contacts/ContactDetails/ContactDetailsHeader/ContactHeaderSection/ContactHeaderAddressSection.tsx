@@ -1,4 +1,4 @@
-import { Box, Link, styled, Typography } from '@material-ui/core';
+import { Box, Link, styled, Typography } from '@mui/material';
 import { LocationOn } from '@material-ui/icons';
 import { Skeleton } from '@material-ui/lab';
 

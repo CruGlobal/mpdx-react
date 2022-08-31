@@ -1,4 +1,4 @@
-import { ListItem, ListItemText, useTheme } from '@material-ui/core';
+import { ListItem, ListItemText, useTheme } from '@mui/material';
 import { ExpandLess, ExpandMore } from '@material-ui/icons';
 import React from 'react';
 import { useTranslation } from 'react-i18next';

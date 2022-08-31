@@ -15,7 +15,7 @@ import {
   AccordionDetails,
   Typography,
   styled,
-} from '@material-ui/core';
+} from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'next/router';
 import { signOut } from 'next-auth/react';
@@ -106,10 +106,8 @@ const ProfileMenu = (): ReactElement => {
   const { contactId: _, ...queryWithoutContactId } = router.query;
   const accountListId = useAccountListId();
   const { data } = useGetTopBarQuery();
-  const [
-    profileMenuAnchorEl,
-    setProfileMenuAnchorEl,
-  ] = useState<HTMLButtonElement>();
+  const [profileMenuAnchorEl, setProfileMenuAnchorEl] =
+    useState<HTMLButtonElement>();
   const profileMenuOpen = Boolean(profileMenuAnchorEl);
   const handleProfileMenuOpen = (
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>,

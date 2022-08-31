@@ -1,4 +1,4 @@
-import { styled, Typography } from '@material-ui/core';
+import { styled, Typography } from '@mui/material';
 import { Email } from '@material-ui/icons';
 import { Skeleton } from '@material-ui/lab';
 

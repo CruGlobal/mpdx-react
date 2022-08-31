@@ -16,7 +16,7 @@ import {
   TextField,
   Tooltip,
   Typography,
-} from '@material-ui/core';
+} from '@mui/material';
 import InfoIcon from '@material-ui/icons/InfoOutlined';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import { useTranslation } from 'react-i18next';
@@ -60,10 +60,9 @@ interface EditPartnershipInfoModalProps {
   handleClose: () => void;
 }
 
-export const EditPartnershipInfoModal: React.FC<EditPartnershipInfoModalProps> = ({
-  contact,
-  handleClose,
-}) => {
+export const EditPartnershipInfoModal: React.FC<
+  EditPartnershipInfoModalProps
+> = ({ contact, handleClose }) => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
   const constants = useApiConstants();
@@ -71,9 +70,8 @@ export const EditPartnershipInfoModal: React.FC<EditPartnershipInfoModalProps> =
   const referredContactIds = contact.contactReferralsToMe.nodes.map(
     (referral) => referral.referredBy.id,
   );
-  const [currentReferredContactIds, setCurrentReferredContactIds] = useState(
-    referredContactIds,
-  );
+  const [currentReferredContactIds, setCurrentReferredContactIds] =
+    useState(referredContactIds);
 
   const { enqueueSnackbar } = useSnackbar();
   const { data, loading, refetch } = useGetDataForPartnershipInfoModalQuery({
@@ -85,10 +83,8 @@ export const EditPartnershipInfoModal: React.FC<EditPartnershipInfoModalProps> =
     },
   });
 
-  const [
-    updateContactPartnership,
-    { loading: updating },
-  ] = useUpdateContactPartnershipMutation();
+  const [updateContactPartnership, { loading: updating }] =
+    useUpdateContactPartnershipMutation();
   const pledgeCurrencies = constants?.pledgeCurrencies;
 
   const contactPartnershipSchema: yup.SchemaOf<

@@ -13,7 +13,7 @@ import {
   TableBody,
   TableContainer,
   withStyles,
-} from '@material-ui/core';
+} from '@mui/material';
 import { motion } from 'framer-motion';
 import { DateTime, Interval } from 'luxon';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';

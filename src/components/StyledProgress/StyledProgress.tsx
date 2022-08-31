@@ -1,5 +1,5 @@
 import React, { ReactElement } from 'react';
-import { makeStyles, Theme, Box } from '@material-ui/core';
+import { makeStyles, Theme, Box } from '@mui/material';
 import { Skeleton } from '@material-ui/lab';
 import { percentageFormat } from '../../lib/intlFormat';
 

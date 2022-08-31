@@ -1,4 +1,4 @@
-import { MuiThemeProvider } from '@material-ui/core';
+import { MuiThemeProvider } from '@mui/material';
 import { render } from '@testing-library/react';
 import { DateTime } from 'luxon';
 import React from 'react';

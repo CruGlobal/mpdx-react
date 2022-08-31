@@ -1,5 +1,5 @@
 import React, { ReactElement } from 'react';
-import { Button } from '@material-ui/core';
+import { Button } from '@mui/material';
 import SubjectIcon from '@material-ui/icons/Subject';
 import Welcome from '.';
 

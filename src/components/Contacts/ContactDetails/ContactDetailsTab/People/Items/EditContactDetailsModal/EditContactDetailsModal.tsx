@@ -11,7 +11,7 @@ import {
   DialogActions,
   DialogContent,
   CircularProgress,
-} from '@material-ui/core';
+} from '@mui/material';
 import BookmarkIcon from '@material-ui/icons/Bookmark';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
@@ -69,7 +69,9 @@ interface EditContactDetailsModalProps {
   handleClose: () => void;
 }
 
-export const EditContactDetailsModal: React.FC<EditContactDetailsModalProps> = ({
+export const EditContactDetailsModal: React.FC<
+  EditContactDetailsModalProps
+> = ({
   accountListId,
   contact,
   isOpen,
@@ -77,18 +79,15 @@ export const EditContactDetailsModal: React.FC<EditContactDetailsModalProps> = (
 }): ReactElement<EditContactDetailsModalProps> => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
-  const [
-    updateContact,
-    { loading: updating },
-  ] = useUpdateContactDetailsMutation();
+  const [updateContact, { loading: updating }] =
+    useUpdateContactDetailsMutation();
 
-  const contactSchema: yup.SchemaOf<
-    Pick<ContactUpdateInput, 'name' | 'id'>
-  > = yup.object({
-    name: yup.string().required(),
-    id: yup.string().required(),
-    primaryPersonId: yup.string().required(),
-  });
+  const contactSchema: yup.SchemaOf<Pick<ContactUpdateInput, 'name' | 'id'>> =
+    yup.object({
+      name: yup.string().required(),
+      id: yup.string().required(),
+      primaryPersonId: yup.string().required(),
+    });
 
   const onSubmit = async (attributes: ContactUpdateInput) => {
     await updateContact({

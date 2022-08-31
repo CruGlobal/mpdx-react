@@ -8,7 +8,7 @@ import {
   Box,
   Typography,
   Divider,
-} from '@material-ui/core';
+} from '@mui/material';
 import { motion } from 'framer-motion';
 import { useAccountListId } from '../../../../src/hooks/useAccountListId';
 import Appeals from '../../../../src/components/Tool/Appeal/Appeals';

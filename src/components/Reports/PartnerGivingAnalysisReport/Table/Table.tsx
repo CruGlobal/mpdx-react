@@ -8,7 +8,7 @@ import {
   TableCell,
   TableContainer,
   TableRow,
-} from '@material-ui/core';
+} from '@mui/material';
 import type { Contact } from '../PartnerGivingAnalysisReport';
 import type { Order } from '../../Reports.type';
 import { PartnerGivingAnalysisReportTableHead as TableHead } from './TableHead/TableHead';
@@ -37,7 +37,9 @@ const StickyTable = styled(Table)(({}) => ({
   height: 'calc(100vh - 96px)',
 }));
 
-export const PartnerGivingAnalysisReportTable: FC<PartnerGivingAnalysisReportTableProps> = ({
+export const PartnerGivingAnalysisReportTable: FC<
+  PartnerGivingAnalysisReportTableProps
+> = ({
   order,
   orderBy,
   contacts,

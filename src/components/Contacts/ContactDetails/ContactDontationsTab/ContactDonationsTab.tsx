@@ -1,4 +1,4 @@
-import { Box, styled, Tab } from '@material-ui/core';
+import { Box, styled, Tab } from '@mui/material';
 import { Skeleton, TabContext, TabList, TabPanel } from '@material-ui/lab';
 import React from 'react';
 import { useTranslation } from 'react-i18next/';
@@ -75,10 +75,8 @@ export const ContactDonationsTab: React.FC<ContactDontationsProp> = ({
 
   const { t } = useTranslation();
 
-  const {
-    selectedDonationTabKey,
-    setSelectedDonationTabKey,
-  } = React.useContext(ContactDetailContext) as ContactDetailsType;
+  const { selectedDonationTabKey, setSelectedDonationTabKey } =
+    React.useContext(ContactDetailContext) as ContactDetailsType;
 
   const handleDonationTabChange = (
     _event: React.ChangeEvent<Record<string, unknown>>,

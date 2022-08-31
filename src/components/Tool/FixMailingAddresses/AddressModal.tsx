@@ -15,7 +15,7 @@ import {
   CardActions,
   Checkbox,
   IconButton,
-} from '@material-ui/core';
+} from '@mui/material';
 import { useTranslation } from 'react-i18next';
 
 import { mdiMap, mdiCloseThick, mdiInformation } from '@mdi/js';

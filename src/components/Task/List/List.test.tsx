@@ -1,6 +1,6 @@
 import React from 'react';
 import userEvent from '@testing-library/user-event';
-import { ThemeProvider } from '@material-ui/core';
+import { ThemeProvider } from '@mui/material';
 import TestWrapper from '../../../../__tests__/util/TestWrapper';
 import { getDataForTaskDrawerMock } from '../Drawer/Form/Form.mock';
 import { render } from '../../../../__tests__/util/testingLibraryReactMock';
@@ -105,19 +105,14 @@ describe('TaskList', () => {
         before: 'A',
       }),
     ];
-    const {
-      findByText,
-      getByLabelText,
-      getAllByRole,
-      getByRole,
-      getByText,
-    } = render(
-      <ThemeProvider theme={theme}>
-        <TestWrapper mocks={mocks}>
-          <TaskList />
-        </TestWrapper>
-      </ThemeProvider>,
-    );
+    const { findByText, getByLabelText, getAllByRole, getByRole, getByText } =
+      render(
+        <ThemeProvider theme={theme}>
+          <TestWrapper mocks={mocks}>
+            <TaskList />
+          </TestWrapper>
+        </ThemeProvider>,
+      );
     userEvent.click(await findByText('On the Journey with the Johnson Family'));
     expect(openTaskDrawer).toHaveBeenCalledWith({
       taskId: 'task-1',

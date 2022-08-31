@@ -16,7 +16,7 @@ import {
   ListItemAvatar,
   Typography,
   Divider,
-} from '@material-ui/core';
+} from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { DateTime } from 'luxon';
 import CallIcon from '@material-ui/icons/Call';

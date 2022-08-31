@@ -1,5 +1,5 @@
 import React, { ReactElement, useState } from 'react';
-import { Box, Button, MuiThemeProvider } from '@material-ui/core';
+import { Box, Button, MuiThemeProvider } from '@mui/material';
 import { gqlMock } from '../../../../../../../../__tests__/util/graphqlMocking';
 import { ContactDetailsTabQuery } from '../../../ContactDetailsTab.generated';
 import {

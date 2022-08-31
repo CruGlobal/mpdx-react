@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Box, CircularProgress, Divider, styled } from '@material-ui/core';
+import { Box, CircularProgress, Divider, styled } from '@mui/material';
 import { AccountsList as List } from '../AccountsListLayout/List/List';
 import { AccountsListHeader as Header } from '../AccountsListLayout/Header/Header';
 import type { Account } from '../AccountsListLayout/List/ListItem/ListItem';
@@ -36,9 +36,8 @@ export const DesignationAccountsReport: React.FC<Props> = ({
     },
   });
 
-  const [
-    setActiveDesignationAccount,
-  ] = useSetActiveDesignationAccountMutation();
+  const [setActiveDesignationAccount] =
+    useSetActiveDesignationAccountMutation();
 
   const handleCheckToggle = (
     event: React.ChangeEvent<HTMLInputElement>,
@@ -110,8 +109,8 @@ export const DesignationAccountsReport: React.FC<Props> = ({
         <ScrollBox data-testid="DesignationAccountsScrollBox">
           <Divider />
           {data?.designationAccounts.map((designationAccountGroup) => {
-            const accounts: Account[] = designationAccountGroup.designationAccounts.map(
-              (account) => ({
+            const accounts: Account[] =
+              designationAccountGroup.designationAccounts.map((account) => ({
                 active: account.active,
                 balance: account.convertedBalance,
                 code: account.designationNumber,
@@ -119,8 +118,7 @@ export const DesignationAccountsReport: React.FC<Props> = ({
                 id: account.id,
                 lastSyncDate: account.balanceUpdatedAt,
                 name: account.name,
-              }),
-            );
+              }));
 
             return (
               <List

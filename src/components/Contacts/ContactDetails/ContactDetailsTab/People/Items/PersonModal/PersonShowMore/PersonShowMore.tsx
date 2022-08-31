@@ -9,7 +9,7 @@ import {
   Select,
   styled,
   TextField,
-} from '@material-ui/core';
+} from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { DatePicker } from '@material-ui/pickers';
 import { DateTime } from 'luxon';

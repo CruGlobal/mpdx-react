@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, CircularProgress, TablePagination } from '@material-ui/core';
+import { Box, CircularProgress, TablePagination } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { AccountsListHeader as Header } from '../AccountsListLayout/Header/Header';
 // import { usePartnerGivingAnalysisReportQuery } from './GetPartnerGivingAnalysisReport.generated';

@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { styled } from '@material-ui/core/styles';
+import { styled } from '@mui/material/styles';
 import Icon from '@mdi/react';
 import { mdiAccountSearch } from '@mdi/js';
-import { InputAdornment, TextField } from '@material-ui/core';
+import { InputAdornment, TextField } from '@mui/material';
 import SearchIcon from '@material-ui/icons/Search';
 
 export interface SearchBoxProps {

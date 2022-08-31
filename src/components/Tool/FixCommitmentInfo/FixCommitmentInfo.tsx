@@ -7,7 +7,7 @@ import {
   Grid,
   Divider,
   CircularProgress,
-} from '@material-ui/core';
+} from '@mui/material';
 import { Trans, useTranslation } from 'react-i18next';
 import { useSnackbar } from 'notistack';
 import {
@@ -74,25 +74,23 @@ const FixCommitmentInfo: React.FC<Props> = ({ accountListId }: Props) => {
   const { data, loading } = useGetInvalidStatusesQuery({
     variables: { accountListId },
   });
-  const {
-    data: contactFilterGroups,
-    loading: loadingStatuses,
-  } = useContactFiltersQuery({
-    variables: {
-      accountListId,
-    },
-  });
-  const [
-    updateInvalidStatus,
-    { loading: updating },
-  ] = useUpdateInvalidStatusMutation();
+  const { data: contactFilterGroups, loading: loadingStatuses } =
+    useContactFiltersQuery({
+      variables: {
+        accountListId,
+      },
+    });
+  const [updateInvalidStatus, { loading: updating }] =
+    useUpdateInvalidStatusMutation();
 
   const contactStatuses = contactFilterGroups?.accountList?.contactFilterGroups
-    ? (contactFilterGroups.accountList.contactFilterGroups
-        .find((group) => group.name === 'Status')
-        ?.filters.find(
-          (filter: { filterKey: string }) => filter.filterKey === 'status',
-        ) as MultiselectFilter).options?.filter(
+    ? (
+        contactFilterGroups.accountList.contactFilterGroups
+          .find((group) => group.name === 'Status')
+          ?.filters.find(
+            (filter: { filterKey: string }) => filter.filterKey === 'status',
+          ) as MultiselectFilter
+      ).options?.filter(
         (status) =>
           status.value !== 'NULL' &&
           status.value !== 'HIDDEN' &&

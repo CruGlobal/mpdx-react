@@ -8,7 +8,7 @@ import {
   ListItem,
   ListItemText,
   ListItemIcon,
-} from '@material-ui/core';
+} from '@mui/material';
 import Icon from '@mdi/react';
 import { mdiTrophy } from '@mdi/js';
 import { useAppealContext } from '../AppealContextProvider/AppealContextProvider';

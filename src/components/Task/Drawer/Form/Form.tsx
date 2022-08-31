@@ -20,7 +20,7 @@ import {
   DialogContent,
   DialogContentText,
   Dialog,
-} from '@material-ui/core';
+} from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { Autocomplete } from '@material-ui/lab';
 

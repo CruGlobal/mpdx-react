@@ -1,4 +1,4 @@
-import { Box, styled } from '@material-ui/core';
+import { Box, styled } from '@mui/material';
 import { Cake } from '@material-ui/icons';
 import { DateTime, Interval } from 'luxon';
 import React from 'react';

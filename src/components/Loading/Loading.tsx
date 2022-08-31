@@ -1,5 +1,5 @@
 import React, { ReactElement, useEffect, useState } from 'react';
-import { makeStyles, Theme, Fab, CircularProgress } from '@material-ui/core';
+import { makeStyles, Theme, Fab, CircularProgress } from '@mui/material';
 import { useRouter } from 'next/router';
 import { motion, AnimatePresence } from 'framer-motion';
 

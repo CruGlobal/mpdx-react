@@ -1,4 +1,4 @@
-import { Box, styled, Theme, Typography } from '@material-ui/core';
+import { Box, styled, Theme, Typography } from '@mui/material';
 import { CalendarToday } from '@material-ui/icons';
 import { DateTime } from 'luxon';
 import React from 'react';

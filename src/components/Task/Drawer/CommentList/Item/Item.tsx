@@ -7,7 +7,7 @@ import {
   Box,
   Tooltip,
   Slide,
-} from '@material-ui/core';
+} from '@mui/material';
 import { DateTime } from 'luxon';
 import { Skeleton } from '@material-ui/lab';
 import { GetCommentsForTaskDrawerCommentListQuery } from '../TaskListComments.generated';

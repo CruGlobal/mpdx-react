@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
-import { ThemeProvider } from '@material-ui/core';
+import { ThemeProvider } from '@mui/material';
 import { DateTime } from 'luxon';
 import theme from '../../../theme';
 import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
@@ -10,24 +10,19 @@ const title = 'test title';
 const onNavListToggle = jest.fn();
 
 it('renders', async () => {
-  const {
-    getByTestId,
-    getByText,
-    queryByRole,
-    queryAllByRole,
-    queryByTestId,
-  } = render(
-    <ThemeProvider theme={theme}>
-      <GqlMockedProvider>
-        <DonationsReport
-          accountListId={'abc'}
-          isNavListOpen={true}
-          onNavListToggle={onNavListToggle}
-          title={title}
-        />
-      </GqlMockedProvider>
-    </ThemeProvider>,
-  );
+  const { getByTestId, getByText, queryByRole, queryAllByRole, queryByTestId } =
+    render(
+      <ThemeProvider theme={theme}>
+        <GqlMockedProvider>
+          <DonationsReport
+            accountListId={'abc'}
+            isNavListOpen={true}
+            onNavListToggle={onNavListToggle}
+            title={title}
+          />
+        </GqlMockedProvider>
+      </ThemeProvider>,
+    );
 
   await waitFor(() =>
     expect(queryByRole('progressbar')).not.toBeInTheDocument(),

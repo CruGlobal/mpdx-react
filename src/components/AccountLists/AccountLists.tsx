@@ -8,7 +8,7 @@ import {
   CardActionArea,
   CardContent,
   Box,
-} from '@material-ui/core';
+} from '@mui/material';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';

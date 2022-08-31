@@ -15,7 +15,7 @@ import {
   Card,
   FormLabel,
   Box,
-} from '@material-ui/core';
+} from '@mui/material';
 import { DateTime } from 'luxon';
 import reduce from 'lodash/fp/reduce';
 import debounce from 'lodash/fp/debounce';

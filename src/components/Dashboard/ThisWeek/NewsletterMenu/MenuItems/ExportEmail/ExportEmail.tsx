@@ -8,7 +8,7 @@ import {
   IconButton,
   styled,
   TextareaAutosize,
-} from '@material-ui/core';
+} from '@mui/material';
 import { Skeleton } from '@material-ui/lab';
 import CloseIcon from '@material-ui/icons/Close';
 import { useTranslation } from 'react-i18next';

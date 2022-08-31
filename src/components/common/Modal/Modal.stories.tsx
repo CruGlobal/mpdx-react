@@ -5,7 +5,7 @@ import {
   DialogActions,
   DialogContent,
   MuiThemeProvider,
-} from '@material-ui/core';
+} from '@mui/material';
 import { Story } from '@storybook/react';
 import theme from '../../../theme';
 import Modal from './Modal';

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, styled } from '@material-ui/core';
+import { Button, styled } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 
 export const DeleteButton = styled(Button)(({ theme }) => ({

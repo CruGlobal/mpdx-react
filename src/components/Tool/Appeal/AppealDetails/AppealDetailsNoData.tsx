@@ -1,4 +1,4 @@
-import { Box, styled, Typography } from '@material-ui/core';
+import { Box, styled, Typography } from '@mui/material';
 import React, { ReactElement } from 'react';
 import { useAppealContext } from '../AppealContextProvider/AppealContextProvider';
 

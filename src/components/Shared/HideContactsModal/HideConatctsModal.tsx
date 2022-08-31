@@ -1,4 +1,4 @@
-import { DialogActions, DialogContent, Typography } from '@material-ui/core';
+import { DialogActions, DialogContent, Typography } from '@mui/material';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import Modal from '../../common/Modal/Modal';

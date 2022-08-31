@@ -4,7 +4,7 @@ import { SnackbarProvider } from 'notistack';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import LuxonUtils from '@date-io/luxon';
 import userEvent from '@testing-library/user-event';
-import { MuiThemeProvider } from '@material-ui/core';
+import { MuiThemeProvider } from '@mui/material';
 import { CreateTaskMutation } from '../../../../../Task/Drawer/Form/TaskDrawer.generated';
 import { GqlMockedProvider } from '../../../../../../../__tests__/util/graphqlMocking';
 import TestWrapper from '../../../../../../../__tests__/util/TestWrapper';

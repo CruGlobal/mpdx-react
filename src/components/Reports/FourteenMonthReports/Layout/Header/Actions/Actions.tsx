@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, ButtonGroup, styled, SvgIcon } from '@material-ui/core';
+import { Button, ButtonGroup, styled, SvgIcon } from '@mui/material';
 import GetAppIcon from '@material-ui/icons/GetApp';
 import FullscreenIcon from '@material-ui/icons/Fullscreen';
 import FullscreenExitIcon from '@material-ui/icons/FullscreenExit';
@@ -23,7 +23,9 @@ const DownloadCsvLink = styled(CSVLink)(({}) => ({
   textDecoration: 'none',
 }));
 
-export const FourteenMonthReportActions: React.FC<FourteenMonthReportActionsProps> = ({
+export const FourteenMonthReportActions: React.FC<
+  FourteenMonthReportActionsProps
+> = ({
   csvData,
   currencyType,
   isExpanded,

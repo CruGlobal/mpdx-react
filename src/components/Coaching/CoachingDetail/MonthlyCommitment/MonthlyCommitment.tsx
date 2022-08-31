@@ -14,7 +14,7 @@ import {
   ReferenceLine,
 } from 'recharts';
 import { useTranslation } from 'react-i18next';
-import { Box, CardContent, CardHeader, Typography } from '@material-ui/core';
+import { Box, CardContent, CardHeader, Typography } from '@mui/material';
 import { useGetReportsPledgeHistoriesQuery } from './MonthlyCommitment.generated';
 import AnimatedCard from 'src/components/AnimatedCard';
 import { currencyFormat } from 'src/lib/intlFormat';

@@ -6,7 +6,7 @@ import {
   Divider,
   styled,
   Typography,
-} from '@material-ui/core';
+} from '@mui/material';
 import { Add, CheckCircleOutline } from '@material-ui/icons';
 import { useTranslation } from 'react-i18next';
 import { DateTime } from 'luxon';
@@ -111,12 +111,8 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
   });
 
   //#region Mass Actions
-  const {
-    selectionType,
-    isRowChecked,
-    toggleSelectAll,
-    toggleSelectionById,
-  } = useMassSelection(data?.tasks?.totalCount ?? 0, []);
+  const { selectionType, isRowChecked, toggleSelectAll, toggleSelectionById } =
+    useMassSelection(data?.tasks?.totalCount ?? 0, []);
 
   const { openTaskModal } = useTaskModal();
 

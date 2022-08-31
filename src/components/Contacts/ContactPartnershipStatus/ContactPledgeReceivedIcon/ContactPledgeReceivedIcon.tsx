@@ -1,6 +1,6 @@
 import React from 'react';
-import { useTheme } from '@material-ui/core';
-import type { Theme } from '@material-ui/core/styles/createTheme';
+import { useTheme } from '@mui/material';
+import type { Theme } from '@mui/material/styles/createTheme';
 import ErrorIcon from '@material-ui/icons/Error';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import { useTranslation } from 'react-i18next';

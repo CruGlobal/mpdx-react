@@ -1,6 +1,6 @@
 import React, { ReactElement } from 'react';
 import { signIn, getSession } from 'next-auth/react';
-import { Button } from '@material-ui/core';
+import { Button } from '@mui/material';
 import SubjectIcon from '@material-ui/icons/Subject';
 import { GetServerSideProps } from 'next';
 import Head from 'next/head';

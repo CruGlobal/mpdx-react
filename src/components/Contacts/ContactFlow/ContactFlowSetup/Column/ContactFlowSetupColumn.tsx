@@ -6,7 +6,7 @@ import {
   TextField,
   styled,
   Theme,
-} from '@material-ui/core';
+} from '@mui/material';
 import { Menu, Clear, FiberManualRecord } from '@material-ui/icons';
 import React, {
   useRef,

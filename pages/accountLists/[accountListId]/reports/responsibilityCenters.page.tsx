@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Head from 'next/head';
 import { useTranslation } from 'react-i18next';
-import { Box, styled } from '@material-ui/core';
+import { Box, styled } from '@mui/material';
 import { ResponsibilityCentersReport } from 'src/components/Reports/ResponsibilityCentersReport/ResponsibilityCentersReport';
 import Loading from 'src/components/Loading';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';

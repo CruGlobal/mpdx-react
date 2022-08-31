@@ -1,4 +1,4 @@
-import { Box, styled, Tab } from '@material-ui/core';
+import { Box, styled, Tab } from '@mui/material';
 import { TabContext, TabList, TabPanel } from '@material-ui/lab';
 import React from 'react';
 import { useTranslation } from 'react-i18next';

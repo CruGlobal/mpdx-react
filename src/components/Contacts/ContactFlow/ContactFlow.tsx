@@ -1,4 +1,4 @@
-import { Box } from '@material-ui/core';
+import { Box } from '@mui/material';
 import React from 'react';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
@@ -71,10 +71,8 @@ export const ContactFlow: React.FC<Props> = ({
   onContactSelected,
   searchTerm,
 }: Props) => {
-  const {
-    data: userOptions,
-    loading: loadingUserOptions,
-  } = useGetUserOptionsQuery({});
+  const { data: userOptions, loading: loadingUserOptions } =
+    useGetUserOptionsQuery({});
 
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();

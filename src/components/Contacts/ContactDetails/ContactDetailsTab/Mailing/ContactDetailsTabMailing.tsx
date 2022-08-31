@@ -1,13 +1,6 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  Box,
-  Grid,
-  IconButton,
-  Link,
-  styled,
-  Typography,
-} from '@material-ui/core';
+import { Box, Grid, IconButton, Link, styled, Typography } from '@mui/material';
 import LocationOn from '@material-ui/icons/LocationOn';
 import CreateIcon from '@material-ui/icons/Create';
 import {
@@ -100,10 +93,8 @@ export const ContactDetailsTabMailing: React.FC<MailingProp> = ({
     editingAddressId &&
     addresses.nodes.filter((address) => address.id === editingAddressId)[0];
 
-  const [
-    showContactDetailTabMoreOpen,
-    setShowContactDetailTabMoreOpen,
-  ] = useState(false);
+  const [showContactDetailTabMoreOpen, setShowContactDetailTabMoreOpen] =
+    useState(false);
   return (
     <>
       <Box>

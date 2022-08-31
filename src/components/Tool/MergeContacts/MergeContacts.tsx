@@ -7,7 +7,7 @@ import {
   Divider,
   Button,
   CircularProgress,
-} from '@material-ui/core';
+} from '@mui/material';
 
 import { Trans, useTranslation } from 'react-i18next';
 import theme from '../../../theme';

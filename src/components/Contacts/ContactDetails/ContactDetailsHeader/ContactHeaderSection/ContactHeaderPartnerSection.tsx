@@ -1,4 +1,4 @@
-import { styled, Typography } from '@material-ui/core';
+import { styled, Typography } from '@mui/material';
 import { Skeleton } from '@material-ui/lab';
 import React from 'react';
 import { useTranslation } from 'react-i18next';

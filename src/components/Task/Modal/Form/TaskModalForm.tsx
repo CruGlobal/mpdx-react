@@ -15,7 +15,7 @@ import {
   InputAdornment,
   Typography,
   Tooltip,
-} from '@material-ui/core';
+} from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { Autocomplete } from '@material-ui/lab';
 import InfoIcon from '@material-ui/icons/InfoOutlined';
@@ -158,25 +158,21 @@ const TaskModalForm = ({
     },
   });
 
-  const {
-    data: dataFilteredByName,
-    loading: loadingFilteredByName,
-  } = useGetTaskModalContactsFilteredQuery({
-    variables: {
-      accountListId,
-      contactsFilters: { wildcardSearch: searchTerm as string },
-    },
-  });
+  const { data: dataFilteredByName, loading: loadingFilteredByName } =
+    useGetTaskModalContactsFilteredQuery({
+      variables: {
+        accountListId,
+        contactsFilters: { wildcardSearch: searchTerm as string },
+      },
+    });
 
-  const {
-    data: dataFilteredById,
-    loading: loadingFilteredById,
-  } = useGetTaskModalContactsFilteredQuery({
-    variables: {
-      accountListId,
-      contactsFilters: { ids: selectedIds },
-    },
-  });
+  const { data: dataFilteredById, loading: loadingFilteredById } =
+    useGetTaskModalContactsFilteredQuery({
+      variables: {
+        accountListId,
+        contactsFilters: { ids: selectedIds },
+      },
+    });
 
   const mergedContacts =
     dataFilteredByName && dataFilteredById

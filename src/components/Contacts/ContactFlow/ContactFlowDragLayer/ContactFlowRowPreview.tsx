@@ -1,4 +1,4 @@
-import { Avatar, Box, Typography } from '@material-ui/core';
+import { Avatar, Box, Typography } from '@mui/material';
 import { Star, StarBorder } from '@material-ui/icons';
 import React, { memo } from 'react';
 import { useTranslation } from 'react-i18next';

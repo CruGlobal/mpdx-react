@@ -1,5 +1,5 @@
 import React, { ReactElement } from 'react';
-import { Box, IconButton, makeStyles } from '@material-ui/core';
+import { Box, IconButton, makeStyles } from '@mui/material';
 import { DataGrid, GridSelectionModel } from '@material-ui/data-grid';
 import Icon from '@mdi/react';
 import { mdiSquareEditOutline, mdiDelete } from '@mdi/js';

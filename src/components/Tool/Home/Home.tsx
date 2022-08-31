@@ -1,5 +1,5 @@
 import React, { ReactElement } from 'react';
-import { makeStyles, Theme, Grid, Box } from '@material-ui/core';
+import { makeStyles, Theme, Grid, Box } from '@mui/material';
 import { motion } from 'framer-motion';
 
 import { useTranslation } from 'react-i18next';

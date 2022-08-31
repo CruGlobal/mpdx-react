@@ -1,4 +1,4 @@
-import { Box, styled, Typography } from '@material-ui/core';
+import { Box, styled, Typography } from '@mui/material';
 import React, { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import StyledProgress from 'src/components/StyledProgress';

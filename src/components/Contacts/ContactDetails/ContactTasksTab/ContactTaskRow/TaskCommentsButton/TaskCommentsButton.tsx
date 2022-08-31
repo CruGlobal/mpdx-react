@@ -1,4 +1,4 @@
-import { Button, styled, Theme, Typography } from '@material-ui/core';
+import { Button, styled, Theme, Typography } from '@mui/material';
 import { ChatBubbleOutline } from '@material-ui/icons';
 import React from 'react';
 

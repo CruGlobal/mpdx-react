@@ -1,4 +1,4 @@
-import { DialogActions, IconButton, styled } from '@material-ui/core';
+import { DialogActions, IconButton, styled } from '@mui/material';
 import React, { useState } from 'react';
 import { DeletedItemIcon } from '../../../../common/DeleteItemIcon/DeleteItemIcon';
 import { DeleteConfirmation } from '../../../../common/Modal/DeleteConfirmation/DeleteConfirmation';

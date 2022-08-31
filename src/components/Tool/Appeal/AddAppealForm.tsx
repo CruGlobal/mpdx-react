@@ -11,7 +11,7 @@ import {
   CircularProgress,
   styled,
   FormControl,
-} from '@material-ui/core';
+} from '@mui/material';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import { Formik, Field, Form } from 'formik';
 import React, { ReactElement, useState } from 'react';
@@ -98,27 +98,25 @@ const AddAppealForm = (): ReactElement => {
   const { t } = useTranslation();
   const accountListId = useAccountListId() || '';
   const { enqueueSnackbar } = useSnackbar();
-  const {
-    data: contactFilterTags,
-    loading: loadingTags,
-  } = useGetContactTagsQuery({
-    variables: { accountListId },
-  });
-  const {
-    data: contactFilterGroups,
-    loading: loadingStatuses,
-  } = useContactFiltersQuery({
-    variables: {
-      accountListId,
-    },
-  });
+  const { data: contactFilterTags, loading: loadingTags } =
+    useGetContactTagsQuery({
+      variables: { accountListId },
+    });
+  const { data: contactFilterGroups, loading: loadingStatuses } =
+    useContactFiltersQuery({
+      variables: {
+        accountListId,
+      },
+    });
 
   const contactStatuses = contactFilterGroups?.accountList?.contactFilterGroups
-    ? (contactFilterGroups.accountList.contactFilterGroups
-        .find((group) => group.name === 'Status')
-        ?.filters.find(
-          (filter: { filterKey: string }) => filter.filterKey === 'status',
-        ) as MultiselectFilter).options
+    ? (
+        contactFilterGroups.accountList.contactFilterGroups
+          .find((group) => group.name === 'Status')
+          ?.filters.find(
+            (filter: { filterKey: string }) => filter.filterKey === 'status',
+          ) as MultiselectFilter
+      ).options
     : [{ name: '', value: '' }];
 
   const [filterTags, setFilterTags] = useState<{

@@ -1,5 +1,5 @@
 import React, { ReactElement } from 'react';
-import { Card, CardProps } from '@material-ui/core';
+import { Card, CardProps } from '@mui/material';
 import { motion } from 'framer-motion';
 
 const variants = {

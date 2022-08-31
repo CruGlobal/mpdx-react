@@ -1,6 +1,6 @@
 import React, { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Box, Button, Chip, styled, TextField } from '@material-ui/core';
+import { Box, Button, Chip, styled, TextField } from '@mui/material';
 import TagIcon from '@material-ui/icons/LocalOfferOutlined';
 import { useSnackbar } from 'notistack';
 import * as yup from 'yup';
@@ -77,10 +77,8 @@ export const ContactTags: React.FC<ContactTagsProps> = ({
 }) => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
-  const [
-    updateContactTags,
-    { loading: updating },
-  ] = useUpdateContactTagsMutation();
+  const [updateContactTags, { loading: updating }] =
+    useUpdateContactTagsMutation();
 
   const { data: contactTagsList, loading } = useGetContactTagListQuery({
     variables: {

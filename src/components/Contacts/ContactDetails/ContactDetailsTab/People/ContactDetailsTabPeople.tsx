@@ -7,7 +7,7 @@ import {
   styled,
   Typography,
   Button,
-} from '@material-ui/core';
+} from '@mui/material';
 import AddIcon from '@material-ui/icons/Add';
 import { Cake, Email, Phone } from '@material-ui/icons';
 import CreateIcon from '@material-ui/icons/Create';

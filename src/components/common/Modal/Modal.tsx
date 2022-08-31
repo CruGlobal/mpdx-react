@@ -5,7 +5,7 @@ import {
   DialogTitle,
   IconButton,
   styled,
-} from '@material-ui/core';
+} from '@mui/material';
 import CloseIcon from '@material-ui/icons/Close';
 import { useTranslation } from 'react-i18next';
 

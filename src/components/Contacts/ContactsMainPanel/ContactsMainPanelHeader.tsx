@@ -1,4 +1,4 @@
-import { Box, Button, Hidden, styled } from '@material-ui/core';
+import { Box, Button, Hidden, styled } from '@mui/material';
 import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
 import React, { useState } from 'react';
 import NextLink from 'next/link';

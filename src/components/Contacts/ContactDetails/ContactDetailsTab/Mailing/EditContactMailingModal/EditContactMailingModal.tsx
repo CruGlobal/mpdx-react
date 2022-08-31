@@ -14,7 +14,7 @@ import {
   Select,
   styled,
   TextField,
-} from '@material-ui/core';
+} from '@mui/material';
 import { useSnackbar } from 'notistack';
 import { Formik } from 'formik';
 import {
@@ -48,7 +48,9 @@ interface EditContactMailingModalProps {
   isOpen: boolean;
 }
 
-export const EditContactMailingModal: React.FC<EditContactMailingModalProps> = ({
+export const EditContactMailingModal: React.FC<
+  EditContactMailingModalProps
+> = ({
   accountListId,
   contact,
   handleClose,
@@ -72,10 +74,8 @@ export const EditContactMailingModal: React.FC<EditContactMailingModalProps> = (
       .nullable(),
   });
 
-  const [
-    updatContactMailing,
-    { loading: updating },
-  ] = useUpdateContactMailingMutation();
+  const [updatContactMailing, { loading: updating }] =
+    useUpdateContactMailingMutation();
 
   const onSubmit = async (
     attributes: Pick<

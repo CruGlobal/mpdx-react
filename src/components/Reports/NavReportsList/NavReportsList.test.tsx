@@ -1,6 +1,6 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import { ThemeProvider } from '@material-ui/core';
+import { ThemeProvider } from '@mui/material';
 import { NavReportsList } from './NavReportsList';
 import TestRouter from '__tests__/util/TestRouter';
 import theme from 'src/theme';

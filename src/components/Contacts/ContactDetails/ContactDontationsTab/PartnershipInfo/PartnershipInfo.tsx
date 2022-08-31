@@ -6,7 +6,7 @@ import {
   IconButton,
   styled,
   Typography,
-} from '@material-ui/core';
+} from '@mui/material';
 import {
   CheckCircleOutline,
   Clear,
@@ -78,9 +78,8 @@ interface PartnershipInfoProp {
 
 export const PartnershipInfo: React.FC<PartnershipInfoProp> = ({ contact }) => {
   const { t } = useTranslation();
-  const [editPartnershipModalOpen, setEditPartnershipModalOpen] = useState(
-    false,
-  );
+  const [editPartnershipModalOpen, setEditPartnershipModalOpen] =
+    useState(false);
 
   return (
     <PartnershipInfoContainer>

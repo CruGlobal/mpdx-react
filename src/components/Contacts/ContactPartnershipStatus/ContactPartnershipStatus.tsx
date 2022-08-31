@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Box, Hidden, Typography } from '@material-ui/core';
+import { Box, Hidden, Typography } from '@mui/material';
 import { DateTime } from 'luxon';
 import { ContactRowFragment } from '../ContactRow/ContactRow.generated';
 import { StatusEnum as ContactPartnershipStatusEnum } from '../../../../graphql/types.generated';
@@ -33,7 +33,9 @@ interface ContactPartnershipStatusProps {
   status: ContactRowFragment['status'];
 }
 
-export const ContactPartnershipStatus: React.FC<ContactPartnershipStatusProps> = ({
+export const ContactPartnershipStatus: React.FC<
+  ContactPartnershipStatusProps
+> = ({
   lateAt,
   contactDetailsOpen,
   pledgeAmount,

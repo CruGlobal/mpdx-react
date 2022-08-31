@@ -1,5 +1,5 @@
 import React, { ReactElement, ReactNode } from 'react';
-import { Typography, makeStyles, Theme } from '@material-ui/core';
+import { Typography, makeStyles, Theme } from '@mui/material';
 
 const useStyles = makeStyles((_theme: Theme) => ({
   title: {

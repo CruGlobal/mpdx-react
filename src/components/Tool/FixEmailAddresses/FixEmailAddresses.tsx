@@ -8,7 +8,7 @@ import {
   NativeSelect,
   styled,
   CircularProgress,
-} from '@material-ui/core';
+} from '@mui/material';
 
 import { Trans, useTranslation } from 'react-i18next';
 

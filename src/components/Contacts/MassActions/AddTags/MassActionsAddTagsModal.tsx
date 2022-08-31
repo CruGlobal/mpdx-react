@@ -6,7 +6,7 @@ import {
   FormControl,
   styled,
   Typography,
-} from '@material-ui/core';
+} from '@mui/material';
 import * as yup from 'yup';
 import { Autocomplete } from '@material-ui/lab';
 import { Formik } from 'formik';
@@ -52,11 +52,9 @@ const tagSchema = yup.object({
   tagList: yup.array().of(yup.string()).default([]).nullable(),
 });
 
-export const MassActionsAddTagsModal: React.FC<MassActionsAddTagsModalProps> = ({
-  handleClose,
-  accountListId,
-  ids,
-}) => {
+export const MassActionsAddTagsModal: React.FC<
+  MassActionsAddTagsModalProps
+> = ({ handleClose, accountListId, ids }) => {
   const { t } = useTranslation();
 
   const { enqueueSnackbar } = useSnackbar();

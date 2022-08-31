@@ -1,5 +1,5 @@
 import React, { ReactElement } from 'react';
-import { Tooltip, Theme, makeStyles, Fab, Avatar } from '@material-ui/core';
+import { Tooltip, Theme, makeStyles, Fab, Avatar } from '@mui/material';
 import { DateTime } from 'luxon';
 import AssignmentLateIcon from '@material-ui/icons/AssignmentLate';
 import AssignmentIcon from '@material-ui/icons/Assignment';

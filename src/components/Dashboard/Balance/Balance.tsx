@@ -7,7 +7,7 @@ import {
   CardActions,
   Button,
   Box,
-} from '@material-ui/core';
+} from '@mui/material';
 import { Skeleton } from '@material-ui/lab';
 import { useTranslation } from 'react-i18next';
 import { currencyFormat } from '../../../lib/intlFormat';

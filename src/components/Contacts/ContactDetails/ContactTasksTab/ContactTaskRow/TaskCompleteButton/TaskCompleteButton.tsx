@@ -1,4 +1,4 @@
-import { Button, styled, Theme } from '@material-ui/core';
+import { Button, styled, Theme } from '@mui/material';
 import { Check } from '@material-ui/icons';
 import React from 'react';
 

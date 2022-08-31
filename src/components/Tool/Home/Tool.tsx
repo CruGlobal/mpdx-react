@@ -5,7 +5,7 @@ import {
   CardActionArea,
   makeStyles,
   Box,
-} from '@material-ui/core';
+} from '@mui/material';
 import Icon from '@mdi/react';
 import NextLink from 'next/link';
 import { useAccountListId } from '../../../../src/hooks/useAccountListId';

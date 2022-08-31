@@ -7,7 +7,7 @@ import {
   CardHeader,
   makeStyles,
   Theme,
-} from '@material-ui/core';
+} from '@mui/material';
 import {
   ReferenceLine,
   BarChart,

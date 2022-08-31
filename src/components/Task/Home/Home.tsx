@@ -1,6 +1,6 @@
 import React, { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Container, makeStyles, Theme } from '@material-ui/core';
+import { Container, makeStyles, Theme } from '@mui/material';
 import PageHeading from '../../PageHeading';
 import TaskList from '../List';
 import { TaskFilter } from '../List/List';

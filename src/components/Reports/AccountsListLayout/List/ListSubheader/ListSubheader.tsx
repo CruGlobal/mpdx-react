@@ -7,7 +7,7 @@ import {
   Tooltip,
   Typography,
   styled,
-} from '@material-ui/core';
+} from '@mui/material';
 import HelpIcon from '@material-ui/icons/Help';
 
 export interface AccountListSubheaderProps {

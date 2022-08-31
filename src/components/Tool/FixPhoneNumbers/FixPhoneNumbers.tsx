@@ -8,7 +8,7 @@ import {
   Button,
   NativeSelect,
   CircularProgress,
-} from '@material-ui/core';
+} from '@mui/material';
 
 import { Trans, useTranslation } from 'react-i18next';
 import Icon from '@mdi/react';

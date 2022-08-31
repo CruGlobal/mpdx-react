@@ -7,7 +7,7 @@ import Document, {
   DocumentContext,
   DocumentInitialProps,
 } from 'next/document';
-import { ServerStyleSheets } from '@material-ui/core/styles';
+import { ServerStyleSheets } from '@mui/material/styles';
 import { RenderPageResult } from 'next/dist/shared/lib/utils';
 import theme from '../src/theme';
 

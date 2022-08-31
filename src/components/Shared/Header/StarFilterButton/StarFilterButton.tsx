@@ -1,4 +1,4 @@
-import { Box, IconButton, styled } from '@material-ui/core';
+import { Box, IconButton, styled } from '@mui/material';
 import React from 'react';
 import {
   ContactFilterSetInput,

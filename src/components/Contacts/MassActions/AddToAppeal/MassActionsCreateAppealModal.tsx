@@ -5,7 +5,7 @@ import {
   DialogContent,
   FormControl,
   TextField,
-} from '@material-ui/core';
+} from '@mui/material';
 import { Formik } from 'formik';
 import React, { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -25,11 +25,9 @@ const MassActionsAddToAppealSchema = yup.object({
   appeal: yup.string().nullable(),
 });
 
-export const MassActionsCreateAppealModal: React.FC<MassActionsCreateAppealModalProps> = ({
-  handleClose,
-  accountListId,
-  ids,
-}) => {
+export const MassActionsCreateAppealModal: React.FC<
+  MassActionsCreateAppealModalProps
+> = ({ handleClose, accountListId, ids }) => {
   const { t } = useTranslation();
 
   const [createAppeal, { loading: updating }] = useAddToAppealMutation();

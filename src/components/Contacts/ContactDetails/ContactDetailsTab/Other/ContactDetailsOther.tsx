@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, styled, Typography } from '@material-ui/core';
+import { Box, styled, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import i18n from 'i18next';
 import { PreferredContactMethodEnum } from '../../../../../../graphql/types.generated';

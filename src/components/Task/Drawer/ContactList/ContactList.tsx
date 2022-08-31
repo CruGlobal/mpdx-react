@@ -1,12 +1,5 @@
 import React, { ReactElement } from 'react';
-import {
-  makeStyles,
-  Theme,
-  Box,
-  Card,
-  Grid,
-  CardContent,
-} from '@material-ui/core';
+import { makeStyles, Theme, Box, Card, Grid, CardContent } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import illustration4 from '../../../../images/drawkit/grape/drawkit-grape-pack-illustration-4.svg';
 import TaskDrawerContactListItem from './Item';

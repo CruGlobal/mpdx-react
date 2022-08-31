@@ -10,7 +10,7 @@ import {
   TableRow,
   Button,
   Typography,
-} from '@material-ui/core';
+} from '@mui/material';
 import { Skeleton } from '@material-ui/lab';
 import { DateTime } from 'luxon';
 import React, { useState } from 'react';
@@ -68,9 +68,8 @@ export const ContactReferralTab: React.FC<ContactReferralTabProps> = ({
   });
 
   const { t } = useTranslation();
-  const [modalContactReferralOpen, setModalContactReferralOpen] = useState(
-    false,
-  );
+  const [modalContactReferralOpen, setModalContactReferralOpen] =
+    useState(false);
 
   const handleModalOpen = () => {
     setModalContactReferralOpen(true);

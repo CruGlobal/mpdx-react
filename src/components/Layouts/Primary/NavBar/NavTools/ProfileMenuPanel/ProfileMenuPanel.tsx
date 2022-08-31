@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Button, Drawer, Link, List, styled } from '@material-ui/core';
+import { Box, Button, Drawer, Link, List, styled } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { signOut } from 'next-auth/react';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';

@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import Head from 'next/head';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'next/router';
-import { Box, Button, ButtonGroup, Hidden, styled } from '@material-ui/core';
+import { Box, Button, ButtonGroup, Hidden, styled } from '@mui/material';
 import AddIcon from '@material-ui/icons/Add';
 import CheckCircleOutlineIcon from '@material-ui/icons/CheckCircleOutline';
 import debounce from 'lodash/debounce';
@@ -160,10 +160,8 @@ const TasksPage: React.FC = () => {
   //#endregion
 
   //#region Mass Actions
-  const [
-    getTaskIds,
-    { data: taskIds, loading: loadingTaskIds },
-  ] = useGetTaskIdsForMassSelectionLazyQuery();
+  const [getTaskIds, { data: taskIds, loading: loadingTaskIds }] =
+    useGetTaskIdsForMassSelectionLazyQuery();
 
   // Only query when the filters or total count change and store data in state
   const [allTaskIds, setAllTaskIds] = useState<string[]>([]);

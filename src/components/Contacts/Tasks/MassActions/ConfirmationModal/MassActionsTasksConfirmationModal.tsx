@@ -1,4 +1,4 @@
-import { DialogActions, DialogContent, Typography } from '@material-ui/core';
+import { DialogActions, DialogContent, Typography } from '@mui/material';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import Modal from '../../../../common/Modal/Modal';
@@ -12,13 +12,9 @@ interface MassActionsTasksConfirmationModalProps {
   onConfirm: () => void;
 }
 
-export const MassActionsTasksConfirmationModal: React.FC<MassActionsTasksConfirmationModalProps> = ({
-  open,
-  idsCount,
-  action,
-  setOpen,
-  onConfirm,
-}) => {
+export const MassActionsTasksConfirmationModal: React.FC<
+  MassActionsTasksConfirmationModalProps
+> = ({ open, idsCount, action, setOpen, onConfirm }) => {
   const { t } = useTranslation();
 
   return (

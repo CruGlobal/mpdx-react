@@ -9,7 +9,7 @@ import {
   ListItem,
   ListItemText,
   Typography,
-} from '@material-ui/core';
+} from '@mui/material';
 import { Maybe } from 'graphql/jsutils/Maybe';
 import { Unarray } from '../../../Reports.type';
 import { AccountListItemChart as Chart } from './Chart/Chart';

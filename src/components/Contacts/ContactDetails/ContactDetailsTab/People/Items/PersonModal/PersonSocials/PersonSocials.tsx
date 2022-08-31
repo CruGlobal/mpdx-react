@@ -10,7 +10,7 @@ import {
   styled,
   TextField,
   Typography,
-} from '@material-ui/core';
+} from '@mui/material';
 import SocialIcon from '@material-ui/icons/Language';
 import AddIcon from '@material-ui/icons/Add';
 import { FormikProps, FieldArray, getIn } from 'formik';

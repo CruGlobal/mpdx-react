@@ -4,7 +4,7 @@ import {
   ListItemIcon,
   ListItemText,
   TextField,
-} from '@material-ui/core';
+} from '@mui/material';
 import { Autocomplete } from '@material-ui/lab';
 import React from 'react';
 import { MultiselectFilter } from '../../../../graphql/types.generated';

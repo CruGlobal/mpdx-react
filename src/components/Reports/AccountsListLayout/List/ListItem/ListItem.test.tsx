@@ -1,6 +1,6 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import { ThemeProvider } from '@material-ui/core';
+import { ThemeProvider } from '@mui/material';
 import userEvent from '@testing-library/user-event';
 import { AccountListItem as ListItem } from './ListItem';
 import theme from 'src/theme';

@@ -8,7 +8,7 @@ import {
   ListItemText,
   CardContent,
   styled,
-} from '@material-ui/core';
+} from '@mui/material';
 import { DateTime } from 'luxon';
 import { Skeleton } from '@material-ui/lab';
 import { motion } from 'framer-motion';

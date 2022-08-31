@@ -7,7 +7,7 @@ import {
   SvgIcon,
   TextField,
   styled,
-} from '@material-ui/core';
+} from '@mui/material';
 import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
 import SearchIcon from '@material-ui/icons/Search';
 
@@ -21,11 +21,9 @@ const SearchField = styled(TextField)(() => ({
   width: 500,
 }));
 
-export const PartnerGivingAnalysisReportActions: React.FC<PartnerGivingAnalysisReportActionsProps> = ({
-  query,
-  onQueryChange,
-  onModalOpen,
-}) => {
+export const PartnerGivingAnalysisReportActions: React.FC<
+  PartnerGivingAnalysisReportActionsProps
+> = ({ query, onQueryChange, onModalOpen }) => {
   const { t } = useTranslation();
 
   return (

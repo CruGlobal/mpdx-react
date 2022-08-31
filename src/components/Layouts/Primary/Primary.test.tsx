@@ -1,6 +1,6 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import { ThemeProvider } from '@material-ui/core';
+import { ThemeProvider } from '@mui/material';
 import * as nextRouter from 'next/router';
 import matchMediaMock from '../../../../__tests__/util/matchMediaMock';
 import TestWrapper from '../../../../__tests__/util/TestWrapper';
@@ -15,9 +15,11 @@ describe('Primary', () => {
   const mocks = [...getNotificationsMocks(), getTopBarMock()];
   beforeEach(() => {
     matchMediaMock({ width: '1024px' });
-    (useRouter as jest.SpyInstance<
-      Pick<nextRouter.NextRouter, 'query' | 'isReady'>
-    >).mockImplementation(() => ({
+    (
+      useRouter as jest.SpyInstance<
+        Pick<nextRouter.NextRouter, 'query' | 'isReady'>
+      >
+    ).mockImplementation(() => ({
       query: { accountListId: 'accountListId' },
       isReady: true,
     }));

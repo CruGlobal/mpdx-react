@@ -2,7 +2,7 @@ import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import { SnackbarProvider } from 'notistack';
 import userEvent from '@testing-library/user-event';
-import { MuiThemeProvider } from '@material-ui/core';
+import { MuiThemeProvider } from '@mui/material';
 import { GqlMockedProvider } from '../../../../../../../../../__tests__/util/graphqlMocking';
 import TestRouter from '../../../../../../../../../__tests__/util/TestRouter';
 import theme from '../../../../../../../../theme';

@@ -7,7 +7,7 @@ import {
   Avatar,
   makeStyles,
   NativeSelect,
-} from '@material-ui/core';
+} from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { Icon } from '@mdi/react';
 import { mdiCheckboxMarkedCircle } from '@mdi/js';

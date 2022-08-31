@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-  Box,
-  IconButton,
-  Divider,
-  styled,
-  Typography,
-} from '@material-ui/core';
+import { Box, IconButton, Divider, styled, Typography } from '@mui/material';
 import CreateIcon from '@material-ui/icons/Create';
 import { Skeleton } from '@material-ui/lab';
 import { useTranslation } from 'react-i18next';

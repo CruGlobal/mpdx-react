@@ -1,10 +1,4 @@
-import {
-  Button,
-  Grid,
-  InputLabel,
-  styled,
-  Typography,
-} from '@material-ui/core';
+import { Button, Grid, InputLabel, styled, Typography } from '@mui/material';
 import React from 'react';
 import AddIcon from '@material-ui/icons/Add';
 import { useTranslation } from 'react-i18next';

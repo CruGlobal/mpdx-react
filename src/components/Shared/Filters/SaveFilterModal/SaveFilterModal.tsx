@@ -10,7 +10,7 @@ import {
   FormHelperText,
   TextField,
   Typography,
-} from '@material-ui/core';
+} from '@mui/material';
 import * as yup from 'yup';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'next/router';

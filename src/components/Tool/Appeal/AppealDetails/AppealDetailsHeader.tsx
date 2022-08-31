@@ -8,7 +8,7 @@ import {
   makeStyles,
   Box,
   Grid,
-} from '@material-ui/core';
+} from '@mui/material';
 import NextLink from 'next/link';
 import { ArrowBackIos, List, TableChart } from '@material-ui/icons';
 import clsx from 'clsx';

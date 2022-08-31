@@ -8,7 +8,7 @@ import {
   CircularProgress,
   NativeSelect,
   Button,
-} from '@material-ui/core';
+} from '@mui/material';
 import { Icon } from '@mdi/react';
 import { mdiCheckboxMarkedCircle } from '@mdi/js';
 import { Trans, useTranslation } from 'react-i18next';

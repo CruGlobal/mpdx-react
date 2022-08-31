@@ -1,6 +1,6 @@
 import { render, waitFor } from '@testing-library/react';
 import { SnackbarProvider } from 'notistack';
-import { MuiThemeProvider } from '@material-ui/core';
+import { MuiThemeProvider } from '@mui/material';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import LuxonUtils from '@date-io/luxon';
 import userEvent from '@testing-library/user-event';

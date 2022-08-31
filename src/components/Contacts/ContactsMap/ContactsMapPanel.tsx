@@ -6,7 +6,7 @@ import {
   Typography,
   styled,
   Theme,
-} from '@material-ui/core';
+} from '@mui/material';
 import React, {
   Dispatch,
   SetStateAction,
@@ -95,12 +95,14 @@ export const ContactsMapPanel: React.FC<ContactMapsPanelProps> = ({
 
   const [statusContactsMapOpen, setStatusContactsMapOpen] = useState(-1);
 
-  const handleExpansionChange = (panel: React.SetStateAction<number>) => (
-    _event: React.ChangeEvent<Record<string, unknown>>,
-    newExpanded: boolean,
-  ) => {
-    setStatusContactsMapOpen(newExpanded ? panel : -1);
-  };
+  const handleExpansionChange =
+    (panel: React.SetStateAction<number>) =>
+    (
+      _event: React.ChangeEvent<Record<string, unknown>>,
+      newExpanded: boolean,
+    ) => {
+      setStatusContactsMapOpen(newExpanded ? panel : -1);
+    };
 
   const panelData: {
     [key: string]: {

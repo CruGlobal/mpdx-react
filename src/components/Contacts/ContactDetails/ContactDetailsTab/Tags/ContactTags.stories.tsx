@@ -1,5 +1,5 @@
 import React, { ReactElement } from 'react';
-import { Box, MuiThemeProvider } from '@material-ui/core';
+import { Box, MuiThemeProvider } from '@mui/material';
 import theme from '../../../../../theme';
 import { GqlMockedProvider } from '../../../../../../__tests__/util/graphqlMocking';
 import { ContactTags } from './ContactTags';

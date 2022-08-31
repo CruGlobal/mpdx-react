@@ -1,4 +1,4 @@
-import { Box, CardContent, Typography } from '@material-ui/core';
+import { Box, CardContent, Typography } from '@mui/material';
 import React, { ReactElement } from 'react';
 import Icon from '@mdi/react';
 import { mdiTrophy } from '@mdi/js';

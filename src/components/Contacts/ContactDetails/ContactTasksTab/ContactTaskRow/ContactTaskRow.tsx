@@ -1,4 +1,4 @@
-import { Box, Checkbox, styled, Typography } from '@material-ui/core';
+import { Box, Checkbox, styled, Typography } from '@mui/material';
 import { Skeleton } from '@material-ui/lab';
 import { TFunction } from 'i18next';
 import { DateTime } from 'luxon';

@@ -2,7 +2,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import Icon from '@mdi/react';
 import { mdiFormatListBulleted } from '@mdi/js';
-import { Button, Typography, styled } from '@material-ui/core';
+import { Button, Typography, styled } from '@mui/material';
 import { NullStateBox } from 'src/components/Shared/Filters/NullState/NullStateBox';
 import useTaskModal from 'src/hooks/useTaskModal';
 
@@ -19,9 +19,9 @@ interface ContactTasksTabNullStateProps {
   contactId: string;
 }
 
-export const ContactTasksTabNullState: React.FC<ContactTasksTabNullStateProps> = ({
-  contactId,
-}) => {
+export const ContactTasksTabNullState: React.FC<
+  ContactTasksTabNullStateProps
+> = ({ contactId }) => {
   const { t } = useTranslation();
   const { openTaskModal } = useTaskModal();
 

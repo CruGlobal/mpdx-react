@@ -1,4 +1,4 @@
-import { Checkbox, Grid, MenuItem, Select, styled } from '@material-ui/core';
+import { Checkbox, Grid, MenuItem, Select, styled } from '@mui/material';
 import React from 'react';
 
 import { useTranslation } from 'react-i18next';
@@ -46,9 +46,8 @@ export const PersonEmailItem: React.FC<Props> = ({
 }) => {
   const { t } = useTranslation();
 
-  const [isEmailPrimaryChecked, setIsEmailPrimaryChecked] = React.useState(
-    false,
-  );
+  const [isEmailPrimaryChecked, setIsEmailPrimaryChecked] =
+    React.useState(false);
 
   React.useEffect(() => {
     setIsEmailPrimaryChecked(emailAddress.id === primaryEmail?.id ?? '');

@@ -1,5 +1,5 @@
 import React, { ReactElement } from 'react';
-import { Box } from '@material-ui/core';
+import { Box } from '@mui/material';
 import { GetThisWeekQuery } from '../GetThisWeek.generated';
 import LateCommitments from './LateCommitments';
 

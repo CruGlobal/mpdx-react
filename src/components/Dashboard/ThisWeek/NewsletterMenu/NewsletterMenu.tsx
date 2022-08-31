@@ -6,7 +6,7 @@ import {
   Dialog,
   ListItemText,
   styled,
-} from '@material-ui/core';
+} from '@mui/material';
 import ArrowDropDown from '@material-ui/icons/ArrowDropDown';
 import { useTranslation } from 'react-i18next';
 import { DateTime } from 'luxon';
@@ -29,9 +29,8 @@ const NewsletterMenu = ({ accountListId }: Props): ReactElement<Props> => {
 
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>();
   const [selectedMenuItem, changeSelectedMenuItem] = useState(-1);
-  const [newsletterMenuDialogOpen, changeNewsletterMenuDialogOpen] = useState(
-    false,
-  );
+  const [newsletterMenuDialogOpen, changeNewsletterMenuDialogOpen] =
+    useState(false);
 
   const { data, loading } = useGetTaskAnalyticsQuery({
     variables: { accountListId },

@@ -1,4 +1,4 @@
-import { Box, styled, Theme, Typography } from '@material-ui/core';
+import { Box, styled, Theme, Typography } from '@mui/material';
 import React, { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 

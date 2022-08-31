@@ -1,5 +1,5 @@
 import React, { ReactElement } from 'react';
-import { Box, InputAdornment, TextField } from '@material-ui/core';
+import { Box, InputAdornment, TextField } from '@mui/material';
 import SearchIcon from '@material-ui/icons/Search';
 import { useTranslation } from 'react-i18next';
 

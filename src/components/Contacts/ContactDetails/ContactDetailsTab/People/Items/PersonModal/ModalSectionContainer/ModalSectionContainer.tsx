@@ -1,5 +1,5 @@
 import React, { ReactNode } from 'react';
-import { Box, styled } from '@material-ui/core';
+import { Box, styled } from '@mui/material';
 
 interface ModalSectionContainerProps {
   children: ReactNode;

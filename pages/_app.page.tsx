@@ -2,7 +2,7 @@ import React, { ReactElement } from 'react';
 import Rollbar from 'rollbar';
 import { ErrorBoundary, Provider } from '@rollbar/react';
 import { AppProps } from 'next/app';
-import { StylesProvider, ThemeProvider } from '@material-ui/core/styles';
+import { StylesProvider, ThemeProvider } from '@mui/material/styles';
 import { ApolloProvider } from '@apollo/client';
 import { AnimatePresence } from 'framer-motion';
 import { SessionProvider } from 'next-auth/react';

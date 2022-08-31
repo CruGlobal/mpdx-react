@@ -7,7 +7,7 @@ import {
   styled,
   Tooltip,
   Typography,
-} from '@material-ui/core';
+} from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { DateTime } from 'luxon';
 import { TaskCompleteButton } from '../../Contacts/ContactDetails/ContactTasksTab/ContactTaskRow/TaskCompleteButton/TaskCompleteButton';

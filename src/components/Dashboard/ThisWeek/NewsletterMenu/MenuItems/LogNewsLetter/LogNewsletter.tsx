@@ -15,7 +15,7 @@ import {
   InputAdornment,
   Button,
   CircularProgress,
-} from '@material-ui/core';
+} from '@mui/material';
 import * as yup from 'yup';
 import CloseIcon from '@material-ui/icons/Close';
 import { useTranslation } from 'react-i18next';
@@ -86,22 +86,21 @@ const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
   margin: theme.spacing(0, 1, 0, 0),
 }));
 
-const taskSchema: yup.SchemaOf<
-  Omit<TaskCreateInput, 'result' | 'nextAction'>
-> = yup.object({
-  id: yup.string().nullable(),
-  activityType: yup.mixed<ActivityTypeEnum>(),
-  subject: yup.string().required(),
-  starred: yup.boolean().nullable(),
-  startAt: yup.string().nullable(),
-  completedAt: yup.string().nullable(),
-  tagList: yup.array().of(yup.string()).default([]),
-  contactIds: yup.array().of(yup.string()).default([]),
-  userId: yup.string().nullable(),
-  notificationTimeBefore: yup.number().nullable(),
-  notificationType: yup.mixed<NotificationTypeEnum>(),
-  notificationTimeUnit: yup.mixed<NotificationTimeUnitEnum>(),
-});
+const taskSchema: yup.SchemaOf<Omit<TaskCreateInput, 'result' | 'nextAction'>> =
+  yup.object({
+    id: yup.string().nullable(),
+    activityType: yup.mixed<ActivityTypeEnum>(),
+    subject: yup.string().required(),
+    starred: yup.boolean().nullable(),
+    startAt: yup.string().nullable(),
+    completedAt: yup.string().nullable(),
+    tagList: yup.array().of(yup.string()).default([]),
+    contactIds: yup.array().of(yup.string()).default([]),
+    userId: yup.string().nullable(),
+    notificationTimeBefore: yup.number().nullable(),
+    notificationType: yup.mixed<NotificationTypeEnum>(),
+    notificationTimeUnit: yup.mixed<NotificationTimeUnitEnum>(),
+  });
 
 const LogNewsletter = ({
   accountListId,

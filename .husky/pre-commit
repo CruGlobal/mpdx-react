@@ -1,4 +1,4 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
-
-yarn lint-staged
+# TODO: Put this back. Disabled temporally for Material 5 Migration
+# yarn lint-staged

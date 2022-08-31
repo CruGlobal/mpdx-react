@@ -10,7 +10,7 @@ import {
   makeStyles,
   NativeSelect,
   styled,
-} from '@material-ui/core';
+} from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import SearchIcon from '@material-ui/icons/Search';
 import VisibilityOffIcon from '@material-ui/icons/VisibilityOff';

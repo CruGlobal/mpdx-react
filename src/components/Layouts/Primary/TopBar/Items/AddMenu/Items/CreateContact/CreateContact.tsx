@@ -9,7 +9,7 @@ import {
   Grid,
   styled,
   TextField,
-} from '@material-ui/core';
+} from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { Formik } from 'formik';
 import * as yup from 'yup';
@@ -46,11 +46,10 @@ const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
   margin: theme.spacing(0, 1, 0, 0),
 }));
 
-const contactSchema: yup.SchemaOf<
-  Pick<ContactCreateInput, 'name'>
-> = yup.object({
-  name: yup.string().required(),
-});
+const contactSchema: yup.SchemaOf<Pick<ContactCreateInput, 'name'>> =
+  yup.object({
+    name: yup.string().required(),
+  });
 
 const CreateContact = ({
   accountListId,

@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Box, IconButton, styled, Theme, Typography } from '@material-ui/core';
+import { Box, IconButton, styled, Theme, Typography } from '@mui/material';
 import { FilterList } from '@material-ui/icons';
 
 interface AccountsListHeaderProps {

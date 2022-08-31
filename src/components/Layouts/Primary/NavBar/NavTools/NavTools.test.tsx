@@ -1,6 +1,6 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import { ThemeProvider } from '@material-ui/core';
+import { ThemeProvider } from '@mui/material';
 import { MockedProvider } from '@apollo/client/testing';
 import { getTopBarMultipleMock } from '../../TopBar/TopBar.mock';
 import { NavTools } from './NavTools';

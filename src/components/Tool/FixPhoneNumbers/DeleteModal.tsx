@@ -10,7 +10,7 @@ import {
   Theme,
   IconButton,
   Box,
-} from '@material-ui/core';
+} from '@mui/material';
 import Icon from '@mdi/react';
 import clsx from 'clsx';
 import React from 'react';

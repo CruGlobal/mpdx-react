@@ -13,7 +13,7 @@ import {
   TableHead,
   TableRow,
   TextField,
-} from '@material-ui/core';
+} from '@mui/material';
 import { Field, FieldArray, FieldProps, Form, Formik } from 'formik';
 import { useSnackbar } from 'notistack';
 import React, { ReactElement } from 'react';
@@ -89,10 +89,8 @@ export const CreateMultipleContacts = ({
   };
 
   const [createContact, { loading: creating }] = useCreateContactMutation();
-  const [
-    updateContact,
-    { loading: updating },
-  ] = useUpdateContactReferralMutation();
+  const [updateContact, { loading: updating }] =
+    useUpdateContactReferralMutation();
 
   const onSubmit = async (attributes: InitialContactInterface) => {
     const filteredContacts = attributes.contacts.filter(

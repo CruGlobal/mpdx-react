@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
-import { ThemeProvider } from '@material-ui/core';
+import { ThemeProvider } from '@mui/material';
 import { StatusEnum } from '../../../../graphql/types.generated';
 import TestRouter from '../../../../__tests__/util/TestRouter';
 import theme from '../../../../src/theme';

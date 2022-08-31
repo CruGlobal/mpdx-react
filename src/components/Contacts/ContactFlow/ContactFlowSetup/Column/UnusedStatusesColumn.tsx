@@ -1,10 +1,4 @@
-import {
-  Box,
-  Card,
-  CardContent,
-  IconButton,
-  Typography,
-} from '@material-ui/core';
+import { Box, Card, CardContent, IconButton, Typography } from '@mui/material';
 import { FiberManualRecord } from '@material-ui/icons';
 import { useTranslation } from 'react-i18next';
 import React, { useRef } from 'react';

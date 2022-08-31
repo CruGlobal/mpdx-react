@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
-import { ThemeProvider } from '@material-ui/core';
+import { ThemeProvider } from '@mui/material';
 import { SnackbarProvider } from 'notistack';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '../../../../../../__tests__/util/TestRouter';

@@ -1,6 +1,6 @@
 import React from 'react';
 import { MockedProvider } from '@apollo/client/testing';
-import { ThemeProvider } from '@material-ui/core';
+import { ThemeProvider } from '@mui/material';
 import { DateTime } from 'luxon';
 import { SnackbarProvider } from 'notistack';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';

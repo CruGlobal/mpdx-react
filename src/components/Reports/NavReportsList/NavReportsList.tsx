@@ -8,7 +8,7 @@ import {
   styled,
   Typography,
   makeStyles,
-} from '@material-ui/core';
+} from '@mui/material';
 import { Close } from '@material-ui/icons';
 import { useTranslation } from 'react-i18next';
 import { Item } from './Item/Item';

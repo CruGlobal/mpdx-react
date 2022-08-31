@@ -5,7 +5,7 @@ import {
   styled,
   TextField,
   Typography,
-} from '@material-ui/core';
+} from '@mui/material';
 import { FormikProps } from 'formik';
 import React from 'react';
 

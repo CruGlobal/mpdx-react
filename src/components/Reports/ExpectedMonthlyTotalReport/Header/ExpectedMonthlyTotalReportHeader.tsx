@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Typography, styled, Divider, Tooltip } from '@material-ui/core';
+import { Box, Typography, styled, Divider, Tooltip } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import theme from '../../../../theme';
 

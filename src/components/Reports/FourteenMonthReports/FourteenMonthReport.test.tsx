@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
-import { ThemeProvider } from '@material-ui/core';
+import { ThemeProvider } from '@mui/material';
 import { FourteenMonthReportCurrencyType } from '../../../../graphql/types.generated';
 import { FourteenMonthReportQuery } from './GetFourteenMonthReport.generated';
 import { FourteenMonthReport } from './FourteenMonthReport';

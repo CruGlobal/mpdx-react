@@ -1,5 +1,5 @@
 import React, { ReactElement } from 'react';
-import { Box, IconButton, ListItemText, Menu, styled } from '@material-ui/core';
+import { Box, IconButton, ListItemText, Menu, styled } from '@mui/material';
 import PersonIcon from '@material-ui/icons/Person';
 import VisibilityOffIcon from '@material-ui/icons/VisibilityOff';
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -103,10 +103,9 @@ interface ContactDetailsMoreAcitionsProps {
   onClose: () => void;
 }
 
-export const ContactDetailsMoreAcitions: React.FC<ContactDetailsMoreAcitionsProps> = ({
-  contactId,
-  onClose,
-}) => {
+export const ContactDetailsMoreAcitions: React.FC<
+  ContactDetailsMoreAcitionsProps
+> = ({ contactId, onClose }) => {
   const { openTaskModal } = useTaskModal();
   const { t } = useTranslation();
   const { accountListId, searchTerm, router } = React.useContext(

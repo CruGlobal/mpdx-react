@@ -6,7 +6,7 @@ import {
   Divider,
   styled,
   Typography,
-} from '@material-ui/core';
+} from '@mui/material';
 import { AccountCircle, EcoOutlined } from '@material-ui/icons';
 import { useTranslation } from 'react-i18next';
 import { Skeleton } from '@material-ui/lab';
@@ -89,35 +89,27 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
   isAccountListId = false,
 }) => {
   const { t } = useTranslation();
-  const {
-    data: accountListData,
-    loading,
-  } = useLoadAccountListCoachingDetailQuery({
-    variables: { coachingId },
-    skip: !isAccountListId,
-  });
+  const { data: accountListData, loading } =
+    useLoadAccountListCoachingDetailQuery({
+      variables: { coachingId },
+      skip: !isAccountListId,
+    });
 
-  const {
-    data: coachingData,
-    loading: coachingLoading,
-  } = useLoadCoachingDetailQuery({
-    variables: { coachingId },
-    skip: isAccountListId,
-  });
+  const { data: coachingData, loading: coachingLoading } =
+    useLoadCoachingDetailQuery({
+      variables: { coachingId },
+      skip: isAccountListId,
+    });
 
-  const {
-    data: coachingUsersData,
-    loading: coachingUsersLoading,
-  } = useGetAccountListCoachUsersQuery({
-    variables: { accountListId: coachingId },
-  });
+  const { data: coachingUsersData, loading: coachingUsersLoading } =
+    useGetAccountListCoachUsersQuery({
+      variables: { accountListId: coachingId },
+    });
 
-  const {
-    data: accountListUsersData,
-    loading: accountListUsersLoading,
-  } = useGetAccountListUsersQuery({
-    variables: { accountListId: coachingId },
-  });
+  const { data: accountListUsersData, loading: accountListUsersLoading } =
+    useGetAccountListUsersQuery({
+      variables: { accountListId: coachingId },
+    });
 
   const data = isAccountListId
     ? accountListData?.accountList

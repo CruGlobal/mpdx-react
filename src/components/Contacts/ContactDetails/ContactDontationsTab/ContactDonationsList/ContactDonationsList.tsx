@@ -6,7 +6,7 @@ import {
   TableCell,
   TableHead,
   TableRow,
-} from '@material-ui/core';
+} from '@mui/material';
 import { Skeleton } from '@material-ui/lab';
 import { DateTime } from 'luxon';
 import React from 'react';

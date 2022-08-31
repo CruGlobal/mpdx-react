@@ -6,7 +6,7 @@ import {
   useScrollTrigger,
   Theme,
   Grid,
-} from '@material-ui/core';
+} from '@mui/material';
 
 const useStyles = makeStyles((theme: Theme) => ({
   appBar: {

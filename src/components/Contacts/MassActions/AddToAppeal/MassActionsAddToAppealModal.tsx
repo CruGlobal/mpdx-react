@@ -5,7 +5,7 @@ import {
   DialogContent,
   FormControl,
   TextField,
-} from '@material-ui/core';
+} from '@mui/material';
 import { Autocomplete } from '@material-ui/lab';
 import { Formik } from 'formik';
 import React, { ReactElement } from 'react';
@@ -27,11 +27,9 @@ const MassActionsAddToAppealSchema = yup.object({
   appeal: yup.string().nullable(),
 });
 
-export const MassActionsAddToAppealModal: React.FC<MassActionsAddToAppealModalProps> = ({
-  handleClose,
-  accountListId,
-  ids,
-}) => {
+export const MassActionsAddToAppealModal: React.FC<
+  MassActionsAddToAppealModalProps
+> = ({ handleClose, accountListId, ids }) => {
   const { t } = useTranslation();
 
   const [addToAppeal, { loading: updating }] = useAddToAppealMutation();
@@ -63,14 +61,12 @@ export const MassActionsAddToAppealModal: React.FC<MassActionsAddToAppealModalPr
     handleClose();
   };
 
-  const {
-    data: appeals,
-    loading: loadingAppeals,
-  } = useGetAppealsForMassActionQuery({
-    variables: {
-      accountListId,
-    },
-  });
+  const { data: appeals, loading: loadingAppeals } =
+    useGetAppealsForMassActionQuery({
+      variables: {
+        accountListId,
+      },
+    });
 
   return (
     <Modal title={t('Add To Appeal')} isOpen={true} handleClose={handleClose}>
