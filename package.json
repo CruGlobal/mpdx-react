@@ -68,7 +68,7 @@
     "next-optimized-images": "^2.6.2",
     "next-plugin-graphql": "0.0.2",
     "next-pwa": "^5.5.5",
-    "notistack": "^1.0.3",
+    "notistack": "^2.0.5",
     "react": "^18.2.0",
     "react-csv": "^2.2.2",
     "react-dnd": "^16.0.1",
