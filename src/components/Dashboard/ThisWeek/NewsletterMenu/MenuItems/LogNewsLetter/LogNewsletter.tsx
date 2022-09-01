@@ -20,7 +20,7 @@ import * as yup from 'yup';
 import CloseIcon from '@mui/icons-material/Close';
 import { useTranslation } from 'react-i18next';
 import { Formik } from 'formik';
-import { DatePicker, TimePicker } from '@material-ui/pickers';
+import { DatePicker, TimePicker } from '@mui/lab';
 import ClockIcon from '@mui/icons-material/AccessTime';
 import CalendarIcon from '@mui/icons-material/CalendarToday';
 import { DateTime } from 'luxon';

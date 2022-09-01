@@ -11,7 +11,7 @@ import {
   TextField,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { DatePicker } from '@material-ui/pickers';
+import { DatePicker } from '@mui/lab';
 import { DateTime } from 'luxon';
 import SchoolIcon from '@mui/icons-material/School';
 import BusinessIcon from '@mui/icons-material/Business';

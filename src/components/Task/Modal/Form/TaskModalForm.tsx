@@ -17,9 +17,8 @@ import {
   Tooltip,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { Autocomplete } from '@mui/lab';
+import { Autocomplete, DatePicker, TimePicker } from '@mui/lab';
 import InfoIcon from '@mui/icons-material/InfoOutlined';
-import { DatePicker, TimePicker } from '@material-ui/pickers';
 import { Formik } from 'formik';
 import * as yup from 'yup';
 import { useSnackbar } from 'notistack';

@@ -12,7 +12,7 @@ import {
   TextField,
 } from '@mui/material';
 import { CalendarToday } from '@mui/icons-material';
-import { DatePicker } from '@material-ui/pickers';
+import { DatePicker } from '@mui/lab';
 import { Formik } from 'formik';
 import React, { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';

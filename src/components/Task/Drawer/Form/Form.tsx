@@ -22,9 +22,8 @@ import {
   Dialog,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { Autocomplete } from '@mui/lab';
+import { Autocomplete, DatePicker, TimePicker } from '@mui/lab';
 
-import { DatePicker, TimePicker } from '@material-ui/pickers';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Formik } from 'formik';

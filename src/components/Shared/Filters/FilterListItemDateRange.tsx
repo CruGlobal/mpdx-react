@@ -1,5 +1,5 @@
 import { ListItem, ListItemText } from '@mui/material';
-import { DatePicker } from '@material-ui/pickers';
+import { DatePicker } from '@mui/lab';
 import React from 'react';
 import { DateTime, Interval } from 'luxon';
 import { useTranslation } from 'react-i18next';

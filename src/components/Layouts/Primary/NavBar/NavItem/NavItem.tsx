@@ -1,13 +1,7 @@
 import React, { useState } from 'react';
 import type { FC, ReactNode } from 'react';
 import NextLink, { LinkProps } from 'next/link';
-import {
-  Button,
-  Collapse,
-  ListItem,
-  styled,
-  useTheme,
-} from '@material-ui/core';
+import { Button, Collapse, ListItem, styled, useTheme } from '@mui/material';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import HandoffLink from 'src/components/HandoffLink';

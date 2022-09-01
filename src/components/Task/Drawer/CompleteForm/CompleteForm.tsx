@@ -14,9 +14,8 @@ import {
   Button,
   Divider,
 } from '@mui/material';
+import { DatePicker, TimePicker, Autocomplete } from '@mui/lab';
 import { useTranslation } from 'react-i18next';
-import { Autocomplete } from '@mui/lab';
-import { DatePicker, TimePicker } from '@material-ui/pickers';
 import { Formik } from 'formik';
 import * as yup from 'yup';
 import { DateTime } from 'luxon';

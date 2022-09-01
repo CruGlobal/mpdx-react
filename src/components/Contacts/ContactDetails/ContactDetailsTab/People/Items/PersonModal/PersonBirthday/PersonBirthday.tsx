@@ -1,5 +1,5 @@
 import React from 'react';
-import { DatePicker } from '@material-ui/pickers';
+import { DatePicker } from '@mui/lab';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import CakeIcon from '@mui/icons-material/Cake';

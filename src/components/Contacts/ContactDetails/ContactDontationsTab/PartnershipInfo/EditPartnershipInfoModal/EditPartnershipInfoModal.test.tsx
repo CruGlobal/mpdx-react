@@ -1,8 +1,8 @@
+import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import React from 'react';
 import { SnackbarProvider } from 'notistack';
 import { ThemeProvider } from '@mui/material';
 import { render, waitFor } from '@testing-library/react';
-import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import LuxonUtils from '@date-io/luxon';
 import userEvent from '@testing-library/user-event';
 import {

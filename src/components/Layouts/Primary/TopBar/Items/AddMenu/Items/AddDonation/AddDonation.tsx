@@ -21,8 +21,7 @@ import {
   useMediaQuery,
 } from '@mui/material';
 import { DateTime } from 'luxon';
-import { KeyboardDatePicker } from '@material-ui/pickers';
-import { Autocomplete } from '@mui/lab';
+import { DatePicker, Autocomplete } from '@mui/lab';
 import debounce from 'lodash/debounce';
 import { DonationCreateInput } from '../../../../../../../../../graphql/types.generated';
 import { useApiConstants } from '../../../../../../../Constants/UseApiConstants';
@@ -307,7 +306,7 @@ export const AddDonation = ({
                     <FastField name="donationDate">
                       {({ field }: FieldProps) => (
                         <Box width="100%">
-                          <KeyboardDatePicker
+                          <DatePicker
                             {...field}
                             fullWidth
                             size="small"

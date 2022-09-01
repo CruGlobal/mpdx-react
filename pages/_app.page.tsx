@@ -2,15 +2,15 @@ import React, { ReactElement } from 'react';
 import Rollbar from 'rollbar';
 import { ErrorBoundary, Provider } from '@rollbar/react';
 import { AppProps } from 'next/app';
-import { StylesProvider, ThemeProvider } from '@mui/material/styles';
+import { StyledEngineProvider, ThemeProvider } from '@mui/material/styles';
 import { ApolloProvider } from '@apollo/client';
 import { AnimatePresence } from 'framer-motion';
 import { SessionProvider } from 'next-auth/react';
 import { NextPage } from 'next';
 import Head from 'next/head';
 import { I18nextProvider } from 'react-i18next';
-import { MuiPickersUtilsProvider } from '@material-ui/pickers';
-import LuxonUtils from '@date-io/luxon';
+import AdapterLuxon from '@mui/lab/AdapterLuxon';
+import LocalizationProvider from '@mui/lab/LocalizationProvider';
 import { SnackbarProvider } from 'notistack';
 import theme from '../src/theme';
 import './helpscout.css';
@@ -101,9 +101,9 @@ const App = ({ Component, pageProps, router }: AppProps): ReactElement => {
             <SessionProvider session={session}>
               <UserPreferenceProvider>
                 <I18nextProvider i18n={i18n}>
-                  <ThemeProvider theme={theme}>
-                    <StylesProvider>
-                      <MuiPickersUtilsProvider utils={LuxonUtils}>
+                  <StyledEngineProvider injectFirst>
+                    <ThemeProvider theme={theme}>
+                      <LocalizationProvider dateAdapter={AdapterLuxon}>
                         <SnackbarProvider maxSnack={3}>
                           <GlobalStyles />
                           <AnimatePresence
@@ -126,9 +126,9 @@ const App = ({ Component, pageProps, router }: AppProps): ReactElement => {
                           </AnimatePresence>
                           <Loading />
                         </SnackbarProvider>
-                      </MuiPickersUtilsProvider>
-                    </StylesProvider>
-                  </ThemeProvider>
+                      </LocalizationProvider>
+                    </ThemeProvider>
+                  </StyledEngineProvider>
                 </I18nextProvider>
               </UserPreferenceProvider>
             </SessionProvider>

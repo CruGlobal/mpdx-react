@@ -22,10 +22,9 @@ import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import { useTranslation } from 'react-i18next';
 import { Formik } from 'formik';
 import * as yup from 'yup';
-import { KeyboardDatePicker } from '@material-ui/pickers';
+import { DatePicker, Autocomplete } from '@mui/lab';
 import { useSnackbar } from 'notistack';
 import { DateTime } from 'luxon';
-import { Autocomplete } from '@mui/lab';
 import { useAccountListId } from '../../../../../../hooks/useAccountListId';
 import Modal from '../../../../../common/Modal/Modal';
 import { ContactDonorAccountsFragment } from '../../ContactDonationsTab.generated';
@@ -453,7 +452,7 @@ export const EditPartnershipInfoModal: React.FC<
                 </FormControl>
               </ContactInputWrapper>
               <ContactInputWrapper>
-                <KeyboardDatePicker
+                <DatePicker
                   onChange={(date): void =>
                     setFieldValue('pledgeStartDate', date)
                   }
@@ -515,7 +514,7 @@ export const EditPartnershipInfoModal: React.FC<
                 />
               </ContactInputWrapper>
               <ContactInputWrapper>
-                <KeyboardDatePicker
+                <DatePicker
                   onChange={(date) =>
                     !date ? null : setFieldValue('nextAsk', date)
                   }
