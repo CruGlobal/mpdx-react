@@ -10,13 +10,13 @@ import {
   CircularProgress,
   Avatar,
   Tooltip,
-  makeStyles,
   Theme,
   Grid,
   Card,
   FormLabel,
   Box,
 } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import { DateTime } from 'luxon';
 import reduce from 'lodash/fp/reduce';
 import debounce from 'lodash/fp/debounce';

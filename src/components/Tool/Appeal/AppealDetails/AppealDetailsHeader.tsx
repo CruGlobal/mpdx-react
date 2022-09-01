@@ -1,14 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  Button,
-  ButtonGroup,
-  TextField,
-  makeStyles,
-  Box,
-  Grid,
-} from '@mui/material';
+import { Button, ButtonGroup, TextField, Box, Grid } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import NextLink from 'next/link';
 import { ArrowBackIos, List, TableChart } from '@mui/icons-material';
 import clsx from 'clsx';

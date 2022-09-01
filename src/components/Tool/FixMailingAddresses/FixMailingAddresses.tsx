@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import {
-  makeStyles,
   Box,
   Typography,
   Grid,
@@ -9,6 +8,7 @@ import {
   NativeSelect,
   Button,
 } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import { Icon } from '@mdi/react';
 import { mdiCheckboxMarkedCircle } from '@mdi/js';
 import { Trans, useTranslation } from 'react-i18next';

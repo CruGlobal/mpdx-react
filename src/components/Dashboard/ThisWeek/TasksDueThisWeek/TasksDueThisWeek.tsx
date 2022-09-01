@@ -2,7 +2,6 @@ import React, { ReactElement } from 'react';
 import {
   Box,
   Typography,
-  makeStyles,
   Theme,
   CardHeader,
   CardActions,
@@ -13,6 +12,7 @@ import {
   ListItemSecondaryAction,
   CardContent,
 } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import { Skeleton } from '@mui/lab';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';

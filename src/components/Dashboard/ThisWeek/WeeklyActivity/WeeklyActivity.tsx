@@ -1,6 +1,5 @@
 import React, { ReactElement, useState, useEffect } from 'react';
 import {
-  makeStyles,
   Theme,
   CardHeader,
   CardActions,
@@ -14,6 +13,7 @@ import {
   TableContainer,
   withStyles,
 } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import { motion } from 'framer-motion';
 import { DateTime, Interval } from 'luxon';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';

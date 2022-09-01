@@ -1,5 +1,6 @@
 import React, { ReactElement } from 'react';
-import { makeStyles, Theme, Drawer } from '@mui/material';
+import { Theme, Drawer } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import NavToolDrawerHandle from './NavToolDrawerHandle';
 import NavToolList from './NavToolList';
 

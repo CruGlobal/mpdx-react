@@ -7,8 +7,8 @@ import {
   Slide,
   styled,
   Typography,
-  makeStyles,
 } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import { Close } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import { Item } from './Item/Item';

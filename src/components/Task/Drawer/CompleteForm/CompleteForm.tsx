@@ -1,6 +1,5 @@
 import React, { ReactElement } from 'react';
 import {
-  makeStyles,
   Theme,
   TextField,
   Select,
@@ -14,6 +13,7 @@ import {
   Button,
   Divider,
 } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import { DatePicker, TimePicker, Autocomplete } from '@mui/lab';
 import { useTranslation } from 'react-i18next';
 import { Formik } from 'formik';

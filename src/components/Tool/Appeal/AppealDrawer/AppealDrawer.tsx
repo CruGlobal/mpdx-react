@@ -1,5 +1,6 @@
 import React, { ReactElement } from 'react';
-import { makeStyles, Drawer } from '@mui/material';
+import { Drawer } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import theme from '../../../../theme';
 import NavToolDrawerHandle from '../../NavToolList/NavToolDrawerHandle';
 import { TestAppeal } from '../../../../../pages/accountLists/[accountListId]/tools/appeals/testAppeal';

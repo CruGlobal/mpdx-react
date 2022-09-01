@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import {
-  makeStyles,
   Box,
   Typography,
   Grid,
@@ -8,7 +7,7 @@ import {
   Button,
   CircularProgress,
 } from '@mui/material';
-
+import { makeStyles } from '@mui/styles';
 import { Trans, useTranslation } from 'react-i18next';
 import theme from '../../../theme';
 import NoData from '../NoData';

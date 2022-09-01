@@ -1,5 +1,6 @@
 import React, { ReactElement } from 'react';
-import { Tooltip, Theme, makeStyles, Fab, Avatar } from '@mui/material';
+import { Tooltip, Theme, Fab, Avatar } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import { DateTime } from 'luxon';
 import AssignmentLateIcon from '@mui/icons-material/AssignmentLate';
 import AssignmentIcon from '@mui/icons-material/Assignment';

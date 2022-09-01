@@ -1,6 +1,5 @@
 import React from 'react';
 import {
-  makeStyles,
   Theme,
   Box,
   Typography,
@@ -8,6 +7,7 @@ import {
   Divider,
   CircularProgress,
 } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import { Trans, useTranslation } from 'react-i18next';
 import { useSnackbar } from 'notistack';
 import {

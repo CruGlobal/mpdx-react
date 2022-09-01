@@ -1,5 +1,6 @@
 import React, { ReactElement, useRef, useEffect } from 'react';
-import { makeStyles, Theme, Box, Card, CardContent } from '@mui/material';
+import { Theme, Box, Card, CardContent } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import { useTranslation } from 'react-i18next';
 import illustration4 from '../../../../images/drawkit/grape/drawkit-grape-pack-illustration-4.svg';
 import TaskDrawerCommentListItem from './Item';

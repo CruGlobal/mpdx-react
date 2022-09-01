@@ -1,5 +1,6 @@
 import React, { ReactElement } from 'react';
-import { ListItem, ListItemText, makeStyles, Box } from '@mui/material';
+import { ListItem, ListItemText, Box } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import { ArrowForwardIos } from '@mui/icons-material';
 import clsx from 'clsx';
 import theme from '../../../../../theme';

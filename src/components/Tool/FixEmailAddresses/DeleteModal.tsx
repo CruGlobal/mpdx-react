@@ -6,11 +6,11 @@ import {
   CardHeader,
   Modal,
   Typography,
-  makeStyles,
   Theme,
   IconButton,
   Box,
 } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import Icon from '@mdi/react';
 import clsx from 'clsx';
 import React from 'react';

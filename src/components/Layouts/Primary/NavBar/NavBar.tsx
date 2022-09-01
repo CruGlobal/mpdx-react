@@ -1,6 +1,7 @@
 import React, { ReactElement, useEffect } from 'react';
 import type { FC } from 'react';
-import { Box, Drawer, Hidden, List, makeStyles, Theme } from '@mui/material';
+import { Box, Drawer, Hidden, List, Theme } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import { useRouter } from 'next/router';
 import NextLink, { LinkProps } from 'next/link';
 import { useTranslation } from 'react-i18next';

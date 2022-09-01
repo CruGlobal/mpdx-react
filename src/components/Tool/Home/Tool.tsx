@@ -1,11 +1,6 @@
 import React, { ReactElement } from 'react';
-import {
-  Typography,
-  CardContent,
-  CardActionArea,
-  makeStyles,
-  Box,
-} from '@mui/material';
+import { Typography, CardContent, CardActionArea, Box } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import Icon from '@mdi/react';
 import NextLink from 'next/link';
 import { useAccountListId } from '../../../../src/hooks/useAccountListId';

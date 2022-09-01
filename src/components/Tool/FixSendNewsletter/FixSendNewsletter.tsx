@@ -1,6 +1,5 @@
 import React from 'react';
 import {
-  makeStyles,
   Box,
   Typography,
   Grid,
@@ -8,6 +7,7 @@ import {
   CircularProgress,
   Button,
 } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import { Icon } from '@mdi/react';
 import { mdiCheckboxMarkedCircle } from '@mdi/js';
 import { useTranslation, Trans } from 'react-i18next';

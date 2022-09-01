@@ -1,7 +1,6 @@
 import React from 'react';
 import clsx from 'clsx';
 import {
-  makeStyles,
   Box,
   Typography,
   Grid,
@@ -16,6 +15,7 @@ import {
   Checkbox,
   IconButton,
 } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import { useTranslation } from 'react-i18next';
 
 import { mdiMap, mdiCloseThick, mdiInformation } from '@mdi/js';

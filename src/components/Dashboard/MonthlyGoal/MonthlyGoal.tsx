@@ -1,7 +1,6 @@
 import React, { ReactElement } from 'react';
 import {
   Typography,
-  makeStyles,
   Theme,
   Grid,
   CardContent,
@@ -9,6 +8,7 @@ import {
   Hidden,
   Button,
 } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import { Skeleton } from '@mui/lab';
 import { useTranslation } from 'react-i18next';
 import { currencyFormat, percentageFormat } from '../../../lib/intlFormat';

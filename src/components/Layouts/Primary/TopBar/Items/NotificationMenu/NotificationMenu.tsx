@@ -5,11 +5,11 @@ import {
   IconButton,
   ListItem,
   ListSubheader,
-  makeStyles,
   Menu,
   Theme,
   Typography,
 } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import React, { ReactElement, useState } from 'react';
 import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
 import NotificationsIcon from '@mui/icons-material/Notifications';

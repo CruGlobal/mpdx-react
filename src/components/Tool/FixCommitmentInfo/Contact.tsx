@@ -7,10 +7,10 @@ import {
   Typography,
   Avatar,
   IconButton,
-  makeStyles,
   NativeSelect,
   styled,
 } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import { useTranslation } from 'react-i18next';
 import SearchIcon from '@mui/icons-material/Search';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';

@@ -1,5 +1,6 @@
 import React, { ReactElement } from 'react';
-import { ListItem, ListItemText, makeStyles, Box, Button } from '@mui/material';
+import { ListItem, ListItemText, Box, Button } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import theme from '../../../../../theme';
 
 const useStyles = makeStyles(() => ({

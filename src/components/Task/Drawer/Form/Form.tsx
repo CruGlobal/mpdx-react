@@ -1,6 +1,5 @@
 import React, { ReactElement, useState } from 'react';
 import {
-  makeStyles,
   Theme,
   TextField,
   Select,
@@ -21,6 +20,7 @@ import {
   DialogContentText,
   Dialog,
 } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import { useTranslation } from 'react-i18next';
 import { Autocomplete, DatePicker, TimePicker } from '@mui/lab';
 

@@ -1,12 +1,6 @@
 import React, { ReactElement, ReactNode } from 'react';
-import {
-  Box,
-  Container,
-  Typography,
-  makeStyles,
-  Theme,
-  Grid,
-} from '@mui/material';
+import { Box, Container, Typography, Theme, Grid } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import { motion } from 'framer-motion';
 import illustration2 from '../../images/drawkit/grape/drawkit-grape-pack-illustration-2.svg';
 

@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import {
-  makeStyles,
   Box,
   Typography,
   Grid,
@@ -9,7 +8,7 @@ import {
   NativeSelect,
   CircularProgress,
 } from '@mui/material';
-
+import { makeStyles } from '@mui/styles';
 import { Trans, useTranslation } from 'react-i18next';
 import Icon from '@mdi/react';
 import { mdiCheckboxMarkedCircle } from '@mdi/js';

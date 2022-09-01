@@ -1,13 +1,6 @@
 import React, { ReactElement } from 'react';
-import {
-  makeStyles,
-  Theme,
-  Avatar,
-  Typography,
-  Box,
-  Tooltip,
-  Slide,
-} from '@mui/material';
+import { Theme, Avatar, Typography, Box, Tooltip, Slide } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import { DateTime } from 'luxon';
 import { Skeleton } from '@mui/lab';
 import { GetCommentsForTaskDrawerCommentListQuery } from '../TaskListComments.generated';

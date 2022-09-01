@@ -1,6 +1,5 @@
 import React, { ReactElement } from 'react';
 import {
-  makeStyles,
   Theme,
   CardContent,
   Typography,
@@ -8,6 +7,7 @@ import {
   Button,
   Box,
 } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import { Skeleton } from '@mui/lab';
 import { useTranslation } from 'react-i18next';
 import { currencyFormat } from '../../../lib/intlFormat';

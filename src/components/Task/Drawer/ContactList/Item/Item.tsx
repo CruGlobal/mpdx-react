@@ -1,6 +1,5 @@
 import React, { ReactElement } from 'react';
 import {
-  makeStyles,
   Theme,
   Card,
   Avatar,
@@ -17,6 +16,7 @@ import {
   Typography,
   Divider,
 } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import { useTranslation } from 'react-i18next';
 import { DateTime } from 'luxon';
 import CallIcon from '@mui/icons-material/Call';

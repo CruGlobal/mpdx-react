@@ -1,6 +1,5 @@
 import React, { ReactElement, useState } from 'react';
 import {
-  makeStyles,
   Theme,
   IconButton,
   Box,
@@ -11,6 +10,7 @@ import {
   Tab,
   Typography,
 } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import CloseIcon from '@mui/icons-material/Close';
 import { useTranslation } from 'react-i18next';
 import { TabContext, TabList, TabPanel } from '@mui/lab';

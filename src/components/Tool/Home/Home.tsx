@@ -1,5 +1,6 @@
 import React, { ReactElement } from 'react';
-import { makeStyles, Theme, Grid, Box } from '@mui/material';
+import { Theme, Grid, Box } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import { motion } from 'framer-motion';
 
 import { useTranslation } from 'react-i18next';

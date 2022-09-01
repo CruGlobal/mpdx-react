@@ -1,7 +1,6 @@
 import React, { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
-  makeStyles,
   Box,
   Theme,
   List,
@@ -9,6 +8,7 @@ import {
   ListItemText,
   ListItemIcon,
 } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import Icon from '@mdi/react';
 import { mdiTrophy } from '@mdi/js';
 import { useAppealContext } from '../AppealContextProvider/AppealContextProvider';

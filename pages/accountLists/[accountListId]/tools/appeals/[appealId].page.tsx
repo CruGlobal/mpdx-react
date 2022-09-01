@@ -1,7 +1,8 @@
 import React, { ReactElement, useState } from 'react';
 import Head from 'next/head';
 import { useTranslation } from 'react-i18next';
-import { makeStyles, Theme, Box, Container } from '@mui/material';
+import { Theme, Box, Container } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import AppealDrawer from '../../../../../src/components/Tool/Appeal/AppealDrawer/AppealDrawer';
 import { AppealProvider } from '../../../../../src/components/Tool/Appeal/AppealContextProvider/AppealContextProvider';
 

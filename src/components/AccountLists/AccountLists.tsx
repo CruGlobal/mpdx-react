@@ -1,6 +1,5 @@
 import React, { ReactElement } from 'react';
 import {
-  makeStyles,
   Theme,
   Container,
   Typography,
@@ -9,6 +8,7 @@ import {
   CardContent,
   Box,
 } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';

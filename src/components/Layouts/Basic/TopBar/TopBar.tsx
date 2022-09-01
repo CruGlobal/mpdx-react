@@ -1,12 +1,6 @@
 import React, { ReactElement, ReactNode } from 'react';
-import {
-  makeStyles,
-  Toolbar,
-  AppBar,
-  useScrollTrigger,
-  Theme,
-  Grid,
-} from '@mui/material';
+import { Toolbar, AppBar, useScrollTrigger, Theme, Grid } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 
 const useStyles = makeStyles((theme: Theme) => ({
   appBar: {

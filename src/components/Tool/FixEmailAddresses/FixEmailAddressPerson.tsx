@@ -5,12 +5,12 @@ import {
   Button,
   Typography,
   Avatar,
-  makeStyles,
   Hidden,
   TextField,
   Theme,
   styled,
 } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import { useTranslation } from 'react-i18next';
 import { Icon } from '@mdi/react';
 import {

@@ -1,13 +1,6 @@
 import React, { Fragment } from 'react';
-import {
-  Box,
-  Grid,
-  Button,
-  Typography,
-  Avatar,
-  makeStyles,
-  Hidden,
-} from '@mui/material';
+import { Box, Grid, Button, Typography, Avatar, Hidden } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { Icon } from '@mdi/react';

@@ -1,6 +1,5 @@
 import React, { ReactElement } from 'react';
 import {
-  makeStyles,
   Theme,
   Box,
   TextField,
@@ -8,6 +7,7 @@ import {
   Grid,
   Divider,
 } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import { Formik, FormikHelpers } from 'formik';
 import * as yup from 'yup';
 import { DateTime } from 'luxon';

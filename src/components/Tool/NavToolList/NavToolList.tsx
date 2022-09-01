@@ -1,6 +1,5 @@
 import React, { ReactElement, Fragment } from 'react';
 import {
-  makeStyles,
   Box,
   Theme,
   List,
@@ -8,6 +7,7 @@ import {
   ListItemText,
   ListItemIcon,
 } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import Icon from '@mdi/react';
 import { ToolsList } from '../Home/ToolList';
 import { Item } from './Item/Item';

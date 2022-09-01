@@ -1,4 +1,5 @@
-import { Box, CardContent, Typography, makeStyles } from '@mui/material';
+import { Box, CardContent, Typography } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import React, { ReactElement } from 'react';
 import StarIcon from '@mui/icons-material/Star';
 import StarOutlineIcon from '@mui/icons-material/StarOutline';

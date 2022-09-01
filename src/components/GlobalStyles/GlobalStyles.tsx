@@ -1,5 +1,6 @@
 import type { FC } from 'react';
-import { createStyles, makeStyles } from '@mui/material';
+import { createStyles } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 
 const useStyles = makeStyles(() =>
   createStyles({

@@ -1,5 +1,6 @@
 import React, { ReactElement } from 'react';
-import { Box, IconButton, makeStyles } from '@mui/material';
+import { Box, IconButton } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import { DataGrid } from '@mui/x-data-grid';
 import Icon from '@mdi/react';
 import { mdiAccountPlus } from '@mdi/js';

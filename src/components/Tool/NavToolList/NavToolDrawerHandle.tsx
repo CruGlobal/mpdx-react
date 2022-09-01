@@ -1,5 +1,6 @@
 import React, { ReactElement } from 'react';
-import { makeStyles, Box, Theme, IconButton } from '@mui/material';
+import { Box, Theme, IconButton } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import DoubleArrowIcon from '@mui/icons-material/DoubleArrow';
 import theme from 'src/theme';
 

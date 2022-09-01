@@ -4,10 +4,10 @@ import {
   Grid,
   Typography,
   Avatar,
-  makeStyles,
   Hidden,
   IconButton,
 } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import { useTranslation } from 'react-i18next';
 import { Icon } from '@mdi/react';
 import {

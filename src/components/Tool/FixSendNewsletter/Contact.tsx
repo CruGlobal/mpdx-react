@@ -5,9 +5,9 @@ import {
   Button,
   Typography,
   Avatar,
-  makeStyles,
   NativeSelect,
 } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import { useTranslation } from 'react-i18next';
 import { Icon } from '@mdi/react';
 import { mdiCheckboxMarkedCircle } from '@mdi/js';

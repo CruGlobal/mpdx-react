@@ -5,9 +5,9 @@ import {
   Typography,
   Grid,
   CardHeader,
-  makeStyles,
   Theme,
 } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import {
   ReferenceLine,
   BarChart,

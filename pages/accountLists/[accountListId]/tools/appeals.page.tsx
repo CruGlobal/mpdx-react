@@ -1,14 +1,8 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import Head from 'next/head';
-import {
-  makeStyles,
-  Theme,
-  Grid,
-  Box,
-  Typography,
-  Divider,
-} from '@mui/material';
+import { Theme, Grid, Box, Typography, Divider } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import { motion } from 'framer-motion';
 import { useAccountListId } from '../../../../src/hooks/useAccountListId';
 import Appeals from '../../../../src/components/Tool/Appeal/Appeals';

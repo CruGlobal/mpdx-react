@@ -1,6 +1,5 @@
 import React, { ReactElement, useMemo, useState } from 'react';
 import {
-  makeStyles,
   Grid,
   MenuItem,
   ListItemText,
@@ -12,6 +11,7 @@ import {
   Box,
   Typography,
 } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import clsx from 'clsx';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import NextLink from 'next/link';
