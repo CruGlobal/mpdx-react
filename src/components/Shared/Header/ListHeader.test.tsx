@@ -29,6 +29,7 @@ const openCreateAppealModal = jest.fn();
 const openEditFieldsModal = jest.fn();
 const openHideContactsModal = jest.fn();
 const openCompleteTasksModal = jest.fn();
+const openEditTasksModal = jest.fn();
 
 jest.mock('../../../hooks/useTaskModal');
 
@@ -855,6 +856,7 @@ describe('ListHeader', () => {
           onCheckAllItems={onCheckAllItems}
           onSearchTermChanged={onSearchTermChanged}
           openCompleteTasksModal={openCompleteTasksModal}
+          openEditTasksModal={openEditTasksModal}
         />
       </ThemeProvider>,
     );
@@ -866,5 +868,35 @@ describe('ListHeader', () => {
     expect(getByText('Complete Tasks')).toBeInTheDocument();
     userEvent.click(getByText('Complete Tasks'));
     expect(openCompleteTasksModal).toHaveBeenCalled();
+  });
+
+  it('opens the more actions menu and clicks the edit tasks action', () => {
+    const { getByPlaceholderText, getByText, queryByText } = render(
+      <ThemeProvider theme={theme}>
+        <ListHeader
+          selectedIds={selectedIds}
+          page="task"
+          activeFilters={false}
+          starredFilter={{}}
+          toggleStarredFilter={toggleStarredFilter}
+          headerCheckboxState={ListHeaderCheckBoxState.unchecked}
+          filterPanelOpen={false}
+          contactDetailsOpen={false}
+          toggleFilterPanel={toggleFilterPanel}
+          onCheckAllItems={onCheckAllItems}
+          onSearchTermChanged={onSearchTermChanged}
+          openCompleteTasksModal={openCompleteTasksModal}
+          openEditTasksModal={openEditTasksModal}
+        />
+      </ThemeProvider>,
+    );
+
+    expect(getByPlaceholderText('Search Tasks')).toBeInTheDocument();
+    expect(queryByText('Edit Tasks')).not.toBeInTheDocument();
+    const actionsButton = getByText('Actions');
+    userEvent.click(actionsButton);
+    expect(getByText('Edit Tasks')).toBeInTheDocument();
+    userEvent.click(getByText('Edit Tasks'));
+    expect(openEditTasksModal).toHaveBeenCalled();
   });
 });
