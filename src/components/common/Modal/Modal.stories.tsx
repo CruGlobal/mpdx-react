@@ -1,11 +1,6 @@
 import React, { useState } from 'react';
-import {
-  Box,
-  Button,
-  DialogActions,
-  DialogContent,
-  MuiThemeProvider,
-} from '@mui/material';
+import { Box, Button, DialogActions, DialogContent } from '@mui/material';
+import { ThemeProvider } from '@mui/material/styles';
 import { Story } from '@storybook/react';
 import theme from '../../../theme';
 import Modal from './Modal';
@@ -54,7 +49,7 @@ export const Default: Story = (args) => {
       >
         open modal
       </Button>
-      <MuiThemeProvider theme={theme}>
+      <ThemeProvider theme={theme}>
         <Modal
           size={args.size}
           isOpen={modalOpen}
@@ -101,7 +96,7 @@ export const Default: Story = (args) => {
             </Button>
           </DialogActions>
         </Modal>
-      </MuiThemeProvider>
+      </ThemeProvider>
     </Box>
   );
 };

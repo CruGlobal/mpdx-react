@@ -1,5 +1,6 @@
 import React, { ReactElement } from 'react';
-import { Box, MuiThemeProvider } from '@mui/material';
+import { Box } from '@mui/material';
+import { ThemeProvider } from '@mui/material/styles';
 import theme from '../../../../../theme';
 import { GqlMockedProvider } from '../../../../../../__tests__/util/graphqlMocking';
 import { ContactTags } from './ContactTags';
@@ -20,13 +21,13 @@ export const Default = ({
   return (
     <Box m={2}>
       <GqlMockedProvider<UpdateContactTagsMutation>>
-        <MuiThemeProvider theme={theme}>
+        <ThemeProvider theme={theme}>
           <ContactTags
             accountListId={accountListId}
             contactId={contactId}
             contactTags={contactTags}
           />
-        </MuiThemeProvider>
+        </ThemeProvider>
       </GqlMockedProvider>
     </Box>
   );
@@ -43,13 +44,13 @@ export const EmptyTags = ({
   return (
     <Box m={2}>
       <GqlMockedProvider<UpdateContactTagsMutation>>
-        <MuiThemeProvider theme={theme}>
+        <ThemeProvider theme={theme}>
           <ContactTags
             accountListId={accountListId}
             contactId={contactId}
             contactTags={contactTags}
           />
-        </MuiThemeProvider>
+        </ThemeProvider>
       </GqlMockedProvider>
     </Box>
   );

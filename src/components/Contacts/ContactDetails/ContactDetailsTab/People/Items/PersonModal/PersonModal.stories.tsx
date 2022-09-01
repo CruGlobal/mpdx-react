@@ -1,5 +1,6 @@
 import React, { ReactElement, useState } from 'react';
-import { Box, Button, MuiThemeProvider } from '@mui/material';
+import { Box, Button } from '@mui/material';
+import { ThemeProvider } from '@mui/material/styles';
 import { gqlMock } from '../../../../../../../../__tests__/util/graphqlMocking';
 import { ContactDetailsTabQuery } from '../../../ContactDetailsTab.generated';
 import {
@@ -24,7 +25,7 @@ export const Default = (): ReactElement => {
     mock.people.nodes[0];
 
   return (
-    <MuiThemeProvider theme={theme}>
+    <ThemeProvider theme={theme}>
       <Box m={2}>
         {modalOpen ? (
           <PersonModal
@@ -38,6 +39,6 @@ export const Default = (): ReactElement => {
           Open Modal
         </Button>
       </Box>
-    </MuiThemeProvider>
+    </ThemeProvider>
   );
 };
