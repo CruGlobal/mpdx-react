@@ -43,6 +43,7 @@
     "@mui/material": "^5.10.3",
     "@mui/styles": "^5.10.3",
     "@mui/x-data-grid": "^5.16.0",
+    "@mui/x-date-pickers": "^5.0.0-beta.7",
     "@react-google-maps/api": "^2.12.1",
     "@rollbar/react": "^0.11.1",
     "apollo-datasource-rest": "^3.6.1",
