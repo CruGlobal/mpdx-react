@@ -1,4 +1,4 @@
-import { createTheme } from '@mui/material/styles';
+import { createTheme, adaptV4Theme } from '@mui/material/styles';
 
 const defaultTheme = createTheme();
 
@@ -52,120 +52,122 @@ declare module '@mui/material/styles/createPalette' {
   }
 }
 
-const theme = createTheme({
-  typography: {
-    fontFamily: "'Source Sans Pro', sans-serif",
-  },
-  palette: {
-    primary: {
-      dark: cruColors.grayDark,
-      main: mpdxColors.blue,
+const theme = createTheme(
+  adaptV4Theme({
+    typography: {
+      fontFamily: "'Source Sans Pro', sans-serif",
     },
-    secondary: {
-      main: cruColors.yellow,
-      dark: cruColors.grayMedium,
-    },
-    text: {
-      primary: cruColors.grayDark,
-      secondary: cruColors.grayMedium,
-    },
-    cruYellow: {
-      main: cruColors.yellow,
-    },
-    cruGrayDark: {
-      main: cruColors.grayDark,
-    },
-    cruGrayMedium: {
-      main: cruColors.grayMedium,
-    },
-    cruGrayLight: {
-      main: cruColors.grayLight,
-    },
-    mpdxGreen: {
-      main: mpdxColors.green,
-    },
-    mpdxBlue: {
-      main: mpdxColors.blue,
-    },
-    mpdxYellow: {
-      main: mpdxColors.yellow,
-    },
-    mpdxGray: {
-      main: mpdxColors.gray,
-    },
-    progressBarYellow: {
-      main: progressBarColors.yellow,
-    },
-    progressBarOrange: {
-      main: progressBarColors.orange,
-    },
-    progressBarGray: {
-      main: progressBarColors.gray,
-    },
-  },
-  overrides: {
-    MuiCard: {
-      root: {
-        borderRadius: '10px',
+    palette: {
+      primary: {
+        dark: cruColors.grayDark,
+        main: mpdxColors.blue,
+      },
+      secondary: {
+        main: cruColors.yellow,
+        dark: cruColors.grayMedium,
+      },
+      text: {
+        primary: cruColors.grayDark,
+        secondary: cruColors.grayMedium,
+      },
+      cruYellow: {
+        main: cruColors.yellow,
+      },
+      cruGrayDark: {
+        main: cruColors.grayDark,
+      },
+      cruGrayMedium: {
+        main: cruColors.grayMedium,
+      },
+      cruGrayLight: {
+        main: cruColors.grayLight,
+      },
+      mpdxGreen: {
+        main: mpdxColors.green,
+      },
+      mpdxBlue: {
+        main: mpdxColors.blue,
+      },
+      mpdxYellow: {
+        main: mpdxColors.yellow,
+      },
+      mpdxGray: {
+        main: mpdxColors.gray,
+      },
+      progressBarYellow: {
+        main: progressBarColors.yellow,
+      },
+      progressBarOrange: {
+        main: progressBarColors.orange,
+      },
+      progressBarGray: {
+        main: progressBarColors.gray,
       },
     },
-    MuiChip: {
-      root: {
-        borderRadius: '16px',
-        boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.25)',
-        backgroundColor: '#fff',
+    overrides: {
+      MuiCard: {
+        root: {
+          borderRadius: '10px',
+        },
       },
-    },
-    MuiCardHeader: {
-      root: {
-        borderBottom: '1px solid #EBECEC',
+      MuiChip: {
+        root: {
+          borderRadius: '16px',
+          boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.25)',
+          backgroundColor: '#fff',
+        },
       },
-      title: {
-        fontSize: '1.2rem',
+      MuiCardHeader: {
+        root: {
+          borderBottom: '1px solid #EBECEC',
+        },
+        title: {
+          fontSize: '1.2rem',
+        },
       },
-    },
-    MuiCardContent: {
-      root: {
-        padding: defaultTheme.spacing(4),
-        [defaultTheme.breakpoints.down('sm')]: {
-          padding: defaultTheme.spacing(2),
+      MuiCardContent: {
+        root: {
+          padding: defaultTheme.spacing(4),
+          [defaultTheme.breakpoints.down('sm')]: {
+            padding: defaultTheme.spacing(2),
+          },
+        },
+      },
+      MuiCardActions: {
+        root: {
+          borderTop: '1px solid #EBECEC',
+          justifyContent: 'flex-end',
+          [defaultTheme.breakpoints.down('xs')]: {
+            justifyContent: 'center',
+          },
+        },
+      },
+      MuiTableCell: {
+        head: {
+          fontWeight: 700,
+        },
+      },
+      MuiCheckbox: {
+        colorSecondary: {
+          color: cruColors.grayMedium,
+          '&$checked, &$indeterminate': {
+            color: cruColors.grayDark,
+          },
+        },
+      },
+      MuiCssBaseline: {
+        '@global': {
+          html: {
+            backgroundColor: '#f6f7f9',
+          },
+          body: {
+            backgroundColor: mpdxColors.blue,
+            overflowX: 'hidden',
+          },
         },
       },
     },
-    MuiCardActions: {
-      root: {
-        borderTop: '1px solid #EBECEC',
-        justifyContent: 'flex-end',
-        [defaultTheme.breakpoints.down('xs')]: {
-          justifyContent: 'center',
-        },
-      },
-    },
-    MuiTableCell: {
-      head: {
-        fontWeight: 700,
-      },
-    },
-    MuiCheckbox: {
-      colorSecondary: {
-        color: cruColors.grayMedium,
-        '&$checked, &$indeterminate': {
-          color: cruColors.grayDark,
-        },
-      },
-    },
-    MuiCssBaseline: {
-      '@global': {
-        html: {
-          backgroundColor: '#f6f7f9',
-        },
-        body: {
-          backgroundColor: mpdxColors.blue,
-          overflowX: 'hidden',
-        },
-      },
-    },
-  },
-});
+  }),
+);
 
 export default theme;
