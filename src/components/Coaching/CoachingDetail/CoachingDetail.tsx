@@ -7,7 +7,8 @@ import {
   styled,
   Typography,
 } from '@mui/material';
-import { AccountCircle, EcoOutlined } from '@mui/icons-material';
+// TODO: EcoOutlined is not defined on @mui/icons-material, find replacement.
+import { AccountCircle } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import { Skeleton } from '@mui/lab';
 import { AppealProgress } from '../AppealProgress/AppealProgress';
@@ -121,12 +122,13 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
     <CoachingDetailContainer>
       <CoachingSideContainer bgcolor={theme.palette.progressBarGray.main}>
         <CoachingSideTitleContainer>
+          {/* TODO: EcoOutlined is not defined on @mui/icons-material, find replacement.
           <EcoOutlined
             style={{
               color: theme.palette.primary.contrastText,
               margin: theme.spacing(1),
             }}
-          />
+          /> */}
           <SideContainerText variant="h5" display="block">
             {t('Coaching')}
           </SideContainerText>
