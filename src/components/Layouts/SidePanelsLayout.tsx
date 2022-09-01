@@ -1,29 +1,29 @@
+import { Breakpoint } from '@mui/system/createTheme/createBreakpoints';
 import { FC, ReactElement } from 'react';
-import { Box, styled, Theme } from '@mui/material';
-import { Breakpoint } from '@mui/material/styles/createBreakpoints';
+import { Box, Theme } from '@mui/material';
+import { styled } from '@mui/material/styles';
 
 type ScrollBoxProps = {
   isscroll?: 1 | 0;
 };
 
+// TODO: Fix undefined minHeight
 const FullHeightBox = styled(Box)(({ theme }) => ({
   height: `calc(100vh - ${theme.mixins.toolbar.minHeight}px)`,
   ['@media (min-width:0px) and (orientation: landscape)']: {
     height: `calc(100vh - ${
-      (
-        theme.mixins.toolbar[
-          '@media (min-width:0px) and (orientation: landscape)'
-        ] as { minHeight: number }
-      ).minHeight
+      theme.mixins.toolbar[
+        '@media (min-width:0px) and (orientation: landscape)'
+      ] as { minHeight: number }
+      // .minHeight
     }px)`,
   },
   ['@media (min-width:600px)']: {
     height: `calc(100vh - ${
-      (
-        theme.mixins.toolbar['@media (min-width:600px)'] as {
-          minHeight: number;
-        }
-      ).minHeight
+      theme.mixins.toolbar['@media (min-width:600px)'] as {
+        minHeight: number;
+      }
+      // .minHeight
     }px)`,
   },
 }));

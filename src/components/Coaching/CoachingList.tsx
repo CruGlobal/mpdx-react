@@ -1,5 +1,6 @@
 import { Box, Divider, styled, Typography } from '@mui/material';
-import { EcoOutlined } from '@mui/icons-material';
+// TODO: This icon is not defined on @mui/icons-material, find replacement.
+// import { EcoOutlined } from '@mui/icons-material';
 import { Skeleton } from '@mui/lab';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -22,9 +23,9 @@ const CoachingTitleWrapper = styled(Box)(({ theme }) => ({
   alignContent: 'center',
 }));
 
-const CoachingTitleIcon = styled(EcoOutlined)(({ theme }) => ({
-  margin: theme.spacing(1),
-}));
+// const CoachingTitleIcon = styled(EcoOutlined)(({ theme }) => ({
+//   margin: theme.spacing(1),
+// }));
 
 const CoachingListTitle = styled(Typography)(({ theme }) => ({
   color: theme.palette.text.primary,
@@ -48,7 +49,7 @@ export const CoachingList: React.FC<CoachingListProps> = ({
     <CoachingListWrapper>
       <Divider />
       <CoachingTitleWrapper>
-        <CoachingTitleIcon />
+        {/* <CoachingTitleIcon /> */}
         <CoachingListTitle variant="h6">
           {t('Staff You Coach')}
         </CoachingListTitle>

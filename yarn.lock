@@ -16799,6 +16799,7 @@ __metadata:
     "@mui/lab": ^5.0.0-alpha.97
     "@mui/material": ^5.10.3
     "@mui/styles": ^5.10.3
+    "@mui/system": ^5.10.3
     "@mui/x-data-grid": ^5.16.0
     "@mui/x-date-pickers": ^5.0.0-beta.7
     "@next/bundle-analyzer": ^12.2.5
