@@ -43,6 +43,7 @@ export const ContactsLeftPanel: React.FC = () => {
           panTo={panTo}
           selected={selected}
           setSelected={setSelected}
+          onClose={toggleFilterPanel}
         />
       )}
     </>

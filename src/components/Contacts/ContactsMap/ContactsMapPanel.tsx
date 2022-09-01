@@ -3,6 +3,7 @@ import {
   AccordionDetails,
   AccordionSummary,
   Box,
+  IconButton,
   Typography,
   styled,
   Theme,
@@ -15,7 +16,7 @@ import React, {
   useState,
 } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ExpandMore } from '@material-ui/icons';
+import { Close, ExpandMore } from '@material-ui/icons';
 import Image from 'next/image';
 import { StatusEnum } from '../../../../graphql/types.generated';
 import { Coordinates } from 'pages/accountLists/[accountListId]/contacts/map/map';
@@ -29,6 +30,7 @@ interface ContactMapsPanelProps {
     lat: number | null | undefined;
     lng: number | null | undefined;
   }) => void;
+  onClose: () => void;
 }
 
 const StatusAccordion = styled(Accordion)(() => ({
@@ -77,6 +79,11 @@ const CruFocus = styled(Typography)(({ theme }) => ({
   display: 'inline',
 }));
 
+const CloseBox = styled(Box)(({ theme }) => ({
+  textAlign: 'right',
+  padding: theme.spacing(2),
+}));
+
 const inactiveStatuses: (StatusEnum | null | undefined)[] = [
   StatusEnum.ExpiredReferral,
   StatusEnum.NeverAsk,
@@ -90,6 +97,7 @@ export const ContactsMapPanel: React.FC<ContactMapsPanelProps> = ({
   panTo,
   selected,
   setSelected,
+  onClose,
 }) => {
   const { t } = useTranslation();
 
@@ -216,86 +224,101 @@ export const ContactsMapPanel: React.FC<ContactMapsPanelProps> = ({
   }, [selected]);
 
   return (
-    <Box>
-      {Object.entries(panelData).map(([status, entry], index) => (
-        <>
-          {entry.data && entry.data?.length > 0 && (
-            <StatusAccordion
-              key={status}
-              expanded={statusContactsMapOpen === index}
-              onChange={handleExpansionChange(index)}
-            >
-              <StatusHeader expandIcon={<ExpandMore />}>
-                <Box display="flex" justifyContent="center" alignItems="center">
-                  <Image
-                    alt={`${entry} Pin`}
-                    src={entry.imgUrl}
-                    width={21}
-                    height={34}
-                  />
-                  <Typography
-                    style={{ marginLeft: theme.spacing(1), fontWeight: 550 }}
+    <>
+      <CloseBox>
+        <IconButton onClick={onClose} aria-label={t('Close')}>
+          <Close titleAccess={t('Close')} />
+        </IconButton>
+      </CloseBox>
+      <Box>
+        {Object.entries(panelData).map(([status, entry], index) => (
+          <>
+            {entry.data && entry.data?.length > 0 && (
+              <StatusAccordion
+                key={status}
+                expanded={statusContactsMapOpen === index}
+                onChange={handleExpansionChange(index)}
+              >
+                <StatusHeader expandIcon={<ExpandMore />}>
+                  <Box
+                    display="flex"
+                    justifyContent="center"
+                    alignItems="center"
                   >
-                    {entry.data.length}
-                  </Typography>
-                  <Typography style={{ marginLeft: theme.spacing(1) }}>
-                    {entry.title}
-                  </Typography>
-                </Box>
-              </StatusHeader>
-              <ContactList>
-                <Box display="flex" flexDirection="column" width="100%">
-                  {entry.data.map((contact) => (
-                    <Box
-                      key={contact?.id}
-                      display="flex"
-                      width="100%"
-                      style={{
-                        background: 'white',
-                      }}
+                    <Image
+                      alt={`${entry} Pin`}
+                      src={entry.imgUrl}
+                      width={21}
+                      height={34}
+                    />
+                    <Typography
+                      style={{ marginLeft: theme.spacing(1), fontWeight: 550 }}
                     >
-                      <ContactWrapper
-                        current={selected?.id === contact?.id}
-                        {...{
-                          ref: selected?.id === contact?.id ? cardRef : null,
-                        }}
-                        onClick={() => {
-                          if (contact?.lat) {
-                            setSelected(contact);
-                            panTo({
-                              lat: contact?.lat,
-                              lng: contact?.lng,
-                            });
-                          }
+                      {entry.data.length}
+                    </Typography>
+                    <Typography style={{ marginLeft: theme.spacing(1) }}>
+                      {entry.title}
+                    </Typography>
+                  </Box>
+                </StatusHeader>
+                <ContactList>
+                  <Box display="flex" flexDirection="column" width="100%">
+                    {entry.data.map((contact) => (
+                      <Box
+                        key={contact?.id}
+                        display="flex"
+                        width="100%"
+                        style={{
+                          background: 'white',
                         }}
                       >
-                        <Box display="flex" flexDirection="column" width="100%">
-                          <Typography style={{ fontWeight: 550 }}>
-                            {contact?.name}
-                          </Typography>
-                          {contact?.lat && contact?.lng && (
-                            <>
-                              <Typography>{contact?.street}</Typography>
-                              <Typography>{`${contact?.city} ${contact?.state} ${contact?.postal}`}</Typography>
-                              <Box>
-                                <CruFocus>{t('Source:')}</CruFocus>
-                                <CruFocus>{contact?.source}</CruFocus>
-                                <Typography display="inline">
-                                  {contact?.date}
-                                </Typography>
-                              </Box>
-                            </>
-                          )}
-                        </Box>
-                      </ContactWrapper>
-                    </Box>
-                  ))}
-                </Box>
-              </ContactList>
-            </StatusAccordion>
-          )}
-        </>
-      ))}
-    </Box>
+                        <ContactWrapper
+                          current={selected?.id === contact?.id}
+                          {...{
+                            ref: selected?.id === contact?.id ? cardRef : null,
+                          }}
+                          onClick={() => {
+                            if (contact?.lat) {
+                              setSelected(contact);
+                              panTo({
+                                lat: contact?.lat,
+                                lng: contact?.lng,
+                              });
+                            }
+                          }}
+                        >
+                          <Box
+                            display="flex"
+                            flexDirection="column"
+                            width="100%"
+                          >
+                            <Typography style={{ fontWeight: 550 }}>
+                              {contact?.name}
+                            </Typography>
+                            {contact?.lat && contact?.lng && (
+                              <>
+                                <Typography>{contact?.street}</Typography>
+                                <Typography>{`${contact?.city} ${contact?.state} ${contact?.postal}`}</Typography>
+                                <Box>
+                                  <CruFocus>{t('Source:')}</CruFocus>
+                                  <CruFocus>{contact?.source}</CruFocus>
+                                  <Typography display="inline">
+                                    {contact?.date}
+                                  </Typography>
+                                </Box>
+                              </>
+                            )}
+                          </Box>
+                        </ContactWrapper>
+                      </Box>
+                    ))}
+                  </Box>
+                </ContactList>
+              </StatusAccordion>
+            )}
+          </>
+        ))}
+      </Box>
+    </>
   );
 };
