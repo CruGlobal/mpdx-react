@@ -1,5 +1,5 @@
-import { Theme, InputBase, createStyles } from '@mui/material';
-import { withStyles } from '@mui/styles';
+import { Theme, InputBase } from '@mui/material';
+import { createStyles, withStyles } from '@mui/styles';
 
 export const StyledInput = withStyles((theme: Theme) =>
   createStyles({
