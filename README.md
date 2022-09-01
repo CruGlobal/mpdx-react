@@ -1,7 +1,7 @@
 # MPDX
 
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/zeit/next.js/tree/canary/packages/create-next-app).
-The project uses node version 16.x.
+The project uses node version 16.16.0.
 
 ## Environments
 
