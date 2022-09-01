@@ -42,6 +42,7 @@ const data = [
 const selected = { id: '', name: '', avatar: '' };
 const setSelected = jest.fn();
 const panTo = jest.fn();
+const onClose = jest.fn();
 
 describe('ContactsMapPanel', () => {
   it('should list the contacts sorted by properly', async () => {
@@ -55,6 +56,7 @@ describe('ContactsMapPanel', () => {
                 selected={selected}
                 setSelected={setSelected}
                 panTo={panTo}
+                onClose={onClose}
               />
             </ContactsPageProvider>
           </GqlMockedProvider>
