@@ -11,16 +11,16 @@ import {
 import TestRouter from '__tests__/util/TestRouter';
 import { ContactsPageProvider } from 'pages/accountLists/[accountListId]/contacts/ContactsPageContext';
 
-export default {
-  title: 'Contacts/ContactDetails',
-};
-
 const accountListId = 'abc';
 const contactId = 'contact-1';
 
+export default {
+  title: 'Contacts/ContactDetails',
+  component: ContactDetails,
+};
+
 const router = {
-  query: { searchTerm: undefined, accountListId },
-  push: jest.fn(),
+  query: { accountListId },
 };
 
 export const Default = (): ReactElement => {
