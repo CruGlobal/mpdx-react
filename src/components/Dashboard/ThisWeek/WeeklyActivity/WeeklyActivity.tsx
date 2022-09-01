@@ -11,9 +11,8 @@ import {
   TableCell,
   TableBody,
   TableContainer,
-  withStyles,
 } from '@mui/material';
-import { makeStyles } from '@mui/styles';
+import { withStyles, makeStyles } from '@mui/styles';
 import { motion } from 'framer-motion';
 import { DateTime, Interval } from 'luxon';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
