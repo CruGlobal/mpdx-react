@@ -34,7 +34,7 @@ const DataTable = styled(Box)(({ theme }) => ({
   flexDirection: 'column',
   '& .MuiDataGrid-row.Mui-even:not(:hover)': {
     backgroundColor:
-      theme.palette.type === 'light'
+      theme.palette.mode === 'light'
         ? theme.palette.common.white
         : theme.palette.cruGrayLight.main,
   },
