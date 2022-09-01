@@ -8,7 +8,6 @@ import CheckCircleOutlineIcon from '@material-ui/icons/CheckCircleOutline';
 import debounce from 'lodash/debounce';
 import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
-import { useMassActionsUpdateTasksMutation } from '../../../../src/components/Contacts/Tasks/MassActions/MassActionsUpdateTasks.generated';
 import { InfiniteList } from '../../../../src/components/InfiniteList/InfiniteList';
 import Loading from '../../../../src/components/Loading';
 import { SidePanelsLayout } from '../../../../src/components/Layouts/SidePanelsLayout';
@@ -32,7 +31,11 @@ import {
 import useTaskModal from 'src/hooks/useTaskModal';
 import { ContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/ContactsRightPanel';
 import { useGetTaskIdsForMassSelectionLazyQuery } from 'src/hooks/GetIdsForMassSelection.generated';
-import { MassActionsTasksConfirmationModal } from 'src/components/Contacts/Tasks/MassActions/ConfirmationModal/MassActionsTasksConfirmationModal';
+import { MassActionsTasksConfirmationModal } from 'src/components/Task/MassActions/ConfirmationModal/MassActionsTasksConfirmationModal';
+import {
+  useMassActionsDeleteTasksMutation,
+  useMassActionsUpdateTasksMutation,
+} from 'src/components/Task/MassActions/MassActionsUpdateTasks.generated';
 import { MassActionsEditTasksModal } from 'src/components/Task/MassActions/EditTasks/MassActionsEditTasksModal';
 
 const WhiteBackground = styled(Box)(({ theme }) => ({
@@ -251,13 +254,15 @@ const TasksPage: React.FC = () => {
   //#region mass actions
 
   const [completeTasksModalOpen, setCompleteTasksModalOpen] = useState(false);
+  const [deleteTasksModalOpen, setDeleteTasksModalOpen] = useState(false);
   const [editTasksModalOpen, setEditTasksModalOpen] = useState(false);
 
-  const [updateTasks] = useMassActionsUpdateTasksMutation();
+  const [updateTasksMutation] = useMassActionsUpdateTasksMutation();
+  const [deleteTasksMutation] = useMassActionsDeleteTasksMutation();
 
   const completeTasks = async () => {
     const completedAt = DateTime.local().toISO();
-    await updateTasks({
+    await updateTasksMutation({
       variables: {
         accountListId: accountListId ?? '',
         attributes: ids.map((id) => ({
@@ -277,6 +282,25 @@ const TasksPage: React.FC = () => {
       variant: 'success',
     });
     setCompleteTasksModalOpen(false);
+  };
+
+  const deleteTasks = async () => {
+    await deleteTasksMutation({
+      variables: {
+        accountListId: accountListId ?? '',
+        ids,
+      },
+      refetchQueries: [
+        {
+          query: TasksDocument,
+          variables: { accountListId },
+        },
+      ],
+    });
+    enqueueSnackbar(t('Contact(s) deleted successfully'), {
+      variant: 'success',
+    });
+    setDeleteTasksModalOpen(false);
   };
 
   //#endregion
@@ -342,6 +366,7 @@ const TasksPage: React.FC = () => {
                   }
                   selectedIds={ids}
                   openCompleteTasksModal={setCompleteTasksModalOpen}
+                  openDeleteTasksModal={setDeleteTasksModalOpen}
                   openEditTasksModal={setEditTasksModalOpen}
                 />
                 {completeTasksModalOpen && (
@@ -351,6 +376,15 @@ const TasksPage: React.FC = () => {
                     idsCount={ids.length}
                     setOpen={setCompleteTasksModalOpen}
                     onConfirm={completeTasks}
+                  />
+                )}
+                {deleteTasksModalOpen && (
+                  <MassActionsTasksConfirmationModal
+                    open={deleteTasksModalOpen}
+                    action="delete"
+                    idsCount={ids.length}
+                    setOpen={setDeleteTasksModalOpen}
+                    onConfirm={deleteTasks}
                   />
                 )}
                 {editTasksModalOpen && (

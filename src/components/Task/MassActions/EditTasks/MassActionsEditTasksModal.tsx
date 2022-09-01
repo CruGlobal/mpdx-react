@@ -28,7 +28,7 @@ import { useCreateTaskCommentMutation } from '../../Modal/Comments/Form/CreateTa
 import theme from 'src/theme';
 import { dateFormat } from 'src/lib/intlFormat/intlFormat';
 import { useGetDataForTaskDrawerQuery } from 'src/components/Task/Drawer/Form/TaskDrawer.generated';
-import { useMassActionsUpdateTasksMutation } from 'src/components/Contacts/Tasks/MassActions/MassActionsUpdateTasks.generated';
+import { useMassActionsUpdateTasksMutation } from 'src/components/Task/MassActions/MassActionsUpdateTasks.generated';
 import { TasksDocument } from 'pages/accountLists/[accountListId]/tasks/Tasks.generated';
 
 interface MassActionsEditTasksModalProps {

@@ -29,6 +29,7 @@ const openCreateAppealModal = jest.fn();
 const openEditFieldsModal = jest.fn();
 const openHideContactsModal = jest.fn();
 const openCompleteTasksModal = jest.fn();
+const openDeleteTasksModal = jest.fn();
 const openEditTasksModal = jest.fn();
 
 jest.mock('../../../hooks/useTaskModal');
@@ -441,6 +442,7 @@ describe('ListHeader', () => {
             openHideContactsModal={openHideContactsModal}
             openAddTagsModal={openAddTagsModal}
             openCreateAppealModal={openCreateAppealModal}
+            openDeleteTasksModal={openDeleteTasksModal}
           />
         </ThemeProvider>,
       );
@@ -856,6 +858,7 @@ describe('ListHeader', () => {
           onCheckAllItems={onCheckAllItems}
           onSearchTermChanged={onSearchTermChanged}
           openCompleteTasksModal={openCompleteTasksModal}
+          openDeleteTasksModal={openDeleteTasksModal}
           openEditTasksModal={openEditTasksModal}
         />
       </ThemeProvider>,
@@ -898,5 +901,36 @@ describe('ListHeader', () => {
     expect(getByText('Edit Tasks')).toBeInTheDocument();
     userEvent.click(getByText('Edit Tasks'));
     expect(openEditTasksModal).toHaveBeenCalled();
+  });
+
+  it('opens the more actions menu and clicks the delete tasks action', () => {
+    const { getByPlaceholderText, getByText, queryByText } = render(
+      <ThemeProvider theme={theme}>
+        <ListHeader
+          selectedIds={selectedIds}
+          page="task"
+          activeFilters={false}
+          starredFilter={{}}
+          toggleStarredFilter={toggleStarredFilter}
+          headerCheckboxState={ListHeaderCheckBoxState.unchecked}
+          filterPanelOpen={false}
+          contactDetailsOpen={false}
+          toggleFilterPanel={toggleFilterPanel}
+          onCheckAllItems={onCheckAllItems}
+          onSearchTermChanged={onSearchTermChanged}
+          openCompleteTasksModal={openCompleteTasksModal}
+          openEditTasksModal={openEditTasksModal}
+          openDeleteTasksModal={openDeleteTasksModal}
+        />
+      </ThemeProvider>,
+    );
+
+    expect(getByPlaceholderText('Search Tasks')).toBeInTheDocument();
+    expect(queryByText('Delete Tasks')).not.toBeInTheDocument();
+    const actionsButton = getByText('Actions');
+    userEvent.click(actionsButton);
+    expect(getByText('Delete Tasks')).toBeInTheDocument();
+    userEvent.click(getByText('Delete Tasks'));
+    expect(openDeleteTasksModal).toHaveBeenCalled();
   });
 });

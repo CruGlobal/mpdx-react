@@ -1,7 +1,7 @@
 import { DialogActions, DialogContent, Typography } from '@material-ui/core';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import Modal from '../../../../common/Modal/Modal';
+import Modal from '../../../common/Modal/Modal';
 import { ActionButton } from 'src/components/Task/Modal/Form/TaskModalForm';
 
 interface MassActionsTasksConfirmationModalProps {
