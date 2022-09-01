@@ -18,10 +18,14 @@ export const Default = (): ReactElement => {
     {
       mocks: {
         nextAsk: DateTime.local().plus({ month: 3 }).toISO(),
+
         pledgeCurrency: 'EUR',
         pledgeStartDate: DateTime.local().toISO(),
         lastDonation: {
           donationDate: DateTime.local().toISO(),
+          amount: {
+            currency: 'USD',
+          },
         },
       },
     },

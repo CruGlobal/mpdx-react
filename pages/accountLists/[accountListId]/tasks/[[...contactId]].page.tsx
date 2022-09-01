@@ -36,6 +36,7 @@ import {
   useMassActionsDeleteTasksMutation,
   useMassActionsUpdateTasksMutation,
 } from 'src/components/Task/MassActions/MassActionsUpdateTasks.generated';
+import { MassActionsEditTasksModal } from 'src/components/Task/MassActions/EditTasks/MassActionsEditTasksModal';
 
 const WhiteBackground = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.common.white,
@@ -254,6 +255,7 @@ const TasksPage: React.FC = () => {
 
   const [completeTasksModalOpen, setCompleteTasksModalOpen] = useState(false);
   const [deleteTasksModalOpen, setDeleteTasksModalOpen] = useState(false);
+  const [editTasksModalOpen, setEditTasksModalOpen] = useState(false);
 
   const [updateTasksMutation] = useMassActionsUpdateTasksMutation();
   const [deleteTasksMutation] = useMassActionsDeleteTasksMutation();
@@ -365,6 +367,7 @@ const TasksPage: React.FC = () => {
                   selectedIds={ids}
                   openCompleteTasksModal={setCompleteTasksModalOpen}
                   openDeleteTasksModal={setDeleteTasksModalOpen}
+                  openEditTasksModal={setEditTasksModalOpen}
                 />
                 {completeTasksModalOpen && (
                   <MassActionsTasksConfirmationModal
@@ -382,6 +385,13 @@ const TasksPage: React.FC = () => {
                     idsCount={ids.length}
                     setOpen={setDeleteTasksModalOpen}
                     onConfirm={deleteTasks}
+                  />
+                )}
+                {editTasksModalOpen && (
+                  <MassActionsEditTasksModal
+                    ids={ids}
+                    accountListId={accountListId}
+                    handleClose={() => setEditTasksModalOpen(false)}
                   />
                 )}
                 <Box>

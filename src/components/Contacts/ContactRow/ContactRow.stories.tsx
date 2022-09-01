@@ -2,6 +2,7 @@ import React from 'react';
 import { Story, Meta } from '@storybook/react';
 import { withDesign } from 'storybook-addon-designs';
 
+import { DateTime } from 'luxon';
 import { gqlMock } from '../../../../__tests__/util/graphqlMocking';
 import { ContactRow } from './ContactRow';
 import {
@@ -17,7 +18,12 @@ export default {
 } as Meta;
 
 export const Default: Story = () => {
-  const contact = gqlMock<ContactRowFragment>(ContactRowFragmentDoc);
+  const contact = gqlMock<ContactRowFragment>(ContactRowFragmentDoc, {
+    mocks: {
+      primaryAddress: { updatedAt: DateTime.now().toISO() },
+      pledgeCurrency: 'USD',
+    },
+  });
 
   return (
     <ContactsPageProvider>

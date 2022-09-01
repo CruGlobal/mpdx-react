@@ -123,6 +123,7 @@ interface ListHeaderProps {
   openHideContactsModal?: (open: boolean) => void;
   openCompleteTasksModal?: (open: boolean) => void;
   openDeleteTasksModal?: (open: boolean) => void;
+  openEditTasksModal?: (open: boolean) => void;
 }
 
 export const ListHeader: React.FC<ListHeaderProps> = ({
@@ -148,6 +149,7 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
   openHideContactsModal,
   openCompleteTasksModal,
   openDeleteTasksModal,
+  openEditTasksModal,
 }) => {
   const { t } = useTranslation();
 
@@ -351,11 +353,17 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
                     <ListItemText>{t('Complete Tasks')}</ListItemText>
                   </MenuItem>
                 )}
-
-                <MenuItem divider>
-                  <ListItemText>{t('Edit Tasks')}</ListItemText>
-                </MenuItem>
-
+                {openEditTasksModal && (
+                  <MenuItem
+                    divider
+                    onClick={() => {
+                      openEditTasksModal(true);
+                      handleClose();
+                    }}
+                  >
+                    <ListItemText>{t('Edit Tasks')}</ListItemText>
+                  </MenuItem>
+                )}
                 <MenuItem>
                   <ListItemText>{t('Add Tag(s)')}</ListItemText>
                 </MenuItem>

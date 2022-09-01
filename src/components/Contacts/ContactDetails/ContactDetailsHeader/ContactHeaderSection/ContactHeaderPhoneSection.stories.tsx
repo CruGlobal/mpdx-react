@@ -1,3 +1,4 @@
+import { DateTime } from 'luxon';
 import React, { ReactElement } from 'react';
 import { gqlMock } from '../../../../../../__tests__/util/graphqlMocking';
 
@@ -14,6 +15,13 @@ export default {
 export const Default = (): ReactElement => {
   const contact = gqlMock<ContactDetailsHeaderFragment>(
     ContactDetailsHeaderFragmentDoc,
+    {
+      mocks: {
+        lastDonation: {
+          donationDate: DateTime.now().toISO(),
+        },
+      },
+    },
   );
 
   return <ContactHeaderPhoneSection loading={false} contact={contact} />;
