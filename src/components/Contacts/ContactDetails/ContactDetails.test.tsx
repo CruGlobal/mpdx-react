@@ -19,7 +19,7 @@ const accountListId = 'account-list-1';
 const contactId = 'contact-1';
 
 const router = {
-  query: { accountListId },
+  query: { accountListId, contactId: [contactId] },
 };
 
 describe('ContactDetails', () => {
