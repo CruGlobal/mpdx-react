@@ -1,6 +1,6 @@
 import React, { ReactElement } from 'react';
 import { Box, IconButton, makeStyles } from '@mui/material';
-import { DataGrid, GridSelectionModel } from '@material-ui/data-grid';
+import { DataGrid, GridSelectionModel } from '@mui/x-data-grid';
 import Icon from '@mdi/react';
 import { mdiSquareEditOutline, mdiDelete } from '@mdi/js';
 import i18n from 'i18next';
