@@ -103,59 +103,73 @@ const theme = createTheme({
       main: progressBarColors.gray,
     },
   },
-  overrides: {
+  components: {
     MuiCard: {
-      root: {
-        borderRadius: '10px',
+      styleOverrides: {
+        root: {
+          borderRadius: '10px',
+        },
       },
     },
     MuiChip: {
-      root: {
-        borderRadius: '16px',
-        boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.25)',
-        backgroundColor: '#fff',
+      styleOverrides: {
+        root: {
+          borderRadius: '16px',
+          boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.25)',
+          backgroundColor: '#fff',
+        },
       },
     },
     MuiCardHeader: {
-      root: {
-        borderBottom: '1px solid #EBECEC',
-      },
-      title: {
-        fontSize: '1.2rem',
+      styleOverrides: {
+        root: {
+          borderBottom: '1px solid #EBECEC',
+        },
+        title: {
+          fontSize: '1.2rem',
+        },
       },
     },
     MuiCardContent: {
-      root: {
-        padding: defaultTheme.spacing(4),
-        [defaultTheme.breakpoints.down('sm')]: {
-          padding: defaultTheme.spacing(2),
+      styleOverrides: {
+        root: {
+          padding: defaultTheme.spacing(4),
+          [defaultTheme.breakpoints.down('sm')]: {
+            padding: defaultTheme.spacing(2),
+          },
         },
       },
     },
     MuiCardActions: {
-      root: {
-        borderTop: '1px solid #EBECEC',
-        justifyContent: 'flex-end',
-        [defaultTheme.breakpoints.down('xs')]: {
-          justifyContent: 'center',
+      styleOverrides: {
+        root: {
+          borderTop: '1px solid #EBECEC',
+          justifyContent: 'flex-end',
+          [defaultTheme.breakpoints.down('xs')]: {
+            justifyContent: 'center',
+          },
         },
       },
     },
     MuiTableCell: {
-      head: {
-        fontWeight: 700,
+      styleOverrides: {
+        head: {
+          fontWeight: 700,
+        },
       },
     },
     MuiCheckbox: {
-      colorSecondary: {
-        color: cruColors.grayMedium,
-        '&$checked, &$indeterminate': {
-          color: cruColors.grayDark,
+      styleOverrides: {
+        colorSecondary: {
+          color: cruColors.grayMedium,
+          '&.Mui-checked, &.MuiCheckbox-indeterminate': {
+            color: cruColors.grayDark,
+          },
         },
       },
     },
     MuiCssBaseline: {
-      '@global': {
+      styleOverrides: {
         html: {
           backgroundColor: '#f6f7f9',
         },
