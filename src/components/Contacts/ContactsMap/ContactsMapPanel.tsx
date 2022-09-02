@@ -79,11 +79,6 @@ const CruFocus = styled(Typography)(({ theme }) => ({
   display: 'inline',
 }));
 
-const CloseBox = styled(Box)(({ theme }) => ({
-  textAlign: 'right',
-  padding: theme.spacing(2),
-}));
-
 const inactiveStatuses: (StatusEnum | null | undefined)[] = [
   StatusEnum.ExpiredReferral,
   StatusEnum.NeverAsk,
@@ -225,11 +220,14 @@ export const ContactsMapPanel: React.FC<ContactMapsPanelProps> = ({
 
   return (
     <>
-      <CloseBox>
-        <IconButton onClick={onClose} aria-label={t('Close')}>
-          <Close titleAccess={t('Close')} />
-        </IconButton>
-      </CloseBox>
+      <Box padding={2}>
+        <Box display="flex" justifyContent="space-between" alignItems="center">
+          <Typography variant="h6">{t('Partners by Status')}</Typography>
+          <IconButton onClick={onClose} aria-label={t('Close')}>
+            <Close titleAccess={t('Close')} />
+          </IconButton>
+        </Box>
+      </Box>
       <Box>
         {Object.entries(panelData).map(([status, entry], index) => (
           <>
