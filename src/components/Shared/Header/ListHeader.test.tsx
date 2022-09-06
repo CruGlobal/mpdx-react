@@ -31,6 +31,7 @@ const openHideContactsModal = jest.fn();
 const openCompleteTasksModal = jest.fn();
 const openDeleteTasksModal = jest.fn();
 const openEditTasksModal = jest.fn();
+const openTasksAddTagsModal = jest.fn();
 
 jest.mock('../../../hooks/useTaskModal');
 
@@ -932,5 +933,37 @@ describe('ListHeader', () => {
     expect(getByText('Delete Tasks')).toBeInTheDocument();
     userEvent.click(getByText('Delete Tasks'));
     expect(openDeleteTasksModal).toHaveBeenCalled();
+  });
+
+  it('opens the more actions menu and clicks the add tags (tasks) action', () => {
+    const { getByPlaceholderText, getByText, queryByText } = render(
+      <ThemeProvider theme={theme}>
+        <ListHeader
+          selectedIds={selectedIds}
+          page="task"
+          activeFilters={false}
+          starredFilter={{}}
+          toggleStarredFilter={toggleStarredFilter}
+          headerCheckboxState={ListHeaderCheckBoxState.unchecked}
+          filterPanelOpen={false}
+          contactDetailsOpen={false}
+          toggleFilterPanel={toggleFilterPanel}
+          onCheckAllItems={onCheckAllItems}
+          onSearchTermChanged={onSearchTermChanged}
+          openCompleteTasksModal={openCompleteTasksModal}
+          openEditTasksModal={openEditTasksModal}
+          openDeleteTasksModal={openDeleteTasksModal}
+          openTasksAddTagsModal={openTasksAddTagsModal}
+        />
+      </ThemeProvider>,
+    );
+
+    expect(getByPlaceholderText('Search Tasks')).toBeInTheDocument();
+    expect(queryByText('Add Tag(s)')).not.toBeInTheDocument();
+    const actionsButton = getByText('Actions');
+    userEvent.click(actionsButton);
+    expect(getByText('Add Tag(s)')).toBeInTheDocument();
+    userEvent.click(getByText('Add Tag(s)'));
+    expect(openTasksAddTagsModal).toHaveBeenCalled();
   });
 });
