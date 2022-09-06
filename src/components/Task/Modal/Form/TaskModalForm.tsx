@@ -283,7 +283,7 @@ const TaskModalForm = ({
             <FormFieldsWrapper>
               <FormFieldsGridContainer>
                 <Grid item>
-                  <TextField
+                  <TextField variant="standard"
                     label={t('Task Name')}
                     value={subject}
                     onChange={handleChange('subject')}
@@ -300,7 +300,7 @@ const TaskModalForm = ({
                   />
                 </Grid>
                 <Grid item>
-                  <FormControl fullWidth>
+                  <FormControl fullWidth variant="standard">
                     <InputLabel id="activityType">{t('Action')}</InputLabel>
                     <Select
                       labelId="activityType"
@@ -334,7 +334,7 @@ const TaskModalForm = ({
                         return `${user?.firstName} ${user?.lastName}`;
                       }}
                       renderInput={(params): ReactElement => (
-                        <TextField
+                        <TextField variant="standard"
                           {...params}
                           label={t('Assignee')}
                           InputProps={{
@@ -484,7 +484,7 @@ const TaskModalForm = ({
                       ))
                     }
                     renderInput={(params): ReactElement => (
-                      <TextField {...params} label={t('Tags')} />
+                      <TextField variant="standard" {...params} label={t('Tags')} />
                     )}
                     onChange={(_, tagList): void =>
                       setFieldValue('tagList', tagList)
@@ -513,7 +513,7 @@ const TaskModalForm = ({
                     }
                     renderInput={(params): ReactElement => {
                       return !loadingFilteredById ? (
-                        <TextField
+                        <TextField variant="standard"
                           {...params}
                           onChange={handleSearchTermChange}
                           label={t('Contacts')}
@@ -557,7 +557,7 @@ const TaskModalForm = ({
                   </Tooltip>
                   <Grid container spacing={2}>
                     <Grid xs={4} item>
-                      <FormControl fullWidth>
+                      <FormControl fullWidth variant="standard">
                         <InputLabel
                           style={{ display: 'flex', alignItems: 'center' }}
                           id="notificationType"
@@ -599,7 +599,7 @@ const TaskModalForm = ({
                           </Typography>
                         }
                       >
-                        <TextField
+                        <TextField variant="standard"
                           label={
                             <Typography
                               style={{ display: 'flex', alignItems: 'center' }}
@@ -619,7 +619,7 @@ const TaskModalForm = ({
                       </Tooltip>
                     </Grid>
                     <Grid xs={5} item>
-                      <FormControl fullWidth>
+                      <FormControl fullWidth variant="standard">
                         <InputLabel id="notificationTimeUnit">
                           <Typography
                             style={{ display: 'flex', alignItems: 'center' }}
@@ -658,7 +658,7 @@ const TaskModalForm = ({
                   </Grid>
                 </Grid>
                 <Grid item>
-                  <TextField
+                  <TextField variant="standard"
                     label={t('Comment')}
                     value={commentBody}
                     onChange={(event) => changeCommentBody(event.target.value)}
