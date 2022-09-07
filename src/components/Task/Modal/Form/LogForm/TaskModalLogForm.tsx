@@ -1,6 +1,6 @@
-import { DatePicker, TimePicker, Autocomplete } from '@mui/lab';
 import React, { ReactElement, useCallback, useState } from 'react';
 import {
+  Autocomplete,
   TextField,
   Select,
   styled,
@@ -23,12 +23,11 @@ import {
   Switch,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-
+import { MobileDatePicker, MobileTimePicker } from '@mui/x-date-pickers';
 import { Formik } from 'formik';
 import * as yup from 'yup';
 import { useSnackbar } from 'notistack';
 import { DateTime } from 'luxon';
-import { CalendarToday, Schedule } from '@mui/icons-material';
 import { v4 as uuidv4 } from 'uuid';
 import { AnimatePresence, motion } from 'framer-motion';
 import { debounce } from 'lodash/fp';
@@ -410,24 +409,14 @@ const TaskModalLogForm = ({
                   <FormControl fullWidth>
                     <Grid container spacing={2}>
                       <Grid xs={6} item>
-                        <DatePicker
-                          InputProps={{
-                            endAdornment: (
-                              <InputAdornment position="end">
-                                <CalendarToday
-                                  style={{
-                                    color: theme.palette.cruGrayMedium.main,
-                                  }}
-                                />
-                              </InputAdornment>
-                            ),
-                          }}
+                        <MobileDatePicker
+                          renderInput={(params) => <TextField {...params} />}
                           clearable
                           fullWidth
                           labelFunc={(date, invalidLabel) =>
                             date ? dateFormat(date) : invalidLabel
                           }
-                          autoOk
+                          closeOnSelect
                           label={t('Completed Date')}
                           value={completedAt}
                           onChange={(date): void =>
@@ -440,21 +429,11 @@ const TaskModalLogForm = ({
                         />
                       </Grid>
                       <Grid xs={6} item>
-                        <TimePicker
+                        <MobileTimePicker
+                          renderInput={(params) => <TextField {...params} />}
                           clearable
                           fullWidth
-                          autoOk
-                          InputProps={{
-                            endAdornment: (
-                              <InputAdornment position="end">
-                                <Schedule
-                                  style={{
-                                    color: theme.palette.cruGrayMedium.main,
-                                  }}
-                                />
-                              </InputAdornment>
-                            ),
-                          }}
+                          closeOnSelect
                           label={t('Completed Time')}
                           value={completedAt}
                           onChange={(date): void =>
