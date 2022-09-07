@@ -25,7 +25,8 @@
     "gql:w": "yarn gql --watch",
     "gql:server": "graphql-codegen --config codegen-server.yml",
     "gql:server:w": "yarn gql:server --watch",
-    "postinstall": "husky install"
+    "postinstall": "husky install",
+    "onesky:upload": "babel-node ./onesky/upload.ts"
   },
   "dependencies": {
     "@apollo/client": "^3.4.11",
