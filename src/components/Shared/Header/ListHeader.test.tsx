@@ -31,6 +31,7 @@ const openHideContactsModal = jest.fn();
 const openCompleteTasksModal = jest.fn();
 const openDeleteTasksModal = jest.fn();
 const openEditTasksModal = jest.fn();
+const openTasksRemoveTagsModal = jest.fn();
 
 jest.mock('../../../hooks/useTaskModal');
 
@@ -932,5 +933,37 @@ describe('ListHeader', () => {
     expect(getByText('Delete Tasks')).toBeInTheDocument();
     userEvent.click(getByText('Delete Tasks'));
     expect(openDeleteTasksModal).toHaveBeenCalled();
+  });
+
+  it('opens the more actions menu and clicks the remove tag(s) action', () => {
+    const { getByPlaceholderText, getByText, queryByText } = render(
+      <ThemeProvider theme={theme}>
+        <ListHeader
+          selectedIds={selectedIds}
+          page="task"
+          activeFilters={false}
+          starredFilter={{}}
+          toggleStarredFilter={toggleStarredFilter}
+          headerCheckboxState={ListHeaderCheckBoxState.unchecked}
+          filterPanelOpen={false}
+          contactDetailsOpen={false}
+          toggleFilterPanel={toggleFilterPanel}
+          onCheckAllItems={onCheckAllItems}
+          onSearchTermChanged={onSearchTermChanged}
+          openCompleteTasksModal={openCompleteTasksModal}
+          openEditTasksModal={openEditTasksModal}
+          openDeleteTasksModal={openDeleteTasksModal}
+          openTasksRemoveTagsModal={openTasksRemoveTagsModal}
+        />
+      </ThemeProvider>,
+    );
+
+    expect(getByPlaceholderText('Search Tasks')).toBeInTheDocument();
+    expect(queryByText('Remove Tag(s)')).not.toBeInTheDocument();
+    const actionsButton = getByText('Actions');
+    userEvent.click(actionsButton);
+    expect(getByText('Remove Tag(s)')).toBeInTheDocument();
+    userEvent.click(getByText('Remove Tag(s)'));
+    expect(openTasksRemoveTagsModal).toHaveBeenCalled();
   });
 });
