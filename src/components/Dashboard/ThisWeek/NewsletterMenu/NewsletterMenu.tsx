@@ -150,7 +150,6 @@ const NewsletterMenu = ({ accountListId }: Props): ReactElement<Props> => {
         open={Boolean(anchorEl)}
         onClose={handleMenuClose}
         anchorEl={anchorEl}
-        getContentAnchorEl={null}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
         transformOrigin={{ vertical: 'top', horizontal: 'center' }}
       >

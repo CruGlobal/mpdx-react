@@ -352,7 +352,6 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
                               vertical: 'top',
                               horizontal: 'left',
                             },
-                            getContentAnchorEl: null,
                             PaperProps: {
                               style: {
                                 maxHeight: '300px',
@@ -391,7 +390,6 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
                               vertical: 'top',
                               horizontal: 'left',
                             },
-                            getContentAnchorEl: null,
                             PaperProps: {
                               style: {
                                 maxHeight: '300px',

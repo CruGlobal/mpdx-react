@@ -327,7 +327,6 @@ export const EditPartnershipInfoModal: React.FC<
                         vertical: 'top',
                         horizontal: 'left',
                       },
-                      getContentAnchorEl: null,
                       PaperProps: {
                         style: {
                           maxHeight: '300px',
@@ -390,7 +389,6 @@ export const EditPartnershipInfoModal: React.FC<
                           vertical: 'top',
                           horizontal: 'left',
                         },
-                        getContentAnchorEl: null,
                         PaperProps: {
                           style: {
                             maxHeight: '300px',

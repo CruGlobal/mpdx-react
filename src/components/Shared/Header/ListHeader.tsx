@@ -230,7 +230,6 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
                       open={open}
                       onClose={handleClose}
                       anchorEl={anchorEl}
-                      getContentAnchorEl={null}
                       anchorOrigin={{
                         vertical: 'bottom',
                         horizontal: 'center',
@@ -335,7 +334,6 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
                 open={open}
                 onClose={handleClose}
                 anchorEl={anchorEl}
-                getContentAnchorEl={null}
                 anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
                 transformOrigin={{ vertical: 'top', horizontal: 'center' }}
               >

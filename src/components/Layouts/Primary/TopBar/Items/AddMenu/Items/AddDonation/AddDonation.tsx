@@ -265,7 +265,6 @@ export const AddDonation = ({
                                   vertical: 'top',
                                   horizontal: 'left',
                                 },
-                                getContentAnchorEl: null,
                                 PaperProps: {
                                   style: {
                                     maxHeight: '300px',
