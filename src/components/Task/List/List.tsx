@@ -1,4 +1,5 @@
-import { DatePicker, Skeleton } from '@mui/lab';
+import { DatePicker } from '@mui/lab';
+import Skeleton from '@mui/material/Skeleton';
 import React, { ReactElement, useState, useCallback } from 'react';
 import MUIDataTable, {
   MUIDataTableOptions,

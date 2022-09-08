@@ -10,7 +10,7 @@ import {
 import ArrowDropDown from '@mui/icons-material/ArrowDropDown';
 import { useTranslation } from 'react-i18next';
 import { DateTime } from 'luxon';
-import { Skeleton } from '@mui/lab';
+import Skeleton from '@mui/material/Skeleton';
 import { useGetTaskAnalyticsQuery } from './NewsletterMenu.generated';
 import ExportEmail from './MenuItems/ExportEmail/ExportEmail';
 import LogNewsletter from './MenuItems/LogNewsLetter/LogNewsletter';

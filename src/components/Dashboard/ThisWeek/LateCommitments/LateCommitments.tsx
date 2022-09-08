@@ -10,7 +10,7 @@ import {
   styled,
 } from '@mui/material';
 import { DateTime } from 'luxon';
-import { Skeleton } from '@mui/lab';
+import Skeleton from '@mui/material/Skeleton';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import AnimatedCard from '../../../AnimatedCard';

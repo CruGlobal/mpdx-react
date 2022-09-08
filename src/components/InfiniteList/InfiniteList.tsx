@@ -7,7 +7,7 @@ import {
   GroupedVirtuosoProps,
   ItemContent,
 } from 'react-virtuoso';
-import { Skeleton } from '@mui/lab';
+import Skeleton from '@mui/material/Skeleton';
 
 const height = 72;
 const padding = 0;

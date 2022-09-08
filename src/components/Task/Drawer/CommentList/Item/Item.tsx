@@ -2,7 +2,7 @@ import React, { ReactElement } from 'react';
 import { Theme, Avatar, Typography, Box, Tooltip, Slide } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import { DateTime } from 'luxon';
-import { Skeleton } from '@mui/lab';
+import Skeleton from '@mui/material/Skeleton';
 import { GetCommentsForTaskDrawerCommentListQuery } from '../TaskListComments.generated';
 
 const useStyles = makeStyles((theme: Theme) => ({

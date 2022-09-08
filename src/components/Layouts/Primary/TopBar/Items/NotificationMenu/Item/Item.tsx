@@ -9,7 +9,7 @@ import {
   ListSubheader,
   Typography,
 } from '@mui/material';
-import { Skeleton } from '@mui/lab';
+import Skeleton from '@mui/material/Skeleton';
 import React, { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DateTime } from 'luxon';

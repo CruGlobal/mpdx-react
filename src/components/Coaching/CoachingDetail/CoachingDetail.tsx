@@ -10,7 +10,7 @@ import {
 // TODO: EcoOutlined is not defined on @mui/icons-material, find replacement.
 import { AccountCircle } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
-import { Skeleton } from '@mui/lab';
+import Skeleton from '@mui/material/Skeleton';
 import { AppealProgress } from '../AppealProgress/AppealProgress';
 import { MonthlyCommitment } from './MonthlyCommitment/MonthlyCommitment';
 import {

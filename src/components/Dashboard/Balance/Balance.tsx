@@ -8,7 +8,7 @@ import {
   Box,
 } from '@mui/material';
 import { makeStyles } from '@mui/styles';
-import { Skeleton } from '@mui/lab';
+import Skeleton from '@mui/material/Skeleton';
 import { useTranslation } from 'react-i18next';
 import { currencyFormat } from '../../../lib/intlFormat';
 import AnimatedCard from '../../AnimatedCard';

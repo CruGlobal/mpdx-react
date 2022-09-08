@@ -23,7 +23,7 @@ import CallIcon from '@mui/icons-material/Call';
 import TextsmsIcon from '@mui/icons-material/Textsms';
 import EmailIcon from '@mui/icons-material/Email';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
-import { Skeleton } from '@mui/lab';
+import Skeleton from '@mui/material/Skeleton';
 import InfoBlock from '../../../../InfoBlock';
 import { currencyFormat } from '../../../../../lib/intlFormat';
 import { dateFormat } from '../../../../../lib/intlFormat/intlFormat';
