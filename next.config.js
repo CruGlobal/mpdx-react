@@ -56,6 +56,13 @@ module.exports = withPlugins([
       GOOGLE_GEOCODE_API_KEY: process.env.GOOGLE_GEOCODE_API_KEY,
       ROLLBAR_ACCESS_TOKEN: process.env.ROLLBAR_ACCESS_TOKEN,
     },
+    experimental: {
+      modularizeImports: {
+        '@mui/icons-material/?(((\\w*)?/?)*)': {
+          transform: '@mui/icons-material/{{ matches.[1] }}/{{member}}',
+        },
+      },
+    },
     // Force .page prefix on page files (ex. index.page.tsx) so generated files can be included in /pages directory without Next.js throwing build errors
     pageExtensions: ['page.tsx', 'page.ts', 'page.jsx', 'page.js'],
     productionBrowserSourceMaps: true,
