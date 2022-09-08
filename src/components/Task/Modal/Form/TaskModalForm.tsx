@@ -15,20 +15,16 @@ import {
   InputAdornment,
   Typography,
   Tooltip,
+  Autocomplete,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { Autocomplete, DatePicker, TimePicker } from '@mui/lab';
+import { MobileDatePicker, MobileTimePicker } from '@mui/x-date-pickers';
 import InfoIcon from '@mui/icons-material/InfoOutlined';
 import { Formik } from 'formik';
 import * as yup from 'yup';
 import { useSnackbar } from 'notistack';
 import { DateTime } from 'luxon';
-import {
-  CalendarToday,
-  MobileFriendly,
-  Schedule,
-  QueryBuilder,
-} from '@mui/icons-material';
+import { CalendarToday, Schedule } from '@mui/icons-material';
 import { v4 as uuidv4 } from 'uuid';
 import _ from 'lodash';
 import debounce from 'lodash/fp/debounce';
@@ -283,7 +279,7 @@ const TaskModalForm = ({
             <FormFieldsWrapper>
               <FormFieldsGridContainer>
                 <Grid item>
-                  <TextField variant="standard"
+                  <TextField
                     label={t('Task Name')}
                     value={subject}
                     onChange={handleChange('subject')}
@@ -300,12 +296,13 @@ const TaskModalForm = ({
                   />
                 </Grid>
                 <Grid item>
-                  <FormControl fullWidth variant="standard">
+                  <FormControl fullWidth>
                     <InputLabel id="activityType">{t('Action')}</InputLabel>
                     <Select
                       labelId="activityType"
                       value={activityType}
                       onChange={handleChange('activityType')}
+                      label={t('Action')}
                     >
                       <MenuItem value={undefined}>{t('None')}</MenuItem>
                       {Object.values(ActivityTypeEnum).map((val) => (
@@ -334,7 +331,7 @@ const TaskModalForm = ({
                         return `${user?.firstName} ${user?.lastName}`;
                       }}
                       renderInput={(params): ReactElement => (
-                        <TextField variant="standard"
+                        <TextField
                           {...params}
                           label={t('Assignee')}
                           InputProps={{
@@ -366,7 +363,7 @@ const TaskModalForm = ({
                   <FormControl fullWidth>
                     <Grid container spacing={2}>
                       <Grid xs={6} item>
-                        <DatePicker
+                        <MobileDatePicker
                           InputProps={{
                             endAdornment: (
                               <InputAdornment position="end">
@@ -378,12 +375,13 @@ const TaskModalForm = ({
                               </InputAdornment>
                             ),
                           }}
+                          renderInput={(params) => <TextField {...params} />}
                           clearable
                           fullWidth
                           labelFunc={(date, invalidLabel) =>
                             date ? dateFormat(date) : invalidLabel
                           }
-                          autoOk
+                          closeOnSelect
                           label={t('Due Date')}
                           value={startAt}
                           onChange={(date): void =>
@@ -396,10 +394,11 @@ const TaskModalForm = ({
                         />
                       </Grid>
                       <Grid xs={6} item>
-                        <TimePicker
+                        <MobileTimePicker
+                          renderInput={(params) => <TextField {...params} />}
                           clearable
                           fullWidth
-                          autoOk
+                          closeOnSelect
                           InputProps={{
                             endAdornment: (
                               <InputAdornment position="end">
@@ -430,13 +429,14 @@ const TaskModalForm = ({
                     <FormControl fullWidth>
                       <Grid container spacing={2}>
                         <Grid xs={6} item>
-                          <DatePicker
+                          <MobileDatePicker
+                            renderInput={(params) => <TextField {...params} />}
                             clearable
                             fullWidth
                             labelFunc={(date, invalidLabel) =>
                               date ? dateFormat(date) : invalidLabel
                             }
-                            autoOk
+                            closeOnSelect
                             label={t('Completed Date')}
                             value={completedAt}
                             onChange={(date): void =>
@@ -449,10 +449,11 @@ const TaskModalForm = ({
                           />
                         </Grid>
                         <Grid xs={6} item>
-                          <TimePicker
+                          <MobileTimePicker
+                            renderInput={(params) => <TextField {...params} />}
                             clearable
                             fullWidth
-                            autoOk
+                            closeOnSelect
                             label={t('Completed Time')}
                             value={completedAt}
                             onChange={(date): void =>
@@ -484,7 +485,7 @@ const TaskModalForm = ({
                       ))
                     }
                     renderInput={(params): ReactElement => (
-                      <TextField variant="standard" {...params} label={t('Tags')} />
+                      <TextField {...params} label={t('Tags')} />
                     )}
                     onChange={(_, tagList): void =>
                       setFieldValue('tagList', tagList)
@@ -513,7 +514,7 @@ const TaskModalForm = ({
                     }
                     renderInput={(params): ReactElement => {
                       return !loadingFilteredById ? (
-                        <TextField variant="standard"
+                        <TextField
                           {...params}
                           onChange={handleSearchTermChange}
                           label={t('Contacts')}
@@ -551,21 +552,26 @@ const TaskModalForm = ({
                       </Typography>
                     }
                   >
-                    <Typography style={{ display: 'flex' }}>
+                    <Typography
+                      style={{
+                        display: 'flex',
+                        marginBottom: theme.spacing(1),
+                      }}
+                    >
                       Notifications <InfoIcon style={{ marginLeft: '5px' }} />{' '}
                     </Typography>
                   </Tooltip>
                   <Grid container spacing={2}>
                     <Grid xs={4} item>
-                      <FormControl fullWidth variant="standard">
+                      <FormControl fullWidth>
                         <InputLabel
                           style={{ display: 'flex', alignItems: 'center' }}
                           id="notificationType"
                         >
-                          <MobileFriendly fontSize="small" />
                           {t('Type')}
                         </InputLabel>
                         <Tooltip
+                          placement="top"
                           title={
                             <Typography>
                               {t('How the notification will be sent')}
@@ -576,6 +582,7 @@ const TaskModalForm = ({
                             labelId="notificationType"
                             value={notificationType}
                             onChange={handleChange('notificationType')}
+                            label={t('Type')}
                           >
                             <MenuItem value={undefined}>{t('None')}</MenuItem>
                             {Object.values(NotificationTypeEnum).map((val) => (
@@ -593,18 +600,19 @@ const TaskModalForm = ({
                     </Grid>
                     <Grid xs={3} item>
                       <Tooltip
+                        placement="top"
                         title={
                           <Typography>
                             {t('Amount of time before notification')}
                           </Typography>
                         }
                       >
-                        <TextField variant="standard"
+                        <TextField
                           label={
                             <Typography
                               style={{ display: 'flex', alignItems: 'center' }}
                             >
-                              <QueryBuilder fontSize="small" /> {t(' Time')}
+                              {t(' Time')}
                             </Typography>
                           }
                           fullWidth
@@ -619,15 +627,16 @@ const TaskModalForm = ({
                       </Tooltip>
                     </Grid>
                     <Grid xs={5} item>
-                      <FormControl fullWidth variant="standard">
+                      <FormControl fullWidth>
                         <InputLabel id="notificationTimeUnit">
                           <Typography
                             style={{ display: 'flex', alignItems: 'center' }}
                           >
-                            <QueryBuilder fontSize="small" /> {t(' Unit')}
+                            {t(' Unit')}
                           </Typography>
                         </InputLabel>
                         <Tooltip
+                          placement="top"
                           title={
                             <Typography>
                               {t('Days, hours, or minutes')}
@@ -638,6 +647,7 @@ const TaskModalForm = ({
                             labelId="notificationTimeUnit"
                             value={notificationTimeUnit}
                             onChange={handleChange('notificationTimeUnit')}
+                            label={t(' Unit')}
                           >
                             <MenuItem value={undefined}>{t('None')}</MenuItem>
                             {Object.values(NotificationTimeUnitEnum).map(
@@ -658,7 +668,7 @@ const TaskModalForm = ({
                   </Grid>
                 </Grid>
                 <Grid item>
-                  <TextField variant="standard"
+                  <TextField
                     label={t('Comment')}
                     value={commentBody}
                     onChange={(event) => changeCommentBody(event.target.value)}
