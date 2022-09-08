@@ -74,6 +74,7 @@ module.exports = withPlugins([
     },
     reactStrictMode: false,
     styledComponents: true,
+    swcMinify: true,
     webpack: (config) => {
       config.experiments = {
         ...config.experiments,
