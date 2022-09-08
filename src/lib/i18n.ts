@@ -26,8 +26,7 @@ i18next
       },
     },
     react: {
-      wait: true,
-      useSuspense: false,
+      useSuspense: true,
     },
     detection: {
       order: ['navigator', 'htmlTag'],
