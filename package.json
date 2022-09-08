@@ -8,6 +8,7 @@
     "build:analyze": "ANALYZE=true yarn build",
     "build:amplify": "AMPLIFY_NEXTJS_EXPERIMENTAL_TRACE=true next build",
     "serve": "next start",
+    "disable-telemetry": "next telemetry disable",
     "lint": "eslint '*/**/*.{js,ts,tsx}' --quiet --fix",
     "lint:ci": "eslint '*/**/*.{js,ts,tsx}'",
     "lint:ts": "tsc",
