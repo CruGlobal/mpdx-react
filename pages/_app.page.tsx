@@ -107,7 +107,7 @@ const App = ({ Component, pageProps, router }: AppProps): ReactElement => {
                         <SnackbarProvider maxSnack={3}>
                           <GlobalStyles />
                           <AnimatePresence
-                            exitBeforeEnter
+                            mode="wait"
                             onExitComplete={handleExitComplete}
                           >
                             <RouterGuard>
