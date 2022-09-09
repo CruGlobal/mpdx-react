@@ -116,6 +116,7 @@ interface ListHeaderProps {
     filter: ContactFilterSetInput | TaskFilterSetInput,
   ) => void;
   selectedIds: string[];
+  openRemoveTagsModal?: (open: boolean) => void;
   openAddTagsModal?: (open: boolean) => void;
   openAddToAppealModal?: (open: boolean) => void;
   openCreateAppealModal?: (open: boolean) => void;
@@ -125,6 +126,7 @@ interface ListHeaderProps {
   openDeleteTasksModal?: (open: boolean) => void;
   openEditTasksModal?: (open: boolean) => void;
   openTasksRemoveTagsModal?: (open: boolean) => void;
+  openTasksAddTagsModal?: (open: boolean) => void;
 }
 
 export const ListHeader: React.FC<ListHeaderProps> = ({
@@ -143,6 +145,7 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
   toggleStarredFilter,
   contactsView,
   selectedIds,
+  openRemoveTagsModal,
   openAddTagsModal,
   openAddToAppealModal,
   openCreateAppealModal,
@@ -152,6 +155,7 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
   openDeleteTasksModal,
   openEditTasksModal,
   openTasksRemoveTagsModal,
+  openTasksAddTagsModal,
 }) => {
   const { t } = useTranslation();
 
@@ -217,7 +221,8 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
               openHideContactsModal &&
               openAddToAppealModal &&
               openCreateAppealModal &&
-              openAddTagsModal && (
+              openAddTagsModal &&
+              openRemoveTagsModal && (
                 <>
                   <Hidden xsDown>
                     <ActionsButton
@@ -254,7 +259,13 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
                       >
                         <ListItemText>{t('Add Tags')}</ListItemText>
                       </MenuItem>
-                      <MenuItem divider>
+                      <MenuItem
+                        divider
+                        onClick={() => {
+                          openRemoveTagsModal(true);
+                          handleClose();
+                        }}
+                      >
                         <ListItemText>{t('Remove Tags')}</ListItemText>
                       </MenuItem>
                       <MenuItem
@@ -366,9 +377,16 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
                     <ListItemText>{t('Edit Tasks')}</ListItemText>
                   </MenuItem>
                 )}
-                <MenuItem>
-                  <ListItemText>{t('Add Tag(s)')}</ListItemText>
-                </MenuItem>
+                {openTasksAddTagsModal && (
+                  <MenuItem
+                    onClick={() => {
+                      openTasksAddTagsModal(true);
+                      handleClose();
+                    }}
+                  >
+                    <ListItemText>{t('Add Tag(s)')}</ListItemText>
+                  </MenuItem>
+                )}
                 {openTasksRemoveTagsModal && (
                   <MenuItem
                     divider

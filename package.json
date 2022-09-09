@@ -25,13 +25,15 @@
     "gql:w": "yarn gql --watch",
     "gql:server": "graphql-codegen --config codegen-server.yml",
     "gql:server:w": "yarn gql:server --watch",
-    "postinstall": "husky install"
+    "postinstall": "husky install",
+    "onesky:upload": "cross-env babel-node ./onesky/upload.js"
   },
   "dependencies": {
     "@apollo/client": "^3.4.11",
     "@apollo/federation": "^0.21.2",
     "@apollo/gateway": "^0.23.2",
     "@apollo/link-context": "^2.0.0-beta.3",
+    "@babel/node": "^7.18.10",
     "@babel/runtime": "^7.12.13",
     "@date-io/luxon": "1.x",
     "@material-ui/core": "^4.11.3",

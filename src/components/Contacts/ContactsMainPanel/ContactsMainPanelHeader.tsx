@@ -12,6 +12,7 @@ import {
   ContactsPageContext,
   ContactsPageType,
 } from '../../../../pages/accountLists/[accountListId]/contacts/ContactsPageContext';
+import { MassActionsRemoveTagsModal } from '../MassActions/RemoveTags/MassActionsRemoveTagsModal';
 import { MassActionsAddTagsModal } from '../MassActions/AddTags/MassActionsAddTagsModal';
 import { MassActionsAddToAppealModal } from '../MassActions/AddToAppeal/MassActionsAddToAppealModal';
 import { MassActionsEditFieldsModal } from '../MassActions/EditFields/MassActionsEditFieldsModal';
@@ -67,6 +68,7 @@ export const ContactsMainPanelHeader: React.FC = () => {
     selectedIds,
   } = React.useContext(ContactsPageContext) as ContactsPageType;
 
+  const [openRemoveTagsModal, setOpenRemoveTagsModal] = useState(false);
   const [openAddTagsModal, setOpenAddTagsModal] = useState(false);
   const [addToAppealModalOpen, setAddToAppealModalOpen] = useState(false);
   const [createAppealModalOpen, setCreateAppealModalOpen] = useState(false);
@@ -134,6 +136,7 @@ export const ContactsMainPanelHeader: React.FC = () => {
         toggleStarredFilter={setStarredFilter}
         headerCheckboxState={selectionType}
         selectedIds={selectedIds}
+        openRemoveTagsModal={setOpenRemoveTagsModal}
         openAddTagsModal={setOpenAddTagsModal}
         openEditFieldsModal={setEditFieldsModalOpen}
         openAddToAppealModal={setAddToAppealModalOpen}
@@ -180,6 +183,13 @@ export const ContactsMainPanelHeader: React.FC = () => {
           </Hidden>
         }
       />
+      {openRemoveTagsModal && (
+        <MassActionsRemoveTagsModal
+          accountListId={accountListId ?? ''}
+          ids={selectedIds}
+          handleClose={() => setOpenRemoveTagsModal(false)}
+        />
+      )}
       {openAddTagsModal && (
         <MassActionsAddTagsModal
           accountListId={accountListId ?? ''}
