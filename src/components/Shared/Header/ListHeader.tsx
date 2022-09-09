@@ -116,6 +116,7 @@ interface ListHeaderProps {
     filter: ContactFilterSetInput | TaskFilterSetInput,
   ) => void;
   selectedIds: string[];
+  openRemoveTagsModal?: (open: boolean) => void;
   openAddTagsModal?: (open: boolean) => void;
   openAddToAppealModal?: (open: boolean) => void;
   openCreateAppealModal?: (open: boolean) => void;
@@ -142,6 +143,7 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
   toggleStarredFilter,
   contactsView,
   selectedIds,
+  openRemoveTagsModal,
   openAddTagsModal,
   openAddToAppealModal,
   openCreateAppealModal,
@@ -215,7 +217,8 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
               openHideContactsModal &&
               openAddToAppealModal &&
               openCreateAppealModal &&
-              openAddTagsModal && (
+              openAddTagsModal &&
+              openRemoveTagsModal && (
                 <>
                   <Hidden xsDown>
                     <ActionsButton
@@ -252,7 +255,13 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
                       >
                         <ListItemText>{t('Add Tags')}</ListItemText>
                       </MenuItem>
-                      <MenuItem divider>
+                      <MenuItem
+                        divider
+                        onClick={() => {
+                          openRemoveTagsModal(true);
+                          handleClose();
+                        }}
+                      >
                         <ListItemText>{t('Remove Tags')}</ListItemText>
                       </MenuItem>
                       <MenuItem
