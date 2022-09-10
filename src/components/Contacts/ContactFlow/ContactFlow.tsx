@@ -143,7 +143,7 @@ export const ContactFlow: React.FC<Props> = ({
                   : 'minmax(0, 1fr)); minmax(0, 1fr)'
               }`}
               gridAutoFlow="column"
-              gridGap={theme.spacing(1)}
+              gap={theme.spacing(1)}
               overflow="auto"
               style={{ overflowX: 'auto' }}
             >

@@ -1,5 +1,6 @@
 import { Box, Button, Hidden, styled } from '@mui/material';
-import { ToggleButton, ToggleButtonGroup } from '@mui/lab';
+import ToggleButton from '@mui/material/ToggleButton';
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import React, { useState } from 'react';
 import NextLink from 'next/link';
 import { useTranslation } from 'react-i18next';
