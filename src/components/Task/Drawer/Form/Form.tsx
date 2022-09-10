@@ -1,5 +1,6 @@
 import React, { ReactElement, useState } from 'react';
 import {
+  Autocomplete,
   Theme,
   TextField,
   Select,
@@ -22,8 +23,7 @@ import {
 } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import { useTranslation } from 'react-i18next';
-import { Autocomplete, DatePicker, TimePicker } from '@mui/lab';
-
+import { MobileDatePicker, MobileTimePicker } from '@mui/x-date-pickers';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Formik } from 'formik';
@@ -278,13 +278,14 @@ const TaskDrawerForm = ({
                 <FormControl className={classes.formControl}>
                   <Grid container spacing={2}>
                     <Grid xs={6} item>
-                      <DatePicker
+                      <MobileDatePicker
+                        renderInput={(params) => <TextField {...params} />}
                         clearable
                         fullWidth
                         labelFunc={(date, invalidLabel) =>
                           date ? dateFormat(date) : invalidLabel
                         }
-                        autoOk
+                        closeOnSelect
                         label={t('Due Date')}
                         value={startAt}
                         onChange={(date): void =>
@@ -297,10 +298,11 @@ const TaskDrawerForm = ({
                       />
                     </Grid>
                     <Grid xs={6} item>
-                      <TimePicker
+                      <MobileTimePicker
+                        renderInput={(params) => <TextField {...params} />}
                         clearable
                         fullWidth
-                        autoOk
+                        closeOnSelect
                         label={t('Due Time')}
                         value={startAt}
                         onChange={(date): void =>
@@ -320,13 +322,14 @@ const TaskDrawerForm = ({
                   <FormControl className={classes.formControl}>
                     <Grid container spacing={2}>
                       <Grid xs={6} item>
-                        <DatePicker
+                        <MobileDatePicker
+                          renderInput={(params) => <TextField {...params} />}
                           clearable
                           fullWidth
                           labelFunc={(date, invalidLabel) =>
                             date ? dateFormat(date) : invalidLabel
                           }
-                          autoOk
+                          closeOnSelect
                           label={t('Completed Date')}
                           value={completedAt}
                           onChange={(date): void =>
@@ -339,10 +342,11 @@ const TaskDrawerForm = ({
                         />
                       </Grid>
                       <Grid xs={6} item>
-                        <TimePicker
+                        <MobileTimePicker
+                          renderInput={(params) => <TextField {...params} />}
                           clearable
                           fullWidth
-                          autoOk
+                          closeOnSelect
                           label={t('Completed Time')}
                           value={completedAt}
                           onChange={(date): void =>

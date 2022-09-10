@@ -1,5 +1,6 @@
 import React, { ReactElement, useCallback, useState } from 'react';
 import {
+  Autocomplete,
   Box,
   IconButton,
   styled,
@@ -14,7 +15,6 @@ import CompassIcon from '@mui/icons-material/Explore';
 import PersonIcon from '@mui/icons-material/Person';
 import PeopleIcon from '@mui/icons-material/People';
 import AddIcon from '@mui/icons-material/Add';
-import { Autocomplete } from '@mui/lab';
 import { createFilterOptions } from '@mui/material/Autocomplete';
 import debounce from 'lodash/debounce';
 import NextLink from 'next/link';

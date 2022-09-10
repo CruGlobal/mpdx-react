@@ -11,7 +11,7 @@ import {
   TextField,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { DatePicker } from '@mui/lab';
+import { MobileDatePicker } from '@mui/x-date-pickers';
 import { DateTime } from 'luxon';
 import SchoolIcon from '@mui/icons-material/School';
 import BusinessIcon from '@mui/icons-material/Business';
@@ -123,7 +123,8 @@ export const PersonShowMore: React.FC<PersonShowMoreProps> = ({
       {/* Anniversary Section */}
       <ModalSectionContainer>
         <ModalSectionIcon icon={<RingIcon />} />
-        <DatePicker
+        <MobileDatePicker
+          renderInput={(params) => <TextField {...params} />}
           onChange={(date) => (!date ? null : handleDateChange(date))}
           value={
             anniversaryMonth && anniversaryDay

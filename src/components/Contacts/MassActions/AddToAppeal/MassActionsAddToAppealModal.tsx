@@ -1,4 +1,5 @@
 import {
+  Autocomplete,
   Button,
   CircularProgress,
   DialogActions,
@@ -6,7 +7,6 @@ import {
   FormControl,
   TextField,
 } from '@mui/material';
-import { Autocomplete } from '@mui/lab';
 import { Formik } from 'formik';
 import React, { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';

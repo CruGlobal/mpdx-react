@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { useSnackbar } from 'notistack';
 import {
+  Autocomplete,
   Box,
   Button,
   CircularProgress,
@@ -19,7 +20,6 @@ import {
   Theme,
   useMediaQuery,
 } from '@mui/material';
-import { Autocomplete } from '@mui/lab';
 import debounce from 'lodash/fp/debounce';
 import {
   ContactUpdateInput,

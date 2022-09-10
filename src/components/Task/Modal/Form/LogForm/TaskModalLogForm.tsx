@@ -22,6 +22,8 @@ import {
   FormControlLabel,
   Switch,
 } from '@mui/material';
+import CalendarToday from '@mui/icons-material/CalendarToday';
+import Schedule from '@mui/icons-material/Schedule';
 import { useTranslation } from 'react-i18next';
 import { MobileDatePicker, MobileTimePicker } from '@mui/x-date-pickers';
 import { Formik } from 'formik';
@@ -324,6 +326,7 @@ const TaskModalLogForm = ({
                     <InputLabel id="activityType">{t('Action')}</InputLabel>
                     <Select
                       labelId="activityType"
+                      label={t('Action')}
                       value={activityType}
                       onChange={handleChange('activityType')}
                     >
@@ -394,6 +397,7 @@ const TaskModalLogForm = ({
                     <InputLabel id="result">{t('Result')}</InputLabel>
                     <Select
                       labelId="result"
+                      label={t('Result')}
                       value={result}
                       onChange={handleChange('result')}
                     >
@@ -411,6 +415,17 @@ const TaskModalLogForm = ({
                       <Grid xs={6} item>
                         <MobileDatePicker
                           renderInput={(params) => <TextField {...params} />}
+                          InputProps={{
+                            endAdornment: (
+                              <InputAdornment position="end">
+                                <CalendarToday
+                                  style={{
+                                    color: theme.palette.cruGrayMedium.main,
+                                  }}
+                                />
+                              </InputAdornment>
+                            ),
+                          }}
                           clearable
                           fullWidth
                           labelFunc={(date, invalidLabel) =>
@@ -431,6 +446,17 @@ const TaskModalLogForm = ({
                       <Grid xs={6} item>
                         <MobileTimePicker
                           renderInput={(params) => <TextField {...params} />}
+                          InputProps={{
+                            endAdornment: (
+                              <InputAdornment position="end">
+                                <Schedule
+                                  style={{
+                                    color: theme.palette.cruGrayMedium.main,
+                                  }}
+                                />
+                              </InputAdornment>
+                            ),
+                          }}
                           clearable
                           fullWidth
                           closeOnSelect
@@ -558,6 +584,7 @@ const TaskModalLogForm = ({
                               </InputLabel>
                               <Select
                                 labelId="nextAction"
+                                label={t('Next Action')}
                                 value={nextAction}
                                 onChange={handleChange('nextAction')}
                               >

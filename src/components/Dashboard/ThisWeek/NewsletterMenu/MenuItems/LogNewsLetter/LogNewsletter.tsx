@@ -20,7 +20,7 @@ import * as yup from 'yup';
 import CloseIcon from '@mui/icons-material/Close';
 import { useTranslation } from 'react-i18next';
 import { Formik } from 'formik';
-import { DatePicker, TimePicker } from '@mui/lab';
+import { MobileDatePicker, MobileTimePicker } from '@mui/x-date-pickers';
 import ClockIcon from '@mui/icons-material/AccessTime';
 import CalendarIcon from '@mui/icons-material/CalendarToday';
 import { DateTime } from 'luxon';
@@ -233,7 +233,8 @@ const LogNewsletter = ({
                 <Grid item xs={12}>
                   <Grid container spacing={2}>
                     <Grid item xs={12} md={6}>
-                      <DatePicker
+                      <MobileDatePicker
+                        renderInput={(params) => <TextField {...params} />}
                         value={completedAt}
                         onChange={(date): void =>
                           setFieldValue('completedAt', date)
@@ -241,7 +242,7 @@ const LogNewsletter = ({
                         format="MM/dd/yyyy"
                         clearable
                         fullWidth
-                        autoOk
+                        closeOnSelect
                         data-testid="completedDate"
                         inputVariant="outlined"
                         label={t('Completed Date')}
@@ -261,14 +262,15 @@ const LogNewsletter = ({
                       />
                     </Grid>
                     <Grid item xs={12} md={6}>
-                      <TimePicker
+                      <MobileTimePicker
+                        renderInput={(params) => <TextField {...params} />}
                         value={completedAt}
                         onChange={(date): void =>
                           setFieldValue('completedAt', date)
                         }
                         clearable
                         fullWidth
-                        autoOk
+                        closeOnSelect
                         data-testid="completedTime"
                         inputVariant="outlined"
                         label={t('Completed Time')}

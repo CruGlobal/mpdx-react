@@ -1,4 +1,5 @@
-import { DatePicker } from '@mui/lab';
+import { MobileDatePicker } from '@mui/x-date-pickers';
+import TextField from '@mui/material/TextField';
 import Skeleton from '@mui/material/Skeleton';
 import React, { ReactElement, useState, useCallback } from 'react';
 import MUIDataTable, {
@@ -351,13 +352,14 @@ const TaskList = ({ initialFilter }: Props): ReactElement => {
                 <FormLabel>{t('Due Date')}</FormLabel>
                 <Grid container spacing={2}>
                   <Grid xs={6} item>
-                    <DatePicker
+                    <MobileDatePicker
+                      renderInput={(params) => <TextField {...params} />}
                       clearable
                       fullWidth
                       labelFunc={(date, invalidLabel) =>
                         date ? dateFormat(date) : invalidLabel
                       }
-                      autoOk
+                      closeOnSelect
                       label={t('Minimum')}
                       value={filterList[index][0] || null}
                       onChange={(date) => {
@@ -371,13 +373,14 @@ const TaskList = ({ initialFilter }: Props): ReactElement => {
                     />
                   </Grid>
                   <Grid xs={6} item>
-                    <DatePicker
+                    <MobileDatePicker
+                      renderInput={(params) => <TextField {...params} />}
                       clearable
                       fullWidth
                       labelFunc={(date, invalidLabel) =>
                         date ? dateFormat(date) : invalidLabel
                       }
-                      autoOk
+                      closeOnSelect
                       label={t('Maximum')}
                       value={filterList[index][1] || null}
                       onChange={(date) => {

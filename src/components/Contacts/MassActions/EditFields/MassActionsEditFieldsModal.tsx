@@ -11,8 +11,8 @@ import {
   Select,
   TextField,
 } from '@mui/material';
-import { CalendarToday } from '@mui/icons-material';
-import { DatePicker } from '@mui/lab';
+import CalendarToday from '@mui/icons-material/CalendarToday';
+import { MobileDatePicker } from '@mui/x-date-pickers';
 import { Formik } from 'formik';
 import React, { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -248,7 +248,8 @@ export const MassActionsEditFieldsModal: React.FC<
                 </Grid>
                 <Grid item xs={12} lg={6}>
                   <FormControl fullWidth>
-                    <DatePicker
+                    <MobileDatePicker
+                      renderInput={(params) => <TextField {...params} />}
                       InputProps={{
                         endAdornment: (
                           <InputAdornment position="end">
@@ -265,7 +266,7 @@ export const MassActionsEditFieldsModal: React.FC<
                       labelFunc={(date, invalidLabel) =>
                         date ? dateFormat(date) : invalidLabel
                       }
-                      autoOk
+                      closeOnSelect
                       label={t('Next Increase Ask')}
                       value={nextAsk}
                       onChange={(date): void => setFieldValue('nextAsk', date)}

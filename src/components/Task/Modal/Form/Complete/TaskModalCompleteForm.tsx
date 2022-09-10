@@ -1,5 +1,6 @@
 import React, { ReactElement, useState } from 'react';
 import {
+  Autocomplete,
   TextField,
   Select,
   styled,
@@ -16,7 +17,7 @@ import {
   Typography,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { Autocomplete, DatePicker, TimePicker } from '@mui/lab';
+import { MobileDatePicker, MobileTimePicker } from '@mui/x-date-pickers';
 import { Formik } from 'formik';
 import * as yup from 'yup';
 import { useSnackbar } from 'notistack';
@@ -174,7 +175,8 @@ const TaskModalCompleteForm = ({
                   <FormControl fullWidth>
                     <Grid container spacing={2}>
                       <Grid xs={6} item>
-                        <DatePicker
+                        <MobileDatePicker
+                          renderInput={(params) => <TextField {...params} />}
                           InputProps={{
                             endAdornment: (
                               <InputAdornment position="end">
@@ -191,7 +193,7 @@ const TaskModalCompleteForm = ({
                           labelFunc={(date, invalidLabel) =>
                             date ? dateFormat(date) : invalidLabel
                           }
-                          autoOk
+                          closeOnSelect
                           label={t('Completed Date')}
                           value={completedAt}
                           onChange={(date): void =>
@@ -204,10 +206,11 @@ const TaskModalCompleteForm = ({
                         />
                       </Grid>
                       <Grid xs={6} item>
-                        <TimePicker
+                        <MobileTimePicker
+                          renderInput={(params) => <TextField {...params} />}
                           clearable
                           fullWidth
-                          autoOk
+                          closeOnSelect
                           InputProps={{
                             endAdornment: (
                               <InputAdornment position="end">

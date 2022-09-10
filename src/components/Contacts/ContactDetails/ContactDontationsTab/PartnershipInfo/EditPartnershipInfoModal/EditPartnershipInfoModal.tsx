@@ -1,5 +1,6 @@
 import React, { ReactElement, useState } from 'react';
 import {
+  Autocomplete,
   Box,
   Button,
   Checkbox,
@@ -22,7 +23,7 @@ import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import { useTranslation } from 'react-i18next';
 import { Formik } from 'formik';
 import * as yup from 'yup';
-import { DatePicker, Autocomplete } from '@mui/lab';
+import { MobileDatePicker } from '@mui/x-date-pickers';
 import { useSnackbar } from 'notistack';
 import { DateTime } from 'luxon';
 import { useAccountListId } from '../../../../../../hooks/useAccountListId';
@@ -450,7 +451,8 @@ export const EditPartnershipInfoModal: React.FC<
                 </FormControl>
               </ContactInputWrapper>
               <ContactInputWrapper>
-                <DatePicker
+                <MobileDatePicker
+                  renderInput={(params) => <TextField {...params} />}
                   onChange={(date): void =>
                     setFieldValue('pledgeStartDate', date)
                   }
@@ -512,7 +514,8 @@ export const EditPartnershipInfoModal: React.FC<
                 />
               </ContactInputWrapper>
               <ContactInputWrapper>
-                <DatePicker
+                <MobileDatePicker
+                  renderInput={(params) => <TextField {...params} />}
                   onChange={(date) =>
                     !date ? null : setFieldValue('nextAsk', date)
                   }

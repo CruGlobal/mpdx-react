@@ -4,6 +4,7 @@ import { useSnackbar } from 'notistack';
 import { Formik, Form, FastField, FieldProps, Field } from 'formik';
 import * as yup from 'yup';
 import {
+  Autocomplete,
   Box,
   Button,
   CircularProgress,
@@ -21,7 +22,7 @@ import {
   useMediaQuery,
 } from '@mui/material';
 import { DateTime } from 'luxon';
-import { DatePicker, Autocomplete } from '@mui/lab';
+import { MobileDatePicker } from '@mui/x-date-pickers';
 import debounce from 'lodash/debounce';
 import { DonationCreateInput } from '../../../../../../../../../graphql/types.generated';
 import { useApiConstants } from '../../../../../../../Constants/UseApiConstants';
@@ -305,7 +306,8 @@ export const AddDonation = ({
                     <FastField name="donationDate">
                       {({ field }: FieldProps) => (
                         <Box width="100%">
-                          <DatePicker
+                          <MobileDatePicker
+                            renderInput={(params) => <TextField {...params} />}
                             {...field}
                             fullWidth
                             size="small"

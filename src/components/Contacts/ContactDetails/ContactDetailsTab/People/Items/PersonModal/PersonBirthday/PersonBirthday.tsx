@@ -1,5 +1,6 @@
 import React from 'react';
-import { DatePicker } from '@mui/lab';
+import TextField from '@mui/material/TextField';
+import { MobileDatePicker } from '@mui/x-date-pickers';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import CakeIcon from '@mui/icons-material/Cake';
@@ -35,7 +36,8 @@ export const PersonBirthday: React.FC<PersonBirthdayProps> = ({
   return (
     <ModalSectionContainer>
       <ModalSectionIcon icon={<CakeIcon />} />
-      <DatePicker
+      <MobileDatePicker
+        renderInput={(params) => <TextField {...params} />}
         onChange={(date) => (!date ? null : handleDateChange(date))}
         value={
           birthdayMonth && birthdayDay

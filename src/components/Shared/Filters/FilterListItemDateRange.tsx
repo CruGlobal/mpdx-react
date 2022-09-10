@@ -1,5 +1,6 @@
 import { ListItem, ListItemText } from '@mui/material';
-import { DatePicker } from '@mui/lab';
+import TextField from '@mui/material/TextField';
+import { MobileDatePicker } from '@mui/x-date-pickers';
 import React from 'react';
 import { DateTime, Interval } from 'luxon';
 import { useTranslation } from 'react-i18next';
@@ -38,7 +39,8 @@ export const FilterListItemDateRange: React.FC<Props> = ({
         />
       </ListItem>
       <ListItem>
-        <DatePicker
+        <MobileDatePicker
+          renderInput={(params) => <TextField {...params} />}
           placeholder={t('Start Date')}
           style={{ marginRight: '8px' }}
           clearable
@@ -55,7 +57,8 @@ export const FilterListItemDateRange: React.FC<Props> = ({
           }
           format="MM/dd/yyyy"
         />
-        <DatePicker
+        <MobileDatePicker
+          renderInput={(params) => <TextField {...params} />}
           placeholder={t('End Date')}
           style={{ marginLeft: '8px' }}
           clearable
