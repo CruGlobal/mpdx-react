@@ -11,8 +11,8 @@ frontend:
         - yarn set version 3.2.3
         - yarn config set nodeLinker node-modules
         - yarn -v
-        - yarn disable-telemetry
         - yarn
+        - yarn disable-telemetry
         - yarn gql:server
         - yarn gql
     build:
