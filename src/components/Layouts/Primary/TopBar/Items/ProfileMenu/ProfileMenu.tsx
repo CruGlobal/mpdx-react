@@ -269,7 +269,7 @@ const ProfileMenu = (): ReactElement => {
         <MenuItem button={false}>
           <MenuButton
             variant="outlined"
-            color="default"
+            color="inherit"
             onClick={() => signOut()}
           >
             {t('Sign Out')}
