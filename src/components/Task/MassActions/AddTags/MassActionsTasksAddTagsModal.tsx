@@ -1,4 +1,5 @@
 import {
+  Autocomplete,
   Button,
   CircularProgress,
   DialogActions,
@@ -6,14 +7,13 @@ import {
   FormControl,
   styled,
   Typography,
-} from '@material-ui/core';
+} from '@mui/material';
+import Add from '@mui/icons-material/Add';
 import * as yup from 'yup';
-import { Autocomplete } from '@material-ui/lab';
 import { Formik } from 'formik';
 import React, { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSnackbar } from 'notistack';
-import { Add } from '@material-ui/icons';
 import { ContactUpdateInput } from '../../../../../graphql/types.generated';
 import Modal from '../../../common/Modal/Modal';
 import {
@@ -52,11 +52,9 @@ const tagSchema = yup.object({
   tagList: yup.array().of(yup.string()).default([]).nullable(),
 });
 
-export const MassActionsTasksAddTagsModal: React.FC<MassActionsTasksAddTagsModalProps> = ({
-  handleClose,
-  accountListId,
-  ids,
-}) => {
+export const MassActionsTasksAddTagsModal: React.FC<
+  MassActionsTasksAddTagsModalProps
+> = ({ handleClose, accountListId, ids }) => {
   const { t } = useTranslation();
 
   const { enqueueSnackbar } = useSnackbar();

@@ -6,13 +6,13 @@ import {
   FormControl,
   styled,
   Typography,
-} from '@material-ui/core';
+} from '@mui/material';
+import Remove from '@mui/icons-material/Remove';
 import * as yup from 'yup';
 import { Formik } from 'formik';
 import React, { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSnackbar } from 'notistack';
-import { Remove } from '@material-ui/icons';
 import {
   Contact,
   ContactUpdateInput,
@@ -53,19 +53,15 @@ const tagSchema = yup.object({
   tagList: yup.array().of(yup.string()).default([]).nullable(),
 });
 
-export const MassActionsRemoveTagsModal: React.FC<MassActionsRemoveTagsModalProps> = ({
-  handleClose,
-  accountListId,
-  ids,
-}) => {
+export const MassActionsRemoveTagsModal: React.FC<
+  MassActionsRemoveTagsModalProps
+> = ({ handleClose, accountListId, ids }) => {
   const { t } = useTranslation();
 
   const { enqueueSnackbar } = useSnackbar();
 
-  const [
-    updateContacts,
-    { loading: updating },
-  ] = useMassActionsUpdateContactsMutation();
+  const [updateContacts, { loading: updating }] =
+    useMassActionsUpdateContactsMutation();
 
   const { data: contactsForTags } = useGetContactsForTagsQuery({
     variables: {

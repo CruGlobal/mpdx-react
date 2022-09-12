@@ -1,4 +1,5 @@
 import {
+  Autocomplete,
   Button,
   Checkbox,
   CircularProgress,
@@ -12,15 +13,15 @@ import {
   MenuItem,
   Select,
   TextField,
-} from '@material-ui/core';
-import { CalendarToday, Schedule } from '@material-ui/icons';
-import { DatePicker, TimePicker } from '@material-ui/pickers';
+} from '@mui/material';
+import CalendarToday from '@mui/icons-material/CalendarToday';
+import Schedule from '@mui/icons-material/Schedule';
+import { MobileDatePicker, MobileTimePicker } from '@mui/x-date-pickers';
 import { Formik } from 'formik';
 import React, { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { useSnackbar } from 'notistack';
-import { Autocomplete } from '@material-ui/lab';
 import { v4 as uuidv4 } from 'uuid';
 import { ActivityTypeEnum } from '../../../../../graphql/types.generated';
 import Modal from '../../../common/Modal/Modal';
@@ -55,11 +56,9 @@ const MassActionsEditTasksSchema = yup.object({
   body: yup.string().nullable(),
 });
 
-export const MassActionsEditTasksModal: React.FC<MassActionsEditTasksModalProps> = ({
-  handleClose,
-  accountListId,
-  ids,
-}) => {
+export const MassActionsEditTasksModal: React.FC<
+  MassActionsEditTasksModalProps
+> = ({ handleClose, accountListId, ids }) => {
   const { t } = useTranslation();
 
   const [updateTasks] = useMassActionsUpdateTasksMutation();
@@ -229,7 +228,8 @@ export const MassActionsEditTasksModal: React.FC<MassActionsEditTasksModalProps>
                 </Grid>
                 <Grid item xs={12} lg={6}>
                   <FormControl fullWidth>
-                    <DatePicker
+                    <MobileDatePicker
+                      renderInput={(params) => <TextField {...params} />}
                       InputProps={{
                         endAdornment: (
                           <InputAdornment position="end">
@@ -259,7 +259,8 @@ export const MassActionsEditTasksModal: React.FC<MassActionsEditTasksModalProps>
                 </Grid>
                 <Grid item xs={12} lg={6}>
                   <FormControl fullWidth>
-                    <TimePicker
+                    <MobileTimePicker
+                      renderInput={(params) => <TextField {...params} />}
                       clearable
                       fullWidth
                       autoOk
