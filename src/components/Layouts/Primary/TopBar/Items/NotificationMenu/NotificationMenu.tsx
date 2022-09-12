@@ -117,7 +117,7 @@ export const NotificationContent = ({
           <Button
             className={classes.menuButton}
             variant="outlined"
-            color="default"
+            color="inherit"
             onClick={onFetchMore}
           >
             {t('Load More')}

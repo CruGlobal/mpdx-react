@@ -250,7 +250,7 @@ export const PartnershipInfo: React.FC<PartnershipInfoProp> = ({ contact }) => {
         );
       })}
       <IconAndTextContainerCenter>
-        <AddAccountButton variant="outlined" color="default">
+        <AddAccountButton variant="outlined" color="inherit">
           {t('Add Account')}
         </AddAccountButton>
       </IconAndTextContainerCenter>

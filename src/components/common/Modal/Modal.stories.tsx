@@ -66,7 +66,7 @@ export const Default: Story = (args) => {
           <DialogActions>
             <Button
               variant="text"
-              color="default"
+              color="inherit"
               onClick={() => {
                 changeModalOpen(false);
                 args.handleClose();
