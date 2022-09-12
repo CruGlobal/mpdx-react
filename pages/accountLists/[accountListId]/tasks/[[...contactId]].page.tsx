@@ -31,8 +31,13 @@ import {
 import useTaskModal from 'src/hooks/useTaskModal';
 import { ContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/ContactsRightPanel';
 import { useGetTaskIdsForMassSelectionLazyQuery } from 'src/hooks/GetIdsForMassSelection.generated';
-import { MassActionsTasksConfirmationModal } from 'src/components/Contacts/Tasks/MassActions/ConfirmationModal/MassActionsTasksConfirmationModal';
-import { useMassActionsUpdateTasksMutation } from 'src/components/Contacts/Tasks/MassActions/MassActionsUpdateTasks.generated';
+import { MassActionsTasksConfirmationModal } from 'src/components/Task/MassActions/ConfirmationModal/MassActionsTasksConfirmationModal';
+import {
+  useMassActionsDeleteTasksMutation,
+  useMassActionsUpdateTasksMutation,
+} from 'src/components/Task/MassActions/MassActionsUpdateTasks.generated';
+import { MassActionsEditTasksModal } from 'src/components/Task/MassActions/EditTasks/MassActionsEditTasksModal';
+import { MassActionsTasksAddTagsModal } from 'src/components/Task/MassActions/AddTags/MassActionsTasksAddTagsModal';
 
 const WhiteBackground = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.common.white,
@@ -248,12 +253,16 @@ const TasksPage: React.FC = () => {
   //#region mass actions
 
   const [completeTasksModalOpen, setCompleteTasksModalOpen] = useState(false);
+  const [addTagsModalOpen, setAddTagsModalOpen] = useState(false);
+  const [deleteTasksModalOpen, setDeleteTasksModalOpen] = useState(false);
+  const [editTasksModalOpen, setEditTasksModalOpen] = useState(false);
 
-  const [updateTasks] = useMassActionsUpdateTasksMutation();
+  const [updateTasksMutation] = useMassActionsUpdateTasksMutation();
+  const [deleteTasksMutation] = useMassActionsDeleteTasksMutation();
 
   const completeTasks = async () => {
     const completedAt = DateTime.local().toISO();
-    await updateTasks({
+    await updateTasksMutation({
       variables: {
         accountListId: accountListId ?? '',
         attributes: ids.map((id) => ({
@@ -273,6 +282,25 @@ const TasksPage: React.FC = () => {
       variant: 'success',
     });
     setCompleteTasksModalOpen(false);
+  };
+
+  const deleteTasks = async () => {
+    await deleteTasksMutation({
+      variables: {
+        accountListId: accountListId ?? '',
+        ids,
+      },
+      refetchQueries: [
+        {
+          query: TasksDocument,
+          variables: { accountListId },
+        },
+      ],
+    });
+    enqueueSnackbar(t('Contact(s) deleted successfully'), {
+      variant: 'success',
+    });
+    setDeleteTasksModalOpen(false);
   };
 
   //#endregion
@@ -338,6 +366,9 @@ const TasksPage: React.FC = () => {
                   }
                   selectedIds={ids}
                   openCompleteTasksModal={setCompleteTasksModalOpen}
+                  openDeleteTasksModal={setDeleteTasksModalOpen}
+                  openEditTasksModal={setEditTasksModalOpen}
+                  openTasksAddTagsModal={setAddTagsModalOpen}
                 />
                 {completeTasksModalOpen && (
                   <MassActionsTasksConfirmationModal
@@ -346,6 +377,29 @@ const TasksPage: React.FC = () => {
                     idsCount={ids.length}
                     setOpen={setCompleteTasksModalOpen}
                     onConfirm={completeTasks}
+                  />
+                )}
+                {addTagsModalOpen && (
+                  <MassActionsTasksAddTagsModal
+                    ids={ids}
+                    accountListId={accountListId}
+                    handleClose={() => setAddTagsModalOpen(false)}
+                  />
+                )}
+                {deleteTasksModalOpen && (
+                  <MassActionsTasksConfirmationModal
+                    open={deleteTasksModalOpen}
+                    action="delete"
+                    idsCount={ids.length}
+                    setOpen={setDeleteTasksModalOpen}
+                    onConfirm={deleteTasks}
+                  />
+                )}
+                {editTasksModalOpen && (
+                  <MassActionsEditTasksModal
+                    ids={ids}
+                    accountListId={accountListId}
+                    handleClose={() => setEditTasksModalOpen(false)}
                   />
                 )}
                 <Box>

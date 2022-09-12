@@ -55,6 +55,8 @@ module.exports = withPlugins([
       GOOGLE_MAPS_API_KEY: process.env.GOOGLE_MAPS_API_KEY,
       GOOGLE_GEOCODE_API_KEY: process.env.GOOGLE_GEOCODE_API_KEY,
       ROLLBAR_ACCESS_TOKEN: process.env.ROLLBAR_ACCESS_TOKEN,
+      ONESKY_API_SECRET: process.env.ONESKY_API_SECRET,
+      ONESKY_API_KEY: process.env.ONESKY_API_KEY,
     },
     experimental: {
       modularizeImports: {

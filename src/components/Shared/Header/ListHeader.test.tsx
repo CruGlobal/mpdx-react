@@ -28,7 +28,11 @@ const openAddToAppealModal = jest.fn();
 const openCreateAppealModal = jest.fn();
 const openEditFieldsModal = jest.fn();
 const openHideContactsModal = jest.fn();
+const openRemoveTagsModal = jest.fn();
 const openCompleteTasksModal = jest.fn();
+const openDeleteTasksModal = jest.fn();
+const openEditTasksModal = jest.fn();
+const openTasksAddTagsModal = jest.fn();
 
 jest.mock('../../../hooks/useTaskModal');
 
@@ -86,6 +90,7 @@ describe('ListHeader', () => {
             openAddToAppealModal={openAddToAppealModal}
             openEditFieldsModal={openEditFieldsModal}
             openHideContactsModal={openHideContactsModal}
+            openRemoveTagsModal={openRemoveTagsModal}
             openAddTagsModal={openAddTagsModal}
             openCreateAppealModal={openCreateAppealModal}
           />
@@ -117,6 +122,7 @@ describe('ListHeader', () => {
             openAddToAppealModal={openAddToAppealModal}
             openEditFieldsModal={openEditFieldsModal}
             openHideContactsModal={openHideContactsModal}
+            openRemoveTagsModal={openRemoveTagsModal}
             openAddTagsModal={openAddTagsModal}
             openCreateAppealModal={openCreateAppealModal}
           />
@@ -188,6 +194,7 @@ describe('ListHeader', () => {
             openAddToAppealModal={openAddToAppealModal}
             openEditFieldsModal={openEditFieldsModal}
             openHideContactsModal={openHideContactsModal}
+            openRemoveTagsModal={openRemoveTagsModal}
             openAddTagsModal={openAddTagsModal}
             openCreateAppealModal={openCreateAppealModal}
           />
@@ -225,6 +232,7 @@ describe('ListHeader', () => {
           openAddToAppealModal={openAddToAppealModal}
           openEditFieldsModal={openEditFieldsModal}
           openHideContactsModal={openHideContactsModal}
+          openRemoveTagsModal={openRemoveTagsModal}
           openAddTagsModal={openAddTagsModal}
           openCreateAppealModal={openCreateAppealModal}
         />
@@ -262,6 +270,7 @@ describe('ListHeader', () => {
             openAddToAppealModal={openAddToAppealModal}
             openEditFieldsModal={openEditFieldsModal}
             openHideContactsModal={openHideContactsModal}
+            openRemoveTagsModal={openRemoveTagsModal}
             openAddTagsModal={openAddTagsModal}
             openCreateAppealModal={openCreateAppealModal}
           />
@@ -294,11 +303,12 @@ describe('ListHeader', () => {
           toggleFilterPanel={toggleFilterPanel}
           onCheckAllItems={onCheckAllItems}
           onSearchTermChanged={onSearchTermChanged}
+          openAddToAppealModal={openAddToAppealModal}
           openEditFieldsModal={openEditFieldsModal}
           openHideContactsModal={openHideContactsModal}
+          openRemoveTagsModal={openRemoveTagsModal}
           openAddTagsModal={openAddTagsModal}
           openCreateAppealModal={openCreateAppealModal}
-          openAddToAppealModal={openAddToAppealModal}
         />
       </ThemeProvider>,
     );
@@ -330,6 +340,7 @@ describe('ListHeader', () => {
           openAddToAppealModal={openAddToAppealModal}
           openEditFieldsModal={openEditFieldsModal}
           openHideContactsModal={openHideContactsModal}
+          openRemoveTagsModal={openRemoveTagsModal}
           openAddTagsModal={openAddTagsModal}
           openCreateAppealModal={openCreateAppealModal}
         />
@@ -363,6 +374,7 @@ describe('ListHeader', () => {
           openAddToAppealModal={openAddToAppealModal}
           openEditFieldsModal={openEditFieldsModal}
           openHideContactsModal={openHideContactsModal}
+          openRemoveTagsModal={openRemoveTagsModal}
           openAddTagsModal={openAddTagsModal}
           openCreateAppealModal={openCreateAppealModal}
         />
@@ -396,6 +408,7 @@ describe('ListHeader', () => {
           openAddToAppealModal={openAddToAppealModal}
           openEditFieldsModal={openEditFieldsModal}
           openHideContactsModal={openHideContactsModal}
+          openRemoveTagsModal={openRemoveTagsModal}
           openAddTagsModal={openAddTagsModal}
           openCreateAppealModal={openCreateAppealModal}
         />
@@ -409,6 +422,40 @@ describe('ListHeader', () => {
     expect(getByText('Hide Contacts')).toBeInTheDocument();
     userEvent.click(getByText('Hide Contacts'));
     expect(openHideContactsModal).toHaveBeenCalled();
+  });
+
+  it('opens the more actions menu and clicks the remove tags action', () => {
+    const { getByPlaceholderText, getByText, queryByText } = render(
+      <ThemeProvider theme={theme}>
+        <ListHeader
+          selectedIds={selectedIds}
+          page="contact"
+          activeFilters={false}
+          starredFilter={{}}
+          toggleStarredFilter={toggleStarredFilter}
+          headerCheckboxState={ListHeaderCheckBoxState.unchecked}
+          filterPanelOpen={false}
+          contactDetailsOpen={false}
+          toggleFilterPanel={toggleFilterPanel}
+          onCheckAllItems={onCheckAllItems}
+          onSearchTermChanged={onSearchTermChanged}
+          openAddToAppealModal={openAddToAppealModal}
+          openEditFieldsModal={openEditFieldsModal}
+          openHideContactsModal={openHideContactsModal}
+          openRemoveTagsModal={openRemoveTagsModal}
+          openAddTagsModal={openAddTagsModal}
+          openCreateAppealModal={openCreateAppealModal}
+        />
+      </ThemeProvider>,
+    );
+
+    expect(getByPlaceholderText('Search Contacts')).toBeInTheDocument();
+    expect(queryByText('Remove Tags')).not.toBeInTheDocument();
+    const actionsButton = getByText('Actions');
+    userEvent.click(actionsButton);
+    expect(getByText('Remove Tags')).toBeInTheDocument();
+    userEvent.click(getByText('Remove Tags'));
+    expect(openRemoveTagsModal).toHaveBeenCalled();
   });
 
   describe('Task', () => {
@@ -430,8 +477,10 @@ describe('ListHeader', () => {
             openAddToAppealModal={openAddToAppealModal}
             openEditFieldsModal={openEditFieldsModal}
             openHideContactsModal={openHideContactsModal}
+            openRemoveTagsModal={openRemoveTagsModal}
             openAddTagsModal={openAddTagsModal}
             openCreateAppealModal={openCreateAppealModal}
+            openDeleteTasksModal={openDeleteTasksModal}
           />
         </ThemeProvider>,
       );
@@ -458,6 +507,7 @@ describe('ListHeader', () => {
           openAddToAppealModal={openAddToAppealModal}
           openEditFieldsModal={openEditFieldsModal}
           openHideContactsModal={openHideContactsModal}
+          openRemoveTagsModal={openRemoveTagsModal}
           openAddTagsModal={openAddTagsModal}
           openCreateAppealModal={openCreateAppealModal}
         />
@@ -496,6 +546,7 @@ describe('ListHeader', () => {
           openAddToAppealModal={openAddToAppealModal}
           openEditFieldsModal={openEditFieldsModal}
           openHideContactsModal={openHideContactsModal}
+          openRemoveTagsModal={openRemoveTagsModal}
           openAddTagsModal={openAddTagsModal}
           openCreateAppealModal={openCreateAppealModal}
         />
@@ -527,6 +578,7 @@ describe('ListHeader', () => {
           openAddToAppealModal={openAddToAppealModal}
           openEditFieldsModal={openEditFieldsModal}
           openHideContactsModal={openHideContactsModal}
+          openRemoveTagsModal={openRemoveTagsModal}
           openAddTagsModal={openAddTagsModal}
           openCreateAppealModal={openCreateAppealModal}
         />
@@ -560,6 +612,7 @@ describe('ListHeader', () => {
           openAddToAppealModal={openAddToAppealModal}
           openEditFieldsModal={openEditFieldsModal}
           openHideContactsModal={openHideContactsModal}
+          openRemoveTagsModal={openRemoveTagsModal}
           openAddTagsModal={openAddTagsModal}
           openCreateAppealModal={openCreateAppealModal}
         />
@@ -595,6 +648,7 @@ describe('ListHeader', () => {
           openAddToAppealModal={openAddToAppealModal}
           openEditFieldsModal={openEditFieldsModal}
           openHideContactsModal={openHideContactsModal}
+          openRemoveTagsModal={openRemoveTagsModal}
           openAddTagsModal={openAddTagsModal}
           openCreateAppealModal={openCreateAppealModal}
         />
@@ -630,6 +684,7 @@ describe('ListHeader', () => {
           openAddToAppealModal={openAddToAppealModal}
           openEditFieldsModal={openEditFieldsModal}
           openHideContactsModal={openHideContactsModal}
+          openRemoveTagsModal={openRemoveTagsModal}
           openAddTagsModal={openAddTagsModal}
           openCreateAppealModal={openCreateAppealModal}
         />
@@ -665,6 +720,7 @@ describe('ListHeader', () => {
           openAddToAppealModal={openAddToAppealModal}
           openEditFieldsModal={openEditFieldsModal}
           openHideContactsModal={openHideContactsModal}
+          openRemoveTagsModal={openRemoveTagsModal}
           openAddTagsModal={openAddTagsModal}
           openCreateAppealModal={openCreateAppealModal}
         />
@@ -701,6 +757,7 @@ describe('ListHeader', () => {
           openAddToAppealModal={openAddToAppealModal}
           openEditFieldsModal={openEditFieldsModal}
           openHideContactsModal={openHideContactsModal}
+          openRemoveTagsModal={openRemoveTagsModal}
           openAddTagsModal={openAddTagsModal}
           openCreateAppealModal={openCreateAppealModal}
         />
@@ -735,6 +792,7 @@ describe('ListHeader', () => {
           openAddToAppealModal={openAddToAppealModal}
           openEditFieldsModal={openEditFieldsModal}
           openHideContactsModal={openHideContactsModal}
+          openRemoveTagsModal={openRemoveTagsModal}
           openAddTagsModal={openAddTagsModal}
           openCreateAppealModal={openCreateAppealModal}
         />
@@ -765,6 +823,7 @@ describe('ListHeader', () => {
           openAddToAppealModal={openAddToAppealModal}
           openEditFieldsModal={openEditFieldsModal}
           openHideContactsModal={openHideContactsModal}
+          openRemoveTagsModal={openRemoveTagsModal}
           openAddTagsModal={openAddTagsModal}
           openCreateAppealModal={openCreateAppealModal}
         />
@@ -796,6 +855,7 @@ describe('ListHeader', () => {
           openAddToAppealModal={openAddToAppealModal}
           openEditFieldsModal={openEditFieldsModal}
           openHideContactsModal={openHideContactsModal}
+          openRemoveTagsModal={openRemoveTagsModal}
           openAddTagsModal={openAddTagsModal}
           openCreateAppealModal={openCreateAppealModal}
         />
@@ -823,6 +883,7 @@ describe('ListHeader', () => {
           openAddToAppealModal={openAddToAppealModal}
           openEditFieldsModal={openEditFieldsModal}
           openHideContactsModal={openHideContactsModal}
+          openRemoveTagsModal={openRemoveTagsModal}
           openAddTagsModal={openAddTagsModal}
           openCreateAppealModal={openCreateAppealModal}
         />
@@ -847,6 +908,8 @@ describe('ListHeader', () => {
           onCheckAllItems={onCheckAllItems}
           onSearchTermChanged={onSearchTermChanged}
           openCompleteTasksModal={openCompleteTasksModal}
+          openDeleteTasksModal={openDeleteTasksModal}
+          openEditTasksModal={openEditTasksModal}
         />
       </ThemeProvider>,
     );
@@ -858,5 +921,98 @@ describe('ListHeader', () => {
     expect(getByText('Complete Tasks')).toBeInTheDocument();
     userEvent.click(getByText('Complete Tasks'));
     expect(openCompleteTasksModal).toHaveBeenCalled();
+  });
+
+  it('opens the more actions menu and clicks the edit tasks action', () => {
+    const { getByPlaceholderText, getByText, queryByText } = render(
+      <ThemeProvider theme={theme}>
+        <ListHeader
+          selectedIds={selectedIds}
+          page="task"
+          activeFilters={false}
+          starredFilter={{}}
+          toggleStarredFilter={toggleStarredFilter}
+          headerCheckboxState={ListHeaderCheckBoxState.unchecked}
+          filterPanelOpen={false}
+          contactDetailsOpen={false}
+          toggleFilterPanel={toggleFilterPanel}
+          onCheckAllItems={onCheckAllItems}
+          onSearchTermChanged={onSearchTermChanged}
+          openCompleteTasksModal={openCompleteTasksModal}
+          openEditTasksModal={openEditTasksModal}
+        />
+      </ThemeProvider>,
+    );
+
+    expect(getByPlaceholderText('Search Tasks')).toBeInTheDocument();
+    expect(queryByText('Edit Tasks')).not.toBeInTheDocument();
+    const actionsButton = getByText('Actions');
+    userEvent.click(actionsButton);
+    expect(getByText('Edit Tasks')).toBeInTheDocument();
+    userEvent.click(getByText('Edit Tasks'));
+    expect(openEditTasksModal).toHaveBeenCalled();
+  });
+
+  it('opens the more actions menu and clicks the delete tasks action', () => {
+    const { getByPlaceholderText, getByText, queryByText } = render(
+      <ThemeProvider theme={theme}>
+        <ListHeader
+          selectedIds={selectedIds}
+          page="task"
+          activeFilters={false}
+          starredFilter={{}}
+          toggleStarredFilter={toggleStarredFilter}
+          headerCheckboxState={ListHeaderCheckBoxState.unchecked}
+          filterPanelOpen={false}
+          contactDetailsOpen={false}
+          toggleFilterPanel={toggleFilterPanel}
+          onCheckAllItems={onCheckAllItems}
+          onSearchTermChanged={onSearchTermChanged}
+          openCompleteTasksModal={openCompleteTasksModal}
+          openEditTasksModal={openEditTasksModal}
+          openDeleteTasksModal={openDeleteTasksModal}
+        />
+      </ThemeProvider>,
+    );
+
+    expect(getByPlaceholderText('Search Tasks')).toBeInTheDocument();
+    expect(queryByText('Delete Tasks')).not.toBeInTheDocument();
+    const actionsButton = getByText('Actions');
+    userEvent.click(actionsButton);
+    expect(getByText('Delete Tasks')).toBeInTheDocument();
+    userEvent.click(getByText('Delete Tasks'));
+    expect(openDeleteTasksModal).toHaveBeenCalled();
+  });
+
+  it('opens the more actions menu and clicks the add tags (tasks) action', () => {
+    const { getByPlaceholderText, getByText, queryByText } = render(
+      <ThemeProvider theme={theme}>
+        <ListHeader
+          selectedIds={selectedIds}
+          page="task"
+          activeFilters={false}
+          starredFilter={{}}
+          toggleStarredFilter={toggleStarredFilter}
+          headerCheckboxState={ListHeaderCheckBoxState.unchecked}
+          filterPanelOpen={false}
+          contactDetailsOpen={false}
+          toggleFilterPanel={toggleFilterPanel}
+          onCheckAllItems={onCheckAllItems}
+          onSearchTermChanged={onSearchTermChanged}
+          openCompleteTasksModal={openCompleteTasksModal}
+          openEditTasksModal={openEditTasksModal}
+          openDeleteTasksModal={openDeleteTasksModal}
+          openTasksAddTagsModal={openTasksAddTagsModal}
+        />
+      </ThemeProvider>,
+    );
+
+    expect(getByPlaceholderText('Search Tasks')).toBeInTheDocument();
+    expect(queryByText('Add Tag(s)')).not.toBeInTheDocument();
+    const actionsButton = getByText('Actions');
+    userEvent.click(actionsButton);
+    expect(getByText('Add Tag(s)')).toBeInTheDocument();
+    userEvent.click(getByText('Add Tag(s)'));
+    expect(openTasksAddTagsModal).toHaveBeenCalled();
   });
 });

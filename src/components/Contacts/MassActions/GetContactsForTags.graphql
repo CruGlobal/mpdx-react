@@ -1,0 +1,11 @@
+query GetContactsForTags(
+  $accountListId: ID!
+  $contactsFilters: ContactFilterSetInput
+) {
+  contacts(accountListId: $accountListId, contactsFilter: $contactsFilters) {
+    nodes {
+      id
+      tagList
+    }
+  }
+}

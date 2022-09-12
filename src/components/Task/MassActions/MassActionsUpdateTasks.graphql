@@ -10,3 +10,9 @@ mutation MassActionsUpdateTasks(
     }
   }
 }
+
+mutation MassActionsDeleteTasks($accountListId: ID!, $ids: [String!]!) {
+  deleteTasks(input: { accountListId: $accountListId, ids: $ids }) {
+    ids
+  }
+}

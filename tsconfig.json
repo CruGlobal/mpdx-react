@@ -17,6 +17,13 @@
     "isolatedModules": true,
     "jsx": "preserve"
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "app.d.ts", ".env"],
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "app.d.ts",
+    ".env",
+    "onesky/upload.js"
+  ],
   "exclude": ["node_modules"]
 }
