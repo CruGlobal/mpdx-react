@@ -41,7 +41,7 @@ export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
     backgroundColor: isChecked(contact.id)
       ? theme.palette.cruGrayLight.main
       : theme.palette.common.white,
-    marginTop: useTopMargin ? '20px' : '0',
+    marginTop: useTopMargin ? '16px' : '0',
     padding: theme.spacing(0, 0.5, 0, 2),
     [theme.breakpoints.up('sm')]: {
       padding: theme.spacing(0, 0.5),
