@@ -78,12 +78,7 @@ export const TaskRow: React.FC<TaskRowProps> = ({
   const { t } = useTranslation();
 
   const TaskRowWrapper = styled(Box)(({ theme }) => ({
-    backgroundColor: isChecked
-      ? theme.palette.cruGrayLight.main
-      : theme.palette.common.white,
-    '&:hover': {
-      backgroundColor: theme.palette.cruGrayLight.main,
-    },
+    ...(isChecked ? { backgroundColor: theme.palette.cruGrayLight.main } : {}),
   }));
 
   const ContactRowButton = styled(Box)(({}) => ({

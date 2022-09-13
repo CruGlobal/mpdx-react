@@ -23,12 +23,7 @@ const TaskRowWrap = styled(Box)(
     justifyContent: 'space-between',
     margin: theme.spacing(0),
     height: theme.spacing(8),
-    backgroundColor: isChecked
-      ? theme.palette.cruGrayLight.main
-      : theme.palette.common.white,
-    '&:hover': {
-      backgroundColor: theme.palette.cruGrayLight.main,
-    },
+    ...(isChecked ? { backgroundColor: theme.palette.cruGrayLight.main } : {}),
   }),
 );
 
