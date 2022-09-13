@@ -23,7 +23,8 @@
     "**/*.tsx",
     "app.d.ts",
     ".env",
-    "onesky/upload.js"
+    "onesky/upload.js",
+    "onesky/download.js"
   ],
   "exclude": ["node_modules"]
 }
