@@ -32,8 +32,8 @@ describe('Welcome', () => {
         />
       </ThemeProvider>,
     );
-    expect(() => getByTestId('welcomeTitle')).toThrowError();
-    expect(() => getByTestId('welcomeSubtitle')).toThrowError();
+    expect(() => getByTestId('welcomeTitle')).toThrow();
+    expect(() => getByTestId('welcomeSubtitle')).toThrow();
     expect(getByTestId('testTitle')).toHaveTextContent('test title');
     expect(getByTestId('testSubtitle')).toHaveTextContent('test subtitle');
     expect(getByTestId('welcomeImg')).toHaveAttribute(

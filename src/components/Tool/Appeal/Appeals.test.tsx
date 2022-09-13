@@ -113,6 +113,6 @@ describe('AppealsTest', () => {
     expect(setPrimaryButton).toBeInTheDocument();
     userEvent.click(setPrimaryButton);
     await waitFor(() => expect(setPrimaryButton).not.toBeInTheDocument());
-    expect(mockEnqueue).toBeCalled();
+    expect(mockEnqueue).toHaveBeenCalled();
   });
 });

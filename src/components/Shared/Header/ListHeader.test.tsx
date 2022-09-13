@@ -167,7 +167,7 @@ describe('ListHeader', () => {
       userEvent.click(getByTestId('list-button'));
 
       await waitFor(() =>
-        expect(router.push).toBeCalledWith({
+        expect(router.push).toHaveBeenCalledWith({
           pathname: '/accountLists/123/contacts/',
           query: {},
         }),

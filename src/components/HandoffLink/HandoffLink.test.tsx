@@ -15,9 +15,11 @@ describe('HandoffLink', () => {
     open = jest.fn();
     originalOpen = window.open;
     window.open = open;
-    (useRouter as jest.SpyInstance<
-      Pick<nextRouter.NextRouter, 'query' | 'isReady'>
-    >).mockImplementation(() => ({
+    (
+      useRouter as jest.SpyInstance<
+        Pick<nextRouter.NextRouter, 'query' | 'isReady'>
+      >
+    ).mockImplementation(() => ({
       query: { accountListId: 'accountListId' },
       isReady: true,
     }));
@@ -97,7 +99,7 @@ describe('HandoffLink', () => {
           </HandoffLink>
         </GqlMockedProvider>,
       ),
-    ).toThrowError();
+    ).toThrow();
   });
 
   describe('SITE_URL set', () => {
