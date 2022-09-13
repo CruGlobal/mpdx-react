@@ -4,8 +4,8 @@ import { addDecorator, addParameters } from '@storybook/react';
 import { ThemeProvider, CssBaseline } from '@mui/material';
 import { withI18next } from 'storybook-addon-i18next';
 import { Settings } from 'luxon';
-import { MuiPickersUtilsProvider } from '@material-ui/pickers';
-import LuxonUtils from '@date-io/luxon';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { SnackbarProvider } from 'notistack';
 import { MockedProvider } from '@apollo/client/testing';
 import TestRouter from '../__tests__/util/TestRouter';
@@ -27,13 +27,13 @@ addDecorator((StoryFn) => (
   <MockedProvider mocks={[]} addTypename={false}>
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <MuiPickersUtilsProvider utils={LuxonUtils}>
+      <LocalizationProvider dateAdapter={AdapterLuxon}>
         <SnackbarProvider maxSnack={3}>
           <TestRouter>
             <StoryFn />
           </TestRouter>
         </SnackbarProvider>
-      </MuiPickersUtilsProvider>
+      </LocalizationProvider>
     </ThemeProvider>
   </MockedProvider>
 ));

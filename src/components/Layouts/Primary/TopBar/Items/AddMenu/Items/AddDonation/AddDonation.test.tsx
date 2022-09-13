@@ -1,8 +1,8 @@
 import { render, waitFor } from '@testing-library/react';
 import { SnackbarProvider } from 'notistack';
 import { MuiThemeProvider } from '@mui/material';
-import { MuiPickersUtilsProvider } from '@material-ui/pickers';
-import LuxonUtils from '@date-io/luxon';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import userEvent from '@testing-library/user-event';
 import { GqlMockedProvider } from '../../../../../../../../../__tests__/util/graphqlMocking';
 import theme from '../../../../../../../../theme';
@@ -15,7 +15,7 @@ const handleClose = jest.fn();
 describe('AddDonation', () => {
   it('default', async () => {
     const { queryByText } = render(
-      <MuiPickersUtilsProvider utils={LuxonUtils}>
+      <LocalizationProvider dateAdapter={AdapterLuxon}>
         <MuiThemeProvider theme={theme}>
           <SnackbarProvider>
             <GqlMockedProvider<AddDonationMutation>>
@@ -26,14 +26,14 @@ describe('AddDonation', () => {
             </GqlMockedProvider>
           </SnackbarProvider>
         </MuiThemeProvider>
-      </MuiPickersUtilsProvider>,
+      </LocalizationProvider>,
     );
     await waitFor(() => expect(queryByText('Amount')).toBeInTheDocument());
   });
 
   it('closes add donation modal', async () => {
     const { queryByText, getByText } = render(
-      <MuiPickersUtilsProvider utils={LuxonUtils}>
+      <LocalizationProvider dateAdapter={AdapterLuxon}>
         <MuiThemeProvider theme={theme}>
           <SnackbarProvider>
             <GqlMockedProvider<AddDonationMutation>>
@@ -44,7 +44,7 @@ describe('AddDonation', () => {
             </GqlMockedProvider>
           </SnackbarProvider>
         </MuiThemeProvider>
-      </MuiPickersUtilsProvider>,
+      </LocalizationProvider>,
     );
     await waitFor(() => expect(queryByText('Amount')).toBeInTheDocument());
     userEvent.click(getByText('Cancel'));
@@ -54,7 +54,7 @@ describe('AddDonation', () => {
   it('Creates a donation', async () => {
     const mutationSpy = jest.fn();
     const { getByRole, queryByText } = render(
-      <MuiPickersUtilsProvider utils={LuxonUtils}>
+      <LocalizationProvider dateAdapter={AdapterLuxon}>
         <MuiThemeProvider theme={theme}>
           <SnackbarProvider>
             <GqlMockedProvider<AddDonationMutation>
@@ -100,7 +100,7 @@ describe('AddDonation', () => {
             </GqlMockedProvider>
           </SnackbarProvider>
         </MuiThemeProvider>
-      </MuiPickersUtilsProvider>,
+      </LocalizationProvider>,
     );
 
     await waitFor(() => expect(queryByText('Amount')).toBeInTheDocument());

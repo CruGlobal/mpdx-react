@@ -1,8 +1,8 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import { ThemeProvider } from '@mui/material';
-import { MuiPickersUtilsProvider } from '@material-ui/pickers';
-import LuxonUtils from '@date-io/luxon';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import { InMemoryCache } from '@apollo/client';
@@ -134,7 +134,7 @@ describe('PersonModal', () => {
   it('should render edit person modal', () => {
     const { getByText } = render(
       <SnackbarProvider>
-        <MuiPickersUtilsProvider utils={LuxonUtils}>
+        <LocalizationProvider dateAdapter={AdapterLuxon}>
           <ThemeProvider theme={theme}>
             <GqlMockedProvider<UpdatePersonMutation>>
               <ContactDetailProvider>
@@ -147,7 +147,7 @@ describe('PersonModal', () => {
               </ContactDetailProvider>
             </GqlMockedProvider>
           </ThemeProvider>
-        </MuiPickersUtilsProvider>
+        </LocalizationProvider>
       </SnackbarProvider>,
     );
 
@@ -157,7 +157,7 @@ describe('PersonModal', () => {
   it('should close edit contact modal', () => {
     const { getByLabelText, getByText } = render(
       <SnackbarProvider>
-        <MuiPickersUtilsProvider utils={LuxonUtils}>
+        <LocalizationProvider dateAdapter={AdapterLuxon}>
           <ThemeProvider theme={theme}>
             <GqlMockedProvider<UpdatePersonMutation>>
               <ContactDetailProvider>
@@ -170,7 +170,7 @@ describe('PersonModal', () => {
               </ContactDetailProvider>
             </GqlMockedProvider>
           </ThemeProvider>
-        </MuiPickersUtilsProvider>
+        </LocalizationProvider>
       </SnackbarProvider>,
     );
     expect(getByText('Edit Person')).toBeInTheDocument();
@@ -181,7 +181,7 @@ describe('PersonModal', () => {
   it('should handle cancel click', () => {
     const { getByText } = render(
       <SnackbarProvider>
-        <MuiPickersUtilsProvider utils={LuxonUtils}>
+        <LocalizationProvider dateAdapter={AdapterLuxon}>
           <ThemeProvider theme={theme}>
             <GqlMockedProvider<UpdatePersonMutation>>
               <ContactDetailProvider>
@@ -194,7 +194,7 @@ describe('PersonModal', () => {
               </ContactDetailProvider>
             </GqlMockedProvider>
           </ThemeProvider>
-        </MuiPickersUtilsProvider>
+        </LocalizationProvider>
       </SnackbarProvider>,
     );
     expect(getByText('Edit Person')).toBeInTheDocument();
@@ -206,7 +206,7 @@ describe('PersonModal', () => {
     const mutationSpy = jest.fn();
     const { getByText } = render(
       <SnackbarProvider>
-        <MuiPickersUtilsProvider utils={LuxonUtils}>
+        <LocalizationProvider dateAdapter={AdapterLuxon}>
           <ThemeProvider theme={theme}>
             <GqlMockedProvider<UpdatePersonMutation> onCall={mutationSpy}>
               <ContactDetailProvider>
@@ -219,7 +219,7 @@ describe('PersonModal', () => {
               </ContactDetailProvider>
             </GqlMockedProvider>
           </ThemeProvider>
-        </MuiPickersUtilsProvider>
+        </LocalizationProvider>
       </SnackbarProvider>,
     );
     expect(getByText('Edit Person')).toBeInTheDocument();
@@ -235,7 +235,7 @@ describe('PersonModal', () => {
   it('should handle Show More click', async () => {
     const { queryAllByText, getByText } = render(
       <SnackbarProvider>
-        <MuiPickersUtilsProvider utils={LuxonUtils}>
+        <LocalizationProvider dateAdapter={AdapterLuxon}>
           <ThemeProvider theme={theme}>
             <GqlMockedProvider<UpdatePersonMutation>>
               <ContactDetailProvider>
@@ -248,7 +248,7 @@ describe('PersonModal', () => {
               </ContactDetailProvider>
             </GqlMockedProvider>
           </ThemeProvider>
-        </MuiPickersUtilsProvider>
+        </LocalizationProvider>
       </SnackbarProvider>,
     );
     expect(getByText('Edit Person')).toBeInTheDocument();
@@ -259,7 +259,7 @@ describe('PersonModal', () => {
   it('should handle Show Less click', async () => {
     const { queryAllByText, getByText, queryByText } = render(
       <SnackbarProvider>
-        <MuiPickersUtilsProvider utils={LuxonUtils}>
+        <LocalizationProvider dateAdapter={AdapterLuxon}>
           <ThemeProvider theme={theme}>
             <GqlMockedProvider<UpdatePersonMutation>>
               <ContactDetailProvider>
@@ -272,7 +272,7 @@ describe('PersonModal', () => {
               </ContactDetailProvider>
             </GqlMockedProvider>
           </ThemeProvider>
-        </MuiPickersUtilsProvider>
+        </LocalizationProvider>
       </SnackbarProvider>,
     );
     expect(getByText('Edit Person')).toBeInTheDocument();
@@ -293,7 +293,7 @@ describe('PersonModal', () => {
 
       const { getByText, getByLabelText } = render(
         <SnackbarProvider>
-          <MuiPickersUtilsProvider utils={LuxonUtils}>
+          <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
               <GqlMockedProvider<UpdatePersonMutation> onCall={mutationSpy}>
                 <ContactDetailProvider>
@@ -306,7 +306,7 @@ describe('PersonModal', () => {
                 </ContactDetailProvider>
               </GqlMockedProvider>
             </ThemeProvider>
-          </MuiPickersUtilsProvider>
+          </LocalizationProvider>
         </SnackbarProvider>,
       );
       expect(getByText('Edit Person')).toBeInTheDocument();
@@ -348,7 +348,7 @@ describe('PersonModal', () => {
       const newPersonPhoneNumber = '888-888-8888';
       const { getByText, getByLabelText, getAllByLabelText } = render(
         <SnackbarProvider>
-          <MuiPickersUtilsProvider utils={LuxonUtils}>
+          <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
               <GqlMockedProvider<UpdatePersonMutation> onCall={mutationSpy}>
                 <ContactDetailProvider>
@@ -361,7 +361,7 @@ describe('PersonModal', () => {
                 </ContactDetailProvider>
               </GqlMockedProvider>
             </ThemeProvider>
-          </MuiPickersUtilsProvider>
+          </LocalizationProvider>
         </SnackbarProvider>,
       );
       expect(getByText('Edit Person')).toBeInTheDocument();
@@ -404,7 +404,7 @@ describe('PersonModal', () => {
       const mutationSpy = jest.fn();
       const { getByText, getAllByLabelText } = render(
         <SnackbarProvider>
-          <MuiPickersUtilsProvider utils={LuxonUtils}>
+          <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
               <GqlMockedProvider<UpdatePersonMutation> onCall={mutationSpy}>
                 <ContactDetailProvider>
@@ -417,7 +417,7 @@ describe('PersonModal', () => {
                 </ContactDetailProvider>
               </GqlMockedProvider>
             </ThemeProvider>
-          </MuiPickersUtilsProvider>
+          </LocalizationProvider>
         </SnackbarProvider>,
       );
       expect(getByText('Edit Person')).toBeInTheDocument();
@@ -443,7 +443,7 @@ describe('PersonModal', () => {
       const mutationSpy = jest.fn();
       const { getByText, getAllByLabelText, getByLabelText } = render(
         <SnackbarProvider>
-          <MuiPickersUtilsProvider utils={LuxonUtils}>
+          <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
               <GqlMockedProvider<UpdatePersonMutation> onCall={mutationSpy}>
                 <ContactDetailProvider>
@@ -456,7 +456,7 @@ describe('PersonModal', () => {
                 </ContactDetailProvider>
               </GqlMockedProvider>
             </ThemeProvider>
-          </MuiPickersUtilsProvider>
+          </LocalizationProvider>
         </SnackbarProvider>,
       );
       expect(getByText('Edit Person')).toBeInTheDocument();
@@ -472,7 +472,7 @@ describe('PersonModal', () => {
       const newPersonEmailAddress = 'testguy@fake.com';
       const { getByText, getByLabelText, getAllByLabelText } = render(
         <SnackbarProvider>
-          <MuiPickersUtilsProvider utils={LuxonUtils}>
+          <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
               <GqlMockedProvider<UpdatePersonMutation> onCall={mutationSpy}>
                 <ContactDetailProvider>
@@ -485,7 +485,7 @@ describe('PersonModal', () => {
                 </ContactDetailProvider>
               </GqlMockedProvider>
             </ThemeProvider>
-          </MuiPickersUtilsProvider>
+          </LocalizationProvider>
         </SnackbarProvider>,
       );
       userEvent.clear(getAllByLabelText('Email Address')[0]);
@@ -532,7 +532,7 @@ describe('PersonModal', () => {
       const mutationSpy = jest.fn();
       const { getByText, getAllByLabelText } = render(
         <SnackbarProvider>
-          <MuiPickersUtilsProvider utils={LuxonUtils}>
+          <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
               <GqlMockedProvider<UpdatePersonMutation> onCall={mutationSpy}>
                 <ContactDetailProvider>
@@ -545,7 +545,7 @@ describe('PersonModal', () => {
                 </ContactDetailProvider>
               </GqlMockedProvider>
             </ThemeProvider>
-          </MuiPickersUtilsProvider>
+          </LocalizationProvider>
         </SnackbarProvider>,
       );
       expect(getByText('Edit Person')).toBeInTheDocument();
@@ -571,7 +571,7 @@ describe('PersonModal', () => {
       const mutationSpy = jest.fn();
       const { getByText, getAllByLabelText, getByLabelText } = render(
         <SnackbarProvider>
-          <MuiPickersUtilsProvider utils={LuxonUtils}>
+          <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
               <GqlMockedProvider<UpdatePersonMutation> onCall={mutationSpy}>
                 <ContactDetailProvider>
@@ -584,7 +584,7 @@ describe('PersonModal', () => {
                 </ContactDetailProvider>
               </GqlMockedProvider>
             </ThemeProvider>
-          </MuiPickersUtilsProvider>
+          </LocalizationProvider>
         </SnackbarProvider>,
       );
       expect(getByText('Edit Person')).toBeInTheDocument();
@@ -603,7 +603,7 @@ describe('PersonModal', () => {
       const newPersonLegalFirstName = 'Jim';
       const { getByText, getByLabelText } = render(
         <SnackbarProvider>
-          <MuiPickersUtilsProvider utils={LuxonUtils}>
+          <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
               <GqlMockedProvider<UpdatePersonMutation> onCall={mutationSpy}>
                 <ContactDetailProvider>
@@ -616,7 +616,7 @@ describe('PersonModal', () => {
                 </ContactDetailProvider>
               </GqlMockedProvider>
             </ThemeProvider>
-          </MuiPickersUtilsProvider>
+          </LocalizationProvider>
         </SnackbarProvider>,
       );
       expect(getByText('Edit Person')).toBeInTheDocument();
@@ -673,7 +673,7 @@ describe('PersonModal', () => {
       const mutationSpy = jest.fn();
       const { getByText, getByLabelText } = render(
         <SnackbarProvider>
-          <MuiPickersUtilsProvider utils={LuxonUtils}>
+          <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
               <GqlMockedProvider<UpdatePersonMutation> onCall={mutationSpy}>
                 <ContactDetailProvider>
@@ -686,7 +686,7 @@ describe('PersonModal', () => {
                 </ContactDetailProvider>
               </GqlMockedProvider>
             </ThemeProvider>
-          </MuiPickersUtilsProvider>
+          </LocalizationProvider>
         </SnackbarProvider>,
       );
       expect(getByText('Edit Person')).toBeInTheDocument();
@@ -714,7 +714,7 @@ describe('PersonModal', () => {
       const mutationSpy = jest.fn();
       const { getByText, getByLabelText } = render(
         <SnackbarProvider>
-          <MuiPickersUtilsProvider utils={LuxonUtils}>
+          <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
               <GqlMockedProvider<UpdatePersonMutation> onCall={mutationSpy}>
                 <ContactDetailProvider>
@@ -727,7 +727,7 @@ describe('PersonModal', () => {
                 </ContactDetailProvider>
               </GqlMockedProvider>
             </ThemeProvider>
-          </MuiPickersUtilsProvider>
+          </LocalizationProvider>
         </SnackbarProvider>,
       );
       expect(getByText('Edit Person')).toBeInTheDocument();
@@ -759,7 +759,7 @@ describe('PersonModal', () => {
       const newPersonWebsite = 'testguy.com';
       const { getByText, getAllByLabelText } = render(
         <SnackbarProvider>
-          <MuiPickersUtilsProvider utils={LuxonUtils}>
+          <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
               <GqlMockedProvider<UpdatePersonMutation> onCall={mutationSpy}>
                 <ContactDetailProvider>
@@ -772,7 +772,7 @@ describe('PersonModal', () => {
                 </ContactDetailProvider>
               </GqlMockedProvider>
             </ThemeProvider>
-          </MuiPickersUtilsProvider>
+          </LocalizationProvider>
         </SnackbarProvider>,
       );
       expect(getByText('Edit Person')).toBeInTheDocument();
@@ -826,7 +826,7 @@ describe('PersonModal', () => {
       const mutationSpy = jest.fn();
       const { getByText, getAllByLabelText } = render(
         <SnackbarProvider>
-          <MuiPickersUtilsProvider utils={LuxonUtils}>
+          <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
               <GqlMockedProvider<UpdatePersonMutation> onCall={mutationSpy}>
                 <ContactDetailProvider>
@@ -839,7 +839,7 @@ describe('PersonModal', () => {
                 </ContactDetailProvider>
               </GqlMockedProvider>
             </ThemeProvider>
-          </MuiPickersUtilsProvider>
+          </LocalizationProvider>
         </SnackbarProvider>,
       );
       expect(getByText('Edit Person')).toBeInTheDocument();
@@ -876,7 +876,7 @@ describe('PersonModal', () => {
       const mutationSpy = jest.fn();
       const { getByText, getAllByLabelText, getByLabelText } = render(
         <SnackbarProvider>
-          <MuiPickersUtilsProvider utils={LuxonUtils}>
+          <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
               <GqlMockedProvider<UpdatePersonMutation> onCall={mutationSpy}>
                 <ContactDetailProvider>
@@ -889,7 +889,7 @@ describe('PersonModal', () => {
                 </ContactDetailProvider>
               </GqlMockedProvider>
             </ThemeProvider>
-          </MuiPickersUtilsProvider>
+          </LocalizationProvider>
         </SnackbarProvider>,
       );
       expect(getByText('Edit Person')).toBeInTheDocument();
@@ -904,7 +904,7 @@ describe('PersonModal', () => {
     it('should handle deleting a person', async () => {
       const { getByRole, getByText } = render(
         <SnackbarProvider>
-          <MuiPickersUtilsProvider utils={LuxonUtils}>
+          <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
               <GqlMockedProvider<UpdatePersonMutation>>
                 <ContactDetailProvider>
@@ -917,7 +917,7 @@ describe('PersonModal', () => {
                 </ContactDetailProvider>
               </GqlMockedProvider>
             </ThemeProvider>
-          </MuiPickersUtilsProvider>
+          </LocalizationProvider>
         </SnackbarProvider>,
       );
       userEvent.click(getByRole('button', { hidden: true, name: 'Delete' }));
@@ -1062,7 +1062,7 @@ describe('PersonModal', () => {
 
       const { getByText, getByLabelText } = render(
         <SnackbarProvider>
-          <MuiPickersUtilsProvider utils={LuxonUtils}>
+          <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
               <GqlMockedProvider<ContactDetailsTabQuery>
                 mocks={mocks}
@@ -1079,7 +1079,7 @@ describe('PersonModal', () => {
                 </ContactDetailProvider>
               </GqlMockedProvider>
             </ThemeProvider>
-          </MuiPickersUtilsProvider>
+          </LocalizationProvider>
         </SnackbarProvider>,
       );
 

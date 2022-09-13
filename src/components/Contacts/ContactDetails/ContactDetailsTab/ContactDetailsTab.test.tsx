@@ -3,8 +3,8 @@ import { render, waitFor } from '@testing-library/react';
 import { ThemeProvider } from '@mui/material';
 import { SnackbarProvider } from 'notistack';
 import userEvent from '@testing-library/user-event';
-import { MuiPickersUtilsProvider } from '@material-ui/pickers';
-import LuxonUtils from '@date-io/luxon';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import TestRouter from '../../../../../__tests__/util/TestRouter';
 import theme from '../../../../theme';
 import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
@@ -136,7 +136,7 @@ describe('ContactDetailTab', () => {
     const { queryByText, getAllByLabelText } = render(
       <SnackbarProvider>
         <TestRouter router={router}>
-          <MuiPickersUtilsProvider utils={LuxonUtils}>
+          <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
               <GqlMockedProvider<ContactDetailsTabQuery>>
                 <ContactsPageProvider>
@@ -150,7 +150,7 @@ describe('ContactDetailTab', () => {
                 </ContactsPageProvider>
               </GqlMockedProvider>
             </ThemeProvider>
-          </MuiPickersUtilsProvider>
+          </LocalizationProvider>
         </TestRouter>
       </SnackbarProvider>,
     );
@@ -165,7 +165,7 @@ describe('ContactDetailTab', () => {
     const { queryByText, getAllByLabelText, getByLabelText } = render(
       <SnackbarProvider>
         <TestRouter router={router}>
-          <MuiPickersUtilsProvider utils={LuxonUtils}>
+          <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
               <GqlMockedProvider<ContactDetailsTabQuery>>
                 <ContactsPageProvider>
@@ -179,7 +179,7 @@ describe('ContactDetailTab', () => {
                 </ContactsPageProvider>
               </GqlMockedProvider>
             </ThemeProvider>
-          </MuiPickersUtilsProvider>
+          </LocalizationProvider>
         </TestRouter>
       </SnackbarProvider>,
     );
@@ -198,7 +198,7 @@ describe('ContactDetailTab', () => {
     const { queryByText, getAllByLabelText } = render(
       <SnackbarProvider>
         <TestRouter router={router}>
-          <MuiPickersUtilsProvider utils={LuxonUtils}>
+          <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
               <GqlMockedProvider<ContactDetailsTabQuery>>
                 <ContactsPageProvider>
@@ -212,7 +212,7 @@ describe('ContactDetailTab', () => {
                 </ContactsPageProvider>
               </GqlMockedProvider>
             </ThemeProvider>
-          </MuiPickersUtilsProvider>
+          </LocalizationProvider>
         </TestRouter>
       </SnackbarProvider>,
     );
@@ -225,7 +225,7 @@ describe('ContactDetailTab', () => {
     const { queryByText, getAllByLabelText, getByLabelText } = render(
       <SnackbarProvider>
         <TestRouter router={router}>
-          <MuiPickersUtilsProvider utils={LuxonUtils}>
+          <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
               <GqlMockedProvider<ContactDetailsTabQuery>>
                 <ContactsPageProvider>
@@ -239,7 +239,7 @@ describe('ContactDetailTab', () => {
                 </ContactsPageProvider>
               </GqlMockedProvider>
             </ThemeProvider>
-          </MuiPickersUtilsProvider>
+          </LocalizationProvider>
         </TestRouter>
       </SnackbarProvider>,
     );
@@ -256,7 +256,7 @@ describe('ContactDetailTab', () => {
     const { queryByText, getByText } = render(
       <SnackbarProvider>
         <TestRouter router={router}>
-          <MuiPickersUtilsProvider utils={LuxonUtils}>
+          <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
               <GqlMockedProvider<ContactDetailsTabQuery>>
                 <ContactsPageProvider>
@@ -270,7 +270,7 @@ describe('ContactDetailTab', () => {
                 </ContactsPageProvider>
               </GqlMockedProvider>
             </ThemeProvider>
-          </MuiPickersUtilsProvider>
+          </LocalizationProvider>
         </TestRouter>
       </SnackbarProvider>,
     );
@@ -285,7 +285,7 @@ describe('ContactDetailTab', () => {
     const { queryByText, getByText, getByLabelText } = render(
       <SnackbarProvider>
         <TestRouter router={router}>
-          <MuiPickersUtilsProvider utils={LuxonUtils}>
+          <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
               <GqlMockedProvider<ContactDetailsTabQuery>>
                 <ContactsPageProvider>
@@ -299,7 +299,7 @@ describe('ContactDetailTab', () => {
                 </ContactsPageProvider>
               </GqlMockedProvider>
             </ThemeProvider>
-          </MuiPickersUtilsProvider>
+          </LocalizationProvider>
         </TestRouter>
       </SnackbarProvider>,
     );
@@ -318,7 +318,7 @@ describe('ContactDetailTab', () => {
     const { queryByText, getByText, getAllByText } = render(
       <SnackbarProvider>
         <TestRouter router={router}>
-          <MuiPickersUtilsProvider utils={LuxonUtils}>
+          <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
               <GqlMockedProvider<ContactDetailsTabQuery>>
                 <ContactsPageProvider>
@@ -332,7 +332,7 @@ describe('ContactDetailTab', () => {
                 </ContactsPageProvider>
               </GqlMockedProvider>
             </ThemeProvider>
-          </MuiPickersUtilsProvider>
+          </LocalizationProvider>
         </TestRouter>
       </SnackbarProvider>,
     );
@@ -346,7 +346,7 @@ describe('ContactDetailTab', () => {
     const { queryByText, getByText, getByLabelText, getAllByText } = render(
       <SnackbarProvider>
         <TestRouter router={router}>
-          <MuiPickersUtilsProvider utils={LuxonUtils}>
+          <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
               <GqlMockedProvider<ContactDetailsTabQuery>>
                 <ContactsPageProvider>
@@ -360,7 +360,7 @@ describe('ContactDetailTab', () => {
                 </ContactsPageProvider>
               </GqlMockedProvider>
             </ThemeProvider>
-          </MuiPickersUtilsProvider>
+          </LocalizationProvider>
         </TestRouter>
       </SnackbarProvider>,
     );
@@ -375,7 +375,7 @@ describe('ContactDetailTab', () => {
     const { queryByText, getAllByLabelText } = render(
       <SnackbarProvider>
         <TestRouter router={router}>
-          <MuiPickersUtilsProvider utils={LuxonUtils}>
+          <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
               <GqlMockedProvider<ContactDetailsTabQuery> mocks={mocks}>
                 <ContactsPageProvider>
@@ -389,7 +389,7 @@ describe('ContactDetailTab', () => {
                 </ContactsPageProvider>
               </GqlMockedProvider>
             </ThemeProvider>
-          </MuiPickersUtilsProvider>
+          </LocalizationProvider>
         </TestRouter>
       </SnackbarProvider>,
     );
@@ -404,7 +404,7 @@ describe('ContactDetailTab', () => {
     const { queryByText, getAllByLabelText, getByLabelText } = render(
       <SnackbarProvider>
         <TestRouter router={router}>
-          <MuiPickersUtilsProvider utils={LuxonUtils}>
+          <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
               <GqlMockedProvider<ContactDetailsTabQuery> mocks={mocks}>
                 <ContactsPageProvider>
@@ -418,7 +418,7 @@ describe('ContactDetailTab', () => {
                 </ContactsPageProvider>
               </GqlMockedProvider>
             </ThemeProvider>
-          </MuiPickersUtilsProvider>
+          </LocalizationProvider>
         </TestRouter>
       </SnackbarProvider>,
     );
@@ -439,7 +439,7 @@ describe('ContactDetailTab', () => {
     const { queryByText, getAllByLabelText } = render(
       <SnackbarProvider>
         <TestRouter router={router}>
-          <MuiPickersUtilsProvider utils={LuxonUtils}>
+          <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
               <GqlMockedProvider<ContactDetailsTabQuery> mocks={mocks}>
                 <ContactsPageProvider>
@@ -453,7 +453,7 @@ describe('ContactDetailTab', () => {
                 </ContactsPageProvider>
               </GqlMockedProvider>
             </ThemeProvider>
-          </MuiPickersUtilsProvider>
+          </LocalizationProvider>
         </TestRouter>
       </SnackbarProvider>,
     );
@@ -468,7 +468,7 @@ describe('ContactDetailTab', () => {
     const { queryByText, getAllByLabelText, getByLabelText } = render(
       <SnackbarProvider>
         <TestRouter router={router}>
-          <MuiPickersUtilsProvider utils={LuxonUtils}>
+          <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
               <GqlMockedProvider<ContactDetailsTabQuery> mocks={mocks}>
                 <ContactsPageProvider>
@@ -482,7 +482,7 @@ describe('ContactDetailTab', () => {
                 </ContactsPageProvider>
               </GqlMockedProvider>
             </ThemeProvider>
-          </MuiPickersUtilsProvider>
+          </LocalizationProvider>
         </TestRouter>
       </SnackbarProvider>,
     );
@@ -501,7 +501,7 @@ describe('ContactDetailTab', () => {
     const { queryByText, getByText } = render(
       <SnackbarProvider>
         <TestRouter router={router}>
-          <MuiPickersUtilsProvider utils={LuxonUtils}>
+          <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
               <GqlMockedProvider<ContactDetailsTabQuery> mocks={mocks}>
                 <ContactsPageProvider>
@@ -515,7 +515,7 @@ describe('ContactDetailTab', () => {
                 </ContactsPageProvider>
               </GqlMockedProvider>
             </ThemeProvider>
-          </MuiPickersUtilsProvider>
+          </LocalizationProvider>
         </TestRouter>
       </SnackbarProvider>,
     );
@@ -530,7 +530,7 @@ describe('ContactDetailTab', () => {
     const { queryByText, getByText } = render(
       <SnackbarProvider>
         <TestRouter router={router}>
-          <MuiPickersUtilsProvider utils={LuxonUtils}>
+          <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
               <GqlMockedProvider<ContactDetailsTabQuery> mocks={mocks}>
                 <ContactsPageProvider>
@@ -544,7 +544,7 @@ describe('ContactDetailTab', () => {
                 </ContactsPageProvider>
               </GqlMockedProvider>
             </ThemeProvider>
-          </MuiPickersUtilsProvider>
+          </LocalizationProvider>
         </TestRouter>
       </SnackbarProvider>,
     );
@@ -563,7 +563,7 @@ describe('ContactDetailTab', () => {
     const { queryByText, getByText, getAllByLabelText } = render(
       <SnackbarProvider>
         <TestRouter router={router}>
-          <MuiPickersUtilsProvider utils={LuxonUtils}>
+          <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
               <GqlMockedProvider<ContactDetailsTabQuery> mocks={mocks}>
                 <ContactsPageProvider>
@@ -577,7 +577,7 @@ describe('ContactDetailTab', () => {
                 </ContactsPageProvider>
               </GqlMockedProvider>
             </ThemeProvider>
-          </MuiPickersUtilsProvider>
+          </LocalizationProvider>
         </TestRouter>
       </SnackbarProvider>,
     );
@@ -596,7 +596,7 @@ describe('ContactDetailTab', () => {
     const { queryByText, getAllByLabelText } = render(
       <SnackbarProvider>
         <TestRouter router={router}>
-          <MuiPickersUtilsProvider utils={LuxonUtils}>
+          <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
               <GqlMockedProvider<ContactDetailsTabQuery> mocks={mocks}>
                 <ContactsPageProvider>
@@ -610,7 +610,7 @@ describe('ContactDetailTab', () => {
                 </ContactsPageProvider>
               </GqlMockedProvider>
             </ThemeProvider>
-          </MuiPickersUtilsProvider>
+          </LocalizationProvider>
         </TestRouter>
       </SnackbarProvider>,
     );
@@ -625,7 +625,7 @@ describe('ContactDetailTab', () => {
     const { queryByText, getAllByLabelText, getByLabelText } = render(
       <SnackbarProvider>
         <TestRouter router={router}>
-          <MuiPickersUtilsProvider utils={LuxonUtils}>
+          <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
               <GqlMockedProvider<ContactDetailsTabQuery> mocks={mocks}>
                 <ContactsPageProvider>
@@ -639,7 +639,7 @@ describe('ContactDetailTab', () => {
                 </ContactsPageProvider>
               </GqlMockedProvider>
             </ThemeProvider>
-          </MuiPickersUtilsProvider>
+          </LocalizationProvider>
         </TestRouter>
       </SnackbarProvider>,
     );

@@ -1,8 +1,8 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import { SnackbarProvider } from 'notistack';
-import { MuiPickersUtilsProvider } from '@material-ui/pickers';
-import LuxonUtils from '@date-io/luxon';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import userEvent from '@testing-library/user-event';
 import { MuiThemeProvider } from '@mui/material';
 import { CreateTaskMutation } from '../../../../../Task/Drawer/Form/TaskDrawer.generated';
@@ -25,7 +25,7 @@ describe('LogNewsletter', () => {
   it('default', () => {
     const { queryByText } = render(
       <MuiThemeProvider theme={theme}>
-        <MuiPickersUtilsProvider utils={LuxonUtils}>
+        <LocalizationProvider dateAdapter={AdapterLuxon}>
           <SnackbarProvider>
             <GqlMockedProvider<CreateTaskMutation>>
               <LogNewsletter
@@ -34,7 +34,7 @@ describe('LogNewsletter', () => {
               />
             </GqlMockedProvider>
           </SnackbarProvider>
-        </MuiPickersUtilsProvider>
+        </LocalizationProvider>
       </MuiThemeProvider>,
     );
     expect(queryByText('Log Newsletter')).toBeInTheDocument();
@@ -43,7 +43,7 @@ describe('LogNewsletter', () => {
   it('closes menu', () => {
     const { getByLabelText } = render(
       <MuiThemeProvider theme={theme}>
-        <MuiPickersUtilsProvider utils={LuxonUtils}>
+        <LocalizationProvider dateAdapter={AdapterLuxon}>
           <SnackbarProvider>
             <GqlMockedProvider<CreateTaskMutation>>
               <LogNewsletter
@@ -52,7 +52,7 @@ describe('LogNewsletter', () => {
               />
             </GqlMockedProvider>
           </SnackbarProvider>
-        </MuiPickersUtilsProvider>
+        </LocalizationProvider>
       </MuiThemeProvider>,
     );
     userEvent.click(getByLabelText('Close'));
@@ -63,7 +63,7 @@ describe('LogNewsletter', () => {
     it('Logs Physical Newsletter', async () => {
       const { getByLabelText, getByText, findByText } = render(
         <MuiThemeProvider theme={theme}>
-          <MuiPickersUtilsProvider utils={LuxonUtils}>
+          <LocalizationProvider dateAdapter={AdapterLuxon}>
             <SnackbarProvider>
               <GqlMockedProvider<CreateTaskMutation>>
                 <LogNewsletter
@@ -72,7 +72,7 @@ describe('LogNewsletter', () => {
                 />
               </GqlMockedProvider>
             </SnackbarProvider>
-          </MuiPickersUtilsProvider>
+          </LocalizationProvider>
         </MuiThemeProvider>,
       );
       expect(getByText('Log Newsletter')).toBeInTheDocument();
@@ -89,7 +89,7 @@ describe('LogNewsletter', () => {
     it('Logs Email Newsletter', async () => {
       const { getByLabelText, getByText, findByText } = render(
         <MuiThemeProvider theme={theme}>
-          <MuiPickersUtilsProvider utils={LuxonUtils}>
+          <LocalizationProvider dateAdapter={AdapterLuxon}>
             <SnackbarProvider>
               <GqlMockedProvider<CreateTaskMutation>>
                 <LogNewsletter
@@ -98,7 +98,7 @@ describe('LogNewsletter', () => {
                 />
               </GqlMockedProvider>
             </SnackbarProvider>
-          </MuiPickersUtilsProvider>
+          </LocalizationProvider>
         </MuiThemeProvider>,
       );
       expect(getByText('Log Newsletter')).toBeInTheDocument();
@@ -116,7 +116,7 @@ describe('LogNewsletter', () => {
     it('Logs Newsletter with completedAt date', async () => {
       const { getByLabelText, getByText, findByText, getByTestId } = render(
         <MuiThemeProvider theme={theme}>
-          <MuiPickersUtilsProvider utils={LuxonUtils}>
+          <LocalizationProvider dateAdapter={AdapterLuxon}>
             <SnackbarProvider>
               <GqlMockedProvider<CreateTaskMutation>>
                 <LogNewsletter
@@ -125,7 +125,7 @@ describe('LogNewsletter', () => {
                 />
               </GqlMockedProvider>
             </SnackbarProvider>
-          </MuiPickersUtilsProvider>
+          </LocalizationProvider>
         </MuiThemeProvider>,
       );
       expect(getByText('Log Newsletter')).toBeInTheDocument();
