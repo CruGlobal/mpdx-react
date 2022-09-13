@@ -217,7 +217,7 @@ export const ContactTaskRow: React.FC<ContactTaskRowProps> = ({
   const isComplete = !!task.completedAt;
 
   return (
-    <TaskRowWrap>
+    <TaskRowWrap isChecked={isChecked}>
       <TaskItemWrap width={theme.spacing(20)} justifyContent="space-between">
         <Checkbox
           checked={isChecked}
