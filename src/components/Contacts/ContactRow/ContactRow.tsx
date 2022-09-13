@@ -38,10 +38,16 @@ export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
   const ListItemButton = styled(ButtonBase)(({ theme }) => ({
     flex: '1 1 auto',
     textAlign: 'left',
+    backgroundColor: isChecked(contact.id)
+      ? theme.palette.cruGrayLight.main
+      : theme.palette.common.white,
     marginTop: useTopMargin ? '20px' : '0',
     padding: theme.spacing(0, 0.5, 0, 2),
     [theme.breakpoints.up('sm')]: {
       padding: theme.spacing(0, 0.5),
+    },
+    '&:hover': {
+      backgroundColor: theme.palette.cruGrayLight.main,
     },
   }));
 
