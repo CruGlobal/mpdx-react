@@ -1,6 +1,6 @@
 import React from 'react';
 import { Settings } from 'luxon';
-import { ThemeProvider } from '@mui/material';
+import { ThemeProvider } from '@mui/material/styles';
 import { render } from '../../../../__tests__/util/testingLibraryReactMock';
 import theme from '../../../theme';
 import Welcome from '.';

@@ -4,7 +4,7 @@ import { SnackbarProvider } from 'notistack';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import userEvent from '@testing-library/user-event';
-import { MuiThemeProvider } from '@mui/material';
+import { ThemeProvider } from '@mui/material/styles';
 import { CreateTaskMutation } from '../../../../../Task/Drawer/Form/TaskDrawer.generated';
 import { GqlMockedProvider } from '../../../../../../../__tests__/util/graphqlMocking';
 import TestWrapper from '../../../../../../../__tests__/util/TestWrapper';
@@ -24,7 +24,7 @@ jest.mock('uuid', () => ({
 describe('LogNewsletter', () => {
   it('default', () => {
     const { queryByText } = render(
-      <MuiThemeProvider theme={theme}>
+      <ThemeProvider theme={theme}>
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <SnackbarProvider>
             <GqlMockedProvider<CreateTaskMutation>>
@@ -35,14 +35,14 @@ describe('LogNewsletter', () => {
             </GqlMockedProvider>
           </SnackbarProvider>
         </LocalizationProvider>
-      </MuiThemeProvider>,
+      </ThemeProvider>,
     );
     expect(queryByText('Log Newsletter')).toBeInTheDocument();
   });
 
   it('closes menu', () => {
     const { getByLabelText } = render(
-      <MuiThemeProvider theme={theme}>
+      <ThemeProvider theme={theme}>
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <SnackbarProvider>
             <GqlMockedProvider<CreateTaskMutation>>
@@ -53,7 +53,7 @@ describe('LogNewsletter', () => {
             </GqlMockedProvider>
           </SnackbarProvider>
         </LocalizationProvider>
-      </MuiThemeProvider>,
+      </ThemeProvider>,
     );
     userEvent.click(getByLabelText('Close'));
     expect(handleClose).toHaveBeenCalled();
@@ -62,7 +62,7 @@ describe('LogNewsletter', () => {
   describe('Logging Newsletter', () => {
     it('Logs Physical Newsletter', async () => {
       const { getByLabelText, getByText, findByText } = render(
-        <MuiThemeProvider theme={theme}>
+        <ThemeProvider theme={theme}>
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <SnackbarProvider>
               <GqlMockedProvider<CreateTaskMutation>>
@@ -73,7 +73,7 @@ describe('LogNewsletter', () => {
               </GqlMockedProvider>
             </SnackbarProvider>
           </LocalizationProvider>
-        </MuiThemeProvider>,
+        </ThemeProvider>,
       );
       expect(getByText('Log Newsletter')).toBeInTheDocument();
 
@@ -88,7 +88,7 @@ describe('LogNewsletter', () => {
 
     it('Logs Email Newsletter', async () => {
       const { getByLabelText, getByText, findByText } = render(
-        <MuiThemeProvider theme={theme}>
+        <ThemeProvider theme={theme}>
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <SnackbarProvider>
               <GqlMockedProvider<CreateTaskMutation>>
@@ -99,7 +99,7 @@ describe('LogNewsletter', () => {
               </GqlMockedProvider>
             </SnackbarProvider>
           </LocalizationProvider>
-        </MuiThemeProvider>,
+        </ThemeProvider>,
       );
       expect(getByText('Log Newsletter')).toBeInTheDocument();
 
@@ -115,7 +115,7 @@ describe('LogNewsletter', () => {
 
     it('Logs Newsletter with completedAt date', async () => {
       const { getByLabelText, getByText, findByText, getByTestId } = render(
-        <MuiThemeProvider theme={theme}>
+        <ThemeProvider theme={theme}>
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <SnackbarProvider>
               <GqlMockedProvider<CreateTaskMutation>>
@@ -126,7 +126,7 @@ describe('LogNewsletter', () => {
               </GqlMockedProvider>
             </SnackbarProvider>
           </LocalizationProvider>
-        </MuiThemeProvider>,
+        </ThemeProvider>,
       );
       expect(getByText('Log Newsletter')).toBeInTheDocument();
 
@@ -147,7 +147,7 @@ describe('LogNewsletter', () => {
 
     it('Logs Newsletter with Comment', async () => {
       const { getByLabelText, getByText, findByText } = render(
-        <MuiThemeProvider theme={theme}>
+        <ThemeProvider theme={theme}>
           <TestWrapper
             mocks={[
               createNewsletterTaskMutationMock(),
@@ -159,7 +159,7 @@ describe('LogNewsletter', () => {
               handleClose={handleClose}
             />
           </TestWrapper>
-        </MuiThemeProvider>,
+        </ThemeProvider>,
       );
       expect(getByText('Log Newsletter')).toBeInTheDocument();
 

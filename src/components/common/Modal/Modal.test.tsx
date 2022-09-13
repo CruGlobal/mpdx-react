@@ -1,6 +1,6 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import { MuiThemeProvider } from '@mui/material';
+import { ThemeProvider } from '@mui/material/styles';
 import userEvent from '@testing-library/user-event';
 import theme from '../../../theme';
 import Modal from './Modal';
@@ -11,11 +11,11 @@ const handleClose = jest.fn();
 
 it('renders when isOpen is true', () => {
   const { getByText } = render(
-    <MuiThemeProvider theme={theme}>
+    <ThemeProvider theme={theme}>
       <Modal isOpen={true} title={modalTitle} handleClose={handleClose}>
         <>{modalTextContent}</>
       </Modal>
-    </MuiThemeProvider>,
+    </ThemeProvider>,
   );
   expect(getByText(modalTitle)).toBeInTheDocument();
   expect(getByText(modalTextContent)).toBeInTheDocument();
@@ -23,11 +23,11 @@ it('renders when isOpen is true', () => {
 
 it('does not render when isOpen is false', () => {
   const { queryByText } = render(
-    <MuiThemeProvider theme={theme}>
+    <ThemeProvider theme={theme}>
       <Modal isOpen={false} title={modalTitle} handleClose={handleClose}>
         <>{modalTextContent}</>
       </Modal>
-    </MuiThemeProvider>,
+    </ThemeProvider>,
   );
   expect(queryByText(modalTitle)).not.toBeInTheDocument();
   expect(queryByText(modalTextContent)).not.toBeInTheDocument();
@@ -35,11 +35,11 @@ it('does not render when isOpen is false', () => {
 
 it('fires onClose | Close Button', () => {
   const { getByLabelText } = render(
-    <MuiThemeProvider theme={theme}>
+    <ThemeProvider theme={theme}>
       <Modal isOpen={true} title={modalTitle} handleClose={handleClose}>
         <>{modalTextContent}</>
       </Modal>
-    </MuiThemeProvider>,
+    </ThemeProvider>,
   );
   userEvent.click(getByLabelText('Close'));
   expect(handleClose).toHaveBeenCalled();

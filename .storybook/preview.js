@@ -1,7 +1,8 @@
 import React from 'react';
 import { configure } from '@storybook/react';
 import { addDecorator, addParameters } from '@storybook/react';
-import { ThemeProvider, CssBaseline } from '@mui/material';
+import { CssBaseline } from '@mui/material';
+import { ThemeProvider } from '@mui/material/styles';
 import { withI18next } from 'storybook-addon-i18next';
 import { Settings } from 'luxon';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
