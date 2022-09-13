@@ -8,12 +8,15 @@ describe('ContactUncompletedTasksCount', () => {
   it('default', async () => {
     const { getByRole, getByText } = render(
       <MuiThemeProvider theme={theme}>
-        <ContactUncompletedTasksCount uncompletedTasksCount={2} />
+        <ContactUncompletedTasksCount
+          uncompletedTasksCount={2}
+          contactId="abc"
+        />
       </MuiThemeProvider>,
     );
 
     const TaskCompletedIcon = getByRole('img', {
-      name: 'Check Outlined',
+      name: 'Log Task',
     });
 
     expect(TaskCompletedIcon).toBeInTheDocument();
