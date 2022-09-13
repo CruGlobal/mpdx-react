@@ -2,7 +2,7 @@ import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
-import { ThemeProvider } from '@mui/styles';
+import { ThemeProvider } from '@mui/material/styles';
 import { SnackbarProvider } from 'notistack';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '../../../../../../__tests__/util/TestRouter';

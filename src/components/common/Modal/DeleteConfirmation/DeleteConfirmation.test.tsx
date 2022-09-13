@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
-import { ThemeProvider } from '@mui/styles';
+import { ThemeProvider } from '@mui/material/styles';
 import userEvent from '@testing-library/user-event';
 import { DeleteConfirmation } from './DeleteConfirmation';
 import theme from 'src/theme';

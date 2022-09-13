@@ -1,7 +1,8 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { Button, ThemeProvider } from '@mui/material';
+import Button from '@mui/material/Button';
+import { ThemeProvider } from '@mui/material/styles';
 import theme from '../../../theme';
 
 import useTaskModal from '../../../hooks/useTaskModal';
