@@ -151,6 +151,7 @@ export const TaskRow: React.FC<TaskRowProps> = ({
       <ContactRowButton
         display="flex"
         alignItems="center"
+        data-testid="task-row"
         onClick={() => onTaskCheckToggle(taskId)}
       >
         <Box
