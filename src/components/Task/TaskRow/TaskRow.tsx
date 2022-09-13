@@ -77,6 +77,15 @@ export const TaskRow: React.FC<TaskRowProps> = ({
 }) => {
   const { t } = useTranslation();
 
+  const TaskRowWrapper = styled(Box)(({ theme }) => ({
+    backgroundColor: isChecked
+      ? theme.palette.cruGrayLight.main
+      : theme.palette.common.white,
+    '&:hover': {
+      backgroundColor: theme.palette.cruGrayLight.main,
+    },
+  }));
+
   const ContactRowButton = styled(Box)(({}) => ({
     height: '56px',
     width: '100%',
@@ -138,7 +147,7 @@ export const TaskRow: React.FC<TaskRowProps> = ({
   }`;
 
   return (
-    <Box role="row" p={1}>
+    <TaskRowWrapper role="row" p={1}>
       <ContactRowButton
         display="flex"
         alignItems="center"
@@ -260,6 +269,6 @@ export const TaskRow: React.FC<TaskRowProps> = ({
           </Hidden>
         </Box>
       </ContactRowButton>
-    </Box>
+    </TaskRowWrapper>
   );
 };
