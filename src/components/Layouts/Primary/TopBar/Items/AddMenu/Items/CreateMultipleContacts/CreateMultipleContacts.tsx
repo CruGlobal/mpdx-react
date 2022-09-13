@@ -5,7 +5,6 @@ import {
   DialogActions,
   DialogContent,
   Paper,
-  styled,
   Table,
   TableBody,
   TableCell,
@@ -14,6 +13,7 @@ import {
   TableRow,
   TextField,
 } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import { Field, FieldArray, FieldProps, Form, Formik } from 'formik';
 import { useSnackbar } from 'notistack';
 import React, { ReactElement } from 'react';

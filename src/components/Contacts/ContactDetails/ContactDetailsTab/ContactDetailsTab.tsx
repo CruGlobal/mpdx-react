@@ -1,5 +1,6 @@
 import React from 'react';
-import { Box, IconButton, Divider, styled, Typography } from '@mui/material';
+import { Box, IconButton, Divider, Typography } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import CreateIcon from '@mui/icons-material/Create';
 import Skeleton from '@mui/material/Skeleton';
 import { useTranslation } from 'react-i18next';

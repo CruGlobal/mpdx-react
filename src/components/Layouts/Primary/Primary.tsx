@@ -1,5 +1,5 @@
 import React, { ReactElement, ReactNode, useState } from 'react';
-import { styled } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import TopBar from './TopBar/TopBar';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { NavBar } from 'src/components/Layouts/Primary/NavBar/NavBar';

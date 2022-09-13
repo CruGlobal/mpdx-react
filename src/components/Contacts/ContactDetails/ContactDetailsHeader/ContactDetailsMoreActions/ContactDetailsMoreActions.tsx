@@ -1,13 +1,13 @@
 import React, { ReactElement } from 'react';
-import { Box, IconButton, ListItemText, Menu, styled } from '@mui/material';
+import { Box, IconButton, ListItemText, Menu } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import PersonIcon from '@mui/icons-material/Person';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ListIcon from '@mui/icons-material/FormatListBulleted';
 import EditIcon from '@mui/icons-material/Edit';
 import { useTranslation } from 'react-i18next';
-
-import { MoreVert } from '@mui/icons-material';
+import MoreVert from '@mui/icons-material/MoreVert';
 import { useSnackbar } from 'notistack';
 import { StatusEnum } from '../../../../../../graphql/types.generated';
 import useTaskModal from '../../../../../hooks/useTaskModal';

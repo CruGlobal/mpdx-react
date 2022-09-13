@@ -9,9 +9,9 @@ import {
   Grid,
   Theme,
   CircularProgress,
-  styled,
   FormControl,
 } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import { makeStyles } from '@mui/styles';
 import { Formik, Field, Form } from 'formik';
 import React, { ReactElement, useState } from 'react';

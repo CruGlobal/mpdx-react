@@ -1,14 +1,7 @@
 import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  Box,
-  CardHeader,
-  CardContent,
-  Grid,
-  Typography,
-  useTheme,
-  styled,
-} from '@mui/material';
+import { Box, CardHeader, CardContent, Grid, Typography } from '@mui/material';
+import { styled, useTheme } from '@mui/material/styles';
 import type { Theme } from '@mui/material/styles/createTheme';
 import {
   ReferenceLine,

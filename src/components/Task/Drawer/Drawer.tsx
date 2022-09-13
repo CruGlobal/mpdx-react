@@ -13,7 +13,9 @@ import {
 import { makeStyles } from '@mui/styles';
 import CloseIcon from '@mui/icons-material/Close';
 import { useTranslation } from 'react-i18next';
-import { TabContext, TabList, TabPanel } from '@mui/lab';
+import TabContext from '@mui/lab/TabContext';
+import TabList from '@mui/lab/TabList';
+import TabPanel from '@mui/lab/TabPanel';
 import { AnimatePresence, motion } from 'framer-motion';
 import Loading from '../../Loading';
 import TaskStatus from '../Status';

@@ -4,7 +4,6 @@ import {
   DialogActions,
   DialogContent,
   IconButton,
-  styled,
   FormControl,
   TextField,
   Grid,
@@ -16,6 +15,7 @@ import {
   Button,
   CircularProgress,
 } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import * as yup from 'yup';
 import CloseIcon from '@mui/icons-material/Close';
 import { useTranslation } from 'react-i18next';

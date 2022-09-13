@@ -6,10 +6,9 @@ import {
   Divider,
   Button,
   NativeSelect,
-  styled,
   CircularProgress,
 } from '@mui/material';
-
+import { styled } from '@mui/material/styles';
 import { Trans, useTranslation } from 'react-i18next';
 
 import Icon from '@mdi/react';

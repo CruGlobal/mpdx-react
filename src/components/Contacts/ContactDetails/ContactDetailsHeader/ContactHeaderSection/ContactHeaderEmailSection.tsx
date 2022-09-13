@@ -1,5 +1,6 @@
-import { styled, Typography } from '@mui/material';
-import { Email } from '@mui/icons-material';
+import Typography from '@mui/material/Typography';
+import { styled } from '@mui/material/styles';
+import Email from '@mui/icons-material/Email';
 import Skeleton from '@mui/material/Skeleton';
 
 import React, { ReactElement } from 'react';

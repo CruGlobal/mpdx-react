@@ -1,4 +1,5 @@
-import { Checkbox, Grid, MenuItem, Select, styled } from '@mui/material';
+import { Checkbox, Grid, MenuItem, Select } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import React from 'react';
 
 import { useTranslation } from 'react-i18next';

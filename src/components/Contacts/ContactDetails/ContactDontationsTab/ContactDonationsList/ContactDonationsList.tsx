@@ -1,12 +1,12 @@
 import {
   Box,
   Button,
-  styled,
   Table,
   TableCell,
   TableHead,
   TableRow,
 } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import Skeleton from '@mui/material/Skeleton';
 import { DateTime } from 'luxon';
 import React from 'react';

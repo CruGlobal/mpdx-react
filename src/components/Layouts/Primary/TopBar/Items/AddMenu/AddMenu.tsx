@@ -1,12 +1,6 @@
 import React, { ReactElement, useState } from 'react';
-import {
-  Box,
-  IconButton,
-  ListItemText,
-  Menu,
-  MenuItem,
-  styled,
-} from '@mui/material';
+import { Box, IconButton, ListItemText, Menu, MenuItem } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import AddIcon from '@mui/icons-material/Add';
 import PersonIcon from '@mui/icons-material/Person';
 import PeopleIcon from '@mui/icons-material/People';

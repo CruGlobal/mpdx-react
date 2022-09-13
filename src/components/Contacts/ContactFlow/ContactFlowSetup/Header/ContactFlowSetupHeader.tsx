@@ -1,6 +1,8 @@
 import React from 'react';
-import { styled, Box, Button } from '@mui/material';
-import { ChevronLeft, Add } from '@mui/icons-material';
+import { Box, Button } from '@mui/material';
+import { styled } from '@mui/material/styles';
+import Add from '@mui/icons-material/Add';
+import ChevronLeft from '@mui/icons-material/ChevronLeft';
 import NextLink from 'next/link';
 import { useTranslation } from 'react-i18next';
 import { useAccountListId } from '../../../../../../src/hooks/useAccountListId';

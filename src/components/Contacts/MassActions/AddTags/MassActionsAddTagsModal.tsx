@@ -5,15 +5,15 @@ import {
   DialogActions,
   DialogContent,
   FormControl,
-  styled,
   Typography,
 } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import * as yup from 'yup';
 import { Formik } from 'formik';
 import React, { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSnackbar } from 'notistack';
-import { Add } from '@mui/icons-material';
+import Add from '@mui/icons-material/Add';
 import { ContactUpdateInput } from '../../../../../graphql/types.generated';
 import Modal from '../../../common/Modal/Modal';
 import {

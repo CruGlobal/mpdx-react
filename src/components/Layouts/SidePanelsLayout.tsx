@@ -1,7 +1,7 @@
 import { Breakpoint } from '@mui/system/createTheme/createBreakpoints';
 import { FC, ReactElement } from 'react';
-import { Box, Theme } from '@mui/material';
-import { styled } from '@mui/material/styles';
+import Box from '@mui/material/Box';
+import { styled, Theme } from '@mui/material/styles';
 
 type ScrollBoxProps = {
   isscroll?: 1 | 0;

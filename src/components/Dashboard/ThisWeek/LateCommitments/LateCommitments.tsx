@@ -7,8 +7,8 @@ import {
   ListItem,
   ListItemText,
   CardContent,
-  styled,
 } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import Skeleton from '@mui/material/Skeleton';
 import { motion } from 'framer-motion';

@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { Box, Button, Drawer, Link, List, styled } from '@mui/material';
+import { Box, Button, Drawer, Link, List } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { signOut } from 'next-auth/react';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useRouter } from 'next/router';
-import { ChevronRight } from '@mui/icons-material';
+import ChevronRight from '@mui/icons-material/ChevronRight';
 import theme from '../../../../../../theme';
 import { useAccountListId } from '../../../../../../hooks/useAccountListId';
 import { LeafButton, LeafListItem, Title } from '../../NavItem/NavItem';

@@ -1,5 +1,6 @@
-import { Box, styled, Theme, Typography } from '@mui/material';
-import { CalendarToday } from '@mui/icons-material';
+import { Box, Theme, Typography } from '@mui/material';
+import { styled } from '@mui/material/styles';
+import CalendarToday from '@mui/icons-material/CalendarToday';
 import { DateTime } from 'luxon';
 import React from 'react';
 

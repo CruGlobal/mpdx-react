@@ -5,11 +5,11 @@ import {
   IconButton,
   List,
   Slide,
-  styled,
   Typography,
 } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import { makeStyles } from '@mui/styles';
-import { Close } from '@mui/icons-material';
+import Close from '@mui/icons-material/Close';
 import { useTranslation } from 'react-i18next';
 import { Item } from './Item/Item';
 import { ReportNavItems } from './ReportNavItems';

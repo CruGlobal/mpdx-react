@@ -1,5 +1,6 @@
 import React, { ReactElement } from 'react';
-import { List, ListItem, styled, Theme, Typography } from '@mui/material';
+import { List, ListItem, Theme, Typography } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import {
   ListProps,
   ItemProps,

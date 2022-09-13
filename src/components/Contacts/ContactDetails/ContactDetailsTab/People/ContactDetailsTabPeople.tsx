@@ -4,13 +4,15 @@ import {
   Box,
   Grid,
   IconButton,
-  styled,
   Typography,
   Button,
 } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import AddIcon from '@mui/icons-material/Add';
-import { Cake, Email, Phone } from '@mui/icons-material';
+import Cake from '@mui/icons-material/Cake';
 import CreateIcon from '@mui/icons-material/Create';
+import Email from '@mui/icons-material/Email';
+import Phone from '@mui/icons-material/Phone';
 import { useTranslation } from 'react-i18next';
 import { RingIcon } from '../../../RingIcon';
 import {

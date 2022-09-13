@@ -16,11 +16,11 @@ import {
   Grid,
   MenuItem,
   Select,
-  styled,
   TextField,
   Theme,
   useMediaQuery,
 } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import { MobileDatePicker } from '@mui/x-date-pickers';
 import debounce from 'lodash/debounce';

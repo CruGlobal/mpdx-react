@@ -1,5 +1,6 @@
 import React, { ReactElement, useState } from 'react';
-import { List, useTheme } from '@mui/material';
+import { List } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 import PersonIcon from '@mui/icons-material/Person';
 import PeopleIcon from '@mui/icons-material/People';
 import CardGiftcardIcon from '@mui/icons-material/CardGiftcard';

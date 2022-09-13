@@ -13,11 +13,11 @@ import {
   InputLabel,
   MenuItem,
   Select,
-  styled,
   TextField,
   Tooltip,
   Typography,
 } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import InfoIcon from '@mui/icons-material/InfoOutlined';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import { useTranslation } from 'react-i18next';

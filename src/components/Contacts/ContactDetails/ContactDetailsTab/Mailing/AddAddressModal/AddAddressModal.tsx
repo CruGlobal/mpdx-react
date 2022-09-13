@@ -16,9 +16,9 @@ import {
   InputLabel,
   MenuItem,
   Select,
-  styled,
   TextField,
 } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import { AddressCreateInput } from '../../../../../../../graphql/types.generated';
 import Modal from '../../../../../common/Modal/Modal';
 import {

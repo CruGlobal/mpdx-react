@@ -1,5 +1,5 @@
 import React from 'react';
-import { useTheme } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 import type { Theme } from '@mui/material/styles/createTheme';
 import ErrorIcon from '@mui/icons-material/Error';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';

@@ -4,10 +4,12 @@ import {
   CardContent,
   IconButton,
   TextField,
-  styled,
   Theme,
 } from '@mui/material';
-import { Menu, Clear, FiberManualRecord } from '@mui/icons-material';
+import { styled } from '@mui/material/styles';
+import Clear from '@mui/icons-material/Clear';
+import FiberManualRecord from '@mui/icons-material/FiberManualRecord';
+import Menu from '@mui/icons-material/Menu';
 import React, {
   useRef,
   useLayoutEffect,

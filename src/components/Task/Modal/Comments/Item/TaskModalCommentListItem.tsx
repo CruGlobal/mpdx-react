@@ -1,11 +1,5 @@
-import {
-  Box,
-  Typography,
-  styled,
-  Button,
-  Tooltip,
-  TextField,
-} from '@mui/material';
+import { Box, Typography, Button, Tooltip, TextField } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import React, { ReactElement, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Formik } from 'formik';

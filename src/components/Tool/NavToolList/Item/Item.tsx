@@ -1,7 +1,8 @@
 import React, { ReactElement } from 'react';
-import { ListItem, ListItemText } from '@mui/material';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
 import { makeStyles } from '@mui/styles';
-import { ArrowForwardIos } from '@mui/icons-material';
+import ArrowForwardIos from '@mui/icons-material/ArrowForwardIos';
 import NextLink from 'next/link';
 import theme from '../../../../theme';
 import { useAccountListId } from 'src/hooks/useAccountListId';

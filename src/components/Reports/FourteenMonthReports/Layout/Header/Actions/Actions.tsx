@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, ButtonGroup, styled, SvgIcon } from '@mui/material';
+import { Button, ButtonGroup, SvgIcon } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import GetAppIcon from '@mui/icons-material/GetApp';
 import FullscreenIcon from '@mui/icons-material/Fullscreen';
 import FullscreenExitIcon from '@mui/icons-material/FullscreenExit';

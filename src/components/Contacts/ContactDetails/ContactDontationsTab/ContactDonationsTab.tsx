@@ -1,6 +1,9 @@
-import { Box, styled, Tab } from '@mui/material';
+import { Box, Tab } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import Skeleton from '@mui/material/Skeleton';
-import { TabContext, TabList, TabPanel } from '@mui/lab';
+import TabContext from '@mui/lab/TabContext';
+import TabList from '@mui/lab/TabList';
+import TabPanel from '@mui/lab/TabPanel';
 import React from 'react';
 import { useTranslation } from 'react-i18next/';
 import {

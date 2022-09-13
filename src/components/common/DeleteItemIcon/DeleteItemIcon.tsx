@@ -1,6 +1,6 @@
-import { styled } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import React from 'react';
-import { DeleteOutlined } from '@mui/icons-material';
+import DeleteOutlined from '@mui/icons-material/DeleteOutlined';
 
 const DeleteOutline = styled(DeleteOutlined)(({ theme }) => ({
   width: '24px',

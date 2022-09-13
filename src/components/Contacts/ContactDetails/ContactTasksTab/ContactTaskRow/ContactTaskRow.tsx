@@ -1,4 +1,5 @@
-import { Box, Checkbox, styled, Typography } from '@mui/material';
+import { Box, Checkbox, Typography } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import Skeleton from '@mui/material/Skeleton';
 import { TFunction } from 'i18next';
 import { DateTime } from 'luxon';

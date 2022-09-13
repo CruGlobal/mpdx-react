@@ -1,4 +1,5 @@
-import { Grid, MenuItem, Select, styled, Checkbox } from '@mui/material';
+import { Grid, MenuItem, Select, Checkbox } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { FormikErrors, getIn } from 'formik';

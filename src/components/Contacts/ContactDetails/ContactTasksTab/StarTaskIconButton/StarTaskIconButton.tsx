@@ -1,4 +1,5 @@
-import { IconButton, styled } from '@mui/material';
+import IconButton from '@mui/material/IconButton';
+import { styled } from '@mui/material/styles';
 import React from 'react';
 import { StarredItemIcon } from '../../../../common/StarredItemIcon/StarredItemIcon';
 import { useSetTaskStarredMutation } from './SetTaskStarred.generated';

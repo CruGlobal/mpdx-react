@@ -1,4 +1,5 @@
-import { Avatar, Box, styled, Typography } from '@mui/material';
+import { Avatar, Box, Typography } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import React, { useEffect } from 'react';
 import { useDrag } from 'react-dnd';
 import { getEmptyImage } from 'react-dnd-html5-backend';

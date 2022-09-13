@@ -3,7 +3,6 @@ import {
   Autocomplete,
   TextField,
   Select,
-  styled,
   MenuItem,
   InputLabel,
   FormControl,
@@ -22,6 +21,7 @@ import {
   FormControlLabel,
   Switch,
 } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import CalendarToday from '@mui/icons-material/CalendarToday';
 import Schedule from '@mui/icons-material/Schedule';
 import { useTranslation } from 'react-i18next';

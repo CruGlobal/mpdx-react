@@ -1,13 +1,7 @@
 import React, { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  Autocomplete,
-  Box,
-  Button,
-  Chip,
-  styled,
-  TextField,
-} from '@mui/material';
+import { Autocomplete, Box, Button, Chip, TextField } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import TagIcon from '@mui/icons-material/LocalOfferOutlined';
 import { useSnackbar } from 'notistack';
 import * as yup from 'yup';

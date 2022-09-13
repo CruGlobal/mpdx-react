@@ -4,9 +4,9 @@ import {
   AccordionSummary,
   Box,
   Typography,
-  styled,
   Theme,
 } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import React, {
   Dispatch,
   SetStateAction,
@@ -15,7 +15,7 @@ import React, {
   useState,
 } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ExpandMore } from '@mui/icons-material';
+import ExpandMore from '@mui/icons-material/ExpandMore';
 import Image from 'next/image';
 import { StatusEnum } from '../../../../graphql/types.generated';
 import { Coordinates } from 'pages/accountLists/[accountListId]/contacts/map/map';

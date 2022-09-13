@@ -4,12 +4,12 @@ import {
   Box,
   Modal,
   Typography,
-  styled,
   Card,
   CardHeader,
   CardContent,
   useMediaQuery,
 } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import CloseIcon from '@mui/icons-material/Close';
 import { useTranslation } from 'react-i18next';
 

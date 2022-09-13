@@ -8,8 +8,8 @@ import {
   SvgIcon,
   useScrollTrigger,
   Hidden,
-  styled,
 } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import MenuIcon from '@mui/icons-material/Menu';
 import logo from '../../../../images/logo.svg';
 import NotificationMenu from './Items/NotificationMenu/NotificationMenu';

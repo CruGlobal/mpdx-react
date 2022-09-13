@@ -1,14 +1,8 @@
 import React, { ReactElement, useState } from 'react';
-import {
-  Box,
-  Card,
-  CardContent,
-  Divider,
-  styled,
-  Typography,
-} from '@mui/material';
+import { Box, Card, CardContent, Divider, Typography } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
-import { Add } from '@mui/icons-material';
+import Add from '@mui/icons-material/Add';
 import illustration4 from '../../../../images/drawkit/grape/drawkit-grape-pack-illustration-4.svg';
 import TaskDrawerCommentListItem from '../../Drawer/CommentList/Item';
 import theme from '../../../../../src/theme';

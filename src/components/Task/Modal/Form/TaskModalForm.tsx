@@ -2,7 +2,6 @@ import React, { ReactElement, useCallback, useState } from 'react';
 import {
   TextField,
   Select,
-  styled,
   MenuItem,
   InputLabel,
   FormControl,
@@ -17,6 +16,7 @@ import {
   Tooltip,
   Autocomplete,
 } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { MobileDatePicker, MobileTimePicker } from '@mui/x-date-pickers';
 import InfoIcon from '@mui/icons-material/InfoOutlined';
@@ -24,7 +24,8 @@ import { Formik } from 'formik';
 import * as yup from 'yup';
 import { useSnackbar } from 'notistack';
 import { DateTime } from 'luxon';
-import { CalendarToday, Schedule } from '@mui/icons-material';
+import CalendarToday from '@mui/icons-material/CalendarToday';
+import Schedule from '@mui/icons-material/Schedule';
 import { v4 as uuidv4 } from 'uuid';
 import _ from 'lodash';
 import debounce from 'lodash/fp/debounce';

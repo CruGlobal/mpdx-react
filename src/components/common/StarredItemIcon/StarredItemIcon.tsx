@@ -1,6 +1,6 @@
-import { styled } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import React from 'react';
-import { StarBorderOutlined } from '@mui/icons-material';
+import StarBorderOutlined from '@mui/icons-material/StarBorderOutlined';
 import StarIcon from '@mui/icons-material/Star';
 
 interface Props {

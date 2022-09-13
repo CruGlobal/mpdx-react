@@ -1,9 +1,10 @@
-import { Button, Grid, InputLabel, styled, Typography } from '@mui/material';
+import { Button, Grid, InputLabel, Typography } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import React from 'react';
 import AddIcon from '@mui/icons-material/Add';
 import { useTranslation } from 'react-i18next';
 import { FormikProps, FieldArray } from 'formik';
-import { Phone } from '@mui/icons-material';
+import Phone from '@mui/icons-material/Phone';
 import { ModalSectionContainer } from '../ModalSectionContainer/ModalSectionContainer';
 import { ModalSectionIcon } from '../ModalSectionIcon/ModalSectionIcon';
 import {

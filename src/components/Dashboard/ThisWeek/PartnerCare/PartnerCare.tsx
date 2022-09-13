@@ -13,9 +13,9 @@ import {
   Tab,
   ListItemIcon,
   CardContent,
-  styled,
   IconButton,
 } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import CakeIcon from '@mui/icons-material/Cake';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import Skeleton from '@mui/material/Skeleton';

@@ -1,13 +1,8 @@
 import React, { useState } from 'react';
-import {
-  Box,
-  Button,
-  Checkbox,
-  Divider,
-  styled,
-  Typography,
-} from '@mui/material';
-import { Add, CheckCircleOutline } from '@mui/icons-material';
+import { Box, Button, Checkbox, Divider, Typography } from '@mui/material';
+import { styled } from '@mui/material/styles';
+import Add from '@mui/icons-material/Add';
+import CheckCircleOutline from '@mui/icons-material/CheckCircleOutline';
 import { useTranslation } from 'react-i18next';
 import { DateTime } from 'luxon';
 import { TaskFilterSetInput } from '../../../../../graphql/types.generated';

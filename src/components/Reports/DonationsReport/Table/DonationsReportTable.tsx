@@ -5,12 +5,12 @@ import {
   Button,
   Link,
   Divider,
-  styled,
   Table,
   TableCell,
   TableRow,
   CircularProgress,
 } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import IconButton from '@mui/material/IconButton';
 import EditIcon from '@mui/icons-material/Edit';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';

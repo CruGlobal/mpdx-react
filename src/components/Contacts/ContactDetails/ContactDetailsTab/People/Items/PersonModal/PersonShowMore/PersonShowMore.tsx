@@ -7,9 +7,9 @@ import {
   InputLabel,
   MenuItem,
   Select,
-  styled,
   TextField,
 } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { MobileDatePicker } from '@mui/x-date-pickers';
 import { DateTime } from 'luxon';

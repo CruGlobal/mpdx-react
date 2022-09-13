@@ -2,13 +2,13 @@ import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Checkbox,
-  styled,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableRow,
 } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import type { Contact } from '../PartnerGivingAnalysisReport';
 import type { Order } from '../../Reports.type';
 import { PartnerGivingAnalysisReportTableHead as TableHead } from './TableHead/TableHead';

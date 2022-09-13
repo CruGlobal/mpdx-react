@@ -6,8 +6,8 @@ import {
   ListSubheader,
   Tooltip,
   Typography,
-  styled,
 } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import HelpIcon from '@mui/icons-material/Help';
 
 export interface AccountListSubheaderProps {

@@ -1,12 +1,6 @@
 import React, { ReactElement, useState } from 'react';
-import {
-  Button,
-  Menu,
-  MenuItem,
-  Dialog,
-  ListItemText,
-  styled,
-} from '@mui/material';
+import { Button, Menu, MenuItem, Dialog, ListItemText } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import ArrowDropDown from '@mui/icons-material/ArrowDropDown';
 import { useTranslation } from 'react-i18next';
 import { DateTime } from 'luxon';

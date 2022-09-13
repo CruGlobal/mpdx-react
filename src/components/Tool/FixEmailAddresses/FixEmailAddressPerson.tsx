@@ -8,8 +8,8 @@ import {
   Hidden,
   TextField,
   Theme,
-  styled,
 } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import { makeStyles } from '@mui/styles';
 import { useTranslation } from 'react-i18next';
 import { Icon } from '@mdi/react';

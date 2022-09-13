@@ -7,14 +7,16 @@ import {
   InputLabel,
   MenuItem,
   Select,
-  styled,
   TextField,
   Typography,
 } from '@mui/material';
-import SocialIcon from '@mui/icons-material/Language';
+import { styled } from '@mui/material/styles';
 import AddIcon from '@mui/icons-material/Add';
+import Facebook from '@mui/icons-material/Facebook';
+import LinkedIn from '@mui/icons-material/LinkedIn';
+import SocialIcon from '@mui/icons-material/Language';
+import Twitter from '@mui/icons-material/Twitter';
 import { FormikProps, FieldArray, getIn } from 'formik';
-import { Facebook, LinkedIn, Twitter } from '@mui/icons-material';
 import { ModalSectionContainer } from '../ModalSectionContainer/ModalSectionContainer';
 import { ModalSectionDeleteIcon } from '../ModalSectionDeleteIcon/ModalSectionDeleteIcon';
 import { ModalSectionIcon } from '../ModalSectionIcon/ModalSectionIcon';

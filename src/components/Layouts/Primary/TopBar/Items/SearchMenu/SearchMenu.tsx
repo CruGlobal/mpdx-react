@@ -3,12 +3,12 @@ import {
   Autocomplete,
   Box,
   IconButton,
-  styled,
   Dialog,
   TextField,
   Typography,
   Popper,
 } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import SearchIcon from '@mui/icons-material/Search';
 import { useTranslation } from 'react-i18next';
 import CompassIcon from '@mui/icons-material/Explore';

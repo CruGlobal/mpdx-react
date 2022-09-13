@@ -1,7 +1,6 @@
 import {
   Box,
   Paper,
-  styled,
   Table,
   TableBody,
   TableCell,
@@ -11,11 +10,12 @@ import {
   Button,
   Typography,
 } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import Skeleton from '@mui/material/Skeleton';
 import { DateTime } from 'luxon';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Add } from '@mui/icons-material';
+import Add from '@mui/icons-material/Add';
 import { useContactReferralTabQuery } from './ContactReferralTab.generated';
 import Modal from 'src/components/common/Modal/Modal';
 import { CreateMultipleContacts } from 'src/components/Layouts/Primary/TopBar/Items/AddMenu/Items/CreateMultipleContacts/CreateMultipleContacts';

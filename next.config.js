@@ -60,6 +60,9 @@ module.exports = withPlugins([
     },
     experimental: {
       modularizeImports: {
+        '@mui/material': {
+          transform: '@mui/material/{{member}}',
+        },
         '@mui/icons-material/?(((\\w*)?/?)*)': {
           transform: '@mui/icons-material/{{ matches.[1] }}/{{member}}',
         },
@@ -74,7 +77,7 @@ module.exports = withPlugins([
     typescript: {
       ignoreBuildErrors: true,
     },
-    reactStrictMode: false,
+    reactStrictMode: true,
     styledComponents: true,
     swcMinify: true,
     webpack: (config) => {

@@ -4,10 +4,10 @@ import {
   Button,
   Checkbox,
   Hidden,
-  styled,
   Tooltip,
   Typography,
 } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { DateTime } from 'luxon';
 import { TaskCompleteButton } from '../../Contacts/ContactDetails/ContactTasksTab/ContactTaskRow/TaskCompleteButton/TaskCompleteButton';

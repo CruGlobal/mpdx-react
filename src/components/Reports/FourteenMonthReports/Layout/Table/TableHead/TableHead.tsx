@@ -1,13 +1,8 @@
 import React, { FC, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DateTime } from 'luxon';
-import {
-  styled,
-  TableCell,
-  TableHead,
-  TableRow,
-  Typography,
-} from '@mui/material';
+import { TableCell, TableHead, TableRow, Typography } from '@mui/material';
+import { styled } from '@mui/material/styles';
 // eslint-disable-next-line import/extensions
 import { FourteenMonthReportQuery } from '../../../GetFourteenMonthReport.generated';
 import type { Order, Unarray } from '../../../../Reports.type';

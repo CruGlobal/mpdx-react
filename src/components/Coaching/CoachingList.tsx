@@ -1,7 +1,8 @@
-import { Box, Divider, styled, Typography } from '@mui/material';
+import { Box, Divider, Typography } from '@mui/material';
 // TODO: This icon is not defined on @mui/icons-material, find replacement.
 // import { EcoOutlined } from '@mui/icons-material';
 import Skeleton from '@mui/material/Skeleton';
+import { styled } from '@mui/material/styles';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { CoachingRow } from './CoachingRow/CoachingRow';

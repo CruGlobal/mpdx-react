@@ -1,14 +1,8 @@
 import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  Box,
-  Grid,
-  IconButton,
-  styled,
-  Theme,
-  Typography,
-} from '@mui/material';
-import { FilterList } from '@mui/icons-material';
+import { Box, Grid, IconButton, Theme, Typography } from '@mui/material';
+import { styled } from '@mui/material/styles';
+import FilterList from '@mui/icons-material/FilterList';
 import { FourteenMonthReportCurrencyType } from '../../../../../../graphql/types.generated';
 import { FourteenMonthReportActions } from './Actions/Actions';
 

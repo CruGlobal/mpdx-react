@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Box, CircularProgress, Divider, styled } from '@mui/material';
+import { Box, CircularProgress, Divider } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import { AccountsList as List } from '../AccountsListLayout/List/List';
 import { AccountsListHeader as Header } from '../AccountsListLayout/Header/Header';
 import type { Account } from '../AccountsListLayout/List/ListItem/ListItem';

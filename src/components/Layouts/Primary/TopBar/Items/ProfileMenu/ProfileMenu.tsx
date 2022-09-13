@@ -14,8 +14,8 @@ import {
   AccordionSummary,
   AccordionDetails,
   Typography,
-  styled,
 } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'next/router';
 import { signOut } from 'next-auth/react';

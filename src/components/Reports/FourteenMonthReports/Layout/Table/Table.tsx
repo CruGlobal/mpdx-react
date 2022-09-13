@@ -2,7 +2,6 @@ import React, { FC, forwardRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Box,
-  styled,
   Table,
   TableBody,
   TableCell,
@@ -11,7 +10,8 @@ import {
   Theme,
   Typography,
 } from '@mui/material';
-import { Info as InfoIcon } from '@mui/icons-material';
+import { styled } from '@mui/material/styles';
+import InfoIcon from '@mui/icons-material/Info';
 import { numberFormat } from '../../../../../lib/intlFormat';
 import { useApiConstants } from '../../../../Constants/UseApiConstants';
 import {
@@ -44,8 +44,8 @@ const StickyTable = styled(Table)(({}) => ({
   height: 'calc(100vh - 96px)',
 }));
 
-// eslint-disable-next-line react/display-name
 export const FourteenMonthReportTable: FC<FourteenMonthReportTableProps> =
+  // eslint-disable-next-line react/display-name
   forwardRef(
     (
       {

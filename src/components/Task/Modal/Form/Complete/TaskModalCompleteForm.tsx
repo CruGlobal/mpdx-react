@@ -3,7 +3,6 @@ import {
   Autocomplete,
   TextField,
   Select,
-  styled,
   MenuItem,
   InputLabel,
   FormControl,
@@ -16,13 +15,15 @@ import {
   InputAdornment,
   Typography,
 } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { MobileDatePicker, MobileTimePicker } from '@mui/x-date-pickers';
 import { Formik } from 'formik';
 import * as yup from 'yup';
 import { useSnackbar } from 'notistack';
 import { DateTime } from 'luxon';
-import { CalendarToday, Schedule } from '@mui/icons-material';
+import CalendarToday from '@mui/icons-material/CalendarToday';
+import Schedule from '@mui/icons-material/Schedule';
 import { v4 as uuidv4 } from 'uuid';
 import { dateFormat } from '../../../../../lib/intlFormat/intlFormat';
 import {

@@ -1,11 +1,5 @@
-import {
-  Avatar,
-  Box,
-  Grid,
-  styled,
-  TextField,
-  Typography,
-} from '@mui/material';
+import { Avatar, Box, Grid, TextField, Typography } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import { FormikProps } from 'formik';
 import React from 'react';
 

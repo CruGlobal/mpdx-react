@@ -8,13 +8,14 @@ import {
   ListItemText,
   Menu,
   MenuItem,
-  styled,
   Theme,
 } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import FilterList from '@mui/icons-material/FilterList';
 import { useTranslation } from 'react-i18next';
 import ArrowDropDown from '@mui/icons-material/ArrowDropDown';
-import { MoreHoriz, ViewList } from '@mui/icons-material';
+import MoreHoriz from '@mui/icons-material/MoreHoriz';
+import ViewList from '@mui/icons-material/ViewList';
 import { SearchBox } from '../../common/SearchBox/SearchBox';
 import {
   ContactFilterSetInput,

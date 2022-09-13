@@ -9,12 +9,13 @@ import {
   ListItem,
   ListItemText,
   Slide,
-  styled,
   Typography,
-  useTheme,
 } from '@mui/material';
+import { useTheme, styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
-import { ArrowBackIos, ArrowForwardIos, Close } from '@mui/icons-material';
+import ArrowBackIos from '@mui/icons-material/ArrowBackIos';
+import ArrowForwardIos from '@mui/icons-material/ArrowForwardIos';
+import Close from '@mui/icons-material/Close';
 import { filter } from 'lodash';
 import {
   ContactFilterNewsletterEnum,

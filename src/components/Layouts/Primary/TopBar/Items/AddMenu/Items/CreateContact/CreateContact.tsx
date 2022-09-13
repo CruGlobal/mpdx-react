@@ -7,9 +7,9 @@ import {
   FormControl,
   FormLabel,
   Grid,
-  styled,
   TextField,
 } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { Formik } from 'formik';
 import * as yup from 'yup';

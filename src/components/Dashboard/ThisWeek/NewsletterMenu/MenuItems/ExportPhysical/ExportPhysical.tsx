@@ -7,12 +7,11 @@ import {
   IconButton,
   Select,
   InputLabel,
-  styled,
   Button,
   Grid,
   MenuItem,
 } from '@mui/material';
-
+import { styled } from '@mui/material/styles';
 import CloseIcon from '@mui/icons-material/Close';
 import { useTranslation } from 'react-i18next';
 import { useSession } from 'next-auth/react';

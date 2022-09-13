@@ -15,9 +15,9 @@ import {
   InputLabel,
   MenuItem,
   Select,
-  styled,
   TextField,
 } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import { ContactMailingFragment } from '../ContactMailing.generated';
 import { AddressUpdateInput } from '../../../../../../../graphql/types.generated';
 import Modal from '../../../../../common/Modal/Modal';

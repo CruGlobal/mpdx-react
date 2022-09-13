@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Box, Grid, IconButton, Link, styled, Typography } from '@mui/material';
+import { Box, Grid, IconButton, Link, Typography } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import LocationOn from '@mui/icons-material/LocationOn';
 import CreateIcon from '@mui/icons-material/Create';
 import {

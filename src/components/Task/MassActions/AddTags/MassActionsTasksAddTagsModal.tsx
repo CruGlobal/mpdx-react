@@ -5,9 +5,9 @@ import {
   DialogActions,
   DialogContent,
   FormControl,
-  styled,
   Typography,
 } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import Add from '@mui/icons-material/Add';
 import * as yup from 'yup';
 import { Formik } from 'formik';

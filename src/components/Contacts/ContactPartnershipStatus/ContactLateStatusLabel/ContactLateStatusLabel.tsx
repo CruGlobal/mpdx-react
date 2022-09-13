@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
-import { useTheme, Typography } from '@mui/material';
+import Typography from '@mui/material/Typography';
 import type { Theme } from '@mui/material/styles/createTheme';
+import { useTheme } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 
 export enum ContactLateStatusEnum {

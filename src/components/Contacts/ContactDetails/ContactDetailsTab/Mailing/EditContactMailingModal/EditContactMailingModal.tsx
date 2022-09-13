@@ -12,9 +12,9 @@ import {
   InputLabel,
   MenuItem,
   Select,
-  styled,
   TextField,
 } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import { useSnackbar } from 'notistack';
 import { Formik } from 'formik';
 import {

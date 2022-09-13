@@ -15,11 +15,11 @@ import {
   InputLabel,
   MenuItem,
   Select,
-  styled,
   TextField,
   Theme,
   useMediaQuery,
 } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import debounce from 'lodash/fp/debounce';
 import {
   ContactUpdateInput,

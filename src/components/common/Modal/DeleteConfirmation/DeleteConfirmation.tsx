@@ -6,8 +6,8 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
-  styled,
 } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { DateTime } from 'luxon';

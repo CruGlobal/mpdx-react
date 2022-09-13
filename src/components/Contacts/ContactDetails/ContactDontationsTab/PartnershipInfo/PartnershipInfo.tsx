@@ -1,22 +1,14 @@
 import React, { useState } from 'react';
-import {
-  Box,
-  Button,
-  Divider,
-  IconButton,
-  styled,
-  Typography,
-} from '@mui/material';
-import {
-  CheckCircleOutline,
-  Clear,
-  DateRangeOutlined,
-  Delete,
-  FiberManualRecordOutlined,
-} from '@mui/icons-material';
+import { Box, Button, Divider, IconButton, Typography } from '@mui/material';
+import { styled } from '@mui/material/styles';
+import CheckCircleOutline from '@mui/icons-material/CheckCircleOutline';
+import Clear from '@mui/icons-material/Clear';
+import CreateIcon from '@mui/icons-material/Create';
+import DateRangeOutlined from '@mui/icons-material/DateRangeOutlined';
+import Delete from '@mui/icons-material/Delete';
+import FiberManualRecordOutlined from '@mui/icons-material/FiberManualRecordOutlined';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
-import CreateIcon from '@mui/icons-material/Create';
 import { currencyFormat } from '../../../../../lib/intlFormat';
 import { HandshakeIcon } from '../../ContactDetailsHeader/ContactHeaderSection/HandshakeIcon';
 import { ContactDonorAccountsFragment } from '../ContactDonationsTab.generated';

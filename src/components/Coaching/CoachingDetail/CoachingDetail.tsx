@@ -1,14 +1,8 @@
 import React, { useState } from 'react';
-import {
-  Box,
-  Button,
-  ButtonGroup,
-  Divider,
-  styled,
-  Typography,
-} from '@mui/material';
+import { Box, Button, ButtonGroup, Divider, Typography } from '@mui/material';
 // TODO: EcoOutlined is not defined on @mui/icons-material, find replacement.
-import { AccountCircle } from '@mui/icons-material';
+import AccountCircle from '@mui/icons-material/AccountCircle';
+import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import Skeleton from '@mui/material/Skeleton';
 import { AppealProgress } from '../AppealProgress/AppealProgress';

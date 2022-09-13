@@ -2,7 +2,8 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import Icon from '@mdi/react';
 import { mdiFormatListBulleted } from '@mdi/js';
-import { Button, Typography, styled } from '@mui/material';
+import { Button, Typography } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import { NullStateBox } from 'src/components/Shared/Filters/NullState/NullStateBox';
 import useTaskModal from 'src/hooks/useTaskModal';
 

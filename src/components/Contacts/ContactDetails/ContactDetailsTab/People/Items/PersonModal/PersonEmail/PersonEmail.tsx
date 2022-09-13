@@ -4,15 +4,15 @@ import {
   FormControlLabel,
   Grid,
   InputLabel,
-  styled,
   Typography,
 } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import React from 'react';
 
 import AddIcon from '@mui/icons-material/Add';
 import { useTranslation } from 'react-i18next';
 import { FieldArray, FormikProps } from 'formik';
-import { Mail } from '@mui/icons-material';
+import Mail from '@mui/icons-material/Mail';
 import { ModalSectionContainer } from '../ModalSectionContainer/ModalSectionContainer';
 import { ModalSectionIcon } from '../ModalSectionIcon/ModalSectionIcon';
 import {
