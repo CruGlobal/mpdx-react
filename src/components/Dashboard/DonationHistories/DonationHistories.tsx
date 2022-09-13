@@ -235,18 +235,18 @@ const DonationHistories = ({
                     alignItems="flex-end"
                     data-testid="DonationHistoriesGridLoading"
                   >
-                    <Skeleton variant="rect" width={30} height={30} />
-                    <Skeleton variant="rect" width={30} height={50} />
-                    <Skeleton variant="rect" width={30} height={70} />
-                    <Skeleton variant="rect" width={30} height={90} />
-                    <Skeleton variant="rect" width={30} height={110} />
-                    <Skeleton variant="rect" width={30} height={130} />
-                    <Skeleton variant="rect" width={30} height={150} />
-                    <Skeleton variant="rect" width={30} height={170} />
-                    <Skeleton variant="rect" width={30} height={190} />
-                    <Skeleton variant="rect" width={30} height={210} />
-                    <Skeleton variant="rect" width={30} height={230} />
-                    <Skeleton variant="rect" width={30} height={250} />
+                    <Skeleton variant="rectangular" width={30} height={30} />
+                    <Skeleton variant="rectangular" width={30} height={50} />
+                    <Skeleton variant="rectangular" width={30} height={70} />
+                    <Skeleton variant="rectangular" width={30} height={90} />
+                    <Skeleton variant="rectangular" width={30} height={110} />
+                    <Skeleton variant="rectangular" width={30} height={130} />
+                    <Skeleton variant="rectangular" width={30} height={150} />
+                    <Skeleton variant="rectangular" width={30} height={170} />
+                    <Skeleton variant="rectangular" width={30} height={190} />
+                    <Skeleton variant="rectangular" width={30} height={210} />
+                    <Skeleton variant="rectangular" width={30} height={230} />
+                    <Skeleton variant="rectangular" width={30} height={250} />
                   </Grid>
                 ) : (
                   <ResponsiveContainer>
@@ -322,18 +322,18 @@ const DonationHistories = ({
                     justifyContent="space-between"
                     alignItems="flex-end"
                   >
-                    <Skeleton variant="rect" width={10} height={40} />
-                    <Skeleton variant="rect" width={10} height={50} />
-                    <Skeleton variant="rect" width={10} height={60} />
-                    <Skeleton variant="rect" width={10} height={70} />
-                    <Skeleton variant="rect" width={10} height={80} />
-                    <Skeleton variant="rect" width={10} height={90} />
-                    <Skeleton variant="rect" width={10} height={100} />
-                    <Skeleton variant="rect" width={10} height={110} />
-                    <Skeleton variant="rect" width={10} height={120} />
-                    <Skeleton variant="rect" width={10} height={130} />
-                    <Skeleton variant="rect" width={10} height={140} />
-                    <Skeleton variant="rect" width={10} height={150} />
+                    <Skeleton variant="rectangular" width={10} height={40} />
+                    <Skeleton variant="rectangular" width={10} height={50} />
+                    <Skeleton variant="rectangular" width={10} height={60} />
+                    <Skeleton variant="rectangular" width={10} height={70} />
+                    <Skeleton variant="rectangular" width={10} height={80} />
+                    <Skeleton variant="rectangular" width={10} height={90} />
+                    <Skeleton variant="rectangular" width={10} height={100} />
+                    <Skeleton variant="rectangular" width={10} height={110} />
+                    <Skeleton variant="rectangular" width={10} height={120} />
+                    <Skeleton variant="rectangular" width={10} height={130} />
+                    <Skeleton variant="rectangular" width={10} height={140} />
+                    <Skeleton variant="rectangular" width={10} height={150} />
                   </Grid>
                 ) : (
                   <ResponsiveContainer>
