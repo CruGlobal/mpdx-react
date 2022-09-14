@@ -162,6 +162,7 @@ export const MassActionsEditTasksModal: React.FC<
                   <FormControl fullWidth>
                     <InputLabel id="activityType">{t('Action')}</InputLabel>
                     <Select
+                      label={t('Action')}
                       labelId="activityType"
                       value={activityType}
                       onChange={(e) =>
@@ -290,7 +291,9 @@ export const MassActionsEditTasksModal: React.FC<
                 <Grid item xs={12} lg={6}>
                   <FormControl fullWidth>
                     <FormControlLabel
-                      control={<Checkbox checked={noDueDate} />}
+                      control={
+                        <Checkbox checked={noDueDate} color="secondary" />
+                      }
                       label="No Due Date"
                       name="noDueDate"
                       onChange={handleChange}
@@ -316,6 +319,7 @@ export const MassActionsEditTasksModal: React.FC<
                 onClick={handleClose}
                 disabled={isSubmitting}
                 variant="text"
+                color="inherit"
               >
                 {t('Cancel')}
               </Button>
