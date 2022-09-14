@@ -14,7 +14,7 @@ import {
 } from '../TaskListComments.generated';
 import { useUser } from '../../../../User/useUser';
 import { ActionButtonSmall } from '../Item/TaskModalCommentListItem';
-import { useCreateTaskCommentMutation } from './CreateTaskComment.generated';
+import { useCreateTaskCommentMutation } from 'src/components/Task/Drawer/CommentList/Form/CreateTaskComment.generated';
 
 export const commentSchema: yup.SchemaOf<Omit<TaskCommentCreateInput, 'id'>> =
   yup.object({

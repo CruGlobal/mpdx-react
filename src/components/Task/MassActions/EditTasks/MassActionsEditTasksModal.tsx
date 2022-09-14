@@ -25,7 +25,7 @@ import { useSnackbar } from 'notistack';
 import { v4 as uuidv4 } from 'uuid';
 import { ActivityTypeEnum } from '../../../../../graphql/types.generated';
 import Modal from '../../../common/Modal/Modal';
-import { useCreateTaskCommentMutation } from '../../Modal/Comments/Form/CreateTaskComment.generated';
+import { useCreateTaskCommentMutation } from 'src/components/Task/Drawer/CommentList/Form/CreateTaskComment.generated';
 import theme from 'src/theme';
 import { dateFormat } from 'src/lib/intlFormat/intlFormat';
 import { useGetDataForTaskDrawerQuery } from 'src/components/Task/Drawer/Form/TaskDrawer.generated';
