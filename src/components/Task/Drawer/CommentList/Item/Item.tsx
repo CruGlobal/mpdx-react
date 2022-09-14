@@ -119,7 +119,7 @@ const TaskDrawerCommentListItem = ({
                 </Avatar>
               </Tooltip>
             ) : (
-              <Skeleton variant="circle" width={40} height={40} />
+              <Skeleton variant="circular" width={40} height={40} />
             )}
           </Box>
         )}

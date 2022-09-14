@@ -135,7 +135,7 @@ const TaskList = ({ initialFilter }: Props): ReactElement => {
               />
             );
           } else {
-            return <Skeleton variant="circle" width={40} height={40} />;
+            return <Skeleton variant="circular" width={40} height={40} />;
           }
         },
       },

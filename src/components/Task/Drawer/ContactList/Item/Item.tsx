@@ -252,7 +252,7 @@ const TaskDrawerContactListItem = ({ contact }: Props): ReactElement => {
   ) : (
     <Card>
       <CardHeader
-        avatar={<Skeleton variant="circle" width={40} height={40} />}
+        avatar={<Skeleton variant="circular" width={40} height={40} />}
         title={<Skeleton width={100} />}
         subheader={<Skeleton width={80} />}
       />
