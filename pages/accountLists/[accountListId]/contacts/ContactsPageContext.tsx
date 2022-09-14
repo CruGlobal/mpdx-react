@@ -82,9 +82,11 @@ export const ContactsPageContext = React.createContext<ContactsPageType | null>(
   null,
 );
 
-export const ContactsPageProvider: React.FC<React.ReactNode> = ({
-  children,
-}) => {
+interface Props {
+  children?: React.ReactNode;
+}
+
+export const ContactsPageProvider: React.FC<Props> = ({ children }) => {
   const accountListId = useAccountListId() ?? '';
   const router = useRouter();
   const { query, push, replace, isReady, pathname } = router;
@@ -113,22 +115,20 @@ export const ContactsPageProvider: React.FC<React.ReactNode> = ({
   const [starredFilter, setStarredFilter] = useState<ContactFilterSetInput>({});
 
   //User options for display view
-  const {
-    data: userOptions,
-    loading: userOptionsLoading,
-  } = useGetUserOptionsQuery({
-    onCompleted: () => {
-      if (contactId?.includes('list')) {
-        setViewMode(TableViewModeEnum.List);
-      } else {
-        setViewMode(
-          (userOptions?.userOptions.find(
-            (option) => option.key === 'contacts_view',
-          )?.value as TableViewModeEnum) || TableViewModeEnum.List,
-        );
-      }
-    },
-  });
+  const { data: userOptions, loading: userOptionsLoading } =
+    useGetUserOptionsQuery({
+      onCompleted: () => {
+        if (contactId?.includes('list')) {
+          setViewMode(TableViewModeEnum.List);
+        } else {
+          setViewMode(
+            (userOptions?.userOptions.find(
+              (option) => option.key === 'contacts_view',
+            )?.value as TableViewModeEnum) || TableViewModeEnum.List,
+          );
+        }
+      },
+    });
 
   const { data, loading, fetchMore } = useContactsQuery({
     variables: {
@@ -148,10 +148,8 @@ export const ContactsPageProvider: React.FC<React.ReactNode> = ({
   });
 
   //#region Mass Actions
-  const [
-    getContactIds,
-    { data: contactIds, loading: loadingContactIds },
-  ] = useGetIdsForMassSelectionLazyQuery();
+  const [getContactIds, { data: contactIds, loading: loadingContactIds }] =
+    useGetIdsForMassSelectionLazyQuery();
 
   // Only query when the filters or total count change and store data in state
   const [allContactIds, setAllContactIds] = useState<string[]>([]);

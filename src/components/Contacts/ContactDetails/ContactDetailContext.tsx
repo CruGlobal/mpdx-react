@@ -49,13 +49,14 @@ export type ContactDetailsType = {
   >;
 };
 
-export const ContactDetailContext = React.createContext<ContactDetailsType | null>(
-  null,
-);
+export const ContactDetailContext =
+  React.createContext<ContactDetailsType | null>(null);
 
-export const ContactDetailProvider: React.FC<React.ReactNode> = ({
-  children,
-}) => {
+interface Props {
+  children?: React.ReactNode;
+}
+
+export const ContactDetailProvider: React.FC<Props> = ({ children }) => {
   const [editingAddressId, setEditingAddressId] = useState<string>();
   const [addAddressModalOpen, setAddAddressModalOpen] = useState(false);
 
