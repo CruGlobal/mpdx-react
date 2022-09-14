@@ -328,7 +328,9 @@ const TaskModalLogForm = ({
                       labelId="activityType"
                       label={t('Action')}
                       value={activityType}
-                      onChange={handleChange('activityType')}
+                      onChange={(e) =>
+                        setFieldValue('activityType', e.target.value)
+                      }
                     >
                       {Object.values(ActivityTypeEnum).map((val) => (
                         <MenuItem key={val} value={val}>
@@ -399,7 +401,7 @@ const TaskModalLogForm = ({
                       labelId="result"
                       label={t('Result')}
                       value={result}
-                      onChange={handleChange('result')}
+                      onChange={(e) => setFieldValue('result', e.target.value)}
                     >
                       {Object.values(ResultEnum).map((val) => (
                         <MenuItem key={val} value={val}>
@@ -586,7 +588,9 @@ const TaskModalLogForm = ({
                                 labelId="nextAction"
                                 label={t('Next Action')}
                                 value={nextAction}
-                                onChange={handleChange('nextAction')}
+                                onChange={(e) =>
+                                  setFieldValue('nextAction', e.target.value)
+                                }
                               >
                                 {Object.values(ActivityTypeEnum).map((val) => (
                                   <MenuItem key={val} value={val}>

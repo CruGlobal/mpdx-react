@@ -164,7 +164,9 @@ export const MassActionsEditTasksModal: React.FC<
                     <Select
                       labelId="activityType"
                       value={activityType}
-                      onChange={handleChange('activityType')}
+                      onChange={(e) =>
+                        setFieldValue('activityType', e.target.value)
+                      }
                     >
                       <MenuItem value={undefined}>{t('None')}</MenuItem>
                       {Object.values(ActivityTypeEnum).map((val) => (

@@ -163,7 +163,7 @@ export const MassActionsEditFieldsModal: React.FC<
                     <Select
                       labelId="activityType"
                       value={status}
-                      onChange={handleChange('status')}
+                      onChange={(e) => setFieldValue('status', e.target.value)}
                     >
                       <MenuItem value={undefined}>{t('None')}</MenuItem>
                       {Object.values(StatusEnum).map((val) => (
@@ -182,7 +182,9 @@ export const MassActionsEditFieldsModal: React.FC<
                     <Select
                       labelId="likelyToGive"
                       value={likelyToGive}
-                      onChange={handleChange('likelyToGive')}
+                      onChange={(e) =>
+                        setFieldValue('likelyToGive', e.target.value)
+                      }
                     >
                       <MenuItem value={undefined}>{t('None')}</MenuItem>
                       {Object.values(LikelyToGiveEnum).map((val) => (
@@ -199,7 +201,7 @@ export const MassActionsEditFieldsModal: React.FC<
                     <Select
                       labelId="starred"
                       value={starred}
-                      onChange={handleChange('starred')}
+                      onChange={(e) => setFieldValue('starred', e.target.value)}
                     >
                       <MenuItem value={undefined}>{t('None')}</MenuItem>
                       {Object.entries(StarredMap).map(([key, val]) => (
@@ -216,7 +218,9 @@ export const MassActionsEditFieldsModal: React.FC<
                     <Select
                       labelId="noAppeals"
                       value={noAppeals}
-                      onChange={handleChange('noAppeals')}
+                      onChange={(e) =>
+                        setFieldValue('noAppeals', e.target.value)
+                      }
                     >
                       <MenuItem value={undefined}>{t('None')}</MenuItem>
                       {Object.entries(NoAppealsMap).map(([key, val]) => (
@@ -235,7 +239,9 @@ export const MassActionsEditFieldsModal: React.FC<
                     <Select
                       labelId="sendNewsletter"
                       value={sendNewsletter}
-                      onChange={handleChange('sendNewsletter')}
+                      onChange={(e) =>
+                        setFieldValue('sendNewsletter', e.target.value)
+                      }
                     >
                       <MenuItem value={undefined}>{t('None')}</MenuItem>
                       {Object.values(SendNewsletterEnum).map((val) => (
@@ -285,7 +291,9 @@ export const MassActionsEditFieldsModal: React.FC<
                     <Select
                       labelId="pledgeReceived"
                       value={pledgeReceived}
-                      onChange={handleChange('pledgeReceived')}
+                      onChange={(e) =>
+                        setFieldValue('pledgeReceived', e.target.value)
+                      }
                     >
                       <MenuItem value={undefined}>{t('None')}</MenuItem>
                       {Object.entries(PledgeReceivedMap).map(([key, val]) => (
@@ -304,7 +312,9 @@ export const MassActionsEditFieldsModal: React.FC<
                     <Select
                       labelId="pledgeCurrency"
                       value={pledgeCurrency}
-                      onChange={handleChange('pledgeCurrency')}
+                      onChange={(e) =>
+                        setFieldValue('pledgeCurrency', e.target.value)
+                      }
                     >
                       <MenuItem value={undefined}>{t('None')}</MenuItem>
                       {!loadingConstants &&
@@ -326,7 +336,7 @@ export const MassActionsEditFieldsModal: React.FC<
                     <Select
                       labelId="locale"
                       value={locale}
-                      onChange={handleChange('locale')}
+                      onChange={(e) => setFieldValue('locale', e.target.value)}
                     >
                       <MenuItem value={undefined}>{t('None')}</MenuItem>
                       {!loadingConstants &&
@@ -360,7 +370,7 @@ export const MassActionsEditFieldsModal: React.FC<
                     <Select
                       labelId="userId"
                       value={userId}
-                      onChange={handleChange('userId')}
+                      onChange={(e) => setFieldValue('userId', e.target.value)}
                       style={{ marginBottom: theme.spacing(2) }}
                     >
                       {!loading ? (

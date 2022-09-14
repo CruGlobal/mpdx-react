@@ -185,7 +185,9 @@ export const AddAddressModal: React.FC<EditContactAddressModalProps> = ({
                         <Select
                           labelId="location-select-label"
                           value={location}
-                          onChange={handleChange('location')}
+                          onChange={(e) =>
+                            setFieldValue('location', e.target.value)
+                          }
                           fullWidth
                         >
                           {Object.values(AddressLocationEnum).map((value) => (

@@ -263,7 +263,9 @@ const TaskDrawerForm = ({
                   <Select
                     labelId="activityType"
                     value={activityType}
-                    onChange={handleChange('activityType')}
+                    onChange={(e) =>
+                      setFieldValue('activityType', e.target.value)
+                    }
                   >
                     <MenuItem value={undefined}>{t('None')}</MenuItem>
                     {Object.values(ActivityTypeEnum).map((val) => (
@@ -509,7 +511,12 @@ const TaskDrawerForm = ({
                             <Select
                               labelId="notificationTimeUnit"
                               value={notificationTimeUnit}
-                              onChange={handleChange('notificationTimeUnit')}
+                              onChange={(e) =>
+                                setFieldValue(
+                                  'notificationTimeUnit',
+                                  e.target.value,
+                                )
+                              }
                             >
                               <MenuItem value={undefined}>{t('None')}</MenuItem>
                               {Object.values(NotificationTimeUnitEnum).map(
@@ -534,7 +541,12 @@ const TaskDrawerForm = ({
                             <Select
                               labelId="notificationType"
                               value={notificationType}
-                              onChange={handleChange('notificationType')}
+                              onChange={(e) =>
+                                setFieldValue(
+                                  'notificationType',
+                                  e.target.value,
+                                )
+                              }
                             >
                               <MenuItem value={undefined}>{t('None')}</MenuItem>
                               {Object.values(NotificationTypeEnum).map(

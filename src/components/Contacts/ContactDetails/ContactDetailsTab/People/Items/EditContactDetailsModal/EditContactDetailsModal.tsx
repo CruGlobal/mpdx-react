@@ -124,6 +124,7 @@ export const EditContactDetailsModal: React.FC<
           values: { name, primaryPersonId },
           handleChange,
           handleSubmit,
+          setFieldValue,
           isSubmitting,
           isValid,
           errors,
@@ -157,7 +158,9 @@ export const EditContactDetailsModal: React.FC<
                     <Select
                       labelId="primary-person-select-label"
                       value={primaryPersonId}
-                      onChange={handleChange('primaryPersonId')}
+                      onChange={(e) =>
+                        setFieldValue('primaryPersonId', e.target.value)
+                      }
                       fullWidth={true}
                     >
                       {contact.people.nodes.map((person) => {

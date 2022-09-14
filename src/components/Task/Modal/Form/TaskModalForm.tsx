@@ -302,7 +302,9 @@ const TaskModalForm = ({
                     <Select
                       labelId="activityType"
                       value={activityType}
-                      onChange={handleChange('activityType')}
+                      onChange={(e) =>
+                        setFieldValue('activityType', e.target.value)
+                      }
                       label={t('Action')}
                     >
                       <MenuItem value={undefined}>{t('None')}</MenuItem>
@@ -582,7 +584,9 @@ const TaskModalForm = ({
                           <Select
                             labelId="notificationType"
                             value={notificationType}
-                            onChange={handleChange('notificationType')}
+                            onChange={(e) =>
+                              setFieldValue('notificationType', e.target.value)
+                            }
                             label={t('Type')}
                           >
                             <MenuItem value={undefined}>{t('None')}</MenuItem>
@@ -647,7 +651,12 @@ const TaskModalForm = ({
                           <Select
                             labelId="notificationTimeUnit"
                             value={notificationTimeUnit}
-                            onChange={handleChange('notificationTimeUnit')}
+                            onChange={(e) =>
+                              setFieldValue(
+                                'notificationTimeUnit',
+                                e.target.value,
+                              )
+                            }
                             label={t(' Unit')}
                           >
                             <MenuItem value={undefined}>{t('None')}</MenuItem>

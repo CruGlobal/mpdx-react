@@ -118,6 +118,7 @@ export const EditContactMailingModal: React.FC<
           values: { greeting, envelopeGreeting, sendNewsletter },
           handleChange,
           handleSubmit,
+          setFieldValue,
           isSubmitting,
           isValid,
         }) => (
@@ -132,7 +133,9 @@ export const EditContactMailingModal: React.FC<
                     <Select
                       labelId="send-newsletter-select-label"
                       value={sendNewsletter}
-                      onChange={handleChange('sendNewsletter')}
+                      onChange={(e) =>
+                        setFieldValue('sendNewsletter', e.target.value)
+                      }
                       fullWidth={true}
                     >
                       {Object.values(SendNewsletterEnum).map((value) => (

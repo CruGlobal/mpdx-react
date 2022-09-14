@@ -74,7 +74,7 @@ export const PersonShowMore: React.FC<PersonShowMoreProps> = ({
               <Select
                 labelId="relationship-status-label"
                 value={maritalStatus ?? ''}
-                onChange={handleChange('maritalStatus')}
+                onChange={(e) => setFieldValue('maritalStatus', e.target.value)}
                 fullWidth
               >
                 <MenuItem selected value=""></MenuItem>
@@ -105,7 +105,7 @@ export const PersonShowMore: React.FC<PersonShowMoreProps> = ({
               <Select
                 labelId="gender-label"
                 value={gender ?? ''}
-                onChange={handleChange('gender')}
+                onChange={(e) => setFieldValue('gender', e.target.value)}
                 fullWidth
               >
                 <MenuItem selected value=""></MenuItem>
