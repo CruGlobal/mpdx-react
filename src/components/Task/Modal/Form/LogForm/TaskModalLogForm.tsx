@@ -328,7 +328,9 @@ const TaskModalLogForm = ({
                       labelId="activityType"
                       label={t('Action')}
                       value={activityType}
-                      onChange={handleChange('activityType')}
+                      onChange={(e) =>
+                        setFieldValue('activityType', e.target.value)
+                      }
                     >
                       {Object.values(ActivityTypeEnum).map((val) => (
                         <MenuItem key={val} value={val}>
@@ -387,7 +389,7 @@ const TaskModalLogForm = ({
                       setFieldValue('contactIds', contactIds);
                       setSelectedIds(contactIds);
                     }}
-                    getOptionSelected={(option, value): boolean =>
+                    isOptionEqualToValue={(option, value): boolean =>
                       option === value
                     }
                   />
@@ -399,7 +401,7 @@ const TaskModalLogForm = ({
                       labelId="result"
                       label={t('Result')}
                       value={result}
-                      onChange={handleChange('result')}
+                      onChange={(e) => setFieldValue('result', e.target.value)}
                     >
                       {Object.values(ResultEnum).map((val) => (
                         <MenuItem key={val} value={val}>
@@ -572,7 +574,7 @@ const TaskModalLogForm = ({
                               onChange={(_, userId): void =>
                                 setFieldValue('userId', userId)
                               }
-                              getOptionSelected={(option, value): boolean =>
+                              isOptionEqualToValue={(option, value): boolean =>
                                 option === value
                               }
                             />
@@ -586,7 +588,9 @@ const TaskModalLogForm = ({
                                 labelId="nextAction"
                                 label={t('Next Action')}
                                 value={nextAction}
-                                onChange={handleChange('nextAction')}
+                                onChange={(e) =>
+                                  setFieldValue('nextAction', e.target.value)
+                                }
                               >
                                 {Object.values(ActivityTypeEnum).map((val) => (
                                   <MenuItem key={val} value={val}>

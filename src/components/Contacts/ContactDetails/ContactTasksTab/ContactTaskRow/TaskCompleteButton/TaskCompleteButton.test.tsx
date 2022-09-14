@@ -1,4 +1,4 @@
-import { MuiThemeProvider } from '@mui/material';
+import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
@@ -10,9 +10,9 @@ describe('TaskCompleteButton', () => {
     const onClick = jest.fn();
 
     const { getByRole } = render(
-      <MuiThemeProvider theme={theme}>
+      <ThemeProvider theme={theme}>
         <TaskCompleteButton isComplete={false} onClick={onClick} />
-      </MuiThemeProvider>,
+      </ThemeProvider>,
     );
 
     const completeButton = getByRole('button');
@@ -36,9 +36,9 @@ describe('TaskCompleteButton', () => {
     const onClick = jest.fn();
 
     const { getByRole } = render(
-      <MuiThemeProvider theme={theme}>
+      <ThemeProvider theme={theme}>
         <TaskCompleteButton isComplete={true} onClick={onClick} />
-      </MuiThemeProvider>,
+      </ThemeProvider>,
     );
 
     const completeButton = getByRole('button');
@@ -62,9 +62,9 @@ describe('TaskCompleteButton', () => {
     const onClick = jest.fn();
 
     const { getByRole } = render(
-      <MuiThemeProvider theme={theme}>
+      <ThemeProvider theme={theme}>
         <TaskCompleteButton isComplete={true} onClick={onClick} />
-      </MuiThemeProvider>,
+      </ThemeProvider>,
     );
 
     const completeButton = getByRole('button');

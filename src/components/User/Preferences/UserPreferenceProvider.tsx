@@ -1,4 +1,4 @@
-import React, { createContext, ReactNode, useContext, useEffect } from 'react';
+import React, { createContext, useContext, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useGetUserQuery } from '../GetUser.generated';
 import i18next from 'src/lib/i18n';
@@ -12,7 +12,10 @@ export const UserPreferenceContext = createContext<UserPreferenceType>({});
 export const useUserPreferenceContext = (): UserPreferenceType =>
   useContext(UserPreferenceContext);
 
-export const UserPreferenceProvider: React.FC<ReactNode> = ({ children }) => {
+interface Props {
+  children?: React.ReactNode;
+}
+export const UserPreferenceProvider: React.FC<Props> = ({ children }) => {
   const { data: session } = useSession();
   const { data: user, loading } = useGetUserQuery({ skip: !session });
 

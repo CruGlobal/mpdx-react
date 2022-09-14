@@ -1,4 +1,4 @@
-import { ThemeProvider } from '@mui/styles';
+import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import { getSession } from 'next-auth/react';
 import { SnackbarProvider } from 'notistack';

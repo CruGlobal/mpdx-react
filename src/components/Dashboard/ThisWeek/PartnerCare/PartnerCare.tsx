@@ -273,7 +273,7 @@ const PartnerCare = ({
                       secondary={<Skeleton variant="text" width={200} />}
                     />
                     <ListItemSecondaryAction>
-                      <Skeleton variant="rect" width={20} height={20} />
+                      <Skeleton variant="rectangular" width={20} height={20} />
                     </ListItemSecondaryAction>
                   </ListItem>
                 ))}
@@ -384,7 +384,7 @@ const PartnerCare = ({
                     secondary={<Skeleton variant="text" width={200} />}
                   />
                   <ListItemSecondaryAction>
-                    <Skeleton variant="rect" width={20} height={20} />
+                    <Skeleton variant="rectangular" width={20} height={20} />
                   </ListItemSecondaryAction>
                 </ListItem>
               ))}

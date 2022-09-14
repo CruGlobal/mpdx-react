@@ -1,4 +1,4 @@
-import { MuiThemeProvider } from '@mui/material';
+import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import { DateTime } from 'luxon';
 import React from 'react';
@@ -11,9 +11,9 @@ const lateDueDate = DateTime.local(2019, 10, 12);
 describe('TaskCommentsButton', () => {
   it('should render not complete', () => {
     const { getByText } = render(
-      <MuiThemeProvider theme={theme}>
+      <ThemeProvider theme={theme}>
         <TaskDueDate isComplete={false} dueDate={notLateDueDate} />
-      </MuiThemeProvider>,
+      </ThemeProvider>,
     );
 
     const dateText = getByText(notLateDueDate.toFormat('MMM dd'));
@@ -27,9 +27,9 @@ describe('TaskCommentsButton', () => {
 
   it('should render complete', () => {
     const { getByText } = render(
-      <MuiThemeProvider theme={theme}>
+      <ThemeProvider theme={theme}>
         <TaskDueDate isComplete={true} dueDate={notLateDueDate} />
-      </MuiThemeProvider>,
+      </ThemeProvider>,
     );
 
     const dateText = getByText(notLateDueDate.toFormat('MMM dd'));
@@ -43,9 +43,9 @@ describe('TaskCommentsButton', () => {
 
   it('should render late', () => {
     const { getByText } = render(
-      <MuiThemeProvider theme={theme}>
+      <ThemeProvider theme={theme}>
         <TaskDueDate isComplete={false} dueDate={lateDueDate} />
-      </MuiThemeProvider>,
+      </ThemeProvider>,
     );
 
     const dateText = getByText(notLateDueDate.toFormat('MMM dd'));

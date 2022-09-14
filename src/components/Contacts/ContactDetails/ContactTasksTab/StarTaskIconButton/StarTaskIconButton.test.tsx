@@ -1,5 +1,5 @@
 import React from 'react';
-import { MuiThemeProvider } from '@mui/material';
+import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import theme from '../../../../../theme';
 import { GqlMockedProvider } from '../../../../../../__tests__/util/graphqlMocking';
@@ -13,13 +13,13 @@ describe('StarTaskIconButton', () => {
   it('renders not starred', async () => {
     const { queryByRole } = render(
       <GqlMockedProvider<SetTaskStarredMutation>>
-        <MuiThemeProvider theme={theme}>
+        <ThemeProvider theme={theme}>
           <StarTaskIconButton
             accountListId={accountListId}
             taskId={taskId}
             isStarred={false}
           />
-        </MuiThemeProvider>
+        </ThemeProvider>
       </GqlMockedProvider>,
     );
 
@@ -39,13 +39,13 @@ describe('StarTaskIconButton', () => {
   it('renders starred', async () => {
     const { queryByRole } = render(
       <GqlMockedProvider<SetTaskStarredMutation>>
-        <MuiThemeProvider theme={theme}>
+        <ThemeProvider theme={theme}>
           <StarTaskIconButton
             accountListId={accountListId}
             taskId={taskId}
             isStarred={true}
           />
-        </MuiThemeProvider>
+        </ThemeProvider>
       </GqlMockedProvider>,
     );
 

@@ -245,7 +245,9 @@ const TaskModalCompleteForm = ({
                         label={t('Result')}
                         labelId="result"
                         value={result}
-                        onChange={handleChange('result')}
+                        onChange={(e) =>
+                          setFieldValue('result', e.target.value)
+                        }
                       >
                         {availableResults.map((val) => (
                           <MenuItem key={val} value={val}>
@@ -266,7 +268,9 @@ const TaskModalCompleteForm = ({
                         label={t('Next Action')}
                         labelId="nextAction"
                         value={nextAction}
-                        onChange={handleChange('nextAction')}
+                        onChange={(e) =>
+                          setFieldValue('nextAction', e.target.value)
+                        }
                       >
                         {availableNextActions.map((val) => (
                           <MenuItem key={val} value={val}>

@@ -1,11 +1,12 @@
 import React, { ReactElement } from 'react';
 import Rollbar from 'rollbar';
 import { ErrorBoundary, Provider } from '@rollbar/react';
-import { AppProps } from 'next/app';
+import type { AppProps } from 'next/app';
 import StyledEngineProvider from '@mui/material/StyledEngineProvider';
 import { ThemeProvider } from '@mui/material/styles';
 import { ApolloProvider } from '@apollo/client';
 import { AnimatePresence } from 'framer-motion';
+import { Session } from 'next-auth';
 import { SessionProvider } from 'next-auth/react';
 import { NextPage } from 'next';
 import Head from 'next/head';
@@ -37,7 +38,13 @@ export type PageWithLayout = NextPage & {
   layout?: React.FC;
 };
 
-const App = ({ Component, pageProps, router }: AppProps): ReactElement => {
+const App = ({
+  Component,
+  pageProps,
+  router,
+}: AppProps<{
+  session: Session;
+}>): ReactElement => {
   const Layout = (Component as PageWithLayout).layout || PrimaryLayout;
   const { session } = pageProps;
   const rollbarConfig: Rollbar.Configuration = {

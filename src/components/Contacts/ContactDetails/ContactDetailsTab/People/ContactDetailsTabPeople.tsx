@@ -54,7 +54,7 @@ const ContactPersonNameText = styled(Typography)(() => ({
 
 const ContactPersonPrimaryText = styled(Typography)(({ theme }) => ({
   margin: theme.spacing(0, 1),
-  color: theme.palette.text.hint,
+  color: theme.palette.text.secondary,
 }));
 
 const ContactPersonIconContainer = styled(Box)(() => ({

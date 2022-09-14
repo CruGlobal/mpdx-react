@@ -1,5 +1,5 @@
 import React from 'react';
-import { MuiThemeProvider } from '@mui/material';
+import { ThemeProvider } from '@mui/material/styles';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import { GqlMockedProvider } from '../../../../../../__tests__/util/graphqlMocking';
@@ -33,13 +33,13 @@ describe('ContactTags', () => {
     const { getByText } = render(
       <SnackbarProvider>
         <GqlMockedProvider<UpdateContactTagsMutation>>
-          <MuiThemeProvider theme={theme}>
+          <ThemeProvider theme={theme}>
             <ContactTags
               accountListId={accountListId}
               contactId={contactId}
               contactTags={contactTags}
             />
-          </MuiThemeProvider>
+          </ThemeProvider>
         </GqlMockedProvider>
       </SnackbarProvider>,
     );
@@ -64,13 +64,13 @@ describe('ContactTags', () => {
           }}
           addTypename={false}
         >
-          <MuiThemeProvider theme={theme}>
+          <ThemeProvider theme={theme}>
             <ContactTags
               accountListId={accountListId}
               contactId={contactId}
               contactTags={contactTags}
             />
-          </MuiThemeProvider>
+          </ThemeProvider>
         </GqlMockedProvider>
       </SnackbarProvider>,
     );
@@ -105,13 +105,13 @@ describe('ContactTags', () => {
           onCall={mutationSpy}
           addTypename={false}
         >
-          <MuiThemeProvider theme={theme}>
+          <ThemeProvider theme={theme}>
             <ContactTags
               accountListId={accountListId}
               contactId={contactId}
               contactTags={contactTags}
             />
-          </MuiThemeProvider>
+          </ThemeProvider>
         </GqlMockedProvider>
       </SnackbarProvider>,
     );

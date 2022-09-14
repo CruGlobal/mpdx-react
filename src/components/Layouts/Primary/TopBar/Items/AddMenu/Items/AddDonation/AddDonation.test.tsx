@@ -1,6 +1,6 @@
 import { render, waitFor } from '@testing-library/react';
 import { SnackbarProvider } from 'notistack';
-import { MuiThemeProvider } from '@mui/material';
+import { ThemeProvider } from '@mui/material/styles';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import userEvent from '@testing-library/user-event';
@@ -16,7 +16,7 @@ describe('AddDonation', () => {
   it('default', async () => {
     const { queryByText } = render(
       <LocalizationProvider dateAdapter={AdapterLuxon}>
-        <MuiThemeProvider theme={theme}>
+        <ThemeProvider theme={theme}>
           <SnackbarProvider>
             <GqlMockedProvider<AddDonationMutation>>
               <AddDonation
@@ -25,7 +25,7 @@ describe('AddDonation', () => {
               />
             </GqlMockedProvider>
           </SnackbarProvider>
-        </MuiThemeProvider>
+        </ThemeProvider>
       </LocalizationProvider>,
     );
     await waitFor(() => expect(queryByText('Amount')).toBeInTheDocument());
@@ -34,7 +34,7 @@ describe('AddDonation', () => {
   it('closes add donation modal', async () => {
     const { queryByText, getByText } = render(
       <LocalizationProvider dateAdapter={AdapterLuxon}>
-        <MuiThemeProvider theme={theme}>
+        <ThemeProvider theme={theme}>
           <SnackbarProvider>
             <GqlMockedProvider<AddDonationMutation>>
               <AddDonation
@@ -43,7 +43,7 @@ describe('AddDonation', () => {
               />
             </GqlMockedProvider>
           </SnackbarProvider>
-        </MuiThemeProvider>
+        </ThemeProvider>
       </LocalizationProvider>,
     );
     await waitFor(() => expect(queryByText('Amount')).toBeInTheDocument());
@@ -55,7 +55,7 @@ describe('AddDonation', () => {
     const mutationSpy = jest.fn();
     const { getByRole, queryByText } = render(
       <LocalizationProvider dateAdapter={AdapterLuxon}>
-        <MuiThemeProvider theme={theme}>
+        <ThemeProvider theme={theme}>
           <SnackbarProvider>
             <GqlMockedProvider<AddDonationMutation>
               onCall={mutationSpy}
@@ -99,7 +99,7 @@ describe('AddDonation', () => {
               />
             </GqlMockedProvider>
           </SnackbarProvider>
-        </MuiThemeProvider>
+        </ThemeProvider>
       </LocalizationProvider>,
     );
 

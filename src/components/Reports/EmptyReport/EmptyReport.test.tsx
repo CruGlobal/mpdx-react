@@ -1,5 +1,5 @@
 import React from 'react';
-import { ThemeProvider } from '@mui/material';
+import { ThemeProvider } from '@mui/material/styles';
 import userEvent from '@testing-library/user-event';
 import { EmptyReport } from './EmptyReport';
 import { render } from '__tests__/util/testingLibraryReactMock';

@@ -90,7 +90,7 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
         }
         <ContactDetailHeadingContainer mt={-3}>
           {loading || !data ? (
-            <ContactDetailLoadingPlaceHolder variant="rect" />
+            <ContactDetailLoadingPlaceHolder variant="rectangular" />
           ) : (
             <ContactTags
               accountListId={accountListId}
@@ -119,9 +119,9 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
           </ContactDetailHeadingContainer>
           {loading || !data ? (
             <>
-              <ContactDetailLoadingPlaceHolder variant="rect" />
-              <ContactDetailLoadingPlaceHolder variant="rect" />
-              <ContactDetailLoadingPlaceHolder variant="rect" />
+              <ContactDetailLoadingPlaceHolder variant="rectangular" />
+              <ContactDetailLoadingPlaceHolder variant="rectangular" />
+              <ContactDetailLoadingPlaceHolder variant="rectangular" />
             </>
           ) : (
             <ContactDetailsTabPeople
@@ -150,9 +150,9 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
           </ContactDetailHeadingContainer>
           {loading || !data ? (
             <>
-              <ContactDetailLoadingPlaceHolder variant="rect" />
-              <ContactDetailLoadingPlaceHolder variant="rect" />
-              <ContactDetailLoadingPlaceHolder variant="rect" />
+              <ContactDetailLoadingPlaceHolder variant="rectangular" />
+              <ContactDetailLoadingPlaceHolder variant="rectangular" />
+              <ContactDetailLoadingPlaceHolder variant="rectangular" />
             </>
           ) : (
             <ContactDetailsTabMailing
@@ -181,9 +181,9 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
           </ContactDetailHeadingContainer>
           {loading || !data ? (
             <>
-              <ContactDetailLoadingPlaceHolder variant="rect" />
-              <ContactDetailLoadingPlaceHolder variant="rect" />
-              <ContactDetailLoadingPlaceHolder variant="rect" />
+              <ContactDetailLoadingPlaceHolder variant="rectangular" />
+              <ContactDetailLoadingPlaceHolder variant="rectangular" />
+              <ContactDetailLoadingPlaceHolder variant="rectangular" />
             </>
           ) : (
             <ContactDetailsOther

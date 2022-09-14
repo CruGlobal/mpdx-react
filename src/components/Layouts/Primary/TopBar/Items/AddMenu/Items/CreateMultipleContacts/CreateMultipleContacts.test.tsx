@@ -2,7 +2,7 @@ import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import { SnackbarProvider } from 'notistack';
 import userEvent from '@testing-library/user-event';
-import { MuiThemeProvider } from '@mui/material';
+import { ThemeProvider } from '@mui/material/styles';
 import { GqlMockedProvider } from '../../../../../../../../../__tests__/util/graphqlMocking';
 import TestRouter from '../../../../../../../../../__tests__/util/TestRouter';
 import theme from '../../../../../../../../theme';
@@ -19,7 +19,7 @@ const router = {
 describe('CreateMultipleContacts', () => {
   it('default', () => {
     const { queryByText } = render(
-      <MuiThemeProvider theme={theme}>
+      <ThemeProvider theme={theme}>
         <SnackbarProvider>
           <TestRouter router={router}>
             <GqlMockedProvider<CreateContactMutation>>
@@ -30,7 +30,7 @@ describe('CreateMultipleContacts', () => {
             </GqlMockedProvider>
           </TestRouter>
         </SnackbarProvider>
-      </MuiThemeProvider>,
+      </ThemeProvider>,
     );
     expect(queryByText('First')).toBeInTheDocument();
     expect(queryByText('Spouse')).toBeInTheDocument();
@@ -42,7 +42,7 @@ describe('CreateMultipleContacts', () => {
 
   it('closes menu', () => {
     const { getByText } = render(
-      <MuiThemeProvider theme={theme}>
+      <ThemeProvider theme={theme}>
         <SnackbarProvider>
           <TestRouter router={router}>
             <GqlMockedProvider<CreateContactMutation>>
@@ -53,7 +53,7 @@ describe('CreateMultipleContacts', () => {
             </GqlMockedProvider>
           </TestRouter>
         </SnackbarProvider>
-      </MuiThemeProvider>,
+      </ThemeProvider>,
     );
 
     userEvent.click(getByText('Cancel'));
@@ -75,7 +75,7 @@ describe('CreateMultipleContacts', () => {
 
     it('creates one contact', async () => {
       const { getByText, getAllByRole } = render(
-        <MuiThemeProvider theme={theme}>
+        <ThemeProvider theme={theme}>
           <SnackbarProvider>
             <TestRouter router={router}>
               <GqlMockedProvider<CreateContactMutation> onCall={mutationSpy}>
@@ -86,7 +86,7 @@ describe('CreateMultipleContacts', () => {
               </GqlMockedProvider>
             </TestRouter>
           </SnackbarProvider>
-        </MuiThemeProvider>,
+        </ThemeProvider>,
       );
 
       userEvent.type(
@@ -114,7 +114,7 @@ describe('CreateMultipleContacts', () => {
 
     it('creates multiple contacts', async () => {
       const { getByText, getAllByRole } = render(
-        <MuiThemeProvider theme={theme}>
+        <ThemeProvider theme={theme}>
           <SnackbarProvider>
             <TestRouter router={router}>
               <GqlMockedProvider<CreateContactMutation> onCall={mutationSpy}>
@@ -125,7 +125,7 @@ describe('CreateMultipleContacts', () => {
               </GqlMockedProvider>
             </TestRouter>
           </SnackbarProvider>
-        </MuiThemeProvider>,
+        </ThemeProvider>,
       );
 
       userEvent.type(

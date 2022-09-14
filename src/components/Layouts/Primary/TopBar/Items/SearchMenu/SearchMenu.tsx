@@ -283,7 +283,7 @@ const SearchMenu = (): ReactElement => {
             filterSelectedOptions
             onChange={handleClose}
             getOptionLabel={(option) => option.name}
-            renderOption={(option) => {
+            renderOption={(props, option) => {
               if (option.link === 'createContact') {
                 return (
                   <Box

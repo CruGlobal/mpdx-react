@@ -382,7 +382,9 @@ export const EditPartnershipInfoModal: React.FC<
                       label={t('Currency')}
                       labelId="currency-select-label"
                       value={pledgeCurrency ?? ''}
-                      onChange={handleChange('pledgeCurrency')}
+                      onChange={(e) =>
+                        setFieldValue('pledgeCurrency', e.target.value)
+                      }
                       MenuProps={{
                         anchorOrigin: {
                           vertical: 'bottom',
@@ -425,7 +427,9 @@ export const EditPartnershipInfoModal: React.FC<
                     value={pledgeFrequency ?? ''}
                     disabled={status !== StatusEnum.PartnerFinancial}
                     aria-readonly={status !== StatusEnum.PartnerFinancial}
-                    onChange={handleChange('pledgeFrequency')}
+                    onChange={(e) =>
+                      setFieldValue('pledgeCurrency', e.target.value)
+                    }
                     IconComponent={() =>
                       status !== StatusEnum.PartnerFinancial ? (
                         <Tooltip
@@ -511,7 +515,7 @@ export const EditPartnershipInfoModal: React.FC<
                   onChange={(_, contactIds): void =>
                     updateReferredBy(contactIds, setFieldValue)
                   }
-                  getOptionSelected={(option, value): boolean =>
+                  isOptionEqualToValue={(option, value): boolean =>
                     option === value
                   }
                 />

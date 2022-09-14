@@ -1,5 +1,5 @@
 import React from 'react';
-import { MuiThemeProvider } from '@mui/material';
+import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import theme from '../../../theme';
 import { StarredItemIcon } from './StarredItemIcon';
@@ -7,9 +7,9 @@ import { StarredItemIcon } from './StarredItemIcon';
 describe('StarTaskIconButton', () => {
   it('renders not starred', async () => {
     const { queryByRole } = render(
-      <MuiThemeProvider theme={theme}>
+      <ThemeProvider theme={theme}>
         <StarredItemIcon isStarred={false} />
-      </MuiThemeProvider>,
+      </ThemeProvider>,
     );
 
     const starFilledIcon = queryByRole('img', {
@@ -27,9 +27,9 @@ describe('StarTaskIconButton', () => {
 
   it('renders starred', async () => {
     const { queryByRole } = render(
-      <MuiThemeProvider theme={theme}>
+      <ThemeProvider theme={theme}>
         <StarredItemIcon isStarred={true} />
-      </MuiThemeProvider>,
+      </ThemeProvider>,
     );
 
     const starFilledIcon = queryByRole('img', {

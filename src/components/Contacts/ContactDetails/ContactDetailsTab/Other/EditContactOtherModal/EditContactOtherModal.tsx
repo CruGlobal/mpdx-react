@@ -294,7 +294,7 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
                         setFieldValue('referredById', referredBy);
                         setSelectedId(referredBy || '');
                       }}
-                      getOptionSelected={(option, value): boolean =>
+                      isOptionEqualToValue={(option, value): boolean =>
                         option === value
                       }
                     />
@@ -312,7 +312,9 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
                       label={t('Preferred Contact Method')}
                       labelId="preferred-contact-method-select-label"
                       value={preferredContactMethod}
-                      onChange={handleChange('preferredContactMethod')}
+                      onChange={(e) =>
+                        setFieldValue('preferredContactMethod', e.target.value)
+                      }
                       fullWidth={true}
                     >
                       {Object.values(PreferredContactMethodEnum).map(
@@ -343,7 +345,9 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
                           label={t('Language')}
                           labelId="language-select-label"
                           value={locale}
-                          onChange={handleChange('locale')}
+                          onChange={(e) =>
+                            setFieldValue('locale', e.target.value)
+                          }
                           fullWidth={true}
                           MenuProps={{
                             anchorOrigin: {
@@ -382,7 +386,9 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
                           label={t('Timezone')}
                           labelId="timezone-select-label"
                           value={timezone}
-                          onChange={handleChange('timezone')}
+                          onChange={(e) =>
+                            setFieldValue('timezone', e.target.value)
+                          }
                           fullWidth={true}
                           MenuProps={{
                             anchorOrigin: {

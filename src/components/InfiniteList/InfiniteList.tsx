@@ -51,7 +51,7 @@ const Item: React.ComponentType<ItemProps> = (props) => (
 
 const SkeletonItem: React.FC<{ height: number }> = ({ height }) => (
   <ItemWithBorders disableHover>
-    <Skeleton variant="rect" height={height - padding * 2} />
+    <Skeleton variant="rectangular" height={height - padding * 2} />
   </ItemWithBorders>
 );
 

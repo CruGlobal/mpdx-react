@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
-import { ThemeProvider } from '@mui/material';
+import { ThemeProvider } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import theme from '../../../../theme';
 import { GetDonationGraphQuery } from '../GetDonationGraph.generated';

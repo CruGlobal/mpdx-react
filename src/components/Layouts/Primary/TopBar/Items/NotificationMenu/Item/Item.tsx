@@ -47,7 +47,7 @@ const NotificationMenuItem = ({
       <Box>
         <ListItem alignItems="flex-start">
           <ListItemAvatar>
-            <Skeleton variant="circle" width={40} height={40} />
+            <Skeleton variant="circular" width={40} height={40} />
           </ListItemAvatar>
           <ListItemText
             primary={<Skeleton />}

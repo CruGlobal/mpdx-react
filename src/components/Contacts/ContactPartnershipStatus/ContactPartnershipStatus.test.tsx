@@ -1,6 +1,6 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import { ThemeProvider } from '@mui/material';
+import { ThemeProvider } from '@mui/material/styles';
 import { I18nextProvider } from 'react-i18next';
 import theme from '../../../theme';
 import { StatusEnum as ContactPartnershipStatusEnum } from '../../../../graphql/types.generated';

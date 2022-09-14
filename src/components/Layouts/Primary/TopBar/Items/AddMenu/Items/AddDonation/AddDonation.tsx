@@ -436,7 +436,7 @@ export const AddDonation = ({
                             onChange={(_, donorAccountId): void =>
                               setFieldValue('donorAccountId', donorAccountId)
                             }
-                            getOptionSelected={(option, value): boolean =>
+                            isOptionEqualToValue={(option, value): boolean =>
                               option === value
                             }
                           />
@@ -513,7 +513,7 @@ export const AddDonation = ({
                                 designationAccountId,
                               )
                             }
-                            getOptionSelected={(option, value): boolean =>
+                            isOptionEqualToValue={(option, value): boolean =>
                               option === value
                             }
                           />
@@ -580,7 +580,7 @@ export const AddDonation = ({
                             onChange={(_, appealId): void =>
                               setFieldValue('appealId', appealId)
                             }
-                            getOptionSelected={(option, value): boolean =>
+                            isOptionEqualToValue={(option, value): boolean =>
                               option === value
                             }
                           />

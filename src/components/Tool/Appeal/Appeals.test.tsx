@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
-import { ThemeProvider } from '@mui/material';
+import { ThemeProvider } from '@mui/material/styles';
 import { SnackbarProvider } from 'notistack';
 import userEvent from '@testing-library/user-event';
 import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';

@@ -7,7 +7,11 @@ import translation from '../../public/locales/en/translation.json';
 
 i18n.addResourceBundle('en', 'translation', translation);
 
-const Wrapper: React.FC = ({ children }) => {
+interface Props {
+  children?: React.ReactNode;
+}
+
+const Wrapper: React.FC<Props> = ({ children }) => {
   return <I18nextProvider i18n={i18n}>{children}</I18nextProvider>;
 };
 
