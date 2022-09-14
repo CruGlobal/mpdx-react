@@ -659,7 +659,11 @@ export const AddDonation = ({
             </Grid>
           </DialogContent>
           <DialogActions>
-            <Button disabled={isSubmitting || adding} onClick={handleClose}>
+            <Button
+              disabled={isSubmitting || adding}
+              onClick={handleClose}
+              color="inherit"
+            >
               {t('Cancel')}
             </Button>
             <Button
