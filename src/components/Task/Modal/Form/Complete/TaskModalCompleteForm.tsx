@@ -242,6 +242,7 @@ const TaskModalCompleteForm = ({
                     <FormControl fullWidth required>
                       <InputLabel id="result">{t('Result')}</InputLabel>
                       <Select
+                        label={t('Result')}
                         labelId="result"
                         value={result}
                         onChange={handleChange('result')}
@@ -262,6 +263,7 @@ const TaskModalCompleteForm = ({
                         {t('Next Action')}
                       </InputLabel>
                       <Select
+                        label={t('Next Action')}
                         labelId="nextAction"
                         value={nextAction}
                         onChange={handleChange('nextAction')}

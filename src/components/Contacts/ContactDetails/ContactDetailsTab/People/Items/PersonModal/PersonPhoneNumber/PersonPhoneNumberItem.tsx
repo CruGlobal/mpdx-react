@@ -1,4 +1,11 @@
-import { Grid, MenuItem, Select, Checkbox } from '@mui/material';
+import {
+  Grid,
+  MenuItem,
+  Select,
+  Checkbox,
+  InputLabel,
+  FormControl,
+} from '@mui/material';
 import { styled } from '@mui/material/styles';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -64,6 +71,7 @@ export const PersonPhoneNumberItem: React.FC<Props> = ({
         <Grid container spacing={3}>
           <Grid item xs={12} md={6}>
             <ContactInputField
+              label={t('Phone Number')}
               destroyed={phoneNumber.destroy ?? false}
               value={phoneNumber.number}
               onChange={(event) =>
@@ -80,32 +88,45 @@ export const PersonPhoneNumberItem: React.FC<Props> = ({
                 getIn(errors, `phoneNumbers.${index}`).number
               }
               fullWidth
+              required
             />
           </Grid>
           <Grid item xs={12} md={3}>
-            <PhoneNumberSelect
-              destroyed={phoneNumber.destroy ?? false}
-              value={phoneNumber.location ?? ''}
-              onChange={(event) =>
-                setFieldValue(
-                  `phoneNumbers.${index}.location`,
-                  event.target.value,
-                )
-              }
-              disabled={!!phoneNumber.destroy}
-              inputProps={{
-                'aria-label': t('Phone Number Type'),
-              }}
-              fullWidth
-            >
-              <MenuItem selected value=""></MenuItem>
-              <MenuItem value="Mobile" aria-label={t('Mobile')}>
-                {t('Mobile')}
-              </MenuItem>
-              <MenuItem value="Work" aria-label={t('Work')}>
-                {t('Work')}
-              </MenuItem>
-            </PhoneNumberSelect>
+            <FormControl fullWidth>
+              <InputLabel id="phone-type-label">{t('Type')}</InputLabel>
+              <PhoneNumberSelect
+                label={t('Type')}
+                labelId="phone-type-label"
+                id="phone-type"
+                destroyed={phoneNumber.destroy ?? false}
+                value={phoneNumber.location ?? ''}
+                onChange={(event) =>
+                  setFieldValue(
+                    `phoneNumbers.${index}.location`,
+                    event.target.value,
+                  )
+                }
+                disabled={!!phoneNumber.destroy}
+                inputProps={{
+                  'aria-label': t('Phone Number Type'),
+                }}
+                fullWidth
+              >
+                <MenuItem selected value=""></MenuItem>
+                <MenuItem value="Mobile" aria-label={t('Mobile')}>
+                  {t('Mobile')}
+                </MenuItem>
+                <MenuItem value="Home" aria-label={t('Home')}>
+                  {t('Home')}
+                </MenuItem>
+                <MenuItem value="Work" aria-label={t('Work')}>
+                  {t('Work')}
+                </MenuItem>
+                <MenuItem value="Other" aria-label={t('Other')}>
+                  {t('Other')}
+                </MenuItem>
+              </PhoneNumberSelect>
+            </FormControl>
           </Grid>
           <Grid item xs={12} md={3}>
             <PrimaryControlLabel
@@ -115,6 +136,7 @@ export const PersonPhoneNumberItem: React.FC<Props> = ({
                   value={phoneNumber.id}
                   checked={isPrimaryChecked}
                   onChange={handleChange}
+                  color="secondary"
                 />
               }
               destroyed={phoneNumber.destroy ?? false}

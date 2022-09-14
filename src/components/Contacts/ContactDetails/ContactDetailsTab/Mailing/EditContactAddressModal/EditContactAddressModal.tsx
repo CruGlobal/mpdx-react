@@ -210,6 +210,7 @@ export const EditContactAddressModal: React.FC<
                           {t('Location')}
                         </InputLabel>
                         <Select
+                          label={t('Location')}
                           labelId="location-select-label"
                           value={location}
                           onChange={handleChange('location')}
@@ -297,6 +298,7 @@ export const EditContactAddressModal: React.FC<
                       <Checkbox
                         checked={historic}
                         onChange={() => setFieldValue('historic', !historic)}
+                        color="secondary"
                       />
                     }
                     label={t('Address no longer valid')}

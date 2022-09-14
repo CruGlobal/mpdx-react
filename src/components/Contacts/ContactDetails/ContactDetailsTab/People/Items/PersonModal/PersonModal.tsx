@@ -43,9 +43,9 @@ import {
 
 export const ContactInputField = styled(TextField)(
   ({ destroyed }: { destroyed: boolean }) => ({
-    '&& > label': {
-      textTransform: 'uppercase',
-    },
+    // '&& > label': {
+    //   textTransform: 'uppercase',
+    // },
     textDecoration: destroyed ? 'line-through' : 'none',
   }),
 );

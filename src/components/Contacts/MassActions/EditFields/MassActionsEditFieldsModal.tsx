@@ -161,6 +161,7 @@ export const MassActionsEditFieldsModal: React.FC<
                   <FormControl fullWidth>
                     <InputLabel id="activityType">{t('Status')}</InputLabel>
                     <Select
+                      label={t('Status')}
                       labelId="activityType"
                       value={status}
                       onChange={handleChange('status')}
@@ -180,6 +181,7 @@ export const MassActionsEditFieldsModal: React.FC<
                       {t('Likely To Give')}
                     </InputLabel>
                     <Select
+                      label={t('Likely To Give')}
                       labelId="likelyToGive"
                       value={likelyToGive}
                       onChange={handleChange('likelyToGive')}
@@ -197,6 +199,7 @@ export const MassActionsEditFieldsModal: React.FC<
                   <FormControl fullWidth>
                     <InputLabel id="starred">{t('Starred')}</InputLabel>
                     <Select
+                      label={t('Starred')}
                       labelId="starred"
                       value={starred}
                       onChange={handleChange('starred')}
@@ -214,6 +217,7 @@ export const MassActionsEditFieldsModal: React.FC<
                   <FormControl fullWidth>
                     <InputLabel id="noAppeals">{t('Send Appeals?')}</InputLabel>
                     <Select
+                      label={t('Send Appeals?')}
                       labelId="noAppeals"
                       value={noAppeals}
                       onChange={handleChange('noAppeals')}
@@ -233,6 +237,7 @@ export const MassActionsEditFieldsModal: React.FC<
                       {t('Newsletter')}
                     </InputLabel>
                     <Select
+                      label={t('Newsletter')}
                       labelId="sendNewsletter"
                       value={sendNewsletter}
                       onChange={handleChange('sendNewsletter')}
@@ -283,6 +288,7 @@ export const MassActionsEditFieldsModal: React.FC<
                       {t('Commitment Received')}
                     </InputLabel>
                     <Select
+                      label={t('Commitment Received')}
                       labelId="pledgeReceived"
                       value={pledgeReceived}
                       onChange={handleChange('pledgeReceived')}
@@ -302,6 +308,7 @@ export const MassActionsEditFieldsModal: React.FC<
                       {t('Commitment Currency')}
                     </InputLabel>
                     <Select
+                      label={t('Commitment Currency')}
                       labelId="pledgeCurrency"
                       value={pledgeCurrency}
                       onChange={handleChange('pledgeCurrency')}
@@ -324,6 +331,7 @@ export const MassActionsEditFieldsModal: React.FC<
                   <FormControl fullWidth>
                     <InputLabel id="locale">{t('Language')}</InputLabel>
                     <Select
+                      label={t('Language')}
                       labelId="locale"
                       value={locale}
                       onChange={handleChange('locale')}
@@ -358,6 +366,7 @@ export const MassActionsEditFieldsModal: React.FC<
                   <FormControl fullWidth>
                     <InputLabel id="userId">{t('Assignee')}</InputLabel>
                     <Select
+                      label={t('Assignee')}
                       labelId="userId"
                       value={userId}
                       onChange={handleChange('userId')}
@@ -388,6 +397,7 @@ export const MassActionsEditFieldsModal: React.FC<
                 onClick={handleClose}
                 disabled={isSubmitting}
                 variant="text"
+                color="inherit"
               >
                 {t('Cancel')}
               </Button>

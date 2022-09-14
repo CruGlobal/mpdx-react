@@ -26,10 +26,12 @@ const useStyles = makeStyles((theme: Theme) => ({
     minHeight: '100vh',
     minWidth: '100vw',
     backgroundColor: theme.palette.mpdxBlue.main,
-    color: theme.palette.common.white,
   },
   subtitle: {
     maxWidth: '450px',
+  },
+  whiteText: {
+    color: theme.palette.common.white,
   },
 }));
 
@@ -76,6 +78,7 @@ const Welcome = ({
                     data-testid="welcomeTitle"
                     variant="h4"
                     component="h1"
+                    className={classes.whiteText}
                   >
                     {title}
                   </Typography>
@@ -86,7 +89,10 @@ const Welcome = ({
               <motion.div variants={divVariants}>
                 {typeof subtitle === 'string' ? (
                   <Box my={3} className={classes.subtitle}>
-                    <Typography data-testid="welcomeSubtitle">
+                    <Typography
+                      data-testid="welcomeSubtitle"
+                      className={classes.whiteText}
+                    >
                       {subtitle}
                     </Typography>
                   </Box>

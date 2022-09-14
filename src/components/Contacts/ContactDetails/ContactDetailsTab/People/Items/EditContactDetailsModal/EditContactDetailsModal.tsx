@@ -40,16 +40,6 @@ const ContactInputWrapper = styled(Box)(({ theme }) => ({
   margin: theme.spacing(2, 0),
 }));
 
-const ContactInputField = styled(TextField)(() => ({
-  '&& > label': {
-    textTransform: 'uppercase',
-  },
-}));
-
-const ContactPrimaryPersonSelectLabel = styled(InputLabel)(() => ({
-  textTransform: 'uppercase',
-}));
-
 const PrimaryContactIcon = styled(BookmarkIcon)(({ theme }) => ({
   position: 'absolute',
   top: '50%',
@@ -133,7 +123,7 @@ export const EditContactDetailsModal: React.FC<
             <DialogContent dividers>
               <ContactEditContainer>
                 <ContactInputWrapper>
-                  <ContactInputField
+                  <TextField
                     label={t('Contact')}
                     value={name}
                     onChange={handleChange('name')}
@@ -151,10 +141,11 @@ export const EditContactDetailsModal: React.FC<
                   <PrimaryContactIcon />
 
                   <FormControl fullWidth={true}>
-                    <ContactPrimaryPersonSelectLabel id="primary-person-select-label">
+                    <InputLabel id="primary-person-select-label">
                       {t('Primary')}
-                    </ContactPrimaryPersonSelectLabel>
+                    </InputLabel>
                     <Select
+                      label={t('Primary')}
                       labelId="primary-person-select-label"
                       value={primaryPersonId}
                       onChange={handleChange('primaryPersonId')}

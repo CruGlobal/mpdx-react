@@ -72,6 +72,7 @@ export const PersonShowMore: React.FC<PersonShowMoreProps> = ({
                 {t('Relationship Status')}
               </InputLabel>
               <Select
+                label={t('Relationship Status')}
                 labelId="relationship-status-label"
                 value={maritalStatus ?? ''}
                 onChange={handleChange('maritalStatus')}
@@ -103,6 +104,7 @@ export const PersonShowMore: React.FC<PersonShowMoreProps> = ({
             <FormControl fullWidth>
               <InputLabel id="gender-label">{t('Gender')}</InputLabel>
               <Select
+                label={t('Gender')}
                 labelId="gender-label"
                 value={gender ?? ''}
                 onChange={handleChange('gender')}
@@ -198,6 +200,7 @@ export const PersonShowMore: React.FC<PersonShowMoreProps> = ({
                 <Checkbox
                   checked={!!deceased}
                   onChange={() => setFieldValue('deceased', !deceased)}
+                  color="secondary"
                 />
               }
               label={t('Deceased')}

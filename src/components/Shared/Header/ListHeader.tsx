@@ -229,6 +229,7 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
                       aria-expanded={open}
                       onClick={handleClick}
                       endIcon={<ArrowDropDown />}
+                      color="inherit"
                     >
                       {filterPanelOpen && contactDetailsOpen ? (
                         <MoreHoriz />
@@ -343,6 +344,7 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
                 aria-expanded={open}
                 onClick={handleClick}
                 endIcon={<ArrowDropDown />}
+                color="inherit"
               >
                 {t('Actions')}
               </ActionsButton>

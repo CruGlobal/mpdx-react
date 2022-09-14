@@ -126,7 +126,11 @@ const CreateContact = ({
             </Grid>
           </DialogContent>
           <DialogActions>
-            <Button disabled={isSubmitting} onClick={handleClose}>
+            <Button
+              disabled={isSubmitting}
+              onClick={handleClose}
+              color="inherit"
+            >
               {t('Cancel')}
             </Button>
             <Button

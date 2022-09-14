@@ -90,6 +90,7 @@ export const MassActionsCreateAppealModal: React.FC<
                 onClick={handleClose}
                 disabled={isSubmitting}
                 variant="text"
+                color="inherit"
               >
                 {t('Cancel')}
               </Button>

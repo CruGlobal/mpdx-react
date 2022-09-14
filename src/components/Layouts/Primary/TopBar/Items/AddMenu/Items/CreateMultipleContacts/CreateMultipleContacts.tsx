@@ -358,6 +358,7 @@ export const CreateMultipleContacts = ({
               onClick={handleClose}
               disabled={isSubmitting}
               variant="text"
+              color="inherit"
             >
               {t('Cancel')}
             </Button>

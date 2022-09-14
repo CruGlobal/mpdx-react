@@ -104,6 +104,7 @@ export const PersonSocial: React.FC<PersonSocialProps> = ({ formikProps }) => {
                         {t('Type')}
                       </InputLabel>
                       <SocialSelect
+                        label={t('Type')}
                         destroyed={account.destroy ?? false}
                         labelId="social-type-label"
                         value={'facebook'}
@@ -164,6 +165,7 @@ export const PersonSocial: React.FC<PersonSocialProps> = ({ formikProps }) => {
                         {t('Type')}
                       </InputLabel>
                       <SocialSelect
+                        label={t('Type')}
                         destroyed={account.destroy ?? false}
                         labelId="social-type-label"
                         value={'twitter'}
@@ -224,6 +226,7 @@ export const PersonSocial: React.FC<PersonSocialProps> = ({ formikProps }) => {
                         {t('Type')}
                       </InputLabel>
                       <SocialSelect
+                        label={t('Type')}
                         destroyed={account.destroy ?? false}
                         labelId="social-type-label"
                         value={'linkedin'}
@@ -288,6 +291,7 @@ export const PersonSocial: React.FC<PersonSocialProps> = ({ formikProps }) => {
                           {t('Type')}
                         </InputLabel>
                         <SocialSelect
+                          label={t('Type')}
                           destroyed={account.destroy ?? false}
                           labelId="social-type-label"
                           value={'website'}
@@ -353,6 +357,7 @@ export const PersonSocial: React.FC<PersonSocialProps> = ({ formikProps }) => {
                           {t('Type')}
                         </InputLabel>
                         <SocialSelect
+                          label={t('Type')}
                           destroyed={social.destroy ?? false}
                           labelId="social-type-label"
                           value={social.type}

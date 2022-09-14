@@ -139,6 +139,7 @@ export const MassActionsRemoveTagsModal: React.FC<
                             onClick={() =>
                               setFieldValue('tagList', [...tagList, tag])
                             }
+                            color="inherit"
                           >
                             <RemoveTagIcon />
                             {tag}
@@ -169,6 +170,7 @@ export const MassActionsRemoveTagsModal: React.FC<
                 onClick={handleClose}
                 disabled={isSubmitting}
                 variant="text"
+                color="inherit"
               >
                 {t('Cancel')}
               </Button>

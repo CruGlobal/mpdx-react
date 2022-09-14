@@ -211,12 +211,12 @@ const LogNewsletter = ({
                   >
                     <LogFormControlLabel
                       value={ActivityTypeEnum.NewsletterPhysical}
-                      control={<Radio required />}
+                      control={<Radio color="secondary" required />}
                       label={t('Newsletter - Physical')}
                     />
                     <LogFormControlLabel
                       value={ActivityTypeEnum.NewsletterEmail}
-                      control={<Radio required />}
+                      control={<Radio color="secondary" required />}
                       label={t('Newsletter - Email')}
                     />
                     {/* TODO: Add Both option once BOTH is added to ActivityTypeEnum type */}
@@ -308,7 +308,11 @@ const LogNewsletter = ({
             </Grid>
           </DialogContent>
           <DialogActions>
-            <Button disabled={isSubmitting} onClick={handleClose}>
+            <Button
+              disabled={isSubmitting}
+              onClick={handleClose}
+              color="inherit"
+            >
               {t('Cancel')}
             </Button>
             <Button

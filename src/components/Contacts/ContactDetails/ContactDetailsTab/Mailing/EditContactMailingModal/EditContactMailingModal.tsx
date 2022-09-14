@@ -130,6 +130,7 @@ export const EditContactMailingModal: React.FC<
                       {t('Newsletter')}
                     </InputLabel>
                     <Select
+                      label={t('Newsletter')}
                       labelId="send-newsletter-select-label"
                       value={sendNewsletter}
                       onChange={handleChange('sendNewsletter')}
@@ -172,6 +173,7 @@ export const EditContactMailingModal: React.FC<
                 onClick={handleClose}
                 disabled={isSubmitting}
                 variant="text"
+                color="inherit"
               >
                 {t('Cancel')}
               </Button>

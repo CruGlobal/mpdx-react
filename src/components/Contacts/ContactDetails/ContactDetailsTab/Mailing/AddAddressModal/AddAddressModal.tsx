@@ -183,6 +183,7 @@ export const AddAddressModal: React.FC<EditContactAddressModalProps> = ({
                           {t('Location')}
                         </InputLabel>
                         <Select
+                          label={t('Location')}
                           labelId="location-select-label"
                           value={location}
                           onChange={handleChange('location')}
@@ -270,6 +271,7 @@ export const AddAddressModal: React.FC<EditContactAddressModalProps> = ({
                       <Checkbox
                         checked={historic}
                         onChange={() => setFieldValue('historic', !historic)}
+                        color="secondary"
                       />
                     }
                     label={t('Address no longer valid')}
@@ -282,6 +284,7 @@ export const AddAddressModal: React.FC<EditContactAddressModalProps> = ({
                 onClick={handleClose}
                 disabled={isSubmitting}
                 variant="text"
+                color="inherit"
               >
                 {t('Cancel')}
               </Button>

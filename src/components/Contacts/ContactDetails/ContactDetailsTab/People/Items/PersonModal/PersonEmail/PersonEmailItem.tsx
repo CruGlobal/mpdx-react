@@ -1,4 +1,11 @@
-import { Checkbox, Grid, MenuItem, Select } from '@mui/material';
+import {
+  Checkbox,
+  Grid,
+  MenuItem,
+  Select,
+  InputLabel,
+  FormControl,
+} from '@mui/material';
 import { styled } from '@mui/material/styles';
 import React from 'react';
 
@@ -64,6 +71,7 @@ export const PersonEmailItem: React.FC<Props> = ({
         <Grid container spacing={3}>
           <Grid item xs={12} md={6}>
             <ContactInputField
+              label={t('Email Address')}
               destroyed={emailAddress.destroy ?? false}
               value={emailAddress.email}
               onChange={(event) =>
@@ -83,29 +91,37 @@ export const PersonEmailItem: React.FC<Props> = ({
             />
           </Grid>
           <Grid item xs={12} md={3}>
-            <EmailSelect
-              destroyed={emailAddress.destroy ?? false}
-              value={emailAddress.location ?? ''}
-              onChange={(event) =>
-                setFieldValue(
-                  `emailAddresses.${index}.location`,
-                  event.target.value,
-                )
-              }
-              disabled={!!emailAddress.destroy}
-              inputProps={{
-                'aria-label': t('Email Address Type'),
-              }}
-              fullWidth
-            >
-              <MenuItem selected value=""></MenuItem>
-              <MenuItem value="Mobile" aria-label={t('Mobile')}>
-                {t('Mobile')}
-              </MenuItem>
-              <MenuItem value="Work" aria-label={t('Work')}>
-                {t('Work')}
-              </MenuItem>
-            </EmailSelect>
+            {' '}
+            <FormControl fullWidth>
+              <InputLabel id="phone-type-label">{t('Type')}</InputLabel>
+              <EmailSelect
+                label={t('Type')}
+                destroyed={emailAddress.destroy ?? false}
+                value={emailAddress.location ?? ''}
+                onChange={(event) =>
+                  setFieldValue(
+                    `emailAddresses.${index}.location`,
+                    event.target.value,
+                  )
+                }
+                disabled={!!emailAddress.destroy}
+                inputProps={{
+                  'aria-label': t('Email Address Type'),
+                }}
+                fullWidth
+              >
+                <MenuItem selected value=""></MenuItem>
+                <MenuItem value="Personal" aria-label={t('Personal')}>
+                  {t('Personal')}
+                </MenuItem>
+                <MenuItem value="Work" aria-label={t('Work')}>
+                  {t('Work')}
+                </MenuItem>
+                <MenuItem value="Other" aria-label={t('Other')}>
+                  {t('Other')}
+                </MenuItem>
+              </EmailSelect>
+            </FormControl>
           </Grid>
           <Grid item xs={12} md={3}>
             <PrimaryControlLabel
@@ -115,6 +131,7 @@ export const PersonEmailItem: React.FC<Props> = ({
                   value={emailAddress.id}
                   checked={isEmailPrimaryChecked}
                   onChange={handleChange}
+                  color="secondary"
                 />
               }
               destroyed={emailAddress.destroy ?? false}

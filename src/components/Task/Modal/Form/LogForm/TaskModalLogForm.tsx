@@ -491,7 +491,7 @@ const TaskModalLogForm = ({
                         animate={{ height: 193, opacity: 1 }}
                         exit={{ height: 0, opacity: 0 }}
                       >
-                        <Grid item container>
+                        <Grid item container spacing={2}>
                           <Grid item xs={12}>
                             <TextField
                               label={t('Comment')}

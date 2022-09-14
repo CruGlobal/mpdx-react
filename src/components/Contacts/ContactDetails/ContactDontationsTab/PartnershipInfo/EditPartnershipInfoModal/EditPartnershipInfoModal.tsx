@@ -314,6 +314,7 @@ export const EditPartnershipInfoModal: React.FC<
                     {t('Status')}
                   </InputLabel>
                   <Select
+                    label={t('Status')}
                     labelId="status-select-label"
                     value={status}
                     onChange={(e) =>
@@ -345,16 +346,16 @@ export const EditPartnershipInfoModal: React.FC<
                 </FormControl>
               </ContactInputWrapper>
               <ContactInputWrapper>
-                <FormControl fullWidth>
-                  <InputLabel>{t('Amount')}</InputLabel>
-                  <Input
-                    value={pledgeAmount}
-                    type="number"
-                    disabled={status !== StatusEnum.PartnerFinancial}
-                    aria-readonly={status !== StatusEnum.PartnerFinancial}
-                    onChange={handleChange('pledgeAmount')}
-                    inputProps={{ 'aria-label': t('Amount') }}
-                    endAdornment={
+                <TextField
+                  label={t('Amount')}
+                  value={pledgeAmount}
+                  type="number"
+                  disabled={status !== StatusEnum.PartnerFinancial}
+                  aria-readonly={status !== StatusEnum.PartnerFinancial}
+                  onChange={handleChange('pledgeAmount')}
+                  inputProps={{ 'aria-label': t('Amount') }}
+                  InputProps={{
+                    endAdornment: (
                       <Tooltip
                         title={
                           <Typography>
@@ -366,10 +367,10 @@ export const EditPartnershipInfoModal: React.FC<
                       >
                         <InfoIcon />
                       </Tooltip>
-                    }
-                    fullWidth
-                  />
-                </FormControl>
+                    ),
+                  }}
+                  fullWidth
+                />
               </ContactInputWrapper>
               <ContactInputWrapper>
                 <FormControl fullWidth>
@@ -378,6 +379,7 @@ export const EditPartnershipInfoModal: React.FC<
                   </InputLabel>
                   {pledgeCurrencies && (
                     <Select
+                      label={t('Currency')}
                       labelId="currency-select-label"
                       value={pledgeCurrency ?? ''}
                       onChange={handleChange('pledgeCurrency')}
@@ -418,6 +420,7 @@ export const EditPartnershipInfoModal: React.FC<
                     {t('Frequency')}
                   </InputLabel>
                   <Select
+                    label={t('Frequency')}
                     labelId="frequency-select-label"
                     value={pledgeFrequency ?? ''}
                     disabled={status !== StatusEnum.PartnerFinancial}
@@ -540,6 +543,7 @@ export const EditPartnershipInfoModal: React.FC<
                       onChange={() =>
                         setFieldValue('pledgeReceived', !pledgeReceived)
                       }
+                      color="secondary"
                     />
                   }
                   label={t('Commitment Recieved')}
@@ -551,6 +555,7 @@ export const EditPartnershipInfoModal: React.FC<
                     <Checkbox
                       checked={!noAppeals}
                       onChange={() => setFieldValue('noAppeals', !noAppeals)}
+                      color="secondary"
                     />
                   }
                   label={t('Send Appeals')}
@@ -562,6 +567,7 @@ export const EditPartnershipInfoModal: React.FC<
                 onClick={handleClose}
                 disabled={isSubmitting}
                 variant="text"
+                color="inherit"
               >
                 {t('Cancel')}
               </Button>

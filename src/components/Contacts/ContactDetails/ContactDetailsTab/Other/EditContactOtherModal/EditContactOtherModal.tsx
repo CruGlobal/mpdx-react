@@ -309,6 +309,7 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
                       {t('Preferred Contact Method')}
                     </InputLabel>
                     <Select
+                      label={t('Preferred Contact Method')}
                       labelId="preferred-contact-method-select-label"
                       value={preferredContactMethod}
                       onChange={handleChange('preferredContactMethod')}
@@ -339,6 +340,7 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
                           {t('Language')}
                         </InputLabel>
                         <Select
+                          label={t('Language')}
                           labelId="language-select-label"
                           value={locale}
                           onChange={handleChange('locale')}
@@ -377,6 +379,7 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
                           {t('Timezone')}
                         </InputLabel>
                         <Select
+                          label={t('Timezone')}
                           labelId="timezone-select-label"
                           value={timezone}
                           onChange={handleChange('timezone')}
@@ -433,6 +436,7 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
                 onClick={handleClose}
                 disabled={isSubmitting}
                 variant="text"
+                color="inherit"
               >
                 {t('Cancel')}
               </Button>

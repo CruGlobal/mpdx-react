@@ -119,6 +119,7 @@ export const PersonEmail: React.FC<PersonEmailProps> = ({ formikProps }) => {
                       <OptOutENewsletterLabel
                         control={
                           <Checkbox
+                            color="secondary"
                             checked={!!optoutEnewsletter}
                             onChange={() =>
                               setFieldValue(
