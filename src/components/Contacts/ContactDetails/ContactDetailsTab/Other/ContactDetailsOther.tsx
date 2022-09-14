@@ -17,7 +17,7 @@ const ContactOtherTextContainer = styled(Box)(({ theme }) => ({
 }));
 
 const ContactOtherTextLabel = styled(Typography)(({ theme }) => ({
-  color: theme.palette.text.hint,
+  color: theme.palette.text.secondary,
   marginRight: '5px',
 }));
 

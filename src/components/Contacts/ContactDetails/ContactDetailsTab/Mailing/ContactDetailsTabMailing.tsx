@@ -37,7 +37,7 @@ const ContactDetailsMailingLabelTextContainer = styled(Box)(({}) => ({
 }));
 
 const ContactDetailsMailingLabel = styled(Typography)(({ theme }) => ({
-  color: theme.palette.text.hint,
+  color: theme.palette.text.secondary,
   marginRight: '5px',
 }));
 
@@ -47,7 +47,7 @@ const ContactMailingShowMoreLabel = styled(Typography)(({ theme }) => ({
 
 const ContactAddressPrimaryText = styled(Typography)(({ theme }) => ({
   margin: theme.spacing(0, 1),
-  color: theme.palette.text.hint,
+  color: theme.palette.text.secondary,
 }));
 
 const ContactAddressRowContainer = styled(Box)(() => ({
