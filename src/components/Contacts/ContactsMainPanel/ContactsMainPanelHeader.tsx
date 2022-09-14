@@ -44,6 +44,7 @@ const BulletedListIcon = styled(FormatListBulleted)(({ theme }) => ({
 }));
 const StyledToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
   marginLeft: theme.spacing(1),
+  backgroundColor: theme.palette.background.default,
 }));
 
 export const ContactsMainPanelHeader: React.FC = () => {

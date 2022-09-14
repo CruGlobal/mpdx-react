@@ -5,6 +5,7 @@ import Icon from '@mdi/react';
 import { mdiAccountSearch } from '@mdi/js';
 import { InputAdornment, TextField } from '@material-ui/core';
 import SearchIcon from '@material-ui/icons/Search';
+import theme from 'src/theme';
 
 export interface SearchBoxProps {
   onChange: (searchTerm: string) => void;
@@ -54,6 +55,9 @@ export const SearchBox: React.FC<SearchBoxProps> = ({
             )}
           </InputAdornment>
         ),
+        style: {
+          backgroundColor: theme.palette.common.white,
+        },
       }}
     />
   );
