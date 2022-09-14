@@ -219,7 +219,7 @@ export const MassActionsEditTasksModal: React.FC<
                         onChange={(_, userId): void =>
                           setFieldValue('userId', userId)
                         }
-                        getOptionSelected={(option, value): boolean =>
+                        isOptionEqualToValue={(option, value): boolean =>
                           option === value
                         }
                       />

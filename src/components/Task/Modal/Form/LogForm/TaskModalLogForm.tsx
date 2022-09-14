@@ -389,7 +389,7 @@ const TaskModalLogForm = ({
                       setFieldValue('contactIds', contactIds);
                       setSelectedIds(contactIds);
                     }}
-                    getOptionSelected={(option, value): boolean =>
+                    isOptionEqualToValue={(option, value): boolean =>
                       option === value
                     }
                   />
@@ -574,7 +574,7 @@ const TaskModalLogForm = ({
                               onChange={(_, userId): void =>
                                 setFieldValue('userId', userId)
                               }
-                              getOptionSelected={(option, value): boolean =>
+                              isOptionEqualToValue={(option, value): boolean =>
                                 option === value
                               }
                             />

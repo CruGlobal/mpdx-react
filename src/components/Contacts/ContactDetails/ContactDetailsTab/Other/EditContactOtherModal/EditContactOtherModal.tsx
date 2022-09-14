@@ -294,7 +294,7 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
                         setFieldValue('referredById', referredBy);
                         setSelectedId(referredBy || '');
                       }}
-                      getOptionSelected={(option, value): boolean =>
+                      isOptionEqualToValue={(option, value): boolean =>
                         option === value
                       }
                     />

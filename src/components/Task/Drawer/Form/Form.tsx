@@ -424,7 +424,7 @@ const TaskDrawerForm = ({
                   onChange={(_, userId): void =>
                     setFieldValue('userId', userId)
                   }
-                  getOptionSelected={(option, value): boolean =>
+                  isOptionEqualToValue={(option, value): boolean =>
                     option === value
                   }
                 />
@@ -466,7 +466,7 @@ const TaskDrawerForm = ({
                   onChange={(_, contactIds): void =>
                     setFieldValue('contactIds', contactIds)
                   }
-                  getOptionSelected={(option, value): boolean =>
+                  isOptionEqualToValue={(option, value): boolean =>
                     option === value
                   }
                 />

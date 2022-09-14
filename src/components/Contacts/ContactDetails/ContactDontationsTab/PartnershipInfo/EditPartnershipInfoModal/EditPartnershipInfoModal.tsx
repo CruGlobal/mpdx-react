@@ -512,7 +512,7 @@ export const EditPartnershipInfoModal: React.FC<
                   onChange={(_, contactIds): void =>
                     updateReferredBy(contactIds, setFieldValue)
                   }
-                  getOptionSelected={(option, value): boolean =>
+                  isOptionEqualToValue={(option, value): boolean =>
                     option === value
                   }
                 />

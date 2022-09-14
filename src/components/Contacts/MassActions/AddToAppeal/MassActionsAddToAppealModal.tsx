@@ -104,7 +104,7 @@ export const MassActionsAddToAppealModal: React.FC<
                   onChange={(_, appealId): void =>
                     setFieldValue('appeal', appealId)
                   }
-                  getOptionSelected={(option, value): boolean =>
+                  isOptionEqualToValue={(option, value): boolean =>
                     option === value
                   }
                   renderInput={(params): ReactElement => (
