@@ -198,6 +198,24 @@ export const PersonModal: React.FC<PersonModalProps> = ({
     deceased: yup.boolean().default(false),
   });
 
+  const personPhoneNumberSources = person?.phoneNumbers.nodes.map(
+    (phoneNumber) => {
+      return {
+        id: phoneNumber.id,
+        source: phoneNumber.source,
+      };
+    },
+  );
+
+  const personEmailAddressSources = person?.emailAddresses.nodes.map(
+    (emailAddress) => {
+      return {
+        id: emailAddress.id,
+        source: emailAddress.source,
+      };
+    },
+  );
+
   const personPhoneNumbers = person?.phoneNumbers.nodes.map((phoneNumber) => {
     return {
       id: phoneNumber.id,
@@ -438,9 +456,15 @@ export const PersonModal: React.FC<PersonModalProps> = ({
                   {/* Name Section */}
                   <PersonName person={person} formikProps={formikProps} />
                   {/* Phone Number Section */}
-                  <PersonPhoneNumber formikProps={formikProps} />
+                  <PersonPhoneNumber
+                    formikProps={formikProps}
+                    sources={personPhoneNumberSources}
+                  />
                   {/* Email Section */}
-                  <PersonEmail formikProps={formikProps} />
+                  <PersonEmail
+                    formikProps={formikProps}
+                    sources={personEmailAddressSources}
+                  />
                   {/* Birthday Section */}
                   <PersonBirthday formikProps={formikProps} />
                   {/* Show More Section */}
