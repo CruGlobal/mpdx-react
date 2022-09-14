@@ -44,7 +44,7 @@ export const PersonBirthday: React.FC<PersonBirthdayProps> = ({
             ? new Date(birthdayYear ?? 1900, birthdayMonth - 1, birthdayDay)
             : null
         }
-        format="MM/dd/yyyy"
+        inputFormat="MM/dd/yyyy"
         clearable
         label={t('Birthday')}
         inputProps={{ 'aria-label': t('Birthday') }}

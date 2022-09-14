@@ -239,7 +239,7 @@ const LogNewsletter = ({
                         onChange={(date): void =>
                           setFieldValue('completedAt', date)
                         }
-                        format="MM/dd/yyyy"
+                        inputFormat="MM/dd/yyyy"
                         clearable
                         fullWidth
                         closeOnSelect

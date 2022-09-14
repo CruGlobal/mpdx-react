@@ -321,7 +321,7 @@ export const AddDonation = ({
                                 ? DateTime.fromISO(field.value).toLocaleString()
                                 : null
                             }
-                            format="MM/dd/yyyy"
+                            inputFormat="MM/dd/yyyy"
                             clearable
                             inputProps={{
                               'aria-labelledby': 'date-label',

@@ -468,7 +468,7 @@ export const EditPartnershipInfoModal: React.FC<
                       ? DateTime.fromISO(pledgeStartDate).toLocaleString()
                       : null
                   }
-                  format="MM/dd/yyyy"
+                  inputFormat="MM/dd/yyyy"
                   clearable
                   label={t('Start Date')}
                   inputProps={{ 'aria-label': t('Start Date') }}
@@ -529,7 +529,7 @@ export const EditPartnershipInfoModal: React.FC<
                   value={
                     nextAsk ? DateTime.fromISO(nextAsk).toLocaleString() : null
                   }
-                  format="MM/dd/yyyy"
+                  inputFormat="MM/dd/yyyy"
                   clearable
                   label={t('Next Ask Increase')}
                   inputProps={{ 'aria-label': t('Next Ask Increase') }}

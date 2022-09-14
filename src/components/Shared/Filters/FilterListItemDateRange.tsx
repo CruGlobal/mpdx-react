@@ -55,7 +55,7 @@ export const FilterListItemDateRange: React.FC<Props> = ({
                   ),
             )
           }
-          format="MM/dd/yyyy"
+          inputFormat="MM/dd/yyyy"
         />
         <MobileDatePicker
           renderInput={(params) => <TextField {...params} />}
@@ -73,7 +73,7 @@ export const FilterListItemDateRange: React.FC<Props> = ({
                   ),
             )
           }
-          format="MM/dd/yyyy"
+          inputFormat="MM/dd/yyyy"
         />
       </ListItem>
     </>
