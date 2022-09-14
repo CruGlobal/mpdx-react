@@ -163,7 +163,7 @@ export const TaskRow: React.FC<TaskRowProps> = ({
             <Box padding="checkbox">
               <Checkbox
                 checked={isChecked}
-                color="default"
+                color="secondary"
                 onClick={(event) => event.stopPropagation()}
                 onChange={() => onTaskCheckToggle(taskId)}
                 value={isChecked}
