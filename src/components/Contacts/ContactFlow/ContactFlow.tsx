@@ -29,6 +29,7 @@ interface Props {
 }
 
 export interface ContactFlowOption {
+  id: string;
   name: string;
   statuses: string[];
   color: string;
