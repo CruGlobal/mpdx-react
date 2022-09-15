@@ -64,7 +64,7 @@ jest.mock('react-virtuoso', () => ({
   }: {
     itemContent: GroupItemContent<undefined>;
   }) => {
-    return <div>{itemContent(0, 0)}</div>;
+    return <div>{itemContent(0, 0, undefined)}</div>;
   },
 }));
 
