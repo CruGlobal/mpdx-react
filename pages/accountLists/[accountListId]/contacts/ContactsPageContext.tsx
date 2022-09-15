@@ -257,7 +257,9 @@ export const ContactsPageProvider: React.FC<Props> = ({ children }) => {
 
   const isFiltered =
     Object.keys(urlFilters ?? {}).length > 0 ||
-    Object.values(urlFilters ?? {}).some((filter) => filter !== []);
+    Object.values(urlFilters ?? {}).some(
+      (filter) => filter !== ([] as Array<string>),
+    );
   //#endregion
 
   //#region User Actions

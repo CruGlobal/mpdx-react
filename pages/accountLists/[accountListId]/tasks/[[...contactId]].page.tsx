@@ -149,7 +149,9 @@ const TasksPage: React.FC = () => {
 
   const isFiltered =
     Object.keys(activeFilters).length > 0 ||
-    Object.values(activeFilters).some((filter) => filter !== []);
+    Object.values(activeFilters).some(
+      (filter) => filter !== ([] as Array<string>),
+    );
 
   const toggleFilterPanel = () => {
     setFilterPanelOpen(!filterPanelOpen);
