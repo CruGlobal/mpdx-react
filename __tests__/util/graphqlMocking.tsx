@@ -14,7 +14,7 @@ import {
   ErgonoMockedProviderProps,
   ErgonomockOptions,
 } from 'graphql-ergonomock';
-import { mergeSchemas } from '@graphql-tools/merge';
+import { mergeSchemas } from '@graphql-tools/schema';
 import { gql } from 'graphql-tag';
 import { DeepPartial } from 'ts-essentials';
 import schema from '../../graphql/schema.graphql';
@@ -30,7 +30,7 @@ export const GqlMockedProvider = <TData,>({
 >): ReactElement => (
   <ErgonoMockedProvider
     {...props}
-    mocks={(mocks as unknown) as ApolloErgonoMockMap}
+    mocks={mocks as unknown as ApolloErgonoMockMap}
     schema={schema}
   >
     {children}
@@ -111,7 +111,7 @@ const ergonomockFragment = <TData,>(
   if (res?.data?.[fieldName] === undefined) {
     throw new Error(`fraql: type "${typeName}" not found`);
   }
-  return res.data[fieldName];
+  return res.data[fieldName] as TData;
 };
 
 const ergonomockQuery = <TData,>(
