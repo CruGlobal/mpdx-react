@@ -354,7 +354,6 @@ const TaskList = ({ initialFilter }: Props): ReactElement => {
                   <Grid xs={6} item>
                     <MobileDatePicker
                       renderInput={(params) => <TextField {...params} />}
-                      clearable
                       fullWidth
                       labelFunc={(date, invalidLabel) =>
                         date ? dateFormat(date) : invalidLabel
@@ -375,7 +374,6 @@ const TaskList = ({ initialFilter }: Props): ReactElement => {
                   <Grid xs={6} item>
                     <MobileDatePicker
                       renderInput={(params) => <TextField {...params} />}
-                      clearable
                       fullWidth
                       labelFunc={(date, invalidLabel) =>
                         date ? dateFormat(date) : invalidLabel

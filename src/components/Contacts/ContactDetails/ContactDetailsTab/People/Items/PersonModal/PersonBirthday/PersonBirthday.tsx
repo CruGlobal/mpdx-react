@@ -45,7 +45,6 @@ export const PersonBirthday: React.FC<PersonBirthdayProps> = ({
             : null
         }
         inputFormat="MM/dd/yyyy"
-        clearable
         label={t('Birthday')}
         inputProps={{ 'aria-label': t('Birthday') }}
         fullWidth

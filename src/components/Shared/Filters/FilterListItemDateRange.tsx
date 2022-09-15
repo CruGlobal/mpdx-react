@@ -43,7 +43,6 @@ export const FilterListItemDateRange: React.FC<Props> = ({
           renderInput={(params) => <TextField {...params} />}
           placeholder={t('Start Date')}
           style={{ marginRight: '8px' }}
-          clearable
           value={range?.start ?? null}
           onChange={(date) =>
             onUpdate(
@@ -61,7 +60,6 @@ export const FilterListItemDateRange: React.FC<Props> = ({
           renderInput={(params) => <TextField {...params} />}
           placeholder={t('End Date')}
           style={{ marginLeft: '8px' }}
-          clearable
           value={range?.end ?? null}
           onChange={(date) =>
             onUpdate(

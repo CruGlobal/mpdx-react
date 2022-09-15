@@ -240,7 +240,6 @@ const LogNewsletter = ({
                           setFieldValue('completedAt', date)
                         }
                         inputFormat="MM/dd/yyyy"
-                        clearable
                         fullWidth
                         closeOnSelect
                         data-testid="completedDate"
@@ -268,7 +267,6 @@ const LogNewsletter = ({
                         onChange={(date): void =>
                           setFieldValue('completedAt', date)
                         }
-                        clearable
                         fullWidth
                         closeOnSelect
                         data-testid="completedTime"

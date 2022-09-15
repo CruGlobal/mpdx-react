@@ -272,7 +272,6 @@ export const MassActionsEditFieldsModal: React.FC<
                           </InputAdornment>
                         ),
                       }}
-                      clearable
                       fullWidth
                       labelFunc={(date, invalidLabel) =>
                         date ? dateFormat(date) : invalidLabel

@@ -428,7 +428,6 @@ const TaskModalLogForm = ({
                               </InputAdornment>
                             ),
                           }}
-                          clearable
                           fullWidth
                           labelFunc={(date, invalidLabel) =>
                             date ? dateFormat(date) : invalidLabel
@@ -459,7 +458,6 @@ const TaskModalLogForm = ({
                               </InputAdornment>
                             ),
                           }}
-                          clearable
                           fullWidth
                           closeOnSelect
                           label={t('Completed Time')}

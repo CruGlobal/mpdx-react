@@ -468,7 +468,6 @@ export const EditPartnershipInfoModal: React.FC<
                       : null
                   }
                   inputFormat="MM/dd/yyyy"
-                  clearable
                   label={t('Start Date')}
                   inputProps={{ 'aria-label': t('Start Date') }}
                   fullWidth
@@ -529,7 +528,6 @@ export const EditPartnershipInfoModal: React.FC<
                     nextAsk ? DateTime.fromISO(nextAsk).toLocaleString() : null
                   }
                   inputFormat="MM/dd/yyyy"
-                  clearable
                   label={t('Next Ask Increase')}
                   inputProps={{ 'aria-label': t('Next Ask Increase') }}
                   fullWidth

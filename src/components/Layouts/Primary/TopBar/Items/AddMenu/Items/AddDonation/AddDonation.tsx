@@ -322,7 +322,6 @@ export const AddDonation = ({
                                 : null
                             }
                             inputFormat="MM/dd/yyyy"
-                            clearable
                             inputProps={{
                               'aria-labelledby': 'date-label',
                             }}

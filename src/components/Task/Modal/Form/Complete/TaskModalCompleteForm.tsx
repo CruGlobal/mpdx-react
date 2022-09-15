@@ -188,7 +188,6 @@ const TaskModalCompleteForm = ({
                               </InputAdornment>
                             ),
                           }}
-                          clearable
                           fullWidth
                           labelFunc={(date, invalidLabel) =>
                             date ? dateFormat(date) : invalidLabel
@@ -208,7 +207,6 @@ const TaskModalCompleteForm = ({
                       <Grid xs={6} item>
                         <MobileTimePicker
                           renderInput={(params) => <TextField {...params} />}
-                          clearable
                           fullWidth
                           closeOnSelect
                           InputProps={{

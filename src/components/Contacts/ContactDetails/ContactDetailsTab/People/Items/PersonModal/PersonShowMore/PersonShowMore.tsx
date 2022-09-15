@@ -138,7 +138,6 @@ export const PersonShowMore: React.FC<PersonShowMoreProps> = ({
               : null
           }
           inputFormat="MM/dd/yyyy"
-          clearable
           label={t('Anniversary')}
           inputProps={{ 'aria-label': t('Anniversary') }}
           fullWidth

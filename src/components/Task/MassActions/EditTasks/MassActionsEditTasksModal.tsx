@@ -244,7 +244,6 @@ export const MassActionsEditTasksModal: React.FC<
                           </InputAdornment>
                         ),
                       }}
-                      clearable
                       fullWidth
                       labelFunc={(date, invalidLabel) =>
                         date ? dateFormat(date) : invalidLabel
@@ -264,7 +263,6 @@ export const MassActionsEditTasksModal: React.FC<
                   <FormControl fullWidth>
                     <MobileTimePicker
                       renderInput={(params) => <TextField {...params} />}
-                      clearable
                       fullWidth
                       autoOk
                       InputProps={{
