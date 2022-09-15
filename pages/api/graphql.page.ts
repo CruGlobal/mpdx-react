@@ -51,13 +51,7 @@ const cors = Cors({
 
 const apolloServer = new ApolloServer({
   gateway,
-  playground: {
-    settings: {
-      'request.credentials': 'same-origin',
-    },
-  },
   introspection: true,
-  subscriptions: false,
   context: async ({ req }: { req: NextApiRequest }) => {
     const jwtToken = (await getToken({
       req,
