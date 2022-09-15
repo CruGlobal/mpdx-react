@@ -74,6 +74,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@testing-library/react", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:13.4.0"],\
             ["@testing-library/react-hooks", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:8.0.1"],\
             ["@testing-library/user-event", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:14.4.3"],\
+            ["@types/google.maps", "npm:3.50.1"],\
             ["@types/jest", "npm:29.0.2"],\
             ["@types/node", "npm:18.7.18"],\
             ["@types/react", "npm:18.0.20"],\
@@ -12095,6 +12096,13 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/@types-google.maps-npm-3.49.2-6859f3cb5e-ca2cb7842d.zip/node_modules/@types/google.maps/",\
           "packageDependencies": [\
             ["@types/google.maps", "npm:3.49.2"]\
+          ],\
+          "linkType": "HARD"\
+        }],\
+        ["npm:3.50.1", {\
+          "packageLocation": "./.yarn/cache/@types-google.maps-npm-3.50.1-89131f6aa7-817119f929.zip/node_modules/@types/google.maps/",\
+          "packageDependencies": [\
+            ["@types/google.maps", "npm:3.50.1"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -25965,6 +25973,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@testing-library/react", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:13.4.0"],\
             ["@testing-library/react-hooks", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:8.0.1"],\
             ["@testing-library/user-event", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:14.4.3"],\
+            ["@types/google.maps", "npm:3.50.1"],\
             ["@types/jest", "npm:29.0.2"],\
             ["@types/node", "npm:18.7.18"],\
             ["@types/react", "npm:18.0.20"],\
