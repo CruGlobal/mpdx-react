@@ -151,7 +151,6 @@ const TaskModalCompleteForm = ({
         {({
           values: { completedAt, tagList, result, nextAction },
           setFieldValue,
-          handleChange,
           handleSubmit,
           isSubmitting,
           isValid,

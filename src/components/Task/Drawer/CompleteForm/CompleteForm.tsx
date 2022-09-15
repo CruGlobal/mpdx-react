@@ -204,7 +204,6 @@ const TaskDrawerCompleteForm = ({
       {({
         values: { result, nextAction, completedAt, tagList },
         setFieldValue,
-        handleChange,
         handleSubmit,
         isSubmitting,
         isValid,
