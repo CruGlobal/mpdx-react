@@ -5,7 +5,7 @@ import { useGetDonationGraphQuery } from '../GetDonationGraph.generated';
 
 interface Props {
   accountListId: string;
-  setTime: (time: DateTime) => void;
+  setTime?: (time: DateTime) => void;
 }
 
 export const MonthlyActivitySection: React.FC<Props> = ({
@@ -23,7 +23,7 @@ export const MonthlyActivitySection: React.FC<Props> = ({
         pledged={data?.accountList.totalPledges}
         reportsDonationHistories={data?.reportsDonationHistories}
         currencyCode={data?.accountList.currency}
-        setTime={setTime}
+        setTime={setTime || undefined}
       />
     </>
   );
