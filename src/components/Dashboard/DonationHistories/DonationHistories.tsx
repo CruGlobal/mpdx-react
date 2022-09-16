@@ -82,6 +82,7 @@ interface Props {
   currencyCode?: string;
   goal?: number;
   pledged?: number;
+  setTime: (time: DateTime) => void;
 }
 
 const DonationHistories = ({
@@ -90,6 +91,7 @@ const DonationHistories = ({
   goal,
   pledged,
   currencyCode = 'USD',
+  setTime,
 }: Props): ReactElement => {
   const classes = useStyles();
   const { t } = useTranslation();
@@ -97,12 +99,14 @@ const DonationHistories = ({
   const currencies: { dataKey: string; fill: string }[] = [];
   const periods = reportsDonationHistories?.periods?.map((period) => {
     const data: {
-      [key: string]: string | number;
+      [key: string]: string | number | DateTime;
       startDate: string;
       total: number;
+      period: DateTime;
     } = {
       startDate: DateTime.fromISO(period.startDate).toFormat('LLL yy'),
       total: period.convertedTotal,
+      period: DateTime.fromISO(period.startDate),
     };
     period.totals.forEach((total) => {
       if (!currencies.find((currency) => total.currency === currency.dataKey)) {
@@ -256,6 +260,9 @@ const DonationHistories = ({
                         left: 20,
                         right: 20,
                       }}
+                      onClick={(period: {
+                        activePayload: { payload: { period: DateTime } }[];
+                      }) => setTime(period.activePayload[0].payload.period)}
                     >
                       <Legend />
                       <CartesianGrid vertical={false} />
