@@ -75,13 +75,11 @@ const FilterIcon = styled(FilterList)(({ theme }) => ({
   color: theme.palette.primary.dark,
 }));
 
-const ItemsShowingText = styled('p')(
-  ({ theme, selected }: { theme: Theme; selected: boolean }) => ({
-    marginLeft: theme.spacing(2),
-    color: selected ? theme.palette.text.primary : theme.palette.text.secondary,
-    fontFamily: theme.typography.fontFamily,
-  }),
-);
+const ItemsShowingText = styled('p')(({ theme }) => ({
+  marginLeft: theme.spacing(2),
+  color: theme.palette.text.secondary,
+  fontFamily: theme.typography.fontFamily,
+}));
 
 // TODO: Keyframes apparently don't work with the styled API in MUI 4 so this can get changed after the upgrade
 const useStyles = makeStyles((theme) => ({
@@ -223,10 +221,7 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
           }
         />
         <Hidden smDown>
-          <ItemsShowingText
-            data-testid="showing-text"
-            selected={selectedIds.length > 0}
-          >
+          <ItemsShowingText data-testid="showing-text">
             {contactsView === TableViewModeEnum.List
               ? t('Showing {{count}}', { count: totalItems })
               : ''}
