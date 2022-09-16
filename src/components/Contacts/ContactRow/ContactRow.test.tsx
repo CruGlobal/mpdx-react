@@ -9,6 +9,7 @@ import {
 import { ContactsPageProvider } from '../../../../pages/accountLists/[accountListId]/contacts/ContactsPageContext';
 import TestRouter from '../../../../__tests__/util/TestRouter';
 import { GetUserOptionsQuery } from '../ContactFlow/GetUserOptions.generated';
+import useTaskModal from '../../../hooks/useTaskModal';
 import { ContactRow } from './ContactRow';
 import {
   ContactRowFragment,
@@ -57,6 +58,16 @@ const contact = gqlMock<ContactRowFragment>(ContactRowFragmentDoc, {
   mocks: contactMock,
 });
 
+jest.mock('../../../hooks/useTaskModal');
+
+const openTaskModal = jest.fn();
+
+beforeEach(() => {
+  (useTaskModal as jest.Mock).mockReturnValue({
+    openTaskModal,
+  });
+});
+
 describe('ContactsRow', () => {
   it('default', () => {
     const { getByText } = render(
@@ -100,6 +111,30 @@ describe('ContactsRow', () => {
     expect(checkbox).not.toBeChecked();
     await waitFor(() => userEvent.click(checkbox));
     // TODO: Find a way to check that click event was pressed.
+  });
+
+  it('should open log task modal', async () => {
+    const { getByTitle } = render(
+      <TestRouter router={router}>
+        <GqlMockedProvider<GetUserOptionsQuery>>
+          <ThemeProvider theme={theme}>
+            <ContactsPageProvider>
+              <ContactRow contact={contact} />
+            </ContactsPageProvider>
+          </ThemeProvider>
+        </GqlMockedProvider>
+      </TestRouter>,
+    );
+
+    const taskButton = getByTitle('Log Task');
+    await waitFor(() => userEvent.click(taskButton));
+    // TODO: Find a way to check that click event was pressed.
+    expect(openTaskModal).toHaveBeenCalledWith({
+      view: 'log',
+      defaultValues: {
+        contactIds: ['test-id'],
+      },
+    });
   });
 
   it('should render contact select event', () => {

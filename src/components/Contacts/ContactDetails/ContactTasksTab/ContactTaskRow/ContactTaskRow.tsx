@@ -16,14 +16,17 @@ import { TaskCompleteButton } from './TaskCompleteButton/TaskCompleteButton';
 import { TaskDueDate } from './TaskDueDate/TaskDueDate';
 import useTaskModal from 'src/hooks/useTaskModal';
 
-const TaskRowWrap = styled(Box)(({ theme }) => ({
-  display: 'flex',
-  flexDirection: 'row',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-  margin: theme.spacing(0),
-  height: theme.spacing(8),
-}));
+const TaskRowWrap = styled(Box)(
+  ({ theme, isChecked }: { theme: Theme; isChecked: boolean }) => ({
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    margin: theme.spacing(0),
+    height: theme.spacing(8),
+    ...(isChecked ? { backgroundColor: theme.palette.cruGrayLight.main } : {}),
+  }),
+);
 
 const TaskItemWrap = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -183,7 +186,7 @@ export const ContactTaskRow: React.FC<ContactTaskRowProps> = ({
 
   if (!task) {
     return (
-      <TaskRowWrap data-testid="loadingRow">
+      <TaskRowWrap data-testid="loadingRow" isChecked={isChecked}>
         <TaskItemWrap>
           <Checkbox />
           <FieldLoadingState width={55} margin={theme.spacing(2)} />
@@ -210,7 +213,7 @@ export const ContactTaskRow: React.FC<ContactTaskRowProps> = ({
   const isComplete = !!task.completedAt;
 
   return (
-    <TaskRowWrap>
+    <TaskRowWrap isChecked={isChecked}>
       <TaskItemWrap width={theme.spacing(20)} justifyContent="space-between">
         <Checkbox
           checked={isChecked}

@@ -77,6 +77,10 @@ export const TaskRow: React.FC<TaskRowProps> = ({
 }) => {
   const { t } = useTranslation();
 
+  const TaskRowWrapper = styled(Box)(({ theme }) => ({
+    ...(isChecked ? { backgroundColor: theme.palette.cruGrayLight.main } : {}),
+  }));
+
   const ContactRowButton = styled(Box)(({}) => ({
     height: '56px',
     width: '100%',
@@ -138,10 +142,11 @@ export const TaskRow: React.FC<TaskRowProps> = ({
   }`;
 
   return (
-    <Box role="row" p={1}>
+    <TaskRowWrapper role="row" p={1}>
       <ContactRowButton
         display="flex"
         alignItems="center"
+        data-testid="task-row"
         onClick={() => onTaskCheckToggle(taskId)}
       >
         <Box
@@ -158,7 +163,7 @@ export const TaskRow: React.FC<TaskRowProps> = ({
             <Box padding="checkbox">
               <Checkbox
                 checked={isChecked}
-                color="default"
+                color="secondary"
                 onClick={(event) => event.stopPropagation()}
                 onChange={() => onTaskCheckToggle(taskId)}
                 value={isChecked}
@@ -260,6 +265,6 @@ export const TaskRow: React.FC<TaskRowProps> = ({
           </Hidden>
         </Box>
       </ContactRowButton>
-    </Box>
+    </TaskRowWrapper>
   );
 };

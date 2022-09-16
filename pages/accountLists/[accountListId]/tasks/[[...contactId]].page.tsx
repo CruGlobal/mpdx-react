@@ -38,6 +38,7 @@ import {
   useMassActionsUpdateTasksMutation,
 } from 'src/components/Task/MassActions/MassActionsUpdateTasks.generated';
 import { MassActionsEditTasksModal } from 'src/components/Task/MassActions/EditTasks/MassActionsEditTasksModal';
+import { MassActionsTasksRemoveTagsModal } from 'src/components/Task/MassActions/RemoveTags/MassActionsTasksRemoveTagsModal';
 import { MassActionsTasksAddTagsModal } from 'src/components/Task/MassActions/AddTags/MassActionsTasksAddTagsModal';
 
 const WhiteBackground = styled(Box)(({ theme }) => ({
@@ -259,6 +260,7 @@ const TasksPage: React.FC = () => {
   const [addTagsModalOpen, setAddTagsModalOpen] = useState(false);
   const [deleteTasksModalOpen, setDeleteTasksModalOpen] = useState(false);
   const [editTasksModalOpen, setEditTasksModalOpen] = useState(false);
+  const [removeTagsModalOpen, setRemoveTagsModalOpen] = useState(false);
 
   const [updateTasksMutation] = useMassActionsUpdateTasksMutation();
   const [deleteTasksMutation] = useMassActionsDeleteTasksMutation();
@@ -371,6 +373,7 @@ const TasksPage: React.FC = () => {
                   openCompleteTasksModal={setCompleteTasksModalOpen}
                   openDeleteTasksModal={setDeleteTasksModalOpen}
                   openEditTasksModal={setEditTasksModalOpen}
+                  openTasksRemoveTagsModal={setRemoveTagsModalOpen}
                   openTasksAddTagsModal={setAddTagsModalOpen}
                 />
                 {completeTasksModalOpen && (
@@ -403,6 +406,13 @@ const TasksPage: React.FC = () => {
                     ids={ids}
                     accountListId={accountListId}
                     handleClose={() => setEditTasksModalOpen(false)}
+                  />
+                )}
+                {removeTagsModalOpen && (
+                  <MassActionsTasksRemoveTagsModal
+                    ids={ids}
+                    accountListId={accountListId}
+                    handleClose={() => setRemoveTagsModalOpen(false)}
                   />
                 )}
                 <Box>

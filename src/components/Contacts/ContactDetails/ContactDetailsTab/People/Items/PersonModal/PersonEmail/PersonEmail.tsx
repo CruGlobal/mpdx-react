@@ -42,9 +42,18 @@ const OptOutENewsletterLabel = styled(FormControlLabel)(() => ({
 
 interface PersonEmailProps {
   formikProps: FormikProps<(PersonUpdateInput | PersonCreateInput) & NewSocial>;
+  sources:
+    | {
+        id: string;
+        source: string;
+      }[]
+    | undefined;
 }
 
-export const PersonEmail: React.FC<PersonEmailProps> = ({ formikProps }) => {
+export const PersonEmail: React.FC<PersonEmailProps> = ({
+  formikProps,
+  sources,
+}) => {
   const { t } = useTranslation();
 
   const {
@@ -92,6 +101,7 @@ export const PersonEmail: React.FC<PersonEmailProps> = ({ formikProps }) => {
                       errors={errors}
                       handleChangePrimary={handleChangePrimary}
                       primaryEmail={primaryEmail}
+                      sources={sources}
                     />
                   </>
                 ))}
