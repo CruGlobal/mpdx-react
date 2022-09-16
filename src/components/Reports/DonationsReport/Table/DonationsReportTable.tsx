@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   Box,
   Typography,
@@ -27,6 +27,8 @@ import {
 
 interface Props {
   accountListId: string;
+  time: DateTime;
+  setTime: (time: DateTime) => void;
 }
 
 const DataTable = styled(Box)(({ theme }) => ({
@@ -68,10 +70,12 @@ interface Donation {
   id: string;
 }
 
-export const DonationsReportTable: React.FC<Props> = ({ accountListId }) => {
+export const DonationsReportTable: React.FC<Props> = ({
+  accountListId,
+  time,
+  setTime,
+}) => {
   const { t } = useTranslation();
-
-  const [time, setTime] = useState(DateTime.now().startOf('month'));
 
   const startDate = time.toString();
 
