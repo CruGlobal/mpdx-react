@@ -6,6 +6,7 @@ import {
   Hidden,
   IconButton,
   ListItemText,
+  makeStyles,
   Menu,
   MenuItem,
   styled,
@@ -82,15 +83,26 @@ const ItemsShowingText = styled('p')(
   }),
 );
 
-const ActionsButton = styled(Button)(({ theme }) => ({
+// TODO: Keyframes apparently don't work with the styled API in MUI 4 so this can get changed after the upgrade
+const useStyles = makeStyles((theme) => ({
+  '@keyframes pulsate': {
+    '0%': {
+      backgroundColor: theme.palette.info.light,
+    },
+    '100%': {
+      transform: 'transparent',
+    },
+  },
+  test: {
+    animation: '$pulsate 1s linear',
+  },
+}));
+
+const ActionsButton = styled(Button)({
   width: 114,
   height: 48,
   border: '1px solid #383F43',
-  backgroundColor: theme.palette.common.white,
-  '&:hover': {
-    backgroundColor: theme.palette.cruGrayLight.main,
-  },
-}));
+});
 
 export enum TableViewModeEnum {
   List = 'list',
@@ -174,6 +186,7 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
   };
 
   const { openTaskModal } = useTaskModal();
+  const classes = useStyles();
 
   return (
     <HeaderWrap contactDetailsOpen={contactDetailsOpen}>
@@ -235,6 +248,7 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
                     {selectedIds.length > 0 && (
                       <>
                         <ActionsButton
+                          className={classes.test}
                           aria-haspopup
                           aria-expanded={open}
                           onClick={handleClick}
