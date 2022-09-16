@@ -125,11 +125,10 @@ export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
         </Grid>
       </Grid>
       <Hidden xsDown>
-        <Box
-          style={uncompletedTasksCount === 0 ? { visibility: 'hidden' } : {}}
-        >
+        <Box onClick={(event) => event.stopPropagation()}>
           <ContactUncompletedTasksCount
             uncompletedTasksCount={uncompletedTasksCount}
+            contactId={contactId}
           />
         </Box>
         <ListItemSecondaryAction
