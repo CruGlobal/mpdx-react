@@ -260,7 +260,9 @@ export const MassActionsEditFieldsModal: React.FC<
                 <Grid item xs={12} lg={6}>
                   <FormControl fullWidth>
                     <MobileDatePicker
-                      renderInput={(params) => <TextField {...params} />}
+                      renderInput={(params) => (
+                        <TextField fullWidth {...params} />
+                      )}
                       InputProps={{
                         endAdornment: (
                           <InputAdornment position="end">
@@ -272,7 +274,6 @@ export const MassActionsEditFieldsModal: React.FC<
                           </InputAdornment>
                         ),
                       }}
-                      fullWidth
                       labelFunc={(date, invalidLabel) =>
                         date ? dateFormat(date) : invalidLabel
                       }

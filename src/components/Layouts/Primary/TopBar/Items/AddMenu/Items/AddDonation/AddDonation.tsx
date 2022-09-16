@@ -307,9 +307,10 @@ export const AddDonation = ({
                       {({ field }: FieldProps) => (
                         <Box width="100%">
                           <MobileDatePicker
-                            renderInput={(params) => <TextField {...params} />}
+                            renderInput={(params) => (
+                              <TextField fullWidth {...params} />
+                            )}
                             {...field}
-                            fullWidth
                             size="small"
                             id="date-input"
                             inputVariant="outlined"

@@ -232,7 +232,9 @@ export const MassActionsEditTasksModal: React.FC<
                 <Grid item xs={12} lg={6}>
                   <FormControl fullWidth>
                     <MobileDatePicker
-                      renderInput={(params) => <TextField {...params} />}
+                      renderInput={(params) => (
+                        <TextField fullWidth {...params} />
+                      )}
                       InputProps={{
                         endAdornment: (
                           <InputAdornment position="end">
@@ -244,11 +246,10 @@ export const MassActionsEditTasksModal: React.FC<
                           </InputAdornment>
                         ),
                       }}
-                      fullWidth
                       labelFunc={(date, invalidLabel) =>
                         date ? dateFormat(date) : invalidLabel
                       }
-                      autoOk
+                      closeOnSelect
                       label={t('Due Date')}
                       value={startAt}
                       onChange={(date): void => setFieldValue('startAt', date)}
@@ -262,9 +263,10 @@ export const MassActionsEditTasksModal: React.FC<
                 <Grid item xs={12} lg={6}>
                   <FormControl fullWidth>
                     <MobileTimePicker
-                      renderInput={(params) => <TextField {...params} />}
-                      fullWidth
-                      autoOk
+                      renderInput={(params) => (
+                        <TextField fullWidth {...params} />
+                      )}
+                      closeOnSelect
                       InputProps={{
                         endAdornment: (
                           <InputAdornment position="end">

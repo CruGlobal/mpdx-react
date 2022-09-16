@@ -9,6 +9,7 @@ import {
   DialogContent,
   FormControl,
   FormControlLabel,
+  InputAdornment,
   InputLabel,
   MenuItem,
   Select,
@@ -17,6 +18,7 @@ import {
   Typography,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import CalendarToday from '@mui/icons-material/CalendarToday';
 import InfoIcon from '@mui/icons-material/InfoOutlined';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import { useTranslation } from 'react-i18next';
@@ -458,7 +460,23 @@ export const EditPartnershipInfoModal: React.FC<
               </ContactInputWrapper>
               <ContactInputWrapper>
                 <MobileDatePicker
-                  renderInput={(params) => <TextField {...params} />}
+                  renderInput={(params) => (
+                    <TextField
+                      fullWidth
+                      inputProps={{ 'aria-label': t('Start Date') }}
+                      {...params}
+                    />
+                  )}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment
+                        aria-label="change start date"
+                        position="end"
+                      >
+                        <CalendarToday />
+                      </InputAdornment>
+                    ),
+                  }}
                   onChange={(date): void =>
                     setFieldValue('pledgeStartDate', date)
                   }
@@ -469,11 +487,6 @@ export const EditPartnershipInfoModal: React.FC<
                   }
                   inputFormat="MM/dd/yyyy"
                   label={t('Start Date')}
-                  inputProps={{ 'aria-label': t('Start Date') }}
-                  fullWidth
-                  KeyboardButtonProps={{
-                    'aria-label': 'change start date',
-                  }}
                 />
               </ContactInputWrapper>
               <ContactInputWrapper>
@@ -520,7 +533,23 @@ export const EditPartnershipInfoModal: React.FC<
               </ContactInputWrapper>
               <ContactInputWrapper>
                 <MobileDatePicker
-                  renderInput={(params) => <TextField {...params} />}
+                  renderInput={(params) => (
+                    <TextField
+                      fullWidth
+                      inputProps={{ 'aria-label': t('Next Ask Increase') }}
+                      {...params}
+                    />
+                  )}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment
+                        aria-label="change next ask date"
+                        position="end"
+                      >
+                        <CalendarToday />
+                      </InputAdornment>
+                    ),
+                  }}
                   onChange={(date) =>
                     !date ? null : setFieldValue('nextAsk', date)
                   }
@@ -529,11 +558,6 @@ export const EditPartnershipInfoModal: React.FC<
                   }
                   inputFormat="MM/dd/yyyy"
                   label={t('Next Ask Increase')}
-                  inputProps={{ 'aria-label': t('Next Ask Increase') }}
-                  fullWidth
-                  KeyboardButtonProps={{
-                    'aria-label': 'change next ask date',
-                  }}
                 />
               </ContactInputWrapper>
               <ContactInputWrapper>

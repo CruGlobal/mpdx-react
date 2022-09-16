@@ -40,9 +40,13 @@ export const FilterListItemDateRange: React.FC<Props> = ({
       </ListItem>
       <ListItem>
         <MobileDatePicker
-          renderInput={(params) => <TextField {...params} />}
-          placeholder={t('Start Date')}
-          style={{ marginRight: '8px' }}
+          renderInput={(params) => (
+            <TextField
+              placeholder={t('Start Date')}
+              style={{ marginRight: '8px' }}
+              {...params}
+            />
+          )}
           value={range?.start ?? null}
           onChange={(date) =>
             onUpdate(
@@ -57,9 +61,13 @@ export const FilterListItemDateRange: React.FC<Props> = ({
           inputFormat="MM/dd/yyyy"
         />
         <MobileDatePicker
-          renderInput={(params) => <TextField {...params} />}
-          placeholder={t('End Date')}
-          style={{ marginLeft: '8px' }}
+          renderInput={(params) => (
+            <TextField
+              placeholder={t('End Date')}
+              style={{ marginLeft: '8px' }}
+              {...params}
+            />
+          )}
           value={range?.end ?? null}
           onChange={(date) =>
             onUpdate(

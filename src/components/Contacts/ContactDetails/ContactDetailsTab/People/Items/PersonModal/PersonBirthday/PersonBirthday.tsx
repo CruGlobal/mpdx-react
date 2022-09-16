@@ -37,7 +37,14 @@ export const PersonBirthday: React.FC<PersonBirthdayProps> = ({
     <ModalSectionContainer>
       <ModalSectionIcon icon={<CakeIcon />} />
       <MobileDatePicker
-        renderInput={(params) => <TextField {...params} />}
+        renderInput={(params) => (
+          <TextField
+            fullWidth
+            helperText="mm/dd/yyyy"
+            inputProps={{ 'aria-label': t('Birthday') }}
+            {...params}
+          />
+        )}
         onChange={(date) => (!date ? null : handleDateChange(date))}
         value={
           birthdayMonth && birthdayDay
@@ -46,9 +53,6 @@ export const PersonBirthday: React.FC<PersonBirthdayProps> = ({
         }
         inputFormat="MM/dd/yyyy"
         label={t('Birthday')}
-        inputProps={{ 'aria-label': t('Birthday') }}
-        fullWidth
-        helperText="mm/dd/yyyy"
       />
     </ModalSectionContainer>
   );

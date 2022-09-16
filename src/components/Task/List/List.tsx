@@ -353,8 +353,9 @@ const TaskList = ({ initialFilter }: Props): ReactElement => {
                 <Grid container spacing={2}>
                   <Grid xs={6} item>
                     <MobileDatePicker
-                      renderInput={(params) => <TextField {...params} />}
-                      fullWidth
+                      renderInput={(params) => (
+                        <TextField fullWidth {...params} />
+                      )}
                       labelFunc={(date, invalidLabel) =>
                         date ? dateFormat(date) : invalidLabel
                       }
@@ -373,8 +374,9 @@ const TaskList = ({ initialFilter }: Props): ReactElement => {
                   </Grid>
                   <Grid xs={6} item>
                     <MobileDatePicker
-                      renderInput={(params) => <TextField {...params} />}
-                      fullWidth
+                      renderInput={(params) => (
+                        <TextField fullWidth {...params} />
+                      )}
                       labelFunc={(date, invalidLabel) =>
                         date ? dateFormat(date) : invalidLabel
                       }

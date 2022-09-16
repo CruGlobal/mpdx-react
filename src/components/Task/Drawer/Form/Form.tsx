@@ -281,8 +281,9 @@ const TaskDrawerForm = ({
                   <Grid container spacing={2}>
                     <Grid xs={6} item>
                       <MobileDatePicker
-                        renderInput={(params) => <TextField {...params} />}
-                        fullWidth
+                        renderInput={(params) => (
+                          <TextField fullWidth {...params} />
+                        )}
                         labelFunc={(date, invalidLabel) =>
                           date ? dateFormat(date) : invalidLabel
                         }
@@ -300,8 +301,9 @@ const TaskDrawerForm = ({
                     </Grid>
                     <Grid xs={6} item>
                       <MobileTimePicker
-                        renderInput={(params) => <TextField {...params} />}
-                        fullWidth
+                        renderInput={(params) => (
+                          <TextField fullWidth {...params} />
+                        )}
                         closeOnSelect
                         label={t('Due Time')}
                         value={startAt}
@@ -323,8 +325,9 @@ const TaskDrawerForm = ({
                     <Grid container spacing={2}>
                       <Grid xs={6} item>
                         <MobileDatePicker
-                          renderInput={(params) => <TextField {...params} />}
-                          fullWidth
+                          renderInput={(params) => (
+                            <TextField fullWidth {...params} />
+                          )}
                           labelFunc={(date, invalidLabel) =>
                             date ? dateFormat(date) : invalidLabel
                           }

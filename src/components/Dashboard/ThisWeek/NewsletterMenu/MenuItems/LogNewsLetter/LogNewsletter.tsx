@@ -234,16 +234,16 @@ const LogNewsletter = ({
                   <Grid container spacing={2}>
                     <Grid item xs={12} md={6}>
                       <MobileDatePicker
-                        renderInput={(params) => <TextField {...params} />}
+                        renderInput={(params) => (
+                          <TextField fullWidth {...params} />
+                        )}
                         value={completedAt}
                         onChange={(date): void =>
                           setFieldValue('completedAt', date)
                         }
                         inputFormat="MM/dd/yyyy"
-                        fullWidth
                         closeOnSelect
                         data-testid="completedDate"
-                        inputVariant="outlined"
                         label={t('Completed Date')}
                         okLabel={t('OK')}
                         todayLabel={t('Today')}
@@ -262,15 +262,15 @@ const LogNewsletter = ({
                     </Grid>
                     <Grid item xs={12} md={6}>
                       <MobileTimePicker
-                        renderInput={(params) => <TextField {...params} />}
+                        renderInput={(params) => (
+                          <TextField fullWidth {...params} />
+                        )}
                         value={completedAt}
                         onChange={(date): void =>
                           setFieldValue('completedAt', date)
                         }
-                        fullWidth
                         closeOnSelect
                         data-testid="completedTime"
-                        inputVariant="outlined"
                         label={t('Completed Time')}
                         okLabel={t('OK')}
                         todayLabel={t('Today')}

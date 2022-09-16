@@ -126,7 +126,14 @@ export const PersonShowMore: React.FC<PersonShowMoreProps> = ({
       <ModalSectionContainer>
         <ModalSectionIcon icon={<RingIcon />} />
         <MobileDatePicker
-          renderInput={(params) => <TextField {...params} />}
+          renderInput={(params) => (
+            <TextField
+              fullWidth
+              helperText="mm/dd/yyyy"
+              inputProps={{ 'aria-label': t('Anniversary') }}
+              {...params}
+            />
+          )}
           onChange={(date) => (!date ? null : handleDateChange(date))}
           value={
             anniversaryMonth && anniversaryDay
@@ -139,9 +146,6 @@ export const PersonShowMore: React.FC<PersonShowMoreProps> = ({
           }
           inputFormat="MM/dd/yyyy"
           label={t('Anniversary')}
-          inputProps={{ 'aria-label': t('Anniversary') }}
-          fullWidth
-          helperText="mm/dd/yyyy"
         />
       </ModalSectionContainer>
       {/* Alma Mater Section */}

@@ -378,8 +378,9 @@ const TaskModalForm = ({
                               </InputAdornment>
                             ),
                           }}
-                          renderInput={(params) => <TextField {...params} />}
-                          fullWidth
+                          renderInput={(params) => (
+                            <TextField fullWidth {...params} />
+                          )}
                           labelFunc={(date, invalidLabel) =>
                             date ? dateFormat(date) : invalidLabel
                           }
@@ -397,8 +398,9 @@ const TaskModalForm = ({
                       </Grid>
                       <Grid xs={6} item>
                         <MobileTimePicker
-                          renderInput={(params) => <TextField {...params} />}
-                          fullWidth
+                          renderInput={(params) => (
+                            <TextField fullWidth {...params} />
+                          )}
                           closeOnSelect
                           InputProps={{
                             endAdornment: (
