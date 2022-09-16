@@ -4,9 +4,9 @@ import {
   DialogActions,
   DialogContent,
   FormControl,
-  styled,
   Typography,
 } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import * as yup from 'yup';
 import { Formik } from 'formik';
 import React, { ReactElement } from 'react';
