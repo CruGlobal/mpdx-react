@@ -7,7 +7,7 @@ import { GetDonationsTableQuery } from '../GetDonationsTable.generated';
 import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
 import { DonationsReportTable } from './DonationsReportTable';
 
-const time = new DateTime();
+const time = DateTime.now();
 const setTime = jest.fn();
 
 it('renders with data', async () => {
