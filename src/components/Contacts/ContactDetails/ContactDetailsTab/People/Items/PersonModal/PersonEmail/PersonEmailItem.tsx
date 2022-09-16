@@ -1,11 +1,4 @@
-import {
-  Checkbox,
-  Grid,
-  MenuItem,
-  Select,
-  InputLabel,
-  FormControl,
-} from '@mui/material';
+import { Checkbox, Grid, MenuItem, Select } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import React from 'react';
 
