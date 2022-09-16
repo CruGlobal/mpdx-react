@@ -82,7 +82,7 @@ interface Props {
   currencyCode?: string;
   goal?: number;
   pledged?: number;
-  setTime: (time: DateTime) => void;
+  setTime?: (time: DateTime) => void;
 }
 
 const DonationHistories = ({
@@ -260,9 +260,16 @@ const DonationHistories = ({
                         left: 20,
                         right: 20,
                       }}
-                      onClick={(period: {
-                        activePayload: { payload: { period: DateTime } }[];
-                      }) => setTime(period.activePayload[0].payload.period)}
+                      onClick={
+                        setTime
+                          ? (period: {
+                              activePayload: {
+                                payload: { period: DateTime };
+                              }[];
+                            }) =>
+                              setTime(period.activePayload[0].payload.period)
+                          : null
+                      }
                     >
                       <Legend />
                       <CartesianGrid vertical={false} />
