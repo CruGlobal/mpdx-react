@@ -203,7 +203,7 @@ describe('TaskRow', () => {
 
       const { findByText, getByTestId } = render(
         <GqlMockedProvider>
-          <MuiThemeProvider theme={theme}>
+          <ThemeProvider theme={theme}>
             <TaskRow
               accountListId={accountListId}
               task={task}
@@ -211,7 +211,7 @@ describe('TaskRow', () => {
               onContactSelected={onContactSelected}
               isChecked={false}
             />
-          </MuiThemeProvider>
+          </ThemeProvider>
         </GqlMockedProvider>,
       );
       expect(await findByText(task.subject)).toBeVisible();
