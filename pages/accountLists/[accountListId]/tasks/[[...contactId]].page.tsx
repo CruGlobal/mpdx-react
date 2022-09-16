@@ -48,7 +48,6 @@ const TaskHeaderButton = styled(Button)(({ theme }) => ({
   fontWeight: 600,
   marginRight: theme.spacing(1),
   marginLeft: theme.spacing(1),
-  backgroundColor: theme.palette.common.white,
 }));
 
 const TaskCurrentHistoryButtonGroup = styled(ButtonGroup)(({ theme }) => ({

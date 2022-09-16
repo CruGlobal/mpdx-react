@@ -10,13 +10,6 @@ const StarIconWrap = styled(Box)(({ theme }) => ({
   marginLeft: theme.spacing(2),
 }));
 
-const StarIconButton = styled(IconButton)(({ theme }) => ({
-  backgroundColor: theme.palette.common.white,
-  '&:hover': {
-    backgroundColor: theme.palette.cruGrayLight.main,
-  },
-}));
-
 interface StarFilterButtonProps {
   starredFilter: ContactFilterSetInput | TaskFilterSetInput;
   toggleStarredFilter: (
@@ -30,14 +23,14 @@ export const StarFilterButton: React.FC<StarFilterButtonProps> = ({
 }) => {
   return (
     <StarIconWrap>
-      <StarIconButton
+      <IconButton
         data-testid="star-filter-button"
         onClick={() =>
           toggleStarredFilter(starredFilter.starred ? {} : { starred: true })
         }
       >
         <StarredItemIcon isStarred={starredFilter.starred || false} />
-      </StarIconButton>
+      </IconButton>
     </StarIconWrap>
   );
 };
