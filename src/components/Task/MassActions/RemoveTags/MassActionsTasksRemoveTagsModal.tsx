@@ -12,7 +12,7 @@ import { Formik } from 'formik';
 import React, { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSnackbar } from 'notistack';
-import { Remove } from '@material-ui/icons';
+import Remove from '@mui/icons-material/Remove';
 import {
   ContactUpdateInput,
   Task,
@@ -55,19 +55,15 @@ const tagSchema = yup.object({
   tagList: yup.array().of(yup.string()).default([]).nullable(),
 });
 
-export const MassActionsTasksRemoveTagsModal: React.FC<MassActionsTasksRemoveTagsModalProps> = ({
-  handleClose,
-  accountListId,
-  ids,
-}) => {
+export const MassActionsTasksRemoveTagsModal: React.FC<
+  MassActionsTasksRemoveTagsModalProps
+> = ({ handleClose, accountListId, ids }) => {
   const { t } = useTranslation();
 
   const { enqueueSnackbar } = useSnackbar();
 
-  const [
-    updateTasks,
-    { loading: updating },
-  ] = useMassActionsUpdateTasksMutation();
+  const [updateTasks, { loading: updating }] =
+    useMassActionsUpdateTasksMutation();
 
   const { data: tasksForTags } = useGetTasksForAddingTagsQuery({
     variables: {

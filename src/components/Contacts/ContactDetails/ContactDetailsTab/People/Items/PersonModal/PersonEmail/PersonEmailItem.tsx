@@ -11,7 +11,7 @@ import React from 'react';
 
 import { useTranslation } from 'react-i18next';
 import { FormikErrors, getIn } from 'formik';
-import { Lock } from '@material-ui/icons';
+import Lock from '@mui/icons-material/Lock';
 import { ModalSectionContainer } from '../ModalSectionContainer/ModalSectionContainer';
 import { ModalSectionDeleteIcon } from '../ModalSectionDeleteIcon/ModalSectionDeleteIcon';
 import {
