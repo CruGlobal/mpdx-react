@@ -11,6 +11,7 @@ import React from 'react';
 
 import { useTranslation } from 'react-i18next';
 import { FormikErrors, getIn } from 'formik';
+import { Lock } from '@material-ui/icons';
 import { ModalSectionContainer } from '../ModalSectionContainer/ModalSectionContainer';
 import { ModalSectionDeleteIcon } from '../ModalSectionDeleteIcon/ModalSectionDeleteIcon';
 import {
@@ -37,6 +38,12 @@ interface Props {
   errors: FormikErrors<(PersonUpdateInput | PersonCreateInput) & NewSocial>;
   primaryEmail: PersonEmailAddressInput | undefined;
   handleChangePrimary: (emailId: string) => void;
+  sources:
+    | {
+        id: string;
+        source: string;
+      }[]
+    | undefined;
 }
 
 const EmailSelect = styled(Select)(({ destroyed }: { destroyed: boolean }) => ({
@@ -51,11 +58,16 @@ export const PersonEmailItem: React.FC<Props> = ({
   errors,
   primaryEmail,
   handleChangePrimary,
+  sources,
 }) => {
   const { t } = useTranslation();
 
   const [isEmailPrimaryChecked, setIsEmailPrimaryChecked] =
     React.useState(false);
+
+  const source = sources?.find((email) => email.id === emailAddress.id)?.source;
+
+  const locked = source !== 'MPDX' && source !== undefined;
 
   React.useEffect(() => {
     setIsEmailPrimaryChecked(emailAddress.id === primaryEmail?.id ?? '');
@@ -80,8 +92,19 @@ export const PersonEmailItem: React.FC<Props> = ({
                   event.target.value,
                 )
               }
-              disabled={!!emailAddress.destroy}
+              disabled={!!emailAddress.destroy || locked}
               inputProps={{ 'aria-label': t('Email Address') }}
+              InputProps={{
+                ...(locked
+                  ? {
+                      endAdornment: (
+                        <Lock
+                          titleAccess={t('Synced with Donation Services')}
+                        />
+                      ),
+                    }
+                  : {}),
+              }}
               error={getIn(errors, `emailAddresses.${index}`)}
               helperText={
                 getIn(errors, `emailAddresses.${index}`) &&
@@ -91,37 +114,29 @@ export const PersonEmailItem: React.FC<Props> = ({
             />
           </Grid>
           <Grid item xs={12} md={3}>
-            {' '}
-            <FormControl fullWidth>
-              <InputLabel id="phone-type-label">{t('Type')}</InputLabel>
-              <EmailSelect
-                label={t('Type')}
-                destroyed={emailAddress.destroy ?? false}
-                value={emailAddress.location ?? ''}
-                onChange={(event) =>
-                  setFieldValue(
-                    `emailAddresses.${index}.location`,
-                    event.target.value,
-                  )
-                }
-                disabled={!!emailAddress.destroy}
-                inputProps={{
-                  'aria-label': t('Email Address Type'),
-                }}
-                fullWidth
-              >
-                <MenuItem selected value=""></MenuItem>
-                <MenuItem value="Personal" aria-label={t('Personal')}>
-                  {t('Personal')}
-                </MenuItem>
-                <MenuItem value="Work" aria-label={t('Work')}>
-                  {t('Work')}
-                </MenuItem>
-                <MenuItem value="Other" aria-label={t('Other')}>
-                  {t('Other')}
-                </MenuItem>
-              </EmailSelect>
-            </FormControl>
+            <EmailSelect
+              destroyed={emailAddress.destroy ?? false}
+              value={emailAddress.location ?? ''}
+              onChange={(event) =>
+                setFieldValue(
+                  `emailAddresses.${index}.location`,
+                  event.target.value,
+                )
+              }
+              disabled={!!emailAddress.destroy || locked}
+              inputProps={{
+                'aria-label': t('Email Address Type'),
+              }}
+              fullWidth
+            >
+              <MenuItem selected value=""></MenuItem>
+              <MenuItem value="Mobile" aria-label={t('Mobile')}>
+                {t('Mobile')}
+              </MenuItem>
+              <MenuItem value="Work" aria-label={t('Work')}>
+                {t('Work')}
+              </MenuItem>
+            </EmailSelect>
           </Grid>
           <Grid item xs={12} md={3}>
             <PrimaryControlLabel
@@ -138,6 +153,7 @@ export const PersonEmailItem: React.FC<Props> = ({
             />
           </Grid>
           <ModalSectionDeleteIcon
+            disabled={locked}
             handleClick={
               emailAddress.id
                 ? () =>

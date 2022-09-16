@@ -38,11 +38,14 @@ export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
   const ListItemButton = styled(ButtonBase)(({ theme }) => ({
     flex: '1 1 auto',
     textAlign: 'left',
-    marginTop: useTopMargin ? '20px' : '0',
+    marginTop: useTopMargin ? '16px' : '0',
     padding: theme.spacing(0, 0.5, 0, 2),
     [theme.breakpoints.up('sm')]: {
       padding: theme.spacing(0, 0.5),
     },
+    ...(isChecked(contactId)
+      ? { backgroundColor: theme.palette.cruGrayLight.main }
+      : {}),
   }));
 
   const StyledCheckbox = styled(Checkbox)(() => ({
@@ -122,11 +125,10 @@ export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
         </Grid>
       </Grid>
       <Hidden xsDown>
-        <Box
-          style={uncompletedTasksCount === 0 ? { visibility: 'hidden' } : {}}
-        >
+        <Box onClick={(event) => event.stopPropagation()}>
           <ContactUncompletedTasksCount
             uncompletedTasksCount={uncompletedTasksCount}
+            contactId={contactId}
           />
         </Box>
         <ListItemSecondaryAction

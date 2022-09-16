@@ -30,10 +30,17 @@ const ContactAddText = styled(Typography)(({ theme }) => ({
 
 interface PersonPhoneNumberProps {
   formikProps: FormikProps<(PersonUpdateInput | PersonCreateInput) & NewSocial>;
+  sources:
+    | {
+        id: string;
+        source: string;
+      }[]
+    | undefined;
 }
 
 export const PersonPhoneNumber: React.FC<PersonPhoneNumberProps> = ({
   formikProps,
+  sources,
 }) => {
   const { t } = useTranslation();
 
@@ -85,6 +92,7 @@ export const PersonPhoneNumber: React.FC<PersonPhoneNumberProps> = ({
                       setFieldValue={setFieldValue}
                       errors={errors}
                       handleChangePrimary={handleChangePrimary}
+                      sources={sources}
                     />
                   </>
                 ))}
