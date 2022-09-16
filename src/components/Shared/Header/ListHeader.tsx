@@ -24,14 +24,7 @@ import { StarFilterButton } from './StarFilterButton/StarFilterButton';
 import useTaskModal from 'src/hooks/useTaskModal';
 
 const HeaderWrap = styled(Box)(
-  ({
-    theme,
-    selected,
-  }: {
-    theme: Theme;
-    contactDetailsOpen: boolean;
-    selected: boolean;
-  }) => ({
+  ({ theme }: { theme: Theme; contactDetailsOpen: boolean }) => ({
     padding: theme.spacing(3, 0.5),
     display: 'flex',
     justifyContent: 'space-between',
@@ -39,11 +32,6 @@ const HeaderWrap = styled(Box)(
     [theme.breakpoints.down('sm')]: {
       paddingRight: theme.spacing(2),
     },
-    ...(selected
-      ? {
-          backgroundColor: theme.palette.info.light,
-        }
-      : {}),
   }),
 );
 
@@ -76,10 +64,7 @@ const FilterButton = styled(
     marginRight: theme.spacing(2),
     backgroundColor: activeFilters
       ? theme.palette.cruYellow.main
-      : theme.palette.common.white,
-    '&:hover': {
-      backgroundColor: theme.palette.cruGrayLight.main,
-    },
+      : 'transparent',
   }),
 );
 
@@ -191,10 +176,7 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
   const { openTaskModal } = useTaskModal();
 
   return (
-    <HeaderWrap
-      contactDetailsOpen={contactDetailsOpen}
-      selected={selectedIds.length > 0}
-    >
+    <HeaderWrap contactDetailsOpen={contactDetailsOpen}>
       <HeaderWrapInner style={{ marginRight: 8 }}>
         {contactsView !== TableViewModeEnum.Map && (
           <Hidden xsDown>
