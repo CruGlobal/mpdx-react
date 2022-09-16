@@ -6,7 +6,7 @@ import {
   FormControl,
   styled,
   Typography,
-} from '@material-ui/core';
+} from '@mui/material';
 import * as yup from 'yup';
 import { Formik } from 'formik';
 import React, { ReactElement } from 'react';
