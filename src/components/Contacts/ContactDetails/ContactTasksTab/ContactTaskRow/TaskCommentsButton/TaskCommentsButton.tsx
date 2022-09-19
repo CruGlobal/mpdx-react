@@ -1,18 +1,11 @@
-import { Button, Theme, Typography } from '@mui/material';
+import { Button, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import theme from 'src/theme';
 import ChatBubbleOutline from '@mui/icons-material/ChatBubbleOutline';
 import React from 'react';
 
 const TaskRowWrap = styled(Button)(
-  ({
-    theme,
-    small,
-    detailsPage,
-  }: {
-    theme: Theme;
-    small: boolean;
-    detailsPage: boolean;
-  }) => ({
+  ({ small, detailsPage }: { small: boolean; detailsPage: boolean }) => ({
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
@@ -26,14 +19,14 @@ const TaskRowWrap = styled(Button)(
 );
 
 const TaskCommentIcon = styled(ChatBubbleOutline)(
-  ({ theme, small }: { theme: Theme; small: boolean }) => ({
+  ({ small }: { small: boolean }) => ({
     color: theme.palette.text.secondary,
     fontSize: small ? 16 : 20,
   }),
 );
 
 const TaskCommentNumber = styled(Typography)(
-  ({ theme, isComplete }: { theme: Theme; isComplete: boolean }) => ({
+  ({ isComplete }: { isComplete: boolean }) => ({
     color: isComplete
       ? theme.palette.text.secondary
       : theme.palette.text.primary,
