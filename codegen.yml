@@ -3,9 +3,6 @@ schema:
   - ${API_URL:https://api.stage.mpdx.org/graphql}
   - ./pages/api/Schema/**/*.graphql
 documents: '**/*.graphql'
-hooks:
-  afterOneFileWrite:
-    - prettier --write
 generates:
   ./graphql/types.generated.ts:
     plugins:
@@ -25,6 +22,8 @@ generates:
           content: '/* eslint-disable */'
       - typescript-operations
       - typescript-react-apollo
+    config:
+      preResolveTypes: false
   ./graphql/schema.graphql:
     plugins:
       - schema-ast
@@ -33,3 +32,6 @@ generates:
   ./graphql/possibleTypes.generated.ts:
     plugins:
       - fragment-matcher
+hooks:
+  afterAllFileWrite:
+    - prettier --write
