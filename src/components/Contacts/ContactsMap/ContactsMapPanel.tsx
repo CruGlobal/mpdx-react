@@ -4,7 +4,6 @@ import {
   AccordionSummary,
   Box,
   Typography,
-  Theme,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import React, {
@@ -53,24 +52,22 @@ const ContactList = styled(AccordionDetails)(() => ({
   width: '100%',
 }));
 
-const ContactWrapper = styled(Box)(
-  ({ theme, current }: { theme: Theme; current: boolean }) => ({
-    display: 'flex',
-    justifyContent: 'space-between',
-    borderBottom: `1px solid ${theme.palette.cruGrayMedium.main}`,
-    alignItems: 'center',
-    width: '100%',
-    padding: theme.spacing(1),
-    paddingLeft: theme.spacing(2),
-    backgroundColor: current
-      ? theme.palette.cruGrayLight.main
-      : theme.palette.common.white,
-    '&:hover': {
-      backgroundColor: theme.palette.cruGrayLight.main,
-      cursor: 'pointer',
-    },
-  }),
-);
+const ContactWrapper = styled(Box)(({ current }: { current: boolean }) => ({
+  display: 'flex',
+  justifyContent: 'space-between',
+  borderBottom: `1px solid ${theme.palette.cruGrayMedium.main}`,
+  alignItems: 'center',
+  width: '100%',
+  padding: theme.spacing(1),
+  paddingLeft: theme.spacing(2),
+  backgroundColor: current
+    ? theme.palette.cruGrayLight.main
+    : theme.palette.common.white,
+  '&:hover': {
+    backgroundColor: theme.palette.cruGrayLight.main,
+    cursor: 'pointer',
+  },
+}));
 
 const CruFocus = styled(Typography)(({ theme }) => ({
   marginRight: theme.spacing(0.5),
@@ -97,10 +94,7 @@ export const ContactsMapPanel: React.FC<ContactMapsPanelProps> = ({
 
   const handleExpansionChange =
     (panel: React.SetStateAction<number>) =>
-    (
-      _event: React.ChangeEvent<Record<string, unknown>>,
-      newExpanded: boolean,
-    ) => {
+    (_event: React.SyntheticEvent, newExpanded: boolean) => {
       setStatusContactsMapOpen(newExpanded ? panel : -1);
     };
 

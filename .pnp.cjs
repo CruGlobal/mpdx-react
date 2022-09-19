@@ -130,8 +130,8 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["prop-types", "npm:15.8.1"],\
             ["react", "npm:18.2.0"],\
             ["react-csv", "npm:2.2.2"],\
-            ["react-dnd", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:16.0.1"],\
-            ["react-dnd-html5-backend", "npm:16.0.1"],\
+            ["react-dnd", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:14.0.5"],\
+            ["react-dnd-html5-backend", "npm:14.1.0"],\
             ["react-dom", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:18.2.0"],\
             ["react-i18next", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:11.18.6"],\
             ["react-to-print", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:2.14.7"],\
@@ -9636,13 +9636,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@react-dnd/asap", "npm:4.0.1"]\
           ],\
           "linkType": "HARD"\
-        }],\
-        ["npm:5.0.2", {\
-          "packageLocation": "./.yarn/cache/@react-dnd-asap-npm-5.0.2-66021d3d61-18f040e535.zip/node_modules/@react-dnd/asap/",\
-          "packageDependencies": [\
-            ["@react-dnd/asap", "npm:5.0.2"]\
-          ],\
-          "linkType": "HARD"\
         }]\
       ]],\
       ["@react-dnd/invariant", [\
@@ -9652,13 +9645,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@react-dnd/invariant", "npm:2.0.0"]\
           ],\
           "linkType": "HARD"\
-        }],\
-        ["npm:4.0.2", {\
-          "packageLocation": "./.yarn/cache/@react-dnd-invariant-npm-4.0.2-826eacc1ea-594f6d7889.zip/node_modules/@react-dnd/invariant/",\
-          "packageDependencies": [\
-            ["@react-dnd/invariant", "npm:4.0.2"]\
-          ],\
-          "linkType": "HARD"\
         }]\
       ]],\
       ["@react-dnd/shallowequal", [\
@@ -9666,13 +9652,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/@react-dnd-shallowequal-npm-2.0.0-2a10dca275-b5bbdc795d.zip/node_modules/@react-dnd/shallowequal/",\
           "packageDependencies": [\
             ["@react-dnd/shallowequal", "npm:2.0.0"]\
-          ],\
-          "linkType": "HARD"\
-        }],\
-        ["npm:4.0.2", {\
-          "packageLocation": "./.yarn/cache/@react-dnd-shallowequal-npm-4.0.2-f944714335-7f21d691bd.zip/node_modules/@react-dnd/shallowequal/",\
-          "packageDependencies": [\
-            ["@react-dnd/shallowequal", "npm:4.0.2"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -18049,12 +18028,12 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           ],\
           "linkType": "HARD"\
         }],\
-        ["npm:16.0.1", {\
-          "packageLocation": "./.yarn/cache/dnd-core-npm-16.0.1-552224cee0-b7d3ef4664.zip/node_modules/dnd-core/",\
+        ["npm:14.0.1", {\
+          "packageLocation": "./.yarn/cache/dnd-core-npm-14.0.1-8d80db20ad-dbc50727f5.zip/node_modules/dnd-core/",\
           "packageDependencies": [\
-            ["dnd-core", "npm:16.0.1"],\
-            ["@react-dnd/asap", "npm:5.0.2"],\
-            ["@react-dnd/invariant", "npm:4.0.2"],\
+            ["dnd-core", "npm:14.0.1"],\
+            ["@react-dnd/asap", "npm:4.0.1"],\
+            ["@react-dnd/invariant", "npm:2.0.0"],\
             ["redux", "npm:4.2.0"]\
           ],\
           "linkType": "HARD"\
@@ -25975,8 +25954,8 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["prop-types", "npm:15.8.1"],\
             ["react", "npm:18.2.0"],\
             ["react-csv", "npm:2.2.2"],\
-            ["react-dnd", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:16.0.1"],\
-            ["react-dnd-html5-backend", "npm:16.0.1"],\
+            ["react-dnd", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:14.0.5"],\
+            ["react-dnd-html5-backend", "npm:14.1.0"],\
             ["react-dom", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:18.2.0"],\
             ["react-i18next", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:11.18.6"],\
             ["react-to-print", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:2.14.7"],\
@@ -28677,10 +28656,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           ],\
           "linkType": "SOFT"\
         }],\
-        ["npm:16.0.1", {\
-          "packageLocation": "./.yarn/cache/react-dnd-npm-16.0.1-974f047d7b-e8da2186aa.zip/node_modules/react-dnd/",\
+        ["npm:14.0.5", {\
+          "packageLocation": "./.yarn/cache/react-dnd-npm-14.0.5-e37445cf62-464e231de8.zip/node_modules/react-dnd/",\
           "packageDependencies": [\
-            ["react-dnd", "npm:16.0.1"]\
+            ["react-dnd", "npm:14.0.5"]\
           ],\
           "linkType": "SOFT"\
         }],\
@@ -28705,16 +28684,16 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           ],\
           "linkType": "HARD"\
         }],\
-        ["virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:16.0.1", {\
-          "packageLocation": "./.yarn/__virtual__/react-dnd-virtual-1de4ae63bd/0/cache/react-dnd-npm-16.0.1-974f047d7b-e8da2186aa.zip/node_modules/react-dnd/",\
+        ["virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:14.0.5", {\
+          "packageLocation": "./.yarn/__virtual__/react-dnd-virtual-a642a19757/0/cache/react-dnd-npm-14.0.5-e37445cf62-464e231de8.zip/node_modules/react-dnd/",\
           "packageDependencies": [\
-            ["react-dnd", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:16.0.1"],\
-            ["@react-dnd/invariant", "npm:4.0.2"],\
-            ["@react-dnd/shallowequal", "npm:4.0.2"],\
+            ["react-dnd", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:14.0.5"],\
+            ["@react-dnd/invariant", "npm:2.0.0"],\
+            ["@react-dnd/shallowequal", "npm:2.0.0"],\
             ["@types/hoist-non-react-statics", null],\
             ["@types/node", "npm:18.7.18"],\
             ["@types/react", "npm:18.0.20"],\
-            ["dnd-core", "npm:16.0.1"],\
+            ["dnd-core", "npm:14.0.1"],\
             ["fast-deep-equal", "npm:3.1.3"],\
             ["hoist-non-react-statics", "npm:3.3.2"],\
             ["react", "npm:18.2.0"]\
@@ -28737,11 +28716,11 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           ],\
           "linkType": "HARD"\
         }],\
-        ["npm:16.0.1", {\
-          "packageLocation": "./.yarn/cache/react-dnd-html5-backend-npm-16.0.1-754940d855-e2368bf85d.zip/node_modules/react-dnd-html5-backend/",\
+        ["npm:14.1.0", {\
+          "packageLocation": "./.yarn/cache/react-dnd-html5-backend-npm-14.1.0-4ade60a8db-6aa8d62c6b.zip/node_modules/react-dnd-html5-backend/",\
           "packageDependencies": [\
-            ["react-dnd-html5-backend", "npm:16.0.1"],\
-            ["dnd-core", "npm:16.0.1"]\
+            ["react-dnd-html5-backend", "npm:14.1.0"],\
+            ["dnd-core", "npm:14.0.1"]\
           ],\
           "linkType": "HARD"\
         }]\

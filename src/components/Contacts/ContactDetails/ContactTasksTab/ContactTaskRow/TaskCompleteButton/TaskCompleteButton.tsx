@@ -1,10 +1,11 @@
-import { Button, Theme } from '@mui/material';
+import { Button } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import theme from 'src/theme';
 import Check from '@mui/icons-material/Check';
 import React from 'react';
 
 const ButtonWrap = styled(Button)(
-  ({ theme, isComplete }: { theme: Theme; isComplete: boolean }) => ({
+  ({ isComplete }: { isComplete: boolean }) => ({
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',

@@ -10,7 +10,7 @@ import { Session } from 'next-auth';
 import { SessionProvider } from 'next-auth/react';
 import { NextPage } from 'next';
 import Head from 'next/head';
-import { I18nextProvider } from 'react-i18next';
+import { I18nextProvider, useTranslation } from 'react-i18next';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { SnackbarProvider } from 'notistack';
@@ -45,6 +45,7 @@ const App = ({
 }: AppProps<{
   session: Session;
 }>): ReactElement => {
+  const { t } = useTranslation();
   const Layout = (Component as PageWithLayout).layout || PrimaryLayout;
   const { session } = pageProps;
   const rollbarConfig: Rollbar.Configuration = {
@@ -111,7 +112,15 @@ const App = ({
                 <I18nextProvider i18n={i18n}>
                   <StyledEngineProvider injectFirst>
                     <ThemeProvider theme={theme}>
-                      <LocalizationProvider dateAdapter={AdapterLuxon}>
+                      <LocalizationProvider
+                        dateAdapter={AdapterLuxon}
+                        localeText={{
+                          cancelButtonLabel: `${t('Cancel')}`,
+                          clearButtonLabel: `${t('Clear')}`,
+                          okButtonLabel: `${t('OK')}`,
+                          todayButtonLabel: `${t('Today')}`,
+                        }}
+                      >
                         <SnackbarProvider maxSnack={3}>
                           <GlobalStyles />
                           <AnimatePresence

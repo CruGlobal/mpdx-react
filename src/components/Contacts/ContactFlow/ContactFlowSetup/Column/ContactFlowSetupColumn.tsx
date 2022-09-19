@@ -1,12 +1,6 @@
-import {
-  Box,
-  Card,
-  CardContent,
-  IconButton,
-  TextField,
-  Theme,
-} from '@mui/material';
+import { Box, Card, CardContent, IconButton, TextField } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import theme from 'src/theme';
 import Clear from '@mui/icons-material/Clear';
 import FiberManualRecord from '@mui/icons-material/FiberManualRecord';
 import Menu from '@mui/icons-material/Menu';
@@ -20,7 +14,6 @@ import React, {
 } from 'react';
 import { DropTargetMonitor, useDrag, useDrop, XYCoord } from 'react-dnd';
 import debounce from 'lodash/fp/debounce';
-import theme from '../../../../../../src/theme';
 import { ContactFilterStatusEnum } from '../../../../../../graphql/types.generated';
 import { colorMap } from '../../../../../../src/components/Contacts/ContactFlow/ContactFlow';
 import { ContactFlowSetupStatusRow } from '../Row/ContactFlowSetupStatusRow';
@@ -37,22 +30,20 @@ const DeleteColumnButton = styled(IconButton)(() => ({
 
 const ColoredCircle = styled(FiberManualRecord)(
   ({
-    theme,
     circlecolor,
     size,
     selected,
   }: {
-    theme: Theme;
     circlecolor: string;
-    size: number;
+    size: string;
     selected: boolean;
   }) => ({
     color: circlecolor,
     height: size,
     width: size,
     '&:hover': {
-      height: !selected ? size + theme.spacing(1) : 'initial',
-      width: !selected ? size + theme.spacing(1) : 'initial',
+      height: !selected ? `calc(${size} + ${theme.spacing(1)})` : 'initial',
+      width: !selected ? `calc(${size} + ${theme.spacing(1)})` : 'initial',
     },
   }),
 );
