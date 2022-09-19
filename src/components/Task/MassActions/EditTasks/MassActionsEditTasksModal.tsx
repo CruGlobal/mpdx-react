@@ -253,10 +253,6 @@ export const MassActionsEditTasksModal: React.FC<
                       label={t('Due Date')}
                       value={startAt}
                       onChange={(date): void => setFieldValue('startAt', date)}
-                      okLabel={t('OK')}
-                      todayLabel={t('Today')}
-                      cancelLabel={t('Cancel')}
-                      clearLabel={t('Clear')}
                     />
                   </FormControl>
                 </Grid>
@@ -281,10 +277,6 @@ export const MassActionsEditTasksModal: React.FC<
                       label={t('Due Time')}
                       value={startAt}
                       onChange={(date): void => setFieldValue('startAt', date)}
-                      okLabel={t('OK')}
-                      todayLabel={t('Today')}
-                      cancelLabel={t('Cancel')}
-                      clearLabel={t('Clear')}
                     />
                   </FormControl>
                 </Grid>

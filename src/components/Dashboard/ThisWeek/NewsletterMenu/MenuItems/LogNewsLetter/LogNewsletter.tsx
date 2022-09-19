@@ -245,10 +245,6 @@ const LogNewsletter = ({
                         closeOnSelect
                         data-testid="completedDate"
                         label={t('Completed Date')}
-                        okLabel={t('OK')}
-                        todayLabel={t('Today')}
-                        cancelLabel={t('Cancel')}
-                        clearLabel={t('Clear')}
                         InputProps={{
                           startAdornment: (
                             <InputAdornment position="start">
@@ -272,10 +268,6 @@ const LogNewsletter = ({
                         closeOnSelect
                         data-testid="completedTime"
                         label={t('Completed Time')}
-                        okLabel={t('OK')}
-                        todayLabel={t('Today')}
-                        cancelLabel={t('Cancel')}
-                        clearLabel={t('Clear')}
                         InputProps={{
                           startAdornment: (
                             <InputAdornment position="start">

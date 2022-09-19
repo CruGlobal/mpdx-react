@@ -293,10 +293,6 @@ const TaskDrawerForm = ({
                         onChange={(date): void =>
                           setFieldValue('startAt', date)
                         }
-                        okLabel={t('OK')}
-                        todayLabel={t('Today')}
-                        cancelLabel={t('Cancel')}
-                        clearLabel={t('Clear')}
                       />
                     </Grid>
                     <Grid xs={6} item>
@@ -310,10 +306,6 @@ const TaskDrawerForm = ({
                         onChange={(date): void =>
                           setFieldValue('startAt', date)
                         }
-                        okLabel={t('OK')}
-                        todayLabel={t('Today')}
-                        cancelLabel={t('Cancel')}
-                        clearLabel={t('Clear')}
                       />
                     </Grid>
                   </Grid>
@@ -337,10 +329,6 @@ const TaskDrawerForm = ({
                           onChange={(date): void =>
                             setFieldValue('completedAt', date)
                           }
-                          okLabel={t('OK')}
-                          todayLabel={t('Today')}
-                          cancelLabel={t('Cancel')}
-                          clearLabel={t('Clear')}
                         />
                       </Grid>
                       <Grid xs={6} item>
@@ -353,10 +341,6 @@ const TaskDrawerForm = ({
                           onChange={(date): void =>
                             setFieldValue('completedAt', date)
                           }
-                          okLabel={t('OK')}
-                          todayLabel={t('Today')}
-                          cancelLabel={t('Cancel')}
-                          clearLabel={t('Clear')}
                         />
                       </Grid>
                     </Grid>

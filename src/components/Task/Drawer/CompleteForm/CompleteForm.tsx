@@ -274,10 +274,6 @@ const TaskDrawerCompleteForm = ({
                         onChange={(date): void =>
                           setFieldValue('completedAt', date)
                         }
-                        okLabel={t('OK')}
-                        todayLabel={t('Today')}
-                        cancelLabel={t('Cancel')}
-                        clearLabel={t('Clear')}
                       />
                     </Grid>
                     <Grid xs={6} item>
@@ -291,10 +287,6 @@ const TaskDrawerCompleteForm = ({
                         onChange={(date): void =>
                           setFieldValue('completedAt', date)
                         }
-                        okLabel={t('OK')}
-                        todayLabel={t('Today')}
-                        cancelLabel={t('Cancel')}
-                        clearLabel={t('Clear')}
                       />
                     </Grid>
                   </Grid>

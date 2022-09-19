@@ -366,10 +366,6 @@ const TaskList = ({ initialFilter }: Props): ReactElement => {
                         filterList[index][0] = date?.toISO() ?? '';
                         onChange(filterList[index], index, column);
                       }}
-                      okLabel={t('OK')}
-                      todayLabel={t('Today')}
-                      cancelLabel={t('Cancel')}
-                      clearLabel={t('Clear')}
                     />
                   </Grid>
                   <Grid xs={6} item>
@@ -387,10 +383,6 @@ const TaskList = ({ initialFilter }: Props): ReactElement => {
                         filterList[index][1] = date?.toISO() ?? '';
                         onChange(filterList[index], index, column);
                       }}
-                      okLabel={t('OK')}
-                      todayLabel={t('Today')}
-                      cancelLabel={t('Cancel')}
-                      clearLabel={t('Clear')}
                     />
                   </Grid>
                 </Grid>
