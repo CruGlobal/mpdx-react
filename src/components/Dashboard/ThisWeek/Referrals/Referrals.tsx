@@ -193,7 +193,7 @@ const Referrals = ({
   const [value, setValue] = useState(0);
 
   const handleChange = (
-    _event: React.ChangeEvent<Record<string, unknown>>,
+    _event: React.SyntheticEvent,
     newValue: number,
   ): void => {
     setValue(newValue);
