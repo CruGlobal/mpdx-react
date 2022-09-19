@@ -1,4 +1,11 @@
-import { Checkbox, Grid, MenuItem, Select } from '@mui/material';
+import {
+  Checkbox,
+  FormControl,
+  Grid,
+  InputLabel,
+  MenuItem,
+  Select,
+} from '@mui/material';
 import { styled } from '@mui/material/styles';
 import React from 'react';
 
@@ -107,29 +114,42 @@ export const PersonEmailItem: React.FC<Props> = ({
             />
           </Grid>
           <Grid item xs={12} md={3}>
-            <EmailSelect
-              destroyed={emailAddress.destroy ?? false}
-              value={emailAddress.location ?? ''}
-              onChange={(event) =>
-                setFieldValue(
-                  `emailAddresses.${index}.location`,
-                  event.target.value,
-                )
-              }
-              disabled={!!emailAddress.destroy || locked}
-              inputProps={{
-                'aria-label': t('Email Address Type'),
-              }}
-              fullWidth
-            >
-              <MenuItem selected value=""></MenuItem>
-              <MenuItem value="Mobile" aria-label={t('Mobile')}>
-                {t('Mobile')}
-              </MenuItem>
-              <MenuItem value="Work" aria-label={t('Work')}>
-                {t('Work')}
-              </MenuItem>
-            </EmailSelect>
+            <FormControl fullWidth>
+              <InputLabel id={`email-type-label-${index}`}>
+                {t('Type')}
+              </InputLabel>
+              <EmailSelect
+                label={t('Type')}
+                labelId={`email-type-label-${index}`}
+                id={`email-type-${index}`}
+                destroyed={emailAddress.destroy ?? false}
+                value={emailAddress.location ?? ''}
+                onChange={(event) =>
+                  setFieldValue(
+                    `emailAddresses.${index}.location`,
+                    event.target.value,
+                  )
+                }
+                disabled={!!emailAddress.destroy || locked}
+                inputProps={{
+                  'aria-label': t('Email Address Type'),
+                }}
+                fullWidth
+              >
+                <MenuItem selected value="">
+                  None
+                </MenuItem>
+                <MenuItem value="personal" aria-label={t('Personal')}>
+                  {t('Personal')}
+                </MenuItem>
+                <MenuItem value="work" aria-label={t('Work')}>
+                  {t('Work')}
+                </MenuItem>
+                <MenuItem value="other" aria-label={t('Other')}>
+                  {t('Other')}
+                </MenuItem>
+              </EmailSelect>
+            </FormControl>
           </Grid>
           <Grid item xs={12} md={3}>
             <PrimaryControlLabel

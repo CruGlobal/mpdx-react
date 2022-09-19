@@ -1,4 +1,11 @@
-import { Grid, MenuItem, Select, Checkbox } from '@mui/material';
+import {
+  Checkbox,
+  FormControl,
+  Grid,
+  InputLabel,
+  MenuItem,
+  Select,
+} from '@mui/material';
 import { styled } from '@mui/material/styles';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -110,29 +117,45 @@ export const PersonPhoneNumberItem: React.FC<Props> = ({
             />
           </Grid>
           <Grid item xs={12} md={3}>
-            <PhoneNumberSelect
-              destroyed={phoneNumber.destroy ?? false}
-              value={phoneNumber.location ?? ''}
-              onChange={(event) =>
-                setFieldValue(
-                  `phoneNumbers.${index}.location`,
-                  event.target.value,
-                )
-              }
-              disabled={!!phoneNumber.destroy || locked}
-              inputProps={{
-                'aria-label': t('Phone Number Type'),
-              }}
-              fullWidth
-            >
-              <MenuItem selected value=""></MenuItem>
-              <MenuItem value="Mobile" aria-label={t('Mobile')}>
-                {t('Mobile')}
-              </MenuItem>
-              <MenuItem value="Work" aria-label={t('Work')}>
-                {t('Work')}
-              </MenuItem>
-            </PhoneNumberSelect>
+            <FormControl fullWidth>
+              <InputLabel id={`phone-type-label-${index}`}>
+                {t('Type')}
+              </InputLabel>
+              <PhoneNumberSelect
+                label={t('Type')}
+                labelId={`phone-type-label-${index}`}
+                id={`phone-type-${index}`}
+                destroyed={phoneNumber.destroy ?? false}
+                value={phoneNumber.location ?? ''}
+                onChange={(event) =>
+                  setFieldValue(
+                    `phoneNumbers.${index}.location`,
+                    event.target.value,
+                  )
+                }
+                disabled={!!phoneNumber.destroy || locked}
+                inputProps={{
+                  'aria-label': t('Phone Number Type'),
+                }}
+                fullWidth
+              >
+                <MenuItem selected value="">
+                  None
+                </MenuItem>
+                <MenuItem value="mobile" aria-label={t('Mobile')}>
+                  {t('Mobile')}
+                </MenuItem>
+                <MenuItem value="home" aria-label={t('Home')}>
+                  {t('Home')}
+                </MenuItem>
+                <MenuItem value="work" aria-label={t('Work')}>
+                  {t('Work')}
+                </MenuItem>
+                <MenuItem value="other" aria-label={t('Other')}>
+                  {t('Other')}
+                </MenuItem>
+              </PhoneNumberSelect>
+            </FormControl>
           </Grid>
           <Grid item xs={12} md={3}>
             <PrimaryControlLabel
