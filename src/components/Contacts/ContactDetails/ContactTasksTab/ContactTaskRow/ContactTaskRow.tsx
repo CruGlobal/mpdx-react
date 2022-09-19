@@ -16,17 +16,15 @@ import { TaskCompleteButton } from './TaskCompleteButton/TaskCompleteButton';
 import { TaskDueDate } from './TaskDueDate/TaskDueDate';
 import useTaskModal from 'src/hooks/useTaskModal';
 
-const TaskRowWrap = styled(Box)(
-  ({ theme, isChecked }: { theme: Theme; isChecked: boolean }) => ({
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    margin: theme.spacing(0),
-    height: theme.spacing(8),
-    ...(isChecked ? { backgroundColor: theme.palette.cruGrayLight.main } : {}),
-  }),
-);
+const TaskRowWrap = styled(Box)(({ isChecked }: { isChecked: boolean }) => ({
+  display: 'flex',
+  flexDirection: 'row',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  margin: theme.spacing(0),
+  height: theme.spacing(8),
+  ...(isChecked ? { backgroundColor: theme.palette.cruGrayLight.main } : {}),
+}));
 
 const TaskItemWrap = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -79,7 +77,7 @@ const StarIconWrap = styled(Box)(({ theme }) => ({
 }));
 
 const FieldLoadingState = styled(Skeleton)(
-  ({ width, margin }: { width: number; margin: number }) => ({
+  ({ width, margin }: { width: number; margin: string }) => ({
     width,
     height: '24px',
     margin: margin,
