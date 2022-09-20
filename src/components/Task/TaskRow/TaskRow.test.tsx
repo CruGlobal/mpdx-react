@@ -311,4 +311,43 @@ describe('TaskRow', () => {
       });
     });
   });
+
+  it('handles renders multiple names separated by comma', async () => {
+    const task = gqlMock<TaskRowFragment>(TaskRowFragmentDoc, {
+      mocks: {
+        startAt,
+        result: ResultEnum.None,
+        contacts: {
+          nodes: [
+            {
+              id: 'contact1',
+              name: 'Contact 1',
+            },
+            {
+              id: 'contact2',
+              name: 'Contact 2',
+            },
+          ],
+        },
+      },
+    });
+
+    const { findByText } = render(
+      <GqlMockedProvider>
+        <MuiThemeProvider theme={theme}>
+          <TaskRow
+            accountListId={accountListId}
+            task={task}
+            onTaskCheckToggle={onTaskCheckSelected}
+            onContactSelected={onContactSelected}
+            isChecked={false}
+          />
+        </MuiThemeProvider>
+      </GqlMockedProvider>,
+    );
+
+    expect(await findByText(task.subject)).toBeVisible();
+    expect(await findByText('Contact 1,')).toBeVisible();
+    expect(await findByText('Contact 2')).toBeVisible();
+  });
 });
