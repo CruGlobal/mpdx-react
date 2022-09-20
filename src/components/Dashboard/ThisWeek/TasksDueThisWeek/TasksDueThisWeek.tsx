@@ -22,7 +22,7 @@ import AnimatedCard from '../../../AnimatedCard';
 import TaskStatus from '../../../Task/Status';
 import illustration8 from '../../../../images/drawkit/grape/drawkit-grape-pack-illustration-8.svg';
 import { GetThisWeekQuery } from '../GetThisWeek.generated';
-import useTaskDrawer from '../../../../hooks/useTaskDrawer';
+import useTaskModal from 'src/hooks/useTaskModal';
 
 const useStyles = makeStyles((theme: Theme) => ({
   div: {
@@ -71,12 +71,12 @@ const TasksDueThisWeek = ({
 }: Props): ReactElement => {
   const classes = useStyles();
   const { t } = useTranslation();
-  const { openTaskDrawer } = useTaskDrawer();
+  const { openTaskModal } = useTaskModal();
 
   const handleClick = ({
     id: taskId,
   }: GetThisWeekQuery['dueTasks']['nodes'][0]): void => {
-    openTaskDrawer({ taskId });
+    openTaskModal({ taskId });
   };
 
   return (
@@ -141,9 +141,9 @@ const TasksDueThisWeek = ({
                       disableTypography={true}
                       primary={
                         <Typography variant="body1">
-                          {task.contacts.nodes
-                            .map(({ name }) => name)
-                            .join(', ')}
+                          {`${task.contacts.nodes[0].name}, +${
+                            task.contacts.totalCount - 1
+                          } more`}
                         </Typography>
                       }
                       secondary={
