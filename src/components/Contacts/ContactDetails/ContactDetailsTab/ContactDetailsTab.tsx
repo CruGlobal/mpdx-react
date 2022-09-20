@@ -18,9 +18,7 @@ import { ContactDetailsTabMailing } from './Mailing/ContactDetailsTabMailing';
 import { ContactDetailsOther } from './Other/ContactDetailsOther';
 import { ContactDetailsTabPeople } from './People/ContactDetailsTabPeople';
 import { ContactTags } from './Tags/ContactTags';
-import { EditContactDetailsModal } from './People/Items/EditContactDetailsModal/EditContactDetailsModal';
 import { EditContactOtherModal } from './Other/EditContactOtherModal/EditContactOtherModal';
-import { EditContactMailingModal } from './Mailing/EditContactMailingModal/EditContactMailingModal';
 
 const ContactDetailsTabContainer = styled(Box)(({ theme }) => ({
   width: '100%',
@@ -39,7 +37,7 @@ const ContactDetailHeadingContainer = styled(Box)(() => ({
   alignItems: 'center',
 }));
 
-const ContactDetailEditIcon = styled(CreateIcon)(({ theme }) => ({
+export const ContactDetailEditIcon = styled(CreateIcon)(({ theme }) => ({
   width: '18px',
   height: '18px',
   margin: theme.spacing(0),
@@ -78,14 +76,9 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
 
   const { t } = useTranslation();
 
-  const {
-    editModalOpen,
-    setEditModalOpen,
-    editOtherModalOpen,
-    setEditOtherModalOpen,
-    editMailingModalOpen,
-    setEditMailingModalOpen,
-  } = React.useContext(ContactDetailContext) as ContactDetailsType;
+  const { editOtherModalOpen, setEditOtherModalOpen } = React.useContext(
+    ContactDetailContext,
+  ) as ContactDetailsType;
 
   return (
     <>
@@ -113,14 +106,6 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
             <ContactDetailHeadingText variant="h6">
               {loading || !data ? t('Loading') : data.contact.name}
             </ContactDetailHeadingText>
-            {loading || !data ? null : (
-              <IconButton
-                onClick={() => setEditModalOpen(true)}
-                aria-label={t('Edit Icon')}
-              >
-                <ContactDetailEditIcon />
-              </IconButton>
-            )}
           </ContactDetailHeadingContainer>
           {loading || !data ? (
             <>
@@ -144,14 +129,6 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
             <ContactDetailHeadingText variant="h6">
               {t('Mailing')}
             </ContactDetailHeadingText>
-            {loading || !data ? null : (
-              <IconButton
-                onClick={() => setEditMailingModalOpen(true)}
-                aria-label={t('Edit Icon')}
-              >
-                <ContactDetailEditIcon />
-              </IconButton>
-            )}
           </ContactDetailHeadingContainer>
           {loading || !data ? (
             <>
@@ -201,24 +178,12 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
       </ContactDetailsTabContainer>
       {loading || !data ? null : (
         <>
-          <EditContactDetailsModal
-            accountListId={accountListId}
-            contact={data.contact}
-            isOpen={editModalOpen}
-            handleClose={() => setEditModalOpen(false)}
-          />
           <EditContactOtherModal
             accountListId={accountListId}
             contact={data.contact}
             isOpen={editOtherModalOpen}
             referral={data.contact.contactReferralsToMe?.nodes[0]}
             handleClose={() => setEditOtherModalOpen(false)}
-          />
-          <EditContactMailingModal
-            accountListId={accountListId}
-            contact={data.contact}
-            isOpen={editMailingModalOpen}
-            handleClose={() => setEditMailingModalOpen(false)}
           />
         </>
       )}
