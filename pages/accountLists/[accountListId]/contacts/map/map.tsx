@@ -12,6 +12,7 @@ import { useTranslation } from 'react-i18next';
 import { StatusEnum } from '../../../../../graphql/types.generated';
 import { ContactsPageContext, ContactsPageType } from '../ContactsPageContext';
 import theme from 'src/theme';
+import { sourceToStr } from 'src/utils/sourceToStr';
 
 const ContactLink = styled(Typography)(({ theme }) => ({
   color: theme.palette.mpdxBlue.main,
@@ -181,7 +182,7 @@ export const ContactsMap: React.FC = ({}) => {
                     display="inline"
                     style={{ marginRight: theme.spacing(0.5) }}
                   >
-                    {selected.source}
+                    {sourceToStr(selected.source ?? '')}
                   </Typography>
                   <Typography display="inline">{selected.date}</Typography>
                   <ContactLink
