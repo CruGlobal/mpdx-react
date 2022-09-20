@@ -27,7 +27,6 @@ import { ActivityTypeEnum } from '../../../../../graphql/types.generated';
 import Modal from '../../../common/Modal/Modal';
 import { useCreateTaskCommentMutation } from 'src/components/Task/Drawer/CommentList/Form/CreateTaskComment.generated';
 import theme from 'src/theme';
-import { dateFormat } from 'src/lib/intlFormat/intlFormat';
 import { useGetDataForTaskDrawerQuery } from 'src/components/Task/Drawer/Form/TaskDrawer.generated';
 import { useMassActionsUpdateTasksMutation } from 'src/components/Task/MassActions/MassActionsUpdateTasks.generated';
 import { TasksDocument } from 'pages/accountLists/[accountListId]/tasks/Tasks.generated';
@@ -246,17 +245,11 @@ export const MassActionsEditTasksModal: React.FC<
                           </InputAdornment>
                         ),
                       }}
-                      labelFunc={(date, invalidLabel) =>
-                        date ? dateFormat(date) : invalidLabel
-                      }
+                      inputFormat="MMM dd, yyyy"
                       closeOnSelect
                       label={t('Due Date')}
                       value={startAt}
                       onChange={(date): void => setFieldValue('startAt', date)}
-                      okLabel={t('OK')}
-                      todayLabel={t('Today')}
-                      cancelLabel={t('Cancel')}
-                      clearLabel={t('Clear')}
                     />
                   </FormControl>
                 </Grid>
@@ -281,10 +274,6 @@ export const MassActionsEditTasksModal: React.FC<
                       label={t('Due Time')}
                       value={startAt}
                       onChange={(date): void => setFieldValue('startAt', date)}
-                      okLabel={t('OK')}
-                      todayLabel={t('Today')}
-                      cancelLabel={t('Cancel')}
-                      clearLabel={t('Clear')}
                     />
                   </FormControl>
                 </Grid>

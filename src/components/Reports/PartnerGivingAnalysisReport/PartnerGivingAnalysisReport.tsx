@@ -389,13 +389,19 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
             selectedContacts={selectedContacts}
           />
           <TablePagination
-            component="div"
+            colSpan={3}
             count={filteredContacts.length}
-            onChangePage={handlePageChange}
-            onChangeRowsPerPage={handleLimitChange}
+            onPageChange={handlePageChange}
+            onRowsPerPageChange={handleLimitChange}
             page={page}
             rowsPerPage={limit}
             rowsPerPageOptions={[10, 25, 50]}
+            SelectProps={{
+              inputProps: {
+                'aria-label': 'rows per page',
+              },
+              native: true,
+            }}
           />
         </>
       ) : (

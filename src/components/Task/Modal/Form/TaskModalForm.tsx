@@ -29,7 +29,6 @@ import Schedule from '@mui/icons-material/Schedule';
 import { v4 as uuidv4 } from 'uuid';
 import _ from 'lodash';
 import debounce from 'lodash/fp/debounce';
-import { dateFormat } from '../../../../lib/intlFormat/intlFormat';
 import {
   ActivityTypeEnum,
   NotificationTimeUnitEnum,
@@ -381,19 +380,13 @@ const TaskModalForm = ({
                           renderInput={(params) => (
                             <TextField fullWidth {...params} />
                           )}
-                          labelFunc={(date, invalidLabel) =>
-                            date ? dateFormat(date) : invalidLabel
-                          }
+                          inputFormat="MMM dd, yyyy"
                           closeOnSelect
                           label={t('Due Date')}
                           value={startAt}
                           onChange={(date): void =>
                             setFieldValue('startAt', date)
                           }
-                          okLabel={t('OK')}
-                          todayLabel={t('Today')}
-                          cancelLabel={t('Cancel')}
-                          clearLabel={t('Clear')}
                         />
                       </Grid>
                       <Grid xs={6} item>
@@ -418,10 +411,6 @@ const TaskModalForm = ({
                           onChange={(date): void =>
                             setFieldValue('startAt', date)
                           }
-                          okLabel={t('OK')}
-                          todayLabel={t('Today')}
-                          cancelLabel={t('Cancel')}
-                          clearLabel={t('Clear')}
                         />
                       </Grid>
                     </Grid>
@@ -433,37 +422,29 @@ const TaskModalForm = ({
                       <Grid container spacing={2}>
                         <Grid xs={6} item>
                           <MobileDatePicker
-                            renderInput={(params) => <TextField {...params} />}
-                            fullWidth
-                            labelFunc={(date, invalidLabel) =>
-                              date ? dateFormat(date) : invalidLabel
-                            }
+                            renderInput={(params) => (
+                              <TextField fullWidth {...params} />
+                            )}
+                            inputFormat="MMM dd, yyyy"
                             closeOnSelect
                             label={t('Completed Date')}
                             value={completedAt}
                             onChange={(date): void =>
                               setFieldValue('completedAt', date)
                             }
-                            okLabel={t('OK')}
-                            todayLabel={t('Today')}
-                            cancelLabel={t('Cancel')}
-                            clearLabel={t('Clear')}
                           />
                         </Grid>
                         <Grid xs={6} item>
                           <MobileTimePicker
-                            renderInput={(params) => <TextField {...params} />}
-                            fullWidth
+                            renderInput={(params) => (
+                              <TextField fullWidth {...params} />
+                            )}
                             closeOnSelect
                             label={t('Completed Time')}
                             value={completedAt}
                             onChange={(date): void =>
                               setFieldValue('completedAt', date)
                             }
-                            okLabel={t('OK')}
-                            todayLabel={t('Today')}
-                            cancelLabel={t('Cancel')}
-                            clearLabel={t('Clear')}
                           />
                         </Grid>
                       </Grid>
@@ -477,11 +458,11 @@ const TaskModalForm = ({
                     renderTags={(value, getTagProps): ReactElement[] =>
                       value.map((option, index) => (
                         <Chip
-                          color="primary"
+                          {...getTagProps({ index })}
+                          color="default"
                           size="small"
                           key={index}
                           label={option}
-                          {...getTagProps({ index })}
                         />
                       ))
                     }

@@ -39,7 +39,8 @@ export function relayStylePaginationWithNodes<TNode = Reference>(
       const edges: TRelayEdge<TNode>[] = [];
       let firstEdgeCursor = '';
       let lastEdgeCursor = '';
-      existing.edges.forEach((edge) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      existing.edges.forEach((edge: any) => {
         // Edges themselves could be Reference objects, so it's important
         // to use readField to access the edge.edge.node property.
         if (canRead(readField('node', edge))) {

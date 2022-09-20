@@ -25,7 +25,6 @@ import { DateTime } from 'luxon';
 import CalendarToday from '@mui/icons-material/CalendarToday';
 import Schedule from '@mui/icons-material/Schedule';
 import { v4 as uuidv4 } from 'uuid';
-import { dateFormat } from '../../../../../lib/intlFormat/intlFormat';
 import {
   ActivityTypeEnum,
   ResultEnum,
@@ -190,19 +189,13 @@ const TaskModalCompleteForm = ({
                               </InputAdornment>
                             ),
                           }}
-                          labelFunc={(date, invalidLabel) =>
-                            date ? dateFormat(date) : invalidLabel
-                          }
+                          inputFormat="MMM dd, yyyy"
                           closeOnSelect
                           label={t('Completed Date')}
                           value={completedAt}
                           onChange={(date): void =>
                             setFieldValue('completedAt', date)
                           }
-                          okLabel={t('OK')}
-                          todayLabel={t('Today')}
-                          cancelLabel={t('Cancel')}
-                          clearLabel={t('Clear')}
                         />
                       </Grid>
                       <Grid xs={6} item>
@@ -227,10 +220,6 @@ const TaskModalCompleteForm = ({
                           onChange={(date): void =>
                             setFieldValue('completedAt', date)
                           }
-                          okLabel={t('OK')}
-                          todayLabel={t('Today')}
-                          cancelLabel={t('Cancel')}
-                          clearLabel={t('Clear')}
                         />
                       </Grid>
                     </Grid>
@@ -288,11 +277,11 @@ const TaskModalCompleteForm = ({
                     renderTags={(value, getTagProps): ReactElement[] =>
                       value.map((option, index) => (
                         <Chip
-                          color="primary"
+                          {...getTagProps({ index })}
+                          color="default"
                           size="small"
                           key={index}
                           label={option}
-                          {...getTagProps({ index })}
                         />
                       ))
                     }

@@ -30,7 +30,6 @@ import { Formik } from 'formik';
 import * as yup from 'yup';
 import { useSnackbar } from 'notistack';
 import { DateTime } from 'luxon';
-import { dateFormat } from '../../../../lib/intlFormat/intlFormat';
 import {
   ActivityTypeEnum,
   NotificationTimeUnitEnum,
@@ -284,19 +283,13 @@ const TaskDrawerForm = ({
                         renderInput={(params) => (
                           <TextField fullWidth {...params} />
                         )}
-                        labelFunc={(date, invalidLabel) =>
-                          date ? dateFormat(date) : invalidLabel
-                        }
+                        inputFormat="MMM dd, yyyy"
                         closeOnSelect
                         label={t('Due Date')}
                         value={startAt}
                         onChange={(date): void =>
                           setFieldValue('startAt', date)
                         }
-                        okLabel={t('OK')}
-                        todayLabel={t('Today')}
-                        cancelLabel={t('Cancel')}
-                        clearLabel={t('Clear')}
                       />
                     </Grid>
                     <Grid xs={6} item>
@@ -310,10 +303,6 @@ const TaskDrawerForm = ({
                         onChange={(date): void =>
                           setFieldValue('startAt', date)
                         }
-                        okLabel={t('OK')}
-                        todayLabel={t('Today')}
-                        cancelLabel={t('Cancel')}
-                        clearLabel={t('Clear')}
                       />
                     </Grid>
                   </Grid>
@@ -328,35 +317,26 @@ const TaskDrawerForm = ({
                           renderInput={(params) => (
                             <TextField fullWidth {...params} />
                           )}
-                          labelFunc={(date, invalidLabel) =>
-                            date ? dateFormat(date) : invalidLabel
-                          }
+                          inputFormat="MMM dd, yyyy"
                           closeOnSelect
                           label={t('Completed Date')}
                           value={completedAt}
                           onChange={(date): void =>
                             setFieldValue('completedAt', date)
                           }
-                          okLabel={t('OK')}
-                          todayLabel={t('Today')}
-                          cancelLabel={t('Cancel')}
-                          clearLabel={t('Clear')}
                         />
                       </Grid>
                       <Grid xs={6} item>
                         <MobileTimePicker
-                          renderInput={(params) => <TextField {...params} />}
-                          fullWidth
+                          renderInput={(params) => (
+                            <TextField fullWidth {...params} />
+                          )}
                           closeOnSelect
                           label={t('Completed Time')}
                           value={completedAt}
                           onChange={(date): void =>
                             setFieldValue('completedAt', date)
                           }
-                          okLabel={t('OK')}
-                          todayLabel={t('Today')}
-                          cancelLabel={t('Cancel')}
-                          clearLabel={t('Clear')}
                         />
                       </Grid>
                     </Grid>
@@ -370,11 +350,11 @@ const TaskDrawerForm = ({
                   renderTags={(value, getTagProps): ReactElement[] =>
                     value.map((option, index) => (
                       <Chip
-                        color="primary"
+                        {...getTagProps({ index })}
+                        color="default"
                         size="small"
                         key={index}
                         label={option}
-                        {...getTagProps({ index })}
                       />
                     ))
                   }

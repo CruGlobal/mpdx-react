@@ -8,9 +8,9 @@ import {
   ListItemText,
   Menu,
   MenuItem,
-  Theme,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import theme from 'src/theme';
 import FilterList from '@mui/icons-material/FilterList';
 import { useTranslation } from 'react-i18next';
 import ArrowDropDown from '@mui/icons-material/ArrowDropDown';
@@ -24,19 +24,17 @@ import {
 import { StarFilterButton } from './StarFilterButton/StarFilterButton';
 import useTaskModal from 'src/hooks/useTaskModal';
 
-const HeaderWrap = styled(Box)(
-  ({ theme }: { theme: Theme; contactDetailsOpen: boolean }) => ({
-    padding: theme.spacing(3, 0.5),
-    display: 'flex',
-    justifyContent: 'space-between',
-    borderBottom: `1px solid ${theme.palette.grey[200]}`,
-    [theme.breakpoints.down('sm')]: {
-      paddingRight: theme.spacing(2),
-    },
-  }),
-);
+const HeaderWrap = styled(Box)(({}: { contactDetailsOpen: boolean }) => ({
+  padding: theme.spacing(3, 0.5),
+  display: 'flex',
+  justifyContent: 'space-between',
+  borderBottom: `1px solid ${theme.palette.grey[200]}`,
+  [theme.breakpoints.down('sm')]: {
+    paddingRight: theme.spacing(2),
+  },
+}));
 
-const HeaderWrapInner = styled(Box)(() => ({
+const HeaderWrapInner = styled(Box)(({}) => ({
   display: 'flex',
   alignItems: 'center',
 }));
@@ -49,19 +47,8 @@ const StyledCheckbox = styled(Checkbox)(({ theme }) => ({
   },
 }));
 
-const FilterButton = styled(
-  ({ activeFilters: _activeFilters, panelOpen: _panelOpen, ...props }) => (
-    <IconButton {...props} />
-  ),
-)(
-  ({
-    theme,
-    activeFilters,
-  }: {
-    theme: Theme;
-    activeFilters: boolean;
-    panelOpen: boolean;
-  }) => ({
+const FilterButton = styled(IconButton)(
+  ({ activeFilters }: { activeFilters: boolean; panelOpen: boolean }) => ({
     marginRight: theme.spacing(2),
     backgroundColor: activeFilters
       ? theme.palette.cruYellow.main
@@ -81,10 +68,16 @@ const ItemsShowingText = styled('p')(({ theme }) => ({
   fontFamily: theme.typography.fontFamily,
 }));
 
-const ActionsButton = styled(Button)(() => ({
+const ActionsButton = styled(Button)(({ theme }) => ({
   width: 114,
   height: 48,
   border: '1px solid #383F43',
+  backgroundColor: theme.palette.mpdxBlue.main,
+  color: theme.palette.common.white,
+  borderWidth: '0 !important',
+  '&:hover': {
+    backgroundColor: '#006193',
+  },
 }));
 
 export enum TableViewModeEnum {
@@ -226,111 +219,117 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
               openRemoveTagsModal && (
                 <>
                   <Hidden xsDown>
-                    <ActionsButton
-                      aria-haspopup
-                      aria-expanded={open}
-                      onClick={handleClick}
-                      endIcon={<ArrowDropDown />}
-                      color="inherit"
-                    >
-                      {filterPanelOpen && contactDetailsOpen ? (
-                        <MoreHoriz />
-                      ) : (
-                        t('Actions')
-                      )}
-                    </ActionsButton>
-                    <Menu
-                      open={open}
-                      onClose={handleClose}
-                      anchorEl={anchorEl}
-                      anchorOrigin={{
-                        vertical: 'bottom',
-                        horizontal: 'center',
-                      }}
-                      transformOrigin={{
-                        vertical: 'top',
-                        horizontal: 'center',
-                      }}
-                    >
-                      <MenuItem
-                        onClick={() => {
-                          openAddTagsModal(true);
-                          handleClose();
-                        }}
-                      >
-                        <ListItemText>{t('Add Tags')}</ListItemText>
-                      </MenuItem>
-                      <MenuItem
-                        divider
-                        onClick={() => {
-                          openRemoveTagsModal(true);
-                          handleClose();
-                        }}
-                      >
-                        <ListItemText>{t('Remove Tags')}</ListItemText>
-                      </MenuItem>
-                      <MenuItem
-                        onClick={() => {
-                          openTaskModal({
-                            defaultValues: { contactIds: selectedIds },
-                          });
-                          handleClose();
-                        }}
-                      >
-                        <ListItemText>{t('Add Task')}</ListItemText>
-                      </MenuItem>
-                      <MenuItem
-                        divider
-                        onClick={() => {
-                          openTaskModal({
-                            view: 'log',
-                            defaultValues: { contactIds: selectedIds },
-                          });
-                          handleClose();
-                        }}
-                      >
-                        <ListItemText>{t('Log Task')}</ListItemText>
-                      </MenuItem>
+                    {selectedIds.length > 0 && (
+                      <>
+                        <ActionsButton
+                          aria-haspopup
+                          aria-expanded={open}
+                          onClick={handleClick}
+                          endIcon={<ArrowDropDown />}
+                          color="inherit"
+                        >
+                          {filterPanelOpen && contactDetailsOpen ? (
+                            <MoreHoriz />
+                          ) : (
+                            t('Actions')
+                          )}
+                        </ActionsButton>
+                        <Menu
+                          open={open}
+                          onClose={handleClose}
+                          anchorEl={anchorEl}
+                          anchorOrigin={{
+                            vertical: 'bottom',
+                            horizontal: 'center',
+                          }}
+                          transformOrigin={{
+                            vertical: 'top',
+                            horizontal: 'center',
+                          }}
+                        >
+                          <MenuItem
+                            onClick={() => {
+                              openAddTagsModal(true);
+                              handleClose();
+                            }}
+                          >
+                            <ListItemText>{t('Add Tags')}</ListItemText>
+                          </MenuItem>
+                          <MenuItem
+                            divider
+                            onClick={() => {
+                              openRemoveTagsModal(true);
+                              handleClose();
+                            }}
+                          >
+                            <ListItemText>{t('Remove Tags')}</ListItemText>
+                          </MenuItem>
+                          <MenuItem
+                            onClick={() => {
+                              openTaskModal({
+                                defaultValues: { contactIds: selectedIds },
+                              });
+                              handleClose();
+                            }}
+                          >
+                            <ListItemText>{t('Add Task')}</ListItemText>
+                          </MenuItem>
+                          <MenuItem
+                            divider
+                            onClick={() => {
+                              openTaskModal({
+                                view: 'log',
+                                defaultValues: { contactIds: selectedIds },
+                              });
+                              handleClose();
+                            }}
+                          >
+                            <ListItemText>{t('Log Task')}</ListItemText>
+                          </MenuItem>
 
-                      <MenuItem
-                        onClick={() => {
-                          openEditFieldsModal(true);
-                          handleClose();
-                        }}
-                      >
-                        <ListItemText>{t('Edit Fields')}</ListItemText>
-                      </MenuItem>
-                      <MenuItem
-                        onClick={() => {
-                          openHideContactsModal(true);
-                          handleClose();
-                        }}
-                      >
-                        <ListItemText>{t('Hide Contacts')}</ListItemText>
-                      </MenuItem>
+                          <MenuItem
+                            onClick={() => {
+                              openEditFieldsModal(true);
+                              handleClose();
+                            }}
+                          >
+                            <ListItemText>{t('Edit Fields')}</ListItemText>
+                          </MenuItem>
+                          <MenuItem
+                            onClick={() => {
+                              openHideContactsModal(true);
+                              handleClose();
+                            }}
+                          >
+                            <ListItemText>{t('Hide Contacts')}</ListItemText>
+                          </MenuItem>
 
-                      <MenuItem
-                        onClick={() => {
-                          openAddToAppealModal(true);
-                          handleClose();
-                        }}
-                      >
-                        <ListItemText>{t('Add to Appeal')}</ListItemText>
-                      </MenuItem>
-                      <MenuItem
-                        divider
-                        onClick={() => {
-                          openCreateAppealModal(true);
-                          handleClose();
-                        }}
-                      >
-                        <ListItemText>{t('Add to New Appeal')}</ListItemText>
-                      </MenuItem>
+                          <MenuItem
+                            onClick={() => {
+                              openAddToAppealModal(true);
+                              handleClose();
+                            }}
+                          >
+                            <ListItemText>{t('Add to Appeal')}</ListItemText>
+                          </MenuItem>
+                          <MenuItem
+                            divider
+                            onClick={() => {
+                              openCreateAppealModal(true);
+                              handleClose();
+                            }}
+                          >
+                            <ListItemText>
+                              {t('Add to New Appeal')}
+                            </ListItemText>
+                          </MenuItem>
 
-                      <MenuItem>
-                        <ListItemText>{t('Export Emails')}</ListItemText>
-                      </MenuItem>
-                    </Menu>
+                          <MenuItem>
+                            <ListItemText>{t('Export Emails')}</ListItemText>
+                          </MenuItem>
+                        </Menu>
+                      </>
+                    )}
                   </Hidden>
                 </>
               )}
@@ -341,75 +340,80 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
           <>
             {buttonGroup}
             <Hidden xsDown>
-              <ActionsButton
-                aria-haspopup
-                aria-expanded={open}
-                onClick={handleClick}
-                endIcon={<ArrowDropDown />}
-                color="inherit"
-              >
-                {t('Actions')}
-              </ActionsButton>
-              <Menu
-                open={open}
-                onClose={handleClose}
-                anchorEl={anchorEl}
-                anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-                transformOrigin={{ vertical: 'top', horizontal: 'center' }}
-              >
-                {openCompleteTasksModal && (
-                  <MenuItem
-                    onClick={() => {
-                      openCompleteTasksModal(true);
-                      handleClose();
-                    }}
+              {selectedIds.length > 0 && (
+                <>
+                  <ActionsButton
+                    aria-haspopup
+                    aria-expanded={open}
+                    onClick={handleClick}
+                    endIcon={<ArrowDropDown />}
+                    disabled={selectedIds.length === 0}
+                    color="inherit"
                   >
-                    <ListItemText>{t('Complete Tasks')}</ListItemText>
-                  </MenuItem>
-                )}
-                {openEditTasksModal && (
-                  <MenuItem
-                    divider
-                    onClick={() => {
-                      openEditTasksModal(true);
-                      handleClose();
-                    }}
+                    {t('Actions')}
+                  </ActionsButton>
+                  <Menu
+                    open={open}
+                    onClose={handleClose}
+                    anchorEl={anchorEl}
+                    anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+                    transformOrigin={{ vertical: 'top', horizontal: 'center' }}
                   >
-                    <ListItemText>{t('Edit Tasks')}</ListItemText>
-                  </MenuItem>
-                )}
-                {openTasksAddTagsModal && (
-                  <MenuItem
-                    onClick={() => {
-                      openTasksAddTagsModal(true);
-                      handleClose();
-                    }}
-                  >
-                    <ListItemText>{t('Add Tag(s)')}</ListItemText>
-                  </MenuItem>
-                )}
-                {openTasksRemoveTagsModal && (
-                  <MenuItem
-                    divider
-                    onClick={() => {
-                      openTasksRemoveTagsModal(true);
-                      handleClose();
-                    }}
-                  >
-                    <ListItemText>{t('Remove Tag(s)')}</ListItemText>
-                  </MenuItem>
-                )}
-                {openDeleteTasksModal && (
-                  <MenuItem
-                    onClick={() => {
-                      openDeleteTasksModal(true);
-                      handleClose();
-                    }}
-                  >
-                    <ListItemText>{t('Delete Tasks')}</ListItemText>
-                  </MenuItem>
-                )}
-              </Menu>
+                    {openCompleteTasksModal && (
+                      <MenuItem
+                        onClick={() => {
+                          openCompleteTasksModal(true);
+                          handleClose();
+                        }}
+                      >
+                        <ListItemText>{t('Complete Tasks')}</ListItemText>
+                      </MenuItem>
+                    )}
+                    {openEditTasksModal && (
+                      <MenuItem
+                        divider
+                        onClick={() => {
+                          openEditTasksModal(true);
+                          handleClose();
+                        }}
+                      >
+                        <ListItemText>{t('Edit Tasks')}</ListItemText>
+                      </MenuItem>
+                    )}
+                    {openTasksAddTagsModal && (
+                      <MenuItem
+                        onClick={() => {
+                          openTasksAddTagsModal(true);
+                          handleClose();
+                        }}
+                      >
+                        <ListItemText>{t('Add Tag(s)')}</ListItemText>
+                      </MenuItem>
+                    )}
+                    {openTasksRemoveTagsModal && (
+                      <MenuItem
+                        divider
+                        onClick={() => {
+                          openTasksRemoveTagsModal(true);
+                          handleClose();
+                        }}
+                      >
+                        <ListItemText>{t('Remove Tag(s)')}</ListItemText>
+                      </MenuItem>
+                    )}
+                    {openDeleteTasksModal && (
+                      <MenuItem
+                        onClick={() => {
+                          openDeleteTasksModal(true);
+                          handleClose();
+                        }}
+                      >
+                        <ListItemText>{t('Delete Tasks')}</ListItemText>
+                      </MenuItem>
+                    )}
+                  </Menu>
+                </>
+              )}
             </Hidden>
           </>
         )}

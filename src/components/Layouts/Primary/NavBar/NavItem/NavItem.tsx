@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import type { FC, ReactNode } from 'react';
 import NextLink, { LinkProps } from 'next/link';
-import { Button, Collapse, ListItem } from '@mui/material';
+import { Button, Collapse, ListItemButton } from '@mui/material';
 import { styled, useTheme } from '@mui/material/styles';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
@@ -18,13 +18,13 @@ interface NavItemProps {
   title: string;
 }
 
-export const StyledListItem = styled(ListItem)(() => ({
+export const StyledListItem = styled(ListItemButton)(() => ({
   display: 'block',
   paddingTop: 0,
   paddingBottom: 0,
 }));
 
-export const LeafListItem = styled(ListItem)(() => ({
+export const LeafListItem = styled(ListItemButton)(() => ({
   display: 'flex',
   paddingTop: 0,
   paddingBottom: 0,
@@ -96,7 +96,7 @@ export const NavItem: FC<NavItemProps> = ({
 
   if (children) {
     return (
-      <StyledListItem button disableGutters key={title} {...rest}>
+      <StyledListItem disableGutters key={title} {...rest}>
         <StyledButton onClick={handleToggle} style={style}>
           {Icon && <Icon style={iconStyle} size="20" />}
           <Title>{title}</Title>
@@ -120,7 +120,7 @@ export const NavItem: FC<NavItemProps> = ({
   }
 
   return (
-    <LeafListItem button disableGutters key={title} {...rest}>
+    <LeafListItem disableGutters key={title} {...rest}>
       {(href as string).includes('tools') ? (
         <HandoffLink key={title} path={href as string}>
           <LeafButton style={style}>

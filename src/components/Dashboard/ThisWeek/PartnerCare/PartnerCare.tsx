@@ -153,7 +153,7 @@ const PartnerCare = ({
   };
 
   const handleChange = (
-    _event: React.ChangeEvent<Record<string, unknown>>,
+    _event: React.SyntheticEvent,
     newValue: number,
   ): void => {
     setValue(newValue);

@@ -33,7 +33,6 @@ import { DateTime } from 'luxon';
 import { v4 as uuidv4 } from 'uuid';
 import { AnimatePresence, motion } from 'framer-motion';
 import { debounce } from 'lodash/fp';
-import { dateFormat } from '../../../../../lib/intlFormat/intlFormat';
 import {
   ActivityTypeEnum,
   NotificationTimeUnitEnum,
@@ -430,19 +429,13 @@ const TaskModalLogForm = ({
                               </InputAdornment>
                             ),
                           }}
-                          labelFunc={(date, invalidLabel) =>
-                            date ? dateFormat(date) : invalidLabel
-                          }
+                          inputFormat="MMM dd, yyyy"
                           closeOnSelect
                           label={t('Completed Date')}
                           value={completedAt}
                           onChange={(date): void =>
                             setFieldValue('completedAt', date)
                           }
-                          okLabel={t('OK')}
-                          todayLabel={t('Today')}
-                          cancelLabel={t('Cancel')}
-                          clearLabel={t('Clear')}
                         />
                       </Grid>
                       <Grid xs={6} item>
@@ -467,10 +460,6 @@ const TaskModalLogForm = ({
                           onChange={(date): void =>
                             setFieldValue('completedAt', date)
                           }
-                          okLabel={t('OK')}
-                          todayLabel={t('Today')}
-                          cancelLabel={t('Cancel')}
-                          clearLabel={t('Clear')}
                         />
                       </Grid>
                     </Grid>
@@ -516,11 +505,11 @@ const TaskModalLogForm = ({
                               ): ReactElement[] =>
                                 value.map((option, index) => (
                                   <Chip
-                                    color="primary"
+                                    {...getTagProps({ index })}
+                                    color="default"
                                     size="small"
                                     key={index}
                                     label={option}
-                                    {...getTagProps({ index })}
                                   />
                                 ))
                               }

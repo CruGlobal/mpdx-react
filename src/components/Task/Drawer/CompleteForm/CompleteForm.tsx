@@ -21,7 +21,6 @@ import { Formik } from 'formik';
 import * as yup from 'yup';
 import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
-import { dateFormat } from '../../../../lib/intlFormat/intlFormat';
 import {
   ActivityTypeEnum,
   ContactConnection,
@@ -265,19 +264,13 @@ const TaskDrawerCompleteForm = ({
                         renderInput={(params) => (
                           <TextField fullWidth {...params} />
                         )}
-                        labelFunc={(date, invalidLabel) =>
-                          date ? dateFormat(date) : invalidLabel
-                        }
+                        inputFormat="MMM dd, yyyy"
                         closeOnSelect
                         label={t('Completed Date')}
                         value={completedAt}
                         onChange={(date): void =>
                           setFieldValue('completedAt', date)
                         }
-                        okLabel={t('OK')}
-                        todayLabel={t('Today')}
-                        cancelLabel={t('Cancel')}
-                        clearLabel={t('Clear')}
                       />
                     </Grid>
                     <Grid xs={6} item>
@@ -291,10 +284,6 @@ const TaskDrawerCompleteForm = ({
                         onChange={(date): void =>
                           setFieldValue('completedAt', date)
                         }
-                        okLabel={t('OK')}
-                        todayLabel={t('Today')}
-                        cancelLabel={t('Cancel')}
-                        clearLabel={t('Clear')}
                       />
                     </Grid>
                   </Grid>
@@ -307,11 +296,11 @@ const TaskDrawerCompleteForm = ({
                   renderTags={(value, getTagProps): ReactElement[] =>
                     value.map((option, index) => (
                       <Chip
-                        color="primary"
+                        {...getTagProps({ index })}
+                        color="default"
                         size="small"
                         key={index}
                         label={option}
-                        {...getTagProps({ index })}
                       />
                     ))
                   }

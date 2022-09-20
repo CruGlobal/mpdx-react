@@ -26,7 +26,6 @@ import {
 import Modal from '../../../common/Modal/Modal';
 import { useMassActionsUpdateContactFieldsMutation } from './MassActionsUpdateContacts.generated';
 import theme from 'src/theme';
-import { dateFormat } from 'src/lib/intlFormat/intlFormat';
 import { useLoadConstantsQuery } from 'src/components/Constants/LoadConstants.generated';
 import { useGetDataForTaskDrawerQuery } from 'src/components/Task/Drawer/Form/TaskDrawer.generated';
 import { ContactsDocument } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
@@ -274,17 +273,14 @@ export const MassActionsEditFieldsModal: React.FC<
                           </InputAdornment>
                         ),
                       }}
-                      labelFunc={(date, invalidLabel) =>
-                        date ? dateFormat(date) : invalidLabel
-                      }
+                      inputFormat="MMM dd, yyyy"
                       closeOnSelect
                       label={t('Next Increase Ask')}
                       value={nextAsk}
                       onChange={(date): void => setFieldValue('nextAsk', date)}
-                      okLabel={t('OK')}
-                      todayLabel={t('Today')}
-                      cancelLabel={t('Cancel')}
-                      clearLabel={t('Clear')}
+                      componentsProps={{
+                        actionBar: { actions: ['clear', 'cancel', 'accept'] },
+                      }}
                     />
                   </FormControl>
                 </Grid>

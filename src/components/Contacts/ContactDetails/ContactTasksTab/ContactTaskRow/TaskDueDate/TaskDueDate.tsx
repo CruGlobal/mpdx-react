@@ -1,5 +1,6 @@
-import { Box, Theme, Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import theme from 'src/theme';
 import CalendarToday from '@mui/icons-material/CalendarToday';
 import { DateTime } from 'luxon';
 import React from 'react';
@@ -12,15 +13,7 @@ const TaskRowWrap = styled(Box)(({ theme }) => ({
 }));
 
 const TaskCommentIcon = styled(CalendarToday)(
-  ({
-    theme,
-    isLate,
-    small,
-  }: {
-    theme: Theme;
-    isLate: boolean;
-    small: boolean;
-  }) => ({
+  ({ isLate, small }: { isLate: boolean; small: boolean }) => ({
     width: small ? 16 : 20,
     height: small ? 16 : 20,
     color: isLate ? theme.palette.error.main : theme.palette.text.secondary,
@@ -29,12 +22,10 @@ const TaskCommentIcon = styled(CalendarToday)(
 
 const DueDate = styled(Typography)(
   ({
-    theme,
     isLate,
     isComplete,
     small,
   }: {
-    theme: Theme;
     isLate: boolean;
     isComplete: boolean;
     small: boolean;
