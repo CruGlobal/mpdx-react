@@ -12,7 +12,6 @@ import AssignmentTurnedInIcon from '@material-ui/icons/AssignmentTurnedIn';
 import { useTranslation } from 'react-i18next';
 import { Check } from '@material-ui/icons';
 import useTaskModal from 'src/hooks/useTaskModal';
-import theme from 'src/theme';
 
 const TaskCompleteButton = styled(IconButton)(({ theme }) => ({
   border: `2px solid ${theme.palette.mpdxGreen.main}`,
