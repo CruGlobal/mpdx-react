@@ -26,7 +26,6 @@ import {
 import Modal from '../../../common/Modal/Modal';
 import { useMassActionsUpdateContactFieldsMutation } from './MassActionsUpdateContacts.generated';
 import theme from 'src/theme';
-import { dateFormat } from 'src/lib/intlFormat/intlFormat';
 import { useLoadConstantsQuery } from 'src/components/Constants/LoadConstants.generated';
 import { useGetDataForTaskDrawerQuery } from 'src/components/Task/Drawer/Form/TaskDrawer.generated';
 import { ContactsDocument } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
