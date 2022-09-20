@@ -308,12 +308,17 @@ export const AddDonation = ({
                         <Box width="100%">
                           <MobileDatePicker
                             renderInput={(params) => (
-                              <TextField fullWidth {...params} />
+                              <TextField
+                                id="date-input"
+                                fullWidth
+                                size="small"
+                                inputProps={{
+                                  'aria-labelledby': 'date-label',
+                                }}
+                                {...params}
+                              />
                             )}
                             {...field}
-                            size="small"
-                            id="date-input"
-                            inputVariant="outlined"
                             onChange={(date) =>
                               !date ? null : setFieldValue('donationDate', date)
                             }
@@ -323,12 +328,6 @@ export const AddDonation = ({
                                 : null
                             }
                             inputFormat="MM/dd/yyyy"
-                            inputProps={{
-                              'aria-labelledby': 'date-label',
-                            }}
-                            KeyboardButtonProps={{
-                              'aria-labelledby': 'date-label',
-                            }}
                           />
                         </Box>
                       )}

@@ -1,7 +1,8 @@
 import { Breakpoint } from '@mui/system/createTheme/createBreakpoints';
 import { FC, ReactElement } from 'react';
 import Box from '@mui/material/Box';
-import { styled, Theme } from '@mui/material/styles';
+import { styled } from '@mui/material/styles';
+import theme from 'src/theme';
 
 type ScrollBoxProps = {
   isscroll?: 1 | 0;
@@ -37,24 +38,16 @@ const CollapsibleWrapper = styled(Box)({
   overflowX: 'hidden',
 });
 
-const ExpandingContent = styled(Box)(
-  ({ open }: { theme: Theme; open: boolean }) => ({
-    flexGrow: 1,
-    flexShrink: 0,
-    flexBasis: open ? 0 : '100%',
-    transition: 'flex-basis ease-in-out 225ms',
-    overflowX: 'hidden',
-  }),
-);
+const ExpandingContent = styled(Box)(({ open }: { open: boolean }) => ({
+  flexGrow: 1,
+  flexShrink: 0,
+  flexBasis: open ? 0 : '100%',
+  transition: 'flex-basis ease-in-out 225ms',
+  overflowX: 'hidden',
+}));
 
 const PanelWrapper = styled(ScrollBox)(
-  ({
-    theme,
-    breakpoint,
-  }: {
-    theme: Theme;
-    breakpoint: Breakpoint | number;
-  }) => ({
+  ({ breakpoint }: { breakpoint: Breakpoint | number }) => ({
     flexShrink: 0,
     [theme.breakpoints.down(breakpoint)]: {
       transition: 'transform ease-in-out 225ms',
@@ -67,11 +60,9 @@ const PanelWrapper = styled(ScrollBox)(
 
 const LeftPanelWrapper = styled(PanelWrapper)(
   ({
-    theme,
     breakpoint,
     open,
   }: {
-    theme: Theme;
     open: boolean;
     breakpoint: Breakpoint | number;
   }) => ({
@@ -84,11 +75,9 @@ const LeftPanelWrapper = styled(PanelWrapper)(
 );
 const RightPanelWrapper = styled(PanelWrapper)(
   ({
-    theme,
     breakpoint,
     open,
   }: {
-    theme: Theme;
     open: boolean;
     breakpoint: Breakpoint | number;
   }) => ({

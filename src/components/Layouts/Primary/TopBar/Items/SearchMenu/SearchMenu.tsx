@@ -277,7 +277,7 @@ const SearchMenu = (): ReactElement => {
         <Box display="flex" justifyContent="center" alignItems="center">
           <Autocomplete
             fullWidth
-            freeSolo
+            multiple
             PopperComponent={SearchPopper}
             loading={loading}
             filterSelectedOptions

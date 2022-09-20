@@ -266,7 +266,7 @@ const ProfileMenu = (): ReactElement => {
             </MenuItem>
           </HandoffLink>
         )}
-        <MenuItem button={false}>
+        <MenuItem>
           <MenuButton
             variant="outlined"
             color="inherit"
