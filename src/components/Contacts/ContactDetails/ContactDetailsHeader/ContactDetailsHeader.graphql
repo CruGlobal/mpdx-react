@@ -7,8 +7,7 @@ fragment ContactDetailsHeader on Contact {
     lastName
   }
   starred
-  ...ContactPeople
-  ...ContactMailing
+  ...ContactDetails
   ...ContactHeaderAddress
   ...ContactHeaderEmail
   ...ContactHeaderPhone
