@@ -23,7 +23,7 @@ export const UserPreferenceProvider: React.FC<Props> = ({ children }) => {
     if (!loading) {
       i18next.changeLanguage(user?.user.preferences?.locale ?? 'en');
     }
-  });
+  }, [loading]);
 
   return (
     <UserPreferenceContext.Provider value={{}}>

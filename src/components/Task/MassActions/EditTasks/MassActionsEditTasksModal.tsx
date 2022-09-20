@@ -246,9 +246,7 @@ export const MassActionsEditTasksModal: React.FC<
                           </InputAdornment>
                         ),
                       }}
-                      labelFunc={(date, invalidLabel) =>
-                        date ? dateFormat(date) : invalidLabel
-                      }
+                      inputFormat="MMM dd, yyyy"
                       closeOnSelect
                       label={t('Due Date')}
                       value={startAt}

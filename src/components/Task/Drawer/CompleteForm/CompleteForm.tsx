@@ -265,9 +265,7 @@ const TaskDrawerCompleteForm = ({
                         renderInput={(params) => (
                           <TextField fullWidth {...params} />
                         )}
-                        labelFunc={(date, invalidLabel) =>
-                          date ? dateFormat(date) : invalidLabel
-                        }
+                        inputFormat="MMM dd, yyyy"
                         closeOnSelect
                         label={t('Completed Date')}
                         value={completedAt}
@@ -299,11 +297,11 @@ const TaskDrawerCompleteForm = ({
                   renderTags={(value, getTagProps): ReactElement[] =>
                     value.map((option, index) => (
                       <Chip
+                        {...getTagProps({ index })}
                         color="primary"
                         size="small"
                         key={index}
                         label={option}
-                        {...getTagProps({ index })}
                       />
                     ))
                   }

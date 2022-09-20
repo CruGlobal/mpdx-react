@@ -284,9 +284,7 @@ const TaskDrawerForm = ({
                         renderInput={(params) => (
                           <TextField fullWidth {...params} />
                         )}
-                        labelFunc={(date, invalidLabel) =>
-                          date ? dateFormat(date) : invalidLabel
-                        }
+                        inputFormat="MMM dd, yyyy"
                         closeOnSelect
                         label={t('Due Date')}
                         value={startAt}
@@ -320,9 +318,7 @@ const TaskDrawerForm = ({
                           renderInput={(params) => (
                             <TextField fullWidth {...params} />
                           )}
-                          labelFunc={(date, invalidLabel) =>
-                            date ? dateFormat(date) : invalidLabel
-                          }
+                          inputFormat="MMM dd, yyyy"
                           closeOnSelect
                           label={t('Completed Date')}
                           value={completedAt}
@@ -333,8 +329,9 @@ const TaskDrawerForm = ({
                       </Grid>
                       <Grid xs={6} item>
                         <MobileTimePicker
-                          renderInput={(params) => <TextField {...params} />}
-                          fullWidth
+                          renderInput={(params) => (
+                            <TextField fullWidth {...params} />
+                          )}
                           closeOnSelect
                           label={t('Completed Time')}
                           value={completedAt}
@@ -354,11 +351,11 @@ const TaskDrawerForm = ({
                   renderTags={(value, getTagProps): ReactElement[] =>
                     value.map((option, index) => (
                       <Chip
+                        {...getTagProps({ index })}
                         color="primary"
                         size="small"
                         key={index}
                         label={option}
-                        {...getTagProps({ index })}
                       />
                     ))
                   }

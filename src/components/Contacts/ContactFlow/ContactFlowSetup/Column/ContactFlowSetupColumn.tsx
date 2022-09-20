@@ -12,7 +12,8 @@ import React, {
   useState,
   useCallback,
 } from 'react';
-import { DropTargetMonitor, useDrag, useDrop, XYCoord } from 'react-dnd';
+import { DropTargetMonitor, useDrag, useDrop } from 'react-dnd';
+import type { Identifier, XYCoord } from 'dnd-core';
 import debounce from 'lodash/fp/debounce';
 import { ContactFilterStatusEnum } from '../../../../../../graphql/types.generated';
 import { colorMap } from '../../../../../../src/components/Contacts/ContactFlow/ContactFlow';
@@ -120,7 +121,11 @@ export const ContactFlowSetupColumn: React.FC<Props> = ({
 
   const dragRef = useRef<HTMLDivElement>(null);
   const previewRef = useRef<HTMLDivElement>(null);
-  const [{ handlerId }, drop] = useDrop({
+  const [{ handlerId }, drop] = useDrop<
+    DragItem,
+    void,
+    { handlerId: Identifier | null }
+  >({
     accept: 'column',
     collect(monitor) {
       return {

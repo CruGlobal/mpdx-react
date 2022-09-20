@@ -356,9 +356,7 @@ const TaskList = ({ initialFilter }: Props): ReactElement => {
                       renderInput={(params) => (
                         <TextField fullWidth {...params} />
                       )}
-                      labelFunc={(date, invalidLabel) =>
-                        date ? dateFormat(date) : invalidLabel
-                      }
+                      inputFormat="MMM dd, yyyy"
                       closeOnSelect
                       label={t('Minimum')}
                       value={filterList[index][0] || null}
@@ -373,9 +371,7 @@ const TaskList = ({ initialFilter }: Props): ReactElement => {
                       renderInput={(params) => (
                         <TextField fullWidth {...params} />
                       )}
-                      labelFunc={(date, invalidLabel) =>
-                        date ? dateFormat(date) : invalidLabel
-                      }
+                      inputFormat="MMM dd, yyyy"
                       closeOnSelect
                       label={t('Maximum')}
                       value={filterList[index][1] || null}
