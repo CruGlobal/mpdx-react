@@ -23,9 +23,10 @@ import {
   ContactUpdateInput,
   SendNewsletterEnum,
 } from '../../../../../../../../graphql/types.generated';
-import { ContactPeopleFragment } from '../../ContactPeople.generated';
-import { ContactMailingFragment } from '../../../Mailing/ContactMailing.generated';
-import { useUpdateContactDetailsMutation } from './EditContactDetails.generated';
+import {
+  ContactDetailsFragment,
+  useUpdateContactDetailsMutation,
+} from './EditContactDetails.generated';
 
 const ContactEditModalFooterButton = styled(Button)(({ theme }) => ({
   color: theme.palette.info.main,
@@ -68,7 +69,7 @@ const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
 }));
 
 interface EditContactDetailsModalProps {
-  contact: ContactPeopleFragment & ContactMailingFragment;
+  contact: ContactDetailsFragment;
   accountListId: string;
   isOpen: boolean;
   handleClose: () => void;
