@@ -13,6 +13,7 @@ mutation UpdateContactDetails(
         firstName
         lastName
       }
+      ...ContactMailing
     }
   }
 }
