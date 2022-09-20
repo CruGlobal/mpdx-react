@@ -153,50 +153,21 @@ const TaskStatus = ({
   } else if (startAt) {
     if (DateTime.fromISO(startAt) < DateTime.local()) {
       return (
-        <Tooltip
+        <CompleteButton
+          taskId={taskId ?? ''}
           title={`Overdue ${DateTime.fromISO(startAt).toRelative()}`}
-          placement={tooltipPlacement}
-          arrow
-          disableFocusListener={disableTooltip}
-          disableHoverListener={disableTooltip}
-          disableTouchListener={disableTooltip}
-        >
-          <CompleteButton
-            taskId={taskId ?? ''}
-            title={`Overdue ${DateTime.fromISO(startAt).toRelative()}`}
-          />
-        </Tooltip>
+        />
       );
     } else {
       return (
-        <Tooltip
+        <CompleteButton
+          taskId={taskId ?? ''}
           title={`Due ${DateTime.fromISO(startAt).toRelative()}`}
-          placement={tooltipPlacement}
-          arrow
-          disableFocusListener={disableTooltip}
-          disableHoverListener={disableTooltip}
-          disableTouchListener={disableTooltip}
-        >
-          <CompleteButton
-            taskId={taskId ?? ''}
-            title={`Due ${DateTime.fromISO(startAt).toRelative()}`}
-          />
-        </Tooltip>
+        />
       );
     }
   } else {
-    return (
-      <Tooltip
-        title={t('No Due Date') ?? ''}
-        placement={tooltipPlacement}
-        arrow
-        disableFocusListener={disableTooltip}
-        disableHoverListener={disableTooltip}
-        disableTouchListener={disableTooltip}
-      >
-        <CompleteButton taskId={taskId ?? ''} />
-      </Tooltip>
-    );
+    return <CompleteButton taskId={taskId ?? ''} title={t('No Due Date')} />;
   }
 };
 
