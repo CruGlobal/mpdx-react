@@ -1,12 +1,29 @@
 import React, { ReactElement } from 'react';
-import { Tooltip, Theme, makeStyles, Fab, Avatar } from '@material-ui/core';
+import {
+  Tooltip,
+  Theme,
+  makeStyles,
+  Avatar,
+  IconButton,
+  styled,
+} from '@material-ui/core';
 import { DateTime } from 'luxon';
-import AssignmentLateIcon from '@material-ui/icons/AssignmentLate';
-import AssignmentIcon from '@material-ui/icons/Assignment';
 import AssignmentTurnedInIcon from '@material-ui/icons/AssignmentTurnedIn';
 import { useTranslation } from 'react-i18next';
-import DoneIcon from '@material-ui/icons/Done';
-import useTaskDrawer from '../../../hooks/useTaskDrawer';
+import { Check } from '@material-ui/icons';
+import useTaskModal from 'src/hooks/useTaskModal';
+import theme from 'src/theme';
+
+const TaskCompleteButton = styled(IconButton)(({ theme }) => ({
+  border: `2px solid ${theme.palette.mpdxGreen.main}`,
+  color: theme.palette.common.white,
+  height: theme.spacing(2),
+  width: theme.spacing(2),
+  backgroundColor: theme.palette.common.white,
+  '&:hover': {
+    backgroundColor: theme.palette.mpdxGreen.main,
+  },
+}));
 
 const useStyles = makeStyles((theme: Theme) => ({
   buttonGreen: {
@@ -84,24 +101,31 @@ interface Props {
     | 'top';
 }
 
+const CompleteButton = ({ taskId }: { taskId: string }): ReactElement => {
+  const { openTaskModal } = useTaskModal();
+
+  const handleClick = (
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+  ): void => {
+    taskId && openTaskModal({ taskId, view: 'complete' });
+    event.stopPropagation();
+  };
+  return (
+    <TaskCompleteButton onClick={handleClick}>
+      <Check titleAccess="Check Icon" />
+    </TaskCompleteButton>
+  );
+};
+
 const TaskStatus = ({
   taskId,
   startAt,
   completedAt,
-  color,
   disableTooltip = false,
   tooltipPlacement = 'right',
 }: Props): ReactElement => {
   const classes = useStyles();
   const { t } = useTranslation();
-  const { openTaskDrawer } = useTaskDrawer();
-
-  const handleClick = (
-    event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-  ): void => {
-    taskId && openTaskDrawer({ taskId, showCompleteForm: true });
-    event.stopPropagation();
-  };
 
   if (completedAt) {
     return (
@@ -132,17 +156,7 @@ const TaskStatus = ({
           disableHoverListener={disableTooltip}
           disableTouchListener={disableTooltip}
         >
-          <Fab
-            className={[
-              classes.buttonSmall,
-              classes.buttonRed,
-              classes.buttonWithHover,
-            ].join(' ')}
-            onClick={handleClick}
-          >
-            <AssignmentLateIcon fontSize="inherit" className={classes.icon} />
-            <DoneIcon className={[classes.icon, classes.hoverIcon].join(' ')} />
-          </Fab>
+          <CompleteButton taskId={taskId ?? ''} />
         </Tooltip>
       );
     } else {
@@ -155,17 +169,7 @@ const TaskStatus = ({
           disableHoverListener={disableTooltip}
           disableTouchListener={disableTooltip}
         >
-          <Fab
-            className={[
-              classes.buttonSmall,
-              classes.buttonPrimary,
-              classes.buttonWithHover,
-            ].join(' ')}
-            onClick={handleClick}
-          >
-            <AssignmentIcon fontSize="inherit" className={classes.icon} />
-            <DoneIcon className={[classes.icon, classes.hoverIcon].join(' ')} />
-          </Fab>
+          <CompleteButton taskId={taskId ?? ''} />
         </Tooltip>
       );
     }
@@ -179,19 +183,7 @@ const TaskStatus = ({
         disableHoverListener={disableTooltip}
         disableTouchListener={disableTooltip}
       >
-        <Fab
-          className={[
-            classes.buttonSmall,
-            color && classes.buttonPrimary,
-            classes.buttonWithHover,
-          ]
-            .filter(Boolean)
-            .join(' ')}
-          onClick={handleClick}
-        >
-          <AssignmentIcon fontSize="inherit" className={classes.icon} />
-          <DoneIcon className={[classes.icon, classes.hoverIcon].join(' ')} />
-        </Fab>
+        <CompleteButton taskId={taskId ?? ''} />
       </Tooltip>
     );
   }
