@@ -22,9 +22,7 @@ type EntryHistory = {
   [key: string]: number | string;
 };
 
-const LegendIdentifier = styled(({ color: _color, ...props }) => (
-  <div {...props} />
-))(({ color }: { color: string }) => ({
+const LegendIdentifier = styled('div')(({ color }: { color: string }) => ({
   display: 'inline-block',
   height: '5px',
   width: '20px',
