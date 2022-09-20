@@ -7,7 +7,7 @@ import ErrorIcon from '@mui/icons-material/Error';
 interface Props {
   message: string;
   padding?: number;
-  size?: 'inherit' | 'default' | 'small' | 'large';
+  size?: 'inherit' | 'medium' | 'small' | 'large';
   type: 'error' | 'info';
 }
 

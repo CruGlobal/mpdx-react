@@ -358,7 +358,7 @@ describe('TaskRow', () => {
 
     const { findByText } = render(
       <GqlMockedProvider>
-        <MuiThemeProvider theme={theme}>
+        <ThemeProvider theme={theme}>
           <TaskRow
             accountListId={accountListId}
             task={task}
@@ -366,7 +366,7 @@ describe('TaskRow', () => {
             onContactSelected={onContactSelected}
             isChecked={false}
           />
-        </MuiThemeProvider>
+        </ThemeProvider>
       </GqlMockedProvider>,
     );
 
