@@ -100,7 +100,13 @@ interface Props {
     | 'top';
 }
 
-const CompleteButton = ({ taskId }: { taskId: string }): ReactElement => {
+const CompleteButton = ({
+  taskId,
+  title,
+}: {
+  taskId: string;
+  title?: string;
+}): ReactElement => {
   const { openTaskModal } = useTaskModal();
 
   const handleClick = (
@@ -111,7 +117,7 @@ const CompleteButton = ({ taskId }: { taskId: string }): ReactElement => {
   };
   return (
     <TaskCompleteButton onClick={handleClick}>
-      <Check titleAccess="Check Icon" />
+      <Check titleAccess={title ?? 'Check Icon'} />
     </TaskCompleteButton>
   );
 };
@@ -155,7 +161,10 @@ const TaskStatus = ({
           disableHoverListener={disableTooltip}
           disableTouchListener={disableTooltip}
         >
-          <CompleteButton taskId={taskId ?? ''} />
+          <CompleteButton
+            taskId={taskId ?? ''}
+            title={`Overdue ${DateTime.fromISO(startAt).toRelative()}`}
+          />
         </Tooltip>
       );
     } else {
@@ -168,7 +177,10 @@ const TaskStatus = ({
           disableHoverListener={disableTooltip}
           disableTouchListener={disableTooltip}
         >
-          <CompleteButton taskId={taskId ?? ''} />
+          <CompleteButton
+            taskId={taskId ?? ''}
+            title={`Due ${DateTime.fromISO(startAt).toRelative()}`}
+          />
         </Tooltip>
       );
     }
