@@ -1,12 +1,12 @@
 import React, { ReactElement, useState } from 'react';
 import { Box, Button, MuiThemeProvider } from '@material-ui/core';
 import { gqlMock } from '../../../../../../../../__tests__/util/graphqlMocking';
-import {
-  ContactPeopleFragment,
-  ContactPeopleFragmentDoc,
-} from '../../ContactPeople.generated';
 import theme from '../../../../../../../theme';
 import { EditContactDetailsModal } from './EditContactDetailsModal';
+import {
+  ContactDetailsFragment,
+  ContactDetailsFragmentDoc,
+} from './EditContactDetails.generated';
 
 export default {
   title: 'Contacts/Tab/ContactDetailsTab/People/Items/EditContactDetailsModal',
@@ -14,17 +14,21 @@ export default {
 };
 
 export const Default = (): ReactElement => {
-  const mock = gqlMock<ContactPeopleFragment>(ContactPeopleFragmentDoc);
+  const mock = gqlMock<ContactDetailsFragment>(ContactDetailsFragmentDoc);
 
   const [modalOpen, setModalOpen] = useState(false);
   const contactId = '123';
   const accountListId = 'abc';
 
-  const mockContact: ContactPeopleFragment = {
+  const mockContact: ContactDetailsFragment = {
     name: 'test person',
     id: contactId,
     people: mock.people,
     primaryPerson: mock.primaryPerson,
+    greeting: 'Hello test',
+    envelopeGreeting: 'Dear Test',
+    sendNewsletter: mock.sendNewsletter,
+    addresses: mock.addresses,
   };
 
   return (
