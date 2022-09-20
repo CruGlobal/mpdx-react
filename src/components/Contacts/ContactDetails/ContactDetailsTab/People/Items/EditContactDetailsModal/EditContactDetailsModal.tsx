@@ -122,6 +122,7 @@ export const EditContactDetailsModal: React.FC<EditContactDetailsModalProps> = (
     enqueueSnackbar(t('Contact updated successfully'), {
       variant: 'success',
     });
+    handleClose();
   };
 
   return (
