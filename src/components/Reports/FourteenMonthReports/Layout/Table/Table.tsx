@@ -7,10 +7,10 @@ import {
   TableCell,
   TableContainer,
   TableRow,
-  Theme,
   Typography,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import theme from 'src/theme';
 import InfoIcon from '@mui/icons-material/Info';
 import { numberFormat } from '../../../../../lib/intlFormat';
 import { useApiConstants } from '../../../../Constants/UseApiConstants';
@@ -26,11 +26,11 @@ interface FourteenMonthReportTableProps extends TableHeadProps {
   ref: React.Ref<HTMLTableElement>;
 }
 
-const NameTypography = styled(({ expanded: _expanded, ...props }) => (
-  <Typography {...props} />
-))(({ theme, expanded }: { theme: Theme; expanded: boolean }) => ({
-  marginLeft: expanded ? 0 : theme.spacing(1),
-}));
+const NameTypography = styled(Typography)(
+  ({ expanded }: { expanded: boolean }) => ({
+    marginLeft: expanded ? 0 : theme.spacing(1),
+  }),
+);
 
 const PrintableContainer = styled(TableContainer)(() => ({
   // First style set size as landscape
@@ -63,7 +63,7 @@ export const FourteenMonthReportTable: FC<FourteenMonthReportTableProps> =
       const apiConstants = useApiConstants();
 
       return (
-        <PrintableContainer innerRef={ref}>
+        <PrintableContainer ref={ref}>
           <StickyTable
             stickyHeader={true}
             aria-label="fourteen month report table"

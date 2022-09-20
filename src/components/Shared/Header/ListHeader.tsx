@@ -8,9 +8,9 @@ import {
   ListItemText,
   Menu,
   MenuItem,
-  Theme,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import theme from 'src/theme';
 import FilterList from '@mui/icons-material/FilterList';
 import { useTranslation } from 'react-i18next';
 import ArrowDropDown from '@mui/icons-material/ArrowDropDown';
@@ -24,17 +24,15 @@ import {
 import { StarFilterButton } from './StarFilterButton/StarFilterButton';
 import useTaskModal from 'src/hooks/useTaskModal';
 
-const HeaderWrap = styled(Box)(
-  ({ theme }: { theme: Theme; contactDetailsOpen: boolean }) => ({
-    padding: theme.spacing(3, 0.5),
-    display: 'flex',
-    justifyContent: 'space-between',
-    borderBottom: `1px solid ${theme.palette.grey[200]}`,
-    [theme.breakpoints.down('sm')]: {
-      paddingRight: theme.spacing(2),
-    },
-  }),
-);
+const HeaderWrap = styled(Box)(({}: { contactDetailsOpen: boolean }) => ({
+  padding: theme.spacing(3, 0.5),
+  display: 'flex',
+  justifyContent: 'space-between',
+  borderBottom: `1px solid ${theme.palette.grey[200]}`,
+  [theme.breakpoints.down('sm')]: {
+    paddingRight: theme.spacing(2),
+  },
+}));
 
 const HeaderWrapInner = styled(Box)(({}) => ({
   display: 'flex',
@@ -49,19 +47,8 @@ const StyledCheckbox = styled(Checkbox)(({ theme }) => ({
   },
 }));
 
-const FilterButton = styled(
-  ({ activeFilters: _activeFilters, panelOpen: _panelOpen, ...props }) => (
-    <IconButton {...props} />
-  ),
-)(
-  ({
-    theme,
-    activeFilters,
-  }: {
-    theme: Theme;
-    activeFilters: boolean;
-    panelOpen: boolean;
-  }) => ({
+const FilterButton = styled(IconButton)(
+  ({ activeFilters }: { activeFilters: boolean; panelOpen: boolean }) => ({
     marginRight: theme.spacing(2),
     backgroundColor: activeFilters
       ? theme.palette.cruYellow.main

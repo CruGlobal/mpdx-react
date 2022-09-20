@@ -21,9 +21,9 @@ export const Loading: Story = () => (
   <InfiniteList
     loading={true}
     itemContent={(index, item) => (
-      <div>
+      <>
         {index} {item}
-      </div>
+      </>
     )}
     endReached={() => {}}
     EmptyPlaceholder={<div>No items</div>}
@@ -34,9 +34,9 @@ export const Empty: Story = () => (
   <InfiniteList
     loading={false}
     itemContent={(index, item) => (
-      <div>
+      <>
         {index} {item}
-      </div>
+      </>
     )}
     endReached={() => {}}
     EmptyPlaceholder={<div>No items</div>}
