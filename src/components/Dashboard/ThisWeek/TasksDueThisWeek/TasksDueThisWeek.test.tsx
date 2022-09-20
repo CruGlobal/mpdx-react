@@ -5,16 +5,16 @@ import { render } from '../../../../../__tests__/util/testingLibraryReactMock';
 import { GetThisWeekQuery } from '../GetThisWeek.generated';
 import { ActivityTypeEnum } from '../../../../../graphql/types.generated';
 import theme from '../../../../theme';
-import useTaskDrawer from '../../../../hooks/useTaskDrawer';
+import useTaskModal from '../../../../hooks/useTaskModal';
 import TasksDueThisWeek from '.';
 
-jest.mock('../../../../hooks/useTaskDrawer');
+jest.mock('../../../../hooks/useTaskModal');
 
-const openTaskDrawer = jest.fn();
+const openTaskModal = jest.fn();
 
 beforeEach(() => {
-  (useTaskDrawer as jest.Mock).mockReturnValue({
-    openTaskDrawer,
+  (useTaskModal as jest.Mock).mockReturnValue({
+    openTaskModal,
   });
 });
 
@@ -114,7 +114,7 @@ describe('TasksDueThisWeek', () => {
         'Smith, RogerPrayer Request — the quick brown fox jumps over the lazy dog',
       );
       userEvent.click(task1Element);
-      expect(openTaskDrawer).toHaveBeenCalledWith({ taskId: 'task_1' });
+      expect(openTaskModal).toHaveBeenCalledWith({ taskId: 'task_1' });
       expect(
         getByTestId('TasksDueThisWeekListItem-task_2').textContent,
       ).toEqual(
