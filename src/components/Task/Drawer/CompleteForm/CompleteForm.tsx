@@ -21,7 +21,6 @@ import { Formik } from 'formik';
 import * as yup from 'yup';
 import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
-import { dateFormat } from '../../../../lib/intlFormat/intlFormat';
 import {
   ActivityTypeEnum,
   ContactConnection,
@@ -298,7 +297,7 @@ const TaskDrawerCompleteForm = ({
                     value.map((option, index) => (
                       <Chip
                         {...getTagProps({ index })}
-                        color="primary"
+                        color="default"
                         size="small"
                         key={index}
                         label={option}

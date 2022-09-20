@@ -459,7 +459,7 @@ const TaskModalForm = ({
                       value.map((option, index) => (
                         <Chip
                           {...getTagProps({ index })}
-                          color="secondary"
+                          color="default"
                           size="small"
                           key={index}
                           label={option}

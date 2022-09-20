@@ -117,7 +117,7 @@ const TaskDrawerContactListItem = ({ contact }: Props): ReactElement => {
                         key={tag}
                         size="small"
                         label={tag}
-                        color="primary"
+                        color="default"
                         className={classes.chip}
                       />
                     ))}

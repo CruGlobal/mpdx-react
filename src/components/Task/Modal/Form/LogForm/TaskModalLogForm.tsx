@@ -33,7 +33,6 @@ import { DateTime } from 'luxon';
 import { v4 as uuidv4 } from 'uuid';
 import { AnimatePresence, motion } from 'framer-motion';
 import { debounce } from 'lodash/fp';
-import { dateFormat } from '../../../../../lib/intlFormat/intlFormat';
 import {
   ActivityTypeEnum,
   NotificationTimeUnitEnum,
@@ -507,7 +506,7 @@ const TaskModalLogForm = ({
                                 value.map((option, index) => (
                                   <Chip
                                     {...getTagProps({ index })}
-                                    color="primary"
+                                    color="default"
                                     size="small"
                                     key={index}
                                     label={option}

@@ -25,7 +25,6 @@ import { DateTime } from 'luxon';
 import CalendarToday from '@mui/icons-material/CalendarToday';
 import Schedule from '@mui/icons-material/Schedule';
 import { v4 as uuidv4 } from 'uuid';
-import { dateFormat } from '../../../../../lib/intlFormat/intlFormat';
 import {
   ActivityTypeEnum,
   ResultEnum,
@@ -279,7 +278,7 @@ const TaskModalCompleteForm = ({
                       value.map((option, index) => (
                         <Chip
                           {...getTagProps({ index })}
-                          color="primary"
+                          color="default"
                           size="small"
                           key={index}
                           label={option}

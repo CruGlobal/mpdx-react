@@ -352,7 +352,7 @@ const TaskDrawerForm = ({
                     value.map((option, index) => (
                       <Chip
                         {...getTagProps({ index })}
-                        color="primary"
+                        color="default"
                         size="small"
                         key={index}
                         label={option}
