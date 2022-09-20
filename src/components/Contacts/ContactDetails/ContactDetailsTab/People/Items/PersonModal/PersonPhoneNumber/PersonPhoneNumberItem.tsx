@@ -2,6 +2,7 @@ import { Grid, MenuItem, Select, styled, Checkbox } from '@material-ui/core';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { FormikErrors, getIn } from 'formik';
+import { Lock } from '@material-ui/icons';
 import { ModalSectionContainer } from '../ModalSectionContainer/ModalSectionContainer';
 import { ModalSectionDeleteIcon } from '../ModalSectionDeleteIcon/ModalSectionDeleteIcon';
 import {
@@ -17,7 +18,7 @@ import {
 } from '../PersonModal';
 
 interface Props {
-  phoneNumber: PersonPhoneNumberInput;
+  phoneNumber: PersonPhoneNumberInput & { source?: string };
   index: number;
   primaryPhoneNumber: PersonPhoneNumberInput | undefined;
   phoneNumbers: InputMaybe<PersonPhoneNumberInput[]> | undefined;
@@ -28,6 +29,12 @@ interface Props {
   ) => void;
   errors: FormikErrors<(PersonUpdateInput | PersonCreateInput) & NewSocial>;
   handleChangePrimary: (numberId: string) => void;
+  sources:
+    | {
+        id: string;
+        source: string;
+      }[]
+    | undefined;
 }
 
 const PhoneNumberSelect = styled(Select)(
@@ -44,10 +51,16 @@ export const PersonPhoneNumberItem: React.FC<Props> = ({
   setFieldValue,
   errors,
   handleChangePrimary,
+  sources,
 }) => {
   const { t } = useTranslation();
 
   const [isPrimaryChecked, setIsPrimaryChecked] = React.useState(false);
+
+  const source = sources?.find((number) => number.id === phoneNumber.id)
+    ?.source;
+
+  const locked = source !== 'MPDX' && source !== undefined;
 
   React.useEffect(() => {
     setIsPrimaryChecked(phoneNumber.id === primaryPhoneNumber?.id);
@@ -71,8 +84,19 @@ export const PersonPhoneNumberItem: React.FC<Props> = ({
                   event.target.value,
                 )
               }
-              disabled={!!phoneNumber.destroy}
+              disabled={!!phoneNumber.destroy || locked}
               inputProps={{ 'aria-label': t('Phone Number') }}
+              InputProps={{
+                ...(locked
+                  ? {
+                      endAdornment: (
+                        <Lock
+                          titleAccess={t('Synced with Donation Services')}
+                        />
+                      ),
+                    }
+                  : {}),
+              }}
               error={getIn(errors, `phoneNumbers.${index}`)}
               helperText={
                 getIn(errors, `phoneNumbers.${index}`) &&
@@ -91,7 +115,7 @@ export const PersonPhoneNumberItem: React.FC<Props> = ({
                   event.target.value,
                 )
               }
-              disabled={!!phoneNumber.destroy}
+              disabled={!!phoneNumber.destroy || locked}
               inputProps={{
                 'aria-label': t('Phone Number Type'),
               }}
@@ -120,6 +144,7 @@ export const PersonPhoneNumberItem: React.FC<Props> = ({
             />
           </Grid>
           <ModalSectionDeleteIcon
+            disabled={locked}
             handleClick={
               phoneNumber.id
                 ? () =>

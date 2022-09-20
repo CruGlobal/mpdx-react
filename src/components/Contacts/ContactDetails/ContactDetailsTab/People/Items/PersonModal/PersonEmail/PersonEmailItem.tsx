@@ -3,6 +3,7 @@ import React from 'react';
 
 import { useTranslation } from 'react-i18next';
 import { FormikErrors, getIn } from 'formik';
+import { Lock } from '@material-ui/icons';
 import { ModalSectionContainer } from '../ModalSectionContainer/ModalSectionContainer';
 import { ModalSectionDeleteIcon } from '../ModalSectionDeleteIcon/ModalSectionDeleteIcon';
 import {
@@ -29,6 +30,12 @@ interface Props {
   errors: FormikErrors<(PersonUpdateInput | PersonCreateInput) & NewSocial>;
   primaryEmail: PersonEmailAddressInput | undefined;
   handleChangePrimary: (emailId: string) => void;
+  sources:
+    | {
+        id: string;
+        source: string;
+      }[]
+    | undefined;
 }
 
 const EmailSelect = styled(Select)(({ destroyed }: { destroyed: boolean }) => ({
@@ -43,12 +50,17 @@ export const PersonEmailItem: React.FC<Props> = ({
   errors,
   primaryEmail,
   handleChangePrimary,
+  sources,
 }) => {
   const { t } = useTranslation();
 
   const [isEmailPrimaryChecked, setIsEmailPrimaryChecked] = React.useState(
     false,
   );
+
+  const source = sources?.find((email) => email.id === emailAddress.id)?.source;
+
+  const locked = source !== 'MPDX' && source !== undefined;
 
   React.useEffect(() => {
     setIsEmailPrimaryChecked(emailAddress.id === primaryEmail?.id ?? '');
@@ -72,8 +84,19 @@ export const PersonEmailItem: React.FC<Props> = ({
                   event.target.value,
                 )
               }
-              disabled={!!emailAddress.destroy}
+              disabled={!!emailAddress.destroy || locked}
               inputProps={{ 'aria-label': t('Email Address') }}
+              InputProps={{
+                ...(locked
+                  ? {
+                      endAdornment: (
+                        <Lock
+                          titleAccess={t('Synced with Donation Services')}
+                        />
+                      ),
+                    }
+                  : {}),
+              }}
               error={getIn(errors, `emailAddresses.${index}`)}
               helperText={
                 getIn(errors, `emailAddresses.${index}`) &&
@@ -92,7 +115,7 @@ export const PersonEmailItem: React.FC<Props> = ({
                   event.target.value,
                 )
               }
-              disabled={!!emailAddress.destroy}
+              disabled={!!emailAddress.destroy || locked}
               inputProps={{
                 'aria-label': t('Email Address Type'),
               }}
@@ -121,6 +144,7 @@ export const PersonEmailItem: React.FC<Props> = ({
             />
           </Grid>
           <ModalSectionDeleteIcon
+            disabled={locked}
             handleClick={
               emailAddress.id
                 ? () =>
