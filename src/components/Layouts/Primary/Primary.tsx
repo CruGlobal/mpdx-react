@@ -33,10 +33,9 @@ const Wrapper = styled('div')(() => ({
 
 interface Props {
   children: ReactNode;
-  navBar?: ReactNode;
 }
 
-const Primary = ({ children, navBar }: Props): ReactElement => {
+const Primary = ({ children }: Props): ReactElement => {
   const accountListId = useAccountListId();
   const [isMobileNavOpen, setMobileNavOpen] = useState<boolean>(false);
 
@@ -51,9 +50,7 @@ const Primary = ({ children, navBar }: Props): ReactElement => {
           <NavBar
             onMobileClose={() => setMobileNavOpen(false)}
             openMobile={isMobileNavOpen}
-          >
-            {navBar}
-          </NavBar>
+          />
         )}
         <Wrapper>
           <ContentContainer>
