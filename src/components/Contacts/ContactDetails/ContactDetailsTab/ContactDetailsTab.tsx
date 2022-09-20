@@ -155,7 +155,7 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
             {loading || !data ? null : (
               <IconButton
                 onClick={() => setEditOtherModalOpen(true)}
-                aria-label={t('Edit Icon')}
+                aria-label={t('Edit Other Icon')}
               >
                 <ContactDetailEditIcon />
               </IconButton>
