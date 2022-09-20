@@ -6,6 +6,12 @@ import { useTranslation } from 'react-i18next';
 import theme from '../../../../theme';
 
 import { StarContactIconButton } from '../../StarContactIconButton/StarContactIconButton';
+import { ContactDetailEditIcon } from '../ContactDetailsTab/ContactDetailsTab';
+import {
+  ContactDetailContext,
+  ContactDetailsType,
+} from '../ContactDetailContext';
+import { EditContactDetailsModal } from '../ContactDetailsTab/People/Items/EditContactDetailsModal/EditContactDetailsModal';
 import { useGetContactDetailsHeaderQuery } from './ContactDetailsHeader.generated';
 import { ContactHeaderAddressSection } from './ContactHeaderSection/ContactHeaderAddressSection';
 import { ContactHeaderPhoneSection } from './ContactHeaderSection/ContactHeaderPhoneSection';
@@ -66,6 +72,10 @@ export const ContactDetailsHeader: React.FC<Props> = ({
   });
   const { t } = useTranslation();
 
+  const { editModalOpen, setEditModalOpen } = React.useContext(
+    ContactDetailContext,
+  ) as ContactDetailsType;
+
   return (
     <Box style={{ padding: 24, backgroundColor: 'transparent' }}>
       <HeaderBar>
@@ -93,6 +103,12 @@ export const ContactDetailsHeader: React.FC<Props> = ({
               <PrimaryText variant="subtitle1">{` - ${t(
                 'Primary',
               )}`}</PrimaryText>
+              <IconButton
+                onClick={() => setEditModalOpen(true)}
+                aria-label={t('Edit Icon')}
+              >
+                <ContactDetailEditIcon />
+              </IconButton>
             </>
           ) : null}
         </HeaderBarContactWrap>
@@ -134,6 +150,14 @@ export const ContactDetailsHeader: React.FC<Props> = ({
           />
         </Box>
       </HeaderSectionWrap>
+      {loading || !data ? null : (
+        <EditContactDetailsModal
+          accountListId={accountListId}
+          contact={data?.contact}
+          isOpen={editModalOpen}
+          handleClose={() => setEditModalOpen(false)}
+        />
+      )}
     </Box>
   );
 };
