@@ -46,7 +46,7 @@ export const Default = (): ReactElement => {
         },
       }}
     >
-      <MonthlyActivitySection accountListId={'abc'} />
+      <MonthlyActivitySection accountListId={'abc'} setTime={() => {}} />
     </GqlMockedProvider>
   );
 };
@@ -89,7 +89,7 @@ export const Empty = (): ReactElement => {
         },
       }}
     >
-      <MonthlyActivitySection accountListId={'abc'} />
+      <MonthlyActivitySection accountListId={'abc'} setTime={() => {}} />
     </GqlMockedProvider>
   );
 };

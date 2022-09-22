@@ -8,6 +8,8 @@ export default {
   title: 'Reports/DonationsReport/Table',
 };
 
+const time = new DateTime();
+
 export const Default = (): ReactElement => {
   return (
     <GqlMockedProvider<GetDonationsTableQuery>
@@ -64,7 +66,11 @@ export const Default = (): ReactElement => {
         },
       }}
     >
-      <DonationsReportTable accountListId={'abc'} />
+      <DonationsReportTable
+        accountListId={'abc'}
+        time={time}
+        setTime={() => {}}
+      />
     </GqlMockedProvider>
   );
 };
@@ -80,7 +86,11 @@ export const Empty = (): ReactElement => {
         },
       }}
     >
-      <DonationsReportTable accountListId={'abc'} />
+      <DonationsReportTable
+        accountListId={'abc'}
+        time={time}
+        setTime={() => {}}
+      />
     </GqlMockedProvider>
   );
 };
