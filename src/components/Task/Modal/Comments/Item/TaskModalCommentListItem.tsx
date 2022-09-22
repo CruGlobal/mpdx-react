@@ -141,13 +141,13 @@ const TaskModalCommentsListItem: React.FC<Props> = ({
                 >
                   <Details />
                   <Box>
+                    <CancelButton size="small" onClick={cancelEdit} />
                     <SubmitButton
                       size="small"
                       disabled={!isValid || isSubmitting}
                     >
                       {t('Save')}
                     </SubmitButton>
-                    <CancelButton size="small" onClick={cancelEdit} />
                   </Box>
                 </Box>
               </form>

@@ -7,16 +7,14 @@ import {
   FormControl,
   Chip,
   Grid,
-  Box,
   CircularProgress,
-  // Button,
-  Divider,
   InputAdornment,
   Typography,
   Tooltip,
   Autocomplete,
+  DialogContent,
+  DialogActions,
 } from '@mui/material';
-import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { MobileDatePicker, MobileTimePicker } from '@mui/x-date-pickers';
 import InfoIcon from '@mui/icons-material/InfoOutlined';
@@ -56,18 +54,6 @@ import {
   CancelButton,
   DeleteButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
-
-export const FormFieldsWrapper = styled(Box)(() => ({
-  padding: theme.spacing(2),
-  paddingBottom: theme.spacing(4),
-  width: '100%',
-  margin: 'auto',
-  maxHeight: '80vh',
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  overflowY: 'auto',
-}));
 
 const taskSchema: yup.SchemaOf<
   Omit<TaskCreateInput | TaskUpdateInput, 'result' | 'nextAction'>
@@ -247,144 +233,186 @@ const TaskModalForm = ({
   };
 
   return (
-    <Box>
-      <Formik
-        initialValues={_.omit(initialTask, '__typename')}
-        validationSchema={taskSchema}
-        onSubmit={onSubmit}
-      >
-        {({
-          values: {
-            activityType,
-            subject,
-            startAt,
-            completedAt,
-            tagList,
-            userId,
-            contactIds,
-            notificationTimeBefore,
-            notificationType,
-            notificationTimeUnit,
-          },
-          setFieldValue,
-          handleChange,
-          handleSubmit,
-          isSubmitting,
-          isValid,
-          errors,
-          touched,
-        }): ReactElement => (
-          <form onSubmit={handleSubmit} noValidate>
-            <FormFieldsWrapper>
-              <FormFieldsGridContainer>
-                <Grid item>
-                  <TextField
-                    label={t('Task Name')}
-                    value={subject}
-                    onChange={handleChange('subject')}
-                    fullWidth
-                    multiline
-                    inputProps={{ 'aria-label': 'Subject' }}
-                    error={!!errors.subject && touched.subject}
-                    helperText={
-                      errors.subject &&
-                      touched.subject &&
-                      t('Field is required')
+    <Formik
+      initialValues={_.omit(initialTask, '__typename')}
+      validationSchema={taskSchema}
+      onSubmit={onSubmit}
+    >
+      {({
+        values: {
+          activityType,
+          subject,
+          startAt,
+          completedAt,
+          tagList,
+          userId,
+          contactIds,
+          notificationTimeBefore,
+          notificationType,
+          notificationTimeUnit,
+        },
+        setFieldValue,
+        handleChange,
+        handleSubmit,
+        isSubmitting,
+        isValid,
+        errors,
+        touched,
+      }): ReactElement => (
+        <form onSubmit={handleSubmit} noValidate>
+          <DialogContent dividers>
+            <FormFieldsGridContainer>
+              <Grid item>
+                <TextField
+                  label={t('Task Name')}
+                  value={subject}
+                  onChange={handleChange('subject')}
+                  fullWidth
+                  multiline
+                  inputProps={{ 'aria-label': 'Subject' }}
+                  error={!!errors.subject && touched.subject}
+                  helperText={
+                    errors.subject && touched.subject && t('Field is required')
+                  }
+                  required
+                />
+              </Grid>
+              <Grid item>
+                <FormControl fullWidth>
+                  <InputLabel id="activityType">{t('Action')}</InputLabel>
+                  <Select
+                    labelId="activityType"
+                    value={activityType}
+                    onChange={(e) =>
+                      setFieldValue('activityType', e.target.value)
                     }
-                    required
+                    label={t('Action')}
+                  >
+                    <MenuItem value={undefined}>{t('None')}</MenuItem>
+                    {Object.values(ActivityTypeEnum).map((val) => (
+                      <MenuItem key={val} value={val}>
+                        {t(val) /* manually added to translation file */}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item>
+                {!loading ? (
+                  <Autocomplete
+                    loading={loading}
+                    options={
+                      (data?.accountListUsers?.nodes &&
+                        data.accountListUsers.nodes.map(
+                          ({ user }) => user.id,
+                        )) ||
+                      []
+                    }
+                    getOptionLabel={(userId): string => {
+                      const user = data?.accountListUsers?.nodes.find(
+                        ({ user }) => user.id === userId,
+                      )?.user;
+                      return `${user?.firstName} ${user?.lastName}`;
+                    }}
+                    renderInput={(params): ReactElement => (
+                      <TextField
+                        {...params}
+                        label={t('Assignee')}
+                        InputProps={{
+                          ...params.InputProps,
+                          endAdornment: (
+                            <>
+                              {loading && (
+                                <CircularProgress color="primary" size={20} />
+                              )}
+                              {params.InputProps.endAdornment}
+                            </>
+                          ),
+                        }}
+                      />
+                    )}
+                    value={userId}
+                    onChange={(_, userId): void =>
+                      setFieldValue('userId', userId)
+                    }
+                    isOptionEqualToValue={(option, value): boolean =>
+                      option === value
+                    }
                   />
-                </Grid>
-                <Grid item>
-                  <FormControl fullWidth>
-                    <InputLabel id="activityType">{t('Action')}</InputLabel>
-                    <Select
-                      labelId="activityType"
-                      value={activityType}
-                      onChange={(e) =>
-                        setFieldValue('activityType', e.target.value)
-                      }
-                      label={t('Action')}
-                    >
-                      <MenuItem value={undefined}>{t('None')}</MenuItem>
-                      {Object.values(ActivityTypeEnum).map((val) => (
-                        <MenuItem key={val} value={val}>
-                          {t(val) /* manually added to translation file */}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                </Grid>
-                <Grid item>
-                  {!loading ? (
-                    <Autocomplete
-                      loading={loading}
-                      options={
-                        (data?.accountListUsers?.nodes &&
-                          data.accountListUsers.nodes.map(
-                            ({ user }) => user.id,
-                          )) ||
-                        []
-                      }
-                      getOptionLabel={(userId): string => {
-                        const user = data?.accountListUsers?.nodes.find(
-                          ({ user }) => user.id === userId,
-                        )?.user;
-                        return `${user?.firstName} ${user?.lastName}`;
-                      }}
-                      renderInput={(params): ReactElement => (
-                        <TextField
-                          {...params}
-                          label={t('Assignee')}
-                          InputProps={{
-                            ...params.InputProps,
-                            endAdornment: (
-                              <>
-                                {loading && (
-                                  <CircularProgress color="primary" size={20} />
-                                )}
-                                {params.InputProps.endAdornment}
-                              </>
-                            ),
-                          }}
-                        />
-                      )}
-                      value={userId}
-                      onChange={(_, userId): void =>
-                        setFieldValue('userId', userId)
-                      }
-                      isOptionEqualToValue={(option, value): boolean =>
-                        option === value
-                      }
-                    />
-                  ) : (
-                    <CircularProgress color="primary" size={20} />
-                  )}
-                </Grid>
+                ) : (
+                  <CircularProgress color="primary" size={20} />
+                )}
+              </Grid>
+              <Grid item>
+                <FormControl fullWidth>
+                  <Grid container spacing={2}>
+                    <Grid xs={6} item>
+                      <MobileDatePicker
+                        InputProps={{
+                          endAdornment: (
+                            <InputAdornment position="end">
+                              <CalendarToday
+                                style={{
+                                  color: theme.palette.cruGrayMedium.main,
+                                }}
+                              />
+                            </InputAdornment>
+                          ),
+                        }}
+                        renderInput={(params) => (
+                          <TextField fullWidth {...params} />
+                        )}
+                        inputFormat="MMM dd, yyyy"
+                        closeOnSelect
+                        label={t('Due Date')}
+                        value={startAt}
+                        onChange={(date): void =>
+                          setFieldValue('startAt', date)
+                        }
+                      />
+                    </Grid>
+                    <Grid xs={6} item>
+                      <MobileTimePicker
+                        renderInput={(params) => (
+                          <TextField fullWidth {...params} />
+                        )}
+                        closeOnSelect
+                        InputProps={{
+                          endAdornment: (
+                            <InputAdornment position="end">
+                              <Schedule
+                                style={{
+                                  color: theme.palette.cruGrayMedium.main,
+                                }}
+                              />
+                            </InputAdornment>
+                          ),
+                        }}
+                        label={t('Due Time')}
+                        value={startAt}
+                        onChange={(date): void =>
+                          setFieldValue('startAt', date)
+                        }
+                      />
+                    </Grid>
+                  </Grid>
+                </FormControl>
+              </Grid>
+              {initialTask.completedAt && (
                 <Grid item>
                   <FormControl fullWidth>
                     <Grid container spacing={2}>
                       <Grid xs={6} item>
                         <MobileDatePicker
-                          InputProps={{
-                            endAdornment: (
-                              <InputAdornment position="end">
-                                <CalendarToday
-                                  style={{
-                                    color: theme.palette.cruGrayMedium.main,
-                                  }}
-                                />
-                              </InputAdornment>
-                            ),
-                          }}
                           renderInput={(params) => (
                             <TextField fullWidth {...params} />
                           )}
                           inputFormat="MMM dd, yyyy"
                           closeOnSelect
-                          label={t('Due Date')}
-                          value={startAt}
+                          label={t('Completed Date')}
+                          value={completedAt}
                           onChange={(date): void =>
-                            setFieldValue('startAt', date)
+                            setFieldValue('completedAt', date)
                           }
                         />
                       </Grid>
@@ -394,181 +422,203 @@ const TaskModalForm = ({
                             <TextField fullWidth {...params} />
                           )}
                           closeOnSelect
-                          InputProps={{
-                            endAdornment: (
-                              <InputAdornment position="end">
-                                <Schedule
-                                  style={{
-                                    color: theme.palette.cruGrayMedium.main,
-                                  }}
-                                />
-                              </InputAdornment>
-                            ),
-                          }}
-                          label={t('Due Time')}
-                          value={startAt}
+                          label={t('Completed Time')}
+                          value={completedAt}
                           onChange={(date): void =>
-                            setFieldValue('startAt', date)
+                            setFieldValue('completedAt', date)
                           }
                         />
                       </Grid>
                     </Grid>
                   </FormControl>
                 </Grid>
-                {initialTask.completedAt && (
-                  <Grid item>
+              )}
+              <Grid item>
+                <Autocomplete
+                  multiple
+                  freeSolo
+                  renderTags={(value, getTagProps): ReactElement[] =>
+                    value.map((option, index) => (
+                      <Chip
+                        {...getTagProps({ index })}
+                        color="default"
+                        size="small"
+                        key={index}
+                        label={option}
+                      />
+                    ))
+                  }
+                  renderInput={(params): ReactElement => (
+                    <TextField {...params} label={t('Tags')} />
+                  )}
+                  onChange={(_, tagList): void =>
+                    setFieldValue('tagList', tagList)
+                  }
+                  value={tagList ?? undefined}
+                  options={data?.accountList?.taskTagList || []}
+                />
+              </Grid>
+              <Grid item>
+                <Autocomplete
+                  multiple
+                  options={
+                    (
+                      mergedContacts &&
+                      [...mergedContacts].sort((a, b) =>
+                        a.name.localeCompare(b.name),
+                      )
+                    )?.map(({ id }) => id) || []
+                  }
+                  getOptionLabel={(contactId) =>
+                    mergedContacts.find(({ id }) => id === contactId)?.name ??
+                    ''
+                  }
+                  loading={
+                    loading || loadingFilteredById || loadingFilteredByName
+                  }
+                  renderInput={(params): ReactElement => {
+                    return !loadingFilteredById ? (
+                      <TextField
+                        {...params}
+                        onChange={handleSearchTermChange}
+                        label={t('Contacts')}
+                        InputProps={{
+                          ...params.InputProps,
+                          endAdornment: (
+                            <>
+                              {loading && (
+                                <CircularProgress color="primary" size={20} />
+                              )}
+                              {params.InputProps.endAdornment}
+                            </>
+                          ),
+                        }}
+                      />
+                    ) : (
+                      <CircularProgress color="primary" size={20} />
+                    );
+                  }}
+                  value={contactIds ?? undefined}
+                  onChange={(_, contactIds): void => {
+                    setFieldValue('contactIds', contactIds);
+                    setSelectedIds(contactIds);
+                  }}
+                  isOptionEqualToValue={(option, value): boolean =>
+                    option === value
+                  }
+                />
+              </Grid>
+              <Grid item>
+                <Tooltip
+                  title={
+                    <Typography>
+                      {t('If blank you will not be notified')}
+                    </Typography>
+                  }
+                >
+                  <Typography
+                    style={{
+                      display: 'flex',
+                      marginBottom: theme.spacing(1),
+                    }}
+                  >
+                    Notifications <InfoIcon style={{ marginLeft: '5px' }} />{' '}
+                  </Typography>
+                </Tooltip>
+                <Grid container spacing={2}>
+                  <Grid xs={4} item>
                     <FormControl fullWidth>
-                      <Grid container spacing={2}>
-                        <Grid xs={6} item>
-                          <MobileDatePicker
-                            renderInput={(params) => (
-                              <TextField fullWidth {...params} />
-                            )}
-                            inputFormat="MMM dd, yyyy"
-                            closeOnSelect
-                            label={t('Completed Date')}
-                            value={completedAt}
-                            onChange={(date): void =>
-                              setFieldValue('completedAt', date)
-                            }
-                          />
-                        </Grid>
-                        <Grid xs={6} item>
-                          <MobileTimePicker
-                            renderInput={(params) => (
-                              <TextField fullWidth {...params} />
-                            )}
-                            closeOnSelect
-                            label={t('Completed Time')}
-                            value={completedAt}
-                            onChange={(date): void =>
-                              setFieldValue('completedAt', date)
-                            }
-                          />
-                        </Grid>
-                      </Grid>
+                      <InputLabel
+                        style={{ display: 'flex', alignItems: 'center' }}
+                        id="notificationType"
+                      >
+                        {t('Type')}
+                      </InputLabel>
+                      <Tooltip
+                        placement="top"
+                        title={
+                          <Typography>
+                            {t('How the notification will be sent')}
+                          </Typography>
+                        }
+                      >
+                        <Select
+                          labelId="notificationType"
+                          value={notificationType}
+                          onChange={(e) =>
+                            setFieldValue('notificationType', e.target.value)
+                          }
+                          label={t('Type')}
+                        >
+                          <MenuItem value={undefined}>{t('None')}</MenuItem>
+                          {Object.values(NotificationTypeEnum).map((val) => (
+                            <MenuItem key={val} value={val}>
+                              {t(val) /* manually added to translation file */}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </Tooltip>
                     </FormControl>
                   </Grid>
-                )}
-                <Grid item>
-                  <Autocomplete
-                    multiple
-                    freeSolo
-                    renderTags={(value, getTagProps): ReactElement[] =>
-                      value.map((option, index) => (
-                        <Chip
-                          {...getTagProps({ index })}
-                          color="default"
-                          size="small"
-                          key={index}
-                          label={option}
-                        />
-                      ))
-                    }
-                    renderInput={(params): ReactElement => (
-                      <TextField {...params} label={t('Tags')} />
-                    )}
-                    onChange={(_, tagList): void =>
-                      setFieldValue('tagList', tagList)
-                    }
-                    value={tagList ?? undefined}
-                    options={data?.accountList?.taskTagList || []}
-                  />
-                </Grid>
-                <Grid item>
-                  <Autocomplete
-                    multiple
-                    options={
-                      (
-                        mergedContacts &&
-                        [...mergedContacts].sort((a, b) =>
-                          a.name.localeCompare(b.name),
-                        )
-                      )?.map(({ id }) => id) || []
-                    }
-                    getOptionLabel={(contactId) =>
-                      mergedContacts.find(({ id }) => id === contactId)?.name ??
-                      ''
-                    }
-                    loading={
-                      loading || loadingFilteredById || loadingFilteredByName
-                    }
-                    renderInput={(params): ReactElement => {
-                      return !loadingFilteredById ? (
-                        <TextField
-                          {...params}
-                          onChange={handleSearchTermChange}
-                          label={t('Contacts')}
-                          InputProps={{
-                            ...params.InputProps,
-                            endAdornment: (
-                              <>
-                                {loading && (
-                                  <CircularProgress color="primary" size={20} />
-                                )}
-                                {params.InputProps.endAdornment}
-                              </>
-                            ),
-                          }}
-                        />
-                      ) : (
-                        <CircularProgress color="primary" size={20} />
-                      );
-                    }}
-                    value={contactIds ?? undefined}
-                    onChange={(_, contactIds): void => {
-                      setFieldValue('contactIds', contactIds);
-                      setSelectedIds(contactIds);
-                    }}
-                    isOptionEqualToValue={(option, value): boolean =>
-                      option === value
-                    }
-                  />
-                </Grid>
-                <Grid item>
-                  <Tooltip
-                    title={
-                      <Typography>
-                        {t('If blank you will not be notified')}
-                      </Typography>
-                    }
-                  >
-                    <Typography
-                      style={{
-                        display: 'flex',
-                        marginBottom: theme.spacing(1),
-                      }}
+                  <Grid xs={3} item>
+                    <Tooltip
+                      placement="top"
+                      title={
+                        <Typography>
+                          {t('Amount of time before notification')}
+                        </Typography>
+                      }
                     >
-                      Notifications <InfoIcon style={{ marginLeft: '5px' }} />{' '}
-                    </Typography>
-                  </Tooltip>
-                  <Grid container spacing={2}>
-                    <Grid xs={4} item>
-                      <FormControl fullWidth>
-                        <InputLabel
-                          style={{ display: 'flex', alignItems: 'center' }}
-                          id="notificationType"
-                        >
-                          {t('Type')}
-                        </InputLabel>
-                        <Tooltip
-                          placement="top"
-                          title={
-                            <Typography>
-                              {t('How the notification will be sent')}
-                            </Typography>
-                          }
-                        >
-                          <Select
-                            labelId="notificationType"
-                            value={notificationType}
-                            onChange={(e) =>
-                              setFieldValue('notificationType', e.target.value)
-                            }
-                            label={t('Type')}
+                      <TextField
+                        label={
+                          <Typography
+                            style={{ display: 'flex', alignItems: 'center' }}
                           >
-                            <MenuItem value={undefined}>{t('None')}</MenuItem>
-                            {Object.values(NotificationTypeEnum).map((val) => (
+                            {t(' Time')}
+                          </Typography>
+                        }
+                        fullWidth
+                        value={notificationTimeBefore}
+                        onChange={handleChange('notificationTimeBefore')}
+                        inputProps={{
+                          'aria-label': 'Time',
+                          type: 'number',
+                          min: 0,
+                        }}
+                      />
+                    </Tooltip>
+                  </Grid>
+                  <Grid xs={5} item>
+                    <FormControl fullWidth>
+                      <InputLabel id="notificationTimeUnit">
+                        <Typography
+                          style={{ display: 'flex', alignItems: 'center' }}
+                        >
+                          {t(' Unit')}
+                        </Typography>
+                      </InputLabel>
+                      <Tooltip
+                        placement="top"
+                        title={
+                          <Typography>
+                            {t('Days, hours, or minutes')}
+                          </Typography>
+                        }
+                      >
+                        <Select
+                          labelId="notificationTimeUnit"
+                          value={notificationTimeUnit}
+                          onChange={(e) =>
+                            setFieldValue(
+                              'notificationTimeUnit',
+                              e.target.value,
+                            )
+                          }
+                          label={t(' Unit')}
+                        >
+                          <MenuItem value={undefined}>{t('None')}</MenuItem>
+                          {Object.values(NotificationTimeUnitEnum).map(
+                            (val) => (
                               <MenuItem key={val} value={val}>
                                 {
                                   t(
@@ -576,135 +626,52 @@ const TaskModalForm = ({
                                   ) /* manually added to translation file */
                                 }
                               </MenuItem>
-                            ))}
-                          </Select>
-                        </Tooltip>
-                      </FormControl>
-                    </Grid>
-                    <Grid xs={3} item>
-                      <Tooltip
-                        placement="top"
-                        title={
-                          <Typography>
-                            {t('Amount of time before notification')}
-                          </Typography>
-                        }
-                      >
-                        <TextField
-                          label={
-                            <Typography
-                              style={{ display: 'flex', alignItems: 'center' }}
-                            >
-                              {t(' Time')}
-                            </Typography>
-                          }
-                          fullWidth
-                          value={notificationTimeBefore}
-                          onChange={handleChange('notificationTimeBefore')}
-                          inputProps={{
-                            'aria-label': 'Time',
-                            type: 'number',
-                            min: 0,
-                          }}
-                        />
+                            ),
+                          )}
+                        </Select>
                       </Tooltip>
-                    </Grid>
-                    <Grid xs={5} item>
-                      <FormControl fullWidth>
-                        <InputLabel id="notificationTimeUnit">
-                          <Typography
-                            style={{ display: 'flex', alignItems: 'center' }}
-                          >
-                            {t(' Unit')}
-                          </Typography>
-                        </InputLabel>
-                        <Tooltip
-                          placement="top"
-                          title={
-                            <Typography>
-                              {t('Days, hours, or minutes')}
-                            </Typography>
-                          }
-                        >
-                          <Select
-                            labelId="notificationTimeUnit"
-                            value={notificationTimeUnit}
-                            onChange={(e) =>
-                              setFieldValue(
-                                'notificationTimeUnit',
-                                e.target.value,
-                              )
-                            }
-                            label={t(' Unit')}
-                          >
-                            <MenuItem value={undefined}>{t('None')}</MenuItem>
-                            {Object.values(NotificationTimeUnitEnum).map(
-                              (val) => (
-                                <MenuItem key={val} value={val}>
-                                  {
-                                    t(
-                                      val,
-                                    ) /* manually added to translation file */
-                                  }
-                                </MenuItem>
-                              ),
-                            )}
-                          </Select>
-                        </Tooltip>
-                      </FormControl>
-                    </Grid>
+                    </FormControl>
                   </Grid>
                 </Grid>
-                <Grid item>
-                  <TextField
-                    label={t('Comment')}
-                    value={commentBody}
-                    onChange={(event) => changeCommentBody(event.target.value)}
-                    fullWidth
-                    multiline
-                    inputProps={{ 'aria-label': 'Comment' }}
-                  />
-                </Grid>
-              </FormFieldsGridContainer>
-            </FormFieldsWrapper>
-            <Divider />
-            <Box
-              display="flex"
-              justifyContent="space-between"
-              alignItems="center"
-              width="100%"
-              p={1}
-            >
-              <Box>
-                {task?.id ? (
-                  <DeleteButton onClick={() => handleRemoveDialog(true)} />
-                ) : null}
-              </Box>
-              <Box>
-                <CancelButton disabled={isSubmitting} onClick={onClose} />
-                <SubmitButton disabled={!isValid || isSubmitting}>
-                  {(saving || creating) && (
-                    <>
-                      <CircularProgress color="primary" size={20} />
-                      &nbsp;
-                    </>
-                  )}
-                  {t('Save')}
-                </SubmitButton>
-              </Box>
-              <DeleteConfirmation
-                accountListId={accountListId}
-                deleteType="task"
-                open={removeDialogOpen}
-                onClickDecline={handleRemoveDialog}
-                onClose={onClose}
-                taskId={task?.id}
-              />
-            </Box>
-          </form>
-        )}
-      </Formik>
-    </Box>
+              </Grid>
+              <Grid item>
+                <TextField
+                  label={t('Comment')}
+                  value={commentBody}
+                  onChange={(event) => changeCommentBody(event.target.value)}
+                  fullWidth
+                  multiline
+                  inputProps={{ 'aria-label': 'Comment' }}
+                />
+              </Grid>
+            </FormFieldsGridContainer>
+          </DialogContent>
+          <DialogActions>
+            {task?.id ? (
+              <DeleteButton onClick={() => handleRemoveDialog(true)} />
+            ) : null}
+            <CancelButton disabled={isSubmitting} onClick={onClose} />
+            <SubmitButton disabled={!isValid || isSubmitting}>
+              {(saving || creating) && (
+                <>
+                  <CircularProgress color="primary" size={20} />
+                  &nbsp;
+                </>
+              )}
+              {t('Save')}
+            </SubmitButton>
+            <DeleteConfirmation
+              accountListId={accountListId}
+              deleteType="task"
+              open={removeDialogOpen}
+              onClickDecline={handleRemoveDialog}
+              onClose={onClose}
+              taskId={task?.id}
+            />
+          </DialogActions>
+        </form>
+      )}
+    </Formik>
   );
 };
 

@@ -1,5 +1,12 @@
 import React, { ReactElement, useState } from 'react';
-import { Box, Card, CardContent, Divider, Typography } from '@mui/material';
+import {
+  Box,
+  Card,
+  CardContent,
+  DialogActions,
+  DialogContent,
+  Typography,
+} from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import Add from '@mui/icons-material/Add';
@@ -29,18 +36,18 @@ const CardContentEmpty = styled(CardContent)(() => ({
   justifyContent: 'center',
 }));
 
-const CommentListContainer = styled(Box)(() => ({
-  width: '20vw',
-  height: '60vh',
-  overflowY: 'auto',
-  [theme.breakpoints.down('md')]: {
-    width: '30vw',
-  },
-  [theme.breakpoints.down('sm')]: {
-    width: '90vw',
-    height: '80vh',
-  },
-}));
+// const CommentListContainer = styled(Box)(() => ({
+//   width: '20vw',
+//   height: '60vh',
+//   overflowY: 'auto',
+//   [theme.breakpoints.down('md')]: {
+//     width: '30vw',
+//   },
+//   [theme.breakpoints.down('sm')]: {
+//     width: '90vw',
+//     height: '80vh',
+//   },
+// }));
 
 export interface TaskModalCommentsListProps {
   taskId: string;
@@ -75,7 +82,7 @@ const TaskModalCommentsList = ({
 
   return (
     <>
-      <CommentListContainer m={2} p={2}>
+      <DialogContent dividers>
         {loading ? (
           <Box data-testid="TaskDrawerCommentListLoading">
             <TaskDrawerCommentListItem />
@@ -133,19 +140,12 @@ const TaskModalCommentsList = ({
             </SubmitButton>
           </>
         )}
-      </CommentListContainer>
-      <Divider />
-      <Box
-        display="flex"
-        justifyContent="end"
-        alignItems="center"
-        width="100%"
-        p={1}
-      >
+      </DialogContent>
+      <DialogActions>
         <SubmitButton type="button" onClick={onClose}>
           {t('Done')}
         </SubmitButton>
-      </Box>
+      </DialogActions>
     </>
   );
 };
