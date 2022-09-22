@@ -10,10 +10,11 @@ import {
 import { makeStyles } from '@mui/styles';
 import Skeleton from '@mui/material/Skeleton';
 import { useTranslation } from 'react-i18next';
+import NextLink from 'next/link';
 import { currencyFormat } from '../../../lib/intlFormat';
 import AnimatedCard from '../../AnimatedCard';
 import AnimatedBox from '../../AnimatedBox';
-import HandoffLink from '../../HandoffLink';
+import { useAccountListId } from 'src/hooks/useAccountListId';
 
 const useStyles = makeStyles((theme: Theme) => ({
   card: {
@@ -41,6 +42,7 @@ const Balance = ({
 }: Props): ReactElement => {
   const classes = useStyles();
   const { t } = useTranslation();
+  const accountListId = useAccountListId();
 
   return (
     <>
@@ -61,11 +63,11 @@ const Balance = ({
           <Typography>{t('It may take a few days to update.')}</Typography>
         </CardContent>
         <CardActions>
-          <HandoffLink path="/reports/donations">
+          <NextLink href={`/accountLists/${accountListId}/reports/donations`}>
             <Button size="small" color="primary">
               {t('View Gifts')}
             </Button>
-          </HandoffLink>
+          </NextLink>
         </CardActions>
       </AnimatedCard>
     </>

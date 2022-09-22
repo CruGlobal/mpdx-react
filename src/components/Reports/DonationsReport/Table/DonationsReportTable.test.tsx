@@ -7,6 +7,9 @@ import { GetDonationsTableQuery } from '../GetDonationsTable.generated';
 import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
 import { DonationsReportTable } from './DonationsReportTable';
 
+const time = DateTime.now();
+const setTime = jest.fn();
+
 it('renders with data', async () => {
   const mocks = {
     GetDonationsTable: {
@@ -64,7 +67,11 @@ it('renders with data', async () => {
   const { getAllByTestId, queryAllByRole, queryByRole } = render(
     <ThemeProvider theme={theme}>
       <GqlMockedProvider<GetDonationsTableQuery> mocks={mocks}>
-        <DonationsReportTable accountListId={'abc'} />
+        <DonationsReportTable
+          accountListId={'abc'}
+          time={time}
+          setTime={setTime}
+        />
       </GqlMockedProvider>
     </ThemeProvider>,
   );
@@ -90,7 +97,11 @@ it('renders empty', async () => {
   const { queryByTestId, queryAllByRole, queryByRole } = render(
     <ThemeProvider theme={theme}>
       <GqlMockedProvider<GetDonationsTableQuery> mocks={mocks}>
-        <DonationsReportTable accountListId={'abc'} />
+        <DonationsReportTable
+          accountListId={'abc'}
+          time={time}
+          setTime={setTime}
+        />
       </GqlMockedProvider>
     </ThemeProvider>,
   );
