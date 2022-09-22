@@ -58,12 +58,11 @@ import { FormFieldsGridContainer } from '../Container/FormFieldsGridContainer';
 import useTaskModal from 'src/hooks/useTaskModal';
 import { ContactTasksTabDocument } from 'src/components/Contacts/ContactDetails/ContactTasksTab/ContactTasksTab.generated';
 import { TasksDocument } from 'pages/accountLists/[accountListId]/tasks/Tasks.generated';
-import { ModalDeleteButton } from 'src/components/common/Modal/DeleteButton/ModalDeleteButton';
-
-export const ActionButton = styled(Button)(() => ({
-  color: theme.palette.info.main,
-  fontWeight: 550,
-}));
+import {
+  SubmitButton,
+  CancelButton,
+  DeleteButton,
+} from 'src/components/common/Modal/ActionButtons/ActionButtons';
 
 const LoadingIndicator = styled(CircularProgress)(() => ({
   display: 'flex',
@@ -610,25 +609,12 @@ const TaskModalLogForm = ({
             >
               <Box>
                 {task?.id ? (
-                  <ModalDeleteButton
-                    size="large"
-                    onClick={() => setRemoveDialogOpen(true)}
-                  />
+                  <DeleteButton onClick={() => setRemoveDialogOpen(true)} />
                 ) : null}
               </Box>
               <Box>
-                <ActionButton
-                  size="large"
-                  disabled={isSubmitting}
-                  onClick={onClose}
-                >
-                  {t('Cancel')}
-                </ActionButton>
-                <ActionButton
-                  size="large"
-                  disabled={!isValid || isSubmitting}
-                  type="submit"
-                >
+                <CancelButton disabled={isSubmitting} onClick={onClose} />
+                <SubmitButton disabled={!isValid || isSubmitting}>
                   {creating && (
                     <>
                       <CircularProgress color="primary" size={20} />
@@ -636,7 +622,7 @@ const TaskModalLogForm = ({
                     </>
                   )}
                   {t('Save')}
-                </ActionButton>
+                </SubmitButton>
               </Box>
 
               <Dialog
@@ -656,16 +642,12 @@ const TaskModalLogForm = ({
                   )}
                 </DialogContent>
                 <DialogActions>
-                  <Button onClick={() => setRemoveDialogOpen(false)}>
+                  <CancelButton onClick={() => setRemoveDialogOpen(false)}>
                     {t('No')}
-                  </Button>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={onDeleteTask}
-                  >
+                  </CancelButton>
+                  <SubmitButton type="button" onClick={onDeleteTask}>
                     {t('Yes')}
-                  </Button>
+                  </SubmitButton>
                 </DialogActions>
               </Dialog>
             </Box>

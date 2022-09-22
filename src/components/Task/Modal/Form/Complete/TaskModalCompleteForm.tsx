@@ -10,7 +10,6 @@ import {
   Grid,
   Box,
   CircularProgress,
-  Button,
   Divider,
   InputAdornment,
   Typography,
@@ -41,11 +40,10 @@ import { useCompleteTaskMutation } from '../../../../../../src/components/Task/D
 import useTaskModal from '../../../../../../src/hooks/useTaskModal';
 import { FormFieldsWrapper } from '../TaskModalForm';
 import { FormFieldsGridContainer } from '../Container/FormFieldsGridContainer';
-
-const ActionButton = styled(Button)(() => ({
-  color: theme.palette.info.main,
-  fontWeight: 550,
-}));
+import {
+  SubmitButton,
+  CancelButton,
+} from 'src/components/common/Modal/ActionButtons/ActionButtons';
 
 const taskSchema: yup.SchemaOf<
   Pick<
@@ -317,18 +315,8 @@ const TaskModalCompleteForm = ({
               p={1}
             >
               <Box>
-                <ActionButton
-                  size="large"
-                  disabled={isSubmitting}
-                  onClick={onClose}
-                >
-                  {t('Cancel')}
-                </ActionButton>
-                <ActionButton
-                  size="large"
-                  disabled={!isValid || isSubmitting}
-                  type="submit"
-                >
+                <CancelButton disabled={isSubmitting} onClick={onClose} />
+                <SubmitButton disabled={!isValid || isSubmitting}>
                   {saving && (
                     <>
                       <CircularProgress color="primary" size={20} />
@@ -336,7 +324,7 @@ const TaskModalCompleteForm = ({
                     </>
                   )}
                   {t('Save')}
-                </ActionButton>
+                </SubmitButton>
               </Box>
             </Box>
           </form>

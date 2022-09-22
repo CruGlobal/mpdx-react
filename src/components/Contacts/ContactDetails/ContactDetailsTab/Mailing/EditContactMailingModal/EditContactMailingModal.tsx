@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import {
   Box,
-  Button,
   CircularProgress,
   DialogActions,
   DialogContent,
@@ -24,6 +23,10 @@ import {
 import Modal from '../../../../../common/Modal/Modal';
 import { ContactMailingFragment } from '../ContactMailing.generated';
 import { useUpdateContactMailingMutation } from './EditContactMailingModal.generated';
+import {
+  SubmitButton,
+  CancelButton,
+} from 'src/components/common/Modal/ActionButtons/ActionButtons';
 
 const ContactEditContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -172,23 +175,11 @@ export const EditContactMailingModal: React.FC<
               </ContactEditContainer>
             </DialogContent>
             <DialogActions>
-              <Button
-                onClick={handleClose}
-                disabled={isSubmitting}
-                variant="text"
-                color="inherit"
-              >
-                {t('Cancel')}
-              </Button>
-              <Button
-                color="primary"
-                type="submit"
-                variant="text"
-                disabled={!isValid || isSubmitting}
-              >
+              <CancelButton onClick={handleClose} disabled={isSubmitting} />
+              <SubmitButton disabled={!isValid || isSubmitting}>
                 {updating && <LoadingIndicator color="primary" size={20} />}
                 {t('Save')}
-              </Button>
+              </SubmitButton>
             </DialogActions>
           </form>
         )}

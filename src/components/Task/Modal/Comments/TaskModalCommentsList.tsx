@@ -6,10 +6,10 @@ import Add from '@mui/icons-material/Add';
 import illustration4 from '../../../../images/drawkit/grape/drawkit-grape-pack-illustration-4.svg';
 import TaskDrawerCommentListItem from '../../Drawer/CommentList/Item';
 import theme from '../../../../../src/theme';
-import { ActionButton } from '../Form/TaskModalForm';
 import { useGetCommentsForTaskModalCommentListQuery } from './TaskListComments.generated';
 import TaskModalCommentsListItem from './Item/TaskModalCommentListItem';
 import TaskModalCommentsListForm from './Form/TaskModalCommentsListForm';
+import { SubmitButton } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 
 const ImageWrap = styled(Box)(() => ({
   height: '120px',
@@ -123,13 +123,14 @@ const TaskModalCommentsList = ({
                 handleFormClose={setShowNewCommentInput}
               />
             )}
-            <ActionButton
+            <SubmitButton
               size="large"
+              type="button"
               onClick={() => setShowNewCommentInput(true)}
             >
               <Add style={{ marginRight: theme.spacing(1) }} />{' '}
               {t('Add Comment')}
-            </ActionButton>
+            </SubmitButton>
           </>
         )}
       </CommentListContainer>
@@ -141,9 +142,9 @@ const TaskModalCommentsList = ({
         width="100%"
         p={1}
       >
-        <ActionButton size="large" onClick={onClose}>
+        <SubmitButton type="button" onClick={onClose}>
           {t('Done')}
-        </ActionButton>
+        </SubmitButton>
       </Box>
     </>
   );

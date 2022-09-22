@@ -29,8 +29,11 @@ import {
   useDeleteContactAddressMutation,
   useUpdateContactAddressMutation,
 } from './EditContactAddress.generated';
-import { ActionButton } from 'src/components/Task/Modal/Form/TaskModalForm';
-import { ModalDeleteButton } from 'src/components/common/Modal/DeleteButton/ModalDeleteButton';
+import {
+  SubmitButton,
+  CancelButton,
+  DeleteButton,
+} from 'src/components/common/Modal/ActionButtons/ActionButtons';
 
 const ContactEditContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -199,6 +202,7 @@ export const EditContactAddressModal: React.FC<
                       <TextField
                         label={t('Street')}
                         value={street}
+                        required
                         onChange={handleChange('street')}
                         inputProps={{ 'aria-label': t('Street') }}
                         fullWidth
@@ -309,34 +313,14 @@ export const EditContactAddressModal: React.FC<
               </ContactEditContainer>
             </DialogContent>
             <DialogActions>
-              <Box
-                justifyContent={address ? 'space-between' : 'end'}
-                display="flex"
-                alignItems="center"
-                width="100%"
-              >
-                {address && (
-                  <ModalDeleteButton onClick={deleteContactAddress} />
+              {address && <DeleteButton onClick={deleteContactAddress} />}
+              <CancelButton onClick={handleClose} disabled={isSubmitting} />
+              <SubmitButton disabled={!isValid || isSubmitting}>
+                {(updating || deleting) && (
+                  <LoadingIndicator color="primary" size={20} />
                 )}
-                <Box>
-                  <ActionButton
-                    onClick={handleClose}
-                    disabled={isSubmitting}
-                    variant="text"
-                  >
-                    {t('Cancel')}
-                  </ActionButton>
-                  <ActionButton
-                    type="submit"
-                    disabled={!isValid || isSubmitting}
-                  >
-                    {(updating || deleting) && (
-                      <LoadingIndicator color="primary" size={20} />
-                    )}
-                    {t('Save')}
-                  </ActionButton>
-                </Box>
-              </Box>
+                {t('Save')}
+              </SubmitButton>
             </DialogActions>
           </form>
         )}

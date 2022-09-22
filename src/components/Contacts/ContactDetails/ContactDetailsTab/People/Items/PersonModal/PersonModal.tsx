@@ -24,7 +24,6 @@ import {
   PersonCreateInput,
   PersonUpdateInput,
 } from '../../../../../../../../graphql/types.generated';
-import { ModalDeleteButton } from '../../../../../../../../src/components/common/Modal/DeleteButton/ModalDeleteButton';
 import { DeleteConfirmation } from '../../../../../../../../src/components/common/Modal/DeleteConfirmation/DeleteConfirmation';
 import { PersonName } from './PersonName/PersonName';
 import { PersonPhoneNumber } from './PersonPhoneNumber/PersonPhoneNumber';
@@ -40,6 +39,11 @@ import {
   ContactDetailContext,
   ContactDetailsType,
 } from 'src/components/Contacts/ContactDetails/ContactDetailContext';
+import {
+  SubmitButton,
+  CancelButton,
+  DeleteButton,
+} from 'src/components/common/Modal/ActionButtons/ActionButtons';
 
 export const ContactInputField = styled(TextField)(
   ({ destroyed }: { destroyed: boolean }) => ({
@@ -71,11 +75,6 @@ const ContactEditContainer = styled(Box)(({ theme }) => ({
   width: '100%',
   flexDirection: 'column',
   margin: theme.spacing(1, 0),
-}));
-
-const ContactEditModalFooterButton = styled(Button)(({ theme }) => ({
-  color: theme.palette.info.main,
-  fontWeight: 'bold',
 }));
 
 const ShowExtraText = styled(Typography)(({ theme }) => ({
@@ -497,36 +496,18 @@ export const PersonModal: React.FC<PersonModalProps> = ({
               </ContactEditContainer>
             </DialogContent>
             <DialogActions>
-              <Box
-                justifyContent={person ? 'space-between' : 'end'}
-                display="flex"
-                alignItems="center"
-                width="100%"
+              {person && (
+                <DeleteButton onClick={() => handleRemoveDialogOpen(true)} />
+              )}
+              <CancelButton onClick={handleClose} />
+              <SubmitButton
+                disabled={!formikProps.isValid || formikProps.isSubmitting}
               >
-                {person && (
-                  <ModalDeleteButton
-                    onClick={() => handleRemoveDialogOpen(true)}
-                  />
+                {(updating || creating || deleting) && (
+                  <LoadingIndicator color="primary" size={20} />
                 )}
-                <Box>
-                  <ContactEditModalFooterButton
-                    onClick={handleClose}
-                    variant="text"
-                  >
-                    {t('Cancel')}
-                  </ContactEditModalFooterButton>
-                  <ContactEditModalFooterButton
-                    type="submit"
-                    disabled={!formikProps.isValid || formikProps.isSubmitting}
-                    variant="text"
-                  >
-                    {(updating || creating || deleting) && (
-                      <LoadingIndicator color="primary" size={20} />
-                    )}
-                    {t('Save')}
-                  </ContactEditModalFooterButton>
-                </Box>
-              </Box>
+                {t('Save')}
+              </SubmitButton>
             </DialogActions>
           </form>
         )}

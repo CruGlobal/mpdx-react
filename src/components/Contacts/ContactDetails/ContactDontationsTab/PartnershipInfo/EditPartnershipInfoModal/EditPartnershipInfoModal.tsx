@@ -2,7 +2,6 @@ import React, { ReactElement, useState } from 'react';
 import {
   Autocomplete,
   Box,
-  Button,
   Checkbox,
   CircularProgress,
   DialogActions,
@@ -41,6 +40,10 @@ import {
   useUpdateContactPartnershipMutation,
   useGetDataForPartnershipInfoModalQuery,
 } from './EditPartnershipInfoModal.generated';
+import {
+  SubmitButton,
+  CancelButton,
+} from 'src/components/common/Modal/ActionButtons/ActionButtons';
 
 const ContactInputWrapper = styled(Box)(({ theme }) => ({
   position: 'relative',
@@ -588,23 +591,11 @@ export const EditPartnershipInfoModal: React.FC<
               </ContactInputWrapper>
             </DialogContent>
             <DialogActions>
-              <Button
-                onClick={handleClose}
-                disabled={isSubmitting}
-                variant="text"
-                color="inherit"
-              >
-                {t('Cancel')}
-              </Button>
-              <Button
-                color="primary"
-                type="submit"
-                variant="text"
-                disabled={!isValid || isSubmitting}
-              >
+              <CancelButton onClick={handleClose} disabled={isSubmitting} />
+              <SubmitButton disabled={!isValid || isSubmitting}>
                 {updating && <LoadingIndicator color="primary" size={20} />}
                 {t('Save')}
-              </Button>
+              </SubmitButton>
             </DialogActions>
           </form>
         )}

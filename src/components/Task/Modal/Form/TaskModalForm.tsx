@@ -9,7 +9,7 @@ import {
   Grid,
   Box,
   CircularProgress,
-  Button,
+  // Button,
   Divider,
   InputAdornment,
   Typography,
@@ -50,13 +50,12 @@ import { useCreateTaskCommentMutation } from '../../Drawer/CommentList/Form/Crea
 import { FormFieldsGridContainer } from './Container/FormFieldsGridContainer';
 import { TasksDocument } from 'pages/accountLists/[accountListId]/tasks/Tasks.generated';
 import { ContactTasksTabDocument } from 'src/components/Contacts/ContactDetails/ContactTasksTab/ContactTasksTab.generated';
-import { ModalDeleteButton } from 'src/components/common/Modal/DeleteButton/ModalDeleteButton';
 import { DeleteConfirmation } from 'src/components/common/Modal/DeleteConfirmation/DeleteConfirmation';
-
-export const ActionButton = styled(Button)(() => ({
-  color: theme.palette.info.main,
-  fontWeight: 550,
-}));
+import {
+  SubmitButton,
+  CancelButton,
+  DeleteButton,
+} from 'src/components/common/Modal/ActionButtons/ActionButtons';
 
 export const FormFieldsWrapper = styled(Box)(() => ({
   padding: theme.spacing(2),
@@ -678,25 +677,12 @@ const TaskModalForm = ({
             >
               <Box>
                 {task?.id ? (
-                  <ModalDeleteButton
-                    onClick={() => handleRemoveDialog(true)}
-                    size="large"
-                  />
+                  <DeleteButton onClick={() => handleRemoveDialog(true)} />
                 ) : null}
               </Box>
               <Box>
-                <ActionButton
-                  size="large"
-                  disabled={isSubmitting}
-                  onClick={onClose}
-                >
-                  {t('Cancel')}
-                </ActionButton>
-                <ActionButton
-                  size="large"
-                  disabled={!isValid || isSubmitting}
-                  type="submit"
-                >
+                <CancelButton disabled={isSubmitting} onClick={onClose} />
+                <SubmitButton disabled={!isValid || isSubmitting}>
                   {(saving || creating) && (
                     <>
                       <CircularProgress color="primary" size={20} />
@@ -704,7 +690,7 @@ const TaskModalForm = ({
                     </>
                   )}
                   {t('Save')}
-                </ActionButton>
+                </SubmitButton>
               </Box>
               <DeleteConfirmation
                 accountListId={accountListId}

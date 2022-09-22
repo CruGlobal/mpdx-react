@@ -13,8 +13,8 @@ import {
   GetCommentsForTaskModalCommentListQuery,
 } from '../TaskListComments.generated';
 import { useUser } from '../../../../User/useUser';
-import { ActionButtonSmall } from '../Item/TaskModalCommentListItem';
 import { useCreateTaskCommentMutation } from 'src/components/Task/Drawer/CommentList/Form/CreateTaskComment.generated';
+import { SubmitButton } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 
 export const commentSchema: yup.SchemaOf<Omit<TaskCommentCreateInput, 'id'>> =
   yup.object({
@@ -127,12 +127,12 @@ const TaskModalCommentsListForm = ({
                   }}
                 />
                 <Box width="100%" display="flex" justifyContent="end">
-                  <ActionButtonSmall
+                  <SubmitButton
+                    size="small"
                     disabled={!isValid || isSubmitting}
-                    type="submit"
                   >
                     {t('Save')}
-                  </ActionButtonSmall>
+                  </SubmitButton>
                 </Box>
               </form>
             )}

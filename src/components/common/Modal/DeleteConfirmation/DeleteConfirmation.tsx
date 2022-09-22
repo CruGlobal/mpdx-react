@@ -1,5 +1,4 @@
 import {
-  Button,
   CircularProgress,
   Dialog,
   DialogActions,
@@ -16,14 +15,13 @@ import { useDeleteTaskMutation } from '../../../Task/Drawer/Form/TaskDrawer.gene
 import { GetTasksForTaskListDocument } from '../../../Task/List/TaskList.generated';
 import { GetThisWeekDocument } from '../../../Dashboard/ThisWeek/GetThisWeek.generated';
 import { ContactTasksTabDocument } from 'src/components/Contacts/ContactDetails/ContactTasksTab/ContactTasksTab.generated';
+import {
+  SubmitButton,
+  CancelButton,
+} from 'src/components/common/Modal/ActionButtons/ActionButtons';
 
 const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
   margin: theme.spacing(0, 1, 0, 0),
-}));
-
-const ActionButton = styled(Button)(({ theme }) => ({
-  color: theme.palette.info.main,
-  fontWeight: 550,
 }));
 
 interface DeleteConfirmationProps {
@@ -106,14 +104,15 @@ export const DeleteConfirmation: React.FC<DeleteConfirmationProps> = ({
         )}
       </DialogContent>
       <DialogActions>
-        <ActionButton onClick={() => onClickDecline(false)}>
+        <CancelButton onClick={() => onClickDecline(false)}>
           {t('No')}
-        </ActionButton>
-        <ActionButton
+        </CancelButton>
+        <SubmitButton
+          type="button"
           onClick={deleteType === 'task' ? onDeleteTask : onClickConfirm}
         >
           {t('Yes')}
-        </ActionButton>
+        </SubmitButton>
       </DialogActions>
     </Dialog>
   );

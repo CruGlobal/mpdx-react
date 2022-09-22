@@ -1,6 +1,5 @@
 import {
   Autocomplete,
-  Button,
   CircularProgress,
   DialogActions,
   DialogContent,
@@ -16,6 +15,10 @@ import Modal from '../../../common/Modal/Modal';
 import { useGetAppealsForMassActionQuery } from './GetAppealsForMassAction.generated';
 import { useAddToAppealMutation } from './AddToAppealMutation.generated';
 import { ContactsDocument } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
+import {
+  SubmitButton,
+  CancelButton,
+} from 'src/components/common/Modal/ActionButtons/ActionButtons';
 
 interface MassActionsAddToAppealModalProps {
   ids: string[];
@@ -128,23 +131,11 @@ export const MassActionsAddToAppealModal: React.FC<
               </FormControl>
             </DialogContent>
             <DialogActions>
-              <Button
-                onClick={handleClose}
-                disabled={isSubmitting}
-                variant="text"
-                color="inherit"
-              >
-                {t('Cancel')}
-              </Button>
-              <Button
-                color="primary"
-                type="submit"
-                variant="contained"
-                disabled={!isValid || isSubmitting || !appeal}
-              >
+              <CancelButton onClick={handleClose} disabled={isSubmitting} />
+              <SubmitButton disabled={!isValid || isSubmitting || !appeal}>
                 {updating && <CircularProgress color="primary" size={20} />}
                 {t('Save')}
-              </Button>
+              </SubmitButton>
             </DialogActions>
           </form>
         )}

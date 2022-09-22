@@ -6,7 +6,6 @@ import { useSnackbar } from 'notistack';
 import {
   Autocomplete,
   Box,
-  Button,
   CircularProgress,
   DialogActions,
   DialogContent,
@@ -40,6 +39,10 @@ import {
 } from '../../../ContactDetailContext';
 import { useUpdateContactOtherMutation } from './EditContactOther.generated';
 import { useGetTaskModalContactsFilteredQuery } from 'src/components/Task/Drawer/Form/TaskDrawer.generated';
+import {
+  SubmitButton,
+  CancelButton,
+} from 'src/components/common/Modal/ActionButtons/ActionButtons';
 
 const ContactEditContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -438,23 +441,11 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
               </ContactEditContainer>
             </DialogContent>
             <DialogActions>
-              <Button
-                onClick={handleClose}
-                disabled={isSubmitting}
-                variant="text"
-                color="inherit"
-              >
-                {t('Cancel')}
-              </Button>
-              <Button
-                color="primary"
-                type="submit"
-                variant="text"
-                disabled={!isValid || isSubmitting}
-              >
+              <CancelButton onClick={handleClose} disabled={isSubmitting} />
+              <SubmitButton disabled={!isValid || isSubmitting}>
                 {updating && <LoadingIndicator color="primary" size={20} />}
                 {t('Save')}
-              </Button>
+              </SubmitButton>
             </DialogActions>
           </form>
         )}

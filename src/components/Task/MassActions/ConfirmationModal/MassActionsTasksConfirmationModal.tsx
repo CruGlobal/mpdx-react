@@ -2,7 +2,10 @@ import { DialogActions, DialogContent, Typography } from '@mui/material';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import Modal from '../../../common/Modal/Modal';
-import { ActionButton } from 'src/components/Task/Modal/Form/TaskModalForm';
+import {
+  SubmitButton,
+  CancelButton,
+} from 'src/components/common/Modal/ActionButtons/ActionButtons';
 
 interface MassActionsTasksConfirmationModalProps {
   open: boolean;
@@ -32,8 +35,10 @@ export const MassActionsTasksConfirmationModal: React.FC<
         </Typography>
       </DialogContent>
       <DialogActions>
-        <ActionButton onClick={() => setOpen(false)}>{t('No')}</ActionButton>
-        <ActionButton onClick={onConfirm}>{t('Yes')}</ActionButton>
+        <CancelButton onClick={() => setOpen(false)}>{t('No')}</CancelButton>
+        <SubmitButton onClick={onConfirm} type="button">
+          {t('Yes')}
+        </SubmitButton>
       </DialogActions>
     </Modal>
   );

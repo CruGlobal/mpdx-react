@@ -1,6 +1,5 @@
 import {
   Autocomplete,
-  Button,
   Checkbox,
   CircularProgress,
   DialogActions,
@@ -30,6 +29,10 @@ import theme from 'src/theme';
 import { useGetDataForTaskDrawerQuery } from 'src/components/Task/Drawer/Form/TaskDrawer.generated';
 import { useMassActionsUpdateTasksMutation } from 'src/components/Task/MassActions/MassActionsUpdateTasks.generated';
 import { TasksDocument } from 'pages/accountLists/[accountListId]/tasks/Tasks.generated';
+import {
+  SubmitButton,
+  CancelButton,
+} from 'src/components/common/Modal/ActionButtons/ActionButtons';
 
 interface MassActionsEditTasksModalProps {
   ids: string[];
@@ -304,23 +307,11 @@ export const MassActionsEditTasksModal: React.FC<
               </Grid>
             </DialogContent>
             <DialogActions>
-              <Button
-                onClick={handleClose}
-                disabled={isSubmitting}
-                variant="text"
-                color="inherit"
-              >
-                {t('Cancel')}
-              </Button>
-              <Button
-                color="primary"
-                type="submit"
-                variant="contained"
-                disabled={!isValid || isSubmitting}
-              >
+              <CancelButton onClick={handleClose} disabled={isSubmitting} />
+              <SubmitButton disabled={!isValid || isSubmitting}>
                 {/* {updating && <LoadingIndicator color="primary" size={20} />} */}
                 {t('Save')}
-              </Button>
+              </SubmitButton>
             </DialogActions>
           </form>
         )}

@@ -5,7 +5,6 @@ import * as yup from 'yup';
 import { useSnackbar } from 'notistack';
 import {
   Box,
-  Button,
   Checkbox,
   CircularProgress,
   DialogActions,
@@ -26,6 +25,10 @@ import {
   ContactDetailsTabQuery,
 } from '../../ContactDetailsTab.generated';
 import { useCreateContactAddressMutation } from './CreateContactAddress.generated';
+import {
+  SubmitButton,
+  CancelButton,
+} from 'src/components/common/Modal/ActionButtons/ActionButtons';
 
 const ContactEditContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -282,23 +285,11 @@ export const AddAddressModal: React.FC<EditContactAddressModalProps> = ({
               </ContactEditContainer>
             </DialogContent>
             <DialogActions>
-              <Button
-                onClick={handleClose}
-                disabled={isSubmitting}
-                variant="text"
-                color="inherit"
-              >
-                {t('Cancel')}
-              </Button>
-              <Button
-                color="primary"
-                type="submit"
-                variant="contained"
-                disabled={!isValid || isSubmitting}
-              >
+              <CancelButton onClick={handleClose} disabled={isSubmitting} />
+              <SubmitButton disabled={!isValid || isSubmitting}>
                 {updating && <LoadingIndicator color="primary" size={20} />}
                 {t('Save')}
-              </Button>
+              </SubmitButton>
             </DialogActions>
           </form>
         )}

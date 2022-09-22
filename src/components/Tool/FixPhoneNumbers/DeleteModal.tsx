@@ -1,5 +1,4 @@
 import {
-  Button,
   Card,
   CardActions,
   CardContent,
@@ -18,6 +17,10 @@ import { mdiCloseThick } from '@mdi/js';
 import { useTranslation } from 'react-i18next';
 import theme from '../../../theme';
 import { ModalState } from './FixPhoneNumbers';
+import {
+  CancelButton,
+  DeleteButton,
+} from 'src/components/common/Modal/ActionButtons/ActionButtons';
 
 const useStyles = makeStyles((theme: Theme) => ({
   modal: {
@@ -25,9 +28,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'auto',
-  },
-  actionButtons: {
-    textTransform: 'none',
   },
   blue: {
     color: 'white',
@@ -99,24 +99,15 @@ const DeleteModal: React.FC<Props> = ({
           </Box>
         </CardContent>
         <CardActions>
-          <Button
-            variant="contained"
-            size="small"
-            className={classes.actionButtons}
-            onClick={handleClose}
-          >
-            {t('Cancel')}
-          </Button>
-          <Button
-            variant="contained"
-            size="small"
-            className={clsx(classes.blue, classes.actionButtons)}
-            data-testid="phoneNumberDeleteButton"
+          <CancelButton onClick={handleClose} />
+          <DeleteButton
+            dataTestId="phoneNumberDeleteButton"
             onClick={handleDelete}
+            sx={{ marginRight: 0 }}
           >
             {/*TODO: make "newNumber" field in number false so it says "edit" instead of "add" */}
             {t('Delete')}
-          </Button>
+          </DeleteButton>
         </CardActions>
       </Card>
     </Modal>

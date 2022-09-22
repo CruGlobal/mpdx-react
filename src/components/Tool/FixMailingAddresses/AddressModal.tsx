@@ -4,7 +4,6 @@ import {
   Box,
   Typography,
   Grid,
-  Button,
   Modal,
   Card,
   CardHeader,
@@ -23,6 +22,10 @@ import Icon from '@mdi/react';
 import theme from '../../../theme';
 import { StyledInput } from './StyledInput';
 import { ContactAddressFragment } from './GetInvalidAddresses.generated';
+import {
+  SubmitButton,
+  CancelButton,
+} from 'src/components/common/Modal/ActionButtons/ActionButtons';
 
 const useStyles = makeStyles(() => ({
   modal: {
@@ -37,9 +40,6 @@ const useStyles = makeStyles(() => ({
   },
   paddingY: {
     paddingBottom: theme.spacing(2),
-  },
-  actionButtons: {
-    textTransform: 'none',
   },
   blue: {
     color: 'white',
@@ -354,23 +354,11 @@ const AddressModal: React.FC<Props> = ({
               </Grid>
             </CardContent>
             <CardActions style={{ padding: theme.spacing(2) }}>
-              <Button
-                variant="contained"
-                size="small"
-                className={classes.actionButtons}
-                onClick={handleClose}
-              >
-                Cancel
-              </Button>
-              <Button
-                variant="contained"
-                disabled={disableAll}
-                size="small"
-                className={clsx(classes.blue, classes.actionButtons)}
-              >
+              <CancelButton onClick={handleClose} />
+              <SubmitButton type="button" disabled={disableAll}>
                 {/*TODO: make "newAddress" field in address false so it says "edit" instead of "add" */}
                 Save
-              </Button>
+              </SubmitButton>
             </CardActions>
           </Card>
         </Box>

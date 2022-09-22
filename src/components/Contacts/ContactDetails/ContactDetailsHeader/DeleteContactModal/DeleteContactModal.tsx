@@ -1,5 +1,4 @@
 import {
-  Button,
   CircularProgress,
   DialogActions,
   DialogContent,
@@ -9,14 +8,10 @@ import { styled } from '@mui/material/styles';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import Modal from 'src/components/common/Modal/Modal';
-
-const DialogDeleteButton = styled(Button)(({ theme }) => ({
-  backgroundColor: theme.palette.error.main,
-  color: theme.palette.common.white,
-  '&:hover': {
-    backgroundColor: theme.palette.error.dark,
-  },
-}));
+import {
+  CancelButton,
+  DeleteButton,
+} from 'src/components/common/Modal/ActionButtons/ActionButtons';
 
 const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
   margin: theme.spacing(0, 1, 0, 0),
@@ -50,18 +45,21 @@ export const DeleteContactModal: React.FC<DeleteContactModalProps> = ({
         </DialogContentText>
       </DialogContent>
       <DialogActions>
-        <Button disabled={deleting} onClick={() => setOpen(false)}>
-          {t('Cancel')}
-        </Button>
-        <DialogDeleteButton
+        <CancelButton
+          size="large"
+          disabled={deleting}
+          onClick={() => setOpen(false)}
+        />
+        <DeleteButton
           size="large"
           variant="contained"
           disabled={deleting}
           onClick={deleteContact}
+          sx={{ marginRight: 0 }}
         >
           {deleting && <LoadingIndicator size={20} />}
           {t('delete contact')}
-        </DialogDeleteButton>
+        </DeleteButton>
       </DialogActions>
     </Modal>
   );

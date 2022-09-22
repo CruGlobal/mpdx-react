@@ -25,6 +25,10 @@ import {
 import { useMassActionsUpdateTasksMutation } from '../MassActionsUpdateTasks.generated';
 import theme from 'src/theme';
 import { TasksDocument } from 'pages/accountLists/[accountListId]/tasks/Tasks.generated';
+import {
+  SubmitButton,
+  CancelButton,
+} from 'src/components/common/Modal/ActionButtons/ActionButtons';
 
 interface MassActionsTasksRemoveTagsModalProps {
   ids: string[];
@@ -164,22 +168,13 @@ export const MassActionsTasksRemoveTagsModal: React.FC<
               </FormControl>
             </DialogContent>
             <DialogActions>
-              <Button
-                onClick={handleClose}
-                disabled={isSubmitting}
-                variant="text"
-              >
-                {t('Cancel')}
-              </Button>
-              <Button
-                color="primary"
-                type="submit"
-                variant="contained"
+              <CancelButton onClick={handleClose} disabled={isSubmitting} />
+              <SubmitButton
                 disabled={!isValid || isSubmitting || tagList?.length === 0}
               >
                 {updating && <CircularProgress color="primary" size={20} />}
                 {t('Save')}
-              </Button>
+              </SubmitButton>
             </DialogActions>
           </form>
         )}

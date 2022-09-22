@@ -1,7 +1,6 @@
 import React, { ReactElement } from 'react';
 import {
   Box,
-  Button,
   TextField,
   Select,
   MenuItem,
@@ -21,11 +20,10 @@ import Modal from '../../../../../../common/Modal/Modal';
 import { ContactUpdateInput } from '../../../../../../../../graphql/types.generated';
 import { ContactPeopleFragment } from '../../ContactPeople.generated';
 import { useUpdateContactDetailsMutation } from './EditContactDetails.generated';
-
-const ContactEditModalFooterButton = styled(Button)(({ theme }) => ({
-  color: theme.palette.info.main,
-  fontWeight: 'bold',
-}));
+import {
+  SubmitButton,
+  CancelButton,
+} from 'src/components/common/Modal/ActionButtons/ActionButtons';
 
 const ContactEditContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -168,21 +166,11 @@ export const EditContactDetailsModal: React.FC<
               </ContactEditContainer>
             </DialogContent>
             <DialogActions>
-              <ContactEditModalFooterButton
-                onClick={handleClose}
-                disabled={isSubmitting}
-                variant="text"
-              >
-                {t('Cancel')}
-              </ContactEditModalFooterButton>
-              <ContactEditModalFooterButton
-                type="submit"
-                variant="text"
-                disabled={!isValid || isSubmitting}
-              >
+              <CancelButton onClick={handleClose} disabled={isSubmitting} />
+              <SubmitButton disabled={!isValid || isSubmitting}>
                 {updating && <LoadingIndicator color="primary" size={20} />}
                 {t('Save')}
-              </ContactEditModalFooterButton>
+              </SubmitButton>
             </DialogActions>
           </form>
         )}

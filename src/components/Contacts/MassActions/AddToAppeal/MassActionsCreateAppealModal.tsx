@@ -1,5 +1,4 @@
 import {
-  Button,
   CircularProgress,
   DialogActions,
   DialogContent,
@@ -14,6 +13,10 @@ import { useSnackbar } from 'notistack';
 import Modal from '../../../common/Modal/Modal';
 import { useAddToAppealMutation } from './AddToAppealMutation.generated';
 import { ContactsDocument } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
+import {
+  SubmitButton,
+  CancelButton,
+} from 'src/components/common/Modal/ActionButtons/ActionButtons';
 
 interface MassActionsCreateAppealModalProps {
   ids: string[];
@@ -86,23 +89,11 @@ export const MassActionsCreateAppealModal: React.FC<
               </FormControl>
             </DialogContent>
             <DialogActions>
-              <Button
-                onClick={handleClose}
-                disabled={isSubmitting}
-                variant="text"
-                color="inherit"
-              >
-                {t('Cancel')}
-              </Button>
-              <Button
-                color="primary"
-                type="submit"
-                variant="contained"
-                disabled={!isValid || isSubmitting || !appeal}
-              >
+              <CancelButton onClick={handleClose} disabled={isSubmitting} />
+              <SubmitButton disabled={!isValid || isSubmitting || !appeal}>
                 {updating && <CircularProgress color="primary" size={20} />}
                 {t('Save')}
-              </Button>
+              </SubmitButton>
             </DialogActions>
           </form>
         )}

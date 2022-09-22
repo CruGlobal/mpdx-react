@@ -1,5 +1,4 @@
 import {
-  Button,
   CircularProgress,
   DialogActions,
   DialogContent,
@@ -29,6 +28,10 @@ import theme from 'src/theme';
 import { useLoadConstantsQuery } from 'src/components/Constants/LoadConstants.generated';
 import { useGetDataForTaskDrawerQuery } from 'src/components/Task/Drawer/Form/TaskDrawer.generated';
 import { ContactsDocument } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
+import {
+  SubmitButton,
+  CancelButton,
+} from 'src/components/common/Modal/ActionButtons/ActionButtons';
 
 interface MassActionsEditFieldsModalProps {
   ids: string[];
@@ -399,23 +402,11 @@ export const MassActionsEditFieldsModal: React.FC<
               </Grid>
             </DialogContent>
             <DialogActions>
-              <Button
-                onClick={handleClose}
-                disabled={isSubmitting}
-                variant="text"
-                color="inherit"
-              >
-                {t('Cancel')}
-              </Button>
-              <Button
-                color="primary"
-                type="submit"
-                variant="contained"
-                disabled={!isValid || isSubmitting}
-              >
+              <CancelButton onClick={handleClose} disabled={isSubmitting} />
+              <SubmitButton disabled={!isValid || isSubmitting}>
                 {/* {updating && <LoadingIndicator color="primary" size={20} />} */}
                 {t('Save')}
-              </Button>
+              </SubmitButton>
             </DialogActions>
           </form>
         )}
