@@ -1,5 +1,4 @@
 import {
-  Button,
   Card,
   CardActions,
   CardContent,
@@ -12,7 +11,6 @@ import {
 } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import Icon from '@mdi/react';
-import clsx from 'clsx';
 import React from 'react';
 import { mdiCloseThick } from '@mdi/js';
 import { useTranslation } from 'react-i18next';

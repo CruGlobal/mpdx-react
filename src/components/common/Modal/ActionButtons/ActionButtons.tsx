@@ -2,9 +2,8 @@ import React from 'react';
 import { Button, ButtonProps } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
-import { string } from 'yup/lib/locale';
 
-const StyledButton = styled(Button)(({ theme }) => ({
+const StyledButton = styled(Button)(() => ({
   fontWeight: 700,
 }));
 
