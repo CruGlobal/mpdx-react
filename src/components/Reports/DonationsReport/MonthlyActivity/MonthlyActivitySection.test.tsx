@@ -7,6 +7,8 @@ import { GetDonationGraphQuery } from '../GetDonationGraph.generated';
 import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
 import { MonthlyActivitySection } from './MonthlyActivitySection';
 
+const setTime = jest.fn();
+
 it('renders with data', async () => {
   const mocks = {
     GetDonationGraph: {
@@ -46,7 +48,7 @@ it('renders with data', async () => {
   const { getByTestId, queryByRole, queryByTestId } = render(
     <ThemeProvider theme={theme}>
       <GqlMockedProvider<GetDonationGraphQuery> mocks={mocks}>
-        <MonthlyActivitySection accountListId={'abc'} />
+        <MonthlyActivitySection accountListId={'abc'} setTime={setTime} />
       </GqlMockedProvider>
     </ThemeProvider>,
   );
@@ -97,7 +99,7 @@ it('renders empty', async () => {
   const { queryByText, queryByRole, getByTestId } = render(
     <ThemeProvider theme={theme}>
       <GqlMockedProvider<GetDonationGraphQuery> mocks={mocks}>
-        <MonthlyActivitySection accountListId={'abc'} />
+        <MonthlyActivitySection accountListId={'abc'} setTime={setTime} />
       </GqlMockedProvider>
     </ThemeProvider>,
   );
