@@ -1,12 +1,17 @@
 import React from 'react';
 import userEvent from '@testing-library/user-event';
 import { ThemeProvider } from '@material-ui/core';
-import { render } from '../../../../../__tests__/util/testingLibraryReactMock';
+import {
+  render,
+  waitFor,
+} from '../../../../../__tests__/util/testingLibraryReactMock';
 import { GetThisWeekQuery } from '../GetThisWeek.generated';
 import { ActivityTypeEnum } from '../../../../../graphql/types.generated';
 import theme from '../../../../theme';
 import useTaskDrawer from '../../../../hooks/useTaskDrawer';
 import TasksDueThisWeek from '.';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { LoadConstantsQuery } from 'src/components/Constants/LoadConstants.generated';
 
 jest.mock('../../../../hooks/useTaskDrawer');
 
@@ -22,7 +27,9 @@ describe('TasksDueThisWeek', () => {
   it('default', () => {
     const { getByTestId, queryByTestId } = render(
       <ThemeProvider theme={theme}>
-        <TasksDueThisWeek accountListId="abc" />
+        <GqlMockedProvider>
+          <TasksDueThisWeek accountListId="abc" />
+        </GqlMockedProvider>
       </ThemeProvider>,
     );
     expect(getByTestId('TasksDueThisWeekCardContentEmpty')).toBeInTheDocument();
@@ -35,7 +42,9 @@ describe('TasksDueThisWeek', () => {
   it('loading', () => {
     const { getByTestId, queryByTestId } = render(
       <ThemeProvider theme={theme}>
-        <TasksDueThisWeek loading accountListId="abc" />
+        <GqlMockedProvider>
+          <TasksDueThisWeek loading accountListId="abc" />
+        </GqlMockedProvider>
       </ThemeProvider>,
     );
     expect(getByTestId('TasksDueThisWeekListLoading')).toBeInTheDocument();
@@ -52,7 +61,9 @@ describe('TasksDueThisWeek', () => {
     };
     const { getByTestId, queryByTestId } = render(
       <ThemeProvider theme={theme}>
-        <TasksDueThisWeek dueTasks={dueTasks} accountListId="abc" />
+        <GqlMockedProvider>
+          <TasksDueThisWeek dueTasks={dueTasks} accountListId="abc" />
+        </GqlMockedProvider>
       </ThemeProvider>,
     );
     expect(getByTestId('TasksDueThisWeekCardContentEmpty')).toBeInTheDocument();
@@ -63,7 +74,7 @@ describe('TasksDueThisWeek', () => {
   });
 
   describe('MockDate', () => {
-    it('props', () => {
+    it('props', async () => {
       const dueTasks: GetThisWeekQuery['dueTasks'] = {
         nodes: [
           {
@@ -87,33 +98,47 @@ describe('TasksDueThisWeek', () => {
       };
       const { getByTestId, queryByTestId } = render(
         <ThemeProvider theme={theme}>
-          <TasksDueThisWeek dueTasks={dueTasks} accountListId="abc" />
+          <GqlMockedProvider<LoadConstantsQuery>
+            mocks={{
+              constant: {
+                activities: [
+                  { id: 'Prayer Request', value: 'Prayer Request' },
+                  { id: 'Appointment', value: 'Appointment' },
+                ],
+              },
+            }}
+          >
+            <TasksDueThisWeek dueTasks={dueTasks} accountListId="abc" />
+          </GqlMockedProvider>
         </ThemeProvider>,
       );
-      expect(getByTestId('TasksDueThisWeekList')).toBeInTheDocument();
-      expect(
-        queryByTestId('TasksDueThisWeekCardContentEmpty'),
-      ).not.toBeInTheDocument();
-      expect(
-        queryByTestId('TasksDueThisWeekListLoading'),
-      ).not.toBeInTheDocument();
-      const viewAllElement = getByTestId('TasksDueThisWeekButtonViewAll');
-      expect(viewAllElement).toHaveAttribute(
-        'href',
-        '/accountLists/abc/tasks?completed=false&startAt[max]=2020-01-01',
-      );
-      expect(viewAllElement.textContent).toEqual('View All (1,234)');
-      const task1Element = getByTestId('TasksDueThisWeekListItem-task_1');
-      expect(task1Element.textContent).toEqual(
-        'Smith, RogerPrayer Request — the quick brown fox jumps over the lazy dog',
-      );
-      userEvent.click(task1Element);
-      expect(openTaskDrawer).toHaveBeenCalledWith({ taskId: 'task_1' });
-      expect(
-        getByTestId('TasksDueThisWeekListItem-task_2').textContent,
-      ).toEqual(
-        'Smith, SarahAppointment — the quick brown fox jumps over the lazy dog',
-      );
+
+      await waitFor(() => {
+        expect(getByTestId('TasksDueThisWeekList')).toBeInTheDocument();
+        expect(
+          queryByTestId('TasksDueThisWeekCardContentEmpty'),
+        ).not.toBeInTheDocument();
+        expect(
+          queryByTestId('TasksDueThisWeekListLoading'),
+        ).not.toBeInTheDocument();
+        const viewAllElement = getByTestId('TasksDueThisWeekButtonViewAll');
+        expect(viewAllElement).toHaveAttribute(
+          'href',
+          '/accountLists/abc/tasks?completed=false&startAt[max]=2020-01-01',
+        );
+        expect(viewAllElement.textContent).toEqual('View All (1,234)');
+        const task1Element = getByTestId('TasksDueThisWeekListItem-task_1');
+        expect(task1Element.textContent).toMatchInlineSnapshot(
+          `"Smith, Roger — the quick brown fox jumps over the lazy dog"`,
+        );
+        userEvent.click(task1Element);
+        expect(openTaskDrawer).toHaveBeenCalledWith({ taskId: 'task_1' });
+        expect(
+          getByTestId('TasksDueThisWeekListItem-task_2').textContent,
+        ).toMatchInlineSnapshot(
+          `"Smith, Sarah — the quick brown fox jumps over the lazy dog"`,
+        );
+      });
     });
   });
 });
