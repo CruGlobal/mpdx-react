@@ -10,7 +10,7 @@ const options = {
 onesky.getLanguages(options).then(function (content) {
   let languages = JSON.parse(content);
   languages.data.map((lang, _index) => {
-    if (lang.code !== 'en' && lang.translation_progress === '100.0%') {
+    if (lang.code !== 'en' && lang.translation_progress !== '0.0%') {
       onesky
         .getFile({
           language: lang.code,
