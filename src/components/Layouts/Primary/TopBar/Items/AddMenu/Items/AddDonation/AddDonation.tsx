@@ -6,7 +6,6 @@ import * as yup from 'yup';
 import {
   Autocomplete,
   Box,
-  Button,
   CircularProgress,
   DialogActions,
   DialogContent,
@@ -31,6 +30,10 @@ import {
   useGetAccountListDonorAccountsLazyQuery,
   useGetDonationModalQuery,
 } from './AddDonation.generated';
+import {
+  SubmitButton,
+  CancelButton,
+} from 'src/components/common/Modal/ActionButtons/ActionButtons';
 
 interface AddDonationProps {
   accountListId: string;
@@ -166,7 +169,7 @@ export const AddDonation = ({
 
   if (loading) {
     return (
-      <DialogContent>
+      <DialogContent dividers>
         <Box width="100%" display="flex" justifyContent="center">
           <CircularProgress />
         </Box>
@@ -658,23 +661,14 @@ export const AddDonation = ({
             </Grid>
           </DialogContent>
           <DialogActions>
-            <Button
+            <CancelButton
               disabled={isSubmitting || adding}
               onClick={handleClose}
-              color="inherit"
-            >
-              {t('Cancel')}
-            </Button>
-            <Button
-              size="large"
-              variant="contained"
-              color="primary"
-              disabled={!isValid || isSubmitting || adding}
-              type="submit"
-            >
+            />
+            <SubmitButton disabled={!isValid || isSubmitting || adding}>
               {adding && <CircularProgress size={20} />}
               {t('Save')}
-            </Button>
+            </SubmitButton>
           </DialogActions>
         </Form>
       )}

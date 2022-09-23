@@ -12,7 +12,6 @@ import {
   Radio,
   FormLabel,
   InputAdornment,
-  Button,
   CircularProgress,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
@@ -35,6 +34,10 @@ import {
 
 import { useCreateTaskMutation } from '../../../../../Task/Drawer/Form/TaskDrawer.generated';
 import { useCreateTaskCommentMutation } from '../../../../../Task/Drawer/CommentList/Form/CreateTaskComment.generated';
+import {
+  SubmitButton,
+  CancelButton,
+} from 'src/components/common/Modal/ActionButtons/ActionButtons';
 
 interface Props {
   accountListId: string;
@@ -298,23 +301,11 @@ const LogNewsletter = ({
             </Grid>
           </DialogContent>
           <DialogActions>
-            <Button
-              disabled={isSubmitting}
-              onClick={handleClose}
-              color="inherit"
-            >
-              {t('Cancel')}
-            </Button>
-            <Button
-              size="large"
-              variant="contained"
-              color="primary"
-              disabled={!isValid || isSubmitting}
-              type="submit"
-            >
+            <CancelButton disabled={isSubmitting} onClick={handleClose} />
+            <SubmitButton disabled={!isValid || isSubmitting}>
               {creating && <LoadingIndicator color="primary" size={20} />}
               {t('Save')}
-            </Button>
+            </SubmitButton>
           </DialogActions>
         </form>
       )}

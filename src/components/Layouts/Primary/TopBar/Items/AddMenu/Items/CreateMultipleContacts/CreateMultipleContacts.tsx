@@ -1,10 +1,8 @@
 import {
   Box,
-  Button,
   CircularProgress,
   DialogActions,
   DialogContent,
-  Paper,
   Table,
   TableBody,
   TableCell,
@@ -25,15 +23,18 @@ import {
   useUpdateContactReferralMutation,
 } from 'src/components/Contacts/ContactDetails/ContactReferralTab/ContactReferralTab.generated';
 import { ContactsDocument } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
+import {
+  SubmitButton,
+  CancelButton,
+} from 'src/components/common/Modal/ActionButtons/ActionButtons';
 
 const InputRow = styled(TableRow)(() => ({
   '&:nth-child(odd)': {
     backgroundColor: '#f9f9f9',
   },
-}));
-
-const DialogContentContainer = styled(DialogContent)(() => ({
-  padding: '0 !important',
+  '&:last-child .MuiTableCell-root': {
+    borderBottom: 'none',
+  },
 }));
 
 interface Props {
@@ -173,8 +174,8 @@ export const CreateMultipleContacts = ({
         setFieldValue,
       }): ReactElement => (
         <Form>
-          <DialogContentContainer dividers>
-            <TableContainer component={Paper}>
+          <DialogContent dividers sx={{ padding: 0 }}>
+            <TableContainer>
               <Table>
                 <TableHead>
                   <TableRow>
@@ -352,20 +353,10 @@ export const CreateMultipleContacts = ({
                 </TableBody>
               </Table>
             </TableContainer>
-          </DialogContentContainer>
+          </DialogContent>
           <DialogActions>
-            <Button
-              onClick={handleClose}
-              disabled={isSubmitting}
-              variant="text"
-              color="inherit"
-            >
-              {t('Cancel')}
-            </Button>
-            <Button
-              color="primary"
-              type="submit"
-              variant="contained"
+            <CancelButton onClick={handleClose} disabled={isSubmitting} />
+            <SubmitButton
               disabled={
                 !isValid ||
                 isSubmitting ||
@@ -377,7 +368,7 @@ export const CreateMultipleContacts = ({
               ) : (
                 t('Save')
               )}
-            </Button>
+            </SubmitButton>
           </DialogActions>
         </Form>
       )}

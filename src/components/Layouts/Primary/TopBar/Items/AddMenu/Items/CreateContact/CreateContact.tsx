@@ -1,6 +1,5 @@
 import React, { ReactElement } from 'react';
 import {
-  Button,
   CircularProgress,
   DialogActions,
   DialogContent,
@@ -17,6 +16,10 @@ import { useSnackbar } from 'notistack';
 import { useRouter } from 'next/router';
 import { ContactCreateInput } from '../../../../../../../../../graphql/types.generated';
 import { useCreateContactMutation } from './CreateContact.generated';
+import {
+  SubmitButton,
+  CancelButton,
+} from 'src/components/common/Modal/ActionButtons/ActionButtons';
 
 interface Props {
   accountListId: string;
@@ -126,23 +129,11 @@ const CreateContact = ({
             </Grid>
           </DialogContent>
           <DialogActions>
-            <Button
-              disabled={isSubmitting}
-              onClick={handleClose}
-              color="inherit"
-            >
-              {t('Cancel')}
-            </Button>
-            <Button
-              size="large"
-              variant="contained"
-              color="primary"
-              disabled={!isValid || isSubmitting}
-              type="submit"
-            >
+            <CancelButton disabled={isSubmitting} onClick={handleClose} />
+            <SubmitButton disabled={!isValid || isSubmitting}>
               {creating && <LoadingIndicator size={20} />}
               {t('Save')}
-            </Button>
+            </SubmitButton>
           </DialogActions>
         </form>
       )}
