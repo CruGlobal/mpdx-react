@@ -9,20 +9,27 @@ const ContactEditDeleteIconButton = styled(IconButton)(({ theme }) => ({
   right: 0,
   transform: 'translateY(-50%)',
   color: theme.palette.cruGrayMedium.main,
+  '&:disabled': {
+    cursor: 'not-allowed',
+    pointerEvents: 'all',
+  },
 }));
 
 interface ModalSectionDeleteIconProps {
   handleClick?: () => void;
+  disabled?: boolean;
 }
 
 export const ModalSectionDeleteIcon: React.FC<ModalSectionDeleteIconProps> = ({
   handleClick,
+  disabled,
 }) => {
   const { t } = useTranslation();
   return (
     <ContactEditDeleteIconButton
       onClick={handleClick}
       aria-label={t('Modal Section Delete Icon')}
+      disabled={disabled ?? false}
     >
       <DeleteIcon />
     </ContactEditDeleteIconButton>

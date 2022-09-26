@@ -27,6 +27,7 @@ fragment ContactPerson on Person {
       email
       primary
       location
+      source
     }
   }
   employer
@@ -55,6 +56,7 @@ fragment ContactPerson on Person {
       number
       primary
       location
+      source
     }
   }
   primaryEmailAddress {
@@ -62,12 +64,14 @@ fragment ContactPerson on Person {
     email
     primary
     location
+    source
   }
   primaryPhoneNumber {
     id
     number
     primary
     location
+    source
   }
   suffix
   title

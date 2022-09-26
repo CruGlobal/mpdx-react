@@ -18,10 +18,11 @@ import { TaskCommentsButton } from '../../Contacts/ContactDetails/ContactTasksTa
 import useTaskModal from '../../../hooks/useTaskModal';
 import { TaskRowFragment } from './TaskRow.generated';
 
-const SubjectWrapOuter = styled(Box)(({}) => ({
-  width: '100%',
+const SubjectWrapOuter = styled(Box)(({ theme }) => ({
+  width: 'fit-content',
   display: 'flex',
   alignItems: 'center',
+  marginRight: theme.spacing(1),
 }));
 
 const SubjectWrapInner = styled(Box)(({}) => ({
@@ -35,9 +36,6 @@ const ContactText = styled(Typography)(({ theme }) => ({
   margin: '0px',
   fontFamily: theme.typography.fontFamily,
   color: theme.palette.text.primary,
-  whiteSpace: 'nowrap',
-  overflow: 'hidden',
-  textOverflow: 'ellipsis',
   fontSize: '14px',
   letterSpacing: '0.25',
 }));
@@ -52,6 +50,7 @@ const TaskType = styled(Typography)(({ theme }) => ({
 
 const TaskContactName = styled(ContactText)(({ theme }) => ({
   fontWeight: 700,
+  whiteSpace: 'nowrap',
   marginRight: theme.spacing(0.5),
   '&:hover': {
     textDecoration: 'underline',
@@ -76,6 +75,10 @@ export const TaskRow: React.FC<TaskRowProps> = ({
   useTopMargin,
 }) => {
   const { t } = useTranslation();
+
+  const TaskRowWrapper = styled(Box)(({ theme }) => ({
+    ...(isChecked ? { backgroundColor: theme.palette.cruGrayLight.main } : {}),
+  }));
 
   const ContactRowButton = styled(Box)(({}) => ({
     height: '56px',
@@ -138,10 +141,11 @@ export const TaskRow: React.FC<TaskRowProps> = ({
   }`;
 
   return (
-    <Box role="row" p={1}>
+    <TaskRowWrapper role="row" p={1}>
       <ContactRowButton
         display="flex"
         alignItems="center"
+        data-testid="task-row"
         onClick={() => onTaskCheckToggle(taskId)}
       >
         <Box
@@ -158,7 +162,7 @@ export const TaskRow: React.FC<TaskRowProps> = ({
             <Box padding="checkbox">
               <Checkbox
                 checked={isChecked}
-                color="default"
+                color="secondary"
                 onClick={(event) => event.stopPropagation()}
                 onChange={() => onTaskCheckToggle(taskId)}
                 value={isChecked}
@@ -174,7 +178,6 @@ export const TaskRow: React.FC<TaskRowProps> = ({
 
           <Box
             display="flex"
-            flexDirection="column"
             style={{
               width: '100%',
               whiteSpace: 'nowrap',
@@ -182,21 +185,6 @@ export const TaskRow: React.FC<TaskRowProps> = ({
               textOverflow: 'ellipsis',
             }}
           >
-            <Box display="flex">
-              {contacts.nodes.map((contact, index) => (
-                <TaskContactName
-                  key={contact.id}
-                  onClick={(e) => {
-                    onClick(e, contact.id);
-                    e.stopPropagation();
-                  }}
-                >
-                  {index !== contacts.nodes.length - 1
-                    ? `${contact.name},`
-                    : contact.name}
-                </TaskContactName>
-              ))}
-            </Box>
             <SubjectWrapOuter>
               <SubjectWrapInner
                 data-testid="subject-wrap"
@@ -211,6 +199,29 @@ export const TaskRow: React.FC<TaskRowProps> = ({
                 </Tooltip>
               </SubjectWrapInner>
             </SubjectWrapOuter>
+            <Box
+              style={{
+                width: '100%',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+              }}
+            >
+              {contacts.nodes.map((contact, index) => (
+                <TaskContactName
+                  noWrap
+                  display="inline"
+                  key={contact.id}
+                  onClick={(e) => {
+                    onClick(e, contact.id);
+                    e.stopPropagation();
+                  }}
+                >
+                  {index !== contacts.nodes.length - 1
+                    ? `${contact.name},`
+                    : contact.name}
+                </TaskContactName>
+              ))}
+            </Box>
             <Hidden smUp>
               <Button>
                 <ContactText>{assigneeName}</ContactText>
@@ -260,6 +271,6 @@ export const TaskRow: React.FC<TaskRowProps> = ({
           </Hidden>
         </Box>
       </ContactRowButton>
-    </Box>
+    </TaskRowWrapper>
   );
 };

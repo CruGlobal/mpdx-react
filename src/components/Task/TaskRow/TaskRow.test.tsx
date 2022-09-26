@@ -189,9 +189,33 @@ describe('TaskRow', () => {
           </MuiThemeProvider>
         </GqlMockedProvider>,
       );
-
       expect(await findByText(task.subject)).toBeVisible();
       userEvent.click(getByRole('checkbox', { hidden: true }));
+      expect(onTaskCheckSelected).toHaveBeenCalledWith(task.id);
+    });
+    it('handles task row click', async () => {
+      const task = gqlMock<TaskRowFragment>(TaskRowFragmentDoc, {
+        mocks: {
+          startAt,
+          result: ResultEnum.None,
+        },
+      });
+
+      const { findByText, getByTestId } = render(
+        <GqlMockedProvider>
+          <MuiThemeProvider theme={theme}>
+            <TaskRow
+              accountListId={accountListId}
+              task={task}
+              onTaskCheckToggle={onTaskCheckSelected}
+              onContactSelected={onContactSelected}
+              isChecked={false}
+            />
+          </MuiThemeProvider>
+        </GqlMockedProvider>,
+      );
+      expect(await findByText(task.subject)).toBeVisible();
+      userEvent.click(getByTestId('task-row'));
       expect(onTaskCheckSelected).toHaveBeenCalledWith(task.id);
     });
     it('handles complete button click', async () => {
@@ -310,5 +334,44 @@ describe('TaskRow', () => {
         view: 'edit',
       });
     });
+  });
+
+  it('handles renders multiple names separated by comma', async () => {
+    const task = gqlMock<TaskRowFragment>(TaskRowFragmentDoc, {
+      mocks: {
+        startAt,
+        result: ResultEnum.None,
+        contacts: {
+          nodes: [
+            {
+              id: 'contact1',
+              name: 'Contact 1',
+            },
+            {
+              id: 'contact2',
+              name: 'Contact 2',
+            },
+          ],
+        },
+      },
+    });
+
+    const { findByText } = render(
+      <GqlMockedProvider>
+        <MuiThemeProvider theme={theme}>
+          <TaskRow
+            accountListId={accountListId}
+            task={task}
+            onTaskCheckToggle={onTaskCheckSelected}
+            onContactSelected={onContactSelected}
+            isChecked={false}
+          />
+        </MuiThemeProvider>
+      </GqlMockedProvider>,
+    );
+
+    expect(await findByText(task.subject)).toBeVisible();
+    expect(await findByText('Contact 1,')).toBeVisible();
+    expect(await findByText('Contact 2')).toBeVisible();
   });
 });
