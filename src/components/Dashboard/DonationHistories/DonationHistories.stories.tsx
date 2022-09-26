@@ -84,6 +84,7 @@ export const Default = (): ReactElement => {
   return (
     <Box m={2}>
       <DonationHistories
+        setTime={() => {}}
         reportsDonationHistories={reportsDonationHistories}
         currencyCode="GBP"
       />
@@ -95,6 +96,7 @@ export const WithReferences = (): ReactElement => {
   return (
     <Box m={2}>
       <DonationHistories
+        setTime={() => {}}
         reportsDonationHistories={reportsDonationHistories}
         goal={1000}
         pledged={500}
@@ -107,7 +109,7 @@ export const WithReferences = (): ReactElement => {
 export const Loading = (): ReactElement => {
   return (
     <Box m={2}>
-      <DonationHistories loading />
+      <DonationHistories setTime={() => {}} loading />
     </Box>
   );
 };
@@ -142,6 +144,7 @@ export const Empty = (): ReactElement => {
   return (
     <Box m={2}>
       <DonationHistories
+        setTime={() => {}}
         reportsDonationHistories={emptyReportsDonationHistories}
       />
     </Box>

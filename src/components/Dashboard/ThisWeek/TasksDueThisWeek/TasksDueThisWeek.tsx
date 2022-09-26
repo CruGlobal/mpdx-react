@@ -18,11 +18,14 @@ import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import Link from 'next/link';
 import { DateTime } from 'luxon';
+import { ActivityTypeEnum } from '../../../../../graphql/types.generated';
 import AnimatedCard from '../../../AnimatedCard';
 import TaskStatus from '../../../Task/Status';
 import illustration8 from '../../../../images/drawkit/grape/drawkit-grape-pack-illustration-8.svg';
 import { GetThisWeekQuery } from '../GetThisWeek.generated';
 import useTaskModal from 'src/hooks/useTaskModal';
+import { useLoadConstantsQuery } from 'src/components/Constants/LoadConstants.generated';
+import { constantIdFromActivityType } from 'src/utils/tasks/taskActivity';
 
 const useStyles = makeStyles((theme: Theme) => ({
   div: {
@@ -72,6 +75,20 @@ const TasksDueThisWeek = ({
   const classes = useStyles();
   const { t } = useTranslation();
   const { openTaskModal } = useTaskModal();
+  const { data } = useLoadConstantsQuery();
+  const [activityTypes, setActivityTypes] = React.useState(
+    data?.constant.activities,
+  );
+  React.useEffect(() => {
+    setActivityTypes(data?.constant.activities);
+  }, [data?.constant.activities]);
+
+  const translatedActivityType = (type: ActivityTypeEnum): string => {
+    return (
+      activityTypes?.find(({ id }) => id === constantIdFromActivityType(type))
+        ?.value ?? ''
+    );
+  };
 
   const handleClick = ({
     id: taskId,
@@ -160,11 +177,9 @@ const TasksDueThisWeek = ({
                               variant="body2"
                               color="textPrimary"
                             >
-                              {
-                                t(
-                                  task.activityType ?? '',
-                                ) /* manually added to translation file */
-                              }
+                              {task.activityType
+                                ? translatedActivityType(task.activityType)
+                                : ''}
                             </Typography>{' '}
                             <Typography
                               component="span"

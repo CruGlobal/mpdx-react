@@ -7,6 +7,8 @@ import { ActivityTypeEnum } from '../../../../../graphql/types.generated';
 import theme from '../../../../theme';
 import useTaskModal from '../../../../hooks/useTaskModal';
 import TasksDueThisWeek from '.';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { LoadConstantsQuery } from 'src/components/Constants/LoadConstants.generated';
 
 jest.mock('../../../../hooks/useTaskModal');
 
@@ -22,7 +24,9 @@ describe('TasksDueThisWeek', () => {
   it('default', () => {
     const { getByTestId, queryByTestId } = render(
       <ThemeProvider theme={theme}>
-        <TasksDueThisWeek accountListId="abc" />
+        <GqlMockedProvider>
+          <TasksDueThisWeek accountListId="abc" />
+        </GqlMockedProvider>
       </ThemeProvider>,
     );
     expect(getByTestId('TasksDueThisWeekCardContentEmpty')).toBeInTheDocument();
@@ -35,7 +39,9 @@ describe('TasksDueThisWeek', () => {
   it('loading', () => {
     const { getByTestId, queryByTestId } = render(
       <ThemeProvider theme={theme}>
-        <TasksDueThisWeek loading accountListId="abc" />
+        <GqlMockedProvider>
+          <TasksDueThisWeek loading accountListId="abc" />
+        </GqlMockedProvider>
       </ThemeProvider>,
     );
     expect(getByTestId('TasksDueThisWeekListLoading')).toBeInTheDocument();
@@ -52,7 +58,9 @@ describe('TasksDueThisWeek', () => {
     };
     const { getByTestId, queryByTestId } = render(
       <ThemeProvider theme={theme}>
-        <TasksDueThisWeek dueTasks={dueTasks} accountListId="abc" />
+        <GqlMockedProvider>
+          <TasksDueThisWeek dueTasks={dueTasks} accountListId="abc" />
+        </GqlMockedProvider>
       </ThemeProvider>,
     );
     expect(getByTestId('TasksDueThisWeekCardContentEmpty')).toBeInTheDocument();
@@ -63,7 +71,7 @@ describe('TasksDueThisWeek', () => {
   });
 
   describe('MockDate', () => {
-    it('props', () => {
+    it('props', async () => {
       const dueTasks: GetThisWeekQuery['dueTasks'] = {
         nodes: [
           {
@@ -93,7 +101,18 @@ describe('TasksDueThisWeek', () => {
       };
       const { getByTestId, queryByTestId } = render(
         <ThemeProvider theme={theme}>
-          <TasksDueThisWeek dueTasks={dueTasks} accountListId="abc" />
+          <GqlMockedProvider<LoadConstantsQuery>
+            mocks={{
+              constant: {
+                activities: [
+                  { id: 'Prayer Request', value: 'Prayer Request' },
+                  { id: 'Appointment', value: 'Appointment' },
+                ],
+              },
+            }}
+          >
+            <TasksDueThisWeek dueTasks={dueTasks} accountListId="abc" />
+          </GqlMockedProvider>
         </ThemeProvider>,
       );
       expect(getByTestId('TasksDueThisWeekList')).toBeInTheDocument();

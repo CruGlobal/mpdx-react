@@ -22,6 +22,7 @@ import {
 import { ContactMailingFragment } from './ContactMailing.generated';
 import { EditContactAddressModal } from './EditContactAddressModal/EditContactAddressModal';
 import { AddAddressModal } from './AddAddressModal/AddAddressModal';
+import { sourceToStr } from 'src/utils/sourceToStr';
 
 const ContactDetailsMailingMainContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -150,7 +151,7 @@ export const ContactDetailsTabMailing: React.FC<MailingProp> = ({
                 </ContactAddressRowContainer>
                 <ContactAddressRowContainer>
                   <Typography variant="subtitle1">
-                    {t(`Source: ${primaryAddress.source}`)}
+                    {t(`Source: ${sourceToStr(primaryAddress.source)}`)}
                   </Typography>
                 </ContactAddressRowContainer>
               </>
@@ -204,7 +205,7 @@ export const ContactDetailsTabMailing: React.FC<MailingProp> = ({
                       {address.country}
                     </Typography>
                     <Typography variant="subtitle1">
-                      {t(`Source: ${address.source}`)}
+                      {t(`Source: ${sourceToStr(address.source)}`)}
                     </Typography>
                   </ContactDetailsMailingTextContainer>
                 ))
