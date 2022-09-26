@@ -99,7 +99,7 @@ describe('TasksDueThisWeek', () => {
         ],
         totalCount: 1234,
       };
-      const { getByTestId, queryByTestId } = render(
+      const { getByTestId, queryByTestId, getByText } = render(
         <ThemeProvider theme={theme}>
           <GqlMockedProvider<LoadConstantsQuery>
             mocks={{
@@ -116,6 +116,7 @@ describe('TasksDueThisWeek', () => {
         </ThemeProvider>,
       );
       expect(getByTestId('TasksDueThisWeekList')).toBeInTheDocument();
+      expect(getByText('Smith, Roger')).toBeInTheDocument();
       expect(
         queryByTestId('TasksDueThisWeekCardContentEmpty'),
       ).not.toBeInTheDocument();
@@ -130,15 +131,53 @@ describe('TasksDueThisWeek', () => {
       expect(viewAllElement.textContent).toEqual('View All (1,234)');
       const task1Element = getByTestId('TasksDueThisWeekListItem-task_1');
       expect(task1Element.textContent).toEqual(
-        'Smith, RogerPrayer Request — the quick brown fox jumps over the lazy dog',
+        'Smith, Roger — the quick brown fox jumps over the lazy dog',
       );
       userEvent.click(task1Element);
       expect(openTaskModal).toHaveBeenCalledWith({ taskId: 'task_1' });
       expect(
         getByTestId('TasksDueThisWeekListItem-task_2').textContent,
-      ).toEqual(
-        'Smith, SarahAppointment — the quick brown fox jumps over the lazy dog',
+      ).toEqual('Smith, Sarah — the quick brown fox jumps over the lazy dog');
+    });
+
+    it('multiple contacts', async () => {
+      const dueTasks: GetThisWeekQuery['dueTasks'] = {
+        nodes: [
+          {
+            id: 'task_1',
+            subject: 'subject_1',
+            activityType: ActivityTypeEnum.PrayerRequest,
+            contacts: {
+              nodes: [
+                { hidden: true, name: 'Smith, Roger' },
+                { hidden: true, name: 'Smith, Sarah' },
+              ],
+              totalCount: 2,
+            },
+            startAt: null,
+            completedAt: null,
+          },
+        ],
+        totalCount: 1234,
+      };
+      const { getByTestId, getByText } = render(
+        <ThemeProvider theme={theme}>
+          <GqlMockedProvider<LoadConstantsQuery>
+            mocks={{
+              constant: {
+                activities: [
+                  { id: 'Prayer Request', value: 'Prayer Request' },
+                  { id: 'Appointment', value: 'Appointment' },
+                ],
+              },
+            }}
+          >
+            <TasksDueThisWeek dueTasks={dueTasks} accountListId="abc" />
+          </GqlMockedProvider>
+        </ThemeProvider>,
       );
+      expect(getByTestId('TasksDueThisWeekList')).toBeInTheDocument();
+      expect(getByText('Smith, Roger, +1 more')).toBeInTheDocument();
     });
   });
 });
