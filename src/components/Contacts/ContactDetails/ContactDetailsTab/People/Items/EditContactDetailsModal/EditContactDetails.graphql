@@ -13,6 +13,39 @@ mutation UpdateContactDetails(
         firstName
         lastName
       }
+      ...ContactMailing
     }
   }
+}
+
+fragment ContactDetails on Contact {
+  id
+  name
+  primaryPerson {
+    ...ContactPerson
+  }
+  people {
+    nodes {
+      ...ContactPerson
+    }
+  }
+  addresses {
+    nodes {
+      city
+      country
+      historic
+      id
+      location
+      metroArea
+      postalCode
+      primaryMailingAddress
+      region
+      source
+      state
+      street
+    }
+  }
+  greeting
+  envelopeGreeting
+  sendNewsletter
 }

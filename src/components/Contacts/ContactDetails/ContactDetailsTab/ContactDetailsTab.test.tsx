@@ -132,68 +132,6 @@ describe('ContactDetailTab', () => {
     expect(queryByText('123 Sesame Street')).toBeInTheDocument();
   });
 
-  it('should open edit contact details modal', async () => {
-    const { queryByText, getAllByLabelText } = render(
-      <SnackbarProvider>
-        <TestRouter router={router}>
-          <MuiPickersUtilsProvider utils={LuxonUtils}>
-            <ThemeProvider theme={theme}>
-              <GqlMockedProvider<ContactDetailsTabQuery>>
-                <ContactsPageProvider>
-                  <ContactDetailProvider>
-                    <ContactDetailsTab
-                      accountListId={accountListId}
-                      contactId={contactId}
-                      onContactSelected={onContactSelected}
-                    />
-                  </ContactDetailProvider>
-                </ContactsPageProvider>
-              </GqlMockedProvider>
-            </ThemeProvider>
-          </MuiPickersUtilsProvider>
-        </TestRouter>
-      </SnackbarProvider>,
-    );
-    await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());
-    userEvent.click(getAllByLabelText('Edit Icon')[0]);
-    await waitFor(() =>
-      expect(queryByText('Edit Contact Details')).toBeInTheDocument(),
-    );
-  });
-
-  it('should close edit contact details modal', async () => {
-    const { queryByText, getAllByLabelText, getByLabelText } = render(
-      <SnackbarProvider>
-        <TestRouter router={router}>
-          <MuiPickersUtilsProvider utils={LuxonUtils}>
-            <ThemeProvider theme={theme}>
-              <GqlMockedProvider<ContactDetailsTabQuery>>
-                <ContactsPageProvider>
-                  <ContactDetailProvider>
-                    <ContactDetailsTab
-                      accountListId={accountListId}
-                      contactId={contactId}
-                      onContactSelected={onContactSelected}
-                    />
-                  </ContactDetailProvider>
-                </ContactsPageProvider>
-              </GqlMockedProvider>
-            </ThemeProvider>
-          </MuiPickersUtilsProvider>
-        </TestRouter>
-      </SnackbarProvider>,
-    );
-    await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());
-    userEvent.click(getAllByLabelText('Edit Icon')[0]);
-    await waitFor(() =>
-      expect(queryByText('Edit Contact Details')).toBeInTheDocument(),
-    );
-    userEvent.click(getByLabelText('Close'));
-    await waitFor(() =>
-      expect(queryByText('Edit Contact Details')).not.toBeInTheDocument(),
-    );
-  });
-
   it('should open edit person modal', async () => {
     const { queryByText, getAllByLabelText } = render(
       <SnackbarProvider>
@@ -217,7 +155,7 @@ describe('ContactDetailTab', () => {
       </SnackbarProvider>,
     );
     await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());
-    userEvent.click(getAllByLabelText('Edit Icon')[1]);
+    userEvent.click(getAllByLabelText('Edit Icon')[0]);
     await waitFor(() => expect(queryByText('Edit Person')).toBeInTheDocument());
   });
 
@@ -244,7 +182,7 @@ describe('ContactDetailTab', () => {
       </SnackbarProvider>,
     );
     await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());
-    userEvent.click(getAllByLabelText('Edit Icon')[1]);
+    userEvent.click(getAllByLabelText('Edit Icon')[0]);
     await waitFor(() => expect(queryByText('Edit Person')).toBeInTheDocument());
     userEvent.click(getByLabelText('Close'));
     await waitFor(() =>
@@ -371,70 +309,6 @@ describe('ContactDetailTab', () => {
     await waitFor(() => expect(getAllByText('Add Address').length).toBe(1));
   });
 
-  it('should open edit contact mailing modal', async () => {
-    const { queryByText, getAllByLabelText } = render(
-      <SnackbarProvider>
-        <TestRouter router={router}>
-          <MuiPickersUtilsProvider utils={LuxonUtils}>
-            <ThemeProvider theme={theme}>
-              <GqlMockedProvider<ContactDetailsTabQuery> mocks={mocks}>
-                <ContactsPageProvider>
-                  <ContactDetailProvider>
-                    <ContactDetailsTab
-                      accountListId={accountListId}
-                      contactId={contactId}
-                      onContactSelected={onContactSelected}
-                    />
-                  </ContactDetailProvider>
-                </ContactsPageProvider>
-              </GqlMockedProvider>
-            </ThemeProvider>
-          </MuiPickersUtilsProvider>
-        </TestRouter>
-      </SnackbarProvider>,
-    );
-    await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());
-    userEvent.click(getAllByLabelText('Edit Icon')[3]);
-    await waitFor(() =>
-      expect(queryByText('Edit Contact Mailing Details')).toBeInTheDocument(),
-    );
-  });
-
-  it('should close edit contact mailing modal', async () => {
-    const { queryByText, getAllByLabelText, getByLabelText } = render(
-      <SnackbarProvider>
-        <TestRouter router={router}>
-          <MuiPickersUtilsProvider utils={LuxonUtils}>
-            <ThemeProvider theme={theme}>
-              <GqlMockedProvider<ContactDetailsTabQuery> mocks={mocks}>
-                <ContactsPageProvider>
-                  <ContactDetailProvider>
-                    <ContactDetailsTab
-                      accountListId={accountListId}
-                      contactId={contactId}
-                      onContactSelected={onContactSelected}
-                    />
-                  </ContactDetailProvider>
-                </ContactsPageProvider>
-              </GqlMockedProvider>
-            </ThemeProvider>
-          </MuiPickersUtilsProvider>
-        </TestRouter>
-      </SnackbarProvider>,
-    );
-    await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());
-    userEvent.click(getAllByLabelText('Edit Icon')[3]);
-    await waitFor(() =>
-      expect(queryByText('Edit Contact Mailing Details')).toBeInTheDocument(),
-    );
-    userEvent.click(getByLabelText('Close'));
-    await waitFor(() =>
-      expect(
-        queryByText('Edit Contact Mailing Details'),
-      ).not.toBeInTheDocument(),
-    );
-  });
-
   it('should open edit contact address modal', async () => {
     const { queryByText, getAllByLabelText } = render(
       <SnackbarProvider>
@@ -458,7 +332,7 @@ describe('ContactDetailTab', () => {
       </SnackbarProvider>,
     );
     await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());
-    userEvent.click(getAllByLabelText('Edit Icon')[4]);
+    userEvent.click(getAllByLabelText('Edit Address Icon')[0]);
     await waitFor(() =>
       expect(queryByText('Edit Address')).toBeInTheDocument(),
     );
@@ -487,7 +361,7 @@ describe('ContactDetailTab', () => {
       </SnackbarProvider>,
     );
     await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());
-    userEvent.click(getAllByLabelText('Edit Icon')[4]);
+    userEvent.click(getAllByLabelText('Edit Address Icon')[0]);
     await waitFor(() =>
       expect(queryByText('Edit Address')).toBeInTheDocument(),
     );
@@ -586,7 +460,7 @@ describe('ContactDetailTab', () => {
     await waitFor(() =>
       expect(getByText('4321 Sesame Street')).toBeInTheDocument(),
     );
-    userEvent.click(getAllByLabelText('Edit Icon')[5]);
+    userEvent.click(getAllByLabelText('Edit Icon')[2]);
     await waitFor(() =>
       expect(queryByText('Edit Address')).toBeInTheDocument(),
     );
@@ -615,7 +489,7 @@ describe('ContactDetailTab', () => {
       </SnackbarProvider>,
     );
     await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());
-    userEvent.click(getAllByLabelText('Edit Icon')[5]);
+    userEvent.click(getAllByLabelText('Edit Other Icon')[0]);
     await waitFor(() =>
       expect(queryByText('Edit Contact Other Details')).toBeInTheDocument(),
     );
@@ -644,7 +518,7 @@ describe('ContactDetailTab', () => {
       </SnackbarProvider>,
     );
     await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());
-    userEvent.click(getAllByLabelText('Edit Icon')[5]);
+    userEvent.click(getAllByLabelText('Edit Other Icon')[0]);
     await waitFor(() =>
       expect(queryByText('Edit Contact Other Details')).toBeInTheDocument(),
     );

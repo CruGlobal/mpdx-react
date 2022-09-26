@@ -1,7 +1,8 @@
 import { ThemeProvider } from '@material-ui/core';
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import React from 'react';
 import { SnackbarProvider } from 'notistack';
+import userEvent from '@testing-library/user-event';
 import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
 import { ContactDetailProvider } from '../ContactDetailContext';
 import { ContactDetailsHeader } from './ContactDetailsHeader';
@@ -113,5 +114,85 @@ describe('ContactDetails', () => {
     expect(await findByText('Lname, Fname')).toBeVisible();
 
     expect(queryByTestId('Skeleton')).toBeNull();
+  });
+
+  it('should open edit contact details modal', async () => {
+    const { queryByText, getAllByLabelText } = render(
+      <SnackbarProvider>
+        <TestRouter router={router}>
+          <ThemeProvider theme={theme}>
+            <GqlMockedProvider<GetContactDetailsHeaderQuery>
+              mocks={{
+                GetContactDetailsHeader: {
+                  contact: {
+                    name: 'Lname, Fname',
+                    primaryPerson: null,
+                    pledgeCurrency: 'USD',
+                    lastDonation: null,
+                  },
+                },
+              }}
+            >
+              <ContactsPageProvider>
+                <ContactDetailProvider>
+                  <ContactDetailsHeader
+                    accountListId={accountListId}
+                    contactId={contactId}
+                    onClose={() => {}}
+                  />
+                </ContactDetailProvider>
+              </ContactsPageProvider>
+            </GqlMockedProvider>
+          </ThemeProvider>
+        </TestRouter>
+      </SnackbarProvider>,
+    );
+    await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());
+    userEvent.click(getAllByLabelText('Edit Icon')[0]);
+    await waitFor(() =>
+      expect(queryByText('Edit Contact Details')).toBeInTheDocument(),
+    );
+  });
+
+  it('should close edit contact address modal', async () => {
+    const { queryByText, getAllByLabelText, getByLabelText } = render(
+      <SnackbarProvider>
+        <TestRouter router={router}>
+          <ThemeProvider theme={theme}>
+            <GqlMockedProvider<GetContactDetailsHeaderQuery>
+              mocks={{
+                GetContactDetailsHeader: {
+                  contact: {
+                    name: 'Lname, Fname',
+                    primaryPerson: null,
+                    pledgeCurrency: 'USD',
+                    lastDonation: null,
+                  },
+                },
+              }}
+            >
+              <ContactsPageProvider>
+                <ContactDetailProvider>
+                  <ContactDetailsHeader
+                    accountListId={accountListId}
+                    contactId={contactId}
+                    onClose={() => {}}
+                  />
+                </ContactDetailProvider>
+              </ContactsPageProvider>
+            </GqlMockedProvider>
+          </ThemeProvider>
+        </TestRouter>
+      </SnackbarProvider>,
+    );
+    await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());
+    userEvent.click(getAllByLabelText('Edit Icon')[0]);
+    await waitFor(() =>
+      expect(queryByText('Edit Contact Details')).toBeInTheDocument(),
+    );
+    userEvent.click(getByLabelText('Close'));
+    await waitFor(() =>
+      expect(queryByText('Edit Contact Details')).not.toBeInTheDocument(),
+    );
   });
 });
