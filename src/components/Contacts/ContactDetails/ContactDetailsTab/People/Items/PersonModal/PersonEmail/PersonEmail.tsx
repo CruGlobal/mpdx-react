@@ -7,7 +7,7 @@ import {
   styled,
   Typography,
 } from '@material-ui/core';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 import AddIcon from '@material-ui/icons/Add';
 import { useTranslation } from 'react-i18next';
@@ -61,18 +61,24 @@ export const PersonEmail: React.FC<PersonEmailProps> = ({
     setFieldValue,
     errors,
   } = formikProps;
+
+  const [primaryIndex, setPrimaryIndex] = useState(0);
+
   const primaryEmail = emailAddresses?.filter(
     (emailAddress) => emailAddress.primary,
   )[0];
 
-  const handleChangePrimary = (emailId: string) => {
-    const index = emailAddresses?.findIndex((email) => email.id === emailId);
-    const primaryIndex = emailAddresses?.findIndex(
-      (email) => email.id === primaryEmail?.id,
-    );
+  const handleChangePrimary = (index: number) => {
     setFieldValue(`emailAddresses.${index}.primary`, true);
     setFieldValue(`emailAddresses.${primaryIndex}.primary`, false);
+    setPrimaryIndex(index);
   };
+
+  useEffect(() => {
+    setPrimaryIndex(
+      emailAddresses?.findIndex((email) => email.id === primaryEmail?.id) ?? 0,
+    );
+  }, []);
 
   return (
     <>
@@ -96,11 +102,11 @@ export const PersonEmail: React.FC<PersonEmailProps> = ({
                     <PersonEmailItem
                       emailAddress={emailAddress}
                       index={index}
+                      primaryIndex={primaryIndex}
                       emailAddresses={emailAddresses}
                       setFieldValue={setFieldValue}
                       errors={errors}
                       handleChangePrimary={handleChangePrimary}
-                      primaryEmail={primaryEmail}
                       sources={sources}
                     />
                   </>
