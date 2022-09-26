@@ -158,11 +158,12 @@ const TasksDueThisWeek = ({
                       disableTypography={true}
                       primary={
                         <Typography variant="body1">
-                          {`${task.contacts.nodes[0].name}${
-                            task.contacts.totalCount > 1
-                              ? `, +${task.contacts.totalCount - 1} more`
-                              : ''
-                          }`}
+                          {task.contacts.nodes.length > 0 &&
+                            `${task.contacts.nodes[0].name}${
+                              task.contacts.totalCount > 1
+                                ? `, +${task.contacts.totalCount - 1} more`
+                                : ''
+                            }`}
                         </Typography>
                       }
                       secondary={
