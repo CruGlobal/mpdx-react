@@ -18,10 +18,12 @@ import { Skeleton } from '@material-ui/lab';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { DateTime } from 'luxon';
+import { StatusEnum } from '../../../../../graphql/types.generated';
 import AnimatedCard from '../../../AnimatedCard';
 import HandoffLink from '../../../HandoffLink';
 import illustration4 from '../../../../images/drawkit/grape/drawkit-grape-pack-illustration-4.svg';
 import { GetThisWeekQuery } from '../GetThisWeek.generated';
+import { useAccountListId } from 'src/hooks/useAccountListId';
 
 const useStyles = makeStyles((theme: Theme) => ({
   div: {
@@ -76,6 +78,7 @@ const ReferralsTab = ({
 }: ReferralsTabProps): ReactElement => {
   const classes = useStyles();
   const { t } = useTranslation();
+  const accountListId = useAccountListId();
 
   return (
     <>
@@ -143,31 +146,38 @@ const ReferralsTab = ({
                 ))}
               </List>
               <CardActions>
-                <HandoffLink
-                  path={`/contacts?filters=${encodeURIComponent(
+                <Button
+                  size="small"
+                  color="primary"
+                  href={`/accountLists/${accountListId}/contacts/list?filters=${encodeURIComponent(
                     JSON.stringify(
                       tab === 'Recent'
                         ? {
-                            created_at: `${DateTime.local()
-                              .endOf('day')
-                              .minus({ weeks: 2 })
-                              .toISODate()}..${DateTime.local().toISODate()}`,
-                            referrer: 'any',
+                            createdAt: {
+                              min: DateTime.local()
+                                .endOf('day')
+                                .minus({ weeks: 2 })
+                                .toISODate(),
+                              max: DateTime.local().toISODate(),
+                            },
+                            referrer: ['any'],
                           }
                         : {
-                            referrer: 'any',
-                            status:
-                              'Never Contacted,Ask in Future,Cultivate Relationship,Contact for Appointment',
+                            referrer: ['any'],
+                            status: [
+                              StatusEnum.NeverContacted,
+                              StatusEnum.AskInFuture,
+                              StatusEnum.CultivateRelationship,
+                              StatusEnum.ContactForAppointment,
+                            ],
                           },
                     ),
                   )}`}
                 >
-                  <Button size="small" color="primary">
-                    {t('View All ({{ totalCount, number }})', {
-                      totalCount: referrals.totalCount,
-                    })}
-                  </Button>
-                </HandoffLink>
+                  {t('View All ({{ totalCount, number }})', {
+                    totalCount: referrals.totalCount,
+                  })}
+                </Button>
               </CardActions>
             </>
           )}
