@@ -21,7 +21,9 @@ import {
   Contact,
   ContactConnection,
   Scalars,
+  StatusEnum,
 } from '../../../../../graphql/types.generated';
+import { useAccountListId } from 'src/hooks/useAccountListId';
 
 const LateCommitmentsContainer = styled(AnimatedCard)(({ theme }) => ({
   display: 'flex',
@@ -68,6 +70,7 @@ const LateCommitments = ({
   latePledgeContacts,
 }: Props): ReactElement => {
   const { t } = useTranslation();
+  const accountListId = useAccountListId();
 
   const showLateCommitments = (latePledgeContacts?: ContactConnection) => {
     if (!latePledgeContacts || latePledgeContacts.nodes.length === 0) {
@@ -171,26 +174,23 @@ const LateCommitments = ({
                   })}
                 </CardList>
                 <CardActions>
-                  <HandoffLink
-                    path={`/contacts?filters=${encodeURIComponent(
+                  <Button
+                    size="small"
+                    color="primary"
+                    data-testid="LateCommitmentsButtonViewAll"
+                    href={`/accountLists/${accountListId}/contacts/list?filters=${encodeURIComponent(
                       JSON.stringify({
-                        late_at: `1970-01-01..${DateTime.local()
+                        llateAt: `1970-01-01..${DateTime.local()
                           .endOf('day')
                           .toISODate()}`,
-                        status: 'Partner - Financial',
+                        status: [StatusEnum.PartnerFinancial],
                       }),
                     )}`}
                   >
-                    <Button
-                      size="small"
-                      color="primary"
-                      data-testid="LateCommitmentsButtonViewAll"
-                    >
-                      {t('View All ({{ totalCount, number }})', {
-                        totalCount: latePledgeContacts?.totalCount,
-                      })}
-                    </Button>
-                  </HandoffLink>
+                    {t('View All ({{ totalCount, number }})', {
+                      totalCount: latePledgeContacts?.totalCount,
+                    })}
+                  </Button>
                 </CardActions>
               </>
             )}
