@@ -18,9 +18,9 @@ import { Skeleton } from '@material-ui/lab';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { DateTime } from 'luxon';
+import { useRouter } from 'next/router';
 import { StatusEnum } from '../../../../../graphql/types.generated';
 import AnimatedCard from '../../../AnimatedCard';
-import HandoffLink from '../../../HandoffLink';
 import illustration4 from '../../../../images/drawkit/grape/drawkit-grape-pack-illustration-4.svg';
 import { GetThisWeekQuery } from '../GetThisWeek.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
@@ -79,6 +79,7 @@ const ReferralsTab = ({
   const classes = useStyles();
   const { t } = useTranslation();
   const accountListId = useAccountListId();
+  const { push } = useRouter();
 
   return (
     <>
@@ -124,25 +125,24 @@ const ReferralsTab = ({
                 data-testid={`ReferralsTab${tab}List`}
               >
                 {referrals.nodes.map((contact) => (
-                  <HandoffLink
+                  <ListItem
+                    component="a"
+                    button
+                    data-testid={`ReferralsTab${tab}ListItem-${contact.id}`}
                     key={contact.id}
-                    path={`/contacts/${contact.id}`}
+                    onClick={() =>
+                      push(
+                        `/accountLists/${accountListId}/contacts/list/${contact.id}`,
+                      )
+                    }
                   >
-                    <ListItem
-                      component="a"
-                      button
-                      data-testid={`ReferralsTab${tab}ListItem-${contact.id}`}
-                    >
-                      <ListItemText
-                        disableTypography={true}
-                        primary={
-                          <Typography variant="body1">
-                            {contact.name}
-                          </Typography>
-                        }
-                      />
-                    </ListItem>
-                  </HandoffLink>
+                    <ListItemText
+                      disableTypography={true}
+                      primary={
+                        <Typography variant="body1">{contact.name}</Typography>
+                      }
+                    />
+                  </ListItem>
                 ))}
               </List>
               <CardActions>
