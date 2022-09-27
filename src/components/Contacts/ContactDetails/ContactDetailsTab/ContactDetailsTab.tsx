@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-  Box,
-  IconButton,
-  Divider,
-  styled,
-  Typography,
-} from '@material-ui/core';
+import { Box, Divider, styled, Typography } from '@material-ui/core';
 import CreateIcon from '@material-ui/icons/Create';
 import { Skeleton } from '@material-ui/lab';
 import { useTranslation } from 'react-i18next';
@@ -152,14 +146,6 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
             <ContactDetailHeadingText variant="h6">
               {t('Other')}
             </ContactDetailHeadingText>
-            {loading || !data ? null : (
-              <IconButton
-                onClick={() => setEditOtherModalOpen(true)}
-                aria-label={t('Edit Other Icon')}
-              >
-                <ContactDetailEditIcon />
-              </IconButton>
-            )}
           </ContactDetailHeadingContainer>
           {loading || !data ? (
             <>
@@ -171,6 +157,7 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
             <ContactDetailsOther
               contact={data.contact}
               onContactSelected={onContactSelected}
+              handleOpen={setEditOtherModalOpen}
             />
           )}
         </ContactDetailSectionContainer>
