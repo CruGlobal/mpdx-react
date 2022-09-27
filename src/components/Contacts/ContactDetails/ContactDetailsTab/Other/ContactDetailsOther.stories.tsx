@@ -18,7 +18,11 @@ export const Default = (): ReactElement => {
   return (
     <Box m={2}>
       <ContactDetailProvider>
-        <ContactDetailsOther contact={mock} onContactSelected={() => {}} />
+        <ContactDetailsOther
+          contact={mock}
+          onContactSelected={() => {}}
+          handleOpen={() => {}}
+        />
       </ContactDetailProvider>
     </Box>
   );
