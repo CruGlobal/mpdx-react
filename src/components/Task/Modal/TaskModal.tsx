@@ -131,7 +131,7 @@ const TaskModal = ({
             <DialogContent dividers>
               <Typography color="error" align="center">
                 {t(
-                  'Our apologies it appears something has gone wrong. Please contact the administrator if this problem persists.',
+                  'Our apologies. It appears something has gone wrong. Please try again later and contact the administrator if this problem persists.',
                 )}
               </Typography>
             </DialogContent>
