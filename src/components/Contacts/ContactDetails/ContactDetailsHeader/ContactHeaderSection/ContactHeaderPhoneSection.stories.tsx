@@ -17,6 +17,12 @@ export const Default = (): ReactElement => {
     ContactDetailsHeaderFragmentDoc,
     {
       mocks: {
+        primaryPerson: {
+          primaryPhoneNumber: {
+            number: '(123)456-7890',
+            location: 'Mobile',
+          },
+        },
         lastDonation: {
           donationDate: DateTime.now().toISO(),
         },

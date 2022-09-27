@@ -1,4 +1,4 @@
-import { styled, Typography } from '@material-ui/core';
+import { Box, styled, Typography } from '@material-ui/core';
 import { Phone } from '@material-ui/icons';
 import { Skeleton } from '@material-ui/lab';
 
@@ -30,6 +30,7 @@ export const ContactHeaderPhoneSection = ({
   contact,
 }: Props): ReactElement => {
   const number = contact?.primaryPerson?.primaryPhoneNumber?.number;
+  const location = contact?.primaryPerson?.primaryPhoneNumber?.location;
 
   if (loading) {
     return (
@@ -40,14 +41,26 @@ export const ContactHeaderPhoneSection = ({
   } else if (number) {
     return (
       <ContactHeaderSection icon={<PhoneIcon />}>
-        <Typography
-          style={{ width: 'fit-content' }}
-          variant="subtitle1"
-          component="a"
-          href={`tel:${number}`}
-        >
-          {number}
-        </Typography>
+        <Box style={{ display: 'flex' }}>
+          <Typography
+            style={{ width: 'fit-content' }}
+            variant="subtitle1"
+            component="a"
+            href={`tel:${number}`}
+          >
+            {number}
+          </Typography>
+          <Typography
+            style={{
+              width: 'fit-content',
+              marginLeft: 5,
+              color: theme.palette.text.disabled,
+            }}
+            variant="subtitle1"
+          >
+            {location}
+          </Typography>
+        </Box>
       </ContactHeaderSection>
     );
   }
