@@ -3,6 +3,7 @@ fragment ContactHeaderPhone on Contact {
   primaryPerson {
     primaryPhoneNumber {
       number
+      location
     }
   }
 }
