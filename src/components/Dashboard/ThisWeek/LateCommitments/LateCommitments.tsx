@@ -20,6 +20,7 @@ import { GetThisWeekQuery } from '../GetThisWeek.generated';
 import {
   Contact,
   ContactConnection,
+  ContactFilterPledgeReceivedEnum,
   Scalars,
   StatusEnum,
 } from '../../../../../graphql/types.generated';
@@ -180,9 +181,15 @@ const LateCommitments = ({
                     data-testid="LateCommitmentsButtonViewAll"
                     href={`/accountLists/${accountListId}/contacts/list?filters=${encodeURIComponent(
                       JSON.stringify({
-                        llateAt: `1970-01-01..${DateTime.local()
-                          .endOf('day')
-                          .toISODate()}`,
+                        lateAt: {
+                          min: DateTime.fromISO('1970-01-01'),
+                          max: DateTime.local()
+                            .endOf('day')
+                            .minus({ days: 30 })
+                            .toISODate(),
+                        },
+                        pledgeReceived:
+                          ContactFilterPledgeReceivedEnum.Received,
                         status: [StatusEnum.PartnerFinancial],
                       }),
                     )}`}
