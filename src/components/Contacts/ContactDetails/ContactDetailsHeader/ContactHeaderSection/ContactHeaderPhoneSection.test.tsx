@@ -9,7 +9,17 @@ import { ContactHeaderPhoneSection } from './ContactHeaderPhoneSection';
 
 const contact = gqlMock<ContactDetailsHeaderFragment>(
   ContactDetailsHeaderFragmentDoc,
-  { mocks: { lastDonation: null } },
+  {
+    mocks: {
+      primaryPerson: {
+        primaryPhoneNumber: {
+          number: '(123)456-7890',
+          location: 'Mobile',
+        },
+      },
+      lastDonation: null,
+    },
+  },
 );
 
 describe('ContactHeaderPhoneSection', () => {
@@ -30,6 +40,9 @@ describe('ContactHeaderPhoneSection', () => {
 
     expect(
       queryByText(contact.primaryPerson?.primaryPhoneNumber?.number || ''),
+    ).toBeInTheDocument();
+    expect(
+      queryByText(contact.primaryPerson?.primaryPhoneNumber?.location || ''),
     ).toBeInTheDocument();
   });
 });
