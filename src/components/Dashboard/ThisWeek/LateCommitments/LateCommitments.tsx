@@ -13,8 +13,8 @@ import { DateTime } from 'luxon';
 import { Skeleton } from '@material-ui/lab';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
+import { useRouter } from 'next/router';
 import AnimatedCard from '../../../AnimatedCard';
-import HandoffLink from '../../../HandoffLink';
 import illustration14 from '../../../../images/drawkit/grape/drawkit-grape-pack-illustration-14.svg';
 import { GetThisWeekQuery } from '../GetThisWeek.generated';
 import {
@@ -72,6 +72,7 @@ const LateCommitments = ({
 }: Props): ReactElement => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
+  const { push } = useRouter();
 
   const showLateCommitments = (latePledgeContacts?: ContactConnection) => {
     if (!latePledgeContacts || latePledgeContacts.nodes.length === 0) {
@@ -150,26 +151,27 @@ const LateCommitments = ({
 
                     return (
                       daysLate >= 7 && (
-                        <HandoffLink
+                        <ListItem
+                          component="a"
+                          button
+                          data-testid={`LateCommitmentsListItemContact-${contact.id}`}
+                          onClick={() =>
+                            push(
+                              `/accountLists/${accountListId}/contacts/list/${contact.id}`,
+                            )
+                          }
                           key={contact.id}
-                          path={`/contacts/${contact.id}`}
                         >
-                          <ListItem
-                            component="a"
-                            button
-                            data-testid={`LateCommitmentsListItemContact-${contact.id}`}
-                          >
-                            <ListItemText
-                              primary={contact.name}
-                              secondary={t(
-                                'Their gift is {{ daysLate, number }} day late._plural',
-                                {
-                                  daysLate,
-                                },
-                              )}
-                            />
-                          </ListItem>
-                        </HandoffLink>
+                          <ListItemText
+                            primary={contact.name}
+                            secondary={t(
+                              'Their gift is {{ daysLate, number }} day late._plural',
+                              {
+                                daysLate,
+                              },
+                            )}
+                          />
+                        </ListItem>
                       )
                     );
                   })}
