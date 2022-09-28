@@ -49,10 +49,6 @@ const PrimaryContactName = styled(Typography)(({}) => ({
   display: 'inline',
   marginLeft: 18,
 }));
-const PrimaryText = styled(Typography)(({}) => ({
-  display: 'inline',
-  marginRight: 8,
-}));
 const CloseButtonIcon = styled(Close)(({}) => ({
   width: 14,
   height: 14,
@@ -96,13 +92,8 @@ export const ContactDetailsHeader: React.FC<Props> = ({
           ) : data?.contact ? (
             <>
               <PrimaryContactName data-testid="ContactName" variant="h5">
-                {data.contact.primaryPerson
-                  ? `${data.contact.primaryPerson?.firstName} ${data.contact.primaryPerson?.lastName}`
-                  : data.contact.name}
+                {data.contact.name}
               </PrimaryContactName>
-              <PrimaryText variant="subtitle1">{` - ${t(
-                'Primary',
-              )}`}</PrimaryText>
               <IconButton
                 onClick={() => setEditModalOpen(true)}
                 aria-label={t('Edit Icon')}
