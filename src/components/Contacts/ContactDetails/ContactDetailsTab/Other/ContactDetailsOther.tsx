@@ -1,8 +1,9 @@
 import React from 'react';
-import { Box, styled, Typography } from '@material-ui/core';
+import { Box, IconButton, styled, Typography } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import i18n from 'i18next';
 import { PreferredContactMethodEnum } from '../../../../../../graphql/types.generated';
+import { ContactDetailEditIcon } from '../ContactDetailsTab';
 import { ContactOtherFragment } from './ContactOther.generated';
 
 const ContactOtherContainer = styled(Box)(({ theme }) => ({
@@ -12,6 +13,7 @@ const ContactOtherContainer = styled(Box)(({ theme }) => ({
 const ContactOtherTextContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
   marginLeft: theme.spacing(2),
+  alignItems: 'center',
 }));
 
 const ContactOtherTextLabel = styled(Typography)(({ theme }) => ({
@@ -34,6 +36,7 @@ interface ContactDetailsOtherProp {
     openDetails?: boolean,
     flows?: boolean,
   ) => void;
+  handleOpen: (open: boolean) => void;
 }
 
 export const localizedContactMethod = (method?: string | null): string => {
@@ -60,6 +63,7 @@ export const localizedContactMethod = (method?: string | null): string => {
 export const ContactDetailsOther: React.FC<ContactDetailsOtherProp> = ({
   contact,
   onContactSelected,
+  handleOpen,
 }) => {
   const { t } = useTranslation();
   const {
@@ -77,11 +81,18 @@ export const ContactDetailsOther: React.FC<ContactDetailsOtherProp> = ({
   return (
     <Box>
       <ContactOtherContainer>
-        <ContactOtherTextContainer>
+        <ContactOtherTextContainer height={28}>
           <ContactOtherTextLabel variant="subtitle1">
             {t('Assignee')}
           </ContactOtherTextLabel>
           <Typography variant="subtitle1">{name}</Typography>
+          <IconButton
+            onClick={() => handleOpen(true)}
+            aria-label={t('Edit Other Icon')}
+            style={{ marginLeft: 16 }}
+          >
+            <ContactDetailEditIcon />
+          </IconButton>
         </ContactOtherTextContainer>
 
         <ContactOtherTextContainer>
