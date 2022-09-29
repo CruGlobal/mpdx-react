@@ -52,7 +52,7 @@ describe('ContactDetails', () => {
               mocks={{
                 GetContactDetailsHeader: {
                   contact: {
-                    primaryPerson: { firstName: 'Fname', lastName: 'Lname' },
+                    name: 'Fname Lname',
                     lastDonation: null,
                     pledgeCurrency: 'USD',
                   },
