@@ -26,7 +26,8 @@ describe('ContactHeaderAddressSection', () => {
       <ContactHeaderAddressSection loading={false} contact={contact} />,
     );
 
-    expect(queryByText(contact.greeting || '')).toBeInTheDocument();
+    expect(queryByText(contact.envelopeGreeting || '')).toBeInTheDocument();
+    expect(queryByText(contact.name || '')).toBeInTheDocument();
     expect(
       queryByText(contact.primaryAddress?.street || ''),
     ).toBeInTheDocument();
