@@ -27,7 +27,6 @@ describe('ContactHeaderAddressSection', () => {
     );
 
     expect(queryByText(contact.envelopeGreeting || '')).toBeInTheDocument();
-    expect(queryByText(contact.name || '')).toBeInTheDocument();
     expect(
       queryByText(contact.primaryAddress?.street || ''),
     ).toBeInTheDocument();

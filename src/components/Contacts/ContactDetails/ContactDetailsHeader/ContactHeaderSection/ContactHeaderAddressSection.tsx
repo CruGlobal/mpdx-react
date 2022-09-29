@@ -33,7 +33,6 @@ export const ContactHeaderAddressSection = ({
   const { t } = useTranslation();
 
   const envelope = contact?.envelopeGreeting;
-  const name = contact?.name;
   const primaryAddress = contact?.primaryAddress;
 
   if (loading) {
@@ -44,15 +43,13 @@ export const ContactHeaderAddressSection = ({
         <TextSkeleton variant="text" />
       </ContactHeaderSection>
     );
-  } else if ((envelope || name) && primaryAddress) {
+  } else if (envelope && primaryAddress) {
     const { street, city, state, postalCode } = primaryAddress;
 
     if (street && city && state && postalCode) {
       return (
         <ContactHeaderSection icon={<LocationIcon />}>
-          <Typography variant="subtitle1">
-            {envelope ? envelope : name}
-          </Typography>
+          <Typography variant="subtitle1">{envelope}</Typography>
           <Typography variant="subtitle1">{street}</Typography>
           <Box>
             <Typography
