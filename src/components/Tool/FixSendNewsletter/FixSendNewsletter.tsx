@@ -7,7 +7,7 @@ import {
   CircularProgress,
   Button,
 } from '@mui/material';
-import { makeStyles } from '@mui/styles';
+import { makeStyles } from 'tss-react/mui';
 import { Icon } from '@mdi/react';
 import { mdiCheckboxMarkedCircle } from '@mdi/js';
 import { useTranslation, Trans } from 'react-i18next';
@@ -23,7 +23,7 @@ import {
 } from './GetInvalidNewsletter.generated';
 import { useUpdateContactNewsletterMutation } from './UpdateNewsletter.generated';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles()(() => ({
   container: {
     padding: theme.spacing(3),
     width: '70%',
@@ -65,7 +65,7 @@ interface Props {
 }
 
 const FixSendNewsletter: React.FC<Props> = ({ accountListId }: Props) => {
-  const classes = useStyles();
+  const { classes } = useStyles();
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
   const { data, loading } = useGetInvalidNewsletterQuery({

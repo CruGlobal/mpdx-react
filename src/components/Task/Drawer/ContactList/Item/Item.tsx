@@ -16,7 +16,7 @@ import {
   Typography,
   Divider,
 } from '@mui/material';
-import { makeStyles } from '@mui/styles';
+import { makeStyles } from 'tss-react/mui';
 import { useTranslation } from 'react-i18next';
 import { DateTime } from 'luxon';
 import CallIcon from '@mui/icons-material/Call';
@@ -29,7 +29,7 @@ import { currencyFormat } from '../../../../../lib/intlFormat';
 import { dateFormat } from '../../../../../lib/intlFormat/intlFormat';
 import { GetContactsForTaskDrawerContactListQuery } from '../TaskDrawerContactList.generated';
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles()((theme: Theme) => ({
   cardContent: {
     padding: theme.spacing(3, 3, 3, 9),
   },
@@ -44,7 +44,7 @@ interface Props {
 }
 
 const TaskDrawerContactListItem = ({ contact }: Props): ReactElement => {
-  const classes = useStyles();
+  const { classes } = useStyles();
   const { t } = useTranslation();
 
   return contact ? (

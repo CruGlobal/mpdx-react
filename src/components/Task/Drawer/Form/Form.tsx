@@ -21,7 +21,7 @@ import {
   DialogContentText,
   Dialog,
 } from '@mui/material';
-import { makeStyles } from '@mui/styles';
+import { makeStyles } from 'tss-react/mui';
 import { useTranslation } from 'react-i18next';
 import { MobileDatePicker, MobileTimePicker } from '@mui/x-date-pickers';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -48,7 +48,7 @@ import {
   useDeleteTaskMutation,
 } from './TaskDrawer.generated';
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles()((theme: Theme) => ({
   formControl: {
     width: '100%',
   },
@@ -132,7 +132,7 @@ const TaskDrawerForm = ({
         notificationTimeUnit: null,
         ...defaultValues,
       };
-  const classes = useStyles();
+  const { classes } = useStyles();
   const { t } = useTranslation();
 
   const [removeDialogOpen, handleRemoveDialog] = useState(false);

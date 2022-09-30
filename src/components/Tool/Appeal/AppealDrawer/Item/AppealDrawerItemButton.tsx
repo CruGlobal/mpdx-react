@@ -1,9 +1,9 @@
 import React, { ReactElement } from 'react';
 import { ListItem, ListItemText, Box, Button } from '@mui/material';
-import { makeStyles } from '@mui/styles';
+import { makeStyles } from 'tss-react/mui';
 import theme from '../../../../../theme';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles()(() => ({
   li: {
     borderBottom: '1px solid black',
     paddingBottom: theme.spacing(3),
@@ -28,7 +28,7 @@ export const AppealDrawerItemButton = ({
   buttonText,
   disabled,
 }: Props): ReactElement => {
-  const classes = useStyles();
+  const { classes } = useStyles();
 
   return (
     <ListItem className={classes.li}>

@@ -7,7 +7,7 @@ import {
   Grid,
   Divider,
 } from '@mui/material';
-import { makeStyles } from '@mui/styles';
+import { makeStyles } from 'tss-react/mui';
 import { Formik, FormikHelpers } from 'formik';
 import * as yup from 'yup';
 import { DateTime } from 'luxon';
@@ -23,7 +23,7 @@ import {
 import { useUser } from '../../../../User/useUser';
 import { useCreateTaskCommentMutation } from './CreateTaskComment.generated';
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles()((theme: Theme) => ({
   div: {
     backgroundColor: theme.palette.background.paper,
     position: 'fixed',
@@ -52,7 +52,7 @@ interface Props {
 }
 
 const Form = ({ accountListId, taskId }: Props): ReactElement => {
-  const classes = useStyles();
+  const { classes } = useStyles();
   const [createTaskComment] = useCreateTaskCommentMutation();
   const user = useUser();
   const onSubmit = async (

@@ -7,14 +7,14 @@ import {
   Button,
   CircularProgress,
 } from '@mui/material';
-import { makeStyles } from '@mui/styles';
+import { makeStyles } from 'tss-react/mui';
 import { Trans, useTranslation } from 'react-i18next';
 import theme from '../../../theme';
 import NoData from '../NoData';
 import { useGetContactDuplicatesQuery } from './GetContactDuplicates.generated';
 import Contact from './Contact';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles()(() => ({
   container: {
     padding: theme.spacing(3),
     width: '70%',
@@ -65,7 +65,7 @@ interface Props {
 }
 
 const MergeContacts: React.FC<Props> = ({ accountListId }: Props) => {
-  const classes = useStyles();
+  const { classes } = useStyles();
   const [actions, setActions] = useState<actionsType>({});
   const { t } = useTranslation();
   const { data, loading } = useGetContactDuplicatesQuery({

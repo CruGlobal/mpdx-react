@@ -12,7 +12,7 @@ import {
   FormControl,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { makeStyles } from '@mui/styles';
+import { makeStyles } from 'tss-react/mui';
 import { Formik, Field, Form } from 'formik';
 import React, { ReactElement, useState } from 'react';
 import Icon from '@mdi/react';
@@ -33,7 +33,7 @@ const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
   margin: theme.spacing(0, 1, 0, 0),
 }));
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles()((theme: Theme) => ({
   input: {
     width: '100%',
   },
@@ -94,7 +94,7 @@ const contactExclusions = [
 ];
 
 const AddAppealForm = (): ReactElement => {
-  const classes = useStyles();
+  const { classes } = useStyles();
   const { t } = useTranslation();
   const accountListId = useAccountListId() || '';
   const { enqueueSnackbar } = useSnackbar();

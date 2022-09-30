@@ -219,7 +219,7 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
               openRemoveTagsModal && (
                 <>
                   <Hidden xsDown>
-                    {selectedIds.length > 0 && (
+                    {selectedIds?.length > 0 && (
                       <>
                         <ActionsButton
                           aria-haspopup
@@ -340,7 +340,7 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
           <>
             {buttonGroup}
             <Hidden xsDown>
-              {selectedIds.length > 0 && (
+              {selectedIds?.length > 0 && (
                 <>
                   <ActionsButton
                     aria-haspopup

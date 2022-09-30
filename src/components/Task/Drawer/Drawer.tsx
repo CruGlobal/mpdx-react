@@ -10,7 +10,7 @@ import {
   Tab,
   Typography,
 } from '@mui/material';
-import { makeStyles } from '@mui/styles';
+import { makeStyles } from 'tss-react/mui';
 import CloseIcon from '@mui/icons-material/Close';
 import { useTranslation } from 'react-i18next';
 import TabContext from '@mui/lab/TabContext';
@@ -28,7 +28,7 @@ import TaskDrawerCommentList from './CommentList';
 import TaskDrawerCompleteForm from './CompleteForm';
 import { useGetTaskForTaskDrawerQuery } from './TaskDrawerTask.generated';
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles()((theme: Theme) => ({
   fixed: {
     position: 'fixed',
     top: 0,
@@ -83,7 +83,7 @@ const TaskDrawer = ({
   rowsPerPage,
 }: TaskDrawerProps): ReactElement => {
   const accountListId = useAccountListId();
-  const classes = useStyles();
+  const { classes } = useStyles();
   const [open, setOpen] = useState(!taskId);
   const { t } = useTranslation();
   const [tab, setTab] = useState(specificTab);

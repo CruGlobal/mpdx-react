@@ -14,7 +14,7 @@ import {
   Checkbox,
   IconButton,
 } from '@mui/material';
-import { makeStyles } from '@mui/styles';
+import { makeStyles } from 'tss-react/mui';
 import { useTranslation } from 'react-i18next';
 
 import { mdiMap, mdiCloseThick, mdiInformation } from '@mdi/js';
@@ -27,7 +27,7 @@ import {
   CancelButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles()(() => ({
   modal: {
     display: 'flex',
     alignItems: 'center',
@@ -106,7 +106,7 @@ const AddressModal: React.FC<Props> = ({
   handleClose,
   handleChange,
 }) => {
-  const classes = useStyles();
+  const { classes } = useStyles();
   const { t } = useTranslation();
 
   const disableAll = !modalState.address.source.includes('MPDX');

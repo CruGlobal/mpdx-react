@@ -1,7 +1,7 @@
 import React, { ReactElement, useEffect } from 'react';
 import type { FC } from 'react';
 import { Box, Drawer, Hidden, List, Theme } from '@mui/material';
-import { makeStyles } from '@mui/styles';
+import { makeStyles } from 'tss-react/mui';
 import { useRouter } from 'next/router';
 import NextLink, { LinkProps } from 'next/link';
 import { useTranslation } from 'react-i18next';
@@ -105,7 +105,7 @@ function reduceChildRoutes({
   return acc;
 }
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles()((theme: Theme) => ({
   mobileDrawer: {
     width: 290,
     backgroundColor: theme.palette.cruGrayDark.main,
@@ -114,7 +114,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 export const NavBar: FC<NavBarProps> = ({ onMobileClose, openMobile }) => {
-  const classes = useStyles();
+  const { classes } = useStyles();
   const accountListId = useAccountListId();
   const { pathname } = useRouter();
   const { t } = useTranslation();

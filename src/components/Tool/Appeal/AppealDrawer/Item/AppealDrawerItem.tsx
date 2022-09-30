@@ -2,13 +2,13 @@ import React, { ReactElement } from 'react';
 import Box from '@mui/material/Box';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
-import { makeStyles } from '@mui/styles';
+import { makeStyles } from 'tss-react/mui';
 import ArrowForwardIos from '@mui/icons-material/ArrowForwardIos';
 import clsx from 'clsx';
 import theme from '../../../../../theme';
 import { useAppealContext } from '../../AppealContextProvider/AppealContextProvider';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles()(() => ({
   li: {
     borderBottom: '1px solid black',
   },
@@ -55,7 +55,7 @@ export const AppealDrawerItem = ({
   isSelected,
   value,
 }: Props): ReactElement => {
-  const classes = useStyles();
+  const { classes } = useStyles();
   const { appealState, setAppealState } = useAppealContext();
 
   const changeSubDisplay = (props: string): void => {

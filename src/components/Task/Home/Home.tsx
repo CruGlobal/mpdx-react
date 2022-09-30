@@ -1,13 +1,13 @@
 import React, { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Container, Theme } from '@mui/material';
-import { makeStyles } from '@mui/styles';
+import { makeStyles } from 'tss-react/mui';
 import PageHeading from '../../PageHeading';
 import TaskList from '../List';
 import { TaskFilter } from '../List/List';
 import illustration8 from '../../../images/drawkit/grape/drawkit-grape-pack-illustration-8.svg';
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles()((theme: Theme) => ({
   container: {
     paddingTop: 40,
   },
@@ -22,7 +22,7 @@ interface Props {
 
 const TaskHome = ({ initialFilter }: Props): ReactElement => {
   const { t } = useTranslation();
-  const classes = useStyles();
+  const { classes } = useStyles();
   return (
     <>
       <PageHeading heading={t('Tasks')} imgSrc={illustration8} />

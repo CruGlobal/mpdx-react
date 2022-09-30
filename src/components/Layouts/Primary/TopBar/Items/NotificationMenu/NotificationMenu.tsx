@@ -9,7 +9,7 @@ import {
   Theme,
   Typography,
 } from '@mui/material';
-import { makeStyles } from '@mui/styles';
+import { makeStyles } from 'tss-react/mui';
 import React, { ReactElement, useState } from 'react';
 import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
 import NotificationsIcon from '@mui/icons-material/Notifications';
@@ -28,7 +28,7 @@ interface NotificationMenuProps {
   isInDrawer?: boolean;
 }
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles()((theme: Theme) => ({
   link: {
     textTransform: 'none',
     color: 'rgba(255,255,255,0.75)',
@@ -78,7 +78,7 @@ export const NotificationContent = ({
   onClose: () => void;
   onFetchMore: () => void;
 }): ReactElement => {
-  const classes = useStyles();
+  const { classes } = useStyles();
   const { t } = useTranslation();
 
   return (
@@ -143,7 +143,7 @@ export const NotificationContent = ({
 const NotificationMenu = ({
   isInDrawer = false,
 }: NotificationMenuProps): ReactElement => {
-  const classes = useStyles();
+  const { classes } = useStyles();
   const accountListId = useAccountListId();
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>();
 

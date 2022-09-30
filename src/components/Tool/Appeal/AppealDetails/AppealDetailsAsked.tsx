@@ -1,6 +1,6 @@
 import React, { ReactElement } from 'react';
 import { Box, IconButton } from '@mui/material';
-import { makeStyles } from '@mui/styles';
+import { makeStyles } from 'tss-react/mui';
 import { DataGrid, GridSelectionModel } from '@mui/x-data-grid';
 import Icon from '@mdi/react';
 import { mdiSquareEditOutline, mdiDelete } from '@mdi/js';
@@ -10,7 +10,7 @@ import theme from '../../../../theme';
 import { TestAppeal } from '../../../../../pages/accountLists/[accountListId]/tools/appeals/testAppeal';
 import AppealDetailsNoData from './AppealDetailsNoData';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles()(() => ({
   container: {
     marginTop: 20,
     height: '60vh',
@@ -78,7 +78,7 @@ const columns = [
     flex: 0.3,
     sortable: false,
     renderCell: function renderActions() {
-      const classes = useStyles();
+      const { classes } = useStyles();
       return (
         <>
           <IconButton className={classes.actionIconButton}>
@@ -98,7 +98,7 @@ export interface Props {
 }
 
 const AppealDetailsAsked = ({ appeal }: Props): ReactElement => {
-  const classes = useStyles();
+  const { classes } = useStyles();
   const { appealState, setAppealState } = useAppealContext();
 
   const rows = appeal.asked.map((contact, index) => ({

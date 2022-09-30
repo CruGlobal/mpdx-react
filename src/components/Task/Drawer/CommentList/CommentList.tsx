@@ -1,13 +1,13 @@
 import React, { ReactElement, useRef, useEffect } from 'react';
 import { Theme, Box, Card, CardContent } from '@mui/material';
-import { makeStyles } from '@mui/styles';
+import { makeStyles } from 'tss-react/mui';
 import { useTranslation } from 'react-i18next';
 import illustration4 from '../../../../images/drawkit/grape/drawkit-grape-pack-illustration-4.svg';
 import TaskDrawerCommentListItem from './Item';
 import TaskDrawerCommentListForm from './Form';
 import { useGetCommentsForTaskDrawerCommentListQuery } from './TaskListComments.generated';
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles()((theme: Theme) => ({
   cardContent: {
     padding: theme.spacing(2),
     display: 'flex',
@@ -35,7 +35,7 @@ const TaskDrawerCommentList = ({
   accountListId,
   taskId,
 }: Props): ReactElement => {
-  const classes = useStyles();
+  const { classes } = useStyles();
   const { t } = useTranslation();
 
   const { data, loading } = useGetCommentsForTaskDrawerCommentListQuery({

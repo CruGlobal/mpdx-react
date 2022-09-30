@@ -18,7 +18,7 @@ import {
   FormLabel,
   Box,
 } from '@mui/material';
-import { makeStyles } from '@mui/styles';
+import { makeStyles } from 'tss-react/mui';
 import { DateTime } from 'luxon';
 import reduce from 'lodash/fp/reduce';
 import debounce from 'lodash/fp/debounce';
@@ -35,7 +35,7 @@ import {
   GetTasksForTaskListQuery,
 } from './TaskList.generated';
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles()((theme: Theme) => ({
   chip: {
     marginRight: theme.spacing(0.5),
   },
@@ -80,7 +80,7 @@ const TaskList = ({ initialFilter }: Props): ReactElement => {
     after: null,
     ...initialFilter,
   });
-  const classes = useStyles();
+  const { classes } = useStyles();
   const { t } = useTranslation();
   const [rowsPerPage, setRowsPerPage] = useState(100);
   const [currentPage, setCurrentPage] = useState(0);

@@ -10,7 +10,7 @@ import {
   Theme,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { makeStyles } from '@mui/styles';
+import { makeStyles } from 'tss-react/mui';
 import { useTranslation } from 'react-i18next';
 import { Icon } from '@mdi/react';
 import {
@@ -86,7 +86,7 @@ const HoverableIcon = styled(Icon)(({ theme }) => ({
   },
 }));
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles()((theme: Theme) => ({
   avatar: {
     width: theme.spacing(7),
     height: theme.spacing(7),
@@ -125,7 +125,7 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
   handleChangePrimary,
 }) => {
   const { t } = useTranslation();
-  const classes = useStyles();
+  const { classes } = useStyles();
   const [newEmailAddress, setNewEmailAddress] = useState<string>('');
   //TODO: Add button functionality
   //TODO: Make name pop up a modal to edit the person info

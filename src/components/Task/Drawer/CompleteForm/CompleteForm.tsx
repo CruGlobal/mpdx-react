@@ -14,7 +14,7 @@ import {
   Button,
   Divider,
 } from '@mui/material';
-import { makeStyles } from '@mui/styles';
+import { makeStyles } from 'tss-react/mui';
 import { MobileDatePicker, MobileTimePicker } from '@mui/x-date-pickers';
 import { useTranslation } from 'react-i18next';
 import { Formik } from 'formik';
@@ -34,7 +34,7 @@ import { GetThisWeekDocument } from '../../../Dashboard/ThisWeek/GetThisWeek.gen
 import useTaskDrawer from '../../../../hooks/useTaskDrawer';
 import { useCompleteTaskMutation } from './CompleteTask.generated';
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles()((theme: Theme) => ({
   formControl: {
     width: '100%',
   },
@@ -84,7 +84,7 @@ const TaskDrawerCompleteForm = ({
     tagList: task.tagList,
   };
 
-  const classes = useStyles();
+  const { classes } = useStyles();
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
   const { openTaskDrawer } = useTaskDrawer();

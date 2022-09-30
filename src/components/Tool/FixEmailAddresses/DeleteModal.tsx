@@ -9,7 +9,7 @@ import {
   IconButton,
   Box,
 } from '@mui/material';
-import { makeStyles } from '@mui/styles';
+import { makeStyles } from 'tss-react/mui';
 import Icon from '@mdi/react';
 import React from 'react';
 import { mdiCloseThick } from '@mdi/js';
@@ -21,7 +21,7 @@ import {
   DeleteButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles()((theme: Theme) => ({
   modal: {
     display: 'flex',
     alignItems: 'center',
@@ -58,7 +58,7 @@ const DeleteModal: React.FC<Props> = ({
   handleClose,
   handleDelete,
 }) => {
-  const classes = useStyles();
+  const { classes } = useStyles();
   const { t } = useTranslation();
   return (
     <Modal

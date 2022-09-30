@@ -10,7 +10,7 @@ import {
   NativeSelect,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { makeStyles } from '@mui/styles';
+import { makeStyles } from 'tss-react/mui';
 import { useTranslation } from 'react-i18next';
 import SearchIcon from '@mui/icons-material/Search';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
@@ -22,7 +22,7 @@ import { StyledInput } from './StyledInput';
 import { frequencies } from './InputOptions/Frequencies';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles()(() => ({
   right: {
     display: 'flex',
     justifyContent: 'flex-start',
@@ -133,7 +133,7 @@ const Contact: React.FC<Props> = ({
     amount: amount,
     frequencyValue: frequencyValue,
   });
-  const classes = useStyles();
+  const { classes } = useStyles();
   const { t } = useTranslation();
   const accountListId = useAccountListId();
   const { push } = useRouter();

@@ -12,7 +12,7 @@ import {
   TableBody,
   TableContainer,
 } from '@mui/material';
-import { withStyles, makeStyles } from '@mui/styles';
+import { makeStyles, withStyles } from 'tss-react/mui';
 import { motion } from 'framer-motion';
 import { DateTime, Interval } from 'luxon';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
@@ -24,7 +24,7 @@ import { numberFormat } from '../../../../lib/intlFormat';
 import HandoffLink from '../../../HandoffLink';
 import { useGetWeeklyActivityQuery } from './GetWeeklyActivity.generated';
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles()((theme: Theme) => ({
   div: {
     flex: 1,
     display: 'flex',
@@ -56,15 +56,15 @@ interface Props {
   accountListId: string;
 }
 
-const StyledTableCell = withStyles(() => ({
+const StyledTableCell = withStyles(TableCell, () => ({
   root: {
     paddingLeft: 4,
     paddingRight: 4,
   },
-}))(TableCell);
+}));
 
 const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
-  const classes = useStyles();
+  const { classes } = useStyles();
   const { t, i18n } = useTranslation();
 
   const [interval, setInterval] = useState(

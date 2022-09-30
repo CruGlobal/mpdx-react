@@ -1,13 +1,13 @@
 import React, { ReactElement } from 'react';
 import { Drawer } from '@mui/material';
-import { makeStyles } from '@mui/styles';
+import { makeStyles } from 'tss-react/mui';
 import theme from '../../../../theme';
 import NavToolDrawerHandle from '../../NavToolList/NavToolDrawerHandle';
 import { TestAppeal } from '../../../../../pages/accountLists/[accountListId]/tools/appeals/testAppeal';
 import AppealDrawerList from './AppealDrawerList';
 //import { useAppealId } from '../../../../src/hooks/useAppealId';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles()(() => ({
   drawer: {
     zIndex: 1,
   },
@@ -39,7 +39,7 @@ export interface Props {
 }
 
 const AppealDrawer = ({ open, toggle, appeal }: Props): ReactElement => {
-  const classes = useStyles();
+  const { classes } = useStyles();
   //const appealId = useAppealId();
 
   return (

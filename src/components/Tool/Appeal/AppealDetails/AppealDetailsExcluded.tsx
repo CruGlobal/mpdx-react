@@ -1,6 +1,6 @@
 import React, { ReactElement } from 'react';
 import { Box, IconButton } from '@mui/material';
-import { makeStyles } from '@mui/styles';
+import { makeStyles } from 'tss-react/mui';
 import { DataGrid } from '@mui/x-data-grid';
 import Icon from '@mdi/react';
 import { mdiAccountPlus } from '@mdi/js';
@@ -9,7 +9,7 @@ import theme from '../../../../theme';
 import { TestAppeal } from '../../../../../pages/accountLists/[accountListId]/tools/appeals/testAppeal';
 import AppealDetailsNoData from './AppealDetailsNoData';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles()(() => ({
   container: {
     marginTop: 20,
     height: '60vh',
@@ -83,7 +83,7 @@ const columns = [
     flex: 0.25,
     sortable: false,
     renderCell: function renderActions() {
-      const classes = useStyles();
+      const { classes } = useStyles();
       return (
         <>
           <IconButton className={classes.actionIconButton}>
@@ -100,7 +100,7 @@ export interface Props {
 }
 
 const AppealDetailsExcluded = ({ appeal }: Props): ReactElement => {
-  const classes = useStyles();
+  const { classes } = useStyles();
 
   const rows = appeal.excluded.map((contact, index) => ({
     id: index,

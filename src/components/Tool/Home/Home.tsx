@@ -1,13 +1,13 @@
 import React, { ReactElement } from 'react';
 import { Theme, Grid, Box } from '@mui/material';
-import { makeStyles } from '@mui/styles';
+import { makeStyles } from 'tss-react/mui';
 import { motion } from 'framer-motion';
 
 import { useTranslation } from 'react-i18next';
 import Tool from './Tool';
 import { ToolsList } from './ToolList';
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles()((theme: Theme) => ({
   container: {
     padding: theme.spacing(3),
     width: '70%',
@@ -43,7 +43,7 @@ const variants = {
 };
 
 const ToolHome = (): ReactElement => {
-  const classes = useStyles();
+  const { classes } = useStyles();
   const toolsListFlattened = ToolsList.flatMap((tool) => tool.items);
   const { t } = useTranslation();
 

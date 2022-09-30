@@ -12,7 +12,7 @@ import {
   ListItemSecondaryAction,
   CardContent,
 } from '@mui/material';
-import { makeStyles } from '@mui/styles';
+import { makeStyles } from 'tss-react/mui';
 import Skeleton from '@mui/material/Skeleton';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
@@ -27,7 +27,7 @@ import useTaskDrawer from '../../../../hooks/useTaskDrawer';
 import { useLoadConstantsQuery } from 'src/components/Constants/LoadConstants.generated';
 import { constantIdFromActivityType } from 'src/utils/tasks/taskActivity';
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles()((theme: Theme) => ({
   div: {
     flex: 1,
     display: 'flex',
@@ -72,7 +72,7 @@ const TasksDueThisWeek = ({
   dueTasks,
   accountListId,
 }: Props): ReactElement => {
-  const classes = useStyles();
+  const { classes } = useStyles();
   const { t } = useTranslation();
   const { openTaskDrawer } = useTaskDrawer();
   const { data } = useLoadConstantsQuery();

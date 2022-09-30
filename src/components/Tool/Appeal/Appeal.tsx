@@ -1,5 +1,5 @@
 import { Box, CardContent, Typography } from '@mui/material';
-import { makeStyles } from '@mui/styles';
+import { makeStyles } from 'tss-react/mui';
 import React, { ReactElement } from 'react';
 import StarIcon from '@mui/icons-material/Star';
 import StarOutlineIcon from '@mui/icons-material/StarOutline';
@@ -22,7 +22,7 @@ export interface Props {
   changePrimary: (newPrimaryId: string) => void;
 }
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles()(() => ({
   cardContent: {
     marginTop: -theme.spacing(2),
   },
@@ -78,7 +78,7 @@ const Appeal = ({
   commited,
   changePrimary,
 }: Props): ReactElement => {
-  const classes = useStyles();
+  const { classes } = useStyles();
   const accountListId = useAccountListId();
 
   return (

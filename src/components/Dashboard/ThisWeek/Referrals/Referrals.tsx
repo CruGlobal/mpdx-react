@@ -13,7 +13,7 @@ import {
   Tab,
   CardContent,
 } from '@mui/material';
-import { makeStyles } from '@mui/styles';
+import { makeStyles } from 'tss-react/mui';
 import Skeleton from '@mui/material/Skeleton';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
@@ -23,7 +23,7 @@ import HandoffLink from '../../../HandoffLink';
 import illustration4 from '../../../../images/drawkit/grape/drawkit-grape-pack-illustration-4.svg';
 import { GetThisWeekQuery } from '../GetThisWeek.generated';
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles()((theme: Theme) => ({
   div: {
     flex: 1,
     display: 'flex',
@@ -74,7 +74,7 @@ const ReferralsTab = ({
   referrals,
   tab,
 }: ReferralsTabProps): ReactElement => {
-  const classes = useStyles();
+  const { classes } = useStyles();
   const { t } = useTranslation();
 
   return (
@@ -188,7 +188,7 @@ const Referrals = ({
   recentReferrals,
   onHandReferrals,
 }: Props): ReactElement => {
-  const classes = useStyles();
+  const { classes } = useStyles();
   const { t } = useTranslation();
   const [value, setValue] = useState(0);
 

@@ -1,16 +1,16 @@
-import '@testing-library/jest-dom';
+import '@testing-library/jest-dom/extend-expect';
 import { Settings } from 'luxon';
 import matchMediaMock from './matchMediaMock';
 
 window.document.createRange = (): Range =>
-  (({
+  ({
     setStart: jest.fn(),
     setEnd: jest.fn(),
-    commonAncestorContainer: ({
+    commonAncestorContainer: {
       nodeName: 'BODY',
       ownerDocument: document,
-    } as unknown) as Node,
-  } as unknown) as Range);
+    } as unknown as Node,
+  } as unknown as Range);
 
 window.HTMLElement.prototype.scrollIntoView = jest.fn();
 

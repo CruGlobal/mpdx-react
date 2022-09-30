@@ -1,6 +1,6 @@
 import React, { ReactElement, ReactNode } from 'react';
 import { Box, Container, Typography, Theme, Grid } from '@mui/material';
-import { makeStyles } from '@mui/styles';
+import { makeStyles } from 'tss-react/mui';
 import { motion } from 'framer-motion';
 import illustration2 from '../../images/drawkit/grape/drawkit-grape-pack-illustration-2.svg';
 
@@ -11,7 +11,7 @@ interface Props {
   children?: ReactNode;
 }
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles()((theme: Theme) => ({
   container: {
     '& > *': {
       marginRight: theme.spacing(2),
@@ -59,7 +59,7 @@ const Welcome = ({
   imgSrc,
   children,
 }: Props): ReactElement => {
-  const classes = useStyles();
+  const { classes } = useStyles();
 
   return (
     <motion.main

@@ -1,6 +1,6 @@
 import React, { ReactElement } from 'react';
 import { Tooltip, Theme, Fab, Avatar } from '@mui/material';
-import { makeStyles } from '@mui/styles';
+import { makeStyles } from 'tss-react/mui';
 import { DateTime } from 'luxon';
 import AssignmentLateIcon from '@mui/icons-material/AssignmentLate';
 import AssignmentIcon from '@mui/icons-material/Assignment';
@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next';
 import DoneIcon from '@mui/icons-material/Done';
 import useTaskDrawer from '../../../hooks/useTaskDrawer';
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles()((theme: Theme) => ({
   buttonGreen: {
     color: theme.palette.common.white,
     backgroundColor: theme.palette.mpdxGreen.main,
@@ -93,7 +93,7 @@ const TaskStatus = ({
   disableTooltip = false,
   tooltipPlacement = 'right',
 }: Props): ReactElement => {
-  const classes = useStyles();
+  const { classes } = useStyles();
   const { t } = useTranslation();
   const { openTaskDrawer } = useTaskDrawer();
 

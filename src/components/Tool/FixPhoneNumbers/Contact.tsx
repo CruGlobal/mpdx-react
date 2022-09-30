@@ -9,7 +9,7 @@ import {
   TextField,
   Theme,
 } from '@mui/material';
-import { makeStyles } from '@mui/styles';
+import { makeStyles } from 'tss-react/mui';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { Icon } from '@mdi/react';
@@ -21,7 +21,7 @@ import { PersonPhoneNumberInput } from '../../../../graphql/types.generated';
 import theme from '../../../theme';
 import { PhoneNumberData } from './FixPhoneNumbers';
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles()((theme: Theme) => ({
   left: {
     [theme.breakpoints.up('md')]: {
       border: `1px solid ${theme.palette.cruGrayMedium.main}`,
@@ -121,7 +121,7 @@ const Contact: React.FC<Props> = ({
   handleChangePrimary,
 }) => {
   const { t } = useTranslation();
-  const classes = useStyles();
+  const { classes } = useStyles();
   const [newPhoneNumber, setNewPhoneNumber] = useState<string>('');
   //TODO: Add button functionality
   //TODO: Make name pop up a modal to edit the person info

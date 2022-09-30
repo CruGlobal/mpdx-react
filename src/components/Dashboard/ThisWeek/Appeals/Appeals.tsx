@@ -9,7 +9,7 @@ import {
   Grid,
   Box,
 } from '@mui/material';
-import { makeStyles } from '@mui/styles';
+import { makeStyles } from 'tss-react/mui';
 import Skeleton from '@mui/material/Skeleton';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
@@ -20,7 +20,7 @@ import HandoffLink from '../../../HandoffLink';
 import illustration13 from '../../../../images/drawkit/grape/drawkit-grape-pack-illustration-13.svg';
 import { GetThisWeekQuery } from '../GetThisWeek.generated';
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles()((theme: Theme) => ({
   div: {
     flex: 1,
     display: 'flex',
@@ -93,7 +93,7 @@ interface Props {
 }
 
 const Appeals = ({ loading, appeal }: Props): ReactElement => {
-  const classes = useStyles();
+  const { classes } = useStyles();
   const { t } = useTranslation();
   const pledgesAmountProcessedPercentage =
     (appeal?.pledgesAmountProcessed || 0) / (appeal?.amount || 0);

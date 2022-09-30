@@ -2,7 +2,7 @@
 import React, { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, ButtonGroup, TextField, Box, Grid } from '@mui/material';
-import { makeStyles } from '@mui/styles';
+import { makeStyles } from 'tss-react/mui';
 import NextLink from 'next/link';
 import ArrowBackIos from '@mui/icons-material/ArrowBackIos';
 import List from '@mui/icons-material/List';
@@ -14,7 +14,7 @@ import AppealProgressBar from '../AppealProgressBar';
 import { useAppealContext } from '../AppealContextProvider/AppealContextProvider';
 import { TestAppeal } from '../../../../../pages/accountLists/[accountListId]/tools/appeals/testAppeal';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles()(() => ({
   container: {
     width: '100%',
   },
@@ -42,7 +42,7 @@ export interface Props {
 }
 
 const AppealDetailsHeader = ({ appeal }: Props): ReactElement => {
-  const classes = useStyles();
+  const { classes } = useStyles();
   const { t } = useTranslation();
   const accountListId = useAccountListId();
   const { appealState, setAppealState } = useAppealContext();

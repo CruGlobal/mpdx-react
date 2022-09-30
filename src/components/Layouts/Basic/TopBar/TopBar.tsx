@@ -1,8 +1,8 @@
 import React, { ReactElement, ReactNode } from 'react';
 import { Toolbar, AppBar, useScrollTrigger, Theme, Grid } from '@mui/material';
-import { makeStyles } from '@mui/styles';
+import { makeStyles } from 'tss-react/mui';
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles()((theme: Theme) => ({
   appBar: {
     paddingTop: `env(safe-area-inset-top)`,
     paddingLeft: `env(safe-area-inset-left)`,
@@ -22,7 +22,7 @@ interface Props {
 }
 
 const TopBar = ({ children }: Props): ReactElement => {
-  const classes = useStyles();
+  const { classes } = useStyles();
 
   const trigger = useScrollTrigger({
     disableHysteresis: true,

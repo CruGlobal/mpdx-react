@@ -1,8 +1,8 @@
 import React, { ReactElement, ReactNode } from 'react';
 import { Typography, Theme } from '@mui/material';
-import { makeStyles } from '@mui/styles';
+import { makeStyles } from 'tss-react/mui';
 
-const useStyles = makeStyles((_theme: Theme) => ({
+const useStyles = makeStyles()((_theme: Theme) => ({
   title: {
     textTransform: 'uppercase',
     fontSize: '0.8rem',
@@ -20,7 +20,7 @@ const InfoBlock = ({
   children,
   disableChildrenTypography,
 }: Props): ReactElement => {
-  const classes = useStyles();
+  const { classes } = useStyles();
 
   return (
     <>

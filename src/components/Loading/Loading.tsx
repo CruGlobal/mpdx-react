@@ -1,10 +1,10 @@
 import React, { ReactElement, useEffect, useState } from 'react';
 import { Theme, Fab, CircularProgress } from '@mui/material';
-import { makeStyles } from '@mui/styles';
+import { makeStyles } from 'tss-react/mui';
 import { useRouter } from 'next/router';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles()((theme: Theme) => ({
   box: {
     position: 'fixed',
     top: '50%',
@@ -26,7 +26,7 @@ interface Props {
 }
 
 const Loading = ({ loading = false }: Props): ReactElement => {
-  const classes = useStyles();
+  const { classes } = useStyles();
   const router = useRouter();
 
   const [currentlyLoading, setCurrentlyLoading] = useState(loading);

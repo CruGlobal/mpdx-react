@@ -7,7 +7,7 @@ import {
   CardHeader,
   Theme,
 } from '@mui/material';
-import { makeStyles } from '@mui/styles';
+import { makeStyles } from 'tss-react/mui';
 import {
   ReferenceLine,
   BarChart,
@@ -28,7 +28,7 @@ import AnimatedCard from '../../AnimatedCard';
 import AnimatedBox from '../../AnimatedBox';
 import illustration15 from '../../../images/drawkit/grape/drawkit-grape-pack-illustration-15.svg';
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles()((theme: Theme) => ({
   cardHeader: {
     textAlign: 'center',
   },
@@ -93,7 +93,7 @@ const DonationHistories = ({
   currencyCode = 'USD',
   setTime,
 }: Props): ReactElement => {
-  const classes = useStyles();
+  const { classes } = useStyles();
   const { t } = useTranslation();
   const fills = ['#FFCF07', '#30F2F2', '#1FC0D2', '#007398'];
   const currencies: { dataKey: string; fill: string }[] = [];
