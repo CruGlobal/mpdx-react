@@ -85,6 +85,7 @@ export const AddAddressModal: React.FC<EditContactAddressModalProps> = ({
     region: yup.string().nullable(),
     state: yup.string().nullable(),
     street: yup.string().required(),
+    primaryMailingAddress: yup.boolean().nullable(false),
   });
 
   const onSubmit = async (
@@ -143,6 +144,7 @@ export const AddAddressModal: React.FC<EditContactAddressModalProps> = ({
           region: '',
           state: '',
           street: '',
+          primaryMailingAddress: false,
         }}
         validationSchema={contactAddressSchema}
         onSubmit={onSubmit}
@@ -158,6 +160,7 @@ export const AddAddressModal: React.FC<EditContactAddressModalProps> = ({
             region,
             state,
             street,
+            primaryMailingAddress,
           },
           handleChange,
           handleSubmit,
@@ -266,6 +269,22 @@ export const AddAddressModal: React.FC<EditContactAddressModalProps> = ({
                       />
                     </Grid>
                   </Grid>
+                </ContactInputWrapper>
+                <ContactInputWrapper>
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={primaryMailingAddress}
+                        onChange={() =>
+                          setFieldValue(
+                            'primaryMailingAddress',
+                            !primaryMailingAddress,
+                          )
+                        }
+                      />
+                    }
+                    label={t('Primary')}
+                  />
                 </ContactInputWrapper>
                 <ContactInputWrapper>
                   <FormControlLabel
