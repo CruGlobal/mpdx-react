@@ -171,6 +171,7 @@ export const EditContactAddressModal: React.FC<
           region: address.region ?? '',
           state: address.state ?? '',
           street: address.street ?? '',
+          primaryMailingAddress: address.primaryMailingAddress ?? false,
         }}
         validationSchema={contactAddressSchema}
         onSubmit={onSubmit}
@@ -186,6 +187,7 @@ export const EditContactAddressModal: React.FC<
             region,
             state,
             street,
+            primaryMailingAddress,
           },
           handleChange,
           handleSubmit,
@@ -297,6 +299,22 @@ export const EditContactAddressModal: React.FC<
                       />
                     </Grid>
                   </Grid>
+                </ContactInputWrapper>
+                <ContactInputWrapper>
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={primaryMailingAddress}
+                        onChange={() =>
+                          setFieldValue(
+                            'primaryMailingAddress',
+                            !primaryMailingAddress,
+                          )
+                        }
+                      />
+                    }
+                    label={t('Primary')}
+                  />
                 </ContactInputWrapper>
                 <ContactInputWrapper>
                   <FormControlLabel
