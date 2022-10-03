@@ -200,7 +200,9 @@ export const EditContactDetailsModal: React.FC<
                     <Select
                       labelId="send-newsletter-select-label"
                       value={sendNewsletter}
-                      onChange={handleChange('sendNewsletter')}
+                      onChange={(e) =>
+                        setFieldValue('sendNewsletter', e.target.value)
+                      }
                       fullWidth={true}
                     >
                       {Object.values(SendNewsletterEnum).map((value) => (
