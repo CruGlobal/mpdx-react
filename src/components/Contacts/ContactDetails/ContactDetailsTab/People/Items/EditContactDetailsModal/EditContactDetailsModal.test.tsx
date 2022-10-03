@@ -5,20 +5,21 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
-import {
-  ContactPeopleFragment,
-  ContactPeopleFragmentDoc,
-} from '../../ContactPeople.generated';
+import { SendNewsletterEnum } from '../../../../../../../../graphql/types.generated';
 import {
   gqlMock,
   GqlMockedProvider,
 } from '../../../../../../../../__tests__/util/graphqlMocking';
 import theme from '../../../../../../../theme';
 import { EditContactDetailsModal } from './EditContactDetailsModal';
-import { UpdateContactDetailsMutation } from './EditContactDetails.generated';
+import {
+  ContactDetailsFragment,
+  ContactDetailsFragmentDoc,
+  UpdateContactDetailsMutation,
+} from './EditContactDetails.generated';
 
 const handleClose = jest.fn();
-const mock = gqlMock<ContactPeopleFragment>(ContactPeopleFragmentDoc);
+const mock = gqlMock<ContactDetailsFragment>(ContactDetailsFragmentDoc);
 const contactId = '123';
 const accountListId = 'abc';
 
@@ -35,7 +36,7 @@ jest.mock('notistack', () => ({
   },
 }));
 
-const mockContact: ContactPeopleFragment = {
+const mockContact: ContactDetailsFragment = {
   name: 'test person',
   id: contactId,
   people: {
@@ -50,6 +51,19 @@ const mockContact: ContactPeopleFragment = {
     ],
   },
   primaryPerson: mock.primaryPerson,
+  greeting: 'Hello test',
+  envelopeGreeting: 'Dear Test',
+  sendNewsletter: SendNewsletterEnum.Email,
+  addresses: {
+    nodes: [
+      {
+        ...mock.addresses.nodes[0],
+        location: 'Home',
+        historic: true,
+        street: '123 Cool Street',
+      },
+    ],
+  },
 };
 
 describe('EditContactDetailsModal', () => {

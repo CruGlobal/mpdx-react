@@ -1,6 +1,7 @@
 fragment ContactHeaderAddress on Contact {
   id
-  greeting
+  envelopeGreeting
+  name
   primaryAddress {
     street
     city

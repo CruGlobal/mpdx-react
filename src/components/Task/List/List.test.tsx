@@ -137,10 +137,11 @@ describe('TaskList', () => {
       }
       return button;
     };
+
     userEvent.click(buttonWithIdThatEndsWith('completedAt'));
     userEvent.click(getByText('Incomplete'));
     userEvent.click(buttonWithIdThatEndsWith('activityType'));
-    userEvent.click(getByText('Appointment'));
+    userEvent.click(getByText('APPOINTMENT'));
     userEvent.tab();
     userEvent.click(buttonWithIdThatEndsWith('contacts'));
     userEvent.click(getByText('Anderson, Robert'));
@@ -183,7 +184,7 @@ describe('TaskList', () => {
         </TestWrapper>
       </ThemeProvider>,
     );
-    expect(getByText('Appointment')).toBeInTheDocument();
+    expect(getByText('APPOINTMENT')).toBeInTheDocument();
     expect(getByText('Complete')).toBeInTheDocument();
     expect(getByText('Tag: tag-1')).toBeInTheDocument();
     expect(getByText('Tag: tag-2')).toBeInTheDocument();

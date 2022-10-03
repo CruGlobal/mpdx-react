@@ -14,7 +14,7 @@ export const Default = (): ReactElement => {
     id: 'task',
     subject: 'the quick brown fox jumps over the lazy dog',
     activityType: ActivityTypeEnum.PrayerRequest,
-    contacts: { nodes: [{ name: 'Smith, Roger' }] },
+    contacts: { nodes: [{ name: 'Smith, Roger' }], totalCount: 1 },
     startAt: null,
     completedAt: null,
   };

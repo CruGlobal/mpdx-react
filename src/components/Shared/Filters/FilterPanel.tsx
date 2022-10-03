@@ -419,7 +419,11 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
         >
           <div>
             <FilterHeader>
-              <Box display="flex" justifyContent="space-between">
+              <Box
+                display="flex"
+                justifyContent="space-between"
+                alignItems="center"
+              >
                 <Typography variant="h6">
                   {selectedFilterCount > 0
                     ? t('Filter ({{count}})', {

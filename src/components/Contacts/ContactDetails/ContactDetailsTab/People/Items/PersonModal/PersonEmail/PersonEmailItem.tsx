@@ -29,6 +29,7 @@ import { InputMaybe } from 'pages/api/graphql-rest.page.generated';
 interface Props {
   emailAddress: PersonEmailAddressInput;
   index: number;
+  primaryIndex: number;
   emailAddresses: InputMaybe<PersonEmailAddressInput[]> | undefined;
   setFieldValue: (
     field: string,
@@ -36,8 +37,7 @@ interface Props {
     shouldValidate?: boolean | undefined,
   ) => void;
   errors: FormikErrors<(PersonUpdateInput | PersonCreateInput) & NewSocial>;
-  primaryEmail: PersonEmailAddressInput | undefined;
-  handleChangePrimary: (emailId: string) => void;
+  handleChangePrimary: (index: number) => void;
   sources:
     | {
         id: string;
@@ -53,10 +53,10 @@ const EmailSelect = styled(Select)(({ destroyed }: { destroyed: boolean }) => ({
 export const PersonEmailItem: React.FC<Props> = ({
   emailAddress,
   index,
+  primaryIndex,
   emailAddresses,
   setFieldValue,
   errors,
-  primaryEmail,
   handleChangePrimary,
   sources,
 }) => {
@@ -70,11 +70,12 @@ export const PersonEmailItem: React.FC<Props> = ({
   const locked = source !== 'MPDX' && source !== undefined;
 
   React.useEffect(() => {
-    setIsEmailPrimaryChecked(emailAddress.id === primaryEmail?.id ?? '');
-  }, [primaryEmail]);
+    setIsEmailPrimaryChecked(index === primaryIndex);
+  }, [primaryIndex]);
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    handleChangePrimary(event.target.value as string);
+  const handleChange = () => {
+    handleChangePrimary(index);
+    console.log(index);
   };
 
   return (

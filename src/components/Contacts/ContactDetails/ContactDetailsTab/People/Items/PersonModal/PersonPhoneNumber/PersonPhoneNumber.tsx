@@ -1,6 +1,6 @@
 import { Button, Grid, InputLabel, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import AddIcon from '@mui/icons-material/Add';
 import { useTranslation } from 'react-i18next';
 import { FormikProps, FieldArray } from 'formik';
@@ -50,20 +50,26 @@ export const PersonPhoneNumber: React.FC<PersonPhoneNumberProps> = ({
     errors,
   } = formikProps;
 
+  const [primaryIndex, setPrimaryIndex] = useState(0);
+
   const primaryPhoneNumber = phoneNumbers?.filter(
     (phoneNumber) => phoneNumber.primary,
   )[0];
 
-  const handleChangePrimary = (numberId: string) => {
-    const index = phoneNumbers?.findIndex(
-      (phoneNumber) => phoneNumber.id === numberId,
-    );
-    const primaryIndex = phoneNumbers?.findIndex(
-      (phoneNumber) => phoneNumber.id === primaryPhoneNumber?.id,
-    );
-    setFieldValue(`phoneNumbers.${index}.primary`, true);
+  const handleChangePrimary = (index: number) => {
     setFieldValue(`phoneNumbers.${primaryIndex}.primary`, false);
+    setFieldValue(`phoneNumbers.${index}.primary`, true);
+    setPrimaryIndex(index);
   };
+
+  ///todo make primary index a state
+  useEffect(() => {
+    setPrimaryIndex(
+      phoneNumbers?.findIndex(
+        (phoneNumber) => phoneNumber.id === primaryPhoneNumber?.id,
+      ) ?? 0,
+    );
+  }, []);
 
   return (
     <>
@@ -87,7 +93,7 @@ export const PersonPhoneNumber: React.FC<PersonPhoneNumberProps> = ({
                     <PersonPhoneNumberItem
                       phoneNumber={phoneNumber}
                       index={index}
-                      primaryPhoneNumber={primaryPhoneNumber}
+                      primaryIndex={primaryIndex}
                       phoneNumbers={phoneNumbers}
                       setFieldValue={setFieldValue}
                       errors={errors}

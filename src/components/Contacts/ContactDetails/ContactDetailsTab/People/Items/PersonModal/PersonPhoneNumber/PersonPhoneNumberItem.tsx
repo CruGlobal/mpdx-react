@@ -28,7 +28,7 @@ import {
 interface Props {
   phoneNumber: PersonPhoneNumberInput & { source?: string };
   index: number;
-  primaryPhoneNumber: PersonPhoneNumberInput | undefined;
+  primaryIndex: number;
   phoneNumbers: InputMaybe<PersonPhoneNumberInput[]> | undefined;
   setFieldValue: (
     field: string,
@@ -36,7 +36,7 @@ interface Props {
     shouldValidate?: boolean | undefined,
   ) => void;
   errors: FormikErrors<(PersonUpdateInput | PersonCreateInput) & NewSocial>;
-  handleChangePrimary: (numberId: string) => void;
+  handleChangePrimary: (index: number) => void;
   sources:
     | {
         id: string;
@@ -54,7 +54,7 @@ const PhoneNumberSelect = styled(Select)(
 export const PersonPhoneNumberItem: React.FC<Props> = ({
   phoneNumber,
   index,
-  primaryPhoneNumber,
+  primaryIndex,
   phoneNumbers,
   setFieldValue,
   errors,
@@ -72,11 +72,11 @@ export const PersonPhoneNumberItem: React.FC<Props> = ({
   const locked = source !== 'MPDX' && source !== undefined;
 
   React.useEffect(() => {
-    setIsPrimaryChecked(phoneNumber.id === primaryPhoneNumber?.id);
-  }, [primaryPhoneNumber]);
+    setIsPrimaryChecked(index === primaryIndex);
+  }, [primaryIndex]);
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    handleChangePrimary(event.target.value as string);
+  const handleChange = () => {
+    handleChangePrimary(index);
   };
 
   return (

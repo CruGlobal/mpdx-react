@@ -3,16 +3,16 @@ import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ThemeProvider } from '@mui/material/styles';
 import theme from '../../../theme';
-import useTaskDrawer from '../../../hooks/useTaskDrawer';
+import useTaskModal from '../../../hooks/useTaskModal';
 import TaskStatus from '.';
 
-jest.mock('../../../hooks/useTaskDrawer');
+jest.mock('../../../hooks/useTaskModal');
 
-const openTaskDrawer = jest.fn();
+const openTaskModal = jest.fn();
 
 beforeEach(() => {
-  (useTaskDrawer as jest.Mock).mockReturnValue({
-    openTaskDrawer,
+  (useTaskModal as jest.Mock).mockReturnValue({
+    openTaskModal,
   });
 });
 
@@ -64,9 +64,9 @@ describe('TaskStatus', () => {
       </ThemeProvider>,
     );
     userEvent.click(getByRole('button'));
-    expect(openTaskDrawer).toHaveBeenCalledWith({
+    expect(openTaskModal).toHaveBeenCalledWith({
       taskId: 'task-1',
-      showCompleteForm: true,
+      view: 'complete',
     });
   });
 });

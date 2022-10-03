@@ -13,6 +13,7 @@ import { currencyFormat } from '../../../../../lib/intlFormat';
 import { HandshakeIcon } from '../../ContactDetailsHeader/ContactHeaderSection/HandshakeIcon';
 import { ContactDonorAccountsFragment } from '../ContactDonationsTab.generated';
 import { EditPartnershipInfoModal } from './EditPartnershipInfoModal/EditPartnershipInfoModal';
+import { useLoadConstantsQuery } from 'src/components/Constants/LoadConstants.generated';
 
 const IconAndTextContainer = styled(Box)(({ theme }) => ({
   margin: theme.spacing(0, 4),
@@ -70,6 +71,16 @@ interface PartnershipInfoProp {
 
 export const PartnershipInfo: React.FC<PartnershipInfoProp> = ({ contact }) => {
   const { t } = useTranslation();
+  const { data } = useLoadConstantsQuery();
+  const constants = data?.constant;
+  const [status, setStatus] = React.useState(
+    constants?.statuses?.find(({ id }) => id === contact?.status),
+  );
+
+  React.useEffect(() => {
+    setStatus(constants?.statuses?.find(({ id }) => id === contact?.status));
+  }, [data?.constant]);
+
   const [editPartnershipModalOpen, setEditPartnershipModalOpen] =
     useState(false);
 
@@ -90,7 +101,7 @@ export const PartnershipInfo: React.FC<PartnershipInfoProp> = ({ contact }) => {
         </IconContainer>
         <Box style={{ margin: 0, padding: 0 }} role="cell">
           <LabelsAndText variant="subtitle1">
-            {contact?.status ? t(contact?.status) : t('No Status')}
+            {contact?.status ? status?.value : t('No Status')}
           </LabelsAndText>
           <LabelsAndText variant="subtitle1">
             {`${currencyFormat(
