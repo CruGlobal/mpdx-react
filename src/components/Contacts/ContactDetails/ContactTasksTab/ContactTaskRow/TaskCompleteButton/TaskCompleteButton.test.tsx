@@ -28,7 +28,7 @@ describe('TaskCompleteButton', () => {
       `"transparent"`,
     );
     expect(completeButtonStyle?.color).toMatchInlineSnapshot(
-      `"rgb(56, 63, 67)"`,
+      `"rgb(0, 202, 153)"`,
     );
   });
 
@@ -51,10 +51,10 @@ describe('TaskCompleteButton', () => {
       completeButton && window.getComputedStyle(completeButton);
 
     expect(completeButtonStyle?.backgroundColor).toMatchInlineSnapshot(
-      `"transparent"`,
+      `"rgb(0, 202, 153)"`,
     );
     expect(completeButtonStyle?.color).toMatchInlineSnapshot(
-      `"rgb(56, 63, 67)"`,
+      `"rgb(255, 255, 255)"`,
     );
   });
 

@@ -54,6 +54,6 @@ describe('TaskCommentsButton', () => {
 
     const style = dateText && window.getComputedStyle(dateText);
 
-    expect(style?.color).toMatchInlineSnapshot(`"rgb(244, 67, 54)"`);
+    expect(style?.color).toMatchInlineSnapshot(`"rgb(211, 47, 47)"`);
   });
 });
