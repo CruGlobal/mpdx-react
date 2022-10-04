@@ -12,6 +12,7 @@ fragment ContactDetailsHeader on Contact {
   ...ContactHeaderEmail
   ...ContactHeaderPhone
   ...ContactHeaderStatus
+  ...ContactHeaderNewsletter
 }
 
 query GetContactDetailsHeader($accountListId: ID!, $contactId: ID!) {
