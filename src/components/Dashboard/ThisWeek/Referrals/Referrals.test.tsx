@@ -100,7 +100,7 @@ describe('Referrals', () => {
       ],
       totalCount: 5678,
     };
-    const { getByTestId, queryByTestId, getByRole } = render(
+    const { getByTestId, queryByTestId } = render(
       <GqlMockedProvider>
         <Referrals
           loading={false}
@@ -120,24 +120,12 @@ describe('Referrals', () => {
       'ReferralsTabRecentListItem-contact_1',
     );
     expect(referralElement1.textContent).toEqual('Smith, Bob');
-    expect(referralElement1).toHaveAttribute(
-      'href',
-      'https://stage.mpdx.org/contacts/contact_1',
-    );
+
     const referralElement2 = getByTestId(
       'ReferralsTabRecentListItem-contact_2',
     );
     expect(referralElement2.textContent).toEqual('Smith, Sarah');
-    expect(referralElement2).toHaveAttribute(
-      'href',
-      'https://stage.mpdx.org/contacts/contact_2',
-    );
-    expect(
-      getByRole('link', { hidden: true, name: 'View All (1,234)' }),
-    ).toHaveAttribute(
-      'href',
-      'https://stage.mpdx.org/contacts?filters=%7B%22created_at%22%3A%222019-12-18..2020-01-01%22%2C%22referrer%22%3A%22any%22%7D',
-    );
+
     const OnHandTab = getByTestId('ReferralsTabOnHand');
     expect(OnHandTab.textContent).toEqual('On Hand (5,678)');
     fireEvent.click(OnHandTab);
@@ -149,23 +137,10 @@ describe('Referrals', () => {
       'ReferralsTabOnHandListItem-contact_3',
     );
     expect(referralElement3.textContent).toEqual('Smith, Mike');
-    expect(referralElement3).toHaveAttribute(
-      'href',
-      'https://stage.mpdx.org/contacts/contact_3',
-    );
+
     const referralElement4 = getByTestId(
       'ReferralsTabOnHandListItem-contact_4',
     );
     expect(referralElement4.textContent).toEqual('Smith, Shelley');
-    expect(referralElement4).toHaveAttribute(
-      'href',
-      'https://stage.mpdx.org/contacts/contact_4',
-    );
-    expect(
-      getByRole('link', { hidden: true, name: 'View All (5,678)' }),
-    ).toHaveAttribute(
-      'href',
-      'https://stage.mpdx.org/contacts?filters=%7B%22referrer%22%3A%22any%22%2C%22status%22%3A%22Never%20Contacted%2CAsk%20in%20Future%2CCultivate%20Relationship%2CContact%20for%20Appointment%22%7D',
-    );
   });
 });
