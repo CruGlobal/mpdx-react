@@ -1,5 +1,4 @@
 import { styled, Typography } from '@material-ui/core';
-import { Email } from '@material-ui/icons';
 import { Skeleton } from '@material-ui/lab';
 import { mdiNewspaperVariantOutline } from '@mdi/js';
 import Icon from '@mdi/react';
@@ -15,18 +14,20 @@ interface Props {
   contact?: ContactHeaderNewsletterFragment;
 }
 
-const EmailIcon = styled(Email)(({}) => ({
-  margin: 8,
-  width: 20,
-  height: 20,
-  color: theme.palette.text.secondary,
-}));
 const TextSkeleton = styled(Skeleton)(({}) => ({
   display: 'inline',
   marginLeft: 18,
   width: 200,
   fontSize: 16,
 }));
+
+const NewsletterIcon: React.FC = () => (
+  <Icon
+    path={mdiNewspaperVariantOutline}
+    size={1}
+    color={theme.palette.cruGrayMedium.main}
+  />
+);
 
 export const ContactHeaderNewsletterSection = ({
   loading,
@@ -37,21 +38,13 @@ export const ContactHeaderNewsletterSection = ({
 
   if (loading) {
     return (
-      <ContactHeaderSection icon={<EmailIcon />}>
+      <ContactHeaderSection icon={<NewsletterIcon />}>
         <TextSkeleton variant="text" />
       </ContactHeaderSection>
     );
   } else if (newsletter) {
     return (
-      <ContactHeaderSection
-        icon={
-          <Icon
-            path={mdiNewspaperVariantOutline}
-            size={1}
-            color={theme.palette.cruGrayMedium.main}
-          />
-        }
-      >
+      <ContactHeaderSection icon={<NewsletterIcon />}>
         <Typography
           variant="subtitle1"
           component="a"
@@ -64,7 +57,7 @@ export const ContactHeaderNewsletterSection = ({
   }
 
   return (
-    <ContactHeaderSection icon={<EmailIcon />}>
+    <ContactHeaderSection icon={<NewsletterIcon />}>
       <Typography variant="subtitle1">{'N/A'}</Typography>
     </ContactHeaderSection>
   );
