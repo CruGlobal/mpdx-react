@@ -1,5 +1,6 @@
-import { styled, Typography } from '@material-ui/core';
-import { Skeleton } from '@material-ui/lab';
+import Skeleton from '@mui/material/Skeleton';
+import Typography from '@mui/material/Typography';
+import { styled } from '@mui/material/styles';
 import { mdiNewspaperVariantOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 
