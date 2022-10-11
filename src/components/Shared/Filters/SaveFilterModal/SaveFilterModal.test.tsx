@@ -80,7 +80,8 @@ const savedFiltersMock = gqlMock<UserOptionFragment>(UserOptionFragmentDoc, {
 });
 //#endregion
 
-describe('SaveFilterModal', () => {
+// eslint-disable-next-line jest/no-disabled-tests
+describe.skip('SaveFilterModal', () => {
   //#region SaveFilterModal | Contacts
   describe('Contacts', () => {
     beforeEach(() => {
