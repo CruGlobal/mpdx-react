@@ -63,5 +63,6 @@
   "COMPLETED": "Completed",
   "DONE": "Done",
   "RECEIVED": "Received",
-  "Due Date {{ minimumDate }} - {{ maximumDate }}": "Due Date: {{ minimumDate }} - {{ maximumDate }}"
+  "Due Date {{ minimumDate }} - {{ maximumDate }}": "Due Date: {{ minimumDate }} - {{ maximumDate }}",
+  "Edit Contact Mailing Details": "Edit Contact Mailing Details"
 }
