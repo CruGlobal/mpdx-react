@@ -164,12 +164,18 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
     attributes: ContactUpdateInput & { referredById: string },
   ) => {
     const referralsInput =
-      referral.referredBy.id !== selectedId
+      referral && referral.referredBy.id !== selectedId
         ? [
             {
               id: referral.id,
               destroy: true,
             },
+            {
+              referredById: attributes.referredById,
+            },
+          ]
+        : selectedId
+        ? [
             {
               referredById: attributes.referredById,
             },
