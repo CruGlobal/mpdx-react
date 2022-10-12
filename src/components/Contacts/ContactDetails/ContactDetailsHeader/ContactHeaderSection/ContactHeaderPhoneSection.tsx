@@ -54,7 +54,7 @@ export const ContactHeaderPhoneSection = ({
             style={{
               width: 'fit-content',
               marginLeft: 5,
-              color: theme.palette.text.disabled,
+              color: theme.palette.text.primary,
             }}
             variant="subtitle1"
           >
