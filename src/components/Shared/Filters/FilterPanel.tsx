@@ -21,6 +21,8 @@ import {
   ContactFilterSetInput,
   ContactFilterStatusEnum,
   FilterGroup,
+  FilterOption,
+  MultiselectFilter,
   TaskFilterSetInput,
 } from '../../../../graphql/types.generated';
 import {
@@ -30,6 +32,7 @@ import {
 import { FilterListItemShowAll } from './FilterListItemShowAll';
 import { FilterListItem } from './FilterListItem';
 import { SaveFilterModal } from './SaveFilterModal/SaveFilterModal';
+import { FilterPanelTagsSection } from './TagsSection/FilterPanelTagsSection';
 
 type ContactFilterKey = keyof ContactFilterSetInput;
 type ContactFilterValue = ContactFilterSetInput[ContactFilterKey];
@@ -406,6 +409,10 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
     }
   };
 
+  const tagsFilters: FilterOption[] | Record<string, never>[] = (filters.find(
+    (filter) => filter.name === 'Tags',
+  )?.filters[0] as MultiselectFilter)?.options ?? [{}];
+
   return (
     <Box {...boxProps}>
       <div style={{ overflow: 'hidden' }}>
@@ -449,6 +456,13 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
                 {t('Clear All')}
               </LinkButton>
             </FilterHeader>
+            {tagsFilters && (
+              <FilterPanelTagsSection
+                filterOptions={tagsFilters}
+                selectedFilters={selectedFilters}
+                onSelectedFiltersChanged={onSelectedFiltersChanged}
+              />
+            )}
             <FilterList dense>
               {filters?.length === 0 ? (
                 <ListItem data-testid="NoFiltersState">
@@ -470,31 +484,37 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
                       </ListItem>
                     </Collapse>
                   )}
-                  {filters?.map((group) => {
-                    const selectedOptions = getOptionsSelected(group);
-                    return (
-                      <Collapse
-                        key={group.name}
-                        in={showAll || isGroupVisible(group)}
-                        data-testid="FilterGroup"
-                      >
-                        <ListItem
-                          button
-                          onClick={() => setSelectedGroup(group)}
+
+                  {filters
+                    .filter((filter) => filter.name !== 'Tags')
+                    ?.map((group) => {
+                      const selectedOptions = getOptionsSelected(group);
+                      return (
+                        <Collapse
+                          key={group.name}
+                          in={showAll || isGroupVisible(group)}
+                          data-testid="FilterGroup"
                         >
-                          <ListItemText
-                            primary={`${group.name} ${
-                              selectedOptions.length > 0
-                                ? `(${selectedOptions.length})`
-                                : ''
-                            }`}
-                            primaryTypographyProps={{ variant: 'subtitle1' }}
-                          />
-                          <ArrowForwardIos fontSize="small" color="disabled" />
-                        </ListItem>
-                      </Collapse>
-                    );
-                  })}
+                          <ListItem
+                            button
+                            onClick={() => setSelectedGroup(group)}
+                          >
+                            <ListItemText
+                              primary={`${group.name} ${
+                                selectedOptions.length > 0
+                                  ? `(${selectedOptions.length})`
+                                  : ''
+                              }`}
+                              primaryTypographyProps={{ variant: 'subtitle1' }}
+                            />
+                            <ArrowForwardIos
+                              fontSize="small"
+                              color="disabled"
+                            />
+                          </ListItem>
+                        </Collapse>
+                      );
+                    })}
                   {filters?.some((g) => !isGroupVisible(g)) ? (
                     <FilterListItemShowAll
                       showAll={showAll}

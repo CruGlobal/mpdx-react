@@ -4,6 +4,7 @@ import LuxonUtils from '@date-io/luxon';
 import userEvent from '@testing-library/user-event';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import { useRouter } from 'next/router';
+import { ThemeProvider } from '@material-ui/core';
 import {
   gqlMock,
   GqlMockedProvider,
@@ -22,6 +23,7 @@ import {
   UserOptionFragmentDoc,
 } from './FilterPanel.generated';
 import { SaveFilterMutation } from './SaveFilterModal/SaveFilterModal.generated';
+import theme from 'src/theme';
 
 const onSelectedFiltersChanged = jest.fn();
 const onClose = jest.fn();
@@ -100,6 +102,7 @@ describe('FilterPanel', () => {
     beforeEach(() => {
       (useRouter as jest.Mock).mockReturnValue({
         route: '/contacts',
+        pathname: '/contacts',
       });
     });
     it('default', async () => {
@@ -109,15 +112,17 @@ describe('FilterPanel', () => {
         queryByTestId,
         queryAllByTestId,
       } = render(
-        <GqlMockedProvider<SaveFilterMutation>>
-          <FilterPanel
-            filters={[filterPanelDefaultMock, filterPanelFeaturedMock]}
-            savedFilters={[savedFiltersMock]}
-            selectedFilters={{}}
-            onClose={onClose}
-            onSelectedFiltersChanged={onSelectedFiltersChanged}
-          />
-        </GqlMockedProvider>,
+        <ThemeProvider theme={theme}>
+          <GqlMockedProvider<SaveFilterMutation>>
+            <FilterPanel
+              filters={[filterPanelDefaultMock, filterPanelFeaturedMock]}
+              savedFilters={[savedFiltersMock]}
+              selectedFilters={{}}
+              onClose={onClose}
+              onSelectedFiltersChanged={onSelectedFiltersChanged}
+            />
+          </GqlMockedProvider>
+        </ThemeProvider>,
       );
 
       await waitFor(() => expect(queryByTestId('LoadingState')).toBeNull());
@@ -154,15 +159,17 @@ describe('FilterPanel', () => {
         getByRole,
       } = render(
         <MuiPickersUtilsProvider utils={LuxonUtils}>
-          <GqlMockedProvider<SaveFilterMutation>>
-            <FilterPanel
-              filters={[filterPanelDefaultMock, filterPanelFeaturedMock]}
-              savedFilters={[savedFiltersMock]}
-              selectedFilters={{}}
-              onClose={onClose}
-              onSelectedFiltersChanged={onSelectedFiltersChanged}
-            />
-          </GqlMockedProvider>
+          <ThemeProvider theme={theme}>
+            <GqlMockedProvider<SaveFilterMutation>>
+              <FilterPanel
+                filters={[filterPanelDefaultMock, filterPanelFeaturedMock]}
+                savedFilters={[savedFiltersMock]}
+                selectedFilters={{}}
+                onClose={onClose}
+                onSelectedFiltersChanged={onSelectedFiltersChanged}
+              />
+            </GqlMockedProvider>
+          </ThemeProvider>
         </MuiPickersUtilsProvider>,
       );
 
@@ -214,17 +221,19 @@ describe('FilterPanel', () => {
         getByTestId,
       } = render(
         <MuiPickersUtilsProvider utils={LuxonUtils}>
-          <GqlMockedProvider<SaveFilterMutation>>
-            <FilterPanel
-              filters={[filterPanelDefaultMock, filterPanelFeaturedMock]}
-              savedFilters={[savedFiltersMock]}
-              selectedFilters={{
-                status: [ContactFilterStatusEnum.ContactForAppointment],
-              }}
-              onClose={onClose}
-              onSelectedFiltersChanged={onSelectedFiltersChanged}
-            />
-          </GqlMockedProvider>
+          <ThemeProvider theme={theme}>
+            <GqlMockedProvider<SaveFilterMutation>>
+              <FilterPanel
+                filters={[filterPanelDefaultMock, filterPanelFeaturedMock]}
+                savedFilters={[savedFiltersMock]}
+                selectedFilters={{
+                  status: [ContactFilterStatusEnum.ContactForAppointment],
+                }}
+                onClose={onClose}
+                onSelectedFiltersChanged={onSelectedFiltersChanged}
+              />
+            </GqlMockedProvider>
+          </ThemeProvider>
         </MuiPickersUtilsProvider>,
       );
 
@@ -250,15 +259,17 @@ describe('FilterPanel', () => {
         queryAllByTestId,
       } = render(
         <MuiPickersUtilsProvider utils={LuxonUtils}>
-          <GqlMockedProvider<SaveFilterMutation>>
-            <FilterPanel
-              filters={[filterPanelDefaultMock, filterPanelFeaturedMock]}
-              savedFilters={[savedFiltersMock, savedGraphQLContactMock]}
-              selectedFilters={{}}
-              onClose={onClose}
-              onSelectedFiltersChanged={onSelectedFiltersChanged}
-            />
-          </GqlMockedProvider>
+          <ThemeProvider theme={theme}>
+            <GqlMockedProvider<SaveFilterMutation>>
+              <FilterPanel
+                filters={[filterPanelDefaultMock, filterPanelFeaturedMock]}
+                savedFilters={[savedFiltersMock, savedGraphQLContactMock]}
+                selectedFilters={{}}
+                onClose={onClose}
+                onSelectedFiltersChanged={onSelectedFiltersChanged}
+              />
+            </GqlMockedProvider>
+          </ThemeProvider>
         </MuiPickersUtilsProvider>,
       );
 
@@ -339,15 +350,17 @@ describe('FilterPanel', () => {
 
     it('closes panel', async () => {
       const { queryByTestId, getByLabelText } = render(
-        <GqlMockedProvider<SaveFilterMutation>>
-          <FilterPanel
-            filters={[]}
-            savedFilters={[savedFiltersMock]}
-            selectedFilters={{}}
-            onClose={onClose}
-            onSelectedFiltersChanged={onSelectedFiltersChanged}
-          />
-        </GqlMockedProvider>,
+        <ThemeProvider theme={theme}>
+          <GqlMockedProvider<SaveFilterMutation>>
+            <FilterPanel
+              filters={[]}
+              savedFilters={[savedFiltersMock]}
+              selectedFilters={{}}
+              onClose={onClose}
+              onSelectedFiltersChanged={onSelectedFiltersChanged}
+            />
+          </GqlMockedProvider>
+        </ThemeProvider>,
       );
 
       await waitFor(() => expect(queryByTestId('LoadingState')).toBeNull());
@@ -359,17 +372,19 @@ describe('FilterPanel', () => {
     it('clears filters', async () => {
       const { getByText, queryByTestId, queryAllByTestId } = render(
         <MuiPickersUtilsProvider utils={LuxonUtils}>
-          <GqlMockedProvider<SaveFilterMutation>>
-            <FilterPanel
-              filters={[filterPanelDefaultMock, filterPanelFeaturedMock]}
-              savedFilters={[savedFiltersMock]}
-              selectedFilters={{
-                status: [ContactFilterStatusEnum.ContactForAppointment],
-              }}
-              onClose={onClose}
-              onSelectedFiltersChanged={onSelectedFiltersChanged}
-            />
-          </GqlMockedProvider>
+          <ThemeProvider theme={theme}>
+            <GqlMockedProvider<SaveFilterMutation>>
+              <FilterPanel
+                filters={[filterPanelDefaultMock, filterPanelFeaturedMock]}
+                savedFilters={[savedFiltersMock]}
+                selectedFilters={{
+                  status: [ContactFilterStatusEnum.ContactForAppointment],
+                }}
+                onClose={onClose}
+                onSelectedFiltersChanged={onSelectedFiltersChanged}
+              />
+            </GqlMockedProvider>
+          </ThemeProvider>
         </MuiPickersUtilsProvider>,
       );
 
@@ -386,15 +401,17 @@ describe('FilterPanel', () => {
 
     it('no filters', async () => {
       const { queryByTestId, queryAllByTestId } = render(
-        <GqlMockedProvider<SaveFilterMutation>>
-          <FilterPanel
-            filters={[]}
-            savedFilters={[savedFiltersMock]}
-            selectedFilters={{}}
-            onClose={onClose}
-            onSelectedFiltersChanged={onSelectedFiltersChanged}
-          />
-        </GqlMockedProvider>,
+        <ThemeProvider theme={theme}>
+          <GqlMockedProvider<SaveFilterMutation>>
+            <FilterPanel
+              filters={[]}
+              savedFilters={[savedFiltersMock]}
+              selectedFilters={{}}
+              onClose={onClose}
+              onSelectedFiltersChanged={onSelectedFiltersChanged}
+            />
+          </GqlMockedProvider>
+        </ThemeProvider>,
       );
 
       await waitFor(() => expect(queryByTestId('LoadingState')).toBeNull());
@@ -409,6 +426,7 @@ describe('FilterPanel', () => {
     beforeEach(() => {
       (useRouter as jest.Mock).mockReturnValue({
         route: '/tasks',
+        pathname: '/tasks',
       });
     });
     it('default', async () => {
@@ -418,15 +436,17 @@ describe('FilterPanel', () => {
         queryByTestId,
         queryAllByTestId,
       } = render(
-        <GqlMockedProvider<SaveFilterMutation>>
-          <FilterPanel
-            filters={[filterPanelDefaultMock, filterPanelFeaturedMock]}
-            savedFilters={[savedFiltersMock]}
-            selectedFilters={{}}
-            onClose={onClose}
-            onSelectedFiltersChanged={onSelectedFiltersChanged}
-          />
-        </GqlMockedProvider>,
+        <ThemeProvider theme={theme}>
+          <GqlMockedProvider<SaveFilterMutation>>
+            <FilterPanel
+              filters={[filterPanelDefaultMock, filterPanelFeaturedMock]}
+              savedFilters={[savedFiltersMock]}
+              selectedFilters={{}}
+              onClose={onClose}
+              onSelectedFiltersChanged={onSelectedFiltersChanged}
+            />
+          </GqlMockedProvider>
+        </ThemeProvider>,
       );
 
       await waitFor(() => expect(queryByTestId('LoadingState')).toBeNull());
@@ -465,15 +485,17 @@ describe('FilterPanel', () => {
         getByRole,
       } = render(
         <MuiPickersUtilsProvider utils={LuxonUtils}>
-          <GqlMockedProvider<SaveFilterMutation>>
-            <FilterPanel
-              filters={[filterPanelDefaultMock, filterPanelFeaturedMock]}
-              savedFilters={[savedFiltersMock]}
-              selectedFilters={{}}
-              onClose={onClose}
-              onSelectedFiltersChanged={onSelectedFiltersChanged}
-            />
-          </GqlMockedProvider>
+          <ThemeProvider theme={theme}>
+            <GqlMockedProvider<SaveFilterMutation>>
+              <FilterPanel
+                filters={[filterPanelDefaultMock, filterPanelFeaturedMock]}
+                savedFilters={[savedFiltersMock]}
+                selectedFilters={{}}
+                onClose={onClose}
+                onSelectedFiltersChanged={onSelectedFiltersChanged}
+              />
+            </GqlMockedProvider>
+          </ThemeProvider>
         </MuiPickersUtilsProvider>,
       );
 
@@ -526,15 +548,17 @@ describe('FilterPanel', () => {
         queryAllByTestId,
       } = render(
         <MuiPickersUtilsProvider utils={LuxonUtils}>
-          <GqlMockedProvider<SaveFilterMutation>>
-            <FilterPanel
-              filters={[filterPanelDefaultMock, filterPanelFeaturedMock]}
-              savedFilters={[savedGraphQLTaskMock]}
-              selectedFilters={{}}
-              onClose={onClose}
-              onSelectedFiltersChanged={onSelectedFiltersChanged}
-            />
-          </GqlMockedProvider>
+          <ThemeProvider theme={theme}>
+            <GqlMockedProvider<SaveFilterMutation>>
+              <FilterPanel
+                filters={[filterPanelDefaultMock, filterPanelFeaturedMock]}
+                savedFilters={[savedGraphQLTaskMock]}
+                selectedFilters={{}}
+                onClose={onClose}
+                onSelectedFiltersChanged={onSelectedFiltersChanged}
+              />
+            </GqlMockedProvider>
+          </ThemeProvider>
         </MuiPickersUtilsProvider>,
       );
 
@@ -555,15 +579,17 @@ describe('FilterPanel', () => {
 
     it('closes panel', async () => {
       const { queryByTestId, getByLabelText } = render(
-        <GqlMockedProvider<SaveFilterMutation>>
-          <FilterPanel
-            filters={[]}
-            savedFilters={[savedFiltersMock]}
-            selectedFilters={{}}
-            onClose={onClose}
-            onSelectedFiltersChanged={onSelectedFiltersChanged}
-          />
-        </GqlMockedProvider>,
+        <ThemeProvider theme={theme}>
+          <GqlMockedProvider<SaveFilterMutation>>
+            <FilterPanel
+              filters={[]}
+              savedFilters={[savedFiltersMock]}
+              selectedFilters={{}}
+              onClose={onClose}
+              onSelectedFiltersChanged={onSelectedFiltersChanged}
+            />
+          </GqlMockedProvider>
+        </ThemeProvider>,
       );
 
       await waitFor(() => expect(queryByTestId('LoadingState')).toBeNull());
@@ -575,17 +601,19 @@ describe('FilterPanel', () => {
     it('clears filters', async () => {
       const { getByText, queryByTestId, queryAllByTestId } = render(
         <MuiPickersUtilsProvider utils={LuxonUtils}>
-          <GqlMockedProvider<SaveFilterMutation>>
-            <FilterPanel
-              filters={[filterPanelDefaultMock, filterPanelFeaturedMock]}
-              savedFilters={[savedFiltersMock]}
-              selectedFilters={{
-                status: [ContactFilterStatusEnum.ContactForAppointment],
-              }}
-              onClose={onClose}
-              onSelectedFiltersChanged={onSelectedFiltersChanged}
-            />
-          </GqlMockedProvider>
+          <ThemeProvider theme={theme}>
+            <GqlMockedProvider<SaveFilterMutation>>
+              <FilterPanel
+                filters={[filterPanelDefaultMock, filterPanelFeaturedMock]}
+                savedFilters={[savedFiltersMock]}
+                selectedFilters={{
+                  status: [ContactFilterStatusEnum.ContactForAppointment],
+                }}
+                onClose={onClose}
+                onSelectedFiltersChanged={onSelectedFiltersChanged}
+              />
+            </GqlMockedProvider>
+          </ThemeProvider>
         </MuiPickersUtilsProvider>,
       );
 
@@ -602,15 +630,17 @@ describe('FilterPanel', () => {
 
     it('no filters', async () => {
       const { queryByTestId, queryAllByTestId } = render(
-        <GqlMockedProvider<SaveFilterMutation>>
-          <FilterPanel
-            filters={[]}
-            savedFilters={[]}
-            selectedFilters={{}}
-            onClose={onClose}
-            onSelectedFiltersChanged={onSelectedFiltersChanged}
-          />
-        </GqlMockedProvider>,
+        <ThemeProvider theme={theme}>
+          <GqlMockedProvider<SaveFilterMutation>>
+            <FilterPanel
+              filters={[]}
+              savedFilters={[]}
+              selectedFilters={{}}
+              onClose={onClose}
+              onSelectedFiltersChanged={onSelectedFiltersChanged}
+            />
+          </GqlMockedProvider>
+        </ThemeProvider>,
       );
 
       await waitFor(() => expect(queryByTestId('LoadingState')).toBeNull());
