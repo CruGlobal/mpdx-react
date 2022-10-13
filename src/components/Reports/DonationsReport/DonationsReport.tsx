@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Container, Box } from '@material-ui/core';
 import { DateTime } from 'luxon';
+import { useRouter } from 'next/router';
+import { ISODateString } from 'next-auth';
 import { AccountsListHeader as Header } from '../AccountsListLayout/Header/Header';
 import { MonthlyActivitySection } from './MonthlyActivity/MonthlyActivitySection';
 import { DonationsReportTable } from './Table/DonationsReportTable';
@@ -19,6 +21,19 @@ export const DonationsReport: React.FC<Props> = ({
   title,
 }) => {
   const [time, setTime] = useState(DateTime.now().startOf('month'));
+  const { query, replace } = useRouter();
+  useEffect(() => {
+    if (query.month) {
+      setTime(DateTime.fromISO(query.month as ISODateString));
+    }
+    replace(
+      {
+        pathname: `/accountLists/${accountListId}/reports/donations`,
+      },
+      undefined,
+      { shallow: true },
+    );
+  }, []);
 
   return (
     <Box>
