@@ -7,7 +7,6 @@ import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import LuxonUtils from '@date-io/luxon';
 import userEvent from '@testing-library/user-event';
 import { InMemoryCache } from '@apollo/client';
-import { ActivityTypeEnum } from '../../../../../graphql/types.generated';
 import { GetTasksForTaskListDocument } from '../../List/TaskList.generated';
 import { getDataForTaskDrawerMock } from '../../Drawer/Form/Form.mock';
 import {
@@ -126,7 +125,7 @@ describe('TaskModalForm', () => {
     userEvent.click(getByLabelText('Action'));
     userEvent.click(
       within(getByRole('listbox', { hidden: true, name: 'Action' })).getByText(
-        ActivityTypeEnum.NewsletterEmail,
+        'Newsletter - Email',
       ),
     );
 

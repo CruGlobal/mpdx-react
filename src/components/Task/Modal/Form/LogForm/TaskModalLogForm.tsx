@@ -60,6 +60,7 @@ import useTaskModal from 'src/hooks/useTaskModal';
 import { ContactTasksTabDocument } from 'src/components/Contacts/ContactDetails/ContactTasksTab/ContactTasksTab.generated';
 import { TasksDocument } from 'pages/accountLists/[accountListId]/tasks/Tasks.generated';
 import { ModalDeleteButton } from 'src/components/common/Modal/DeleteButton/ModalDeleteButton';
+import { getLocalizedTaskType } from 'src/utils/functions/getLocalizedTaskType';
 
 export const ActionButton = styled(Button)(() => ({
   color: theme.palette.info.main,
@@ -333,11 +334,14 @@ const TaskModalLogForm = ({
                       value={activityType}
                       onChange={handleChange('activityType')}
                     >
-                      {Object.values(ActivityTypeEnum).map((val) => (
-                        <MenuItem key={val} value={val}>
-                          {t(val) /* manually added to translation file */}
-                        </MenuItem>
-                      ))}
+                      <MenuItem value={undefined}>{t('None')}</MenuItem>
+                      {Object.values(ActivityTypeEnum)
+                        .filter((val) => val !== 'NONE')
+                        .map((val) => (
+                          <MenuItem key={val} value={val}>
+                            {getLocalizedTaskType(t, val)}
+                          </MenuItem>
+                        ))}
                     </Select>
                   </FormControl>
                 </Grid>
@@ -587,15 +591,16 @@ const TaskModalLogForm = ({
                                 value={nextAction}
                                 onChange={handleChange('nextAction')}
                               >
-                                {Object.values(ActivityTypeEnum).map((val) => (
-                                  <MenuItem key={val} value={val}>
-                                    {
-                                      t(
-                                        val,
-                                      ) /* manually added to translation file */
-                                    }
-                                  </MenuItem>
-                                ))}
+                                <MenuItem value={undefined}>
+                                  {t('None')}
+                                </MenuItem>
+                                {Object.values(ActivityTypeEnum)
+                                  .filter((val) => val !== 'NONE')
+                                  .map((val) => (
+                                    <MenuItem key={val} value={val}>
+                                      {getLocalizedTaskType(t, val)}
+                                    </MenuItem>
+                                  ))}
                               </Select>
                             </FormControl>
                           </Grid>
