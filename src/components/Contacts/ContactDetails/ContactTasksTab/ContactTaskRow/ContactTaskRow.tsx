@@ -1,10 +1,8 @@
 import { Box, Checkbox, styled, Theme, Typography } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
-import { TFunction } from 'i18next';
 import { DateTime } from 'luxon';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityTypeEnum } from '../../../../../../graphql/types.generated';
 import theme from '../../../../../theme';
 import { StarredItemIcon } from '../../../../common/StarredItemIcon/StarredItemIcon';
 import { TaskRowFragment } from '../../../../Task/TaskRow/TaskRow.generated';
@@ -14,6 +12,7 @@ import { TaskCommentsButton } from './TaskCommentsButton/TaskCommentsButton';
 import { TaskCompleteButton } from './TaskCompleteButton/TaskCompleteButton';
 import { TaskDueDate } from './TaskDueDate/TaskDueDate';
 import useTaskModal from 'src/hooks/useTaskModal';
+import { getLocalizedTaskType } from 'src/utils/functions/getLocalizedTaskType';
 
 const TaskRowWrap = styled(Box)(
   ({ theme, isChecked }: { theme: Theme; isChecked: boolean }) => ({
@@ -84,65 +83,6 @@ const FieldLoadingState = styled(Skeleton)(
     margin: margin,
   }),
 );
-
-const getLocalizedTaskType = (
-  t: TFunction,
-  taskType: ActivityTypeEnum | null | undefined,
-): string => {
-  if (!taskType) {
-    return '';
-  }
-
-  switch (taskType) {
-    case ActivityTypeEnum.Appointment:
-      return t('Appointment');
-
-    case ActivityTypeEnum.Call:
-      return t('Call');
-
-    case ActivityTypeEnum.Email:
-      return t('Email');
-
-    case ActivityTypeEnum.FacebookMessage:
-      return t('Facebook Message');
-
-    case ActivityTypeEnum.Letter:
-      return t('Letter');
-
-    case ActivityTypeEnum.NewsletterEmail:
-      return t('Newsletter - Email');
-
-    case ActivityTypeEnum.NewsletterPhysical:
-      return t('Newsletter - Physical');
-
-    case ActivityTypeEnum.None:
-      return '';
-
-    case ActivityTypeEnum.PrayerRequest:
-      return t('Prayer Request');
-
-    case ActivityTypeEnum.PreCallLetter:
-      return t('Pre-Call Letter');
-
-    case ActivityTypeEnum.ReminderLetter:
-      return t('Reminder Letter');
-
-    case ActivityTypeEnum.SupportLetter:
-      return t('Support Letter');
-
-    case ActivityTypeEnum.TalkToInPerson:
-      return t('Talk To In Person');
-
-    case ActivityTypeEnum.TextMessage:
-      return t('Text Message');
-
-    case ActivityTypeEnum.Thank:
-      return t('Thank');
-
-    case ActivityTypeEnum.ToDo:
-      return t('To Do');
-  }
-};
 
 interface ContactTaskRowProps {
   accountListId: string;
