@@ -6,8 +6,17 @@ import theme from '../../../../theme';
 import { GetDonationGraphQuery } from '../GetDonationGraph.generated';
 import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
 import { MonthlyActivitySection } from './MonthlyActivitySection';
+import TestRouter from '__tests__/util/TestRouter';
 
 const setTime = jest.fn();
+
+const push = jest.fn();
+
+const router = {
+  query: { accountListId: '123' },
+  isReady: true,
+  push,
+};
 
 it('renders with data', async () => {
   const mocks = {
@@ -47,9 +56,11 @@ it('renders with data', async () => {
 
   const { getByTestId, queryByRole, queryByTestId } = render(
     <ThemeProvider theme={theme}>
-      <GqlMockedProvider<GetDonationGraphQuery> mocks={mocks}>
-        <MonthlyActivitySection accountListId={'abc'} setTime={setTime} />
-      </GqlMockedProvider>
+      <TestRouter router={router}>
+        <GqlMockedProvider<GetDonationGraphQuery> mocks={mocks}>
+          <MonthlyActivitySection accountListId={'abc'} setTime={setTime} />
+        </GqlMockedProvider>
+      </TestRouter>
     </ThemeProvider>,
   );
 
@@ -98,9 +109,11 @@ it('renders empty', async () => {
 
   const { queryByText, queryByRole, getByTestId } = render(
     <ThemeProvider theme={theme}>
-      <GqlMockedProvider<GetDonationGraphQuery> mocks={mocks}>
-        <MonthlyActivitySection accountListId={'abc'} setTime={setTime} />
-      </GqlMockedProvider>
+      <TestRouter router={router}>
+        <GqlMockedProvider<GetDonationGraphQuery> mocks={mocks}>
+          <MonthlyActivitySection accountListId={'abc'} setTime={setTime} />
+        </GqlMockedProvider>
+      </TestRouter>
     </ThemeProvider>,
   );
 

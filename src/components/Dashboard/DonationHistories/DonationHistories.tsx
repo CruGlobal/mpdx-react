@@ -23,10 +23,12 @@ import {
 import { DateTime } from 'luxon';
 import { Skeleton } from '@material-ui/lab';
 import { useTranslation } from 'react-i18next';
+import { useRouter } from 'next/router';
 import { currencyFormat } from '../../../lib/intlFormat';
 import AnimatedCard from '../../AnimatedCard';
 import AnimatedBox from '../../AnimatedBox';
 import illustration15 from '../../../images/drawkit/grape/drawkit-grape-pack-illustration-15.svg';
+import { useAccountListId } from 'src/hooks/useAccountListId';
 
 const useStyles = makeStyles((theme: Theme) => ({
   cardHeader: {
@@ -94,7 +96,9 @@ const DonationHistories = ({
   setTime,
 }: Props): ReactElement => {
   const classes = useStyles();
+  const { push } = useRouter();
   const { t } = useTranslation();
+  const accountListId = useAccountListId();
   const fills = ['#FFCF07', '#30F2F2', '#1FC0D2', '#007398'];
   const currencies: { dataKey: string; fill: string }[] = [];
   const periods = reportsDonationHistories?.periods?.map((period) => {
@@ -268,7 +272,17 @@ const DonationHistories = ({
                               }[];
                             }) =>
                               setTime(period.activePayload[0].payload.period)
-                          : null
+                          : (period: {
+                              activePayload: {
+                                payload: { period: DateTime };
+                              }[];
+                            }) =>
+                              push({
+                                pathname: `/accountLists/${accountListId}/reports/donations`,
+                                query: {
+                                  month: period.activePayload[0].payload.period.toISO(),
+                                },
+                              })
                       }
                     >
                       <Legend />
