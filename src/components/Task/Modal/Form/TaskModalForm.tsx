@@ -57,6 +57,7 @@ import { TasksDocument } from 'pages/accountLists/[accountListId]/tasks/Tasks.ge
 import { ContactTasksTabDocument } from 'src/components/Contacts/ContactDetails/ContactTasksTab/ContactTasksTab.generated';
 import { ModalDeleteButton } from 'src/components/common/Modal/DeleteButton/ModalDeleteButton';
 import { DeleteConfirmation } from 'src/components/common/Modal/DeleteConfirmation/DeleteConfirmation';
+import { getLocalizedTaskType } from 'src/utils/functions/getLocalizedTaskType';
 
 export const ActionButton = styled(Button)(() => ({
   color: theme.palette.info.main,
@@ -313,11 +314,13 @@ const TaskModalForm = ({
                       onChange={handleChange('activityType')}
                     >
                       <MenuItem value={undefined}>{t('None')}</MenuItem>
-                      {Object.values(ActivityTypeEnum).map((val) => (
-                        <MenuItem key={val} value={val}>
-                          {t(val) /* manually added to translation file */}
-                        </MenuItem>
-                      ))}
+                      {Object.values(ActivityTypeEnum)
+                        .filter((val) => val !== 'NONE')
+                        .map((val) => (
+                          <MenuItem key={val} value={val}>
+                            {getLocalizedTaskType(t, val)}
+                          </MenuItem>
+                        ))}
                     </Select>
                   </FormControl>
                 </Grid>

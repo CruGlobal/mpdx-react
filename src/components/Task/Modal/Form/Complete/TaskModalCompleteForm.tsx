@@ -42,6 +42,7 @@ import { useCompleteTaskMutation } from '../../../../../../src/components/Task/D
 import useTaskModal from '../../../../../../src/hooks/useTaskModal';
 import { FormFieldsWrapper } from '../TaskModalForm';
 import { FormFieldsGridContainer } from '../Container/FormFieldsGridContainer';
+import { getLocalizedTaskType } from 'src/utils/functions/getLocalizedTaskType';
 
 const ActionButton = styled(Button)(() => ({
   color: theme.palette.info.main,
@@ -161,7 +162,7 @@ const TaskModalCompleteForm = ({
               <FormFieldsGridContainer>
                 <Grid item>
                   <Typography style={{ fontWeight: 600 }} display="inline">
-                    {task?.activityType}
+                    {getLocalizedTaskType(t, task?.activityType)}
                   </Typography>{' '}
                   <Typography display="inline">{task?.subject}</Typography>{' '}
                   {task?.contacts.nodes.map((contact, index) => (

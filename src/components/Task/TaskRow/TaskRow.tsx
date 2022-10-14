@@ -17,6 +17,7 @@ import { TaskDueDate } from '../../Contacts/ContactDetails/ContactTasksTab/Conta
 import { TaskCommentsButton } from '../../Contacts/ContactDetails/ContactTasksTab/ContactTaskRow/TaskCommentsButton/TaskCommentsButton';
 import useTaskModal from '../../../hooks/useTaskModal';
 import { TaskRowFragment } from './TaskRow.generated';
+import { getLocalizedTaskType } from 'src/utils/functions/getLocalizedTaskType';
 
 const SubjectWrapOuter = styled(Box)(({ theme }) => ({
   width: 'fit-content',
@@ -193,7 +194,9 @@ export const TaskRow: React.FC<TaskRowProps> = ({
                   e.stopPropagation();
                 }}
               >
-                <TaskType>{activityType ? t(activityType) : ''}</TaskType>
+                <TaskType>
+                  {activityType ? getLocalizedTaskType(t, activityType) : ''}
+                </TaskType>
                 <Tooltip title={subject}>
                   <ContactText>{subject}</ContactText>
                 </Tooltip>
