@@ -177,6 +177,32 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
 
   const { openTaskModal } = useTaskModal();
 
+  const restExport = async () => {
+    fetch('https://api.stage.mpdx.org/api/v2/contacts/exports', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/vnd.api+json',
+        authorization: 'Bearer ',
+      },
+      body: JSON.stringify({
+        data: {
+          type: 'export_logs',
+          attributes: {
+            params: {
+              filter: {
+                account_list_id: 'c1029414-992c-4aae-8b89-528c7737e499',
+                any_tags: false,
+                ids: '6b1a2df5-e2ed-473a-a74e-e75b576c4af7',
+              },
+            },
+          },
+        },
+      }),
+    });
+  };
+
+  const restGet = async () => {};
+
   return (
     <HeaderWrap contactDetailsOpen={contactDetailsOpen}>
       <HeaderWrapInner style={{ marginRight: 8 }}>
@@ -336,7 +362,7 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
                             </ListItemText>
                           </MenuItem>
 
-                          <MenuItem>
+                          <MenuItem onClick={restExport}>
                             <ListItemText>{t('Export Emails')}</ListItemText>
                           </MenuItem>
                         </Menu>
