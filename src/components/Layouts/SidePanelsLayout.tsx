@@ -1,5 +1,5 @@
 import { FC, ReactElement } from 'react';
-import { Box, styled, Theme } from '@material-ui/core';
+import { Box, styled, Theme, useMediaQuery } from '@material-ui/core';
 import { Breakpoint } from '@material-ui/core/styles/createBreakpoints';
 
 type ScrollBoxProps = {
@@ -28,6 +28,11 @@ const ScrollBox = styled(FullHeightBox)(({ isscroll }: ScrollBoxProps) => ({
   overflowY: isscroll === 1 ? 'auto' : 'hidden',
 }));
 
+const OuterWrapper = styled(Box)({
+  position: 'relative',
+  overflowX: 'hidden',
+});
+
 const CollapsibleWrapper = styled(Box)({
   display: 'flex',
   overflowX: 'hidden',
@@ -40,6 +45,8 @@ const ExpandingContent = styled(Box)(
     flexBasis: open ? 0 : '100%',
     transition: 'flex-basis ease-in-out 225ms',
     overflowX: 'hidden',
+    position: 'relative',
+    zIndex: 10,
   }),
 );
 
@@ -78,23 +85,20 @@ const LeftPanelWrapper = styled(PanelWrapper)(
     },
   }),
 );
-const RightPanelWrapper = styled(PanelWrapper)(
-  ({
-    theme,
-    breakpoint,
-    open,
-  }: {
-    theme: Theme;
-    open: boolean;
-    breakpoint: Breakpoint | number;
-  }) => ({
-    borderLeft: `1px solid ${theme.palette.cruGrayLight.main}`,
+const RightPanelWrapper = styled(ScrollBox)(
+  ({ theme, open }: { theme: Theme; open: boolean }) => ({
+    position: 'absolute',
+    zIndex: 20,
+    top: 0,
     right: 0,
-    [theme.breakpoints.down(breakpoint)]: {
-      transform: open ? 'none' : 'translate(100%)',
-    },
+    transform: open ? 'none' : 'translate(100%)',
+    transition: 'transform ease-in-out 225ms',
+    background: theme.palette.common.white,
     [theme.breakpoints.down('sm')]: {
       width: '100%',
+    },
+    [theme.breakpoints.up('md')]: {
+      borderLeft: `1px solid ${theme.palette.cruGrayLight.main}`,
     },
   }),
 );
@@ -119,28 +123,32 @@ export const SidePanelsLayout: FC<SidePanelsLayoutProps> = ({
   rightPanel,
   rightWidth,
   rightOpen = false,
-}) => (
-  <CollapsibleWrapper justifyContent="flex-start">
-    <ExpandingContent open={rightOpen}>
-      <CollapsibleWrapper justifyContent="flex-end">
-        <LeftPanelWrapper
-          open={leftOpen}
-          width={leftWidth}
-          flexBasis={leftWidth}
-          breakpoint="sm"
-        >
-          <ScrollBox isscroll={isScrollBox ? 1 : 0}>{leftPanel}</ScrollBox>
-        </LeftPanelWrapper>
-        <ExpandingContent open={leftOpen}>{mainContent}</ExpandingContent>
-      </CollapsibleWrapper>
-    </ExpandingContent>
-    <RightPanelWrapper
-      open={rightOpen}
-      width={rightWidth}
-      flexBasis={rightWidth}
-      breakpoint="md"
-    >
-      <ScrollBox isscroll={isScrollBox ? 1 : 0}>{rightPanel}</ScrollBox>
-    </RightPanelWrapper>
-  </CollapsibleWrapper>
-);
+}) => {
+  const isMobile = useMediaQuery((theme: Theme) =>
+    theme.breakpoints.down('sm'),
+  );
+
+  return (
+    <OuterWrapper>
+      <ExpandingContent open={rightOpen}>
+        <CollapsibleWrapper justifyContent="flex-end">
+          <LeftPanelWrapper
+            open={leftOpen}
+            width={leftWidth}
+            flexBasis={leftWidth}
+            breakpoint="sm"
+          >
+            <ScrollBox isscroll={isScrollBox ? 1 : 0}>{leftPanel}</ScrollBox>
+          </LeftPanelWrapper>
+          <ExpandingContent open={leftOpen}>{mainContent}</ExpandingContent>
+        </CollapsibleWrapper>
+      </ExpandingContent>
+      <RightPanelWrapper
+        open={rightOpen}
+        width={isMobile ? '100%' : rightWidth}
+      >
+        <ScrollBox isscroll={isScrollBox ? 1 : 0}>{rightPanel}</ScrollBox>
+      </RightPanelWrapper>
+    </OuterWrapper>
+  );
+};
