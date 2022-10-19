@@ -1,6 +1,5 @@
 import { FC, ReactElement } from 'react';
 import { Box, styled, Theme, useMediaQuery } from '@material-ui/core';
-import { Breakpoint } from '@material-ui/core/styles/createBreakpoints';
 
 type ScrollBoxProps = {
   isscroll?: 1 | 0;
@@ -50,58 +49,32 @@ const ExpandingContent = styled(Box)(
   }),
 );
 
-const PanelWrapper = styled(ScrollBox)(
-  ({
-    theme,
-    breakpoint,
-  }: {
-    theme: Theme;
-    breakpoint: Breakpoint | number;
-  }) => ({
-    flexShrink: 0,
-    [theme.breakpoints.down(breakpoint)]: {
-      transition: 'transform ease-in-out 225ms',
-      background: theme.palette.common.white,
-      position: 'absolute',
-      zIndex: 1,
-    },
-  }),
-);
-
-const LeftPanelWrapper = styled(PanelWrapper)(
-  ({
-    theme,
-    breakpoint,
-    open,
-  }: {
-    theme: Theme;
-    open: boolean;
-    breakpoint: Breakpoint | number;
-  }) => ({
-    borderRight: `1px solid ${theme.palette.cruGrayLight.main}`,
-    left: 0,
-    [theme.breakpoints.down(breakpoint)]: {
-      transform: open ? 'none' : 'translate(-100%)',
-    },
-  }),
-);
-const RightPanelWrapper = styled(ScrollBox)(
-  ({ theme, open }: { theme: Theme; open: boolean }) => ({
-    position: 'absolute',
-    zIndex: 20,
-    top: 0,
-    right: 0,
-    transform: open ? 'none' : 'translate(100%)',
+const LeftPanelWrapper = styled(ScrollBox)(({ theme }: { theme: Theme }) => ({
+  flexShrink: 0,
+  borderRight: `1px solid ${theme.palette.cruGrayLight.main}`,
+  left: 0,
+  background: theme.palette.common.white,
+  [theme.breakpoints.down('md')]: {
     transition: 'transform ease-in-out 225ms',
     background: theme.palette.common.white,
-    [theme.breakpoints.down('sm')]: {
-      width: '100%',
-    },
-    [theme.breakpoints.up('md')]: {
-      borderLeft: `1px solid ${theme.palette.cruGrayLight.main}`,
-    },
-  }),
-);
+    position: 'absolute',
+    zIndex: 20,
+  },
+}));
+const RightPanelWrapper = styled(ScrollBox)(({ theme }: { theme: Theme }) => ({
+  position: 'absolute',
+  zIndex: 20,
+  top: 0,
+  right: 0,
+  transition: 'transform ease-in-out 225ms',
+  background: theme.palette.common.white,
+  [theme.breakpoints.down('sm')]: {
+    width: '100%',
+  },
+  [theme.breakpoints.up('md')]: {
+    borderLeft: `1px solid ${theme.palette.cruGrayLight.main}`,
+  },
+}));
 
 interface SidePanelsLayoutProps {
   isScrollBox?: boolean;
@@ -133,10 +106,9 @@ export const SidePanelsLayout: FC<SidePanelsLayoutProps> = ({
       <ExpandingContent open={rightOpen}>
         <CollapsibleWrapper justifyContent="flex-end">
           <LeftPanelWrapper
-            open={leftOpen}
             width={leftWidth}
             flexBasis={leftWidth}
-            breakpoint="sm"
+            style={{ transform: leftOpen ? 'none' : 'translate(-100%)' }}
           >
             <ScrollBox isscroll={isScrollBox ? 1 : 0}>{leftPanel}</ScrollBox>
           </LeftPanelWrapper>
@@ -144,8 +116,8 @@ export const SidePanelsLayout: FC<SidePanelsLayoutProps> = ({
         </CollapsibleWrapper>
       </ExpandingContent>
       <RightPanelWrapper
-        open={rightOpen}
         width={isMobile ? '100%' : rightWidth}
+        style={{ transform: rightOpen ? 'none' : 'translate(100%)' }}
       >
         <ScrollBox isscroll={isScrollBox ? 1 : 0}>{rightPanel}</ScrollBox>
       </RightPanelWrapper>
