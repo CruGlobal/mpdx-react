@@ -15,6 +15,10 @@ import FilterList from '@material-ui/icons/FilterList';
 import { useTranslation } from 'react-i18next';
 import ArrowDropDown from '@material-ui/icons/ArrowDropDown';
 import { MoreHoriz, ViewList } from '@material-ui/icons';
+import { mdiFileExportOutline } from '@mdi/js';
+import { getToken } from 'next-auth/jwt';
+import { useSession } from 'next-auth/react';
+import Icon from '@mdi/react';
 import { SearchBox } from '../../common/SearchBox/SearchBox';
 import {
   ContactFilterSetInput,
@@ -22,6 +26,7 @@ import {
 } from '../../../../graphql/types.generated';
 import { StarFilterButton } from './StarFilterButton/StarFilterButton';
 import useTaskModal from 'src/hooks/useTaskModal';
+import theme from 'src/theme';
 
 const HeaderWrap = styled(Box)(
   ({ theme }: { theme: Theme; contactDetailsOpen: boolean }) => ({
@@ -133,6 +138,7 @@ interface ListHeaderProps {
   openEditTasksModal?: (open: boolean) => void;
   openTasksRemoveTagsModal?: (open: boolean) => void;
   openTasksAddTagsModal?: (open: boolean) => void;
+  openExportsModal?: (open: boolean) => void;
 }
 
 export const ListHeader: React.FC<ListHeaderProps> = ({
@@ -162,6 +168,7 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
   openEditTasksModal,
   openTasksRemoveTagsModal,
   openTasksAddTagsModal,
+  openExportsModal,
 }) => {
   const { t } = useTranslation();
 
@@ -176,44 +183,6 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
   };
 
   const { openTaskModal } = useTaskModal();
-
-  const token = '';
-
-  const restExport = async () => {
-    fetch('https://api.stage.mpdx.org/api/v2/contacts/exports', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/vnd.api+json',
-        authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        data: {
-          type: 'export_logs',
-          attributes: {
-            params: {
-              filter: {
-                account_list_id: 'c1029414-992c-4aae-8b89-528c7737e499',
-                any_tags: false,
-                ids: '6b1a2df5-e2ed-473a-a74e-e75b576c4af7',
-              },
-            },
-          },
-        },
-      }),
-    });
-  };
-
-  const restGet = async () => {
-    fetch(
-      `https://api.stage.mpdx.org/api/v2/contacts/exports/cb6253b5-2dd1-46f1-b8f9-f8f8efe613c7.csv?access_token=${token}`,
-      {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'text/csv',
-        },
-      },
-    );
-  };
 
   return (
     <HeaderWrap contactDetailsOpen={contactDetailsOpen}>
@@ -266,7 +235,8 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
               openAddToAppealModal &&
               openCreateAppealModal &&
               openAddTagsModal &&
-              openRemoveTagsModal && (
+              openRemoveTagsModal &&
+              openExportsModal && (
                 <>
                   <Hidden xsDown>
                     {selectedIds.length > 0 && (
@@ -374,10 +344,22 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
                             </ListItemText>
                           </MenuItem>
 
-                          <MenuItem onClick={restGet}>
+                          <MenuItem>
                             <ListItemText>{t('Export Emails')}</ListItemText>
                           </MenuItem>
                         </Menu>
+                        <ActionsButton
+                          aria-haspopup
+                          aria-expanded={open}
+                          onClick={() => openExportsModal(true)}
+                          style={{ marginLeft: theme.spacing(1) }}
+                        >
+                          {filterPanelOpen && contactDetailsOpen ? (
+                            <Icon path={mdiFileExportOutline} />
+                          ) : (
+                            t('Export')
+                          )}
+                        </ActionsButton>
                       </>
                     )}
                   </Hidden>
