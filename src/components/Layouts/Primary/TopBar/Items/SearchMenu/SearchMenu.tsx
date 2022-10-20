@@ -366,6 +366,8 @@ const SearchMenu = (): ReactElement => {
                   setWildcardSearch(e.target.value);
                   handleUpdateWildcardSearch(e.target.value);
                 }}
+                // eslint-disable-next-line
+                autoFocus
               />
             )}
           />
