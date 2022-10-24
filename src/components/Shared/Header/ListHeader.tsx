@@ -16,8 +16,6 @@ import { useTranslation } from 'react-i18next';
 import ArrowDropDown from '@material-ui/icons/ArrowDropDown';
 import { MoreHoriz, ViewList } from '@material-ui/icons';
 import { mdiFileExportOutline } from '@mdi/js';
-import { getToken } from 'next-auth/jwt';
-import { useSession } from 'next-auth/react';
 import Icon from '@mdi/react';
 import { SearchBox } from '../../common/SearchBox/SearchBox';
 import {
@@ -185,30 +183,6 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
   const { openTaskModal } = useTaskModal();
 
   const token = '';
-
-  const restExport = async () => {
-    fetch('https://api.stage.mpdx.org/api/v2/contacts/exports', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/vnd.api+json',
-        authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        data: {
-          type: 'export_logs',
-          attributes: {
-            params: {
-              filter: {
-                account_list_id: 'c1029414-992c-4aae-8b89-528c7737e499',
-                any_tags: false,
-                ids: '6b1a2df5-e2ed-473a-a74e-e75b576c4af7',
-              },
-            },
-          },
-        },
-      }),
-    });
-  };
 
   const restGet = async () => {
     fetch(

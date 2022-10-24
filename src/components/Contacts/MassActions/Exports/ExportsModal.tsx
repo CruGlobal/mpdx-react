@@ -1,10 +1,9 @@
 import { Button, Grid, Typography, Box, styled } from '@material-ui/core';
 import { useSession } from 'next-auth/react';
 import { useSnackbar } from 'notistack';
-import React, { useState } from 'react';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { exportRest } from './exportRest';
-import { MailMergedLabelModal } from './MailMergedLabelModal/MailMergedLabelModal';
 import Modal from 'src/components/common/Modal/Modal';
 
 interface ExportsModalProps {

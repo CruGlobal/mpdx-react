@@ -1,9 +1,5 @@
 import {
-  Button,
   Grid,
-  Typography,
-  Box,
-  styled,
   DialogActions,
   DialogContent,
   FormControl,
@@ -13,7 +9,7 @@ import {
 } from '@material-ui/core';
 import { useSession } from 'next-auth/react';
 import { useSnackbar } from 'notistack';
-import React, { ReactElement, useState } from 'react';
+import React, { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { Formik } from 'formik';
@@ -33,16 +29,6 @@ const MailMergedLabelsSchema = yup.object({
   sort: yup.string().nullable(),
 });
 
-const ExportActionButton = styled(Button)(({ theme }) => ({
-  backgroundColor: theme.palette.mpdxBlue.main,
-  width: '100%',
-  color: theme.palette.common.white,
-  textTransform: 'none',
-  '&:hover': {
-    backgroundColor: '#006193',
-  },
-}));
-
 export const MailMergedLabelModal: React.FC<MailMergedLabelModalProps> = ({
   accountListId,
   ids,
@@ -53,9 +39,7 @@ export const MailMergedLabelModal: React.FC<MailMergedLabelModalProps> = ({
   const token = sessionData?.user?.apiToken ?? '';
   const { enqueueSnackbar } = useSnackbar();
 
-  const [labelModalOpen, setLabelModalOpen] = useState(false);
-
-  const onSubmit = async (fields: { template: string; sort: string }) => {
+  const onSubmit = async () => {
     try {
       exportRest(accountListId, ids, token, 'pdf');
     } catch (err) {
@@ -84,7 +68,6 @@ export const MailMergedLabelModal: React.FC<MailMergedLabelModalProps> = ({
           values: { template, sort },
           handleChange,
           handleSubmit,
-          setFieldValue,
           isSubmitting,
           isValid,
         }): ReactElement => (
