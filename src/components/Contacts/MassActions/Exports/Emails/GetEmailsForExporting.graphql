@@ -1,0 +1,18 @@
+query GetEmailsForExporting(
+  $accountListId: ID!
+  $contactsFilters: ContactFilterSetInput
+) {
+  contacts(accountListId: $accountListId, contactsFilter: $contactsFilters) {
+    nodes {
+      id
+      people {
+        nodes {
+          primaryEmailAddress {
+            id
+            email
+          }
+        }
+      }
+    }
+  }
+}
