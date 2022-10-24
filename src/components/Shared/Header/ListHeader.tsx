@@ -15,6 +15,10 @@ import FilterList from '@material-ui/icons/FilterList';
 import { useTranslation } from 'react-i18next';
 import ArrowDropDown from '@material-ui/icons/ArrowDropDown';
 import { MoreHoriz, ViewList } from '@material-ui/icons';
+import { mdiFileExportOutline } from '@mdi/js';
+import { getToken } from 'next-auth/jwt';
+import { useSession } from 'next-auth/react';
+import Icon from '@mdi/react';
 import { SearchBox } from '../../common/SearchBox/SearchBox';
 import {
   ContactFilterSetInput,
@@ -22,6 +26,7 @@ import {
 } from '../../../../graphql/types.generated';
 import { StarFilterButton } from './StarFilterButton/StarFilterButton';
 import useTaskModal from 'src/hooks/useTaskModal';
+import theme from 'src/theme';
 
 const HeaderWrap = styled(Box)(
   ({ theme }: { theme: Theme; contactDetailsOpen: boolean }) => ({
@@ -133,6 +138,7 @@ interface ListHeaderProps {
   openEditTasksModal?: (open: boolean) => void;
   openTasksRemoveTagsModal?: (open: boolean) => void;
   openTasksAddTagsModal?: (open: boolean) => void;
+  openExportsModal?: (open: boolean) => void;
 }
 
 export const ListHeader: React.FC<ListHeaderProps> = ({
@@ -162,6 +168,7 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
   openEditTasksModal,
   openTasksRemoveTagsModal,
   openTasksAddTagsModal,
+  openExportsModal,
 }) => {
   const { t } = useTranslation();
 
@@ -266,7 +273,8 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
               openAddToAppealModal &&
               openCreateAppealModal &&
               openAddTagsModal &&
-              openRemoveTagsModal && (
+              openRemoveTagsModal &&
+              openExportsModal && (
                 <>
                   <Hidden xsDown>
                     {selectedIds.length > 0 && (
@@ -378,6 +386,18 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
                             <ListItemText>{t('Export Emails')}</ListItemText>
                           </MenuItem>
                         </Menu>
+                        <ActionsButton
+                          aria-haspopup
+                          aria-expanded={open}
+                          onClick={() => openExportsModal(true)}
+                          style={{ marginLeft: theme.spacing(1) }}
+                        >
+                          {filterPanelOpen && contactDetailsOpen ? (
+                            <Icon path={mdiFileExportOutline} />
+                          ) : (
+                            t('Export')
+                          )}
+                        </ActionsButton>
                       </>
                     )}
                   </Hidden>

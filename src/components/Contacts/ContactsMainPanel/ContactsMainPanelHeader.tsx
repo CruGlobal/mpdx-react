@@ -18,6 +18,8 @@ import { MassActionsAddToAppealModal } from '../MassActions/AddToAppeal/MassActi
 import { MassActionsEditFieldsModal } from '../MassActions/EditFields/MassActionsEditFieldsModal';
 import { useMassActionsUpdateContactsMutation } from '../MassActions/MassActionsUpdateContacts.generated';
 import { MassActionsCreateAppealModal } from '../MassActions/AddToAppeal/MassActionsCreateAppealModal';
+import { ExportsModal } from '../MassActions/Exports/ExportsModal';
+import { MailMergedLabelModal } from '../MassActions/Exports/MailMergedLabelModal/MailMergedLabelModal';
 import {
   ListHeader,
   TableViewModeEnum,
@@ -74,6 +76,8 @@ export const ContactsMainPanelHeader: React.FC = () => {
   const [createAppealModalOpen, setCreateAppealModalOpen] = useState(false);
   const [editFieldsModalOpen, setEditFieldsModalOpen] = useState(false);
   const [hideContactsModalOpen, setHideContactsModalOpen] = useState(false);
+  const [exportsModalOpen, setExportsModalOpen] = useState(false);
+  const [labelModalOpen, setLabelModalOpen] = useState(false);
 
   const { data } = useContactsQuery({
     variables: {
@@ -142,6 +146,7 @@ export const ContactsMainPanelHeader: React.FC = () => {
         openAddToAppealModal={setAddToAppealModalOpen}
         openHideContactsModal={setHideContactsModalOpen}
         openCreateAppealModal={setCreateAppealModalOpen}
+        openExportsModal={setExportsModalOpen}
         buttonGroup={
           <Hidden xsDown>
             <Box display="flex" alignItems="center">
@@ -218,13 +223,27 @@ export const ContactsMainPanelHeader: React.FC = () => {
           handleClose={() => setEditFieldsModalOpen(false)}
         />
       )}
-
       {hideContactsModalOpen && (
         <HideContactsModal
           open={hideContactsModalOpen}
           setOpen={setHideContactsModalOpen}
           onConfirm={hideContacts}
           multi={selectedIds.length > 1}
+        />
+      )}
+      {exportsModalOpen && (
+        <ExportsModal
+          ids={selectedIds}
+          accountListId={accountListId ?? ''}
+          handleClose={() => setExportsModalOpen(false)}
+          openMailMergedLabelModal={() => setLabelModalOpen(true)}
+        />
+      )}
+      {labelModalOpen && (
+        <MailMergedLabelModal
+          accountListId={accountListId ?? ''}
+          ids={selectedIds}
+          handleClose={() => setLabelModalOpen(false)}
         />
       )}
     </>
