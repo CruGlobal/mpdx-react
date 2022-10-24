@@ -128,6 +128,7 @@ interface ListHeaderProps {
   openCreateAppealModal?: (open: boolean) => void;
   openEditFieldsModal?: (open: boolean) => void;
   openHideContactsModal?: (open: boolean) => void;
+  openExportEmailsModal?: (open: boolean) => void;
   openCompleteTasksModal?: (open: boolean) => void;
   openDeleteTasksModal?: (open: boolean) => void;
   openEditTasksModal?: (open: boolean) => void;
@@ -158,6 +159,7 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
   openEditFieldsModal,
   openHideContactsModal,
   openCompleteTasksModal,
+  openExportEmailsModal,
   openDeleteTasksModal,
   openEditTasksModal,
   openTasksRemoveTagsModal,
@@ -228,7 +230,8 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
               openAddToAppealModal &&
               openCreateAppealModal &&
               openAddTagsModal &&
-              openRemoveTagsModal && (
+              openRemoveTagsModal &&
+              openExportEmailsModal && (
                 <>
                   <Hidden xsDown>
                     {selectedIds.length > 0 && (
@@ -336,7 +339,12 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
                             </ListItemText>
                           </MenuItem>
 
-                          <MenuItem>
+                          <MenuItem
+                            onClick={() => {
+                              openExportEmailsModal(true);
+                              handleClose();
+                            }}
+                          >
                             <ListItemText>{t('Export Emails')}</ListItemText>
                           </MenuItem>
                         </Menu>
