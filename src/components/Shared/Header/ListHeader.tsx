@@ -182,20 +182,6 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
 
   const { openTaskModal } = useTaskModal();
 
-  const token = '';
-
-  const restGet = async () => {
-    fetch(
-      `https://api.stage.mpdx.org/api/v2/contacts/exports/cb6253b5-2dd1-46f1-b8f9-f8f8efe613c7.csv?access_token=${token}`,
-      {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'text/csv',
-        },
-      },
-    );
-  };
-
   return (
     <HeaderWrap contactDetailsOpen={contactDetailsOpen}>
       <HeaderWrapInner style={{ marginRight: 8 }}>
@@ -356,7 +342,7 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
                             </ListItemText>
                           </MenuItem>
 
-                          <MenuItem onClick={restGet}>
+                          <MenuItem>
                             <ListItemText>{t('Export Emails')}</ListItemText>
                           </MenuItem>
                         </Menu>

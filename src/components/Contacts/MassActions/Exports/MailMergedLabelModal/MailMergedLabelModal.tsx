@@ -136,7 +136,6 @@ export const MailMergedLabelModal: React.FC<MailMergedLabelModalProps> = ({
                 variant="contained"
                 disabled={!isValid || isSubmitting}
               >
-                {/* {updating && <LoadingIndicator color="primary" size={20} />} */}
                 {t('Export')}
               </ActionButton>
             </DialogActions>
