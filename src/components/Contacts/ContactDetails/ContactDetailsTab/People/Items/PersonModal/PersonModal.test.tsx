@@ -134,8 +134,7 @@ jest.mock('notistack', () => ({
   },
 }));
 
-// eslint-disable-next-line jest/no-disabled-tests
-describe.skip('PersonModal', () => {
+describe('PersonModal', () => {
   it('should render edit person modal', () => {
     const { getByText } = render(
       <SnackbarProvider>

@@ -149,6 +149,7 @@
     "node-mocks-http": "^1.11.0",
     "prettier": "^2.7.1",
     "prop-types": "^15.8.1",
+    "seedrandom": "^3.0.5",
     "storybook-addon-designs": "^6.3.1",
     "storybook-addon-i18next": "^1.3.0",
     "ts-essentials": "^9.3.0",
@@ -157,7 +158,21 @@
     "url-loader": "^4.1.1"
   },
   "resolutions": {
-    "graphql-ergonomock/graphql": "^16.6.0"
+    "graphql-ergonomock/graphql": "^16.6.0",
+    "graphql-ergonomock/graphql-tools": "^8.3.6",
+    "graphql-ergonomock/jest": "^29.0.3",
+    "graphql-ergonomock/jest-extended": "^3.1.0",
+    "graphql-ergonomock/prettier": "^2.7.1",
+    "graphql-ergonomock/react": "^18.2.0",
+    "graphql-ergonomock/react-dom": "^18.2.0",
+    "graphql-ergonomock/semantic-release": "19.0.5",
+    "graphql-ergonomock/ts-jest": "29.0.3",
+    "graphql-ergonomock/typescript": "^4.8.3",
+    "graphql-ergonomock/@apollo/client": "^3.6.9",
+    "graphql-ergonomock/@testing-library/jest-dom": "^5.16.5",
+    "graphql-ergonomock/@testing-library/react": "^13.4.0",
+    "graphql-ergonomock/@types/react": "^18.0.22",
+    "graphql-ergonomock/@types/react-dom": "^18.0.7"
   },
   "lint-staged": {
     "*.{js,ts,tsx}": "eslint --cache --fix"

@@ -56,8 +56,7 @@ describe('ContactHeaderStatusSection', () => {
     expect(queryByText('Partner - Financial')).toBeNull();
   });
 
-  // eslint-disable-next-line jest/no-disabled-tests
-  it.skip('should render if status is null', () => {
+  it('should render if status is null', () => {
     const { queryByText } = render(
       <ContactHeaderStatusSection
         loading={false}
@@ -71,8 +70,7 @@ describe('ContactHeaderStatusSection', () => {
     expect(queryByText('Partner - Financial')).toBeNull();
   });
 
-  // eslint-disable-next-line jest/no-disabled-tests
-  it.skip('renders for financial partner', () => {
+  it('renders for financial partner', () => {
     const { queryByText } = render(
       <ThemeProvider theme={theme}>
         <ContactHeaderStatusSection

@@ -68,8 +68,7 @@ beforeEach(() => {
   });
 });
 
-// eslint-disable-next-line jest/no-disabled-tests
-describe.skip('ContactsRow', () => {
+describe('ContactsRow', () => {
   it('default', () => {
     const { getByText } = render(
       <TestRouter router={router}>

@@ -52,8 +52,7 @@ jest.mock('next/router', () => ({
   },
 }));
 
-// eslint-disable-next-line jest/no-disabled-tests
-describe.skip('PartnershipInfo', () => {
+describe('PartnershipInfo', () => {
   it('test renderer', async () => {
     const { getByText } = render(
       <SnackbarProvider>

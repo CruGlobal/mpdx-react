@@ -10,8 +10,7 @@ import {
 import { gqlMock } from '../../../../../__tests__/util/graphqlMocking';
 import { ExpectedMonthlyTotalReportHeader } from './ExpectedMonthlyTotalReportHeader';
 
-// eslint-disable-next-line jest/no-disabled-tests
-it.skip('renders with data', () => {
+it('renders with data', () => {
   const data = gqlMock<
     GetExpectedMonthlyTotalsQuery,
     GetExpectedMonthlyTotalsQueryVariables

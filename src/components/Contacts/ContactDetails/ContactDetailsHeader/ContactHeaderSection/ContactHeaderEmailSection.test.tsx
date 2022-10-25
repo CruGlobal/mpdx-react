@@ -12,8 +12,7 @@ const contact = gqlMock<ContactDetailsHeaderFragment>(
   { mocks: { lastDonation: null } },
 );
 
-// eslint-disable-next-line jest/no-disabled-tests
-describe.skip('ContactHeaderEmailSection', () => {
+describe('ContactHeaderEmailSection', () => {
   it('should show loading state', async () => {
     const { queryByText } = render(
       <ContactHeaderEmailSection loading={true} contact={undefined} />,

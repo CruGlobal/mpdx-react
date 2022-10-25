@@ -29,8 +29,7 @@ it('renders empty', async () => {
   expect(queryByRole('button')).not.toBeInTheDocument();
 });
 
-// eslint-disable-next-line jest/no-disabled-tests
-it.skip('renders donation table', async () => {
+it('renders donation table', async () => {
   const data = gqlMock<
     GetExpectedMonthlyTotalsQuery,
     GetExpectedMonthlyTotalsQueryVariables
@@ -54,8 +53,7 @@ it.skip('renders donation table', async () => {
   expect(getAllByTestId('donationColumn')[0]).toBeInTheDocument();
 });
 
-// eslint-disable-next-line jest/no-disabled-tests
-it.skip('renders non-donation table', async () => {
+it('renders non-donation table', async () => {
   const data = gqlMock<
     GetExpectedMonthlyTotalsQuery,
     GetExpectedMonthlyTotalsQueryVariables

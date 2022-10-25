@@ -45,8 +45,7 @@ jest.mock('notistack', () => ({
   },
 }));
 
-// eslint-disable-next-line jest/no-disabled-tests
-describe.skip('ContactTaskRow', () => {
+describe('ContactTaskRow', () => {
   it('should render loading', () => {
     const { getByTestId } = render(
       <GqlMockedProvider>

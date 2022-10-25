@@ -66,8 +66,7 @@ const mockContact: ContactDetailsFragment = {
   },
 };
 
-// eslint-disable-next-line jest/no-disabled-tests
-describe.skip('EditContactDetailsModal', () => {
+describe('EditContactDetailsModal', () => {
   it('should render edit contact details modal', () => {
     const { getByText } = render(
       <SnackbarProvider>

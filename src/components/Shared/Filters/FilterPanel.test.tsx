@@ -3,7 +3,6 @@ import { render, waitFor, within } from '@testing-library/react';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import userEvent from '@testing-library/user-event';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { useRouter } from 'next/router';
 import {
   gqlMock,
   GqlMockedProvider,
@@ -93,13 +92,13 @@ jest.mock('notistack', () => ({
   },
 }));
 
-jest.mock('next/router');
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const useRouter = jest.spyOn(require('next/router'), 'useRouter');
 
-// eslint-disable-next-line jest/no-disabled-tests
-describe.skip('FilterPanel', () => {
+describe('FilterPanel', () => {
   describe('Contacts', () => {
     beforeEach(() => {
-      (useRouter as jest.Mock).mockReturnValue({
+      useRouter.mockReturnValue({
         route: '/contacts',
       });
     });
@@ -400,7 +399,7 @@ describe.skip('FilterPanel', () => {
 
   describe('Tasks', () => {
     beforeEach(() => {
-      (useRouter as jest.Mock).mockReturnValue({
+      useRouter.mockReturnValue({
         route: '/tasks',
       });
     });
