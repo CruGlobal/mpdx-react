@@ -478,6 +478,41 @@ describe('ListHeader', () => {
     expect(openRemoveTagsModal).toHaveBeenCalled();
   });
 
+  it('opens the more actions menu and clicks the export emails action', () => {
+    const { getByPlaceholderText, getByText, queryByText } = render(
+      <ThemeProvider theme={theme}>
+        <ListHeader
+          selectedIds={selectedIds}
+          page="contact"
+          activeFilters={false}
+          starredFilter={{}}
+          toggleStarredFilter={toggleStarredFilter}
+          headerCheckboxState={ListHeaderCheckBoxState.unchecked}
+          filterPanelOpen={false}
+          contactDetailsOpen={false}
+          toggleFilterPanel={toggleFilterPanel}
+          onCheckAllItems={onCheckAllItems}
+          onSearchTermChanged={onSearchTermChanged}
+          openAddToAppealModal={openAddToAppealModal}
+          openEditFieldsModal={openEditFieldsModal}
+          openHideContactsModal={openHideContactsModal}
+          openRemoveTagsModal={openRemoveTagsModal}
+          openAddTagsModal={openAddTagsModal}
+          openCreateAppealModal={openCreateAppealModal}
+          openExportEmailsModal={openExportEmailsModal}
+        />
+      </ThemeProvider>,
+    );
+
+    expect(getByPlaceholderText('Search Contacts')).toBeInTheDocument();
+    expect(queryByText('Export Emails')).not.toBeInTheDocument();
+    const actionsButton = getByText('Actions');
+    userEvent.click(actionsButton);
+    expect(getByText('Export Emails')).toBeInTheDocument();
+    userEvent.click(getByText('Export Emails'));
+    expect(openExportEmailsModal).toHaveBeenCalled();
+  });
+
   describe('Task', () => {
     it('renders task header', () => {
       const { getByPlaceholderText } = render(
