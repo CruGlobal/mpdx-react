@@ -25,7 +25,7 @@ jest.mock('notistack', () => ({
 }));
 
 describe('ExportsModal', () => {
-  it('default', () => {
+  it.skip('default', () => {
     const { getByText } = render(
       <SessionProvider>
         <ThemeProvider theme={theme}>
@@ -46,7 +46,7 @@ describe('ExportsModal', () => {
     expect(getByText('Advanced Excel (XLSX)')).toBeInTheDocument();
   });
 
-  it('handle clicking the mail merged labels button', () => {
+  it.skip('handle clicking the mail merged labels button', () => {
     const { getByText } = render(
       <SessionProvider>
         <ThemeProvider theme={theme}>
