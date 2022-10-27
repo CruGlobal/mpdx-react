@@ -140,11 +140,11 @@ export const PersonEmailItem: React.FC<Props> = ({
                 <MenuItem selected value="">
                   None
                 </MenuItem>
-                <MenuItem value="personal" aria-label={t('Personal')}>
-                  {t('Personal')}
-                </MenuItem>
                 <MenuItem value="work" aria-label={t('Work')}>
                   {t('Work')}
+                </MenuItem>
+                <MenuItem value="Personal" aria-label={t('Personal')}>
+                  {t('Personal')}
                 </MenuItem>
                 <MenuItem value="other" aria-label={t('Other')}>
                   {t('Other')}
