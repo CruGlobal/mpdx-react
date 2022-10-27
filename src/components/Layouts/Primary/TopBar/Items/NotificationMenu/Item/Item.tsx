@@ -218,7 +218,7 @@ const NotificationMenuItem = ({
           </ListSubheader>
         )}
       <HandoffLink path={`/contacts/${item.notification.contact.id}`}>
-        <ListItem alignItems="flex-start" button onClick={handleClick}>
+        <ListItem alignItems="flex-start" role="button" button onClick={handleClick}>
           <ListItemAvatar>
             <Badge
               color="secondary"
