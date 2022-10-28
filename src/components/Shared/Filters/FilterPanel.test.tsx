@@ -178,7 +178,7 @@ describe('FilterPanel', () => {
         }),
       );
 
-      const statusSelect = getByRole('textbox', {
+      const statusSelect = getByRole('combobox', {
         hidden: true,
         name: 'Status',
       });
@@ -481,7 +481,7 @@ describe('FilterPanel', () => {
         }),
       );
 
-      const statusSelect = getByRole('textbox', {
+      const statusSelect = getByRole('combobox', {
         hidden: true,
         name: 'Status',
       });
