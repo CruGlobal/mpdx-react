@@ -24,17 +24,16 @@ import { useSnackbar } from 'notistack';
 import { DateTime } from 'luxon';
 import CalendarToday from '@mui/icons-material/CalendarToday';
 import Schedule from '@mui/icons-material/Schedule';
-import { v4 as uuidv4 } from 'uuid';
 import _ from 'lodash';
 import debounce from 'lodash/fp/debounce';
 import {
   ActivityTypeEnum,
   NotificationTimeUnitEnum,
   NotificationTypeEnum,
+  ResultEnum,
   TaskCreateInput,
   TaskUpdateInput,
 } from '../../../../../graphql/types.generated';
-import { GetTaskForTaskDrawerQuery } from '../../Drawer/TaskDrawerTask.generated';
 import { GetTasksForTaskListDocument } from '../../List/TaskList.generated';
 import { TaskFilter } from '../../List/List';
 import {
@@ -44,7 +43,6 @@ import {
   useGetTaskModalContactsFilteredQuery,
 } from '../../Drawer/Form/TaskDrawer.generated';
 import theme from '../../../../../src/theme';
-import { useCreateTaskCommentMutation } from '../../Drawer/CommentList/Form/CreateTaskComment.generated';
 import { FormFieldsGridContainer } from './Container/FormFieldsGridContainer';
 import { TasksDocument } from 'pages/accountLists/[accountListId]/tasks/Tasks.generated';
 import { ContactTasksTabDocument } from 'src/components/Contacts/ContactDetails/ContactTasksTab/ContactTasksTab.generated';
@@ -54,6 +52,10 @@ import {
   CancelButton,
   DeleteButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
+import { possibleResults } from './PossibleResults';
+import { possibleNextActions } from './PossibleNextActions';
+import useTaskModal from 'src/hooks/useTaskModal';
+import { GetTaskForTaskModalQuery } from '../TaskModalTask.generated';
 
 const taskSchema: yup.SchemaOf<
   Omit<TaskCreateInput | TaskUpdateInput, 'result' | 'nextAction'>
@@ -64,6 +66,8 @@ const taskSchema: yup.SchemaOf<
   starred: yup.boolean().nullable(),
   startAt: yup.string().nullable(),
   completedAt: yup.string().nullable(),
+  result: yup.mixed<ResultEnum>(),
+  nextAction: yup.mixed<ActivityTypeEnum>(),
   tagList: yup.array().of(yup.string()).default([]),
   contactIds: yup.array().of(yup.string()).default([]),
   userId: yup.string().nullable(),
@@ -74,7 +78,7 @@ const taskSchema: yup.SchemaOf<
 
 interface Props {
   accountListId: string;
-  task?: GetTaskForTaskDrawerQuery['task'];
+  task?: GetTaskForTaskModalQuery['task'];
   onClose: () => void;
   defaultValues?: Partial<TaskCreateInput & TaskUpdateInput>;
   filter?: TaskFilter;
@@ -101,6 +105,8 @@ const TaskModalForm = ({
         subject: defaultValues?.subject || '',
         startAt: DateTime.local().plus({ hours: 1 }).startOf('hour').toISO(),
         completedAt: null,
+        result: defaultValues?.result || null,
+        nextAction: defaultValues?.nextAction || null,
         tagList: defaultValues?.tagList || [],
         contactIds: defaultValues?.contactIds || [],
         userId: defaultValues?.userId || null,
@@ -108,15 +114,14 @@ const TaskModalForm = ({
         notificationType: null,
         notificationTimeUnit: null,
       };
+    console.log(task)
   const { t } = useTranslation();
-  const [commentBody, changeCommentBody] = useState('');
-
+  const { openTaskModal } = useTaskModal();
   const [removeDialogOpen, handleRemoveDialog] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
 
   const [createTask, { loading: creating }] = useCreateTaskMutation();
   const [updateTask, { loading: saving }] = useUpdateTaskMutation();
-  const [createTaskComment] = useCreateTaskCommentMutation();
   const [selectedIds, setSelectedIds] = useState(
     task?.contacts.nodes.map((contact) => contact.id) ||
       defaultValues?.contactIds ||
@@ -167,6 +172,9 @@ const TaskModalForm = ({
         dataFilteredByName?.contacts.nodes ||
         data?.contacts.nodes ||
         [];
+        
+  const availableResults = task ? possibleResults(task) : [];
+  const availableNextActions = task ? possibleNextActions(task):[];
 
   const onSubmit = async (
     attributes: TaskCreateInput | TaskUpdateInput,
@@ -174,7 +182,6 @@ const TaskModalForm = ({
     const isUpdate = (
       attributes: TaskCreateInput | TaskUpdateInput,
     ): attributes is TaskUpdateInput => !!task;
-    const body = commentBody.trim();
     if (isUpdate(attributes)) {
       await updateTask({
         variables: { accountListId, attributes },
@@ -192,19 +199,6 @@ const TaskModalForm = ({
     } else {
       await createTask({
         variables: { accountListId, attributes },
-        update: (_cache, { data }) => {
-          if (data?.createTask?.task.id && body !== '') {
-            const id = uuidv4();
-
-            createTaskComment({
-              variables: {
-                accountListId,
-                taskId: data.createTask.task.id,
-                attributes: { id, body },
-              },
-            });
-          }
-        },
         refetchQueries: [
           {
             query: GetTasksForTaskListDocument,
@@ -229,7 +223,24 @@ const TaskModalForm = ({
       });
     }
     enqueueSnackbar(t('Task saved successfully'), { variant: 'success' });
-    onClose();
+    if (
+      attributes.nextAction &&
+      attributes.nextAction !== ActivityTypeEnum.None &&
+      attributes.nextAction !== task.nextAction
+    ) {
+      openTaskModal({
+        defaultValues: {
+          activityType: attributes.nextAction,
+          // TODO: Use fragments to ensure all required fields are loaded
+          contactIds: task?.contacts.nodes.map((contact) => contact.id),
+          userId: task?.user?.id,
+          tagList: task?.tagList,
+        },
+      });
+    }
+    else {
+      onClose();
+    }
   };
 
   return (
@@ -244,6 +255,8 @@ const TaskModalForm = ({
           subject,
           startAt,
           completedAt,
+          result,
+          nextAction,
           tagList,
           userId,
           contactIds,
@@ -343,61 +356,63 @@ const TaskModalForm = ({
                   <CircularProgress color="primary" size={20} />
                 )}
               </Grid>
-              <Grid item>
-                <FormControl fullWidth>
-                  <Grid container spacing={2}>
-                    <Grid xs={6} item>
-                      <MobileDatePicker
-                        InputProps={{
-                          endAdornment: (
-                            <InputAdornment position="end">
-                              <CalendarToday
-                                style={{
-                                  color: theme.palette.cruGrayMedium.main,
-                                }}
-                              />
-                            </InputAdornment>
-                          ),
-                        }}
-                        renderInput={(params) => (
-                          <TextField fullWidth {...params} />
-                        )}
-                        inputFormat="MMM dd, yyyy"
-                        closeOnSelect
-                        label={t('Due Date')}
-                        value={startAt}
-                        onChange={(date): void =>
-                          setFieldValue('startAt', date)
-                        }
-                      />
+      {!initialTask.completedAt &&
+                      <Grid item>
+                      <FormControl fullWidth>
+                        <Grid container spacing={2}>
+                          <Grid xs={6} item>
+                            <MobileDatePicker
+                              InputProps={{
+                                endAdornment: (
+                                  <InputAdornment position="end">
+                                    <CalendarToday
+                                      style={{
+                                        color: theme.palette.cruGrayMedium.main,
+                                      }}
+                                    />
+                                  </InputAdornment>
+                                ),
+                              }}
+                              renderInput={(params) => (
+                                <TextField fullWidth {...params} />
+                              )}
+                              inputFormat="MMM dd, yyyy"
+                              closeOnSelect
+                              label={t('Due Date')}
+                              value={startAt}
+                              onChange={(date): void =>
+                                setFieldValue('startAt', date)
+                              }
+                            />
+                          </Grid>
+                          <Grid xs={6} item>
+                            <MobileTimePicker
+                              renderInput={(params) => (
+                                <TextField fullWidth {...params} />
+                              )}
+                              closeOnSelect
+                              InputProps={{
+                                endAdornment: (
+                                  <InputAdornment position="end">
+                                    <Schedule
+                                      style={{
+                                        color: theme.palette.cruGrayMedium.main,
+                                      }}
+                                    />
+                                  </InputAdornment>
+                                ),
+                              }}
+                              label={t('Due Time')}
+                              value={startAt}
+                              onChange={(date): void =>
+                                setFieldValue('startAt', date)
+                              }
+                            />
+                          </Grid>
+                        </Grid>
+                      </FormControl>
                     </Grid>
-                    <Grid xs={6} item>
-                      <MobileTimePicker
-                        renderInput={(params) => (
-                          <TextField fullWidth {...params} />
-                        )}
-                        closeOnSelect
-                        InputProps={{
-                          endAdornment: (
-                            <InputAdornment position="end">
-                              <Schedule
-                                style={{
-                                  color: theme.palette.cruGrayMedium.main,
-                                }}
-                              />
-                            </InputAdornment>
-                          ),
-                        }}
-                        label={t('Due Time')}
-                        value={startAt}
-                        onChange={(date): void =>
-                          setFieldValue('startAt', date)
-                        }
-                      />
-                    </Grid>
-                  </Grid>
-                </FormControl>
-              </Grid>
+      }
               {initialTask.completedAt && (
                 <Grid item>
                   <FormControl fullWidth>
@@ -433,31 +448,6 @@ const TaskModalForm = ({
                   </FormControl>
                 </Grid>
               )}
-              <Grid item>
-                <Autocomplete
-                  multiple
-                  freeSolo
-                  renderTags={(value, getTagProps): ReactElement[] =>
-                    value.map((option, index) => (
-                      <Chip
-                        {...getTagProps({ index })}
-                        color="default"
-                        size="small"
-                        key={index}
-                        label={option}
-                      />
-                    ))
-                  }
-                  renderInput={(params): ReactElement => (
-                    <TextField {...params} label={t('Tags')} />
-                  )}
-                  onChange={(_, tagList): void =>
-                    setFieldValue('tagList', tagList)
-                  }
-                  value={tagList ?? undefined}
-                  options={data?.accountList?.taskTagList || []}
-                />
-              </Grid>
               <Grid item>
                 <Autocomplete
                   multiple
@@ -508,7 +498,72 @@ const TaskModalForm = ({
                   }
                 />
               </Grid>
+              {initialTask.completedAt && availableResults.length > 0 && (
+                <Grid item>
+                  <FormControl fullWidth required>
+                    <InputLabel id="result">{t('Result')}</InputLabel>
+                    <Select
+                      label={t('Result')}
+                      labelId="result"
+                      value={result}
+                      onChange={(e) => setFieldValue('result', e.target.value)}
+                    >
+                      {availableResults.map((val) => (
+                        <MenuItem key={val} value={val}>
+                          {t(val)}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </Grid>
+              )}
+              {initialTask.completedAt && availableNextActions.length > 0 && (
+                <Grid item>
+                  <FormControl fullWidth>
+                    <InputLabel id="nextAction">{t('Next Action')}</InputLabel>
+                    <Select
+                      label={t('Next Action')}
+                      labelId="nextAction"
+                      value={nextAction}
+                      onChange={(e) =>
+                        setFieldValue('nextAction', e.target.value)
+                      }
+                    >
+                      {availableNextActions.map((val) => (
+                        <MenuItem key={val} value={val}>
+                          {t(val) /* manually added to translation file */}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </Grid>
+              )}
               <Grid item>
+                <Autocomplete
+                  multiple
+                  freeSolo
+                  renderTags={(value, getTagProps): ReactElement[] =>
+                    value.map((option, index) => (
+                      <Chip
+                        {...getTagProps({ index })}
+                        color="default"
+                        size="small"
+                        key={index}
+                        label={option}
+                      />
+                    ))
+                  }
+                  renderInput={(params): ReactElement => (
+                    <TextField {...params} label={t('Tags')} />
+                  )}
+                  onChange={(_, tagList): void =>
+                    setFieldValue('tagList', tagList)
+                  }
+                  value={tagList ?? undefined}
+                  options={data?.accountList?.taskTagList || []}
+                />
+              </Grid>
+              {!initialTask.completedAt && <Grid item>
                 <Tooltip
                   title={
                     <Typography>
@@ -633,17 +688,7 @@ const TaskModalForm = ({
                     </FormControl>
                   </Grid>
                 </Grid>
-              </Grid>
-              <Grid item>
-                <TextField
-                  label={t('Comment')}
-                  value={commentBody}
-                  onChange={(event) => changeCommentBody(event.target.value)}
-                  fullWidth
-                  multiline
-                  inputProps={{ 'aria-label': 'Comment' }}
-                />
-              </Grid>
+              </Grid>}
             </FormFieldsGridContainer>
           </DialogContent>
           <DialogActions>
