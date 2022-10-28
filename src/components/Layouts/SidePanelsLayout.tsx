@@ -10,20 +10,16 @@ const FullHeightBox = styled(Box)(({ theme }) => ({
   height: `calc(100vh - ${theme.mixins.toolbar.minHeight}px)`,
   ['@media (min-width:0px) and (orientation: landscape)']: {
     height: `calc(100vh - ${
-      (
-        theme.mixins.toolbar[
-          '@media (min-width:0px) and (orientation: landscape)'
-        ] as { minHeight: number }
-      ).minHeight
+      theme.mixins.toolbar[
+        '@media (min-width:0px) and (orientation: landscape)'
+      ] as { minHeight: number }
     }px)`,
   },
   ['@media (min-width:600px)']: {
     height: `calc(100vh - ${
-      (
-        theme.mixins.toolbar['@media (min-width:600px)'] as {
-          minHeight: number;
-        }
-      ).minHeight
+      theme.mixins.toolbar['@media (min-width:600px)'] as {
+        minHeight: number;
+      }
     }px)`,
   },
 }));

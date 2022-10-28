@@ -1,11 +1,11 @@
 import {
   Box,
-  styled,
   Typography,
   Accordion,
   AccordionSummary,
   AccordionDetails,
 } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import LocalOffer from '@mui/icons-material/LocalOffer';
 import { useRouter } from 'next/router';
