@@ -85,6 +85,15 @@ interface InfiniteListProps<T, C> {
   groupBy?: (item: T) => string;
 }
 
+interface Group {
+  value: number;
+  collapse: boolean;
+}
+
+interface GroupCollection {
+  [key: string]: Group;
+}
+
 export const InfiniteList = <T, C>({
   loading,
   data = [],
@@ -95,7 +104,7 @@ export const InfiniteList = <T, C>({
   ...props
 }: Omit<GroupedVirtuosoProps<T, C>, 'groupCounts' | 'itemContent'> &
   InfiniteListProps<T, C>): ReactElement => {
-  const [groups, setGroups] = useState({});
+  const [groups, setGroups] = useState<GroupCollection>({});
 
   useEffect(()=>{
     setGroups(data?.length > 0
@@ -113,7 +122,7 @@ export const InfiniteList = <T, C>({
               },
             };
           }, {})
-        : { '': totalCount }
+        : { '': {value: totalCount, collapse: false} }
       : {})
   },[data])
 
@@ -128,7 +137,7 @@ export const InfiniteList = <T, C>({
 
   return (
     <GroupedVirtuoso
-      groupCounts={Object.values(groups).map((group) => group.value)}
+      groupCounts={Object.values(groups).map((x)  => x.value)}
       {...props}
       itemContent={(index, groupIndex) => {
         return getItemVisibility(groupIndex) ? data[index] && props.itemContent(index, data[index], context) : null
