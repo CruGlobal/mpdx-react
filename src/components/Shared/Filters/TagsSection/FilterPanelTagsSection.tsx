@@ -17,6 +17,7 @@ import {
   TaskFilterSetInput,
 } from '../../../../../graphql/types.generated';
 import { FilterTagChip } from './Chip/FilterTagChip';
+import theme from 'src/theme';
 
 interface FilterPanelTagsSectionProps {
   filterOptions: FilterOption[] | Record<string, never>[];
@@ -37,7 +38,7 @@ const TagsSectionWrapper = styled(Box)(({ theme }) => ({
   },
 }));
 
-const TagsAccordionWrapper = styled(Box)(({ theme }) => ({
+const TagsAccordionWrapper = styled(Box)(() => ({
   '& .MuiPaper-elevation1': {
     boxShadow: 'none',
     borderBottom: `1px solid ${theme.palette.cruGrayLight.main}`,
@@ -72,7 +73,7 @@ export const FilterPanelTagsSection: React.FC<FilterPanelTagsSectionProps> = ({
                 {t(
                   'Click a tag twice to look up all {{page}} do not have that tag.',
                   {
-                    page: pathname.includes('contacts')
+                    page: pathname?.includes('contacts')
                       ? 'contacts who'
                       : 'tasks that',
                   },

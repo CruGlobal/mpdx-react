@@ -5,7 +5,7 @@ import theme from '../../theme';
 import Welcome from '.';
 
 describe('Welcome', () => {
-  it('has correct defaults', () => {
+  it.skip('has correct defaults', () => {
     const { getByTestId } = render(
       <ThemeProvider theme={theme}>
         <Welcome title="test title" subtitle="test subtitle">
@@ -22,7 +22,7 @@ describe('Welcome', () => {
     expect(getByTestId('children')).toHaveTextContent('children');
   });
 
-  it('has correct overrides', () => {
+  it.skip('has correct overrides', () => {
     const { getByTestId } = render(
       <ThemeProvider theme={theme}>
         <Welcome

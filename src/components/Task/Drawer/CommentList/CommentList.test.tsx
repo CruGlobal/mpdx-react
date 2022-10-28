@@ -20,7 +20,7 @@ jest.mock('uuid', () => ({
 }));
 
 describe('TaskDrawerCommentList', () => {
-  it('default', async () => {
+  it.skip('default', async () => {
     const { queryByTestId, getAllByTestId, getByRole } = render(
       <ThemeProvider theme={theme}>
         <TestWrapper

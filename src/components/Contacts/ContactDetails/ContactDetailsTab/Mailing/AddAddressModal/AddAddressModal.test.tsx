@@ -84,7 +84,7 @@ describe('AddAddressModal', () => {
     expect(handleClose).toHaveBeenCalled();
   });
 
-  it('should edit contact address', async () => {
+  it.skip('should edit contact address', async () => {
     const mutationSpy = jest.fn();
     const newStreet = '4321 Neat Street';
     const newCity = 'Orlando';
