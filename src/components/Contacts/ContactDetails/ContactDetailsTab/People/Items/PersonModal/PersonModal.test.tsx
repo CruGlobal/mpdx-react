@@ -41,7 +41,7 @@ const mock = gqlMock<ContactPeopleFragment>(ContactPeopleFragmentDoc, {
               },
               {
                 email: 'secondemail@test.com',
-                location: 'Mobile',
+                location: 'Personal',
                 primary: false,
                 source: 'MPDX',
               },
@@ -350,7 +350,7 @@ describe('PersonModal', () => {
     it('should handle editing person phone number section', async () => {
       const mutationSpy = jest.fn();
       const newPersonPhoneNumber = '888-888-8888';
-      const { getByText, getByLabelText, getAllByLabelText } = render(
+      const { getByText, getAllByLabelText } = render(
         <SnackbarProvider>
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
@@ -375,7 +375,7 @@ describe('PersonModal', () => {
         newPersonPhoneNumber,
       );
       userEvent.click(getAllByLabelText('Phone Number Type')[0]);
-      userEvent.click(getByLabelText('Work'));
+      userEvent.click(getAllByLabelText('Work')[0]);
       userEvent.click(getAllByLabelText('Primary')[1]);
       userEvent.click(getByText('Save'));
 
@@ -399,7 +399,7 @@ describe('PersonModal', () => {
       expect(operation.variables.attributes.phoneNumbers[1].primary).toEqual(
         true,
       );
-      expect(operation.variables.attributes.phoneNumbers[0].location).toEqual(
+      expect(operation.variables.attributes.phoneNumbers[1].location).toEqual(
         'Work',
       );
     });
@@ -500,7 +500,7 @@ describe('PersonModal', () => {
         newPersonEmailAddress,
       );
       userEvent.click(getAllByLabelText('Email Address Type')[0]);
-      userEvent.click(getByLabelText('Mobile'));
+      userEvent.click(getAllByLabelText('Personal')[0]);
       userEvent.click(getAllByLabelText('Primary')[1]);
       userEvent.click(getByLabelText('Opt-out of Email Newsletter'));
 
@@ -520,8 +520,8 @@ describe('PersonModal', () => {
       expect(operation.variables.attributes.emailAddresses[0].email).toEqual(
         newPersonEmailAddress,
       );
-      expect(operation.variables.attributes.emailAddresses[0].location).toEqual(
-        'Mobile',
+      expect(operation.variables.attributes.emailAddresses[1].location).toEqual(
+        'Personal',
       );
       expect(operation.variables.attributes.emailAddresses[0].primary).toEqual(
         true,
