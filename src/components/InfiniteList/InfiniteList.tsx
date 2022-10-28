@@ -27,6 +27,9 @@ const ItemWithBorders = styled(ListItem)(
   ({ disableHover = false }: { disableHover?: boolean }) => ({
     padding: `${padding}px`,
     borderBottom: `1px solid ${theme.palette.grey[200]}`,
+    '&:empty': {
+      borderBottom: 'none',
+    },
     '&:last-child': {
       borderBottom: 'none',
     },
