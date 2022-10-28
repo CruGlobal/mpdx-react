@@ -135,9 +135,11 @@ export const InfiniteList = <T, C>({
     return !groups[key].collapse;
   }
 
+  //TODO: Fix bug where if second groups id open and first group is closed, the first group cannot be updated sometimes
+
   return (
     <GroupedVirtuoso
-      groupCounts={Object.values(groups).map((x)  => x.value)}
+      groupCounts={Object.values(groups).map((group)  => group.value)}
       {...props}
       itemContent={(index, groupIndex) => {
         return getItemVisibility(groupIndex) ? data[index] && props.itemContent(index, data[index], context) : null
