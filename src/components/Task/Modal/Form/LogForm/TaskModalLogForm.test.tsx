@@ -143,7 +143,7 @@ describe('TaskModalLogForm', () => {
     );
     expect(
       getAllByRole('textbox').find(
-        (item) => (item as HTMLInputElement).value === 'Jan 5, 2016',
+        (item) => (item as HTMLInputElement).value === 'Jan 05, 2016',
       ),
     ).toBeInTheDocument();
     userEvent.click(getByLabelText('Action'));
@@ -207,7 +207,7 @@ describe('TaskModalLogForm', () => {
     );
     userEvent.click(tagsElement);
 
-    const assigneeElement = getByRole('textbox', {
+    const assigneeElement = getByRole('combobox', {
       hidden: true,
       name: 'Assignee',
     });
@@ -217,7 +217,7 @@ describe('TaskModalLogForm', () => {
       expect(getByText('Robert Anderson')).toBeInTheDocument(),
     );
 
-    const contactsElement = getByRole('textbox', {
+    const contactsElement = getByRole('combobox', {
       hidden: true,
       name: 'Contacts',
     });
