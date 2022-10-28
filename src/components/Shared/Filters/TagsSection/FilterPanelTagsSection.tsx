@@ -5,8 +5,9 @@ import {
   Accordion,
   AccordionSummary,
   AccordionDetails,
-} from '@material-ui/core';
-import { ExpandMore, LocalOffer } from '@material-ui/icons';
+} from '@mui/material';
+import ExpandMore from '@mui/icons-material/ExpandMore';
+import LocalOffer from '@mui/icons-material/LocalOffer';
 import { useRouter } from 'next/router';
 import React from 'react';
 import { useTranslation } from 'react-i18next';

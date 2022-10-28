@@ -1,9 +1,11 @@
-import { Chip, styled, Theme } from '@material-ui/core';
+import { Chip } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import React from 'react';
 import {
   ContactFilterSetInput,
   TaskFilterSetInput,
 } from '../../../../../../graphql/types.generated';
+import theme from 'src/theme';
 
 interface FilterTagChipProps {
   name: string;
@@ -15,13 +17,7 @@ interface FilterTagChipProps {
 }
 
 const TagChip = styled(Chip)(
-  ({
-    theme,
-    selectType,
-  }: {
-    theme: Theme;
-    selectType: 'none' | 'include' | 'exclude';
-  }) => ({
+  ({ selectType }: { selectType: 'none' | 'include' | 'exclude' }) => ({
     color: theme.palette.common.white,
     backgroundColor:
       selectType === 'include'
