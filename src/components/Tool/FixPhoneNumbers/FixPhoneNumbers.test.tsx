@@ -165,7 +165,7 @@ describe.skip('FixPhoneNumbers-Home', () => {
     const delete02 = await waitFor(() => getByTestId('delete-testid-2'));
     userEvent.click(delete02);
 
-    const deleteButton = getByTestId('phoneNumberDeleteButton');
+    const deleteButton = getByTestId('modal-delete-button');
     userEvent.click(deleteButton);
 
     expect(queryByTestId('textfield-testid-2')).not.toBeInTheDocument();
@@ -200,7 +200,7 @@ describe.skip('FixPhoneNumbers-Home', () => {
     const delete11 = getByTestId('delete-testid2-1');
     userEvent.click(delete11);
 
-    const deleteButton = getByTestId('phoneNumberDeleteButton');
+    const deleteButton = getByTestId('modal-delete-button');
     userEvent.click(deleteButton);
 
     expect(queryByTestId('starIcon-testid2-1')).not.toBeInTheDocument();
