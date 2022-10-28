@@ -114,7 +114,7 @@ const TaskModalCompleteForm = ({
         },
       ],
     });
-
+    onClose();
     enqueueSnackbar(t('Task saved successfully'), { variant: 'success' });
     if (
       attributes.nextAction &&
@@ -129,8 +129,6 @@ const TaskModalCompleteForm = ({
           tagList: task.tagList,
         },
       });
-    } else {
-      onClose();
     }
   };
 
