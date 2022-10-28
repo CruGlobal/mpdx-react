@@ -114,7 +114,7 @@ const TaskModalForm = ({
         notificationType: null,
         notificationTimeUnit: null,
       };
-    console.log(task)
+
   const { t } = useTranslation();
   const { openTaskModal } = useTaskModal();
   const [removeDialogOpen, handleRemoveDialog] = useState(false);
@@ -213,9 +213,8 @@ const TaskModalForm = ({
             variables: {
               accountListId,
               tasksFilter: {
-                contactIds: [
-                  defaultValues?.contactIds ? defaultValues.contactIds[0] : '',
-                ],
+                contactIds: defaultValues?.contactIds && defaultValues?.contactIds[0] ? [
+                  defaultValues.contactIds[0]] : [],
               },
             },
           },
@@ -223,23 +222,20 @@ const TaskModalForm = ({
       });
     }
     enqueueSnackbar(t('Task saved successfully'), { variant: 'success' });
+    onClose();
     if (
       attributes.nextAction &&
       attributes.nextAction !== ActivityTypeEnum.None &&
-      attributes.nextAction !== task.nextAction
+      attributes.nextAction !== task?.nextAction
     ) {
       openTaskModal({
         defaultValues: {
           activityType: attributes.nextAction,
-          // TODO: Use fragments to ensure all required fields are loaded
           contactIds: task?.contacts.nodes.map((contact) => contact.id),
           userId: task?.user?.id,
           tagList: task?.tagList,
         },
       });
-    }
-    else {
-      onClose();
     }
   };
 
