@@ -76,9 +76,9 @@ const testData: ErgonoMockShape[] = [
   },
 ];
 
-describe.skip('FixPhoneNumbers-Home', () => {
+describe('FixPhoneNumbers-Home', () => {
   it('default with test data', async () => {
-    const { getByText, getByTestId, queryByTestId } = render(
+    const { getByText, queryByTestId } = render(
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
           <TestWrapper>
@@ -107,8 +107,6 @@ describe.skip('FixPhoneNumbers-Home', () => {
     expect(getByText('Confirm 2 as MPDX')).toBeInTheDocument();
     expect(getByText('Test Contact')).toBeInTheDocument();
     expect(getByText('Simba Lion')).toBeInTheDocument();
-    expect(getByTestId('textfield-testid-0')).toBeInTheDocument();
-    expect(getByTestId('starIcon-testid-0')).toBeInTheDocument();
     expect(queryByTestId('no-data')).not.toBeInTheDocument();
   });
 
