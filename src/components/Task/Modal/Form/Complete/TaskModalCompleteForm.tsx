@@ -42,6 +42,7 @@ import {
   CancelButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import { GetTaskForTaskModalQuery } from '../../TaskModalTask.generated';
+import { getLocalizedTaskType } from 'src/utils/functions/getLocalizedTaskType';
 
 const taskSchema: yup.SchemaOf<
   Pick<
@@ -153,7 +154,7 @@ const TaskModalCompleteForm = ({
             <FormFieldsGridContainer>
               <Grid item>
                 <Typography style={{ fontWeight: 600 }} display="inline">
-                  {task?.activityType}
+                  {getLocalizedTaskType(t, task?.activityType)}
                 </Typography>{' '}
                 <Typography display="inline">{task?.subject}</Typography>{' '}
                 {task?.contacts.nodes.map((contact, index) => (
