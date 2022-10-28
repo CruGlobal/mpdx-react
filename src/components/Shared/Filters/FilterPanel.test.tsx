@@ -182,7 +182,7 @@ describe('FilterPanel', () => {
         }),
       );
 
-      const statusSelect = getByRole('textbox', {
+      const statusSelect = getByRole('combobox', {
         hidden: true,
         name: 'Status',
       });
@@ -236,10 +236,12 @@ describe('FilterPanel', () => {
 
       expect(getAllByTestId('FilterGroup').length).toEqual(2);
       userEvent.click(getByText('Group 1 (1)'));
-      expect(getByText(filterPanelDefaultMock.filters[0].title)).toBeVisible();
+      expect(
+        getAllByText(filterPanelDefaultMock.filters[0].title)
+      ).toHaveLength(2);
       expect(
         getAllByText(filterPanelDefaultMock.filters[1].title),
-      ).toHaveLength(2);
+      ).toHaveLength(3);
       expect(getByTestId('multiSelectFilter')).toBeInTheDocument();
       expect(getByText('Group 1 (1)')).toBeVisible();
     });
@@ -495,7 +497,7 @@ describe('FilterPanel', () => {
         }),
       );
 
-      const statusSelect = getByRole('textbox', {
+      const statusSelect = getByRole('combobox', {
         hidden: true,
         name: 'Status',
       });

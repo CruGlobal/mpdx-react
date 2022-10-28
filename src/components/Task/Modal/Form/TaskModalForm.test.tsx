@@ -78,7 +78,7 @@ describe('TaskModalForm', () => {
     expect(await queryByText('Delete')).not.toBeInTheDocument();
     userEvent.type(getByLabelText('Subject'), accountListId);
     await new Promise((resolve) => setTimeout(resolve, 1000));
-    const contactsElement = getByRole('textbox', {
+    const contactsElement = getByRole('combobox', {
       hidden: true,
       name: 'Contacts',
     });
@@ -114,7 +114,7 @@ describe('TaskModalForm', () => {
     );
     expect(
       getAllByRole('textbox').find(
-        (item) => (item as HTMLInputElement).value === 'Jan 5, 2016',
+        (item) => (item as HTMLInputElement).value === 'Jan 05, 2016',
       ),
     ).toBeInTheDocument();
     userEvent.click(getByLabelText('Action'));
@@ -178,7 +178,7 @@ describe('TaskModalForm', () => {
     );
     userEvent.click(tagsElement);
 
-    const assigneeElement = getByRole('textbox', {
+    const assigneeElement = getByRole('combobox', {
       hidden: true,
       name: 'Assignee',
     });
@@ -191,7 +191,7 @@ describe('TaskModalForm', () => {
       await within(getByRole('presentation')).findByText('Robert Anderson'),
     );
 
-    const contactsElement = getByRole('textbox', {
+    const contactsElement = getByRole('combobox', {
       hidden: true,
       name: 'Contacts',
     });
