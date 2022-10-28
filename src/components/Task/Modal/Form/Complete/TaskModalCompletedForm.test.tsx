@@ -68,12 +68,7 @@ describe('TaskModalCompleteForm', () => {
         />
       </TestWrapper>,
     );
-    const dateString = dateFormat(DateTime.local());
-    expect(
-      getAllByRole('textbox').find(
-        (item) => (item as HTMLInputElement).value === dateString,
-      ),
-    ).toBeInTheDocument();
+    expect(getAllByRole('textbox').find((item) => item.id === ':r0:')).toHaveValue('Jan 01, 2020');
   });
 
   it('saves simple', async () => {
