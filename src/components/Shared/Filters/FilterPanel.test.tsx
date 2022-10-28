@@ -237,7 +237,7 @@ describe('FilterPanel', () => {
       expect(getAllByTestId('FilterGroup').length).toEqual(2);
       userEvent.click(getByText('Group 1 (1)'));
       expect(
-        getAllByText(filterPanelDefaultMock.filters[0].title)
+        getAllByText(filterPanelDefaultMock.filters[0].title),
       ).toHaveLength(2);
       expect(
         getAllByText(filterPanelDefaultMock.filters[1].title),
