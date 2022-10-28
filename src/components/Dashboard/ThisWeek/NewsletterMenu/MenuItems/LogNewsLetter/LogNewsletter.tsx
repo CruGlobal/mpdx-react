@@ -246,7 +246,6 @@ const LogNewsletter = ({
                         }
                         inputFormat="MM/dd/yyyy"
                         closeOnSelect
-                        data-testid="completedDate"
                         label={t('Completed Date')}
                         InputProps={{
                           startAdornment: (
@@ -269,7 +268,6 @@ const LogNewsletter = ({
                           setFieldValue('completedAt', date)
                         }
                         closeOnSelect
-                        data-testid="completedTime"
                         label={t('Completed Time')}
                         InputProps={{
                           startAdornment: (
