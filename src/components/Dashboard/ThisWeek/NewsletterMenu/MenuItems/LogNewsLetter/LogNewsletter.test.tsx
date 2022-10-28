@@ -114,7 +114,7 @@ describe('LogNewsletter', () => {
     });
 
     it.skip('Logs Newsletter with completedAt date', async () => {
-      const { getByLabelText, getByText, findByText, getByTestId } = render(
+      const { getByLabelText, getByText, findByText } = render(
         <ThemeProvider theme={theme}>
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <SnackbarProvider>
