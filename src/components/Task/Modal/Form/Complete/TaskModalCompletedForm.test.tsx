@@ -4,7 +4,6 @@ import userEvent from '@testing-library/user-event';
 import { DateTime } from 'luxon';
 import { getDataForTaskModalMock } from '../TaskModalForm.mock';
 import TestWrapper from '../../../../../../__tests__/util/TestWrapper';
-import { dateFormat } from '../../../../../lib/intlFormat/intlFormat';
 import {
   ActivityTypeEnum,
   NotificationTimeUnitEnum,
