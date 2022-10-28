@@ -28,7 +28,6 @@ import {
   ResultEnum,
   TaskUpdateInput,
 } from '../../../../../../graphql/types.generated';
-import { GetTaskForTaskDrawerQuery } from '../../../Drawer/TaskDrawerTask.generated';
 import { GetThisWeekDocument } from '../../../../Dashboard/ThisWeek/GetThisWeek.generated';
 import { useGetDataForTaskDrawerQuery } from '../../../Drawer/Form/TaskDrawer.generated';
 import theme from '../../../../../../src/theme';
@@ -42,6 +41,7 @@ import {
   SubmitButton,
   CancelButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
+import { GetTaskForTaskModalQuery } from '../../TaskModalTask.generated';
 
 const taskSchema: yup.SchemaOf<
   Pick<
@@ -58,7 +58,7 @@ const taskSchema: yup.SchemaOf<
 
 interface Props {
   accountListId: string;
-  task: GetTaskForTaskDrawerQuery['task'];
+  task: GetTaskForTaskModalQuery['task'];
   onClose: () => void;
 }
 
@@ -116,7 +116,6 @@ const TaskModalCompleteForm = ({
     });
 
     enqueueSnackbar(t('Task saved successfully'), { variant: 'success' });
-    onClose();
     if (
       attributes.nextAction &&
       attributes.nextAction !== ActivityTypeEnum.None
@@ -130,6 +129,8 @@ const TaskModalCompleteForm = ({
           tagList: task.tagList,
         },
       });
+    } else {
+      onClose();
     }
   };
 
