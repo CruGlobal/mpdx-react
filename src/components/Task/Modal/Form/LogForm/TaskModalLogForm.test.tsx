@@ -7,7 +7,6 @@ import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import userEvent from '@testing-library/user-event';
 import { InMemoryCache } from '@apollo/client';
 import { MockedProvider } from '@apollo/client/testing';
-import { ActivityTypeEnum } from '../../../../../../graphql/types.generated';
 import { GetTasksForTaskListDocument } from '../../../List/TaskList.generated';
 import useTaskModal from '../../../../../hooks/useTaskModal';
 import TaskModalLogForm from './TaskModalLogForm';
@@ -150,7 +149,7 @@ describe('TaskModalLogForm', () => {
     userEvent.click(getByLabelText('Action'));
     userEvent.click(
       within(getByRole('listbox', { hidden: true, name: 'Action' })).getByText(
-        ActivityTypeEnum.NewsletterEmail,
+        'Newsletter - Email',
       ),
     );
 
@@ -313,7 +312,7 @@ describe('TaskModalLogForm', () => {
     userEvent.click(
       within(
         getByRole('listbox', { hidden: true, name: 'Next Action' }),
-      ).getByText(ActivityTypeEnum.Call),
+      ).getByText('Call'),
     );
     userEvent.click(getByText('Save'));
     expect(await findByText('Field is required')).toBeInTheDocument();

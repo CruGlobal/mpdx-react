@@ -54,6 +54,7 @@ import {
   CancelButton,
   DeleteButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
+import { getLocalizedTaskType } from 'src/utils/functions/getLocalizedTaskType';
 
 const taskSchema: yup.SchemaOf<
   Omit<TaskCreateInput | TaskUpdateInput, 'result' | 'nextAction'>
@@ -289,11 +290,13 @@ const TaskModalForm = ({
                     label={t('Action')}
                   >
                     <MenuItem value={undefined}>{t('None')}</MenuItem>
-                    {Object.values(ActivityTypeEnum).map((val) => (
-                      <MenuItem key={val} value={val}>
-                        {t(val) /* manually added to translation file */}
-                      </MenuItem>
-                    ))}
+                    {Object.values(ActivityTypeEnum)
+                      .filter((val) => val !== 'NONE')
+                      .map((val) => (
+                        <MenuItem key={val} value={val}>
+                          {getLocalizedTaskType(t, val)}
+                        </MenuItem>
+                      ))}
                   </Select>
                 </FormControl>
               </Grid>
