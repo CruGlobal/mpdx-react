@@ -26,10 +26,10 @@ jobs:
         run: yarn install --immutable --immutable-cache
       - id: set-test-chunks
         name: Set Chunks
-        run: echo "::set-output name=test-chunks::$(yarn test --silent --listTests --json | jq -cM '[_nwise(length / 4 | ceil)]')"
+        run: echo "test-chunks=$(yarn test --silent --listTests --json | jq -cM '[_nwise(length / 4 | ceil)]')" >> $GITHUB_OUTPUT
       - id: set-test-chunk-ids
         name: Set Chunk IDs
-        run: echo "::set-output name=test-chunk-ids::$(echo $CHUNKS | jq -cM 'to_entries | map(.key)')"
+        run: echo "test-chunk-ids=$(echo $CHUNKS | jq -cM 'to_entries | map(.key)')" >> $GITHUB_OUTPUT
         env:
           CHUNKS: ${{ steps['set-test-chunks'].outputs['test-chunks'] }}
 
