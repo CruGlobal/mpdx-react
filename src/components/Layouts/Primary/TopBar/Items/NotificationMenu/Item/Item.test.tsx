@@ -107,7 +107,7 @@ describe.skip('NotificationMenuItem', () => {
       </TestWrapper>,
     );
     expect(getByRole('button').textContent).toEqual(
-      'SSmith, RogerMay 26, 2020 — No call logged in the past year',
+      'SSmith, RogerMay 25, 2020 — No call logged in the past year',
     );
   });
 
@@ -120,7 +120,7 @@ describe.skip('NotificationMenuItem', () => {
       </TestWrapper>,
     );
     expect(getByRole('button').textContent).toEqual(
-      'SSmith, RogerMay 26, 2020 — Gave a larger gift than their commitment amount',
+      'SSmith, RogerMay 25, 2020 — Gave a larger gift than their commitment amount',
     );
   });
 
@@ -133,7 +133,7 @@ describe.skip('NotificationMenuItem', () => {
       </TestWrapper>,
     );
     expect(getByRole('button').textContent).toEqual(
-      'SSmith, RogerMay 26, 2020 — Gave a gift of A$10,000 which is greater than their commitment amount',
+      'SSmith, RogerMay 25, 2020 — Gave a gift of A$10,000 which is greater than their commitment amount',
     );
   });
 
@@ -146,7 +146,7 @@ describe.skip('NotificationMenuItem', () => {
       </TestWrapper>,
     );
     expect(getByRole('button').textContent).toEqual(
-      'SSmith, RogerMay 26, 2020 — Gave a gift where commitment frequency is set to semi-annual or greater',
+      'SSmith, RogerMay 25, 2020 — Gave a gift where commitment frequency is set to semi-annual or greater',
     );
   });
 
@@ -159,7 +159,7 @@ describe.skip('NotificationMenuItem', () => {
       </TestWrapper>,
     );
     expect(getByRole('button').textContent).toEqual(
-      'SSmith, RogerMay 26, 2020 — Gave a gift of A$10,000 where commitment frequency is set to semi-annual or greater',
+      'SSmith, RogerMay 25, 2020 — Gave a gift of A$10,000 where commitment frequency is set to semi-annual or greater',
     );
   });
 
@@ -174,7 +174,7 @@ describe.skip('NotificationMenuItem', () => {
       </TestWrapper>,
     );
     expect(getByRole('button').textContent).toEqual(
-      'SSmith, RogerMay 26, 2020 — On your physical newsletter list but has no mailing address',
+      'SSmith, RogerMay 25, 2020 — On your physical newsletter list but has no mailing address',
     );
   });
 
@@ -189,7 +189,7 @@ describe.skip('NotificationMenuItem', () => {
       </TestWrapper>,
     );
     expect(getByRole('button').textContent).toEqual(
-      'SSmith, RogerMay 26, 2020 — On your email newsletter list but has no people with a valid email address',
+      'SSmith, RogerMay 25, 2020 — On your email newsletter list but has no people with a valid email address',
     );
   });
 
@@ -204,7 +204,7 @@ describe.skip('NotificationMenuItem', () => {
       </TestWrapper>,
     );
     expect(getByRole('button').textContent).toEqual(
-      'SSmith, RogerMay 26, 2020 — Added through your Give Site subscription form',
+      'SSmith, RogerMay 25, 2020 — Added through your Give Site subscription form',
     );
   });
 
@@ -219,7 +219,7 @@ describe.skip('NotificationMenuItem', () => {
       </TestWrapper>,
     );
     expect(getByRole('button').textContent).toEqual(
-      'SSmith, RogerMay 26, 2020 — Added and merged',
+      'SSmith, RogerMay 25, 2020 — Added and merged',
     );
   });
 
@@ -234,7 +234,7 @@ describe.skip('NotificationMenuItem', () => {
       </TestWrapper>,
     );
     expect(getByRole('button').textContent).toEqual(
-      'SSmith, RogerMay 26, 2020 — Added but not merged',
+      'SSmith, RogerMay 25, 2020 — Added but not merged',
     );
   });
 
@@ -249,7 +249,7 @@ describe.skip('NotificationMenuItem', () => {
       </TestWrapper>,
     );
     expect(getByRole('button').textContent).toEqual(
-      'SSmith, RogerMay 26, 2020 — Added with no duplicate found',
+      'SSmith, RogerMay 25, 2020 — Added with no duplicate found',
     );
   });
 
@@ -262,7 +262,7 @@ describe.skip('NotificationMenuItem', () => {
       </TestWrapper>,
     );
     expect(getByRole('button').textContent).toEqual(
-      'SSmith, RogerMay 26, 2020 — Recontinued giving',
+      'SSmith, RogerMay 25, 2020 — Recontinued giving',
     );
   });
 
@@ -277,7 +277,7 @@ describe.skip('NotificationMenuItem', () => {
       </TestWrapper>,
     );
     expect(getByRole('button').textContent).toEqual(
-      'SSmith, RogerMay 26, 2020 — Semi-annual or greater gift is expected one month from now',
+      'SSmith, RogerMay 25, 2020 — Semi-annual or greater gift is expected one month from now',
     );
   });
 
@@ -290,7 +290,7 @@ describe.skip('NotificationMenuItem', () => {
       </TestWrapper>,
     );
     expect(getByRole('button').textContent).toEqual(
-      'SSmith, RogerMay 26, 2020 — Gave a smaller gift than their commitment amount',
+      'SSmith, RogerMay 25, 2020 — Gave a smaller gift than their commitment amount',
     );
   });
 
@@ -303,7 +303,7 @@ describe.skip('NotificationMenuItem', () => {
       </TestWrapper>,
     );
     expect(getByRole('button').textContent).toEqual(
-      'SSmith, RogerMay 26, 2020 — Gave a gift of A$10,000 which is less than their commitment amount',
+      'SSmith, RogerMay 25, 2020 — Gave a gift of A$10,000 which is less than their commitment amount',
     );
   });
 
@@ -316,7 +316,7 @@ describe.skip('NotificationMenuItem', () => {
       </TestWrapper>,
     );
     expect(getByRole('button').textContent).toEqual(
-      'SSmith, RogerMay 26, 2020 — Gave a special gift',
+      'SSmith, RogerMay 25, 2020 — Gave a special gift',
     );
   });
 
@@ -329,7 +329,7 @@ describe.skip('NotificationMenuItem', () => {
       </TestWrapper>,
     );
     expect(getByRole('button').textContent).toEqual(
-      'SSmith, RogerMay 26, 2020 — Gave a special gift of A$10,000',
+      'SSmith, RogerMay 25, 2020 — Gave a special gift of A$10,000',
     );
   });
 
@@ -342,7 +342,7 @@ describe.skip('NotificationMenuItem', () => {
       </TestWrapper>,
     );
     expect(getByRole('button').textContent).toEqual(
-      'SSmith, RogerMay 26, 2020 — Started giving',
+      'SSmith, RogerMay 25, 2020 — Started giving',
     );
   });
 
@@ -355,7 +355,7 @@ describe.skip('NotificationMenuItem', () => {
       </TestWrapper>,
     );
     expect(getByRole('button').textContent).toEqual(
-      'SSmith, RogerMay 26, 2020 — Missed a gift',
+      'SSmith, RogerMay 25, 2020 — Missed a gift',
     );
   });
 
@@ -370,7 +370,7 @@ describe.skip('NotificationMenuItem', () => {
       </TestWrapper>,
     );
     expect(getByRole('button').textContent).toEqual(
-      'SSmith, RogerMay 26, 2020 — No thank you note logged in the past year',
+      'SSmith, RogerMay 25, 2020 — No thank you note logged in the past year',
     );
   });
 
@@ -385,7 +385,7 @@ describe.skip('NotificationMenuItem', () => {
       </TestWrapper>,
     );
     expect(getByRole('button').textContent).toEqual(
-      'SSmith, RogerMay 26, 2020 — Upcoming anniversary',
+      'SSmith, RogerMay 25, 2020 — Upcoming anniversary',
     );
   });
 
@@ -398,7 +398,7 @@ describe.skip('NotificationMenuItem', () => {
       </TestWrapper>,
     );
     expect(getByRole('button').textContent).toEqual(
-      'SSmith, RogerMay 26, 2020 — Upcoming birthday',
+      'SSmith, RogerMay 25, 2020 — Upcoming birthday',
     );
   });
 
@@ -413,7 +413,7 @@ describe.skip('NotificationMenuItem', () => {
       </TestWrapper>,
     );
     expect(getByRole('button').textContent).toEqual(
-      'SSmith, RogerMay 26, 2020 — Custom notification description',
+      'SSmith, RogerMay 25, 2020 — Custom notification description',
     );
   });
 
