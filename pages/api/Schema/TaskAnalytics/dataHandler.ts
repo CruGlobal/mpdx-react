@@ -28,7 +28,8 @@ const getTaskAnalytics = (data: {
   return {
     ...data,
     createdAt: created_at,
-    lastElectronicNewsletterCompletedAt: last_electronic_newsletter_completed_at,
+    lastElectronicNewsletterCompletedAt:
+      last_electronic_newsletter_completed_at,
     lastPhysicalNewsletterCompletedAt: last_physical_newsletter_completed_at,
     tasksOverdueOrDueTodayCounts: tasks_overdue_or_due_today_counts,
     totalTasksDueCount: total_tasks_due_count,

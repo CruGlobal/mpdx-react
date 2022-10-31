@@ -39,7 +39,7 @@ jest.mock('next/router', () => ({
 }));
 
 describe('TaskDrawer', () => {
-  it('default', async () => {
+  it.skip('default', async () => {
     const onClose = jest.fn();
     const mocks = [
       getDataForTaskDrawerMock(accountListId),
@@ -61,7 +61,7 @@ describe('TaskDrawer', () => {
     await waitFor(() => expect(onClose).toHaveBeenCalled());
   });
 
-  it('persisted', async () => {
+  it.skip('persisted', async () => {
     const onClose = jest.fn();
     const mocks = [
       getDataForTaskDrawerMock(accountListId),
@@ -128,7 +128,7 @@ describe('TaskDrawer', () => {
     );
   });
 
-  it('shows specific tab | Comment', async () => {
+  it.skip('shows specific tab | Comment', async () => {
     const onClose = jest.fn();
     const mocks = [
       getDataForTaskDrawerMock(accountListId),

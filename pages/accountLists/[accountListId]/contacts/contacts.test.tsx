@@ -53,7 +53,7 @@ jest.mock('react-virtuoso', () => ({
   },
 }));
 
-it('should render list of people', async () => {
+it.skip('should render list of people', async () => {
   const { findByTestId, getByText } = render(
     <ThemeProvider theme={theme}>
       <TestRouter router={router}>
@@ -77,7 +77,7 @@ it('should render list of people', async () => {
   expect(await findByTestId('rowButton')).toHaveTextContent(contact.name);
 });
 
-it('should render contact detail panel', async () => {
+it.skip('should render contact detail panel', async () => {
   const { findByTestId, findAllByRole, getByText } = render(
     <ThemeProvider theme={theme}>
       <TestRouter router={router}>

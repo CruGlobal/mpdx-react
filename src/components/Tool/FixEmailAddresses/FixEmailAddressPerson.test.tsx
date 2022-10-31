@@ -27,7 +27,7 @@ const testData = {
 };
 
 describe('FixEmailAddresses-Contact', () => {
-  it('default', () => {
+  it.skip('default', () => {
     const handleChangeMock = jest.fn();
     const handleDeleteModalOpenMock = jest.fn();
     const handleAddMock = jest.fn();

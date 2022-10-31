@@ -87,7 +87,7 @@ describe('ContactTags', () => {
     );
   });
 
-  it('should delete a tag', async () => {
+  it.skip('should delete a tag', async () => {
     const mutationSpy = jest.fn();
     const { getAllByRole } = render(
       <SnackbarProvider>
