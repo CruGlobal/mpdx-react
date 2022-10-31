@@ -8,6 +8,7 @@ frontend:
         - echo $secrets
         - echo "NEXTAUTH_URL=$NEXTAUTH_URL" >> .env
         - echo "NODE_ENV=$NODE_ENV" >> .env
+        - echo "SITE_URL=$SITE_URL" >> .env
         - yarn set version 3.2.3
         - yarn config set nodeLinker node-modules
         - yarn -v
