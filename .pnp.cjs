@@ -440,7 +440,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ]],\
       ["@apollo/protobufjs", [\
         ["npm:1.2.4", {\
-          "packageLocation": "./.yarn/unplugged/@apollo-protobufjs-npm-1.2.4-8c1501a712/node_modules/@apollo/protobufjs/",\
+          "packageLocation": "./.yarn/cache/@apollo-protobufjs-npm-1.2.4-8c1501a712-261d48dbeb.zip/node_modules/@apollo/protobufjs/",\
           "packageDependencies": [\
             ["@apollo/protobufjs", "npm:1.2.4"],\
             ["@protobufjs/aspromise", "npm:1.1.2"],\
@@ -18223,14 +18223,14 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ]],\
       ["core-js", [\
         ["npm:3.24.1", {\
-          "packageLocation": "./.yarn/unplugged/core-js-npm-3.24.1-01484c0f43/node_modules/core-js/",\
+          "packageLocation": "./.yarn/cache/core-js-npm-3.24.1-01484c0f43-6fb5bf0fd9.zip/node_modules/core-js/",\
           "packageDependencies": [\
             ["core-js", "npm:3.24.1"]\
           ],\
           "linkType": "HARD"\
         }],\
         ["npm:3.25.2", {\
-          "packageLocation": "./.yarn/unplugged/core-js-npm-3.25.2-923ea16673/node_modules/core-js/",\
+          "packageLocation": "./.yarn/cache/core-js-npm-3.25.2-923ea16673-e93c6c645d.zip/node_modules/core-js/",\
           "packageDependencies": [\
             ["core-js", "npm:3.25.2"]\
           ],\
@@ -18258,7 +18258,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ]],\
       ["core-js-pure", [\
         ["npm:3.24.1", {\
-          "packageLocation": "./.yarn/unplugged/core-js-pure-npm-3.24.1-d44f029f92/node_modules/core-js-pure/",\
+          "packageLocation": "./.yarn/cache/core-js-pure-npm-3.24.1-d44f029f92-4b8990a65c.zip/node_modules/core-js-pure/",\
           "packageDependencies": [\
             ["core-js-pure", "npm:3.24.1"]\
           ],\
@@ -21793,7 +21793,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ]],\
       ["full-icu", [\
         ["npm:1.5.0", {\
-          "packageLocation": "./.yarn/unplugged/full-icu-npm-1.5.0-64ef6b2565/node_modules/full-icu/",\
+          "packageLocation": "./.yarn/cache/full-icu-npm-1.5.0-64ef6b2565-28881850ad.zip/node_modules/full-icu/",\
           "packageDependencies": [\
             ["full-icu", "npm:1.5.0"],\
             ["yauzl", "npm:2.10.0"]\
@@ -22805,7 +22805,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }],\
         ["npm:9.18.5", {\
-          "packageLocation": "./.yarn/unplugged/highlight.js-npm-9.18.5-571500f48d/node_modules/highlight.js/",\
+          "packageLocation": "./.yarn/cache/highlight.js-npm-9.18.5-571500f48d-a8afdb3958.zip/node_modules/highlight.js/",\
           "packageDependencies": [\
             ["highlight.js", "npm:9.18.5"]\
           ],\
@@ -25164,10 +25164,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["jose", [\
-        ["npm:4.9.0", {\
-          "packageLocation": "./.yarn/cache/jose-npm-4.9.0-7fd33ef1e3-fc1e71f493.zip/node_modules/jose/",\
+        ["npm:4.10.4", {\
+          "packageLocation": "./.yarn/cache/jose-npm-4.10.4-9ec976169f-0e6caaae0b.zip/node_modules/jose/",\
           "packageDependencies": [\
-            ["jose", "npm:4.9.0"]\
+            ["jose", "npm:4.10.4"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -27488,7 +27488,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/react", "npm:18.0.21"],\
             ["@types/react-dom", null],\
             ["cookie", "npm:0.4.2"],\
-            ["jose", "npm:4.9.0"],\
+            ["jose", "npm:4.10.4"],\
             ["nodemailer", null],\
             ["oauth", "npm:0.9.15"],\
             ["openid-client", "npm:5.1.8"],\
@@ -28190,7 +28190,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/openid-client-npm-5.1.8-5537e594c2-e6fe2c7d76.zip/node_modules/openid-client/",\
           "packageDependencies": [\
             ["openid-client", "npm:5.1.8"],\
-            ["jose", "npm:4.9.0"],\
+            ["jose", "npm:4.10.4"],\
             ["lru-cache", "npm:6.0.0"],\
             ["object-hash", "npm:2.2.0"],\
             ["oidc-token-hash", "npm:5.0.1"]\
