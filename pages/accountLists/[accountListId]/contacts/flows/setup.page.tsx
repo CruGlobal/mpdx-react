@@ -3,7 +3,7 @@ import Head from 'next/head';
 import { useTranslation } from 'react-i18next';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
-import { Box } from '@material-ui/core';
+import Box from '@mui/material/Box';
 import { v4 as uuidv4 } from 'uuid';
 import { useSnackbar } from 'notistack';
 import _ from 'lodash';

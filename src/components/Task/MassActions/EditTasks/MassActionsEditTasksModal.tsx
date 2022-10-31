@@ -1,5 +1,5 @@
 import {
-  Button,
+  Autocomplete,
   Checkbox,
   CircularProgress,
   DialogActions,
@@ -12,24 +12,27 @@ import {
   MenuItem,
   Select,
   TextField,
-} from '@material-ui/core';
-import { CalendarToday, Schedule } from '@material-ui/icons';
-import { DatePicker, TimePicker } from '@material-ui/pickers';
+} from '@mui/material';
+import CalendarToday from '@mui/icons-material/CalendarToday';
+import Schedule from '@mui/icons-material/Schedule';
+import { MobileDatePicker, MobileTimePicker } from '@mui/x-date-pickers';
 import { Formik } from 'formik';
 import React, { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { useSnackbar } from 'notistack';
-import { Autocomplete } from '@material-ui/lab';
 import { v4 as uuidv4 } from 'uuid';
 import { ActivityTypeEnum } from '../../../../../graphql/types.generated';
 import Modal from '../../../common/Modal/Modal';
-import { useCreateTaskCommentMutation } from '../../Modal/Comments/Form/CreateTaskComment.generated';
+import { useCreateTaskCommentMutation } from 'src/components/Task/Drawer/CommentList/Form/CreateTaskComment.generated';
 import theme from 'src/theme';
-import { dateFormat } from 'src/lib/intlFormat/intlFormat';
 import { useGetDataForTaskDrawerQuery } from 'src/components/Task/Drawer/Form/TaskDrawer.generated';
 import { useMassActionsUpdateTasksMutation } from 'src/components/Task/MassActions/MassActionsUpdateTasks.generated';
 import { TasksDocument } from 'pages/accountLists/[accountListId]/tasks/Tasks.generated';
+import {
+  SubmitButton,
+  CancelButton,
+} from 'src/components/common/Modal/ActionButtons/ActionButtons';
 
 interface MassActionsEditTasksModalProps {
   ids: string[];
@@ -55,11 +58,9 @@ const MassActionsEditTasksSchema = yup.object({
   body: yup.string().nullable(),
 });
 
-export const MassActionsEditTasksModal: React.FC<MassActionsEditTasksModalProps> = ({
-  handleClose,
-  accountListId,
-  ids,
-}) => {
+export const MassActionsEditTasksModal: React.FC<
+  MassActionsEditTasksModalProps
+> = ({ handleClose, accountListId, ids }) => {
   const { t } = useTranslation();
 
   const [updateTasks] = useMassActionsUpdateTasksMutation();
@@ -163,9 +164,12 @@ export const MassActionsEditTasksModal: React.FC<MassActionsEditTasksModalProps>
                   <FormControl fullWidth>
                     <InputLabel id="activityType">{t('Action')}</InputLabel>
                     <Select
+                      label={t('Action')}
                       labelId="activityType"
                       value={activityType}
-                      onChange={handleChange('activityType')}
+                      onChange={(e) =>
+                        setFieldValue('activityType', e.target.value)
+                      }
                     >
                       <MenuItem value={undefined}>{t('None')}</MenuItem>
                       {Object.values(ActivityTypeEnum).map((val) => (
@@ -218,7 +222,7 @@ export const MassActionsEditTasksModal: React.FC<MassActionsEditTasksModalProps>
                         onChange={(_, userId): void =>
                           setFieldValue('userId', userId)
                         }
-                        getOptionSelected={(option, value): boolean =>
+                        isOptionEqualToValue={(option, value): boolean =>
                           option === value
                         }
                       />
@@ -229,7 +233,10 @@ export const MassActionsEditTasksModal: React.FC<MassActionsEditTasksModalProps>
                 </Grid>
                 <Grid item xs={12} lg={6}>
                   <FormControl fullWidth>
-                    <DatePicker
+                    <MobileDatePicker
+                      renderInput={(params) => (
+                        <TextField fullWidth {...params} />
+                      )}
                       InputProps={{
                         endAdornment: (
                           <InputAdornment position="end">
@@ -241,28 +248,21 @@ export const MassActionsEditTasksModal: React.FC<MassActionsEditTasksModalProps>
                           </InputAdornment>
                         ),
                       }}
-                      clearable
-                      fullWidth
-                      labelFunc={(date, invalidLabel) =>
-                        date ? dateFormat(date) : invalidLabel
-                      }
-                      autoOk
+                      inputFormat="MMM dd, yyyy"
+                      closeOnSelect
                       label={t('Due Date')}
                       value={startAt}
                       onChange={(date): void => setFieldValue('startAt', date)}
-                      okLabel={t('OK')}
-                      todayLabel={t('Today')}
-                      cancelLabel={t('Cancel')}
-                      clearLabel={t('Clear')}
                     />
                   </FormControl>
                 </Grid>
                 <Grid item xs={12} lg={6}>
                   <FormControl fullWidth>
-                    <TimePicker
-                      clearable
-                      fullWidth
-                      autoOk
+                    <MobileTimePicker
+                      renderInput={(params) => (
+                        <TextField fullWidth {...params} />
+                      )}
+                      closeOnSelect
                       InputProps={{
                         endAdornment: (
                           <InputAdornment position="end">
@@ -277,17 +277,15 @@ export const MassActionsEditTasksModal: React.FC<MassActionsEditTasksModalProps>
                       label={t('Due Time')}
                       value={startAt}
                       onChange={(date): void => setFieldValue('startAt', date)}
-                      okLabel={t('OK')}
-                      todayLabel={t('Today')}
-                      cancelLabel={t('Cancel')}
-                      clearLabel={t('Clear')}
                     />
                   </FormControl>
                 </Grid>
                 <Grid item xs={12} lg={6}>
                   <FormControl fullWidth>
                     <FormControlLabel
-                      control={<Checkbox checked={noDueDate} />}
+                      control={
+                        <Checkbox checked={noDueDate} color="secondary" />
+                      }
                       label="No Due Date"
                       name="noDueDate"
                       onChange={handleChange}
@@ -309,22 +307,11 @@ export const MassActionsEditTasksModal: React.FC<MassActionsEditTasksModalProps>
               </Grid>
             </DialogContent>
             <DialogActions>
-              <Button
-                onClick={handleClose}
-                disabled={isSubmitting}
-                variant="text"
-              >
-                {t('Cancel')}
-              </Button>
-              <Button
-                color="primary"
-                type="submit"
-                variant="contained"
-                disabled={!isValid || isSubmitting}
-              >
+              <CancelButton onClick={handleClose} disabled={isSubmitting} />
+              <SubmitButton disabled={!isValid || isSubmitting}>
                 {/* {updating && <LoadingIndicator color="primary" size={20} />} */}
                 {t('Save')}
-              </Button>
+              </SubmitButton>
             </DialogActions>
           </form>
         )}

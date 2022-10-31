@@ -1,6 +1,6 @@
 import React, { ReactElement } from 'react';
 import {
-  makeStyles,
+  Autocomplete,
   Theme,
   TextField,
   Select,
@@ -13,15 +13,14 @@ import {
   CircularProgress,
   Button,
   Divider,
-} from '@material-ui/core';
+} from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
+import { MobileDatePicker, MobileTimePicker } from '@mui/x-date-pickers';
 import { useTranslation } from 'react-i18next';
-import { Autocomplete } from '@material-ui/lab';
-import { DatePicker, TimePicker } from '@material-ui/pickers';
 import { Formik } from 'formik';
 import * as yup from 'yup';
 import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
-import { dateFormat } from '../../../../lib/intlFormat/intlFormat';
 import {
   ActivityTypeEnum,
   ContactConnection,
@@ -35,7 +34,7 @@ import { GetThisWeekDocument } from '../../../Dashboard/ThisWeek/GetThisWeek.gen
 import useTaskDrawer from '../../../../hooks/useTaskDrawer';
 import { useCompleteTaskMutation } from './CompleteTask.generated';
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles()((theme: Theme) => ({
   formControl: {
     width: '100%',
   },
@@ -85,7 +84,7 @@ const TaskDrawerCompleteForm = ({
     tagList: task.tagList,
   };
 
-  const classes = useStyles();
+  const { classes } = useStyles();
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
   const { openTaskDrawer } = useTaskDrawer();
@@ -204,7 +203,6 @@ const TaskDrawerCompleteForm = ({
       {({
         values: { result, nextAction, completedAt, tagList },
         setFieldValue,
-        handleChange,
         handleSubmit,
         isSubmitting,
         isValid,
@@ -221,7 +219,9 @@ const TaskDrawerCompleteForm = ({
                         <Select
                           labelId="result"
                           value={result}
-                          onChange={handleChange('result')}
+                          onChange={(e) =>
+                            setFieldValue('result', e.target.value)
+                          }
                         >
                           {availableResults.map((val) => (
                             <MenuItem key={val} value={val}>
@@ -241,7 +241,9 @@ const TaskDrawerCompleteForm = ({
                         <Select
                           labelId="nextAction"
                           value={nextAction}
-                          onChange={handleChange('nextAction')}
+                          onChange={(e) =>
+                            setFieldValue('nextAction', e.target.value)
+                          }
                         >
                           {availableNextActions.map((val) => (
                             <MenuItem key={val} value={val}>
@@ -258,36 +260,30 @@ const TaskDrawerCompleteForm = ({
                 <FormControl className={classes.formControl}>
                   <Grid container spacing={2}>
                     <Grid xs={6} item>
-                      <DatePicker
-                        fullWidth
-                        labelFunc={(date, invalidLabel) =>
-                          date ? dateFormat(date) : invalidLabel
-                        }
-                        autoOk
+                      <MobileDatePicker
+                        renderInput={(params) => (
+                          <TextField fullWidth {...params} />
+                        )}
+                        inputFormat="MMM dd, yyyy"
+                        closeOnSelect
                         label={t('Completed Date')}
                         value={completedAt}
                         onChange={(date): void =>
                           setFieldValue('completedAt', date)
                         }
-                        okLabel={t('OK')}
-                        todayLabel={t('Today')}
-                        cancelLabel={t('Cancel')}
-                        clearLabel={t('Clear')}
                       />
                     </Grid>
                     <Grid xs={6} item>
-                      <TimePicker
-                        fullWidth
-                        autoOk
+                      <MobileTimePicker
+                        renderInput={(params) => (
+                          <TextField fullWidth {...params} />
+                        )}
+                        closeOnSelect
                         label={t('Completed Time')}
                         value={completedAt}
                         onChange={(date): void =>
                           setFieldValue('completedAt', date)
                         }
-                        okLabel={t('OK')}
-                        todayLabel={t('Today')}
-                        cancelLabel={t('Cancel')}
-                        clearLabel={t('Clear')}
                       />
                     </Grid>
                   </Grid>
@@ -300,11 +296,11 @@ const TaskDrawerCompleteForm = ({
                   renderTags={(value, getTagProps): ReactElement[] =>
                     value.map((option, index) => (
                       <Chip
-                        color="primary"
+                        {...getTagProps({ index })}
+                        color="default"
                         size="small"
                         key={index}
                         label={option}
-                        {...getTagProps({ index })}
                       />
                     ))
                   }
@@ -322,7 +318,7 @@ const TaskDrawerCompleteForm = ({
           </Box>
           <Divider />
           <Box m={2}>
-            <Grid container spacing={1} justify="flex-end">
+            <Grid container spacing={1} justifyContent="flex-end">
               <Grid item>
                 <Button size="large" disabled={isSubmitting} onClick={onClose}>
                   {t('Cancel')}

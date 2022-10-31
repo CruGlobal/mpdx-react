@@ -1,5 +1,6 @@
 import { FC, ReactElement } from 'react';
-import { Box, styled, Theme, useMediaQuery } from '@material-ui/core';
+import { Box, Theme, useMediaQuery } from '@mui/material';
+import { styled } from '@mui/material/styles';
 
 type ScrollBoxProps = {
   isscroll?: 1 | 0;
@@ -9,16 +10,16 @@ const FullHeightBox = styled(Box)(({ theme }) => ({
   height: `calc(100vh - ${theme.mixins.toolbar.minHeight}px)`,
   ['@media (min-width:0px) and (orientation: landscape)']: {
     height: `calc(100vh - ${
-      (theme.mixins.toolbar[
+      theme.mixins.toolbar[
         '@media (min-width:0px) and (orientation: landscape)'
-      ] as { minHeight: number }).minHeight
+      ] as { minHeight: number }
     }px)`,
   },
   ['@media (min-width:600px)']: {
     height: `calc(100vh - ${
-      (theme.mixins.toolbar['@media (min-width:600px)'] as {
+      theme.mixins.toolbar['@media (min-width:600px)'] as {
         minHeight: number;
-      }).minHeight
+      }
     }px)`,
   },
 }));
@@ -37,17 +38,15 @@ const CollapsibleWrapper = styled(Box)({
   overflowX: 'hidden',
 });
 
-const ExpandingContent = styled(Box)(
-  ({ open }: { theme: Theme; open: boolean }) => ({
-    flexGrow: 1,
-    flexShrink: 0,
-    flexBasis: open ? 0 : '100%',
-    transition: 'flex-basis ease-in-out 225ms',
-    overflowX: 'hidden',
-    position: 'relative',
-    zIndex: 10,
-  }),
-);
+const ExpandingContent = styled(Box)(({ open }: { open: boolean }) => ({
+  flexGrow: 1,
+  flexShrink: 0,
+  flexBasis: open ? 0 : '100%',
+  transition: 'flex-basis ease-in-out 225ms',
+  overflowX: 'hidden',
+  position: 'relative',
+  zIndex: 10,
+}));
 
 const LeftPanelWrapper = styled(ScrollBox)(({ theme }: { theme: Theme }) => ({
   flexShrink: 0,

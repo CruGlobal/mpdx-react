@@ -1,13 +1,8 @@
 import React, { useState } from 'react';
-import {
-  Box,
-  Button,
-  Checkbox,
-  Divider,
-  styled,
-  Typography,
-} from '@material-ui/core';
-import { Add, CheckCircleOutline } from '@material-ui/icons';
+import { Box, Button, Checkbox, Divider, Typography } from '@mui/material';
+import { styled } from '@mui/material/styles';
+import Add from '@mui/icons-material/Add';
+import CheckCircleOutline from '@mui/icons-material/CheckCircleOutline';
 import { useTranslation } from 'react-i18next';
 import { DateTime } from 'luxon';
 import { TaskFilterSetInput } from '../../../../../graphql/types.generated';
@@ -111,12 +106,8 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
   });
 
   //#region Mass Actions
-  const {
-    selectionType,
-    isRowChecked,
-    toggleSelectAll,
-    toggleSelectionById,
-  } = useMassSelection(data?.tasks?.totalCount ?? 0, []);
+  const { selectionType, isRowChecked, toggleSelectAll, toggleSelectionById } =
+    useMassSelection(data?.tasks?.totalCount ?? 0, []);
 
   const { openTaskModal } = useTaskModal();
 

@@ -1,11 +1,10 @@
 import {
-  Button,
   CircularProgress,
   DialogActions,
   DialogContent,
   FormControl,
   TextField,
-} from '@material-ui/core';
+} from '@mui/material';
 import { Formik } from 'formik';
 import React, { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -14,6 +13,10 @@ import { useSnackbar } from 'notistack';
 import Modal from '../../../common/Modal/Modal';
 import { useAddToAppealMutation } from './AddToAppealMutation.generated';
 import { ContactsDocument } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
+import {
+  SubmitButton,
+  CancelButton,
+} from 'src/components/common/Modal/ActionButtons/ActionButtons';
 
 interface MassActionsCreateAppealModalProps {
   ids: string[];
@@ -25,11 +28,9 @@ const MassActionsAddToAppealSchema = yup.object({
   appeal: yup.string().nullable(),
 });
 
-export const MassActionsCreateAppealModal: React.FC<MassActionsCreateAppealModalProps> = ({
-  handleClose,
-  accountListId,
-  ids,
-}) => {
+export const MassActionsCreateAppealModal: React.FC<
+  MassActionsCreateAppealModalProps
+> = ({ handleClose, accountListId, ids }) => {
   const { t } = useTranslation();
 
   const [createAppeal, { loading: updating }] = useAddToAppealMutation();
@@ -88,22 +89,11 @@ export const MassActionsCreateAppealModal: React.FC<MassActionsCreateAppealModal
               </FormControl>
             </DialogContent>
             <DialogActions>
-              <Button
-                onClick={handleClose}
-                disabled={isSubmitting}
-                variant="text"
-              >
-                {t('Cancel')}
-              </Button>
-              <Button
-                color="primary"
-                type="submit"
-                variant="contained"
-                disabled={!isValid || isSubmitting || !appeal}
-              >
+              <CancelButton onClick={handleClose} disabled={isSubmitting} />
+              <SubmitButton disabled={!isValid || isSubmitting || !appeal}>
                 {updating && <CircularProgress color="primary" size={20} />}
                 {t('Save')}
-              </Button>
+              </SubmitButton>
             </DialogActions>
           </form>
         )}

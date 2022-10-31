@@ -1,14 +1,8 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import Head from 'next/head';
-import {
-  makeStyles,
-  Theme,
-  Grid,
-  Box,
-  Typography,
-  Divider,
-} from '@material-ui/core';
+import { Theme, Grid, Box, Typography, Divider } from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
 import { motion } from 'framer-motion';
 import { useAccountListId } from '../../../../src/hooks/useAccountListId';
 import Appeals from '../../../../src/components/Tool/Appeal/Appeals';
@@ -16,7 +10,7 @@ import Appeals from '../../../../src/components/Tool/Appeal/Appeals';
 import AddAppealForm from '../../../../src/components/Tool/Appeal/AddAppealForm';
 import Loading from '../../../../src/components/Loading';
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles()((theme: Theme) => ({
   container: {
     padding: theme.spacing(3),
     width: '70%',
@@ -44,7 +38,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 const AppealsPage: React.FC = () => {
   const { t } = useTranslation();
-  const classes = useStyles();
+  const { classes } = useStyles();
   const accountListId = useAccountListId();
 
   const variants = {

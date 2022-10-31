@@ -8,9 +8,9 @@ import {
   SvgIcon,
   useScrollTrigger,
   Hidden,
-  styled,
-} from '@material-ui/core';
-import MenuIcon from '@material-ui/icons/Menu';
+} from '@mui/material';
+import { styled } from '@mui/material/styles';
+import MenuIcon from '@mui/icons-material/Menu';
 import logo from '../../../../images/logo.svg';
 import NotificationMenu from './Items/NotificationMenu/NotificationMenu';
 import AddMenu from './Items/AddMenu/AddMenu';

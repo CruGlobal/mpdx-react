@@ -5,9 +5,9 @@ import {
   Button,
   Typography,
   Avatar,
-  makeStyles,
   NativeSelect,
-} from '@material-ui/core';
+} from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
 import { useTranslation } from 'react-i18next';
 import { Icon } from '@mdi/react';
 import { mdiCheckboxMarkedCircle } from '@mdi/js';
@@ -18,7 +18,7 @@ import {
   ContactPrimaryPersonFragment,
 } from './GetInvalidNewsletter.generated';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles()(() => ({
   left: {
     [theme.breakpoints.up('lg')]: {
       border: `1px solid ${theme.palette.cruGrayMedium.main}`,
@@ -95,7 +95,7 @@ const Contact = ({
 }: Props): ReactElement => {
   const { t } = useTranslation();
   const [newsletter, setNewsletter] = useState('BOTH');
-  const classes = useStyles();
+  const { classes } = useStyles();
 
   //TODO: Add button functionality
   //TODO: Mkae contact name a link to contact page

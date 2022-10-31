@@ -15,9 +15,11 @@ describe('HandoffLink', () => {
     open = jest.fn();
     originalOpen = window.open;
     window.open = open;
-    (useRouter as jest.SpyInstance<
-      Pick<nextRouter.NextRouter, 'query' | 'isReady'>
-    >).mockImplementation(() => ({
+    (
+      useRouter as jest.SpyInstance<
+        Pick<nextRouter.NextRouter, 'query' | 'isReady'>
+      >
+    ).mockImplementation(() => ({
       query: { accountListId: 'accountListId' },
       isReady: true,
     }));
@@ -43,7 +45,9 @@ describe('HandoffLink', () => {
     userEvent.click(linkElement);
     // TODO investigate why the user is undefined when click fires
     expect(open).toHaveBeenCalledWith(
-      'http://localhost/api/handoff?accountListId=accountListId&userId=&path=%2Fcontacts',
+      `${
+        process.env.SITE_URL || window.location.origin
+      }/api/handoff?accountListId=accountListId&userId=&path=%2Fcontacts`,
       '_blank',
     );
   });
@@ -63,7 +67,9 @@ describe('HandoffLink', () => {
     );
     userEvent.click(linkElement);
     expect(open).toHaveBeenCalledWith(
-      'http://localhost/api/handoff?auth=true&path=%2Fcontacts',
+      `${
+        process.env.SITE_URL || window.location.origin
+      }/api/handoff?auth=true&path=%2Fcontacts`,
       '_blank',
     );
   });
@@ -97,7 +103,7 @@ describe('HandoffLink', () => {
           </HandoffLink>
         </GqlMockedProvider>,
       ),
-    ).toThrowError();
+    ).toThrow();
   });
 
   describe('SITE_URL set', () => {

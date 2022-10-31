@@ -1,6 +1,5 @@
 import React, { ReactElement, useState } from 'react';
 import {
-  makeStyles,
   Theme,
   IconButton,
   Box,
@@ -10,10 +9,13 @@ import {
   AppBar,
   Tab,
   Typography,
-} from '@material-ui/core';
-import CloseIcon from '@material-ui/icons/Close';
+} from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
+import CloseIcon from '@mui/icons-material/Close';
 import { useTranslation } from 'react-i18next';
-import { TabContext, TabList, TabPanel } from '@material-ui/lab';
+import TabContext from '@mui/lab/TabContext';
+import TabList from '@mui/lab/TabList';
+import TabPanel from '@mui/lab/TabPanel';
 import { AnimatePresence, motion } from 'framer-motion';
 import Loading from '../../Loading';
 import TaskStatus from '../Status';
@@ -26,7 +28,7 @@ import TaskDrawerCommentList from './CommentList';
 import TaskDrawerCompleteForm from './CompleteForm';
 import { useGetTaskForTaskDrawerQuery } from './TaskDrawerTask.generated';
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles()((theme: Theme) => ({
   fixed: {
     position: 'fixed',
     top: 0,
@@ -81,7 +83,7 @@ const TaskDrawer = ({
   rowsPerPage,
 }: TaskDrawerProps): ReactElement => {
   const accountListId = useAccountListId();
-  const classes = useStyles();
+  const { classes } = useStyles();
   const [open, setOpen] = useState(!taskId);
   const { t } = useTranslation();
   const [tab, setTab] = useState(specificTab);

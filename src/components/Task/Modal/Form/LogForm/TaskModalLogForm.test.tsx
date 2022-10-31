@@ -2,8 +2,8 @@ import React from 'react';
 import { render, waitFor, within } from '@testing-library/react';
 import { SnackbarProvider } from 'notistack';
 import { DateTime } from 'luxon';
-import { MuiPickersUtilsProvider } from '@material-ui/pickers';
-import LuxonUtils from '@date-io/luxon';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import userEvent from '@testing-library/user-event';
 import { InMemoryCache } from '@apollo/client';
 import { MockedProvider } from '@apollo/client/testing';
@@ -83,7 +83,7 @@ describe('TaskModalLogForm', () => {
     const mutationSpy = jest.fn();
     const onClose = jest.fn();
     const { getByText, findByText, queryByText, getByLabelText } = render(
-      <MuiPickersUtilsProvider utils={LuxonUtils}>
+      <LocalizationProvider dateAdapter={AdapterLuxon}>
         <SnackbarProvider>
           <TestRouter router={router}>
             <GqlMockedProvider<CreateTaskMutation>
@@ -99,7 +99,7 @@ describe('TaskModalLogForm', () => {
             </GqlMockedProvider>
           </TestRouter>
         </SnackbarProvider>
-      </MuiPickersUtilsProvider>,
+      </LocalizationProvider>,
     );
     userEvent.click(getByText('Cancel'));
     expect(onClose).toHaveBeenCalled();
@@ -125,7 +125,7 @@ describe('TaskModalLogForm', () => {
       queryByLabelText,
       getByText,
     } = render(
-      <MuiPickersUtilsProvider utils={LuxonUtils}>
+      <LocalizationProvider dateAdapter={AdapterLuxon}>
         <SnackbarProvider>
           <TestRouter router={router}>
             <GqlMockedProvider<UpdateTaskMutation> addTypename={false}>
@@ -139,11 +139,11 @@ describe('TaskModalLogForm', () => {
             </GqlMockedProvider>
           </TestRouter>
         </SnackbarProvider>
-      </MuiPickersUtilsProvider>,
+      </LocalizationProvider>,
     );
     expect(
       getAllByRole('textbox').find(
-        (item) => (item as HTMLInputElement).value === 'Jan 5, 2016',
+        (item) => (item as HTMLInputElement).value === 'Jan 05, 2016',
       ),
     ).toBeInTheDocument();
     userEvent.click(getByLabelText('Action'));
@@ -174,7 +174,7 @@ describe('TaskModalLogForm', () => {
   it('should load and show data for task', async () => {
     const onClose = jest.fn();
     const { getByRole, getByLabelText, getByText, queryByTestId } = render(
-      <MuiPickersUtilsProvider utils={LuxonUtils}>
+      <LocalizationProvider dateAdapter={AdapterLuxon}>
         <SnackbarProvider>
           <MockedProvider
             mocks={[
@@ -192,7 +192,7 @@ describe('TaskModalLogForm', () => {
             />
           </MockedProvider>
         </SnackbarProvider>
-      </MuiPickersUtilsProvider>,
+      </LocalizationProvider>,
     );
     userEvent.click(getByLabelText('Show More'));
     const tagsElement = getByLabelText('Tags');
@@ -207,7 +207,7 @@ describe('TaskModalLogForm', () => {
     );
     userEvent.click(tagsElement);
 
-    const assigneeElement = getByRole('textbox', {
+    const assigneeElement = getByRole('combobox', {
       hidden: true,
       name: 'Assignee',
     });
@@ -217,7 +217,7 @@ describe('TaskModalLogForm', () => {
       expect(getByText('Robert Anderson')).toBeInTheDocument(),
     );
 
-    const contactsElement = getByRole('textbox', {
+    const contactsElement = getByRole('combobox', {
       hidden: true,
       name: 'Contacts',
     });
@@ -252,7 +252,7 @@ describe('TaskModalLogForm', () => {
     };
     cache.writeQuery(query);
     const { getByText, getByRole } = render(
-      <MuiPickersUtilsProvider utils={LuxonUtils}>
+      <LocalizationProvider dateAdapter={AdapterLuxon}>
         <SnackbarProvider>
           <TestRouter router={router}>
             <GqlMockedProvider<DeleteTaskMutation>
@@ -269,7 +269,7 @@ describe('TaskModalLogForm', () => {
             </GqlMockedProvider>
           </TestRouter>
         </SnackbarProvider>
-      </MuiPickersUtilsProvider>,
+      </LocalizationProvider>,
     );
     userEvent.click(getByRole('button', { hidden: true, name: 'Delete' }));
     expect(
@@ -289,28 +289,23 @@ describe('TaskModalLogForm', () => {
   it('opens the next action modal', async () => {
     const mutationSpy = jest.fn();
     const onClose = jest.fn();
-    const {
-      findByText,
-      queryByText,
-      getByText,
-      getByRole,
-      getByLabelText,
-    } = render(
-      <MuiPickersUtilsProvider utils={LuxonUtils}>
-        <SnackbarProvider>
-          <TestRouter router={router}>
-            <GqlMockedProvider<CreateTaskMutation> onCall={mutationSpy}>
-              <TaskModalLogForm
-                accountListId={accountListId}
-                filter={mockFilter}
-                rowsPerPage={100}
-                onClose={onClose}
-              />
-            </GqlMockedProvider>
-          </TestRouter>
-        </SnackbarProvider>
-      </MuiPickersUtilsProvider>,
-    );
+    const { findByText, queryByText, getByText, getByRole, getByLabelText } =
+      render(
+        <LocalizationProvider dateAdapter={AdapterLuxon}>
+          <SnackbarProvider>
+            <TestRouter router={router}>
+              <GqlMockedProvider<CreateTaskMutation> onCall={mutationSpy}>
+                <TaskModalLogForm
+                  accountListId={accountListId}
+                  filter={mockFilter}
+                  rowsPerPage={100}
+                  onClose={onClose}
+                />
+              </GqlMockedProvider>
+            </TestRouter>
+          </SnackbarProvider>
+        </LocalizationProvider>,
+      );
 
     userEvent.click(getByLabelText('Show More'));
     userEvent.click(getByLabelText('Next Action'));

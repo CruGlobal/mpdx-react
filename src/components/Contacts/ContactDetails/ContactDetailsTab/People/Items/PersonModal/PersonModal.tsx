@@ -6,10 +6,10 @@ import {
   DialogActions,
   DialogContent,
   FormControlLabel,
-  styled,
   TextField,
   Typography,
-} from '@material-ui/core';
+} from '@mui/material';
+import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { Formik } from 'formik';
 import * as yup from 'yup';
@@ -24,7 +24,6 @@ import {
   PersonCreateInput,
   PersonUpdateInput,
 } from '../../../../../../../../graphql/types.generated';
-import { ModalDeleteButton } from '../../../../../../../../src/components/common/Modal/DeleteButton/ModalDeleteButton';
 import { DeleteConfirmation } from '../../../../../../../../src/components/common/Modal/DeleteConfirmation/DeleteConfirmation';
 import { PersonName } from './PersonName/PersonName';
 import { PersonPhoneNumber } from './PersonPhoneNumber/PersonPhoneNumber';
@@ -40,12 +39,17 @@ import {
   ContactDetailContext,
   ContactDetailsType,
 } from 'src/components/Contacts/ContactDetails/ContactDetailContext';
+import {
+  SubmitButton,
+  CancelButton,
+  DeleteButton,
+} from 'src/components/common/Modal/ActionButtons/ActionButtons';
 
 export const ContactInputField = styled(TextField)(
   ({ destroyed }: { destroyed: boolean }) => ({
-    '&& > label': {
-      textTransform: 'uppercase',
-    },
+    // '&& > label': {
+    //   textTransform: 'uppercase',
+    // },
     textDecoration: destroyed ? 'line-through' : 'none',
   }),
 );
@@ -71,11 +75,6 @@ const ContactEditContainer = styled(Box)(({ theme }) => ({
   width: '100%',
   flexDirection: 'column',
   margin: theme.spacing(1, 0),
-}));
-
-const ContactEditModalFooterButton = styled(Button)(({ theme }) => ({
-  color: theme.palette.info.main,
-  fontWeight: 'bold',
 }));
 
 const ShowExtraText = styled(Typography)(({ theme }) => ({
@@ -266,65 +265,65 @@ export const PersonModal: React.FC<PersonModalProps> = ({
     destroy: false,
   }));
 
-  const initialPerson: (PersonCreateInput | PersonUpdateInput) &
-    NewSocial = person
-    ? {
-        id: person.id,
-        firstName: person.firstName,
-        lastName: person.lastName,
-        title: person.title,
-        suffix: person.suffix,
-        phoneNumbers: personPhoneNumbers,
-        emailAddresses: personEmails,
-        optoutEnewsletter: person.optoutEnewsletter,
-        birthdayDay: person.birthdayDay,
-        birthdayMonth: person.birthdayMonth,
-        birthdayYear: person.birthdayYear,
-        maritalStatus: person.maritalStatus,
-        gender: person.gender,
-        anniversaryDay: person.anniversaryDay,
-        anniversaryMonth: person.anniversaryMonth,
-        anniversaryYear: person.anniversaryYear,
-        almaMater: person.almaMater,
-        employer: person.employer,
-        occupation: person.occupation,
-        facebookAccounts: personFacebookAccounts,
-        twitterAccounts: personTwitterAccounts,
-        linkedinAccounts: personLinkedinAccounts,
-        websites: personWebsites,
-        legalFirstName: person.legalFirstName,
-        deceased: person.deceased,
-        newSocials: [],
-      }
-    : {
-        contactId,
-        id: null,
-        firstName: '',
-        lastName: null,
-        title: null,
-        suffix: null,
-        phoneNumbers: [],
-        emailAddresses: [],
-        optoutEnewsletter: false,
-        birthdayDay: null,
-        birthdayMonth: null,
-        birthdayYear: null,
-        maritalStatus: null,
-        gender: 'Male',
-        anniversaryDay: null,
-        anniversaryMonth: null,
-        anniversaryYear: null,
-        almaMater: null,
-        employer: null,
-        occupation: null,
-        facebookAccounts: [],
-        twitterAccounts: [],
-        linkedinAccounts: [],
-        websites: [],
-        legalFirstName: null,
-        deceased: false,
-        newSocials: [],
-      };
+  const initialPerson: (PersonCreateInput | PersonUpdateInput) & NewSocial =
+    person
+      ? {
+          id: person.id,
+          firstName: person.firstName,
+          lastName: person.lastName,
+          title: person.title,
+          suffix: person.suffix,
+          phoneNumbers: personPhoneNumbers,
+          emailAddresses: personEmails,
+          optoutEnewsletter: person.optoutEnewsletter,
+          birthdayDay: person.birthdayDay,
+          birthdayMonth: person.birthdayMonth,
+          birthdayYear: person.birthdayYear,
+          maritalStatus: person.maritalStatus,
+          gender: person.gender,
+          anniversaryDay: person.anniversaryDay,
+          anniversaryMonth: person.anniversaryMonth,
+          anniversaryYear: person.anniversaryYear,
+          almaMater: person.almaMater,
+          employer: person.employer,
+          occupation: person.occupation,
+          facebookAccounts: personFacebookAccounts,
+          twitterAccounts: personTwitterAccounts,
+          linkedinAccounts: personLinkedinAccounts,
+          websites: personWebsites,
+          legalFirstName: person.legalFirstName,
+          deceased: person.deceased,
+          newSocials: [],
+        }
+      : {
+          contactId,
+          id: null,
+          firstName: '',
+          lastName: null,
+          title: null,
+          suffix: null,
+          phoneNumbers: [],
+          emailAddresses: [],
+          optoutEnewsletter: false,
+          birthdayDay: null,
+          birthdayMonth: null,
+          birthdayYear: null,
+          maritalStatus: null,
+          gender: 'Male',
+          anniversaryDay: null,
+          anniversaryMonth: null,
+          anniversaryYear: null,
+          almaMater: null,
+          employer: null,
+          occupation: null,
+          facebookAccounts: [],
+          twitterAccounts: [],
+          linkedinAccounts: [],
+          websites: [],
+          legalFirstName: null,
+          deceased: false,
+          newSocials: [],
+        };
 
   const onSubmit = async (
     fields: (PersonCreateInput | PersonUpdateInput) & NewSocial,
@@ -497,36 +496,18 @@ export const PersonModal: React.FC<PersonModalProps> = ({
               </ContactEditContainer>
             </DialogContent>
             <DialogActions>
-              <Box
-                justifyContent={person ? 'space-between' : 'end'}
-                display="flex"
-                alignItems="center"
-                width="100%"
+              {person && (
+                <DeleteButton onClick={() => handleRemoveDialogOpen(true)} />
+              )}
+              <CancelButton onClick={handleClose} />
+              <SubmitButton
+                disabled={!formikProps.isValid || formikProps.isSubmitting}
               >
-                {person && (
-                  <ModalDeleteButton
-                    onClick={() => handleRemoveDialogOpen(true)}
-                  />
+                {(updating || creating || deleting) && (
+                  <LoadingIndicator color="primary" size={20} />
                 )}
-                <Box>
-                  <ContactEditModalFooterButton
-                    onClick={handleClose}
-                    variant="text"
-                  >
-                    {t('Cancel')}
-                  </ContactEditModalFooterButton>
-                  <ContactEditModalFooterButton
-                    type="submit"
-                    disabled={!formikProps.isValid || formikProps.isSubmitting}
-                    variant="text"
-                  >
-                    {(updating || creating || deleting) && (
-                      <LoadingIndicator color="primary" size={20} />
-                    )}
-                    {t('Save')}
-                  </ContactEditModalFooterButton>
-                </Box>
-              </Box>
+                {t('Save')}
+              </SubmitButton>
             </DialogActions>
           </form>
         )}

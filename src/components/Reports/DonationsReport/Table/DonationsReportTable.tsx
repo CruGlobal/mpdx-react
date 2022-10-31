@@ -5,18 +5,18 @@ import {
   Button,
   Link,
   Divider,
-  styled,
   Table,
   TableCell,
   TableRow,
   CircularProgress,
-} from '@material-ui/core';
-import IconButton from '@material-ui/core/IconButton';
-import EditIcon from '@material-ui/icons/Edit';
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+} from '@mui/material';
+import { styled } from '@mui/material/styles';
+import IconButton from '@mui/material/IconButton';
+import EditIcon from '@mui/icons-material/Edit';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { useTranslation } from 'react-i18next';
-import { DataGrid, GridColDef, GridCellParams } from '@material-ui/data-grid';
+import { DataGrid, GridColDef, GridCellParams } from '@mui/x-data-grid';
 import { DateTime } from 'luxon';
 import { EmptyDonationsTable } from '../../../common/EmptyDonationsTable/EmptyDonationsTable';
 import {
@@ -36,7 +36,7 @@ const DataTable = styled(Box)(({ theme }) => ({
   flexDirection: 'column',
   '& .MuiDataGrid-row.Mui-even:not(:hover)': {
     backgroundColor:
-      theme.palette.type === 'light'
+      theme.palette.mode === 'light'
         ? theme.palette.common.white
         : theme.palette.cruGrayLight.main,
   },
@@ -85,12 +85,10 @@ export const DonationsReportTable: React.FC<Props> = ({
     variables: { accountListId, startDate, endDate },
   });
 
-  const {
-    data: accountListData,
-    loading: loadingAccountListData,
-  } = useGetAccountListCurrencyQuery({
-    variables: { accountListId },
-  });
+  const { data: accountListData, loading: loadingAccountListData } =
+    useGetAccountListCurrencyQuery({
+      variables: { accountListId },
+    });
 
   const nodes = data?.donations.nodes || [];
 

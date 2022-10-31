@@ -1,13 +1,9 @@
-import {
-  Box,
-  Card,
-  CardContent,
-  IconButton,
-  TextField,
-  styled,
-  Theme,
-} from '@material-ui/core';
-import { Menu, Clear, FiberManualRecord } from '@material-ui/icons';
+import { Box, Card, CardContent, IconButton, TextField } from '@mui/material';
+import { styled } from '@mui/material/styles';
+import theme from 'src/theme';
+import Clear from '@mui/icons-material/Clear';
+import FiberManualRecord from '@mui/icons-material/FiberManualRecord';
+import Menu from '@mui/icons-material/Menu';
 import React, {
   useRef,
   useLayoutEffect,
@@ -16,9 +12,9 @@ import React, {
   useState,
   useCallback,
 } from 'react';
-import { DropTargetMonitor, useDrag, useDrop, XYCoord } from 'react-dnd';
+import { DropTargetMonitor, useDrag, useDrop } from 'react-dnd';
+import type { Identifier, XYCoord } from 'dnd-core';
 import debounce from 'lodash/fp/debounce';
-import theme from '../../../../../../src/theme';
 import { ContactFilterStatusEnum } from '../../../../../../graphql/types.generated';
 import { colorMap } from '../../../../../../src/components/Contacts/ContactFlow/ContactFlow';
 import { ContactFlowSetupStatusRow } from '../Row/ContactFlowSetupStatusRow';
@@ -35,22 +31,20 @@ const DeleteColumnButton = styled(IconButton)(() => ({
 
 const ColoredCircle = styled(FiberManualRecord)(
   ({
-    theme,
     circlecolor,
     size,
     selected,
   }: {
-    theme: Theme;
     circlecolor: string;
-    size: number;
+    size: string;
     selected: boolean;
   }) => ({
     color: circlecolor,
     height: size,
     width: size,
     '&:hover': {
-      height: !selected ? size + theme.spacing(1) : 'initial',
-      width: !selected ? size + theme.spacing(1) : 'initial',
+      height: !selected ? `calc(${size} + ${theme.spacing(1)})` : 'initial',
+      width: !selected ? `calc(${size} + ${theme.spacing(1)})` : 'initial',
     },
   }),
 );
@@ -127,7 +121,11 @@ export const ContactFlowSetupColumn: React.FC<Props> = ({
 
   const dragRef = useRef<HTMLDivElement>(null);
   const previewRef = useRef<HTMLDivElement>(null);
-  const [{ handlerId }, drop] = useDrop({
+  const [{ handlerId }, drop] = useDrop<
+    DragItem,
+    void,
+    { handlerId: Identifier | null }
+  >({
     accept: 'column',
     collect(monitor) {
       return {

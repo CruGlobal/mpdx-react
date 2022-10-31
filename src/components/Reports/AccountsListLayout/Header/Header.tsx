@@ -1,7 +1,9 @@
 import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Box, IconButton, styled, Theme, Typography } from '@material-ui/core';
-import { FilterList } from '@material-ui/icons';
+import { Box, IconButton, Typography } from '@mui/material';
+import { styled } from '@mui/material/styles';
+import theme from 'src/theme';
+import FilterList from '@mui/icons-material/FilterList';
 
 interface AccountsListHeaderProps {
   isNavListOpen: boolean;
@@ -20,16 +22,16 @@ const HeaderTitle = styled(Typography)(({}) => ({
   lineHeight: 1.1,
 }));
 
-const NavListButton = styled(({ panelOpen: _panelOpen, ...props }) => (
-  <IconButton {...props} />
-))(({ theme, panelOpen }: { theme: Theme; panelOpen: boolean }) => ({
-  display: 'inline-block',
-  width: 48,
-  height: 48,
-  borderradius: 24,
-  margin: theme.spacing(1),
-  backgroundColor: panelOpen ? theme.palette.secondary.dark : 'transparent',
-}));
+const NavListButton = styled(IconButton)(
+  ({ panelOpen }: { panelOpen: boolean }) => ({
+    display: 'inline-block',
+    width: 48,
+    height: 48,
+    borderradius: 24,
+    margin: theme.spacing(1),
+    backgroundColor: panelOpen ? theme.palette.secondary.dark : 'transparent',
+  }),
+);
 
 const NavListIcon = styled(FilterList)(({ theme }) => ({
   width: 24,

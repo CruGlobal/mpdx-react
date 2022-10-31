@@ -4,15 +4,15 @@ import {
   FormControlLabel,
   Grid,
   InputLabel,
-  styled,
   Typography,
-} from '@material-ui/core';
+} from '@mui/material';
+import { styled } from '@mui/material/styles';
 import React, { useEffect, useState } from 'react';
 
-import AddIcon from '@material-ui/icons/Add';
+import AddIcon from '@mui/icons-material/Add';
 import { useTranslation } from 'react-i18next';
 import { FieldArray, FormikProps } from 'formik';
-import { Mail } from '@material-ui/icons';
+import Mail from '@mui/icons-material/Mail';
 import { ModalSectionContainer } from '../ModalSectionContainer/ModalSectionContainer';
 import { ModalSectionIcon } from '../ModalSectionIcon/ModalSectionIcon';
 import {
@@ -135,6 +135,7 @@ export const PersonEmail: React.FC<PersonEmailProps> = ({
                       <OptOutENewsletterLabel
                         control={
                           <Checkbox
+                            color="secondary"
                             checked={!!optoutEnewsletter}
                             onChange={() =>
                               setFieldValue(

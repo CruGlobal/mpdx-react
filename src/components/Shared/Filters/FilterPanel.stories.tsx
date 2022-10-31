@@ -1,4 +1,4 @@
-import { Box } from '@material-ui/core';
+import { Box } from '@mui/material';
 import React, { ReactElement } from 'react';
 import { gqlMock } from '../../../../__tests__/util/graphqlMocking';
 import { FilterPanel } from './FilterPanel';

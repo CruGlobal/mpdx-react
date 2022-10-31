@@ -1,11 +1,6 @@
 import React from 'react';
-import {
-  Box,
-  Typography,
-  Divider,
-  CircularProgress,
-  styled,
-} from '@material-ui/core';
+import { Box, Typography, Divider, CircularProgress } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { useSnackbar } from 'notistack';
 import {
@@ -27,10 +22,8 @@ interface Props {
 const Appeals: React.FC<Props> = ({ accountListId }: Props) => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
-  const [
-    changePrimaryAppeal,
-    { loading: updating },
-  ] = useChangePrimaryAppealMutation();
+  const [changePrimaryAppeal, { loading: updating }] =
+    useChangePrimaryAppealMutation();
   const { data, loading } = useGetAppealsQuery({
     variables: { accountListId },
   });

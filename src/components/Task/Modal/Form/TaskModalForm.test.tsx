@@ -3,8 +3,8 @@ import { render, waitFor, within } from '@testing-library/react';
 import { MockedProvider } from '@apollo/client/testing';
 import { SnackbarProvider } from 'notistack';
 import { DateTime } from 'luxon';
-import { MuiPickersUtilsProvider } from '@material-ui/pickers';
-import LuxonUtils from '@date-io/luxon';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import userEvent from '@testing-library/user-event';
 import { InMemoryCache } from '@apollo/client';
 import { GetTasksForTaskListDocument } from '../../List/TaskList.generated';
@@ -49,32 +49,27 @@ describe('TaskModalForm', () => {
 
   it('default', async () => {
     const onClose = jest.fn();
-    const {
-      getByText,
-      findByText,
-      queryByText,
-      getByLabelText,
-      getByRole,
-    } = render(
-      <MuiPickersUtilsProvider utils={LuxonUtils}>
-        <SnackbarProvider>
-          <MockedProvider
-            mocks={[
-              getDataForTaskModalMock(accountListId),
-              createTaskMutationMock(),
-            ]}
-            addTypename={false}
-          >
-            <TaskModalForm
-              accountListId={accountListId}
-              filter={mockFilter}
-              rowsPerPage={100}
-              onClose={onClose}
-            />
-          </MockedProvider>
-        </SnackbarProvider>
-      </MuiPickersUtilsProvider>,
-    );
+    const { getByText, findByText, queryByText, getByLabelText, getByRole } =
+      render(
+        <LocalizationProvider dateAdapter={AdapterLuxon}>
+          <SnackbarProvider>
+            <MockedProvider
+              mocks={[
+                getDataForTaskModalMock(accountListId),
+                createTaskMutationMock(),
+              ]}
+              addTypename={false}
+            >
+              <TaskModalForm
+                accountListId={accountListId}
+                filter={mockFilter}
+                rowsPerPage={100}
+                onClose={onClose}
+              />
+            </MockedProvider>
+          </SnackbarProvider>
+        </LocalizationProvider>,
+      );
     userEvent.click(getByText('Cancel'));
     expect(onClose).toHaveBeenCalled();
     onClose.mockClear();
@@ -83,7 +78,7 @@ describe('TaskModalForm', () => {
     expect(await queryByText('Delete')).not.toBeInTheDocument();
     userEvent.type(getByLabelText('Subject'), accountListId);
     await new Promise((resolve) => setTimeout(resolve, 1000));
-    const contactsElement = getByRole('textbox', {
+    const contactsElement = getByRole('combobox', {
       hidden: true,
       name: 'Contacts',
     });
@@ -97,7 +92,7 @@ describe('TaskModalForm', () => {
   it('persisted', async () => {
     const onClose = jest.fn();
     const { getByRole, getAllByRole, getByLabelText } = render(
-      <MuiPickersUtilsProvider utils={LuxonUtils}>
+      <LocalizationProvider dateAdapter={AdapterLuxon}>
         <SnackbarProvider>
           <MockedProvider
             mocks={[
@@ -115,11 +110,11 @@ describe('TaskModalForm', () => {
             />
           </MockedProvider>
         </SnackbarProvider>
-      </MuiPickersUtilsProvider>,
+      </LocalizationProvider>,
     );
     expect(
       getAllByRole('textbox').find(
-        (item) => (item as HTMLInputElement).value === 'Jan 5, 2016',
+        (item) => (item as HTMLInputElement).value === 'Jan 05, 2016',
       ),
     ).toBeInTheDocument();
     userEvent.click(getByLabelText('Action'));
@@ -154,7 +149,7 @@ describe('TaskModalForm', () => {
   it('should load and show data for task', async () => {
     const onClose = jest.fn();
     const { getByRole, getByLabelText, getByText, queryByTestId } = render(
-      <MuiPickersUtilsProvider utils={LuxonUtils}>
+      <LocalizationProvider dateAdapter={AdapterLuxon}>
         <SnackbarProvider>
           <MockedProvider
             mocks={[getDataForTaskDrawerMock(accountListId)]}
@@ -169,7 +164,7 @@ describe('TaskModalForm', () => {
             />
           </MockedProvider>
         </SnackbarProvider>
-      </MuiPickersUtilsProvider>,
+      </LocalizationProvider>,
     );
 
     await new Promise((resolve) => setTimeout(resolve, 0));
@@ -183,7 +178,7 @@ describe('TaskModalForm', () => {
     );
     userEvent.click(tagsElement);
 
-    const assigneeElement = getByRole('textbox', {
+    const assigneeElement = getByRole('combobox', {
       hidden: true,
       name: 'Assignee',
     });
@@ -196,7 +191,7 @@ describe('TaskModalForm', () => {
       await within(getByRole('presentation')).findByText('Robert Anderson'),
     );
 
-    const contactsElement = getByRole('textbox', {
+    const contactsElement = getByRole('combobox', {
       hidden: true,
       name: 'Contacts',
     });
@@ -230,7 +225,7 @@ describe('TaskModalForm', () => {
     };
     cache.writeQuery(query);
     const { getByText, getByRole } = render(
-      <MuiPickersUtilsProvider utils={LuxonUtils}>
+      <LocalizationProvider dateAdapter={AdapterLuxon}>
         <SnackbarProvider>
           <MockedProvider
             mocks={[
@@ -249,7 +244,7 @@ describe('TaskModalForm', () => {
             />
           </MockedProvider>
         </SnackbarProvider>
-      </MuiPickersUtilsProvider>,
+      </LocalizationProvider>,
     );
     userEvent.click(getByRole('button', { hidden: true, name: 'Delete' }));
     expect(getByText('Confirm')).toBeInTheDocument();

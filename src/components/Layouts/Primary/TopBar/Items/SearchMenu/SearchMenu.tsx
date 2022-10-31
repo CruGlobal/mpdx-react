@@ -1,20 +1,21 @@
 import React, { ReactElement, useCallback, useState } from 'react';
 import {
+  Autocomplete,
   Box,
   IconButton,
-  styled,
   Dialog,
   TextField,
   Typography,
   Popper,
-} from '@material-ui/core';
-import SearchIcon from '@material-ui/icons/Search';
+} from '@mui/material';
+import { styled } from '@mui/material/styles';
+import SearchIcon from '@mui/icons-material/Search';
 import { useTranslation } from 'react-i18next';
-import CompassIcon from '@material-ui/icons/Explore';
-import PersonIcon from '@material-ui/icons/Person';
-import PeopleIcon from '@material-ui/icons/People';
-import AddIcon from '@material-ui/icons/Add';
-import { Autocomplete, createFilterOptions } from '@material-ui/lab';
+import CompassIcon from '@mui/icons-material/Explore';
+import PersonIcon from '@mui/icons-material/Person';
+import PeopleIcon from '@mui/icons-material/People';
+import AddIcon from '@mui/icons-material/Add';
+import { createFilterOptions } from '@mui/material/Autocomplete';
 import debounce from 'lodash/debounce';
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
@@ -67,10 +68,8 @@ const SearchMenu = (): ReactElement => {
   //#region Search
   const [wildcardSearch, setWildcardSearch] = useState('');
 
-  const [
-    searchForContacts,
-    { loading, data },
-  ] = useGetSearchMenuContactsLazyQuery();
+  const [searchForContacts, { loading, data }] =
+    useGetSearchMenuContactsLazyQuery();
 
   const [createContact] = useCreateContactMutation();
 
@@ -278,13 +277,13 @@ const SearchMenu = (): ReactElement => {
         <Box display="flex" justifyContent="center" alignItems="center">
           <Autocomplete
             fullWidth
-            freeSolo
+            multiple
             PopperComponent={SearchPopper}
             loading={loading}
             filterSelectedOptions
             onChange={handleClose}
             getOptionLabel={(option) => option.name}
-            renderOption={(option) => {
+            renderOption={(props, option) => {
               if (option.link === 'createContact') {
                 return (
                   <Box

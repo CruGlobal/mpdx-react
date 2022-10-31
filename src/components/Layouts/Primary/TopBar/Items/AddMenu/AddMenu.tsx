@@ -1,18 +1,12 @@
 import React, { ReactElement, useState } from 'react';
-import {
-  Box,
-  IconButton,
-  ListItemText,
-  Menu,
-  MenuItem,
-  styled,
-} from '@material-ui/core';
-import AddIcon from '@material-ui/icons/Add';
-import PersonIcon from '@material-ui/icons/Person';
-import PeopleIcon from '@material-ui/icons/People';
-import CardGiftcardIcon from '@material-ui/icons/CardGiftcard';
-import ListIcon from '@material-ui/icons/FormatListBulleted';
-import EditIcon from '@material-ui/icons/Edit';
+import { Box, IconButton, ListItemText, Menu, MenuItem } from '@mui/material';
+import { styled } from '@mui/material/styles';
+import AddIcon from '@mui/icons-material/Add';
+import PersonIcon from '@mui/icons-material/Person';
+import PeopleIcon from '@mui/icons-material/People';
+import CardGiftcardIcon from '@mui/icons-material/CardGiftcard';
+import ListIcon from '@mui/icons-material/FormatListBulleted';
+import EditIcon from '@mui/icons-material/Edit';
 import { useTranslation } from 'react-i18next';
 
 import useTaskModal from '../../../../../../hooks/useTaskModal';
@@ -247,7 +241,6 @@ const AddMenu = ({ isInDrawer = false }: AddMenuProps): ReactElement => {
         open={Boolean(anchorEl)}
         onClose={() => setAnchorEl(undefined)}
         anchorEl={anchorEl}
-        getContentAnchorEl={null}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
         transformOrigin={{ vertical: 'top', horizontal: 'center' }}
       >

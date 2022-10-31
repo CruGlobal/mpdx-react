@@ -1,18 +1,11 @@
 import React, { ReactElement } from 'react';
-import {
-  makeStyles,
-  Theme,
-  Avatar,
-  Typography,
-  Box,
-  Tooltip,
-  Slide,
-} from '@material-ui/core';
+import { Theme, Avatar, Typography, Box, Tooltip, Slide } from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
 import { DateTime } from 'luxon';
-import { Skeleton } from '@material-ui/lab';
+import Skeleton from '@mui/material/Skeleton';
 import { GetCommentsForTaskDrawerCommentListQuery } from '../TaskListComments.generated';
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles()((theme: Theme) => ({
   container: {
     display: 'grid',
     gridTemplateColumns: '40px 5px 1fr',
@@ -91,7 +84,7 @@ const TaskDrawerCommentListItem = ({
   reverse,
   nextComment,
 }: Props): ReactElement => {
-  const classes = useStyles();
+  const { classes } = useStyles();
 
   const nextCommentMatches =
     comment?.person &&
@@ -126,7 +119,7 @@ const TaskDrawerCommentListItem = ({
                 </Avatar>
               </Tooltip>
             ) : (
-              <Skeleton variant="circle" width={40} height={40} />
+              <Skeleton variant="circular" width={40} height={40} />
             )}
           </Box>
         )}

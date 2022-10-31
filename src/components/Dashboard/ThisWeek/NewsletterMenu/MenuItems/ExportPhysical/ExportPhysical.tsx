@@ -7,13 +7,12 @@ import {
   IconButton,
   Select,
   InputLabel,
-  styled,
   Button,
   Grid,
   MenuItem,
-} from '@material-ui/core';
-
-import CloseIcon from '@material-ui/icons/Close';
+} from '@mui/material';
+import { styled } from '@mui/material/styles';
+import CloseIcon from '@mui/icons-material/Close';
 import { useTranslation } from 'react-i18next';
 import { useSession } from 'next-auth/react';
 import {
@@ -103,7 +102,7 @@ const ExportPhysical: React.FC<Props> = ({
       </ExportPhysicalTitle>
       <DialogContent dividers>
         <>
-          <Grid container alignItems="center" justify="space-between">
+          <Grid container alignItems="center" justifyContent="space-between">
             {isExportingPdf ? (
               <>
                 <Grid item xs={12}>

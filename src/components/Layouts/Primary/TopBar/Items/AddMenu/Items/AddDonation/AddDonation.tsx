@@ -4,8 +4,8 @@ import { useSnackbar } from 'notistack';
 import { Formik, Form, FastField, FieldProps, Field } from 'formik';
 import * as yup from 'yup';
 import {
+  Autocomplete,
   Box,
-  Button,
   CircularProgress,
   DialogActions,
   DialogContent,
@@ -15,14 +15,13 @@ import {
   Grid,
   MenuItem,
   Select,
-  styled,
   TextField,
   Theme,
   useMediaQuery,
-} from '@material-ui/core';
+} from '@mui/material';
+import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
-import { KeyboardDatePicker } from '@material-ui/pickers';
-import { Autocomplete } from '@material-ui/lab';
+import { MobileDatePicker } from '@mui/x-date-pickers';
 import debounce from 'lodash/debounce';
 import { DonationCreateInput } from '../../../../../../../../../graphql/types.generated';
 import { useApiConstants } from '../../../../../../../Constants/UseApiConstants';
@@ -31,53 +30,56 @@ import {
   useGetAccountListDonorAccountsLazyQuery,
   useGetDonationModalQuery,
 } from './AddDonation.generated';
+import {
+  SubmitButton,
+  CancelButton,
+} from 'src/components/common/Modal/ActionButtons/ActionButtons';
 
 interface AddDonationProps {
   accountListId: string;
   handleClose: () => void;
 }
 
-const donationSchema: yup.SchemaOf<
-  Omit<DonationCreateInput, 'id'>
-> = yup.object({
-  amount: yup
-    .number()
-    .typeError('Amount must be a valid number')
-    .required()
-    .test(
-      'Is amount in valid currency format?',
-      'Amount must be in valid currency format',
-      (amount) => /\$?[0-9][0-9.,]*/.test((amount as unknown) as string),
-    )
-    .test(
-      'Is positive?',
-      'Must use a positive number for amount',
-      (value) => parseFloat((value as unknown) as string) > 0,
-    ),
-  appealAmount: yup
-    .number()
-    .typeError('Appeal amount must be a valid number')
-    .nullable()
-    .test(
-      'Is appeal amount in valid currency format?',
-      'Appeal amount must be in valid currency format',
-      (amount) =>
-        !amount || /\$?[0-9][0-9.,]*/.test((amount as unknown) as string),
-    )
-    .test(
-      'Is positive?',
-      'Must use a positive number for appeal amount',
-      (value) => !value || parseFloat((value as unknown) as string) > 0,
-    ),
-  appealId: yup.string().nullable(),
-  currency: yup.string().required(),
-  designationAccountId: yup.string().required(),
-  donationDate: yup.string().required(),
-  donorAccountId: yup.string().required(),
-  memo: yup.string().nullable(),
-  motivation: yup.string().nullable(),
-  paymentMethod: yup.string().nullable(),
-});
+const donationSchema: yup.SchemaOf<Omit<DonationCreateInput, 'id'>> =
+  yup.object({
+    amount: yup
+      .number()
+      .typeError('Amount must be a valid number')
+      .required()
+      .test(
+        'Is amount in valid currency format?',
+        'Amount must be in valid currency format',
+        (amount) => /\$?[0-9][0-9.,]*/.test(amount as unknown as string),
+      )
+      .test(
+        'Is positive?',
+        'Must use a positive number for amount',
+        (value) => parseFloat(value as unknown as string) > 0,
+      ),
+    appealAmount: yup
+      .number()
+      .typeError('Appeal amount must be a valid number')
+      .nullable()
+      .test(
+        'Is appeal amount in valid currency format?',
+        'Appeal amount must be in valid currency format',
+        (amount) =>
+          !amount || /\$?[0-9][0-9.,]*/.test(amount as unknown as string),
+      )
+      .test(
+        'Is positive?',
+        'Must use a positive number for appeal amount',
+        (value) => !value || parseFloat(value as unknown as string) > 0,
+      ),
+    appealId: yup.string().nullable(),
+    currency: yup.string().required(),
+    designationAccountId: yup.string().required(),
+    donationDate: yup.string().required(),
+    donorAccountId: yup.string().required(),
+    memo: yup.string().nullable(),
+    motivation: yup.string().nullable(),
+    paymentMethod: yup.string().nullable(),
+  });
 
 const LogFormLabel = styled(FormLabel)(({ theme }) => ({
   margin: theme.spacing(1, 0),
@@ -134,7 +136,7 @@ export const AddDonation = ({
   };
 
   const onSubmit = async (attributes: Omit<DonationCreateInput, 'id'>) => {
-    const amount = ((attributes.amount as unknown) as string).replace(
+    const amount = (attributes.amount as unknown as string).replace(
       /[^\d.-]/g,
       '',
     );
@@ -146,7 +148,7 @@ export const AddDonation = ({
           ...attributes,
           amount: parseFloat(amount),
           appealAmount: parseFloat(
-            (attributes.appealAmount as unknown) as string,
+            attributes.appealAmount as unknown as string,
           ),
         },
       },
@@ -167,7 +169,7 @@ export const AddDonation = ({
 
   if (loading) {
     return (
-      <DialogContent>
+      <DialogContent dividers>
         <Box width="100%" display="flex" justifyContent="center">
           <CircularProgress />
         </Box>
@@ -267,7 +269,6 @@ export const AddDonation = ({
                                   vertical: 'top',
                                   horizontal: 'left',
                                 },
-                                getContentAnchorEl: null,
                                 PaperProps: {
                                   style: {
                                     maxHeight: '300px',
@@ -308,12 +309,19 @@ export const AddDonation = ({
                     <FastField name="donationDate">
                       {({ field }: FieldProps) => (
                         <Box width="100%">
-                          <KeyboardDatePicker
+                          <MobileDatePicker
+                            renderInput={(params) => (
+                              <TextField
+                                id="date-input"
+                                fullWidth
+                                size="small"
+                                inputProps={{
+                                  'aria-labelledby': 'date-label',
+                                }}
+                                {...params}
+                              />
+                            )}
                             {...field}
-                            fullWidth
-                            size="small"
-                            id="date-input"
-                            inputVariant="outlined"
                             onChange={(date) =>
                               !date ? null : setFieldValue('donationDate', date)
                             }
@@ -322,14 +330,7 @@ export const AddDonation = ({
                                 ? DateTime.fromISO(field.value).toLocaleString()
                                 : null
                             }
-                            format="MM/dd/yyyy"
-                            clearable
-                            inputProps={{
-                              'aria-labelledby': 'date-label',
-                            }}
-                            KeyboardButtonProps={{
-                              'aria-labelledby': 'date-label',
-                            }}
+                            inputFormat="MM/dd/yyyy"
                           />
                         </Box>
                       )}
@@ -437,7 +438,7 @@ export const AddDonation = ({
                             onChange={(_, donorAccountId): void =>
                               setFieldValue('donorAccountId', donorAccountId)
                             }
-                            getOptionSelected={(option, value): boolean =>
+                            isOptionEqualToValue={(option, value): boolean =>
                               option === value
                             }
                           />
@@ -514,7 +515,7 @@ export const AddDonation = ({
                                 designationAccountId,
                               )
                             }
-                            getOptionSelected={(option, value): boolean =>
+                            isOptionEqualToValue={(option, value): boolean =>
                               option === value
                             }
                           />
@@ -581,7 +582,7 @@ export const AddDonation = ({
                             onChange={(_, appealId): void =>
                               setFieldValue('appealId', appealId)
                             }
-                            getOptionSelected={(option, value): boolean =>
+                            isOptionEqualToValue={(option, value): boolean =>
                               option === value
                             }
                           />
@@ -660,19 +661,14 @@ export const AddDonation = ({
             </Grid>
           </DialogContent>
           <DialogActions>
-            <Button disabled={isSubmitting || adding} onClick={handleClose}>
-              {t('Cancel')}
-            </Button>
-            <Button
-              size="large"
-              variant="contained"
-              color="primary"
-              disabled={!isValid || isSubmitting || adding}
-              type="submit"
-            >
+            <CancelButton
+              disabled={isSubmitting || adding}
+              onClick={handleClose}
+            />
+            <SubmitButton disabled={!isValid || isSubmitting || adding}>
               {adding && <CircularProgress size={20} />}
               {t('Save')}
-            </Button>
+            </SubmitButton>
           </DialogActions>
         </Form>
       )}

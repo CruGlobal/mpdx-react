@@ -4,8 +4,8 @@ import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { useSnackbar } from 'notistack';
 import {
+  Autocomplete,
   Box,
-  Button,
   CircularProgress,
   DialogActions,
   DialogContent,
@@ -14,12 +14,11 @@ import {
   InputLabel,
   MenuItem,
   Select,
-  styled,
   TextField,
   Theme,
   useMediaQuery,
-} from '@material-ui/core';
-import { Autocomplete } from '@material-ui/lab';
+} from '@mui/material';
+import { styled } from '@mui/material/styles';
 import debounce from 'lodash/fp/debounce';
 import {
   ContactUpdateInput,
@@ -40,6 +39,10 @@ import {
 } from '../../../ContactDetailContext';
 import { useUpdateContactOtherMutation } from './EditContactOther.generated';
 import { useGetTaskModalContactsFilteredQuery } from 'src/components/Task/Drawer/Form/TaskDrawer.generated';
+import {
+  SubmitButton,
+  CancelButton,
+} from 'src/components/common/Modal/ActionButtons/ActionButtons';
 
 const ContactEditContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -75,10 +78,8 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
 }): ReactElement<EditContactOtherModalProps> => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
-  const [
-    updateContactOther,
-    { loading: updating },
-  ] = useUpdateContactOtherMutation();
+  const [updateContactOther, { loading: updating }] =
+    useUpdateContactOtherMutation();
 
   const isMobile = useMediaQuery((theme: Theme) =>
     theme.breakpoints.down('sm'),
@@ -107,25 +108,21 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
     [],
   );
 
-  const {
-    data: dataFilteredByName,
-    loading: loadingFilteredByName,
-  } = useGetTaskModalContactsFilteredQuery({
-    variables: {
-      accountListId,
-      contactsFilters: { wildcardSearch: searchTerm as string },
-    },
-  });
+  const { data: dataFilteredByName, loading: loadingFilteredByName } =
+    useGetTaskModalContactsFilteredQuery({
+      variables: {
+        accountListId,
+        contactsFilters: { wildcardSearch: searchTerm as string },
+      },
+    });
 
-  const {
-    data: dataFilteredById,
-    loading: loadingFilteredById,
-  } = useGetTaskModalContactsFilteredQuery({
-    variables: {
-      accountListId,
-      contactsFilters: { ids: [selectedId] },
-    },
-  });
+  const { data: dataFilteredById, loading: loadingFilteredById } =
+    useGetTaskModalContactsFilteredQuery({
+      variables: {
+        accountListId,
+        contactsFilters: { ids: [selectedId] },
+      },
+    });
 
   const mergedContacts =
     dataFilteredByName && dataFilteredById
@@ -306,7 +303,7 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
                         setFieldValue('referredById', referredBy);
                         setSelectedId(referredBy || '');
                       }}
-                      getOptionSelected={(option, value): boolean =>
+                      isOptionEqualToValue={(option, value): boolean =>
                         option === value
                       }
                     />
@@ -321,9 +318,12 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
                       {t('Preferred Contact Method')}
                     </InputLabel>
                     <Select
+                      label={t('Preferred Contact Method')}
                       labelId="preferred-contact-method-select-label"
                       value={preferredContactMethod}
-                      onChange={handleChange('preferredContactMethod')}
+                      onChange={(e) =>
+                        setFieldValue('preferredContactMethod', e.target.value)
+                      }
                       fullWidth={true}
                     >
                       {Object.values(PreferredContactMethodEnum).map(
@@ -351,9 +351,12 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
                           {t('Language')}
                         </InputLabel>
                         <Select
+                          label={t('Language')}
                           labelId="language-select-label"
                           value={locale}
-                          onChange={handleChange('locale')}
+                          onChange={(e) =>
+                            setFieldValue('locale', e.target.value)
+                          }
                           fullWidth={true}
                           MenuProps={{
                             anchorOrigin: {
@@ -364,7 +367,6 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
                               vertical: 'top',
                               horizontal: 'left',
                             },
-                            getContentAnchorEl: null,
                             PaperProps: {
                               style: {
                                 maxHeight: '300px',
@@ -390,9 +392,12 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
                           {t('Timezone')}
                         </InputLabel>
                         <Select
+                          label={t('Timezone')}
                           labelId="timezone-select-label"
                           value={timezone}
-                          onChange={handleChange('timezone')}
+                          onChange={(e) =>
+                            setFieldValue('timezone', e.target.value)
+                          }
                           fullWidth={true}
                           MenuProps={{
                             anchorOrigin: {
@@ -403,7 +408,6 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
                               vertical: 'top',
                               horizontal: 'left',
                             },
-                            getContentAnchorEl: null,
                             PaperProps: {
                               style: {
                                 maxHeight: '300px',
@@ -443,22 +447,11 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
               </ContactEditContainer>
             </DialogContent>
             <DialogActions>
-              <Button
-                onClick={handleClose}
-                disabled={isSubmitting}
-                variant="text"
-              >
-                {t('Cancel')}
-              </Button>
-              <Button
-                color="primary"
-                type="submit"
-                variant="text"
-                disabled={!isValid || isSubmitting}
-              >
+              <CancelButton onClick={handleClose} disabled={isSubmitting} />
+              <SubmitButton disabled={!isValid || isSubmitting}>
                 {updating && <LoadingIndicator color="primary" size={20} />}
                 {t('Save')}
-              </Button>
+              </SubmitButton>
             </DialogActions>
           </form>
         )}

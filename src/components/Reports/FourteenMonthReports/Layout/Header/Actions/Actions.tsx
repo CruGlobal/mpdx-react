@@ -1,10 +1,11 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, ButtonGroup, styled, SvgIcon } from '@material-ui/core';
-import GetAppIcon from '@material-ui/icons/GetApp';
-import FullscreenIcon from '@material-ui/icons/Fullscreen';
-import FullscreenExitIcon from '@material-ui/icons/FullscreenExit';
-import PrintIcon from '@material-ui/icons/Print';
+import { Button, ButtonGroup, SvgIcon } from '@mui/material';
+import { styled } from '@mui/material/styles';
+import GetAppIcon from '@mui/icons-material/GetApp';
+import FullscreenIcon from '@mui/icons-material/Fullscreen';
+import FullscreenExitIcon from '@mui/icons-material/FullscreenExit';
+import PrintIcon from '@mui/icons-material/Print';
 import { CSVLink } from 'react-csv';
 import { DateTime } from 'luxon';
 import { FourteenMonthReportCurrencyType } from '../../../../../../../graphql/types.generated';
@@ -23,7 +24,9 @@ const DownloadCsvLink = styled(CSVLink)(({}) => ({
   textDecoration: 'none',
 }));
 
-export const FourteenMonthReportActions: React.FC<FourteenMonthReportActionsProps> = ({
+export const FourteenMonthReportActions: React.FC<
+  FourteenMonthReportActionsProps
+> = ({
   csvData,
   currencyType,
   isExpanded,

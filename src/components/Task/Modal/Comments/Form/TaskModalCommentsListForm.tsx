@@ -1,5 +1,5 @@
 import React, { Dispatch, ReactElement, SetStateAction } from 'react';
-import { Box, TextField } from '@material-ui/core';
+import { Box, TextField } from '@mui/material';
 import { Formik, FormikHelpers } from 'formik';
 import * as yup from 'yup';
 import { DateTime } from 'luxon';
@@ -13,14 +13,13 @@ import {
   GetCommentsForTaskModalCommentListQuery,
 } from '../TaskListComments.generated';
 import { useUser } from '../../../../User/useUser';
-import { ActionButtonSmall } from '../Item/TaskModalCommentListItem';
-import { useCreateTaskCommentMutation } from './CreateTaskComment.generated';
+import { useCreateTaskCommentMutation } from 'src/components/Task/Drawer/CommentList/Form/CreateTaskComment.generated';
+import { SubmitButton } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 
-export const commentSchema: yup.SchemaOf<
-  Omit<TaskCommentCreateInput, 'id'>
-> = yup.object({
-  body: yup.string().trim().required(),
-});
+export const commentSchema: yup.SchemaOf<Omit<TaskCommentCreateInput, 'id'>> =
+  yup.object({
+    body: yup.string().trim().required(),
+  });
 
 interface Props {
   accountListId: string;
@@ -70,9 +69,8 @@ const TaskModalCommentsListForm = ({
             taskId,
           },
         };
-        const dataFromCache = cache.readQuery<GetCommentsForTaskModalCommentListQuery>(
-          query,
-        );
+        const dataFromCache =
+          cache.readQuery<GetCommentsForTaskModalCommentListQuery>(query);
         const data = {
           task: {
             ...dataFromCache?.task,
@@ -129,12 +127,12 @@ const TaskModalCommentsListForm = ({
                   }}
                 />
                 <Box width="100%" display="flex" justifyContent="end">
-                  <ActionButtonSmall
+                  <SubmitButton
+                    size="small"
                     disabled={!isValid || isSubmitting}
-                    type="submit"
                   >
                     {t('Save')}
-                  </ActionButtonSmall>
+                  </SubmitButton>
                 </Box>
               </form>
             )}

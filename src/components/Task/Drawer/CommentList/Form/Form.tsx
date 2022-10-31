@@ -1,17 +1,17 @@
 import React, { ReactElement } from 'react';
 import {
-  makeStyles,
   Theme,
   Box,
   TextField,
   IconButton,
   Grid,
   Divider,
-} from '@material-ui/core';
+} from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
 import { Formik, FormikHelpers } from 'formik';
 import * as yup from 'yup';
 import { DateTime } from 'luxon';
-import SendIcon from '@material-ui/icons/Send';
+import SendIcon from '@mui/icons-material/Send';
 import { motion } from 'framer-motion';
 import reject from 'lodash/fp/reject';
 import { v4 as uuidv4 } from 'uuid';
@@ -23,7 +23,7 @@ import {
 import { useUser } from '../../../../User/useUser';
 import { useCreateTaskCommentMutation } from './CreateTaskComment.generated';
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles()((theme: Theme) => ({
   div: {
     backgroundColor: theme.palette.background.paper,
     position: 'fixed',
@@ -41,11 +41,10 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-const commentSchema: yup.SchemaOf<
-  Omit<TaskCommentCreateInput, 'id'>
-> = yup.object({
-  body: yup.string().trim().required(),
-});
+const commentSchema: yup.SchemaOf<Omit<TaskCommentCreateInput, 'id'>> =
+  yup.object({
+    body: yup.string().trim().required(),
+  });
 
 interface Props {
   accountListId: string;
@@ -53,7 +52,7 @@ interface Props {
 }
 
 const Form = ({ accountListId, taskId }: Props): ReactElement => {
-  const classes = useStyles();
+  const { classes } = useStyles();
   const [createTaskComment] = useCreateTaskCommentMutation();
   const user = useUser();
   const onSubmit = async (
@@ -90,9 +89,8 @@ const Form = ({ accountListId, taskId }: Props): ReactElement => {
             taskId,
           },
         };
-        const dataFromCache = cache.readQuery<GetCommentsForTaskDrawerCommentListQuery>(
-          query,
-        );
+        const dataFromCache =
+          cache.readQuery<GetCommentsForTaskDrawerCommentListQuery>(query);
         const data = {
           task: {
             ...dataFromCache?.task,

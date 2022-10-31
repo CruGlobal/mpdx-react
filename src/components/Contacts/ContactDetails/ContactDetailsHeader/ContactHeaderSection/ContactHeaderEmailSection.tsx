@@ -1,6 +1,7 @@
-import { styled, Typography } from '@material-ui/core';
-import { Email } from '@material-ui/icons';
-import { Skeleton } from '@material-ui/lab';
+import Typography from '@mui/material/Typography';
+import { styled } from '@mui/material/styles';
+import Email from '@mui/icons-material/Email';
+import Skeleton from '@mui/material/Skeleton';
 
 import React, { ReactElement } from 'react';
 import theme from '../../../../../theme';

@@ -1,11 +1,11 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
-import { ThemeProvider } from '@material-ui/styles';
+import { ThemeProvider } from '@mui/material/styles';
 import userEvent from '@testing-library/user-event';
 import { DeleteConfirmation } from './DeleteConfirmation';
 import theme from 'src/theme';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { DeleteTaskMutation } from 'src/components/Task/Modal/Form/TaskModal.generated';
+import { DeleteTaskMutation } from 'src/components/Task/Drawer/Form/TaskDrawer.generated';
 
 const onClickConfirm = jest.fn();
 const onClickDecline = jest.fn();

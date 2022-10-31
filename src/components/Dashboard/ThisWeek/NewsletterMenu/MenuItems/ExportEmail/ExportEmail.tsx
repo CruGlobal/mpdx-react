@@ -6,11 +6,11 @@ import {
   DialogContent,
   DialogContentText,
   IconButton,
-  styled,
   TextareaAutosize,
-} from '@material-ui/core';
-import { Skeleton } from '@material-ui/lab';
-import CloseIcon from '@material-ui/icons/Close';
+} from '@mui/material';
+import { styled } from '@mui/material/styles';
+import Skeleton from '@mui/material/Skeleton';
+import CloseIcon from '@mui/icons-material/Close';
 import { useTranslation } from 'react-i18next';
 import { useGetEmailNewsletterContactsQuery } from './GetNewsletterContacts.generated';
 

@@ -5,14 +5,14 @@ import {
   IconButton,
   ListItem,
   ListSubheader,
-  makeStyles,
   Menu,
   Theme,
   Typography,
-} from '@material-ui/core';
+} from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
 import React, { ReactElement, useState } from 'react';
-import NotificationsNoneIcon from '@material-ui/icons/NotificationsNone';
-import NotificationsIcon from '@material-ui/icons/Notifications';
+import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
+import NotificationsIcon from '@mui/icons-material/Notifications';
 import { useTranslation } from 'react-i18next';
 import illustration13 from '../../../../../../images/drawkit/grape/drawkit-grape-pack-illustration-13.svg';
 import { useAccountListId } from '../../../../../../hooks/useAccountListId';
@@ -28,7 +28,7 @@ interface NotificationMenuProps {
   isInDrawer?: boolean;
 }
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles()((theme: Theme) => ({
   link: {
     textTransform: 'none',
     color: 'rgba(255,255,255,0.75)',
@@ -78,7 +78,7 @@ export const NotificationContent = ({
   onClose: () => void;
   onFetchMore: () => void;
 }): ReactElement => {
-  const classes = useStyles();
+  const { classes } = useStyles();
   const { t } = useTranslation();
 
   return (
@@ -117,7 +117,7 @@ export const NotificationContent = ({
           <Button
             className={classes.menuButton}
             variant="outlined"
-            color="default"
+            color="inherit"
             onClick={onFetchMore}
           >
             {t('Load More')}
@@ -143,7 +143,7 @@ export const NotificationContent = ({
 const NotificationMenu = ({
   isInDrawer = false,
 }: NotificationMenuProps): ReactElement => {
-  const classes = useStyles();
+  const { classes } = useStyles();
   const accountListId = useAccountListId();
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>();
 
@@ -156,9 +156,8 @@ const NotificationMenu = ({
     notifyOnNetworkStatusChange: true,
   });
 
-  const [
-    acknoweldgeAllUserNotifications,
-  ] = useAcknowledgeAllUserNotificationsMutation();
+  const [acknoweldgeAllUserNotifications] =
+    useAcknowledgeAllUserNotificationsMutation();
 
   const handleAcknowledgeAllClick = () => {
     const optimisticResponse = true;

@@ -14,13 +14,13 @@ import {
   AccordionSummary,
   AccordionDetails,
   Typography,
-  styled,
-} from '@material-ui/core';
+} from '@mui/material';
+import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'next/router';
 import { signOut } from 'next-auth/react';
-import AccountCircleIcon from '@material-ui/icons/AccountCircle';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { useAccountListId } from '../../../../../../hooks/useAccountListId';
 import HandoffLink from '../../../../../HandoffLink';
 import { useGetTopBarQuery } from '../../GetTopBar.generated';
@@ -106,10 +106,8 @@ const ProfileMenu = (): ReactElement => {
   const { contactId: _, ...queryWithoutContactId } = router.query;
   const accountListId = useAccountListId();
   const { data } = useGetTopBarQuery();
-  const [
-    profileMenuAnchorEl,
-    setProfileMenuAnchorEl,
-  ] = useState<HTMLButtonElement>();
+  const [profileMenuAnchorEl, setProfileMenuAnchorEl] =
+    useState<HTMLButtonElement>();
   const profileMenuOpen = Boolean(profileMenuAnchorEl);
   const handleProfileMenuOpen = (
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
@@ -268,10 +266,10 @@ const ProfileMenu = (): ReactElement => {
             </MenuItem>
           </HandoffLink>
         )}
-        <MenuItem button={false}>
+        <MenuItem>
           <MenuButton
             variant="outlined"
-            color="default"
+            color="inherit"
             onClick={() => signOut()}
           >
             {t('Sign Out')}

@@ -1,18 +1,12 @@
 import React, { ReactElement } from 'react';
-import {
-  makeStyles,
-  Theme,
-  Box,
-  Card,
-  Grid,
-  CardContent,
-} from '@material-ui/core';
+import { Theme, Box, Card, Grid, CardContent } from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
 import { useTranslation } from 'react-i18next';
 import illustration4 from '../../../../images/drawkit/grape/drawkit-grape-pack-illustration-4.svg';
 import TaskDrawerContactListItem from './Item';
 import { useGetContactsForTaskDrawerContactListQuery } from './TaskDrawerContactList.generated';
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles()((theme: Theme) => ({
   cardContent: {
     padding: theme.spacing(2),
     display: 'flex',
@@ -40,7 +34,7 @@ const TaskDrawerContactList = ({
   accountListId,
   contactIds,
 }: Props): ReactElement => {
-  const classes = useStyles();
+  const { classes } = useStyles();
   const { t } = useTranslation();
 
   const { data, loading } = useGetContactsForTaskDrawerContactListQuery({

@@ -39,10 +39,10 @@ const AppealProvider = ({
 }): ReactElement => {
   const [appealState, setAppealState] = useState<StateType>(initialState);
 
-  const value = useMemo(() => ({ appealState, setAppealState }), [
-    appealState,
-    setAppealState,
-  ]);
+  const value = useMemo(
+    () => ({ appealState, setAppealState }),
+    [appealState, setAppealState],
+  );
 
   return (
     <AppealContext.Provider value={value}>{children}</AppealContext.Provider>

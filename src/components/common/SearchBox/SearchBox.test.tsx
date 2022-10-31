@@ -1,7 +1,7 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { MuiThemeProvider } from '@material-ui/core';
+import { ThemeProvider } from '@mui/material/styles';
 import theme from '../../../theme';
 import { SearchBox } from './SearchBox';
 
@@ -9,14 +9,14 @@ it('starts without value', () => {
   const placeholderText = 'placeholder';
 
   const { getByRole } = render(
-    <MuiThemeProvider theme={theme}>
+    <ThemeProvider theme={theme}>
       <SearchBox
         page="contact"
         placeholder={placeholderText}
         onChange={() => {}}
       />
       ,
-    </MuiThemeProvider>,
+    </ThemeProvider>,
   );
 
   const textbox = getByRole('textbox');
@@ -30,14 +30,14 @@ it('triggers onChange', async () => {
   const placeholderText = 'placeholder';
 
   const { getByRole } = render(
-    <MuiThemeProvider theme={theme}>
+    <ThemeProvider theme={theme}>
       <SearchBox
         page="task"
         placeholder={placeholderText}
         onChange={onChange}
       />
       ,
-    </MuiThemeProvider>,
+    </ThemeProvider>,
   );
 
   const textbox = getByRole('textbox');

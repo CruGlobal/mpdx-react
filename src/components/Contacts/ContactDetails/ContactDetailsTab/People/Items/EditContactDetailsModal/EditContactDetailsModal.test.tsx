@@ -1,8 +1,8 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
-import { ThemeProvider } from '@material-ui/core';
-import { MuiPickersUtilsProvider } from '@material-ui/pickers';
-import LuxonUtils from '@date-io/luxon';
+import { ThemeProvider } from '@mui/material/styles';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import { SendNewsletterEnum } from '../../../../../../../../graphql/types.generated';
@@ -70,7 +70,7 @@ describe('EditContactDetailsModal', () => {
   it('should render edit contact details modal', () => {
     const { getByText } = render(
       <SnackbarProvider>
-        <MuiPickersUtilsProvider utils={LuxonUtils}>
+        <LocalizationProvider dateAdapter={AdapterLuxon}>
           <ThemeProvider theme={theme}>
             <GqlMockedProvider<UpdateContactDetailsMutation>>
               <EditContactDetailsModal
@@ -81,7 +81,7 @@ describe('EditContactDetailsModal', () => {
               />
             </GqlMockedProvider>
           </ThemeProvider>
-        </MuiPickersUtilsProvider>
+        </LocalizationProvider>
       </SnackbarProvider>,
     );
 
@@ -91,7 +91,7 @@ describe('EditContactDetailsModal', () => {
   it('should close edit contact details modal', () => {
     const { getByRole, getByText } = render(
       <SnackbarProvider>
-        <MuiPickersUtilsProvider utils={LuxonUtils}>
+        <LocalizationProvider dateAdapter={AdapterLuxon}>
           <ThemeProvider theme={theme}>
             <GqlMockedProvider<UpdateContactDetailsMutation>>
               <EditContactDetailsModal
@@ -102,7 +102,7 @@ describe('EditContactDetailsModal', () => {
               />
             </GqlMockedProvider>
           </ThemeProvider>
-        </MuiPickersUtilsProvider>
+        </LocalizationProvider>
       </SnackbarProvider>,
     );
     expect(getByText('Edit Contact Details')).toBeInTheDocument();
@@ -113,7 +113,7 @@ describe('EditContactDetailsModal', () => {
   it('should handle cancel click', () => {
     const { getByText } = render(
       <SnackbarProvider>
-        <MuiPickersUtilsProvider utils={LuxonUtils}>
+        <LocalizationProvider dateAdapter={AdapterLuxon}>
           <ThemeProvider theme={theme}>
             <GqlMockedProvider<UpdateContactDetailsMutation>>
               <EditContactDetailsModal
@@ -124,7 +124,7 @@ describe('EditContactDetailsModal', () => {
               />
             </GqlMockedProvider>
           </ThemeProvider>
-        </MuiPickersUtilsProvider>
+        </LocalizationProvider>
       </SnackbarProvider>,
     );
     expect(getByText('Edit Contact Details')).toBeInTheDocument();
@@ -138,7 +138,7 @@ describe('EditContactDetailsModal', () => {
     const newPrimaryContactName = `${mockContact.people.nodes[1].firstName} ${mockContact.people.nodes[1].lastName}`;
     const { getByText, getByRole } = render(
       <SnackbarProvider>
-        <MuiPickersUtilsProvider utils={LuxonUtils}>
+        <LocalizationProvider dateAdapter={AdapterLuxon}>
           <ThemeProvider theme={theme}>
             <GqlMockedProvider<UpdateContactDetailsMutation>
               onCall={mutationSpy}
@@ -151,7 +151,7 @@ describe('EditContactDetailsModal', () => {
               />
             </GqlMockedProvider>
           </ThemeProvider>
-        </MuiPickersUtilsProvider>
+        </LocalizationProvider>
       </SnackbarProvider>,
     );
     expect(getByText('Edit Contact Details')).toBeInTheDocument();

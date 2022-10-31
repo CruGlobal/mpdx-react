@@ -5,11 +5,11 @@ import {
   IconButton,
   List,
   Slide,
-  styled,
   Typography,
-  makeStyles,
-} from '@material-ui/core';
-import { Close } from '@material-ui/icons';
+} from '@mui/material';
+import { styled } from '@mui/material/styles';
+import { makeStyles } from 'tss-react/mui';
+import Close from '@mui/icons-material/Close';
 import { useTranslation } from 'react-i18next';
 import { Item } from './Item/Item';
 import { ReportNavItems } from './ReportNavItems';
@@ -20,7 +20,7 @@ interface Props {
   onClose: () => void;
 }
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles()(() => ({
   root: {
     overflow: 'hidden',
   },
@@ -47,7 +47,7 @@ export const NavReportsList: React.FC<Props & BoxProps> = ({
   onClose,
   ...BoxProps
 }) => {
-  const classes = useStyles();
+  const { classes } = useStyles();
   const { t } = useTranslation();
 
   return (

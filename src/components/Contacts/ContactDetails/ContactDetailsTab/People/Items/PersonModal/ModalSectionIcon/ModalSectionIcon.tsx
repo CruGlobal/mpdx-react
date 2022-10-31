@@ -1,5 +1,6 @@
 import React, { ReactNode } from 'react';
-import { Box, styled } from '@material-ui/core';
+import Box from '@mui/material/Box';
+import { styled } from '@mui/material/styles';
 
 const IconContainer = styled(Box)(({ theme }) => ({
   display: 'flex',

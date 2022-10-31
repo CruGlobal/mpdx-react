@@ -1,6 +1,5 @@
 import React, { ReactElement } from 'react';
 import {
-  makeStyles,
   Theme,
   Card,
   Avatar,
@@ -16,20 +15,21 @@ import {
   ListItemAvatar,
   Typography,
   Divider,
-} from '@material-ui/core';
+} from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
 import { useTranslation } from 'react-i18next';
 import { DateTime } from 'luxon';
-import CallIcon from '@material-ui/icons/Call';
-import TextsmsIcon from '@material-ui/icons/Textsms';
-import EmailIcon from '@material-ui/icons/Email';
-import LocationOnIcon from '@material-ui/icons/LocationOn';
-import { Skeleton } from '@material-ui/lab';
+import CallIcon from '@mui/icons-material/Call';
+import TextsmsIcon from '@mui/icons-material/Textsms';
+import EmailIcon from '@mui/icons-material/Email';
+import LocationOnIcon from '@mui/icons-material/LocationOn';
+import Skeleton from '@mui/material/Skeleton';
 import InfoBlock from '../../../../InfoBlock';
 import { currencyFormat } from '../../../../../lib/intlFormat';
 import { dateFormat } from '../../../../../lib/intlFormat/intlFormat';
 import { GetContactsForTaskDrawerContactListQuery } from '../TaskDrawerContactList.generated';
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles()((theme: Theme) => ({
   cardContent: {
     padding: theme.spacing(3, 3, 3, 9),
   },
@@ -44,7 +44,7 @@ interface Props {
 }
 
 const TaskDrawerContactListItem = ({ contact }: Props): ReactElement => {
-  const classes = useStyles();
+  const { classes } = useStyles();
   const { t } = useTranslation();
 
   return contact ? (
@@ -117,7 +117,7 @@ const TaskDrawerContactListItem = ({ contact }: Props): ReactElement => {
                         key={tag}
                         size="small"
                         label={tag}
-                        color="primary"
+                        color="default"
                         className={classes.chip}
                       />
                     ))}
@@ -252,7 +252,7 @@ const TaskDrawerContactListItem = ({ contact }: Props): ReactElement => {
   ) : (
     <Card>
       <CardHeader
-        avatar={<Skeleton variant="circle" width={40} height={40} />}
+        avatar={<Skeleton variant="circular" width={40} height={40} />}
         title={<Skeleton width={100} />}
         subheader={<Skeleton width={80} />}
       />

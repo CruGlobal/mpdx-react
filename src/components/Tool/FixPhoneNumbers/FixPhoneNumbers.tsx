@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import {
-  makeStyles,
   Box,
   Typography,
   Grid,
@@ -8,8 +7,8 @@ import {
   Button,
   NativeSelect,
   CircularProgress,
-} from '@material-ui/core';
-
+} from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
 import { Trans, useTranslation } from 'react-i18next';
 import Icon from '@mdi/react';
 import { mdiCheckboxMarkedCircle } from '@mdi/js';
@@ -21,7 +20,7 @@ import { useGetInvalidPhoneNumbersQuery } from './GetInvalidPhoneNumbers.generat
 import Contact from './Contact';
 import DeleteModal from './DeleteModal';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles()(() => ({
   container: {
     padding: theme.spacing(3),
     overflow: 'auto',
@@ -118,7 +117,7 @@ interface PersonPhoneNumbers {
 }
 
 const FixPhoneNumbers: React.FC<Props> = ({ accountListId }: Props) => {
-  const classes = useStyles();
+  const { classes } = useStyles();
 
   const [defaultSource, setDefaultSource] = useState('MPDX');
   const [deleteModalState, setDeleteModalState] = useState<ModalState>(

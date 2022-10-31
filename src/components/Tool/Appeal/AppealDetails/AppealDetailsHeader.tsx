@@ -1,16 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  Button,
-  ButtonGroup,
-  TextField,
-  makeStyles,
-  Box,
-  Grid,
-} from '@material-ui/core';
+import { Button, ButtonGroup, TextField, Box, Grid } from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
 import NextLink from 'next/link';
-import { ArrowBackIos, List, TableChart } from '@material-ui/icons';
+import ArrowBackIos from '@mui/icons-material/ArrowBackIos';
+import List from '@mui/icons-material/List';
+import TableChart from '@mui/icons-material/TableChart';
 import clsx from 'clsx';
 import { useAccountListId } from '../../../../../src/hooks/useAccountListId';
 import theme from '../../../../theme';
@@ -18,7 +14,7 @@ import AppealProgressBar from '../AppealProgressBar';
 import { useAppealContext } from '../AppealContextProvider/AppealContextProvider';
 import { TestAppeal } from '../../../../../pages/accountLists/[accountListId]/tools/appeals/testAppeal';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles()(() => ({
   container: {
     width: '100%',
   },
@@ -46,7 +42,7 @@ export interface Props {
 }
 
 const AppealDetailsHeader = ({ appeal }: Props): ReactElement => {
-  const classes = useStyles();
+  const { classes } = useStyles();
   const { t } = useTranslation();
   const accountListId = useAccountListId();
   const { appealState, setAppealState } = useAppealContext();

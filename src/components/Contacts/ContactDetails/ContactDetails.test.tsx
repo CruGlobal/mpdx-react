@@ -1,4 +1,4 @@
-import { MuiThemeProvider } from '@material-ui/core';
+import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
@@ -23,13 +23,13 @@ describe('ContactDetails', () => {
       <SnackbarProvider>
         <TestRouter router={router}>
           <GqlMockedProvider>
-            <MuiThemeProvider theme={theme}>
+            <ThemeProvider theme={theme}>
               <ContactsPageProvider>
                 <ContactDetailProvider>
                   <ContactDetails onClose={() => {}} />
                 </ContactDetailProvider>
               </ContactsPageProvider>
-            </MuiThemeProvider>
+            </ThemeProvider>
           </GqlMockedProvider>
         </TestRouter>
       </SnackbarProvider>,

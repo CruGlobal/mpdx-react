@@ -1,19 +1,19 @@
 import {
+  Autocomplete,
   Button,
   CircularProgress,
   DialogActions,
   DialogContent,
   FormControl,
-  styled,
   Typography,
-} from '@material-ui/core';
+} from '@mui/material';
+import { styled } from '@mui/material/styles';
 import * as yup from 'yup';
-import { Autocomplete } from '@material-ui/lab';
 import { Formik } from 'formik';
 import React, { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSnackbar } from 'notistack';
-import { Add } from '@material-ui/icons';
+import Add from '@mui/icons-material/Add';
 import { ContactUpdateInput } from '../../../../../graphql/types.generated';
 import Modal from '../../../common/Modal/Modal';
 import {
@@ -27,6 +27,10 @@ import {
 } from './ContactsAddTags.generated';
 import theme from 'src/theme';
 import { ContactsDocument } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
+import {
+  SubmitButton,
+  CancelButton,
+} from 'src/components/common/Modal/ActionButtons/ActionButtons';
 
 interface MassActionsAddTagsModalProps {
   ids: string[];
@@ -52,11 +56,9 @@ const tagSchema = yup.object({
   tagList: yup.array().of(yup.string()).default([]).nullable(),
 });
 
-export const MassActionsAddTagsModal: React.FC<MassActionsAddTagsModalProps> = ({
-  handleClose,
-  accountListId,
-  ids,
-}) => {
+export const MassActionsAddTagsModal: React.FC<
+  MassActionsAddTagsModalProps
+> = ({ handleClose, accountListId, ids }) => {
   const { t } = useTranslation();
 
   const { enqueueSnackbar } = useSnackbar();
@@ -133,6 +135,7 @@ export const MassActionsAddTagsModal: React.FC<MassActionsAddTagsModalProps> = (
                           onClick={() =>
                             setFieldValue('tagList', [...tagList, tag])
                           }
+                          color="inherit"
                         >
                           <AddTagIcon />
                           {tag}
@@ -170,22 +173,13 @@ export const MassActionsAddTagsModal: React.FC<MassActionsAddTagsModalProps> = (
               </FormControl>
             </DialogContent>
             <DialogActions>
-              <Button
-                onClick={handleClose}
-                disabled={isSubmitting}
-                variant="text"
-              >
-                {t('Cancel')}
-              </Button>
-              <Button
-                color="primary"
-                type="submit"
-                variant="contained"
+              <CancelButton onClick={handleClose} disabled={isSubmitting} />
+              <SubmitButton
                 disabled={!isValid || isSubmitting || tagList?.length === 0}
               >
                 {updating && <CircularProgress color="primary" size={20} />}
                 {t('Save')}
-              </Button>
+              </SubmitButton>
             </DialogActions>
           </form>
         )}

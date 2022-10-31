@@ -1,3 +1,6 @@
+import { MobileDatePicker } from '@mui/x-date-pickers';
+import TextField from '@mui/material/TextField';
+import Skeleton from '@mui/material/Skeleton';
 import React, { ReactElement, useState, useCallback } from 'react';
 import MUIDataTable, {
   MUIDataTableOptions,
@@ -9,18 +12,16 @@ import {
   CircularProgress,
   Avatar,
   Tooltip,
-  makeStyles,
   Theme,
   Grid,
   Card,
   FormLabel,
   Box,
-} from '@material-ui/core';
+} from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
 import { DateTime } from 'luxon';
 import reduce from 'lodash/fp/reduce';
 import debounce from 'lodash/fp/debounce';
-import { Skeleton } from '@material-ui/lab';
-import { DatePicker } from '@material-ui/pickers';
 import { dateFormat, dayMonthFormat } from '../../../lib/intlFormat/intlFormat';
 import TaskStatus from '../Status';
 import illustration15 from '../../../images/drawkit/grape/drawkit-grape-pack-illustration-15.svg';
@@ -34,7 +35,7 @@ import {
   GetTasksForTaskListQuery,
 } from './TaskList.generated';
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles()((theme: Theme) => ({
   chip: {
     marginRight: theme.spacing(0.5),
   },
@@ -79,7 +80,7 @@ const TaskList = ({ initialFilter }: Props): ReactElement => {
     after: null,
     ...initialFilter,
   });
-  const classes = useStyles();
+  const { classes } = useStyles();
   const { t } = useTranslation();
   const [rowsPerPage, setRowsPerPage] = useState(100);
   const [currentPage, setCurrentPage] = useState(0);
@@ -134,7 +135,7 @@ const TaskList = ({ initialFilter }: Props): ReactElement => {
               />
             );
           } else {
-            return <Skeleton variant="circle" width={40} height={40} />;
+            return <Skeleton variant="circular" width={40} height={40} />;
           }
         },
       },
@@ -255,7 +256,7 @@ const TaskList = ({ initialFilter }: Props): ReactElement => {
                 key={tag}
                 size="small"
                 label={tag}
-                color="primary"
+                color="default"
                 className={classes.chip}
               />
             ));
@@ -351,43 +352,33 @@ const TaskList = ({ initialFilter }: Props): ReactElement => {
                 <FormLabel>{t('Due Date')}</FormLabel>
                 <Grid container spacing={2}>
                   <Grid xs={6} item>
-                    <DatePicker
-                      clearable
-                      fullWidth
-                      labelFunc={(date, invalidLabel) =>
-                        date ? dateFormat(date) : invalidLabel
-                      }
-                      autoOk
+                    <MobileDatePicker
+                      renderInput={(params) => (
+                        <TextField fullWidth {...params} />
+                      )}
+                      inputFormat="MMM dd, yyyy"
+                      closeOnSelect
                       label={t('Minimum')}
                       value={filterList[index][0] || null}
                       onChange={(date) => {
                         filterList[index][0] = date?.toISO() ?? '';
                         onChange(filterList[index], index, column);
                       }}
-                      okLabel={t('OK')}
-                      todayLabel={t('Today')}
-                      cancelLabel={t('Cancel')}
-                      clearLabel={t('Clear')}
                     />
                   </Grid>
                   <Grid xs={6} item>
-                    <DatePicker
-                      clearable
-                      fullWidth
-                      labelFunc={(date, invalidLabel) =>
-                        date ? dateFormat(date) : invalidLabel
-                      }
-                      autoOk
+                    <MobileDatePicker
+                      renderInput={(params) => (
+                        <TextField fullWidth {...params} />
+                      )}
+                      inputFormat="MMM dd, yyyy"
+                      closeOnSelect
                       label={t('Maximum')}
                       value={filterList[index][1] || null}
                       onChange={(date) => {
                         filterList[index][1] = date?.toISO() ?? '';
                         onChange(filterList[index], index, column);
                       }}
-                      okLabel={t('OK')}
-                      todayLabel={t('Today')}
-                      cancelLabel={t('Cancel')}
-                      clearLabel={t('Clear')}
                     />
                   </Grid>
                 </Grid>

@@ -1,6 +1,6 @@
 import React, { ReactElement, useState } from 'react';
 import {
-  makeStyles,
+  Autocomplete,
   Theme,
   TextField,
   Select,
@@ -20,18 +20,16 @@ import {
   DialogContent,
   DialogContentText,
   Dialog,
-} from '@material-ui/core';
+} from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
 import { useTranslation } from 'react-i18next';
-import { Autocomplete } from '@material-ui/lab';
-
-import { DatePicker, TimePicker } from '@material-ui/pickers';
-import DeleteIcon from '@material-ui/icons/Delete';
+import { MobileDatePicker, MobileTimePicker } from '@mui/x-date-pickers';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Formik } from 'formik';
 import * as yup from 'yup';
 import { useSnackbar } from 'notistack';
 import { DateTime } from 'luxon';
-import { dateFormat } from '../../../../lib/intlFormat/intlFormat';
 import {
   ActivityTypeEnum,
   NotificationTimeUnitEnum,
@@ -50,7 +48,7 @@ import {
   useDeleteTaskMutation,
 } from './TaskDrawer.generated';
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles()((theme: Theme) => ({
   formControl: {
     width: '100%',
   },
@@ -134,7 +132,7 @@ const TaskDrawerForm = ({
         notificationTimeUnit: null,
         ...defaultValues,
       };
-  const classes = useStyles();
+  const { classes } = useStyles();
   const { t } = useTranslation();
 
   const [removeDialogOpen, handleRemoveDialog] = useState(false);
@@ -264,7 +262,9 @@ const TaskDrawerForm = ({
                   <Select
                     labelId="activityType"
                     value={activityType}
-                    onChange={handleChange('activityType')}
+                    onChange={(e) =>
+                      setFieldValue('activityType', e.target.value)
+                    }
                   >
                     <MenuItem value={undefined}>{t('None')}</MenuItem>
                     {Object.values(ActivityTypeEnum).map((val) => (
@@ -279,38 +279,30 @@ const TaskDrawerForm = ({
                 <FormControl className={classes.formControl}>
                   <Grid container spacing={2}>
                     <Grid xs={6} item>
-                      <DatePicker
-                        clearable
-                        fullWidth
-                        labelFunc={(date, invalidLabel) =>
-                          date ? dateFormat(date) : invalidLabel
-                        }
-                        autoOk
+                      <MobileDatePicker
+                        renderInput={(params) => (
+                          <TextField fullWidth {...params} />
+                        )}
+                        inputFormat="MMM dd, yyyy"
+                        closeOnSelect
                         label={t('Due Date')}
                         value={startAt}
                         onChange={(date): void =>
                           setFieldValue('startAt', date)
                         }
-                        okLabel={t('OK')}
-                        todayLabel={t('Today')}
-                        cancelLabel={t('Cancel')}
-                        clearLabel={t('Clear')}
                       />
                     </Grid>
                     <Grid xs={6} item>
-                      <TimePicker
-                        clearable
-                        fullWidth
-                        autoOk
+                      <MobileTimePicker
+                        renderInput={(params) => (
+                          <TextField fullWidth {...params} />
+                        )}
+                        closeOnSelect
                         label={t('Due Time')}
                         value={startAt}
                         onChange={(date): void =>
                           setFieldValue('startAt', date)
                         }
-                        okLabel={t('OK')}
-                        todayLabel={t('Today')}
-                        cancelLabel={t('Cancel')}
-                        clearLabel={t('Clear')}
                       />
                     </Grid>
                   </Grid>
@@ -321,38 +313,30 @@ const TaskDrawerForm = ({
                   <FormControl className={classes.formControl}>
                     <Grid container spacing={2}>
                       <Grid xs={6} item>
-                        <DatePicker
-                          clearable
-                          fullWidth
-                          labelFunc={(date, invalidLabel) =>
-                            date ? dateFormat(date) : invalidLabel
-                          }
-                          autoOk
+                        <MobileDatePicker
+                          renderInput={(params) => (
+                            <TextField fullWidth {...params} />
+                          )}
+                          inputFormat="MMM dd, yyyy"
+                          closeOnSelect
                           label={t('Completed Date')}
                           value={completedAt}
                           onChange={(date): void =>
                             setFieldValue('completedAt', date)
                           }
-                          okLabel={t('OK')}
-                          todayLabel={t('Today')}
-                          cancelLabel={t('Cancel')}
-                          clearLabel={t('Clear')}
                         />
                       </Grid>
                       <Grid xs={6} item>
-                        <TimePicker
-                          clearable
-                          fullWidth
-                          autoOk
+                        <MobileTimePicker
+                          renderInput={(params) => (
+                            <TextField fullWidth {...params} />
+                          )}
+                          closeOnSelect
                           label={t('Completed Time')}
                           value={completedAt}
                           onChange={(date): void =>
                             setFieldValue('completedAt', date)
                           }
-                          okLabel={t('OK')}
-                          todayLabel={t('Today')}
-                          cancelLabel={t('Cancel')}
-                          clearLabel={t('Clear')}
                         />
                       </Grid>
                     </Grid>
@@ -366,11 +350,11 @@ const TaskDrawerForm = ({
                   renderTags={(value, getTagProps): ReactElement[] =>
                     value.map((option, index) => (
                       <Chip
-                        color="primary"
+                        {...getTagProps({ index })}
+                        color="default"
                         size="small"
                         key={index}
                         label={option}
-                        {...getTagProps({ index })}
                       />
                     ))
                   }
@@ -419,7 +403,7 @@ const TaskDrawerForm = ({
                   onChange={(_, userId): void =>
                     setFieldValue('userId', userId)
                   }
-                  getOptionSelected={(option, value): boolean =>
+                  isOptionEqualToValue={(option, value): boolean =>
                     option === value
                   }
                 />
@@ -461,7 +445,7 @@ const TaskDrawerForm = ({
                   onChange={(_, contactIds): void =>
                     setFieldValue('contactIds', contactIds)
                   }
-                  getOptionSelected={(option, value): boolean =>
+                  isOptionEqualToValue={(option, value): boolean =>
                     option === value
                   }
                 />
@@ -506,7 +490,12 @@ const TaskDrawerForm = ({
                             <Select
                               labelId="notificationTimeUnit"
                               value={notificationTimeUnit}
-                              onChange={handleChange('notificationTimeUnit')}
+                              onChange={(e) =>
+                                setFieldValue(
+                                  'notificationTimeUnit',
+                                  e.target.value,
+                                )
+                              }
                             >
                               <MenuItem value={undefined}>{t('None')}</MenuItem>
                               {Object.values(NotificationTimeUnitEnum).map(
@@ -531,7 +520,12 @@ const TaskDrawerForm = ({
                             <Select
                               labelId="notificationType"
                               value={notificationType}
-                              onChange={handleChange('notificationType')}
+                              onChange={(e) =>
+                                setFieldValue(
+                                  'notificationType',
+                                  e.target.value,
+                                )
+                              }
                             >
                               <MenuItem value={undefined}>{t('None')}</MenuItem>
                               {Object.values(NotificationTypeEnum).map(
@@ -557,8 +551,8 @@ const TaskDrawerForm = ({
           </Box>
           <Divider />
           <Box m={2}>
-            <Grid container spacing={1} justify="flex-end">
-              <Grid container item xs={8} justify="flex-start">
+            <Grid container spacing={1} justifyContent="flex-end">
+              <Grid container item xs={8} justifyContent="flex-start">
                 {task?.id ? (
                   <Button
                     size="large"

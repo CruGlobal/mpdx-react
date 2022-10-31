@@ -4,10 +4,10 @@ import {
   Grid,
   Typography,
   Avatar,
-  makeStyles,
   Hidden,
   IconButton,
-} from '@material-ui/core';
+} from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
 import { useTranslation } from 'react-i18next';
 import { Icon } from '@mdi/react';
 import {
@@ -22,7 +22,7 @@ import theme from '../../../theme';
 import { RecordInfoFragment } from './GetContactDuplicates.generated';
 import { contactPartnershipStatus } from 'src/utils/contacts/contactPartnershipStatus';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles()(() => ({
   container: {
     display: 'flex',
     alignItems: 'center',
@@ -86,7 +86,7 @@ interface Props {
 const Contact: React.FC<Props> = ({ contact1, contact2, update }) => {
   const [selected, setSelected] = useState('none');
   const { t } = useTranslation();
-  const classes = useStyles();
+  const { classes } = useStyles();
   //TODO: Add button functionality
   //TODO: Make contact title a link to contact page
 

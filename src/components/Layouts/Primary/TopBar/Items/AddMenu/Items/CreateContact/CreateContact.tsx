@@ -1,15 +1,14 @@
 import React, { ReactElement } from 'react';
 import {
-  Button,
   CircularProgress,
   DialogActions,
   DialogContent,
   FormControl,
   FormLabel,
   Grid,
-  styled,
   TextField,
-} from '@material-ui/core';
+} from '@mui/material';
+import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { Formik } from 'formik';
 import * as yup from 'yup';
@@ -17,6 +16,10 @@ import { useSnackbar } from 'notistack';
 import { useRouter } from 'next/router';
 import { ContactCreateInput } from '../../../../../../../../../graphql/types.generated';
 import { useCreateContactMutation } from './CreateContact.generated';
+import {
+  SubmitButton,
+  CancelButton,
+} from 'src/components/common/Modal/ActionButtons/ActionButtons';
 
 interface Props {
   accountListId: string;
@@ -46,11 +49,10 @@ const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
   margin: theme.spacing(0, 1, 0, 0),
 }));
 
-const contactSchema: yup.SchemaOf<
-  Pick<ContactCreateInput, 'name'>
-> = yup.object({
-  name: yup.string().required(),
-});
+const contactSchema: yup.SchemaOf<Pick<ContactCreateInput, 'name'>> =
+  yup.object({
+    name: yup.string().required(),
+  });
 
 const CreateContact = ({
   accountListId,
@@ -127,19 +129,11 @@ const CreateContact = ({
             </Grid>
           </DialogContent>
           <DialogActions>
-            <Button disabled={isSubmitting} onClick={handleClose}>
-              {t('Cancel')}
-            </Button>
-            <Button
-              size="large"
-              variant="contained"
-              color="primary"
-              disabled={!isValid || isSubmitting}
-              type="submit"
-            >
+            <CancelButton disabled={isSubmitting} onClick={handleClose} />
+            <SubmitButton disabled={!isValid || isSubmitting}>
               {creating && <LoadingIndicator size={20} />}
               {t('Save')}
-            </Button>
+            </SubmitButton>
           </DialogActions>
         </form>
       )}

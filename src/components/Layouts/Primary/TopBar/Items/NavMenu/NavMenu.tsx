@@ -1,6 +1,5 @@
 import React, { ReactElement, useMemo, useState } from 'react';
 import {
-  makeStyles,
   Grid,
   MenuItem,
   ListItemText,
@@ -11,9 +10,10 @@ import {
   Paper,
   Box,
   Typography,
-} from '@material-ui/core';
+} from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
 import clsx from 'clsx';
-import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import NextLink from 'next/link';
 import { useTranslation } from 'react-i18next';
 import Icon from '@mdi/react';
@@ -30,7 +30,7 @@ export const filteredReportNavItems = ReportNavItems.filter(
   (item) => item.id !== 'partnerCurrency',
 );
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles()(() => ({
   navListItem: {
     order: 2,
     [theme.breakpoints.down('md')]: {
@@ -115,7 +115,7 @@ export const toolsRedirectLinks: { [key: string]: string } = {
 const NavMenu = (): ReactElement => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
-  const classes = useStyles();
+  const { classes } = useStyles();
   const currentToolId = useCurrentToolId();
   const { data, loading } = useGetToolNotificationsQuery({
     variables: { accountListId: accountListId ?? '' },

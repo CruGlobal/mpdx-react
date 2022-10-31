@@ -1,6 +1,5 @@
 import React, { ReactElement } from 'react';
 import {
-  makeStyles,
   Theme,
   Container,
   Typography,
@@ -8,7 +7,8 @@ import {
   CardActionArea,
   CardContent,
   Box,
-} from '@material-ui/core';
+} from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
@@ -21,7 +21,7 @@ interface Props {
   data: GetAccountListsQuery;
 }
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles()((theme: Theme) => ({
   box: {
     paddingBottom: theme.spacing(5),
     backgroundColor: '#f6f7f9',
@@ -55,7 +55,7 @@ const variants = {
 };
 
 const AccountLists = ({ data }: Props): ReactElement => {
-  const classes = useStyles();
+  const { classes } = useStyles();
   const { t } = useTranslation();
 
   return (

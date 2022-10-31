@@ -1,11 +1,11 @@
 import {
+  Autocomplete,
   Checkbox,
   ListItem,
   ListItemIcon,
   ListItemText,
   TextField,
-} from '@material-ui/core';
-import { Autocomplete } from '@material-ui/lab';
+} from '@mui/material';
 import React from 'react';
 import { MultiselectFilter } from '../../../../graphql/types.generated';
 

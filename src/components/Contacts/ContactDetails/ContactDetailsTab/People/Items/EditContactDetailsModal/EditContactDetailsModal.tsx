@@ -1,8 +1,6 @@
 import React, { ReactElement } from 'react';
 import {
   Box,
-  Button,
-  styled,
   TextField,
   Select,
   MenuItem,
@@ -12,8 +10,9 @@ import {
   DialogContent,
   CircularProgress,
   Grid,
-} from '@material-ui/core';
-import BookmarkIcon from '@material-ui/icons/Bookmark';
+} from '@mui/material';
+import { styled } from '@mui/material/styles';
+import BookmarkIcon from '@mui/icons-material/Bookmark';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { useSnackbar } from 'notistack';
@@ -27,11 +26,10 @@ import {
   ContactDetailsFragment,
   useUpdateContactDetailsMutation,
 } from './EditContactDetails.generated';
-
-const ContactEditModalFooterButton = styled(Button)(({ theme }) => ({
-  color: theme.palette.info.main,
-  fontWeight: 'bold',
-}));
+import {
+  SubmitButton,
+  CancelButton,
+} from 'src/components/common/Modal/ActionButtons/ActionButtons';
 
 const ContactEditContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -44,16 +42,6 @@ const ContactInputWrapper = styled(Box)(({ theme }) => ({
   position: 'relative',
   padding: theme.spacing(0, 6),
   margin: theme.spacing(2, 0),
-}));
-
-const ContactInputField = styled(TextField)(() => ({
-  '&& > label': {
-    textTransform: 'uppercase',
-  },
-}));
-
-const ContactPrimaryPersonSelectLabel = styled(InputLabel)(() => ({
-  textTransform: 'uppercase',
 }));
 
 const PrimaryContactIcon = styled(BookmarkIcon)(({ theme }) => ({
@@ -75,7 +63,9 @@ interface EditContactDetailsModalProps {
   handleClose: () => void;
 }
 
-export const EditContactDetailsModal: React.FC<EditContactDetailsModalProps> = ({
+export const EditContactDetailsModal: React.FC<
+  EditContactDetailsModalProps
+> = ({
   accountListId,
   contact,
   isOpen,
@@ -83,10 +73,8 @@ export const EditContactDetailsModal: React.FC<EditContactDetailsModalProps> = (
 }): ReactElement<EditContactDetailsModalProps> => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
-  const [
-    updateContact,
-    { loading: updating },
-  ] = useUpdateContactDetailsMutation();
+  const [updateContact, { loading: updating }] =
+    useUpdateContactDetailsMutation();
 
   const contactSchema: yup.SchemaOf<
     Pick<
@@ -153,6 +141,7 @@ export const EditContactDetailsModal: React.FC<EditContactDetailsModalProps> = (
           },
           handleChange,
           handleSubmit,
+          setFieldValue,
           isSubmitting,
           isValid,
           errors,
@@ -162,7 +151,7 @@ export const EditContactDetailsModal: React.FC<EditContactDetailsModalProps> = (
             <DialogContent dividers>
               <ContactEditContainer>
                 <ContactInputWrapper>
-                  <ContactInputField
+                  <TextField
                     label={t('Contact')}
                     value={name}
                     onChange={handleChange('name')}
@@ -180,13 +169,16 @@ export const EditContactDetailsModal: React.FC<EditContactDetailsModalProps> = (
                   <PrimaryContactIcon />
 
                   <FormControl fullWidth={true}>
-                    <ContactPrimaryPersonSelectLabel id="primary-person-select-label">
+                    <InputLabel id="primary-person-select-label">
                       {t('Primary')}
-                    </ContactPrimaryPersonSelectLabel>
+                    </InputLabel>
                     <Select
+                      label={t('Primary')}
                       labelId="primary-person-select-label"
                       value={primaryPersonId}
-                      onChange={handleChange('primaryPersonId')}
+                      onChange={(e) =>
+                        setFieldValue('primaryPersonId', e.target.value)
+                      }
                       fullWidth={true}
                     >
                       {contact.people.nodes.map((person) => {
@@ -208,7 +200,9 @@ export const EditContactDetailsModal: React.FC<EditContactDetailsModalProps> = (
                     <Select
                       labelId="send-newsletter-select-label"
                       value={sendNewsletter}
-                      onChange={handleChange('sendNewsletter')}
+                      onChange={(e) =>
+                        setFieldValue('sendNewsletter', e.target.value)
+                      }
                       fullWidth={true}
                     >
                       {Object.values(SendNewsletterEnum).map((value) => (
@@ -244,21 +238,11 @@ export const EditContactDetailsModal: React.FC<EditContactDetailsModalProps> = (
               </ContactEditContainer>
             </DialogContent>
             <DialogActions>
-              <ContactEditModalFooterButton
-                onClick={handleClose}
-                disabled={isSubmitting}
-                variant="text"
-              >
-                {t('Cancel')}
-              </ContactEditModalFooterButton>
-              <ContactEditModalFooterButton
-                type="submit"
-                variant="text"
-                disabled={!isValid || isSubmitting}
-              >
+              <CancelButton onClick={handleClose} disabled={isSubmitting} />
+              <SubmitButton disabled={!isValid || isSubmitting}>
                 {updating && <LoadingIndicator color="primary" size={20} />}
                 {t('Save')}
-              </ContactEditModalFooterButton>
+              </SubmitButton>
             </DialogActions>
           </form>
         )}

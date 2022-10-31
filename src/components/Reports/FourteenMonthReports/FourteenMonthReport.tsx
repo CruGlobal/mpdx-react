@@ -1,5 +1,6 @@
 import React, { useMemo, useRef, useState } from 'react';
-import { Box, CircularProgress, Theme, useMediaQuery } from '@material-ui/core';
+import { Box, CircularProgress, useMediaQuery } from '@mui/material';
+import { Theme } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { useReactToPrint } from 'react-to-print';
 import { DateTime } from 'luxon';
