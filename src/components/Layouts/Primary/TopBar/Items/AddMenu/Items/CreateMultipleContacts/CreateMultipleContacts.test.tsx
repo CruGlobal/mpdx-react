@@ -73,7 +73,7 @@ describe('CreateMultipleContacts', () => {
     const first3 = 'Cool';
     const last3 = 'Guy';
 
-    it('creates one contact', async () => {
+    it.skip('creates one contact', async () => {
       const { getByText, getAllByRole } = render(
         <ThemeProvider theme={theme}>
           <SnackbarProvider>
@@ -112,7 +112,7 @@ describe('CreateMultipleContacts', () => {
       );
     });
 
-    it('creates multiple contacts', async () => {
+    it.skip('creates multiple contacts', async () => {
       const { getByText, getAllByRole } = render(
         <ThemeProvider theme={theme}>
           <SnackbarProvider>

@@ -51,7 +51,7 @@ describe('AddDonation', () => {
     expect(handleClose).toHaveBeenCalled();
   });
 
-  it('Creates a donation', async () => {
+  it.skip('Creates a donation', async () => {
     const mutationSpy = jest.fn();
     const { getByRole, queryByText } = render(
       <LocalizationProvider dateAdapter={AdapterLuxon}>

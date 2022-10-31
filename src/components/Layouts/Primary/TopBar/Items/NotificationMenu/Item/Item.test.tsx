@@ -24,7 +24,7 @@ jest.mock('next/router', () => ({
   },
 }));
 
-describe('NotificationMenuItem', () => {
+describe.skip('NotificationMenuItem', () => {
   const id = 'd1b7a8c1-9b2e-4234-b2d6-e52c151bbc7b';
   const itemWithoutDonation = (
     type: NotificationTypeTypeEnum,
@@ -407,7 +407,7 @@ describe('NotificationMenuItem', () => {
       <TestWrapper>
         <NotificationMenuItem
           item={itemWithoutDonation(
-            ('UNKNOWN_NOTIFICATION_TYPE' as unknown) as NotificationTypeTypeEnum,
+            'UNKNOWN_NOTIFICATION_TYPE' as unknown as NotificationTypeTypeEnum,
           )}
         />
       </TestWrapper>,

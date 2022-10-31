@@ -160,22 +160,23 @@ export const getNotificationsLoadingMock = (): MockedResponse => {
   };
 };
 
-export const acknowledgeAllUserNotificationsMutationMock = (): MockedResponse => {
-  const data: AcknowledgeAllUserNotificationsMutation = {
-    acknowledgeAllUserNotifications: {
-      notificationIds: ['d1b7a8c1-9b2e-4234-b2d6-e52c151bbc7b'],
-    },
-  };
-
-  return {
-    request: {
-      query: AcknowledgeAllUserNotificationsDocument,
-      variables: {
-        accountListId: '1',
+export const acknowledgeAllUserNotificationsMutationMock =
+  (): MockedResponse => {
+    const data: AcknowledgeAllUserNotificationsMutation = {
+      acknowledgeAllUserNotifications: {
+        notificationIds: ['d1b7a8c1-9b2e-4234-b2d6-e52c151bbc7b'],
       },
-    },
-    result: {
-      data,
-    },
+    };
+
+    return {
+      request: {
+        query: AcknowledgeAllUserNotificationsDocument,
+        variables: {
+          accountListId: '1',
+        },
+      },
+      result: {
+        data,
+      },
+    };
   };
-};

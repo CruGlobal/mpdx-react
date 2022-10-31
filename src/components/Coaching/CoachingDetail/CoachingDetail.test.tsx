@@ -8,25 +8,36 @@ import {
 import { CoachingDetail } from './CoachingDetail';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { render } from '__tests__/util/testingLibraryReactMock';
+import TestRouter from '__tests__/util/TestRouter';
+
+const push = jest.fn();
+
+const router = {
+  query: { accountListId: '123' },
+  isReady: true,
+  push,
+};
 
 const coachingId = 'coaching-id';
 describe('LoadCoachingDetail', () => {
   it('view', async () => {
     const { findByText } = render(
-      <GqlMockedProvider<LoadCoachingDetailQuery>
-        mocks={{
-          LoadCoachingDetail: {
-            coachingAccountList: {
-              id: coachingId,
-              name: 'John Doe',
-              currency: 'USD',
-              monthlyGoal: 55,
+      <TestRouter router={router}>
+        <GqlMockedProvider<LoadCoachingDetailQuery>
+          mocks={{
+            LoadCoachingDetail: {
+              coachingAccountList: {
+                id: coachingId,
+                name: 'John Doe',
+                currency: 'USD',
+                monthlyGoal: 55,
+              },
             },
-          },
-        }}
-      >
-        <CoachingDetail coachingId="coaching-id" isAccountListId={false} />
-      </GqlMockedProvider>,
+          }}
+        >
+          <CoachingDetail coachingId="coaching-id" isAccountListId={false} />
+        </GqlMockedProvider>
+      </TestRouter>,
     );
     expect(await findByText('John Doe')).toBeVisible();
     expect(await findByText('Monthly $55')).toBeVisible();
@@ -34,20 +45,22 @@ describe('LoadCoachingDetail', () => {
   });
   it('null goal', async () => {
     const { findByText } = render(
-      <GqlMockedProvider<LoadCoachingDetailQuery>
-        mocks={{
-          LoadCoachingDetail: {
-            coachingAccountList: {
-              id: coachingId,
-              name: 'John Doe',
-              currency: 'USD',
-              monthlyGoal: null,
+      <TestRouter router={router}>
+        <GqlMockedProvider<LoadCoachingDetailQuery>
+          mocks={{
+            LoadCoachingDetail: {
+              coachingAccountList: {
+                id: coachingId,
+                name: 'John Doe',
+                currency: 'USD',
+                monthlyGoal: null,
+              },
             },
-          },
-        }}
-      >
-        <CoachingDetail coachingId="coaching-id" isAccountListId={false} />
-      </GqlMockedProvider>,
+          }}
+        >
+          <CoachingDetail coachingId="coaching-id" isAccountListId={false} />
+        </GqlMockedProvider>
+      </TestRouter>,
     );
     expect(await findByText('John Doe')).toBeVisible();
     expect(await findByText('Monthly $0')).toBeVisible();
@@ -56,20 +69,22 @@ describe('LoadCoachingDetail', () => {
 
   it('view isAccountList', async () => {
     const { findByText } = render(
-      <GqlMockedProvider<LoadCoachingDetailQuery>
-        mocks={{
-          LoadAccountListCoachingDetail: {
-            accountList: {
-              id: coachingId,
-              name: 'John Doe',
-              currency: 'USD',
-              monthlyGoal: 55,
+      <TestRouter router={router}>
+        <GqlMockedProvider<LoadCoachingDetailQuery>
+          mocks={{
+            LoadAccountListCoachingDetail: {
+              accountList: {
+                id: coachingId,
+                name: 'John Doe',
+                currency: 'USD',
+                monthlyGoal: 55,
+              },
             },
-          },
-        }}
-      >
-        <CoachingDetail coachingId="coaching-id" isAccountListId={true} />
-      </GqlMockedProvider>,
+          }}
+        >
+          <CoachingDetail coachingId="coaching-id" isAccountListId={true} />
+        </GqlMockedProvider>
+      </TestRouter>,
     );
     expect(await findByText('John Doe')).toBeVisible();
     expect(await findByText('Monthly $55')).toBeVisible();
@@ -77,20 +92,22 @@ describe('LoadCoachingDetail', () => {
   });
   it('null goal isAccountList', async () => {
     const { findByText } = render(
-      <GqlMockedProvider<LoadCoachingDetailQuery>
-        mocks={{
-          LoadAccountListCoachingDetail: {
-            accountList: {
-              id: coachingId,
-              name: 'John Doe',
-              currency: 'USD',
-              monthlyGoal: null,
+      <TestRouter router={router}>
+        <GqlMockedProvider<LoadCoachingDetailQuery>
+          mocks={{
+            LoadAccountListCoachingDetail: {
+              accountList: {
+                id: coachingId,
+                name: 'John Doe',
+                currency: 'USD',
+                monthlyGoal: null,
+              },
             },
-          },
-        }}
-      >
-        <CoachingDetail coachingId="coaching-id" isAccountListId={true} />
-      </GqlMockedProvider>,
+          }}
+        >
+          <CoachingDetail coachingId="coaching-id" isAccountListId={true} />
+        </GqlMockedProvider>
+      </TestRouter>,
     );
     expect(await findByText('John Doe')).toBeVisible();
     expect(await findByText('Monthly $0')).toBeVisible();

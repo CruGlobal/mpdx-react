@@ -45,7 +45,9 @@ describe('HandoffLink', () => {
     userEvent.click(linkElement);
     // TODO investigate why the user is undefined when click fires
     expect(open).toHaveBeenCalledWith(
-      'http://localhost:3000/api/handoff?accountListId=accountListId&userId=&path=%2Fcontacts',
+      `${
+        process.env.SITE_URL || window.location.origin
+      }/api/handoff?accountListId=accountListId&userId=&path=%2Fcontacts`,
       '_blank',
     );
   });
@@ -65,7 +67,9 @@ describe('HandoffLink', () => {
     );
     userEvent.click(linkElement);
     expect(open).toHaveBeenCalledWith(
-      'http://localhost:3000/api/handoff?auth=true&path=%2Fcontacts',
+      `${
+        process.env.SITE_URL || window.location.origin
+      }/api/handoff?auth=true&path=%2Fcontacts`,
       '_blank',
     );
   });

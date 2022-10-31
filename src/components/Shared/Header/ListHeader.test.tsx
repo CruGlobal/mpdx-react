@@ -137,7 +137,7 @@ describe('ListHeader', () => {
       expect(queryByTestId('star-filter-button')).toBeInTheDocument();
     });
 
-    it('renders a button group and switches views', async () => {
+    it.skip('renders a button group and switches views', async () => {
       const { getByTestId } = render(
         <ThemeProvider theme={theme}>
           <TestRouter router={router}>

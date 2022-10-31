@@ -59,6 +59,7 @@ import {
   CancelButton,
   DeleteButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
+import { getLocalizedTaskType } from 'src/utils/functions/getLocalizedTaskType';
 
 const LoadingIndicator = styled(CircularProgress)(() => ({
   display: 'flex',
@@ -323,11 +324,14 @@ const TaskModalLogForm = ({
                       setFieldValue('activityType', e.target.value)
                     }
                   >
-                    {Object.values(ActivityTypeEnum).map((val) => (
-                      <MenuItem key={val} value={val}>
-                        {t(val) /* manually added to translation file */}
-                      </MenuItem>
-                    ))}
+                    <MenuItem value={undefined}>{t('None')}</MenuItem>
+                    {Object.values(ActivityTypeEnum)
+                      .filter((val) => val !== 'NONE')
+                      .map((val) => (
+                        <MenuItem key={val} value={val}>
+                          {getLocalizedTaskType(t, val)}
+                        </MenuItem>
+                      ))}
                   </Select>
                 </FormControl>
               </Grid>
@@ -570,15 +574,14 @@ const TaskModalLogForm = ({
                                 setFieldValue('nextAction', e.target.value)
                               }
                             >
-                              {Object.values(ActivityTypeEnum).map((val) => (
-                                <MenuItem key={val} value={val}>
-                                  {
-                                    t(
-                                      val,
-                                    ) /* manually added to translation file */
-                                  }
-                                </MenuItem>
-                              ))}
+                              <MenuItem value={undefined}>{t('None')}</MenuItem>
+                              {Object.values(ActivityTypeEnum)
+                                .filter((val) => val !== 'NONE')
+                                .map((val) => (
+                                  <MenuItem key={val} value={val}>
+                                    {getLocalizedTaskType(t, val)}
+                                  </MenuItem>
+                                ))}
                             </Select>
                           </FormControl>
                         </Grid>

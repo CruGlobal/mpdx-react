@@ -40,6 +40,7 @@ import {
 import { MassActionsEditTasksModal } from 'src/components/Task/MassActions/EditTasks/MassActionsEditTasksModal';
 import { MassActionsTasksRemoveTagsModal } from 'src/components/Task/MassActions/RemoveTags/MassActionsTasksRemoveTagsModal';
 import { MassActionsTasksAddTagsModal } from 'src/components/Task/MassActions/AddTags/MassActionsTasksAddTagsModal';
+import { currentString, historicString } from 'src/utils/tasks/taskActivity';
 
 const WhiteBackground = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.common.white,
@@ -424,13 +425,13 @@ const TasksPage: React.FC = () => {
                       variant={isCurrent ? 'contained' : 'outlined'}
                       onClick={() => setCurrentFilter(true)}
                     >
-                      {t('Current')}
+                      {currentString()}
                     </Button>
                     <Button
                       variant={isCurrent ? 'outlined' : 'contained'}
                       onClick={() => setCurrentFilter(false)}
                     >
-                      {t('Historic')}
+                      {historicString()}
                     </Button>
                   </TaskCurrentHistoryButtonGroup>
                   <InfiniteList

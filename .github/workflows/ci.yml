@@ -9,8 +9,7 @@ on:
 
 env:
   # Use production API for codegen to make sure production is compatible with the code to be merged
-  # TODO: This is the current production api and will need to be updated on rewrite release.
-  API_URL: 'https://next.mpdx.org/api/graphql'
+  API_URL: 'https://api.mpdx.org/graphql'
 
 jobs:
   split-tests:
@@ -19,7 +18,7 @@ jobs:
       test-chunks: ${{ steps['set-test-chunks'].outputs['test-chunks'] }}
       test-chunk-ids: ${{ steps['set-test-chunk-ids'].outputs['test-chunk-ids'] }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
           node-version: 16
@@ -27,10 +26,10 @@ jobs:
         run: yarn install --immutable --immutable-cache
       - id: set-test-chunks
         name: Set Chunks
-        run: echo "::set-output name=test-chunks::$(yarn test --silent --listTests --json | jq -cM '[_nwise(length / 4 | ceil)]')"
+        run: echo "test-chunks=$(yarn test --silent --listTests --json | jq -cM '[_nwise(length / 4 | ceil)]')" >> $GITHUB_OUTPUT
       - id: set-test-chunk-ids
         name: Set Chunk IDs
-        run: echo "::set-output name=test-chunk-ids::$(echo $CHUNKS | jq -cM 'to_entries | map(.key)')"
+        run: echo "test-chunk-ids=$(echo $CHUNKS | jq -cM 'to_entries | map(.key)')" >> $GITHUB_OUTPUT
         env:
           CHUNKS: ${{ steps['set-test-chunks'].outputs['test-chunks'] }}
 
@@ -43,7 +42,7 @@ jobs:
       matrix:
         chunk: ${{ fromJson(needs.split-tests.outputs['test-chunk-ids']) }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
           node-version: 16
@@ -58,7 +57,7 @@ jobs:
         env:
           CHUNKS: ${{ needs.split-tests.outputs['test-chunks'] }}
       - name: Codecov
-        uses: codecov/codecov-action@v2
+        uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: true
@@ -66,7 +65,7 @@ jobs:
   eslint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
           node-version: 16
@@ -82,7 +81,7 @@ jobs:
   typescript:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
           node-version: 16
@@ -98,7 +97,7 @@ jobs:
   prettier:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
           node-version: 16
@@ -110,7 +109,7 @@ jobs:
   chromatic:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           # Chromatic needs access to the full Git history graph
           fetch-depth: 0
@@ -136,7 +135,7 @@ jobs:
   yarn-check-cache:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
           node-version: 16
@@ -148,8 +147,8 @@ jobs:
     needs: [test, eslint, typescript, prettier]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
         with:
           node-version: 16
       - name: 📦 Install Dependencies

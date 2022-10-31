@@ -82,6 +82,7 @@ export const DeleteButton: React.FC<ActionButtonProps> = ({
     <ActionButton
       onClick={onClick}
       size={size}
+      dataTestId="modal-delete-button"
       disabled={disabled}
       color="error"
       sx={sx}
