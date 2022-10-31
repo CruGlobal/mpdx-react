@@ -4,7 +4,7 @@ import { ThemeProvider } from '@mui/material/styles';
 import theme from '../../theme';
 import PageHeading from '.';
 
-describe.skip('PageHeading', () => {
+describe('PageHeading', () => {
   it('has correct defaults', () => {
     const { getByTestId } = render(
       <ThemeProvider theme={theme}>
