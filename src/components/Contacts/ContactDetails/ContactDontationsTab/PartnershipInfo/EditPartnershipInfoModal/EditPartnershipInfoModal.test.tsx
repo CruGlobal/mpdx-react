@@ -192,7 +192,7 @@ describe('EditPartnershipInfoModal', () => {
     expect(handleClose).toHaveBeenCalled();
   });
 
-  it.skip('should handle editing status | Financial', async () => {
+  it('should handle editing status | Financial', async () => {
     const { getByLabelText, getByText } = render(
       <SnackbarProvider>
         <LocalizationProvider dateAdapter={AdapterLuxon}>
@@ -221,7 +221,9 @@ describe('EditPartnershipInfoModal', () => {
     userEvent.click(frequencyInput);
     userEvent.click(getByText(PledgeFrequencyEnum.Annual));
 
-    expect(frequencyInput.textContent).toEqual(PledgeFrequencyEnum.Annual);
+    await waitFor(() =>
+      expect(frequencyInput.textContent).toEqual(PledgeFrequencyEnum.Annual),
+    );
     expect(amountInput).toHaveValue(500);
 
     userEvent.click(getByText('Save'));
@@ -359,7 +361,7 @@ describe('EditPartnershipInfoModal', () => {
     expect(handleClose).toHaveBeenCalled();
   });
 
-  it.skip('should handle editing start date', async () => {
+  it('should handle editing start date', async () => {
     const { getByLabelText, getByText, getAllByText } = render(
       <SnackbarProvider>
         <LocalizationProvider dateAdapter={AdapterLuxon}>
@@ -398,7 +400,7 @@ describe('EditPartnershipInfoModal', () => {
     const datePickerButton = getByLabelText('change start date');
     userEvent.click(datePickerButton);
 
-    const day = await waitFor(async () => getAllByText('30')[1]);
+    const day = await waitFor(async () => getAllByText('30')[0]);
     userEvent.click(day);
     const okayButton = await waitFor(async () => getByText('OK'));
     userEvent.click(okayButton);
@@ -414,7 +416,7 @@ describe('EditPartnershipInfoModal', () => {
     expect(handleClose).toHaveBeenCalled();
   });
 
-  it.skip('should handle editing the referred by | Delete', async () => {
+  it('should handle editing the referred by | Delete', async () => {
     const { getByLabelText, getByText, getByRole, queryByText } = render(
       <SnackbarProvider>
         <LocalizationProvider dateAdapter={AdapterLuxon}>
@@ -432,6 +434,7 @@ describe('EditPartnershipInfoModal', () => {
 
     const referredByInput = getByLabelText('Referred By');
     await waitFor(() => expect(referredByInput).toBeInTheDocument());
+    userEvent.click(referredByInput);
     expect(getByText('Person, Cool')).toBeInTheDocument();
     const deleteIcon = getByRole('button', {
       name: 'Person, Cool',
@@ -452,7 +455,7 @@ describe('EditPartnershipInfoModal', () => {
     expect(handleClose).toHaveBeenCalled();
   });
 
-  it.skip('should handle editing the referred by | Create', async () => {
+  it('should handle editing the referred by | Create', async () => {
     const { getByLabelText, getByText } = render(
       <SnackbarProvider>
         <LocalizationProvider dateAdapter={AdapterLuxon}>
@@ -534,7 +537,7 @@ describe('EditPartnershipInfoModal', () => {
     expect(getByText('No options')).toBeInTheDocument();
   });
 
-  it.skip('should handle editing next ask date', async () => {
+  it('should handle editing next ask date', async () => {
     const { getByLabelText, getByText, getAllByText } = render(
       <SnackbarProvider>
         <LocalizationProvider dateAdapter={AdapterLuxon}>
@@ -573,7 +576,7 @@ describe('EditPartnershipInfoModal', () => {
     const datePickerButton = getByLabelText('change next ask date');
     userEvent.click(datePickerButton);
 
-    const day = await waitFor(async () => getAllByText('30')[1]);
+    const day = await waitFor(async () => getAllByText('30')[0]);
     userEvent.click(day);
     const okayButton = await waitFor(async () => getByText('OK'));
     userEvent.click(okayButton);

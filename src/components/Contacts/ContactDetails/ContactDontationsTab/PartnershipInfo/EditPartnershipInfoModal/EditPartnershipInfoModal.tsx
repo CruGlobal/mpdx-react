@@ -432,7 +432,7 @@ export const EditPartnershipInfoModal: React.FC<
                     disabled={status !== StatusEnum.PartnerFinancial}
                     aria-readonly={status !== StatusEnum.PartnerFinancial}
                     onChange={(e) =>
-                      setFieldValue('pledgeCurrency', e.target.value)
+                      setFieldValue('pledgeFrequency', e.target.value)
                     }
                     IconComponent={() =>
                       status !== StatusEnum.PartnerFinancial ? (
