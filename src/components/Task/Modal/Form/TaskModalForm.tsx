@@ -173,9 +173,9 @@ const TaskModalForm = ({
         dataFilteredByName?.contacts.nodes ||
         data?.contacts.nodes ||
         [];
-        
+
   const availableResults = task ? possibleResults(task) : [];
-  const availableNextActions = task ? possibleNextActions(task):[];
+  const availableNextActions = task ? possibleNextActions(task) : [];
 
   const onSubmit = async (
     attributes: TaskCreateInput | TaskUpdateInput,
@@ -214,8 +214,10 @@ const TaskModalForm = ({
             variables: {
               accountListId,
               tasksFilter: {
-                contactIds: defaultValues?.contactIds && defaultValues?.contactIds[0] ? [
-                  defaultValues.contactIds[0]] : [],
+                contactIds:
+                  defaultValues?.contactIds && defaultValues?.contactIds[0]
+                    ? [defaultValues.contactIds[0]]
+                    : [],
               },
             },
           },
@@ -355,63 +357,63 @@ const TaskModalForm = ({
                   <CircularProgress color="primary" size={20} />
                 )}
               </Grid>
-      {!initialTask.completedAt &&
-                      <Grid item>
-                      <FormControl fullWidth>
-                        <Grid container spacing={2}>
-                          <Grid xs={6} item>
-                            <MobileDatePicker
-                              InputProps={{
-                                endAdornment: (
-                                  <InputAdornment position="end">
-                                    <CalendarToday
-                                      style={{
-                                        color: theme.palette.cruGrayMedium.main,
-                                      }}
-                                    />
-                                  </InputAdornment>
-                                ),
-                              }}
-                              renderInput={(params) => (
-                                <TextField fullWidth {...params} />
-                              )}
-                              inputFormat="MMM dd, yyyy"
-                              closeOnSelect
-                              label={t('Due Date')}
-                              value={startAt}
-                              onChange={(date): void =>
-                                setFieldValue('startAt', date)
-                              }
-                            />
-                          </Grid>
-                          <Grid xs={6} item>
-                            <MobileTimePicker
-                              renderInput={(params) => (
-                                <TextField fullWidth {...params} />
-                              )}
-                              closeOnSelect
-                              InputProps={{
-                                endAdornment: (
-                                  <InputAdornment position="end">
-                                    <Schedule
-                                      style={{
-                                        color: theme.palette.cruGrayMedium.main,
-                                      }}
-                                    />
-                                  </InputAdornment>
-                                ),
-                              }}
-                              label={t('Due Time')}
-                              value={startAt}
-                              onChange={(date): void =>
-                                setFieldValue('startAt', date)
-                              }
-                            />
-                          </Grid>
-                        </Grid>
-                      </FormControl>
+              {!initialTask.completedAt && (
+                <Grid item>
+                  <FormControl fullWidth>
+                    <Grid container spacing={2}>
+                      <Grid xs={6} item>
+                        <MobileDatePicker
+                          InputProps={{
+                            endAdornment: (
+                              <InputAdornment position="end">
+                                <CalendarToday
+                                  style={{
+                                    color: theme.palette.cruGrayMedium.main,
+                                  }}
+                                />
+                              </InputAdornment>
+                            ),
+                          }}
+                          renderInput={(params) => (
+                            <TextField fullWidth {...params} />
+                          )}
+                          inputFormat="MMM dd, yyyy"
+                          closeOnSelect
+                          label={t('Due Date')}
+                          value={startAt}
+                          onChange={(date): void =>
+                            setFieldValue('startAt', date)
+                          }
+                        />
+                      </Grid>
+                      <Grid xs={6} item>
+                        <MobileTimePicker
+                          renderInput={(params) => (
+                            <TextField fullWidth {...params} />
+                          )}
+                          closeOnSelect
+                          InputProps={{
+                            endAdornment: (
+                              <InputAdornment position="end">
+                                <Schedule
+                                  style={{
+                                    color: theme.palette.cruGrayMedium.main,
+                                  }}
+                                />
+                              </InputAdornment>
+                            ),
+                          }}
+                          label={t('Due Time')}
+                          value={startAt}
+                          onChange={(date): void =>
+                            setFieldValue('startAt', date)
+                          }
+                        />
+                      </Grid>
                     </Grid>
-      }
+                  </FormControl>
+                </Grid>
+              )}
               {initialTask.completedAt && (
                 <Grid item>
                   <FormControl fullWidth>
@@ -562,117 +564,51 @@ const TaskModalForm = ({
                   options={data?.accountList?.taskTagList || []}
                 />
               </Grid>
-              {!initialTask.completedAt && <Grid item>
-                <Tooltip
-                  title={
-                    <Typography>
-                      {t('If blank you will not be notified')}
-                    </Typography>
-                  }
-                >
-                  <Typography
-                    style={{
-                      display: 'flex',
-                      marginBottom: theme.spacing(1),
-                    }}
+              {!initialTask.completedAt && (
+                <Grid item>
+                  <Tooltip
+                    title={
+                      <Typography>
+                        {t('If blank you will not be notified')}
+                      </Typography>
+                    }
                   >
-                    Notifications <InfoIcon style={{ marginLeft: '5px' }} />{' '}
-                  </Typography>
-                </Tooltip>
-                <Grid container spacing={2}>
-                  <Grid xs={4} item>
-                    <FormControl fullWidth>
-                      <InputLabel
-                        style={{ display: 'flex', alignItems: 'center' }}
-                        id="notificationType"
-                      >
-                        {t('Type')}
-                      </InputLabel>
-                      <Tooltip
-                        placement="top"
-                        title={
-                          <Typography>
-                            {t('How the notification will be sent')}
-                          </Typography>
-                        }
-                      >
-                        <Select
-                          labelId="notificationType"
-                          value={notificationType}
-                          onChange={(e) =>
-                            setFieldValue('notificationType', e.target.value)
-                          }
-                          label={t('Type')}
-                        >
-                          <MenuItem value={undefined}>{t('None')}</MenuItem>
-                          {Object.values(NotificationTypeEnum).map((val) => (
-                            <MenuItem key={val} value={val}>
-                              {t(val) /* manually added to translation file */}
-                            </MenuItem>
-                          ))}
-                        </Select>
-                      </Tooltip>
-                    </FormControl>
-                  </Grid>
-                  <Grid xs={3} item>
-                    <Tooltip
-                      placement="top"
-                      title={
-                        <Typography>
-                          {t('Amount of time before notification')}
-                        </Typography>
-                      }
+                    <Typography
+                      style={{
+                        display: 'flex',
+                        marginBottom: theme.spacing(1),
+                      }}
                     >
-                      <TextField
-                        label={
-                          <Typography
-                            style={{ display: 'flex', alignItems: 'center' }}
-                          >
-                            {t(' Time')}
-                          </Typography>
-                        }
-                        fullWidth
-                        value={notificationTimeBefore}
-                        onChange={handleChange('notificationTimeBefore')}
-                        inputProps={{
-                          'aria-label': 'Time',
-                          type: 'number',
-                          min: 0,
-                        }}
-                      />
-                    </Tooltip>
-                  </Grid>
-                  <Grid xs={5} item>
-                    <FormControl fullWidth>
-                      <InputLabel id="notificationTimeUnit">
-                        <Typography
+                      Notifications <InfoIcon style={{ marginLeft: '5px' }} />{' '}
+                    </Typography>
+                  </Tooltip>
+                  <Grid container spacing={2}>
+                    <Grid xs={4} item>
+                      <FormControl fullWidth>
+                        <InputLabel
                           style={{ display: 'flex', alignItems: 'center' }}
+                          id="notificationType"
                         >
-                          {t(' Unit')}
-                        </Typography>
-                      </InputLabel>
-                      <Tooltip
-                        placement="top"
-                        title={
-                          <Typography>
-                            {t('Days, hours, or minutes')}
-                          </Typography>
-                        }
-                      >
-                        <Select
-                          labelId="notificationTimeUnit"
-                          value={notificationTimeUnit}
-                          onChange={(e) =>
-                            setFieldValue(
-                              'notificationTimeUnit',
-                              e.target.value,
-                            )
+                          {t('Type')}
+                        </InputLabel>
+                        <Tooltip
+                          placement="top"
+                          title={
+                            <Typography>
+                              {t('How the notification will be sent')}
+                            </Typography>
                           }
-                          label={t(' Unit')}
                         >
-                          <MenuItem value={undefined}>{t('None')}</MenuItem>
-                          {Object.values(NotificationTimeUnitEnum).map(
-                            (val) => (
+                          <Select
+                            labelId="notificationType"
+                            value={notificationType}
+                            onChange={(e) =>
+                              setFieldValue('notificationType', e.target.value)
+                            }
+                            label={t('Type')}
+                          >
+                            <MenuItem value={undefined}>{t('None')}</MenuItem>
+                            {Object.values(NotificationTypeEnum).map((val) => (
                               <MenuItem key={val} value={val}>
                                 {
                                   t(
@@ -680,14 +616,86 @@ const TaskModalForm = ({
                                   ) /* manually added to translation file */
                                 }
                               </MenuItem>
-                            ),
-                          )}
-                        </Select>
+                            ))}
+                          </Select>
+                        </Tooltip>
+                      </FormControl>
+                    </Grid>
+                    <Grid xs={3} item>
+                      <Tooltip
+                        placement="top"
+                        title={
+                          <Typography>
+                            {t('Amount of time before notification')}
+                          </Typography>
+                        }
+                      >
+                        <TextField
+                          label={
+                            <Typography
+                              style={{ display: 'flex', alignItems: 'center' }}
+                            >
+                              {t(' Time')}
+                            </Typography>
+                          }
+                          fullWidth
+                          value={notificationTimeBefore}
+                          onChange={handleChange('notificationTimeBefore')}
+                          inputProps={{
+                            'aria-label': 'Time',
+                            type: 'number',
+                            min: 0,
+                          }}
+                        />
                       </Tooltip>
-                    </FormControl>
+                    </Grid>
+                    <Grid xs={5} item>
+                      <FormControl fullWidth>
+                        <InputLabel id="notificationTimeUnit">
+                          <Typography
+                            style={{ display: 'flex', alignItems: 'center' }}
+                          >
+                            {t(' Unit')}
+                          </Typography>
+                        </InputLabel>
+                        <Tooltip
+                          placement="top"
+                          title={
+                            <Typography>
+                              {t('Days, hours, or minutes')}
+                            </Typography>
+                          }
+                        >
+                          <Select
+                            labelId="notificationTimeUnit"
+                            value={notificationTimeUnit}
+                            onChange={(e) =>
+                              setFieldValue(
+                                'notificationTimeUnit',
+                                e.target.value,
+                              )
+                            }
+                            label={t(' Unit')}
+                          >
+                            <MenuItem value={undefined}>{t('None')}</MenuItem>
+                            {Object.values(NotificationTimeUnitEnum).map(
+                              (val) => (
+                                <MenuItem key={val} value={val}>
+                                  {
+                                    t(
+                                      val,
+                                    ) /* manually added to translation file */
+                                  }
+                                </MenuItem>
+                              ),
+                            )}
+                          </Select>
+                        </Tooltip>
+                      </FormControl>
+                    </Grid>
                   </Grid>
                 </Grid>
-              </Grid>}
+              )}
             </FormFieldsGridContainer>
           </DialogContent>
           <DialogActions>
