@@ -35,7 +35,6 @@ export const Default: Story = () => {
 Default.parameters = {
   design: {
     type: 'figma',
-    url:
-      'https://www.figma.com/file/zvqkcHImucOoPyXrYNqrkn/MPDX-Update-Material-UI?node-id=168%3A17154',
+    url: 'https://www.figma.com/file/zvqkcHImucOoPyXrYNqrkn/MPDX-Update-Material-UI?node-id=168%3A17154',
   },
 };

@@ -76,7 +76,7 @@ const testData: ErgonoMockShape[] = [
   },
 ];
 
-describe('FixPhoneNumbers-Home', () => {
+describe.skip('FixPhoneNumbers-Home', () => {
   it('default with test data', async () => {
     const { getByText, getByTestId, queryByTestId } = render(
       <ThemeProvider theme={theme}>

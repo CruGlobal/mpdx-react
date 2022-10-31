@@ -52,7 +52,7 @@ describe('TaskDrawerCompleteForm', () => {
     notificationTimeUnit: NotificationTimeUnitEnum.Hours,
   };
 
-  it('default', async () => {
+  it.skip('default', async () => {
     const { getAllByRole } = render(
       <TestWrapper
         mocks={[
@@ -102,7 +102,7 @@ describe('TaskDrawerCompleteForm', () => {
     expect(openTaskDrawer).not.toHaveBeenCalled();
   });
 
-  it('saves complex', async () => {
+  it.skip('saves complex', async () => {
     const onClose = jest.fn();
     const { getByRole, getByText } = render(
       <TestWrapper

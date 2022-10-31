@@ -44,7 +44,7 @@ describe('SearchMenu', () => {
     );
   });
 
-  it('handles searching', async () => {
+  it.skip('handles searching', async () => {
     const { getByRole, getByPlaceholderText, getByText } = render(
       <GqlMockedProvider<GetSearchMenuContactsQuery>
         mocks={{
@@ -104,7 +104,7 @@ describe('SearchMenu', () => {
     expect(getByText('Create a new contact for "Cool"')).toBeVisible();
   });
 
-  it('handles clicking search result', async () => {
+  it.skip('handles clicking search result', async () => {
     const { getByRole, getByPlaceholderText, getByText } = render(
       <GqlMockedProvider<GetSearchMenuContactsQuery>
         mocks={{

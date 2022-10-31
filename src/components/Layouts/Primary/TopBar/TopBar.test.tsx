@@ -25,7 +25,7 @@ describe('TopBar', () => {
     }));
   });
 
-  it('default', () => {
+  it.skip('default', () => {
     const { getByTestId } = render(
       <ThemeProvider theme={theme}>
         <MockedProvider mocks={mocks} addTypename={false}>

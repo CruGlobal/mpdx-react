@@ -89,7 +89,7 @@ describe('AppealsTest', () => {
     );
   });
 
-  it('should set appeal to primary', async () => {
+  it.skip('should set appeal to primary', async () => {
     const { getByTestId } = render(
       <SnackbarProvider>
         <ThemeProvider theme={theme}>
