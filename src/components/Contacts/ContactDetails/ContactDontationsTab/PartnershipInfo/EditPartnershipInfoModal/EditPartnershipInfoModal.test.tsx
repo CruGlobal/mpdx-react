@@ -221,7 +221,9 @@ describe('EditPartnershipInfoModal', () => {
     userEvent.click(frequencyInput);
     userEvent.click(getByText(PledgeFrequencyEnum.Annual));
 
-    await waitFor(() => expect(frequencyInput.textContent).toEqual(PledgeFrequencyEnum.Annual));
+    await waitFor(() =>
+      expect(frequencyInput.textContent).toEqual(PledgeFrequencyEnum.Annual),
+    );
     expect(amountInput).toHaveValue(500);
 
     userEvent.click(getByText('Save'));
