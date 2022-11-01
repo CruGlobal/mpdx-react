@@ -112,7 +112,7 @@ describe('CreateMultipleContacts', () => {
       );
     });
 
-    it.skip('creates multiple contacts', async () => {
+    it('creates multiple contacts', async () => {
       const { getByText, getAllByRole } = render(
         <ThemeProvider theme={theme}>
           <SnackbarProvider>
