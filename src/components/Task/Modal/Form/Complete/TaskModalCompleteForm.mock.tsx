@@ -1,7 +1,7 @@
 import {
   CompleteTaskDocument,
   CompleteTaskMutation,
-} from 'src/components/Task/Modal/CompleteForm/CompleteTask.generated';
+} from './CompleteTask.generated';
 import { MockedResponse } from '@apollo/client/testing';
 import { DateTime } from 'luxon';
 import {
