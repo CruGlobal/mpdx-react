@@ -8,7 +8,7 @@ import ListIcon from '@mui/icons-material/FormatListBulleted';
 import EditIcon from '@mui/icons-material/Edit';
 import { useTranslation } from 'react-i18next';
 import { LeafButton, LeafListItem, Title } from '../../NavItem/NavItem';
-import useTaskDrawer from 'src/hooks/useTaskDrawer';
+import useTaskModal from 'src/hooks/useTaskModal';
 import {
   AddMenuItemsEnum,
   renderDialog,
@@ -24,7 +24,7 @@ type MenuContent = {
 export const AddMenuPanel = (): ReactElement => {
   const [selectedMenuItem, changeSelectedMenuItem] = useState(-1);
   const [dialogOpen, changeDialogOpen] = useState(false);
-  const { openTaskDrawer } = useTaskDrawer();
+  const { openTaskModal } = useTaskModal();
   const theme = useTheme();
   const { t } = useTranslation();
 
@@ -54,7 +54,7 @@ export const AddMenuPanel = (): ReactElement => {
       text: 'Add Task',
       icon: ListIcon,
       onClick: () => {
-        openTaskDrawer({});
+        openTaskModal({});
       },
     },
     {

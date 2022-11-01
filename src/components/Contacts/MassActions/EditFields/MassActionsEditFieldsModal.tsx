@@ -26,7 +26,7 @@ import Modal from '../../../common/Modal/Modal';
 import { useMassActionsUpdateContactFieldsMutation } from './MassActionsUpdateContacts.generated';
 import theme from 'src/theme';
 import { useLoadConstantsQuery } from 'src/components/Constants/LoadConstants.generated';
-import { useGetDataForTaskDrawerQuery } from 'src/components/Task/Drawer/Form/TaskDrawer.generated';
+import { useGetDataForTaskModalQuery } from 'src/components/Task/Modal/Form/TaskModal.generated';
 import { ContactsDocument } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import {
   SubmitButton,
@@ -109,7 +109,7 @@ export const MassActionsEditFieldsModal: React.FC<
     handleClose();
   };
 
-  const { data, loading } = useGetDataForTaskDrawerQuery({
+  const { data, loading } = useGetDataForTaskModalQuery({
     variables: {
       accountListId,
     },

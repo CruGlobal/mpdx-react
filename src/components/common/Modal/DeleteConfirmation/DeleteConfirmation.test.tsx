@@ -5,7 +5,7 @@ import userEvent from '@testing-library/user-event';
 import { DeleteConfirmation } from './DeleteConfirmation';
 import theme from 'src/theme';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { DeleteTaskMutation } from 'src/components/Task/Drawer/Form/TaskDrawer.generated';
+import { DeleteTaskMutation } from 'src/components/Task/Modal/Form/TaskModal.generated';
 
 const onClickConfirm = jest.fn();
 const onClickDecline = jest.fn();

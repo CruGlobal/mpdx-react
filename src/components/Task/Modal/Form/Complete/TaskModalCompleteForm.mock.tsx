@@ -1,3 +1,7 @@
+import {
+  CompleteTaskDocument,
+  CompleteTaskMutation,
+} from 'src/components/Task/Modal/CompleteForm/CompleteTask.generated';
 import { MockedResponse } from '@apollo/client/testing';
 import { DateTime } from 'luxon';
 import {
@@ -11,10 +15,6 @@ import {
   GetTaskForTaskModalDocument,
   GetTaskForTaskModalQuery,
 } from '../../TaskModalTask.generated';
-import {
-  CompleteTaskDocument,
-  CompleteTaskMutation,
-} from 'src/components/Task/Drawer/CompleteForm/CompleteTask.generated';
 
 export const getCompleteTaskForTaskModalMock = (
   accountListId: string,

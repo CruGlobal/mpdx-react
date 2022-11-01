@@ -128,13 +128,13 @@ const App = ({
                           >
                             <RouterGuard>
                               <TaskModalProvider>
-                                  <Layout>
-                                    <SnackbarUtilsConfigurator />
-                                    <Component
-                                      {...pageProps}
-                                      key={router.route}
-                                    />
-                                  </Layout>
+                                <Layout>
+                                  <SnackbarUtilsConfigurator />
+                                  <Component
+                                    {...pageProps}
+                                    key={router.route}
+                                  />
+                                </Layout>
                               </TaskModalProvider>
                             </RouterGuard>
                           </AnimatePresence>

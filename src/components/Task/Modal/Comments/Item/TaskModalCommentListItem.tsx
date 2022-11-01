@@ -22,7 +22,7 @@ import {
 
 interface Props {
   comment?: GetCommentsForTaskModalCommentListQuery['task']['comments']['nodes'][0];
-  taskId: string;
+  taskId?: string;
 }
 
 const CommentInfoText = styled(Typography)(() => ({

@@ -7,12 +7,12 @@ import {
 import {
   CreateTaskCommentDocument,
   CreateTaskCommentMutation,
-} from '../../../../../Task/Drawer/CommentList/Form/CreateTaskComment.generated';
+} from '../../../../../Task/Modal/CommentList/Form/CreateTaskComment.generated';
 import {
   CreateTaskDocument,
   CreateTaskMutation,
   TaskMutationResponseFragment,
-} from '../../../../../Task/Drawer/Form/TaskDrawer.generated';
+} from '../../../../../Task/Modal/Form/TaskModal.generated';
 
 export const createNewsletterTaskMutationMock = (): MockedResponse => {
   const task: TaskCreateInput = {

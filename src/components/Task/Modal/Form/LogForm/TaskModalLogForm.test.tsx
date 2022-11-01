@@ -16,11 +16,11 @@ import {
   CreateTaskMutation,
   DeleteTaskMutation,
   UpdateTaskMutation,
-} from 'src/components/Task/Drawer/Form/TaskDrawer.generated';
+} from 'src/components/Task/Modal/Form/TaskModal.generated';
 import {
-  getDataForTaskDrawerMock,
+  getDataForTaskModalMock,
   updateTaskMutationMock,
-} from 'src/components/Task/Drawer/Form/Form.mock';
+} from 'src/components/Task/Modal/Form/TaskModalForm.mock';
 
 const accountListId = 'abc';
 
@@ -178,7 +178,7 @@ describe('TaskModalLogForm', () => {
         <SnackbarProvider>
           <MockedProvider
             mocks={[
-              getDataForTaskDrawerMock(accountListId),
+              getDataForTaskModalMock(accountListId),
               updateTaskMutationMock(),
             ]}
             addTypename={false}

@@ -6,11 +6,11 @@ import { ThemeProvider } from '@mui/material/styles';
 import matchMediaMock from '../../../__tests__/util/matchMediaMock';
 import { GetDashboardQuery } from '../../../pages/accountLists/GetDashboard.generated';
 import theme from '../../theme';
-import useTaskDrawer from '../../hooks/useTaskDrawer';
+import useTaskModal from '../../hooks/useTaskModal';
 import { GetThisWeekDefaultMocks } from './ThisWeek/ThisWeek.mock';
 import Dashboard from '.';
 
-jest.mock('../../hooks/useTaskDrawer');
+jest.mock('../../hooks/useTaskModal');
 jest.mock('next/router', () => ({
   useRouter: () => {
     return {
@@ -21,8 +21,8 @@ jest.mock('next/router', () => ({
 }));
 
 beforeEach(() => {
-  (useTaskDrawer as jest.Mock).mockReturnValue({
-    openTaskDrawer: jest.fn(),
+  (useTaskModal as jest.Mock).mockReturnValue({
+    openTaskModal: jest.fn(),
   });
 });
 

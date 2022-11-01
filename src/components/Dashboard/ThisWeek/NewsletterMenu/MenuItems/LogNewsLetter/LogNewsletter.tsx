@@ -32,8 +32,8 @@ import {
   TaskCreateInput,
 } from '../../../../../../../graphql/types.generated';
 
-import { useCreateTaskMutation } from '../../../../../Task/Drawer/Form/TaskDrawer.generated';
-import { useCreateTaskCommentMutation } from '../../../../../Task/Drawer/CommentList/Form/CreateTaskComment.generated';
+import { useCreateTaskMutation } from '../../../../../Task/Modal/Form/TaskModal.generated';
+import { useCreateTaskCommentMutation } from '../../../../../Task/Modal/Comments/Form/CreateTaskComment.generated';
 import {
   SubmitButton,
   CancelButton,
