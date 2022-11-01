@@ -7,7 +7,7 @@ import {
 import {
   CreateTaskCommentDocument,
   CreateTaskCommentMutation,
-} from '../../../../../Task/Modal/CommentList/Form/CreateTaskComment.generated';
+} from '../../../../../Task/Modal/Comments/Form/CreateTaskComment.generated';
 import {
   CreateTaskDocument,
   CreateTaskMutation,
