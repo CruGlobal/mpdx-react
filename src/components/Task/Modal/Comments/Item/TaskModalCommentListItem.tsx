@@ -22,7 +22,7 @@ import {
 
 interface Props {
   comment?: GetCommentsForTaskModalCommentListQuery['task']['comments']['nodes'][0];
-  taskId?: string;
+  taskId: string;
 }
 
 const CommentInfoText = styled(Typography)(() => ({
@@ -44,7 +44,7 @@ const TaskModalCommentsListItem: React.FC<Props> = ({
   const deleteTaskComment = async (): Promise<void> => {
     await deleteComment({
       variables: {
-        taskId,
+        taskId: taskId ?? '',
         commentId: comment?.id || '',
       },
       refetchQueries: [
@@ -61,7 +61,7 @@ const TaskModalCommentsListItem: React.FC<Props> = ({
   ): Promise<void> => {
     await updateComment({
       variables: {
-        taskId,
+        taskId: taskId ?? '',
         commentId: comment?.id || '',
         body: values.body,
       },
