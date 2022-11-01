@@ -25,7 +25,7 @@ jest.mock('next/router', () => ({
 }));
 
 describe('NotificationMenu', () => {
-  it.skip('default', async () => {
+  it('default', async () => {
     const cache = new InMemoryCache({ addTypename: false });
     jest.spyOn(cache, 'writeQuery');
     const { getByRole, queryByRole } = render(
