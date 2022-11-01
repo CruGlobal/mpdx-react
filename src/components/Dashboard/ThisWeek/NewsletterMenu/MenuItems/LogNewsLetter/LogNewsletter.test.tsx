@@ -114,7 +114,7 @@ describe('LogNewsletter', () => {
     });
 
     it.skip('Logs Newsletter with completedAt date', async () => {
-      const { getByLabelText, getByText, findByText, getByTestId } = render(
+      const { getByLabelText, getByText, findByText } = render(
         <ThemeProvider theme={theme}>
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <SnackbarProvider>
@@ -135,10 +135,10 @@ describe('LogNewsletter', () => {
 
       userEvent.type(getByLabelText('Subject'), accountListId);
       await waitFor(() => expect(getByText('Save')).not.toBeDisabled());
-      userEvent.click(getByTestId('completedDate'));
+      userEvent.click(getByLabelText('Completed Date'));
       const dateOkButton = await waitFor(() => getByText('OK'));
       userEvent.click(dateOkButton);
-      userEvent.click(getByTestId('completedTime'));
+      userEvent.click(getByLabelText('Completed Time'));
       const timeOkButton = await waitFor(() => getByText('OK'));
       userEvent.click(timeOkButton);
       userEvent.click(getByText('Save'));
