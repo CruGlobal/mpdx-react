@@ -28,7 +28,7 @@ describe('NotificationMenu', () => {
   it('default', async () => {
     const cache = new InMemoryCache({ addTypename: false });
     jest.spyOn(cache, 'writeQuery');
-    const { getByRole, queryByRole } = render(
+    const { getByRole, queryByRole, queryByLabelText } = render(
       <TestWrapper
         mocks={[
           ...getNotificationsMocks(),
@@ -115,9 +115,7 @@ describe('NotificationMenu', () => {
         },
       }),
     );
-    expect(
-      queryByRole('button', { hidden: true, name: 'Mark all as read' }),
-    ).not.toBeInTheDocument();
+    expect(queryByLabelText('Mark all as read')).not.toBeInTheDocument();
   });
 
   it('loading', async () => {
