@@ -18,7 +18,7 @@ const router = {
   push,
 };
 
-it.skip('renders with data', async () => {
+it('renders with data', async () => {
   const mocks = {
     GetDonationGraph: {
       accountList: {
@@ -64,10 +64,12 @@ it.skip('renders with data', async () => {
     </ThemeProvider>,
   );
 
-  await waitFor(() =>
-    expect(queryByRole('progressbar')).not.toBeInTheDocument(),
-  );
-  expect(getByTestId('DonationHistoriesTypographyAverage')).toBeInTheDocument();
+  await waitFor(() => {
+    expect(queryByRole('progressbar')).not.toBeInTheDocument();
+    expect(
+      getByTestId('DonationHistoriesTypographyAverage'),
+    ).toBeInTheDocument();
+  });
   expect(queryByTestId('DonationHistoriesGridLoading')).not.toBeInTheDocument();
 });
 
