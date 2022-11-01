@@ -13,7 +13,7 @@ import {
   GetCommentsForTaskModalCommentListQuery,
 } from '../TaskListComments.generated';
 import { useUser } from '../../../../User/useUser';
-import { useCreateTaskCommentMutation } from 'src/components/Task/Drawer/CommentList/Form/CreateTaskComment.generated';
+import { useCreateTaskCommentMutation } from 'src/components/Task/Modal/Comments/Form/CreateTaskComment.generated';
 import { SubmitButton } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 
 export const commentSchema: yup.SchemaOf<Omit<TaskCommentCreateInput, 'id'>> =

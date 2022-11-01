@@ -2,10 +2,10 @@ import {
   ActivityTypeEnum,
   ResultEnum,
 } from '../../../../../graphql/types.generated';
-import { GetTaskForTaskDrawerQuery } from '../../Drawer/TaskDrawerTask.generated';
+import { GetTaskForTaskModalQuery } from '../../Modal/TaskModalTask.generated';
 
 export const possibleResults = (
-  task: GetTaskForTaskDrawerQuery['task'],
+  task: GetTaskForTaskModalQuery['task'],
 ): ResultEnum[] => {
   const common = [ResultEnum.None, ResultEnum.Completed];
   switch (task.activityType) {

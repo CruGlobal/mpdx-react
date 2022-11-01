@@ -11,7 +11,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
-import { useDeleteTaskMutation } from '../../../Task/Drawer/Form/TaskDrawer.generated';
+import { useDeleteTaskMutation } from '../../../Task/Modal/Form/TaskModal.generated';
 import { GetTasksForTaskListDocument } from '../../../Task/List/TaskList.generated';
 import { GetThisWeekDocument } from '../../../Dashboard/ThisWeek/GetThisWeek.generated';
 import { ContactTasksTabDocument } from 'src/components/Contacts/ContactDetails/ContactTasksTab/ContactTasksTab.generated';

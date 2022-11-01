@@ -1,7 +1,7 @@
 import React, { ReactElement } from 'react';
 import { GqlMockedProvider } from '../../../../../../../__tests__/util/graphqlMocking';
-import { CreateTaskCommentMutation } from '../../../../../Task/Drawer/CommentList/Form/CreateTaskComment.generated';
-import { CreateTaskMutation } from '../../../../../Task/Drawer/Form/TaskDrawer.generated';
+import { CreateTaskCommentMutation } from '../../../../../Task/Modal/Comments/Form/CreateTaskComment.generated';
+import { CreateTaskMutation } from '../../../../../Task/Modal/Form/TaskModal.generated';
 import LogNewsletter from './LogNewsletter';
 
 export default {

@@ -38,7 +38,7 @@ import {
   ContactDetailsType,
 } from '../../../ContactDetailContext';
 import { useUpdateContactOtherMutation } from './EditContactOther.generated';
-import { useGetTaskModalContactsFilteredQuery } from 'src/components/Task/Drawer/Form/TaskDrawer.generated';
+import { useGetTaskModalContactsFilteredQuery } from 'src/components/Task/Modal/Form/TaskModal.generated';
 import {
   SubmitButton,
   CancelButton,

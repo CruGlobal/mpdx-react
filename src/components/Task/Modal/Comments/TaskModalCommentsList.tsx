@@ -11,10 +11,9 @@ import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import Add from '@mui/icons-material/Add';
 import illustration4 from '../../../../images/drawkit/grape/drawkit-grape-pack-illustration-4.svg';
-import TaskDrawerCommentListItem from '../../Drawer/CommentList/Item';
+import TaskModalCommentsListItem from '../Comments/Item/TaskModalCommentListItem';
 import theme from '../../../../../src/theme';
 import { useGetCommentsForTaskModalCommentListQuery } from './TaskListComments.generated';
-import TaskModalCommentsListItem from './Item/TaskModalCommentListItem';
 import TaskModalCommentsListForm from './Form/TaskModalCommentsListForm';
 import { SubmitButton } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 
@@ -84,17 +83,17 @@ const TaskModalCommentsList = ({
     <>
       <DialogContent dividers>
         {loading ? (
-          <Box data-testid="TaskDrawerCommentListLoading">
-            <TaskDrawerCommentListItem />
-            <TaskDrawerCommentListItem reverse />
-            <TaskDrawerCommentListItem />
-            <TaskDrawerCommentListItem reverse />
+          <Box data-testid="TaskModalCommentListLoading">
+            <TaskModalCommentsListItem taskId={taskId} />
+            <TaskModalCommentsListItem taskId={taskId} />
+            <TaskModalCommentsListItem taskId={taskId} />
+            <TaskModalCommentsListItem taskId={taskId} />
           </Box>
         ) : (
           <>
             {nodes?.length === 0 && (
               <Card
-                data-testid="TaskDrawerCommentListEmpty"
+                data-testid="TaskModalCommentListEmpty"
                 style={{ marginBottom: theme.spacing(2) }}
               >
                 <CardContentEmpty>
@@ -113,7 +112,7 @@ const TaskModalCommentsList = ({
               return [
                 ...result,
                 <Box
-                  data-testid={`TaskModalCommentListItem-${comment.id}`}
+                  data-testid={`TaskModalCommentsListItem-${comment.id}`}
                   key={comment.id}
                 >
                   <TaskModalCommentsListItem

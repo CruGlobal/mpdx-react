@@ -5,7 +5,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import userEvent from '@testing-library/user-event';
 import { ThemeProvider } from '@mui/material/styles';
-import { CreateTaskMutation } from '../../../../../Task/Drawer/Form/TaskDrawer.generated';
+import { CreateTaskMutation } from '../../../../../Task/Modal/Form/TaskModal.generated';
 import { GqlMockedProvider } from '../../../../../../../__tests__/util/graphqlMocking';
 import TestWrapper from '../../../../../../../__tests__/util/TestWrapper';
 import theme from '../../../../../../theme';

@@ -20,7 +20,6 @@ import client from '../src/lib/client';
 import PrimaryLayout from '../src/components/Layouts/Primary';
 import Loading from '../src/components/Loading';
 import i18n from '../src/lib/i18n';
-import TaskDrawerProvider from '../src/components/Task/Drawer/TaskDrawerProvider';
 import TaskModalProvider from '../src/components/Task/Modal/TaskModalProvider';
 import { SnackbarUtilsConfigurator } from '../src/components/Snackbar/Snackbar';
 import { GlobalStyles } from '../src/components/GlobalStyles/GlobalStyles';
@@ -129,15 +128,13 @@ const App = ({
                           >
                             <RouterGuard>
                               <TaskModalProvider>
-                                <TaskDrawerProvider>
-                                  <Layout>
-                                    <SnackbarUtilsConfigurator />
-                                    <Component
-                                      {...pageProps}
-                                      key={router.route}
-                                    />
-                                  </Layout>
-                                </TaskDrawerProvider>
+                                <Layout>
+                                  <SnackbarUtilsConfigurator />
+                                  <Component
+                                    {...pageProps}
+                                    key={router.route}
+                                  />
+                                </Layout>
                               </TaskModalProvider>
                             </RouterGuard>
                           </AnimatePresence>

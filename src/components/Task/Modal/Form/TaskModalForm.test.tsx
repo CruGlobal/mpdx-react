@@ -8,7 +8,6 @@ import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import userEvent from '@testing-library/user-event';
 import { InMemoryCache } from '@apollo/client';
 import { GetTasksForTaskListDocument } from '../../List/TaskList.generated';
-import { getDataForTaskDrawerMock } from '../../Drawer/Form/Form.mock';
 import {
   getDataForTaskModalMock,
   createTaskMutationMock,
@@ -152,7 +151,7 @@ describe('TaskModalForm', () => {
       <LocalizationProvider dateAdapter={AdapterLuxon}>
         <SnackbarProvider>
           <MockedProvider
-            mocks={[getDataForTaskDrawerMock(accountListId)]}
+            mocks={[getDataForTaskModalMock(accountListId)]}
             addTypename={false}
           >
             <TaskModalForm
