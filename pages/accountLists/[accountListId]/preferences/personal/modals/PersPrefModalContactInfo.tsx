@@ -8,9 +8,9 @@ import {
   MenuItem,
   Radio,
   Theme,
-  styled,
-} from '@material-ui/core';
-import { AddCircle, Cancel, Check } from '@material-ui/icons';
+} from '@mui/material';
+import { styled } from '@mui/material/styles';
+import { AddCircle, Cancel, Check } from '@mui/icons-material';
 import {
   PersPrefFieldWrapper,
   StyledOutlinedInput,

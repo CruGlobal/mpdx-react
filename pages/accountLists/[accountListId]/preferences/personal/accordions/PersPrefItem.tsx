@@ -1,13 +1,13 @@
-import React from 'react';
 import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
   Box,
   Typography,
-  styled,
-} from '@material-ui/core';
-import { ExpandMore } from '@material-ui/icons';
+} from '@mui/material';
+import { styled } from '@mui/material/styles';
+import { ExpandMore } from '@mui/icons-material';
+import React from 'react';
 import { accordionShared } from '../shared/PersPrefShared';
 
 const StyledAccordion = styled(Accordion)(({ theme }) => ({
@@ -59,6 +59,7 @@ interface PersPrefItemProps {
   expandedPanel: string;
   label: string;
   value: string;
+  children?: React.ReactNode;
 }
 
 export const PersPrefItem: React.FC<PersPrefItemProps> = ({

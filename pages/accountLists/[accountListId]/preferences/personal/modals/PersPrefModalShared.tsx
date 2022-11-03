@@ -8,9 +8,9 @@ import {
   Hidden,
   IconButton,
   Typography,
-  styled,
-} from '@material-ui/core';
-import { Delete } from '@material-ui/icons';
+} from '@mui/material';
+import { styled } from '@mui/material/styles';
+import { Delete } from '@mui/icons-material';
 
 export const SectionHeading = styled(Typography)(() => ({
   fontWeight: 700,
@@ -29,7 +29,8 @@ const SmallColumnLabels = styled(Grid)(() => ({
 
 interface OptionHeadingsProps {
   smallCols: GridProps['sm'];
-  align?: GridProps['justify'];
+  align?: GridProps['justifyContent'];
+  children?: React.ReactNode;
 }
 
 export const OptionHeadings: React.FC<OptionHeadingsProps> = ({
@@ -37,7 +38,7 @@ export const OptionHeadings: React.FC<OptionHeadingsProps> = ({
   align = 'center',
   children,
 }) => (
-  <SmallColumnLabels item sm={smallCols} justify={align}>
+  <SmallColumnLabels item sm={smallCols} justifyContent={align}>
     <Typography component="span">{children}</Typography>
   </SmallColumnLabels>
 );
@@ -79,7 +80,11 @@ export const StyledGridItem = styled(Grid)(({ theme }) => ({
   },
 }));
 
-export const HiddenSmLabel: React.FC = ({ children }) => (
+interface HiddenSmLabelProps {
+  children?: React.ReactNode;
+}
+
+export const HiddenSmLabel: React.FC<HiddenSmLabelProps> = ({ children }) => (
   <Hidden smUp>
     <Typography component="span">{children}</Typography>
   </Hidden>

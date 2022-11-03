@@ -1,5 +1,5 @@
 import React from 'react';
-import { Typography } from '@material-ui/core';
+import { Typography } from '@mui/material';
 
 interface WorkProps {
   employer: string;
@@ -11,7 +11,7 @@ export const PersPrefWork: React.FC<WorkProps> = ({ employer, occupation }) => {
 
   if (occupation || employer) {
     return (
-      <Typography gutterBottom>
+      <Typography component="h4">
         {occupation} {separator} {employer}
       </Typography>
     );

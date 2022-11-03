@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, DialogContent, Tab, styled } from '@material-ui/core';
-import { TabContext, TabList, TabPanel } from '@material-ui/lab';
+import { Button, DialogContent, Tab } from '@mui/material';
+import { styled } from '@mui/material/styles';
+import { TabContext, TabList, TabPanel } from '@mui/lab';
 import Modal from '../../../../../../src/components/common/Modal/Modal';
 import { StyledDialogActions } from './PersPrefModalShared';
 import { PersPrefModalContact } from './PersPrefModalContactInfo';

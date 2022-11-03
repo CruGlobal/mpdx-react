@@ -1,6 +1,7 @@
 import React from 'react';
-import { IconButton, List, ListItem, styled } from '@material-ui/core';
-import { Facebook, Language, LinkedIn, Twitter } from '@material-ui/icons';
+import { IconButton, List, ListItem } from '@mui/material';
+import { styled } from '@mui/material/styles';
+import { Facebook, Language, LinkedIn, Twitter } from '@mui/icons-material';
 
 const StyledList = styled(List)({
   fontSize: '0',
@@ -57,7 +58,7 @@ const ListItemLinks: React.FC<ListItemProps> = ({ accounts, type }) => {
   return (
     <>
       {accounts.map((account) => (
-        <StyledListItem key={`${type}-${account}`} disableGutters button>
+        <StyledListItem key={`${type}-${account}`} disableGutters>
           <StyledSocialButton
             href={`${link}${account}`}
             color="primary"

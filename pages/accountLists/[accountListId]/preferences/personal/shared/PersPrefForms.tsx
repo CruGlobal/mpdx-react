@@ -17,14 +17,14 @@ import {
   Radio,
   Select,
   Theme,
-  styled,
-} from '@material-ui/core';
+} from '@mui/material';
+import { styled } from '@mui/material/styles';
 import {
   CheckBox,
   CheckBoxOutlineBlank,
   RadioButtonChecked,
   RadioButtonUnchecked,
-} from '@material-ui/icons';
+} from '@mui/icons-material';
 
 const StyledFormLabel = styled(FormLabel)(({ theme }) => ({
   color: theme.palette.text.primary,
@@ -101,10 +101,6 @@ export const PersPrefField: React.FC<PersPrefFieldProps> = ({
 }) => {
   const [selectValueState, setSelectValueState] = useState(selectValue);
 
-  const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
-    setSelectValueState(event.target.value as string);
-  };
-
   return (
     <FormControl
       variant="outlined"
@@ -135,7 +131,7 @@ export const PersPrefField: React.FC<PersPrefFieldProps> = ({
 
       {/* Select field */}
       {type === 'select' && options.length > 0 && (
-        <StyledSelect value={selectValueState} onChange={handleChange}>
+        <StyledSelect value={selectValueState} onChange={(e) => setSelectValueState(e.target.value as string)}>
           {options.map(([optionVal, optionLabel], index) => {
             return (
               <MenuItem value={optionVal} key={index}>
@@ -191,6 +187,7 @@ interface PersPrefFormWrapperProps {
   formButtonText?: string;
   formButtonColor?: ButtonProps['color'];
   formButtonVariant?: ButtonProps['variant'];
+  children?: React.ReactNode;
 }
 
 export const PersPrefFormWrapper: React.FC<PersPrefFormWrapperProps> = ({
@@ -227,6 +224,7 @@ interface PersPrefFieldWrapperProps {
   formControlRequired?: FormControlProps['required'];
   formControlVariant?: FormControlProps['variant'];
   formHelperTextProps?: { variant?: FormHelperTextProps['variant'] };
+  children?: React.ReactNode;
 }
 
 export const PersPrefFieldWrapper: React.FC<PersPrefFieldWrapperProps> = ({

@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Grid, MenuItem, styled } from '@material-ui/core';
+import { Grid, MenuItem } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import { Info } from 'luxon';
 import {
   PersPrefFieldWrapper,

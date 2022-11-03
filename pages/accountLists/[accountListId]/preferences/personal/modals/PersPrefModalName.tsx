@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Grid, styled } from '@material-ui/core';
+import { Grid } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import { PersPrefField } from '../shared/PersPrefForms';
 import { info } from '../DemoContent';
 

@@ -1,7 +1,8 @@
 import React, { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Grid, Hidden, Typography, styled } from '@material-ui/core';
-import { Facebook, Language, LinkedIn, Twitter } from '@material-ui/icons';
+import { Button, Grid, Hidden, Typography } from '@mui/material';
+import { styled } from '@mui/material/styles';
+import { Facebook, Language, LinkedIn, Twitter } from '@mui/icons-material';
 
 import {
   PersPrefFieldWrapper,

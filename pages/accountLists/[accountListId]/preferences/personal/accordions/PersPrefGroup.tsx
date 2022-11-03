@@ -1,5 +1,6 @@
+import { Box, Typography } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import React from 'react';
-import { Box, Typography, styled } from '@material-ui/core';
 
 const StyledGroupWrapper = styled(Box)(({ theme }) => ({
   marginTop: theme.spacing(3),
@@ -7,6 +8,7 @@ const StyledGroupWrapper = styled(Box)(({ theme }) => ({
 
 interface PersPrefGroupProps {
   title: string;
+  children?: React.ReactNode;
 }
 
 export const PersPrefGroup: React.FC<PersPrefGroupProps> = ({

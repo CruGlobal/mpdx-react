@@ -6,9 +6,9 @@ import {
   AccordionDetails,
   Link,
   Typography,
-  styled,
-} from '@material-ui/core';
-import { ExpandMore } from '@material-ui/icons';
+} from '@mui/material';
+import { styled } from '@mui/material/styles';
+import { ExpandMore } from '@mui/icons-material';
 import { accordionShared } from '../shared/PersPrefShared';
 
 const StyledAccordion = styled(Accordion)({

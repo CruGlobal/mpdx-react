@@ -6,9 +6,9 @@ import {
   Grid,
   Hidden,
   MenuItem,
-  styled,
-} from '@material-ui/core';
-import { AddCircle, Search } from '@material-ui/icons';
+} from '@mui/material';
+import { styled } from '@mui/material/styles';
+import { AddCircle, Search } from '@mui/icons-material';
 import Modal from '../../../../../../src/components/common/Modal/Modal';
 import {
   PersPrefFieldWrapper,

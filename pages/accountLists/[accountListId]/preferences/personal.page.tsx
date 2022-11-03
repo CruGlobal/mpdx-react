@@ -5,8 +5,8 @@ import {
   Checkbox,
   FormControlLabel,
   MenuItem,
-  styled,
-} from '@material-ui/core';
+} from '@mui/material';
+import { styled } from '@mui/material/styles';
 import { PreferencesWrapper } from './wrapper';
 import { PersPrefInfo } from './personal/info/PersPrefInfo';
 import { PersPrefGroup } from './personal/accordions/PersPrefGroup';
