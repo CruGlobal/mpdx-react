@@ -131,7 +131,7 @@ describe('FilterListItem', () => {
     );
   });
 
-  it.skip('MultiSelectFilter blank', () => {
+  it('MultiSelectFilter blank', () => {
     const { getAllByText, getByTestId } = render(
       <FilterListItem
         filter={multiselectFilter}
@@ -140,7 +140,7 @@ describe('FilterListItem', () => {
       />,
     );
 
-    expect(getAllByText(multiselectFilter.title)).toHaveLength(2);
+    expect(getAllByText(multiselectFilter.title)).toHaveLength(3);
     expect(getByTestId('multiSelectFilter')).toBeInTheDocument();
   });
 
@@ -178,8 +178,8 @@ describe('FilterListItem', () => {
     );
   });
 
-  it.skip('TextFieldFilter blank', async () => {
-    const { getByText, getByRole } = render(
+  it('TextFieldFilter blank', async () => {
+    const { getAllByText, getByRole } = render(
       <FilterListItem
         filter={textFieldFilter}
         value={undefined}
@@ -187,12 +187,12 @@ describe('FilterListItem', () => {
       />,
     );
 
-    expect(getByText(textFieldFilter.title)).toBeInTheDocument();
+    expect(getAllByText(textFieldFilter.title)[0]).toBeInTheDocument();
     expect(getByRole('textbox').getAttribute('value')).toEqual('');
   });
 
-  it.skip('TextFieldFilter filled', async () => {
-    const { getByText, getByRole } = render(
+  it('TextFieldFilter filled', async () => {
+    const { getAllByText, getByRole } = render(
       <FilterListItem
         filter={textFieldFilter}
         value={'Text'}
@@ -200,7 +200,7 @@ describe('FilterListItem', () => {
       />,
     );
 
-    expect(getByText(textFieldFilter.title)).toBeInTheDocument();
+    expect(getAllByText(textFieldFilter.title)[0]).toBeInTheDocument();
     expect(getByRole('textbox').getAttribute('value')).toEqual('Text');
   });
 });
