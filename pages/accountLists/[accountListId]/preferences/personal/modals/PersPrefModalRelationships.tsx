@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Button,
+  DialogActions,
   DialogContent,
   Grid,
   Hidden,
@@ -21,10 +22,13 @@ import {
   DeleteButton,
   OptionHeadings,
   SectionHeading,
-  StyledDialogActions,
   StyledGridContainer,
   StyledGridItem,
 } from './PersPrefModalShared';
+import {
+  SubmitButton,
+  CancelButton,
+} from 'src/components/common/Modal/ActionButtons/ActionButtons';
 
 const AddRelationshipButton = styled(Button)({
   fontSize: 16,
@@ -52,7 +56,6 @@ const RelationshipModal: React.FC<RelationshipModalProps> = ({
       isOpen={isOpen}
       title={t('Person')}
       handleClose={handleClose}
-      size={'md'}
     >
       <form>
         <DialogContent dividers>
@@ -60,19 +63,12 @@ const RelationshipModal: React.FC<RelationshipModalProps> = ({
             <StyledOutlinedInput startAdornment={<Search />} />
           </PersPrefFieldWrapper>
         </DialogContent>
-        <StyledDialogActions>
-          <Button onClick={handleClose} disableRipple disableElevation>
-            {t('Cancel')}
-          </Button>
-          <Button
-            variant="contained"
-            color="primary"
-            disableRipple
-            disableElevation
-          >
+        <DialogActions>
+          <CancelButton onClick={handleClose} />
+          <SubmitButton>
             {t('Save')}
-          </Button>
-        </StyledDialogActions>
+          </SubmitButton>
+        </DialogActions>
       </form>
     </Modal>
   );

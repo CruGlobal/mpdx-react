@@ -1,7 +1,6 @@
 import React from 'react';
 import {
   Box,
-  DialogActions,
   Divider,
   Grid,
   GridProps,
@@ -112,7 +111,3 @@ export const StyledDivider = styled(Divider)(({ theme }) => {
     marginBottom: theme.spacing(3),
   };
 });
-
-export const StyledDialogActions = styled(DialogActions)(({ theme }) => ({
-  padding: `${theme.spacing(2)}px ${theme.spacing(3)}px`,
-}));

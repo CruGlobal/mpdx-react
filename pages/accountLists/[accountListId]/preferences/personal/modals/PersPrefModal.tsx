@@ -1,15 +1,18 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, DialogContent, Tab } from '@mui/material';
+import { DialogActions, DialogContent, Tab } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { TabContext, TabList, TabPanel } from '@mui/lab';
 import Modal from '../../../../../../src/components/common/Modal/Modal';
-import { StyledDialogActions } from './PersPrefModalShared';
 import { PersPrefModalContact } from './PersPrefModalContactInfo';
 import { PersPrefModalDetails } from './PersPrefModalDetails';
 import { PersPrefModalSocial } from './PersPrefModalSocial';
 import { PersPrefModalRelationships } from './PersPrefModalRelationships';
 import { PersPrefModalName } from './PersPrefModalName';
+import {
+  SubmitButton,
+  CancelButton,
+} from 'src/components/common/Modal/ActionButtons/ActionButtons';
 
 const StyledTabList = styled(TabList)(({ theme }) => ({
   '& .MuiTabs-flexContainer > *': {
@@ -81,19 +84,12 @@ export const PersPrefModal: React.FC<PersPrefModalProps> = ({
             </TabPanel>
           </TabContext>
         </DialogContent>
-        <StyledDialogActions>
-          <Button onClick={handleClose} disableElevation disableRipple>
-            {t('Cancel')}
-          </Button>
-          <Button
-            variant="contained"
-            color="primary"
-            disableElevation
-            disableRipple
-          >
+        <DialogActions>
+          <CancelButton onClick={handleClose} />
+          <SubmitButton>
             {t('Save')}
-          </Button>
-        </StyledDialogActions>
+          </SubmitButton>
+        </DialogActions>
       </form>
     </Modal>
   );
