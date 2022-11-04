@@ -1,78 +1,30 @@
-import React from 'react';
-import { IconButton, List, ListItem } from '@mui/material';
-import { styled } from '@mui/material/styles';
+import React, { ReactNode } from 'react';
+import { Box, IconButton, useMediaQuery } from '@mui/material';
+import { Theme } from '@mui/material/styles';
 import { Facebook, Language, LinkedIn, Twitter } from '@mui/icons-material';
 
-const StyledList = styled(List)(({ theme }) => ({
-  fontSize: '0',
-  marginTop: theme.spacing(1),
-}));
-
-const StyledListItem = styled(ListItem)(({ theme }) => ({
-  display: 'inline-block',
-  width: 'auto',
-  marginRight: theme.spacing(1),
-  padding: '0',
-  '&:last-child': {
-    marginRight: '0',
-  },
-  '&:hover': {
-    backgroundColor: 'transparent',
-  },
-}));
-
-const StyledSocialButton = styled(IconButton)(({ theme }) => ({
-  padding: 0,
-  color: theme.palette.primary.main,
-  '&:hover': {
-    backgroundColor: 'transparent',
-  },
-})) as typeof IconButton;
-
-const profileTypes = {
-  facebook: {
-    link: 'https://www.facebook.com/',
-    icon: <Facebook />,
-  },
-  twitter: {
-    link: 'https://www.twitter.com/',
-    icon: <Twitter />,
-  },
-  linkedin: {
-    link: '',
-    icon: <LinkedIn />,
-  },
-  websites: {
-    link: '',
-    icon: <Language />,
-  },
-};
-
-interface ListItemProps {
+interface SocialProps {
   accounts: string[];
-  type: keyof typeof profileTypes;
+  icon: ReactNode;
+  url?: string;
 }
 
-const ListItemLinks: React.FC<ListItemProps> = ({ accounts, type }) => {
-  const { link, icon } = profileTypes[type];
-
-  return (
-    <>
-      {accounts.map((account) => (
-        <StyledListItem key={`${type}-${account}`} disableGutters>
-          <StyledSocialButton
-            href={`${link}${account}`}
-            color="primary"
-            target="_blank"
-            disableRipple
-          >
-            {icon}
-          </StyledSocialButton>
-        </StyledListItem>
-      ))}
-    </>
-  );
-};
+const SocialLinks: React.FC<SocialProps> = ({ accounts, icon, url = '' }) => (
+  <>
+    {accounts.map((account) => (
+      <IconButton
+        key={account}
+        href={`${url}${account}`}
+        color="primary"
+        target="_blank"
+        sx={{ padding: 0 }}
+        disableRipple
+      >
+        {icon}
+      </IconButton>
+    ))}
+  </>
+);
 
 interface SocialMediaProps {
   facebook_accounts: string[];
@@ -87,12 +39,29 @@ export const PersPrefSocials: React.FC<SocialMediaProps> = ({
   linkedin_accounts,
   websites,
 }) => {
+  const isMobile = useMediaQuery((theme: Theme) =>
+    theme.breakpoints.only('xs'),
+  );
+
   return (
-    <StyledList disablePadding>
-      <ListItemLinks accounts={facebook_accounts} type="facebook" />
-      <ListItemLinks accounts={twitter_accounts} type="twitter" />
-      <ListItemLinks accounts={linkedin_accounts} type="linkedin" />
-      <ListItemLinks accounts={websites} type="websites" />
-    </StyledList>
+    <Box
+      display="flex"
+      justifyContent={isMobile ? 'center' : 'start'}
+      columnGap={1}
+      marginTop={1}
+    >
+      <SocialLinks
+        accounts={facebook_accounts}
+        icon={<Facebook />}
+        url="https://www.facebook.com/"
+      />
+      <SocialLinks
+        accounts={twitter_accounts}
+        icon={<Twitter />}
+        url="https://www.twitter.com/"
+      />
+      <SocialLinks accounts={linkedin_accounts} icon={<LinkedIn />} />
+      <SocialLinks accounts={websites} icon={<Language />} />
+    </Box>
   );
 };
