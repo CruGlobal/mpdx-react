@@ -8,7 +8,7 @@ describe('MonthlyGoal', () => {
     matchMediaMock({ width: '1024px' });
   });
 
-  it.skip('default', () => {
+  it('default', () => {
     const { getByTestId, queryByTestId } = render(
       <MonthlyGoal accountListId="1111" />,
     );
@@ -146,7 +146,7 @@ describe('MonthlyGoal', () => {
       matchMediaMock({ width: '599px' });
     });
 
-    it.skip('default', () => {
+    it('default', () => {
       const { getByTestId, queryByTestId } = render(
         <MonthlyGoal accountListId="1111" />,
       );

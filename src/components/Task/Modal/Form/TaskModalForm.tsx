@@ -37,12 +37,13 @@ import {
 import { GetTasksForTaskListDocument } from '../../List/TaskList.generated';
 import { TaskFilter } from '../../List/List';
 import {
-  useGetDataForTaskDrawerQuery,
+  useGetDataForTaskModalQuery,
   useCreateTaskMutation,
   useUpdateTaskMutation,
   useGetTaskModalContactsFilteredQuery,
-} from '../../Drawer/Form/TaskDrawer.generated';
+} from '../../Modal/Form/TaskModal.generated';
 import theme from '../../../../../src/theme';
+import { useCreateTaskCommentMutation } from '../../Modal/Comments/Form/CreateTaskComment.generated';
 import { FormFieldsGridContainer } from './Container/FormFieldsGridContainer';
 import { TasksDocument } from 'pages/accountLists/[accountListId]/tasks/Tasks.generated';
 import { ContactTasksTabDocument } from 'src/components/Contacts/ContactDetails/ContactTasksTab/ContactTasksTab.generated';
@@ -120,6 +121,7 @@ const TaskModalForm = ({
   const { openTaskModal } = useTaskModal();
   const [removeDialogOpen, handleRemoveDialog] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
+  const [commentBody, changeCommentBody] = useState('');
 
   const [createTask, { loading: creating }] = useCreateTaskMutation();
   const [updateTask, { loading: saving }] = useUpdateTaskMutation();
@@ -138,7 +140,7 @@ const TaskModalForm = ({
     [],
   );
 
-  const { data, loading } = useGetDataForTaskDrawerQuery({
+  const { data, loading } = useGetDataForTaskModalQuery({
     variables: {
       accountListId,
     },
@@ -693,6 +695,18 @@ const TaskModalForm = ({
                         </Tooltip>
                       </FormControl>
                     </Grid>
+                  </Grid>
+                  <Grid item>
+                    <TextField
+                      label={t('Comment')}
+                      value={commentBody}
+                      onChange={(event) =>
+                        changeCommentBody(event.target.value)
+                      }
+                      fullWidth
+                      multiline
+                      inputProps={{ 'aria-label': 'Comment' }}
+                    />
                   </Grid>
                 </Grid>
               )}

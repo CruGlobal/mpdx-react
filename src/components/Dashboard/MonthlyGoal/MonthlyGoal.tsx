@@ -102,7 +102,7 @@ const MonthlyGoal = ({
             secondary={pledgedPercentage}
           />
           <Grid container spacing={2}>
-            <Hidden xsDown>
+            <Hidden smDown>
               <Grid sm={6} md={3} item>
                 <Typography component="div" color="textSecondary">
                   <div
@@ -182,7 +182,7 @@ const MonthlyGoal = ({
                 )}
               </Typography>
             </Grid>
-            <Hidden xsDown>
+            <Hidden smDown>
               {!isNaN(belowGoal) && belowGoal > 0 ? (
                 <Grid sm={6} md={3} item>
                   <Typography component="div" color="textSecondary">

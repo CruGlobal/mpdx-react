@@ -32,8 +32,8 @@ import {
   TaskCreateInput,
 } from '../../../../../../../graphql/types.generated';
 
-import { useCreateTaskMutation } from '../../../../../Task/Drawer/Form/TaskDrawer.generated';
-import { useCreateTaskCommentMutation } from '../../../../../Task/Drawer/CommentList/Form/CreateTaskComment.generated';
+import { useCreateTaskMutation } from '../../../../../Task/Modal/Form/TaskModal.generated';
+import { useCreateTaskCommentMutation } from '../../../../../Task/Modal/Comments/Form/CreateTaskComment.generated';
 import {
   SubmitButton,
   CancelButton,
@@ -246,7 +246,6 @@ const LogNewsletter = ({
                         }
                         inputFormat="MM/dd/yyyy"
                         closeOnSelect
-                        data-testid="completedDate"
                         label={t('Completed Date')}
                         InputProps={{
                           startAdornment: (
@@ -269,7 +268,6 @@ const LogNewsletter = ({
                           setFieldValue('completedAt', date)
                         }
                         closeOnSelect
-                        data-testid="completedTime"
                         label={t('Completed Time')}
                         InputProps={{
                           startAdornment: (

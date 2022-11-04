@@ -38,18 +38,18 @@ import {
   TaskUpdateInput,
   ResultEnum,
 } from '../../../../../../graphql/types.generated';
-import { GetTaskForTaskDrawerQuery } from '../../../Drawer/TaskDrawerTask.generated';
+import { GetTaskForTaskModalQuery } from '../../../Modal/TaskModalTask.generated';
 import { GetTasksForTaskListDocument } from '../../../List/TaskList.generated';
 import { TaskFilter } from '../../../List/List';
 import { GetThisWeekDocument } from '../../../../Dashboard/ThisWeek/GetThisWeek.generated';
 import {
-  useGetDataForTaskDrawerQuery,
+  useGetDataForTaskModalQuery,
   useCreateTaskMutation,
   useDeleteTaskMutation,
   useGetTaskModalContactsFilteredQuery,
-} from '../../../Drawer/Form/TaskDrawer.generated';
+} from '../../../Modal/Form/TaskModal.generated';
 import theme from '../../../../../../src/theme';
-import { useCreateTaskCommentMutation } from '../../../Drawer/CommentList/Form/CreateTaskComment.generated';
+import { useCreateTaskCommentMutation } from '../../../Modal/Comments/Form/CreateTaskComment.generated';
 import { FormFieldsGridContainer } from '../Container/FormFieldsGridContainer';
 import useTaskModal from 'src/hooks/useTaskModal';
 import { ContactTasksTabDocument } from 'src/components/Contacts/ContactDetails/ContactTasksTab/ContactTasksTab.generated';
@@ -85,7 +85,7 @@ const taskSchema: yup.SchemaOf<TaskCreateInput | TaskUpdateInput> = yup.object({
 
 interface Props {
   accountListId: string;
-  task?: GetTaskForTaskDrawerQuery['task'];
+  task?: GetTaskForTaskModalQuery['task'];
   onClose: () => void;
   defaultValues?: Partial<TaskCreateInput>;
   filter?: TaskFilter;
@@ -132,7 +132,7 @@ const TaskModalLogForm = ({
   const { enqueueSnackbar } = useSnackbar();
   const { openTaskModal } = useTaskModal();
 
-  const { data, loading } = useGetDataForTaskDrawerQuery({
+  const { data, loading } = useGetDataForTaskModalQuery({
     variables: { accountListId },
   });
   const [createTask, { loading: creating }] = useCreateTaskMutation();

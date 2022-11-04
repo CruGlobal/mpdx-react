@@ -89,7 +89,7 @@ describe('AppealsTest', () => {
     );
   });
 
-  it.skip('should set appeal to primary', async () => {
+  it('should set appeal to primary', async () => {
     const { getByTestId } = render(
       <SnackbarProvider>
         <ThemeProvider theme={theme}>
@@ -112,7 +112,9 @@ describe('AppealsTest', () => {
     const setPrimaryButton = await waitFor(() => getByTestId('setPrimary-1'));
     expect(setPrimaryButton).toBeInTheDocument();
     userEvent.click(setPrimaryButton);
-    await waitFor(() => expect(setPrimaryButton).not.toBeInTheDocument());
-    expect(mockEnqueue).toHaveBeenCalled();
+    await waitFor(() => {
+      expect(setPrimaryButton).not.toBeInTheDocument();
+      expect(mockEnqueue).toHaveBeenCalled();
+    });
   });
 });

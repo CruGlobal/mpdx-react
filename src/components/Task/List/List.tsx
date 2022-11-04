@@ -26,8 +26,8 @@ import { dateFormat, dayMonthFormat } from '../../../lib/intlFormat/intlFormat';
 import TaskStatus from '../Status';
 import illustration15 from '../../../images/drawkit/grape/drawkit-grape-pack-illustration-15.svg';
 import { ActivityTypeEnum } from '../../../../graphql/types.generated';
-import { useGetDataForTaskDrawerQuery } from '../Drawer/Form/TaskDrawer.generated';
-import useTaskDrawer from '../../../hooks/useTaskDrawer';
+import { useGetDataForTaskModalQuery } from '../Modal/Form/TaskModal.generated';
+import useTaskModal from '../../../hooks/useTaskModal';
 import { useAccountListId } from '../../../hooks/useAccountListId';
 import {
   useGetTasksForTaskListQuery,
@@ -87,9 +87,9 @@ const TaskList = ({ initialFilter }: Props): ReactElement => {
 
   const accountListId = useAccountListId();
 
-  const { openTaskDrawer } = useTaskDrawer();
+  const { openTaskModal } = useTaskModal();
 
-  const { data: filterData } = useGetDataForTaskDrawerQuery({
+  const { data: filterData } = useGetDataForTaskModalQuery({
     variables: { accountListId: accountListId ?? '' },
   });
 
@@ -438,7 +438,7 @@ const TaskList = ({ initialFilter }: Props): ReactElement => {
       setCurrentPage(newPage);
     },
     onRowClick: (_rowData, rowMeta) => {
-      openTaskDrawer({
+      openTaskModal({
         taskId: data?.tasks.nodes[rowMeta.dataIndex].id,
         filter,
         rowsPerPage,

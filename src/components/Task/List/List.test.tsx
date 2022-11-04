@@ -2,11 +2,11 @@ import React from 'react';
 import userEvent from '@testing-library/user-event';
 import { ThemeProvider } from '@mui/material/styles';
 import TestWrapper from '../../../../__tests__/util/TestWrapper';
-import { getDataForTaskDrawerMock } from '../Drawer/Form/Form.mock';
+import { getDataForTaskModalMock } from '../Modal/Form/TaskModalForm.mock';
 import { render } from '../../../../__tests__/util/testingLibraryReactMock';
 import { ActivityTypeEnum } from '../../../../graphql/types.generated';
 import theme from '../../../theme';
-import useTaskDrawer from '../../../hooks/useTaskDrawer';
+import useTaskModal from '../../../hooks/useTaskModal';
 import {
   getTasksForTaskListMock,
   getFilteredTasksForTaskListMock,
@@ -16,13 +16,13 @@ import TaskList from '.';
 
 const accountListId = 'abc';
 
-const openTaskDrawer = jest.fn();
+const openTaskModal = jest.fn();
 
-jest.mock('../../../hooks/useTaskDrawer');
+jest.mock('../../../hooks/useTaskModal');
 
 beforeEach(() => {
-  (useTaskDrawer as jest.Mock).mockReturnValue({
-    openTaskDrawer,
+  (useTaskModal as jest.Mock).mockReturnValue({
+    openTaskModal,
   });
 });
 
@@ -43,7 +43,7 @@ describe('TaskList', () => {
   it('has correct defaults', async () => {
     const mocks = [
       getTasksForTaskListMock(accountListId),
-      getDataForTaskDrawerMock(accountListId),
+      getDataForTaskModalMock(accountListId),
       getFilteredTasksForTaskListMock(accountListId, { completed: false }),
       getFilteredTasksForTaskListMock(accountListId, {
         activityType: [ActivityTypeEnum.Appointment],
@@ -114,7 +114,7 @@ describe('TaskList', () => {
         </ThemeProvider>,
       );
     userEvent.click(await findByText('On the Journey with the Johnson Family'));
-    expect(openTaskDrawer).toHaveBeenCalledWith({
+    expect(openTaskModal).toHaveBeenCalledWith({
       taskId: 'task-1',
       filter: {
         userIds: [],
@@ -177,7 +177,7 @@ describe('TaskList', () => {
         <TestWrapper
           mocks={[
             getFilteredTasksForTaskListMock(accountListId, filter),
-            getDataForTaskDrawerMock(accountListId),
+            getDataForTaskModalMock(accountListId),
           ]}
         >
           <TaskList initialFilter={filter} />
@@ -197,7 +197,7 @@ describe('TaskList', () => {
 
   it('has loading state', () => {
     const mocks = [
-      { ...getDataForTaskDrawerMock(accountListId), delay: 100931731455 },
+      { ...getDataForTaskModalMock(accountListId), delay: 100931731455 },
       {
         ...getFilteredTasksForTaskListMock(accountListId, {
           userIds: ['user-1'],
@@ -229,7 +229,7 @@ describe('TaskList', () => {
         <TestWrapper
           mocks={[
             getEmptyTasksForTaskListMock(accountListId),
-            getDataForTaskDrawerMock(accountListId),
+            getDataForTaskModalMock(accountListId),
           ]}
         >
           <TaskList />
@@ -237,7 +237,7 @@ describe('TaskList', () => {
       </ThemeProvider>,
     );
     expect(
-      queryByTestId('TaskDrawerCommentListItemAvatar'),
+      queryByTestId('TaskModalCommentListItemAvatar'),
     ).not.toBeInTheDocument();
   });
 });

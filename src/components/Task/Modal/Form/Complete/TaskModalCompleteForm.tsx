@@ -28,20 +28,20 @@ import {
   ResultEnum,
   TaskUpdateInput,
 } from '../../../../../../graphql/types.generated';
+import { GetTaskForTaskModalQuery } from '../../../Modal/TaskModalTask.generated';
 import { GetThisWeekDocument } from '../../../../Dashboard/ThisWeek/GetThisWeek.generated';
-import { useGetDataForTaskDrawerQuery } from '../../../Drawer/Form/TaskDrawer.generated';
+import { useGetDataForTaskModalQuery } from '../../../Modal/Form/TaskModal.generated';
 import theme from '../../../../../../src/theme';
-import { useCreateTaskCommentMutation } from '../../../Drawer/CommentList/Form/CreateTaskComment.generated';
+import { useCreateTaskCommentMutation } from '../../../Modal/Comments/Form/CreateTaskComment.generated';
 import { possibleNextActions } from '../PossibleNextActions';
 import { possibleResults } from '../PossibleResults';
-import { useCompleteTaskMutation } from '../../../../../../src/components/Task/Drawer/CompleteForm/CompleteTask.generated';
+import { useCompleteTaskMutation } from './CompleteTask.generated';
 import useTaskModal from '../../../../../../src/hooks/useTaskModal';
 import { FormFieldsGridContainer } from '../Container/FormFieldsGridContainer';
 import {
   SubmitButton,
   CancelButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
-import { GetTaskForTaskModalQuery } from '../../TaskModalTask.generated';
 import { getLocalizedTaskType } from 'src/utils/functions/getLocalizedTaskType';
 
 const taskSchema: yup.SchemaOf<
@@ -79,7 +79,7 @@ const TaskModalCompleteForm = ({
   const { openTaskModal } = useTaskModal();
   const { enqueueSnackbar } = useSnackbar();
 
-  const { data } = useGetDataForTaskDrawerQuery({
+  const { data } = useGetDataForTaskModalQuery({
     variables: { accountListId },
   });
   const [updateTask, { loading: saving }] = useCompleteTaskMutation();

@@ -198,7 +198,7 @@ const NavMenu = (): ReactElement => {
               <MenuItem
                 tabIndex={0}
                 className={classes.menuItem}
-                aria-current={router.asPath.includes('contacts') && 'page'}
+                aria-current={router.asPath?.includes('contacts') && 'page'}
               >
                 <ListItemText primary={t('Contacts')} />
               </MenuItem>
@@ -209,7 +209,7 @@ const NavMenu = (): ReactElement => {
               <MenuItem
                 tabIndex={0}
                 className={classes.menuItem}
-                aria-current={router.asPath.includes('tasks') && 'page'}
+                aria-current={router.asPath?.includes('tasks') && 'page'}
               >
                 <ListItemText primary={t('Tasks')} />
               </MenuItem>
@@ -227,7 +227,7 @@ const NavMenu = (): ReactElement => {
               className={clsx(
                 classes.menuItem,
                 reportsMenuOpen && classes.menuItemSelected,
-                router.asPath.includes('reports') && classes.menuItemSelected,
+                router.asPath?.includes('reports') && classes.menuItemSelected,
               )}
             >
               <ListItemText primary={t('Reports')} />
@@ -292,7 +292,7 @@ const NavMenu = (): ReactElement => {
               className={clsx(
                 classes.menuItem,
                 toolsMenuOpen && classes.menuItemSelected,
-                router.asPath.includes('tools') && classes.menuItemSelected,
+                router.asPath?.includes('tools') && classes.menuItemSelected,
               )}
               aria-expanded={toolsMenuOpen}
             >
@@ -411,7 +411,7 @@ const NavMenu = (): ReactElement => {
               <MenuItem
                 tabIndex={0}
                 className={classes.menuItem}
-                aria-current={router.asPath.includes(`/coaching`) && 'page'}
+                aria-current={router.asPath?.includes(`/coaching`) && 'page'}
               >
                 <ListItemText primary={t('Coaches')} />
               </MenuItem>

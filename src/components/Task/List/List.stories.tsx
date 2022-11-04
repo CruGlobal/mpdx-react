@@ -1,9 +1,9 @@
 import React, { ReactElement } from 'react';
 import { MockedProvider } from '@apollo/client/testing';
 import {
-  getDataForTaskDrawerMock,
-  getDataForTaskDrawerLoadingMock,
-} from '../Drawer/Form/Form.mock';
+  getDataForTaskModalMock,
+  getDataForTaskModalLoadingMock,
+} from '../Modal/Form/TaskModalForm.mock';
 import withMargin from '../../../decorators/withMargin';
 import { ActivityTypeEnum } from '../../../../graphql/types.generated';
 import {
@@ -26,7 +26,7 @@ export const Default = (): ReactElement => (
   <MockedProvider
     mocks={[
       getTasksForTaskListMock(accountListId),
-      getDataForTaskDrawerMock(accountListId),
+      getDataForTaskModalMock(accountListId),
     ]}
     addTypename={false}
   >
@@ -38,7 +38,7 @@ export const Loading = (): ReactElement => (
   <MockedProvider
     mocks={[
       getTasksForTaskListLoadingMock(accountListId),
-      getDataForTaskDrawerLoadingMock(accountListId),
+      getDataForTaskModalLoadingMock(accountListId),
     ]}
     addTypename={false}
   >
@@ -50,7 +50,7 @@ export const Empty = (): ReactElement => (
   <MockedProvider
     mocks={[
       getEmptyTasksForTaskListMock(accountListId),
-      getDataForTaskDrawerMock(accountListId),
+      getDataForTaskModalMock(accountListId),
     ]}
     addTypename={false}
   >
@@ -80,7 +80,7 @@ export const WithInitialFilter = (): ReactElement => {
           ...filter,
           before: 'A',
         }),
-        getDataForTaskDrawerMock(accountListId),
+        getDataForTaskModalMock(accountListId),
       ]}
       addTypename={false}
     >
@@ -93,7 +93,7 @@ export const Error = (): ReactElement => (
   <MockedProvider
     mocks={[
       getTasksForTaskListErrorMock(accountListId),
-      getDataForTaskDrawerMock(accountListId),
+      getDataForTaskModalMock(accountListId),
     ]}
     addTypename={false}
   >
