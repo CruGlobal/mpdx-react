@@ -59,13 +59,18 @@ export const PersPrefInfo: React.FC = () => {
   return (
     <PersPrefInfoWrapper component="section">
       <StyledContactTop>
+        {/* Avatar */}
         <StyledAvatar
           src={info.avatar}
           alt={`${info.first_name} ${info.last_name}`}
         />
+
+        {/* Name */}
         <Typography component="h3" variant="h5">
           {t(info.title)} {info.first_name} {info.last_name} {t(info.suffix)}
         </Typography>
+
+        {/* Work */}
         {(info.occupation || info.employer) && (
           <Typography component="h4">
             {`${info.occupation} ${
@@ -74,20 +79,30 @@ export const PersPrefInfo: React.FC = () => {
           </Typography>
         )}
       </StyledContactTop>
+
+      {/* Email */}
       <PersPrefContactMethods type="email" methods={info.email} />
+
+      {/* Phone */}
       <PersPrefContactMethods type="phone" methods={info.phone} />
+
+      {/* Anniversay */}
       <PersPrefAnniversary
         marital_status={t(info.marital_status)}
         anniversary_day={info.anniversary_day}
         anniversary_month={info.anniversary_month}
         anniversary_year={info.anniversary_year}
       />
+
+      {/* Social Media */}
       <PersPrefSocials
         facebook_accounts={info.facebook_accounts}
         twitter_accounts={info.twitter_accounts}
         linkedin_accounts={info.linkedin_accounts}
         websites={info.websites}
       />
+
+      {/* Edit Info Button */}
       <StyledContactEdit
         onClick={handleOpen}
         startIcon={<Edit />}
@@ -95,6 +110,8 @@ export const PersPrefInfo: React.FC = () => {
       >
         {t('Edit')}
       </StyledContactEdit>
+
+      {/* Edit Info Modal */}
       {profileOpen ? (
         <PersPrefModal handleClose={() => setProfileOpen(false)} />
       ) : null}
