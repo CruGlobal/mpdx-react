@@ -44,7 +44,7 @@ describe('SearchMenu', () => {
     );
   });
 
-  it.skip('handles searching', async () => {
+  it('handles searching', async () => {
     const { getByRole, getByPlaceholderText, getByText } = render(
       <GqlMockedProvider<GetSearchMenuContactsQuery>
         mocks={{
@@ -98,13 +98,14 @@ describe('SearchMenu', () => {
       getByPlaceholderText('Type something to start searching'),
       'Cool',
     );
+    await new Promise((resolve) => setTimeout(resolve, 1000));
     await waitFor(() => expect(getByText('Cool, Guy')).toBeVisible());
     await waitFor(() => expect(getByText('Cool, Dude')).toBeVisible());
     await waitFor(() => expect(getByText('And 3 more')).toBeVisible());
     expect(getByText('Create a new contact for "Cool"')).toBeVisible();
   });
 
-  it.skip('handles clicking search result', async () => {
+  it('handles clicking search result', async () => {
     const { getByRole, getByPlaceholderText, getByText } = render(
       <GqlMockedProvider<GetSearchMenuContactsQuery>
         mocks={{
@@ -142,6 +143,7 @@ describe('SearchMenu', () => {
       getByPlaceholderText('Type something to start searching'),
       'Cool',
     );
+    await new Promise((resolve) => setTimeout(resolve, 1000));
     await waitFor(() => expect(getByText('Cool, Guy')).toBeVisible());
     await waitFor(() => expect(getByText('Cool, Dude')).toBeVisible());
     expect(getByText('Create a new contact for "Cool"')).toBeVisible();
