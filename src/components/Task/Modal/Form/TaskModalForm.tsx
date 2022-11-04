@@ -58,6 +58,7 @@ import { possibleNextActions } from './PossibleNextActions';
 import useTaskModal from 'src/hooks/useTaskModal';
 import { GetTaskForTaskModalQuery } from '../TaskModalTask.generated';
 import { getLocalizedTaskType } from 'src/utils/functions/getLocalizedTaskType';
+import { v4 as uuidv4 } from 'uuid';
 
 const taskSchema: yup.SchemaOf<
   Omit<TaskCreateInput | TaskUpdateInput, 'result' | 'nextAction'>
@@ -125,6 +126,7 @@ const TaskModalForm = ({
 
   const [createTask, { loading: creating }] = useCreateTaskMutation();
   const [updateTask, { loading: saving }] = useUpdateTaskMutation();
+  const [createTaskComment] = useCreateTaskCommentMutation();
   const [selectedIds, setSelectedIds] = useState(
     task?.contacts.nodes.map((contact) => contact.id) ||
       defaultValues?.contactIds ||
@@ -185,6 +187,7 @@ const TaskModalForm = ({
     const isUpdate = (
       attributes: TaskCreateInput | TaskUpdateInput,
     ): attributes is TaskUpdateInput => !!task;
+    const body = commentBody.trim();
     if (isUpdate(attributes)) {
       await updateTask({
         variables: { accountListId, attributes },
@@ -202,6 +205,19 @@ const TaskModalForm = ({
     } else {
       await createTask({
         variables: { accountListId, attributes },
+        update: (_cache, { data }) => {
+          if (data?.createTask?.task.id && body !== '') {
+            const id = uuidv4();
+
+            createTaskComment({
+              variables: {
+                accountListId,
+                taskId: data.createTask.task.id,
+                attributes: { id, body },
+              },
+            });
+          }
+        },
         refetchQueries: [
           {
             query: GetTasksForTaskListDocument,
