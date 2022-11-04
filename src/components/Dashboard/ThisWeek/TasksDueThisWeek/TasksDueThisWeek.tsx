@@ -2,7 +2,6 @@ import React, { ReactElement } from 'react';
 import {
   Box,
   Typography,
-  makeStyles,
   Theme,
   CardHeader,
   CardActions,
@@ -12,8 +11,9 @@ import {
   ListItemText,
   ListItemSecondaryAction,
   CardContent,
-} from '@material-ui/core';
-import { Skeleton } from '@material-ui/lab';
+} from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
+import Skeleton from '@mui/material/Skeleton';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import Link from 'next/link';
@@ -27,7 +27,7 @@ import useTaskModal from 'src/hooks/useTaskModal';
 import { useLoadConstantsQuery } from 'src/components/Constants/LoadConstants.generated';
 import { constantIdFromActivityType } from 'src/utils/tasks/taskActivity';
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles()((theme: Theme) => ({
   div: {
     flex: 1,
     display: 'flex',
@@ -72,7 +72,7 @@ const TasksDueThisWeek = ({
   dueTasks,
   accountListId,
 }: Props): ReactElement => {
-  const classes = useStyles();
+  const { classes } = useStyles();
   const { t } = useTranslation();
   const { openTaskModal } = useTaskModal();
   const { data } = useLoadConstantsQuery();
@@ -117,7 +117,7 @@ const TasksDueThisWeek = ({
                   secondary={<Skeleton variant="text" width={200} />}
                 />
                 <ListItemSecondaryAction>
-                  <Skeleton variant="rect" width={20} height={20} />
+                  <Skeleton variant="rectangular" width={20} height={20} />
                 </ListItemSecondaryAction>
               </ListItem>
             ))}

@@ -8,8 +8,8 @@ import {
   ListItemText,
   ListSubheader,
   Typography,
-} from '@material-ui/core';
-import { Skeleton } from '@material-ui/lab';
+} from '@mui/material';
+import Skeleton from '@mui/material/Skeleton';
 import React, { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DateTime } from 'luxon';
@@ -47,7 +47,7 @@ const NotificationMenuItem = ({
       <Box>
         <ListItem alignItems="flex-start">
           <ListItemAvatar>
-            <Skeleton variant="circle" width={40} height={40} />
+            <Skeleton variant="circular" width={40} height={40} />
           </ListItemAvatar>
           <ListItemText
             primary={<Skeleton />}
@@ -60,9 +60,8 @@ const NotificationMenuItem = ({
   }
 
   const amount = item.notification.donation?.amount;
-  const [
-    acknoweldgeUserNotification,
-  ] = useAcknowledgeUserNotificationMutation();
+  const [acknoweldgeUserNotification] =
+    useAcknowledgeUserNotificationMutation();
   const handleClick = async () => {
     let optimisticResponse = true;
     if (!item.read) {
@@ -219,12 +218,17 @@ const NotificationMenuItem = ({
           </ListSubheader>
         )}
       <HandoffLink path={`/contacts/${item.notification.contact.id}`}>
-        <ListItem alignItems="flex-start" button onClick={handleClick}>
+        <ListItem
+          alignItems="flex-start"
+          role="button"
+          button
+          onClick={handleClick}
+        >
           <ListItemAvatar>
             <Badge
               color="secondary"
               variant="dot"
-              overlap="circle"
+              overlap="circular"
               invisible={item.read}
               data-testid="NotificationMenuItemBadge"
             >

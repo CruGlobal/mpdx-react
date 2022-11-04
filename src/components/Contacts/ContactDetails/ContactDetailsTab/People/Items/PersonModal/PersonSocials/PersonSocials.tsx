@@ -7,14 +7,16 @@ import {
   InputLabel,
   MenuItem,
   Select,
-  styled,
   TextField,
   Typography,
-} from '@material-ui/core';
-import SocialIcon from '@material-ui/icons/Language';
-import AddIcon from '@material-ui/icons/Add';
+} from '@mui/material';
+import { styled } from '@mui/material/styles';
+import AddIcon from '@mui/icons-material/Add';
+import Facebook from '@mui/icons-material/Facebook';
+import LinkedIn from '@mui/icons-material/LinkedIn';
+import SocialIcon from '@mui/icons-material/Language';
+import Twitter from '@mui/icons-material/Twitter';
 import { FormikProps, FieldArray, getIn } from 'formik';
-import { Facebook, LinkedIn, Twitter } from '@material-ui/icons';
 import { ModalSectionContainer } from '../ModalSectionContainer/ModalSectionContainer';
 import { ModalSectionDeleteIcon } from '../ModalSectionDeleteIcon/ModalSectionDeleteIcon';
 import { ModalSectionIcon } from '../ModalSectionIcon/ModalSectionIcon';
@@ -102,6 +104,7 @@ export const PersonSocial: React.FC<PersonSocialProps> = ({ formikProps }) => {
                         {t('Type')}
                       </InputLabel>
                       <SocialSelect
+                        label={t('Type')}
                         destroyed={account.destroy ?? false}
                         labelId="social-type-label"
                         value={'facebook'}
@@ -162,6 +165,7 @@ export const PersonSocial: React.FC<PersonSocialProps> = ({ formikProps }) => {
                         {t('Type')}
                       </InputLabel>
                       <SocialSelect
+                        label={t('Type')}
                         destroyed={account.destroy ?? false}
                         labelId="social-type-label"
                         value={'twitter'}
@@ -222,6 +226,7 @@ export const PersonSocial: React.FC<PersonSocialProps> = ({ formikProps }) => {
                         {t('Type')}
                       </InputLabel>
                       <SocialSelect
+                        label={t('Type')}
                         destroyed={account.destroy ?? false}
                         labelId="social-type-label"
                         value={'linkedin'}
@@ -286,6 +291,7 @@ export const PersonSocial: React.FC<PersonSocialProps> = ({ formikProps }) => {
                           {t('Type')}
                         </InputLabel>
                         <SocialSelect
+                          label={t('Type')}
                           destroyed={account.destroy ?? false}
                           labelId="social-type-label"
                           value={'website'}
@@ -351,6 +357,7 @@ export const PersonSocial: React.FC<PersonSocialProps> = ({ formikProps }) => {
                           {t('Type')}
                         </InputLabel>
                         <SocialSelect
+                          label={t('Type')}
                           destroyed={social.destroy ?? false}
                           labelId="social-type-label"
                           value={social.type}

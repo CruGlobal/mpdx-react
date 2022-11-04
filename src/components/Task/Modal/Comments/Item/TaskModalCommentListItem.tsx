@@ -1,11 +1,5 @@
-import {
-  Box,
-  Typography,
-  styled,
-  Button,
-  Tooltip,
-  TextField,
-} from '@material-ui/core';
+import { Box, Typography, Tooltip, TextField } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import React, { ReactElement, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Formik } from 'formik';
@@ -20,7 +14,11 @@ import { commentSchema } from '../Form/TaskModalCommentsListForm';
 import { useDeleteCommentMutation } from './DeleteTaskComment.generated';
 import { useUpdateCommentMutation } from './UpdateTaskComment.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
-import { ModalDeleteButton } from 'src/components/common/Modal/DeleteButton/ModalDeleteButton';
+import {
+  SubmitButton,
+  CancelButton,
+  DeleteButton,
+} from 'src/components/common/Modal/ActionButtons/ActionButtons';
 
 interface Props {
   comment?: GetCommentsForTaskModalCommentListQuery['task']['comments']['nodes'][0];
@@ -30,11 +28,6 @@ interface Props {
 const CommentInfoText = styled(Typography)(() => ({
   fontSize: 12,
   color: theme.palette.cruGrayDark.main,
-}));
-
-export const ActionButtonSmall = styled(Button)(() => ({
-  color: theme.palette.info.main,
-  fontSize: 12,
 }));
 
 const TaskModalCommentsListItem: React.FC<Props> = ({
@@ -51,7 +44,7 @@ const TaskModalCommentsListItem: React.FC<Props> = ({
   const deleteTaskComment = async (): Promise<void> => {
     await deleteComment({
       variables: {
-        taskId,
+        taskId: taskId ?? '',
         commentId: comment?.id || '',
       },
       refetchQueries: [
@@ -68,7 +61,7 @@ const TaskModalCommentsListItem: React.FC<Props> = ({
   ): Promise<void> => {
     await updateComment({
       variables: {
-        taskId,
+        taskId: taskId ?? '',
         commentId: comment?.id || '',
         body: values.body,
       },
@@ -148,15 +141,13 @@ const TaskModalCommentsListItem: React.FC<Props> = ({
                 >
                   <Details />
                   <Box>
-                    <ActionButtonSmall
+                    <CancelButton size="small" onClick={cancelEdit} />
+                    <SubmitButton
+                      size="small"
                       disabled={!isValid || isSubmitting}
-                      type="submit"
                     >
                       {t('Save')}
-                    </ActionButtonSmall>
-                    <ActionButtonSmall onClick={cancelEdit}>
-                      {t('Cancel')}
-                    </ActionButtonSmall>
+                    </SubmitButton>
                   </Box>
                 </Box>
               </form>
@@ -177,13 +168,19 @@ const TaskModalCommentsListItem: React.FC<Props> = ({
             <Details />
             <Box>
               {editing ? (
-                <ActionButtonSmall size="small">{t('Save')}</ActionButtonSmall>
+                <SubmitButton size="small" type="button">
+                  {t('Save')}
+                </SubmitButton>
               ) : (
-                <ActionButtonSmall size="small" onClick={toggleEditing}>
+                <SubmitButton
+                  size="small"
+                  type="button"
+                  onClick={toggleEditing}
+                >
                   {t('Edit')}
-                </ActionButtonSmall>
+                </SubmitButton>
               )}
-              <ModalDeleteButton size="small" onClick={deleteTaskComment} />
+              <DeleteButton size="small" onClick={deleteTaskComment} />
             </Box>
           </Box>
         </>

@@ -1,13 +1,13 @@
 import React from 'react';
 import {
-  makeStyles,
   Box,
   Typography,
   Grid,
   Divider,
   CircularProgress,
   Button,
-} from '@material-ui/core';
+} from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
 import { Icon } from '@mdi/react';
 import { mdiCheckboxMarkedCircle } from '@mdi/js';
 import { useTranslation, Trans } from 'react-i18next';
@@ -23,7 +23,7 @@ import {
 } from './GetInvalidNewsletter.generated';
 import { useUpdateContactNewsletterMutation } from './UpdateNewsletter.generated';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles()(() => ({
   container: {
     padding: theme.spacing(3),
     width: '70%',
@@ -65,16 +65,14 @@ interface Props {
 }
 
 const FixSendNewsletter: React.FC<Props> = ({ accountListId }: Props) => {
-  const classes = useStyles();
+  const { classes } = useStyles();
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
   const { data, loading } = useGetInvalidNewsletterQuery({
     variables: { accountListId },
   });
-  const [
-    updateNewsletter,
-    { loading: updating },
-  ] = useUpdateContactNewsletterMutation();
+  const [updateNewsletter, { loading: updating }] =
+    useUpdateContactNewsletterMutation();
 
   //TODO: Add deceased to contact filters
   const updateContact = async (

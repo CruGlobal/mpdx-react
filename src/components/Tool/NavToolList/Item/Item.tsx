@@ -1,11 +1,13 @@
 import React, { ReactElement } from 'react';
-import { ListItem, ListItemText, makeStyles } from '@material-ui/core';
-import { ArrowForwardIos } from '@material-ui/icons';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
+import { makeStyles } from 'tss-react/mui';
+import ArrowForwardIos from '@mui/icons-material/ArrowForwardIos';
 import NextLink from 'next/link';
 import theme from '../../../../theme';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles()(() => ({
   liButton: {
     '&:hover': {
       backgroundColor: theme.palette.cruGrayLight.main,
@@ -25,7 +27,7 @@ interface Props {
 
 export const Item = ({ id, title, isSelected }: Props): ReactElement => {
   const accountListId = useAccountListId();
-  const classes = useStyles();
+  const { classes } = useStyles();
 
   return (
     <NextLink

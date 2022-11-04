@@ -3,19 +3,19 @@ import {
   Box,
   Card,
   CardContent,
-  Divider,
-  styled,
+  DialogActions,
+  DialogContent,
   Typography,
-} from '@material-ui/core';
+} from '@mui/material';
+import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
-import { Add } from '@material-ui/icons';
+import Add from '@mui/icons-material/Add';
 import illustration4 from '../../../../images/drawkit/grape/drawkit-grape-pack-illustration-4.svg';
-import TaskDrawerCommentListItem from '../../Drawer/CommentList/Item';
+import TaskModalCommentsListItem from '../Comments/Item/TaskModalCommentListItem';
 import theme from '../../../../../src/theme';
-import { ActionButton } from '../Form/TaskModalForm';
 import { useGetCommentsForTaskModalCommentListQuery } from './TaskListComments.generated';
-import TaskModalCommentsListItem from './Item/TaskModalCommentListItem';
 import TaskModalCommentsListForm from './Form/TaskModalCommentsListForm';
+import { SubmitButton } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 
 const ImageWrap = styled(Box)(() => ({
   height: '120px',
@@ -35,18 +35,18 @@ const CardContentEmpty = styled(CardContent)(() => ({
   justifyContent: 'center',
 }));
 
-const CommentListContainer = styled(Box)(() => ({
-  width: '20vw',
-  height: '60vh',
-  overflowY: 'auto',
-  [theme.breakpoints.down('md')]: {
-    width: '30vw',
-  },
-  [theme.breakpoints.down('sm')]: {
-    width: '90vw',
-    height: '80vh',
-  },
-}));
+// const CommentListContainer = styled(Box)(() => ({
+//   width: '20vw',
+//   height: '60vh',
+//   overflowY: 'auto',
+//   [theme.breakpoints.down('md')]: {
+//     width: '30vw',
+//   },
+//   [theme.breakpoints.down('sm')]: {
+//     width: '90vw',
+//     height: '80vh',
+//   },
+// }));
 
 export interface TaskModalCommentsListProps {
   taskId: string;
@@ -76,25 +76,24 @@ const TaskModalCommentsList = ({
 
   const nodes = data?.task.comments.nodes;
 
-  const [showNewCommentInput, setShowNewCommentInput] = useState<boolean>(
-    false,
-  );
+  const [showNewCommentInput, setShowNewCommentInput] =
+    useState<boolean>(false);
 
   return (
     <>
-      <CommentListContainer m={2} p={2}>
+      <DialogContent dividers>
         {loading ? (
-          <Box data-testid="TaskDrawerCommentListLoading">
-            <TaskDrawerCommentListItem />
-            <TaskDrawerCommentListItem reverse />
-            <TaskDrawerCommentListItem />
-            <TaskDrawerCommentListItem reverse />
+          <Box data-testid="TaskModalCommentListLoading">
+            <TaskModalCommentsListItem taskId={taskId} />
+            <TaskModalCommentsListItem taskId={taskId} />
+            <TaskModalCommentsListItem taskId={taskId} />
+            <TaskModalCommentsListItem taskId={taskId} />
           </Box>
         ) : (
           <>
             {nodes?.length === 0 && (
               <Card
-                data-testid="TaskDrawerCommentListEmpty"
+                data-testid="TaskModalCommentListEmpty"
                 style={{ marginBottom: theme.spacing(2) }}
               >
                 <CardContentEmpty>
@@ -113,7 +112,7 @@ const TaskModalCommentsList = ({
               return [
                 ...result,
                 <Box
-                  data-testid={`TaskModalCommentListItem-${comment.id}`}
+                  data-testid={`TaskModalCommentsListItem-${comment.id}`}
                   key={comment.id}
                 >
                   <TaskModalCommentsListItem
@@ -130,28 +129,22 @@ const TaskModalCommentsList = ({
                 handleFormClose={setShowNewCommentInput}
               />
             )}
-            <ActionButton
+            <SubmitButton
               size="large"
+              type="button"
               onClick={() => setShowNewCommentInput(true)}
             >
               <Add style={{ marginRight: theme.spacing(1) }} />{' '}
               {t('Add Comment')}
-            </ActionButton>
+            </SubmitButton>
           </>
         )}
-      </CommentListContainer>
-      <Divider />
-      <Box
-        display="flex"
-        justifyContent="end"
-        alignItems="center"
-        width="100%"
-        p={1}
-      >
-        <ActionButton size="large" onClick={onClose}>
+      </DialogContent>
+      <DialogActions>
+        <SubmitButton type="button" onClick={onClose}>
           {t('Done')}
-        </ActionButton>
-      </Box>
+        </SubmitButton>
+      </DialogActions>
     </>
   );
 };

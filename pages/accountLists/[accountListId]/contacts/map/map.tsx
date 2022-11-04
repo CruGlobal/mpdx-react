@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { Fragment, useCallback } from 'react';
 import {
   GoogleMap,
   useLoadScript,
@@ -6,7 +6,8 @@ import {
   MarkerClusterer,
   InfoWindow,
 } from '@react-google-maps/api';
-import { Box, CircularProgress, styled, Typography } from '@material-ui/core';
+import { Box, CircularProgress, Typography } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { StatusEnum } from '../../../../../graphql/types.generated';
 import { ContactsPageContext, ContactsPageType } from '../ContactsPageContext';
@@ -96,8 +97,6 @@ export const ContactsMap: React.FC = ({}) => {
   } = React.useContext(ContactsPageContext) as ContactsPageType;
 
   const onMapLoad = useCallback((map) => {
-    // eslint-disable-next-line
-    // @ts-ignore
     mapRef.current = map;
   }, []);
 
@@ -127,31 +126,35 @@ export const ContactsMap: React.FC = ({}) => {
           >
             {data && (
               <MarkerClusterer>
-                {(clusterer) =>
-                  data
-                    .filter((contact) => contact?.lat)
-                    .map((contact) => (
-                      <Marker
-                        key={contact?.id}
-                        clusterer={clusterer}
-                        position={{
-                          lat: contact?.lat || 0,
-                          lng: contact?.lng || 0,
-                        }}
-                        onClick={() => {
-                          setSelected(contact);
-                        }}
-                        icon={{
-                          url: `/images/pin${getStatusPin(
-                            contact?.status,
-                          )}.png`,
-                          origin: new window.google.maps.Point(0, 0),
-                          anchor: new window.google.maps.Point(15, 48),
-                          scaledSize: new window.google.maps.Size(30, 48),
-                        }}
-                      />
-                    ))
-                }
+                {(clusterer) => {
+                  return (
+                    <Fragment>
+                      {data
+                        .filter((contact) => contact?.lat)
+                        .map((contact) => (
+                          <Marker
+                            key={contact?.id}
+                            clusterer={clusterer}
+                            position={{
+                              lat: contact?.lat || 0,
+                              lng: contact?.lng || 0,
+                            }}
+                            onClick={() => {
+                              setSelected(contact);
+                            }}
+                            icon={{
+                              url: `/images/pin${getStatusPin(
+                                contact?.status,
+                              )}.png`,
+                              origin: new window.google.maps.Point(0, 0),
+                              anchor: new window.google.maps.Point(15, 48),
+                              scaledSize: new window.google.maps.Size(30, 48),
+                            }}
+                          />
+                        ))}
+                    </Fragment>
+                  );
+                }}
               </MarkerClusterer>
             )}
 

@@ -4,7 +4,7 @@ import {
   CardContent,
   Typography,
   CircularProgress,
-} from '@material-ui/core';
+} from '@mui/material';
 import React, { useRef } from 'react';
 import { useDrop } from 'react-dnd';
 import theme from '../../../../theme';

@@ -1,5 +1,5 @@
 import React from 'react';
-import { MuiThemeProvider } from '@material-ui/core';
+import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { waitFor } from '@testing-library/dom';
@@ -15,13 +15,13 @@ describe('StarTaskIconButton', () => {
   it('renders not starred', async () => {
     const { queryByRole } = render(
       <GqlMockedProvider<SetContactStarredMutation>>
-        <MuiThemeProvider theme={theme}>
+        <ThemeProvider theme={theme}>
           <StarContactIconButton
             accountListId={accountListId}
             contactId={contactId}
             isStarred={false}
           />
-        </MuiThemeProvider>
+        </ThemeProvider>
       </GqlMockedProvider>,
     );
 
@@ -41,13 +41,13 @@ describe('StarTaskIconButton', () => {
   it('renders starred', async () => {
     const { queryByRole } = render(
       <GqlMockedProvider<SetContactStarredMutation>>
-        <MuiThemeProvider theme={theme}>
+        <ThemeProvider theme={theme}>
           <StarContactIconButton
             accountListId={accountListId}
             contactId={contactId}
             isStarred={true}
           />
-        </MuiThemeProvider>
+        </ThemeProvider>
       </GqlMockedProvider>,
     );
 
@@ -69,13 +69,13 @@ describe('StarTaskIconButton', () => {
 
     const { getByRole } = render(
       <GqlMockedProvider<SetContactStarredMutation> onCall={mutationSpy}>
-        <MuiThemeProvider theme={theme}>
+        <ThemeProvider theme={theme}>
           <StarContactIconButton
             accountListId={accountListId}
             contactId={contactId}
             isStarred={false}
           />
-        </MuiThemeProvider>
+        </ThemeProvider>
       </GqlMockedProvider>,
     );
 

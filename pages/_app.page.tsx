@@ -1,16 +1,18 @@
 import React, { ReactElement } from 'react';
 import Rollbar from 'rollbar';
 import { ErrorBoundary, Provider } from '@rollbar/react';
-import { AppProps } from 'next/app';
-import { StylesProvider, ThemeProvider } from '@material-ui/core/styles';
+import type { AppProps } from 'next/app';
+import StyledEngineProvider from '@mui/material/StyledEngineProvider';
+import { ThemeProvider } from '@mui/material/styles';
 import { ApolloProvider } from '@apollo/client';
 import { AnimatePresence } from 'framer-motion';
+import { Session } from 'next-auth';
 import { SessionProvider } from 'next-auth/react';
 import { NextPage } from 'next';
 import Head from 'next/head';
-import { I18nextProvider } from 'react-i18next';
-import { MuiPickersUtilsProvider } from '@material-ui/pickers';
-import LuxonUtils from '@date-io/luxon';
+import { I18nextProvider, useTranslation } from 'react-i18next';
+import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { SnackbarProvider } from 'notistack';
 import theme from '../src/theme';
 import './helpscout.css';
@@ -18,7 +20,6 @@ import client from '../src/lib/client';
 import PrimaryLayout from '../src/components/Layouts/Primary';
 import Loading from '../src/components/Loading';
 import i18n from '../src/lib/i18n';
-import TaskDrawerProvider from '../src/components/Task/Drawer/TaskDrawerProvider';
 import TaskModalProvider from '../src/components/Task/Modal/TaskModalProvider';
 import { SnackbarUtilsConfigurator } from '../src/components/Snackbar/Snackbar';
 import { GlobalStyles } from '../src/components/GlobalStyles/GlobalStyles';
@@ -36,7 +37,14 @@ export type PageWithLayout = NextPage & {
   layout?: React.FC;
 };
 
-const App = ({ Component, pageProps, router }: AppProps): ReactElement => {
+const App = ({
+  Component,
+  pageProps,
+  router,
+}: AppProps<{
+  session: Session;
+}>): ReactElement => {
+  const { t } = useTranslation();
   const Layout = (Component as PageWithLayout).layout || PrimaryLayout;
   const { session } = pageProps;
   const rollbarConfig: Rollbar.Configuration = {
@@ -94,10 +102,6 @@ const App = ({ Component, pageProps, router }: AppProps): ReactElement => {
           href="/icons/apple-touch-icon-ipad-retina-152x152.png"
         />
         <meta name="apple-mobile-web-app-status-bar-style" content="black" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;700&display=swap"
-          rel="stylesheet"
-        />
       </Head>
       <Provider config={rollbarConfig}>
         <ErrorBoundary>
@@ -105,34 +109,40 @@ const App = ({ Component, pageProps, router }: AppProps): ReactElement => {
             <SessionProvider session={session}>
               <UserPreferenceProvider>
                 <I18nextProvider i18n={i18n}>
-                  <ThemeProvider theme={theme}>
-                    <StylesProvider>
-                      <MuiPickersUtilsProvider utils={LuxonUtils}>
+                  <StyledEngineProvider injectFirst>
+                    <ThemeProvider theme={theme}>
+                      <LocalizationProvider
+                        dateAdapter={AdapterLuxon}
+                        localeText={{
+                          cancelButtonLabel: `${t('Cancel')}`,
+                          clearButtonLabel: `${t('Clear')}`,
+                          okButtonLabel: `${t('OK')}`,
+                          todayButtonLabel: `${t('Today')}`,
+                        }}
+                      >
                         <SnackbarProvider maxSnack={3}>
                           <GlobalStyles />
                           <AnimatePresence
-                            exitBeforeEnter
+                            mode="wait"
                             onExitComplete={handleExitComplete}
                           >
                             <RouterGuard>
                               <TaskModalProvider>
-                                <TaskDrawerProvider>
-                                  <Layout>
-                                    <SnackbarUtilsConfigurator />
-                                    <Component
-                                      {...pageProps}
-                                      key={router.route}
-                                    />
-                                  </Layout>
-                                </TaskDrawerProvider>
+                                <Layout>
+                                  <SnackbarUtilsConfigurator />
+                                  <Component
+                                    {...pageProps}
+                                    key={router.route}
+                                  />
+                                </Layout>
                               </TaskModalProvider>
                             </RouterGuard>
                           </AnimatePresence>
                           <Loading />
                         </SnackbarProvider>
-                      </MuiPickersUtilsProvider>
-                    </StylesProvider>
-                  </ThemeProvider>
+                      </LocalizationProvider>
+                    </ThemeProvider>
+                  </StyledEngineProvider>
                 </I18nextProvider>
               </UserPreferenceProvider>
             </SessionProvider>

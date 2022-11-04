@@ -1,7 +1,9 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Box, styled, Typography } from '@material-ui/core';
-import CheckCircleOutlineIcon from '@material-ui/icons/CheckCircleOutline';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+import { styled } from '@mui/material/styles';
 import useTaskModal from 'src/hooks/useTaskModal';
 
 interface ContactUncompletedTasksCountProps {
@@ -16,10 +18,9 @@ const LogTaskButton = styled(CheckCircleOutlineIcon)(({ theme }) => ({
   },
 }));
 
-export const ContactUncompletedTasksCount: React.FC<ContactUncompletedTasksCountProps> = ({
-  uncompletedTasksCount,
-  contactId,
-}) => {
+export const ContactUncompletedTasksCount: React.FC<
+  ContactUncompletedTasksCountProps
+> = ({ uncompletedTasksCount, contactId }) => {
   const { t } = useTranslation();
   const { openTaskModal } = useTaskModal();
 

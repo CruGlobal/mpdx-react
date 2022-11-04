@@ -4,7 +4,7 @@ import {
   getTasksForTaskListMock,
   getFilteredTasksForTaskListMock,
 } from '../List/List.mock';
-import { getDataForTaskDrawerMock } from '../Drawer/Form/Form.mock';
+import { getDataForTaskModalMock } from '../Modal/Form/TaskModalForm.mock';
 import { ActivityTypeEnum } from '../../../../graphql/types.generated';
 import TaskHome from '.';
 
@@ -18,7 +18,7 @@ export const Default = (): ReactElement => (
   <MockedProvider
     mocks={[
       getTasksForTaskListMock(accountListId),
-      getDataForTaskDrawerMock(accountListId),
+      getDataForTaskModalMock(accountListId),
     ]}
     addTypename={false}
   >
@@ -37,7 +37,7 @@ export const WithInitialFilter = (): ReactElement => {
     <MockedProvider
       mocks={[
         getFilteredTasksForTaskListMock(accountListId, filter),
-        getDataForTaskDrawerMock(accountListId),
+        getDataForTaskModalMock(accountListId),
       ]}
       addTypename={false}
     >

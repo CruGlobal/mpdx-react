@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { Box, Button, Drawer, Link, List, styled } from '@material-ui/core';
+import { Box, Button, Drawer, Link, List } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { signOut } from 'next-auth/react';
-import ArrowBackIcon from '@material-ui/icons/ArrowBack';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useRouter } from 'next/router';
-import { ChevronRight } from '@material-ui/icons';
+import ChevronRight from '@mui/icons-material/ChevronRight';
 import theme from '../../../../../../theme';
 import { useAccountListId } from '../../../../../../hooks/useAccountListId';
 import { LeafButton, LeafListItem, Title } from '../../NavItem/NavItem';
@@ -86,7 +87,6 @@ export const ProfileMenuPanel: React.FC = () => {
         <>
           <LeafListItem
             data-testid="accountListSelectorButton"
-            button
             disableGutters
             onClick={toggleAccountsDrawer}
           >
@@ -115,7 +115,6 @@ export const ProfileMenuPanel: React.FC = () => {
           >
             <LeafListItem
               data-testid="closeAccountListDrawerButton"
-              button
               disableGutters
               onClick={toggleAccountsDrawer}
             >
@@ -129,7 +128,6 @@ export const ProfileMenuPanel: React.FC = () => {
             {data?.accountLists.nodes.map((accountList) => (
               <LeafListItemHover
                 key={accountList.id}
-                button
                 data-testid={`accountListButton-${accountList.id}`}
                 disableGutters
                 style={{
@@ -149,7 +147,7 @@ export const ProfileMenuPanel: React.FC = () => {
         </>
       )}
       {addProfileContent.map(({ text, path, onClick }, index) => (
-        <LeafListItem key={index} button disableGutters onClick={onClick}>
+        <LeafListItem key={index} disableGutters onClick={onClick}>
           <HandoffLink path={path}>
             <LeafButton style={style}>
               <Title>{t(text)}</Title>
@@ -159,7 +157,7 @@ export const ProfileMenuPanel: React.FC = () => {
       ))}
       {(data?.user?.admin ||
         !!data?.user?.administrativeOrganizations?.nodes?.length) && (
-        <LeafListItem button disableGutters>
+        <LeafListItem disableGutters>
           <HandoffLink path="/preferences/organizations">
             <LeafButton style={style}>
               <Title>{t('Manage Organizations')}</Title>
@@ -168,7 +166,7 @@ export const ProfileMenuPanel: React.FC = () => {
         </LeafListItem>
       )}
       {(data?.user?.admin || data?.user?.developer) && (
-        <LeafListItem button disableGutters>
+        <LeafListItem disableGutters>
           <HandoffLink path="/preferences/admin">
             <LeafButton style={style}>
               <Title>{t('Admin Console')}</Title>
@@ -177,7 +175,7 @@ export const ProfileMenuPanel: React.FC = () => {
         </LeafListItem>
       )}
       {data?.user?.developer && (
-        <LeafListItem button disableGutters>
+        <LeafListItem disableGutters>
           <HandoffLink path="/auth/user/admin">
             <LeafButton style={style}>
               <Title>{t('Backend Admin')}</Title>
@@ -186,7 +184,7 @@ export const ProfileMenuPanel: React.FC = () => {
         </LeafListItem>
       )}
       {data?.user?.developer && (
-        <LeafListItem button disableGutters>
+        <LeafListItem disableGutters>
           <HandoffLink path="/auth/user/sidekiq">
             <LeafButton style={style}>
               <Title>{t('Sidekiq')}</Title>
@@ -194,7 +192,7 @@ export const ProfileMenuPanel: React.FC = () => {
           </HandoffLink>
         </LeafListItem>
       )}
-      <LeafListItem button disableGutters>
+      <LeafListItem disableGutters>
         <Box display="flex" flexDirection="column" px={4} py={2}>
           <Button
             variant="outlined"

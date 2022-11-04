@@ -1,4 +1,4 @@
-import { Box } from '@material-ui/core';
+import { Box } from '@mui/material';
 import React from 'react';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
@@ -29,6 +29,7 @@ interface Props {
 }
 
 export interface ContactFlowOption {
+  id: string;
   name: string;
   statuses: string[];
   color: string;
@@ -71,10 +72,8 @@ export const ContactFlow: React.FC<Props> = ({
   onContactSelected,
   searchTerm,
 }: Props) => {
-  const {
-    data: userOptions,
-    loading: loadingUserOptions,
-  } = useGetUserOptionsQuery({});
+  const { data: userOptions, loading: loadingUserOptions } =
+    useGetUserOptionsQuery({});
 
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
@@ -145,7 +144,7 @@ export const ContactFlow: React.FC<Props> = ({
                   : 'minmax(0, 1fr)); minmax(0, 1fr)'
               }`}
               gridAutoFlow="column"
-              gridGap={theme.spacing(1)}
+              gap={theme.spacing(1)}
               overflow="auto"
               style={{ overflowX: 'auto' }}
             >

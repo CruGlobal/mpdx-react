@@ -1,15 +1,9 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  Box,
-  Grid,
-  IconButton,
-  Link,
-  styled,
-  Typography,
-} from '@material-ui/core';
-import LocationOn from '@material-ui/icons/LocationOn';
-import CreateIcon from '@material-ui/icons/Create';
+import { Box, Grid, IconButton, Link, Typography } from '@mui/material';
+import { styled } from '@mui/material/styles';
+import LocationOn from '@mui/icons-material/LocationOn';
+import CreateIcon from '@mui/icons-material/Create';
 import {
   ContactDetailsAddButton,
   ContactDetailsAddIcon,
@@ -44,7 +38,7 @@ const ContactDetailsMailingLabelTextContainer = styled(Box)(({}) => ({
 }));
 
 const ContactDetailsMailingLabel = styled(Typography)(({ theme }) => ({
-  color: theme.palette.text.hint,
+  color: theme.palette.text.secondary,
   marginRight: '5px',
 }));
 
@@ -54,7 +48,7 @@ const ContactMailingShowMoreLabel = styled(Typography)(({ theme }) => ({
 
 const ContactAddressPrimaryText = styled(Typography)(({ theme }) => ({
   margin: theme.spacing(0, 1),
-  color: theme.palette.text.hint,
+  color: theme.palette.text.secondary,
 }));
 
 const ContactAddressRowContainer = styled(Box)(() => ({
@@ -101,10 +95,8 @@ export const ContactDetailsTabMailing: React.FC<MailingProp> = ({
     editingAddressId &&
     addresses.nodes.filter((address) => address.id === editingAddressId)[0];
 
-  const [
-    showContactDetailTabMoreOpen,
-    setShowContactDetailTabMoreOpen,
-  ] = useState(false);
+  const [showContactDetailTabMoreOpen, setShowContactDetailTabMoreOpen] =
+    useState(false);
   return (
     <>
       <Box>

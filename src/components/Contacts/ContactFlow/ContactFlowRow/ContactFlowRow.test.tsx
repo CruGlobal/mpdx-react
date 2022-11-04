@@ -3,7 +3,7 @@ import { render } from '@testing-library/react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import userEvent from '@testing-library/user-event';
-import { ThemeProvider } from '@material-ui/core';
+import { ThemeProvider } from '@mui/material/styles';
 import TestWrapper from '../../../../../__tests__/util/TestWrapper';
 import { StatusEnum } from '../../../../../graphql/types.generated';
 import theme from '../../../../../src/theme';

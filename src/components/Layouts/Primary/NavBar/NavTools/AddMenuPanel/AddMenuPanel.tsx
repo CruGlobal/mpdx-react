@@ -1,13 +1,14 @@
 import React, { ReactElement, useState } from 'react';
-import { List, useTheme } from '@material-ui/core';
-import PersonIcon from '@material-ui/icons/Person';
-import PeopleIcon from '@material-ui/icons/People';
-import CardGiftcardIcon from '@material-ui/icons/CardGiftcard';
-import ListIcon from '@material-ui/icons/FormatListBulleted';
-import EditIcon from '@material-ui/icons/Edit';
+import { List } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
+import PersonIcon from '@mui/icons-material/Person';
+import PeopleIcon from '@mui/icons-material/People';
+import CardGiftcardIcon from '@mui/icons-material/CardGiftcard';
+import ListIcon from '@mui/icons-material/FormatListBulleted';
+import EditIcon from '@mui/icons-material/Edit';
 import { useTranslation } from 'react-i18next';
 import { LeafButton, LeafListItem, Title } from '../../NavItem/NavItem';
-import useTaskDrawer from 'src/hooks/useTaskDrawer';
+import useTaskModal from 'src/hooks/useTaskModal';
 import {
   AddMenuItemsEnum,
   renderDialog,
@@ -23,7 +24,7 @@ type MenuContent = {
 export const AddMenuPanel = (): ReactElement => {
   const [selectedMenuItem, changeSelectedMenuItem] = useState(-1);
   const [dialogOpen, changeDialogOpen] = useState(false);
-  const { openTaskDrawer } = useTaskDrawer();
+  const { openTaskModal } = useTaskModal();
   const theme = useTheme();
   const { t } = useTranslation();
 
@@ -53,7 +54,7 @@ export const AddMenuPanel = (): ReactElement => {
       text: 'Add Task',
       icon: ListIcon,
       onClick: () => {
-        openTaskDrawer({});
+        openTaskModal({});
       },
     },
     {
@@ -74,7 +75,7 @@ export const AddMenuPanel = (): ReactElement => {
     <>
       <List disablePadding data-testid="AddMenuPanelForNavBar">
         {addMenuContent.map(({ text, icon: Icon, onClick }, index) => (
-          <LeafListItem key={index} button disableGutters onClick={onClick}>
+          <LeafListItem key={index} disableGutters onClick={onClick}>
             <LeafButton style={style}>
               <Icon size={18} style={iconStyle} />
               <Title>{t(text)}</Title>

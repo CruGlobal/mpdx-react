@@ -1,18 +1,18 @@
 import {
+  Autocomplete,
   Box,
   CardContent,
   CardHeader,
   Typography,
   TextField,
-  makeStyles,
   Button,
   Grid,
   Theme,
   CircularProgress,
-  styled,
   FormControl,
-} from '@material-ui/core';
-import Autocomplete from '@material-ui/lab/Autocomplete';
+} from '@mui/material';
+import { styled } from '@mui/material/styles';
+import { makeStyles } from 'tss-react/mui';
 import { Formik, Field, Form } from 'formik';
 import React, { ReactElement, useState } from 'react';
 import Icon from '@mdi/react';
@@ -33,7 +33,7 @@ const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
   margin: theme.spacing(0, 1, 0, 0),
 }));
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles()((theme: Theme) => ({
   input: {
     width: '100%',
   },
@@ -94,31 +94,29 @@ const contactExclusions = [
 ];
 
 const AddAppealForm = (): ReactElement => {
-  const classes = useStyles();
+  const { classes } = useStyles();
   const { t } = useTranslation();
   const accountListId = useAccountListId() || '';
   const { enqueueSnackbar } = useSnackbar();
-  const {
-    data: contactFilterTags,
-    loading: loadingTags,
-  } = useGetContactTagsQuery({
-    variables: { accountListId },
-  });
-  const {
-    data: contactFilterGroups,
-    loading: loadingStatuses,
-  } = useContactFiltersQuery({
-    variables: {
-      accountListId,
-    },
-  });
+  const { data: contactFilterTags, loading: loadingTags } =
+    useGetContactTagsQuery({
+      variables: { accountListId },
+    });
+  const { data: contactFilterGroups, loading: loadingStatuses } =
+    useContactFiltersQuery({
+      variables: {
+        accountListId,
+      },
+    });
 
   const contactStatuses = contactFilterGroups?.accountList?.contactFilterGroups
-    ? (contactFilterGroups.accountList.contactFilterGroups
-        .find((group) => group.name === 'Status')
-        ?.filters.find(
-          (filter: { filterKey: string }) => filter.filterKey === 'status',
-        ) as MultiselectFilter).options
+    ? (
+        contactFilterGroups.accountList.contactFilterGroups
+          .find((group) => group.name === 'Status')
+          ?.filters.find(
+            (filter: { filterKey: string }) => filter.filterKey === 'status',
+          ) as MultiselectFilter
+      ).options
     : [{ name: '', value: '' }];
 
   const [filterTags, setFilterTags] = useState<{

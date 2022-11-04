@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
-import { ThemeProvider } from '@material-ui/core';
+import { ThemeProvider } from '@mui/material/styles';
 import { GqlMockedProvider } from '../../../../../../__tests__/util/graphqlMocking';
 import { FourteenMonthReportTable } from './Table';
 import theme from 'src/theme';

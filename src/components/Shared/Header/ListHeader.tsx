@@ -8,13 +8,14 @@ import {
   ListItemText,
   Menu,
   MenuItem,
-  styled,
-  Theme,
-} from '@material-ui/core';
-import FilterList from '@material-ui/icons/FilterList';
+} from '@mui/material';
+import { styled } from '@mui/material/styles';
+import theme from 'src/theme';
+import FilterList from '@mui/icons-material/FilterList';
 import { useTranslation } from 'react-i18next';
-import ArrowDropDown from '@material-ui/icons/ArrowDropDown';
-import { MoreHoriz, ViewList } from '@material-ui/icons';
+import ArrowDropDown from '@mui/icons-material/ArrowDropDown';
+import MoreHoriz from '@mui/icons-material/MoreHoriz';
+import ViewList from '@mui/icons-material/ViewList';
 import { SearchBox } from '../../common/SearchBox/SearchBox';
 import {
   ContactFilterSetInput,
@@ -23,17 +24,15 @@ import {
 import { StarFilterButton } from './StarFilterButton/StarFilterButton';
 import useTaskModal from 'src/hooks/useTaskModal';
 
-const HeaderWrap = styled(Box)(
-  ({ theme }: { theme: Theme; contactDetailsOpen: boolean }) => ({
-    padding: theme.spacing(3, 0.5),
-    display: 'flex',
-    justifyContent: 'space-between',
-    borderBottom: `1px solid ${theme.palette.grey[200]}`,
-    [theme.breakpoints.down('sm')]: {
-      paddingRight: theme.spacing(2),
-    },
-  }),
-);
+const HeaderWrap = styled(Box)(({}: { contactDetailsOpen: boolean }) => ({
+  padding: theme.spacing(3, 0.5),
+  display: 'flex',
+  justifyContent: 'space-between',
+  borderBottom: `1px solid ${theme.palette.grey[200]}`,
+  [theme.breakpoints.down('sm')]: {
+    paddingRight: theme.spacing(2),
+  },
+}));
 
 const HeaderWrapInner = styled(Box)(({}) => ({
   display: 'flex',
@@ -48,19 +47,8 @@ const StyledCheckbox = styled(Checkbox)(({ theme }) => ({
   },
 }));
 
-const FilterButton = styled(
-  ({ activeFilters: _activeFilters, panelOpen: _panelOpen, ...props }) => (
-    <IconButton {...props} />
-  ),
-)(
-  ({
-    theme,
-    activeFilters,
-  }: {
-    theme: Theme;
-    activeFilters: boolean;
-    panelOpen: boolean;
-  }) => ({
+const FilterButton = styled(IconButton)(
+  ({ activeFilters }: { activeFilters: boolean; panelOpen: boolean }) => ({
     marginRight: theme.spacing(2),
     backgroundColor: activeFilters
       ? theme.palette.cruYellow.main
@@ -234,13 +222,14 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
               openExportEmailsModal && (
                 <>
                   <Hidden xsDown>
-                    {selectedIds.length > 0 && (
+                    {selectedIds?.length > 0 && (
                       <>
                         <ActionsButton
                           aria-haspopup
                           aria-expanded={open}
                           onClick={handleClick}
                           endIcon={<ArrowDropDown />}
+                          color="inherit"
                         >
                           {filterPanelOpen && contactDetailsOpen ? (
                             <MoreHoriz />
@@ -252,7 +241,6 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
                           open={open}
                           onClose={handleClose}
                           anchorEl={anchorEl}
-                          getContentAnchorEl={null}
                           anchorOrigin={{
                             vertical: 'bottom',
                             horizontal: 'center',
@@ -360,7 +348,7 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
           <>
             {buttonGroup}
             <Hidden xsDown>
-              {selectedIds.length > 0 && (
+              {selectedIds?.length > 0 && (
                 <>
                   <ActionsButton
                     aria-haspopup
@@ -368,6 +356,7 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
                     onClick={handleClick}
                     endIcon={<ArrowDropDown />}
                     disabled={selectedIds.length === 0}
+                    color="inherit"
                   >
                     {t('Actions')}
                   </ActionsButton>
@@ -375,7 +364,6 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
                     open={open}
                     onClose={handleClose}
                     anchorEl={anchorEl}
-                    getContentAnchorEl={null}
                     anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
                     transformOrigin={{ vertical: 'top', horizontal: 'center' }}
                   >

@@ -1,7 +1,6 @@
 import {
   Box,
   Paper,
-  styled,
   Table,
   TableBody,
   TableCell,
@@ -10,12 +9,13 @@ import {
   TableRow,
   Button,
   Typography,
-} from '@material-ui/core';
-import { Skeleton } from '@material-ui/lab';
+} from '@mui/material';
+import { styled } from '@mui/material/styles';
+import Skeleton from '@mui/material/Skeleton';
 import { DateTime } from 'luxon';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Add } from '@material-ui/icons';
+import Add from '@mui/icons-material/Add';
 import { useContactReferralTabQuery } from './ContactReferralTab.generated';
 import Modal from 'src/components/common/Modal/Modal';
 import { CreateMultipleContacts } from 'src/components/Layouts/Primary/TopBar/Items/AddMenu/Items/CreateMultipleContacts/CreateMultipleContacts';
@@ -68,9 +68,8 @@ export const ContactReferralTab: React.FC<ContactReferralTabProps> = ({
   });
 
   const { t } = useTranslation();
-  const [modalContactReferralOpen, setModalContactReferralOpen] = useState(
-    false,
-  );
+  const [modalContactReferralOpen, setModalContactReferralOpen] =
+    useState(false);
 
   const handleModalOpen = () => {
     setModalContactReferralOpen(true);

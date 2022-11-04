@@ -1,8 +1,8 @@
 import React, { ReactElement } from 'react';
-import { Grid, Box, Typography } from '@material-ui/core';
+import { Grid, Box, Typography } from '@mui/material';
 import { mdiSquareEditOutline, mdiDelete, mdiDotsVertical } from '@mdi/js';
 import Icon from '@mdi/react';
-import StarOutlineIcon from '@material-ui/icons/StarOutline';
+import StarOutlineIcon from '@mui/icons-material/StarOutline';
 import theme from '../../../../theme';
 import { TestContact } from '../../../../../pages/accountLists/[accountListId]/tools/appeals/testAppeal';
 

@@ -1,5 +1,5 @@
 import React, { ReactElement } from 'react';
-import { Box, Container } from '@material-ui/core';
+import { Box, Container } from '@mui/material';
 import TopBar from '.';
 
 export default {

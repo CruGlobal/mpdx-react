@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { MuiThemeProvider } from '@material-ui/core';
+import { ThemeProvider } from '@mui/material/styles';
 import { GqlMockedProvider } from '../../../../../../../__tests__/util/graphqlMocking';
 import theme from '../../../../../../theme';
 import ExportEmail from './ExportEmail';
@@ -13,14 +13,14 @@ const handleClose = jest.fn();
 describe('LogNewsletter', () => {
   it('default', () => {
     const { queryByText } = render(
-      <MuiThemeProvider theme={theme}>
+      <ThemeProvider theme={theme}>
         <GqlMockedProvider<GetEmailNewsletterContactsQuery>>
           <ExportEmail
             accountListId={accountListId}
             handleClose={handleClose}
           />
         </GqlMockedProvider>
-      </MuiThemeProvider>,
+      </ThemeProvider>,
     );
     expect(queryByText('Email Newsletter List')).toBeInTheDocument();
   });
@@ -54,14 +54,14 @@ describe('LogNewsletter', () => {
       },
     };
     const { queryByTestId } = render(
-      <MuiThemeProvider theme={theme}>
+      <ThemeProvider theme={theme}>
         <GqlMockedProvider<GetEmailNewsletterContactsQuery> mocks={mocks}>
           <ExportEmail
             accountListId={accountListId}
             handleClose={handleClose}
           />
         </GqlMockedProvider>
-      </MuiThemeProvider>,
+      </ThemeProvider>,
     );
     await waitFor(() => expect(queryByTestId('emailList')).not.toBeNull());
     expect(queryByTestId('emailList')).toHaveValue(`${email1},${email2}`);
@@ -101,14 +101,14 @@ describe('LogNewsletter', () => {
       },
     };
     const { queryByTestId, getByText } = render(
-      <MuiThemeProvider theme={theme}>
+      <ThemeProvider theme={theme}>
         <GqlMockedProvider<GetEmailNewsletterContactsQuery> mocks={mocks}>
           <ExportEmail
             accountListId={accountListId}
             handleClose={handleClose}
           />
         </GqlMockedProvider>
-      </MuiThemeProvider>,
+      </ThemeProvider>,
     );
     await waitFor(() => expect(queryByTestId('emailList')).not.toBeNull());
     userEvent.click(getByText('Copy All'));

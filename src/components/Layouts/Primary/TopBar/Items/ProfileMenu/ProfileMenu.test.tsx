@@ -1,6 +1,6 @@
 import React from 'react';
 import userEvent from '@testing-library/user-event';
-import { ThemeProvider } from '@material-ui/core';
+import { ThemeProvider } from '@mui/material/styles';
 import TestRouter from '../../../../../../../__tests__/util/TestRouter';
 import {
   render,

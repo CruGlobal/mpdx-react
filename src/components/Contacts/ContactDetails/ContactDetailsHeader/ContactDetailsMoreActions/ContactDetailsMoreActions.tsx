@@ -1,13 +1,13 @@
 import React, { ReactElement } from 'react';
-import { Box, IconButton, ListItemText, Menu, styled } from '@material-ui/core';
-import PersonIcon from '@material-ui/icons/Person';
-import VisibilityOffIcon from '@material-ui/icons/VisibilityOff';
-import DeleteIcon from '@material-ui/icons/Delete';
-import ListIcon from '@material-ui/icons/FormatListBulleted';
-import EditIcon from '@material-ui/icons/Edit';
+import { Box, IconButton, ListItemText, Menu } from '@mui/material';
+import { styled } from '@mui/material/styles';
+import PersonIcon from '@mui/icons-material/Person';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import DeleteIcon from '@mui/icons-material/Delete';
+import ListIcon from '@mui/icons-material/FormatListBulleted';
+import EditIcon from '@mui/icons-material/Edit';
 import { useTranslation } from 'react-i18next';
-
-import { MoreVert } from '@material-ui/icons';
+import MoreVert from '@mui/icons-material/MoreVert';
 import { useSnackbar } from 'notistack';
 import { StatusEnum } from '../../../../../../graphql/types.generated';
 import useTaskModal from '../../../../../hooks/useTaskModal';
@@ -103,10 +103,9 @@ interface ContactDetailsMoreAcitionsProps {
   onClose: () => void;
 }
 
-export const ContactDetailsMoreAcitions: React.FC<ContactDetailsMoreAcitionsProps> = ({
-  contactId,
-  onClose,
-}) => {
+export const ContactDetailsMoreAcitions: React.FC<
+  ContactDetailsMoreAcitionsProps
+> = ({ contactId, onClose }) => {
   const { openTaskModal } = useTaskModal();
   const { t } = useTranslation();
   const { accountListId, searchTerm, router } = React.useContext(
@@ -261,7 +260,6 @@ export const ContactDetailsMoreAcitions: React.FC<ContactDetailsMoreAcitionsProp
         open={Boolean(anchorEl)}
         onClose={() => setAnchorEl(undefined)}
         anchorEl={anchorEl}
-        getContentAnchorEl={null}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
         transformOrigin={{ vertical: 'top', horizontal: 'center' }}
       >

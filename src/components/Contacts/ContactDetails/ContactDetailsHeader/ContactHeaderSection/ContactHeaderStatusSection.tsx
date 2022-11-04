@@ -1,8 +1,11 @@
-import { Box, IconButton, styled, Typography } from '@material-ui/core';
 import React, { useMemo, useState } from 'react';
-import { Skeleton } from '@material-ui/lab';
+import Box from '@mui/material/Box';
+import IconButton from '@mui/material/IconButton';
+import Skeleton from '@mui/material/Skeleton';
+import Typography from '@mui/material/Typography';
+import { styled } from '@mui/material/styles';
+import CreateIcon from '@mui/icons-material/Create';
 import { DateTime } from 'luxon';
-import CreateIcon from '@material-ui/icons/Create';
 import { currencyFormat } from '../../../../../lib/intlFormat';
 import { PledgeFrequencyEnum } from '../../../ContactPartnershipStatus/ContactPartnershipStatus';
 import {
@@ -33,13 +36,14 @@ export const ContactHeaderStatusSection: React.FC<Props> = ({
   contact,
 }) => {
   const status = contact?.status;
-  const [editPartnershipModalOpen, setEditPartnershipModalOpen] = useState(
-    false,
-  );
+  const [editPartnershipModalOpen, setEditPartnershipModalOpen] =
+    useState(false);
   const lateStatusEnum: number | undefined = useMemo(() => {
     if (contact?.lateAt) {
-      const diff = DateTime.now().diff(DateTime.fromISO(contact.lateAt), 'days')
-        ?.days;
+      const diff = DateTime.now().diff(
+        DateTime.fromISO(contact.lateAt),
+        'days',
+      )?.days;
 
       if (diff < 0) {
         return ContactLateStatusEnum.OnTime;

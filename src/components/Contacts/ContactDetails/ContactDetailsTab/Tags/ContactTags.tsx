@@ -1,10 +1,10 @@
 import React, { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Box, Button, Chip, styled, TextField } from '@material-ui/core';
-import TagIcon from '@material-ui/icons/LocalOfferOutlined';
+import { Autocomplete, Box, Button, Chip, TextField } from '@mui/material';
+import { styled } from '@mui/material/styles';
+import TagIcon from '@mui/icons-material/LocalOfferOutlined';
 import { useSnackbar } from 'notistack';
 import * as yup from 'yup';
-import { Autocomplete } from '@material-ui/lab';
 import { Formik, FormikHelpers } from 'formik';
 import {
   useGetContactTagListQuery,
@@ -77,10 +77,8 @@ export const ContactTags: React.FC<ContactTagsProps> = ({
 }) => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
-  const [
-    updateContactTags,
-    { loading: updating },
-  ] = useUpdateContactTagsMutation();
+  const [updateContactTags, { loading: updating }] =
+    useUpdateContactTagsMutation();
 
   const { data: contactTagsList, loading } = useGetContactTagListQuery({
     variables: {

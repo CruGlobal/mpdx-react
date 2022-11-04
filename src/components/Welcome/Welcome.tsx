@@ -1,12 +1,6 @@
 import React, { ReactElement, ReactNode } from 'react';
-import {
-  Box,
-  Container,
-  Typography,
-  makeStyles,
-  Theme,
-  Grid,
-} from '@material-ui/core';
+import { Box, Container, Typography, Theme, Grid } from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
 import { motion } from 'framer-motion';
 import illustration2 from '../../images/drawkit/grape/drawkit-grape-pack-illustration-2.svg';
 
@@ -17,7 +11,7 @@ interface Props {
   children?: ReactNode;
 }
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles()((theme: Theme) => ({
   container: {
     '& > *': {
       marginRight: theme.spacing(2),
@@ -32,10 +26,12 @@ const useStyles = makeStyles((theme: Theme) => ({
     minHeight: '100vh',
     minWidth: '100vw',
     backgroundColor: theme.palette.mpdxBlue.main,
-    color: theme.palette.common.white,
   },
   subtitle: {
     maxWidth: '450px',
+  },
+  whiteText: {
+    color: theme.palette.common.white,
   },
 }));
 
@@ -63,7 +59,7 @@ const Welcome = ({
   imgSrc,
   children,
 }: Props): ReactElement => {
-  const classes = useStyles();
+  const { classes } = useStyles();
 
   return (
     <motion.main
@@ -82,6 +78,7 @@ const Welcome = ({
                     data-testid="welcomeTitle"
                     variant="h4"
                     component="h1"
+                    className={classes.whiteText}
                   >
                     {title}
                   </Typography>
@@ -92,7 +89,10 @@ const Welcome = ({
               <motion.div variants={divVariants}>
                 {typeof subtitle === 'string' ? (
                   <Box my={3} className={classes.subtitle}>
-                    <Typography data-testid="welcomeSubtitle">
+                    <Typography
+                      data-testid="welcomeSubtitle"
+                      className={classes.whiteText}
+                    >
                       {subtitle}
                     </Typography>
                   </Box>

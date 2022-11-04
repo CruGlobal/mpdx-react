@@ -1,5 +1,5 @@
 import React, { ReactElement } from 'react';
-import { Box } from '@material-ui/core';
+import { Box } from '@mui/material';
 import InfoBlock from '.';
 
 export default {

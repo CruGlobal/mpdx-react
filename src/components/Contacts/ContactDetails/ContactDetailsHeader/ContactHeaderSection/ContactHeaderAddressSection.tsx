@@ -1,6 +1,7 @@
-import { Box, Link, styled, Typography } from '@material-ui/core';
-import { LocationOn } from '@material-ui/icons';
-import { Skeleton } from '@material-ui/lab';
+import { Box, Link, Typography } from '@mui/material';
+import { styled } from '@mui/material/styles';
+import LocationOn from '@mui/icons-material/LocationOn';
+import Skeleton from '@mui/material/Skeleton';
 
 import React, { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';

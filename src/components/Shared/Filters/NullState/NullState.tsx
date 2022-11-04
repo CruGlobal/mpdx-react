@@ -1,5 +1,5 @@
 import React, { Dispatch, SetStateAction, useState } from 'react';
-import { Box, Typography, Button } from '@material-ui/core';
+import { Box, Typography, Button } from '@mui/material';
 import { mdiFormatListBulleted, mdiHome } from '@mdi/js';
 import Icon from '@mdi/react';
 import { Trans, useTranslation } from 'react-i18next';

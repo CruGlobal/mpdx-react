@@ -1,7 +1,7 @@
 import React from 'react';
-import { ThemeProvider } from '@material-ui/core';
+import { ThemeProvider } from '@mui/material/styles';
 import TestWrapper from '../../../../__tests__/util/TestWrapper';
-import { getDataForTaskDrawerMock } from '../Drawer/Form/Form.mock';
+import { getDataForTaskModalMock } from '../Modal/Form/TaskModalForm.mock';
 import { render } from '../../../../__tests__/util/testingLibraryReactMock';
 import {
   getTasksForTaskListMock,
@@ -26,7 +26,7 @@ describe('TaskHome', () => {
   it('has correct defaults', async () => {
     const mocks = [
       getTasksForTaskListMock(accountListId),
-      getDataForTaskDrawerMock(accountListId),
+      getDataForTaskModalMock(accountListId),
     ];
     const { findByText } = render(
       <ThemeProvider theme={theme}>
@@ -55,7 +55,7 @@ describe('TaskHome', () => {
         <TestWrapper
           mocks={[
             getFilteredTasksForTaskListMock(accountListId, filter),
-            getDataForTaskDrawerMock(accountListId),
+            getDataForTaskModalMock(accountListId),
           ]}
         >
           <TaskHome initialFilter={filter} />

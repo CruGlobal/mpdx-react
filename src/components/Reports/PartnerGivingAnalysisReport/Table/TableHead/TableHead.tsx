@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { Checkbox, TableCell, TableHead, TableRow } from '@material-ui/core';
+import { Checkbox, TableCell, TableHead, TableRow } from '@mui/material';
 // import { PartnerGivingAnalysisReportQuery } from '../../../GetPartnerGivingAnalysisReport.generated';
 import type { Order } from '../../../Reports.type';
 import type { Contact } from '../../PartnerGivingAnalysisReport';
@@ -23,7 +23,9 @@ export interface PartnerGivingAnalysisReportTableHeadProps {
   orderBy: string | null;
 }
 
-export const PartnerGivingAnalysisReportTableHead: FC<PartnerGivingAnalysisReportTableHeadProps> = ({
+export const PartnerGivingAnalysisReportTableHead: FC<
+  PartnerGivingAnalysisReportTableHeadProps
+> = ({
   isSelectedAll,
   isSelectedSome,
   items,
@@ -32,11 +34,10 @@ export const PartnerGivingAnalysisReportTableHead: FC<PartnerGivingAnalysisRepor
   onRequestSort,
   onSelectAll,
 }) => {
-  const createSortHandler = (property: keyof Contact) => (
-    event: React.MouseEvent<unknown>,
-  ) => {
-    onRequestSort(event, property);
-  };
+  const createSortHandler =
+    (property: keyof Contact) => (event: React.MouseEvent<unknown>) => {
+      onRequestSort(event, property);
+    };
 
   return (
     <TableHead data-testid="PartnerGivingAnalysisReportTableHead">

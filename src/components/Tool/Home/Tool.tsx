@@ -1,18 +1,13 @@
 import React, { ReactElement } from 'react';
-import {
-  Typography,
-  CardContent,
-  CardActionArea,
-  makeStyles,
-  Box,
-} from '@material-ui/core';
+import { Typography, CardContent, CardActionArea, Box } from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
 import Icon from '@mdi/react';
 import NextLink from 'next/link';
 import { useAccountListId } from '../../../../src/hooks/useAccountListId';
 import theme from '../../../theme';
 import AnimatedCard from 'src/components/AnimatedCard';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles()(() => ({
   cardContainer: {
     display: 'flex',
     justifyContent: 'center',
@@ -52,7 +47,7 @@ export interface Props {
 }
 
 const Tool = ({ tool, desc, icon, id }: Props): ReactElement => {
-  const classes = useStyles();
+  const { classes } = useStyles();
   const accountListId = useAccountListId();
 
   return (

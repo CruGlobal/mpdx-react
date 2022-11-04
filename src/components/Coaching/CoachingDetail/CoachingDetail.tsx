@@ -1,15 +1,10 @@
 import React, { useState } from 'react';
-import {
-  Box,
-  Button,
-  ButtonGroup,
-  Divider,
-  styled,
-  Typography,
-} from '@material-ui/core';
-import { AccountCircle, EcoOutlined } from '@material-ui/icons';
+import { Box, Button, ButtonGroup, Divider, Typography } from '@mui/material';
+// TODO: EcoOutlined is not defined on @mui/icons-material, find replacement.
+import AccountCircle from '@mui/icons-material/AccountCircle';
+import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
-import { Skeleton } from '@material-ui/lab';
+import Skeleton from '@mui/material/Skeleton';
 import { AppealProgress } from '../AppealProgress/AppealProgress';
 import { MonthlyCommitment } from './MonthlyCommitment/MonthlyCommitment';
 import {
@@ -89,35 +84,27 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
   isAccountListId = false,
 }) => {
   const { t } = useTranslation();
-  const {
-    data: accountListData,
-    loading,
-  } = useLoadAccountListCoachingDetailQuery({
-    variables: { coachingId },
-    skip: !isAccountListId,
-  });
+  const { data: accountListData, loading } =
+    useLoadAccountListCoachingDetailQuery({
+      variables: { coachingId },
+      skip: !isAccountListId,
+    });
 
-  const {
-    data: coachingData,
-    loading: coachingLoading,
-  } = useLoadCoachingDetailQuery({
-    variables: { coachingId },
-    skip: isAccountListId,
-  });
+  const { data: coachingData, loading: coachingLoading } =
+    useLoadCoachingDetailQuery({
+      variables: { coachingId },
+      skip: isAccountListId,
+    });
 
-  const {
-    data: coachingUsersData,
-    loading: coachingUsersLoading,
-  } = useGetAccountListCoachUsersQuery({
-    variables: { accountListId: coachingId },
-  });
+  const { data: coachingUsersData, loading: coachingUsersLoading } =
+    useGetAccountListCoachUsersQuery({
+      variables: { accountListId: coachingId },
+    });
 
-  const {
-    data: accountListUsersData,
-    loading: accountListUsersLoading,
-  } = useGetAccountListUsersQuery({
-    variables: { accountListId: coachingId },
-  });
+  const { data: accountListUsersData, loading: accountListUsersLoading } =
+    useGetAccountListUsersQuery({
+      variables: { accountListId: coachingId },
+    });
 
   const data = isAccountListId
     ? accountListData?.accountList
@@ -129,12 +116,13 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
     <CoachingDetailContainer>
       <CoachingSideContainer bgcolor={theme.palette.progressBarGray.main}>
         <CoachingSideTitleContainer>
+          {/* TODO: EcoOutlined is not defined on @mui/icons-material, find replacement.
           <EcoOutlined
             style={{
               color: theme.palette.primary.contrastText,
               margin: theme.spacing(1),
             }}
-          />
+          /> */}
           <SideContainerText variant="h5" display="block">
             {t('Coaching')}
           </SideContainerText>

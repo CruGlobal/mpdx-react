@@ -1,4 +1,4 @@
-import { ThemeProvider } from '@material-ui/core';
+import { ThemeProvider } from '@mui/material/styles';
 import React from 'react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
@@ -43,7 +43,7 @@ describe('ContactTasksTabNullState', () => {
       getByText('Try adding a task or changing your search filters.'),
     ).toBeInTheDocument();
     userEvent.click(getByText('Add New Task'));
-    expect(openTaskModal).toBeCalledWith({
+    expect(openTaskModal).toHaveBeenCalledWith({
       defaultValues: { contactIds: [contactId] },
     });
   });

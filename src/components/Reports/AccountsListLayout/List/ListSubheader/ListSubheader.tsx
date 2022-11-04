@@ -6,9 +6,9 @@ import {
   ListSubheader,
   Tooltip,
   Typography,
-  styled,
-} from '@material-ui/core';
-import HelpIcon from '@material-ui/icons/Help';
+} from '@mui/material';
+import { styled } from '@mui/material/styles';
+import HelpIcon from '@mui/icons-material/Help';
 
 export interface AccountListSubheaderProps {
   organizationName: string;

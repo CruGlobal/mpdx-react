@@ -1,6 +1,6 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import { ThemeProvider } from '@material-ui/core';
+import { ThemeProvider } from '@mui/material/styles';
 import theme from '../../theme';
 import PageHeading from '.';
 
@@ -19,10 +19,7 @@ describe('PageHeading', () => {
     expect(getByTestId('PageHeadingSubheading')).toHaveTextContent(
       'test subheading',
     );
-    expect(getByTestId('PageHeadingImg')).toHaveAttribute(
-      'src',
-      'drawkit-grape-pack-illustration-20.svg',
-    );
+    expect(getByTestId('PageHeadingImg')).toHaveAttribute('src');
   });
 
   it('has correct overrides', () => {
@@ -42,10 +39,7 @@ describe('PageHeading', () => {
       'padding-bottom: 100px',
     );
     expect(queryByTestId('PageHeadingSubheading')).toBeNull();
-    expect(getByTestId('PageHeadingImg')).toHaveAttribute(
-      'src',
-      'drawkit-grape-pack-illustration-1.svg',
-    );
+    expect(getByTestId('PageHeadingImg')).toHaveAttribute('src');
   });
 
   it('has correct overrides for image', () => {

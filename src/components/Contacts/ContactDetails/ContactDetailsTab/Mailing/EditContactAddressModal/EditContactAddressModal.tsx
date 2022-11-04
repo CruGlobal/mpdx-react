@@ -15,9 +15,9 @@ import {
   InputLabel,
   MenuItem,
   Select,
-  styled,
   TextField,
-} from '@material-ui/core';
+} from '@mui/material';
+import { styled } from '@mui/material/styles';
 import { ContactMailingFragment } from '../ContactMailing.generated';
 import { AddressUpdateInput } from '../../../../../../../graphql/types.generated';
 import Modal from '../../../../../common/Modal/Modal';
@@ -29,8 +29,11 @@ import {
   useDeleteContactAddressMutation,
   useUpdateContactAddressMutation,
 } from './EditContactAddress.generated';
-import { ActionButton } from 'src/components/Task/Modal/Form/TaskModalForm';
-import { ModalDeleteButton } from 'src/components/common/Modal/DeleteButton/ModalDeleteButton';
+import {
+  SubmitButton,
+  CancelButton,
+  DeleteButton,
+} from 'src/components/common/Modal/ActionButtons/ActionButtons';
 
 const ContactEditContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -66,7 +69,9 @@ enum AddressLocationEnum {
   RepAddress = 'Rep Address',
 }
 
-export const EditContactAddressModal: React.FC<EditContactAddressModalProps> = ({
+export const EditContactAddressModal: React.FC<
+  EditContactAddressModalProps
+> = ({
   accountListId,
   address,
   contactId,
@@ -74,14 +79,10 @@ export const EditContactAddressModal: React.FC<EditContactAddressModalProps> = (
 }): ReactElement<EditContactAddressModalProps> => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
-  const [
-    updateContactAddress,
-    { loading: updating },
-  ] = useUpdateContactAddressMutation();
-  const [
-    deleteAddress,
-    { loading: deleting },
-  ] = useDeleteContactAddressMutation();
+  const [updateContactAddress, { loading: updating }] =
+    useUpdateContactAddressMutation();
+  const [deleteAddress, { loading: deleting }] =
+    useDeleteContactAddressMutation();
 
   const contactAddressSchema: yup.SchemaOf<
     Omit<AddressUpdateInput, 'validValues'>
@@ -201,6 +202,7 @@ export const EditContactAddressModal: React.FC<EditContactAddressModalProps> = (
                       <TextField
                         label={t('Street')}
                         value={street}
+                        required
                         onChange={handleChange('street')}
                         inputProps={{ 'aria-label': t('Street') }}
                         fullWidth
@@ -212,9 +214,12 @@ export const EditContactAddressModal: React.FC<EditContactAddressModalProps> = (
                           {t('Location')}
                         </InputLabel>
                         <Select
+                          label={t('Location')}
                           labelId="location-select-label"
                           value={location}
-                          onChange={handleChange('location')}
+                          onChange={(e) =>
+                            setFieldValue('location', e.target.value)
+                          }
                           fullWidth
                         >
                           {Object.values(AddressLocationEnum).map((value) => (
@@ -299,6 +304,7 @@ export const EditContactAddressModal: React.FC<EditContactAddressModalProps> = (
                       <Checkbox
                         checked={historic}
                         onChange={() => setFieldValue('historic', !historic)}
+                        color="secondary"
                       />
                     }
                     label={t('Address no longer valid')}
@@ -307,34 +313,14 @@ export const EditContactAddressModal: React.FC<EditContactAddressModalProps> = (
               </ContactEditContainer>
             </DialogContent>
             <DialogActions>
-              <Box
-                justifyContent={address ? 'space-between' : 'end'}
-                display="flex"
-                alignItems="center"
-                width="100%"
-              >
-                {address && (
-                  <ModalDeleteButton onClick={deleteContactAddress} />
+              {address && <DeleteButton onClick={deleteContactAddress} />}
+              <CancelButton onClick={handleClose} disabled={isSubmitting} />
+              <SubmitButton disabled={!isValid || isSubmitting}>
+                {(updating || deleting) && (
+                  <LoadingIndicator color="primary" size={20} />
                 )}
-                <Box>
-                  <ActionButton
-                    onClick={handleClose}
-                    disabled={isSubmitting}
-                    variant="text"
-                  >
-                    {t('Cancel')}
-                  </ActionButton>
-                  <ActionButton
-                    type="submit"
-                    disabled={!isValid || isSubmitting}
-                  >
-                    {(updating || deleting) && (
-                      <LoadingIndicator color="primary" size={20} />
-                    )}
-                    {t('Save')}
-                  </ActionButton>
-                </Box>
-              </Box>
+                {t('Save')}
+              </SubmitButton>
             </DialogActions>
           </form>
         )}

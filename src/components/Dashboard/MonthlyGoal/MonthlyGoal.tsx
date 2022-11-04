@@ -1,15 +1,15 @@
 import React, { ReactElement } from 'react';
 import {
   Typography,
-  makeStyles,
   Theme,
   Grid,
   CardContent,
   Box,
   Hidden,
   Button,
-} from '@material-ui/core';
-import { Skeleton } from '@material-ui/lab';
+} from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
+import Skeleton from '@mui/material/Skeleton';
 import { useTranslation } from 'react-i18next';
 import { currencyFormat, percentageFormat } from '../../../lib/intlFormat';
 import AnimatedCard from '../../AnimatedCard';
@@ -20,7 +20,7 @@ import {
   StatusEnum,
 } from '../../../../graphql/types.generated';
 
-const useStyles = makeStyles((_theme: Theme) => ({
+const useStyles = makeStyles()((_theme: Theme) => ({
   received: {
     background: 'linear-gradient(180deg, #FFE67C 0%, #FFCF07 100%)',
   },
@@ -59,7 +59,7 @@ const MonthlyGoal = ({
   totalGiftsNotStarted,
   currencyCode = 'USD',
 }: Props): ReactElement => {
-  const classes = useStyles();
+  const { classes } = useStyles();
   const { t } = useTranslation();
   const receivedPercentage = received / goal;
   const pledgedPercentage = pledged / goal;
@@ -102,7 +102,7 @@ const MonthlyGoal = ({
             secondary={pledgedPercentage}
           />
           <Grid container spacing={2}>
-            <Hidden xsDown>
+            <Hidden smDown>
               <Grid sm={6} md={3} item>
                 <Typography component="div" color="textSecondary">
                   <div
@@ -182,7 +182,7 @@ const MonthlyGoal = ({
                 )}
               </Typography>
             </Grid>
-            <Hidden xsDown>
+            <Hidden smDown>
               {!isNaN(belowGoal) && belowGoal > 0 ? (
                 <Grid sm={6} md={3} item>
                   <Typography component="div" color="textSecondary">

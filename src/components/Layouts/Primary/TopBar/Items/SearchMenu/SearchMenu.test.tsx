@@ -98,6 +98,7 @@ describe('SearchMenu', () => {
       getByPlaceholderText('Type something to start searching'),
       'Cool',
     );
+    await new Promise((resolve) => setTimeout(resolve, 1000));
     await waitFor(() => expect(getByText('Cool, Guy')).toBeVisible());
     await waitFor(() => expect(getByText('Cool, Dude')).toBeVisible());
     await waitFor(() => expect(getByText('And 3 more')).toBeVisible());
@@ -142,6 +143,7 @@ describe('SearchMenu', () => {
       getByPlaceholderText('Type something to start searching'),
       'Cool',
     );
+    await new Promise((resolve) => setTimeout(resolve, 1000));
     await waitFor(() => expect(getByText('Cool, Guy')).toBeVisible());
     await waitFor(() => expect(getByText('Cool, Dude')).toBeVisible());
     expect(getByText('Create a new contact for "Cool"')).toBeVisible();
