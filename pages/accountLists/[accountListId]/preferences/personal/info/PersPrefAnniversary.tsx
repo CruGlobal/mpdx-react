@@ -18,23 +18,41 @@ export const PersPrefAnniversary: React.FC<AnniversaryProps> = ({
 }) => {
   const { t } = useTranslation();
   const anniversary = Boolean(
-    anniversary_month && (anniversary_day || anniversary_year),
+    anniversary_month || anniversary_day || anniversary_year,
   );
 
-  const months = Info.monthsFormat('short');
+  // Status string
+  let statusOutput = marital_status
+    ? marital_status
+    : anniversary
+    ? t('Anniversary')
+    : '';
+  statusOutput += anniversary ? ': ' : '';
+
+  // Anniversary string
+  let dateOutput = '';
+  if (anniversary) {
+    // Month
+    dateOutput += anniversary_month
+      ? Info.monthsFormat('short')[anniversary_month] + ' '
+      : '';
+
+    // Day
+    dateOutput += anniversary_day ? anniversary_day : '';
+
+    // Spacer before year
+    dateOutput +=
+      anniversary_month && anniversary_day && anniversary_year ? ', ' : ' ';
+
+    // Year
+    dateOutput += anniversary_year ? anniversary_year : '';
+  }
 
   if (marital_status || anniversary) {
     return (
-      <Typography gutterBottom>
-        {marital_status ? marital_status : anniversary ? t('Anniversary') : ''}
-        {anniversary && (
-          <>
-            {`: ${months[anniversary_month]}.`}
-            {anniversary_day ? ` ${anniversary_day}` : ''}
-            {anniversary_day && anniversary_year ? `, ${anniversary_year}` : ''}
-            {!anniversary_day && anniversary_year ? ` ${anniversary_year}` : ''}
-          </>
-        )}
+      <Typography>
+        {statusOutput}
+        {dateOutput}
       </Typography>
     );
   }

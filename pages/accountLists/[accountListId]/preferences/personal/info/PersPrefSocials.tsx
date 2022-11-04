@@ -3,9 +3,10 @@ import { IconButton, List, ListItem } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { Facebook, Language, LinkedIn, Twitter } from '@mui/icons-material';
 
-const StyledList = styled(List)({
+const StyledList = styled(List)(({ theme }) => ({
   fontSize: '0',
-});
+  marginTop: theme.spacing(1),
+}));
 
 const StyledListItem = styled(ListItem)(({ theme }) => ({
   display: 'inline-block',
