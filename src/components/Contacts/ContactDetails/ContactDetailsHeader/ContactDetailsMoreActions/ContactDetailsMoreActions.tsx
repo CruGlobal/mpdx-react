@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react';
+
 import { Box, IconButton, ListItemText, Menu } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import PersonIcon from '@mui/icons-material/Person';
@@ -6,6 +6,7 @@ import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ListIcon from '@mui/icons-material/FormatListBulleted';
 import EditIcon from '@mui/icons-material/Edit';
+import React, { ReactElement, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import MoreVert from '@mui/icons-material/MoreVert';
 import { useSnackbar } from 'notistack';
@@ -28,6 +29,7 @@ import {
   ContactsPageContext,
   ContactsPageType,
 } from 'pages/accountLists/[accountListId]/contacts/ContactsPageContext';
+import { MoreActionHideContactModal } from './MoreActionHideContactModal';
 
 type AddMenuItem = {
   text: string;
@@ -127,7 +129,10 @@ export const ContactDetailsMoreAcitions: React.FC<
 
   const [updateContactOther] = useUpdateContactOtherMutation();
 
+  const [openHideModal, setOpenHideModal] = useState(false);
+  const [updateHiding, setUpdateHiding] = useState(false);
   const hideContact = async (): Promise<void> => {
+    setUpdateHiding(true);
     const attributes = {
       id: contactId,
       status: StatusEnum.NeverAsk,
@@ -227,7 +232,7 @@ export const ContactDetailsMoreAcitions: React.FC<
       text: 'Hide Contact',
       icon: <VisibilityOffIcon />,
       onClick: () => {
-        hideContact();
+        setOpenHideModal(true);
         setAnchorEl(undefined);
       },
     },
@@ -287,6 +292,12 @@ export const ContactDetailsMoreAcitions: React.FC<
         setOpen={setDeleteModalOpen}
         deleting={deleting}
         deleteContact={handleDeleteContact}
+      />
+      <MoreActionHideContactModal
+        open={openHideModal}
+        setOpen={setOpenHideModal}
+        hiding={updateHiding}
+        hideContact={hideContact}
       />
     </>
   );
