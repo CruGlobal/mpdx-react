@@ -634,7 +634,11 @@ export const AddDonation = ({
               <Grid container item xs={12} spacing={1}>
                 <Grid item xs={12}>
                   <FormControl fullWidth size="small">
-                    <LogFormLabel htmlFor="memo-input" id="memo-label">
+                    <LogFormLabel
+                      data-testid="memo-label"
+                      htmlFor="memo-input"
+                      id="memo-label"
+                    >
                       {t('Memo')}
                     </LogFormLabel>
                     <FastField name="memo">
