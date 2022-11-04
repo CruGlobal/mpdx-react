@@ -12,7 +12,6 @@ import { ExpandMore } from '@mui/icons-material';
 import { accordionShared } from '../shared/PersPrefShared';
 
 const StyledAccordion = styled(Accordion)({
-  backgroundColor: 'transparent',
   boxShadow: 'none',
   '&.Mui-expanded': {
     margin: 0,
@@ -24,19 +23,20 @@ const StyledAccordionSummary = styled(AccordionSummary)({
   display: 'inline-block',
   padding: 0,
   minHeight: 'unset',
+  paddingRight: 24,
+  position: 'relative',
   '& .MuiAccordionSummary-content': {
-    display: 'inline-block',
+    flexGrow: 'unset',
     margin: 0,
   },
-  '& .MuiAccordionSummary-expandIcon': {
-    padding: 0,
-    position: 'relative',
-    top: '-3px',
+  '& .MuiAccordionSummary-expandIconWrapper': {
+    position: 'absolute',
+    top: 0,
+    right: 0,
   },
 });
 
 const StyledAccordionDetails = styled(AccordionDetails)({
-  display: 'block',
   padding: 0,
 });
 
@@ -63,7 +63,7 @@ const PersPrefContactMethod: React.FC<PersPrefContactMethodProps> = ({
   const value = method.value;
 
   return (
-    <Typography gutterBottom>
+    <Typography>
       <Link href={`${prefix}:${value}`}>{value}</Link>{' '}
       <span style={{ textTransform: 'capitalize' }}>- {t(method.type)}</span>
     </Typography>
