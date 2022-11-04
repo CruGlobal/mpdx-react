@@ -12,9 +12,9 @@ export const Default = (): ReactElement => {
     <Box>
       <MoreActionHideContactModal
         open={true}
-        setOpen={() => { }}
+        setOpen={() => {}}
         hiding={false}
-        hideContact={() => { }}
+        hideContact={() => {}}
       />
     </Box>
   );
@@ -25,9 +25,9 @@ export const Loading = (): ReactElement => {
     <Box>
       <MoreActionHideContactModal
         open={true}
-        setOpen={() => { }}
+        setOpen={() => {}}
         hiding={true}
-        hideContact={() => { }}
+        hideContact={() => {}}
       />
     </Box>
   );

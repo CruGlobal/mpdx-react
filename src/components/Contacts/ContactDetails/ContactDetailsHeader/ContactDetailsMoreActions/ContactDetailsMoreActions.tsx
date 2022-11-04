@@ -1,4 +1,3 @@
-
 import { Box, IconButton, ListItemText, Menu } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import PersonIcon from '@mui/icons-material/Person';
@@ -94,12 +93,11 @@ const ActionPanel = ({
       {actionContent.map(({ visibility, text, icon, onClick }, index) => (
         <>
           {visibility && (
-            <RowContainer key={index} display="flex" onClick={onClick} >
+            <RowContainer key={index} display="flex" onClick={onClick}>
               {icon}
               <MenuItemText primary={t(`${text}`)} />
             </RowContainer>
           )}
-
         </>
       ))}
     </Box>

@@ -29,35 +29,35 @@ interface Props {
   onClose: () => void;
 }
 
-const HeaderBar = styled(Box)(({ }) => ({
+const HeaderBar = styled(Box)(({}) => ({
   display: 'flex',
   paddingBottom: theme.spacing(1),
 }));
-const HeaderBarContactWrap = styled(Box)(({ }) => ({
+const HeaderBarContactWrap = styled(Box)(({}) => ({
   flex: 1,
   display: 'flex',
   alignItems: 'center',
 }));
-const HeaderBarButtonsWrap = styled(Box)(({ }) => ({
+const HeaderBarButtonsWrap = styled(Box)(({}) => ({
   display: 'flex',
   alignItems: 'center',
 }));
-const ContactAvatar = styled(Avatar)(({ }) => ({
+const ContactAvatar = styled(Avatar)(({}) => ({
   backgroundColor: theme.palette.secondary.dark,
   height: 64,
   width: 64,
   borderRadius: 32,
 }));
-const PrimaryContactName = styled(Typography)(({ }) => ({
+const PrimaryContactName = styled(Typography)(({}) => ({
   display: 'inline',
   marginLeft: 18,
 }));
-const CloseButtonIcon = styled(Close)(({ }) => ({
+const CloseButtonIcon = styled(Close)(({}) => ({
   width: 14,
   height: 14,
   color: theme.palette.text.primary,
 }));
-const HeaderSectionWrap = styled(Box)(({ }) => ({
+const HeaderSectionWrap = styled(Box)(({}) => ({
   display: 'flex',
 }));
 
@@ -112,7 +112,11 @@ export const ContactDetailsHeader: React.FC<Props> = ({
             contactId={contactId}
             isStarred={data?.contact?.starred || false}
           />
-          <ContactDetailsMoreAcitions contactId={contactId} status={data?.contact.status ?? StatusEnum.Unresponsive} onClose={onClose} />
+          <ContactDetailsMoreAcitions
+            contactId={contactId}
+            status={data?.contact.status ?? StatusEnum.Unresponsive}
+            onClose={onClose}
+          />
           <IconButton onClick={onClose}>
             <CloseButtonIcon titleAccess={t('Close')} />
           </IconButton>

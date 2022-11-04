@@ -1,4 +1,10 @@
-import { Button, CircularProgress, DialogActions, DialogContent, DialogContentText } from '@mui/material';
+import {
+  Button,
+  CircularProgress,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+} from '@mui/material';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import Modal from 'src/components/common/Modal/Modal';
@@ -10,12 +16,9 @@ interface MoreActionHideContactProps {
   hideContact: () => void;
 }
 
-export const MoreActionHideContactModal: React.FC<MoreActionHideContactProps> = ({
-  open,
-  setOpen,
-  hiding,
-  hideContact,
-}) => {
+export const MoreActionHideContactModal: React.FC<
+  MoreActionHideContactProps
+> = ({ open, setOpen, hiding, hideContact }) => {
   const { t } = useTranslation();
 
   return (
