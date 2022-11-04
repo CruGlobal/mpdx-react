@@ -177,6 +177,7 @@ describe('ContactDetailsMoreActions', () => {
     );
     expect(getByText('Hide Contact')).toBeInTheDocument();
     userEvent.click(getByText('Hide Contact'));
+    await waitFor(() => userEvent.click(getByText('Hide')));
     await waitFor(() =>
       expect(mockEnqueue).toHaveBeenCalledWith('Contact hidden successfully!', {
         variant: 'success',
