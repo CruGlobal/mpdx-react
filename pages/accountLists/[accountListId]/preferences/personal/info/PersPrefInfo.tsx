@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Avatar, Box, Button, Typography } from '@mui/material';
-import { styled } from '@mui/material/styles';
+import { Avatar, Box, Button, Typography, useMediaQuery } from '@mui/material';
+import { Theme, styled, useTheme } from '@mui/material/styles';
 import { Edit } from '@mui/icons-material';
 import { info } from '../DemoContent';
 import { PersPrefModal } from '../modals/PersPrefModal';
@@ -15,13 +15,6 @@ const PersPrefInfoWrapper = styled(Box)(({ theme }) => ({
     position: 'relative',
     textAlign: 'left',
     paddingLeft: theme.spacing(14),
-  },
-}));
-
-const StyledContactTop = styled(Box)(({ theme }) => ({
-  marginBottom: theme.spacing(2),
-  [theme.breakpoints.up('sm')]: {
-    marginBottom: 0,
   },
 }));
 
@@ -50,6 +43,11 @@ const StyledContactEdit = styled(Button)(({ theme }) => ({
 export const PersPrefInfo: React.FC = () => {
   const { t } = useTranslation();
 
+  const theme = useTheme<Theme>();
+  const isMobile = useMediaQuery((theme: Theme) =>
+    theme.breakpoints.down('sm'),
+  );
+
   const [profileOpen, setProfileOpen] = useState(false);
 
   const handleOpen = () => {
@@ -58,7 +56,7 @@ export const PersPrefInfo: React.FC = () => {
 
   return (
     <PersPrefInfoWrapper component="section">
-      <StyledContactTop>
+      <Box marginBottom={isMobile ? theme.spacing(2) : 0}>
         {/* Avatar */}
         <StyledAvatar
           src={info.avatar}
@@ -78,7 +76,7 @@ export const PersPrefInfo: React.FC = () => {
             } ${info.employer}`}
           </Typography>
         )}
-      </StyledContactTop>
+      </Box>
 
       {/* Email */}
       <PersPrefContactMethods type="email" methods={info.email} />
