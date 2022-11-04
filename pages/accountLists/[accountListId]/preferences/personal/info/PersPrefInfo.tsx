@@ -5,7 +5,6 @@ import { styled } from '@mui/material/styles';
 import { Edit } from '@mui/icons-material';
 import { info } from '../DemoContent';
 import { PersPrefModal } from '../modals/PersPrefModal';
-import { PersPrefWork } from './PersPrefWork';
 import { PersPrefContactMethods } from './PersPrefContactMethods';
 import { PersPrefAnniversary } from './PersPrefAnniversary';
 import { PersPrefSocials } from './PersPrefSocials';
@@ -67,7 +66,13 @@ export const PersPrefInfo: React.FC = () => {
         <Typography component="h3" variant="h5">
           {t(info.title)} {info.first_name} {info.last_name} {t(info.suffix)}
         </Typography>
-        <PersPrefWork employer={info.employer} occupation={info.occupation} />
+        {(info.occupation || info.employer) && (
+          <Typography component="h4">
+            {`${info.occupation} ${
+              info.occupation && info.employer ? '-' : ''
+            } ${info.employer}`}
+          </Typography>
+        )}
       </StyledContactTop>
       <PersPrefContactMethods type="email" methods={info.email} />
       <PersPrefContactMethods type="phone" methods={info.phone} />
