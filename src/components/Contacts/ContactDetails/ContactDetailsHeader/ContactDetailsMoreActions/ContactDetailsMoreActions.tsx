@@ -32,6 +32,7 @@ import {
 import { MoreActionHideContactModal } from './MoreActionHideContactModal';
 
 type AddMenuItem = {
+  visibility: boolean;
   text: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   icon: any;
@@ -90,11 +91,16 @@ const ActionPanel = ({
 
   return (
     <Box display="flex" flexDirection="column" justifyContent="center">
-      {actionContent.map(({ text, icon, onClick }, index) => (
-        <RowContainer key={index} display="flex" onClick={onClick}>
-          {icon}
-          <MenuItemText primary={t(`${text}`)} />
-        </RowContainer>
+      {actionContent.map(({ visibility, text, icon, onClick }, index) => (
+        <>
+          {visibility && (
+            <RowContainer key={index} display="flex" onClick={onClick} >
+              {icon}
+              <MenuItemText primary={t(`${text}`)} />
+            </RowContainer>
+          )}
+
+        </>
       ))}
     </Box>
   );
@@ -102,12 +108,13 @@ const ActionPanel = ({
 
 interface ContactDetailsMoreAcitionsProps {
   contactId: string;
+  status: StatusEnum;
   onClose: () => void;
 }
 
 export const ContactDetailsMoreAcitions: React.FC<
   ContactDetailsMoreAcitionsProps
-> = ({ contactId, onClose }) => {
+> = ({ contactId, status, onClose }) => {
   const { openTaskModal } = useTaskModal();
   const { t } = useTranslation();
   const { accountListId, searchTerm, router } = React.useContext(
@@ -202,6 +209,7 @@ export const ContactDetailsMoreAcitions: React.FC<
 
   const actionContent = [
     {
+      visibility: true,
       text: 'Add Referrals',
       icon: <PersonIcon />,
       onClick: () => {
@@ -210,6 +218,7 @@ export const ContactDetailsMoreAcitions: React.FC<
       },
     },
     {
+      visibility: true,
       text: 'Add Task',
       icon: <ListIcon />,
       onClick: () => {
@@ -218,6 +227,7 @@ export const ContactDetailsMoreAcitions: React.FC<
       },
     },
     {
+      visibility: true,
       text: 'Log Task',
       icon: <EditIcon />,
       onClick: () => {
@@ -229,6 +239,7 @@ export const ContactDetailsMoreAcitions: React.FC<
       },
     },
     {
+      visibility: status !== StatusEnum.NeverAsk,
       text: 'Hide Contact',
       icon: <VisibilityOffIcon />,
       onClick: () => {
@@ -237,6 +248,7 @@ export const ContactDetailsMoreAcitions: React.FC<
       },
     },
     {
+      visibility: true,
       text: 'Delete Contact',
       icon: <DeleteIcon />,
       onClick: () => {
