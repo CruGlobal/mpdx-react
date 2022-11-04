@@ -86,6 +86,7 @@ interface Props {
   defaultValues?: Partial<TaskCreateInput & TaskUpdateInput>;
   filter?: TaskFilter;
   rowsPerPage: number;
+  view?: 'comments' | 'log' | 'add' | 'complete' | 'edit';
 }
 
 const TaskModalForm = ({
@@ -95,6 +96,7 @@ const TaskModalForm = ({
   defaultValues,
   filter,
   rowsPerPage,
+  view,
 }: Props): ReactElement => {
   const initialTask: TaskCreateInput | TaskUpdateInput = task
     ? {
@@ -712,18 +714,18 @@ const TaskModalForm = ({
                       </FormControl>
                     </Grid>
                   </Grid>
-                  <Grid item>
-                    <TextField
-                      label={t('Comment')}
-                      value={commentBody}
-                      onChange={(event) =>
-                        changeCommentBody(event.target.value)
-                      }
-                      fullWidth
-                      multiline
-                      inputProps={{ 'aria-label': 'Comment' }}
-                    />
-                  </Grid>
+                </Grid>
+              )}
+              {!initialTask.completedAt && view !== 'edit' && (
+                <Grid item>
+                  <TextField
+                    label={t('Comment')}
+                    value={commentBody}
+                    onChange={(event) => changeCommentBody(event.target.value)}
+                    fullWidth
+                    multiline
+                    inputProps={{ 'aria-label': 'Comment' }}
+                  />
                 </Grid>
               )}
             </FormFieldsGridContainer>

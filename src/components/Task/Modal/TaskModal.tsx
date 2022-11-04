@@ -114,6 +114,7 @@ const TaskModal = ({
             defaultValues={defaultValues}
             filter={filter}
             rowsPerPage={rowsPerPage || 100}
+            view={view}
           />
         );
     }
