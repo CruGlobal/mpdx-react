@@ -1,17 +1,18 @@
+import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import Modal from '../../../../common/Modal/Modal';
+import { useGetEmailsForExportingQuery } from './GetEmailsForExporting.generated';
+import theme from 'src/theme';
 import {
   Box,
   CircularProgress,
   styled,
   TextField,
   Typography,
-} from '@material-ui/core';
-import React, { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { ExpandLess, ExpandMore } from '@material-ui/icons';
-import Modal from '../../../../common/Modal/Modal';
-import { useGetEmailsForExportingQuery } from './GetEmailsForExporting.generated';
-import theme from 'src/theme';
-import { ActionButton } from 'src/components/Task/Modal/Form/TaskModalForm';
+} from '@mui/material';
+import ExpandLess from '@mui/icons-material/ExpandLess';
+import ExpandMore from '@mui/icons-material/ExpandMore';
+import { ActionButton } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 
 interface MassActionsExportEmailsModalProps {
   ids: string[];
@@ -33,11 +34,9 @@ const CopyButtonWrapper = styled(Box)(({ theme }) => ({
   marginTop: theme.spacing(1),
 }));
 
-export const MassActionsExportEmailsModal: React.FC<MassActionsExportEmailsModalProps> = ({
-  handleClose,
-  accountListId,
-  ids,
-}) => {
+export const MassActionsExportEmailsModal: React.FC<
+  MassActionsExportEmailsModalProps
+> = ({ handleClose, accountListId, ids }) => {
   const { t } = useTranslation();
 
   const [showOutlookFormat, setShowOutlookFormat] = useState(false);
