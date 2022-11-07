@@ -1,4 +1,3 @@
-import React, { ReactElement } from 'react';
 import { Box, IconButton, ListItemText, Menu } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import PersonIcon from '@mui/icons-material/Person';
@@ -6,6 +5,7 @@ import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ListIcon from '@mui/icons-material/FormatListBulleted';
 import EditIcon from '@mui/icons-material/Edit';
+import React, { ReactElement, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import MoreVert from '@mui/icons-material/MoreVert';
 import { useSnackbar } from 'notistack';
@@ -28,8 +28,10 @@ import {
   ContactsPageContext,
   ContactsPageType,
 } from 'pages/accountLists/[accountListId]/contacts/ContactsPageContext';
+import { MoreActionHideContactModal } from './MoreActionHideContactModal';
 
 type AddMenuItem = {
+  visibility: boolean;
   text: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   icon: any;
@@ -88,11 +90,15 @@ const ActionPanel = ({
 
   return (
     <Box display="flex" flexDirection="column" justifyContent="center">
-      {actionContent.map(({ text, icon, onClick }, index) => (
-        <RowContainer key={index} display="flex" onClick={onClick}>
-          {icon}
-          <MenuItemText primary={t(`${text}`)} />
-        </RowContainer>
+      {actionContent.map(({ visibility, text, icon, onClick }, index) => (
+        <>
+          {visibility && (
+            <RowContainer key={index} display="flex" onClick={onClick}>
+              {icon}
+              <MenuItemText primary={t(`${text}`)} />
+            </RowContainer>
+          )}
+        </>
       ))}
     </Box>
   );
@@ -100,12 +106,13 @@ const ActionPanel = ({
 
 interface ContactDetailsMoreAcitionsProps {
   contactId: string;
+  status: StatusEnum;
   onClose: () => void;
 }
 
 export const ContactDetailsMoreAcitions: React.FC<
   ContactDetailsMoreAcitionsProps
-> = ({ contactId, onClose }) => {
+> = ({ contactId, status, onClose }) => {
   const { openTaskModal } = useTaskModal();
   const { t } = useTranslation();
   const { accountListId, searchTerm, router } = React.useContext(
@@ -127,7 +134,10 @@ export const ContactDetailsMoreAcitions: React.FC<
 
   const [updateContactOther] = useUpdateContactOtherMutation();
 
+  const [openHideModal, setOpenHideModal] = useState(false);
+  const [updateHiding, setUpdateHiding] = useState(false);
   const hideContact = async (): Promise<void> => {
+    setUpdateHiding(true);
     const attributes = {
       id: contactId,
       status: StatusEnum.NeverAsk,
@@ -197,6 +207,7 @@ export const ContactDetailsMoreAcitions: React.FC<
 
   const actionContent = [
     {
+      visibility: true,
       text: 'Add Referrals',
       icon: <PersonIcon />,
       onClick: () => {
@@ -205,6 +216,7 @@ export const ContactDetailsMoreAcitions: React.FC<
       },
     },
     {
+      visibility: true,
       text: 'Add Task',
       icon: <ListIcon />,
       onClick: () => {
@@ -213,6 +225,7 @@ export const ContactDetailsMoreAcitions: React.FC<
       },
     },
     {
+      visibility: true,
       text: 'Log Task',
       icon: <EditIcon />,
       onClick: () => {
@@ -224,14 +237,16 @@ export const ContactDetailsMoreAcitions: React.FC<
       },
     },
     {
+      visibility: status !== StatusEnum.NeverAsk,
       text: 'Hide Contact',
       icon: <VisibilityOffIcon />,
       onClick: () => {
-        hideContact();
+        setOpenHideModal(true);
         setAnchorEl(undefined);
       },
     },
     {
+      visibility: true,
       text: 'Delete Contact',
       icon: <DeleteIcon />,
       onClick: () => {
@@ -287,6 +302,12 @@ export const ContactDetailsMoreAcitions: React.FC<
         setOpen={setDeleteModalOpen}
         deleting={deleting}
         deleteContact={handleDeleteContact}
+      />
+      <MoreActionHideContactModal
+        open={openHideModal}
+        setOpen={setOpenHideModal}
+        hiding={updateHiding}
+        hideContact={hideContact}
       />
     </>
   );

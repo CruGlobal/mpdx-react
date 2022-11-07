@@ -1,3 +1,4 @@
+import { StatusEnum } from '../../../../../../graphql/types.generated';
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import { ThemeProvider } from '@mui/material/styles';
@@ -54,6 +55,7 @@ describe('ContactDetailsMoreActions', () => {
               <ContactsPageProvider>
                 <ContactDetailProvider>
                   <ContactDetailsMoreAcitions
+                    status={StatusEnum.AskInFuture}
                     contactId={contactId}
                     onClose={onClose}
                   />
@@ -83,6 +85,7 @@ describe('ContactDetailsMoreActions', () => {
               <ContactsPageProvider>
                 <ContactDetailProvider>
                   <ContactDetailsMoreAcitions
+                    status={StatusEnum.AskInFuture}
                     contactId={contactId}
                     onClose={onClose}
                   />
@@ -114,6 +117,7 @@ describe('ContactDetailsMoreActions', () => {
               <ContactsPageProvider>
                 <ContactDetailProvider>
                   <ContactDetailsMoreAcitions
+                    status={StatusEnum.AskInFuture}
                     contactId={contactId}
                     onClose={onClose}
                   />
@@ -156,6 +160,7 @@ describe('ContactDetailsMoreActions', () => {
               <ContactsPageProvider>
                 <ContactDetailProvider>
                   <ContactDetailsMoreAcitions
+                    status={StatusEnum.AskInFuture}
                     contactId={contactId}
                     onClose={onClose}
                   />
@@ -172,6 +177,7 @@ describe('ContactDetailsMoreActions', () => {
     );
     expect(getByText('Hide Contact')).toBeInTheDocument();
     userEvent.click(getByText('Hide Contact'));
+    await waitFor(() => userEvent.click(getByText('Hide')));
     await waitFor(() =>
       expect(mockEnqueue).toHaveBeenCalledWith('Contact hidden successfully!', {
         variant: 'success',
@@ -195,6 +201,7 @@ describe('ContactDetailsMoreActions', () => {
               <ContactsPageProvider>
                 <ContactDetailProvider>
                   <ContactDetailsMoreAcitions
+                    status={StatusEnum.AskInFuture}
                     contactId={contactId}
                     onClose={onClose}
                   />
@@ -232,6 +239,7 @@ describe('ContactDetailsMoreActions', () => {
               <ContactsPageProvider>
                 <ContactDetailProvider>
                   <ContactDetailsMoreAcitions
+                    status={StatusEnum.AskInFuture}
                     contactId={contactId}
                     onClose={onClose}
                   />
@@ -263,6 +271,7 @@ describe('ContactDetailsMoreActions', () => {
               <ContactsPageProvider>
                 <ContactDetailProvider>
                   <ContactDetailsMoreAcitions
+                    status={StatusEnum.AskInFuture}
                     contactId={contactId}
                     onClose={onClose}
                   />

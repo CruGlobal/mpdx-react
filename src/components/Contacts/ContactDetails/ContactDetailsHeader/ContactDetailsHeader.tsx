@@ -1,3 +1,4 @@
+import { StatusEnum } from '../../../../../graphql/types.generated';
 import { Avatar, Box, IconButton, Typography } from '@mui/material';
 import Close from '@mui/icons-material/Close';
 import { styled } from '@mui/material/styles';
@@ -111,7 +112,11 @@ export const ContactDetailsHeader: React.FC<Props> = ({
             contactId={contactId}
             isStarred={data?.contact?.starred || false}
           />
-          <ContactDetailsMoreAcitions contactId={contactId} onClose={onClose} />
+          <ContactDetailsMoreAcitions
+            contactId={contactId}
+            status={data?.contact.status ?? StatusEnum.Unresponsive}
+            onClose={onClose}
+          />
           <IconButton onClick={onClose}>
             <CloseButtonIcon titleAccess={t('Close')} />
           </IconButton>
