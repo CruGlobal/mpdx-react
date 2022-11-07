@@ -1,18 +1,18 @@
 import React, { ReactElement, Fragment } from 'react';
 import {
-  makeStyles,
   Box,
   Theme,
   List,
   ListItem,
   ListItemText,
   ListItemIcon,
-} from '@material-ui/core';
+} from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
 import Icon from '@mdi/react';
 import { ToolsList } from '../Home/ToolList';
 import { Item } from './Item/Item';
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles()((theme: Theme) => ({
   list: {
     width: '290px',
     transform: 'translateY(55px)',
@@ -32,7 +32,7 @@ export interface Props {
 }
 
 const NavToolList = ({ selectedId }: Props): ReactElement => {
-  const classes = useStyles();
+  const { classes } = useStyles();
 
   return (
     <Box component="div" className={classes.list} data-testid="ToolNavList">

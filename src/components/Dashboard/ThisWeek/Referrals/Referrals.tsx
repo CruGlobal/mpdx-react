@@ -1,7 +1,6 @@
 import React, { ReactElement, useState } from 'react';
 import {
   Typography,
-  makeStyles,
   Theme,
   CardHeader,
   CardActions,
@@ -13,8 +12,9 @@ import {
   Tabs,
   Tab,
   CardContent,
-} from '@material-ui/core';
-import { Skeleton } from '@material-ui/lab';
+} from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
+import Skeleton from '@mui/material/Skeleton';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { DateTime } from 'luxon';
@@ -25,7 +25,7 @@ import illustration4 from '../../../../images/drawkit/grape/drawkit-grape-pack-i
 import { GetThisWeekQuery } from '../GetThisWeek.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles()((theme: Theme) => ({
   div: {
     flex: 1,
     display: 'flex',
@@ -76,7 +76,7 @@ const ReferralsTab = ({
   referrals,
   tab,
 }: ReferralsTabProps): ReactElement => {
-  const classes = useStyles();
+  const { classes } = useStyles();
   const { t } = useTranslation();
   const accountListId = useAccountListId();
   const { push } = useRouter();
@@ -96,7 +96,7 @@ const ReferralsTab = ({
                   secondary={<Skeleton variant="text" width={200} />}
                 />
                 <ListItemSecondaryAction>
-                  <Skeleton variant="rect" width={20} height={20} />
+                  <Skeleton variant="rectangular" width={20} height={20} />
                 </ListItemSecondaryAction>
               </ListItem>
             ))}
@@ -198,12 +198,12 @@ const Referrals = ({
   recentReferrals,
   onHandReferrals,
 }: Props): ReactElement => {
-  const classes = useStyles();
+  const { classes } = useStyles();
   const { t } = useTranslation();
   const [value, setValue] = useState(0);
 
   const handleChange = (
-    _event: React.ChangeEvent<Record<string, unknown>>,
+    _event: React.SyntheticEvent,
     newValue: number,
   ): void => {
     setValue(newValue);

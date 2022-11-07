@@ -1,19 +1,8 @@
 import React, { ReactElement, useState } from 'react';
-import {
-  IconButton,
-  Box,
-  Modal,
-  Typography,
-  styled,
-  Card,
-  CardHeader,
-  CardContent,
-  useMediaQuery,
-} from '@material-ui/core';
-import CloseIcon from '@material-ui/icons/Close';
+import { DialogContent, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 
-import { AnimatePresence, motion } from 'framer-motion';
+import Modal from '../../common/Modal/Modal';
 import Loading from '../../Loading';
 import {
   TaskCreateInput,
@@ -26,15 +15,6 @@ import TaskModalForm from './Form/TaskModalForm';
 import TaskModalCompleteForm from './Form/Complete/TaskModalCompleteForm';
 import TaskModalCommentsList from './Comments/TaskModalCommentsList';
 import TaskModalLogForm from './Form/LogForm/TaskModalLogForm';
-import theme from 'src/theme';
-
-const StyledModal = styled(Modal)(() => ({
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  justifyContent: 'center',
-  overflow: 'auto',
-}));
 
 export interface TaskModalProps {
   taskId?: string;
@@ -61,7 +41,6 @@ const TaskModal = ({
   rowsPerPage,
 }: TaskModalProps): ReactElement => {
   const accountListId = useAccountListId();
-  const smallScreen = useMediaQuery(theme.breakpoints.down('sm'));
   const [open, setOpen] = useState(!taskId);
   const { t } = useTranslation();
   const { data, loading } = useGetTaskForTaskModalQuery({
@@ -145,37 +124,19 @@ const TaskModal = ({
       {loading ? (
         <Loading loading />
       ) : (
-        <StyledModal open={open} onClose={onModalClose}>
-          <Card style={{ width: smallScreen ? '100%' : 480 }}>
-            <CardHeader
-              title={
-                <Box
-                  display="flex"
-                  justifyContent="space-between"
-                  alignItems="center"
-                >
-                  <Typography variant="h6">{renderTitle()}</Typography>
-                  <IconButton size="small" onClick={onModalClose}>
-                    <CloseIcon titleAccess={t('Close')} />
-                  </IconButton>
-                </Box>
-              }
-            />
-            <CardContent style={{ padding: 0 }}>
-              <Box display="flex" justifyContent="center">
-                <AnimatePresence initial={false}>
-                  <motion.div
-                    initial={{ x: 300, opacity: 0 }}
-                    animate={{ x: 0, opacity: 1 }}
-                    exit={{ x: -300, opacity: 0 }}
-                  >
-                    {!loading && accountListId && <>{renderView()}</>}
-                  </motion.div>
-                </AnimatePresence>
-              </Box>
-            </CardContent>
-          </Card>
-        </StyledModal>
+        <Modal isOpen={open} title={renderTitle()} handleClose={onModalClose}>
+          {accountListId ? (
+            <>{renderView()}</>
+          ) : (
+            <DialogContent dividers>
+              <Typography color="error" align="center">
+                {t(
+                  'Our apologies. It appears something has gone wrong. Please try again later and contact the administrator if this problem persists.',
+                )}
+              </Typography>
+            </DialogContent>
+          )}
+        </Modal>
       )}
     </>
   );

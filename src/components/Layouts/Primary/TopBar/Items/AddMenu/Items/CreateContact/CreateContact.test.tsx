@@ -2,7 +2,7 @@ import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import { SnackbarProvider } from 'notistack';
 import userEvent from '@testing-library/user-event';
-import { MuiThemeProvider } from '@material-ui/core';
+import { ThemeProvider } from '@mui/material/styles';
 import { GqlMockedProvider } from '../../../../../../../../../__tests__/util/graphqlMocking';
 import TestRouter from '../../../../../../../../../__tests__/util/TestRouter';
 import theme from '../../../../../../../../theme';
@@ -19,7 +19,7 @@ const router = {
 describe('CreateContact', () => {
   it('default', async () => {
     const { queryByLabelText } = render(
-      <MuiThemeProvider theme={theme}>
+      <ThemeProvider theme={theme}>
         <SnackbarProvider>
           <TestRouter router={router}>
             <GqlMockedProvider<CreateContactMutation>>
@@ -30,14 +30,14 @@ describe('CreateContact', () => {
             </GqlMockedProvider>
           </TestRouter>
         </SnackbarProvider>
-      </MuiThemeProvider>,
+      </ThemeProvider>,
     );
     await waitFor(() => expect(queryByLabelText('Name')).toBeInTheDocument());
   });
 
   it('closes menu', () => {
     const { getByText } = render(
-      <MuiThemeProvider theme={theme}>
+      <ThemeProvider theme={theme}>
         <SnackbarProvider>
           <TestRouter router={router}>
             <GqlMockedProvider<CreateContactMutation>>
@@ -48,7 +48,7 @@ describe('CreateContact', () => {
             </GqlMockedProvider>
           </TestRouter>
         </SnackbarProvider>
-      </MuiThemeProvider>,
+      </ThemeProvider>,
     );
 
     userEvent.click(getByText('Cancel'));
@@ -60,7 +60,7 @@ describe('CreateContact', () => {
     const name = 'Huffman, Christian';
     it('creates contact', async () => {
       const { getByText, findByText, getByRole } = render(
-        <MuiThemeProvider theme={theme}>
+        <ThemeProvider theme={theme}>
           <SnackbarProvider>
             <TestRouter router={router}>
               <GqlMockedProvider<CreateContactMutation> onCall={mutationSpy}>
@@ -71,7 +71,7 @@ describe('CreateContact', () => {
               </GqlMockedProvider>
             </TestRouter>
           </SnackbarProvider>
-        </MuiThemeProvider>,
+        </ThemeProvider>,
       );
 
       userEvent.click(getByText('Save'));

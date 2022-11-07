@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Field, FieldProps, Form, Formik } from 'formik';
 import { useSnackbar } from 'notistack';
 import {
-  Button,
   CircularProgress,
   DialogActions,
   DialogContent,
@@ -10,7 +9,7 @@ import {
   FormHelperText,
   TextField,
   Typography,
-} from '@material-ui/core';
+} from '@mui/material';
 import * as yup from 'yup';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'next/router';
@@ -23,6 +22,10 @@ import Modal from '../../../common/Modal/Modal';
 import { useAccountListId } from '../../../../hooks/useAccountListId';
 import { UserOptionFragment } from '../FilterPanel.generated';
 import { useSaveFilterMutation } from './SaveFilterModal.generated';
+import {
+  SubmitButton,
+  CancelButton,
+} from 'src/components/common/Modal/ActionButtons/ActionButtons';
 
 interface SaveFilterModalProps {
   isOpen: boolean;
@@ -103,7 +106,7 @@ export const SaveFilterModal: React.FC<SaveFilterModalProps> = ({
           setConfirmModalStatus({ isOpen: false, key: '', value: '' })
         }
       >
-        <DialogContent>
+        <DialogContent dividers>
           <Typography>
             {t(
               'A filter with that name already exists. Do you wish to replace it?',
@@ -111,21 +114,14 @@ export const SaveFilterModal: React.FC<SaveFilterModalProps> = ({
           </Typography>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleNoChoice} variant="text">
-            {t('No')}
-          </Button>
-          <Button
-            color="primary"
-            type="button"
-            variant="contained"
-            onClick={handleYesChoice}
-          >
+          <CancelButton onClick={handleNoChoice}>{t('No')}</CancelButton>
+          <SubmitButton type="button" onClick={handleYesChoice}>
             {saving ? (
               <CircularProgress color="secondary" size={20} />
             ) : (
               t('Yes')
             )}
-          </Button>
+          </SubmitButton>
         </DialogActions>
       </Modal>
     );
@@ -174,25 +170,14 @@ export const SaveFilterModal: React.FC<SaveFilterModalProps> = ({
               </Field>
             </DialogContent>
             <DialogActions>
-              <Button
-                onClick={handleClose}
-                disabled={isSubmitting}
-                variant="text"
-              >
-                {t('Cancel')}
-              </Button>
-              <Button
-                color="primary"
-                type="submit"
-                variant="contained"
-                disabled={!isValid || isSubmitting}
-              >
+              <CancelButton onClick={handleClose} disabled={isSubmitting} />
+              <SubmitButton disabled={!isValid || isSubmitting}>
                 {saving ? (
                   <CircularProgress color="secondary" size={20} />
                 ) : (
                   t('Save')
                 )}
-              </Button>
+              </SubmitButton>
             </DialogActions>
           </Form>
         )}

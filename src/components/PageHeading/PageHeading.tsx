@@ -1,11 +1,6 @@
 import React, { ReactElement } from 'react';
-import {
-  makeStyles,
-  Theme,
-  Container,
-  Typography,
-  Box,
-} from '@material-ui/core';
+import { Theme, Container, Typography, Box } from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
 import { motion } from 'framer-motion';
 import illustration20 from '../../images/drawkit/grape/drawkit-grape-pack-illustration-20.svg';
 
@@ -18,7 +13,7 @@ interface Props {
   image?: boolean;
 }
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles()((theme: Theme) => ({
   div: {
     backgroundColor: theme.palette.mpdxBlue.main,
     height: '250px',
@@ -44,7 +39,7 @@ const PageHeading = ({
   height = 250,
   image = true,
 }: Props): ReactElement => {
-  const classes = useStyles();
+  const { classes } = useStyles();
 
   return (
     <motion.div

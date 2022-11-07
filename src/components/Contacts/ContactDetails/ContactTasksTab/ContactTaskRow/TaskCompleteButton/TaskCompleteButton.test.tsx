@@ -1,4 +1,4 @@
-import { MuiThemeProvider } from '@material-ui/core';
+import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
@@ -10,9 +10,9 @@ describe('TaskCompleteButton', () => {
     const onClick = jest.fn();
 
     const { getByRole } = render(
-      <MuiThemeProvider theme={theme}>
+      <ThemeProvider theme={theme}>
         <TaskCompleteButton isComplete={false} onClick={onClick} />
-      </MuiThemeProvider>,
+      </ThemeProvider>,
     );
 
     const completeButton = getByRole('button');
@@ -28,7 +28,7 @@ describe('TaskCompleteButton', () => {
       `"transparent"`,
     );
     expect(completeButtonStyle?.color).toMatchInlineSnapshot(
-      `"rgb(56, 63, 67)"`,
+      `"rgb(0, 202, 153)"`,
     );
   });
 
@@ -36,9 +36,9 @@ describe('TaskCompleteButton', () => {
     const onClick = jest.fn();
 
     const { getByRole } = render(
-      <MuiThemeProvider theme={theme}>
+      <ThemeProvider theme={theme}>
         <TaskCompleteButton isComplete={true} onClick={onClick} />
-      </MuiThemeProvider>,
+      </ThemeProvider>,
     );
 
     const completeButton = getByRole('button');
@@ -51,10 +51,10 @@ describe('TaskCompleteButton', () => {
       completeButton && window.getComputedStyle(completeButton);
 
     expect(completeButtonStyle?.backgroundColor).toMatchInlineSnapshot(
-      `"transparent"`,
+      `"rgb(0, 202, 153)"`,
     );
     expect(completeButtonStyle?.color).toMatchInlineSnapshot(
-      `"rgb(56, 63, 67)"`,
+      `"rgb(255, 255, 255)"`,
     );
   });
 
@@ -62,9 +62,9 @@ describe('TaskCompleteButton', () => {
     const onClick = jest.fn();
 
     const { getByRole } = render(
-      <MuiThemeProvider theme={theme}>
+      <ThemeProvider theme={theme}>
         <TaskCompleteButton isComplete={true} onClick={onClick} />
-      </MuiThemeProvider>,
+      </ThemeProvider>,
     );
 
     const completeButton = getByRole('button');

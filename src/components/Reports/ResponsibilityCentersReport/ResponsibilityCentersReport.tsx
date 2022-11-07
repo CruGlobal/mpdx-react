@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Box, CircularProgress, Divider, styled } from '@material-ui/core';
+import { Box, CircularProgress, Divider } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import { AccountsListHeader as Header } from '../AccountsListLayout/Header/Header';
 import { AccountsList as List } from '../AccountsListLayout/List/List';
 import type { Account } from '../AccountsListLayout/List/ListItem/ListItem';
@@ -47,18 +48,19 @@ export const ResponsibilityCentersReport: React.FC<Props> = ({
 
   const financialAccountsGroups = useMemo(() => {
     if (data) {
-      const preFinancialAccountsGroup = data.financialAccounts.nodes.reduce<PreFinancialAccountsGroup>(
-        (obj, item) => {
-          return {
-            ...obj,
-            [item?.organization?.name ?? '']: [
-              ...(obj[item?.organization?.name ?? ''] || []),
-              item,
-            ],
-          };
-        },
-        {},
-      );
+      const preFinancialAccountsGroup =
+        data.financialAccounts.nodes.reduce<PreFinancialAccountsGroup>(
+          (obj, item) => {
+            return {
+              ...obj,
+              [item?.organization?.name ?? '']: [
+                ...(obj[item?.organization?.name ?? ''] || []),
+                item,
+              ],
+            };
+          },
+          {},
+        );
       const financialAccountsGroup: FinancialAccountsGroup[] = Object.entries(
         preFinancialAccountsGroup,
       ).map(([organizationName, financialAccounts]) => ({
@@ -188,8 +190,8 @@ export const ResponsibilityCentersReport: React.FC<Props> = ({
         <ScrollBox data-testid="ResponsibilityCentersScrollBox">
           <Divider />
           {financialAccountsGroups?.map((financialAccountGroup) => {
-            const accounts: Account[] = financialAccountGroup.financialAccounts.map(
-              (account) => ({
+            const accounts: Account[] =
+              financialAccountGroup.financialAccounts.map((account) => ({
                 active: account?.active,
                 balance: -(account?.balance.convertedAmount ?? 0),
                 code: account?.code,
@@ -197,12 +199,12 @@ export const ResponsibilityCentersReport: React.FC<Props> = ({
                 id: account?.id,
                 lastSyncDate: account?.balance.conversionDate,
                 name: account?.name,
-                entryHistories: entryHistoriesResponse?.data?.entryHistories?.find(
-                  (entryHistoriesGroup) =>
-                    entryHistoriesGroup.financialAccountId === account?.id,
-                )?.entryHistories,
-              }),
-            );
+                entryHistories:
+                  entryHistoriesResponse?.data?.entryHistories?.find(
+                    (entryHistoriesGroup) =>
+                      entryHistoriesGroup.financialAccountId === account?.id,
+                  )?.entryHistories,
+              }));
 
             return (
               <List

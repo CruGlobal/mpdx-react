@@ -8,9 +8,9 @@ import {
   ListItemIcon,
   ListItemSecondaryAction,
   ListItemText,
-  styled,
   Typography,
-} from '@material-ui/core';
+} from '@mui/material';
+import { styled } from '@mui/material/styles';
 import { CelebrationIcons } from '../CelebrationIcons/CelebrationIcons';
 import { ContactPartnershipStatus } from '../ContactPartnershipStatus/ContactPartnershipStatus';
 import { StarContactIconButton } from '../StarContactIconButton/StarContactIconButton';

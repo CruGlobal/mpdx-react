@@ -1,7 +1,7 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import { mdiAlert } from '@mdi/js';
-import { ThemeProvider } from '@material-ui/core';
+import { ThemeProvider } from '@mui/material/styles';
 import theme from '../../../../src/theme';
 import TestRouter from '../../../../__tests__/util/TestRouter';
 import Tool from './Tool';

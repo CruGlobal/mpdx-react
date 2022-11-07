@@ -1,5 +1,6 @@
 import React, { ReactNode } from 'react';
-import { styled, TableCell, TableSortLabel } from '@material-ui/core';
+import { TableCell, TableSortLabel } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import { Contact } from '../../../PartnerGivingAnalysisReport';
 
 type Align = 'center' | 'inherit' | 'justify' | 'left' | 'right';
@@ -29,14 +30,9 @@ const HeadCellSpan = styled('span')(() => ({
   width: 1,
 }));
 
-export const TableHeadCell: React.FC<PartnerGivingAnalysisReportTableCellProps> = ({
-  isActive,
-  align,
-  children,
-  direction,
-  sortDirection,
-  onClick,
-}) => {
+export const TableHeadCell: React.FC<
+  PartnerGivingAnalysisReportTableCellProps
+> = ({ isActive, align, children, direction, sortDirection, onClick }) => {
   return (
     <TableCell align={align} sortDirection={sortDirection}>
       <TableSortLabel active={isActive} direction={direction} onClick={onClick}>

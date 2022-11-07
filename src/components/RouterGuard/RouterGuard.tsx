@@ -2,9 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { getSession, signIn } from 'next-auth/react';
 import { useRouter } from 'next/router';
 import { DateTime } from 'luxon';
-import { Box, CircularProgress } from '@material-ui/core';
+import { Box, CircularProgress } from '@mui/material';
 
-export const RouterGuard: React.FC = ({ children }) => {
+interface Props {
+  children?: React.ReactNode;
+}
+
+export const RouterGuard: React.FC<Props> = ({ children }) => {
   const [isAuthed, setIsAuthed] = useState(false);
   const { push, pathname, query, isReady } = useRouter();
   const getSess = async () => {

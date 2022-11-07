@@ -1,4 +1,4 @@
-import { ListItem, TextField } from '@material-ui/core';
+import { ListItem, TextField } from '@mui/material';
 import React from 'react';
 import { TextFilter } from '../../../../graphql/types.generated';
 

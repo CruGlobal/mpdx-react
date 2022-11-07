@@ -1,8 +1,8 @@
 import { ActivityTypeEnum } from '../../../../../graphql/types.generated';
-import { GetTaskForTaskDrawerQuery } from '../../Drawer/TaskDrawerTask.generated';
+import { GetTaskForTaskModalQuery } from '../../Modal/TaskModalTask.generated';
 
 export const possibleNextActions = (
-  task: GetTaskForTaskDrawerQuery['task'],
+  task: GetTaskForTaskModalQuery['task'],
 ): ActivityTypeEnum[] => {
   const common = [
     ActivityTypeEnum.None,

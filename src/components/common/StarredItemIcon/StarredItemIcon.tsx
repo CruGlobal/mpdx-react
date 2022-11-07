@@ -1,7 +1,7 @@
-import { styled } from '@material-ui/core';
+import { styled } from '@mui/material/styles';
 import React from 'react';
-import { StarBorderOutlined } from '@material-ui/icons';
-import StarIcon from '@material-ui/icons/Star';
+import StarBorderOutlined from '@mui/icons-material/StarBorderOutlined';
+import StarIcon from '@mui/icons-material/Star';
 
 interface Props {
   isStarred: boolean;

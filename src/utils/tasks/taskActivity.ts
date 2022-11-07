@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { ActivityTypeEnum } from '../../../graphql/types.generated';
 
 //  This is a work around to match the Activity Types with Constant Activity Id
@@ -38,4 +39,14 @@ export const constantIdFromActivityType = (
     default:
       return '';
   }
+};
+
+export const currentString = (): string => {
+  const { t } = useTranslation();
+  return t('Current');
+};
+
+export const historicString = (): string => {
+  const { t } = useTranslation();
+  return t('Historic');
 };

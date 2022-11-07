@@ -1,14 +1,15 @@
 import React, { ReactElement, useState } from 'react';
 import Head from 'next/head';
 import { useTranslation } from 'react-i18next';
-import { makeStyles, Theme, Box, Container } from '@material-ui/core';
+import { Theme, Box, Container } from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
 import AppealDrawer from '../../../../../src/components/Tool/Appeal/AppealDrawer/AppealDrawer';
 import { AppealProvider } from '../../../../../src/components/Tool/Appeal/AppealContextProvider/AppealContextProvider';
 
 import AppealDetailsMain from '../../../../../src/components/Tool/Appeal/AppealDetails/AppealDetailsMain';
 import { testAppeal2 } from './testAppeal';
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles()((theme: Theme) => ({
   container: {
     padding: theme.spacing(3),
     marginRight: theme.spacing(2),
@@ -38,7 +39,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 const AppealIdPage = (): ReactElement => {
   const { t } = useTranslation();
   const [isNavListOpen, setNavListOpen] = useState<boolean>(true);
-  const classes = useStyles();
+  const { classes } = useStyles();
 
   const handleNavListToggle = () => {
     setNavListOpen(!isNavListOpen);

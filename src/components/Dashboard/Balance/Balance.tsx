@@ -1,14 +1,14 @@
 import React, { ReactElement } from 'react';
 import {
-  makeStyles,
   Theme,
   CardContent,
   Typography,
   CardActions,
   Button,
   Box,
-} from '@material-ui/core';
-import { Skeleton } from '@material-ui/lab';
+} from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
+import Skeleton from '@mui/material/Skeleton';
 import { useTranslation } from 'react-i18next';
 import NextLink from 'next/link';
 import { currencyFormat } from '../../../lib/intlFormat';
@@ -16,7 +16,7 @@ import AnimatedCard from '../../AnimatedCard';
 import AnimatedBox from '../../AnimatedBox';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles()((theme: Theme) => ({
   card: {
     display: 'flex',
     flexDirection: 'column',
@@ -40,7 +40,7 @@ const Balance = ({
   balance,
   currencyCode = 'USD',
 }: Props): ReactElement => {
-  const classes = useStyles();
+  const { classes } = useStyles();
   const { t } = useTranslation();
   const accountListId = useAccountListId();
 

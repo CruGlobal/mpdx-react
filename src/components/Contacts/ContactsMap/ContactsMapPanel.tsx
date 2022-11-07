@@ -5,9 +5,8 @@ import {
   Box,
   IconButton,
   Typography,
-  styled,
-  Theme,
-} from '@material-ui/core';
+} from '@mui/material';
+import { styled } from '@mui/material/styles';
 import React, {
   Dispatch,
   SetStateAction,
@@ -16,7 +15,8 @@ import React, {
   useState,
 } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Close, ExpandMore } from '@material-ui/icons';
+import ExpandMore from '@mui/icons-material/ExpandMore';
+import Close from '@mui/icons-material/Close';
 import Image from 'next/image';
 import { StatusEnum } from '../../../../graphql/types.generated';
 import { Coordinates } from 'pages/accountLists/[accountListId]/contacts/map/map';
@@ -56,24 +56,22 @@ const ContactList = styled(AccordionDetails)(() => ({
   width: '100%',
 }));
 
-const ContactWrapper = styled(Box)(
-  ({ theme, current }: { theme: Theme; current: boolean }) => ({
-    display: 'flex',
-    justifyContent: 'space-between',
-    borderBottom: `1px solid ${theme.palette.cruGrayMedium.main}`,
-    alignItems: 'center',
-    width: '100%',
-    padding: theme.spacing(1),
-    paddingLeft: theme.spacing(2),
-    backgroundColor: current
-      ? theme.palette.cruGrayLight.main
-      : theme.palette.common.white,
-    '&:hover': {
-      backgroundColor: theme.palette.cruGrayLight.main,
-      cursor: 'pointer',
-    },
-  }),
-);
+const ContactWrapper = styled(Box)(({ current }: { current: boolean }) => ({
+  display: 'flex',
+  justifyContent: 'space-between',
+  borderBottom: `1px solid ${theme.palette.cruGrayMedium.main}`,
+  alignItems: 'center',
+  width: '100%',
+  padding: theme.spacing(1),
+  paddingLeft: theme.spacing(2),
+  backgroundColor: current
+    ? theme.palette.cruGrayLight.main
+    : theme.palette.common.white,
+  '&:hover': {
+    backgroundColor: theme.palette.cruGrayLight.main,
+    cursor: 'pointer',
+  },
+}));
 
 const CruFocus = styled(Typography)(({ theme }) => ({
   marginRight: theme.spacing(0.5),
@@ -99,12 +97,11 @@ export const ContactsMapPanel: React.FC<ContactMapsPanelProps> = ({
 
   const [statusContactsMapOpen, setStatusContactsMapOpen] = useState(-1);
 
-  const handleExpansionChange = (panel: React.SetStateAction<number>) => (
-    _event: React.ChangeEvent<Record<string, unknown>>,
-    newExpanded: boolean,
-  ) => {
-    setStatusContactsMapOpen(newExpanded ? panel : -1);
-  };
+  const handleExpansionChange =
+    (panel: React.SetStateAction<number>) =>
+    (_event: React.SyntheticEvent, newExpanded: boolean) => {
+      setStatusContactsMapOpen(newExpanded ? panel : -1);
+    };
 
   const panelData: {
     [key: string]: {

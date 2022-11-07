@@ -1,5 +1,6 @@
-import { ListItem, ListItemText } from '@material-ui/core';
-import { DatePicker } from '@material-ui/pickers';
+import { ListItem, ListItemText } from '@mui/material';
+import TextField from '@mui/material/TextField';
+import { MobileDatePicker } from '@mui/x-date-pickers';
 import React from 'react';
 import { DateTime, Interval } from 'luxon';
 import { useTranslation } from 'react-i18next';
@@ -38,10 +39,14 @@ export const FilterListItemDateRange: React.FC<Props> = ({
         />
       </ListItem>
       <ListItem>
-        <DatePicker
-          placeholder={t('Start Date')}
-          style={{ marginRight: '8px' }}
-          clearable
+        <MobileDatePicker
+          renderInput={(params) => (
+            <TextField
+              placeholder={t('Start Date')}
+              style={{ marginRight: '8px' }}
+              {...params}
+            />
+          )}
           value={range?.start ?? null}
           onChange={(date) =>
             onUpdate(
@@ -53,12 +58,16 @@ export const FilterListItemDateRange: React.FC<Props> = ({
                   ),
             )
           }
-          format="MM/dd/yyyy"
+          inputFormat="MM/dd/yyyy"
         />
-        <DatePicker
-          placeholder={t('End Date')}
-          style={{ marginLeft: '8px' }}
-          clearable
+        <MobileDatePicker
+          renderInput={(params) => (
+            <TextField
+              placeholder={t('End Date')}
+              style={{ marginLeft: '8px' }}
+              {...params}
+            />
+          )}
           value={range?.end ?? null}
           onChange={(date) =>
             onUpdate(
@@ -70,7 +79,7 @@ export const FilterListItemDateRange: React.FC<Props> = ({
                   ),
             )
           }
-          format="MM/dd/yyyy"
+          inputFormat="MM/dd/yyyy"
         />
       </ListItem>
     </>

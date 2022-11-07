@@ -37,19 +37,14 @@ function getItemStyles(
 }
 
 export const ContactFlowDragLayer: React.FC = () => {
-  const {
-    isDragging,
-    item,
-    itemType,
-    initialOffset,
-    currentOffset,
-  } = useDragLayer((monitor) => ({
-    item: monitor.getItem(),
-    itemType: monitor.getItemType(),
-    initialOffset: monitor.getInitialSourceClientOffset(),
-    currentOffset: monitor.getSourceClientOffset(),
-    isDragging: monitor.isDragging(),
-  }));
+  const { isDragging, item, itemType, initialOffset, currentOffset } =
+    useDragLayer((monitor) => ({
+      item: monitor.getItem(),
+      itemType: monitor.getItemType(),
+      initialOffset: monitor.getInitialSourceClientOffset(),
+      currentOffset: monitor.getSourceClientOffset(),
+      isDragging: monitor.isDragging(),
+    }));
 
   function renderItem() {
     switch (itemType) {

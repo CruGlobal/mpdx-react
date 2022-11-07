@@ -1,4 +1,4 @@
-import { MuiThemeProvider } from '@material-ui/core';
+import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
@@ -12,13 +12,13 @@ describe('TaskCommentsButton', () => {
     const onClick = jest.fn();
 
     const { getByText } = render(
-      <MuiThemeProvider theme={theme}>
+      <ThemeProvider theme={theme}>
         <TaskCommentsButton
           isComplete={false}
           numberOfComments={numberOfComments}
           onClick={onClick}
         />
-      </MuiThemeProvider>,
+      </ThemeProvider>,
     );
 
     const numberText = getByText(`${numberOfComments}`);
@@ -34,13 +34,13 @@ describe('TaskCommentsButton', () => {
     const onClick = jest.fn();
 
     const { getByText } = render(
-      <MuiThemeProvider theme={theme}>
+      <ThemeProvider theme={theme}>
         <TaskCommentsButton
           isComplete={true}
           numberOfComments={numberOfComments}
           onClick={onClick}
         />
-      </MuiThemeProvider>,
+      </ThemeProvider>,
     );
 
     const numberText = getByText(`${numberOfComments}`);
@@ -56,13 +56,13 @@ describe('TaskCommentsButton', () => {
     const onClick = jest.fn();
 
     const { getByRole } = render(
-      <MuiThemeProvider theme={theme}>
+      <ThemeProvider theme={theme}>
         <TaskCommentsButton
           isComplete={true}
           numberOfComments={numberOfComments}
           onClick={onClick}
         />
-      </MuiThemeProvider>,
+      </ThemeProvider>,
     );
 
     const commentsButton = getByRole('button');

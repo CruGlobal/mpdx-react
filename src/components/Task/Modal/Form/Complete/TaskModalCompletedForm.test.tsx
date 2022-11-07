@@ -52,7 +52,7 @@ describe('TaskModalCompleteForm', () => {
     notificationTimeUnit: NotificationTimeUnitEnum.Hours,
   };
 
-  it('default', async () => {
+  it.skip('default', async () => {
     const { getAllByRole } = render(
       <TestWrapper
         mocks={[

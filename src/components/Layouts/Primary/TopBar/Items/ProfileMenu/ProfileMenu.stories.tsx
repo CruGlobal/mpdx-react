@@ -1,5 +1,5 @@
 import React, { ReactElement } from 'react';
-import { AppBar, Box } from '@material-ui/core';
+import { AppBar, Box } from '@mui/material';
 import { MockedProvider } from '@apollo/client/testing';
 import { getTopBarMock } from '../../TopBar.mock';
 import ProfileMenu from './ProfileMenu';

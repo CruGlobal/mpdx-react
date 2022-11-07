@@ -1,4 +1,4 @@
-import { ThemeProvider } from '@material-ui/core';
+import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import React from 'react';
 import { SnackbarProvider } from 'notistack';
@@ -147,8 +147,10 @@ describe('ContactDetails', () => {
         </TestRouter>
       </SnackbarProvider>,
     );
-    await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());
-    userEvent.click(getAllByLabelText('Edit Icon')[0]);
+    await waitFor(() => {
+      expect(queryByText('Loading')).not.toBeInTheDocument();
+      userEvent.click(getAllByLabelText('Edit Icon')[0]);
+    });
     await waitFor(() =>
       expect(queryByText('Edit Contact Details')).toBeInTheDocument(),
     );
@@ -185,8 +187,10 @@ describe('ContactDetails', () => {
         </TestRouter>
       </SnackbarProvider>,
     );
-    await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());
-    userEvent.click(getAllByLabelText('Edit Icon')[0]);
+    await waitFor(() => {
+      expect(queryByText('Loading')).not.toBeInTheDocument();
+      userEvent.click(getAllByLabelText('Edit Icon')[0]);
+    });
     await waitFor(() =>
       expect(queryByText('Edit Contact Details')).toBeInTheDocument(),
     );

@@ -1,12 +1,12 @@
 import React, { ReactElement } from 'react';
-import { Box } from '@material-ui/core';
+import { Box } from '@mui/material';
 import { MockedProvider } from '@apollo/client/testing';
 import { ActivityTypeEnum } from '../../../../../graphql/types.generated';
 import { GetThisWeekQuery } from '../GetThisWeek.generated';
 import {
   createTaskMutationMock,
   updateTaskMutationMock,
-} from '../../../Task/Drawer/Form/Form.mock';
+} from '../../../Task/Modal/Form/TaskModalForm.mock';
 import PartnerCare from './PartnerCare';
 
 export default {
@@ -50,26 +50,28 @@ export const Default = (): ReactElement => {
     ],
     totalCount: 80,
   };
-  const reportsPeopleWithBirthdays: GetThisWeekQuery['reportsPeopleWithBirthdays'] = {
-    periods: [
-      {
-        people: [
-          { ...personWithBirthday, id: 'person_1' },
-          { ...personWithBirthday, id: 'person_2' },
-        ],
-      },
-    ],
-  };
-  const reportsPeopleWithAnniversaries: GetThisWeekQuery['reportsPeopleWithAnniversaries'] = {
-    periods: [
-      {
-        people: [
-          { ...personWithAnniversary, id: 'person_3' },
-          { ...personWithAnniversary, id: 'person_4' },
-        ],
-      },
-    ],
-  };
+  const reportsPeopleWithBirthdays: GetThisWeekQuery['reportsPeopleWithBirthdays'] =
+    {
+      periods: [
+        {
+          people: [
+            { ...personWithBirthday, id: 'person_1' },
+            { ...personWithBirthday, id: 'person_2' },
+          ],
+        },
+      ],
+    };
+  const reportsPeopleWithAnniversaries: GetThisWeekQuery['reportsPeopleWithAnniversaries'] =
+    {
+      periods: [
+        {
+          people: [
+            { ...personWithAnniversary, id: 'person_3' },
+            { ...personWithAnniversary, id: 'person_4' },
+          ],
+        },
+      ],
+    };
   return (
     <Box m={2}>
       <MockedProvider
@@ -93,20 +95,22 @@ export const Empty = (): ReactElement => {
     nodes: [],
     totalCount: 0,
   };
-  const reportsPeopleWithBirthdays: GetThisWeekQuery['reportsPeopleWithBirthdays'] = {
-    periods: [
-      {
-        people: [],
-      },
-    ],
-  };
-  const reportsPeopleWithAnniversaries: GetThisWeekQuery['reportsPeopleWithAnniversaries'] = {
-    periods: [
-      {
-        people: [],
-      },
-    ],
-  };
+  const reportsPeopleWithBirthdays: GetThisWeekQuery['reportsPeopleWithBirthdays'] =
+    {
+      periods: [
+        {
+          people: [],
+        },
+      ],
+    };
+  const reportsPeopleWithAnniversaries: GetThisWeekQuery['reportsPeopleWithAnniversaries'] =
+    {
+      periods: [
+        {
+          people: [],
+        },
+      ],
+    };
   return (
     <Box m={2}>
       <MockedProvider mocks={[]} addTypename={false}>

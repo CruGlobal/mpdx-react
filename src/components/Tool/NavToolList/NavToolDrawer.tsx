@@ -1,9 +1,10 @@
 import React, { ReactElement } from 'react';
-import { makeStyles, Theme, Drawer } from '@material-ui/core';
+import { Theme, Drawer } from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
 import NavToolDrawerHandle from './NavToolDrawerHandle';
 import NavToolList from './NavToolList';
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles()((theme: Theme) => ({
   drawer: {
     zIndex: 1,
   },
@@ -23,7 +24,7 @@ export interface Props {
 }
 
 const NavToolDrawer = ({ open, toggle, selectedId }: Props): ReactElement => {
-  const classes = useStyles();
+  const { classes } = useStyles();
 
   return (
     <>

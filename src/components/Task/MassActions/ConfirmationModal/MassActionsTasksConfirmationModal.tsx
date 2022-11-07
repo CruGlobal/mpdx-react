@@ -1,8 +1,11 @@
-import { DialogActions, DialogContent, Typography } from '@material-ui/core';
+import { DialogActions, DialogContent, Typography } from '@mui/material';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import Modal from '../../../common/Modal/Modal';
-import { ActionButton } from 'src/components/Task/Modal/Form/TaskModalForm';
+import {
+  SubmitButton,
+  CancelButton,
+} from 'src/components/common/Modal/ActionButtons/ActionButtons';
 
 interface MassActionsTasksConfirmationModalProps {
   open: boolean;
@@ -12,13 +15,9 @@ interface MassActionsTasksConfirmationModalProps {
   onConfirm: () => void;
 }
 
-export const MassActionsTasksConfirmationModal: React.FC<MassActionsTasksConfirmationModalProps> = ({
-  open,
-  idsCount,
-  action,
-  setOpen,
-  onConfirm,
-}) => {
+export const MassActionsTasksConfirmationModal: React.FC<
+  MassActionsTasksConfirmationModalProps
+> = ({ open, idsCount, action, setOpen, onConfirm }) => {
   const { t } = useTranslation();
 
   return (
@@ -36,8 +35,10 @@ export const MassActionsTasksConfirmationModal: React.FC<MassActionsTasksConfirm
         </Typography>
       </DialogContent>
       <DialogActions>
-        <ActionButton onClick={() => setOpen(false)}>{t('No')}</ActionButton>
-        <ActionButton onClick={onConfirm}>{t('Yes')}</ActionButton>
+        <CancelButton onClick={() => setOpen(false)}>{t('No')}</CancelButton>
+        <SubmitButton onClick={onConfirm} type="button">
+          {t('Yes')}
+        </SubmitButton>
       </DialogActions>
     </Modal>
   );

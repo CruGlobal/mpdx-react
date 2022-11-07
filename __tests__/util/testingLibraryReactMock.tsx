@@ -1,3 +1,4 @@
+/* eslint-disable import/export */
 import React, { ReactElement } from 'react';
 import { render, RenderResult, RenderOptions } from '@testing-library/react';
 import { I18nextProvider } from 'react-i18next';
@@ -6,7 +7,11 @@ import translation from '../../public/locales/en/translation.json';
 
 i18n.addResourceBundle('en', 'translation', translation);
 
-const Wrapper: React.FC = ({ children }) => {
+interface Props {
+  children?: React.ReactNode;
+}
+
+const Wrapper: React.FC<Props> = ({ children }) => {
   return <I18nextProvider i18n={i18n}>{children}</I18nextProvider>;
 };
 

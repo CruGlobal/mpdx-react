@@ -1,16 +1,10 @@
 import React, { ReactElement, useState } from 'react';
-import {
-  Button,
-  Menu,
-  MenuItem,
-  Dialog,
-  ListItemText,
-  styled,
-} from '@material-ui/core';
-import ArrowDropDown from '@material-ui/icons/ArrowDropDown';
+import { Button, Menu, MenuItem, Dialog, ListItemText } from '@mui/material';
+import { styled } from '@mui/material/styles';
+import ArrowDropDown from '@mui/icons-material/ArrowDropDown';
 import { useTranslation } from 'react-i18next';
 import { DateTime } from 'luxon';
-import { Skeleton } from '@material-ui/lab';
+import Skeleton from '@mui/material/Skeleton';
 import { useGetTaskAnalyticsQuery } from './NewsletterMenu.generated';
 import ExportEmail from './MenuItems/ExportEmail/ExportEmail';
 import LogNewsletter from './MenuItems/LogNewsLetter/LogNewsletter';
@@ -29,9 +23,8 @@ const NewsletterMenu = ({ accountListId }: Props): ReactElement<Props> => {
 
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>();
   const [selectedMenuItem, changeSelectedMenuItem] = useState(-1);
-  const [newsletterMenuDialogOpen, changeNewsletterMenuDialogOpen] = useState(
-    false,
-  );
+  const [newsletterMenuDialogOpen, changeNewsletterMenuDialogOpen] =
+    useState(false);
 
   const { data, loading } = useGetTaskAnalyticsQuery({
     variables: { accountListId },
@@ -151,7 +144,6 @@ const NewsletterMenu = ({ accountListId }: Props): ReactElement<Props> => {
         open={Boolean(anchorEl)}
         onClose={handleMenuClose}
         anchorEl={anchorEl}
-        getContentAnchorEl={null}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
         transformOrigin={{ vertical: 'top', horizontal: 'center' }}
       >

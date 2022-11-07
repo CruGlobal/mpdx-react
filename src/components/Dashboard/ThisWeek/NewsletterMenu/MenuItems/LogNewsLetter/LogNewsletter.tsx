@@ -4,7 +4,6 @@ import {
   DialogActions,
   DialogContent,
   IconButton,
-  styled,
   FormControl,
   TextField,
   Grid,
@@ -13,16 +12,16 @@ import {
   Radio,
   FormLabel,
   InputAdornment,
-  Button,
   CircularProgress,
-} from '@material-ui/core';
+} from '@mui/material';
+import { styled } from '@mui/material/styles';
 import * as yup from 'yup';
-import CloseIcon from '@material-ui/icons/Close';
+import CloseIcon from '@mui/icons-material/Close';
 import { useTranslation } from 'react-i18next';
 import { Formik } from 'formik';
-import { DatePicker, TimePicker } from '@material-ui/pickers';
-import ClockIcon from '@material-ui/icons/AccessTime';
-import CalendarIcon from '@material-ui/icons/CalendarToday';
+import { MobileDatePicker, MobileTimePicker } from '@mui/x-date-pickers';
+import ClockIcon from '@mui/icons-material/AccessTime';
+import CalendarIcon from '@mui/icons-material/CalendarToday';
 import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
 import { v4 as uuidv4 } from 'uuid';
@@ -33,8 +32,12 @@ import {
   TaskCreateInput,
 } from '../../../../../../../graphql/types.generated';
 
-import { useCreateTaskMutation } from '../../../../../Task/Drawer/Form/TaskDrawer.generated';
-import { useCreateTaskCommentMutation } from '../../../../../Task/Drawer/CommentList/Form/CreateTaskComment.generated';
+import { useCreateTaskMutation } from '../../../../../Task/Modal/Form/TaskModal.generated';
+import { useCreateTaskCommentMutation } from '../../../../../Task/Modal/Comments/Form/CreateTaskComment.generated';
+import {
+  SubmitButton,
+  CancelButton,
+} from 'src/components/common/Modal/ActionButtons/ActionButtons';
 
 interface Props {
   accountListId: string;
@@ -86,22 +89,21 @@ const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
   margin: theme.spacing(0, 1, 0, 0),
 }));
 
-const taskSchema: yup.SchemaOf<
-  Omit<TaskCreateInput, 'result' | 'nextAction'>
-> = yup.object({
-  id: yup.string().nullable(),
-  activityType: yup.mixed<ActivityTypeEnum>(),
-  subject: yup.string().required(),
-  starred: yup.boolean().nullable(),
-  startAt: yup.string().nullable(),
-  completedAt: yup.string().nullable(),
-  tagList: yup.array().of(yup.string()).default([]),
-  contactIds: yup.array().of(yup.string()).default([]),
-  userId: yup.string().nullable(),
-  notificationTimeBefore: yup.number().nullable(),
-  notificationType: yup.mixed<NotificationTypeEnum>(),
-  notificationTimeUnit: yup.mixed<NotificationTimeUnitEnum>(),
-});
+const taskSchema: yup.SchemaOf<Omit<TaskCreateInput, 'result' | 'nextAction'>> =
+  yup.object({
+    id: yup.string().nullable(),
+    activityType: yup.mixed<ActivityTypeEnum>(),
+    subject: yup.string().required(),
+    starred: yup.boolean().nullable(),
+    startAt: yup.string().nullable(),
+    completedAt: yup.string().nullable(),
+    tagList: yup.array().of(yup.string()).default([]),
+    contactIds: yup.array().of(yup.string()).default([]),
+    userId: yup.string().nullable(),
+    notificationTimeBefore: yup.number().nullable(),
+    notificationType: yup.mixed<NotificationTypeEnum>(),
+    notificationTimeUnit: yup.mixed<NotificationTimeUnitEnum>(),
+  });
 
 const LogNewsletter = ({
   accountListId,
@@ -212,12 +214,12 @@ const LogNewsletter = ({
                   >
                     <LogFormControlLabel
                       value={ActivityTypeEnum.NewsletterPhysical}
-                      control={<Radio required />}
+                      control={<Radio color="secondary" required />}
                       label={t('Newsletter - Physical')}
                     />
                     <LogFormControlLabel
                       value={ActivityTypeEnum.NewsletterEmail}
-                      control={<Radio required />}
+                      control={<Radio color="secondary" required />}
                       label={t('Newsletter - Email')}
                     />
                     {/* TODO: Add Both option once BOTH is added to ActivityTypeEnum type */}
@@ -234,22 +236,17 @@ const LogNewsletter = ({
                 <Grid item xs={12}>
                   <Grid container spacing={2}>
                     <Grid item xs={12} md={6}>
-                      <DatePicker
+                      <MobileDatePicker
+                        renderInput={(params) => (
+                          <TextField fullWidth {...params} />
+                        )}
                         value={completedAt}
                         onChange={(date): void =>
                           setFieldValue('completedAt', date)
                         }
-                        format="MM/dd/yyyy"
-                        clearable
-                        fullWidth
-                        autoOk
-                        data-testid="completedDate"
-                        inputVariant="outlined"
+                        inputFormat="MM/dd/yyyy"
+                        closeOnSelect
                         label={t('Completed Date')}
-                        okLabel={t('OK')}
-                        todayLabel={t('Today')}
-                        cancelLabel={t('Cancel')}
-                        clearLabel={t('Clear')}
                         InputProps={{
                           startAdornment: (
                             <InputAdornment position="start">
@@ -262,21 +259,16 @@ const LogNewsletter = ({
                       />
                     </Grid>
                     <Grid item xs={12} md={6}>
-                      <TimePicker
+                      <MobileTimePicker
+                        renderInput={(params) => (
+                          <TextField fullWidth {...params} />
+                        )}
                         value={completedAt}
                         onChange={(date): void =>
                           setFieldValue('completedAt', date)
                         }
-                        clearable
-                        fullWidth
-                        autoOk
-                        data-testid="completedTime"
-                        inputVariant="outlined"
+                        closeOnSelect
                         label={t('Completed Time')}
-                        okLabel={t('OK')}
-                        todayLabel={t('Today')}
-                        cancelLabel={t('Cancel')}
-                        clearLabel={t('Clear')}
                         InputProps={{
                           startAdornment: (
                             <InputAdornment position="start">
@@ -307,19 +299,11 @@ const LogNewsletter = ({
             </Grid>
           </DialogContent>
           <DialogActions>
-            <Button disabled={isSubmitting} onClick={handleClose}>
-              {t('Cancel')}
-            </Button>
-            <Button
-              size="large"
-              variant="contained"
-              color="primary"
-              disabled={!isValid || isSubmitting}
-              type="submit"
-            >
+            <CancelButton disabled={isSubmitting} onClick={handleClose} />
+            <SubmitButton disabled={!isValid || isSubmitting}>
               {creating && <LoadingIndicator color="primary" size={20} />}
               {t('Save')}
-            </Button>
+            </SubmitButton>
           </DialogActions>
         </form>
       )}

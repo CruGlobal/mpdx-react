@@ -13,11 +13,11 @@ import {
   CreateTaskMutation,
   DeleteTaskDocument,
   DeleteTaskMutation,
-  GetDataForTaskModalDocument,
-  GetDataForTaskModalQuery,
   TaskMutationResponseFragment,
   UpdateTaskDocument,
   UpdateTaskMutation,
+  GetDataForTaskModalDocument,
+  GetDataForTaskModalQuery,
 } from '../../Modal/Form/TaskModal.generated';
 
 export const getDataForTaskModalMock = (

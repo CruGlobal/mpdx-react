@@ -1,9 +1,10 @@
 import React, { ReactElement } from 'react';
-import { makeStyles, Theme, Box } from '@material-ui/core';
-import { Skeleton } from '@material-ui/lab';
+import { Theme, Box } from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
+import Skeleton from '@mui/material/Skeleton';
 import { percentageFormat } from '../../lib/intlFormat';
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles()((theme: Theme) => ({
   box: {
     width: '100%',
     height: '54px',
@@ -47,7 +48,7 @@ const StyledProgress = ({
   primary = 0,
   secondary = 0,
 }: Props): ReactElement => {
-  const classes = useStyles();
+  const { classes } = useStyles();
 
   return (
     <Box className={classes.box}>

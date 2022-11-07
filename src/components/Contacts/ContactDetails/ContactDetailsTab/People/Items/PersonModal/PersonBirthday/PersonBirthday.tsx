@@ -1,8 +1,9 @@
 import React from 'react';
-import { DatePicker } from '@material-ui/pickers';
+import TextField from '@mui/material/TextField';
+import { MobileDatePicker } from '@mui/x-date-pickers';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
-import CakeIcon from '@material-ui/icons/Cake';
+import CakeIcon from '@mui/icons-material/Cake';
 import { FormikProps } from 'formik';
 import { ModalSectionContainer } from '../ModalSectionContainer/ModalSectionContainer';
 import { ModalSectionIcon } from '../ModalSectionIcon/ModalSectionIcon';
@@ -35,19 +36,23 @@ export const PersonBirthday: React.FC<PersonBirthdayProps> = ({
   return (
     <ModalSectionContainer>
       <ModalSectionIcon icon={<CakeIcon />} />
-      <DatePicker
+      <MobileDatePicker
+        renderInput={(params) => (
+          <TextField
+            fullWidth
+            helperText="mm/dd/yyyy"
+            inputProps={{ 'aria-label': t('Birthday') }}
+            {...params}
+          />
+        )}
         onChange={(date) => (!date ? null : handleDateChange(date))}
         value={
           birthdayMonth && birthdayDay
             ? new Date(birthdayYear ?? 1900, birthdayMonth - 1, birthdayDay)
             : null
         }
-        format="MM/dd/yyyy"
-        clearable
+        inputFormat="MM/dd/yyyy"
         label={t('Birthday')}
-        inputProps={{ 'aria-label': t('Birthday') }}
-        fullWidth
-        helperText="mm/dd/yyyy"
       />
     </ModalSectionContainer>
   );

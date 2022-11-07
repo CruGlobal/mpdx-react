@@ -4,15 +4,15 @@ import {
   DialogActions,
   DialogContent,
   FormControl,
-  styled,
   Typography,
-} from '@material-ui/core';
+} from '@mui/material';
+import { styled } from '@mui/material/styles';
+import Remove from '@mui/icons-material/Remove';
 import * as yup from 'yup';
 import { Formik } from 'formik';
 import React, { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSnackbar } from 'notistack';
-import { Remove } from '@material-ui/icons';
 import {
   Contact,
   ContactUpdateInput,
@@ -23,6 +23,10 @@ import { useGetContactsForTagsQuery } from '../GetContactsForTags.generated';
 import { useMassActionsUpdateContactsMutation } from '../MassActionsUpdateContacts.generated';
 import theme from 'src/theme';
 import { ContactsDocument } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
+import {
+  SubmitButton,
+  CancelButton,
+} from 'src/components/common/Modal/ActionButtons/ActionButtons';
 
 interface MassActionsRemoveTagsModalProps {
   ids: string[];
@@ -53,19 +57,15 @@ const tagSchema = yup.object({
   tagList: yup.array().of(yup.string()).default([]).nullable(),
 });
 
-export const MassActionsRemoveTagsModal: React.FC<MassActionsRemoveTagsModalProps> = ({
-  handleClose,
-  accountListId,
-  ids,
-}) => {
+export const MassActionsRemoveTagsModal: React.FC<
+  MassActionsRemoveTagsModalProps
+> = ({ handleClose, accountListId, ids }) => {
   const { t } = useTranslation();
 
   const { enqueueSnackbar } = useSnackbar();
 
-  const [
-    updateContacts,
-    { loading: updating },
-  ] = useMassActionsUpdateContactsMutation();
+  const [updateContacts, { loading: updating }] =
+    useMassActionsUpdateContactsMutation();
 
   const { data: contactsForTags } = useGetContactsForTagsQuery({
     variables: {
@@ -143,6 +143,7 @@ export const MassActionsRemoveTagsModal: React.FC<MassActionsRemoveTagsModalProp
                             onClick={() =>
                               setFieldValue('tagList', [...tagList, tag])
                             }
+                            color="inherit"
                           >
                             <RemoveTagIcon />
                             {tag}
@@ -169,22 +170,13 @@ export const MassActionsRemoveTagsModal: React.FC<MassActionsRemoveTagsModalProp
               </FormControl>
             </DialogContent>
             <DialogActions>
-              <Button
-                onClick={handleClose}
-                disabled={isSubmitting}
-                variant="text"
-              >
-                {t('Cancel')}
-              </Button>
-              <Button
-                color="primary"
-                type="submit"
-                variant="contained"
+              <CancelButton onClick={handleClose} disabled={isSubmitting} />
+              <SubmitButton
                 disabled={!isValid || isSubmitting || tagList?.length === 0}
               >
                 {updating && <CircularProgress color="primary" size={20} />}
                 {t('Save')}
-              </Button>
+              </SubmitButton>
             </DialogActions>
           </form>
         )}

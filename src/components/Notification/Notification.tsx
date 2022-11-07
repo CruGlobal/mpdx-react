@@ -1,12 +1,13 @@
 import React from 'react';
-import { Box, Typography } from '@material-ui/core';
-import InfoIcon from '@material-ui/icons/Info';
-import ErrorIcon from '@material-ui/icons/Error';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import InfoIcon from '@mui/icons-material/Info';
+import ErrorIcon from '@mui/icons-material/Error';
 
 interface Props {
   message: string;
   padding?: number;
-  size?: 'inherit' | 'default' | 'small' | 'large';
+  size?: 'inherit' | 'medium' | 'small' | 'large';
   type: 'error' | 'info';
 }
 

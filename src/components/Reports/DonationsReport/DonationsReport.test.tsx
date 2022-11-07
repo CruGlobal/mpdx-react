@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
-import { ThemeProvider } from '@material-ui/core';
+import { ThemeProvider } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import theme from '../../../theme';
 import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
@@ -19,26 +19,21 @@ const router = {
 };
 
 it('renders', async () => {
-  const {
-    getByTestId,
-    getByText,
-    queryByRole,
-    queryAllByRole,
-    queryByTestId,
-  } = render(
-    <ThemeProvider theme={theme}>
-      <TestRouter router={router}>
-        <GqlMockedProvider>
-          <DonationsReport
-            accountListId={'abc'}
-            isNavListOpen={true}
-            onNavListToggle={onNavListToggle}
-            title={title}
-          />
-        </GqlMockedProvider>
-      </TestRouter>
-    </ThemeProvider>,
-  );
+  const { getByTestId, getByText, queryByRole, queryAllByRole, queryByTestId } =
+    render(
+      <ThemeProvider theme={theme}>
+        <TestRouter router={router}>
+          <GqlMockedProvider>
+            <DonationsReport
+              accountListId={'abc'}
+              isNavListOpen={true}
+              onNavListToggle={onNavListToggle}
+              title={title}
+            />
+          </GqlMockedProvider>
+        </TestRouter>
+      </ThemeProvider>,
+    );
 
   await waitFor(() =>
     expect(queryByRole('progressbar')).not.toBeInTheDocument(),

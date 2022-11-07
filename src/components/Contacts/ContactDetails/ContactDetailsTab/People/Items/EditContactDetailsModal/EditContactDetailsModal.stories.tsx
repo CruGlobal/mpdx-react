@@ -1,5 +1,6 @@
 import React, { ReactElement, useState } from 'react';
-import { Box, Button, MuiThemeProvider } from '@material-ui/core';
+import { Box, Button } from '@mui/material';
+import { ThemeProvider } from '@mui/material/styles';
 import { gqlMock } from '../../../../../../../../__tests__/util/graphqlMocking';
 import theme from '../../../../../../../theme';
 import { EditContactDetailsModal } from './EditContactDetailsModal';
@@ -32,7 +33,7 @@ export const Default = (): ReactElement => {
   };
 
   return (
-    <MuiThemeProvider theme={theme}>
+    <ThemeProvider theme={theme}>
       <Box m={2}>
         <EditContactDetailsModal
           accountListId={accountListId}
@@ -44,6 +45,6 @@ export const Default = (): ReactElement => {
           Open Modal
         </Button>
       </Box>
-    </MuiThemeProvider>
+    </ThemeProvider>
   );
 };

@@ -1,6 +1,5 @@
 import React, { ReactElement, useMemo, useState } from 'react';
 import {
-  makeStyles,
   Grid,
   MenuItem,
   ListItemText,
@@ -11,9 +10,10 @@ import {
   Paper,
   Box,
   Typography,
-} from '@material-ui/core';
+} from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
 import clsx from 'clsx';
-import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import NextLink from 'next/link';
 import { useTranslation } from 'react-i18next';
 import Icon from '@mdi/react';
@@ -30,7 +30,7 @@ export const filteredReportNavItems = ReportNavItems.filter(
   (item) => item.id !== 'partnerCurrency',
 );
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles()(() => ({
   navListItem: {
     order: 2,
     [theme.breakpoints.down('md')]: {
@@ -115,7 +115,7 @@ export const toolsRedirectLinks: { [key: string]: string } = {
 const NavMenu = (): ReactElement => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
-  const classes = useStyles();
+  const { classes } = useStyles();
   const currentToolId = useCurrentToolId();
   const { data, loading } = useGetToolNotificationsQuery({
     variables: { accountListId: accountListId ?? '' },
@@ -198,7 +198,7 @@ const NavMenu = (): ReactElement => {
               <MenuItem
                 tabIndex={0}
                 className={classes.menuItem}
-                aria-current={router.asPath.includes('contacts') && 'page'}
+                aria-current={router.asPath?.includes('contacts') && 'page'}
               >
                 <ListItemText primary={t('Contacts')} />
               </MenuItem>
@@ -209,7 +209,7 @@ const NavMenu = (): ReactElement => {
               <MenuItem
                 tabIndex={0}
                 className={classes.menuItem}
-                aria-current={router.asPath.includes('tasks') && 'page'}
+                aria-current={router.asPath?.includes('tasks') && 'page'}
               >
                 <ListItemText primary={t('Tasks')} />
               </MenuItem>
@@ -227,7 +227,7 @@ const NavMenu = (): ReactElement => {
               className={clsx(
                 classes.menuItem,
                 reportsMenuOpen && classes.menuItemSelected,
-                router.asPath.includes('reports') && classes.menuItemSelected,
+                router.asPath?.includes('reports') && classes.menuItemSelected,
               )}
             >
               <ListItemText primary={t('Reports')} />
@@ -292,7 +292,7 @@ const NavMenu = (): ReactElement => {
               className={clsx(
                 classes.menuItem,
                 toolsMenuOpen && classes.menuItemSelected,
-                router.asPath.includes('tools') && classes.menuItemSelected,
+                router.asPath?.includes('tools') && classes.menuItemSelected,
               )}
               aria-expanded={toolsMenuOpen}
             >
@@ -411,7 +411,7 @@ const NavMenu = (): ReactElement => {
               <MenuItem
                 tabIndex={0}
                 className={classes.menuItem}
-                aria-current={router.asPath.includes(`/coaching`) && 'page'}
+                aria-current={router.asPath?.includes(`/coaching`) && 'page'}
               >
                 <ListItemText primary={t('Coaches')} />
               </MenuItem>

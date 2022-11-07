@@ -1,7 +1,7 @@
 import React, { ReactElement } from 'react';
 import Head from 'next/head';
 import { useTranslation } from 'react-i18next';
-import { Box } from '@material-ui/core';
+import { Box } from '@mui/material';
 import { ExpectedMonthlyTotalReportHeader } from '../../../../src/components/Reports/ExpectedMonthlyTotalReport/Header/ExpectedMonthlyTotalReportHeader';
 import Loading from '../../../../src/components/Loading';
 import { useAccountListId } from '../../../../src/hooks/useAccountListId';

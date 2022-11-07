@@ -1,11 +1,9 @@
 import React from 'react';
 import clsx from 'clsx';
 import {
-  makeStyles,
   Box,
   Typography,
   Grid,
-  Button,
   Modal,
   Card,
   CardHeader,
@@ -15,7 +13,8 @@ import {
   CardActions,
   Checkbox,
   IconButton,
-} from '@material-ui/core';
+} from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
 import { useTranslation } from 'react-i18next';
 
 import { mdiMap, mdiCloseThick, mdiInformation } from '@mdi/js';
@@ -23,8 +22,12 @@ import Icon from '@mdi/react';
 import theme from '../../../theme';
 import { StyledInput } from './StyledInput';
 import { ContactAddressFragment } from './GetInvalidAddresses.generated';
+import {
+  SubmitButton,
+  CancelButton,
+} from 'src/components/common/Modal/ActionButtons/ActionButtons';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles()(() => ({
   modal: {
     display: 'flex',
     alignItems: 'center',
@@ -37,9 +40,6 @@ const useStyles = makeStyles(() => ({
   },
   paddingY: {
     paddingBottom: theme.spacing(2),
-  },
-  actionButtons: {
-    textTransform: 'none',
   },
   blue: {
     color: 'white',
@@ -106,7 +106,7 @@ const AddressModal: React.FC<Props> = ({
   handleClose,
   handleChange,
 }) => {
-  const classes = useStyles();
+  const { classes } = useStyles();
   const { t } = useTranslation();
 
   const disableAll = !modalState.address.source.includes('MPDX');
@@ -354,23 +354,11 @@ const AddressModal: React.FC<Props> = ({
               </Grid>
             </CardContent>
             <CardActions style={{ padding: theme.spacing(2) }}>
-              <Button
-                variant="contained"
-                size="small"
-                className={classes.actionButtons}
-                onClick={handleClose}
-              >
-                Cancel
-              </Button>
-              <Button
-                variant="contained"
-                disabled={disableAll}
-                size="small"
-                className={clsx(classes.blue, classes.actionButtons)}
-              >
+              <CancelButton onClick={handleClose} />
+              <SubmitButton type="button" disabled={disableAll}>
                 {/*TODO: make "newAddress" field in address false so it says "edit" instead of "add" */}
                 Save
-              </Button>
+              </SubmitButton>
             </CardActions>
           </Card>
         </Box>

@@ -13,18 +13,18 @@ import {
   Tab,
   ListItemIcon,
   CardContent,
-  styled,
   IconButton,
-} from '@material-ui/core';
-import CakeIcon from '@material-ui/icons/Cake';
-import FavoriteIcon from '@material-ui/icons/Favorite';
-import { Skeleton } from '@material-ui/lab';
+} from '@mui/material';
+import { styled } from '@mui/material/styles';
+import CakeIcon from '@mui/icons-material/Cake';
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import Skeleton from '@mui/material/Skeleton';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import Link from 'next/link';
-import Brightness1Outlined from '@material-ui/icons/Brightness1Outlined';
-import DoneIcon from '@material-ui/icons/Done';
-import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
+import Brightness1Outlined from '@mui/icons-material/Brightness1Outlined';
+import DoneIcon from '@mui/icons-material/Done';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import {
   Contact,
   PersonWithParentContact,
@@ -153,7 +153,7 @@ const PartnerCare = ({
   };
 
   const handleChange = (
-    _event: React.ChangeEvent<Record<string, unknown>>,
+    _event: React.SyntheticEvent,
     newValue: number,
   ): void => {
     setValue(newValue);
@@ -273,7 +273,7 @@ const PartnerCare = ({
                       secondary={<Skeleton variant="text" width={200} />}
                     />
                     <ListItemSecondaryAction>
-                      <Skeleton variant="rect" width={20} height={20} />
+                      <Skeleton variant="rectangular" width={20} height={20} />
                     </ListItemSecondaryAction>
                   </ListItem>
                 ))}
@@ -384,7 +384,7 @@ const PartnerCare = ({
                     secondary={<Skeleton variant="text" width={200} />}
                   />
                   <ListItemSecondaryAction>
-                    <Skeleton variant="rect" width={20} height={20} />
+                    <Skeleton variant="rectangular" width={20} height={20} />
                   </ListItemSecondaryAction>
                 </ListItem>
               ))}

@@ -1,10 +1,9 @@
 import React from 'react';
 import { render, waitFor, within } from '@testing-library/react';
-import LuxonUtils from '@date-io/luxon';
+import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import userEvent from '@testing-library/user-event';
-import { MuiPickersUtilsProvider } from '@material-ui/pickers';
-import { useRouter } from 'next/router';
-import { ThemeProvider } from '@material-ui/core';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { ThemeProvider } from '@mui/material/styles';
 import {
   gqlMock,
   GqlMockedProvider,
@@ -95,35 +94,31 @@ jest.mock('notistack', () => ({
   },
 }));
 
-jest.mock('next/router');
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const useRouter = jest.spyOn(require('next/router'), 'useRouter');
 
 describe('FilterPanel', () => {
   describe('Contacts', () => {
     beforeEach(() => {
-      (useRouter as jest.Mock).mockReturnValue({
+      useRouter.mockReturnValue({
         route: '/contacts',
-        pathname: '/contacts',
       });
     });
     it('default', async () => {
-      const {
-        getByTestId,
-        getByText,
-        queryByTestId,
-        queryAllByTestId,
-      } = render(
-        <ThemeProvider theme={theme}>
-          <GqlMockedProvider<SaveFilterMutation>>
-            <FilterPanel
-              filters={[filterPanelDefaultMock, filterPanelFeaturedMock]}
-              savedFilters={[savedFiltersMock]}
-              selectedFilters={{}}
-              onClose={onClose}
-              onSelectedFiltersChanged={onSelectedFiltersChanged}
-            />
-          </GqlMockedProvider>
-        </ThemeProvider>,
-      );
+      const { getByTestId, getByText, queryByTestId, queryAllByTestId } =
+        render(
+          <ThemeProvider theme={theme}>
+            <GqlMockedProvider<SaveFilterMutation>>
+              <FilterPanel
+                filters={[filterPanelDefaultMock, filterPanelFeaturedMock]}
+                savedFilters={[savedFiltersMock]}
+                selectedFilters={{}}
+                onClose={onClose}
+                onSelectedFiltersChanged={onSelectedFiltersChanged}
+              />
+            </GqlMockedProvider>
+          </ThemeProvider>,
+        );
 
       await waitFor(() => expect(queryByTestId('LoadingState')).toBeNull());
       expect(queryByTestId('LoadingState')).toBeNull();
@@ -158,19 +153,17 @@ describe('FilterPanel', () => {
         queryAllByTestId,
         getByRole,
       } = render(
-        <MuiPickersUtilsProvider utils={LuxonUtils}>
-          <ThemeProvider theme={theme}>
-            <GqlMockedProvider<SaveFilterMutation>>
-              <FilterPanel
-                filters={[filterPanelDefaultMock, filterPanelFeaturedMock]}
-                savedFilters={[savedFiltersMock]}
-                selectedFilters={{}}
-                onClose={onClose}
-                onSelectedFiltersChanged={onSelectedFiltersChanged}
-              />
-            </GqlMockedProvider>
-          </ThemeProvider>
-        </MuiPickersUtilsProvider>,
+        <LocalizationProvider dateAdapter={AdapterLuxon}>
+          <GqlMockedProvider<SaveFilterMutation>>
+            <FilterPanel
+              filters={[filterPanelDefaultMock, filterPanelFeaturedMock]}
+              savedFilters={[savedFiltersMock]}
+              selectedFilters={{}}
+              onClose={onClose}
+              onSelectedFiltersChanged={onSelectedFiltersChanged}
+            />
+          </GqlMockedProvider>
+        </LocalizationProvider>,
       );
 
       await waitFor(() => expect(queryByTestId('LoadingState')).toBeNull());
@@ -189,7 +182,7 @@ describe('FilterPanel', () => {
         }),
       );
 
-      const statusSelect = getByRole('textbox', {
+      const statusSelect = getByRole('combobox', {
         hidden: true,
         name: 'Status',
       });
@@ -220,7 +213,7 @@ describe('FilterPanel', () => {
         getAllByTestId,
         getByTestId,
       } = render(
-        <MuiPickersUtilsProvider utils={LuxonUtils}>
+        <LocalizationProvider dateAdapter={AdapterLuxon}>
           <ThemeProvider theme={theme}>
             <GqlMockedProvider<SaveFilterMutation>>
               <FilterPanel
@@ -234,7 +227,7 @@ describe('FilterPanel', () => {
               />
             </GqlMockedProvider>
           </ThemeProvider>
-        </MuiPickersUtilsProvider>,
+        </LocalizationProvider>,
       );
 
       await waitFor(() => expect(queryByTestId('LoadingState')).toBeNull());
@@ -243,35 +236,33 @@ describe('FilterPanel', () => {
 
       expect(getAllByTestId('FilterGroup').length).toEqual(2);
       userEvent.click(getByText('Group 1 (1)'));
-      expect(getByText(filterPanelDefaultMock.filters[0].title)).toBeVisible();
+      expect(
+        getAllByText(filterPanelDefaultMock.filters[0].title),
+      ).toHaveLength(2);
       expect(
         getAllByText(filterPanelDefaultMock.filters[1].title),
-      ).toHaveLength(2);
+      ).toHaveLength(3);
       expect(getByTestId('multiSelectFilter')).toBeInTheDocument();
       expect(getByText('Group 1 (1)')).toBeVisible();
     });
 
     it('opens and selects a saved filter', async () => {
-      const {
-        getByTestId,
-        getByText,
-        queryByTestId,
-        queryAllByTestId,
-      } = render(
-        <MuiPickersUtilsProvider utils={LuxonUtils}>
-          <ThemeProvider theme={theme}>
-            <GqlMockedProvider<SaveFilterMutation>>
-              <FilterPanel
-                filters={[filterPanelDefaultMock, filterPanelFeaturedMock]}
-                savedFilters={[savedFiltersMock, savedGraphQLContactMock]}
-                selectedFilters={{}}
-                onClose={onClose}
-                onSelectedFiltersChanged={onSelectedFiltersChanged}
-              />
-            </GqlMockedProvider>
-          </ThemeProvider>
-        </MuiPickersUtilsProvider>,
-      );
+      const { getByTestId, getByText, queryByTestId, queryAllByTestId } =
+        render(
+          <LocalizationProvider dateAdapter={AdapterLuxon}>
+            <ThemeProvider theme={theme}>
+              <GqlMockedProvider<SaveFilterMutation>>
+                <FilterPanel
+                  filters={[filterPanelDefaultMock, filterPanelFeaturedMock]}
+                  savedFilters={[savedFiltersMock, savedGraphQLContactMock]}
+                  selectedFilters={{}}
+                  onClose={onClose}
+                  onSelectedFiltersChanged={onSelectedFiltersChanged}
+                />
+              </GqlMockedProvider>
+            </ThemeProvider>
+          </LocalizationProvider>,
+        );
 
       await waitFor(() => expect(queryByTestId('LoadingState')).toBeNull());
       expect(queryByTestId('LoadingState')).toBeNull();
@@ -350,17 +341,15 @@ describe('FilterPanel', () => {
 
     it('closes panel', async () => {
       const { queryByTestId, getByLabelText } = render(
-        <ThemeProvider theme={theme}>
-          <GqlMockedProvider<SaveFilterMutation>>
-            <FilterPanel
-              filters={[]}
-              savedFilters={[savedFiltersMock]}
-              selectedFilters={{}}
-              onClose={onClose}
-              onSelectedFiltersChanged={onSelectedFiltersChanged}
-            />
-          </GqlMockedProvider>
-        </ThemeProvider>,
+        <GqlMockedProvider<SaveFilterMutation>>
+          <FilterPanel
+            filters={[]}
+            savedFilters={[savedFiltersMock]}
+            selectedFilters={{}}
+            onClose={onClose}
+            onSelectedFiltersChanged={onSelectedFiltersChanged}
+          />
+        </GqlMockedProvider>,
       );
 
       await waitFor(() => expect(queryByTestId('LoadingState')).toBeNull());
@@ -371,7 +360,7 @@ describe('FilterPanel', () => {
 
     it('clears filters', async () => {
       const { getByText, queryByTestId, queryAllByTestId } = render(
-        <MuiPickersUtilsProvider utils={LuxonUtils}>
+        <LocalizationProvider dateAdapter={AdapterLuxon}>
           <ThemeProvider theme={theme}>
             <GqlMockedProvider<SaveFilterMutation>>
               <FilterPanel
@@ -385,7 +374,7 @@ describe('FilterPanel', () => {
               />
             </GqlMockedProvider>
           </ThemeProvider>
-        </MuiPickersUtilsProvider>,
+        </LocalizationProvider>,
       );
 
       await waitFor(() => expect(queryByTestId('LoadingState')).toBeNull());
@@ -401,17 +390,15 @@ describe('FilterPanel', () => {
 
     it('no filters', async () => {
       const { queryByTestId, queryAllByTestId } = render(
-        <ThemeProvider theme={theme}>
-          <GqlMockedProvider<SaveFilterMutation>>
-            <FilterPanel
-              filters={[]}
-              savedFilters={[savedFiltersMock]}
-              selectedFilters={{}}
-              onClose={onClose}
-              onSelectedFiltersChanged={onSelectedFiltersChanged}
-            />
-          </GqlMockedProvider>
-        </ThemeProvider>,
+        <GqlMockedProvider<SaveFilterMutation>>
+          <FilterPanel
+            filters={[]}
+            savedFilters={[savedFiltersMock]}
+            selectedFilters={{}}
+            onClose={onClose}
+            onSelectedFiltersChanged={onSelectedFiltersChanged}
+          />
+        </GqlMockedProvider>,
       );
 
       await waitFor(() => expect(queryByTestId('LoadingState')).toBeNull());
@@ -424,30 +411,25 @@ describe('FilterPanel', () => {
 
   describe('Tasks', () => {
     beforeEach(() => {
-      (useRouter as jest.Mock).mockReturnValue({
+      useRouter.mockReturnValue({
         route: '/tasks',
-        pathname: '/tasks',
       });
     });
     it('default', async () => {
-      const {
-        getByTestId,
-        getByText,
-        queryByTestId,
-        queryAllByTestId,
-      } = render(
-        <ThemeProvider theme={theme}>
-          <GqlMockedProvider<SaveFilterMutation>>
-            <FilterPanel
-              filters={[filterPanelDefaultMock, filterPanelFeaturedMock]}
-              savedFilters={[savedFiltersMock]}
-              selectedFilters={{}}
-              onClose={onClose}
-              onSelectedFiltersChanged={onSelectedFiltersChanged}
-            />
-          </GqlMockedProvider>
-        </ThemeProvider>,
-      );
+      const { getByTestId, getByText, queryByTestId, queryAllByTestId } =
+        render(
+          <ThemeProvider theme={theme}>
+            <GqlMockedProvider<SaveFilterMutation>>
+              <FilterPanel
+                filters={[filterPanelDefaultMock, filterPanelFeaturedMock]}
+                savedFilters={[savedFiltersMock]}
+                selectedFilters={{}}
+                onClose={onClose}
+                onSelectedFiltersChanged={onSelectedFiltersChanged}
+              />
+            </GqlMockedProvider>
+          </ThemeProvider>,
+        );
 
       await waitFor(() => expect(queryByTestId('LoadingState')).toBeNull());
       expect(queryByTestId('LoadingState')).toBeNull();
@@ -484,7 +466,7 @@ describe('FilterPanel', () => {
         queryAllByTestId,
         getByRole,
       } = render(
-        <MuiPickersUtilsProvider utils={LuxonUtils}>
+        <LocalizationProvider dateAdapter={AdapterLuxon}>
           <ThemeProvider theme={theme}>
             <GqlMockedProvider<SaveFilterMutation>>
               <FilterPanel
@@ -496,7 +478,7 @@ describe('FilterPanel', () => {
               />
             </GqlMockedProvider>
           </ThemeProvider>
-        </MuiPickersUtilsProvider>,
+        </LocalizationProvider>,
       );
 
       await waitFor(() => expect(queryByTestId('LoadingState')).toBeNull());
@@ -515,7 +497,7 @@ describe('FilterPanel', () => {
         }),
       );
 
-      const statusSelect = getByRole('textbox', {
+      const statusSelect = getByRole('combobox', {
         hidden: true,
         name: 'Status',
       });
@@ -541,26 +523,22 @@ describe('FilterPanel', () => {
     });
 
     it('opens and selects a saved filter', async () => {
-      const {
-        getByTestId,
-        getByText,
-        queryByTestId,
-        queryAllByTestId,
-      } = render(
-        <MuiPickersUtilsProvider utils={LuxonUtils}>
-          <ThemeProvider theme={theme}>
-            <GqlMockedProvider<SaveFilterMutation>>
-              <FilterPanel
-                filters={[filterPanelDefaultMock, filterPanelFeaturedMock]}
-                savedFilters={[savedGraphQLTaskMock]}
-                selectedFilters={{}}
-                onClose={onClose}
-                onSelectedFiltersChanged={onSelectedFiltersChanged}
-              />
-            </GqlMockedProvider>
-          </ThemeProvider>
-        </MuiPickersUtilsProvider>,
-      );
+      const { getByTestId, getByText, queryByTestId, queryAllByTestId } =
+        render(
+          <LocalizationProvider dateAdapter={AdapterLuxon}>
+            <ThemeProvider theme={theme}>
+              <GqlMockedProvider<SaveFilterMutation>>
+                <FilterPanel
+                  filters={[filterPanelDefaultMock, filterPanelFeaturedMock]}
+                  savedFilters={[savedGraphQLTaskMock]}
+                  selectedFilters={{}}
+                  onClose={onClose}
+                  onSelectedFiltersChanged={onSelectedFiltersChanged}
+                />
+              </GqlMockedProvider>
+            </ThemeProvider>
+          </LocalizationProvider>,
+        );
 
       await waitFor(() => expect(queryByTestId('LoadingState')).toBeNull());
       expect(queryByTestId('LoadingState')).toBeNull();
@@ -579,17 +557,15 @@ describe('FilterPanel', () => {
 
     it('closes panel', async () => {
       const { queryByTestId, getByLabelText } = render(
-        <ThemeProvider theme={theme}>
-          <GqlMockedProvider<SaveFilterMutation>>
-            <FilterPanel
-              filters={[]}
-              savedFilters={[savedFiltersMock]}
-              selectedFilters={{}}
-              onClose={onClose}
-              onSelectedFiltersChanged={onSelectedFiltersChanged}
-            />
-          </GqlMockedProvider>
-        </ThemeProvider>,
+        <GqlMockedProvider<SaveFilterMutation>>
+          <FilterPanel
+            filters={[]}
+            savedFilters={[savedFiltersMock]}
+            selectedFilters={{}}
+            onClose={onClose}
+            onSelectedFiltersChanged={onSelectedFiltersChanged}
+          />
+        </GqlMockedProvider>,
       );
 
       await waitFor(() => expect(queryByTestId('LoadingState')).toBeNull());
@@ -600,7 +576,7 @@ describe('FilterPanel', () => {
 
     it('clears filters', async () => {
       const { getByText, queryByTestId, queryAllByTestId } = render(
-        <MuiPickersUtilsProvider utils={LuxonUtils}>
+        <LocalizationProvider dateAdapter={AdapterLuxon}>
           <ThemeProvider theme={theme}>
             <GqlMockedProvider<SaveFilterMutation>>
               <FilterPanel
@@ -614,7 +590,7 @@ describe('FilterPanel', () => {
               />
             </GqlMockedProvider>
           </ThemeProvider>
-        </MuiPickersUtilsProvider>,
+        </LocalizationProvider>,
       );
 
       await waitFor(() => expect(queryByTestId('LoadingState')).toBeNull());
@@ -630,17 +606,15 @@ describe('FilterPanel', () => {
 
     it('no filters', async () => {
       const { queryByTestId, queryAllByTestId } = render(
-        <ThemeProvider theme={theme}>
-          <GqlMockedProvider<SaveFilterMutation>>
-            <FilterPanel
-              filters={[]}
-              savedFilters={[]}
-              selectedFilters={{}}
-              onClose={onClose}
-              onSelectedFiltersChanged={onSelectedFiltersChanged}
-            />
-          </GqlMockedProvider>
-        </ThemeProvider>,
+        <GqlMockedProvider<SaveFilterMutation>>
+          <FilterPanel
+            filters={[]}
+            savedFilters={[]}
+            selectedFilters={{}}
+            onClose={onClose}
+            onSelectedFiltersChanged={onSelectedFiltersChanged}
+          />
+        </GqlMockedProvider>,
       );
 
       await waitFor(() => expect(queryByTestId('LoadingState')).toBeNull());

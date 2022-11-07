@@ -1,5 +1,4 @@
 import {
-  Button,
   CircularProgress,
   DialogActions,
   DialogContent,
@@ -10,9 +9,9 @@ import {
   MenuItem,
   Select,
   TextField,
-} from '@material-ui/core';
-import { CalendarToday } from '@material-ui/icons';
-import { DatePicker } from '@material-ui/pickers';
+} from '@mui/material';
+import CalendarToday from '@mui/icons-material/CalendarToday';
+import { MobileDatePicker } from '@mui/x-date-pickers';
 import { Formik } from 'formik';
 import React, { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -26,10 +25,13 @@ import {
 import Modal from '../../../common/Modal/Modal';
 import { useMassActionsUpdateContactFieldsMutation } from './MassActionsUpdateContacts.generated';
 import theme from 'src/theme';
-import { dateFormat } from 'src/lib/intlFormat/intlFormat';
 import { useLoadConstantsQuery } from 'src/components/Constants/LoadConstants.generated';
-import { useGetDataForTaskDrawerQuery } from 'src/components/Task/Drawer/Form/TaskDrawer.generated';
+import { useGetDataForTaskModalQuery } from 'src/components/Task/Modal/Form/TaskModal.generated';
 import { ContactsDocument } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
+import {
+  SubmitButton,
+  CancelButton,
+} from 'src/components/common/Modal/ActionButtons/ActionButtons';
 
 interface MassActionsEditFieldsModalProps {
   ids: string[];
@@ -66,11 +68,9 @@ const MassActionsEditFieldsSchema = yup.object({
   userId: yup.string().nullable(),
 });
 
-export const MassActionsEditFieldsModal: React.FC<MassActionsEditFieldsModalProps> = ({
-  handleClose,
-  accountListId,
-  ids,
-}) => {
+export const MassActionsEditFieldsModal: React.FC<
+  MassActionsEditFieldsModalProps
+> = ({ handleClose, accountListId, ids }) => {
   const { t } = useTranslation();
 
   const [updateContacts] = useMassActionsUpdateContactFieldsMutation();
@@ -109,15 +109,13 @@ export const MassActionsEditFieldsModal: React.FC<MassActionsEditFieldsModalProp
     handleClose();
   };
 
-  const { data, loading } = useGetDataForTaskDrawerQuery({
+  const { data, loading } = useGetDataForTaskModalQuery({
     variables: {
       accountListId,
     },
   });
-  const {
-    data: constants,
-    loading: loadingConstants,
-  } = useLoadConstantsQuery();
+  const { data: constants, loading: loadingConstants } =
+    useLoadConstantsQuery();
 
   return (
     <Modal title={t('Edit Fields')} isOpen={true} handleClose={handleClose}>
@@ -165,9 +163,10 @@ export const MassActionsEditFieldsModal: React.FC<MassActionsEditFieldsModalProp
                   <FormControl fullWidth>
                     <InputLabel id="activityType">{t('Status')}</InputLabel>
                     <Select
+                      label={t('Status')}
                       labelId="activityType"
                       value={status}
-                      onChange={handleChange('status')}
+                      onChange={(e) => setFieldValue('status', e.target.value)}
                     >
                       <MenuItem value={undefined}>{t('None')}</MenuItem>
                       {Object.values(StatusEnum).map((val) => (
@@ -184,9 +183,12 @@ export const MassActionsEditFieldsModal: React.FC<MassActionsEditFieldsModalProp
                       {t('Likely To Give')}
                     </InputLabel>
                     <Select
+                      label={t('Likely To Give')}
                       labelId="likelyToGive"
                       value={likelyToGive}
-                      onChange={handleChange('likelyToGive')}
+                      onChange={(e) =>
+                        setFieldValue('likelyToGive', e.target.value)
+                      }
                     >
                       <MenuItem value={undefined}>{t('None')}</MenuItem>
                       {Object.values(LikelyToGiveEnum).map((val) => (
@@ -201,9 +203,10 @@ export const MassActionsEditFieldsModal: React.FC<MassActionsEditFieldsModalProp
                   <FormControl fullWidth>
                     <InputLabel id="starred">{t('Starred')}</InputLabel>
                     <Select
+                      label={t('Starred')}
                       labelId="starred"
                       value={starred}
-                      onChange={handleChange('starred')}
+                      onChange={(e) => setFieldValue('starred', e.target.value)}
                     >
                       <MenuItem value={undefined}>{t('None')}</MenuItem>
                       {Object.entries(StarredMap).map(([key, val]) => (
@@ -218,9 +221,12 @@ export const MassActionsEditFieldsModal: React.FC<MassActionsEditFieldsModalProp
                   <FormControl fullWidth>
                     <InputLabel id="noAppeals">{t('Send Appeals?')}</InputLabel>
                     <Select
+                      label={t('Send Appeals?')}
                       labelId="noAppeals"
                       value={noAppeals}
-                      onChange={handleChange('noAppeals')}
+                      onChange={(e) =>
+                        setFieldValue('noAppeals', e.target.value)
+                      }
                     >
                       <MenuItem value={undefined}>{t('None')}</MenuItem>
                       {Object.entries(NoAppealsMap).map(([key, val]) => (
@@ -237,9 +243,12 @@ export const MassActionsEditFieldsModal: React.FC<MassActionsEditFieldsModalProp
                       {t('Newsletter')}
                     </InputLabel>
                     <Select
+                      label={t('Newsletter')}
                       labelId="sendNewsletter"
                       value={sendNewsletter}
-                      onChange={handleChange('sendNewsletter')}
+                      onChange={(e) =>
+                        setFieldValue('sendNewsletter', e.target.value)
+                      }
                     >
                       <MenuItem value={undefined}>{t('None')}</MenuItem>
                       {Object.values(SendNewsletterEnum).map((val) => (
@@ -252,7 +261,10 @@ export const MassActionsEditFieldsModal: React.FC<MassActionsEditFieldsModalProp
                 </Grid>
                 <Grid item xs={12} lg={6}>
                   <FormControl fullWidth>
-                    <DatePicker
+                    <MobileDatePicker
+                      renderInput={(params) => (
+                        <TextField fullWidth {...params} />
+                      )}
                       InputProps={{
                         endAdornment: (
                           <InputAdornment position="end">
@@ -264,19 +276,14 @@ export const MassActionsEditFieldsModal: React.FC<MassActionsEditFieldsModalProp
                           </InputAdornment>
                         ),
                       }}
-                      clearable
-                      fullWidth
-                      labelFunc={(date, invalidLabel) =>
-                        date ? dateFormat(date) : invalidLabel
-                      }
-                      autoOk
+                      inputFormat="MMM dd, yyyy"
+                      closeOnSelect
                       label={t('Next Increase Ask')}
                       value={nextAsk}
                       onChange={(date): void => setFieldValue('nextAsk', date)}
-                      okLabel={t('OK')}
-                      todayLabel={t('Today')}
-                      cancelLabel={t('Cancel')}
-                      clearLabel={t('Clear')}
+                      componentsProps={{
+                        actionBar: { actions: ['clear', 'cancel', 'accept'] },
+                      }}
                     />
                   </FormControl>
                 </Grid>
@@ -286,9 +293,12 @@ export const MassActionsEditFieldsModal: React.FC<MassActionsEditFieldsModalProp
                       {t('Commitment Received')}
                     </InputLabel>
                     <Select
+                      label={t('Commitment Received')}
                       labelId="pledgeReceived"
                       value={pledgeReceived}
-                      onChange={handleChange('pledgeReceived')}
+                      onChange={(e) =>
+                        setFieldValue('pledgeReceived', e.target.value)
+                      }
                     >
                       <MenuItem value={undefined}>{t('None')}</MenuItem>
                       {Object.entries(PledgeReceivedMap).map(([key, val]) => (
@@ -305,9 +315,12 @@ export const MassActionsEditFieldsModal: React.FC<MassActionsEditFieldsModalProp
                       {t('Commitment Currency')}
                     </InputLabel>
                     <Select
+                      label={t('Commitment Currency')}
                       labelId="pledgeCurrency"
                       value={pledgeCurrency}
-                      onChange={handleChange('pledgeCurrency')}
+                      onChange={(e) =>
+                        setFieldValue('pledgeCurrency', e.target.value)
+                      }
                     >
                       <MenuItem value={undefined}>{t('None')}</MenuItem>
                       {!loadingConstants &&
@@ -327,9 +340,10 @@ export const MassActionsEditFieldsModal: React.FC<MassActionsEditFieldsModalProp
                   <FormControl fullWidth>
                     <InputLabel id="locale">{t('Language')}</InputLabel>
                     <Select
+                      label={t('Language')}
                       labelId="locale"
                       value={locale}
-                      onChange={handleChange('locale')}
+                      onChange={(e) => setFieldValue('locale', e.target.value)}
                     >
                       <MenuItem value={undefined}>{t('None')}</MenuItem>
                       {!loadingConstants &&
@@ -361,9 +375,10 @@ export const MassActionsEditFieldsModal: React.FC<MassActionsEditFieldsModalProp
                   <FormControl fullWidth>
                     <InputLabel id="userId">{t('Assignee')}</InputLabel>
                     <Select
+                      label={t('Assignee')}
                       labelId="userId"
                       value={userId}
-                      onChange={handleChange('userId')}
+                      onChange={(e) => setFieldValue('userId', e.target.value)}
                       style={{ marginBottom: theme.spacing(2) }}
                     >
                       {!loading ? (
@@ -387,22 +402,11 @@ export const MassActionsEditFieldsModal: React.FC<MassActionsEditFieldsModalProp
               </Grid>
             </DialogContent>
             <DialogActions>
-              <Button
-                onClick={handleClose}
-                disabled={isSubmitting}
-                variant="text"
-              >
-                {t('Cancel')}
-              </Button>
-              <Button
-                color="primary"
-                type="submit"
-                variant="contained"
-                disabled={!isValid || isSubmitting}
-              >
+              <CancelButton onClick={handleClose} disabled={isSubmitting} />
+              <SubmitButton disabled={!isValid || isSubmitting}>
                 {/* {updating && <LoadingIndicator color="primary" size={20} />} */}
                 {t('Save')}
-              </Button>
+              </SubmitButton>
             </DialogActions>
           </form>
         )}

@@ -1,4 +1,6 @@
-import { Box, styled, Theme, Typography } from '@material-ui/core';
+import { Box, Typography } from '@mui/material';
+import { styled } from '@mui/material/styles';
+import theme from 'src/theme';
 import React, { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -7,15 +9,13 @@ interface Props {
   width: number;
 }
 
-const DragLayerStatusBox = styled(Box)(
-  ({ theme, width }: { theme: Theme; width: number }) => ({
-    width: width,
-    padding: theme.spacing(1.5),
-    backgroundColor: theme.palette.mpdxYellow.main,
-    cursor: 'move',
-    boxShadow: `inset 0px 0px 0px 3px  ${theme.palette.progressBarYellow.main}`,
-  }),
-);
+const DragLayerStatusBox = styled(Box)(({ width }: { width: number }) => ({
+  width: width,
+  padding: theme.spacing(1.5),
+  backgroundColor: theme.palette.mpdxYellow.main,
+  cursor: 'move',
+  boxShadow: `inset 0px 0px 0px 3px  ${theme.palette.progressBarYellow.main}`,
+}));
 
 export const ContactFlowSetupDragPreviewStatus: React.FC<Props> = memo(
   function ContactFlowSetupDragPreviewStatus({ status, width }) {

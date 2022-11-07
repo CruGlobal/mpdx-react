@@ -2,9 +2,10 @@ import React, { useCallback, useEffect, useState } from 'react';
 import Head from 'next/head';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'next/router';
-import { Box, Button, ButtonGroup, Hidden, styled } from '@material-ui/core';
-import AddIcon from '@material-ui/icons/Add';
-import CheckCircleOutlineIcon from '@material-ui/icons/CheckCircleOutline';
+import { Box, Button, ButtonGroup, Hidden } from '@mui/material';
+import { styled } from '@mui/material/styles';
+import AddIcon from '@mui/icons-material/Add';
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import debounce from 'lodash/debounce';
 import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
@@ -39,6 +40,7 @@ import {
 import { MassActionsEditTasksModal } from 'src/components/Task/MassActions/EditTasks/MassActionsEditTasksModal';
 import { MassActionsTasksRemoveTagsModal } from 'src/components/Task/MassActions/RemoveTags/MassActionsTasksRemoveTagsModal';
 import { MassActionsTasksAddTagsModal } from 'src/components/Task/MassActions/AddTags/MassActionsTasksAddTagsModal';
+import { currentString, historicString } from 'src/utils/tasks/taskActivity';
 
 const WhiteBackground = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.common.white,
@@ -149,7 +151,9 @@ const TasksPage: React.FC = () => {
 
   const isFiltered =
     Object.keys(activeFilters).length > 0 ||
-    Object.values(activeFilters).some((filter) => filter !== []);
+    Object.values(activeFilters).some(
+      (filter) => filter !== ([] as Array<string>),
+    );
 
   const toggleFilterPanel = () => {
     setFilterPanelOpen(!filterPanelOpen);
@@ -166,10 +170,8 @@ const TasksPage: React.FC = () => {
   //#endregion
 
   //#region Mass Actions
-  const [
-    getTaskIds,
-    { data: taskIds, loading: loadingTaskIds },
-  ] = useGetTaskIdsForMassSelectionLazyQuery();
+  const [getTaskIds, { data: taskIds, loading: loadingTaskIds }] =
+    useGetTaskIdsForMassSelectionLazyQuery();
 
   // Only query when the filters or total count change and store data in state
   const [allTaskIds, setAllTaskIds] = useState<string[]>([]);
@@ -423,13 +425,13 @@ const TasksPage: React.FC = () => {
                       variant={isCurrent ? 'contained' : 'outlined'}
                       onClick={() => setCurrentFilter(true)}
                     >
-                      {t('Current')}
+                      {currentString()}
                     </Button>
                     <Button
                       variant={isCurrent ? 'outlined' : 'contained'}
                       onClick={() => setCurrentFilter(false)}
                     >
-                      {t('Historic')}
+                      {historicString()}
                     </Button>
                   </TaskCurrentHistoryButtonGroup>
                   <InfiniteList

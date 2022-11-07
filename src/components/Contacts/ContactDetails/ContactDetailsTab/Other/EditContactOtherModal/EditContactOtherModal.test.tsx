@@ -1,5 +1,5 @@
 import React from 'react';
-import { ThemeProvider } from '@material-ui/core';
+import { ThemeProvider } from '@mui/material/styles';
 import { SnackbarProvider } from 'notistack';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -16,7 +16,7 @@ import {
 import { ContactDetailProvider } from '../../../ContactDetailContext';
 import { UpdateContactOtherMutation } from './EditContactOther.generated';
 import { EditContactOtherModal } from './EditContactOtherModal';
-import { GetTaskModalContactsFilteredQuery } from 'src/components/Task/Drawer/Form/TaskDrawer.generated';
+import { GetTaskModalContactsFilteredQuery } from 'src/components/Task/Modal/Form/TaskModal.generated';
 import { ContactsPageProvider } from 'pages/accountLists/[accountListId]/contacts/ContactsPageContext';
 import TestRouter from '__tests__/util/TestRouter';
 
@@ -133,7 +133,7 @@ describe('EditContactOtherModal', () => {
     );
 
     expect(getByText('Edit Contact Other Details')).toBeInTheDocument();
-    const referredByElement = getByRole('textbox', {
+    const referredByElement = getByRole('combobox', {
       hidden: true,
       name: 'Referred By',
     });

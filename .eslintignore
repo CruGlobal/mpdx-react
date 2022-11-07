@@ -4,3 +4,7 @@ node_modules
 .now
 public
 dist
+
+# Storybook cache
+/node_modules/.cache
+/storybook-static

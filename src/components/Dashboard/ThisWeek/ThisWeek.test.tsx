@@ -2,9 +2,9 @@ import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import { MockedProvider } from '@apollo/client/testing';
 import { SnackbarProvider } from 'notistack';
-import { ThemeProvider } from '@material-ui/core';
+import { ThemeProvider } from '@mui/material/styles';
 import theme from '../../../theme';
-import useTaskDrawer from '../../../hooks/useTaskDrawer';
+import useTaskModal from '../../../hooks/useTaskModal';
 import {
   GetThisWeekEmptyMocks,
   GetThisWeekLoadingMocks,
@@ -12,7 +12,7 @@ import {
 } from './ThisWeek.mock';
 import ThisWeek from '.';
 
-jest.mock('../../../hooks/useTaskDrawer');
+jest.mock('../../../hooks/useTaskModal');
 
 jest.mock('next/router', () => ({
   useRouter: () => {
@@ -24,8 +24,8 @@ jest.mock('next/router', () => ({
 }));
 
 beforeEach(() => {
-  (useTaskDrawer as jest.Mock).mockReturnValue({
-    openTaskDrawer: jest.fn(),
+  (useTaskModal as jest.Mock).mockReturnValue({
+    openTaskModal: jest.fn(),
   });
 });
 
