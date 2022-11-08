@@ -9,7 +9,7 @@ import {
 interface Props {
   filter: NumericRangeFilter;
   value?: NumericRangeInput;
-  onUpdate: (value?: string) => void;
+  onUpdate: (value?: NumericRangeInput) => void;
 }
 
 export const FilterListItemNumericRange: React.FC<Props> = ({
@@ -22,7 +22,10 @@ export const FilterListItemNumericRange: React.FC<Props> = ({
   const valueMin = value?.min?.toString() || undefined;
   const valueMax = value?.max?.toString() || undefined;
 
-  const createRange = (start: string, end: string) => start + '..' + end;
+  const createRange = (start: string, end: string): NumericRangeInput => ({
+    min: parseFloat(start),
+    max: parseFloat(end),
+  });
 
   return (
     <>
