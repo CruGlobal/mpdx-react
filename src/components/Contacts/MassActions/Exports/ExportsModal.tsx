@@ -5,7 +5,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { exportRest } from './exportRest';
 import Modal from '../../../common/Modal/Modal';
-import styled from '@emotion/styled';
+import styled from '@mui/system/styled';
 
 interface ExportsModalProps {
   ids: string[];
