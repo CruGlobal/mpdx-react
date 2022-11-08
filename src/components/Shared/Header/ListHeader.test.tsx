@@ -498,9 +498,11 @@ describe('ListHeader', () => {
     );
 
     expect(getByPlaceholderText('Search Contacts')).toBeInTheDocument();
-    expect(queryByText('Export Contacts')).not.toBeInTheDocument();
-    const exportButton = getByText('Export');
-    userEvent.click(exportButton);
+    expect(queryByText('Export')).not.toBeInTheDocument();
+    const actionsButton = getByText('Actions');
+    userEvent.click(actionsButton);
+    expect(getByText('Export')).toBeInTheDocument();
+    userEvent.click(getByText('Export'));
     expect(openExportsModal).toHaveBeenCalled();
   });
 
