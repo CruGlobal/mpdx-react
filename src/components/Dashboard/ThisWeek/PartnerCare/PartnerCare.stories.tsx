@@ -6,7 +6,7 @@ import { GetThisWeekQuery } from '../GetThisWeek.generated';
 import {
   createTaskMutationMock,
   updateTaskMutationMock,
-} from '../../../Task/Drawer/Form/Form.mock';
+} from '../../../Task/Modal/Form/TaskModalForm.mock';
 import PartnerCare from './PartnerCare';
 
 export default {

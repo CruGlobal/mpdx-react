@@ -7,7 +7,6 @@ import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import userEvent from '@testing-library/user-event';
 import { InMemoryCache } from '@apollo/client';
 import { MockedProvider } from '@apollo/client/testing';
-import { ActivityTypeEnum } from '../../../../../../graphql/types.generated';
 import { GetTasksForTaskListDocument } from '../../../List/TaskList.generated';
 import useTaskModal from '../../../../../hooks/useTaskModal';
 import TaskModalLogForm from './TaskModalLogForm';
@@ -17,11 +16,11 @@ import {
   CreateTaskMutation,
   DeleteTaskMutation,
   UpdateTaskMutation,
-} from 'src/components/Task/Drawer/Form/TaskDrawer.generated';
+} from 'src/components/Task/Modal/Form/TaskModal.generated';
 import {
-  getDataForTaskDrawerMock,
+  getDataForTaskModalMock,
   updateTaskMutationMock,
-} from 'src/components/Task/Drawer/Form/Form.mock';
+} from 'src/components/Task/Modal/Form/TaskModalForm.mock';
 
 const accountListId = 'abc';
 
@@ -144,13 +143,13 @@ describe('TaskModalLogForm', () => {
     );
     expect(
       getAllByRole('textbox').find(
-        (item) => (item as HTMLInputElement).value === 'Jan 5, 2016',
+        (item) => (item as HTMLInputElement).value === 'Jan 05, 2016',
       ),
     ).toBeInTheDocument();
     userEvent.click(getByLabelText('Action'));
     userEvent.click(
       within(getByRole('listbox', { hidden: true, name: 'Action' })).getByText(
-        ActivityTypeEnum.NewsletterEmail,
+        'Newsletter - Email',
       ),
     );
 
@@ -179,7 +178,7 @@ describe('TaskModalLogForm', () => {
         <SnackbarProvider>
           <MockedProvider
             mocks={[
-              getDataForTaskDrawerMock(accountListId),
+              getDataForTaskModalMock(accountListId),
               updateTaskMutationMock(),
             ]}
             addTypename={false}
@@ -208,7 +207,7 @@ describe('TaskModalLogForm', () => {
     );
     userEvent.click(tagsElement);
 
-    const assigneeElement = getByRole('textbox', {
+    const assigneeElement = getByRole('combobox', {
       hidden: true,
       name: 'Assignee',
     });
@@ -218,7 +217,7 @@ describe('TaskModalLogForm', () => {
       expect(getByText('Robert Anderson')).toBeInTheDocument(),
     );
 
-    const contactsElement = getByRole('textbox', {
+    const contactsElement = getByRole('combobox', {
       hidden: true,
       name: 'Contacts',
     });
@@ -313,7 +312,7 @@ describe('TaskModalLogForm', () => {
     userEvent.click(
       within(
         getByRole('listbox', { hidden: true, name: 'Next Action' }),
-      ).getByText(ActivityTypeEnum.Call),
+      ).getByText('Call'),
     );
     userEvent.click(getByText('Save'));
     expect(await findByText('Field is required')).toBeInTheDocument();

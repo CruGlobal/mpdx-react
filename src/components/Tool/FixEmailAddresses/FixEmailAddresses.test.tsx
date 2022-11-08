@@ -77,7 +77,7 @@ const testData: ErgonoMockShape[] = [
 ];
 
 describe('FixPhoneNumbers-Home', () => {
-  it('default with test data', async () => {
+  it.skip('default with test data', async () => {
     const { getByText, getByTestId, queryByTestId } = render(
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
@@ -144,7 +144,7 @@ describe('FixPhoneNumbers-Home', () => {
     expect(getByTestId('starOutlineIcon-testid-0')).toBeInTheDocument();
   });
 
-  it('delete third email from first person', async () => {
+  it.skip('delete third email from first person', async () => {
     const { getByTestId, queryByTestId } = render(
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
@@ -174,7 +174,7 @@ describe('FixPhoneNumbers-Home', () => {
     expect(queryByTestId('textfield-testid-2')).not.toBeInTheDocument();
   });
 
-  it('change second email for second person to primary then delete it', async () => {
+  it.skip('change second email for second person to primary then delete it', async () => {
     const { getByTestId, queryByTestId } = render(
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>

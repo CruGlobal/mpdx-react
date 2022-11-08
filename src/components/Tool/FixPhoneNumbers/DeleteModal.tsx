@@ -99,11 +99,7 @@ const DeleteModal: React.FC<Props> = ({
         </CardContent>
         <CardActions>
           <CancelButton onClick={handleClose} />
-          <DeleteButton
-            dataTestId="phoneNumberDeleteButton"
-            onClick={handleDelete}
-            sx={{ marginRight: 0 }}
-          >
+          <DeleteButton onClick={handleDelete} sx={{ marginRight: 0 }}>
             {/*TODO: make "newNumber" field in number false so it says "edit" instead of "add" */}
             {t('Delete')}
           </DeleteButton>

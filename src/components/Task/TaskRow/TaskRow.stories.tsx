@@ -108,7 +108,6 @@ export const Late = (): ReactElement => {
 Default.parameters = {
   design: {
     type: 'figma',
-    url:
-      'https://www.figma.com/file/zvqkcHImucOoPyXrYNqrkn/MPDX-Update-Material-UI?node-id=1845%3A545',
+    url: 'https://www.figma.com/file/zvqkcHImucOoPyXrYNqrkn/MPDX-Update-Material-UI?node-id=1845%3A545',
   },
 };

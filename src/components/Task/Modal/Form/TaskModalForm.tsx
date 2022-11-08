@@ -34,17 +34,17 @@ import {
   TaskCreateInput,
   TaskUpdateInput,
 } from '../../../../../graphql/types.generated';
-import { GetTaskForTaskDrawerQuery } from '../../Drawer/TaskDrawerTask.generated';
+import { GetTaskForTaskModalQuery } from '../../Modal/TaskModalTask.generated';
 import { GetTasksForTaskListDocument } from '../../List/TaskList.generated';
 import { TaskFilter } from '../../List/List';
 import {
-  useGetDataForTaskDrawerQuery,
+  useGetDataForTaskModalQuery,
   useCreateTaskMutation,
   useUpdateTaskMutation,
   useGetTaskModalContactsFilteredQuery,
-} from '../../Drawer/Form/TaskDrawer.generated';
+} from '../../Modal/Form/TaskModal.generated';
 import theme from '../../../../../src/theme';
-import { useCreateTaskCommentMutation } from '../../Drawer/CommentList/Form/CreateTaskComment.generated';
+import { useCreateTaskCommentMutation } from '../../Modal/Comments/Form/CreateTaskComment.generated';
 import { FormFieldsGridContainer } from './Container/FormFieldsGridContainer';
 import { TasksDocument } from 'pages/accountLists/[accountListId]/tasks/Tasks.generated';
 import { ContactTasksTabDocument } from 'src/components/Contacts/ContactDetails/ContactTasksTab/ContactTasksTab.generated';
@@ -54,6 +54,7 @@ import {
   CancelButton,
   DeleteButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
+import { getLocalizedTaskType } from 'src/utils/functions/getLocalizedTaskType';
 
 const taskSchema: yup.SchemaOf<
   Omit<TaskCreateInput | TaskUpdateInput, 'result' | 'nextAction'>
@@ -74,7 +75,7 @@ const taskSchema: yup.SchemaOf<
 
 interface Props {
   accountListId: string;
-  task?: GetTaskForTaskDrawerQuery['task'];
+  task?: GetTaskForTaskModalQuery['task'];
   onClose: () => void;
   defaultValues?: Partial<TaskCreateInput & TaskUpdateInput>;
   filter?: TaskFilter;
@@ -132,7 +133,7 @@ const TaskModalForm = ({
     [],
   );
 
-  const { data, loading } = useGetDataForTaskDrawerQuery({
+  const { data, loading } = useGetDataForTaskModalQuery({
     variables: {
       accountListId,
     },
@@ -289,11 +290,13 @@ const TaskModalForm = ({
                     label={t('Action')}
                   >
                     <MenuItem value={undefined}>{t('None')}</MenuItem>
-                    {Object.values(ActivityTypeEnum).map((val) => (
-                      <MenuItem key={val} value={val}>
-                        {t(val) /* manually added to translation file */}
-                      </MenuItem>
-                    ))}
+                    {Object.values(ActivityTypeEnum)
+                      .filter((val) => val !== 'NONE')
+                      .map((val) => (
+                        <MenuItem key={val} value={val}>
+                          {getLocalizedTaskType(t, val)}
+                        </MenuItem>
+                      ))}
                   </Select>
                 </FormControl>
               </Grid>

@@ -28,20 +28,21 @@ import {
   ResultEnum,
   TaskUpdateInput,
 } from '../../../../../../graphql/types.generated';
-import { GetTaskForTaskDrawerQuery } from '../../../Drawer/TaskDrawerTask.generated';
+import { GetTaskForTaskModalQuery } from '../../../Modal/TaskModalTask.generated';
 import { GetThisWeekDocument } from '../../../../Dashboard/ThisWeek/GetThisWeek.generated';
-import { useGetDataForTaskDrawerQuery } from '../../../Drawer/Form/TaskDrawer.generated';
+import { useGetDataForTaskModalQuery } from '../../../Modal/Form/TaskModal.generated';
 import theme from '../../../../../../src/theme';
-import { useCreateTaskCommentMutation } from '../../../Drawer/CommentList/Form/CreateTaskComment.generated';
+import { useCreateTaskCommentMutation } from '../../../Modal/Comments/Form/CreateTaskComment.generated';
 import { possibleNextActions } from '../PossibleNextActions';
 import { possibleResults } from '../PossibleResults';
-import { useCompleteTaskMutation } from '../../../../../../src/components/Task/Drawer/CompleteForm/CompleteTask.generated';
+import { useCompleteTaskMutation } from './CompleteTask.generated';
 import useTaskModal from '../../../../../../src/hooks/useTaskModal';
 import { FormFieldsGridContainer } from '../Container/FormFieldsGridContainer';
 import {
   SubmitButton,
   CancelButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
+import { getLocalizedTaskType } from 'src/utils/functions/getLocalizedTaskType';
 
 const taskSchema: yup.SchemaOf<
   Pick<
@@ -58,7 +59,7 @@ const taskSchema: yup.SchemaOf<
 
 interface Props {
   accountListId: string;
-  task: GetTaskForTaskDrawerQuery['task'];
+  task: GetTaskForTaskModalQuery['task'];
   onClose: () => void;
 }
 
@@ -78,7 +79,7 @@ const TaskModalCompleteForm = ({
   const { openTaskModal } = useTaskModal();
   const { enqueueSnackbar } = useSnackbar();
 
-  const { data } = useGetDataForTaskDrawerQuery({
+  const { data } = useGetDataForTaskModalQuery({
     variables: { accountListId },
   });
   const [updateTask, { loading: saving }] = useCompleteTaskMutation();
@@ -154,7 +155,7 @@ const TaskModalCompleteForm = ({
             <FormFieldsGridContainer>
               <Grid item>
                 <Typography style={{ fontWeight: 600 }} display="inline">
-                  {task?.activityType}
+                  {getLocalizedTaskType(t, task?.activityType)}
                 </Typography>{' '}
                 <Typography display="inline">{task?.subject}</Typography>{' '}
                 {task?.contacts.nodes.map((contact, index) => (

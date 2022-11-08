@@ -7,9 +7,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import userEvent from '@testing-library/user-event';
 import { InMemoryCache } from '@apollo/client';
-import { ActivityTypeEnum } from '../../../../../graphql/types.generated';
 import { GetTasksForTaskListDocument } from '../../List/TaskList.generated';
-import { getDataForTaskDrawerMock } from '../../Drawer/Form/Form.mock';
 import {
   getDataForTaskModalMock,
   createTaskMutationMock,
@@ -79,7 +77,7 @@ describe('TaskModalForm', () => {
     expect(await queryByText('Delete')).not.toBeInTheDocument();
     userEvent.type(getByLabelText('Subject'), accountListId);
     await new Promise((resolve) => setTimeout(resolve, 1000));
-    const contactsElement = getByRole('textbox', {
+    const contactsElement = getByRole('combobox', {
       hidden: true,
       name: 'Contacts',
     });
@@ -115,13 +113,13 @@ describe('TaskModalForm', () => {
     );
     expect(
       getAllByRole('textbox').find(
-        (item) => (item as HTMLInputElement).value === 'Jan 5, 2016',
+        (item) => (item as HTMLInputElement).value === 'Jan 05, 2016',
       ),
     ).toBeInTheDocument();
     userEvent.click(getByLabelText('Action'));
     userEvent.click(
       within(getByRole('listbox', { hidden: true, name: 'Action' })).getByText(
-        ActivityTypeEnum.NewsletterEmail,
+        'Newsletter - Email',
       ),
     );
 
@@ -153,7 +151,7 @@ describe('TaskModalForm', () => {
       <LocalizationProvider dateAdapter={AdapterLuxon}>
         <SnackbarProvider>
           <MockedProvider
-            mocks={[getDataForTaskDrawerMock(accountListId)]}
+            mocks={[getDataForTaskModalMock(accountListId)]}
             addTypename={false}
           >
             <TaskModalForm
@@ -179,7 +177,7 @@ describe('TaskModalForm', () => {
     );
     userEvent.click(tagsElement);
 
-    const assigneeElement = getByRole('textbox', {
+    const assigneeElement = getByRole('combobox', {
       hidden: true,
       name: 'Assignee',
     });
@@ -192,7 +190,7 @@ describe('TaskModalForm', () => {
       await within(getByRole('presentation')).findByText('Robert Anderson'),
     );
 
-    const contactsElement = getByRole('textbox', {
+    const contactsElement = getByRole('combobox', {
       hidden: true,
       name: 'Contacts',
     });

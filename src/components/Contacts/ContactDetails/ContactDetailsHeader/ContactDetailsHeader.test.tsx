@@ -147,8 +147,10 @@ describe('ContactDetails', () => {
         </TestRouter>
       </SnackbarProvider>,
     );
-    await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());
-    userEvent.click(getAllByLabelText('Edit Icon')[0]);
+    await waitFor(() => {
+      expect(queryByText('Loading')).not.toBeInTheDocument();
+      userEvent.click(getAllByLabelText('Edit Icon')[0]);
+    });
     await waitFor(() =>
       expect(queryByText('Edit Contact Details')).toBeInTheDocument(),
     );
@@ -185,8 +187,10 @@ describe('ContactDetails', () => {
         </TestRouter>
       </SnackbarProvider>,
     );
-    await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());
-    userEvent.click(getAllByLabelText('Edit Icon')[0]);
+    await waitFor(() => {
+      expect(queryByText('Loading')).not.toBeInTheDocument();
+      userEvent.click(getAllByLabelText('Edit Icon')[0]);
+    });
     await waitFor(() =>
       expect(queryByText('Edit Contact Details')).toBeInTheDocument(),
     );

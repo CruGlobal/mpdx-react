@@ -140,7 +140,7 @@ describe('FilterListItem', () => {
       />,
     );
 
-    expect(getAllByText(multiselectFilter.title)).toHaveLength(2);
+    expect(getAllByText(multiselectFilter.title)).toHaveLength(3);
     expect(getByTestId('multiSelectFilter')).toBeInTheDocument();
   });
 
@@ -179,7 +179,7 @@ describe('FilterListItem', () => {
   });
 
   it('TextFieldFilter blank', async () => {
-    const { getByText, getByRole } = render(
+    const { getAllByText, getByRole } = render(
       <FilterListItem
         filter={textFieldFilter}
         value={undefined}
@@ -187,12 +187,12 @@ describe('FilterListItem', () => {
       />,
     );
 
-    expect(getByText(textFieldFilter.title)).toBeInTheDocument();
+    expect(getAllByText(textFieldFilter.title)[0]).toBeInTheDocument();
     expect(getByRole('textbox').getAttribute('value')).toEqual('');
   });
 
   it('TextFieldFilter filled', async () => {
-    const { getByText, getByRole } = render(
+    const { getAllByText, getByRole } = render(
       <FilterListItem
         filter={textFieldFilter}
         value={'Text'}
@@ -200,7 +200,7 @@ describe('FilterListItem', () => {
       />,
     );
 
-    expect(getByText(textFieldFilter.title)).toBeInTheDocument();
+    expect(getAllByText(textFieldFilter.title)[0]).toBeInTheDocument();
     expect(getByRole('textbox').getAttribute('value')).toEqual('Text');
   });
 });

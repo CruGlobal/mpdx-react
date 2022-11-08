@@ -16,8 +16,6 @@ import {
   TaskMutationResponseFragment,
   UpdateTaskDocument,
   UpdateTaskMutation,
-} from 'src/components/Task/Drawer/Form/TaskDrawer.generated';
-import {
   GetDataForTaskModalDocument,
   GetDataForTaskModalQuery,
 } from '../../Modal/Form/TaskModal.generated';

@@ -5,22 +5,33 @@ import { DateTime } from 'luxon';
 import theme from '../../../theme';
 import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
 import { DonationsReport } from './DonationsReport';
+import TestRouter from '__tests__/util/TestRouter';
 
 const title = 'test title';
 const onNavListToggle = jest.fn();
+
+const push = jest.fn();
+
+const router = {
+  query: { accountListId: '123' },
+  isReady: true,
+  push,
+};
 
 it('renders', async () => {
   const { getByTestId, getByText, queryByRole, queryAllByRole, queryByTestId } =
     render(
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider>
-          <DonationsReport
-            accountListId={'abc'}
-            isNavListOpen={true}
-            onNavListToggle={onNavListToggle}
-            title={title}
-          />
-        </GqlMockedProvider>
+        <TestRouter router={router}>
+          <GqlMockedProvider>
+            <DonationsReport
+              accountListId={'abc'}
+              isNavListOpen={true}
+              onNavListToggle={onNavListToggle}
+              title={title}
+            />
+          </GqlMockedProvider>
+        </TestRouter>
       </ThemeProvider>,
     );
 
@@ -99,14 +110,16 @@ it('renders with data', async () => {
 
   const { getByTestId, queryByRole, queryByTestId } = render(
     <ThemeProvider theme={theme}>
-      <GqlMockedProvider mocks={mocks}>
-        <DonationsReport
-          accountListId={'abc'}
-          isNavListOpen={true}
-          onNavListToggle={onNavListToggle}
-          title={title}
-        />
-      </GqlMockedProvider>
+      <TestRouter router={router}>
+        <GqlMockedProvider mocks={mocks}>
+          <DonationsReport
+            accountListId={'abc'}
+            isNavListOpen={true}
+            onNavListToggle={onNavListToggle}
+            title={title}
+          />
+        </GqlMockedProvider>
+      </TestRouter>
     </ThemeProvider>,
   );
 

@@ -1,8 +1,17 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import DonationHistories from '.';
+import TestRouter from '__tests__/util/TestRouter';
 
 const setTime = jest.fn();
+
+const push = jest.fn();
+
+const router = {
+  query: { accountListId: '123' },
+  isReady: true,
+  push,
+};
 
 describe('DonationHistories', () => {
   let reportsDonationHistories: Parameters<
@@ -11,7 +20,9 @@ describe('DonationHistories', () => {
 
   it('default', () => {
     const { getByTestId, queryByTestId } = render(
-      <DonationHistories setTime={setTime} />,
+      <TestRouter router={router}>
+        <DonationHistories setTime={setTime} />,
+      </TestRouter>,
     );
     expect(getByTestId('DonationHistoriesBoxEmpty')).toBeInTheDocument();
     expect(
@@ -36,10 +47,12 @@ describe('DonationHistories', () => {
       averageIgnoreCurrent: 0,
     };
     const { getByTestId, queryByTestId } = render(
-      <DonationHistories
-        setTime={setTime}
-        reportsDonationHistories={reportsDonationHistories}
-      />,
+      <TestRouter router={router}>
+        <DonationHistories
+          setTime={setTime}
+          reportsDonationHistories={reportsDonationHistories}
+        />
+      </TestRouter>,
     );
     expect(getByTestId('DonationHistoriesBoxEmpty')).toBeInTheDocument();
     expect(
@@ -49,7 +62,9 @@ describe('DonationHistories', () => {
 
   it('loading', () => {
     const { getByTestId, queryByTestId } = render(
-      <DonationHistories setTime={setTime} loading={true} />,
+      <TestRouter router={router}>
+        <DonationHistories setTime={setTime} loading={true} />
+      </TestRouter>,
     );
     expect(getByTestId('DonationHistoriesGridLoading')).toBeInTheDocument();
     expect(queryByTestId('DonationHistoriesBoxEmpty')).not.toBeInTheDocument();
@@ -76,12 +91,14 @@ describe('DonationHistories', () => {
 
     it('shows references', () => {
       const { getByTestId } = render(
-        <DonationHistories
-          setTime={setTime}
-          reportsDonationHistories={reportsDonationHistories}
-          goal={100}
-          pledged={2500}
-        />,
+        <TestRouter router={router}>
+          <DonationHistories
+            setTime={setTime}
+            reportsDonationHistories={reportsDonationHistories}
+            goal={100}
+            pledged={2500}
+          />
+        </TestRouter>,
       );
       expect(
         getByTestId('DonationHistoriesTypographyGoal').textContent,

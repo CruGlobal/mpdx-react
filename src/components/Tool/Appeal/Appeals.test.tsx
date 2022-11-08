@@ -112,7 +112,9 @@ describe('AppealsTest', () => {
     const setPrimaryButton = await waitFor(() => getByTestId('setPrimary-1'));
     expect(setPrimaryButton).toBeInTheDocument();
     userEvent.click(setPrimaryButton);
-    await waitFor(() => expect(setPrimaryButton).not.toBeInTheDocument());
-    expect(mockEnqueue).toHaveBeenCalled();
+    await waitFor(() => {
+      expect(setPrimaryButton).not.toBeInTheDocument();
+      expect(mockEnqueue).toHaveBeenCalled();
+    });
   });
 });

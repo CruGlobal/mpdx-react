@@ -38,18 +38,18 @@ import {
   TaskUpdateInput,
   ResultEnum,
 } from '../../../../../../graphql/types.generated';
-import { GetTaskForTaskDrawerQuery } from '../../../Drawer/TaskDrawerTask.generated';
+import { GetTaskForTaskModalQuery } from '../../../Modal/TaskModalTask.generated';
 import { GetTasksForTaskListDocument } from '../../../List/TaskList.generated';
 import { TaskFilter } from '../../../List/List';
 import { GetThisWeekDocument } from '../../../../Dashboard/ThisWeek/GetThisWeek.generated';
 import {
-  useGetDataForTaskDrawerQuery,
+  useGetDataForTaskModalQuery,
   useCreateTaskMutation,
   useDeleteTaskMutation,
   useGetTaskModalContactsFilteredQuery,
-} from '../../../Drawer/Form/TaskDrawer.generated';
+} from '../../../Modal/Form/TaskModal.generated';
 import theme from '../../../../../../src/theme';
-import { useCreateTaskCommentMutation } from '../../../Drawer/CommentList/Form/CreateTaskComment.generated';
+import { useCreateTaskCommentMutation } from '../../../Modal/Comments/Form/CreateTaskComment.generated';
 import { FormFieldsGridContainer } from '../Container/FormFieldsGridContainer';
 import useTaskModal from 'src/hooks/useTaskModal';
 import { ContactTasksTabDocument } from 'src/components/Contacts/ContactDetails/ContactTasksTab/ContactTasksTab.generated';
@@ -59,6 +59,7 @@ import {
   CancelButton,
   DeleteButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
+import { getLocalizedTaskType } from 'src/utils/functions/getLocalizedTaskType';
 
 const LoadingIndicator = styled(CircularProgress)(() => ({
   display: 'flex',
@@ -84,7 +85,7 @@ const taskSchema: yup.SchemaOf<TaskCreateInput | TaskUpdateInput> = yup.object({
 
 interface Props {
   accountListId: string;
-  task?: GetTaskForTaskDrawerQuery['task'];
+  task?: GetTaskForTaskModalQuery['task'];
   onClose: () => void;
   defaultValues?: Partial<TaskCreateInput>;
   filter?: TaskFilter;
@@ -131,7 +132,7 @@ const TaskModalLogForm = ({
   const { enqueueSnackbar } = useSnackbar();
   const { openTaskModal } = useTaskModal();
 
-  const { data, loading } = useGetDataForTaskDrawerQuery({
+  const { data, loading } = useGetDataForTaskModalQuery({
     variables: { accountListId },
   });
   const [createTask, { loading: creating }] = useCreateTaskMutation();
@@ -323,11 +324,14 @@ const TaskModalLogForm = ({
                       setFieldValue('activityType', e.target.value)
                     }
                   >
-                    {Object.values(ActivityTypeEnum).map((val) => (
-                      <MenuItem key={val} value={val}>
-                        {t(val) /* manually added to translation file */}
-                      </MenuItem>
-                    ))}
+                    <MenuItem value={undefined}>{t('None')}</MenuItem>
+                    {Object.values(ActivityTypeEnum)
+                      .filter((val) => val !== 'NONE')
+                      .map((val) => (
+                        <MenuItem key={val} value={val}>
+                          {getLocalizedTaskType(t, val)}
+                        </MenuItem>
+                      ))}
                   </Select>
                 </FormControl>
               </Grid>
@@ -570,15 +574,14 @@ const TaskModalLogForm = ({
                                 setFieldValue('nextAction', e.target.value)
                               }
                             >
-                              {Object.values(ActivityTypeEnum).map((val) => (
-                                <MenuItem key={val} value={val}>
-                                  {
-                                    t(
-                                      val,
-                                    ) /* manually added to translation file */
-                                  }
-                                </MenuItem>
-                              ))}
+                              <MenuItem value={undefined}>{t('None')}</MenuItem>
+                              {Object.values(ActivityTypeEnum)
+                                .filter((val) => val !== 'NONE')
+                                .map((val) => (
+                                  <MenuItem key={val} value={val}>
+                                    {getLocalizedTaskType(t, val)}
+                                  </MenuItem>
+                                ))}
                             </Select>
                           </FormControl>
                         </Grid>
