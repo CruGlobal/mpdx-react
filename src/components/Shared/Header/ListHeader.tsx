@@ -254,6 +254,17 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
                         >
                           <MenuItem
                             onClick={() => {
+                              openExportsModal(true);
+                              handleClose();
+                            }}
+                          >
+                            <ListItemText>{t('Export')}</ListItemText>
+                          </MenuItem>
+                          <MenuItem divider>
+                            <ListItemText>{t('Merge')}</ListItemText>
+                          </MenuItem>
+                          <MenuItem
+                            onClick={() => {
                               openAddTagsModal(true);
                               handleClose();
                             }}
@@ -333,18 +344,6 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
                             <ListItemText>{t('Export Emails')}</ListItemText>
                           </MenuItem>
                         </Menu>
-                        <ActionsButton
-                          aria-haspopup
-                          aria-expanded={open}
-                          onClick={() => openExportsModal(true)}
-                          style={{ marginLeft: theme.spacing(1) }}
-                        >
-                          {filterPanelOpen && contactDetailsOpen ? (
-                            <Icon path={mdiFileExportOutline} />
-                          ) : (
-                            t('Export')
-                          )}
-                        </ActionsButton>
                       </>
                     )}
                   </Hidden>
