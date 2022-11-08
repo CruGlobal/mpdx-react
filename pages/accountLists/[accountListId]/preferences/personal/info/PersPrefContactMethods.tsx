@@ -27,7 +27,7 @@ const StyledAccordionSummary = styled(AccordionSummary)({
   position: 'relative',
   '& .MuiAccordionSummary-content': {
     flexGrow: 'unset',
-    margin: 0,
+    margin: '0 !important',
   },
   '& .MuiAccordionSummary-expandIconWrapper': {
     position: 'absolute',
