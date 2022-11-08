@@ -2,7 +2,7 @@ import React from 'react';
 import { render, waitFor, within } from '@testing-library/react';
 import { useSession } from 'next-auth/react';
 import userEvent from '@testing-library/user-event';
-import { MuiThemeProvider } from '@material-ui/core';
+import { ThemeProvider } from '@mui/material/styles';
 import {
   ExportFormatEnum,
   ExportLabelTypeEnum,
@@ -39,28 +39,28 @@ describe('ExportPhysical', () => {
 
   it('default', () => {
     const { getByText } = render(
-      <MuiThemeProvider theme={theme}>
+      <ThemeProvider theme={theme}>
         <GqlMockedProvider<CreateExportedContactsMutation> mocks={mocks}>
           <ExportPhysical
             accountListId={accountListId}
             handleClose={handleClose}
           />
         </GqlMockedProvider>
-      </MuiThemeProvider>,
+      </ThemeProvider>,
     );
     expect(getByText('Export Contacts')).toBeInTheDocument();
   });
 
   it('handles closing menu', () => {
     const { getByRole } = render(
-      <MuiThemeProvider theme={theme}>
+      <ThemeProvider theme={theme}>
         <GqlMockedProvider<CreateExportedContactsMutation> mocks={mocks}>
           <ExportPhysical
             accountListId={accountListId}
             handleClose={handleClose}
           />
         </GqlMockedProvider>
-      </MuiThemeProvider>,
+      </ThemeProvider>,
     );
     userEvent.click(getByRole('button', { hidden: true, name: 'Close' }));
     expect(handleClose).toHaveBeenCalled();
@@ -92,7 +92,7 @@ describe('ExportPhysical', () => {
 
     it('Exports Contacts and Downloads File - PDF of Mail Merged Labels | Avery5160 and Contact Name', async () => {
       const { getByText, getByTestId } = render(
-        <MuiThemeProvider theme={theme}>
+        <ThemeProvider theme={theme}>
           <GqlMockedProvider<CreateExportedContactsMutation>
             mocks={createMock(ExportFormatEnum.Pdf)}
           >
@@ -101,7 +101,7 @@ describe('ExportPhysical', () => {
               handleClose={handleClose}
             />
           </GqlMockedProvider>
-        </MuiThemeProvider>,
+        </ThemeProvider>,
       );
       userEvent.click(getByText('PDF of Mail Merged Labels'));
       // value of the select is held in a child Input element, so we must reference that element for the value
@@ -122,7 +122,7 @@ describe('ExportPhysical', () => {
 
     it('Exports Contacts and Downloads File - PDF of Mail Merged Labels | Avery7160 and Zip', async () => {
       const { getByText, getByTestId, getByLabelText, getByRole } = render(
-        <MuiThemeProvider theme={theme}>
+        <ThemeProvider theme={theme}>
           <GqlMockedProvider<CreateExportedContactsMutation>
             mocks={createMock(ExportFormatEnum.Pdf)}
           >
@@ -131,7 +131,7 @@ describe('ExportPhysical', () => {
               handleClose={handleClose}
             />
           </GqlMockedProvider>
-        </MuiThemeProvider>,
+        </ThemeProvider>,
       );
 
       userEvent.click(getByText('PDF of Mail Merged Labels'));
@@ -162,7 +162,7 @@ describe('ExportPhysical', () => {
 
     it('Exports Contacts and Downloads File - CSV For Mailing', async () => {
       const { getByText } = render(
-        <MuiThemeProvider theme={theme}>
+        <ThemeProvider theme={theme}>
           <GqlMockedProvider<CreateExportedContactsMutation>
             mocks={createMock(ExportFormatEnum.Csv)}
           >
@@ -171,7 +171,7 @@ describe('ExportPhysical', () => {
               handleClose={handleClose}
             />
           </GqlMockedProvider>
-        </MuiThemeProvider>,
+        </ThemeProvider>,
       );
       userEvent.click(getByText('CSV for Mail Merge'));
       await waitFor(() =>
@@ -183,7 +183,7 @@ describe('ExportPhysical', () => {
 
     it('Exports Contacts and Downloads File - Advanced CSV', async () => {
       const { getByText } = render(
-        <MuiThemeProvider theme={theme}>
+        <ThemeProvider theme={theme}>
           <GqlMockedProvider<CreateExportedContactsMutation>
             mocks={createMock(ExportFormatEnum.Csv)}
           >
@@ -192,7 +192,7 @@ describe('ExportPhysical', () => {
               handleClose={handleClose}
             />
           </GqlMockedProvider>
-        </MuiThemeProvider>,
+        </ThemeProvider>,
       );
       userEvent.click(getByText('Advanced CSV'));
       await waitFor(() =>
@@ -204,7 +204,7 @@ describe('ExportPhysical', () => {
 
     it('Exports Contacts and Downloads File - Advanced Excel (XLSX)', async () => {
       const { getByText } = render(
-        <MuiThemeProvider theme={theme}>
+        <ThemeProvider theme={theme}>
           <GqlMockedProvider<CreateExportedContactsMutation>
             mocks={createMock(ExportFormatEnum.Xlsx)}
           >
@@ -213,7 +213,7 @@ describe('ExportPhysical', () => {
               handleClose={handleClose}
             />
           </GqlMockedProvider>
-        </MuiThemeProvider>,
+        </ThemeProvider>,
       );
       userEvent.click(getByText('Advanced Excel (XLSX)'));
       await waitFor(() =>

@@ -1,15 +1,8 @@
 import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  Box,
-  CardHeader,
-  CardContent,
-  Grid,
-  Typography,
-  useTheme,
-  styled,
-} from '@material-ui/core';
-import type { Theme } from '@material-ui/core/styles/createMuiTheme';
+import { Box, CardHeader, CardContent, Grid, Typography } from '@mui/material';
+import { styled, useTheme } from '@mui/material/styles';
+import type { Theme } from '@mui/material/styles/createTheme';
 import {
   ReferenceLine,
   BarChart,
@@ -29,9 +22,7 @@ type EntryHistory = {
   [key: string]: number | string;
 };
 
-const LegendIdentifier = styled(({ color: _color, ...props }) => (
-  <div {...props} />
-))(({ color }: { color: string }) => ({
+const LegendIdentifier = styled('div')(({ color }: { color: string }) => ({
   display: 'inline-block',
   height: '5px',
   width: '20px',
@@ -62,7 +53,7 @@ export const AccountListItemChart: FC<AccountListItemChartProps> = ({
           <CardHeader
             title={
               <Box display={{ xs: 'none', sm: 'block' }}>
-                <Grid container spacing={2} justify="center">
+                <Grid container spacing={2} justifyContent="center">
                   <Grid item>
                     <LegendIdentifier color={theme.palette.secondary.dark} />
                     <Typography variant="body1" component="span">

@@ -1,6 +1,8 @@
-import { Box, styled, Typography } from '@material-ui/core';
-import { Phone } from '@material-ui/icons';
-import { Skeleton } from '@material-ui/lab';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import { styled } from '@mui/material/styles';
+import Phone from '@mui/icons-material/Phone';
+import Skeleton from '@mui/material/Skeleton';
 
 import React, { ReactElement } from 'react';
 import theme from '../../../../../theme';

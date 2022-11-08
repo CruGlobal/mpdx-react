@@ -1,6 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import NextAuth, { DefaultSession, NextAuthOptions } from 'next-auth';
-import getConfig from 'next/config';
 import OktaProvider from 'next-auth/providers/okta';
 import client from '../../../src/lib/client';
 import {
@@ -8,9 +7,6 @@ import {
   OktaSignInMutation,
   OktaSignInMutationVariables,
 } from './oktaSignIn.generated';
-
-const { serverRuntimeConfig } = getConfig();
-process.env.NEXTAUTH_URL = serverRuntimeConfig.NEXTAUTH_URL;
 
 declare module 'next-auth' {
   interface Session extends DefaultSession {
@@ -38,6 +34,7 @@ const options: NextAuthOptions = {
       userinfo: { params: { scope: 'openid email profile' } },
     }),
   ],
+  secret: process.env.JWT_SECRET,
   callbacks: {
     signIn: async ({ user, account }) => {
       const { access_token } = account;
@@ -74,7 +71,6 @@ const options: NextAuthOptions = {
       };
     },
   },
-  secret: process.env.JWT_SECRET,
 };
 
 const Auth = (req: NextApiRequest, res: NextApiResponse): Promise<void> =>

@@ -1,6 +1,6 @@
 import React, { ReactElement } from 'react';
 import { MockedProvider } from '@apollo/client/testing';
-import { Box } from '@material-ui/core';
+import { Box } from '@mui/material';
 import { DateTime } from 'luxon';
 import { MonthlyCommitment } from './MonthlyCommitment';
 import {

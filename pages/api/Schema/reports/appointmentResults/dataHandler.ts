@@ -25,8 +25,8 @@ const getAppointmentResults = (
     },
   ],
 ): ReportsAppointmentResultsPeriods[] => {
-  const appointmentResultsPeriods: ReportsAppointmentResultsPeriods[] = data.map(
-    (resultPeriod) => {
+  const appointmentResultsPeriods: ReportsAppointmentResultsPeriods[] =
+    data.map((resultPeriod) => {
       const {
         id,
         type,
@@ -69,8 +69,7 @@ const getAppointmentResults = (
           weekly_individual_appointment_goal,
         ),
       };
-    },
-  );
+    });
   return appointmentResultsPeriods;
 };
 

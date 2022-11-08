@@ -1,8 +1,9 @@
 import React, { ReactElement } from 'react';
-import { Box, Typography, Tooltip, makeStyles, Theme } from '@material-ui/core';
+import { Box, Typography, Tooltip, Theme } from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
 import theme from '../../../../src/theme';
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles()((theme: Theme) => ({
   colorYellow: {
     color: theme.palette.progressBarYellow.main,
   },
@@ -42,7 +43,7 @@ const AppealProgressBar = ({
   amount,
   amountCurrency,
 }: Props): ReactElement => {
-  const classes = useStyles();
+  const { classes } = useStyles();
 
   return (
     <>

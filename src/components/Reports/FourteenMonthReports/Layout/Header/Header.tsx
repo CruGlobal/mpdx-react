@@ -1,14 +1,9 @@
 import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  Box,
-  Grid,
-  IconButton,
-  styled,
-  Theme,
-  Typography,
-} from '@material-ui/core';
-import { FilterList } from '@material-ui/icons';
+import { Box, Grid, IconButton, Typography } from '@mui/material';
+import { styled } from '@mui/material/styles';
+import theme from 'src/theme';
+import FilterList from '@mui/icons-material/FilterList';
 import { FourteenMonthReportCurrencyType } from '../../../../../../graphql/types.generated';
 import { FourteenMonthReportActions } from './Actions/Actions';
 
@@ -34,16 +29,16 @@ const HeaderTitle = styled(Typography)(({}) => ({
   lineHeight: 1.1,
 }));
 
-const NavListButton = styled(({ panelOpen: _panelOpen, ...props }) => (
-  <IconButton {...props} />
-))(({ theme, panelOpen }: { theme: Theme; panelOpen: boolean }) => ({
-  display: 'inline-block',
-  width: 48,
-  height: 48,
-  borderradius: 24,
-  margin: theme.spacing(1),
-  backgroundColor: panelOpen ? theme.palette.secondary.dark : 'transparent',
-}));
+const NavListButton = styled(IconButton)(
+  ({ panelOpen }: { panelOpen: boolean }) => ({
+    display: 'inline-block',
+    width: 48,
+    height: 48,
+    borderradius: 24,
+    margin: theme.spacing(1),
+    backgroundColor: panelOpen ? theme.palette.secondary.dark : 'transparent',
+  }),
+);
 
 const NavListIcon = styled(FilterList)(({ theme }) => ({
   width: 24,
@@ -69,7 +64,7 @@ export const FourteenMonthReportHeader: FC<FourteenMonthReportHeaderProps> = ({
     <StickyHeader p={2} data-testid="FourteenMonthReportHeader">
       <Grid
         container
-        justify={isMobile ? 'center' : 'space-between'}
+        justifyContent={isMobile ? 'center' : 'space-between'}
         spacing={2}
         {...rest}
       >

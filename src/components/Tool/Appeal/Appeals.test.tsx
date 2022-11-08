@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
-import { ThemeProvider } from '@material-ui/core';
+import { ThemeProvider } from '@mui/material/styles';
 import { SnackbarProvider } from 'notistack';
 import userEvent from '@testing-library/user-event';
 import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
@@ -112,7 +112,9 @@ describe('AppealsTest', () => {
     const setPrimaryButton = await waitFor(() => getByTestId('setPrimary-1'));
     expect(setPrimaryButton).toBeInTheDocument();
     userEvent.click(setPrimaryButton);
-    await waitFor(() => expect(setPrimaryButton).not.toBeInTheDocument());
-    expect(mockEnqueue).toBeCalled();
+    await waitFor(() => {
+      expect(setPrimaryButton).not.toBeInTheDocument();
+      expect(mockEnqueue).toHaveBeenCalled();
+    });
   });
 });

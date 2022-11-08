@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import {
-  makeStyles,
   Box,
   Typography,
   Grid,
@@ -8,7 +7,8 @@ import {
   CircularProgress,
   NativeSelect,
   Button,
-} from '@material-ui/core';
+} from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
 import { Icon } from '@mdi/react';
 import { mdiCheckboxMarkedCircle } from '@mdi/js';
 import { Trans, useTranslation } from 'react-i18next';
@@ -22,7 +22,7 @@ import {
 import Contact from './Contact';
 import AddressModal from './AddressModal';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles()(() => ({
   container: {
     padding: theme.spacing(3),
     width: '70%',
@@ -105,7 +105,7 @@ interface Props {
 }
 
 const FixSendNewsletter: React.FC<Props> = ({ accountListId }: Props) => {
-  const classes = useStyles();
+  const { classes } = useStyles();
   const [modalState, setModalState] = useState({
     open: false,
     address: emptyAddress,

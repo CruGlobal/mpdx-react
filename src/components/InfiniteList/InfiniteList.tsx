@@ -1,5 +1,7 @@
 import React, { ReactElement } from 'react';
-import { List, ListItem, styled, Theme, Typography } from '@material-ui/core';
+import { List, ListItem, Typography } from '@mui/material';
+import { styled } from '@mui/material/styles';
+import theme from 'src/theme';
 import {
   ListProps,
   ItemProps,
@@ -7,7 +9,7 @@ import {
   GroupedVirtuosoProps,
   ItemContent,
 } from 'react-virtuoso';
-import { Skeleton } from '@material-ui/lab';
+import Skeleton from '@mui/material/Skeleton';
 
 const height = 72;
 const padding = 0;
@@ -19,16 +21,8 @@ const ListContainer: React.ComponentType<ListProps> = React.forwardRef(
   ),
 );
 
-const ItemWithBorders = styled(({ disableHover: _, ...props }) => (
-  <ListItem disableGutters {...props} />
-))(
-  ({
-    theme,
-    disableHover = false,
-  }: {
-    theme: Theme;
-    disableHover?: boolean;
-  }) => ({
+const ItemWithBorders = styled(ListItem)(
+  ({ disableHover = false }: { disableHover?: boolean }) => ({
     padding: `${padding}px`,
     borderBottom: `1px solid ${theme.palette.grey[200]}`,
     '&:last-child': {
@@ -45,12 +39,12 @@ const ItemWithBorders = styled(({ disableHover: _, ...props }) => (
 );
 
 const Item: React.ComponentType<ItemProps> = (props) => (
-  <ItemWithBorders {...props} />
+  <ItemWithBorders disableGutters {...props} />
 );
 
 const SkeletonItem: React.FC<{ height: number }> = ({ height }) => (
-  <ItemWithBorders disableHover>
-    <Skeleton variant="rect" height={height - padding * 2} />
+  <ItemWithBorders disableGutters disableHover>
+    <Skeleton variant="rectangular" height={height - padding * 2} />
   </ItemWithBorders>
 );
 
@@ -72,23 +66,26 @@ const GroupLabel = styled(Typography)(({ theme }) => ({
   padding: theme.spacing(0, 2),
 }));
 
-interface InfiniteListProps<T> {
+interface InfiniteListProps<T, C> {
   loading: boolean;
   EmptyPlaceholder: ReactElement;
-  itemContent: ItemContent<T>;
+  itemContent: ItemContent<T, C>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  context?: any;
   totalCount?: number;
   groupBy?: (item: T) => string;
 }
 
-export const InfiniteList = <T,>({
+export const InfiniteList = <T, C>({
   loading,
   data = [],
   totalCount = data?.length ?? 0,
   EmptyPlaceholder,
+  context,
   groupBy,
   ...props
-}: Omit<GroupedVirtuosoProps<T>, 'groupCounts' | 'itemContent'> &
-  InfiniteListProps<T>): ReactElement => {
+}: Omit<GroupedVirtuosoProps<T, C>, 'groupCounts' | 'itemContent'> &
+  InfiniteListProps<T, C>): ReactElement => {
   const groups =
     data?.length > 0
       ? groupBy
@@ -107,7 +104,7 @@ export const InfiniteList = <T,>({
       groupCounts={Object.values(groups)}
       {...props}
       itemContent={(index) =>
-        data[index] && props.itemContent(index, data[index])
+        data[index] && props.itemContent(index, data[index], context)
       }
       groupContent={(index) => {
         const groupLabel = Object.keys(groups)[index];

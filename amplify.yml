@@ -1,0 +1,27 @@
+version: 1
+frontend:
+  phases:
+    preBuild:
+      commands:
+        - nvm install 16.16.0
+        - nvm use 16.16.0
+        - echo $secrets
+        - echo "NEXTAUTH_URL=$NEXTAUTH_URL" >> .env
+        - echo "NODE_ENV=$NODE_ENV" >> .env
+        - yarn set version 3.2.3
+        - yarn config set nodeLinker node-modules
+        - yarn -v
+        - yarn
+        - yarn disable-telemetry
+        - yarn gql:server
+        - yarn gql
+    build:
+      commands:
+        - yarn build:amplify
+  artifacts:
+    baseDirectory: .next
+    files:
+      - '**/*'
+  cache:
+    paths:
+      - '.next/cache/**/*'

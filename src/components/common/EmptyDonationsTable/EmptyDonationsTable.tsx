@@ -1,7 +1,8 @@
 import React from 'react';
-import { Box, Typography, styled, Button } from '@material-ui/core';
+import { Box, Typography, Button } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
-import LocalAtmIcon from '@material-ui/icons/LocalAtm';
+import LocalAtmIcon from '@mui/icons-material/LocalAtm';
 
 interface Props {
   title: string;

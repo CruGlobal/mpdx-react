@@ -1,5 +1,5 @@
 import React, { ReactElement, ReactNode, useState } from 'react';
-import { styled } from '@material-ui/core';
+import { styled } from '@mui/material/styles';
 import TopBar from './TopBar/TopBar';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { NavBar } from 'src/components/Layouts/Primary/NavBar/NavBar';
@@ -33,10 +33,9 @@ const Wrapper = styled('div')(() => ({
 
 interface Props {
   children: ReactNode;
-  navBar?: ReactNode;
 }
 
-const Primary = ({ children, navBar }: Props): ReactElement => {
+const Primary = ({ children }: Props): ReactElement => {
   const accountListId = useAccountListId();
   const [isMobileNavOpen, setMobileNavOpen] = useState<boolean>(false);
 
@@ -51,9 +50,7 @@ const Primary = ({ children, navBar }: Props): ReactElement => {
           <NavBar
             onMobileClose={() => setMobileNavOpen(false)}
             openMobile={isMobileNavOpen}
-          >
-            {navBar}
-          </NavBar>
+          />
         )}
         <Wrapper>
           <ContentContainer>

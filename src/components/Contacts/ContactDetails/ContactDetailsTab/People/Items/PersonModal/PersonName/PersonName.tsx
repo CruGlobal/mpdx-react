@@ -1,11 +1,5 @@
-import {
-  Avatar,
-  Box,
-  Grid,
-  styled,
-  TextField,
-  Typography,
-} from '@material-ui/core';
+import { Avatar, Box, Grid, TextField, Typography } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import { FormikProps } from 'formik';
 import React from 'react';
 
@@ -26,12 +20,6 @@ const ContactAvatar = styled(Avatar)(() => ({
   transform: 'translateY(-50%)',
   width: '34px',
   height: '34px',
-}));
-
-const ContactInputField = styled(TextField)(() => ({
-  '&& > label': {
-    textTransform: 'uppercase',
-  },
 }));
 
 interface PersonNameProps {
@@ -68,7 +56,7 @@ export const PersonName: React.FC<PersonNameProps> = ({
       <ModalSectionContainer>
         <Grid container spacing={3}>
           <Grid item xs={12} md={6}>
-            <ContactInputField
+            <TextField
               label={t('First Name')}
               value={firstName}
               onChange={handleChange('firstName')}
@@ -80,7 +68,7 @@ export const PersonName: React.FC<PersonNameProps> = ({
             />
           </Grid>
           <Grid item xs={12} md={6}>
-            <ContactInputField
+            <TextField
               label={t('Last Name')}
               value={lastName}
               onChange={handleChange('lastName')}
@@ -91,11 +79,9 @@ export const PersonName: React.FC<PersonNameProps> = ({
               required
             />
           </Grid>
-        </Grid>
-        <Grid container spacing={3}>
           <Grid item xs={12} md={6}>
-            <ContactInputField
-              placeholder={t('Title')}
+            <TextField
+              label={t('Title')}
               value={title}
               onChange={handleChange('title')}
               inputProps={{ 'aria-label': t('Title') }}
@@ -103,8 +89,8 @@ export const PersonName: React.FC<PersonNameProps> = ({
             />
           </Grid>
           <Grid item xs={12} md={6}>
-            <ContactInputField
-              placeholder={t('Suffix')}
+            <TextField
+              label={t('Suffix')}
               value={suffix}
               onChange={handleChange('suffix')}
               inputProps={{ 'aria-label': t('Suffix') }}

@@ -1,7 +1,7 @@
 import React, { ReactElement } from 'react';
 import { signIn, getSession } from 'next-auth/react';
-import { Button } from '@material-ui/core';
-import SubjectIcon from '@material-ui/icons/Subject';
+import { Button } from '@mui/material';
+import SubjectIcon from '@mui/icons-material/Subject';
 import { GetServerSideProps } from 'next';
 import Head from 'next/head';
 import Welcome from '../src/components/Welcome';
@@ -18,7 +18,12 @@ const IndexPage = (): ReactElement => (
       subtitle="MPDX is fundraising software from Cru that helps you grow and maintain your ministry
 partners in a quick and easy way."
     >
-      <Button size="large" variant="contained" onClick={() => signIn('okta')}>
+      <Button
+        size="large"
+        variant="contained"
+        onClick={() => signIn('okta')}
+        color="inherit"
+      >
         Sign In
       </Button>
       <Button

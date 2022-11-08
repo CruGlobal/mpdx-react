@@ -1,5 +1,5 @@
 import React from 'react';
-import { MuiThemeProvider } from '@material-ui/core';
+import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import theme from '../../../../theme';
 import {
@@ -10,9 +10,9 @@ import {
 describe('ContactLateStatusLabel', () => {
   it('should render on time', () => {
     const { getByText } = render(
-      <MuiThemeProvider theme={theme}>
+      <ThemeProvider theme={theme}>
         <ContactLateStatusLabel lateStatusEnum={ContactLateStatusEnum.OnTime} />
-      </MuiThemeProvider>,
+      </ThemeProvider>,
     );
 
     expect(getByText('(On time)')).toBeInTheDocument();
@@ -20,33 +20,33 @@ describe('ContactLateStatusLabel', () => {
 
   it('should render less than 30 days late', () => {
     const { getByText } = render(
-      <MuiThemeProvider theme={theme}>
+      <ThemeProvider theme={theme}>
         <ContactLateStatusLabel
           lateStatusEnum={ContactLateStatusEnum.LateLessThirty}
         />
-      </MuiThemeProvider>,
+      </ThemeProvider>,
     );
 
     expect(getByText('(0-30 days late)')).toBeInTheDocument();
   });
   it('should render 30 to 60 days late', () => {
     const { getByText } = render(
-      <MuiThemeProvider theme={theme}>
+      <ThemeProvider theme={theme}>
         <ContactLateStatusLabel
           lateStatusEnum={ContactLateStatusEnum.LateMoreThirty}
         />
-      </MuiThemeProvider>,
+      </ThemeProvider>,
     );
 
     expect(getByText('(30-60 days late)')).toBeInTheDocument();
   });
   it('should render more than 60 days late', () => {
     const { getByText } = render(
-      <MuiThemeProvider theme={theme}>
+      <ThemeProvider theme={theme}>
         <ContactLateStatusLabel
           lateStatusEnum={ContactLateStatusEnum.LateMoreSixty}
         />
-      </MuiThemeProvider>,
+      </ThemeProvider>,
     );
 
     expect(getByText('(60+ days late)')).toBeInTheDocument();

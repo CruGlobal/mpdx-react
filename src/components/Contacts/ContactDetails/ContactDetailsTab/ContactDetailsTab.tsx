@@ -1,7 +1,8 @@
 import React from 'react';
-import { Box, Divider, styled, Typography } from '@material-ui/core';
-import CreateIcon from '@material-ui/icons/Create';
-import { Skeleton } from '@material-ui/lab';
+import { Box, Divider, Typography } from '@mui/material';
+import { styled } from '@mui/material/styles';
+import CreateIcon from '@mui/icons-material/Create';
+import Skeleton from '@mui/material/Skeleton';
 import { useTranslation } from 'react-i18next';
 import {
   ContactDetailContext,
@@ -82,7 +83,7 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
         }
         <ContactDetailHeadingContainer mt={-3}>
           {loading || !data ? (
-            <ContactDetailLoadingPlaceHolder variant="rect" />
+            <ContactDetailLoadingPlaceHolder variant="rectangular" />
           ) : (
             <ContactTags
               accountListId={accountListId}
@@ -103,9 +104,9 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
           </ContactDetailHeadingContainer>
           {loading || !data ? (
             <>
-              <ContactDetailLoadingPlaceHolder variant="rect" />
-              <ContactDetailLoadingPlaceHolder variant="rect" />
-              <ContactDetailLoadingPlaceHolder variant="rect" />
+              <ContactDetailLoadingPlaceHolder variant="rectangular" />
+              <ContactDetailLoadingPlaceHolder variant="rectangular" />
+              <ContactDetailLoadingPlaceHolder variant="rectangular" />
             </>
           ) : (
             <ContactDetailsTabPeople
@@ -126,9 +127,9 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
           </ContactDetailHeadingContainer>
           {loading || !data ? (
             <>
-              <ContactDetailLoadingPlaceHolder variant="rect" />
-              <ContactDetailLoadingPlaceHolder variant="rect" />
-              <ContactDetailLoadingPlaceHolder variant="rect" />
+              <ContactDetailLoadingPlaceHolder variant="rectangular" />
+              <ContactDetailLoadingPlaceHolder variant="rectangular" />
+              <ContactDetailLoadingPlaceHolder variant="rectangular" />
             </>
           ) : (
             <ContactDetailsTabMailing
@@ -149,9 +150,9 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
           </ContactDetailHeadingContainer>
           {loading || !data ? (
             <>
-              <ContactDetailLoadingPlaceHolder variant="rect" />
-              <ContactDetailLoadingPlaceHolder variant="rect" />
-              <ContactDetailLoadingPlaceHolder variant="rect" />
+              <ContactDetailLoadingPlaceHolder variant="rectangular" />
+              <ContactDetailLoadingPlaceHolder variant="rectangular" />
+              <ContactDetailLoadingPlaceHolder variant="rectangular" />
             </>
           ) : (
             <ContactDetailsOther

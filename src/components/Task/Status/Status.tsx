@@ -1,16 +1,12 @@
 import React, { ReactElement } from 'react';
-import {
-  Tooltip,
-  Theme,
-  makeStyles,
-  Avatar,
-  IconButton,
-  styled,
-} from '@material-ui/core';
+import { Tooltip, Theme, Avatar } from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
+import { styled } from '@mui/material/styles';
+import IconButton from '@mui/material/IconButton';
 import { DateTime } from 'luxon';
-import AssignmentTurnedInIcon from '@material-ui/icons/AssignmentTurnedIn';
+import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
+import Check from '@mui/icons-material/Check';
 import { useTranslation } from 'react-i18next';
-import { Check } from '@material-ui/icons';
 import useTaskModal from 'src/hooks/useTaskModal';
 
 const TaskCompleteButton = styled(IconButton)(({ theme }) => ({
@@ -24,7 +20,7 @@ const TaskCompleteButton = styled(IconButton)(({ theme }) => ({
   },
 }));
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles()((theme: Theme) => ({
   buttonGreen: {
     color: theme.palette.common.white,
     backgroundColor: theme.palette.mpdxGreen.main,
@@ -129,7 +125,7 @@ const TaskStatus = ({
   disableTooltip = false,
   tooltipPlacement = 'right',
 }: Props): ReactElement => {
-  const classes = useStyles();
+  const { classes } = useStyles();
   const { t } = useTranslation();
 
   if (completedAt) {

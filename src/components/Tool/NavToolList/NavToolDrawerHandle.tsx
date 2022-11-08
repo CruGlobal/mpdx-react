@@ -1,9 +1,10 @@
 import React, { ReactElement } from 'react';
-import { makeStyles, Box, Theme, IconButton } from '@material-ui/core';
-import DoubleArrowIcon from '@material-ui/icons/DoubleArrow';
+import { Box, Theme, IconButton } from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
+import DoubleArrowIcon from '@mui/icons-material/DoubleArrow';
 import theme from 'src/theme';
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles()((theme: Theme) => ({
   navToggle: {
     backgroundColor: theme.palette.mpdxBlue.main,
     color: 'white',
@@ -19,7 +20,7 @@ export interface Props {
 }
 
 const NavToolDrawerHandle = ({ open, toggle }: Props): ReactElement => {
-  const classes = useStyles();
+  const { classes } = useStyles();
 
   return (
     <>

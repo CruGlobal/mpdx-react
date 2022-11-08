@@ -1,7 +1,6 @@
-import { ThemeProvider } from '@material-ui/core';
+import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { useRouter } from 'next/router';
 import React from 'react';
 import {
   gqlMock,
@@ -29,7 +28,8 @@ jest.mock('notistack', () => ({
   },
 }));
 
-jest.mock('next/router');
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const useRouter = jest.spyOn(require('next/router'), 'useRouter');
 
 const handleClose = jest.fn();
 
@@ -84,7 +84,7 @@ describe('SaveFilterModal', () => {
   //#region SaveFilterModal | Contacts
   describe('Contacts', () => {
     beforeEach(() => {
-      (useRouter as jest.Mock).mockReturnValue({
+      useRouter.mockReturnValue({
         route: '/contacts',
       });
     });
@@ -211,7 +211,7 @@ describe('SaveFilterModal', () => {
   //#region SaveFilterModal | Tasks
   describe('Tasks', () => {
     beforeEach(() => {
-      (useRouter as jest.Mock).mockReturnValue({
+      useRouter.mockReturnValue({
         route: '/tasks',
       });
     });

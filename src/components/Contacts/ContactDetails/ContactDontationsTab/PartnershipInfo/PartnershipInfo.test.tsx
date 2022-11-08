@@ -1,10 +1,10 @@
 import React from 'react';
 import { MockedProvider } from '@apollo/client/testing';
-import { ThemeProvider } from '@material-ui/core';
+import { ThemeProvider } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import { SnackbarProvider } from 'notistack';
-import { MuiPickersUtilsProvider } from '@material-ui/pickers';
-import LuxonUtils from '@date-io/luxon';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import userEvent from '@testing-library/user-event';
 import {
   PledgeFrequencyEnum,
@@ -57,7 +57,7 @@ describe('PartnershipInfo', () => {
     const { getByText } = render(
       <SnackbarProvider>
         <ThemeProvider theme={theme}>
-          <MuiPickersUtilsProvider utils={LuxonUtils}>
+          <LocalizationProvider dateAdapter={AdapterLuxon}>
             <MockedProvider
               mocks={[
                 {
@@ -81,7 +81,7 @@ describe('PartnershipInfo', () => {
             >
               <PartnershipInfo contact={mock} />
             </MockedProvider>
-          </MuiPickersUtilsProvider>
+          </LocalizationProvider>
         </ThemeProvider>
       </SnackbarProvider>,
     );
@@ -96,11 +96,11 @@ describe('PartnershipInfo', () => {
     const { getByText, getByLabelText } = render(
       <SnackbarProvider>
         <ThemeProvider theme={theme}>
-          <MuiPickersUtilsProvider utils={LuxonUtils}>
+          <LocalizationProvider dateAdapter={AdapterLuxon}>
             <MockedProvider>
               <PartnershipInfo contact={mock} />
             </MockedProvider>
-          </MuiPickersUtilsProvider>
+          </LocalizationProvider>
         </ThemeProvider>
       </SnackbarProvider>,
     );
@@ -113,11 +113,11 @@ describe('PartnershipInfo', () => {
     const { getByText, getByLabelText, queryByText } = render(
       <SnackbarProvider>
         <ThemeProvider theme={theme}>
-          <MuiPickersUtilsProvider utils={LuxonUtils}>
+          <LocalizationProvider dateAdapter={AdapterLuxon}>
             <MockedProvider>
               <PartnershipInfo contact={mock} />
             </MockedProvider>
-          </MuiPickersUtilsProvider>
+          </LocalizationProvider>
         </ThemeProvider>
       </SnackbarProvider>,
     );

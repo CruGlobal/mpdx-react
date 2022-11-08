@@ -7,14 +7,14 @@ import {
   InputLabel,
   MenuItem,
   Select,
-  styled,
   TextField,
-} from '@material-ui/core';
+} from '@mui/material';
+import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
-import { DatePicker } from '@material-ui/pickers';
+import { MobileDatePicker } from '@mui/x-date-pickers';
 import { DateTime } from 'luxon';
-import SchoolIcon from '@material-ui/icons/School';
-import BusinessIcon from '@material-ui/icons/Business';
+import SchoolIcon from '@mui/icons-material/School';
+import BusinessIcon from '@mui/icons-material/Business';
 import { FormikProps } from 'formik';
 import { ModalSectionContainer } from '../ModalSectionContainer/ModalSectionContainer';
 import { RingIcon } from '../../../../../../RingIcon';
@@ -72,9 +72,10 @@ export const PersonShowMore: React.FC<PersonShowMoreProps> = ({
                 {t('Relationship Status')}
               </InputLabel>
               <Select
+                label={t('Relationship Status')}
                 labelId="relationship-status-label"
                 value={maritalStatus ?? ''}
-                onChange={handleChange('maritalStatus')}
+                onChange={(e) => setFieldValue('maritalStatus', e.target.value)}
                 fullWidth
               >
                 <MenuItem selected value=""></MenuItem>
@@ -103,9 +104,10 @@ export const PersonShowMore: React.FC<PersonShowMoreProps> = ({
             <FormControl fullWidth>
               <InputLabel id="gender-label">{t('Gender')}</InputLabel>
               <Select
+                label={t('Gender')}
                 labelId="gender-label"
                 value={gender ?? ''}
-                onChange={handleChange('gender')}
+                onChange={(e) => setFieldValue('gender', e.target.value)}
                 fullWidth
               >
                 <MenuItem selected value=""></MenuItem>
@@ -123,7 +125,15 @@ export const PersonShowMore: React.FC<PersonShowMoreProps> = ({
       {/* Anniversary Section */}
       <ModalSectionContainer>
         <ModalSectionIcon icon={<RingIcon />} />
-        <DatePicker
+        <MobileDatePicker
+          renderInput={(params) => (
+            <TextField
+              fullWidth
+              helperText="mm/dd/yyyy"
+              inputProps={{ 'aria-label': t('Anniversary') }}
+              {...params}
+            />
+          )}
           onChange={(date) => (!date ? null : handleDateChange(date))}
           value={
             anniversaryMonth && anniversaryDay
@@ -134,12 +144,8 @@ export const PersonShowMore: React.FC<PersonShowMoreProps> = ({
                 )
               : null
           }
-          format="MM/dd/yyyy"
-          clearable
+          inputFormat="MM/dd/yyyy"
           label={t('Anniversary')}
-          inputProps={{ 'aria-label': t('Anniversary') }}
-          fullWidth
-          helperText="mm/dd/yyyy"
         />
       </ModalSectionContainer>
       {/* Alma Mater Section */}
@@ -197,6 +203,7 @@ export const PersonShowMore: React.FC<PersonShowMoreProps> = ({
                 <Checkbox
                   checked={!!deceased}
                   onChange={() => setFieldValue('deceased', !deceased)}
+                  color="secondary"
                 />
               }
               label={t('Deceased')}

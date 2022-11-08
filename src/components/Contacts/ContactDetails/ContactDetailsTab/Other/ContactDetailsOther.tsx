@@ -1,5 +1,8 @@
 import React from 'react';
-import { Box, IconButton, styled, Typography } from '@material-ui/core';
+import Box from '@mui/material/Box';
+import IconButton from '@mui/material/IconButton';
+import Typography from '@mui/material/Typography';
+import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import i18n from 'i18next';
 import { PreferredContactMethodEnum } from '../../../../../../graphql/types.generated';
@@ -17,7 +20,7 @@ const ContactOtherTextContainer = styled(Box)(({ theme }) => ({
 }));
 
 const ContactOtherTextLabel = styled(Typography)(({ theme }) => ({
-  color: theme.palette.text.hint,
+  color: theme.palette.text.secondary,
   marginRight: '5px',
 }));
 

@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import Head from 'next/head';
 import { useTranslation } from 'react-i18next';
-import { Box, styled } from '@material-ui/core';
+import Box from '@mui/material/Box';
+import { styled } from '@mui/material/styles';
 import { FourteenMonthReportCurrencyType } from '../../../../graphql/types.generated';
 import { FourteenMonthReport } from 'src/components/Reports/FourteenMonthReports/FourteenMonthReport';
 import Loading from 'src/components/Loading';

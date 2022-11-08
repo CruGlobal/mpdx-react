@@ -7,10 +7,10 @@ import {
   ListItem,
   ListItemText,
   CardContent,
-  styled,
-} from '@material-ui/core';
+} from '@mui/material';
+import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
-import { Skeleton } from '@material-ui/lab';
+import Skeleton from '@mui/material/Skeleton';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'next/router';

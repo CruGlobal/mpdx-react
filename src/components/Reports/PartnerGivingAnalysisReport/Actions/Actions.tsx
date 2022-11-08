@@ -1,15 +1,9 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  Box,
-  Button,
-  InputAdornment,
-  SvgIcon,
-  TextField,
-  styled,
-} from '@material-ui/core';
-import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
-import SearchIcon from '@material-ui/icons/Search';
+import { Box, Button, InputAdornment, SvgIcon, TextField } from '@mui/material';
+import { styled } from '@mui/material/styles';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+import SearchIcon from '@mui/icons-material/Search';
 
 interface PartnerGivingAnalysisReportActionsProps {
   query: string;
@@ -21,11 +15,9 @@ const SearchField = styled(TextField)(() => ({
   width: 500,
 }));
 
-export const PartnerGivingAnalysisReportActions: React.FC<PartnerGivingAnalysisReportActionsProps> = ({
-  query,
-  onQueryChange,
-  onModalOpen,
-}) => {
+export const PartnerGivingAnalysisReportActions: React.FC<
+  PartnerGivingAnalysisReportActionsProps
+> = ({ query, onQueryChange, onModalOpen }) => {
   const { t } = useTranslation();
 
   return (

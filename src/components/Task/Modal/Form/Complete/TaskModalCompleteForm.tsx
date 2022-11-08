@@ -1,53 +1,48 @@
 import React, { ReactElement, useState } from 'react';
 import {
+  Autocomplete,
   TextField,
   Select,
-  styled,
   MenuItem,
   InputLabel,
   FormControl,
   Chip,
   Grid,
-  Box,
   CircularProgress,
-  Button,
-  Divider,
   InputAdornment,
   Typography,
-} from '@material-ui/core';
+  DialogContent,
+  DialogActions,
+} from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { Autocomplete } from '@material-ui/lab';
-
-import { DatePicker, TimePicker } from '@material-ui/pickers';
+import { MobileDatePicker, MobileTimePicker } from '@mui/x-date-pickers';
 import { Formik } from 'formik';
 import * as yup from 'yup';
 import { useSnackbar } from 'notistack';
 import { DateTime } from 'luxon';
-import { CalendarToday, Schedule } from '@material-ui/icons';
+import CalendarToday from '@mui/icons-material/CalendarToday';
+import Schedule from '@mui/icons-material/Schedule';
 import { v4 as uuidv4 } from 'uuid';
-import { dateFormat } from '../../../../../lib/intlFormat/intlFormat';
 import {
   ActivityTypeEnum,
   ResultEnum,
   TaskUpdateInput,
 } from '../../../../../../graphql/types.generated';
-import { GetTaskForTaskDrawerQuery } from '../../../Drawer/TaskDrawerTask.generated';
+import { GetTaskForTaskModalQuery } from '../../../Modal/TaskModalTask.generated';
 import { GetThisWeekDocument } from '../../../../Dashboard/ThisWeek/GetThisWeek.generated';
-import { useGetDataForTaskDrawerQuery } from '../../../Drawer/Form/TaskDrawer.generated';
+import { useGetDataForTaskModalQuery } from '../../../Modal/Form/TaskModal.generated';
 import theme from '../../../../../../src/theme';
-import { useCreateTaskCommentMutation } from '../../../Drawer/CommentList/Form/CreateTaskComment.generated';
+import { useCreateTaskCommentMutation } from '../../../Modal/Comments/Form/CreateTaskComment.generated';
 import { possibleNextActions } from '../PossibleNextActions';
 import { possibleResults } from '../PossibleResults';
-import { useCompleteTaskMutation } from '../../../../../../src/components/Task/Drawer/CompleteForm/CompleteTask.generated';
+import { useCompleteTaskMutation } from './CompleteTask.generated';
 import useTaskModal from '../../../../../../src/hooks/useTaskModal';
-import { FormFieldsWrapper } from '../TaskModalForm';
 import { FormFieldsGridContainer } from '../Container/FormFieldsGridContainer';
+import {
+  SubmitButton,
+  CancelButton,
+} from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import { getLocalizedTaskType } from 'src/utils/functions/getLocalizedTaskType';
-
-const ActionButton = styled(Button)(() => ({
-  color: theme.palette.info.main,
-  fontWeight: 550,
-}));
 
 const taskSchema: yup.SchemaOf<
   Pick<
@@ -64,7 +59,7 @@ const taskSchema: yup.SchemaOf<
 
 interface Props {
   accountListId: string;
-  task: GetTaskForTaskDrawerQuery['task'];
+  task: GetTaskForTaskModalQuery['task'];
   onClose: () => void;
 }
 
@@ -84,7 +79,7 @@ const TaskModalCompleteForm = ({
   const { openTaskModal } = useTaskModal();
   const { enqueueSnackbar } = useSnackbar();
 
-  const { data } = useGetDataForTaskDrawerQuery({
+  const { data } = useGetDataForTaskModalQuery({
     variables: { accountListId },
   });
   const [updateTask, { loading: saving }] = useCompleteTaskMutation();
@@ -143,211 +138,183 @@ const TaskModalCompleteForm = ({
   const availableNextActions = possibleNextActions(task);
 
   return (
-    <Box>
-      <Formik
-        initialValues={initialTask}
-        validationSchema={taskSchema}
-        onSubmit={onSubmit}
-      >
-        {({
-          values: { completedAt, tagList, result, nextAction },
-          setFieldValue,
-          handleChange,
-          handleSubmit,
-          isSubmitting,
-          isValid,
-        }): ReactElement => (
-          <form onSubmit={handleSubmit} noValidate>
-            <FormFieldsWrapper>
-              <FormFieldsGridContainer>
-                <Grid item>
-                  <Typography style={{ fontWeight: 600 }} display="inline">
-                    {getLocalizedTaskType(t, task?.activityType)}
-                  </Typography>{' '}
-                  <Typography display="inline">{task?.subject}</Typography>{' '}
-                  {task?.contacts.nodes.map((contact, index) => (
-                    <Typography key={contact.id}>
-                      {index !== task.contacts.nodes.length - 1
-                        ? `${contact.name},`
-                        : contact.name}
-                    </Typography>
-                  ))}
-                </Grid>
-                <Grid item>
-                  <FormControl fullWidth>
-                    <Grid container spacing={2}>
-                      <Grid xs={6} item>
-                        <DatePicker
-                          InputProps={{
-                            endAdornment: (
-                              <InputAdornment position="end">
-                                <CalendarToday
-                                  style={{
-                                    color: theme.palette.cruGrayMedium.main,
-                                  }}
-                                />
-                              </InputAdornment>
-                            ),
-                          }}
-                          clearable
-                          fullWidth
-                          labelFunc={(date, invalidLabel) =>
-                            date ? dateFormat(date) : invalidLabel
-                          }
-                          autoOk
-                          label={t('Completed Date')}
-                          value={completedAt}
-                          onChange={(date): void =>
-                            setFieldValue('completedAt', date)
-                          }
-                          okLabel={t('OK')}
-                          todayLabel={t('Today')}
-                          cancelLabel={t('Cancel')}
-                          clearLabel={t('Clear')}
-                        />
-                      </Grid>
-                      <Grid xs={6} item>
-                        <TimePicker
-                          clearable
-                          fullWidth
-                          autoOk
-                          InputProps={{
-                            endAdornment: (
-                              <InputAdornment position="end">
-                                <Schedule
-                                  style={{
-                                    color: theme.palette.cruGrayMedium.main,
-                                  }}
-                                />
-                              </InputAdornment>
-                            ),
-                          }}
-                          label={t('Completed Time')}
-                          value={completedAt}
-                          onChange={(date): void =>
-                            setFieldValue('completedAt', date)
-                          }
-                          okLabel={t('OK')}
-                          todayLabel={t('Today')}
-                          cancelLabel={t('Cancel')}
-                          clearLabel={t('Clear')}
-                        />
-                      </Grid>
+    <Formik
+      initialValues={initialTask}
+      validationSchema={taskSchema}
+      onSubmit={onSubmit}
+    >
+      {({
+        values: { completedAt, tagList, result, nextAction },
+        setFieldValue,
+        handleSubmit,
+        isSubmitting,
+        isValid,
+      }): ReactElement => (
+        <form onSubmit={handleSubmit} noValidate>
+          <DialogContent dividers>
+            <FormFieldsGridContainer>
+              <Grid item>
+                <Typography style={{ fontWeight: 600 }} display="inline">
+                  {getLocalizedTaskType(t, task?.activityType)}
+                </Typography>{' '}
+                <Typography display="inline">{task?.subject}</Typography>{' '}
+                {task?.contacts.nodes.map((contact, index) => (
+                  <Typography key={contact.id}>
+                    {index !== task.contacts.nodes.length - 1
+                      ? `${contact.name},`
+                      : contact.name}
+                  </Typography>
+                ))}
+              </Grid>
+              <Grid item>
+                <FormControl fullWidth>
+                  <Grid container spacing={2}>
+                    <Grid xs={6} item>
+                      <MobileDatePicker
+                        renderInput={(params) => (
+                          <TextField fullWidth {...params} />
+                        )}
+                        InputProps={{
+                          endAdornment: (
+                            <InputAdornment position="end">
+                              <CalendarToday
+                                style={{
+                                  color: theme.palette.cruGrayMedium.main,
+                                }}
+                              />
+                            </InputAdornment>
+                          ),
+                        }}
+                        inputFormat="MMM dd, yyyy"
+                        closeOnSelect
+                        label={t('Completed Date')}
+                        value={completedAt}
+                        onChange={(date): void =>
+                          setFieldValue('completedAt', date)
+                        }
+                      />
                     </Grid>
+                    <Grid xs={6} item>
+                      <MobileTimePicker
+                        renderInput={(params) => (
+                          <TextField fullWidth {...params} />
+                        )}
+                        closeOnSelect
+                        InputProps={{
+                          endAdornment: (
+                            <InputAdornment position="end">
+                              <Schedule
+                                style={{
+                                  color: theme.palette.cruGrayMedium.main,
+                                }}
+                              />
+                            </InputAdornment>
+                          ),
+                        }}
+                        label={t('Completed Time')}
+                        value={completedAt}
+                        onChange={(date): void =>
+                          setFieldValue('completedAt', date)
+                        }
+                      />
+                    </Grid>
+                  </Grid>
+                </FormControl>
+              </Grid>
+              {availableResults.length > 0 && (
+                <Grid item>
+                  <FormControl fullWidth required>
+                    <InputLabel id="result">{t('Result')}</InputLabel>
+                    <Select
+                      label={t('Result')}
+                      labelId="result"
+                      value={result}
+                      onChange={(e) => setFieldValue('result', e.target.value)}
+                    >
+                      {availableResults.map((val) => (
+                        <MenuItem key={val} value={val}>
+                          {t(val) /* manually added to translation file */}
+                        </MenuItem>
+                      ))}
+                    </Select>
                   </FormControl>
                 </Grid>
-                {availableResults.length > 0 && (
-                  <Grid item>
-                    <FormControl fullWidth required>
-                      <InputLabel id="result">{t('Result')}</InputLabel>
-                      <Select
-                        labelId="result"
-                        value={result}
-                        onChange={handleChange('result')}
-                      >
-                        {availableResults.map((val) => (
-                          <MenuItem key={val} value={val}>
-                            {t(val) /* manually added to translation file */}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl>
-                  </Grid>
-                )}
-                {availableNextActions.length > 0 && (
-                  <Grid item>
-                    <FormControl fullWidth>
-                      <InputLabel id="nextAction">
-                        {t('Next Action')}
-                      </InputLabel>
-                      <Select
-                        labelId="nextAction"
-                        value={nextAction}
-                        onChange={handleChange('nextAction')}
-                      >
-                        {availableNextActions.map((val) => (
-                          <MenuItem key={val} value={val}>
-                            {t(val) /* manually added to translation file */}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl>
-                  </Grid>
-                )}
-                {/*Add field to change contact statuses */}
+              )}
+              {availableNextActions.length > 0 && (
                 <Grid item>
-                  <Autocomplete
-                    multiple
-                    freeSolo
-                    renderTags={(value, getTagProps): ReactElement[] =>
-                      value.map((option, index) => (
-                        <Chip
-                          color="primary"
-                          size="small"
-                          key={index}
-                          label={option}
-                          {...getTagProps({ index })}
-                        />
-                      ))
-                    }
-                    renderInput={(params): ReactElement => (
-                      <TextField {...params} label={t('Tags')} />
-                    )}
-                    onChange={(_, tagList): void =>
-                      setFieldValue('tagList', tagList)
-                    }
-                    value={tagList ?? undefined}
-                    options={data?.accountList?.taskTagList || []}
-                  />
+                  <FormControl fullWidth>
+                    <InputLabel id="nextAction">{t('Next Action')}</InputLabel>
+                    <Select
+                      label={t('Next Action')}
+                      labelId="nextAction"
+                      value={nextAction}
+                      onChange={(e) =>
+                        setFieldValue('nextAction', e.target.value)
+                      }
+                    >
+                      {availableNextActions.map((val) => (
+                        <MenuItem key={val} value={val}>
+                          {t(val) /* manually added to translation file */}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
                 </Grid>
-
-                <Grid item>
-                  <TextField
-                    label={t('Add New Comment')}
-                    value={commentBody}
-                    onChange={(event) => changeCommentBody(event.target.value)}
-                    fullWidth
-                    multiline
-                    inputProps={{ 'aria-label': 'Add New Comment' }}
-                  />
-                </Grid>
-              </FormFieldsGridContainer>
-            </FormFieldsWrapper>
-            <Divider />
-            <Box
-              display="flex"
-              justifyContent="end"
-              alignItems="center"
-              width="100%"
-              p={1}
-            >
-              <Box>
-                <ActionButton
-                  size="large"
-                  disabled={isSubmitting}
-                  onClick={onClose}
-                >
-                  {t('Cancel')}
-                </ActionButton>
-                <ActionButton
-                  size="large"
-                  disabled={!isValid || isSubmitting}
-                  type="submit"
-                >
-                  {saving && (
-                    <>
-                      <CircularProgress color="primary" size={20} />
-                      &nbsp;
-                    </>
+              )}
+              {/*Add field to change contact statuses */}
+              <Grid item>
+                <Autocomplete
+                  multiple
+                  freeSolo
+                  renderTags={(value, getTagProps): ReactElement[] =>
+                    value.map((option, index) => (
+                      <Chip
+                        {...getTagProps({ index })}
+                        color="default"
+                        size="small"
+                        key={index}
+                        label={option}
+                      />
+                    ))
+                  }
+                  renderInput={(params): ReactElement => (
+                    <TextField {...params} label={t('Tags')} />
                   )}
-                  {t('Save')}
-                </ActionButton>
-              </Box>
-            </Box>
-          </form>
-        )}
-      </Formik>
-    </Box>
+                  onChange={(_, tagList): void =>
+                    setFieldValue('tagList', tagList)
+                  }
+                  value={tagList ?? undefined}
+                  options={data?.accountList?.taskTagList || []}
+                />
+              </Grid>
+
+              <Grid item>
+                <TextField
+                  label={t('Add New Comment')}
+                  value={commentBody}
+                  onChange={(event) => changeCommentBody(event.target.value)}
+                  fullWidth
+                  multiline
+                  inputProps={{ 'aria-label': 'Add New Comment' }}
+                />
+              </Grid>
+            </FormFieldsGridContainer>
+          </DialogContent>
+          <DialogActions>
+            <CancelButton disabled={isSubmitting} onClick={onClose} />
+            <SubmitButton disabled={!isValid || isSubmitting}>
+              {saving && (
+                <>
+                  <CircularProgress color="primary" size={20} />
+                  &nbsp;
+                </>
+              )}
+              {t('Save')}
+            </SubmitButton>
+          </DialogActions>
+        </form>
+      )}
+    </Formik>
   );
 };
 

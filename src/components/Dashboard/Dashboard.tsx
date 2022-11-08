@@ -1,5 +1,5 @@
 import React, { ReactElement } from 'react';
-import { Container, Grid, Box } from '@material-ui/core';
+import { Container, Grid, Box } from '@mui/material';
 import { motion } from 'framer-motion';
 import { GetDashboardQuery } from '../../../pages/accountLists/GetDashboard.generated';
 import Welcome from './Welcome';

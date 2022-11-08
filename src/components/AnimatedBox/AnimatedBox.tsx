@@ -1,5 +1,5 @@
 import React, { ReactElement } from 'react';
-import { Box, BoxProps } from '@material-ui/core';
+import { Box, BoxProps } from '@mui/material';
 import { motion } from 'framer-motion';
 
 const variants = {

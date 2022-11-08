@@ -1,31 +1,31 @@
 import React, { ReactElement, useState } from 'react';
 import {
+  Autocomplete,
   Box,
-  Button,
   Checkbox,
   CircularProgress,
   DialogActions,
   DialogContent,
   FormControl,
   FormControlLabel,
-  Input,
+  InputAdornment,
   InputLabel,
   MenuItem,
   Select,
-  styled,
   TextField,
   Tooltip,
   Typography,
-} from '@material-ui/core';
-import InfoIcon from '@material-ui/icons/InfoOutlined';
-import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
+} from '@mui/material';
+import { styled } from '@mui/material/styles';
+import CalendarToday from '@mui/icons-material/CalendarToday';
+import InfoIcon from '@mui/icons-material/InfoOutlined';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import { useTranslation } from 'react-i18next';
 import { Formik } from 'formik';
 import * as yup from 'yup';
-import { KeyboardDatePicker } from '@material-ui/pickers';
+import { MobileDatePicker } from '@mui/x-date-pickers';
 import { useSnackbar } from 'notistack';
 import { DateTime } from 'luxon';
-import { Autocomplete } from '@material-ui/lab';
 import { useAccountListId } from '../../../../../../hooks/useAccountListId';
 import Modal from '../../../../../common/Modal/Modal';
 import { ContactDonorAccountsFragment } from '../../ContactDonationsTab.generated';
@@ -40,6 +40,10 @@ import {
   useUpdateContactPartnershipMutation,
   useGetDataForPartnershipInfoModalQuery,
 } from './EditPartnershipInfoModal.generated';
+import {
+  SubmitButton,
+  CancelButton,
+} from 'src/components/common/Modal/ActionButtons/ActionButtons';
 
 const ContactInputWrapper = styled(Box)(({ theme }) => ({
   position: 'relative',
@@ -60,10 +64,9 @@ interface EditPartnershipInfoModalProps {
   handleClose: () => void;
 }
 
-export const EditPartnershipInfoModal: React.FC<EditPartnershipInfoModalProps> = ({
-  contact,
-  handleClose,
-}) => {
+export const EditPartnershipInfoModal: React.FC<
+  EditPartnershipInfoModalProps
+> = ({ contact, handleClose }) => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
   const constants = useApiConstants();
@@ -71,9 +74,8 @@ export const EditPartnershipInfoModal: React.FC<EditPartnershipInfoModalProps> =
   const referredContactIds = contact.contactReferralsToMe.nodes.map(
     (referral) => referral.referredBy.id,
   );
-  const [currentReferredContactIds, setCurrentReferredContactIds] = useState(
-    referredContactIds,
-  );
+  const [currentReferredContactIds, setCurrentReferredContactIds] =
+    useState(referredContactIds);
 
   const { enqueueSnackbar } = useSnackbar();
   const { data, loading, refetch } = useGetDataForPartnershipInfoModalQuery({
@@ -85,10 +87,8 @@ export const EditPartnershipInfoModal: React.FC<EditPartnershipInfoModalProps> =
     },
   });
 
-  const [
-    updateContactPartnership,
-    { loading: updating },
-  ] = useUpdateContactPartnershipMutation();
+  const [updateContactPartnership, { loading: updating }] =
+    useUpdateContactPartnershipMutation();
   const pledgeCurrencies = constants?.pledgeCurrencies;
 
   const contactPartnershipSchema: yup.SchemaOf<
@@ -318,6 +318,7 @@ export const EditPartnershipInfoModal: React.FC<EditPartnershipInfoModalProps> =
                     {t('Status')}
                   </InputLabel>
                   <Select
+                    label={t('Status')}
                     labelId="status-select-label"
                     value={status}
                     onChange={(e) =>
@@ -332,7 +333,6 @@ export const EditPartnershipInfoModal: React.FC<EditPartnershipInfoModalProps> =
                         vertical: 'top',
                         horizontal: 'left',
                       },
-                      getContentAnchorEl: null,
                       PaperProps: {
                         style: {
                           maxHeight: '300px',
@@ -350,16 +350,16 @@ export const EditPartnershipInfoModal: React.FC<EditPartnershipInfoModalProps> =
                 </FormControl>
               </ContactInputWrapper>
               <ContactInputWrapper>
-                <FormControl fullWidth>
-                  <InputLabel>{t('Amount')}</InputLabel>
-                  <Input
-                    value={pledgeAmount}
-                    type="number"
-                    disabled={status !== StatusEnum.PartnerFinancial}
-                    aria-readonly={status !== StatusEnum.PartnerFinancial}
-                    onChange={handleChange('pledgeAmount')}
-                    inputProps={{ 'aria-label': t('Amount') }}
-                    endAdornment={
+                <TextField
+                  label={t('Amount')}
+                  value={pledgeAmount}
+                  type="number"
+                  disabled={status !== StatusEnum.PartnerFinancial}
+                  aria-readonly={status !== StatusEnum.PartnerFinancial}
+                  onChange={handleChange('pledgeAmount')}
+                  inputProps={{ 'aria-label': t('Amount') }}
+                  InputProps={{
+                    endAdornment: (
                       <Tooltip
                         title={
                           <Typography>
@@ -371,10 +371,10 @@ export const EditPartnershipInfoModal: React.FC<EditPartnershipInfoModalProps> =
                       >
                         <InfoIcon />
                       </Tooltip>
-                    }
-                    fullWidth
-                  />
-                </FormControl>
+                    ),
+                  }}
+                  fullWidth
+                />
               </ContactInputWrapper>
               <ContactInputWrapper>
                 <FormControl fullWidth>
@@ -383,9 +383,12 @@ export const EditPartnershipInfoModal: React.FC<EditPartnershipInfoModalProps> =
                   </InputLabel>
                   {pledgeCurrencies && (
                     <Select
+                      label={t('Currency')}
                       labelId="currency-select-label"
                       value={pledgeCurrency ?? ''}
-                      onChange={handleChange('pledgeCurrency')}
+                      onChange={(e) =>
+                        setFieldValue('pledgeCurrency', e.target.value)
+                      }
                       MenuProps={{
                         anchorOrigin: {
                           vertical: 'bottom',
@@ -395,7 +398,6 @@ export const EditPartnershipInfoModal: React.FC<EditPartnershipInfoModalProps> =
                           vertical: 'top',
                           horizontal: 'left',
                         },
-                        getContentAnchorEl: null,
                         PaperProps: {
                           style: {
                             maxHeight: '300px',
@@ -424,11 +426,14 @@ export const EditPartnershipInfoModal: React.FC<EditPartnershipInfoModalProps> =
                     {t('Frequency')}
                   </InputLabel>
                   <Select
+                    label={t('Frequency')}
                     labelId="frequency-select-label"
                     value={pledgeFrequency ?? ''}
                     disabled={status !== StatusEnum.PartnerFinancial}
                     aria-readonly={status !== StatusEnum.PartnerFinancial}
-                    onChange={handleChange('pledgeFrequency')}
+                    onChange={(e) =>
+                      setFieldValue('pledgeFrequency', e.target.value)
+                    }
                     IconComponent={() =>
                       status !== StatusEnum.PartnerFinancial ? (
                         <Tooltip
@@ -457,7 +462,24 @@ export const EditPartnershipInfoModal: React.FC<EditPartnershipInfoModalProps> =
                 </FormControl>
               </ContactInputWrapper>
               <ContactInputWrapper>
-                <KeyboardDatePicker
+                <MobileDatePicker
+                  renderInput={(params) => (
+                    <TextField
+                      fullWidth
+                      inputProps={{ 'aria-label': t('Start Date') }}
+                      {...params}
+                    />
+                  )}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment
+                        aria-label="change start date"
+                        position="end"
+                      >
+                        <CalendarToday />
+                      </InputAdornment>
+                    ),
+                  }}
                   onChange={(date): void =>
                     setFieldValue('pledgeStartDate', date)
                   }
@@ -466,14 +488,8 @@ export const EditPartnershipInfoModal: React.FC<EditPartnershipInfoModalProps> =
                       ? DateTime.fromISO(pledgeStartDate).toLocaleString()
                       : null
                   }
-                  format="MM/dd/yyyy"
-                  clearable
+                  inputFormat="MM/dd/yyyy"
                   label={t('Start Date')}
-                  inputProps={{ 'aria-label': t('Start Date') }}
-                  fullWidth
-                  KeyboardButtonProps={{
-                    'aria-label': 'change start date',
-                  }}
                 />
               </ContactInputWrapper>
               <ContactInputWrapper>
@@ -513,27 +529,38 @@ export const EditPartnershipInfoModal: React.FC<EditPartnershipInfoModalProps> =
                   onChange={(_, contactIds): void =>
                     updateReferredBy(contactIds, setFieldValue)
                   }
-                  getOptionSelected={(option, value): boolean =>
+                  isOptionEqualToValue={(option, value): boolean =>
                     option === value
                   }
                 />
               </ContactInputWrapper>
               <ContactInputWrapper>
-                <KeyboardDatePicker
+                <MobileDatePicker
+                  renderInput={(params) => (
+                    <TextField
+                      fullWidth
+                      inputProps={{ 'aria-label': t('Next Ask Increase') }}
+                      {...params}
+                    />
+                  )}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment
+                        aria-label="change next ask date"
+                        position="end"
+                      >
+                        <CalendarToday />
+                      </InputAdornment>
+                    ),
+                  }}
                   onChange={(date) =>
                     !date ? null : setFieldValue('nextAsk', date)
                   }
                   value={
                     nextAsk ? DateTime.fromISO(nextAsk).toLocaleString() : null
                   }
-                  format="MM/dd/yyyy"
-                  clearable
+                  inputFormat="MM/dd/yyyy"
                   label={t('Next Ask Increase')}
-                  inputProps={{ 'aria-label': t('Next Ask Increase') }}
-                  fullWidth
-                  KeyboardButtonProps={{
-                    'aria-label': 'change next ask date',
-                  }}
                 />
               </ContactInputWrapper>
               <ContactInputWrapper>
@@ -544,6 +571,7 @@ export const EditPartnershipInfoModal: React.FC<EditPartnershipInfoModalProps> =
                       onChange={() =>
                         setFieldValue('pledgeReceived', !pledgeReceived)
                       }
+                      color="secondary"
                     />
                   }
                   label={t('Commitment Recieved')}
@@ -555,6 +583,7 @@ export const EditPartnershipInfoModal: React.FC<EditPartnershipInfoModalProps> =
                     <Checkbox
                       checked={!noAppeals}
                       onChange={() => setFieldValue('noAppeals', !noAppeals)}
+                      color="secondary"
                     />
                   }
                   label={t('Send Appeals')}
@@ -562,22 +591,11 @@ export const EditPartnershipInfoModal: React.FC<EditPartnershipInfoModalProps> =
               </ContactInputWrapper>
             </DialogContent>
             <DialogActions>
-              <Button
-                onClick={handleClose}
-                disabled={isSubmitting}
-                variant="text"
-              >
-                {t('Cancel')}
-              </Button>
-              <Button
-                color="primary"
-                type="submit"
-                variant="text"
-                disabled={!isValid || isSubmitting}
-              >
+              <CancelButton onClick={handleClose} disabled={isSubmitting} />
+              <SubmitButton disabled={!isValid || isSubmitting}>
                 {updating && <LoadingIndicator color="primary" size={20} />}
                 {t('Save')}
-              </Button>
+              </SubmitButton>
             </DialogActions>
           </form>
         )}

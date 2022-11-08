@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
-import { ThemeProvider } from '@material-ui/core';
+import { ThemeProvider } from '@mui/material/styles';
 // import { PartnerGivingAnalysisReportQuery } from './GetPartnerGivingAnalysisReport.generated';
 import { PartnerGivingAnalysisReport } from './PartnerGivingAnalysisReport';
 // import { GqlMockedProvider } from '__tests__/util/graphqlMocking';

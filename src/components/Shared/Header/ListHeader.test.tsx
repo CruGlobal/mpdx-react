@@ -1,7 +1,8 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { Button, ThemeProvider } from '@material-ui/core';
+import Button from '@mui/material/Button';
+import { ThemeProvider } from '@mui/material/styles';
 import theme from '../../../theme';
 
 import useTaskModal from '../../../hooks/useTaskModal';
@@ -10,13 +11,7 @@ import {
   ListHeaderCheckBoxState,
   TableViewModeEnum,
 } from './ListHeader';
-import {
-  ContactsPageContext,
-  ContactsPageProvider,
-  ContactsPageType,
-} from 'pages/accountLists/[accountListId]/contacts/ContactsPageContext';
 import TestRouter from '__tests__/util/TestRouter';
-import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 
 const toggleFilterPanel = jest.fn();
 const onSearchTermChanged = jest.fn();
@@ -55,18 +50,19 @@ const router = {
 };
 
 const ButtonGroup: React.FC = () => {
-  const { handleViewModeChange } = React.useContext(
-    ContactsPageContext,
-  ) as ContactsPageType;
   return (
     <>
       <Button
         data-testid="list-button"
-        onClick={(event) => handleViewModeChange(event, TableViewModeEnum.List)}
+        onClick={() =>
+          push({ pathname: '/accountLists/123/contacts/', query: {} })
+        }
       />
       <Button
         data-testid="map-button"
-        onClick={(event) => handleViewModeChange(event, TableViewModeEnum.Map)}
+        onClick={() =>
+          push({ pathname: '/accountLists/123/contacts/map', query: {} })
+        }
       />
     </>
   );
@@ -141,38 +137,43 @@ describe('ListHeader', () => {
 
     it('renders a button group and switches views', async () => {
       const { getByTestId } = render(
-        <ThemeProvider theme={theme}>
-          <TestRouter router={router}>
-            <GqlMockedProvider>
-              <ContactsPageProvider>
-                <ListHeader
-                  selectedIds={selectedIds}
-                  page="contact"
-                  activeFilters={false}
-                  starredFilter={{}}
-                  contactsView={TableViewModeEnum.List}
-                  toggleStarredFilter={toggleStarredFilter}
-                  headerCheckboxState={ListHeaderCheckBoxState.unchecked}
-                  filterPanelOpen={true}
-                  contactDetailsOpen={true}
-                  toggleFilterPanel={toggleFilterPanel}
-                  onCheckAllItems={onCheckAllItems}
-                  onSearchTermChanged={onSearchTermChanged}
-                  openEditFieldsModal={openEditFieldsModal}
-                  buttonGroup={<ButtonGroup />}
-                />
-              </ContactsPageProvider>
-            </GqlMockedProvider>
-          </TestRouter>
-        </ThemeProvider>,
+        <TestRouter router={router}>
+          <ThemeProvider theme={theme}>
+            <ListHeader
+              selectedIds={selectedIds}
+              page="contact"
+              activeFilters={false}
+              starredFilter={{}}
+              contactsView={TableViewModeEnum.List}
+              toggleStarredFilter={toggleStarredFilter}
+              headerCheckboxState={ListHeaderCheckBoxState.unchecked}
+              filterPanelOpen={true}
+              contactDetailsOpen={true}
+              toggleFilterPanel={toggleFilterPanel}
+              onCheckAllItems={onCheckAllItems}
+              onSearchTermChanged={onSearchTermChanged}
+              openEditFieldsModal={openEditFieldsModal}
+              buttonGroup={<ButtonGroup />}
+            />
+          </ThemeProvider>
+        </TestRouter>,
       );
 
       expect(getByTestId('list-button')).toBeInTheDocument();
       userEvent.click(getByTestId('list-button'));
 
       await waitFor(() =>
-        expect(router.push).toBeCalledWith({
+        expect(router.push).toHaveBeenCalledWith({
           pathname: '/accountLists/123/contacts/',
+          query: {},
+        }),
+      );
+
+      userEvent.click(getByTestId('map-button'));
+
+      await waitFor(() =>
+        expect(router.push).toHaveBeenCalledWith({
+          pathname: '/accountLists/123/contacts/map',
           query: {},
         }),
       );
@@ -180,35 +181,31 @@ describe('ListHeader', () => {
   });
 
   it('opens the more actions menu and clicks the add task action', () => {
-    const {
-      getByPlaceholderText,
-      getByTestId,
-      getByText,
-      queryByText,
-    } = render(
-      <ThemeProvider theme={theme}>
-        <ListHeader
-          selectedIds={selectedIds}
-          page="contact"
-          activeFilters={false}
-          starredFilter={{}}
-          toggleStarredFilter={toggleStarredFilter}
-          headerCheckboxState={ListHeaderCheckBoxState.unchecked}
-          filterPanelOpen={false}
-          contactDetailsOpen={false}
-          toggleFilterPanel={toggleFilterPanel}
-          onCheckAllItems={onCheckAllItems}
-          onSearchTermChanged={onSearchTermChanged}
-          openAddToAppealModal={openAddToAppealModal}
-          openEditFieldsModal={openEditFieldsModal}
-          openHideContactsModal={openHideContactsModal}
-          openRemoveTagsModal={openRemoveTagsModal}
-          openAddTagsModal={openAddTagsModal}
-          openCreateAppealModal={openCreateAppealModal}
-          openExportsModal={openExportsModal}
-        />
-      </ThemeProvider>,
-    );
+    const { getByPlaceholderText, getByTestId, getByText, queryByText } =
+      render(
+        <ThemeProvider theme={theme}>
+          <ListHeader
+            selectedIds={selectedIds}
+            page="contact"
+            activeFilters={false}
+            starredFilter={{}}
+            toggleStarredFilter={toggleStarredFilter}
+            headerCheckboxState={ListHeaderCheckBoxState.unchecked}
+            filterPanelOpen={false}
+            contactDetailsOpen={false}
+            toggleFilterPanel={toggleFilterPanel}
+            onCheckAllItems={onCheckAllItems}
+            onSearchTermChanged={onSearchTermChanged}
+            openAddToAppealModal={openAddToAppealModal}
+            openEditFieldsModal={openEditFieldsModal}
+            openHideContactsModal={openHideContactsModal}
+            openRemoveTagsModal={openRemoveTagsModal}
+            openAddTagsModal={openAddTagsModal}
+            openCreateAppealModal={openCreateAppealModal}
+            openExportsModal={openExportsModal}
+          />
+        </ThemeProvider>,
+      );
 
     expect(getByPlaceholderText('Search Contacts')).toBeInTheDocument();
     expect(queryByText('Add Task')).not.toBeInTheDocument();
@@ -262,35 +259,31 @@ describe('ListHeader', () => {
   });
 
   it('opens the more actions menu and clicks the add tags action', () => {
-    const {
-      getByPlaceholderText,
-      getByTestId,
-      getByText,
-      queryByText,
-    } = render(
-      <ThemeProvider theme={theme}>
-        <ListHeader
-          selectedIds={selectedIds}
-          page="contact"
-          activeFilters={false}
-          starredFilter={{}}
-          toggleStarredFilter={toggleStarredFilter}
-          headerCheckboxState={ListHeaderCheckBoxState.unchecked}
-          filterPanelOpen={false}
-          contactDetailsOpen={false}
-          toggleFilterPanel={toggleFilterPanel}
-          onCheckAllItems={onCheckAllItems}
-          onSearchTermChanged={onSearchTermChanged}
-          openAddToAppealModal={openAddToAppealModal}
-          openEditFieldsModal={openEditFieldsModal}
-          openHideContactsModal={openHideContactsModal}
-          openRemoveTagsModal={openRemoveTagsModal}
-          openAddTagsModal={openAddTagsModal}
-          openCreateAppealModal={openCreateAppealModal}
-          openExportsModal={openExportsModal}
-        />
-      </ThemeProvider>,
-    );
+    const { getByPlaceholderText, getByTestId, getByText, queryByText } =
+      render(
+        <ThemeProvider theme={theme}>
+          <ListHeader
+            selectedIds={selectedIds}
+            page="contact"
+            activeFilters={false}
+            starredFilter={{}}
+            toggleStarredFilter={toggleStarredFilter}
+            headerCheckboxState={ListHeaderCheckBoxState.unchecked}
+            filterPanelOpen={false}
+            contactDetailsOpen={false}
+            toggleFilterPanel={toggleFilterPanel}
+            onCheckAllItems={onCheckAllItems}
+            onSearchTermChanged={onSearchTermChanged}
+            openAddToAppealModal={openAddToAppealModal}
+            openEditFieldsModal={openEditFieldsModal}
+            openHideContactsModal={openHideContactsModal}
+            openRemoveTagsModal={openRemoveTagsModal}
+            openAddTagsModal={openAddTagsModal}
+            openCreateAppealModal={openCreateAppealModal}
+            openExportsModal={openExportsModal}
+          />
+        </ThemeProvider>,
+      );
 
     expect(getByPlaceholderText('Search Contacts')).toBeInTheDocument();
     expect(queryByText('Add Tags')).not.toBeInTheDocument();
@@ -651,7 +644,7 @@ describe('ListHeader', () => {
     expect(onSearchTermChanged).not.toHaveBeenCalled();
   });
 
-  it.skip('filters button displays for open filter panel', async () => {
+  it('filters button displays for open filter panel', async () => {
     const { getByRole } = render(
       <ThemeProvider theme={theme}>
         <ListHeader
@@ -682,13 +675,13 @@ describe('ListHeader', () => {
     });
 
     expect(filterButton).toHaveStyle({
-      backgroundColor: theme.palette.secondary.dark,
+      backgroundColor: 'transparent',
     });
     expect(toggleFilterPanel).not.toHaveBeenCalled();
     expect(onSearchTermChanged).not.toHaveBeenCalled();
   });
 
-  it.skip('filters button displays for active filters', async () => {
+  it('filters button displays for active filters', async () => {
     const { getByRole } = render(
       <ThemeProvider theme={theme}>
         <ListHeader
@@ -725,7 +718,7 @@ describe('ListHeader', () => {
     expect(onSearchTermChanged).not.toHaveBeenCalled();
   });
 
-  it.skip('filters button displays for active filters and filter panel open', async () => {
+  it('filters button displays for active filters and filter panel open', async () => {
     const { getByRole } = render(
       <ThemeProvider theme={theme}>
         <ListHeader

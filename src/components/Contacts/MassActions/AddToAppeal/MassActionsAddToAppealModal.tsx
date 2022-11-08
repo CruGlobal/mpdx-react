@@ -1,12 +1,11 @@
 import {
-  Button,
+  Autocomplete,
   CircularProgress,
   DialogActions,
   DialogContent,
   FormControl,
   TextField,
-} from '@material-ui/core';
-import { Autocomplete } from '@material-ui/lab';
+} from '@mui/material';
 import { Formik } from 'formik';
 import React, { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -16,6 +15,10 @@ import Modal from '../../../common/Modal/Modal';
 import { useGetAppealsForMassActionQuery } from './GetAppealsForMassAction.generated';
 import { useAddToAppealMutation } from './AddToAppealMutation.generated';
 import { ContactsDocument } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
+import {
+  SubmitButton,
+  CancelButton,
+} from 'src/components/common/Modal/ActionButtons/ActionButtons';
 
 interface MassActionsAddToAppealModalProps {
   ids: string[];
@@ -27,11 +30,9 @@ const MassActionsAddToAppealSchema = yup.object({
   appeal: yup.string().nullable(),
 });
 
-export const MassActionsAddToAppealModal: React.FC<MassActionsAddToAppealModalProps> = ({
-  handleClose,
-  accountListId,
-  ids,
-}) => {
+export const MassActionsAddToAppealModal: React.FC<
+  MassActionsAddToAppealModalProps
+> = ({ handleClose, accountListId, ids }) => {
   const { t } = useTranslation();
 
   const [addToAppeal, { loading: updating }] = useAddToAppealMutation();
@@ -63,14 +64,12 @@ export const MassActionsAddToAppealModal: React.FC<MassActionsAddToAppealModalPr
     handleClose();
   };
 
-  const {
-    data: appeals,
-    loading: loadingAppeals,
-  } = useGetAppealsForMassActionQuery({
-    variables: {
-      accountListId,
-    },
-  });
+  const { data: appeals, loading: loadingAppeals } =
+    useGetAppealsForMassActionQuery({
+      variables: {
+        accountListId,
+      },
+    });
 
   return (
     <Modal title={t('Add To Appeal')} isOpen={true} handleClose={handleClose}>
@@ -108,7 +107,7 @@ export const MassActionsAddToAppealModal: React.FC<MassActionsAddToAppealModalPr
                   onChange={(_, appealId): void =>
                     setFieldValue('appeal', appealId)
                   }
-                  getOptionSelected={(option, value): boolean =>
+                  isOptionEqualToValue={(option, value): boolean =>
                     option === value
                   }
                   renderInput={(params): ReactElement => (
@@ -132,22 +131,11 @@ export const MassActionsAddToAppealModal: React.FC<MassActionsAddToAppealModalPr
               </FormControl>
             </DialogContent>
             <DialogActions>
-              <Button
-                onClick={handleClose}
-                disabled={isSubmitting}
-                variant="text"
-              >
-                {t('Cancel')}
-              </Button>
-              <Button
-                color="primary"
-                type="submit"
-                variant="contained"
-                disabled={!isValid || isSubmitting || !appeal}
-              >
+              <CancelButton onClick={handleClose} disabled={isSubmitting} />
+              <SubmitButton disabled={!isValid || isSubmitting || !appeal}>
                 {updating && <CircularProgress color="primary" size={20} />}
                 {t('Save')}
-              </Button>
+              </SubmitButton>
             </DialogActions>
           </form>
         )}

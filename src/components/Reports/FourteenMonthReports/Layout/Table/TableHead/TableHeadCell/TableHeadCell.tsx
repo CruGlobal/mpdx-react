@@ -1,5 +1,6 @@
 import React, { ReactNode } from 'react';
-import { styled, TableCell, TableSortLabel } from '@material-ui/core';
+import { TableCell, TableSortLabel } from '@mui/material';
+import { styled } from '@mui/material/styles';
 
 type Align = 'center' | 'inherit' | 'justify' | 'left' | 'right';
 

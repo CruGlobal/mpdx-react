@@ -26,7 +26,6 @@ i18next
       },
     },
     react: {
-      wait: true,
       useSuspense: false,
     },
     detection: {

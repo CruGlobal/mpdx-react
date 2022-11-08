@@ -1,21 +1,20 @@
 import React, { useState } from 'react';
 import {
-  makeStyles,
   Box,
   Typography,
   Grid,
   Divider,
   Button,
   CircularProgress,
-} from '@material-ui/core';
-
+} from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
 import { Trans, useTranslation } from 'react-i18next';
 import theme from '../../../theme';
 import NoData from '../NoData';
 import { useGetPersonDuplicatesQuery } from './GetPersonDuplicates.generated';
 import PersonDuplicate from './PersonDuplicates';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles()(() => ({
   container: {
     padding: theme.spacing(3),
     width: '70%',
@@ -66,7 +65,7 @@ interface Props {
 }
 
 const MergePeople: React.FC<Props> = ({ accountListId }: Props) => {
-  const classes = useStyles();
+  const { classes } = useStyles();
   const [actions, setActions] = useState<ActionsType>({});
   const { t } = useTranslation();
   const { data, loading } = useGetPersonDuplicatesQuery({

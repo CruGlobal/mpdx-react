@@ -1,22 +1,14 @@
 import React, { useState } from 'react';
-import {
-  Box,
-  Button,
-  Divider,
-  IconButton,
-  styled,
-  Typography,
-} from '@material-ui/core';
-import {
-  CheckCircleOutline,
-  Clear,
-  DateRangeOutlined,
-  Delete,
-  FiberManualRecordOutlined,
-} from '@material-ui/icons';
+import { Box, Button, Divider, IconButton, Typography } from '@mui/material';
+import { styled } from '@mui/material/styles';
+import CheckCircleOutline from '@mui/icons-material/CheckCircleOutline';
+import Clear from '@mui/icons-material/Clear';
+import CreateIcon from '@mui/icons-material/Create';
+import DateRangeOutlined from '@mui/icons-material/DateRangeOutlined';
+import Delete from '@mui/icons-material/Delete';
+import FiberManualRecordOutlined from '@mui/icons-material/FiberManualRecordOutlined';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
-import CreateIcon from '@material-ui/icons/Create';
 import { currencyFormat } from '../../../../../lib/intlFormat';
 import { HandshakeIcon } from '../../ContactDetailsHeader/ContactHeaderSection/HandshakeIcon';
 import { ContactDonorAccountsFragment } from '../ContactDonationsTab.generated';
@@ -89,9 +81,8 @@ export const PartnershipInfo: React.FC<PartnershipInfoProp> = ({ contact }) => {
     setStatus(constants?.statuses?.find(({ id }) => id === contact?.status));
   }, [data?.constant]);
 
-  const [editPartnershipModalOpen, setEditPartnershipModalOpen] = useState(
-    false,
-  );
+  const [editPartnershipModalOpen, setEditPartnershipModalOpen] =
+    useState(false);
 
   return (
     <PartnershipInfoContainer>
@@ -262,7 +253,7 @@ export const PartnershipInfo: React.FC<PartnershipInfoProp> = ({ contact }) => {
         );
       })}
       <IconAndTextContainerCenter>
-        <AddAccountButton variant="outlined" color="default">
+        <AddAccountButton variant="outlined" color="inherit">
           {t('Add Account')}
         </AddAccountButton>
       </IconAndTextContainerCenter>

@@ -5,9 +5,9 @@ import {
   Typography,
   Grid,
   CardHeader,
-  makeStyles,
   Theme,
-} from '@material-ui/core';
+} from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
 import {
   ReferenceLine,
   BarChart,
@@ -21,7 +21,7 @@ import {
   Text,
 } from 'recharts';
 import { DateTime } from 'luxon';
-import { Skeleton } from '@material-ui/lab';
+import Skeleton from '@mui/material/Skeleton';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'next/router';
 import { currencyFormat } from '../../../lib/intlFormat';
@@ -30,7 +30,7 @@ import AnimatedBox from '../../AnimatedBox';
 import illustration15 from '../../../images/drawkit/grape/drawkit-grape-pack-illustration-15.svg';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles()((theme: Theme) => ({
   cardHeader: {
     textAlign: 'center',
   },
@@ -95,7 +95,7 @@ const DonationHistories = ({
   currencyCode = 'USD',
   setTime,
 }: Props): ReactElement => {
-  const classes = useStyles();
+  const { classes } = useStyles();
   const { push } = useRouter();
   const { t } = useTranslation();
   const accountListId = useAccountListId();
@@ -135,7 +135,7 @@ const DonationHistories = ({
     <>
       <Box my={{ xs: 1, sm: 2 }}>
         <AnimatedBox>
-          <Typography variant="h6">Monthly Activity</Typography>
+          <Typography variant="h6">{t('Monthly Activity')}</Typography>
         </AnimatedBox>
       </Box>
       <AnimatedCard>
@@ -145,7 +145,7 @@ const DonationHistories = ({
               className={classes.cardHeader}
               title={
                 <Box display={{ xs: 'none', sm: 'block' }}>
-                  <Grid container spacing={2} justify="center">
+                  <Grid container spacing={2} justifyContent="center">
                     {goal ? (
                       <>
                         <Grid item>
@@ -239,22 +239,22 @@ const DonationHistories = ({
                 {loading ? (
                   <Grid
                     container
-                    justify="space-between"
+                    justifyContent="space-between"
                     alignItems="flex-end"
                     data-testid="DonationHistoriesGridLoading"
                   >
-                    <Skeleton variant="rect" width={30} height={30} />
-                    <Skeleton variant="rect" width={30} height={50} />
-                    <Skeleton variant="rect" width={30} height={70} />
-                    <Skeleton variant="rect" width={30} height={90} />
-                    <Skeleton variant="rect" width={30} height={110} />
-                    <Skeleton variant="rect" width={30} height={130} />
-                    <Skeleton variant="rect" width={30} height={150} />
-                    <Skeleton variant="rect" width={30} height={170} />
-                    <Skeleton variant="rect" width={30} height={190} />
-                    <Skeleton variant="rect" width={30} height={210} />
-                    <Skeleton variant="rect" width={30} height={230} />
-                    <Skeleton variant="rect" width={30} height={250} />
+                    <Skeleton variant="rectangular" width={30} height={30} />
+                    <Skeleton variant="rectangular" width={30} height={50} />
+                    <Skeleton variant="rectangular" width={30} height={70} />
+                    <Skeleton variant="rectangular" width={30} height={90} />
+                    <Skeleton variant="rectangular" width={30} height={110} />
+                    <Skeleton variant="rectangular" width={30} height={130} />
+                    <Skeleton variant="rectangular" width={30} height={150} />
+                    <Skeleton variant="rectangular" width={30} height={170} />
+                    <Skeleton variant="rectangular" width={30} height={190} />
+                    <Skeleton variant="rectangular" width={30} height={210} />
+                    <Skeleton variant="rectangular" width={30} height={230} />
+                    <Skeleton variant="rectangular" width={30} height={250} />
                   </Grid>
                 ) : (
                   <ResponsiveContainer>
@@ -280,7 +280,8 @@ const DonationHistories = ({
                               push({
                                 pathname: `/accountLists/${accountListId}/reports/donations`,
                                 query: {
-                                  month: period.activePayload[0].payload.period.toISO(),
+                                  month:
+                                    period.activePayload[0].payload.period.toISO(),
                                 },
                               })
                       }
@@ -345,19 +346,23 @@ const DonationHistories = ({
                 style={{ height: '150px' }}
               >
                 {loading ? (
-                  <Grid container justify="space-between" alignItems="flex-end">
-                    <Skeleton variant="rect" width={10} height={40} />
-                    <Skeleton variant="rect" width={10} height={50} />
-                    <Skeleton variant="rect" width={10} height={60} />
-                    <Skeleton variant="rect" width={10} height={70} />
-                    <Skeleton variant="rect" width={10} height={80} />
-                    <Skeleton variant="rect" width={10} height={90} />
-                    <Skeleton variant="rect" width={10} height={100} />
-                    <Skeleton variant="rect" width={10} height={110} />
-                    <Skeleton variant="rect" width={10} height={120} />
-                    <Skeleton variant="rect" width={10} height={130} />
-                    <Skeleton variant="rect" width={10} height={140} />
-                    <Skeleton variant="rect" width={10} height={150} />
+                  <Grid
+                    container
+                    justifyContent="space-between"
+                    alignItems="flex-end"
+                  >
+                    <Skeleton variant="rectangular" width={10} height={40} />
+                    <Skeleton variant="rectangular" width={10} height={50} />
+                    <Skeleton variant="rectangular" width={10} height={60} />
+                    <Skeleton variant="rectangular" width={10} height={70} />
+                    <Skeleton variant="rectangular" width={10} height={80} />
+                    <Skeleton variant="rectangular" width={10} height={90} />
+                    <Skeleton variant="rectangular" width={10} height={100} />
+                    <Skeleton variant="rectangular" width={10} height={110} />
+                    <Skeleton variant="rectangular" width={10} height={120} />
+                    <Skeleton variant="rectangular" width={10} height={130} />
+                    <Skeleton variant="rectangular" width={10} height={140} />
+                    <Skeleton variant="rectangular" width={10} height={150} />
                   </Grid>
                 ) : (
                   <ResponsiveContainer>

@@ -1,11 +1,3 @@
-import { ApolloServer } from '@saeris/apollo-server-vercel';
-import { NextApiRequest } from 'next';
-import {
-  RequestOptions,
-  Response,
-  RESTDataSource,
-} from 'apollo-datasource-rest';
-import { DateTime, Duration, Interval } from 'luxon';
 import {
   ExportFormatEnum,
   ExportLabelTypeEnum,
@@ -54,6 +46,15 @@ import { getAccountListDonorAccounts } from './Schema/AccountListDonorAccounts/d
 import { getAccountListCoachUsers } from './Schema/AccountListCoachUser/dataHandler';
 import { getAccountListCoaches } from './Schema/AccountListCoaches/dataHandler';
 import { getReportsPledgeHistories } from './Schema/reports/pledgeHistories/dataHandler';
+import { DateTime, Duration, Interval } from 'luxon';
+import {
+  RequestOptions,
+  Response,
+  RESTDataSource,
+} from 'apollo-datasource-rest';
+import Cors from 'micro-cors';
+import { PageConfig, NextApiRequest } from 'next';
+import { ApolloServer } from 'apollo-server-micro';
 
 class MpdxRestApi extends RESTDataSource {
   constructor() {
@@ -315,7 +316,12 @@ export interface Context {
   dataSources: { mpdxRestApi: MpdxRestApi };
 }
 
-const server = new ApolloServer({
+const cors = Cors({
+  origin: 'https://studio.apollographql.com',
+  allowCredentials: true,
+});
+
+const apolloServer = new ApolloServer({
   schema,
   dataSources: () => {
     return {
@@ -327,4 +333,22 @@ const server = new ApolloServer({
   },
 });
 
-export default server.createHandler();
+const startServer = apolloServer.start();
+
+export default cors(async (req, res) => {
+  if (req.method === 'OPTIONS') {
+    res.end();
+    return false;
+  }
+  await startServer;
+  await apolloServer.createHandler({
+    path: '/api/graphql-rest',
+  })(req, res);
+});
+
+// Apollo Server Micro takes care of body parsing
+export const config: PageConfig = {
+  api: {
+    bodyParser: false,
+  },
+};

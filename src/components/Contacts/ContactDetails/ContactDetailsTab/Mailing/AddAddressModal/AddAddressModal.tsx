@@ -5,7 +5,6 @@ import * as yup from 'yup';
 import { useSnackbar } from 'notistack';
 import {
   Box,
-  Button,
   Checkbox,
   CircularProgress,
   DialogActions,
@@ -16,9 +15,9 @@ import {
   InputLabel,
   MenuItem,
   Select,
-  styled,
   TextField,
-} from '@material-ui/core';
+} from '@mui/material';
+import { styled } from '@mui/material/styles';
 import { AddressCreateInput } from '../../../../../../../graphql/types.generated';
 import Modal from '../../../../../common/Modal/Modal';
 import {
@@ -26,6 +25,10 @@ import {
   ContactDetailsTabQuery,
 } from '../../ContactDetailsTab.generated';
 import { useCreateContactAddressMutation } from './CreateContactAddress.generated';
+import {
+  SubmitButton,
+  CancelButton,
+} from 'src/components/common/Modal/ActionButtons/ActionButtons';
 
 const ContactEditContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -67,25 +70,22 @@ export const AddAddressModal: React.FC<EditContactAddressModalProps> = ({
 }): ReactElement<EditContactAddressModalProps> => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
-  const [
-    createContactAddress,
-    { loading: updating },
-  ] = useCreateContactAddressMutation();
+  const [createContactAddress, { loading: updating }] =
+    useCreateContactAddressMutation();
 
-  const contactAddressSchema: yup.SchemaOf<
-    Omit<AddressCreateInput, 'id'>
-  > = yup.object({
-    contactId: yup.string().required(),
-    city: yup.string().nullable(),
-    country: yup.string().nullable(),
-    historic: yup.boolean().nullable(),
-    location: yup.string().nullable(),
-    metroArea: yup.string().nullable(),
-    postalCode: yup.string().nullable(),
-    region: yup.string().nullable(),
-    state: yup.string().nullable(),
-    street: yup.string().required(),
-  });
+  const contactAddressSchema: yup.SchemaOf<Omit<AddressCreateInput, 'id'>> =
+    yup.object({
+      contactId: yup.string().required(),
+      city: yup.string().nullable(),
+      country: yup.string().nullable(),
+      historic: yup.boolean().nullable(),
+      location: yup.string().nullable(),
+      metroArea: yup.string().nullable(),
+      postalCode: yup.string().nullable(),
+      region: yup.string().nullable(),
+      state: yup.string().nullable(),
+      street: yup.string().required(),
+    });
 
   const onSubmit = async (
     attributes: Omit<AddressCreateInput, 'validValues' | 'id'>,
@@ -186,9 +186,12 @@ export const AddAddressModal: React.FC<EditContactAddressModalProps> = ({
                           {t('Location')}
                         </InputLabel>
                         <Select
+                          label={t('Location')}
                           labelId="location-select-label"
                           value={location}
-                          onChange={handleChange('location')}
+                          onChange={(e) =>
+                            setFieldValue('location', e.target.value)
+                          }
                           fullWidth
                         >
                           {Object.values(AddressLocationEnum).map((value) => (
@@ -273,6 +276,7 @@ export const AddAddressModal: React.FC<EditContactAddressModalProps> = ({
                       <Checkbox
                         checked={historic}
                         onChange={() => setFieldValue('historic', !historic)}
+                        color="secondary"
                       />
                     }
                     label={t('Address no longer valid')}
@@ -281,22 +285,11 @@ export const AddAddressModal: React.FC<EditContactAddressModalProps> = ({
               </ContactEditContainer>
             </DialogContent>
             <DialogActions>
-              <Button
-                onClick={handleClose}
-                disabled={isSubmitting}
-                variant="text"
-              >
-                {t('Cancel')}
-              </Button>
-              <Button
-                color="primary"
-                type="submit"
-                variant="contained"
-                disabled={!isValid || isSubmitting}
-              >
+              <CancelButton onClick={handleClose} disabled={isSubmitting} />
+              <SubmitButton disabled={!isValid || isSubmitting}>
                 {updating && <LoadingIndicator color="primary" size={20} />}
                 {t('Save')}
-              </Button>
+              </SubmitButton>
             </DialogActions>
           </form>
         )}

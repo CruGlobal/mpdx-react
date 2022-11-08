@@ -4,7 +4,7 @@ import {
   ListItem,
   MenuItem,
   Select,
-} from '@material-ui/core';
+} from '@mui/material';
 import React from 'react';
 import { RadioFilter } from '../../../../graphql/types.generated';
 

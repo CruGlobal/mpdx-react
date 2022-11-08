@@ -5,23 +5,23 @@ import {
   Button,
   Typography,
   Avatar,
-  makeStyles,
   Hidden,
   TextField,
   Theme,
-} from '@material-ui/core';
+} from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { Icon } from '@mdi/react';
 import { mdiCheckboxMarkedCircle, mdiPlus, mdiLock, mdiDelete } from '@mdi/js';
-import StarIcon from '@material-ui/icons/Star';
-import StarOutlineIcon from '@material-ui/icons/StarOutline';
+import StarIcon from '@mui/icons-material/Star';
+import StarOutlineIcon from '@mui/icons-material/StarOutline';
 import { DateTime } from 'luxon';
 import { PersonPhoneNumberInput } from '../../../../graphql/types.generated';
 import theme from '../../../theme';
 import { PhoneNumberData } from './FixPhoneNumbers';
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles()((theme: Theme) => ({
   left: {
     [theme.breakpoints.up('md')]: {
       border: `1px solid ${theme.palette.cruGrayMedium.main}`,
@@ -121,7 +121,7 @@ const Contact: React.FC<Props> = ({
   handleChangePrimary,
 }) => {
   const { t } = useTranslation();
-  const classes = useStyles();
+  const { classes } = useStyles();
   const [newPhoneNumber, setNewPhoneNumber] = useState<string>('');
   //TODO: Add button functionality
   //TODO: Make name pop up a modal to edit the person info

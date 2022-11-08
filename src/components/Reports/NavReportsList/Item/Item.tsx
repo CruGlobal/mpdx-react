@@ -1,7 +1,9 @@
 import React from 'react';
-import { ListItem, ListItemText } from '@material-ui/core';
-import { ArrowForwardIos } from '@material-ui/icons';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
+import ArrowForwardIos from '@mui/icons-material/ArrowForwardIos';
 import NextLink from 'next/link';
+import { useTranslation } from 'react-i18next';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 
 interface ReportOption {
@@ -17,7 +19,7 @@ interface Props {
 
 export const Item: React.FC<Props> = ({ item, isSelected, ...rest }) => {
   const accountListId = useAccountListId();
-
+  const { t } = useTranslation();
   return (
     <NextLink
       href={`/accountLists/${accountListId}/reports/${item.id}`}
@@ -29,8 +31,8 @@ export const Item: React.FC<Props> = ({ item, isSelected, ...rest }) => {
             variant: 'subtitle1',
             color: 'textPrimary',
           }}
-          primary={item.title}
-          secondary={item.subTitle}
+          primary={t(item.title)}
+          secondary={item.subTitle ? t(item.subTitle) : undefined}
         />
         <ArrowForwardIos fontSize="small" color="disabled" />
       </ListItem>
