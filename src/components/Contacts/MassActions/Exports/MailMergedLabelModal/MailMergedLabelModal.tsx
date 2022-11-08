@@ -6,7 +6,7 @@ import {
   InputLabel,
   Select,
   MenuItem,
-} from '@material-ui/core';
+} from '@mui/material';
 import { useSession } from 'next-auth/react';
 import { useSnackbar } from 'notistack';
 import React, { ReactElement } from 'react';
@@ -14,9 +14,9 @@ import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { Formik } from 'formik';
 import { exportRest } from '../exportRest';
-import Modal from 'src/components/common/Modal/Modal';
-import theme from 'src/theme';
-import { ActionButton } from 'src/components/Task/Modal/Form/TaskModalForm';
+import Modal from '../../../../common/Modal/Modal';
+import theme from '../../../../../theme';
+import { ActionButton } from '../../../../common/Modal/ActionButtons/ActionButtons';
 
 interface MailMergedLabelModalProps {
   ids: string[];

@@ -1,10 +1,11 @@
-import { Button, Grid, Typography, Box, styled } from '@material-ui/core';
+import { Button, Grid, Typography, Box } from '@mui/material';
 import { useSession } from 'next-auth/react';
 import { useSnackbar } from 'notistack';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { exportRest } from './exportRest';
-import Modal from 'src/components/common/Modal/Modal';
+import Modal from '../../../common/Modal/Modal';
+import styled from '@emotion/styled';
 
 interface ExportsModalProps {
   ids: string[];
