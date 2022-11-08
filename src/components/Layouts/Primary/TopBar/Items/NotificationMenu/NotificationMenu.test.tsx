@@ -47,12 +47,12 @@ describe('NotificationMenu', () => {
     );
     expect(
       getByRole('button', {
-        name: 'S Smith, Roger May 25, 2020 — Upcoming anniversary',
+        name: 'S Smith, Roger May 26, 2020 — Upcoming anniversary',
       }),
     ).toBeInTheDocument();
     expect(
       getByRole('button', {
-        name: 'R Robertson, Tara May 25, 2020 — Upcoming birthday',
+        name: 'R Robertson, Tara May 26, 2020 — Upcoming birthday',
       }),
     ).toBeInTheDocument();
     userEvent.click(getByRole('button', { hidden: true, name: 'Load More' }));
