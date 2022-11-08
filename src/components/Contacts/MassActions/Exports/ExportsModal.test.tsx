@@ -1,10 +1,10 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import { ThemeProvider } from '@material-ui/core';
+import { ThemeProvider } from '@mui/material';
 import { SessionProvider } from 'next-auth/react';
 import userEvent from '@testing-library/user-event';
 import { ExportsModal } from './ExportsModal';
-import theme from 'src/theme';
+import theme from '../../../../theme';
 
 const ids = ['abc'];
 const accountListId = '123';

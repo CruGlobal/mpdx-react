@@ -16,8 +16,6 @@ import { useTranslation } from 'react-i18next';
 import ArrowDropDown from '@mui/icons-material/ArrowDropDown';
 import MoreHoriz from '@mui/icons-material/MoreHoriz';
 import ViewList from '@mui/icons-material/ViewList';
-import { mdiFileExportOutline } from '@mdi/js';
-import Icon from '@mdi/react';
 import { SearchBox } from '../../common/SearchBox/SearchBox';
 import {
   ContactFilterSetInput,
