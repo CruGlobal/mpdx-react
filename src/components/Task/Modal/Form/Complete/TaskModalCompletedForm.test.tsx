@@ -67,7 +67,9 @@ describe('TaskModalCompleteForm', () => {
         />
       </TestWrapper>,
     );
-    expect(getAllByRole('textbox').find((item) => item.id === ':r0:')).toHaveValue('Jan 01, 2020');
+    expect(
+      getAllByRole('textbox').find((item) => item.id === ':r0:'),
+    ).toHaveValue('Jan 01, 2020');
   });
 
   it('saves simple', async () => {
