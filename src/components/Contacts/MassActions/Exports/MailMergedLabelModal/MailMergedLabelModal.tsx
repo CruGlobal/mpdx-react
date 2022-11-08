@@ -66,7 +66,7 @@ export const MailMergedLabelModal: React.FC<MailMergedLabelModalProps> = ({
       >
         {({
           values: { template, sort },
-          handleChange,
+          setFieldValue,
           handleSubmit,
           isSubmitting,
           isValid,
@@ -80,7 +80,9 @@ export const MailMergedLabelModal: React.FC<MailMergedLabelModalProps> = ({
                     <Select
                       labelId="template"
                       value={template}
-                      onChange={handleChange('template')}
+                      onChange={(e) =>
+                        setFieldValue('template', e.target.value)
+                      }
                       style={{ marginBottom: theme.spacing(2) }}
                     >
                       {[
@@ -103,7 +105,7 @@ export const MailMergedLabelModal: React.FC<MailMergedLabelModalProps> = ({
                     <Select
                       labelId="sort"
                       value={sort}
-                      onChange={handleChange('sort')}
+                      onChange={(e) => setFieldValue('sort', e.target.value)}
                       style={{ marginBottom: theme.spacing(2) }}
                     >
                       {[
