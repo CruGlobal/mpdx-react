@@ -22,6 +22,16 @@ export const StarContactIconButton: React.FC<Props> = ({
         event.stopPropagation();
         setContactStarred({
           variables: { accountListId, contactId, starred: !isStarred },
+          optimisticResponse: {
+            updateContact: {
+              __typename: 'ContactUpdateMutationPayload',
+              contact: {
+                __typename: 'Contact',
+                id: contactId,
+                starred: !isStarred,
+              },
+            },
+          },
         });
       }}
     >

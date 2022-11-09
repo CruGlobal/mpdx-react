@@ -24,6 +24,16 @@ export const StarTaskIconButton: React.FC<Props> = ({
   const toggleStarred = () => {
     setTaskStarred({
       variables: { accountListId, taskId, starred: !isStarred },
+      optimisticResponse: {
+        updateTask: {
+          __typename: 'TaskUpdateMutationPayload',
+          task: {
+            __typename: 'Task',
+            id: taskId,
+            starred: !isStarred,
+          },
+        },
+      },
     });
   };
 
