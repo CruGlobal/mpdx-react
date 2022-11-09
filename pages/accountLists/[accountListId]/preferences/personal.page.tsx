@@ -1,11 +1,6 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  Box,
-  Checkbox,
-  FormControlLabel,
-  MenuItem,
-} from '@mui/material';
+import { Box, Checkbox, FormControlLabel, MenuItem } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { PreferencesWrapper } from './wrapper';
 import { PersPrefInfo } from './personal/info/PersPrefInfo';

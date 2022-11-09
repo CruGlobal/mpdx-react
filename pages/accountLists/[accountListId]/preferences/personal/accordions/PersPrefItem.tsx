@@ -10,47 +10,44 @@ import { ExpandMore } from '@mui/icons-material';
 import React from 'react';
 import { accordionShared } from '../shared/PersPrefShared';
 
-const StyledAccordion = styled(Accordion)(({ theme }) => ({
-  marginTop: theme.spacing(1),
-  '& .MuiAccordionSummary-content.Mui-expanded': {
-    margin: '12px 0',
-  },
+const StyledAccordion = styled(Accordion)(() => ({
+  overflow: 'hidden',
   ...accordionShared,
 }));
 
 const StyledAccordionSummary = styled(AccordionSummary)(({ theme }) => ({
+  '&.Mui-expanded': {
+    backgroundColor: theme.palette.mpdxYellow.main,
+  },
   '& .MuiAccordionSummary-content': {
-    alignItems: 'center',
-    [theme.breakpoints.down('xs')]: {
-      flexWrap: 'wrap',
+    [theme.breakpoints.only('xs')]: {
+      flexDirection: 'column',
     },
   },
 }));
 
 const StyledAccordionColumn = styled(Box)(({ theme }) => ({
   paddingRight: theme.spacing(2),
-  boxSizing: 'border-box',
   flexBasis: '100%',
-  [theme.breakpoints.down('xs')]: {
+  [theme.breakpoints.only('xs')]: {
     '&:nth-child(2)': {
       fontStyle: 'italic',
     },
   },
-  [theme.breakpoints.up('sm')]: {
+  [theme.breakpoints.up('md')]: {
     '&:first-child:not(:last-child)': {
-      width: '33.33%',
+      flexBasis: '33.33%',
     },
     '&:nth-child(2)': {
-      width: '66.66%',
+      flexBasis: '66.66%',
     },
   },
 }));
 
 const StyledAccordionDetails = styled(Box)(({ theme }) => ({
-  flexGrow: 1,
-  [theme.breakpoints.up('sm')]: {
-    width: 'calc((100% - 36px) * 0.6666)',
-    marginLeft: 'calc((100% - 36px) * 0.3333)',
+  [theme.breakpoints.up('md')]: {
+    flexBasis: 'calc((100% - 36px) * 0.661)',
+    marginLeft: 'calc((100% - 36px) * 0.338)',
   },
 }));
 
@@ -73,6 +70,7 @@ export const PersPrefItem: React.FC<PersPrefItemProps> = ({
     <StyledAccordion
       onChange={() => onAccordionChange(label)}
       expanded={expandedPanel === label}
+      disableGutters
     >
       <StyledAccordionSummary expandIcon={<ExpandMore />}>
         <StyledAccordionColumn>
