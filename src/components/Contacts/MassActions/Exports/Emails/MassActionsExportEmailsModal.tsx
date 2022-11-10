@@ -48,17 +48,12 @@ export const MassActionsExportEmailsModal: React.FC<
   const contactPrimaryEmails =
     contactData?.contacts.nodes
       .flatMap((contact) => contact.people.nodes)
-      .filter((person) => person.primaryEmailAddress) ?? [];
+      .filter((person) => person.primaryEmailAddress)
+      .map((person) => person.primaryEmailAddress?.email) ?? [];
 
-  const regularFormat = contactPrimaryEmails
-    .map((person) => person.primaryEmailAddress?.email)
-    .join(',');
+  const regularFormat = contactPrimaryEmails.join(',');
 
-  const outlookFormat = contactPrimaryEmails
-    .map((person) => {
-      return person.primaryEmailAddress?.email;
-    })
-    .join(';');
+  const outlookFormat = contactPrimaryEmails.join(';');
 
   return (
     <Modal title={t('Export Emails')} isOpen={true} handleClose={handleClose}>
