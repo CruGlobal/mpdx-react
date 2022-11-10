@@ -24,17 +24,16 @@ import { useSnackbar } from 'notistack';
 import { DateTime } from 'luxon';
 import CalendarToday from '@mui/icons-material/CalendarToday';
 import Schedule from '@mui/icons-material/Schedule';
-import { v4 as uuidv4 } from 'uuid';
 import _ from 'lodash';
 import debounce from 'lodash/fp/debounce';
 import {
   ActivityTypeEnum,
   NotificationTimeUnitEnum,
   NotificationTypeEnum,
+  ResultEnum,
   TaskCreateInput,
   TaskUpdateInput,
 } from '../../../../../graphql/types.generated';
-import { GetTaskForTaskModalQuery } from '../../Modal/TaskModalTask.generated';
 import { GetTasksForTaskListDocument } from '../../List/TaskList.generated';
 import { TaskFilter } from '../../List/List';
 import {
@@ -54,7 +53,12 @@ import {
   CancelButton,
   DeleteButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
+import { possibleResults } from './PossibleResults';
+import { possibleNextActions } from './PossibleNextActions';
+import useTaskModal from 'src/hooks/useTaskModal';
+import { GetTaskForTaskModalQuery } from '../TaskModalTask.generated';
 import { getLocalizedTaskType } from 'src/utils/functions/getLocalizedTaskType';
+import { v4 as uuidv4 } from 'uuid';
 
 const taskSchema: yup.SchemaOf<
   Omit<TaskCreateInput | TaskUpdateInput, 'result' | 'nextAction'>
@@ -65,6 +69,8 @@ const taskSchema: yup.SchemaOf<
   starred: yup.boolean().nullable(),
   startAt: yup.string().nullable(),
   completedAt: yup.string().nullable(),
+  result: yup.mixed<ResultEnum>(),
+  nextAction: yup.mixed<ActivityTypeEnum>(),
   tagList: yup.array().of(yup.string()).default([]),
   contactIds: yup.array().of(yup.string()).default([]),
   userId: yup.string().nullable(),
@@ -80,6 +86,7 @@ interface Props {
   defaultValues?: Partial<TaskCreateInput & TaskUpdateInput>;
   filter?: TaskFilter;
   rowsPerPage: number;
+  view?: 'comments' | 'log' | 'add' | 'complete' | 'edit';
 }
 
 const TaskModalForm = ({
@@ -89,6 +96,7 @@ const TaskModalForm = ({
   defaultValues,
   filter,
   rowsPerPage,
+  view,
 }: Props): ReactElement => {
   const initialTask: TaskCreateInput | TaskUpdateInput = task
     ? {
@@ -102,6 +110,8 @@ const TaskModalForm = ({
         subject: defaultValues?.subject || '',
         startAt: DateTime.local().plus({ hours: 1 }).startOf('hour').toISO(),
         completedAt: null,
+        result: defaultValues?.result || null,
+        nextAction: defaultValues?.nextAction || null,
         tagList: defaultValues?.tagList || [],
         contactIds: defaultValues?.contactIds || [],
         userId: defaultValues?.userId || null,
@@ -109,11 +119,12 @@ const TaskModalForm = ({
         notificationType: null,
         notificationTimeUnit: null,
       };
-  const { t } = useTranslation();
-  const [commentBody, changeCommentBody] = useState('');
 
+  const { t } = useTranslation();
+  const { openTaskModal } = useTaskModal();
   const [removeDialogOpen, handleRemoveDialog] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
+  const [commentBody, changeCommentBody] = useState('');
 
   const [createTask, { loading: creating }] = useCreateTaskMutation();
   const [updateTask, { loading: saving }] = useUpdateTaskMutation();
@@ -169,6 +180,9 @@ const TaskModalForm = ({
         data?.contacts.nodes ||
         [];
 
+  const availableResults = task ? possibleResults(task) : [];
+  const availableNextActions = task ? possibleNextActions(task) : [];
+
   const onSubmit = async (
     attributes: TaskCreateInput | TaskUpdateInput,
   ): Promise<void> => {
@@ -220,9 +234,10 @@ const TaskModalForm = ({
             variables: {
               accountListId,
               tasksFilter: {
-                contactIds: [
-                  defaultValues?.contactIds ? defaultValues.contactIds[0] : '',
-                ],
+                contactIds:
+                  defaultValues?.contactIds && defaultValues?.contactIds[0]
+                    ? [defaultValues.contactIds[0]]
+                    : [],
               },
             },
           },
@@ -231,6 +246,20 @@ const TaskModalForm = ({
     }
     enqueueSnackbar(t('Task saved successfully'), { variant: 'success' });
     onClose();
+    if (
+      attributes.nextAction &&
+      attributes.nextAction !== ActivityTypeEnum.None &&
+      attributes.nextAction !== task?.nextAction
+    ) {
+      openTaskModal({
+        defaultValues: {
+          activityType: attributes.nextAction,
+          contactIds: task?.contacts.nodes.map((contact) => contact.id),
+          userId: task?.user?.id,
+          tagList: task?.tagList,
+        },
+      });
+    }
   };
 
   return (
@@ -245,6 +274,8 @@ const TaskModalForm = ({
           subject,
           startAt,
           completedAt,
+          result,
+          nextAction,
           tagList,
           userId,
           contactIds,
@@ -346,61 +377,63 @@ const TaskModalForm = ({
                   <CircularProgress color="primary" size={20} />
                 )}
               </Grid>
-              <Grid item>
-                <FormControl fullWidth>
-                  <Grid container spacing={2}>
-                    <Grid xs={6} item>
-                      <MobileDatePicker
-                        InputProps={{
-                          endAdornment: (
-                            <InputAdornment position="end">
-                              <CalendarToday
-                                style={{
-                                  color: theme.palette.cruGrayMedium.main,
-                                }}
-                              />
-                            </InputAdornment>
-                          ),
-                        }}
-                        renderInput={(params) => (
-                          <TextField fullWidth {...params} />
-                        )}
-                        inputFormat="MMM dd, yyyy"
-                        closeOnSelect
-                        label={t('Due Date')}
-                        value={startAt}
-                        onChange={(date): void =>
-                          setFieldValue('startAt', date)
-                        }
-                      />
+              {!initialTask.completedAt && (
+                <Grid item>
+                  <FormControl fullWidth>
+                    <Grid container spacing={2}>
+                      <Grid xs={6} item>
+                        <MobileDatePicker
+                          InputProps={{
+                            endAdornment: (
+                              <InputAdornment position="end">
+                                <CalendarToday
+                                  style={{
+                                    color: theme.palette.cruGrayMedium.main,
+                                  }}
+                                />
+                              </InputAdornment>
+                            ),
+                          }}
+                          renderInput={(params) => (
+                            <TextField fullWidth {...params} />
+                          )}
+                          inputFormat="MMM dd, yyyy"
+                          closeOnSelect
+                          label={t('Due Date')}
+                          value={startAt}
+                          onChange={(date): void =>
+                            setFieldValue('startAt', date)
+                          }
+                        />
+                      </Grid>
+                      <Grid xs={6} item>
+                        <MobileTimePicker
+                          renderInput={(params) => (
+                            <TextField fullWidth {...params} />
+                          )}
+                          closeOnSelect
+                          InputProps={{
+                            endAdornment: (
+                              <InputAdornment position="end">
+                                <Schedule
+                                  style={{
+                                    color: theme.palette.cruGrayMedium.main,
+                                  }}
+                                />
+                              </InputAdornment>
+                            ),
+                          }}
+                          label={t('Due Time')}
+                          value={startAt}
+                          onChange={(date): void =>
+                            setFieldValue('startAt', date)
+                          }
+                        />
+                      </Grid>
                     </Grid>
-                    <Grid xs={6} item>
-                      <MobileTimePicker
-                        renderInput={(params) => (
-                          <TextField fullWidth {...params} />
-                        )}
-                        closeOnSelect
-                        InputProps={{
-                          endAdornment: (
-                            <InputAdornment position="end">
-                              <Schedule
-                                style={{
-                                  color: theme.palette.cruGrayMedium.main,
-                                }}
-                              />
-                            </InputAdornment>
-                          ),
-                        }}
-                        label={t('Due Time')}
-                        value={startAt}
-                        onChange={(date): void =>
-                          setFieldValue('startAt', date)
-                        }
-                      />
-                    </Grid>
-                  </Grid>
-                </FormControl>
-              </Grid>
+                  </FormControl>
+                </Grid>
+              )}
               {initialTask.completedAt && (
                 <Grid item>
                   <FormControl fullWidth>
@@ -436,31 +469,6 @@ const TaskModalForm = ({
                   </FormControl>
                 </Grid>
               )}
-              <Grid item>
-                <Autocomplete
-                  multiple
-                  freeSolo
-                  renderTags={(value, getTagProps): ReactElement[] =>
-                    value.map((option, index) => (
-                      <Chip
-                        {...getTagProps({ index })}
-                        color="default"
-                        size="small"
-                        key={index}
-                        label={option}
-                      />
-                    ))
-                  }
-                  renderInput={(params): ReactElement => (
-                    <TextField {...params} label={t('Tags')} />
-                  )}
-                  onChange={(_, tagList): void =>
-                    setFieldValue('tagList', tagList)
-                  }
-                  value={tagList ?? undefined}
-                  options={data?.accountList?.taskTagList || []}
-                />
-              </Grid>
               <Grid item>
                 <Autocomplete
                   multiple
@@ -511,117 +519,116 @@ const TaskModalForm = ({
                   }
                 />
               </Grid>
-              <Grid item>
-                <Tooltip
-                  title={
-                    <Typography>
-                      {t('If blank you will not be notified')}
-                    </Typography>
-                  }
-                >
-                  <Typography
-                    style={{
-                      display: 'flex',
-                      marginBottom: theme.spacing(1),
-                    }}
-                  >
-                    Notifications <InfoIcon style={{ marginLeft: '5px' }} />{' '}
-                  </Typography>
-                </Tooltip>
-                <Grid container spacing={2}>
-                  <Grid xs={4} item>
-                    <FormControl fullWidth>
-                      <InputLabel
-                        style={{ display: 'flex', alignItems: 'center' }}
-                        id="notificationType"
-                      >
-                        {t('Type')}
-                      </InputLabel>
-                      <Tooltip
-                        placement="top"
-                        title={
-                          <Typography>
-                            {t('How the notification will be sent')}
-                          </Typography>
-                        }
-                      >
-                        <Select
-                          labelId="notificationType"
-                          value={notificationType}
-                          onChange={(e) =>
-                            setFieldValue('notificationType', e.target.value)
-                          }
-                          label={t('Type')}
-                        >
-                          <MenuItem value={undefined}>{t('None')}</MenuItem>
-                          {Object.values(NotificationTypeEnum).map((val) => (
-                            <MenuItem key={val} value={val}>
-                              {t(val) /* manually added to translation file */}
-                            </MenuItem>
-                          ))}
-                        </Select>
-                      </Tooltip>
-                    </FormControl>
-                  </Grid>
-                  <Grid xs={3} item>
-                    <Tooltip
-                      placement="top"
-                      title={
-                        <Typography>
-                          {t('Amount of time before notification')}
-                        </Typography>
+              {initialTask.completedAt && availableResults.length > 0 && (
+                <Grid item>
+                  <FormControl fullWidth required>
+                    <InputLabel id="result">{t('Result')}</InputLabel>
+                    <Select
+                      label={t('Result')}
+                      labelId="result"
+                      value={result}
+                      onChange={(e) => setFieldValue('result', e.target.value)}
+                    >
+                      {availableResults.map((val) => (
+                        <MenuItem key={val} value={val}>
+                          {t(val)}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </Grid>
+              )}
+              {initialTask.completedAt && availableNextActions.length > 0 && (
+                <Grid item>
+                  <FormControl fullWidth>
+                    <InputLabel id="nextAction">{t('Next Action')}</InputLabel>
+                    <Select
+                      label={t('Next Action')}
+                      labelId="nextAction"
+                      value={nextAction}
+                      onChange={(e) =>
+                        setFieldValue('nextAction', e.target.value)
                       }
                     >
-                      <TextField
-                        label={
-                          <Typography
-                            style={{ display: 'flex', alignItems: 'center' }}
-                          >
-                            {t(' Time')}
-                          </Typography>
-                        }
-                        fullWidth
-                        value={notificationTimeBefore}
-                        onChange={handleChange('notificationTimeBefore')}
-                        inputProps={{
-                          'aria-label': 'Time',
-                          type: 'number',
-                          min: 0,
-                        }}
+                      {availableNextActions.map((val) => (
+                        <MenuItem key={val} value={val}>
+                          {t(val) /* manually added to translation file */}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </Grid>
+              )}
+              <Grid item>
+                <Autocomplete
+                  multiple
+                  freeSolo
+                  renderTags={(value, getTagProps): ReactElement[] =>
+                    value.map((option, index) => (
+                      <Chip
+                        {...getTagProps({ index })}
+                        color="default"
+                        size="small"
+                        key={index}
+                        label={option}
                       />
-                    </Tooltip>
-                  </Grid>
-                  <Grid xs={5} item>
-                    <FormControl fullWidth>
-                      <InputLabel id="notificationTimeUnit">
-                        <Typography
+                    ))
+                  }
+                  renderInput={(params): ReactElement => (
+                    <TextField {...params} label={t('Tags')} />
+                  )}
+                  onChange={(_, tagList): void =>
+                    setFieldValue('tagList', tagList)
+                  }
+                  value={tagList ?? undefined}
+                  options={data?.accountList?.taskTagList || []}
+                />
+              </Grid>
+              {!initialTask.completedAt && (
+                <Grid item>
+                  <Tooltip
+                    title={
+                      <Typography>
+                        {t('If blank you will not be notified')}
+                      </Typography>
+                    }
+                  >
+                    <Typography
+                      style={{
+                        display: 'flex',
+                        marginBottom: theme.spacing(1),
+                      }}
+                    >
+                      Notifications <InfoIcon style={{ marginLeft: '5px' }} />{' '}
+                    </Typography>
+                  </Tooltip>
+                  <Grid container spacing={2}>
+                    <Grid xs={4} item>
+                      <FormControl fullWidth>
+                        <InputLabel
                           style={{ display: 'flex', alignItems: 'center' }}
+                          id="notificationType"
                         >
-                          {t(' Unit')}
-                        </Typography>
-                      </InputLabel>
-                      <Tooltip
-                        placement="top"
-                        title={
-                          <Typography>
-                            {t('Days, hours, or minutes')}
-                          </Typography>
-                        }
-                      >
-                        <Select
-                          labelId="notificationTimeUnit"
-                          value={notificationTimeUnit}
-                          onChange={(e) =>
-                            setFieldValue(
-                              'notificationTimeUnit',
-                              e.target.value,
-                            )
+                          {t('Type')}
+                        </InputLabel>
+                        <Tooltip
+                          placement="top"
+                          title={
+                            <Typography>
+                              {t('How the notification will be sent')}
+                            </Typography>
                           }
-                          label={t(' Unit')}
                         >
-                          <MenuItem value={undefined}>{t('None')}</MenuItem>
-                          {Object.values(NotificationTimeUnitEnum).map(
-                            (val) => (
+                          <Select
+                            labelId="notificationType"
+                            value={notificationType}
+                            onChange={(e) =>
+                              setFieldValue('notificationType', e.target.value)
+                            }
+                            label={t('Type')}
+                          >
+                            <MenuItem value={undefined}>{t('None')}</MenuItem>
+                            {Object.values(NotificationTypeEnum).map((val) => (
                               <MenuItem key={val} value={val}>
                                 {
                                   t(
@@ -629,24 +636,98 @@ const TaskModalForm = ({
                                   ) /* manually added to translation file */
                                 }
                               </MenuItem>
-                            ),
-                          )}
-                        </Select>
+                            ))}
+                          </Select>
+                        </Tooltip>
+                      </FormControl>
+                    </Grid>
+                    <Grid xs={3} item>
+                      <Tooltip
+                        placement="top"
+                        title={
+                          <Typography>
+                            {t('Amount of time before notification')}
+                          </Typography>
+                        }
+                      >
+                        <TextField
+                          label={
+                            <Typography
+                              style={{ display: 'flex', alignItems: 'center' }}
+                            >
+                              {t(' Time')}
+                            </Typography>
+                          }
+                          fullWidth
+                          value={notificationTimeBefore}
+                          onChange={handleChange('notificationTimeBefore')}
+                          inputProps={{
+                            'aria-label': 'Time',
+                            type: 'number',
+                            min: 0,
+                          }}
+                        />
                       </Tooltip>
-                    </FormControl>
+                    </Grid>
+                    <Grid xs={5} item>
+                      <FormControl fullWidth>
+                        <InputLabel id="notificationTimeUnit">
+                          <Typography
+                            style={{ display: 'flex', alignItems: 'center' }}
+                          >
+                            {t(' Unit')}
+                          </Typography>
+                        </InputLabel>
+                        <Tooltip
+                          placement="top"
+                          title={
+                            <Typography>
+                              {t('Days, hours, or minutes')}
+                            </Typography>
+                          }
+                        >
+                          <Select
+                            labelId="notificationTimeUnit"
+                            value={notificationTimeUnit}
+                            onChange={(e) =>
+                              setFieldValue(
+                                'notificationTimeUnit',
+                                e.target.value,
+                              )
+                            }
+                            label={t(' Unit')}
+                          >
+                            <MenuItem value={undefined}>{t('None')}</MenuItem>
+                            {Object.values(NotificationTimeUnitEnum).map(
+                              (val) => (
+                                <MenuItem key={val} value={val}>
+                                  {
+                                    t(
+                                      val,
+                                    ) /* manually added to translation file */
+                                  }
+                                </MenuItem>
+                              ),
+                            )}
+                          </Select>
+                        </Tooltip>
+                      </FormControl>
+                    </Grid>
                   </Grid>
                 </Grid>
-              </Grid>
-              <Grid item>
-                <TextField
-                  label={t('Comment')}
-                  value={commentBody}
-                  onChange={(event) => changeCommentBody(event.target.value)}
-                  fullWidth
-                  multiline
-                  inputProps={{ 'aria-label': 'Comment' }}
-                />
-              </Grid>
+              )}
+              {!initialTask.completedAt && view !== 'edit' && (
+                <Grid item>
+                  <TextField
+                    label={t('Comment')}
+                    value={commentBody}
+                    onChange={(event) => changeCommentBody(event.target.value)}
+                    fullWidth
+                    multiline
+                    inputProps={{ 'aria-label': 'Comment' }}
+                  />
+                </Grid>
+              )}
             </FormFieldsGridContainer>
           </DialogContent>
           <DialogActions>
