@@ -24,6 +24,7 @@ const openCreateAppealModal = jest.fn();
 const openEditFieldsModal = jest.fn();
 const openHideContactsModal = jest.fn();
 const openRemoveTagsModal = jest.fn();
+const openExportEmailsModal = jest.fn();
 const openCompleteTasksModal = jest.fn();
 const openDeleteTasksModal = jest.fn();
 const openEditTasksModal = jest.fn();
@@ -90,6 +91,7 @@ describe('ListHeader', () => {
             openRemoveTagsModal={openRemoveTagsModal}
             openAddTagsModal={openAddTagsModal}
             openCreateAppealModal={openCreateAppealModal}
+            openExportEmailsModal={openExportEmailsModal}
           />
         </ThemeProvider>,
       );
@@ -122,6 +124,7 @@ describe('ListHeader', () => {
             openRemoveTagsModal={openRemoveTagsModal}
             openAddTagsModal={openAddTagsModal}
             openCreateAppealModal={openCreateAppealModal}
+            openExportEmailsModal={openExportEmailsModal}
           />
         </ThemeProvider>,
       );
@@ -199,6 +202,7 @@ describe('ListHeader', () => {
             openRemoveTagsModal={openRemoveTagsModal}
             openAddTagsModal={openAddTagsModal}
             openCreateAppealModal={openCreateAppealModal}
+            openExportEmailsModal={openExportEmailsModal}
           />
         </ThemeProvider>,
       );
@@ -237,6 +241,7 @@ describe('ListHeader', () => {
           openRemoveTagsModal={openRemoveTagsModal}
           openAddTagsModal={openAddTagsModal}
           openCreateAppealModal={openCreateAppealModal}
+          openExportEmailsModal={openExportEmailsModal}
         />
       </ThemeProvider>,
     );
@@ -275,6 +280,7 @@ describe('ListHeader', () => {
             openRemoveTagsModal={openRemoveTagsModal}
             openAddTagsModal={openAddTagsModal}
             openCreateAppealModal={openCreateAppealModal}
+            openExportEmailsModal={openExportEmailsModal}
           />
         </ThemeProvider>,
       );
@@ -311,6 +317,7 @@ describe('ListHeader', () => {
           openRemoveTagsModal={openRemoveTagsModal}
           openAddTagsModal={openAddTagsModal}
           openCreateAppealModal={openCreateAppealModal}
+          openExportEmailsModal={openExportEmailsModal}
         />
       </ThemeProvider>,
     );
@@ -345,6 +352,7 @@ describe('ListHeader', () => {
           openRemoveTagsModal={openRemoveTagsModal}
           openAddTagsModal={openAddTagsModal}
           openCreateAppealModal={openCreateAppealModal}
+          openExportEmailsModal={openExportEmailsModal}
         />
       </ThemeProvider>,
     );
@@ -379,6 +387,7 @@ describe('ListHeader', () => {
           openRemoveTagsModal={openRemoveTagsModal}
           openAddTagsModal={openAddTagsModal}
           openCreateAppealModal={openCreateAppealModal}
+          openExportEmailsModal={openExportEmailsModal}
         />
       </ThemeProvider>,
     );
@@ -413,6 +422,7 @@ describe('ListHeader', () => {
           openRemoveTagsModal={openRemoveTagsModal}
           openAddTagsModal={openAddTagsModal}
           openCreateAppealModal={openCreateAppealModal}
+          openExportEmailsModal={openExportEmailsModal}
         />
       </ThemeProvider>,
     );
@@ -447,6 +457,7 @@ describe('ListHeader', () => {
           openRemoveTagsModal={openRemoveTagsModal}
           openAddTagsModal={openAddTagsModal}
           openCreateAppealModal={openCreateAppealModal}
+          openExportEmailsModal={openExportEmailsModal}
         />
       </ThemeProvider>,
     );
@@ -458,6 +469,41 @@ describe('ListHeader', () => {
     expect(getByText('Remove Tags')).toBeInTheDocument();
     userEvent.click(getByText('Remove Tags'));
     expect(openRemoveTagsModal).toHaveBeenCalled();
+  });
+
+  it('opens the more actions menu and clicks the export emails action', () => {
+    const { getByPlaceholderText, getByText, queryByText } = render(
+      <ThemeProvider theme={theme}>
+        <ListHeader
+          selectedIds={selectedIds}
+          page="contact"
+          activeFilters={false}
+          starredFilter={{}}
+          toggleStarredFilter={toggleStarredFilter}
+          headerCheckboxState={ListHeaderCheckBoxState.unchecked}
+          filterPanelOpen={false}
+          contactDetailsOpen={false}
+          toggleFilterPanel={toggleFilterPanel}
+          onCheckAllItems={onCheckAllItems}
+          onSearchTermChanged={onSearchTermChanged}
+          openAddToAppealModal={openAddToAppealModal}
+          openEditFieldsModal={openEditFieldsModal}
+          openHideContactsModal={openHideContactsModal}
+          openRemoveTagsModal={openRemoveTagsModal}
+          openAddTagsModal={openAddTagsModal}
+          openCreateAppealModal={openCreateAppealModal}
+          openExportEmailsModal={openExportEmailsModal}
+        />
+      </ThemeProvider>,
+    );
+
+    expect(getByPlaceholderText('Search Contacts')).toBeInTheDocument();
+    expect(queryByText('Export Emails')).not.toBeInTheDocument();
+    const actionsButton = getByText('Actions');
+    userEvent.click(actionsButton);
+    expect(getByText('Export Emails')).toBeInTheDocument();
+    userEvent.click(getByText('Export Emails'));
+    expect(openExportEmailsModal).toHaveBeenCalled();
   });
 
   describe('Task', () => {
@@ -482,6 +528,7 @@ describe('ListHeader', () => {
             openRemoveTagsModal={openRemoveTagsModal}
             openAddTagsModal={openAddTagsModal}
             openCreateAppealModal={openCreateAppealModal}
+            openExportEmailsModal={openExportEmailsModal}
             openDeleteTasksModal={openDeleteTasksModal}
           />
         </ThemeProvider>,
@@ -512,6 +559,7 @@ describe('ListHeader', () => {
           openRemoveTagsModal={openRemoveTagsModal}
           openAddTagsModal={openAddTagsModal}
           openCreateAppealModal={openCreateAppealModal}
+          openExportEmailsModal={openExportEmailsModal}
         />
       </ThemeProvider>,
     );
@@ -551,6 +599,7 @@ describe('ListHeader', () => {
           openRemoveTagsModal={openRemoveTagsModal}
           openAddTagsModal={openAddTagsModal}
           openCreateAppealModal={openCreateAppealModal}
+          openExportEmailsModal={openExportEmailsModal}
         />
       </ThemeProvider>,
     );
@@ -583,6 +632,7 @@ describe('ListHeader', () => {
           openRemoveTagsModal={openRemoveTagsModal}
           openAddTagsModal={openAddTagsModal}
           openCreateAppealModal={openCreateAppealModal}
+          openExportEmailsModal={openExportEmailsModal}
         />
       </ThemeProvider>,
     );
@@ -617,6 +667,7 @@ describe('ListHeader', () => {
           openRemoveTagsModal={openRemoveTagsModal}
           openAddTagsModal={openAddTagsModal}
           openCreateAppealModal={openCreateAppealModal}
+          openExportEmailsModal={openExportEmailsModal}
         />
       </ThemeProvider>,
     );
@@ -653,6 +704,7 @@ describe('ListHeader', () => {
           openRemoveTagsModal={openRemoveTagsModal}
           openAddTagsModal={openAddTagsModal}
           openCreateAppealModal={openCreateAppealModal}
+          openExportEmailsModal={openExportEmailsModal}
         />
       </ThemeProvider>,
     );
@@ -689,6 +741,7 @@ describe('ListHeader', () => {
           openRemoveTagsModal={openRemoveTagsModal}
           openAddTagsModal={openAddTagsModal}
           openCreateAppealModal={openCreateAppealModal}
+          openExportEmailsModal={openExportEmailsModal}
         />
       </ThemeProvider>,
     );
@@ -725,6 +778,7 @@ describe('ListHeader', () => {
           openRemoveTagsModal={openRemoveTagsModal}
           openAddTagsModal={openAddTagsModal}
           openCreateAppealModal={openCreateAppealModal}
+          openExportEmailsModal={openExportEmailsModal}
         />
       </ThemeProvider>,
     );
@@ -762,6 +816,7 @@ describe('ListHeader', () => {
           openRemoveTagsModal={openRemoveTagsModal}
           openAddTagsModal={openAddTagsModal}
           openCreateAppealModal={openCreateAppealModal}
+          openExportEmailsModal={openExportEmailsModal}
         />
       </ThemeProvider>,
     );
@@ -797,6 +852,7 @@ describe('ListHeader', () => {
           openRemoveTagsModal={openRemoveTagsModal}
           openAddTagsModal={openAddTagsModal}
           openCreateAppealModal={openCreateAppealModal}
+          openExportEmailsModal={openExportEmailsModal}
         />
       </ThemeProvider>,
     );
@@ -828,6 +884,7 @@ describe('ListHeader', () => {
           openRemoveTagsModal={openRemoveTagsModal}
           openAddTagsModal={openAddTagsModal}
           openCreateAppealModal={openCreateAppealModal}
+          openExportEmailsModal={openExportEmailsModal}
         />
       </ThemeProvider>,
     );
@@ -860,6 +917,7 @@ describe('ListHeader', () => {
           openRemoveTagsModal={openRemoveTagsModal}
           openAddTagsModal={openAddTagsModal}
           openCreateAppealModal={openCreateAppealModal}
+          openExportEmailsModal={openExportEmailsModal}
         />
       </ThemeProvider>,
     );
@@ -888,6 +946,7 @@ describe('ListHeader', () => {
           openRemoveTagsModal={openRemoveTagsModal}
           openAddTagsModal={openAddTagsModal}
           openCreateAppealModal={openCreateAppealModal}
+          openExportEmailsModal={openExportEmailsModal}
         />
       </ThemeProvider>,
     );
