@@ -121,6 +121,7 @@ interface ListHeaderProps {
   openEditTasksModal?: (open: boolean) => void;
   openTasksRemoveTagsModal?: (open: boolean) => void;
   openTasksAddTagsModal?: (open: boolean) => void;
+  openExportsModal?: (open: boolean) => void;
 }
 
 export const ListHeader: React.FC<ListHeaderProps> = ({
@@ -150,6 +151,7 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
   openEditTasksModal,
   openTasksRemoveTagsModal,
   openTasksAddTagsModal,
+  openExportsModal,
 }) => {
   const { t } = useTranslation();
 
@@ -216,7 +218,8 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
               openAddToAppealModal &&
               openCreateAppealModal &&
               openAddTagsModal &&
-              openRemoveTagsModal && (
+              openRemoveTagsModal &&
+              openExportsModal && (
                 <>
                   <Hidden xsDown>
                     {selectedIds?.length > 0 && (
@@ -247,6 +250,17 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
                             horizontal: 'center',
                           }}
                         >
+                          <MenuItem
+                            onClick={() => {
+                              openExportsModal(true);
+                              handleClose();
+                            }}
+                          >
+                            <ListItemText>{t('Export')}</ListItemText>
+                          </MenuItem>
+                          <MenuItem divider>
+                            <ListItemText>{t('Merge')}</ListItemText>
+                          </MenuItem>
                           <MenuItem
                             onClick={() => {
                               openAddTagsModal(true);
