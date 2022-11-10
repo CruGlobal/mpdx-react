@@ -26,9 +26,6 @@ export const Default = (): ReactElement => {
     id: contactId,
     people: mock.people,
     primaryPerson: mock.primaryPerson,
-    greeting: 'Hello test',
-    envelopeGreeting: 'Dear Test',
-    sendNewsletter: mock.sendNewsletter,
     addresses: mock.addresses,
   };
 
