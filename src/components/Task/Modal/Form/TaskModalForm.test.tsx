@@ -130,19 +130,6 @@ describe('TaskModalForm', () => {
 
     const tagsElement = getByLabelText('Tags');
     userEvent.click(tagsElement);
-    userEvent.type(getByLabelText('Time'), '20');
-    userEvent.click(getByLabelText('Unit'));
-    userEvent.click(
-      within(getByRole('listbox', { hidden: true, name: 'Unit' })).getByText(
-        'HOURS',
-      ),
-    );
-    userEvent.click(getByLabelText('Type'));
-    userEvent.click(
-      within(getByRole('listbox', { hidden: true, name: 'Type' })).getByText(
-        'BOTH',
-      ),
-    );
   }, 25000);
 
   it('should load and show data for task', async () => {
