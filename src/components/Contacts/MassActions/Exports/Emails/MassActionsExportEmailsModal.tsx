@@ -46,8 +46,9 @@ export const MassActionsExportEmailsModal: React.FC<
   });
 
   const contactPrimaryEmails =
-    contactData?.contacts.nodes.flatMap((contact) => contact.people.nodes) ??
-    [];
+    contactData?.contacts.nodes
+      .flatMap((contact) => contact.people.nodes)
+      .filter((person) => person.primaryEmailAddress) ?? [];
 
   const regularFormat = contactPrimaryEmails
     .map((person) => person.primaryEmailAddress?.email)
