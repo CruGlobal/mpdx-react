@@ -1,8 +1,6 @@
 import React, { ReactElement, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
-  Button,
-  ButtonProps,
   Checkbox,
   FormControl,
   FormControlLabel,
@@ -131,7 +129,10 @@ export const PersPrefField: React.FC<PersPrefFieldProps> = ({
 
       {/* Select field */}
       {type === 'select' && options.length > 0 && (
-        <StyledSelect value={selectValueState} onChange={(e) => setSelectValueState(e.target.value as string)}>
+        <StyledSelect
+          value={selectValueState}
+          onChange={(e) => setSelectValueState(e.target.value as string)}
+        >
           {options.map(([optionVal, optionLabel], index) => {
             return (
               <MenuItem value={optionVal} key={index}>
@@ -175,42 +176,6 @@ export const PersPrefField: React.FC<PersPrefFieldProps> = ({
         <StyledFormHelperText>{helperText}</StyledFormHelperText>
       )}
     </FormControl>
-  );
-};
-
-const StyledButton = styled(Button)(({ theme }) => ({
-  marginTop: theme.spacing(2),
-}));
-
-interface PersPrefFormWrapperProps {
-  formAttrs?: { action?: string; method?: string };
-  formButtonText?: string;
-  formButtonColor?: ButtonProps['color'];
-  formButtonVariant?: ButtonProps['variant'];
-  children?: React.ReactNode;
-}
-
-export const PersPrefFormWrapper: React.FC<PersPrefFormWrapperProps> = ({
-  formAttrs = {},
-  formButtonText = 'Save',
-  formButtonColor = 'primary',
-  formButtonVariant = 'contained',
-  children,
-}) => {
-  const { t } = useTranslation();
-
-  return (
-    <form {...formAttrs}>
-      {children}
-      <StyledButton
-        variant={formButtonVariant}
-        color={formButtonColor}
-        disableElevation
-        disableRipple
-      >
-        {t(formButtonText)}
-      </StyledButton>
-    </form>
   );
 };
 

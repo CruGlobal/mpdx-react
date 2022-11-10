@@ -6,9 +6,9 @@ import { PreferencesWrapper } from './wrapper';
 import { PersPrefInfo } from './personal/info/PersPrefInfo';
 import { PersPrefGroup } from './personal/accordions/PersPrefGroup';
 import { PersPrefItem } from './personal/accordions/PersPrefItem';
+import { PersPrefFormWrapper } from './personal/forms/PersPrefFormWrapper';
 import {
   PersPrefFieldWrapper,
-  PersPrefFormWrapper,
   StyledOutlinedInput,
   StyledSelect,
 } from './personal/shared/PersPrefForms';
