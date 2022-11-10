@@ -29,6 +29,7 @@ const openDeleteTasksModal = jest.fn();
 const openEditTasksModal = jest.fn();
 const openTasksRemoveTagsModal = jest.fn();
 const openTasksAddTagsModal = jest.fn();
+const openExportsModal = jest.fn();
 
 jest.mock('../../../hooks/useTaskModal');
 
@@ -90,6 +91,7 @@ describe('ListHeader', () => {
             openRemoveTagsModal={openRemoveTagsModal}
             openAddTagsModal={openAddTagsModal}
             openCreateAppealModal={openCreateAppealModal}
+            openExportsModal={openExportsModal}
           />
         </ThemeProvider>,
       );
@@ -122,6 +124,7 @@ describe('ListHeader', () => {
             openRemoveTagsModal={openRemoveTagsModal}
             openAddTagsModal={openAddTagsModal}
             openCreateAppealModal={openCreateAppealModal}
+            openExportsModal={openExportsModal}
           />
         </ThemeProvider>,
       );
@@ -199,6 +202,7 @@ describe('ListHeader', () => {
             openRemoveTagsModal={openRemoveTagsModal}
             openAddTagsModal={openAddTagsModal}
             openCreateAppealModal={openCreateAppealModal}
+            openExportsModal={openExportsModal}
           />
         </ThemeProvider>,
       );
@@ -237,6 +241,7 @@ describe('ListHeader', () => {
           openRemoveTagsModal={openRemoveTagsModal}
           openAddTagsModal={openAddTagsModal}
           openCreateAppealModal={openCreateAppealModal}
+          openExportsModal={openExportsModal}
         />
       </ThemeProvider>,
     );
@@ -275,6 +280,7 @@ describe('ListHeader', () => {
             openRemoveTagsModal={openRemoveTagsModal}
             openAddTagsModal={openAddTagsModal}
             openCreateAppealModal={openCreateAppealModal}
+            openExportsModal={openExportsModal}
           />
         </ThemeProvider>,
       );
@@ -311,6 +317,7 @@ describe('ListHeader', () => {
           openRemoveTagsModal={openRemoveTagsModal}
           openAddTagsModal={openAddTagsModal}
           openCreateAppealModal={openCreateAppealModal}
+          openExportsModal={openExportsModal}
         />
       </ThemeProvider>,
     );
@@ -345,6 +352,7 @@ describe('ListHeader', () => {
           openRemoveTagsModal={openRemoveTagsModal}
           openAddTagsModal={openAddTagsModal}
           openCreateAppealModal={openCreateAppealModal}
+          openExportsModal={openExportsModal}
         />
       </ThemeProvider>,
     );
@@ -379,6 +387,7 @@ describe('ListHeader', () => {
           openRemoveTagsModal={openRemoveTagsModal}
           openAddTagsModal={openAddTagsModal}
           openCreateAppealModal={openCreateAppealModal}
+          openExportsModal={openExportsModal}
         />
       </ThemeProvider>,
     );
@@ -413,6 +422,7 @@ describe('ListHeader', () => {
           openRemoveTagsModal={openRemoveTagsModal}
           openAddTagsModal={openAddTagsModal}
           openCreateAppealModal={openCreateAppealModal}
+          openExportsModal={openExportsModal}
         />
       </ThemeProvider>,
     );
@@ -447,6 +457,7 @@ describe('ListHeader', () => {
           openRemoveTagsModal={openRemoveTagsModal}
           openAddTagsModal={openAddTagsModal}
           openCreateAppealModal={openCreateAppealModal}
+          openExportsModal={openExportsModal}
         />
       </ThemeProvider>,
     );
@@ -458,6 +469,41 @@ describe('ListHeader', () => {
     expect(getByText('Remove Tags')).toBeInTheDocument();
     userEvent.click(getByText('Remove Tags'));
     expect(openRemoveTagsModal).toHaveBeenCalled();
+  });
+
+  it('opens export contacts modal', () => {
+    const { getByPlaceholderText, getByText, queryByText } = render(
+      <ThemeProvider theme={theme}>
+        <ListHeader
+          selectedIds={selectedIds}
+          page="contact"
+          activeFilters={false}
+          starredFilter={{}}
+          toggleStarredFilter={toggleStarredFilter}
+          headerCheckboxState={ListHeaderCheckBoxState.unchecked}
+          filterPanelOpen={false}
+          contactDetailsOpen={false}
+          toggleFilterPanel={toggleFilterPanel}
+          onCheckAllItems={onCheckAllItems}
+          onSearchTermChanged={onSearchTermChanged}
+          openAddToAppealModal={openAddToAppealModal}
+          openEditFieldsModal={openEditFieldsModal}
+          openHideContactsModal={openHideContactsModal}
+          openRemoveTagsModal={openRemoveTagsModal}
+          openAddTagsModal={openAddTagsModal}
+          openCreateAppealModal={openCreateAppealModal}
+          openExportsModal={openExportsModal}
+        />
+      </ThemeProvider>,
+    );
+
+    expect(getByPlaceholderText('Search Contacts')).toBeInTheDocument();
+    expect(queryByText('Export')).not.toBeInTheDocument();
+    const actionsButton = getByText('Actions');
+    userEvent.click(actionsButton);
+    expect(getByText('Export')).toBeInTheDocument();
+    userEvent.click(getByText('Export'));
+    expect(openExportsModal).toHaveBeenCalled();
   });
 
   describe('Task', () => {
@@ -482,6 +528,7 @@ describe('ListHeader', () => {
             openRemoveTagsModal={openRemoveTagsModal}
             openAddTagsModal={openAddTagsModal}
             openCreateAppealModal={openCreateAppealModal}
+            openExportsModal={openExportsModal}
             openDeleteTasksModal={openDeleteTasksModal}
           />
         </ThemeProvider>,
@@ -512,6 +559,7 @@ describe('ListHeader', () => {
           openRemoveTagsModal={openRemoveTagsModal}
           openAddTagsModal={openAddTagsModal}
           openCreateAppealModal={openCreateAppealModal}
+          openExportsModal={openExportsModal}
         />
       </ThemeProvider>,
     );
@@ -551,6 +599,7 @@ describe('ListHeader', () => {
           openRemoveTagsModal={openRemoveTagsModal}
           openAddTagsModal={openAddTagsModal}
           openCreateAppealModal={openCreateAppealModal}
+          openExportsModal={openExportsModal}
         />
       </ThemeProvider>,
     );
@@ -583,6 +632,7 @@ describe('ListHeader', () => {
           openRemoveTagsModal={openRemoveTagsModal}
           openAddTagsModal={openAddTagsModal}
           openCreateAppealModal={openCreateAppealModal}
+          openExportsModal={openExportsModal}
         />
       </ThemeProvider>,
     );
@@ -617,6 +667,7 @@ describe('ListHeader', () => {
           openRemoveTagsModal={openRemoveTagsModal}
           openAddTagsModal={openAddTagsModal}
           openCreateAppealModal={openCreateAppealModal}
+          openExportsModal={openExportsModal}
         />
       </ThemeProvider>,
     );
@@ -653,6 +704,7 @@ describe('ListHeader', () => {
           openRemoveTagsModal={openRemoveTagsModal}
           openAddTagsModal={openAddTagsModal}
           openCreateAppealModal={openCreateAppealModal}
+          openExportsModal={openExportsModal}
         />
       </ThemeProvider>,
     );
@@ -689,6 +741,7 @@ describe('ListHeader', () => {
           openRemoveTagsModal={openRemoveTagsModal}
           openAddTagsModal={openAddTagsModal}
           openCreateAppealModal={openCreateAppealModal}
+          openExportsModal={openExportsModal}
         />
       </ThemeProvider>,
     );
@@ -725,6 +778,7 @@ describe('ListHeader', () => {
           openRemoveTagsModal={openRemoveTagsModal}
           openAddTagsModal={openAddTagsModal}
           openCreateAppealModal={openCreateAppealModal}
+          openExportsModal={openExportsModal}
         />
       </ThemeProvider>,
     );
@@ -762,6 +816,7 @@ describe('ListHeader', () => {
           openRemoveTagsModal={openRemoveTagsModal}
           openAddTagsModal={openAddTagsModal}
           openCreateAppealModal={openCreateAppealModal}
+          openExportsModal={openExportsModal}
         />
       </ThemeProvider>,
     );
@@ -797,6 +852,7 @@ describe('ListHeader', () => {
           openRemoveTagsModal={openRemoveTagsModal}
           openAddTagsModal={openAddTagsModal}
           openCreateAppealModal={openCreateAppealModal}
+          openExportsModal={openExportsModal}
         />
       </ThemeProvider>,
     );
@@ -828,6 +884,7 @@ describe('ListHeader', () => {
           openRemoveTagsModal={openRemoveTagsModal}
           openAddTagsModal={openAddTagsModal}
           openCreateAppealModal={openCreateAppealModal}
+          openExportsModal={openExportsModal}
         />
       </ThemeProvider>,
     );
@@ -860,6 +917,7 @@ describe('ListHeader', () => {
           openRemoveTagsModal={openRemoveTagsModal}
           openAddTagsModal={openAddTagsModal}
           openCreateAppealModal={openCreateAppealModal}
+          openExportsModal={openExportsModal}
         />
       </ThemeProvider>,
     );
@@ -888,6 +946,7 @@ describe('ListHeader', () => {
           openRemoveTagsModal={openRemoveTagsModal}
           openAddTagsModal={openAddTagsModal}
           openCreateAppealModal={openCreateAppealModal}
+          openExportsModal={openExportsModal}
         />
       </ThemeProvider>,
     );
