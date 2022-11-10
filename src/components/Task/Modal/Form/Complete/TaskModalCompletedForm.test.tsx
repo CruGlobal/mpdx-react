@@ -4,7 +4,6 @@ import userEvent from '@testing-library/user-event';
 import { DateTime } from 'luxon';
 import { getDataForTaskModalMock } from '../TaskModalForm.mock';
 import TestWrapper from '../../../../../../__tests__/util/TestWrapper';
-import { dateFormat } from '../../../../../lib/intlFormat/intlFormat';
 import {
   ActivityTypeEnum,
   NotificationTimeUnitEnum,
@@ -68,12 +67,9 @@ describe('TaskModalCompleteForm', () => {
         />
       </TestWrapper>,
     );
-    const dateString = dateFormat(DateTime.local());
     expect(
-      getAllByRole('textbox').find(
-        (item) => (item as HTMLInputElement).value === dateString,
-      ),
-    ).toBeInTheDocument();
+      getAllByRole('textbox').find((item) => item.id === ':r0:'),
+    ).toHaveValue('Jan 01, 2020');
   });
 
   it('saves simple', async () => {
