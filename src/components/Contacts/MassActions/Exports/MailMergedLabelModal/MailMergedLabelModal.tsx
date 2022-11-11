@@ -79,6 +79,7 @@ export const MailMergedLabelModal: React.FC<MailMergedLabelModalProps> = ({
                     <InputLabel id="template">{t('Template')}</InputLabel>
                     <Select
                       labelId="template"
+                      label={t('Template')}
                       value={template}
                       onChange={(e) =>
                         setFieldValue('template', e.target.value)
@@ -104,6 +105,7 @@ export const MailMergedLabelModal: React.FC<MailMergedLabelModalProps> = ({
                     <InputLabel id="sort">{t('Sort By')}</InputLabel>
                     <Select
                       labelId="sort"
+                      label={t('Sort By')}
                       value={sort}
                       onChange={(e) => setFieldValue('sort', e.target.value)}
                       style={{ marginBottom: theme.spacing(2) }}
