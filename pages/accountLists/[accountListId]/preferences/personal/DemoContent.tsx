@@ -163,3 +163,11 @@ export const options = [
   ['opt4', 'Option 4'],
   ['opt5', 'Option 5'],
 ];
+
+export const options2 = [
+  { label: 'Option 1', value: 'opt1' },
+  { label: 'Option 2', value: 'opt2' },
+  { label: 'Option 3', value: 'opt3' },
+  { label: 'Option 4', value: 'opt4' },
+  { label: 'Option 5', value: 'opt5' },
+];

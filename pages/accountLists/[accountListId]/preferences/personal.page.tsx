@@ -7,12 +7,13 @@ import { PersPrefInfo } from './personal/info/PersPrefInfo';
 import { PersPrefGroup } from './personal/accordions/PersPrefGroup';
 import { PersPrefItem } from './personal/accordions/PersPrefItem';
 import { PersPrefFormWrapper } from './personal/forms/PersPrefFormWrapper';
+import { PersPrefSelect } from './personal/forms/PersPrefSelect';
 import {
   PersPrefFieldWrapper,
   StyledOutlinedInput,
   StyledSelect,
 } from './personal/shared/PersPrefForms';
-import { language, locale, options } from './personal/DemoContent';
+import { language, locale, options, options2 } from './personal/DemoContent';
 
 const StyledColumnsWrapper = styled(Box)(({ theme }) => ({
   marginBottom: theme.spacing(2),
@@ -62,6 +63,14 @@ const PersonalPreferences: React.FC = () => {
                 ))}
               </StyledSelect>
             </PersPrefFieldWrapper>
+            <PersPrefSelect
+              label={t('Language')}
+              helperText={t(
+                'The language determines your default language for MPDX.',
+              )}
+              value="opt1"
+              selectOptions={options2}
+            />
           </PersPrefFormWrapper>
         </PersPrefItem>
 
