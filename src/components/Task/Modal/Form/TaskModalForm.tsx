@@ -60,9 +60,7 @@ import { GetTaskForTaskModalQuery } from '../TaskModalTask.generated';
 import { getLocalizedTaskType } from 'src/utils/functions/getLocalizedTaskType';
 import { v4 as uuidv4 } from 'uuid';
 
-const taskSchema: yup.SchemaOf<
-  Omit<TaskCreateInput | TaskUpdateInput, 'result' | 'nextAction'>
-> = yup.object({
+const taskSchema: yup.SchemaOf<TaskCreateInput | TaskUpdateInput> = yup.object({
   id: yup.string().nullable(),
   activityType: yup.mixed<ActivityTypeEnum>(),
   subject: yup.string().required(),
@@ -234,10 +232,9 @@ const TaskModalForm = ({
             variables: {
               accountListId,
               tasksFilter: {
-                contactIds:
-                  defaultValues?.contactIds && defaultValues?.contactIds[0]
-                    ? [defaultValues.contactIds[0]]
-                    : [],
+                contactIds: defaultValues?.contactIds?.[0]
+                  ? [defaultValues.contactIds[0]]
+                  : [],
               },
             },
           },
