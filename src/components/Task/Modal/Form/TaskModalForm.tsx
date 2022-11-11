@@ -251,7 +251,7 @@ const TaskModalForm = ({
       openTaskModal({
         defaultValues: {
           activityType: attributes.nextAction,
-          contactIds: task?.contacts.nodes.map((contact) => contact.id),
+          contactIds: attributes.contactIds,
           userId: task?.user?.id,
           tagList: task?.tagList,
         },
