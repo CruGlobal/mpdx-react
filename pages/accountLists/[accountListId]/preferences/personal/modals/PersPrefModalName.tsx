@@ -1,8 +1,8 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Grid } from '@mui/material';
+import { OutlinedInput, Unstable_Grid2 as Grid } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { PersPrefField } from '../shared/PersPrefForms';
+import { PersPrefFieldWrapper } from '../shared/PersPrefForms';
 import { info } from '../DemoContent';
 
 const StyledGridItem = styled(Grid)(({ theme }) => ({
@@ -22,25 +22,32 @@ export const PersPrefModalName: React.FC = () => {
 
   return (
     <StyledGrid container spacing={2}>
-      <StyledGridItem item xs={12} sm={2}>
-        <PersPrefField label={t('Title')} inputValue={info.title} />
+      {/* Title */}
+      <StyledGridItem xs={12} sm={2}>
+        <PersPrefFieldWrapper labelText={t('Title')}>
+          <OutlinedInput value={info.title} />
+        </PersPrefFieldWrapper>
       </StyledGridItem>
-      <StyledGridItem item xs={12} sm={4}>
-        <PersPrefField
-          label={t('First Name')}
-          inputValue={info.first_name}
-          required
-        />
+
+      {/* First name */}
+      <StyledGridItem xs={12} sm={4}>
+        <PersPrefFieldWrapper labelText={t('First Name')} required>
+          <OutlinedInput value={info.first_name} />
+        </PersPrefFieldWrapper>
       </StyledGridItem>
-      <StyledGridItem item xs={12} sm={4}>
-        <PersPrefField
-          label={t('Last Name')}
-          inputValue={info.last_name}
-          required
-        />
+
+      {/* Last name */}
+      <StyledGridItem xs={12} sm={4}>
+        <PersPrefFieldWrapper labelText={t('Last Name')} required>
+          <OutlinedInput value={info.last_name} />
+        </PersPrefFieldWrapper>
       </StyledGridItem>
-      <StyledGridItem item xs={12} sm={2}>
-        <PersPrefField label={t('Suffix')} inputValue={info.suffix} />
+
+      {/* Suffix  */}
+      <StyledGridItem xs={12} sm={2}>
+        <PersPrefFieldWrapper labelText={t('Suffix')}>
+          <OutlinedInput value={info.suffix} />
+        </PersPrefFieldWrapper>
       </StyledGridItem>
     </StyledGrid>
   );

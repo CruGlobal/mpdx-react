@@ -27,6 +27,7 @@ import {
 const StyledFormLabel = styled(FormLabel)(({ theme }) => ({
   color: theme.palette.text.primary,
   fontWeight: 700,
+  marginBottom: theme.spacing(1),
   '& .MuiFormControlLabel-label': {
     fontWeight: '700',
   },
