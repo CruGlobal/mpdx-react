@@ -24,6 +24,8 @@ import { MassActionsAddToAppealModal } from '../MassActions/AddToAppeal/MassActi
 import { MassActionsEditFieldsModal } from '../MassActions/EditFields/MassActionsEditFieldsModal';
 import { useMassActionsUpdateContactsMutation } from '../MassActions/MassActionsUpdateContacts.generated';
 import { MassActionsCreateAppealModal } from '../MassActions/AddToAppeal/MassActionsCreateAppealModal';
+import { ExportsModal } from '../MassActions/Exports/ExportsModal';
+import { MailMergedLabelModal } from '../MassActions/Exports/MailMergedLabelModal/MailMergedLabelModal';
 import { MassActionsExportEmailsModal } from '../MassActions/Exports/Emails/MassActionsExportEmailsModal';
 import {
   ListHeader,
@@ -81,6 +83,8 @@ export const ContactsMainPanelHeader: React.FC = () => {
   const [createAppealModalOpen, setCreateAppealModalOpen] = useState(false);
   const [editFieldsModalOpen, setEditFieldsModalOpen] = useState(false);
   const [hideContactsModalOpen, setHideContactsModalOpen] = useState(false);
+  const [exportsModalOpen, setExportsModalOpen] = useState(false);
+  const [labelModalOpen, setLabelModalOpen] = useState(false);
   const [exportEmailsModalOpen, setExportEmailsModalOpen] = useState(false);
 
   const { data } = useContactsQuery({
@@ -150,6 +154,7 @@ export const ContactsMainPanelHeader: React.FC = () => {
         openAddToAppealModal={setAddToAppealModalOpen}
         openHideContactsModal={setHideContactsModalOpen}
         openCreateAppealModal={setCreateAppealModalOpen}
+        openExportsModal={setExportsModalOpen}
         openExportEmailsModal={setExportEmailsModalOpen}
         buttonGroup={
           <Hidden xsDown>
@@ -233,6 +238,21 @@ export const ContactsMainPanelHeader: React.FC = () => {
           setOpen={setHideContactsModalOpen}
           onConfirm={hideContacts}
           multi={selectedIds.length > 1}
+        />
+      )}
+      {exportsModalOpen && (
+        <ExportsModal
+          ids={selectedIds}
+          accountListId={accountListId ?? ''}
+          handleClose={() => setExportsModalOpen(false)}
+          openMailMergedLabelModal={() => setLabelModalOpen(true)}
+        />
+      )}
+      {labelModalOpen && (
+        <MailMergedLabelModal
+          accountListId={accountListId ?? ''}
+          ids={selectedIds}
+          handleClose={() => setLabelModalOpen(false)}
         />
       )}
       {exportEmailsModalOpen && (
