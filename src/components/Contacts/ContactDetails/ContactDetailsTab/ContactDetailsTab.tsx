@@ -97,11 +97,6 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
           // People Section
         }
         <ContactDetailSectionContainer>
-          <ContactDetailHeadingContainer>
-            <ContactDetailHeadingText variant="h6">
-              {loading || !data ? t('Loading') : data.contact.name}
-            </ContactDetailHeadingText>
-          </ContactDetailHeadingContainer>
           {loading || !data ? (
             <>
               <ContactDetailLoadingPlaceHolder variant="rectangular" />
