@@ -193,7 +193,7 @@ class MpdxRestApi extends RESTDataSource {
   // the primaryMailingAddress field when we have API resources again
   async setContactPrimaryAddress(
     contactId: string,
-    primaryAddressId: string | null,
+    primaryAddressId: string | null | undefined,
   ) {
     // Setting primary_mailing_address to true on one address doesn't set it to false on all the
     // others, so we have to load all the existing addresses and update all of their
