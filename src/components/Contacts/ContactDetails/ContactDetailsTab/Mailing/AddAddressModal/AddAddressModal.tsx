@@ -29,6 +29,8 @@ import {
   SubmitButton,
   CancelButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
+import { useUpdateCache } from '../useUpdateCache';
+import { useSetContactPrimaryAddressMutation } from '../SetPrimaryAddress.generated';
 
 const ContactEditContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -72,6 +74,9 @@ export const AddAddressModal: React.FC<EditContactAddressModalProps> = ({
   const { enqueueSnackbar } = useSnackbar();
   const [createContactAddress, { loading: updating }] =
     useCreateContactAddressMutation();
+  const [setContactPrimaryAddress, { loading: settingPrimaryAddress }] =
+    useSetContactPrimaryAddressMutation();
+  const { update } = useUpdateCache(contactId);
 
   const contactAddressSchema: yup.SchemaOf<Omit<AddressCreateInput, 'id'>> =
     yup.object({
@@ -88,10 +93,13 @@ export const AddAddressModal: React.FC<EditContactAddressModalProps> = ({
       primaryMailingAddress: yup.boolean().nullable(false),
     });
 
-  const onSubmit = async (
-    attributes: Omit<AddressCreateInput, 'validValues' | 'id'>,
-  ) => {
-    await createContactAddress({
+  const onSubmit = async ({
+    primaryMailingAddress,
+    ...attributes
+  }: Omit<AddressCreateInput, 'validValues'> & {
+    primaryMailingAddress: boolean;
+  }) => {
+    const response = await createContactAddress({
       variables: {
         accountListId,
         attributes,
@@ -122,12 +130,22 @@ export const AddAddressModal: React.FC<EditContactAddressModalProps> = ({
           };
           cache.writeQuery({ ...query, data });
         }
-        enqueueSnackbar(t('Address added successfully'), {
-          variant: 'success',
-        });
       },
     });
-    handleClose();
+    const newAddressId = response.data?.createAddress?.address?.id;
+    if (primaryMailingAddress && newAddressId) {
+      await setContactPrimaryAddress({
+        variables: {
+          contactId,
+          primaryAddressId: newAddressId,
+        },
+        update,
+      });
+    }
+    enqueueSnackbar(t('Address added successfully'), {
+      variant: 'success',
+    });
+    await handleClose();
   };
 
   return (
@@ -144,7 +162,7 @@ export const AddAddressModal: React.FC<EditContactAddressModalProps> = ({
           region: '',
           state: '',
           street: '',
-          primaryMailingAddress: false,
+          primaryMailingAddress: true,
         }}
         validationSchema={contactAddressSchema}
         onSubmit={onSubmit}
@@ -293,7 +311,7 @@ export const AddAddressModal: React.FC<EditContactAddressModalProps> = ({
                   <FormControlLabel
                     control={
                       <Checkbox
-                        checked={historic}
+                        checked={Boolean(historic)}
                         onChange={() => setFieldValue('historic', !historic)}
                         color="secondary"
                       />
@@ -306,7 +324,9 @@ export const AddAddressModal: React.FC<EditContactAddressModalProps> = ({
             <DialogActions>
               <CancelButton onClick={handleClose} disabled={isSubmitting} />
               <SubmitButton disabled={!isValid || isSubmitting}>
-                {updating && <LoadingIndicator color="primary" size={20} />}
+                {(updating || settingPrimaryAddress) && (
+                  <LoadingIndicator color="primary" size={20} />
+                )}
                 {t('Save')}
               </SubmitButton>
             </DialogActions>

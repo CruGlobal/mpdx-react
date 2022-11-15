@@ -11,6 +11,7 @@ import {
   CoachingAnswerSetIncluded,
   getCoachingAnswerSets,
 } from './Schema/CoachingAnswerSets/dataHandler';
+import { readExistingAddresses } from './Schema/ContactPrimaryAddress/datahandler';
 import {
   FourteenMonthReportResponse,
   mapFourteenMonthReport,
@@ -186,6 +187,51 @@ class MpdxRestApi extends RESTDataSource {
     );
 
     return getCoachingAnswerSets(data, included);
+  }
+
+  // TODO: This should be merged with the updateContact mutation by adding the ability to update
+  // the primaryMailingAddress field when we have API resources again
+  async setContactPrimaryAddress(
+    contactId: string,
+    primaryAddressId: string | null,
+  ) {
+    // Setting primary_mailing_address to true on one address doesn't set it to false on all the
+    // others, so we have to load all the existing addresses and update all of their
+    // primary_mailing_address attributes
+    const getAddressesResponse = await this.get(
+      `contacts/${contactId}?include=addresses`,
+    );
+    const addresses = readExistingAddresses(getAddressesResponse).map(
+      (address) => ({
+        ...address,
+        primaryMailingAddress: address.id === primaryAddressId,
+      }),
+    );
+    await this.put(`contacts/${contactId}`, {
+      included: addresses.map(({ id, primaryMailingAddress }) => ({
+        type: 'addresses',
+        id,
+        attributes: {
+          primary_mailing_address: primaryMailingAddress,
+        },
+      })),
+      data: {
+        type: 'contacts',
+        id: contactId,
+        attributes: { overwrite: true },
+        relationships: {
+          addresses: {
+            data: addresses.map(({ id }) => ({
+              type: 'addresses',
+              id,
+            })),
+          },
+        },
+      },
+    });
+    return {
+      addresses,
+    };
   }
 
   async getFourteenMonthReport(

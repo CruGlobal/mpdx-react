@@ -3,6 +3,7 @@ fragment ContactHeaderAddress on Contact {
   envelopeGreeting
   name
   primaryAddress {
+    id
     street
     city
     state

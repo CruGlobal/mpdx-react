@@ -34,6 +34,8 @@ import {
   CancelButton,
   DeleteButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
+import { useUpdateCache } from '../useUpdateCache';
+import { useSetContactPrimaryAddressMutation } from '../SetPrimaryAddress.generated';
 
 const ContactEditContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -83,6 +85,9 @@ export const EditContactAddressModal: React.FC<
     useUpdateContactAddressMutation();
   const [deleteAddress, { loading: deleting }] =
     useDeleteContactAddressMutation();
+  const [setContactPrimaryAddress, { loading: settingPrimaryAddress }] =
+    useSetContactPrimaryAddressMutation();
+  const { update } = useUpdateCache(contactId);
 
   const contactAddressSchema: yup.SchemaOf<
     Omit<AddressUpdateInput, 'validValues'>
@@ -97,17 +102,32 @@ export const EditContactAddressModal: React.FC<
     region: yup.string().nullable(),
     state: yup.string().nullable(),
     street: yup.string().nullable(),
+    primaryMailingAddress: yup.boolean().nullable(false),
   });
 
-  const onSubmit = async (
-    attributes: Omit<AddressUpdateInput, 'validValues'>,
-  ) => {
+  const onSubmit = async ({
+    primaryMailingAddress,
+    ...attributes
+  }: Omit<AddressUpdateInput, 'validValues'> & {
+    primaryMailingAddress: boolean;
+  }) => {
     await updateContactAddress({
       variables: {
         accountListId,
         attributes,
       },
     });
+    // updateContactAddress doesn't set support setting the primaryMailingAddress field, so if
+    // that field changes, then use the setContactPrimaryAddress mutation to update it
+    if (address.primaryMailingAddress !== primaryMailingAddress) {
+      await setContactPrimaryAddress({
+        variables: {
+          contactId,
+          primaryAddressId: primaryMailingAddress ? address.id : null,
+        },
+        update,
+      });
+    }
     enqueueSnackbar(t('Address updated successfully'), {
       variant: 'success',
     });
@@ -334,7 +354,7 @@ export const EditContactAddressModal: React.FC<
               {address && <DeleteButton onClick={deleteContactAddress} />}
               <CancelButton onClick={handleClose} disabled={isSubmitting} />
               <SubmitButton disabled={!isValid || isSubmitting}>
-                {(updating || deleting) && (
+                {(updating || deleting || settingPrimaryAddress) && (
                   <LoadingIndicator color="primary" size={20} />
                 )}
                 {t('Save')}
