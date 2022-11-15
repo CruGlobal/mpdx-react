@@ -43,6 +43,7 @@ const mockContact: ContactMailingFragment = {
         location: 'Home',
         historic: true,
         street: '123 Cool Street',
+        primaryMailingAddress: false,
       },
     ],
   },
@@ -110,7 +111,7 @@ describe('EditContactAddressModal', () => {
     expect(handleClose).toHaveBeenCalled();
   });
 
-  it.skip('should edit contact address', async () => {
+  it('should edit contact address', async () => {
     const mutationSpy = jest.fn();
     const newStreet = '4321 Neat Street';
     const newCity = 'Orlando';
@@ -143,6 +144,7 @@ describe('EditContactAddressModal', () => {
     userEvent.clear(getByLabelText('Metro'));
     userEvent.click(getByLabelText('Location'));
     userEvent.click(getByLabelText('Mailing'));
+    userEvent.click(getByLabelText('Primary'));
     userEvent.type(getByLabelText('Street'), newStreet);
     userEvent.type(getByLabelText('City'), newCity);
     userEvent.type(getByLabelText('State'), newState);
@@ -170,6 +172,41 @@ describe('EditContactAddressModal', () => {
     expect(operation.variables.attributes.region).toEqual(newRegion);
     expect(operation.variables.attributes.metroArea).toEqual(newMetroArea);
     expect(operation.variables.attributes.historic).toEqual(false);
+
+    const { operation: operation2 } = mutationSpy.mock.calls[1][0];
+    expect(operation2.variables.primaryAddressId).toEqual(
+      mockContact.addresses.nodes[0].id,
+    );
+  });
+
+  it('should edit not set primary address when it has not changed', async () => {
+    const mutationSpy = jest.fn();
+    const newStreet = '4321 Neat Street';
+    const { getByText, getByLabelText } = render(
+      <SnackbarProvider>
+        <ThemeProvider theme={theme}>
+          <GqlMockedProvider<UpdateContactAddressMutation> onCall={mutationSpy}>
+            <EditContactAddressModal
+              contactId={contactId}
+              accountListId={accountListId}
+              handleClose={handleClose}
+              address={mockContact.addresses.nodes[0]}
+            />
+          </GqlMockedProvider>
+        </ThemeProvider>
+      </SnackbarProvider>,
+    );
+
+    userEvent.clear(getByLabelText('Street'));
+    userEvent.type(getByLabelText('Street'), newStreet);
+    userEvent.click(getByText('Save'));
+    await waitFor(() =>
+      expect(mockEnqueue).toHaveBeenCalledWith('Address updated successfully', {
+        variant: 'success',
+      }),
+    );
+
+    expect(mutationSpy).toHaveBeenCalledTimes(1);
   });
 
   it('should handle delete click', async () => {
