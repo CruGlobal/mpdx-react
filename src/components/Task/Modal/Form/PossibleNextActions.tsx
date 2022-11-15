@@ -1,8 +1,7 @@
 import { ActivityTypeEnum } from '../../../../../graphql/types.generated';
-import { GetTaskForTaskModalQuery } from '../../Modal/TaskModalTask.generated';
 
 export const possibleNextActions = (
-  task: GetTaskForTaskModalQuery['task'],
+  activityType: ActivityTypeEnum,
 ): ActivityTypeEnum[] => {
   const common = [
     ActivityTypeEnum.None,
@@ -12,7 +11,7 @@ export const possibleNextActions = (
     ActivityTypeEnum.FacebookMessage,
     ActivityTypeEnum.TalkToInPerson,
   ];
-  switch (task.activityType) {
+  switch (activityType) {
     case ActivityTypeEnum.Call:
     case ActivityTypeEnum.Email:
     case ActivityTypeEnum.TextMessage:

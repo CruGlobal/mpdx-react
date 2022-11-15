@@ -135,8 +135,12 @@ const TaskModalCompleteForm = ({
     }
   };
 
-  const availableResults = possibleResults(task);
-  const availableNextActions = possibleNextActions(task);
+  const availableResults = task.activityType
+    ? possibleResults(task.activityType)
+    : [];
+  const availableNextActions = task.activityType
+    ? possibleNextActions(task.activityType)
+    : [];
 
   return (
     <Formik
