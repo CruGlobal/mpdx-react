@@ -60,6 +60,7 @@ import {
   DeleteButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import { getLocalizedTaskType } from 'src/utils/functions/getLocalizedTaskType';
+import { getLocalizedResultString } from 'src/utils/functions/getLocalizedResultStrings';
 
 const LoadingIndicator = styled(CircularProgress)(() => ({
   display: 'flex',
@@ -400,7 +401,7 @@ const TaskModalLogForm = ({
                   >
                     {Object.values(ResultEnum).map((val) => (
                       <MenuItem key={val} value={val}>
-                        {t(val) /* manually added to translation file */}
+                        {getLocalizedResultString(t, val)}
                       </MenuItem>
                     ))}
                   </Select>
