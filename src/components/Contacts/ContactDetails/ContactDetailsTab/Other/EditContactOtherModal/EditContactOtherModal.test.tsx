@@ -1,7 +1,7 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { SnackbarProvider } from 'notistack';
-import { render, waitFor } from '@testing-library/react';
+import { act, render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { PreferredContactMethodEnum } from '../../../../../../../graphql/types.generated';
 import {
@@ -198,6 +198,48 @@ describe('EditContactOtherModal', () => {
     expect(getByText('Edit Contact Other Details')).toBeInTheDocument();
     userEvent.click(getByText('Cancel'));
     expect(handleClose).toHaveBeenCalled();
+  });
+
+  it('should handle empty referral', async () => {
+    const mutationSpy = jest.fn();
+    await act(async () => {
+      render(
+        <SnackbarProvider>
+          <TestRouter router={router}>
+            <ThemeProvider theme={theme}>
+              <GqlMockedProvider<UpdateContactOtherMutation>
+                onCall={mutationSpy}
+              >
+                <ContactsPageProvider>
+                  <ContactDetailProvider>
+                    <EditContactOtherModal
+                      accountListId={accountListId}
+                      isOpen={true}
+                      handleClose={handleClose}
+                      contact={mockContact}
+                      referral={undefined}
+                    />
+                  </ContactDetailProvider>
+                </ContactsPageProvider>
+              </GqlMockedProvider>
+            </ThemeProvider>
+          </TestRouter>
+        </SnackbarProvider>,
+      );
+    });
+
+    const getFilteredContactsCalls = mutationSpy.mock.calls
+      .map(([{ operation }]) => operation)
+      .filter(
+        ({ operationName, variables }) =>
+          operationName === 'GetTaskModalContactsFiltered' &&
+          Array.isArray(variables.contactsFilters.ids),
+      );
+    // Test that contactsFilters.ids isn't ever [undefined]
+    expect(getFilteredContactsCalls.length).toBeGreaterThanOrEqual(1);
+    getFilteredContactsCalls.forEach(({ variables }) => {
+      expect(variables.contactsFilters.ids).toEqual(['']);
+    });
   });
 
   it('should edit contact other details', async () => {

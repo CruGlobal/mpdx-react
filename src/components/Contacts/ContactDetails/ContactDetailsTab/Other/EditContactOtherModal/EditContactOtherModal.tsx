@@ -63,7 +63,9 @@ const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
 
 interface EditContactOtherModalProps {
   contact: ContactOtherFragment;
-  referral: { id: string; referredBy: { id: string; name: string } };
+  referral:
+    | { id: string; referredBy: { id: string; name: string } }
+    | undefined;
   accountListId: string;
   isOpen: boolean;
   handleClose: () => void;
@@ -97,8 +99,8 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
   } = React.useContext(ContactDetailContext) as ContactDetailsType;
 
   useEffect(() => {
-    setSelectedId(referral?.referredBy.id);
-    setSearchTerm(referral?.referredBy.name);
+    setSelectedId(referral?.referredBy.id ?? '');
+    setSearchTerm(referral?.referredBy.name ?? '');
   }, []);
 
   const handleSearchTermChange = useCallback(
