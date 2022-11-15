@@ -166,7 +166,6 @@ describe('TaskModalLogForm', () => {
     userEvent.type(getByLabelText('Comment'), 'test comment');
     expect(getByLabelText('Tags')).toBeInTheDocument();
     expect(getByLabelText('Assignee')).toBeInTheDocument();
-    expect(getByLabelText('Next Action')).toBeInTheDocument();
     userEvent.click(getByText('Save'));
     await waitFor(() => expect(onClose).toHaveBeenCalled());
   }, 25000);
@@ -308,6 +307,15 @@ describe('TaskModalLogForm', () => {
       );
 
     userEvent.click(getByLabelText('Show More'));
+    expect(queryByText('Next Action')).not.toBeInTheDocument();
+    userEvent.click(getByLabelText('Action'));
+    userEvent.click(
+      within(getByRole('listbox', { hidden: true, name: 'Action' })).getByText(
+        'Call',
+      ),
+    );
+    expect(getByLabelText('Next Action')).toBeInTheDocument();
+
     userEvent.click(getByLabelText('Next Action'));
     userEvent.click(
       within(
