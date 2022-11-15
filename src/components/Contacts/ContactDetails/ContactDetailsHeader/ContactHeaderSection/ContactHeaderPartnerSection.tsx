@@ -36,7 +36,9 @@ export const ContactHeaderPartnerSection: React.FC<Props> = ({
     ) {
       return (
         <ContactHeaderSection>
-          <Typography variant="subtitle1">{t('Partner Account')}</Typography>
+          <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
+            {t('Partner Account')}
+          </Typography>
           {contact?.contactDonorAccounts.nodes.map((donorAccount) => {
             return (
               <>
