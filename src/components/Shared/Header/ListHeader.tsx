@@ -116,11 +116,13 @@ interface ListHeaderProps {
   openCreateAppealModal?: (open: boolean) => void;
   openEditFieldsModal?: (open: boolean) => void;
   openHideContactsModal?: (open: boolean) => void;
+  openExportEmailsModal?: (open: boolean) => void;
   openCompleteTasksModal?: (open: boolean) => void;
   openDeleteTasksModal?: (open: boolean) => void;
   openEditTasksModal?: (open: boolean) => void;
   openTasksRemoveTagsModal?: (open: boolean) => void;
   openTasksAddTagsModal?: (open: boolean) => void;
+  openExportsModal?: (open: boolean) => void;
 }
 
 export const ListHeader: React.FC<ListHeaderProps> = ({
@@ -146,10 +148,12 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
   openEditFieldsModal,
   openHideContactsModal,
   openCompleteTasksModal,
+  openExportEmailsModal,
   openDeleteTasksModal,
   openEditTasksModal,
   openTasksRemoveTagsModal,
   openTasksAddTagsModal,
+  openExportsModal,
 }) => {
   const { t } = useTranslation();
 
@@ -216,7 +220,9 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
               openAddToAppealModal &&
               openCreateAppealModal &&
               openAddTagsModal &&
-              openRemoveTagsModal && (
+              openRemoveTagsModal &&
+              openExportsModal &&
+              openExportEmailsModal && (
                 <>
                   <Hidden xsDown>
                     {selectedIds?.length > 0 && (
@@ -247,6 +253,17 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
                             horizontal: 'center',
                           }}
                         >
+                          <MenuItem
+                            onClick={() => {
+                              openExportsModal(true);
+                              handleClose();
+                            }}
+                          >
+                            <ListItemText>{t('Export')}</ListItemText>
+                          </MenuItem>
+                          <MenuItem divider>
+                            <ListItemText>{t('Merge')}</ListItemText>
+                          </MenuItem>
                           <MenuItem
                             onClick={() => {
                               openAddTagsModal(true);
@@ -324,7 +341,12 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
                             </ListItemText>
                           </MenuItem>
 
-                          <MenuItem>
+                          <MenuItem
+                            onClick={() => {
+                              openExportEmailsModal(true);
+                              handleClose();
+                            }}
+                          >
                             <ListItemText>{t('Export Emails')}</ListItemText>
                           </MenuItem>
                         </Menu>

@@ -87,9 +87,9 @@ describe('ContactTags', () => {
     );
   });
 
-  it.skip('should delete a tag', async () => {
+  it('should delete a tag', async () => {
     const mutationSpy = jest.fn();
-    const { getAllByRole } = render(
+    const { getAllByTitle } = render(
       <SnackbarProvider>
         <GqlMockedProvider<UpdateContactTagsMutation>
           mocks={{
@@ -115,9 +115,9 @@ describe('ContactTags', () => {
         </GqlMockedProvider>
       </SnackbarProvider>,
     );
-    const tag1DeleteIcon = getAllByRole('button', {
-      name: 'Delete Icon',
-    })[0].querySelector('.MuiChip-deleteIcon');
+    const tag1DeleteIcon = getAllByTitle('Delete Icon')[0].querySelector(
+      '.MuiChip-deleteIcon',
+    );
 
     expect(tag1DeleteIcon).toBeInTheDocument();
     tag1DeleteIcon && userEvent.click(tag1DeleteIcon);
