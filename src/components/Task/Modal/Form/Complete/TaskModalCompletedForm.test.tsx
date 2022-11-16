@@ -170,7 +170,7 @@ describe('TaskModalCompleteForm', () => {
         .getAllByRole('option')
         .map((option) => option.textContent)
         .filter(Boolean) as ResultEnum[];
-      userEvent.click(getByRole('option', { hidden: true, name: 'NONE' }));
+      userEvent.click(getByRole('option', { hidden: true, name: 'None' }));
     }
     let nextActions: ActivityTypeEnum[] = [];
     if (queryByRole('button', { hidden: true, name: 'Next Action' })) {
@@ -189,62 +189,54 @@ describe('TaskModalCompleteForm', () => {
 
   it('has correct options for APPOINTMENT', () => {
     const { results, nextActions } = getOptions(ActivityTypeEnum.Appointment);
-    expect(results).toEqual([
-      ResultEnum.None,
-      ResultEnum.Completed,
-      ResultEnum.Attempted,
-    ]);
+    expect(results).toEqual(['None', 'Completed', 'Attempted']);
     expect(nextActions).toEqual([
-      ActivityTypeEnum.None,
-      ActivityTypeEnum.Call,
-      ActivityTypeEnum.Email,
-      ActivityTypeEnum.TextMessage,
-      ActivityTypeEnum.FacebookMessage,
-      ActivityTypeEnum.TalkToInPerson,
-      ActivityTypeEnum.PrayerRequest,
-      ActivityTypeEnum.Thank,
+      'None',
+      'Call',
+      'Email',
+      'Text Message',
+      'Facebook Message',
+      'Talk To In Person',
+      'Prayer Request',
+      'Thank',
     ]);
   });
 
   it('has correct options for CALL', () => {
     const { results, nextActions } = getOptions(ActivityTypeEnum.Call);
     expect(results).toEqual([
-      ResultEnum.None,
-      ResultEnum.Completed,
-      ResultEnum.Attempted,
-      ResultEnum.AttemptedLeftMessage,
-      ResultEnum.Received,
+      'None',
+      'Completed',
+      'Attempted',
+      'Attempted - Left Message',
+      'Received',
     ]);
     expect(nextActions).toEqual([
-      ActivityTypeEnum.None,
-      ActivityTypeEnum.Call,
-      ActivityTypeEnum.Email,
-      ActivityTypeEnum.TextMessage,
-      ActivityTypeEnum.FacebookMessage,
-      ActivityTypeEnum.TalkToInPerson,
-      ActivityTypeEnum.Appointment,
-      ActivityTypeEnum.PrayerRequest,
-      ActivityTypeEnum.Thank,
+      'None',
+      'Call',
+      'Email',
+      'Text Message',
+      'Facebook Message',
+      'Talk To In Person',
+      'Appointment',
+      'Prayer Request',
+      'Thank',
     ]);
   });
 
   it('has correct options for EMAIL', () => {
     const { results, nextActions } = getOptions(ActivityTypeEnum.Email);
-    expect(results).toEqual([
-      ResultEnum.None,
-      ResultEnum.Completed,
-      ResultEnum.Received,
-    ]);
+    expect(results).toEqual(['None', 'Completed', 'Received']);
     expect(nextActions).toEqual([
-      ActivityTypeEnum.None,
-      ActivityTypeEnum.Call,
-      ActivityTypeEnum.Email,
-      ActivityTypeEnum.TextMessage,
-      ActivityTypeEnum.FacebookMessage,
-      ActivityTypeEnum.TalkToInPerson,
-      ActivityTypeEnum.Appointment,
-      ActivityTypeEnum.PrayerRequest,
-      ActivityTypeEnum.Thank,
+      'None',
+      'Call',
+      'Email',
+      'Text Message',
+      'Facebook Message',
+      'Talk To In Person',
+      'Appointment',
+      'Prayer Request',
+      'Thank',
     ]);
   });
 
@@ -252,38 +244,30 @@ describe('TaskModalCompleteForm', () => {
     const { results, nextActions } = getOptions(
       ActivityTypeEnum.FacebookMessage,
     );
-    expect(results).toEqual([
-      ResultEnum.None,
-      ResultEnum.Completed,
-      ResultEnum.Received,
-    ]);
+    expect(results).toEqual(['None', 'Completed', 'Received']);
     expect(nextActions).toEqual([
-      ActivityTypeEnum.None,
-      ActivityTypeEnum.Call,
-      ActivityTypeEnum.Email,
-      ActivityTypeEnum.TextMessage,
-      ActivityTypeEnum.FacebookMessage,
-      ActivityTypeEnum.TalkToInPerson,
-      ActivityTypeEnum.Appointment,
-      ActivityTypeEnum.PrayerRequest,
-      ActivityTypeEnum.Thank,
+      'None',
+      'Call',
+      'Email',
+      'Text Message',
+      'Facebook Message',
+      'Talk To In Person',
+      'Appointment',
+      'Prayer Request',
+      'Thank',
     ]);
   });
 
   it('has correct options for LETTER', () => {
     const { results, nextActions } = getOptions(ActivityTypeEnum.Letter);
-    expect(results).toEqual([
-      ResultEnum.None,
-      ResultEnum.Completed,
-      ResultEnum.Received,
-    ]);
+    expect(results).toEqual(['None', 'Completed', 'Received']);
     expect(nextActions).toEqual([
-      ActivityTypeEnum.None,
-      ActivityTypeEnum.Call,
-      ActivityTypeEnum.Email,
-      ActivityTypeEnum.TextMessage,
-      ActivityTypeEnum.FacebookMessage,
-      ActivityTypeEnum.TalkToInPerson,
+      'None',
+      'Call',
+      'Email',
+      'Text Message',
+      'Facebook Message',
+      'Talk To In Person',
     ]);
   });
 
@@ -311,34 +295,30 @@ describe('TaskModalCompleteForm', () => {
 
   it('has correct options for PRAYER_REQUEST', () => {
     const { results, nextActions } = getOptions(ActivityTypeEnum.PrayerRequest);
-    expect(results).toEqual([ResultEnum.None, ResultEnum.Completed]);
+    expect(results).toEqual(['None', 'Completed']);
     expect(nextActions).toEqual([
-      ActivityTypeEnum.None,
-      ActivityTypeEnum.Call,
-      ActivityTypeEnum.Email,
-      ActivityTypeEnum.TextMessage,
-      ActivityTypeEnum.FacebookMessage,
-      ActivityTypeEnum.TalkToInPerson,
-      ActivityTypeEnum.Appointment,
-      ActivityTypeEnum.PrayerRequest,
-      ActivityTypeEnum.Thank,
+      'None',
+      'Call',
+      'Email',
+      'Text Message',
+      'Facebook Message',
+      'Talk To In Person',
+      'Appointment',
+      'Prayer Request',
+      'Thank',
     ]);
   });
 
   it('has correct options for PRE_CALL_LETTER', () => {
     const { results, nextActions } = getOptions(ActivityTypeEnum.PreCallLetter);
-    expect(results).toEqual([
-      ResultEnum.None,
-      ResultEnum.Completed,
-      ResultEnum.Received,
-    ]);
+    expect(results).toEqual(['None', 'Completed', 'Received']);
     expect(nextActions).toEqual([
-      ActivityTypeEnum.None,
-      ActivityTypeEnum.Call,
-      ActivityTypeEnum.Email,
-      ActivityTypeEnum.TextMessage,
-      ActivityTypeEnum.FacebookMessage,
-      ActivityTypeEnum.TalkToInPerson,
+      'None',
+      'Call',
+      'Email',
+      'Text Message',
+      'Facebook Message',
+      'Talk To In Person',
     ]);
   });
 
@@ -346,35 +326,27 @@ describe('TaskModalCompleteForm', () => {
     const { results, nextActions } = getOptions(
       ActivityTypeEnum.ReminderLetter,
     );
-    expect(results).toEqual([
-      ResultEnum.None,
-      ResultEnum.Completed,
-      ResultEnum.Received,
-    ]);
+    expect(results).toEqual(['None', 'Completed', 'Received']);
     expect(nextActions).toEqual([
-      ActivityTypeEnum.None,
-      ActivityTypeEnum.Call,
-      ActivityTypeEnum.Email,
-      ActivityTypeEnum.TextMessage,
-      ActivityTypeEnum.FacebookMessage,
-      ActivityTypeEnum.TalkToInPerson,
+      'None',
+      'Call',
+      'Email',
+      'Text Message',
+      'Facebook Message',
+      'Talk To In Person',
     ]);
   });
 
   it('has correct options for SUPPORT_LETTER', () => {
     const { results, nextActions } = getOptions(ActivityTypeEnum.SupportLetter);
-    expect(results).toEqual([
-      ResultEnum.None,
-      ResultEnum.Completed,
-      ResultEnum.Received,
-    ]);
+    expect(results).toEqual(['None', 'Completed', 'Received']);
     expect(nextActions).toEqual([
-      ActivityTypeEnum.None,
-      ActivityTypeEnum.Call,
-      ActivityTypeEnum.Email,
-      ActivityTypeEnum.TextMessage,
-      ActivityTypeEnum.FacebookMessage,
-      ActivityTypeEnum.TalkToInPerson,
+      'None',
+      'Call',
+      'Email',
+      'Text Message',
+      'Facebook Message',
+      'Talk To In Person',
     ]);
   });
 
@@ -382,58 +354,46 @@ describe('TaskModalCompleteForm', () => {
     const { results, nextActions } = getOptions(
       ActivityTypeEnum.TalkToInPerson,
     );
-    expect(results).toEqual([
-      ResultEnum.None,
-      ResultEnum.Completed,
-      ResultEnum.Received,
-    ]);
+    expect(results).toEqual(['None', 'Completed', 'Received']);
     expect(nextActions).toEqual([
-      ActivityTypeEnum.None,
-      ActivityTypeEnum.Call,
-      ActivityTypeEnum.Email,
-      ActivityTypeEnum.TextMessage,
-      ActivityTypeEnum.FacebookMessage,
-      ActivityTypeEnum.TalkToInPerson,
-      ActivityTypeEnum.Appointment,
-      ActivityTypeEnum.PrayerRequest,
-      ActivityTypeEnum.Thank,
+      'None',
+      'Call',
+      'Email',
+      'Text Message',
+      'Facebook Message',
+      'Talk To In Person',
+      'Appointment',
+      'Prayer Request',
+      'Thank',
     ]);
   });
 
   it('has correct options for TEXT_MESSAGE', () => {
     const { results, nextActions } = getOptions(ActivityTypeEnum.TextMessage);
-    expect(results).toEqual([
-      ResultEnum.None,
-      ResultEnum.Completed,
-      ResultEnum.Received,
-    ]);
+    expect(results).toEqual(['None', 'Completed', 'Received']);
     expect(nextActions).toEqual([
-      ActivityTypeEnum.None,
-      ActivityTypeEnum.Call,
-      ActivityTypeEnum.Email,
-      ActivityTypeEnum.TextMessage,
-      ActivityTypeEnum.FacebookMessage,
-      ActivityTypeEnum.TalkToInPerson,
-      ActivityTypeEnum.Appointment,
-      ActivityTypeEnum.PrayerRequest,
-      ActivityTypeEnum.Thank,
+      'None',
+      'Call',
+      'Email',
+      'Text Message',
+      'Facebook Message',
+      'Talk To In Person',
+      'Appointment',
+      'Prayer Request',
+      'Thank',
     ]);
   });
 
   it('has correct options for THANK', () => {
     const { results, nextActions } = getOptions(ActivityTypeEnum.Thank);
-    expect(results).toEqual([
-      ResultEnum.None,
-      ResultEnum.Completed,
-      ResultEnum.Received,
-    ]);
+    expect(results).toEqual(['None', 'Completed', 'Received']);
     expect(nextActions).toEqual([
-      ActivityTypeEnum.None,
-      ActivityTypeEnum.Call,
-      ActivityTypeEnum.Email,
-      ActivityTypeEnum.TextMessage,
-      ActivityTypeEnum.FacebookMessage,
-      ActivityTypeEnum.TalkToInPerson,
+      'None',
+      'Call',
+      'Email',
+      'Text Message',
+      'Facebook Message',
+      'Talk To In Person',
     ]);
   });
 

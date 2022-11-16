@@ -60,6 +60,9 @@ import {
   DeleteButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import { getLocalizedTaskType } from 'src/utils/functions/getLocalizedTaskType';
+import { getLocalizedResultString } from 'src/utils/functions/getLocalizedResultStrings';
+import { possibleNextActions } from '../PossibleNextActions';
+import { possibleResults } from '../PossibleResults';
 
 const LoadingIndicator = styled(CircularProgress)(() => ({
   display: 'flex',
@@ -92,6 +95,51 @@ interface Props {
   rowsPerPage: number;
 }
 
+interface NextActionsSectionProps {
+  activityType: ActivityTypeEnum;
+  nextAction: ActivityTypeEnum | undefined | null;
+  setFieldValue: (
+    field: string,
+    value: string | null,
+    shouldValidate?: boolean | undefined,
+  ) => void;
+}
+
+const NextActionsSection: React.FC<NextActionsSectionProps> = ({
+  activityType,
+  nextAction,
+  setFieldValue,
+}) => {
+  const { t } = useTranslation();
+  const availableNextActions = possibleNextActions(activityType);
+  return (
+    <>
+      {availableNextActions.length > 0 && (
+        <Grid item xs={12}>
+          <FormControl fullWidth>
+            <InputLabel id="nextAction">{t('Next Action')}</InputLabel>
+            <Select
+              labelId="nextAction"
+              label={t('Next Action')}
+              value={nextAction}
+              onChange={(e) => setFieldValue('nextAction', e.target.value)}
+            >
+              <MenuItem value={ActivityTypeEnum.None}>{t('None')}</MenuItem>
+              {availableNextActions
+                .filter((val) => val !== 'NONE')
+                .map((val) => (
+                  <MenuItem key={val} value={val}>
+                    {getLocalizedTaskType(t, val)}
+                  </MenuItem>
+                ))}
+            </Select>
+          </FormControl>
+        </Grid>
+      )}
+    </>
+  );
+};
+
 const TaskModalLogForm = ({
   accountListId,
   task,
@@ -119,7 +167,7 @@ const TaskModalLogForm = ({
         notificationTimeBefore: null,
         notificationType: null,
         notificationTimeUnit: null,
-        result: null,
+        result: ResultEnum.Done,
         nextAction: null,
         ...defaultValues,
       };
@@ -398,11 +446,19 @@ const TaskModalLogForm = ({
                     value={result}
                     onChange={(e) => setFieldValue('result', e.target.value)}
                   >
-                    {Object.values(ResultEnum).map((val) => (
-                      <MenuItem key={val} value={val}>
-                        {t(val) /* manually added to translation file */}
+                    {activityType ? (
+                      possibleResults(activityType)
+                        .filter((val) => val !== 'NONE')
+                        .map((val) => (
+                          <MenuItem key={val} value={val}>
+                            {getLocalizedResultString(t, val)}
+                          </MenuItem>
+                        ))
+                    ) : (
+                      <MenuItem value={ResultEnum.Done}>
+                        {getLocalizedResultString(t, ResultEnum.Done)}
                       </MenuItem>
-                    ))}
+                    )}
                   </Select>
                 </FormControl>
               </Grid>
@@ -478,7 +534,12 @@ const TaskModalLogForm = ({
                       animate={{ height: 193, opacity: 1 }}
                       exit={{ height: 0, opacity: 0 }}
                     >
-                      <Grid item container spacing={2}>
+                      <Grid
+                        item
+                        container
+                        spacing={2}
+                        style={{ marginBottom: 16 }}
+                      >
                         <Grid item xs={12}>
                           <TextField
                             label={t('Comment')}
@@ -561,30 +622,13 @@ const TaskModalLogForm = ({
                             }
                           />
                         </Grid>
-                        <Grid item xs={12}>
-                          <FormControl fullWidth>
-                            <InputLabel id="nextAction">
-                              {t('Next Action')}
-                            </InputLabel>
-                            <Select
-                              labelId="nextAction"
-                              label={t('Next Action')}
-                              value={nextAction}
-                              onChange={(e) =>
-                                setFieldValue('nextAction', e.target.value)
-                              }
-                            >
-                              <MenuItem value={undefined}>{t('None')}</MenuItem>
-                              {Object.values(ActivityTypeEnum)
-                                .filter((val) => val !== 'NONE')
-                                .map((val) => (
-                                  <MenuItem key={val} value={val}>
-                                    {getLocalizedTaskType(t, val)}
-                                  </MenuItem>
-                                ))}
-                            </Select>
-                          </FormControl>
-                        </Grid>
+                        {activityType && (
+                          <NextActionsSection
+                            activityType={activityType}
+                            nextAction={nextAction}
+                            setFieldValue={setFieldValue}
+                          />
+                        )}
                       </Grid>
                     </motion.div>
                   )}
