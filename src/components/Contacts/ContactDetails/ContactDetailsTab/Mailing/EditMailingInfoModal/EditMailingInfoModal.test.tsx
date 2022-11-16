@@ -120,9 +120,9 @@ describe('EditMailingInfoModal', () => {
     userEvent.type(envelopeGreetingInput, newEnvelopeGreeting);
 
     const sendNewsletterInput = getByLabelText('Newsletter');
-    expect(sendNewsletterInput.textContent).toEqual(contact.sendNewsletter);
+    expect(sendNewsletterInput.textContent).toEqual('Both');
     userEvent.click(sendNewsletterInput);
-    userEvent.click(getByText(newSendNewsletter));
+    userEvent.click(getByText('None'));
 
     userEvent.click(getByText('Save'));
     await waitFor(() =>

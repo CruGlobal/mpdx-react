@@ -250,12 +250,14 @@ export const MassActionsEditFieldsModal: React.FC<
                         setFieldValue('sendNewsletter', e.target.value)
                       }
                     >
-                      <MenuItem value={undefined}>{t('None')}</MenuItem>
-                      {Object.values(SendNewsletterEnum).map((val) => (
-                        <MenuItem key={val} value={val}>
-                          {t(val) /* manually added to translation file */}
-                        </MenuItem>
-                      ))}
+                      <MenuItem value={undefined}>{t('-')}</MenuItem>
+                      {Object.entries(SendNewsletterEnum).map(
+                        ([name, value]) => (
+                          <MenuItem key={value} value={value}>
+                            {t(name)}
+                          </MenuItem>
+                        ),
+                      )}
                     </Select>
                   </FormControl>
                 </Grid>

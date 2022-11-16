@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next';
 import theme from '../../../../../theme';
 import { ContactHeaderNewsletterFragment } from './ContactHeaderNewsletter.generated';
 import { ContactHeaderSection } from './ContactHeaderSection';
+import { getLocalizedSendNewsletter } from 'src/utils/functions/getLocalizedSendNewsletter';
 
 interface Props {
   loading: boolean;
@@ -51,7 +52,9 @@ export const ContactHeaderNewsletterSection = ({
           component="a"
           style={{ width: 'fit-content' }}
         >
-          {t('Newsletter: {{newsletter}}', { newsletter })}
+          {t('Newsletter: {{newsletter}}', {
+            newsletter: getLocalizedSendNewsletter(t, newsletter),
+          })}
         </Typography>
       </ContactHeaderSection>
     );

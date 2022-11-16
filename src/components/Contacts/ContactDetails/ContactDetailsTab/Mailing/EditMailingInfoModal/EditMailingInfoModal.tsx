@@ -156,11 +156,13 @@ export const EditMailingInfoModal: React.FC<EditMailingInfoModalProps> = ({
                         )
                       }
                     >
-                      {Object.values(SendNewsletterEnum).map((value) => (
-                        <MenuItem key={value} value={value}>
-                          {t(value)}
-                        </MenuItem>
-                      ))}
+                      {Object.entries(SendNewsletterEnum).map(
+                        ([name, value]) => (
+                          <MenuItem key={value} value={value}>
+                            {t(name)}
+                          </MenuItem>
+                        ),
+                      )}
                     </Select>
                   </FormControl>
                 </ContactInputWrapper>
