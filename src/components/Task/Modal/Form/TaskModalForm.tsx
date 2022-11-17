@@ -59,6 +59,11 @@ import useTaskModal from 'src/hooks/useTaskModal';
 import { GetTaskForTaskModalQuery } from '../TaskModalTask.generated';
 import { getLocalizedTaskType } from 'src/utils/functions/getLocalizedTaskType';
 import { v4 as uuidv4 } from 'uuid';
+import { getLocalizedResultString } from 'src/utils/functions/getLocalizedResultStrings';
+import {
+  getLocalizedNotificationTimeUnit,
+  getLocalizedNotificationType,
+} from 'src/utils/functions/getLocalizedNotificationStrings';
 
 const taskSchema: yup.SchemaOf<TaskCreateInput | TaskUpdateInput> = yup.object({
   id: yup.string().nullable(),
@@ -178,8 +183,12 @@ const TaskModalForm = ({
         data?.contacts.nodes ||
         [];
 
-  const availableResults = task ? possibleResults(task) : [];
-  const availableNextActions = task ? possibleNextActions(task) : [];
+  const availableResults = task?.activityType
+    ? possibleResults(task.activityType)
+    : [];
+  const availableNextActions = task?.activityType
+    ? possibleNextActions(task.activityType)
+    : [];
 
   const onSubmit = async (
     attributes: TaskCreateInput | TaskUpdateInput,
@@ -528,7 +537,7 @@ const TaskModalForm = ({
                     >
                       {availableResults.map((val) => (
                         <MenuItem key={val} value={val}>
-                          {t(val)}
+                          {getLocalizedResultString(t, val)}
                         </MenuItem>
                       ))}
                     </Select>
@@ -549,7 +558,7 @@ const TaskModalForm = ({
                     >
                       {availableNextActions.map((val) => (
                         <MenuItem key={val} value={val}>
-                          {t(val) /* manually added to translation file */}
+                          {getLocalizedTaskType(t, val)}
                         </MenuItem>
                       ))}
                     </Select>
@@ -627,11 +636,7 @@ const TaskModalForm = ({
                             <MenuItem value={undefined}>{t('None')}</MenuItem>
                             {Object.values(NotificationTypeEnum).map((val) => (
                               <MenuItem key={val} value={val}>
-                                {
-                                  t(
-                                    val,
-                                  ) /* manually added to translation file */
-                                }
+                                {getLocalizedNotificationType(t, val)}
                               </MenuItem>
                             ))}
                           </Select>
@@ -698,11 +703,7 @@ const TaskModalForm = ({
                             {Object.values(NotificationTimeUnitEnum).map(
                               (val) => (
                                 <MenuItem key={val} value={val}>
-                                  {
-                                    t(
-                                      val,
-                                    ) /* manually added to translation file */
-                                  }
+                                  {getLocalizedNotificationTimeUnit(t, val)}
                                 </MenuItem>
                               ),
                             )}
