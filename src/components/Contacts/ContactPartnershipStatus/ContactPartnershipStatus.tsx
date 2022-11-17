@@ -10,18 +10,8 @@ import {
 import { ContactPledgeReceivedIcon } from './ContactPledgeReceivedIcon/ContactPledgeReceivedIcon';
 import { ContactPartnershipStatusLabel } from './ContactPartnershipStatusLabel/ContactPartnershipStatusLabel';
 import { currencyFormat } from 'src/lib/intlFormat';
-
-export enum PledgeFrequencyEnum {
-  ANNUAL = 'Annual',
-  EVERY_2_MONTHS = 'Every 2 Months',
-  EVERY_2_WEEKS = 'Every 2 Weeks',
-  EVERY_2_YEARS = 'Every 2 Years',
-  EVERY_4_MONTHS = 'Every 4 Months',
-  EVERY_6_MONTHS = 'Every 6 Months',
-  MONTHLY = 'Monthly',
-  QUARTERLY = 'Quarterly',
-  WEEKLY = 'Weekly',
-}
+import { getLocalizedPledgeFequency } from 'src/utils/functions/getLocalizedPledgeFequency';
+import { useTranslation } from 'react-i18next';
 
 interface ContactPartnershipStatusProps {
   lateAt: ContactRowFragment['lateAt'];
@@ -44,6 +34,7 @@ export const ContactPartnershipStatus: React.FC<
   pledgeReceived,
   status,
 }) => {
+  const { t } = useTranslation();
   const lateStatusEnum: number | undefined = useMemo(() => {
     if (lateAt) {
       const diff = DateTime.now().diff(DateTime.fromISO(lateAt), 'days')?.days;
@@ -78,7 +69,7 @@ export const ContactPartnershipStatus: React.FC<
             {pledgeAmount && pledgeCurrency
               ? currencyFormat(pledgeAmount, pledgeCurrency)
               : pledgeAmount}{' '}
-            {pledgeFrequency && PledgeFrequencyEnum[pledgeFrequency]}{' '}
+            {pledgeFrequency && getLocalizedPledgeFequency(t, pledgeFrequency)}{' '}
             {status === ContactPartnershipStatusEnum.PartnerFinancial &&
               lateStatusEnum !== undefined && (
                 <ContactLateStatusLabel lateStatusEnum={lateStatusEnum} />

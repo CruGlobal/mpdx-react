@@ -165,9 +165,7 @@ describe('EditPartnershipInfoModal', () => {
     expect(statusInput.textContent).toEqual('Partner - Financial');
 
     expect(amountInput).toHaveValue(50);
-    expect(frequencyInput.textContent).toEqual(
-      PledgeFrequencyEnum.Every_2Months,
-    );
+    expect(frequencyInput.textContent).toEqual('Every 2 Months');
     userEvent.click(statusInput);
     userEvent.click(getByText('Ask In Future'));
 
@@ -214,16 +212,12 @@ describe('EditPartnershipInfoModal', () => {
 
     expect(amountInput).toHaveValue(50);
 
-    expect(frequencyInput.textContent).toEqual(
-      PledgeFrequencyEnum.Every_2Months,
-    );
+    expect(frequencyInput.textContent).toEqual('Every 2 Months');
     userEvent.type(amountInput, '0');
     userEvent.click(frequencyInput);
-    userEvent.click(getByText(PledgeFrequencyEnum.Annual));
+    userEvent.click(getByText('Annual'));
 
-    await waitFor(() =>
-      expect(frequencyInput.textContent).toEqual(PledgeFrequencyEnum.Annual),
-    );
+    await waitFor(() => expect(frequencyInput.textContent).toEqual('Annual'));
     expect(amountInput).toHaveValue(500);
 
     userEvent.click(getByText('Save'));
