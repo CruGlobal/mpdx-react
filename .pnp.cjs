@@ -12782,7 +12782,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/react", "npm:18.0.21"],\
             ["@types/react-dom", null],\
             ["core-js", "npm:3.24.1"],\
-            ["deep-object-diff", "npm:1.1.7"],\
+            ["deep-object-diff", "npm:1.1.9"],\
             ["emotion-theming", "virtual:c3fd99633c812416c28f2577fe03565f8188c92d4afdbf777ca9ef51663b318a2739861aacd331bc4ffdf935de05025cfca0b2d702dd83b66c7413c344e1b002#npm:10.3.0"],\
             ["global", "npm:4.4.0"],\
             ["memoizerific", "npm:1.11.3"],\
@@ -12853,7 +12853,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/react", "npm:18.0.21"],\
             ["@types/react-dom", null],\
             ["core-js", "npm:3.24.1"],\
-            ["deep-object-diff", "npm:1.1.7"],\
+            ["deep-object-diff", "npm:1.1.9"],\
             ["emotion-theming", "virtual:c3fd99633c812416c28f2577fe03565f8188c92d4afdbf777ca9ef51663b318a2739861aacd331bc4ffdf935de05025cfca0b2d702dd83b66c7413c344e1b002#npm:10.3.0"],\
             ["global", "npm:4.4.0"],\
             ["memoizerific", "npm:1.11.3"],\
@@ -12882,7 +12882,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/react", null],\
             ["@types/react-dom", null],\
             ["core-js", "npm:3.24.1"],\
-            ["deep-object-diff", "npm:1.1.7"],\
+            ["deep-object-diff", "npm:1.1.9"],\
             ["emotion-theming", "virtual:c8366753012bb7825564ce5ff77cebc412ad2f04b47f191b5fb210a9e15a4254194dae65e510ec83d25e3cb32206a511d193eb67975b304ce631ce60d6e64080#npm:10.3.0"],\
             ["global", "npm:4.4.0"],\
             ["memoizerific", "npm:1.11.3"],\
@@ -19080,10 +19080,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["deep-object-diff", [\
-        ["npm:1.1.7", {\
-          "packageLocation": "./.yarn/cache/deep-object-diff-npm-1.1.7-f83d006c8d-543fb1ae87.zip/node_modules/deep-object-diff/",\
+        ["npm:1.1.9", {\
+          "packageLocation": "./.yarn/cache/deep-object-diff-npm-1.1.9-b3c323e343-ecd42455e4.zip/node_modules/deep-object-diff/",\
           "packageDependencies": [\
-            ["deep-object-diff", "npm:1.1.7"]\
+            ["deep-object-diff", "npm:1.1.9"]\
           ],\
           "linkType": "HARD"\
         }]\
