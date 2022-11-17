@@ -1,0 +1,20 @@
+fragment PrimaryMailingAddress on Address {
+  primaryMailingAddress
+}
+
+fragment ContactPrimaryAddressRelation on Contact {
+  primaryAddress {
+    id
+  }
+}
+
+mutation SetContactPrimaryAddress($contactId: ID!, $primaryAddressId: ID) {
+  setContactPrimaryAddress(
+    input: { contactId: $contactId, primaryAddressId: $primaryAddressId }
+  ) {
+    addresses {
+      id
+      primaryMailingAddress
+    }
+  }
+}

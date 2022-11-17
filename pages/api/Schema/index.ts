@@ -21,6 +21,8 @@ import { AccountListAnalyticsResolvers } from './AccountListAnalytics/resolvers'
 import AccountListAnalyticsTypeDefs from './AccountListAnalytics/accountListAnalytics.graphql';
 import { AppointmentResultsResolvers } from './reports/appointmentResults/resolvers';
 import AppointmentResultsTypeDefs from './reports/appointmentResults/appointmentResults.graphql';
+import ContactPrimaryAddressTypeDefs from './ContactPrimaryAddress/contactPrimaryAddress.graphql';
+import { ContactPrimaryAddressResolvers } from './ContactPrimaryAddress/resolvers';
 import DeleteCommentTypeDefs from './Tasks/Comments/DeleteComments/deleteComment.graphql';
 import { DeleteCommentResolvers } from './Tasks/Comments/DeleteComments/resolvers';
 import UpdateCommentTypeDefs from './Tasks/Comments/UpdateComments/updateComments.graphql';
@@ -60,6 +62,10 @@ const schema = buildSubgraphSchema([
   {
     typeDefs: AppointmentResultsTypeDefs,
     resolvers: AppointmentResultsResolvers,
+  },
+  {
+    typeDefs: ContactPrimaryAddressTypeDefs,
+    resolvers: ContactPrimaryAddressResolvers,
   },
   { typeDefs: ExportContactsTypeDefs, resolvers: ExportContactsResolvers },
   {

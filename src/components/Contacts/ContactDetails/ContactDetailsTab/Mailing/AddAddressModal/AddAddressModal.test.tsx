@@ -84,7 +84,7 @@ describe('AddAddressModal', () => {
     expect(handleClose).toHaveBeenCalled();
   });
 
-  it.skip('should edit contact address', async () => {
+  it('should create contact address', async () => {
     const mutationSpy = jest.fn();
     const newStreet = '4321 Neat Street';
     const newCity = 'Orlando';
@@ -143,5 +143,70 @@ describe('AddAddressModal', () => {
     expect(operation.variables.attributes.region).toEqual(newRegion);
     expect(operation.variables.attributes.metroArea).toEqual(newMetroArea);
     expect(operation.variables.attributes.historic).toEqual(true);
+  });
+
+  it('should set new address as primary', async () => {
+    const mutationSpy = jest.fn();
+    const newStreet = '4321 Neat Street';
+    const { getByText, getByLabelText } = render(
+      <SnackbarProvider>
+        <ThemeProvider theme={theme}>
+          <GqlMockedProvider<CreateContactAddressMutation> onCall={mutationSpy}>
+            <AddAddressModal
+              accountListId={accountListId}
+              contactId={contactId}
+              handleClose={handleClose}
+            />
+          </GqlMockedProvider>
+        </ThemeProvider>
+      </SnackbarProvider>,
+    );
+
+    userEvent.clear(getByLabelText('Street'));
+    userEvent.type(getByLabelText('Street'), newStreet);
+    userEvent.click(getByText('Save'));
+    await waitFor(() =>
+      expect(mockEnqueue).toHaveBeenCalledWith('Address added successfully', {
+        variant: 'success',
+      }),
+    );
+
+    const { operation } = mutationSpy.mock.calls[0][0];
+    expect(operation.variables.accountListId).toEqual(accountListId);
+    expect(operation.variables.attributes.street).toEqual(newStreet);
+
+    const { operation: operation2 } = mutationSpy.mock.calls[1][0];
+    console.log(operation2);
+    expect(operation2.variables.primaryAddressId).not.toBeNull();
+  });
+
+  it('should not set new address as primary if it is unchecked', async () => {
+    const mutationSpy = jest.fn();
+    const newStreet = '4321 Neat Street';
+    const { getByText, getByLabelText } = render(
+      <SnackbarProvider>
+        <ThemeProvider theme={theme}>
+          <GqlMockedProvider<CreateContactAddressMutation> onCall={mutationSpy}>
+            <AddAddressModal
+              accountListId={accountListId}
+              contactId={contactId}
+              handleClose={handleClose}
+            />
+          </GqlMockedProvider>
+        </ThemeProvider>
+      </SnackbarProvider>,
+    );
+
+    userEvent.clear(getByLabelText('Street'));
+    userEvent.type(getByLabelText('Street'), newStreet);
+    userEvent.click(getByLabelText('Primary'));
+    userEvent.click(getByText('Save'));
+    await waitFor(() =>
+      expect(mockEnqueue).toHaveBeenCalledWith('Address added successfully', {
+        variant: 'success',
+      }),
+    );
+
+    expect(mutationSpy).toHaveBeenCalledTimes(1);
   });
 });
