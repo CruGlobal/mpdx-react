@@ -1,5 +1,6 @@
 import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
+import { DateTime } from 'luxon';
 import {
   Checkbox,
   Table,
@@ -60,7 +61,7 @@ export const PartnerGivingAnalysisReportTable: FC<
       <StickyTable
         stickyHeader={true}
         aria-label="partner giving analysis report table"
-        data-testid="PartnerGivingAnalysis"
+        data-testid="PartnerGivingAnalysisReport"
       >
         <TableHead
           items={[
@@ -69,27 +70,27 @@ export const PartnerGivingAnalysisReportTable: FC<
               label: t('Name'),
             },
             {
-              id: 'giftTotal',
+              id: 'donationPeriodSum',
               label: t('Gift Total'),
             },
             {
-              id: 'giftCount',
+              id: 'donationPeriodCount',
               label: t('Gift Count'),
             },
             {
-              id: 'giftAverage',
+              id: 'donationPeriodAverage',
               label: t('Gift Average'),
             },
             {
-              id: 'lastGiftAmount',
+              id: 'lastDonationAmount',
               label: t('Last Gift Amount'),
             },
             {
-              id: 'lastGiftDate',
+              id: 'lastDonationDate',
               label: t('Last Gift Date'),
             },
             {
-              id: 'lifeTimeTotal',
+              id: 'totalDonations',
               label: t('Lifetime Total'),
             },
           ]}
@@ -118,12 +119,30 @@ export const PartnerGivingAnalysisReportTable: FC<
                   />
                 </TableCell>
                 <TableCell>{contact.name}</TableCell>
-                <TableCell align="center">{contact.giftTotal}</TableCell>
-                <TableCell align="center">{contact.giftCount}</TableCell>
-                <TableCell align="center">{contact.giftAverage}</TableCell>
-                <TableCell align="center">{contact.lastGiftAmount}</TableCell>
-                <TableCell align="center">{contact.lastGiftDate}</TableCell>
-                <TableCell align="center">{contact.lifeTimeTotal}</TableCell>
+                <TableCell align="center">
+                  {contact.donationPeriodSum.toFixed(2)}{' '}
+                  {contact.pledgeCurrency}
+                </TableCell>
+                <TableCell align="center">
+                  {contact.donationPeriodCount}
+                </TableCell>
+                <TableCell align="center">
+                  {contact.donationPeriodAverage.toFixed(2)}{' '}
+                  {contact.pledgeCurrency}
+                </TableCell>
+                <TableCell align="center">
+                  {contact.lastDonationAmount.toFixed(2)}{' '}
+                  {contact.lastDonationCurrency}
+                </TableCell>
+                <TableCell align="center">
+                  {DateTime.fromFormat(
+                    contact.lastDonationDate,
+                    'yyyy-MM-dd',
+                  ).toLocaleString(DateTime.DATE_SHORT)}
+                </TableCell>
+                <TableCell align="center">
+                  {contact.totalDonations.toFixed(2)} {contact.pledgeCurrency}
+                </TableCell>
               </TableRow>
             );
           })}
