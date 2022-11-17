@@ -5,6 +5,8 @@ query GetTaskForTaskModal($accountListId: ID!, $taskId: ID!) {
     subject
     startAt
     completedAt
+    result
+    nextAction
     tagList
     contacts {
       nodes {

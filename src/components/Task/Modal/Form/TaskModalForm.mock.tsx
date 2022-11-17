@@ -112,6 +112,8 @@ export const createTaskMutationMock = (): MockedResponse => {
     notificationTimeBefore: null,
     notificationType: null,
     notificationTimeUnit: null,
+    result: null,
+    nextAction: null,
   };
   const data: CreateTaskMutation = {
     createTask: {
@@ -141,9 +143,6 @@ export const updateTaskMutationMock = (): MockedResponse => {
     tagList: ['tag-1', 'tag-2'],
     contactIds: ['contact-1', 'contact-2'],
     userId: 'user-1',
-    notificationTimeBefore: 20,
-    notificationType: NotificationTypeEnum.Both,
-    notificationTimeUnit: NotificationTimeUnitEnum.Hours,
   };
   const data: UpdateTaskMutation = {
     updateTask: {
