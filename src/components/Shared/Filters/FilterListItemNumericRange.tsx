@@ -42,11 +42,7 @@ export const FilterListItemNumericRange: React.FC<Props> = ({
           style={{ marginRight: '8px' }}
           value={valueMin || null}
           onChange={({ target: { value: min } }) =>
-            onUpdate(
-              !min
-                ? undefined
-                : createRange(min, valueMax && valueMax > min ? valueMax : min),
-            )
+            onUpdate(!min ? undefined : createRange(min, valueMax ?? min))
           }
         />
         <TextField
@@ -55,11 +51,7 @@ export const FilterListItemNumericRange: React.FC<Props> = ({
           style={{ marginLeft: '8px' }}
           value={valueMax || null}
           onChange={({ target: { value: max } }) =>
-            onUpdate(
-              !max
-                ? undefined
-                : createRange(valueMin && valueMin < max ? valueMin : max, max),
-            )
+            onUpdate(!max ? undefined : createRange(valueMin ?? max, max))
           }
         />
       </ListItem>
