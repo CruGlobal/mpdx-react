@@ -838,8 +838,8 @@
   "To Do": "To Do",
   "Current": "Current",
   "Historic": "Historic",
-  "Are you sure you wish to hide the selected contact? Hiding a contact in MPDX actually sets the contact status to \"Never Ask\"._plural": "Are you sure you wish to hide the selected contact? Hiding a contact in MPDX actually sets the contact status to \"Never Ask\"."
-"What's New": "What's New",
+  "Are you sure you wish to hide the selected contact? Hiding a contact in MPDX actually sets the contact status to \"Never Ask\"._plural": "Are you sure you wish to hide the selected contact? Hiding a contact in MPDX actually sets the contact status to \"Never Ask\".",
+  "What's New": "What's New",
   "© {{ year }}, Cru. All Rights Reserved.": "© {{ year }}, Cru. All Rights Reserved.",
   "Overview": "Overview",
   "Gifts": "Gifts",
