@@ -102,6 +102,16 @@ describe('TaskModalForm', () => {
     });
 
     userEvent.type(contactsElement, 'Smith');
+
+    const commentsBox = getByRole('textbox', {
+      hidden: true,
+      name: 'Comment',
+    });
+
+    expect(queryByText('test comment')).not.toBeInTheDocument();
+    userEvent.type(commentsBox, 'test comment');
+    expect(getByText('test comment')).toBeInTheDocument();
+
     await waitFor(() => expect(getByText('Save')).not.toBeDisabled());
     userEvent.click(getByText('Save'));
     await waitFor(() => expect(onClose).toHaveBeenCalled());
@@ -115,6 +125,7 @@ describe('TaskModalForm', () => {
       queryByLabelText,
       getByText,
       queryByText,
+      queryByRole,
     } = render(
       <LocalizationProvider dateAdapter={AdapterLuxon}>
         <SnackbarProvider>
@@ -152,6 +163,26 @@ describe('TaskModalForm', () => {
 
     const tagsElement = getByLabelText('Tags');
     userEvent.click(tagsElement);
+
+    const dateSelector = getByRole('textbox', {
+      hidden: true,
+      name: 'Choose date, selected date is Jan 5, 2013',
+    });
+
+    expect(
+      queryByRole('gridcell', { hidden: true, name: '17' }),
+    ).not.toBeInTheDocument();
+    userEvent.click(dateSelector);
+    const date17 = getByRole('gridcell', { hidden: true, name: '17' });
+    userEvent.click(date17);
+    userEvent.click(getByRole('button', { hidden: true, name: 'OK' }));
+
+    expect(
+      getByRole('textbox', {
+        hidden: true,
+        name: 'Choose date, selected date is Jan 17, 2013',
+      }),
+    ).toBeInTheDocument();
 
     expect(getByText('Notifications')).toBeInTheDocument();
     expect(queryByText('Both')).not.toBeInTheDocument();
