@@ -43,6 +43,7 @@ import {
   CancelButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import { getLocalizedTaskType } from 'src/utils/functions/getLocalizedTaskType';
+import { getLocalizedResultString } from 'src/utils/functions/getLocalizedResultStrings';
 
 const taskSchema: yup.SchemaOf<
   Pick<
@@ -134,8 +135,12 @@ const TaskModalCompleteForm = ({
     }
   };
 
-  const availableResults = possibleResults(task);
-  const availableNextActions = possibleNextActions(task);
+  const availableResults = task.activityType
+    ? possibleResults(task.activityType)
+    : [];
+  const availableNextActions = task.activityType
+    ? possibleNextActions(task.activityType)
+    : [];
 
   return (
     <Formik
@@ -233,7 +238,7 @@ const TaskModalCompleteForm = ({
                     >
                       {availableResults.map((val) => (
                         <MenuItem key={val} value={val}>
-                          {t(val) /* manually added to translation file */}
+                          {getLocalizedResultString(t, val)}
                         </MenuItem>
                       ))}
                     </Select>
@@ -252,11 +257,14 @@ const TaskModalCompleteForm = ({
                         setFieldValue('nextAction', e.target.value)
                       }
                     >
-                      {availableNextActions.map((val) => (
-                        <MenuItem key={val} value={val}>
-                          {t(val) /* manually added to translation file */}
-                        </MenuItem>
-                      ))}
+                      <MenuItem value={undefined}>{t('None')}</MenuItem>
+                      {availableNextActions
+                        .filter((val) => val !== 'NONE')
+                        .map((val) => (
+                          <MenuItem key={val} value={val}>
+                            {getLocalizedTaskType(t, val)}
+                          </MenuItem>
+                        ))}
                     </Select>
                   </FormControl>
                 </Grid>
