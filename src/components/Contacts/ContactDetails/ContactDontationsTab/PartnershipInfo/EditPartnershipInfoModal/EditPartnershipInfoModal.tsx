@@ -439,6 +439,7 @@ export const EditPartnershipInfoModal: React.FC<
                     IconComponent={() =>
                       status !== StatusEnum.PartnerFinancial ? (
                         <Tooltip
+                          sx={{ marginRight: '14px' }}
                           title={
                             <Typography>
                               {t(
