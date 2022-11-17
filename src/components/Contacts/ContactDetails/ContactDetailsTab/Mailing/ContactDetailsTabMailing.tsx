@@ -19,6 +19,7 @@ import { AddAddressModal } from './AddAddressModal/AddAddressModal';
 import { EditMailingInfoModal } from './EditMailingInfoModal/EditMailingInfoModal';
 import { ContactDetailEditIcon } from '../ContactDetailsTab';
 import { sourceToStr } from 'src/utils/sourceToStr';
+import { getLocalizedSendNewsletter } from 'src/utils/functions/getLocalizedSendNewsletter';
 
 const ContactDetailsMailingMainContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -231,7 +232,9 @@ export const ContactDetailsTabMailing: React.FC<MailingProp> = ({
               <ContactDetailsMailingLabel variant="subtitle1">
                 {t('Newsletter')}
               </ContactDetailsMailingLabel>
-              <Typography variant="subtitle1">{sendNewsletter}</Typography>
+              <Typography variant="subtitle1">
+                {getLocalizedSendNewsletter(t, sendNewsletter)}
+              </Typography>
             </ContactDetailsMailingLabelTextContainer>
           </ContactDetailsMailingTextContainer>
         </ContactDetailsMailingMainContainer>

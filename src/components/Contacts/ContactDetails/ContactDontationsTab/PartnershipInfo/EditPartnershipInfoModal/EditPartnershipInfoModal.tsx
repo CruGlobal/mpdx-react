@@ -44,6 +44,7 @@ import {
   SubmitButton,
   CancelButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
+import { getLocalizedContactStatus } from 'src/utils/functions/getLocalizedContactStatus';
 
 const ContactInputWrapper = styled(Box)(({ theme }) => ({
   position: 'relative',
@@ -343,7 +344,7 @@ export const EditPartnershipInfoModal: React.FC<
                   >
                     {Object.values(StatusEnum).map((value) => (
                       <MenuItem key={value} value={value}>
-                        {t(value)}
+                        {getLocalizedContactStatus(t, value)}
                       </MenuItem>
                     ))}
                   </Select>
