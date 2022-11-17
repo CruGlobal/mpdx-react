@@ -114,12 +114,12 @@ describe('EditMailingInfoModal', () => {
     userEvent.clear(greetingInput);
     userEvent.type(greetingInput, newGreeting);
 
-    const envelopeGreetingInput = getByLabelText('Envelope Greeting');
+    const envelopeGreetingInput = getByLabelText('Envelope Name Line');
     expect(envelopeGreetingInput).toHaveValue(contact.envelopeGreeting);
     userEvent.clear(envelopeGreetingInput);
     userEvent.type(envelopeGreetingInput, newEnvelopeGreeting);
 
-    const sendNewsletterInput = getByLabelText('Send Newsletter');
+    const sendNewsletterInput = getByLabelText('Newsletter');
     expect(sendNewsletterInput.textContent).toEqual(contact.sendNewsletter);
     userEvent.click(sendNewsletterInput);
     userEvent.click(getByText(newSendNewsletter));
