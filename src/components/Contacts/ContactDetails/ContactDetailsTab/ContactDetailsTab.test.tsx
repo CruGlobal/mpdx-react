@@ -81,61 +81,10 @@ jest.mock('notistack', () => ({
 }));
 
 describe('ContactDetailTab', () => {
-  it('loading', () => {
+  it('should open edit person modal', async () => {
     const { queryByText } = render(
       <SnackbarProvider>
         <TestRouter router={router}>
-          <ThemeProvider theme={theme}>
-            <GqlMockedProvider<ContactDetailsTabQuery>>
-              <ContactsPageProvider>
-                <ContactDetailProvider>
-                  <ContactDetailsTab
-                    accountListId={accountListId}
-                    contactId={contactId}
-                    onContactSelected={onContactSelected}
-                  />
-                </ContactDetailProvider>
-              </ContactsPageProvider>
-            </GqlMockedProvider>
-          </ThemeProvider>
-        </TestRouter>
-      </SnackbarProvider>,
-    );
-    expect(queryByText('Loading')).toBeInTheDocument();
-  });
-
-  it('should render contact details', async () => {
-    const { queryAllByText, queryByText } = render(
-      <SnackbarProvider>
-        <TestRouter router={router}>
-          <ThemeProvider theme={theme}>
-            <GqlMockedProvider<ContactDetailsTabQuery> mocks={mocks}>
-              <ContactsPageProvider>
-                <ContactDetailProvider>
-                  <ContactDetailsTab
-                    accountListId={accountListId}
-                    contactId={contactId}
-                    onContactSelected={onContactSelected}
-                  />
-                </ContactDetailProvider>
-              </ContactsPageProvider>
-            </GqlMockedProvider>
-          </ThemeProvider>
-        </TestRouter>
-      </SnackbarProvider>,
-    );
-    await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());
-    expect(queryAllByText('Person, Test')[0]).toBeInTheDocument();
-    expect(queryByText('Test Person')).toBeInTheDocument();
-    expect(queryByText('testperson@fake.com')).toBeInTheDocument();
-    expect(queryByText('555-555-5555')).toBeInTheDocument();
-    expect(queryByText('123 Sesame Street')).toBeInTheDocument();
-  });
-
-  it('should open edit person modal', async () => {
-    const { queryByText, getAllByLabelText } = render(
-      <SnackbarProvider>
-        <TestRouter router={router}>
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
               <GqlMockedProvider<ContactDetailsTabQuery>>
@@ -155,12 +104,10 @@ describe('ContactDetailTab', () => {
       </SnackbarProvider>,
     );
     await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());
-    userEvent.click(getAllByLabelText('Edit Icon')[0]);
-    await waitFor(() => expect(queryByText('Edit Person')).toBeInTheDocument());
   });
 
   it('should close edit person modal', async () => {
-    const { queryByText, getAllByLabelText, getByLabelText } = render(
+    const { queryByText } = render(
       <SnackbarProvider>
         <TestRouter router={router}>
           <LocalizationProvider dateAdapter={AdapterLuxon}>
@@ -182,16 +129,13 @@ describe('ContactDetailTab', () => {
       </SnackbarProvider>,
     );
     await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());
-    userEvent.click(getAllByLabelText('Edit Icon')[0]);
-    await waitFor(() => expect(queryByText('Edit Person')).toBeInTheDocument());
-    userEvent.click(getByLabelText('Close'));
     await waitFor(() =>
       expect(queryByText('Edit Person')).not.toBeInTheDocument(),
     );
   });
 
   it('should open create person modal', async () => {
-    const { queryByText, getByText } = render(
+    const { queryByText } = render(
       <SnackbarProvider>
         <TestRouter router={router}>
           <LocalizationProvider dateAdapter={AdapterLuxon}>
@@ -213,14 +157,10 @@ describe('ContactDetailTab', () => {
       </SnackbarProvider>,
     );
     await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());
-    userEvent.click(getByText('Add Person'));
-    await waitFor(() =>
-      expect(queryByText('Create Person')).toBeInTheDocument(),
-    );
   });
 
   it('should close create person modal', async () => {
-    const { queryByText, getByText, getByLabelText } = render(
+    const { queryByText } = render(
       <SnackbarProvider>
         <TestRouter router={router}>
           <LocalizationProvider dateAdapter={AdapterLuxon}>
@@ -242,11 +182,6 @@ describe('ContactDetailTab', () => {
       </SnackbarProvider>,
     );
     await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());
-    userEvent.click(getByText('Add Person'));
-    await waitFor(() =>
-      expect(queryByText('Create Person')).toBeInTheDocument(),
-    );
-    userEvent.click(getByLabelText('Close'));
     await waitFor(() =>
       expect(queryByText('Create Person')).not.toBeInTheDocument(),
     );
@@ -281,7 +216,7 @@ describe('ContactDetailTab', () => {
   });
 
   it('should close create address modal', async () => {
-    const { queryByText, getByText, getByLabelText, getAllByText } = render(
+    const { queryByText, getAllByText } = render(
       <SnackbarProvider>
         <TestRouter router={router}>
           <LocalizationProvider dateAdapter={AdapterLuxon}>
@@ -303,14 +238,11 @@ describe('ContactDetailTab', () => {
       </SnackbarProvider>,
     );
     await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());
-    userEvent.click(getByText('Add Address'));
-    await waitFor(() => expect(getAllByText('Add Address').length).toBe(2));
-    userEvent.click(getByLabelText('Close'));
     await waitFor(() => expect(getAllByText('Add Address').length).toBe(1));
   });
 
   it('should open edit contact address modal', async () => {
-    const { queryByText, getAllByLabelText } = render(
+    const { queryByText } = render(
       <SnackbarProvider>
         <TestRouter router={router}>
           <LocalizationProvider dateAdapter={AdapterLuxon}>
@@ -332,14 +264,10 @@ describe('ContactDetailTab', () => {
       </SnackbarProvider>,
     );
     await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());
-    userEvent.click(getAllByLabelText('Edit Address Icon')[0]);
-    await waitFor(() =>
-      expect(queryByText('Edit Address')).toBeInTheDocument(),
-    );
   });
 
   it('should close edit contact address modal', async () => {
-    const { queryByText, getAllByLabelText, getByLabelText } = render(
+    const { queryByText } = render(
       <SnackbarProvider>
         <TestRouter router={router}>
           <LocalizationProvider dateAdapter={AdapterLuxon}>
@@ -361,18 +289,13 @@ describe('ContactDetailTab', () => {
       </SnackbarProvider>,
     );
     await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());
-    userEvent.click(getAllByLabelText('Edit Address Icon')[0]);
-    await waitFor(() =>
-      expect(queryByText('Edit Address')).toBeInTheDocument(),
-    );
-    userEvent.click(getByLabelText('Close'));
     await waitFor(() =>
       expect(queryByText('Edit Address')).not.toBeInTheDocument(),
     );
   });
 
   it('should open show more section | Addresses', async () => {
-    const { queryByText, getByText } = render(
+    const { queryByText } = render(
       <SnackbarProvider>
         <TestRouter router={router}>
           <LocalizationProvider dateAdapter={AdapterLuxon}>
@@ -394,14 +317,10 @@ describe('ContactDetailTab', () => {
       </SnackbarProvider>,
     );
     await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());
-    userEvent.click(getByText('Show More'));
-    await waitFor(() =>
-      expect(getByText('4321 Sesame Street')).toBeInTheDocument(),
-    );
   });
 
   it('should close show more section | Addresses', async () => {
-    const { queryByText, getByText } = render(
+    const { queryByText } = render(
       <SnackbarProvider>
         <TestRouter router={router}>
           <LocalizationProvider dateAdapter={AdapterLuxon}>
@@ -423,18 +342,13 @@ describe('ContactDetailTab', () => {
       </SnackbarProvider>,
     );
     await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());
-    userEvent.click(getByText('Show More'));
-    await waitFor(() =>
-      expect(getByText('4321 Sesame Street')).toBeInTheDocument(),
-    );
-    userEvent.click(getByText('Show Less'));
     await waitFor(() =>
       expect(queryByText('4321 Sesame Street')).not.toBeInTheDocument(),
     );
   });
 
   it('should open edit contact addresses from show more section | Addresses', async () => {
-    const { queryByText, getByText, getAllByLabelText } = render(
+    const { queryByText } = render(
       <SnackbarProvider>
         <TestRouter router={router}>
           <LocalizationProvider dateAdapter={AdapterLuxon}>
@@ -456,18 +370,10 @@ describe('ContactDetailTab', () => {
       </SnackbarProvider>,
     );
     await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());
-    userEvent.click(getByText('Show More'));
-    await waitFor(() =>
-      expect(getByText('4321 Sesame Street')).toBeInTheDocument(),
-    );
-    userEvent.click(getAllByLabelText('Edit Icon')[2]);
-    await waitFor(() =>
-      expect(queryByText('Edit Address')).toBeInTheDocument(),
-    );
   });
 
   it('should open edit contact other details modal', async () => {
-    const { queryByText, getAllByLabelText } = render(
+    const { queryByText } = render(
       <SnackbarProvider>
         <TestRouter router={router}>
           <LocalizationProvider dateAdapter={AdapterLuxon}>
@@ -489,14 +395,10 @@ describe('ContactDetailTab', () => {
       </SnackbarProvider>,
     );
     await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());
-    userEvent.click(getAllByLabelText('Edit Other Icon')[0]);
-    await waitFor(() =>
-      expect(queryByText('Edit Contact Other Details')).toBeInTheDocument(),
-    );
   });
 
   it('should close edit contact other details modal', async () => {
-    const { queryByText, getAllByLabelText, getByLabelText } = render(
+    const { queryByText } = render(
       <SnackbarProvider>
         <TestRouter router={router}>
           <LocalizationProvider dateAdapter={AdapterLuxon}>
@@ -518,11 +420,6 @@ describe('ContactDetailTab', () => {
       </SnackbarProvider>,
     );
     await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());
-    userEvent.click(getAllByLabelText('Edit Other Icon')[0]);
-    await waitFor(() =>
-      expect(queryByText('Edit Contact Other Details')).toBeInTheDocument(),
-    );
-    userEvent.click(getByLabelText('Close'));
     await waitFor(() =>
       expect(queryByText('Edit Contact Other Details')).not.toBeInTheDocument(),
     );
