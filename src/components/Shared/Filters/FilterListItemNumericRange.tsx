@@ -22,9 +22,12 @@ export const FilterListItemNumericRange: React.FC<Props> = ({
   const valueMin = value?.min?.toString() || undefined;
   const valueMax = value?.max?.toString() || undefined;
 
-  const createRange = (start: string, end: string): NumericRangeInput => ({
-    min: parseFloat(start),
-    max: parseFloat(end),
+  const createRange = (
+    start: string | undefined,
+    end: string | undefined,
+  ): NumericRangeInput => ({
+    min: start ? parseFloat(start) : undefined,
+    max: end ? parseFloat(end) : undefined,
   });
 
   return (
@@ -42,7 +45,7 @@ export const FilterListItemNumericRange: React.FC<Props> = ({
           style={{ marginRight: '8px' }}
           value={valueMin || null}
           onChange={({ target: { value: min } }) =>
-            onUpdate(!min ? undefined : createRange(min, valueMax ?? min))
+            onUpdate(createRange(min, valueMax))
           }
         />
         <TextField
@@ -51,7 +54,7 @@ export const FilterListItemNumericRange: React.FC<Props> = ({
           style={{ marginLeft: '8px' }}
           value={valueMax || null}
           onChange={({ target: { value: max } }) =>
-            onUpdate(!max ? undefined : createRange(valueMin ?? max, max))
+            onUpdate(createRange(valueMin, max))
           }
         />
       </ListItem>
