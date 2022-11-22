@@ -42,8 +42,15 @@ const InputCell = styled(TableCell)(() => ({
   [theme.breakpoints.down('lg')]: {
     minWidth: '150px',
   },
-  [theme.breakpoints.down('xs')]: {
-    minWidth: '100px',
+  [theme.breakpoints.down('md')]: {
+    minWidth: '130px',
+  },
+}))
+
+const DialogContentCustom = styled(DialogContent)(() => ({
+  [theme.breakpoints.down('md')]: {
+    maxHeight: '600px',
+    overflowX: 'auto'
   },
 }))
 
@@ -184,7 +191,7 @@ export const CreateMultipleContacts = ({
         setFieldValue,
       }): ReactElement => (
         <Form>
-          <DialogContent dividers sx={{ padding: 0 }}>
+          <DialogContentCustom dividers sx={{ padding: 0 }}>
             <TableContainer>
               <Table>
                 <TableHead>
@@ -363,7 +370,7 @@ export const CreateMultipleContacts = ({
                 </TableBody>
               </Table>
             </TableContainer>
-          </DialogContent>
+          </DialogContentCustom>
           <DialogActions>
             <CancelButton onClick={handleClose} disabled={isSubmitting} />
             <SubmitButton
