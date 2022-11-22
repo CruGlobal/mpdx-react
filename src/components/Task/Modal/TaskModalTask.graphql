@@ -21,4 +21,8 @@ query GetTaskForTaskModal($accountListId: ID!, $taskId: ID!) {
     notificationType
     notificationTimeUnit
   }
+  taskLocation(accountListId: $accountListId, taskId: $taskId) {
+    id
+    location
+  }
 }
