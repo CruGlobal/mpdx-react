@@ -27,7 +27,6 @@ import {
   SubmitButton,
   CancelButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
-import theme from '../../../../../../../../theme'
 
 const InputRow = styled(TableRow)(() => ({
   '&:nth-child(odd)': {
@@ -37,15 +36,6 @@ const InputRow = styled(TableRow)(() => ({
     borderBottom: 'none',
   },
 }));
-
-const InputCell = styled(TableCell)(() => ({
-  [theme.breakpoints.down('lg')]: {
-    minWidth: '150px',
-  },
-  [theme.breakpoints.down('xs')]: {
-    minWidth: '100px',
-  },
-}))
 
 interface Props {
   accountListId: string;
@@ -189,12 +179,12 @@ export const CreateMultipleContacts = ({
               <Table>
                 <TableHead>
                   <TableRow>
-                    <InputCell align="left">{t('First')}</InputCell>
-                    <InputCell align="left">{t('Spouse')}</InputCell>
-                    <InputCell align="left">{t('Last')}</InputCell>
-                    <InputCell align="left">{t('Address')}</InputCell>
-                    <InputCell align="left">{t('Phone')}</InputCell>
-                    <InputCell align="left">{t('Email')}</InputCell>
+                    <TableCell align="left">{t('First')}</TableCell>
+                    <TableCell align="left">{t('Spouse')}</TableCell>
+                    <TableCell align="left">{t('Last')}</TableCell>
+                    <TableCell align="left">{t('Address')}</TableCell>
+                    <TableCell align="left">{t('Phone')}</TableCell>
+                    <TableCell align="left">{t('Email')}</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -204,7 +194,7 @@ export const CreateMultipleContacts = ({
                       <>
                         {contacts.map((contact, index) => (
                           <InputRow key={index}>
-                            <InputCell>
+                            <TableCell>
                               <Field name="firstName">
                                 {({ field }: FieldProps) => (
                                   <Box width="100%">
@@ -228,8 +218,8 @@ export const CreateMultipleContacts = ({
                                   </Box>
                                 )}
                               </Field>
-                            </InputCell>
-                            <InputCell>
+                            </TableCell>
+                            <TableCell>
                               <Field name="spouseName">
                                 {({ field }: FieldProps) => (
                                   <Box width="100%">
@@ -253,8 +243,8 @@ export const CreateMultipleContacts = ({
                                   </Box>
                                 )}
                               </Field>
-                            </InputCell>
-                            <InputCell>
+                            </TableCell>
+                            <TableCell>
                               <Field name="lastName">
                                 {({ field }: FieldProps) => (
                                   <Box width="100%">
@@ -278,8 +268,8 @@ export const CreateMultipleContacts = ({
                                   </Box>
                                 )}
                               </Field>
-                            </InputCell>
-                            <InputCell>
+                            </TableCell>
+                            <TableCell>
                               {/* TODO: Connect to Google Autocomplete? */}
                               <Field name="address">
                                 {({ field }: FieldProps) => (
@@ -304,8 +294,8 @@ export const CreateMultipleContacts = ({
                                   </Box>
                                 )}
                               </Field>
-                            </InputCell>
-                            <InputCell>
+                            </TableCell>
+                            <TableCell>
                               <Field name="phone">
                                 {({ field }: FieldProps) => (
                                   <Box width="100%">
@@ -329,8 +319,8 @@ export const CreateMultipleContacts = ({
                                   </Box>
                                 )}
                               </Field>
-                            </InputCell>
-                            <InputCell>
+                            </TableCell>
+                            <TableCell>
                               <Field name="email">
                                 {({ field }: FieldProps) => (
                                   <Box width="100%">
@@ -354,7 +344,7 @@ export const CreateMultipleContacts = ({
                                   </Box>
                                 )}
                               </Field>
-                            </InputCell>
+                            </TableCell>
                           </InputRow>
                         ))}
                       </>
