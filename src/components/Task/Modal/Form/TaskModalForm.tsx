@@ -54,9 +54,13 @@ import {
   DeleteButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import { getLocalizedTaskType } from 'src/utils/functions/getLocalizedTaskType';
+import { TaskLocation } from 'pages/api/graphql-rest.page.generated';
 
 const taskSchema: yup.SchemaOf<
-  Omit<TaskCreateInput | TaskUpdateInput, 'result' | 'nextAction'>
+  Omit<
+    TaskCreateInput | TaskUpdateInput | TaskLocation,
+    'result' | 'nextAction'
+  >
 > = yup.object({
   id: yup.string().nullable(),
   activityType: yup.mixed<ActivityTypeEnum>(),
@@ -70,6 +74,7 @@ const taskSchema: yup.SchemaOf<
   notificationTimeBefore: yup.number().nullable(),
   notificationType: yup.mixed<NotificationTypeEnum>(),
   notificationTimeUnit: yup.mixed<NotificationTimeUnitEnum>(),
+  location: yup.string().nullable(),
 });
 
 interface Props {
@@ -98,6 +103,7 @@ const TaskModalForm = ({
     : {
         id: null,
         activityType: defaultValues?.activityType || null,
+        location: null,
         subject: defaultValues?.subject || '',
         startAt: DateTime.local().plus({ hours: 1 }).startOf('hour').toISO(),
         completedAt: null,
@@ -169,7 +175,7 @@ const TaskModalForm = ({
         [];
 
   const onSubmit = async (
-    attributes: TaskCreateInput | TaskUpdateInput,
+    attributes: (TaskCreateInput | TaskUpdateInput) & TaskLocation,
   ): Promise<void> => {
     const isUpdate = (
       attributes: TaskCreateInput | TaskUpdateInput,
@@ -250,6 +256,7 @@ const TaskModalForm = ({
           notificationTimeBefore,
           notificationType,
           notificationTimeUnit,
+          location,
         },
         setFieldValue,
         handleChange,
@@ -299,6 +306,18 @@ const TaskModalForm = ({
                   </Select>
                 </FormControl>
               </Grid>
+              {activityType === ActivityTypeEnum.Appointment && (
+                <Grid item>
+                  <TextField
+                    label={t('Location')}
+                    value={location}
+                    onChange={handleChange('location')}
+                    fullWidth
+                    multiline
+                    inputProps={{ 'aria-label': 'Location' }}
+                  />
+                </Grid>
+              )}
               <Grid item>
                 {!loading ? (
                   <Autocomplete
