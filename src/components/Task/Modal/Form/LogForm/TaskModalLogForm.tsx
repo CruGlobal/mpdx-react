@@ -38,7 +38,6 @@ import {
   TaskUpdateInput,
   ResultEnum,
 } from '../../../../../../graphql/types.generated';
-import { GetTaskForTaskModalQuery } from '../../../Modal/TaskModalTask.generated';
 import { GetThisWeekDocument } from '../../../../Dashboard/ThisWeek/GetThisWeek.generated';
 import {
   useGetDataForTaskModalQuery,

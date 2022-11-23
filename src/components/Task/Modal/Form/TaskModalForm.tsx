@@ -55,7 +55,6 @@ import {
 import { possibleResults } from './PossibleResults';
 import { possibleNextActions } from './PossibleNextActions';
 import useTaskModal from 'src/hooks/useTaskModal';
-import { GetTaskForTaskModalQuery } from '../TaskModalTask.generated';
 import { getLocalizedTaskType } from 'src/utils/functions/getLocalizedTaskType';
 import { v4 as uuidv4 } from 'uuid';
 import { getLocalizedResultString } from 'src/utils/functions/getLocalizedResultStrings';
