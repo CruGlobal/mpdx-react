@@ -8,7 +8,6 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import userEvent from '@testing-library/user-event';
 import { InMemoryCache } from '@apollo/client';
-import { GetTasksForTaskListDocument } from '../../List/TaskList.generated';
 import {
   getDataForTaskModalMock,
   createTaskMutationMock,
@@ -17,6 +16,7 @@ import {
 } from './TaskModalForm.mock';
 import TaskModalForm from './TaskModalForm';
 import { debug } from 'console';
+import { TasksDocument } from 'pages/accountLists/[accountListId]/tasks/Tasks.generated';
 
 const accountListId = 'abc';
 
@@ -304,7 +304,7 @@ describe('TaskModalForm', () => {
     jest.spyOn(cache, 'writeQuery');
     jest.spyOn(cache, 'readQuery');
     const query = {
-      query: GetTasksForTaskListDocument,
+      query: TasksDocument,
       variables: {
         accountListId,
         first: 100,

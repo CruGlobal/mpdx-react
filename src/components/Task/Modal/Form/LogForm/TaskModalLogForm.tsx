@@ -39,8 +39,6 @@ import {
   ResultEnum,
 } from '../../../../../../graphql/types.generated';
 import { GetTaskForTaskModalQuery } from '../../../Modal/TaskModalTask.generated';
-import { GetTasksForTaskListDocument } from '../../../List/TaskList.generated';
-import { TaskFilter } from '../../../List/List';
 import { GetThisWeekDocument } from '../../../../Dashboard/ThisWeek/GetThisWeek.generated';
 import {
   useGetDataForTaskModalQuery,
@@ -91,8 +89,6 @@ interface Props {
   task?: GetTaskForTaskModalQuery['task'];
   onClose: () => void;
   defaultValues?: Partial<TaskCreateInput>;
-  filter?: TaskFilter;
-  rowsPerPage: number;
 }
 
 interface NextActionsSectionProps {
@@ -145,8 +141,6 @@ const TaskModalLogForm = ({
   task,
   onClose,
   defaultValues,
-  filter,
-  rowsPerPage,
 }: Props): ReactElement => {
   const initialTask: TaskCreateInput = task
     ? {
@@ -211,10 +205,6 @@ const TaskModalLogForm = ({
         }
       },
       refetchQueries: [
-        {
-          query: GetTasksForTaskListDocument,
-          variables: { accountListId, first: rowsPerPage, ...filter },
-        },
         {
           query: TasksDocument,
           variables: { accountListId },
@@ -292,10 +282,6 @@ const TaskModalLogForm = ({
           id: task.id,
         },
         refetchQueries: [
-          {
-            query: GetTasksForTaskListDocument,
-            variables: { accountListId, first: rowsPerPage, ...filter },
-          },
           {
             query: GetThisWeekDocument,
             variables: {
