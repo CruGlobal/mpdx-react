@@ -1,5 +1,5 @@
 import React from 'react';
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { DateTime } from 'luxon';
@@ -13,6 +13,7 @@ import {
   TextFilter,
 } from '../../../../graphql/types.generated';
 import { FilterListItem } from './FilterListItem';
+import userEvent from '@testing-library/user-event';
 
 const checkboxFilter: CheckboxFilter = {
   __typename: 'CheckboxFilter',
@@ -176,6 +177,32 @@ describe('FilterListItem', () => {
     expect(getAllByRole('spinbutton')[1].getAttribute('value')).toEqual(
       numericRange.max?.toString(),
     );
+  });
+
+  it('NumericRangeFilter changed', async () => {
+    const numericRange: NumericRangeInput = { min: 0.0, max: 1.0 };
+
+    const { getByText, getAllByRole } = render(
+      <FilterListItem
+        filter={numericRangeFilter}
+        value={numericRange}
+        onUpdate={() => {}}
+      />,
+    );
+
+    expect(getByText(numericRangeFilter.title)).toBeInTheDocument();
+    const minInput = getAllByRole('spinbutton')[0];
+    const maxInput = getAllByRole('spinbutton')[1];
+    expect(minInput.getAttribute('value')).toEqual(
+      numericRange.min?.toString(),
+    );
+    expect(maxInput.getAttribute('value')).toEqual(
+      numericRange.max?.toString(),
+    );
+    userEvent.type(minInput, '5');
+    waitFor(() => expect(minInput).toHaveValue('5'));
+    userEvent.type(maxInput, '20');
+    waitFor(() => expect(maxInput).toHaveValue('20'));
   });
 
   it('TextFieldFilter blank', async () => {
