@@ -51,6 +51,7 @@ const ContactAvatar = styled(Avatar)(({}) => ({
 const PrimaryContactName = styled(Typography)(({}) => ({
   display: 'inline',
   marginLeft: 18,
+  fontWeight: 'bold',
 }));
 const CloseButtonIcon = styled(Close)(({}) => ({
   width: 14,
