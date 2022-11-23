@@ -49,7 +49,7 @@ const InputCell = styled(TableCell)(() => ({
 
 const DialogContentCustom = styled(DialogContent)(() => ({
   [theme.breakpoints.down('md')]: {
-    maxHeight: '600px',
+    maxHeight: '500px',
     overflowX: 'auto'
   },
 }))
