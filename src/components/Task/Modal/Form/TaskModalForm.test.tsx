@@ -78,12 +78,7 @@ describe('TaskModalForm', () => {
               ]}
               addTypename={false}
             >
-              <TaskModalForm
-                accountListId={accountListId}
-                filter={mockFilter}
-                rowsPerPage={100}
-                onClose={onClose}
-              />
+              <TaskModalForm accountListId={accountListId} onClose={onClose} />
             </MockedProvider>
           </SnackbarProvider>
         </LocalizationProvider>,
@@ -138,8 +133,6 @@ describe('TaskModalForm', () => {
           >
             <TaskModalForm
               accountListId={accountListId}
-              filter={mockFilter}
-              rowsPerPage={100}
               onClose={onClose}
               task={mockTask}
             />
@@ -206,8 +199,6 @@ describe('TaskModalForm', () => {
           >
             <TaskModalForm
               accountListId={accountListId}
-              filter={mockFilter}
-              rowsPerPage={100}
               onClose={onClose}
               task={mockTask}
             />
@@ -269,8 +260,6 @@ describe('TaskModalForm', () => {
             >
               <TaskModalForm
                 accountListId={accountListId}
-                filter={mockFilter}
-                rowsPerPage={100}
                 onClose={onClose}
                 task={mockCompletedTask}
               />
@@ -330,8 +319,6 @@ describe('TaskModalForm', () => {
           >
             <TaskModalForm
               accountListId={accountListId}
-              filter={mockFilter}
-              rowsPerPage={100}
               onClose={onClose}
               task={mockTask}
             />

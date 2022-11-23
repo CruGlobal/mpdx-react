@@ -92,8 +92,6 @@ describe('TaskModalLogForm', () => {
             >
               <TaskModalLogForm
                 accountListId={accountListId}
-                filter={mockFilter}
-                rowsPerPage={100}
                 onClose={onClose}
               />
             </GqlMockedProvider>
@@ -131,8 +129,6 @@ describe('TaskModalLogForm', () => {
             <GqlMockedProvider<UpdateTaskMutation> addTypename={false}>
               <TaskModalLogForm
                 accountListId={accountListId}
-                filter={mockFilter}
-                rowsPerPage={100}
                 onClose={onClose}
                 task={mockTask}
               />
@@ -184,8 +180,6 @@ describe('TaskModalLogForm', () => {
           >
             <TaskModalLogForm
               accountListId={accountListId}
-              filter={mockFilter}
-              rowsPerPage={100}
               onClose={onClose}
               task={mockTask}
             />
@@ -260,8 +254,6 @@ describe('TaskModalLogForm', () => {
             >
               <TaskModalLogForm
                 accountListId={accountListId}
-                filter={mockFilter}
-                rowsPerPage={100}
                 onClose={onClose}
                 task={mockTask}
               />
@@ -296,8 +288,6 @@ describe('TaskModalLogForm', () => {
               <GqlMockedProvider<CreateTaskMutation> onCall={mutationSpy}>
                 <TaskModalLogForm
                   accountListId={accountListId}
-                  filter={mockFilter}
-                  rowsPerPage={100}
                   onClose={onClose}
                 />
               </GqlMockedProvider>
