@@ -36,12 +36,14 @@ export const ContactHeaderPartnerSection: React.FC<Props> = ({
     ) {
       return (
         <ContactHeaderSection>
-          <Typography variant="h5">{t('Partner Account')}</Typography>
+          <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
+            {t('Partner Account')}
+          </Typography>
           {contact?.contactDonorAccounts.nodes.map((donorAccount) => {
             return (
               <>
                 <span key={donorAccount.id} />
-                <Typography variant="caption">
+                <Typography variant="subtitle1">
                   {donorAccount.donorAccount.displayName}
                 </Typography>
               </>
