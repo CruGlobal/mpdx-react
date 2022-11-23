@@ -38,7 +38,6 @@ import {
   TaskUpdateInput,
   ResultEnum,
 } from '../../../../../../graphql/types.generated';
-import { GetTaskForTaskModalQuery } from '../../../Modal/TaskModalTask.generated';
 import { GetTasksForTaskListDocument } from '../../../List/TaskList.generated';
 import { TaskFilter } from '../../../List/List';
 import { GetThisWeekDocument } from '../../../../Dashboard/ThisWeek/GetThisWeek.generated';
@@ -88,7 +87,7 @@ const taskSchema: yup.SchemaOf<TaskCreateInput | TaskUpdateInput> = yup.object({
 
 interface Props {
   accountListId: string;
-  task?: GetTaskForTaskModalQuery['task'];
+  task?: any;
   onClose: () => void;
   defaultValues?: Partial<TaskCreateInput>;
   filter?: TaskFilter;

@@ -34,7 +34,6 @@ import {
   TaskCreateInput,
   TaskUpdateInput,
 } from '../../../../../graphql/types.generated';
-import { GetTaskForTaskModalQuery } from '../../Modal/TaskModalTask.generated';
 import { GetTasksForTaskListDocument } from '../../List/TaskList.generated';
 import { TaskFilter } from '../../List/List';
 import {
@@ -75,7 +74,7 @@ const taskSchema: yup.SchemaOf<
 
 interface Props {
   accountListId: string;
-  task?: GetTaskForTaskModalQuery['task'];
+  task?: any;
   onClose: () => void;
   defaultValues?: Partial<TaskCreateInput & TaskUpdateInput>;
   filter?: TaskFilter;

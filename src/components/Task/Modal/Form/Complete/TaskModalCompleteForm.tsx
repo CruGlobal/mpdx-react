@@ -28,7 +28,6 @@ import {
   ResultEnum,
   TaskUpdateInput,
 } from '../../../../../../graphql/types.generated';
-import { GetTaskForTaskModalQuery } from '../../../Modal/TaskModalTask.generated';
 import { GetThisWeekDocument } from '../../../../Dashboard/ThisWeek/GetThisWeek.generated';
 import { useGetDataForTaskModalQuery } from '../../../Modal/Form/TaskModal.generated';
 import theme from '../../../../../../src/theme';
@@ -60,7 +59,7 @@ const taskSchema: yup.SchemaOf<
 
 interface Props {
   accountListId: string;
-  task: GetTaskForTaskModalQuery['task'];
+  task: any;
   onClose: () => void;
 }
 
