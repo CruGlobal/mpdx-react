@@ -7,7 +7,6 @@ import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import userEvent from '@testing-library/user-event';
 import { InMemoryCache } from '@apollo/client';
 import { MockedProvider } from '@apollo/client/testing';
-import { GetTasksForTaskListDocument } from '../../../List/TaskList.generated';
 import useTaskModal from '../../../../../hooks/useTaskModal';
 import TaskModalLogForm from './TaskModalLogForm';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
@@ -21,6 +20,7 @@ import {
   getDataForTaskModalMock,
   updateTaskMutationMock,
 } from 'src/components/Task/Modal/Form/TaskModalForm.mock';
+import { TasksDocument } from 'pages/accountLists/[accountListId]/tasks/Tasks.generated';
 
 const accountListId = 'abc';
 
@@ -92,8 +92,6 @@ describe('TaskModalLogForm', () => {
             >
               <TaskModalLogForm
                 accountListId={accountListId}
-                filter={mockFilter}
-                rowsPerPage={100}
                 onClose={onClose}
               />
             </GqlMockedProvider>
@@ -131,8 +129,6 @@ describe('TaskModalLogForm', () => {
             <GqlMockedProvider<UpdateTaskMutation> addTypename={false}>
               <TaskModalLogForm
                 accountListId={accountListId}
-                filter={mockFilter}
-                rowsPerPage={100}
                 onClose={onClose}
                 task={mockTask}
               />
@@ -184,8 +180,6 @@ describe('TaskModalLogForm', () => {
           >
             <TaskModalLogForm
               accountListId={accountListId}
-              filter={mockFilter}
-              rowsPerPage={100}
               onClose={onClose}
               task={mockTask}
             />
@@ -237,7 +231,7 @@ describe('TaskModalLogForm', () => {
     jest.spyOn(cache, 'writeQuery');
     jest.spyOn(cache, 'readQuery');
     const query = {
-      query: GetTasksForTaskListDocument,
+      query: TasksDocument,
       variables: {
         accountListId,
         first: 100,
@@ -260,8 +254,6 @@ describe('TaskModalLogForm', () => {
             >
               <TaskModalLogForm
                 accountListId={accountListId}
-                filter={mockFilter}
-                rowsPerPage={100}
                 onClose={onClose}
                 task={mockTask}
               />
@@ -296,8 +288,6 @@ describe('TaskModalLogForm', () => {
               <GqlMockedProvider<CreateTaskMutation> onCall={mutationSpy}>
                 <TaskModalLogForm
                   accountListId={accountListId}
-                  filter={mockFilter}
-                  rowsPerPage={100}
                   onClose={onClose}
                 />
               </GqlMockedProvider>

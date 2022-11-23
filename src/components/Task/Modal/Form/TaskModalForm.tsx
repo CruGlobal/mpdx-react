@@ -34,8 +34,6 @@ import {
   TaskCreateInput,
   TaskUpdateInput,
 } from '../../../../../graphql/types.generated';
-import { GetTasksForTaskListDocument } from '../../List/TaskList.generated';
-import { TaskFilter } from '../../List/List';
 import {
   useGetDataForTaskModalQuery,
   useCreateTaskMutation,
@@ -87,8 +85,6 @@ interface Props {
   task?: GetTaskForTaskModalQuery['task'];
   onClose: () => void;
   defaultValues?: Partial<TaskCreateInput & TaskUpdateInput>;
-  filter?: TaskFilter;
-  rowsPerPage: number;
   view?: 'comments' | 'log' | 'add' | 'complete' | 'edit';
 }
 
@@ -97,8 +93,6 @@ const TaskModalForm = ({
   task,
   onClose,
   defaultValues,
-  filter,
-  rowsPerPage,
   view,
 }: Props): ReactElement => {
   const initialTask: TaskCreateInput | TaskUpdateInput = task
@@ -228,10 +222,6 @@ const TaskModalForm = ({
           }
         },
         refetchQueries: [
-          {
-            query: GetTasksForTaskListDocument,
-            variables: { accountListId, first: rowsPerPage, ...filter },
-          },
           {
             query: TasksDocument,
             variables: { accountListId },

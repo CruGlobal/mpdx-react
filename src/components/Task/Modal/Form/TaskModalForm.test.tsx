@@ -8,7 +8,6 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import userEvent from '@testing-library/user-event';
 import { InMemoryCache } from '@apollo/client';
-import { GetTasksForTaskListDocument } from '../../List/TaskList.generated';
 import {
   getDataForTaskModalMock,
   createTaskMutationMock,
@@ -17,6 +16,7 @@ import {
 } from './TaskModalForm.mock';
 import TaskModalForm from './TaskModalForm';
 import { debug } from 'console';
+import { TasksDocument } from 'pages/accountLists/[accountListId]/tasks/Tasks.generated';
 
 const accountListId = 'abc';
 
@@ -78,12 +78,7 @@ describe('TaskModalForm', () => {
               ]}
               addTypename={false}
             >
-              <TaskModalForm
-                accountListId={accountListId}
-                filter={mockFilter}
-                rowsPerPage={100}
-                onClose={onClose}
-              />
+              <TaskModalForm accountListId={accountListId} onClose={onClose} />
             </MockedProvider>
           </SnackbarProvider>
         </LocalizationProvider>,
@@ -138,8 +133,6 @@ describe('TaskModalForm', () => {
           >
             <TaskModalForm
               accountListId={accountListId}
-              filter={mockFilter}
-              rowsPerPage={100}
               onClose={onClose}
               task={mockTask}
             />
@@ -206,8 +199,6 @@ describe('TaskModalForm', () => {
           >
             <TaskModalForm
               accountListId={accountListId}
-              filter={mockFilter}
-              rowsPerPage={100}
               onClose={onClose}
               task={mockTask}
             />
@@ -269,8 +260,6 @@ describe('TaskModalForm', () => {
             >
               <TaskModalForm
                 accountListId={accountListId}
-                filter={mockFilter}
-                rowsPerPage={100}
                 onClose={onClose}
                 task={mockCompletedTask}
               />
@@ -304,7 +293,7 @@ describe('TaskModalForm', () => {
     jest.spyOn(cache, 'writeQuery');
     jest.spyOn(cache, 'readQuery');
     const query = {
-      query: GetTasksForTaskListDocument,
+      query: TasksDocument,
       variables: {
         accountListId,
         first: 100,
@@ -330,8 +319,6 @@ describe('TaskModalForm', () => {
           >
             <TaskModalForm
               accountListId={accountListId}
-              filter={mockFilter}
-              rowsPerPage={100}
               onClose={onClose}
               task={mockTask}
             />
