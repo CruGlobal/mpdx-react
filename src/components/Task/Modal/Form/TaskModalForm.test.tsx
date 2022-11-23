@@ -1,3 +1,4 @@
+import { ActivityTypeEnum } from '../../../../../graphql/types.generated';
 import React from 'react';
 import { render, waitFor, within } from '@testing-library/react';
 import { MockedProvider } from '@apollo/client/testing';
@@ -7,7 +8,6 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import userEvent from '@testing-library/user-event';
 import { InMemoryCache } from '@apollo/client';
-import { GetTasksForTaskListDocument } from '../../List/TaskList.generated';
 import {
   getDataForTaskModalMock,
   createTaskMutationMock,
@@ -15,8 +15,12 @@ import {
   deleteTaskMutationMock,
 } from './TaskModalForm.mock';
 import TaskModalForm from './TaskModalForm';
+import { debug } from 'console';
+import { TasksDocument } from 'pages/accountLists/[accountListId]/tasks/Tasks.generated';
 
 const accountListId = 'abc';
+
+debug(undefined, Infinity);
 
 describe('TaskModalForm', () => {
   const mockFilter = {
@@ -40,6 +44,21 @@ describe('TaskModalForm', () => {
     notificationTimeUnit: null,
     notificationType: null,
     startAt: DateTime.local(2013, 1, 5, 1, 2).toISO(),
+    subject: '',
+    tagList: [],
+    user: null,
+  };
+
+  const mockCompletedTask = {
+    activityType: ActivityTypeEnum.Email,
+    contacts: {
+      nodes: [],
+    },
+    id: 'task-2',
+    notificationTimeBefore: null,
+    notificationTimeUnit: null,
+    notificationType: null,
+    startAt: DateTime.local(2013, 1, 5, 1, 2).toISO(),
     completedAt: DateTime.local(2016, 1, 5, 1, 2).toISO(),
     subject: '',
     tagList: [],
@@ -59,12 +78,7 @@ describe('TaskModalForm', () => {
               ]}
               addTypename={false}
             >
-              <TaskModalForm
-                accountListId={accountListId}
-                filter={mockFilter}
-                rowsPerPage={100}
-                onClose={onClose}
-              />
+              <TaskModalForm accountListId={accountListId} onClose={onClose} />
             </MockedProvider>
           </SnackbarProvider>
         </LocalizationProvider>,
@@ -83,6 +97,16 @@ describe('TaskModalForm', () => {
     });
 
     userEvent.type(contactsElement, 'Smith');
+
+    const commentsBox = getByRole('textbox', {
+      hidden: true,
+      name: 'Comment',
+    });
+
+    expect(queryByText('test comment')).not.toBeInTheDocument();
+    userEvent.type(commentsBox, 'test comment');
+    expect(getByText('test comment')).toBeInTheDocument();
+
     await waitFor(() => expect(getByText('Save')).not.toBeDisabled());
     userEvent.click(getByText('Save'));
     await waitFor(() => expect(onClose).toHaveBeenCalled());
@@ -90,7 +114,14 @@ describe('TaskModalForm', () => {
 
   it('persisted', async () => {
     const onClose = jest.fn();
-    const { getByRole, getAllByRole, getByLabelText } = render(
+    const {
+      getByRole,
+      getByLabelText,
+      queryByLabelText,
+      getByText,
+      queryByText,
+      queryByRole,
+    } = render(
       <LocalizationProvider dateAdapter={AdapterLuxon}>
         <SnackbarProvider>
           <MockedProvider
@@ -102,8 +133,6 @@ describe('TaskModalForm', () => {
           >
             <TaskModalForm
               accountListId={accountListId}
-              filter={mockFilter}
-              rowsPerPage={100}
               onClose={onClose}
               task={mockTask}
             />
@@ -111,11 +140,6 @@ describe('TaskModalForm', () => {
         </SnackbarProvider>
       </LocalizationProvider>,
     );
-    expect(
-      getAllByRole('textbox').find(
-        (item) => (item as HTMLInputElement).value === 'Jan 05, 2016',
-      ),
-    ).toBeInTheDocument();
     userEvent.click(getByLabelText('Action'));
     userEvent.click(
       within(getByRole('listbox', { hidden: true, name: 'Action' })).getByText(
@@ -128,21 +152,40 @@ describe('TaskModalForm', () => {
       'On the Journey with the Johnson Family',
     );
 
+    expect(queryByLabelText('Result')).not.toBeInTheDocument();
+
     const tagsElement = getByLabelText('Tags');
     userEvent.click(tagsElement);
-    userEvent.type(getByLabelText('Time'), '20');
-    userEvent.click(getByLabelText('Unit'));
-    userEvent.click(
-      within(getByRole('listbox', { hidden: true, name: 'Unit' })).getByText(
-        'HOURS',
-      ),
-    );
-    userEvent.click(getByLabelText('Type'));
-    userEvent.click(
-      within(getByRole('listbox', { hidden: true, name: 'Type' })).getByText(
-        'BOTH',
-      ),
-    );
+
+    const dateSelector = getByRole('textbox', {
+      hidden: true,
+      name: 'Choose date, selected date is Jan 5, 2013',
+    });
+
+    expect(
+      queryByRole('gridcell', { hidden: true, name: '17' }),
+    ).not.toBeInTheDocument();
+    userEvent.click(dateSelector);
+    const date17 = getByRole('gridcell', { hidden: true, name: '17' });
+    userEvent.click(date17);
+    userEvent.click(getByRole('button', { hidden: true, name: 'OK' }));
+
+    expect(
+      getByRole('textbox', {
+        hidden: true,
+        name: 'Choose date, selected date is Jan 17, 2013',
+      }),
+    ).toBeInTheDocument();
+
+    expect(getByText('Notifications')).toBeInTheDocument();
+    expect(queryByText('Both')).not.toBeInTheDocument();
+    userEvent.click(getByRole('button', { hidden: true, name: 'Type' }));
+    expect(getByText('Both')).toBeInTheDocument();
+    userEvent.click(getByText('Both'));
+    expect(queryByText('Hours')).not.toBeInTheDocument();
+    userEvent.click(getByRole('button', { hidden: true, name: 'Unit' }));
+    expect(getByText('Hours')).toBeInTheDocument();
+    userEvent.click(getByText('Hours'));
   }, 25000);
 
   it('should load and show data for task', async () => {
@@ -156,8 +199,6 @@ describe('TaskModalForm', () => {
           >
             <TaskModalForm
               accountListId={accountListId}
-              filter={mockFilter}
-              rowsPerPage={100}
               onClose={onClose}
               task={mockTask}
             />
@@ -204,13 +245,55 @@ describe('TaskModalForm', () => {
     userEvent.click(contactsElement);
   }, 25000);
 
+  it('renders fields for completed task', async () => {
+    const onClose = jest.fn();
+    const { getByRole, getAllByRole, queryByText, getByText, getByLabelText } =
+      render(
+        <LocalizationProvider dateAdapter={AdapterLuxon}>
+          <SnackbarProvider>
+            <MockedProvider
+              mocks={[
+                getDataForTaskModalMock(accountListId),
+                updateTaskMutationMock(),
+              ]}
+              addTypename={false}
+            >
+              <TaskModalForm
+                accountListId={accountListId}
+                onClose={onClose}
+                task={mockCompletedTask}
+              />
+            </MockedProvider>
+          </SnackbarProvider>
+        </LocalizationProvider>,
+      );
+    expect(
+      getAllByRole('textbox').find(
+        (item) => (item as HTMLInputElement).value === 'Jan 05, 2016',
+      ),
+    ).toBeInTheDocument();
+    expect(queryByText('Notifications')).not.toBeInTheDocument();
+    await waitFor(() => expect(getByText('Result')).toBeInTheDocument());
+    expect(queryByText('Completed')).not.toBeInTheDocument();
+    userEvent.click(getByRole('button', { hidden: true, name: 'Result' }));
+    expect(getByText('Completed')).toBeInTheDocument();
+    userEvent.click(getByText('Completed'));
+    await waitFor(() =>
+      expect(getByLabelText('Next Action')).toBeInTheDocument(),
+    );
+    expect(queryByText('Call')).not.toBeInTheDocument();
+    userEvent.click(getByRole('button', { hidden: true, name: 'Next Action' }));
+    expect(getByText('Call')).toBeInTheDocument();
+    userEvent.click(getByText('Call'));
+  }, 2500);
+
   it('deletes a task', async () => {
     const onClose = jest.fn();
     const cache = new InMemoryCache({ addTypename: false });
     jest.spyOn(cache, 'writeQuery');
     jest.spyOn(cache, 'readQuery');
     const query = {
-      query: GetTasksForTaskListDocument,
+      query: TasksDocument,
       variables: {
         accountListId,
         first: 100,
@@ -236,8 +319,6 @@ describe('TaskModalForm', () => {
           >
             <TaskModalForm
               accountListId={accountListId}
-              filter={mockFilter}
-              rowsPerPage={100}
               onClose={onClose}
               task={mockTask}
             />

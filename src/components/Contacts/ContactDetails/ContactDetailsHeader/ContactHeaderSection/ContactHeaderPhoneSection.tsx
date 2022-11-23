@@ -1,5 +1,4 @@
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
+import { Box, Link, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import Phone from '@mui/icons-material/Phone';
 import Skeleton from '@mui/material/Skeleton';
@@ -44,13 +43,8 @@ export const ContactHeaderPhoneSection = ({
     return (
       <ContactHeaderSection icon={<PhoneIcon />}>
         <Box style={{ display: 'flex' }}>
-          <Typography
-            style={{ width: 'fit-content' }}
-            variant="subtitle1"
-            component="a"
-            href={`tel:${number}`}
-          >
-            {number}
+          <Typography style={{ width: 'fit-content' }} variant="subtitle1">
+            <Link href={`tel:${number}`}>{number}</Link>
           </Typography>
           <Typography
             style={{
