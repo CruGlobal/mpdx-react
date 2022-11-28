@@ -57,6 +57,7 @@ import Cors from 'micro-cors';
 import { PageConfig, NextApiRequest } from 'next';
 import { ApolloServer } from 'apollo-server-micro';
 import { getLocationForTask } from './Schema/Tasks/TaskLocation/datahandler';
+import { UpdateTaskLocation } from './Schema/Tasks/TaskLocation/Update/datahandler';
 
 class MpdxRestApi extends RESTDataSource {
   constructor() {
@@ -360,6 +361,21 @@ class MpdxRestApi extends RESTDataSource {
   async getTaskLocation(_accountListId: string, taskId: string) {
     const { data } = await this.get(`tasks/${taskId}`);
     return getLocationForTask(data);
+  }
+
+  async updateTaskLocation(taskId: string, location: string) {
+    const { data }: { data: UpdateCommentResponse } = await this.put(
+      `tasks/${taskId}`,
+      {
+        data: {
+          type: 'tasks',
+          attributes: {
+            location,
+          },
+        },
+      },
+    );
+    return UpdateTaskLocation(data);
   }
 }
 

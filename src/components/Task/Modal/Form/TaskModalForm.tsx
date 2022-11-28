@@ -40,6 +40,7 @@ import {
   useCreateTaskMutation,
   useUpdateTaskMutation,
   useGetTaskModalContactsFilteredQuery,
+  useUpdateTaskLocationMutation,
 } from '../../Modal/Form/TaskModal.generated';
 import theme from '../../../../../src/theme';
 import { useCreateTaskCommentMutation } from '../../Modal/Comments/Form/CreateTaskComment.generated';
@@ -98,6 +99,7 @@ const TaskModalForm = ({
   defaultValues,
   view,
 }: Props): ReactElement => {
+  console.log(task);
   const initialTask: TaskCreateInput | TaskUpdateInput = task
     ? {
         ...(({ user: _user, contacts: _contacts, ...task }) => task)(task),
@@ -135,6 +137,8 @@ const TaskModalForm = ({
       defaultValues?.contactIds ||
       [],
   );
+
+  const [updateTaskLocation] = useUpdateTaskLocationMutation();
 
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -195,9 +199,21 @@ const TaskModalForm = ({
       attributes: TaskCreateInput | TaskUpdateInput,
     ): attributes is TaskUpdateInput => !!task;
     const body = commentBody.trim();
+    const location = attributes.location;
+    delete attributes.location;
     if (isUpdate(attributes)) {
       await updateTask({
         variables: { accountListId, attributes },
+        update: (_cache, { data }) => {
+          if (data?.updateTask?.task.id && location) {
+            updateTaskLocation({
+              variables: {
+                taskId: data?.updateTask?.task.id,
+                location,
+              },
+            });
+          }
+        },
         refetchQueries: [
           {
             query: TasksDocument,
@@ -213,6 +229,14 @@ const TaskModalForm = ({
       await createTask({
         variables: { accountListId, attributes },
         update: (_cache, { data }) => {
+          if (data?.createTask?.task.id && location) {
+            updateTaskLocation({
+              variables: {
+                taskId: data.createTask.task.id,
+                location,
+              },
+            });
+          }
           if (data?.createTask?.task.id && body !== '') {
             const id = uuidv4();
 

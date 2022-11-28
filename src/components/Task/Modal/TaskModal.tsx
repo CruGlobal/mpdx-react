@@ -52,7 +52,9 @@ const TaskModal = ({
     onClose && onClose();
   };
 
-  const task = { ...data?.task, location: data?.taskLocation?.location };
+  const task = data?.task
+    ? { ...data?.task, location: data?.taskLocation?.location }
+    : null;
 
   const renderTitle = (): string => {
     switch (view) {

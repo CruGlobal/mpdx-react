@@ -37,6 +37,8 @@ import ReportsPledgeHistoriesTyeDefs from './reports/pledgeHistories/pledgeHisto
 import { ReportsPledgeHistoriesResolvers } from './reports/pledgeHistories/resolvers';
 import TaskLocationTypeDefs from './Tasks/TaskLocation/taskLocation.graphql';
 import { TaskLocationResolvers } from './Tasks/TaskLocation/resolvers';
+import UpdateTaskLocationTypeDefs from './Tasks/TaskLocation/Update/updateTaskLocation.graphql';
+import { UpdateTaskLocationResolvers } from './Tasks/TaskLocation/Update/resolvers';
 
 const schema = buildSubgraphSchema([
   {
@@ -105,6 +107,10 @@ const schema = buildSubgraphSchema([
   {
     typeDefs: TaskLocationTypeDefs,
     resolvers: TaskLocationResolvers,
+  },
+  {
+    typeDefs: UpdateTaskLocationTypeDefs,
+    resolvers: UpdateTaskLocationResolvers,
   },
 ]);
 

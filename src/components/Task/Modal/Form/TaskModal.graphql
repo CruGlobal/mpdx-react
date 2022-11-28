@@ -41,6 +41,12 @@ mutation UpdateTask($accountListId: ID!, $attributes: TaskUpdateInput!) {
   }
 }
 
+mutation UpdateTaskLocation($taskId: ID!, $location: String!) {
+  updateTaskLocation(input: { taskId: $taskId, location: $location }) {
+    id
+  }
+}
+
 mutation DeleteTask($accountListId: ID!, $id: ID!) {
   deleteTask(input: { accountListId: $accountListId, id: $id }) {
     id
