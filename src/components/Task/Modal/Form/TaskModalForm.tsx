@@ -199,6 +199,7 @@ const TaskModalForm = ({
       attributes: TaskCreateInput | TaskUpdateInput,
     ): attributes is TaskUpdateInput => !!task;
     const body = commentBody.trim();
+    //TODO: Delete all location related stuff when field gets added to rails schema
     const location = attributes.location;
     delete attributes.location;
     if (isUpdate(attributes)) {
