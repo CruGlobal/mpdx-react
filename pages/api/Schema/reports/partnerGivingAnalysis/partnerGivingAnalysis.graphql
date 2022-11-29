@@ -299,10 +299,9 @@ input ContactFilterSetInput {
   pledgeReceived: ContactFilterPledgeReceivedEnum
 
   """
-  Filter contacts with addresses in particular state; accepts comma separated
-  values of either 'primary', 'active', 'inactive', 'null'
+  Filter contacts with addresses in particular state; accepts values 'primary', 'active', 'inactive', or 'null'
   """
-  primaryAddress: [String!]
+  primaryAddress: String
 
   """
   Filter by Referrer; Accepts multiple parameters, with values 'none', 'any', or a Contact ID
@@ -339,7 +338,6 @@ input ContactFilterSetInput {
   reversePledgeAmount: Boolean
   reversePledgeCurrency: Boolean
   reversePledgeFrequency: Boolean
-  reversePrimaryAddress: Boolean
   reverseReferrer: Boolean
   reverseRegion: Boolean
   reverseRelatedTaskAction: Boolean
