@@ -1,5 +1,6 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { ThemeProvider } from '@mui/material/styles';
 import { GetPartnerGivingAnalysisReportQuery } from './PartnerGivingAnalysisReport.generated';
 import { PartnerGivingAnalysisReport } from './PartnerGivingAnalysisReport';
@@ -10,9 +11,20 @@ const accountListId = '111';
 const title = 'test title';
 const onNavListToggle = jest.fn();
 
-const mocks: {
+jest.mock('next/router', () => ({
+  useRouter: () => {
+    return {
+      query: { accountListId: 'abc' },
+      isReady: true,
+    };
+  },
+}));
+
+type Mocks = {
   GetPartnerGivingAnalysisReport: GetPartnerGivingAnalysisReportQuery;
-} = {
+};
+
+const mocks: Mocks = {
   GetPartnerGivingAnalysisReport: {
     partnerGivingAnalysisReport: {
       contacts: [
@@ -136,5 +148,240 @@ describe('PartnerGivingAnalysisReport', () => {
     expect(queryByText(title)).toBeInTheDocument();
     expect(getByTestId('PartnerGivingAnalysisReport')).toBeInTheDocument();
     expect(queryByTestId('ReportNavList')).toBeNull();
+  });
+
+  it('shows a placeholder when there are zero contacts', async () => {
+    const mocksWithZeroContacts: Mocks = {
+      GetPartnerGivingAnalysisReport: {
+        partnerGivingAnalysisReport: {
+          contacts: [],
+          pagination:
+            mocks.GetPartnerGivingAnalysisReport.partnerGivingAnalysisReport
+              .pagination,
+          totalContacts: 300,
+        },
+      },
+    };
+    const { queryByTestId, queryByText, queryByRole } = render(
+      <ThemeProvider theme={theme}>
+        <GqlMockedProvider<GetPartnerGivingAnalysisReportQuery>
+          mocks={mocksWithZeroContacts}
+        >
+          <PartnerGivingAnalysisReport
+            accountListId={accountListId}
+            isNavListOpen={true}
+            title={title}
+            onNavListToggle={onNavListToggle}
+          />
+        </GqlMockedProvider>
+      </ThemeProvider>,
+    );
+
+    await waitFor(() => {
+      expect(
+        queryByTestId('LoadingPartnerGivingAnalysisReport'),
+      ).not.toBeInTheDocument();
+    });
+
+    expect(queryByRole('table')).not.toBeInTheDocument();
+    expect(
+      queryByText('You have {{contacts}} total contacts', { exact: false }),
+    ).toBeInTheDocument();
+  });
+
+  it('fields are sortable', async () => {
+    const mutationSpy = jest.fn();
+    const { getByText, queryByTestId } = render(
+      <ThemeProvider theme={theme}>
+        <GqlMockedProvider<GetPartnerGivingAnalysisReportQuery>
+          mocks={mocks}
+          onCall={mutationSpy}
+        >
+          <PartnerGivingAnalysisReport
+            accountListId={accountListId}
+            isNavListOpen={false}
+            title={title}
+            onNavListToggle={onNavListToggle}
+          />
+        </GqlMockedProvider>
+      </ThemeProvider>,
+    );
+
+    await waitFor(() => {
+      expect(
+        queryByTestId('LoadingPartnerGivingAnalysisReport'),
+      ).not.toBeInTheDocument();
+    });
+
+    userEvent.click(getByText('Gift Count'));
+    await waitFor(() => {
+      expect(
+        queryByTestId('LoadingPartnerGivingAnalysisReport'),
+      ).not.toBeInTheDocument();
+    });
+    expect(
+      mutationSpy.mock.calls[1][0].operation.variables.input.sortField,
+    ).toEqual('donationPeriodCount');
+    expect(
+      mutationSpy.mock.calls[1][0].operation.variables.input.sortDirection,
+    ).toEqual('ASCENDING');
+
+    userEvent.click(getByText('Gift Count'));
+    await waitFor(() => {
+      expect(
+        queryByTestId('LoadingPartnerGivingAnalysisReport'),
+      ).not.toBeInTheDocument();
+    });
+    expect(
+      mutationSpy.mock.calls[2][0].operation.variables.input.sortField,
+    ).toEqual('donationPeriodCount');
+    expect(
+      mutationSpy.mock.calls[2][0].operation.variables.input.sortDirection,
+    ).toEqual('DESCENDING');
+
+    userEvent.click(getByText('Gift Average'));
+    await waitFor(() => {
+      expect(
+        queryByTestId('LoadingPartnerGivingAnalysisReport'),
+      ).not.toBeInTheDocument();
+    });
+    expect(
+      mutationSpy.mock.calls[3][0].operation.variables.input.sortField,
+    ).toEqual('donationPeriodAverage');
+    expect(
+      mutationSpy.mock.calls[3][0].operation.variables.input.sortDirection,
+    ).toEqual('ASCENDING');
+  });
+
+  it('filters contacts by name', async () => {
+    const mutationSpy = jest.fn();
+    const { getByPlaceholderText, queryByTestId } = render(
+      <ThemeProvider theme={theme}>
+        <GqlMockedProvider<GetPartnerGivingAnalysisReportQuery>
+          mocks={mocks}
+          onCall={mutationSpy}
+        >
+          <PartnerGivingAnalysisReport
+            accountListId={accountListId}
+            isNavListOpen={true}
+            title={title}
+            onNavListToggle={onNavListToggle}
+          />
+        </GqlMockedProvider>
+      </ThemeProvider>,
+    );
+
+    await waitFor(() => {
+      expect(
+        queryByTestId('LoadingPartnerGivingAnalysisReport'),
+      ).not.toBeInTheDocument();
+    });
+
+    userEvent.type(getByPlaceholderText('Search contacts'), 'John');
+    await waitFor(() => {
+      expect(
+        queryByTestId('LoadingPartnerGivingAnalysisReport'),
+      ).toBeInTheDocument();
+    });
+    await waitFor(() => {
+      expect(
+        queryByTestId('LoadingPartnerGivingAnalysisReport'),
+      ).not.toBeInTheDocument();
+    });
+
+    expect(
+      mutationSpy.mock.calls[1][0].operation.variables.input.contactFilters,
+    ).toEqual({ nameLike: '%John%' });
+  });
+
+  it('sets the pagination limit', async () => {
+    const mutationSpy = jest.fn();
+    const { getByRole, queryByTestId } = render(
+      <ThemeProvider theme={theme}>
+        <GqlMockedProvider<GetPartnerGivingAnalysisReportQuery>
+          mocks={mocks}
+          onCall={mutationSpy}
+        >
+          <PartnerGivingAnalysisReport
+            accountListId={accountListId}
+            isNavListOpen={true}
+            title={title}
+            onNavListToggle={onNavListToggle}
+          />
+        </GqlMockedProvider>
+      </ThemeProvider>,
+    );
+
+    await waitFor(() => {
+      expect(
+        queryByTestId('LoadingPartnerGivingAnalysisReport'),
+      ).not.toBeInTheDocument();
+    });
+
+    userEvent.selectOptions(getByRole('combobox'), '50');
+    await waitFor(() => {
+      expect(
+        queryByTestId('LoadingPartnerGivingAnalysisReport'),
+      ).not.toBeInTheDocument();
+    });
+
+    expect(
+      mutationSpy.mock.calls[1][0].operation.variables.input.pageSize,
+    ).toBe(50);
+  });
+
+  it('selects and unselects all', async () => {
+    const { getAllByRole, queryByTestId } = render(
+      <ThemeProvider theme={theme}>
+        <GqlMockedProvider<GetPartnerGivingAnalysisReportQuery> mocks={mocks}>
+          <PartnerGivingAnalysisReport
+            accountListId={accountListId}
+            isNavListOpen={true}
+            title={title}
+            onNavListToggle={onNavListToggle}
+          />
+        </GqlMockedProvider>
+      </ThemeProvider>,
+    );
+
+    await waitFor(() => {
+      expect(
+        queryByTestId('LoadingPartnerGivingAnalysisReport'),
+      ).not.toBeInTheDocument();
+    });
+
+    // Select one
+    userEvent.click(getAllByRole('checkbox')[1]);
+    expect(getAllByRole('checkbox')[1]).toBeChecked();
+    expect(getAllByRole('checkbox')[0].dataset.indeterminate).toBe('true');
+
+    // Select all
+    userEvent.click(getAllByRole('checkbox')[0]);
+    expect(getAllByRole('checkbox')[1]).toBeChecked();
+    expect(getAllByRole('checkbox')[2]).toBeChecked();
+    expect(getAllByRole('checkbox')[3]).toBeChecked();
+
+    // Deselect one
+    userEvent.click(getAllByRole('checkbox')[1]);
+    expect(getAllByRole('checkbox')[0].dataset.indeterminate).toBe('true');
+
+    // Deselect all
+    userEvent.click(getAllByRole('checkbox')[0]);
+    userEvent.click(getAllByRole('checkbox')[0]);
+    expect(getAllByRole('checkbox')[1]).not.toBeChecked();
+    expect(getAllByRole('checkbox')[2]).not.toBeChecked();
+    expect(getAllByRole('checkbox')[3]).not.toBeChecked();
+
+    // Select all individually
+    userEvent.click(getAllByRole('checkbox')[1]);
+    userEvent.click(getAllByRole('checkbox')[2]);
+    userEvent.click(getAllByRole('checkbox')[3]);
+    expect(getAllByRole('checkbox')[0]).toBeChecked();
+
+    // Deselect all individually
+    userEvent.click(getAllByRole('checkbox')[1]);
+    userEvent.click(getAllByRole('checkbox')[2]);
+    userEvent.click(getAllByRole('checkbox')[3]);
+    expect(getAllByRole('checkbox')[0]).not.toBeChecked();
   });
 });
