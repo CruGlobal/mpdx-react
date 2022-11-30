@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { DialogActions, DialogContent, Typography } from '@mui/material';
+import { Alert, DialogActions, DialogContent, Typography } from '@mui/material';
 import Modal from '../../../../common/Modal/Modal';
 import {
   SubmitButton,
@@ -23,7 +23,7 @@ export const WeeklyReportModal = ({
   onNext,
 }: WeeklyReportModalProps) => {
   const { t } = useTranslation();
-  const error = false;
+  const setupError = false;
 
   const handleSubmit = () => {
     onClose();
@@ -32,13 +32,17 @@ export const WeeklyReportModal = ({
   return (
     <Modal isOpen={open} title={t('Weekly Report')} handleClose={onClose}>
       <DialogContent dividers>
-        {error ? (
-          <Typography>{t('Error!')}</Typography>
+        {setupError ? (
+          <Alert severity="warning">
+            {t(
+              'Weekly report questions have not been setup for your organization.',
+            )}
+          </Alert>
         ) : (
           <Typography>Step {activeStep}</Typography>
         )}
       </DialogContent>
-      {!error && (
+      {!setupError && (
         <DialogActions
           sx={{
             justifyContent: activeStep === 1 ? 'flex-end' : 'space-between',
