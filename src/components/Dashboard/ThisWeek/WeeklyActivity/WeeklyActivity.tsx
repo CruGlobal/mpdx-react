@@ -263,7 +263,7 @@ const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
             </Button>
           </HandoffLink>
           <Button size="small" color="primary" onClick={onWeeklyReportOpen}>
-            {t('Fill Out Weekly Report')}
+            {t('Fill out weekly report')}
           </Button>
           <WeeklyReportModal
             open={openWeeklyReportModal}
