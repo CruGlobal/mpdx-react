@@ -179,6 +179,26 @@ describe('FilterListItem', () => {
     );
   });
 
+  it('NumericRangeFilter empty value', async () => {
+    const numericRange: NumericRangeInput = { min: undefined, max: 1.0 };
+    const onUpdate = jest.fn();
+    const { getByText, getAllByRole } = render(
+      <FilterListItem
+        filter={numericRangeFilter}
+        value={numericRange}
+        onUpdate={onUpdate}
+      />,
+    );
+
+    expect(getByText(numericRangeFilter.title)).toBeInTheDocument();
+    const maxInput = getAllByRole('spinbutton')[1];
+    userEvent.type(maxInput, '5');
+    waitFor(() => expect(maxInput).toHaveValue('5'));
+    waitFor(() =>
+      expect(onUpdate).toHaveBeenCalledWith({ min: undefined, max: 5 }),
+    );
+  });
+
   it('NumericRangeFilter changed', async () => {
     const numericRange: NumericRangeInput = { min: 0.0, max: 1.0 };
 
