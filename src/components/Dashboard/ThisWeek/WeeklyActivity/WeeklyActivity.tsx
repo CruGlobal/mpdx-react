@@ -23,6 +23,7 @@ import AnimatedCard from '../../../AnimatedCard';
 import { numberFormat } from '../../../../lib/intlFormat';
 import HandoffLink from '../../../HandoffLink';
 import { useGetWeeklyActivityQuery } from './GetWeeklyActivity.generated';
+import { WeeklyReportModal } from './WeeklyReportModal/WeeklyReportModal';
 
 const useStyles = makeStyles()((theme: Theme) => ({
   div: {
@@ -104,6 +105,28 @@ const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
       endOfWeek: interval.end.toISO(),
     });
   }, [interval]);
+
+  const [openWeeklyReportModal, setOpenWeeklyReportModal] = useState(false);
+  const [formStep, setFormStep] = useState(1);
+
+  const onWeeklyReportOpen = () => {
+    setOpenWeeklyReportModal(true);
+  };
+
+  const onWeeklyReportClose = () => {
+    setOpenWeeklyReportModal(false);
+    setTimeout(() => {
+      setFormStep(1);
+    }, 1000);
+  };
+
+  const handleWeeklyReportPrev = () => {
+    setFormStep((prevState) => prevState - 1);
+  };
+
+  const handleWeeklyReportNext = () => {
+    setFormStep((prevState) => prevState + 1);
+  };
 
   return (
     <AnimatedCard className={classes.card}>
@@ -233,12 +256,22 @@ const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
             </TableBody>
           </Table>
         </TableContainer>
-        <CardActions>
+        <CardActions sx={{ justifyContent: 'space-between' }}>
           <HandoffLink path="/reports/coaching">
             <Button size="small" color="primary">
               {t('View Activity Detail')}
             </Button>
           </HandoffLink>
+          <Button size="small" color="primary" onClick={onWeeklyReportOpen}>
+            {t('Fill Out Weekly Report')}
+          </Button>
+          <WeeklyReportModal
+            open={openWeeklyReportModal}
+            onClose={onWeeklyReportClose}
+            activeStep={formStep}
+            onPrev={handleWeeklyReportPrev}
+            onNext={handleWeeklyReportNext}
+          />
         </CardActions>
       </motion.div>
     </AnimatedCard>
