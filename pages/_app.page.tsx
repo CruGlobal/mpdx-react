@@ -81,7 +81,12 @@ const App = ({
         />
         <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
         <link rel="manifest" href="/manifest.json" />
-        <link href="/favicon.png" rel="icon" type="image/png" sizes="32x32" />
+        <link
+          href={process.env.NEXT_PUBLIC_MEDIA_FAVICON}
+          rel="icon"
+          type="image/png"
+          sizes="32x32"
+        />
         <link
           rel="apple-touch-icon"
           href="/icons/apple-touch-icon-iphone-60x60.png"

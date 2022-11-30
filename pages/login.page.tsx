@@ -6,7 +6,6 @@ import { GetServerSideProps } from 'next';
 import Head from 'next/head';
 import Welcome from '../src/components/Welcome';
 import BaseLayout from '../src/components/Layouts/Basic';
-import logo from '../src/images/logo.svg';
 
 const IndexPage = (): ReactElement => (
   <>
@@ -14,7 +13,9 @@ const IndexPage = (): ReactElement => (
       <title>MPDX | Home</title>
     </Head>
     <Welcome
-      title={<img src={logo} alt="logo" height={50} />}
+      title={
+        <img src={process.env.NEXT_PUBLIC_MEDIA_LOGO} alt="logo" height={50} />
+      }
       subtitle="MPDX is fundraising software from Cru that helps you grow and maintain your ministry
 partners in a quick and easy way."
     >
