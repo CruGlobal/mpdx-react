@@ -188,6 +188,50 @@ describe('TaskModalForm', () => {
     userEvent.click(getByText('Hours'));
   }, 25000);
 
+  it('show the location field appropriately', async () => {
+    const onClose = jest.fn();
+    const { getByRole, getByLabelText, queryByLabelText } = render(
+      <LocalizationProvider dateAdapter={AdapterLuxon}>
+        <SnackbarProvider>
+          <MockedProvider
+            mocks={[
+              getDataForTaskModalMock(accountListId),
+              updateTaskMutationMock(),
+            ]}
+            addTypename={false}
+          >
+            <TaskModalForm
+              accountListId={accountListId}
+              onClose={onClose}
+              task={mockTask}
+            />
+          </MockedProvider>
+        </SnackbarProvider>
+      </LocalizationProvider>,
+    );
+
+    expect(queryByLabelText('Location')).not.toBeInTheDocument();
+
+    userEvent.click(getByLabelText('Action'));
+    userEvent.click(
+      within(getByRole('listbox', { hidden: true, name: 'Action' })).getByText(
+        'Appointment',
+      ),
+    );
+    expect(queryByLabelText('Location')).toBeInTheDocument();
+
+    userEvent.type(getByLabelText('Location'), '123 Test Street');
+
+    userEvent.click(getByRole('listbox', { hidden: true, name: 'Action' }));
+    userEvent.click(
+      within(getByRole('listbox', { hidden: true, name: 'Action' })).getByText(
+        'Call',
+      ),
+    );
+
+    expect(queryByLabelText('Location')).not.toBeInTheDocument();
+  }, 25000);
+
   it('should load and show data for task', async () => {
     const onClose = jest.fn();
     const { getByRole, getByLabelText, getByText, queryByTestId } = render(
