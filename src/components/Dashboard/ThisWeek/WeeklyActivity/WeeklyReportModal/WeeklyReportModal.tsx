@@ -31,31 +31,36 @@ export const WeeklyReportModal = ({
 
   return (
     <Modal isOpen={open} title={t('Weekly Report')} handleClose={onClose}>
-      <DialogContent dividers>
-        {setupError ? (
-          <Alert severity="warning">
-            {t(
-              'Weekly report questions have not been setup for your organization.',
-            )}
-          </Alert>
-        ) : (
-          <Typography>Step {activeStep}</Typography>
-        )}
-      </DialogContent>
-      {!setupError && (
-        <DialogActions
-          sx={{
-            justifyContent: activeStep === 1 ? 'flex-end' : 'space-between',
-          }}
-        >
-          {activeStep >= 2 && (
-            <CancelButton onClick={onPrev}>{t('Back')}</CancelButton>
+      <form>
+        <DialogContent dividers>
+          {setupError ? (
+            <Alert severity="warning">
+              {t(
+                'Weekly report questions have not been setup for your organization.',
+              )}
+            </Alert>
+          ) : (
+            <Typography>Step {activeStep}</Typography>
           )}
-          <SubmitButton onClick={activeStep < 8 ? onNext : handleSubmit}>
-            {activeStep < 8 ? t('Next') : t('Submit')}
-          </SubmitButton>
-        </DialogActions>
-      )}
+        </DialogContent>
+        {!setupError && (
+          <DialogActions
+            sx={{
+              justifyContent: activeStep === 1 ? 'flex-end' : 'space-between',
+            }}
+          >
+            {activeStep >= 2 && (
+              <CancelButton onClick={onPrev}>{t('Back')}</CancelButton>
+            )}
+            <SubmitButton
+              type={'button'} // TODO: change type to 'submit' on last screen
+              onClick={activeStep < 8 ? onNext : handleSubmit}
+            >
+              {activeStep < 8 ? t('Next') : t('Submit')}
+            </SubmitButton>
+          </DialogActions>
+        )}
+      </form>
     </Modal>
   );
 };
