@@ -1,6 +1,13 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Alert, DialogActions, DialogContent, Typography } from '@mui/material';
+import {
+  Alert,
+  Box,
+  DialogActions,
+  DialogContent,
+  LinearProgress,
+  Typography,
+} from '@mui/material';
 import Modal from '../../../../common/Modal/Modal';
 import {
   SubmitButton,
@@ -40,7 +47,32 @@ export const WeeklyReportModal = ({
               )}
             </Alert>
           ) : (
-            <Typography>Step {activeStep}</Typography>
+            <>
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                }}
+              >
+                <Box sx={{ width: '100%', mr: 1 }}>
+                  <LinearProgress
+                    variant="determinate"
+                    value={(activeStep / 8) * 100}
+                  />
+                </Box>
+                <Box>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                  >{`${activeStep}/8`}</Typography>
+                </Box>
+              </Box>
+              <Box mt={1}>
+                <Typography variant="h5">{`Question ${activeStep}`}</Typography>
+                <Typography>Input field goes here.</Typography>
+              </Box>
+            </>
           )}
         </DialogContent>
         {!setupError && (
