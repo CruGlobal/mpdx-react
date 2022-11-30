@@ -1,0 +1,12 @@
+extend type Query {
+  getDesignationDisplayNames(
+    accountListId: ID!
+    startDate: ISO8601Date
+    endDate: ISO8601Date
+  ): DesignationWithDisplayName
+}
+
+type DesignationWithDisplayName {
+  id: ID!
+  displayName: String
+}

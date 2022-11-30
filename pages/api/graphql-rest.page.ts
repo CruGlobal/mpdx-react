@@ -56,6 +56,10 @@ import {
 import Cors from 'micro-cors';
 import { PageConfig, NextApiRequest } from 'next';
 import { ApolloServer } from 'apollo-server-micro';
+import {
+  DonationReponse,
+  getDesignationDisplayNames,
+} from './Schema/donations/datahandler';
 
 class MpdxRestApi extends RESTDataSource {
   constructor() {
@@ -354,6 +358,18 @@ class MpdxRestApi extends RESTDataSource {
       },
     );
     return UpdateComment(data);
+  }
+
+  async getDesginationDisplayNames(
+    accountListId: string,
+    startDate: string,
+    endDate: string,
+  ) {
+    console.log('aa');
+    const { data }: { data: DonationReponse } = await this.get(
+      `donations?fields[designation_account]=display_name&filter[donation_date]=${startDate}..${endDate}&include=designation_account&per_page=10000`,
+    );
+    return getDesignationDisplayNames(data);
   }
 }
 

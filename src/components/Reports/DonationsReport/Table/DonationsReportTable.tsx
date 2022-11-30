@@ -92,6 +92,8 @@ export const DonationsReportTable: React.FC<Props> = ({
 
   const nodes = data?.donations.nodes || [];
 
+  console.log(data);
+
   const accountCurrency = accountListData?.accountList.currency || 'USD';
 
   const createData = (data: ExpectedDonationDataFragment): Donation => {
