@@ -38,16 +38,20 @@ export const WeeklyReportModal = ({
           <Typography>Step {activeStep}</Typography>
         )}
       </DialogContent>
-      <DialogActions
-        sx={{ justifyContent: activeStep === 1 ? 'flex-end' : 'space-between' }}
-      >
-        {activeStep >= 2 ? (
-          <CancelButton onClick={onPrev}>{t('Back')}</CancelButton>
-        ) : null}
-        <SubmitButton onClick={activeStep < 8 ? onNext : handleSubmit}>
-          {activeStep < 8 ? t('Next') : t('Submit')}
-        </SubmitButton>
-      </DialogActions>
+      {!error && (
+        <DialogActions
+          sx={{
+            justifyContent: activeStep === 1 ? 'flex-end' : 'space-between',
+          }}
+        >
+          {activeStep >= 2 && (
+            <CancelButton onClick={onPrev}>{t('Back')}</CancelButton>
+          )}
+          <SubmitButton onClick={activeStep < 8 ? onNext : handleSubmit}>
+            {activeStep < 8 ? t('Next') : t('Submit')}
+          </SubmitButton>
+        </DialogActions>
+      )}
     </Modal>
   );
 };
