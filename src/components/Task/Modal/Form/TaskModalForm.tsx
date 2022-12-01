@@ -86,7 +86,7 @@ const taskSchema: yup.SchemaOf<
 
 interface Props {
   accountListId: string;
-  task?: any;
+  task?: GetTaskForTaskModalQuery['task'];
   onClose: () => void;
   defaultValues?: Partial<TaskCreateInput & TaskUpdateInput>;
   view?: 'comments' | 'log' | 'add' | 'complete' | 'edit';
@@ -99,7 +99,6 @@ const TaskModalForm = ({
   defaultValues,
   view,
 }: Props): ReactElement => {
-  console.log(task);
   const initialTask: TaskCreateInput | TaskUpdateInput = task
     ? {
         ...(({ user: _user, contacts: _contacts, ...task }) => task)(task),
