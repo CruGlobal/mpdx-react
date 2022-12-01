@@ -26,6 +26,7 @@ import {
   SubmitButton,
   CancelButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
+import { getLocalizedSendNewsletter } from 'src/utils/functions/getLocalizedSendNewsletter';
 
 const ContactEditContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -156,13 +157,11 @@ export const EditMailingInfoModal: React.FC<EditMailingInfoModalProps> = ({
                         )
                       }
                     >
-                      {Object.entries(SendNewsletterEnum).map(
-                        ([name, value]) => (
-                          <MenuItem key={value} value={value}>
-                            {t(name)}
-                          </MenuItem>
-                        ),
-                      )}
+                      {Object.values(SendNewsletterEnum).map((value) => (
+                        <MenuItem key={value} value={value}>
+                          {getLocalizedSendNewsletter(t, value)}
+                        </MenuItem>
+                      ))}
                     </Select>
                   </FormControl>
                 </ContactInputWrapper>
