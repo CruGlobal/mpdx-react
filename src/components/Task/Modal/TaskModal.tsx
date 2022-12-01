@@ -9,8 +9,11 @@ import {
   TaskUpdateInput,
 } from '../../../../graphql/types.generated';
 import { useAccountListId } from '../../../hooks/useAccountListId';
-import { useGetTaskForTaskModalQuery } from '../Modal/TaskModalTask.generated';
-import TaskModalForm from './Form/TaskModalForm';
+import {
+  GetTaskForTaskModalQuery,
+  useGetTaskForTaskModalQuery,
+} from '../Modal/TaskModalTask.generated';
+import TaskModalForm, { TaskLocation } from './Form/TaskModalForm';
 import TaskModalCompleteForm from './Form/Complete/TaskModalCompleteForm';
 import TaskModalCommentsList from './Comments/TaskModalCommentsList';
 import TaskModalLogForm from './Form/LogForm/TaskModalLogForm';
@@ -52,9 +55,10 @@ const TaskModal = ({
     onClose && onClose();
   };
 
-  const task = data?.task
-    ? { ...data?.task, location: data?.taskLocation?.location }
-    : null;
+  const task: (GetTaskForTaskModalQuery['task'] & TaskLocation) | null =
+    data?.task
+      ? { ...data?.task, location: data?.taskLocation?.location }
+      : null;
 
   const renderTitle = (): string => {
     switch (view) {

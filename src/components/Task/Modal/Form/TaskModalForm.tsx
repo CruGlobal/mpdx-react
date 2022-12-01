@@ -90,8 +90,7 @@ const taskSchema: yup.SchemaOf<
 
 interface Props {
   accountListId: string;
-  task?: GetTaskForTaskModalQuery['task'] &
-    GetTaskForTaskModalQuery['taskLocation'];
+  task?: (GetTaskForTaskModalQuery['task'] & TaskLocation) | null;
   onClose: () => void;
   defaultValues?: Partial<TaskCreateInput & TaskUpdateInput>;
   view?: 'comments' | 'log' | 'add' | 'complete' | 'edit';
