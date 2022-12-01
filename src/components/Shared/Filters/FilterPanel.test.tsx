@@ -107,17 +107,19 @@ describe('FilterPanel', () => {
     it('default', async () => {
       const { getByTestId, getByText, queryByTestId, queryAllByTestId } =
         render(
-          <ThemeProvider theme={theme}>
-            <GqlMockedProvider<SaveFilterMutation>>
-              <FilterPanel
-                filters={[filterPanelDefaultMock, filterPanelFeaturedMock]}
-                savedFilters={[savedFiltersMock]}
-                selectedFilters={{}}
-                onClose={onClose}
-                onSelectedFiltersChanged={onSelectedFiltersChanged}
-              />
-            </GqlMockedProvider>
-          </ThemeProvider>,
+          <LocalizationProvider dateAdapter={AdapterLuxon}>
+            <ThemeProvider theme={theme}>
+              <GqlMockedProvider<SaveFilterMutation>>
+                <FilterPanel
+                  filters={[filterPanelDefaultMock, filterPanelFeaturedMock]}
+                  savedFilters={[savedFiltersMock]}
+                  selectedFilters={{}}
+                  onClose={onClose}
+                  onSelectedFiltersChanged={onSelectedFiltersChanged}
+                />
+              </GqlMockedProvider>
+            </ThemeProvider>
+          </LocalizationProvider>,
         );
 
       await waitFor(() => expect(queryByTestId('LoadingState')).toBeNull());
@@ -148,21 +150,24 @@ describe('FilterPanel', () => {
     it('opens and selects a filter', async () => {
       const {
         getByTestId,
+        getAllByTestId,
         getByText,
         queryByTestId,
         queryAllByTestId,
         getByRole,
       } = render(
         <LocalizationProvider dateAdapter={AdapterLuxon}>
-          <GqlMockedProvider<SaveFilterMutation>>
-            <FilterPanel
-              filters={[filterPanelDefaultMock, filterPanelFeaturedMock]}
-              savedFilters={[savedFiltersMock]}
-              selectedFilters={{}}
-              onClose={onClose}
-              onSelectedFiltersChanged={onSelectedFiltersChanged}
-            />
-          </GqlMockedProvider>
+          <ThemeProvider theme={theme}>
+            <GqlMockedProvider<SaveFilterMutation>>
+              <FilterPanel
+                filters={[filterPanelDefaultMock, filterPanelFeaturedMock]}
+                savedFilters={[savedFiltersMock]}
+                selectedFilters={{}}
+                onClose={onClose}
+                onSelectedFiltersChanged={onSelectedFiltersChanged}
+              />
+            </GqlMockedProvider>
+          </ThemeProvider>
         </LocalizationProvider>,
       );
 
@@ -196,23 +201,14 @@ describe('FilterPanel', () => {
           'Contact for Appointment',
         ),
       );
-      expect(getByTestId('multiSelectFilter')).toBeInTheDocument();
-      await waitFor(() =>
-        userEvent.click(getByTestId('CloseFilterGroupButton')),
-      );
+      expect(getAllByTestId('multiSelectFilter')).toHaveLength(2);
       expect(onSelectedFiltersChanged).toHaveBeenCalledWith({
         status: [ContactFilterStatusEnum.ContactForAppointment],
       });
     });
 
     it('should display a selected filter', async () => {
-      const {
-        getByText,
-        getAllByText,
-        queryByTestId,
-        getAllByTestId,
-        getByTestId,
-      } = render(
+      const { getByText, getAllByText, queryByTestId, getAllByTestId } = render(
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <ThemeProvider theme={theme}>
             <GqlMockedProvider<SaveFilterMutation>>
@@ -241,8 +237,8 @@ describe('FilterPanel', () => {
       ).toHaveLength(2);
       expect(
         getAllByText(filterPanelDefaultMock.filters[1].title),
-      ).toHaveLength(3);
-      expect(getByTestId('multiSelectFilter')).toBeInTheDocument();
+      ).toHaveLength(6);
+      expect(getAllByTestId('multiSelectFilter')).toHaveLength(2);
       expect(getByText('Group 1 (1)')).toBeVisible();
     });
 
@@ -418,17 +414,19 @@ describe('FilterPanel', () => {
     it('default', async () => {
       const { getByTestId, getByText, queryByTestId, queryAllByTestId } =
         render(
-          <ThemeProvider theme={theme}>
-            <GqlMockedProvider<SaveFilterMutation>>
-              <FilterPanel
-                filters={[filterPanelDefaultMock, filterPanelFeaturedMock]}
-                savedFilters={[savedFiltersMock]}
-                selectedFilters={{}}
-                onClose={onClose}
-                onSelectedFiltersChanged={onSelectedFiltersChanged}
-              />
-            </GqlMockedProvider>
-          </ThemeProvider>,
+          <LocalizationProvider dateAdapter={AdapterLuxon}>
+            <ThemeProvider theme={theme}>
+              <GqlMockedProvider<SaveFilterMutation>>
+                <FilterPanel
+                  filters={[filterPanelDefaultMock, filterPanelFeaturedMock]}
+                  savedFilters={[savedFiltersMock]}
+                  selectedFilters={{}}
+                  onClose={onClose}
+                  onSelectedFiltersChanged={onSelectedFiltersChanged}
+                />
+              </GqlMockedProvider>
+            </ThemeProvider>
+          </LocalizationProvider>,
         );
 
       await waitFor(() => expect(queryByTestId('LoadingState')).toBeNull());
@@ -461,6 +459,7 @@ describe('FilterPanel', () => {
     it('opens and selects a filter', async () => {
       const {
         getByTestId,
+        getAllByTestId,
         getByText,
         queryByTestId,
         queryAllByTestId,
@@ -512,11 +511,7 @@ describe('FilterPanel', () => {
         ),
       );
 
-      expect(getByTestId('multiSelectFilter')).toBeInTheDocument();
-      await waitFor(() =>
-        userEvent.click(getByTestId('CloseFilterGroupButton')),
-      );
-
+      expect(getAllByTestId('multiSelectFilter')).toHaveLength(2);
       expect(onSelectedFiltersChanged).toHaveBeenCalledWith({
         status: [ContactFilterStatusEnum.ContactForAppointment],
       });
