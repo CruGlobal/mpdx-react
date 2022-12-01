@@ -1,0 +1,25 @@
+query GetPartnerGivingAnalysisReport(
+  $input: PartnerGivingAnalysisReportInput!
+) {
+  partnerGivingAnalysisReport(input: $input) {
+    contacts {
+      id
+      donationPeriodAverage
+      donationPeriodCount
+      donationPeriodSum
+      lastDonationAmount
+      lastDonationCurrency
+      lastDonationDate
+      name
+      pledgeCurrency
+      totalDonations
+    }
+    pagination {
+      page
+      pageSize
+      totalItems
+      totalPages
+    }
+    totalContacts
+  }
+}

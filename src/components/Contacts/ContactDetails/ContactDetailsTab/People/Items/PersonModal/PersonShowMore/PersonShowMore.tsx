@@ -125,7 +125,7 @@ export const PersonShowMore: React.FC<PersonShowMoreProps> = ({
       {/* Anniversary Section */}
       <ModalSectionContainer>
         <ModalSectionIcon icon={<RingIcon />} />
-        <MobileDatePicker
+        <MobileDatePicker<Date, DateTime>
           renderInput={(params) => (
             <TextField
               fullWidth

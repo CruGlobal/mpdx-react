@@ -8,7 +8,7 @@ export default {
   title: 'Reports/DonationsReport/Table',
 };
 
-const time = new DateTime();
+const time = DateTime.now();
 
 export const Default = (): ReactElement => {
   return (

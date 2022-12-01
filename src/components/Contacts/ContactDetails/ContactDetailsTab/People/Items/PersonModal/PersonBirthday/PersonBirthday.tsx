@@ -36,7 +36,7 @@ export const PersonBirthday: React.FC<PersonBirthdayProps> = ({
   return (
     <ModalSectionContainer>
       <ModalSectionIcon icon={<CakeIcon />} />
-      <MobileDatePicker
+      <MobileDatePicker<Date, DateTime>
         renderInput={(params) => (
           <TextField
             fullWidth

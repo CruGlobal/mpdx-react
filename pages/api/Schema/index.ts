@@ -9,6 +9,8 @@ import { TaskAnalyticsResolvers } from './TaskAnalytics/resolvers';
 import TaskAnalyticsTypeDefs from './TaskAnalytics/taskAnalytics.graphql';
 import FourteenMonthReportTypeDefs from './reports/fourteenMonth/fourteenMonth.graphql';
 import { FourteenMonthReportResolvers } from './reports/fourteenMonth/resolvers';
+import { PartnerGivingAnalysisReportResolvers } from './reports/partnerGivingAnalysis/resolvers';
+import PartnerGivingAnalysisTypeDefs from './reports/partnerGivingAnalysis/partnerGivingAnalysis.graphql';
 import ExpectedMonthlyTotalReportTypeDefs from './reports/expectedMonthlyTotal/expectedMonthlyTotal.graphql';
 import { ExpectedMonthlyTotalReportResolvers } from './reports/expectedMonthlyTotal/resolvers';
 import DesignationAccountsTypeDefs from './reports/designationAccounts/designationAccounts.graphql';
@@ -75,6 +77,10 @@ const schema = buildSubgraphSchema([
   {
     typeDefs: FourteenMonthReportTypeDefs,
     resolvers: FourteenMonthReportResolvers,
+  },
+  {
+    typeDefs: PartnerGivingAnalysisTypeDefs,
+    resolvers: PartnerGivingAnalysisReportResolvers,
   },
   {
     typeDefs: ExpectedMonthlyTotalReportTypeDefs,
