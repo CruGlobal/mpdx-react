@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next';
 import theme from '../../../../../theme';
 import { ContactHeaderNewsletterFragment } from './ContactHeaderNewsletter.generated';
 import { ContactHeaderSection } from './ContactHeaderSection';
+import { getLocalizedSendNewsletter } from 'src/utils/functions/getLocalizedSendNewsletter';
 
 interface Props {
   loading: boolean;
@@ -46,12 +47,8 @@ export const ContactHeaderNewsletterSection = ({
   } else if (newsletter) {
     return (
       <ContactHeaderSection icon={<NewsletterIcon />}>
-        <Typography
-          variant="subtitle1"
-          component="a"
-          style={{ width: 'fit-content' }}
-        >
-          {t('Newsletter: {{newsletter}}', { newsletter })}
+        <Typography variant="subtitle1" style={{ width: 'fit-content' }}>
+          {t('Newsletter')}: {getLocalizedSendNewsletter(t, newsletter)}
         </Typography>
       </ContactHeaderSection>
     );

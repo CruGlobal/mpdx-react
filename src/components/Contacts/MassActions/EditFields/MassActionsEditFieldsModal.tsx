@@ -168,7 +168,9 @@ export const MassActionsEditFieldsModal: React.FC<
                       value={status}
                       onChange={(e) => setFieldValue('status', e.target.value)}
                     >
-                      <MenuItem value={undefined}>{t('None')}</MenuItem>
+                      <MenuItem value={''}>
+                        <em>{t("Don't change")}</em>
+                      </MenuItem>
                       {Object.values(StatusEnum).map((val) => (
                         <MenuItem key={val} value={val}>
                           {t(val) /* manually added to translation file */}
@@ -190,7 +192,9 @@ export const MassActionsEditFieldsModal: React.FC<
                         setFieldValue('likelyToGive', e.target.value)
                       }
                     >
-                      <MenuItem value={undefined}>{t('None')}</MenuItem>
+                      <MenuItem value={''}>
+                        <em>{t("Don't change")}</em>
+                      </MenuItem>
                       {Object.values(LikelyToGiveEnum).map((val) => (
                         <MenuItem key={val} value={val}>
                           {t(val) /* manually added to translation file */}
@@ -208,7 +212,9 @@ export const MassActionsEditFieldsModal: React.FC<
                       value={starred}
                       onChange={(e) => setFieldValue('starred', e.target.value)}
                     >
-                      <MenuItem value={undefined}>{t('None')}</MenuItem>
+                      <MenuItem value={''}>
+                        <em>{t("Don't change")}</em>
+                      </MenuItem>
                       {Object.entries(StarredMap).map(([key, val]) => (
                         <MenuItem key={key} value={String(val)}>
                           {t(key) /* manually added to translation file */}
@@ -228,7 +234,9 @@ export const MassActionsEditFieldsModal: React.FC<
                         setFieldValue('noAppeals', e.target.value)
                       }
                     >
-                      <MenuItem value={undefined}>{t('None')}</MenuItem>
+                      <MenuItem value={''}>
+                        <em>{t("Don't change")}</em>
+                      </MenuItem>
                       {Object.entries(NoAppealsMap).map(([key, val]) => (
                         <MenuItem key={key} value={String(val)}>
                           {t(key) /* manually added to translation file */}
@@ -250,12 +258,16 @@ export const MassActionsEditFieldsModal: React.FC<
                         setFieldValue('sendNewsletter', e.target.value)
                       }
                     >
-                      <MenuItem value={undefined}>{t('None')}</MenuItem>
-                      {Object.values(SendNewsletterEnum).map((val) => (
-                        <MenuItem key={val} value={val}>
-                          {t(val) /* manually added to translation file */}
-                        </MenuItem>
-                      ))}
+                      <MenuItem value={''}>
+                        <em>{t("Don't change")}</em>
+                      </MenuItem>
+                      {Object.entries(SendNewsletterEnum).map(
+                        ([name, value]) => (
+                          <MenuItem key={value} value={value}>
+                            {t(name)}
+                          </MenuItem>
+                        ),
+                      )}
                     </Select>
                   </FormControl>
                 </Grid>
@@ -300,7 +312,9 @@ export const MassActionsEditFieldsModal: React.FC<
                         setFieldValue('pledgeReceived', e.target.value)
                       }
                     >
-                      <MenuItem value={undefined}>{t('None')}</MenuItem>
+                      <MenuItem value={''}>
+                        <em>{t("Don't change")}</em>
+                      </MenuItem>
                       {Object.entries(PledgeReceivedMap).map(([key, val]) => (
                         <MenuItem key={key} value={String(val)}>
                           {t(key) /* manually added to translation file */}
@@ -322,7 +336,9 @@ export const MassActionsEditFieldsModal: React.FC<
                         setFieldValue('pledgeCurrency', e.target.value)
                       }
                     >
-                      <MenuItem value={undefined}>{t('None')}</MenuItem>
+                      <MenuItem value={''}>
+                        <em>{t("Don't change")}</em>
+                      </MenuItem>
                       {!loadingConstants &&
                         constants?.constant?.pledgeCurrencies?.map((val) => (
                           <MenuItem key={val.id} value={val.id || ''}>
@@ -345,7 +361,9 @@ export const MassActionsEditFieldsModal: React.FC<
                       value={locale}
                       onChange={(e) => setFieldValue('locale', e.target.value)}
                     >
-                      <MenuItem value={undefined}>{t('None')}</MenuItem>
+                      <MenuItem value={''}>
+                        <em>{t("Don't change")}</em>
+                      </MenuItem>
                       {!loadingConstants &&
                         constants?.constant?.languages?.map((val) => (
                           <MenuItem key={val.id} value={val.id || ''}>
@@ -383,8 +401,8 @@ export const MassActionsEditFieldsModal: React.FC<
                     >
                       {!loading ? (
                         [
-                          <MenuItem key="" value={undefined}>
-                            {t('None')}
+                          <MenuItem key="" value={''}>
+                            <em>{t("Don't change")}</em>
                           </MenuItem>,
                           data?.accountListUsers?.nodes &&
                             data.accountListUsers.nodes.map((val) => (
