@@ -32,7 +32,6 @@ import {
   NotificationTypeEnum,
   ResultEnum,
   TaskCreateInput,
-  TaskLocation,
   TaskUpdateInput,
 } from '../../../../../graphql/types.generated';
 import {
@@ -63,6 +62,11 @@ import {
   getLocalizedNotificationTimeUnit,
   getLocalizedNotificationType,
 } from 'src/utils/functions/getLocalizedNotificationStrings';
+import { GetTaskForTaskModalQuery } from '../TaskModalTask.generated';
+
+export interface TaskLocation {
+  location?: string | null | undefined;
+}
 
 const taskSchema: yup.SchemaOf<
   TaskCreateInput | TaskUpdateInput | TaskLocation
@@ -86,7 +90,8 @@ const taskSchema: yup.SchemaOf<
 
 interface Props {
   accountListId: string;
-  task?: GetTaskForTaskModalQuery['task'];
+  task?: GetTaskForTaskModalQuery['task'] &
+    GetTaskForTaskModalQuery['taskLocation'];
   onClose: () => void;
   defaultValues?: Partial<TaskCreateInput & TaskUpdateInput>;
   view?: 'comments' | 'log' | 'add' | 'complete' | 'edit';
@@ -99,7 +104,7 @@ const TaskModalForm = ({
   defaultValues,
   view,
 }: Props): ReactElement => {
-  const initialTask: TaskCreateInput | TaskUpdateInput = task
+  const initialTask: (TaskCreateInput | TaskUpdateInput) & TaskLocation = task
     ? {
         ...(({ user: _user, contacts: _contacts, ...task }) => task)(task),
         userId: task.user?.id,

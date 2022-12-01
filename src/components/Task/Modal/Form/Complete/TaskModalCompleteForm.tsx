@@ -43,6 +43,7 @@ import {
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import { getLocalizedTaskType } from 'src/utils/functions/getLocalizedTaskType';
 import { getLocalizedResultString } from 'src/utils/functions/getLocalizedResultStrings';
+import { GetTaskForTaskModalQuery } from '../../TaskModalTask.generated';
 
 const taskSchema: yup.SchemaOf<
   Pick<
@@ -59,7 +60,8 @@ const taskSchema: yup.SchemaOf<
 
 interface Props {
   accountListId: string;
-  task: any;
+  task: GetTaskForTaskModalQuery['task'] &
+    GetTaskForTaskModalQuery['taskLocation'];
   onClose: () => void;
 }
 

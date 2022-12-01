@@ -60,6 +60,7 @@ import { getLocalizedTaskType } from 'src/utils/functions/getLocalizedTaskType';
 import { getLocalizedResultString } from 'src/utils/functions/getLocalizedResultStrings';
 import { possibleNextActions } from '../PossibleNextActions';
 import { possibleResults } from '../PossibleResults';
+import { GetTaskForTaskModalQuery } from '../../TaskModalTask.generated';
 
 const LoadingIndicator = styled(CircularProgress)(() => ({
   display: 'flex',
@@ -85,7 +86,8 @@ const taskSchema: yup.SchemaOf<TaskCreateInput | TaskUpdateInput> = yup.object({
 
 interface Props {
   accountListId: string;
-  task?: any;
+  task?: GetTaskForTaskModalQuery['task'] &
+    GetTaskForTaskModalQuery['taskLocation'];
   onClose: () => void;
   defaultValues?: Partial<TaskCreateInput>;
 }
