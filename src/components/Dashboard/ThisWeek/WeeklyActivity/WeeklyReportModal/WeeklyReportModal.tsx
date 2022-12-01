@@ -144,107 +144,129 @@ export const WeeklyReportModal = ({
     },
   ];
 
+  const errorFlag = questions.length === 0 || setupError;
+
   return (
     <Modal isOpen={open} title={t('Weekly Report')} handleClose={onClose}>
-      <form>
-        <DialogContent dividers>
-          {setupError ? (
-            <Alert severity="warning">
-              {t(
-                'Weekly report questions have not been setup for your organization.',
-              )}
-            </Alert>
-          ) : (
-            <>
-              <Box
-                sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                }}
-              >
-                <Box sx={{ width: '100%', mr: 1 }}>
-                  <LinearProgress
-                    variant="determinate"
-                    value={(activeStep / questions.length) * 100}
-                  />
+      {!errorFlag ? (
+        <form>
+          <DialogContent dividers>
+            {setupError ? (
+              <Alert severity="warning">
+                {t(
+                  'Weekly report questions have not been setup for your organization.',
+                )}
+              </Alert>
+            ) : (
+              <>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                  }}
+                >
+                  <Box sx={{ width: '100%', mr: 1 }}>
+                    <LinearProgress
+                      variant="determinate"
+                      value={(activeStep / questions.length) * 100}
+                    />
+                  </Box>
+                  <Box>
+                    <Typography
+                      variant="body2"
+                      color="text.secondary"
+                    >{`${activeStep}/${questions.length}`}</Typography>
+                  </Box>
                 </Box>
-                <Box>
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                  >{`${activeStep}/${questions.length}`}</Typography>
-                </Box>
-              </Box>
-              {/* TODO: Integrate questions from production */}
-              {questions.map((question, i) => {
-                if (activeStep === i + 1) {
-                  return (
-                    <Box mt={1} key={question.question}>
-                      {question.type === 'radio' && question.options && (
-                        <FormControl>
-                          <FormLabel sx={labelStyles}>
-                            {question.question}
-                          </FormLabel>
-                          <RadioGroup
-                            defaultValue={question.options[0].label}
-                            name={`radio-group-${i}`}
-                            row
-                          >
-                            {question.options.map((option) => (
-                              <FormControlLabel
-                                key={option.value}
-                                value={option.value}
-                                control={<Radio />}
-                                label={option.label}
-                              />
-                            ))}
-                          </RadioGroup>
-                        </FormControl>
-                      )}
-                      {question.type === 'textarea' && (
-                        <TextField
-                          rows={3}
-                          label={question.question}
-                          InputLabelProps={{
-                            shrink: true,
-                            sx: labelStyles,
-                          }}
-                          InputProps={{
-                            notched: false,
-                          }}
-                          variant="outlined"
-                          multiline
-                          fullWidth
-                        />
-                      )}
-                    </Box>
-                  );
-                } else {
-                  return null;
-                }
-              })}
-            </>
-          )}
-        </DialogContent>
-        {!setupError && (
-          <DialogActions
-            sx={{
-              justifyContent: activeStep === 1 ? 'flex-end' : 'space-between',
-            }}
-          >
-            {activeStep >= 2 && (
-              <CancelButton onClick={onPrev}>{t('Back')}</CancelButton>
+                {/* TODO: Integrate questions from production */}
+                {questions.map((question, i) => {
+                  if (activeStep === i + 1) {
+                    return (
+                      <Box mt={1} key={question.question}>
+                        {question.type === 'radio' && question.options && (
+                          <FormControl>
+                            <FormLabel sx={labelStyles}>
+                              {question.question}
+                            </FormLabel>
+                            <RadioGroup
+                              defaultValue={question.options[0].label}
+                              name={`radio-group-${i}`}
+                              row
+                            >
+                              {question.options.map((option) => (
+                                <FormControlLabel
+                                  key={option.value}
+                                  value={option.value}
+                                  control={<Radio />}
+                                  label={option.label}
+                                />
+                              ))}
+                            </RadioGroup>
+                          </FormControl>
+                        )}
+                        {question.type === 'textarea' && (
+                          <TextField
+                            rows={3}
+                            label={question.question}
+                            InputLabelProps={{
+                              shrink: true,
+                              sx: labelStyles,
+                            }}
+                            InputProps={{
+                              notched: false,
+                            }}
+                            variant="outlined"
+                            multiline
+                            fullWidth
+                          />
+                        )}
+                      </Box>
+                    );
+                  } else {
+                    return null;
+                  }
+                })}
+              </>
             )}
-            <SubmitButton
-              type={'button'} // TODO: change type to 'submit' on last screen
-              onClick={activeStep < questions.length ? onNext : handleSubmit}
+          </DialogContent>
+          {!setupError && (
+            <DialogActions
+              sx={{
+                justifyContent: activeStep === 1 ? 'flex-end' : 'space-between',
+              }}
             >
-              {activeStep < questions.length ? t('Next') : t('Submit')}
-            </SubmitButton>
+              {activeStep >= 2 && (
+                <CancelButton onClick={onPrev}>{t('Back')}</CancelButton>
+              )}
+              <SubmitButton
+                type={'button'} // TODO: change type to 'submit' on last screen
+                onClick={activeStep < questions.length ? onNext : handleSubmit}
+              >
+                {activeStep < questions.length ? t('Next') : t('Submit')}
+              </SubmitButton>
+            </DialogActions>
+          )}
+        </form>
+      ) : (
+        <>
+          <DialogContent dividers>
+            <Alert severity="warning">
+              {setupError
+                ? t(
+                    'Weekly report questions have not been setup for your organization.',
+                  )
+                : null}
+              {!setupError && questions.length === 0
+                ? t('No questions have been created') // TODO: Get real error message
+                : null}
+            </Alert>
+          </DialogContent>
+          <DialogActions>
+            <CancelButton onClick={onClose} />
           </DialogActions>
-        )}
-      </form>
+        </>
+      )}
     </Modal>
   );
 };
