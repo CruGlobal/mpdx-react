@@ -1,0 +1,490 @@
+"""
+Range of dates
+"""
+input DateRangeInput {
+  """
+  Maximum value of the range
+  """
+  max: ISO8601Date
+
+  """
+  Minimum value of the range
+  """
+  min: ISO8601Date
+}
+
+"""
+Range of dates
+"""
+input DateTimeRangeInput {
+  """
+  Maximum value of the range
+  """
+  max: ISO8601DateTime
+
+  """
+  Minimum value of the range
+  """
+  min: ISO8601DateTime
+}
+
+"""
+Range of numbers
+"""
+input NumericRangeInput {
+  """
+  Maximum value of the range
+  """
+  max: Float
+
+  """
+  Minimum value of the range
+  """
+  min: Float
+}
+
+enum ContactFilterNewsletterEnum {
+  ALL
+  BOTH
+  EMAIL
+  EMAIL_ONLY
+  NONE
+  NO_VALUE
+  PHYSICAL
+  PHYSICAL_ONLY
+}
+
+enum ContactFilterPledgeReceivedEnum {
+  ANY
+  NOT_RECEIVED
+  RECEIVED
+}
+
+input ContactFilterSetInput {
+  """
+  Filter by Address No Longer Valid; Accepts values 'true', or 'false'
+  """
+  addressHistoric: Boolean
+
+  """
+  Filter contacts with addresses located within the lat lng bounds. Hash should contain a ne and sw lat lng pair.
+  """
+  addressLatLng: String
+
+  """
+  Filter where address value is false; accepts "false"
+  """
+  addressValid: Boolean
+
+  """
+  Filter by alma mater; Accepts multiple parameters, with value 'none', or an alma mater name
+  """
+  almaMater: [String!]
+
+  """
+  Filter where contact people have anniversary on date between provided date range
+  """
+  anniversary: DateRangeInput
+
+  """
+  When filtering by tags this specifies if the filter should match tasks with
+  any of the filtered tags if "true" or only tasks with all of the filtered tags if "false"
+  """
+  anyTags: Boolean
+
+  """
+  Filter by Appeal; Accepts multiple parameters, with value 'no_appeals', or an appeal ID
+  """
+  appeal: [String!]
+
+  """
+  Filter by Pledge Status. One of excluded, asked, not_received,
+  received_not_processed, or processed. Must be used with appeal filter.
+  """
+  appealStatus: String
+
+  """
+  Filter where contact people have birthday on date between provided date range
+  """
+  birthday: DateRangeInput
+
+  """
+  Filter by Church; Accepts multiple parameters, with value 'none', or a church name
+  """
+  church: [String!]
+
+  """
+  Filter by City; Accepts multiple parameters, with value 'none', or a city name
+  """
+  city: [String!]
+
+  """
+  Filter by where contact has address; Accepts values 'Yes', or 'No'
+  """
+  contactInfoAddr: String
+
+  """
+  Filter where contact people has an email; Accepts values 'Yes', or 'No'
+  """
+  contactInfoEmail: String
+
+  """
+  Filter where contact people has a Facebook Profile; Accepts values 'Yes', or 'No'
+  """
+  contactInfoFacebook: String
+
+  """
+  Filter where contact people has a mobile phone; Accepts values 'Yes', or 'No'
+  """
+  contactInfoMobile: String
+
+  """
+  Filter where contact people has a phone; Accepts values 'Yes', or 'No'
+  """
+  contactInfoPhone: String
+
+  """
+  Filter where contact people has a work phone; Accepts values 'Yes', or 'No'
+  """
+  contactInfoWorkPhone: String
+
+  """
+  Filter by Type; Accepts multiple parameters, with values 'person', and 'company'
+  """
+  contactType: [String!]
+
+  """
+  Filter by Country; Accepts multiple parameters, with values 'none', or a country
+  """
+  country: [String!]
+
+  """
+  Filter by Created At date between a provided date range
+  """
+  createdAt: DateRangeInput
+
+  """
+  Filter by Designation Account; accepts multiple parameters, separated by comma
+  """
+  designationAccountId: [ID!]
+
+  """
+  Filter by Gift Options; Accepts multiple parameters, with values 'none', 'one', 'first', and 'last'
+  """
+  donation: [String!]
+
+  """
+  Filter by Exact Gift Amount; Accepts multiple parameters, with values like '9.99'
+  """
+  donationAmount: [String!]
+
+  """
+  Filter by Gift Amount Range; Accepts object with max and min keys with decimal values { "max": "9.99", "min": "0.99" }
+  """
+  donationAmountRange: NumericRangeInput
+
+  """
+  Filter by Gift Date; Accepts date range with text value like 'MM/DD/YYYY - MM/DD/YYYY'
+  """
+  donationDate: DateRangeInput
+
+  """
+  Filter contacts that have any of the tags included in this filter; comma separated value for multiple
+  """
+  excludeTags: [String!]
+
+  """
+  Filter where contact gave more than they pledged within the provided date range
+  """
+  gaveMoreThanPledgedRange: DateRangeInput
+
+  """
+  Filter contacts with ids included in this filter; comma separated value for multiple
+  """
+  ids: [ID!]
+
+  """
+  Filter contacts by the date at which the contact started being late on payments
+  """
+  lateAt: DateRangeInput
+
+  """
+  Filter by Likely To Give; Accepts multiple parameters, with values 'none', 'Least Likely', 'Likely', and 'Most Likely'
+  """
+  likely: [String!]
+
+  """
+  Filter by Language; Accepts multiple parameters,
+  """
+  locale: [String!]
+
+  """
+  Filter by Metro Area; Accepts multiple parameters, with values 'none', or a metro area name
+  """
+  metroArea: [String!]
+
+  """
+  Filter where contact name starts with the provided value
+  """
+  nameLike: String
+
+  """
+  Filter by Newsletter Recipients; Accepts values 'none', 'all', 'address', 'email', and 'both'
+  """
+  newsletter: ContactFilterNewsletterEnum
+
+  """
+  Filter by Next Ask date within the provided date range
+  """
+  nextAsk: DateRangeInput
+
+  """
+  Filter where contact has asked specifically not to receive appeals; accepts "true"
+  """
+  noAppeals: Boolean
+
+  """
+  Filter contacts with note contents; accepts hash with wildcard_note_search
+  parameter { "wildcard_note_search": "value to search by" }
+  """
+  notes: String
+
+  """
+  Filter where at least one contact person has opted out from email; Accepts values 'Yes', or 'No'
+  """
+  optOut: String
+
+  """
+  filter where contact's account list has a designation account belonging to an organization; Accepts IDs separated by comma
+  """
+  organizationId: [ID!]
+
+  """
+  Filter contacts by pledge status. completed, outstanding, pending
+  """
+  pledge: String
+
+  """
+  Filter by Pledge Amount; Accepts multiple parameters, with values like '100.0'
+  """
+  pledgeAmount: [String!]
+
+  """
+  Filter where Pledge Amount increased in the provided date range
+  """
+  pledgeAmountIncreasedRange: DateRangeInput
+
+  """
+  Filter by Pledge Currency; Accepts multiple parameters, with values like 'USD'
+  """
+  pledgeCurrency: [String!]
+
+  """
+  Filter by Pledge Frequency; Accepts multiple parameters, with numeric values
+  like '0.23076923076923' (Weekly), '0.46153846153846' (Every 2 Weeks), '1.0'
+  (Monthly), '2.0' (Every 2 Months), '3.0', '4.0', '6.0', '12.0' (Yearly), and
+  '24.0' (Every 2 Years)
+  """
+  pledgeFrequency: [String!]
+
+  """
+  Filter by Late By; Accepts values '', '0_30' (Less than 30 days late), '30_60'
+  (More than 30 days late), '60_90' (More than 60 days late), or '90' (More than 90 days late)
+  """
+  pledgeLateBy: String
+
+  """
+  Filter by Pledge Received; Accepts values 'true', or 'false'
+  """
+  pledgeReceived: ContactFilterPledgeReceivedEnum
+
+  """
+  Filter contacts with addresses in particular state; accepts values 'primary', 'active', 'inactive', or 'null'
+  """
+  primaryAddress: String
+
+  """
+  Filter by Referrer; Accepts multiple parameters, with values 'none', 'any', or a Contact ID
+  """
+  referrer: [String!]
+
+  """
+  Filter by Referrer ID; Accepts Comma separated list of Contact IDs
+  """
+  referrerIds: [ID!]
+
+  """
+  Filter by Region; Accepts multiple parameters, with values 'none', or a region name
+  """
+  region: [String!]
+
+  """
+  Filter by Action; Accepts multiple parameters, with values 'none', or an activity type like 'Call'
+  """
+  relatedTaskAction: [String!]
+  reverseAlmaMater: Boolean
+  reverseAppeal: Boolean
+  reverseChurch: Boolean
+  reverseCity: Boolean
+  reverseContactType: Boolean
+  reverseCountry: Boolean
+  reverseDesignationAccountId: Boolean
+  reverseDonation: Boolean
+  reverseDonationAmount: Boolean
+  reverseIds: Boolean
+  reverseLikely: Boolean
+  reverseLocale: Boolean
+  reverseMetroArea: Boolean
+  reversePledgeAmount: Boolean
+  reversePledgeCurrency: Boolean
+  reversePledgeFrequency: Boolean
+  reverseReferrer: Boolean
+  reverseRegion: Boolean
+  reverseRelatedTaskAction: Boolean
+  reverseSource: Boolean
+  reverseState: Boolean
+  reverseStatus: Boolean
+  reverseTags: Boolean
+  reverseTimezone: Boolean
+  reverseUserIds: Boolean
+
+  """
+  Filter by Source; Accepts multiple parameters
+  """
+  source: [String!]
+
+  """
+  Filter by starred, is either selected or unselected
+  """
+  starred: Boolean
+
+  """
+  Filter where contact started giving in the provided date range
+  """
+  startedGivingRange: DateRangeInput
+
+  """
+  Filter by State; Accepts multiple parameters, with values 'none', or a state
+  """
+  state: [String!]
+
+  """
+  Filter by Status; Accepts multiple parameters, with values 'active', 'hidden',
+  'null', 'Never Contacted', 'Ask in Future', 'Cultivate Relationship', 'Contact
+  for Appointment', 'Appointment Scheduled', 'Call for Decision', 'Partner -
+  Financial', 'Partner - Special', 'Partner - Pray', 'Not Interested',
+  'Unresponsive', 'Never Ask', 'Research Abandoned', and 'Expired Referral'
+  """
+  status: [ContactFilterStatusEnum!]
+
+  """
+  Filter by Status Valid; Accepts values 'true', or 'false'
+  """
+  statusValid: Boolean
+
+  """
+  Filter where contact stopped giving in the provided date range
+  """
+  stoppedGivingRange: DateRangeInput
+
+  """
+  Filter by Tags; Accepts multiple parameters, with text values separated by comma
+  """
+  tags: [String!]
+
+  """
+  Filter by Due Date; Accepts date range with text value like 'MM/DD/YYYY - MM/DD/YYYY'
+  """
+  taskDueDate: DateRangeInput
+
+  """
+  Filter where contact's tasks have completed set to true; accepts "true"
+  """
+  tasksAllCompleted: Boolean
+
+  """
+  Filter by Timezone; Accepts multiple parameters
+  """
+  timezone: [String!]
+
+  """
+  Filter contacts that were updated in this date range
+  """
+  updatedAt: DateTimeRangeInput
+
+  """
+  Filter contacts with user_ids included in this filter; comma separated value for multiple
+  """
+  userIds: [ID!]
+
+  """
+  Filter contacts where subject contains this filter
+  """
+  wildcardSearch: String
+}
+
+enum ContactFilterStatusEnum {
+  ACTIVE
+  APPOINTMENT_SCHEDULED
+  ASK_IN_FUTURE
+  CALL_FOR_DECISION
+  CONTACT_FOR_APPOINTMENT
+  CULTIVATE_RELATIONSHIP
+  EXPIRED_REFERRAL
+  HIDDEN
+  NEVER_ASK
+  NEVER_CONTACTED
+  NOT_INTERESTED
+  NULL
+  PARTNER_FINANCIAL
+  PARTNER_PRAY
+  PARTNER_SPECIAL
+  RESEARCH_ABANDONED
+  UNRESPONSIVE
+}
+
+extend type Query {
+  partnerGivingAnalysisReport(
+    input: PartnerGivingAnalysisReportInput!
+  ): PartnerGivingAnalysisReport!
+}
+
+enum SortDirection {
+  ASCENDING
+  DESCENDING
+}
+
+input PartnerGivingAnalysisReportInput {
+  accountListId: ID!
+  page: Int!
+  pageSize: Int!
+  sortField: String!
+  sortDirection: SortDirection!
+  contactFilters: ContactFilterSetInput
+}
+
+type PartnerGivingAnalysisReportContact {
+  id: ID!
+  donationPeriodAverage: Float!
+  donationPeriodCount: Int!
+  donationPeriodSum: Float!
+  lastDonationAmount: Float!
+  lastDonationCurrency: String!
+  lastDonationDate: ISO8601Date!
+  name: String!
+  pledgeCurrency: String!
+  totalDonations: Float!
+}
+
+type PartnerGivingAnalysisReportPagination {
+  page: Int!
+  pageSize: Int!
+  totalItems: Int!
+  totalPages: Int!
+}
+
+type PartnerGivingAnalysisReport {
+  contacts: [PartnerGivingAnalysisReportContact!]!
+  pagination: PartnerGivingAnalysisReportPagination!
+  totalContacts: Int!
+}

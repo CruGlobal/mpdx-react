@@ -3,7 +3,14 @@ import {
   ExportLabelTypeEnum,
   ExportSortEnum,
 } from '../../graphql/types.generated';
-import { FourteenMonthReportCurrencyType } from './graphql-rest.page.generated';
+import {
+  ContactFilterNewsletterEnum,
+  ContactFilterSetInput,
+  ContactFilterStatusEnum,
+  DateRangeInput,
+  FourteenMonthReportCurrencyType,
+  NumericRangeInput,
+} from './graphql-rest.page.generated';
 import schema from './Schema';
 import { getTaskAnalytics } from './Schema/TaskAnalytics/dataHandler';
 import {
@@ -16,6 +23,7 @@ import {
   FourteenMonthReportResponse,
   mapFourteenMonthReport,
 } from './Schema/reports/fourteenMonth/datahandler';
+import { mapPartnerGivingAnalysisResponse } from './Schema/reports/partnerGivingAnalysis/datahandler';
 import {
   ExpectedMonthlyTotalResponse,
   mapExpectedMonthlyTotalReport,
@@ -56,6 +64,10 @@ import {
 import Cors from 'micro-cors';
 import { PageConfig, NextApiRequest } from 'next';
 import { ApolloServer } from 'apollo-server-micro';
+
+function camelToSnake(str: string): string {
+  return str.replace(/[A-Z]/g, (c) => '_' + c.toLowerCase());
+}
 
 class MpdxRestApi extends RESTDataSource {
   constructor() {
@@ -258,6 +270,242 @@ class MpdxRestApi extends RESTDataSource {
       `reports/expected_monthly_totals?filter[account_list_id]=${accountListId}`,
     );
     return mapExpectedMonthlyTotalReport(data);
+  }
+
+  async getPartnerGivingAnalysis(
+    accountListId: string,
+    page: number,
+    pageSize: number,
+    sortField: string,
+    sortAscending: boolean,
+    contactFilters: ContactFilterSetInput | null | undefined,
+  ) {
+    // Adapted from src/components/Shared/Filters/FilterPanel.tsx
+    // This code essentially does the reverse of the logic in setSelectedSavedFilter
+    const filters: Record<
+      string,
+      string | number | boolean | NumericRangeInput
+    > = {
+      account_list_id: accountListId,
+      any_tags: false,
+    };
+    Object.entries(contactFilters ?? {}).forEach(([key, value]) => {
+      if (value === null) {
+        return;
+      }
+
+      const snakedKey = camelToSnake(key);
+
+      switch (key) {
+        // Boolean
+        case 'addressHistoric':
+        case 'addressValid':
+        case 'anyTags':
+        case 'noAppeals':
+        case 'pledgeReceived':
+        case 'reverseAlmaMater':
+        case 'reverseAppeal':
+        case 'reverseChurch':
+        case 'reverseCity':
+        case 'reverseCountry':
+        case 'reverseDesignationAccountId':
+        case 'reverseDonation':
+        case 'reverseDonationAmount':
+        case 'reverseIds':
+        case 'reverseLikely':
+        case 'reverseLocale':
+        case 'reverseMetroArea':
+        case 'reversePledgeAmount':
+        case 'reversePledgeCurrency':
+        case 'reversePledgeFrequency':
+        case 'reversePrimaryAddress':
+        case 'reverseReferrer':
+        case 'reverseRegion':
+        case 'reverseRelatedTaskAction':
+        case 'reverseSource':
+        case 'reverseState':
+        case 'reverseStatus':
+        case 'reverseTimezone':
+        case 'reverseUserIds':
+        case 'starred':
+        case 'statusValid':
+        case 'tasksAllCompleted':
+          if (value === true) {
+            filters[snakedKey] = true;
+          }
+          break;
+
+        // DateRangeInput
+        case 'donationDate':
+        case 'createdAt':
+        case 'anniversary':
+        case 'birthday':
+        case 'gaveMoreThanPledgedRange':
+        case 'lateAt':
+        case 'nextAsk':
+        case 'pledgeAmountIncreasedRange':
+        case 'startedGivingRange':
+        case 'stoppedGivingRange':
+        case 'taskDueDate':
+        case 'updatedAt':
+          const dateRange = value as DateRangeInput;
+          filters[snakedKey] = `${dateRange.min ?? ''}..${dateRange.max ?? ''}`;
+          break;
+
+        // Multiselect
+        case 'almaMater':
+        case 'appeal':
+        case 'church':
+        case 'city':
+        case 'country':
+        case 'designationAccountId':
+        case 'donation':
+        case 'donationAmount':
+        case 'ids':
+        case 'likely':
+        case 'locale':
+        case 'metroArea':
+        case 'organizationId':
+        case 'pledgeAmount':
+        case 'pledgeCurrency':
+        case 'pledgeFrequency':
+        case 'primaryAddress':
+        case 'referrer':
+        case 'referrerIds':
+        case 'region':
+        case 'relatedTaskAction':
+        case 'source':
+        case 'state':
+        case 'timezone':
+        case 'userIds':
+          filters[snakedKey] = (value as string[]).join(',');
+          break;
+
+        // Newsletter
+        case 'newsletter':
+          const newsletterMap = new Map<ContactFilterNewsletterEnum, string>([
+            [ContactFilterNewsletterEnum.All, 'all'],
+            [ContactFilterNewsletterEnum.Both, 'both'],
+            [ContactFilterNewsletterEnum.Email, 'email'],
+            [ContactFilterNewsletterEnum.EmailOnly, 'email_only'],
+            [ContactFilterNewsletterEnum.None, 'none'],
+            [ContactFilterNewsletterEnum.NoValue, 'no_value'],
+            [ContactFilterNewsletterEnum.Physical, 'address'],
+            [ContactFilterNewsletterEnum.PhysicalOnly, 'address_only'],
+          ]);
+          filters[snakedKey] =
+            newsletterMap.get(value as ContactFilterNewsletterEnum) ?? '';
+          break;
+
+        // Status
+        case 'status':
+          const statusMap = new Map<ContactFilterStatusEnum, string>([
+            [ContactFilterStatusEnum.Active, 'active'],
+            [ContactFilterStatusEnum.Hidden, 'hidden'],
+            [ContactFilterStatusEnum.Null, 'null'],
+            [
+              ContactFilterStatusEnum.AppointmentScheduled,
+              'Appointment Scheduled',
+            ],
+            [ContactFilterStatusEnum.AskInFuture, 'Ask in Future'],
+            [ContactFilterStatusEnum.CallForDecision, 'Call for Decision'],
+            [
+              ContactFilterStatusEnum.ContactForAppointment,
+              'Contact for Appointment',
+            ],
+            [
+              ContactFilterStatusEnum.CultivateRelationship,
+              'Cultivate Relationship',
+            ],
+            [ContactFilterStatusEnum.ExpiredReferral, 'Expired Referral'],
+            [ContactFilterStatusEnum.NeverAsk, 'Never Ask'],
+            [ContactFilterStatusEnum.NeverContacted, 'Never Contacted'],
+            [ContactFilterStatusEnum.NotInterested, 'Not Interested'],
+            [ContactFilterStatusEnum.PartnerFinancial, 'Partner - Financial'],
+            [ContactFilterStatusEnum.PartnerPray, 'Partner - Pray'],
+            [ContactFilterStatusEnum.PartnerSpecial, 'Partner - Special'],
+            [ContactFilterStatusEnum.ResearchAbandoned, 'Research Abandoned'],
+            [ContactFilterStatusEnum.Unresponsive, 'Unresponsive'],
+          ]);
+          filters[snakedKey] = (value as ContactFilterStatusEnum[])
+            .map((status) => {
+              const translated = statusMap.get(status);
+              if (!translated) {
+                throw new Error(
+                  `Unrecognized ContactFilterStatusEnum value ${value}`,
+                );
+              }
+
+              return translated;
+            })
+            .join(',');
+          break;
+
+        // String[]
+        case 'contactType':
+        case 'tags':
+        case 'excludeTags':
+          filters[snakedKey] = (value as string[]).join(',');
+          break;
+
+        // String and NumericRangeInput
+        case 'addressLatLng':
+        case 'appealStatus':
+        case 'contactInfoAddr':
+        case 'contactInfoEmail':
+        case 'contactInfoFacebook':
+        case 'contactInfoMobile':
+        case 'contactInfoPhone':
+        case 'contactInfoWorkPhone':
+        case 'donationAmountRange':
+        case 'nameLike':
+        case 'notes':
+        case 'optOut':
+        case 'pledge':
+        case 'pledgeLateBy':
+        case 'wildcardSearch':
+          filters[snakedKey] = value as string | NumericRangeInput;
+          break;
+
+        default:
+          throw new Error(`Unrecognized filter key ${key}`);
+      }
+    });
+
+    const analysisPromise = this.post(
+      'reports/partner_giving_analysis',
+      {
+        data: {
+          type: 'partner_giving_analysis',
+        },
+        fields: {
+          contacts:
+            'donation_period_average,donation_period_count,donation_period_sum,last_donation_amount,last_donation_currency,last_donation_date,name,pledge_currency,total_donations',
+        },
+        filter: filters,
+        page,
+        per_page: pageSize,
+        sort: `${sortAscending ? '' : '-'}${camelToSnake(sortField)}`,
+      },
+      {
+        headers: {
+          'Content-Type': 'application/vnd.api+json',
+          'X-HTTP-Method-Override': 'GET',
+        },
+      },
+    );
+    const countContactsPromise = this.get('contacts', {
+      'filter[account_list_id]': accountListId,
+      per_page: 0,
+    });
+    const [analysisResponse, countContactsResponse] = await Promise.all([
+      analysisPromise,
+      countContactsPromise,
+    ]);
+    return mapPartnerGivingAnalysisResponse(
+      analysisResponse,
+      countContactsResponse,
+    );
   }
 
   async getAccountListDonorAccounts(accountListId: string, searchTerm: string) {

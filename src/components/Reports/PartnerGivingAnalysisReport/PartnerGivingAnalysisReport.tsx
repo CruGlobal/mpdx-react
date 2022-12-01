@@ -1,297 +1,70 @@
+import {
+  PartnerGivingAnalysisReportContact,
+  SortDirection,
+} from '../../../../graphql/types.generated';
 import React, { useState } from 'react';
 import { Box, CircularProgress, TablePagination } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import { useDebounce } from 'use-debounce';
 import { AccountsListHeader as Header } from '../AccountsListLayout/Header/Header';
-// import { usePartnerGivingAnalysisReportQuery } from './GetPartnerGivingAnalysisReport.generated';
 import type { Order } from '../Reports.type';
+import { useGetPartnerGivingAnalysisReportQuery } from './PartnerGivingAnalysisReport.generated';
 import { PartnerGivingAnalysisReportTable as Table } from './Table/Table';
 import { PartnerGivingAnalysisReportActions as Actions } from './Actions/Actions';
 // import { Notification } from 'src/components/Notification/Notification';
 import { EmptyReport } from 'src/components/Reports/EmptyReport/EmptyReport';
+import { ContactFilterSetInput } from 'pages/api/graphql-rest.page.generated';
 
 interface Props {
   accountListId: string;
   isNavListOpen: boolean;
   onNavListToggle: () => void;
   title: string;
+  contactFilters?: ContactFilterSetInput;
 }
 
-export type Contact = {
-  giftAverage: number;
-  giftCount: number;
-  giftTotal: number;
-  currency: string;
-  lastGiftAmount: number;
-  lastGiftDate: string;
-  id: string;
-  name: string;
-  lifeTimeTotal: number;
-};
-
-type OrderBy = keyof Contact | null;
-
-const applyFilters = (contacts: Contact[], query: string): Contact[] => {
-  return contacts.filter((contact) => {
-    let matches = true;
-
-    if (query) {
-      const properties: Array<keyof Contact> = ['name'];
-      let containsQuery = false;
-
-      properties.forEach((property) => {
-        if (
-          String(contact[property]).toLowerCase().includes(query.toLowerCase())
-        ) {
-          containsQuery = true;
-        }
-      });
-
-      if (!containsQuery) {
-        matches = false;
-      }
-    }
-
-    return matches;
-  });
-};
-
-const applySort = (
-  contacts: Contact[],
-  order: Order,
-  orderBy: OrderBy,
-): Contact[] => {
-  if (orderBy) {
-    return contacts.sort((a, b) => {
-      const compare = a[orderBy]
-        .toString()
-        .localeCompare(b[orderBy].toString(), undefined, {
-          numeric: true,
-        });
-
-      return order === 'asc' ? compare : -compare;
-    });
-  } else {
-    return contacts;
-  }
-};
-
-const applyPagination = (
-  contacts: Contact[],
-  page: number,
-  limit: number,
-): Contact[] => {
-  return contacts.slice(page * limit, page * limit + limit);
-};
+export type Contact = PartnerGivingAnalysisReportContact;
 
 export const PartnerGivingAnalysisReport: React.FC<Props> = ({
+  accountListId,
   isNavListOpen,
   onNavListToggle,
   title,
+  contactFilters: filters,
 }) => {
   const { t } = useTranslation();
   const [selectedContacts, setSelectedContacts] = useState<Array<string>>([]);
   const [order, setOrder] = useState<Order>('asc');
-  const [orderBy, setOrderBy] = useState<OrderBy>(null);
+  const [orderBy, setOrderBy] = useState<keyof Contact>('name');
   const [limit, setLimit] = useState<number>(10);
   const [page, setPage] = useState<number>(0);
   const [query, setQuery] = useState<string>('');
+  const [search] = useDebounce(query, 500);
 
-  // Mock data
-  // const error: Array<string> | null = null;
-  const loading = false;
-  const data = {
-    partnerGivingAnalysisReport: [
-      {
-        giftAverage: 88.468,
-        giftCount: 176,
-        giftTotal: 15218.42,
-        currency: 'CAD',
-        lastGiftAmount: 150.92,
-        lastGiftDate: '2021-07-07',
-        id: '01',
-        name: 'Ababa, Aladdin und Jasmine (Princess)',
-        lifeTimeTotal: 15218.42,
-      },
-      {
-        giftAverage: 71.4,
-        giftCount: 127,
-        giftTotal: 13118.42,
-        currency: 'CAD',
-        lastGiftAmount: 170.92,
-        lastGiftDate: '2021-03-07',
-        id: '02',
-        name: 'Princess',
-        lifeTimeTotal: 13118.42,
-      },
-      {
-        giftAverage: 86.4682954545454545,
-        giftCount: 221,
-        giftTotal: 25218.42,
-        currency: 'CAD',
-        lastGiftAmount: 150.92,
-        lastGiftDate: '2021-08-07',
-        id: '03',
-        name: 'Jasmine (Princess)',
-        lifeTimeTotal: 25218.42,
-      },
-      {
-        giftAverage: 86.4682954545454545,
-        giftCount: 221,
-        giftTotal: 25218.42,
-        currency: 'CAD',
-        lastGiftAmount: 150.92,
-        lastGiftDate: '2021-08-07',
-        id: '03',
-        name: 'Jasmine (Princess)',
-        lifeTimeTotal: 25218.42,
-      },
-      {
-        giftAverage: 86.4682954545454545,
-        giftCount: 221,
-        giftTotal: 25218.42,
-        currency: 'CAD',
-        lastGiftAmount: 150.92,
-        lastGiftDate: '2021-08-07',
-        id: '03',
-        name: 'Jasmine (Princess)',
-        lifeTimeTotal: 25218.42,
-      },
-      {
-        giftAverage: 86.4682954545454545,
-        giftCount: 221,
-        giftTotal: 25218.42,
-        currency: 'CAD',
-        lastGiftAmount: 150.92,
-        lastGiftDate: '2021-08-07',
-        id: '03',
-        name: 'Jasmine (Princess)',
-        lifeTimeTotal: 25218.42,
-      },
-      {
-        giftAverage: 86.4682954545454545,
-        giftCount: 221,
-        giftTotal: 25218.42,
-        currency: 'CAD',
-        lastGiftAmount: 150.92,
-        lastGiftDate: '2021-08-07',
-        id: '03',
-        name: 'Jasmine (Princess)',
-        lifeTimeTotal: 25218.42,
-      },
-      {
-        giftAverage: 86.4682954545454545,
-        giftCount: 221,
-        giftTotal: 25218.42,
-        currency: 'CAD',
-        lastGiftAmount: 150.92,
-        lastGiftDate: '2021-08-07',
-        id: '03',
-        name: 'Jasmine (Princess)',
-        lifeTimeTotal: 25218.42,
-      },
-      {
-        giftAverage: 71.4,
-        giftCount: 127,
-        giftTotal: 13118.42,
-        currency: 'CAD',
-        lastGiftAmount: 170.92,
-        lastGiftDate: '2021-03-07',
-        id: '02',
-        name: 'Princess',
-        lifeTimeTotal: 13118.42,
-      },
-      {
-        giftAverage: 71.4,
-        giftCount: 127,
-        giftTotal: 13118.42,
-        currency: 'CAD',
-        lastGiftAmount: 170.92,
-        lastGiftDate: '2021-03-07',
-        id: '02',
-        name: 'Princess',
-        lifeTimeTotal: 13118.42,
-      },
-      {
-        giftAverage: 86.4682954545454545,
-        giftCount: 221,
-        giftTotal: 25218.42,
-        currency: 'CAD',
-        lastGiftAmount: 150.92,
-        lastGiftDate: '2021-08-07',
-        id: '03',
-        name: 'Jasmine (Princess)',
-        lifeTimeTotal: 25218.42,
-      },
-      {
-        giftAverage: 86.4682954545454545,
-        giftCount: 221,
-        giftTotal: 25218.42,
-        currency: 'CAD',
-        lastGiftAmount: 150.92,
-        lastGiftDate: '2021-08-07',
-        id: '03',
-        name: 'Jasmine (Princess)',
-        lifeTimeTotal: 25218.42,
-      },
-      {
-        giftAverage: 86.4682954545454545,
-        giftCount: 221,
-        giftTotal: 25218.42,
-        currency: 'CAD',
-        lastGiftAmount: 150.92,
-        lastGiftDate: '2021-08-07',
-        id: '03',
-        name: 'Jasmine (Princess)',
-        lifeTimeTotal: 25218.42,
-      },
-      {
-        giftAverage: 86.4682954545454545,
-        giftCount: 221,
-        giftTotal: 25218.42,
-        currency: 'CAD',
-        lastGiftAmount: 150.92,
-        lastGiftDate: '2021-08-07',
-        id: '03',
-        name: 'Jasmine (Princess)',
-        lifeTimeTotal: 25218.42,
-      },
-      {
-        giftAverage: 86.4682954545454545,
-        giftCount: 221,
-        giftTotal: 25218.42,
-        currency: 'CAD',
-        lastGiftAmount: 150.92,
-        lastGiftDate: '2021-08-07',
-        id: '03',
-        name: 'Jasmine (Princess)',
-        lifeTimeTotal: 25218.42,
-      },
-    ],
+  const contactFilters: ContactFilterSetInput = {
+    ...filters,
+    ...(search.length > 0
+      ? {
+          nameLike: `%${search}%`,
+        }
+      : {}),
   };
 
-  // Need to get the real data
-
-  // const { data, loading, error } = usePartnerGivingAnalysisReportQuery({
-  //   variables: {
-  //     accountListId,
-  //   },
-  // });
-
-  // const orderedContacts = useMemo(() => {
-  //   if (data.partnerGivingAnalysisReport && orderBy !== null) {
-  //     return data.partnerGivingAnalysisReport.sort((a, b) => {
-  //       const compare = a[orderBy]
-  //         .toString()
-  //         .localeCompare(b[orderBy].toString(), undefined, {
-  //           numeric: true,
-  //         });
-
-  //       return order === 'asc' ? compare : -compare;
-  //     });
-  //   } else {
-  //     return data.partnerGivingAnalysisReport;
-  //   }
-  // }, [data.partnerGivingAnalysisReport, order, orderBy]);
+  const { data, loading } = useGetPartnerGivingAnalysisReportQuery({
+    variables: {
+      input: {
+        accountListId,
+        // Page 1 is the first page for the API
+        page: page + 1,
+        pageSize: limit,
+        sortField: orderBy ?? '',
+        sortDirection:
+          order === 'asc' ? SortDirection.Ascending : SortDirection.Descending,
+        contactFilters,
+      },
+    },
+  });
+  const contacts = data?.partnerGivingAnalysisReport.contacts ?? [];
 
   const handleModalOpen = () => {
     return;
@@ -306,20 +79,18 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
 
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,
-    property: keyof Contact,
+    property: string,
   ) => {
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
-    setOrderBy(property);
+    setOrderBy(property as keyof Contact);
   };
 
   const handleSelectAll = (
     event: React.ChangeEvent<HTMLInputElement>,
   ): void => {
     setSelectedContacts(
-      event.target.checked
-        ? data.partnerGivingAnalysisReport.map((contact: Contact) => contact.id)
-        : [],
+      event.target.checked ? contacts.map((contact) => contact.id) : [],
     );
   };
 
@@ -349,19 +120,17 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
     setLimit(parseInt(event.target.value));
   };
 
-  const filteredContacts = applyFilters(
-    data.partnerGivingAnalysisReport,
-    query,
-  );
-  const sortedContacts = applySort(filteredContacts, order, orderBy);
-  const paginatedContacts = applyPagination(sortedContacts, page, limit);
-
   return (
     <Box>
       <Header
         isNavListOpen={isNavListOpen}
         onNavListToggle={onNavListToggle}
         title={title}
+      />
+      <Actions
+        query={query}
+        onQueryChange={handleQueryChange}
+        onModalOpen={handleModalOpen}
       />
       {loading ? (
         <Box
@@ -372,27 +141,23 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
         >
           <CircularProgress data-testid="LoadingPartnerGivingAnalysisReport" />
         </Box>
-      ) : data?.partnerGivingAnalysisReport.length > 0 ? (
+      ) : contacts.length > 0 ? (
         <>
-          <Actions
-            query={query}
-            onQueryChange={handleQueryChange}
-            onModalOpen={handleModalOpen}
-          />
           <Table
             onRequestSort={handleRequestSort}
             onSelectAll={handleSelectAll}
             onSelectOne={handleSelectOne}
             order={order}
             orderBy={orderBy}
-            contacts={paginatedContacts}
+            contacts={contacts}
             selectedContacts={selectedContacts}
           />
           <TablePagination
             colSpan={3}
-            count={filteredContacts.length}
+            count={data?.partnerGivingAnalysisReport.pagination.totalItems ?? 0}
             onPageChange={handlePageChange}
             onRowsPerPageChange={handleLimitChange}
+            // Page 0 is the first page for the component
             page={page}
             rowsPerPage={limit}
             rowsPerPageOptions={[10, 25, 50]}
@@ -406,7 +171,9 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
         </>
       ) : (
         <EmptyReport
-          title={t('You have 42 total contacts')}
+          title={t('You have {{contacts}} total contacts', {
+            contacts: data?.partnerGivingAnalysisReport.totalContacts ?? '?',
+          })}
           subTitle={t(
             'Unfortunately none of them match your current search or filters.',
           )}

@@ -207,7 +207,6 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
               case 'reversePledgeAmount':
               case 'reversePledgeCurrency':
               case 'reversePledgeFrequency':
-              case 'reversePrimaryAddress':
               case 'reverseReferrer':
               case 'reverseRegion':
               case 'reverseRelatedTaskAction':
