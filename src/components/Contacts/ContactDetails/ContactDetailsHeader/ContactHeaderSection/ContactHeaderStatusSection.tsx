@@ -7,7 +7,6 @@ import { styled } from '@mui/material/styles';
 import CreateIcon from '@mui/icons-material/Create';
 import { DateTime } from 'luxon';
 import { currencyFormat } from '../../../../../lib/intlFormat';
-import { PledgeFrequencyEnum } from '../../../ContactPartnershipStatus/ContactPartnershipStatus';
 import {
   ContactLateStatusEnum,
   ContactLateStatusLabel,
@@ -18,6 +17,8 @@ import { ContactHeaderSection } from './ContactHeaderSection';
 import { ContactHeaderStatusFragment } from './ContactHeaderStatus.generated';
 import { HandshakeIcon } from './HandshakeIcon';
 import { contactPartnershipStatus } from 'src/utils/contacts/contactPartnershipStatus';
+import { getLocalizedPledgeFequency } from 'src/utils/functions/getLocalizedPledgeFequency';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
   loading: boolean;
@@ -35,6 +36,7 @@ export const ContactHeaderStatusSection: React.FC<Props> = ({
   loading,
   contact,
 }) => {
+  const { t } = useTranslation();
   const status = contact?.status;
   const [editPartnershipModalOpen, setEditPartnershipModalOpen] =
     useState(false);
@@ -89,9 +91,10 @@ export const ContactHeaderStatusSection: React.FC<Props> = ({
                                   contact.pledgeCurrency,
                                 )
                               : contact.pledgeAmount
-                          } ${`- ${
-                            PledgeFrequencyEnum[contact.pledgeFrequency]
-                          }`}`}
+                          } ${`- ${getLocalizedPledgeFequency(
+                            t,
+                            contact.pledgeFrequency,
+                          )}`}`}
                         </Typography>
                       ) : null}
 

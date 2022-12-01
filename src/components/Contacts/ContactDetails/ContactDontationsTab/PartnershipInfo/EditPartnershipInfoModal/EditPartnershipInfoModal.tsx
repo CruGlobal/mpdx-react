@@ -44,6 +44,8 @@ import {
   SubmitButton,
   CancelButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
+import { getLocalizedContactStatus } from 'src/utils/functions/getLocalizedContactStatus';
+import { getLocalizedPledgeFequency } from 'src/utils/functions/getLocalizedPledgeFequency';
 
 const ContactInputWrapper = styled(Box)(({ theme }) => ({
   position: 'relative',
@@ -343,7 +345,7 @@ export const EditPartnershipInfoModal: React.FC<
                   >
                     {Object.values(StatusEnum).map((value) => (
                       <MenuItem key={value} value={value}>
-                        {t(value)}
+                        {getLocalizedContactStatus(t, value)}
                       </MenuItem>
                     ))}
                   </Select>
@@ -437,6 +439,7 @@ export const EditPartnershipInfoModal: React.FC<
                     IconComponent={() =>
                       status !== StatusEnum.PartnerFinancial ? (
                         <Tooltip
+                          sx={{ marginRight: '14px' }}
                           title={
                             <Typography>
                               {t(
@@ -455,7 +458,7 @@ export const EditPartnershipInfoModal: React.FC<
                     <MenuItem value={''} disabled></MenuItem>
                     {Object.values(PledgeFrequencyEnum).map((value) => (
                       <MenuItem key={value} value={value}>
-                        {t(value)}
+                        {getLocalizedPledgeFequency(t, value)}
                       </MenuItem>
                     ))}
                   </Select>
