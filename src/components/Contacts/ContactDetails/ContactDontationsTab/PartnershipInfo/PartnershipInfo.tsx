@@ -14,6 +14,7 @@ import { HandshakeIcon } from '../../ContactDetailsHeader/ContactHeaderSection/H
 import { ContactDonorAccountsFragment } from '../ContactDonationsTab.generated';
 import { EditPartnershipInfoModal } from './EditPartnershipInfoModal/EditPartnershipInfoModal';
 import { useLoadConstantsQuery } from 'src/components/Constants/LoadConstants.generated';
+import { getLocalizedPledgeFrequency } from 'src/utils/functions/getLocalizedPledgeFrequency';
 
 const IconAndTextContainer = styled(Box)(({ theme }) => ({
   margin: theme.spacing(0, 4),
@@ -107,7 +108,10 @@ export const PartnershipInfo: React.FC<PartnershipInfoProp> = ({ contact }) => {
             {`${currencyFormat(
               contact?.pledgeAmount ?? 0,
               contact?.pledgeCurrency ?? 'USD',
-            )} - ${contact?.pledgeFrequency ?? t('No Frequency Set')}`}
+            )} - ${
+              getLocalizedPledgeFrequency(t, contact?.pledgeFrequency) ??
+              t('No Frequency Set')
+            }`}
           </LabelsAndText>
           <LabelsAndText variant="subtitle1">{contact?.source}</LabelsAndText>
         </Box>

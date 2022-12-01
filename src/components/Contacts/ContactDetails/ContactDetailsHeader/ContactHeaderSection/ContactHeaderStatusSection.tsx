@@ -17,7 +17,7 @@ import { ContactHeaderSection } from './ContactHeaderSection';
 import { ContactHeaderStatusFragment } from './ContactHeaderStatus.generated';
 import { HandshakeIcon } from './HandshakeIcon';
 import { contactPartnershipStatus } from 'src/utils/contacts/contactPartnershipStatus';
-import { getLocalizedPledgeFequency } from 'src/utils/functions/getLocalizedPledgeFequency';
+import { getLocalizedPledgeFrequency } from 'src/utils/functions/getLocalizedPledgeFrequency';
 import { useTranslation } from 'react-i18next';
 
 interface Props {
@@ -91,7 +91,7 @@ export const ContactHeaderStatusSection: React.FC<Props> = ({
                                   contact.pledgeCurrency,
                                 )
                               : contact.pledgeAmount
-                          } ${`- ${getLocalizedPledgeFequency(
+                          } ${`- ${getLocalizedPledgeFrequency(
                             t,
                             contact.pledgeFrequency,
                           )}`}`}
