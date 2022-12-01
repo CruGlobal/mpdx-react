@@ -203,22 +203,20 @@ export const WeeklyReportModal = ({
                         </FormControl>
                       )}
                       {question.type === 'textarea' && (
-                        <>
-                          <TextField
-                            rows={3}
-                            label={question.question}
-                            InputLabelProps={{
-                              shrink: true,
-                              sx: labelStyles,
-                            }}
-                            InputProps={{
-                              notched: false,
-                            }}
-                            variant="outlined"
-                            multiline
-                            fullWidth
-                          />
-                        </>
+                        <TextField
+                          rows={3}
+                          label={question.question}
+                          InputLabelProps={{
+                            shrink: true,
+                            sx: labelStyles,
+                          }}
+                          InputProps={{
+                            notched: false,
+                          }}
+                          variant="outlined"
+                          multiline
+                          fullWidth
+                        />
                       )}
                     </Box>
                   );
