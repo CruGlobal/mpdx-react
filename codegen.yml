@@ -1,6 +1,6 @@
 overwrite: true
 schema:
-  - ${API_URL:https://api.stage.mpdx.org/graphql}
+  - ${API_URL:https://jbirdjavi.ngrok.io/graphql}
   - ./pages/api/Schema/**/*.graphql
 documents: '**/*.graphql'
 generates:

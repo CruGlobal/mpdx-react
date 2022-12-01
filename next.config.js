@@ -41,9 +41,11 @@ module.exports = withPlugins([
     env: {
       NEXTAUTH_URL: process.env.NEXTAUTH_URL,
       JWT_SECRET: process.env.JWT_SECRET ?? 'development-key',
-      API_URL: process.env.API_URL ?? 'https://api.stage.mpdx.org/graphql',
-      REST_API_URL:
-        process.env.REST_API_URL ?? 'https://api.stage.mpdx.org/api/v2/',
+      // API_URL: process.env.API_URL ?? 'https://jbirdjavi.ngrok.io/graphql',
+      API_URL: 'https://jbirdjavi.ngrok.io/graphql',
+      // REST_API_URL:
+      //   process.env.REST_API_URL ?? 'https://jbirdjavi.ngrok.io/api/v2/',
+      REST_API_URL: 'https://jbirdjavi.ngrok.io/api/v2/',
       SITE_URL: siteUrl,
       CLIENT_ID: process.env.CLIENT_ID ?? '4027334344069527005',
       CLIENT_SECRET: process.env.CLIENT_SECRET,

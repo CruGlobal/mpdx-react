@@ -26,6 +26,17 @@ partners in a quick and easy way."
       >
         Sign In
       </Button>
+
+      <Button
+        size="large"
+        variant="contained"
+        onClick={() => signIn('auth0')}
+        color="inherit"
+        style={{ marginLeft: '10px' }}
+      >
+        Sign In with Wycliffe
+      </Button>
+
       <Button
         size="large"
         startIcon={<SubjectIcon />}
