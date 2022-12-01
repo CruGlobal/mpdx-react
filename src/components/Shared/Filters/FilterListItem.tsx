@@ -9,6 +9,7 @@ import {
   TextFilter,
   DateRangeInput,
   NumericRangeInput,
+  InputMaybe,
 } from '../../../../graphql/types.generated';
 import { FilterListItemCheckbox } from './FilterListItemCheckbox';
 import { FilterListItemDateRange } from './FilterListItemDateRange';
@@ -39,38 +40,38 @@ export const FilterListItem: React.FC<Props> = ({
 }: Props) => {
   return filter.__typename === 'TextFilter' ? (
     <FilterListItemTextField
-      filter={filter as TextFilter}
+      filter={filter}
       value={value?.toString()}
       onUpdate={(value) => onUpdate(value)}
     />
   ) : filter.__typename === 'RadioFilter' ? (
     <FilterListItemSelect
-      filter={filter as RadioFilter}
+      filter={filter}
       value={value?.toString()}
       onUpdate={onUpdate}
     />
   ) : filter.__typename === 'MultiselectFilter' ? (
     <FilterListItemMultiselect
-      filter={filter as MultiselectFilter}
+      filter={filter}
       selected={Array.isArray(value) ? value : undefined}
       onUpdate={onUpdate}
     />
   ) : filter.__typename === 'DaterangeFilter' ? (
     <FilterListItemDateRange
-      filter={filter as DaterangeFilter}
-      value={value as DateRangeInput}
+      filter={filter}
+      value={value as InputMaybe<DateRangeInput>}
       onUpdate={onUpdate}
     />
   ) : filter.__typename === 'CheckboxFilter' ? (
     <FilterListItemCheckbox
-      filter={filter as CheckboxFilter}
+      filter={filter}
       value={!!value}
       onUpdate={onUpdate}
     />
   ) : filter.__typename === 'NumericRangeFilter' ? (
     <FilterListItemNumericRange
-      filter={filter as NumericRangeFilter}
-      value={value as NumericRangeInput}
+      filter={filter}
+      value={value as InputMaybe<NumericRangeInput>}
       onUpdate={onUpdate}
     />
   ) : (

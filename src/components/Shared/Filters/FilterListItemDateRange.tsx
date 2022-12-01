@@ -11,7 +11,7 @@ import {
 
 interface Props {
   filter: DaterangeFilter;
-  value?: DateRangeInput;
+  value?: DateRangeInput | null;
   onUpdate: (value?: DateRangeInput) => void;
 }
 
