@@ -34,8 +34,8 @@ const labelStyles = {
   whiteSpace: 'unset',
 };
 
-const WeeklyReportRadio = ({ question, options, value, name }) => (
-  <FormControl>
+const WeeklyReportRadio = ({ question, options, value, name, show }) => (
+  <FormControl sx={{ display: show ? 'inline-flex' : 'none' }}>
     <FormLabel sx={labelStyles}>{question}</FormLabel>
     <RadioGroup defaultValue={value} name={name} row>
       {options.map((option) => (
@@ -50,8 +50,9 @@ const WeeklyReportRadio = ({ question, options, value, name }) => (
   </FormControl>
 );
 
-const WeeklyReportTextField = ({ question, value, name }) => (
+const WeeklyReportTextField = ({ question, value, name, show }) => (
   <TextField
+    sx={{ display: show ? 'inline-flex' : 'none' }}
     defaultValue={value}
     name={name}
     rows={3}
@@ -212,65 +213,57 @@ export const WeeklyReportModal = ({
                   </Box>
                   {/* TODO: Integrate questions from production */}
                   <Box mt={1}>
-                    {activeStep === 1 && (
-                      <WeeklyReportRadio
-                        question={questions[0].question}
-                        options={questions[0].options}
-                        value={values.q1}
-                        name="q1"
-                      />
-                    )}
-                    {activeStep === 2 && (
-                      <WeeklyReportRadio
-                        question={questions[1].question}
-                        options={questions[1].options}
-                        value={values.q2}
-                        name="q2"
-                      />
-                    )}
-                    {activeStep === 3 && (
-                      <WeeklyReportRadio
-                        question={questions[2].question}
-                        options={questions[2].options}
-                        value={values.q3}
-                        name="q3"
-                      />
-                    )}
-                    {activeStep === 4 && (
-                      <WeeklyReportTextField
-                        question={questions[3].question}
-                        value={values.q4}
-                        name="q4"
-                      />
-                    )}
-                    {activeStep === 5 && (
-                      <WeeklyReportTextField
-                        question={questions[4].question}
-                        value={values.q5}
-                        name="q5"
-                      />
-                    )}
-                    {activeStep === 6 && (
-                      <WeeklyReportTextField
-                        question={questions[5].question}
-                        value={values.q6}
-                        name="q6"
-                      />
-                    )}
-                    {activeStep === 7 && (
-                      <WeeklyReportTextField
-                        question={questions[6].question}
-                        value={values.q7}
-                        name="q7"
-                      />
-                    )}
-                    {activeStep === 8 && (
-                      <WeeklyReportTextField
-                        question={questions[7].question}
-                        value={values.q8}
-                        name="q8"
-                      />
-                    )}
+                    <WeeklyReportRadio
+                      question={questions[0].question}
+                      options={questions[0].options}
+                      value={values.q1}
+                      name="q1"
+                      show={activeStep === 1}
+                    />
+                    <WeeklyReportRadio
+                      question={questions[1].question}
+                      options={questions[1].options}
+                      value={values.q2}
+                      name="q2"
+                      show={activeStep === 2}
+                    />
+                    <WeeklyReportRadio
+                      question={questions[2].question}
+                      options={questions[2].options}
+                      value={values.q3}
+                      name="q3"
+                      show={activeStep === 3}
+                    />
+                    <WeeklyReportTextField
+                      question={questions[3].question}
+                      value={values.q4}
+                      name="q4"
+                      show={activeStep === 4}
+                    />
+                    <WeeklyReportTextField
+                      question={questions[4].question}
+                      value={values.q5}
+                      name="q5"
+                      show={activeStep === 5}
+                    />
+                    <WeeklyReportTextField
+                      question={questions[5].question}
+                      value={values.q6}
+                      name="q6"
+                      show={activeStep === 6}
+                    />
+                    <WeeklyReportTextField
+                      question={questions[6].question}
+                      value={values.q7}
+                      name="q7"
+                      show={activeStep === 7}
+                    />
+                    <WeeklyReportTextField
+                      question={questions[7].question}
+                      value={values.q8}
+                      name="q8"
+                      show={activeStep === 8}
+                    />
                   </Box>
                 </>
               </DialogContent>
