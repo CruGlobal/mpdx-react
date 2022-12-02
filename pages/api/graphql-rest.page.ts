@@ -64,6 +64,8 @@ import {
 import Cors from 'micro-cors';
 import { PageConfig, NextApiRequest } from 'next';
 import { ApolloServer } from 'apollo-server-micro';
+import { getLocationForTask } from './Schema/Tasks/TaskLocation/datahandler';
+import { UpdateTaskLocation } from './Schema/Tasks/TaskLocation/Update/datahandler';
 
 function camelToSnake(str: string): string {
   return str.replace(/[A-Z]/g, (c) => '_' + c.toLowerCase());
@@ -602,6 +604,26 @@ class MpdxRestApi extends RESTDataSource {
       },
     );
     return UpdateComment(data);
+  }
+
+  async getTaskLocation(_accountListId: string, taskId: string) {
+    const { data } = await this.get(`tasks/${taskId}`);
+    return getLocationForTask(data);
+  }
+
+  async updateTaskLocation(taskId: string, location: string) {
+    const { data }: { data: UpdateCommentResponse } = await this.put(
+      `tasks/${taskId}`,
+      {
+        data: {
+          type: 'tasks',
+          attributes: {
+            location,
+          },
+        },
+      },
+    );
+    return UpdateTaskLocation(data);
   }
 }
 

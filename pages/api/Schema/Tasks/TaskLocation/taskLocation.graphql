@@ -1,0 +1,8 @@
+extend type Query {
+  taskLocation(accountListId: ID!, taskId: ID!): TaskLocation
+}
+
+type TaskLocation {
+  id: ID!
+  location: String
+}
