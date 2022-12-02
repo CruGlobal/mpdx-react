@@ -193,10 +193,7 @@ export const WeeklyReportModal = ({
           }}
           onSubmit={onClose}
         >
-          {({
-            values, // eslint-disable-line
-            handleSubmit,
-          }) => (
+          {({ values, handleSubmit }) => (
             <form onSubmit={handleSubmit}>
               <DialogContent dividers>
                 <>
@@ -228,7 +225,7 @@ export const WeeklyReportModal = ({
                             key={i}
                             question={question.question}
                             options={question.options}
-                            value={eval('values.q' + (i + 1))}
+                            value={values['q' + (i + 1)]}
                             name={`q${i + 1}`}
                             show={activeStep === i + 1}
                           />
@@ -238,7 +235,7 @@ export const WeeklyReportModal = ({
                           <WeeklyReportTextField
                             key={i}
                             question={question.question}
-                            value={eval('values.q' + (i + 1))}
+                            value={values['q' + (i + 1)]}
                             name={`q${i + 1}`}
                             show={activeStep === i + 1}
                           />
