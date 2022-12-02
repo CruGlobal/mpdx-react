@@ -88,6 +88,7 @@ export const WeeklyReportModal = ({
   const { t } = useTranslation();
   const setupError = false;
 
+  // TODO: Integrate questions from production
   const questions = [
     {
       question: t('How many hours this week did you spend on MPD?'),
@@ -152,20 +153,25 @@ export const WeeklyReportModal = ({
       question: t(
         'In addition to calls/texts/appointments, what other MPD work did you do this week?',
       ),
+      options: [],
     },
     {
       question: t('What has been encouraging in MPD this past week?'),
+      options: [],
     },
     {
       question: t('What has been discouraging in MPD this past week?'),
+      options: [],
     },
     {
       question: t(
         'What is one thing you will definitely prioritize next in MPD?',
       ),
+      options: [],
     },
     {
       question: t('How can I be praying for you?'),
+      options: [],
     },
   ];
 
@@ -187,7 +193,10 @@ export const WeeklyReportModal = ({
           }}
           onSubmit={onClose}
         >
-          {({ values, handleSubmit }) => (
+          {({
+            values, // eslint-disable-line
+            handleSubmit,
+          }) => (
             <form onSubmit={handleSubmit}>
               <DialogContent dividers>
                 <>
@@ -211,59 +220,31 @@ export const WeeklyReportModal = ({
                       >{`${activeStep}/${questions.length}`}</Typography>
                     </Box>
                   </Box>
-                  {/* TODO: Integrate questions from production */}
                   <Box mt={1}>
-                    <WeeklyReportRadio
-                      question={questions[0].question}
-                      options={questions[0].options}
-                      value={values.q1}
-                      name="q1"
-                      show={activeStep === 1}
-                    />
-                    <WeeklyReportRadio
-                      question={questions[1].question}
-                      options={questions[1].options}
-                      value={values.q2}
-                      name="q2"
-                      show={activeStep === 2}
-                    />
-                    <WeeklyReportRadio
-                      question={questions[2].question}
-                      options={questions[2].options}
-                      value={values.q3}
-                      name="q3"
-                      show={activeStep === 3}
-                    />
-                    <WeeklyReportTextField
-                      question={questions[3].question}
-                      value={values.q4}
-                      name="q4"
-                      show={activeStep === 4}
-                    />
-                    <WeeklyReportTextField
-                      question={questions[4].question}
-                      value={values.q5}
-                      name="q5"
-                      show={activeStep === 5}
-                    />
-                    <WeeklyReportTextField
-                      question={questions[5].question}
-                      value={values.q6}
-                      name="q6"
-                      show={activeStep === 6}
-                    />
-                    <WeeklyReportTextField
-                      question={questions[6].question}
-                      value={values.q7}
-                      name="q7"
-                      show={activeStep === 7}
-                    />
-                    <WeeklyReportTextField
-                      question={questions[7].question}
-                      value={values.q8}
-                      name="q8"
-                      show={activeStep === 8}
-                    />
+                    {questions.map((question, i) => {
+                      if (question.options.length > 0) {
+                        return (
+                          <WeeklyReportRadio
+                            key={i}
+                            question={question.question}
+                            options={question.options}
+                            value={eval('values.q' + (i + 1))}
+                            name={`q${i + 1}`}
+                            show={activeStep === i + 1}
+                          />
+                        );
+                      } else {
+                        return (
+                          <WeeklyReportTextField
+                            key={i}
+                            question={question.question}
+                            value={eval('values.q' + (i + 1))}
+                            name={`q${i + 1}`}
+                            show={activeStep === i + 1}
+                          />
+                        );
+                      }
+                    })}
                   </Box>
                 </>
               </DialogContent>
