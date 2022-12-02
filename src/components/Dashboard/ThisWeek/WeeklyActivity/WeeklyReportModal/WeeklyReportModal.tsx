@@ -87,10 +87,6 @@ export const WeeklyReportModal = ({
   const { t } = useTranslation();
   const setupError = false;
 
-  const handleSubmit = () => {
-    onClose();
-  };
-
   const questions = [
     {
       question: t('How many hours this week did you spend on MPD?'),
@@ -188,10 +184,10 @@ export const WeeklyReportModal = ({
             q7: '',
             q8: '',
           }}
-          onSubmit={handleSubmit}
+          onSubmit={onClose}
         >
-          {({ values }) => (
-            <form>
+          {({ values, handleSubmit }) => (
+            <form onSubmit={handleSubmit}>
               <DialogContent dividers>
                 <>
                   <Box
@@ -287,14 +283,14 @@ export const WeeklyReportModal = ({
                 {activeStep >= 2 && (
                   <CancelButton onClick={onPrev}>{t('Back')}</CancelButton>
                 )}
-                <SubmitButton
-                  type={'button'} // TODO: change type to 'submit' on last screen
-                  onClick={
-                    activeStep < questions.length ? onNext : handleSubmit
-                  }
-                >
-                  {activeStep < questions.length ? t('Next') : t('Submit')}
-                </SubmitButton>
+                {activeStep < questions.length && (
+                  <SubmitButton type="button" onClick={onNext}>
+                    {t('Next')}
+                  </SubmitButton>
+                )}
+                {activeStep === questions.length && (
+                  <SubmitButton type="submit">{t('Submit')}</SubmitButton>
+                )}
               </DialogActions>
             </form>
           )}
