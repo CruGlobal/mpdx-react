@@ -34,6 +34,41 @@ const labelStyles = {
   whiteSpace: 'unset',
 };
 
+const WeeklyReportRadio = ({ question, options, value, name }) => (
+  <FormControl>
+    <FormLabel sx={labelStyles}>{question}</FormLabel>
+    <RadioGroup defaultValue={value} name={name} row>
+      {options.map((option) => (
+        <FormControlLabel
+          key={option.value}
+          value={option.value}
+          control={<Radio />}
+          label={option.label}
+        />
+      ))}
+    </RadioGroup>
+  </FormControl>
+);
+
+const WeeklyReportTextField = ({ question, value, name }) => (
+  <TextField
+    defaultValue={value}
+    name={name}
+    rows={3}
+    label={question}
+    InputLabelProps={{
+      shrink: true,
+      sx: labelStyles,
+    }}
+    InputProps={{
+      notched: false,
+    }}
+    variant="outlined"
+    multiline
+    fullWidth
+  />
+);
+
 interface WeeklyReportModalProps {
   open: boolean;
   onClose: () => void;
@@ -138,41 +173,6 @@ export const WeeklyReportModal = ({
   ];
 
   const errorFlag = questions.length === 0 || setupError;
-
-  const WeeklyReportRadio = ({ question, options, value, name }) => (
-    <FormControl>
-      <FormLabel sx={labelStyles}>{question}</FormLabel>
-      <RadioGroup defaultValue={value} name={name} row>
-        {options.map((option) => (
-          <FormControlLabel
-            key={option.value}
-            value={option.value}
-            control={<Radio />}
-            label={option.label}
-          />
-        ))}
-      </RadioGroup>
-    </FormControl>
-  );
-
-  const WeeklyReportTextField = ({ question, value, name }) => (
-    <TextField
-      defaultValue={value}
-      name={name}
-      rows={3}
-      label={question}
-      InputLabelProps={{
-        shrink: true,
-        sx: labelStyles,
-      }}
-      InputProps={{
-        notched: false,
-      }}
-      variant="outlined"
-      multiline
-      fullWidth
-    />
-  );
 
   return (
     <Modal isOpen={open} title={t('Weekly Report')} handleClose={onClose}>
