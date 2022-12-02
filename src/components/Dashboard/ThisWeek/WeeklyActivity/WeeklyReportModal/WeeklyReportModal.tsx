@@ -20,6 +20,7 @@ import {
   CancelButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import theme from '../../../../../theme';
+import { Formik } from 'formik';
 
 const labelStyles = {
   fontSize: '1.5rem',
@@ -146,108 +147,166 @@ export const WeeklyReportModal = ({
 
   const errorFlag = questions.length === 0 || setupError;
 
+  const WeeklyReportRadio = ({ question, options, value, name }) => (
+    <FormControl>
+      <FormLabel sx={labelStyles}>{question}</FormLabel>
+      <RadioGroup defaultValue={value} name={name} row>
+        {options.map((option) => (
+          <FormControlLabel
+            key={option.value}
+            value={option.value}
+            control={<Radio />}
+            label={option.label}
+          />
+        ))}
+      </RadioGroup>
+    </FormControl>
+  );
+
+  const WeeklyReportTextField = ({ question, value, name }) => (
+    <TextField
+      defaultValue={value}
+      name={name}
+      rows={3}
+      label={question}
+      InputLabelProps={{
+        shrink: true,
+        sx: labelStyles,
+      }}
+      InputProps={{
+        notched: false,
+      }}
+      variant="outlined"
+      multiline
+      fullWidth
+    />
+  );
+
   return (
     <Modal isOpen={open} title={t('Weekly Report')} handleClose={onClose}>
       {!errorFlag ? (
-        <form>
-          <DialogContent dividers>
-            {setupError ? (
-              <Alert severity="warning">
-                {t(
-                  'Weekly report questions have not been setup for your organization.',
-                )}
-              </Alert>
-            ) : (
-              <>
-                <Box
-                  sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                  }}
-                >
-                  <Box sx={{ width: '100%', mr: 1 }}>
-                    <LinearProgress
-                      variant="determinate"
-                      value={(activeStep / questions.length) * 100}
-                    />
+        <Formik
+          initialValues={{
+            q1: '',
+            q2: '',
+            q3: '',
+            q4: '',
+            q5: '',
+            q6: '',
+            q7: '',
+            q8: '',
+          }}
+          onSubmit={handleSubmit}
+        >
+          {({ values }) => (
+            <form>
+              <DialogContent dividers>
+                <>
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                    }}
+                  >
+                    <Box sx={{ width: '100%', mr: 1 }}>
+                      <LinearProgress
+                        variant="determinate"
+                        value={(activeStep / questions.length) * 100}
+                      />
+                    </Box>
+                    <Box>
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                      >{`${activeStep}/${questions.length}`}</Typography>
+                    </Box>
                   </Box>
-                  <Box>
-                    <Typography
-                      variant="body2"
-                      color="text.secondary"
-                    >{`${activeStep}/${questions.length}`}</Typography>
+                  {/* TODO: Integrate questions from production */}
+                  <Box mt={1}>
+                    {activeStep === 1 && (
+                      <WeeklyReportRadio
+                        question={questions[0].question}
+                        options={questions[0].options}
+                        value={values.q1}
+                        name="q1"
+                      />
+                    )}
+                    {activeStep === 2 && (
+                      <WeeklyReportRadio
+                        question={questions[1].question}
+                        options={questions[1].options}
+                        value={values.q2}
+                        name="q2"
+                      />
+                    )}
+                    {activeStep === 3 && (
+                      <WeeklyReportRadio
+                        question={questions[2].question}
+                        options={questions[2].options}
+                        value={values.q3}
+                        name="q3"
+                      />
+                    )}
+                    {activeStep === 4 && (
+                      <WeeklyReportTextField
+                        question={questions[3].question}
+                        value={values.q4}
+                        name="q4"
+                      />
+                    )}
+                    {activeStep === 5 && (
+                      <WeeklyReportTextField
+                        question={questions[4].question}
+                        value={values.q5}
+                        name="q5"
+                      />
+                    )}
+                    {activeStep === 6 && (
+                      <WeeklyReportTextField
+                        question={questions[5].question}
+                        value={values.q6}
+                        name="q6"
+                      />
+                    )}
+                    {activeStep === 7 && (
+                      <WeeklyReportTextField
+                        question={questions[6].question}
+                        value={values.q7}
+                        name="q7"
+                      />
+                    )}
+                    {activeStep === 8 && (
+                      <WeeklyReportTextField
+                        question={questions[7].question}
+                        value={values.q8}
+                        name="q8"
+                      />
+                    )}
                   </Box>
-                </Box>
-                {/* TODO: Integrate questions from production */}
-                {questions.map((question, i) => {
-                  if (activeStep === i + 1) {
-                    return (
-                      <Box mt={1} key={question.question}>
-                        {question.type === 'radio' && question.options && (
-                          <FormControl>
-                            <FormLabel sx={labelStyles}>
-                              {question.question}
-                            </FormLabel>
-                            <RadioGroup
-                              defaultValue={question.options[0].label}
-                              name={`radio-group-${i}`}
-                              row
-                            >
-                              {question.options.map((option) => (
-                                <FormControlLabel
-                                  key={option.value}
-                                  value={option.value}
-                                  control={<Radio />}
-                                  label={option.label}
-                                />
-                              ))}
-                            </RadioGroup>
-                          </FormControl>
-                        )}
-                        {question.type === 'textarea' && (
-                          <TextField
-                            rows={3}
-                            label={question.question}
-                            InputLabelProps={{
-                              shrink: true,
-                              sx: labelStyles,
-                            }}
-                            InputProps={{
-                              notched: false,
-                            }}
-                            variant="outlined"
-                            multiline
-                            fullWidth
-                          />
-                        )}
-                      </Box>
-                    );
-                  } else {
-                    return null;
-                  }
-                })}
-              </>
-            )}
-          </DialogContent>
-          {!setupError && (
-            <DialogActions
-              sx={{
-                justifyContent: activeStep === 1 ? 'flex-end' : 'space-between',
-              }}
-            >
-              {activeStep >= 2 && (
-                <CancelButton onClick={onPrev}>{t('Back')}</CancelButton>
-              )}
-              <SubmitButton
-                type={'button'} // TODO: change type to 'submit' on last screen
-                onClick={activeStep < questions.length ? onNext : handleSubmit}
+                </>
+              </DialogContent>
+              <DialogActions
+                sx={{
+                  justifyContent:
+                    activeStep === 1 ? 'flex-end' : 'space-between',
+                }}
               >
-                {activeStep < questions.length ? t('Next') : t('Submit')}
-              </SubmitButton>
-            </DialogActions>
+                {activeStep >= 2 && (
+                  <CancelButton onClick={onPrev}>{t('Back')}</CancelButton>
+                )}
+                <SubmitButton
+                  type={'button'} // TODO: change type to 'submit' on last screen
+                  onClick={
+                    activeStep < questions.length ? onNext : handleSubmit
+                  }
+                >
+                  {activeStep < questions.length ? t('Next') : t('Submit')}
+                </SubmitButton>
+              </DialogActions>
+            </form>
           )}
-        </form>
+        </Formik>
       ) : (
         <>
           <DialogContent dividers>
