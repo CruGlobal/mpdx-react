@@ -59,7 +59,6 @@ export const WeeklyReportModal = ({
   const questions = [
     {
       question: t('How many hours this week did you spend on MPD?'),
-      type: 'radio',
       options: [
         {
           label: '0 - 9',
@@ -85,7 +84,6 @@ export const WeeklyReportModal = ({
     },
     {
       question: t('How is your current financial situation?'),
-      type: 'radio',
       options: [
         {
           label: t('not enough money to pay bills'),
@@ -103,7 +101,6 @@ export const WeeklyReportModal = ({
     },
     {
       question: t('How is your time with the Lord?'),
-      type: 'radio',
       options: [
         {
           label: t('feeling distant'),
@@ -123,25 +120,20 @@ export const WeeklyReportModal = ({
       question: t(
         'In addition to calls/texts/appointments, what other MPD work did you do this week?',
       ),
-      type: 'textarea',
     },
     {
       question: t('What has been encouraging in MPD this past week?'),
-      type: 'textarea',
     },
     {
       question: t('What has been discouraging in MPD this past week?'),
-      type: 'textarea',
     },
     {
       question: t(
         'What is one thing you will definitely prioritize next in MPD?',
       ),
-      type: 'textarea',
     },
     {
       question: t('How can I be praying for you?'),
-      type: 'textarea',
     },
   ];
 
