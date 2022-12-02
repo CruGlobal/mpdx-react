@@ -8,7 +8,7 @@ import {
 
 interface Props {
   filter: NumericRangeFilter;
-  value?: NumericRangeInput;
+  value?: NumericRangeInput | null;
   onUpdate: (value?: NumericRangeInput) => void;
 }
 

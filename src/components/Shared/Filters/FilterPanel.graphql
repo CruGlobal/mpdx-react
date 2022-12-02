@@ -23,6 +23,7 @@ fragment FilterPanelGroup on FilterGroup {
     ... on NumericRangeFilter {
       min
       minLabel
+      max
       maxLabel
       title
     }
