@@ -179,14 +179,14 @@ export const WeeklyReportModal = ({
       {!errorFlag ? (
         <Formik
           initialValues={{
-            q1: '0 - 9',
-            q2: 'just enough for basics',
-            q3: 'robust time with God',
-            q4: 'Test 4',
-            q5: 'Test 5',
-            q6: 'Test 6',
-            q7: 'Test 7',
-            q8: 'Test 8',
+            q1: '',
+            q2: '',
+            q3: '',
+            q4: '',
+            q5: '',
+            q6: '',
+            q7: '',
+            q8: '',
           }}
           onSubmit={handleSubmit}
         >
