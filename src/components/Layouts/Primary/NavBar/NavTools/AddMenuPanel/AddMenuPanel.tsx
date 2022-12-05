@@ -40,7 +40,10 @@ export const AddMenuPanel = (): ReactElement => {
     {
       text: 'Multiple Contacts',
       icon: PeopleIcon,
-      onClick: () => console.log('multiple contacts'),
+      onClick: () => {
+        changeSelectedMenuItem(AddMenuItemsEnum.MULTIPLE_CONTACTS);
+        changeDialogOpen(true);
+      },
     },
     {
       text: 'Add Donation',
