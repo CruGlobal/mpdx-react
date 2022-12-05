@@ -107,7 +107,7 @@ const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
   }, [interval]);
 
   const [openWeeklyReportModal, setOpenWeeklyReportModal] = useState(false);
-  const [formStep, setFormStep] = useState(1);
+  const [weeklyReportFormStep, setWeeklyReportFormStep] = useState(1);
 
   const onWeeklyReportOpen = () => {
     setOpenWeeklyReportModal(true);
@@ -116,16 +116,16 @@ const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
   const onWeeklyReportClose = () => {
     setOpenWeeklyReportModal(false);
     setTimeout(() => {
-      setFormStep(1);
+      setWeeklyReportFormStep(1);
     }, 1000);
   };
 
   const handleWeeklyReportPrev = () => {
-    setFormStep((prevState) => prevState - 1);
+    setWeeklyReportFormStep((prevState) => prevState - 1);
   };
 
   const handleWeeklyReportNext = () => {
-    setFormStep((prevState) => prevState + 1);
+    setWeeklyReportFormStep((prevState) => prevState + 1);
   };
 
   return (
@@ -268,7 +268,7 @@ const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
           <WeeklyReportModal
             open={openWeeklyReportModal}
             onClose={onWeeklyReportClose}
-            activeStep={formStep}
+            activeStep={weeklyReportFormStep}
             onPrev={handleWeeklyReportPrev}
             onNext={handleWeeklyReportNext}
           />
