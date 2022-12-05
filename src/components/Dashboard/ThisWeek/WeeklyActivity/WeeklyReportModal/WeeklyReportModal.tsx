@@ -73,19 +73,14 @@ const WeeklyReportTextField = ({ question, value, name, show }) => (
 interface WeeklyReportModalProps {
   open: boolean;
   onClose: () => void;
-  activeStep: number;
-  onPrev: () => void;
-  onNext: () => void;
 }
 
 export const WeeklyReportModal = ({
   open,
   onClose,
-  activeStep,
-  onPrev,
-  onNext,
 }: WeeklyReportModalProps) => {
   const { t } = useTranslation();
+  const [activeStep, setActiveStep] = useState(1);
   const setupError = false;
 
   // TODO: Integrate questions from production
@@ -176,22 +171,31 @@ export const WeeklyReportModal = ({
   ];
 
   const errorFlag = questions.length === 0 || setupError;
-  const [success, setSucces] = useState(false);
+  const [success, setSuccess] = useState(false);
+
+  const handleWeeklyReportPrev = () => {
+    setActiveStep((prevState) => prevState - 1);
+  };
+
+  const handleWeeklyReportNext = () => {
+    setActiveStep((prevState) => prevState + 1);
+  };
 
   const handleSuccess = () => {
-    setSucces(true);
-    onNext();
+    setSuccess(true);
+    handleWeeklyReportNext();
+  };
+
+  const localOnClose = () => {
+    onClose();
+    setSuccess(false);
+    setTimeout(() => {
+      setActiveStep(1);
+    }, 1000);
   };
 
   return (
-    <Modal
-      isOpen={open}
-      title={t('Weekly Report')}
-      handleClose={() => {
-        onClose();
-        setSucces(false);
-      }}
-    >
+    <Modal isOpen={open} title={t('Weekly Report')} handleClose={localOnClose}>
       {!errorFlag ? (
         <Formik
           initialValues={{
@@ -276,20 +280,17 @@ export const WeeklyReportModal = ({
                 }}
               >
                 {activeStep > 1 && activeStep < questions.length + 1 && (
-                  <CancelButton onClick={onPrev}>{t('Back')}</CancelButton>
+                  <CancelButton onClick={handleWeeklyReportPrev}>
+                    {t('Back')}
+                  </CancelButton>
                 )}
                 {activeStep === questions.length + 1 && (
-                  <CancelButton
-                    onClick={() => {
-                      onClose();
-                      setSucces(false);
-                    }}
-                  >
+                  <CancelButton onClick={localOnClose}>
                     {t('Close')}
                   </CancelButton>
                 )}
                 {activeStep < questions.length && ( // TODO: Disable button when currently visible field has no value
-                  <SubmitButton type="button" onClick={onNext}>
+                  <SubmitButton type="button" onClick={handleWeeklyReportNext}>
                     {t('Next')}
                   </SubmitButton>
                 )}
@@ -315,7 +316,7 @@ export const WeeklyReportModal = ({
             </Alert>
           </DialogContent>
           <DialogActions>
-            <CancelButton onClick={onClose} />
+            <CancelButton onClick={localOnClose} />
           </DialogActions>
         </>
       )}
