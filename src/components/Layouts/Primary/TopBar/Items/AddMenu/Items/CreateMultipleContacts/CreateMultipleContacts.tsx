@@ -27,7 +27,7 @@ import {
   SubmitButton,
   CancelButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
-import theme from '../../../../../../../../theme'
+import theme from '../../../../../../../../theme';
 
 const InputRow = styled(TableRow)(() => ({
   '&:nth-child(odd)': {
@@ -45,14 +45,14 @@ const InputCell = styled(TableCell)(() => ({
   [theme.breakpoints.down('md')]: {
     minWidth: '130px',
   },
-}))
+}));
 
 const DialogContentCustom = styled(DialogContent)(() => ({
   [theme.breakpoints.down('md')]: {
     maxHeight: '500px',
-    overflowX: 'auto'
+    overflowX: 'auto',
   },
-}))
+}));
 
 interface Props {
   accountListId: string;
@@ -126,8 +126,8 @@ export const CreateMultipleContacts = ({
                     ? `${contact.lastName}, ${contact.firstName} and ${contact.spouseName}`
                     : `${contact.lastName}, ${contact.firstName}`
                   : contact.spouseName
-                    ? `${contact.firstName} and ${contact.spouseName}`
-                    : `${contact.firstName}`,
+                  ? `${contact.firstName} and ${contact.spouseName}`
+                  : `${contact.firstName}`,
               },
             },
             refetchQueries: [
