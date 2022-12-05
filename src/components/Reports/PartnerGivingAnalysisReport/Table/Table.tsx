@@ -5,7 +5,7 @@ import {
   Checkbox,
   Table,
   TableBody,
-  TableCell,
+  TableCell as TableCellMui,
   TableContainer,
   TableRow,
 } from '@mui/material';
@@ -37,6 +37,10 @@ const StickyTableContainer = styled(TableContainer)(() => ({
 const StickyTable = styled(Table)(({}) => ({
   height: 'calc(100vh - 96px)',
 }));
+
+const TableCell = styled(TableCellMui)({
+  fontSize: '1.15em',
+});
 
 export const PartnerGivingAnalysisReportTable: FC<
   PartnerGivingAnalysisReportTableProps
