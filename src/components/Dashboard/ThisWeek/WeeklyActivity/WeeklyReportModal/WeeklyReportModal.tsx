@@ -254,15 +254,13 @@ export const WeeklyReportModal = ({
                 {activeStep >= 2 && (
                   <CancelButton onClick={onPrev}>{t('Back')}</CancelButton>
                 )}
-                {activeStep < questions.length && (
+                {activeStep < questions.length && ( // TODO: Disable button when currently visible field has no value
                   <SubmitButton type="button" onClick={onNext}>
                     {t('Next')}
                   </SubmitButton>
                 )}
-                {activeStep === questions.length && (
-                  <SubmitButton type="submit" disabled={isSubmitting}>
-                    {t('Submit')}
-                  </SubmitButton>
+                {activeStep === questions.length && ( // TODO: Disable button when currently visible field has no value or isSubmitting
+                  <SubmitButton type="submit" disabled={isSubmitting} />
                 )}
               </DialogActions>
             </form>
