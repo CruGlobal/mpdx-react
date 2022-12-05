@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Alert,
@@ -176,9 +176,22 @@ export const WeeklyReportModal = ({
   ];
 
   const errorFlag = questions.length === 0 || setupError;
+  const [success, setSucces] = useState(false);
+
+  const handleSuccess = () => {
+    setSucces(true);
+    onNext();
+  };
 
   return (
-    <Modal isOpen={open} title={t('Weekly Report')} handleClose={onClose}>
+    <Modal
+      isOpen={open}
+      title={t('Weekly Report')}
+      handleClose={() => {
+        onClose();
+        setSucces(false);
+      }}
+    >
       {!errorFlag ? (
         <Formik
           initialValues={{
@@ -191,33 +204,36 @@ export const WeeklyReportModal = ({
             q7: '',
             q8: '',
           }}
-          onSubmit={onClose}
+          onSubmit={handleSuccess}
         >
           {({ values, handleSubmit, isSubmitting }) => (
             <form onSubmit={handleSubmit}>
               <DialogContent dividers>
                 <>
-                  <Box
-                    sx={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                    }}
-                  >
-                    <Box sx={{ width: '100%', mr: 1 }}>
-                      <LinearProgress
-                        variant="determinate"
-                        value={(activeStep / questions.length) * 100}
-                      />
+                  {activeStep <= questions.length && (
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                      }}
+                      mb={1}
+                    >
+                      <Box sx={{ width: '100%', mr: 1 }}>
+                        <LinearProgress
+                          variant="determinate"
+                          value={(activeStep / questions.length) * 100}
+                        />
+                      </Box>
+                      <Box>
+                        <Typography
+                          variant="body2"
+                          color="text.secondary"
+                        >{`${activeStep}/${questions.length}`}</Typography>
+                      </Box>
                     </Box>
-                    <Box>
-                      <Typography
-                        variant="body2"
-                        color="text.secondary"
-                      >{`${activeStep}/${questions.length}`}</Typography>
-                    </Box>
-                  </Box>
-                  <Box mt={1}>
+                  )}
+                  <Box>
                     {questions.map((question, i) => {
                       if (question.options.length > 0) {
                         return (
@@ -242,17 +258,35 @@ export const WeeklyReportModal = ({
                         );
                       }
                     })}
+                    {success && ( // TODO: Translate success message
+                      <Alert severity="success">
+                        Your report was successfully submitted. View it on your
+                        coaching reports page.
+                      </Alert>
+                    )}
                   </Box>
                 </>
               </DialogContent>
               <DialogActions
                 sx={{
                   justifyContent:
-                    activeStep === 1 ? 'flex-end' : 'space-between',
+                    activeStep === 1 || activeStep === questions.length + 1
+                      ? 'flex-end'
+                      : 'space-between',
                 }}
               >
-                {activeStep >= 2 && (
+                {activeStep > 1 && activeStep < questions.length + 1 && (
                   <CancelButton onClick={onPrev}>{t('Back')}</CancelButton>
+                )}
+                {activeStep === questions.length + 1 && (
+                  <CancelButton
+                    onClick={() => {
+                      onClose();
+                      setSucces(false);
+                    }}
+                  >
+                    {t('Close')}
+                  </CancelButton>
                 )}
                 {activeStep < questions.length && ( // TODO: Disable button when currently visible field has no value
                   <SubmitButton type="button" onClick={onNext}>
