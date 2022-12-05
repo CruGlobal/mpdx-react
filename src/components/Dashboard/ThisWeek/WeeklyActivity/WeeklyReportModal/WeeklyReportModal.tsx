@@ -193,7 +193,7 @@ export const WeeklyReportModal = ({
           }}
           onSubmit={onClose}
         >
-          {({ values, handleSubmit }) => (
+          {({ values, handleSubmit, isSubmitting }) => (
             <form onSubmit={handleSubmit}>
               <DialogContent dividers>
                 <>
@@ -260,7 +260,9 @@ export const WeeklyReportModal = ({
                   </SubmitButton>
                 )}
                 {activeStep === questions.length && (
-                  <SubmitButton type="submit">{t('Submit')}</SubmitButton>
+                  <SubmitButton type="submit" disabled={isSubmitting}>
+                    {t('Submit')}
+                  </SubmitButton>
                 )}
               </DialogActions>
             </form>
