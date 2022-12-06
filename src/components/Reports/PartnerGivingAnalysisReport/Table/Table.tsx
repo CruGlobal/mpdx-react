@@ -5,7 +5,7 @@ import {
   Checkbox,
   Table,
   TableBody,
-  TableCell,
+  TableCell as TableCellMui,
   TableContainer,
   TableRow,
 } from '@mui/material';
@@ -37,6 +37,20 @@ const StickyTableContainer = styled(TableContainer)(() => ({
 const StickyTable = styled(Table)(({}) => ({
   height: 'calc(100vh - 96px)',
 }));
+
+const TableCell = styled(TableCellMui)({
+  fontSize: '1.15em',
+});
+
+function formatCurrency(amount: number, currency: string): string {
+  // Force to 2 decimal places and add commas between thousands
+  return (
+    Intl.NumberFormat([], {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(amount) + ` ${currency}`
+  );
+}
 
 export const PartnerGivingAnalysisReportTable: FC<
   PartnerGivingAnalysisReportTableProps
@@ -120,19 +134,25 @@ export const PartnerGivingAnalysisReportTable: FC<
                 </TableCell>
                 <TableCell>{contact.name}</TableCell>
                 <TableCell align="center">
-                  {contact.donationPeriodSum.toFixed(2)}{' '}
-                  {contact.pledgeCurrency}
+                  {formatCurrency(
+                    contact.donationPeriodSum,
+                    contact.pledgeCurrency,
+                  )}
                 </TableCell>
                 <TableCell align="center">
                   {contact.donationPeriodCount}
                 </TableCell>
                 <TableCell align="center">
-                  {contact.donationPeriodAverage.toFixed(2)}{' '}
-                  {contact.pledgeCurrency}
+                  {formatCurrency(
+                    contact.donationPeriodAverage,
+                    contact.pledgeCurrency,
+                  )}
                 </TableCell>
                 <TableCell align="center">
-                  {contact.lastDonationAmount.toFixed(2)}{' '}
-                  {contact.lastDonationCurrency}
+                  {formatCurrency(
+                    contact.lastDonationAmount,
+                    contact.lastDonationCurrency,
+                  )}
                 </TableCell>
                 <TableCell align="center">
                   {DateTime.fromFormat(
@@ -141,7 +161,10 @@ export const PartnerGivingAnalysisReportTable: FC<
                   ).toLocaleString(DateTime.DATE_SHORT)}
                 </TableCell>
                 <TableCell align="center">
-                  {contact.totalDonations.toFixed(2)} {contact.pledgeCurrency}
+                  {formatCurrency(
+                    contact.totalDonations,
+                    contact.pledgeCurrency,
+                  )}
                 </TableCell>
               </TableRow>
             );

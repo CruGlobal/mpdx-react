@@ -32,13 +32,13 @@ const mocks: Mocks = {
           donationPeriodAverage: 88.468,
           donationPeriodCount: 176,
           donationPeriodSum: 15218.42,
-          lastDonationAmount: 150.92,
+          lastDonationAmount: 150,
           lastDonationCurrency: 'CAD',
           lastDonationDate: '2021-07-07',
           id: '01',
           name: 'Ababa, Aladdin und Jasmine (Princess)',
           pledgeCurrency: 'CAD',
-          totalDonations: 15218.42,
+          totalDonations: 25218.42,
         },
         {
           donationPeriodAverage: 71.4,
@@ -383,5 +383,39 @@ describe('PartnerGivingAnalysisReport', () => {
     userEvent.click(getAllByRole('checkbox')[2]);
     userEvent.click(getAllByRole('checkbox')[3]);
     expect(getAllByRole('checkbox')[0]).not.toBeChecked();
+  });
+
+  it('formats currencies', async () => {
+    const mutationSpy = jest.fn();
+    const { getByText, queryByTestId } = render(
+      <ThemeProvider theme={theme}>
+        <GqlMockedProvider<GetPartnerGivingAnalysisReportQuery>
+          mocks={mocks}
+          onCall={mutationSpy}
+        >
+          <PartnerGivingAnalysisReport
+            accountListId={accountListId}
+            isNavListOpen={true}
+            title={title}
+            onNavListToggle={onNavListToggle}
+          />
+        </GqlMockedProvider>
+      </ThemeProvider>,
+    );
+
+    await waitFor(() => {
+      expect(
+        queryByTestId('LoadingPartnerGivingAnalysisReport'),
+      ).not.toBeInTheDocument();
+    });
+
+    // Test that it adds commas
+    expect(getByText('15,218.42 CAD')).toBeInTheDocument();
+
+    // Test that it adds two decimal points
+    expect(getByText('150.00 CAD')).toBeInTheDocument();
+
+    // Test that it rounds to two decimal points
+    expect(getByText('86.47 CAD')).toBeInTheDocument();
   });
 });
