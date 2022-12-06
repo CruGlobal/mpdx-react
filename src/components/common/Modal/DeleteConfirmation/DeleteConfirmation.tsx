@@ -76,6 +76,7 @@ export const DeleteConfirmation: React.FC<DeleteConfirmationProps> = ({
       enqueueSnackbar(t('Task deleted successfully'), { variant: 'success' });
       onClickDecline(false);
       onClose && onClose();
+      onClickConfirm && onClickConfirm();
     }
   };
 

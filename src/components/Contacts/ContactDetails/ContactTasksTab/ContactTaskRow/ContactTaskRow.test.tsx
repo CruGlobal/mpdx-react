@@ -1,5 +1,5 @@
 import { ThemeProvider } from '@mui/material/styles';
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import {
@@ -206,6 +206,42 @@ describe('ContactTaskRow', () => {
         taskId: task.id,
         view: 'comments',
       });
+    });
+
+    it('handles delete task', async () => {
+      const task = gqlMock<TaskRowFragment>(TaskRowFragmentDoc, {
+        mocks: {
+          startAt,
+          result: ResultEnum.None,
+        },
+      });
+
+      const { findByText, getByRole, getByText, queryByText } = render(
+        <GqlMockedProvider>
+          <ThemeProvider theme={theme}>
+            <ContactTaskRow
+              accountListId={accountListId}
+              task={task}
+              isChecked={false}
+              onTaskCheckToggle={onTaskCheckToggle}
+            />
+          </ThemeProvider>
+        </GqlMockedProvider>,
+      );
+
+      expect(await findByText(task.subject)).toBeVisible();
+      userEvent.click(
+        getByRole('img', { hidden: true, name: 'Outlined Delete Icon' }),
+      );
+      expect(
+        await findByText(
+          'Are you sure you wish to delete the selected {{deleteType}}?',
+        ),
+      ).toBeVisible();
+      userEvent.click(getByText('Yes'));
+      await waitFor(() =>
+        expect(queryByText(task.subject)).not.toBeInTheDocument(),
+      );
     });
   });
 

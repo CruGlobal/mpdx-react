@@ -2,7 +2,7 @@ import { Box, Checkbox, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import Skeleton from '@mui/material/Skeleton';
 import { DateTime } from 'luxon';
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import theme from '../../../../../theme';
 import { StarredItemIcon } from '../../../../common/StarredItemIcon/StarredItemIcon';
@@ -97,6 +97,7 @@ export const ContactTaskRow: React.FC<ContactTaskRowProps> = ({
   onTaskCheckToggle,
 }) => {
   const { t } = useTranslation();
+  const [hasBeenDeleted, setHasBeenDeleted] = useState<boolean>(false);
 
   const { openTaskModal } = useTaskModal();
 
@@ -120,6 +121,10 @@ export const ContactTaskRow: React.FC<ContactTaskRowProps> = ({
       taskId: task?.id,
       view: 'edit',
     });
+  };
+
+  const handleDeleteConfirm = () => {
+    setHasBeenDeleted(true);
   };
 
   if (!task) {
@@ -151,43 +156,54 @@ export const ContactTaskRow: React.FC<ContactTaskRowProps> = ({
   const isComplete = !!task.completedAt;
 
   return (
-    <TaskRowWrap isChecked={isChecked}>
-      <TaskItemWrap width={theme.spacing(20)} justifyContent="space-between">
-        <Checkbox
-          checked={isChecked}
-          color="secondary"
-          onChange={() => onTaskCheckToggle(task.id)}
-          value={isChecked}
-        />
-        <TaskCompleteButton
-          isComplete={isComplete}
-          onClick={handleCompleteButtonPressed}
-        />
-      </TaskItemWrap>
-      <SubjectWrap onClick={handleSubjectPressed}>
-        <TaskType>{getLocalizedTaskType(t, activityType)}</TaskType>
-        <TaskDescription>{subject}</TaskDescription>
-      </SubjectWrap>
+    <>
+      {!hasBeenDeleted && (
+        <TaskRowWrap isChecked={isChecked}>
+          <TaskItemWrap
+            width={theme.spacing(20)}
+            justifyContent="space-between"
+          >
+            <Checkbox
+              checked={isChecked}
+              color="secondary"
+              onChange={() => onTaskCheckToggle(task.id)}
+              value={isChecked}
+            />
+            <TaskCompleteButton
+              isComplete={isComplete}
+              onClick={handleCompleteButtonPressed}
+            />
+          </TaskItemWrap>
+          <SubjectWrap onClick={handleSubjectPressed}>
+            <TaskType>{getLocalizedTaskType(t, activityType)}</TaskType>
+            <TaskDescription>{subject}</TaskDescription>
+          </SubjectWrap>
 
-      <TaskItemWrap justifyContent="end" maxWidth={theme.spacing(45)}>
-        <AssigneeName noWrap>{assigneeName}</AssigneeName>
-        <Box width={theme.spacing(12)}>
-          <TaskDueDate isComplete={isComplete} dueDate={dueDate} />
-        </Box>
-        <TaskCommentsButton
-          isComplete={isComplete}
-          numberOfComments={comments?.totalCount}
-          onClick={handleCommentButtonPressed}
-          detailsPage
-        />
+          <TaskItemWrap justifyContent="end" maxWidth={theme.spacing(45)}>
+            <AssigneeName noWrap>{assigneeName}</AssigneeName>
+            <Box width={theme.spacing(12)}>
+              <TaskDueDate isComplete={isComplete} dueDate={dueDate} />
+            </Box>
+            <TaskCommentsButton
+              isComplete={isComplete}
+              numberOfComments={comments?.totalCount}
+              onClick={handleCommentButtonPressed}
+              detailsPage
+            />
 
-        <DeleteTaskIconButton accountListId={accountListId} taskId={task.id} />
-        <StarTaskIconButton
-          accountListId={accountListId}
-          taskId={task.id}
-          isStarred={task.starred}
-        />
-      </TaskItemWrap>
-    </TaskRowWrap>
+            <DeleteTaskIconButton
+              accountListId={accountListId}
+              taskId={task.id}
+              onDeleteConfirm={handleDeleteConfirm}
+            />
+            <StarTaskIconButton
+              accountListId={accountListId}
+              taskId={task.id}
+              isStarred={task.starred}
+            />
+          </TaskItemWrap>
+        </TaskRowWrap>
+      )}
+    </>
   );
 };
