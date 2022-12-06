@@ -81,6 +81,7 @@ const TasksPage: React.FC = () => {
   if (contactId !== undefined && !Array.isArray(contactId)) {
     throw new Error('contactId should be an array or undefined');
   }
+  console.log("contactId", contactId)
 
   useEffect(() => {
     if (isReady && contactId) {
@@ -214,19 +215,24 @@ const TasksPage: React.FC = () => {
       contactId: _contactId,
       ...filteredQuery
     } = query;
-    push(
-      id
-        ? {
-            pathname: `/accountLists/${accountListId}/tasks/${id}`,
-            query: filteredQuery,
-          }
-        : {
-            pathname: `/accountLists/${accountListId}/tasks/`,
-            query: filteredQuery,
-          },
-    );
+    console.log("query", query)
+    console.log("id", id)
+    console.log("filteredQuery", filteredQuery)
+    push(`/accountLists/${accountListId}/tasks/${id}`)
+    // push(
+    //   id
+    //     ? {
+    //       pathname: `/accountLists/${accountListId}/tasks/${id}`,
+    //       query: filteredQuery,
+    //     }
+    //     : {
+    //       pathname: `/accountLists/${accountListId}/tasks/`,
+    //       query: filteredQuery,
+    //     },
+    // );
     id && setContactDetailsId(id);
     setContactDetailsOpen(!!id);
+    console.log("fine", query)
   };
 
   const setSearchTerm = useCallback(

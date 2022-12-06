@@ -280,28 +280,34 @@ export const ContactsPageProvider: React.FC<Props> = ({ children }) => {
         delete filteredQuery['filters'];
       }
     }
+    console.log('setContactFocus', router)
+    console.log('query', query)
+
+    let pathName = `/accountLists/${accountListId}/contacts`
+
+    if (router.pathname.includes === '/accountLists/[accountListId]/tasks/[[...contactId]]') {
+      pathName = `/accountLists/${accountListId}/tasks/`
+    }
     push(
       id
         ? {
-            pathname: `/accountLists/${accountListId}/contacts${
-              viewMode === TableViewModeEnum.List
-                ? ''
-                : viewMode === TableViewModeEnum.Flows
-                ? '/flows'
-                : '/map'
+          pathname: `${pathName}${viewMode === TableViewModeEnum.List
+            ? ''
+            : viewMode === TableViewModeEnum.Flows
+              ? '/flows'
+              : '/map'
             }/${id}`,
-            query: filteredQuery,
-          }
+          query: filteredQuery,
+        }
         : {
-            pathname: `/accountLists/${accountListId}/contacts/${
-              viewMode === TableViewModeEnum.List
-                ? ''
-                : viewMode === TableViewModeEnum.Flows
-                ? '/flows'
-                : '/map'
+          pathname: `${pathName}/${viewMode === TableViewModeEnum.List
+            ? ''
+            : viewMode === TableViewModeEnum.Flows
+              ? '/flows'
+              : '/map'
             }`,
-            query: filteredQuery,
-          },
+          query: filteredQuery,
+        },
     );
     if (openDetails) {
       id && setContactDetailsId(id);
