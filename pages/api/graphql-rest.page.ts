@@ -647,19 +647,41 @@ class MpdxRestApi extends RESTDataSource {
           },
           relationships: {
             donor_accounts: {
-              data: donorAccounts,
+              data: donorAccounts.map((donorAccount) => ({
+                id: donorAccount.id,
+                type: donorAccount.type,
+              })),
             },
           },
         },
         included: donorAccounts.map((donorAccount) => {
           const donorAccountData: {
             id: string;
-            attributes?: { _destroy: string };
-          } = { id: donorAccount.id };
-          if (donorAccountId === donorAccount.id) {
-            donorAccountData.attributes = {
-              _destroy: '1',
+            attributes: { _destroy?: string; account_numner: string };
+            relationships: {
+              organization: {
+                data: {
+                  id: string;
+                  type: string;
+                } | null;
+              };
             };
+          } = {
+            id: donorAccount.id,
+            attributes: { account_numner: donorAccount.accountNumber },
+            relationships: {
+              organization: {
+                data: donorAccount.organization?.id
+                  ? {
+                      id: donorAccount.organization.id,
+                      type: donorAccount.organization.type,
+                    }
+                  : null,
+              },
+            },
+          };
+          if (donorAccountId === donorAccount.id) {
+            donorAccountData.attributes._destroy = '1';
           }
           return donorAccountData;
         }),

@@ -7,10 +7,17 @@ extend type Mutation {
 input ContactDestroyDonorAccountInput {
   contactId: ID!
   donorAccountId: ID!
-  donorAccounts: [ContactDonorAccountType]!
+  donorAccounts: [ContactDonorAccountType!]!
 }
 
 input ContactDonorAccountType {
+  id: ID!
+  type: String!
+  accountNumber: String!
+  organization: ContactDonorOrganizationType
+}
+
+input ContactDonorOrganizationType {
   id: ID!
   type: String!
 }

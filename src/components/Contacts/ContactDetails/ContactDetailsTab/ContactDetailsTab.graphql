@@ -11,6 +11,7 @@ query ContactDetailsTab($accountListId: ID!, $contactId: ID!) {
     ...ContactPeople
     ...ContactOther
     ...ContactMailing
+    ...ContactPartnerAccounts
   }
 }
 

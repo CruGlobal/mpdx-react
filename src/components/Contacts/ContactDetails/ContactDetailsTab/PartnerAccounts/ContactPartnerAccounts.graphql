@@ -1,0 +1,16 @@
+fragment ContactPartnerAccounts on Contact {
+  id
+  contactDonorAccounts {
+    nodes {
+      id
+      donorAccount {
+        id
+        displayName
+        accountNumber
+        organization {
+          id
+        }
+      }
+    }
+  }
+}
