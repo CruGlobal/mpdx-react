@@ -4,18 +4,21 @@ import theme from 'src/theme';
 import ChatBubbleOutline from '@mui/icons-material/ChatBubbleOutline';
 import React from 'react';
 
-const TaskRowWrap = styled(Button)(
-  ({ small, detailsPage }: { small: boolean; detailsPage: boolean }) => ({
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    height: small ? 24 : 32,
-    width: small ? 48 : 58,
-    borderRadius: 4,
-    border: `1px solid ${theme.palette.text.secondary}`,
-    margin: theme.spacing(detailsPage ? 1 : 2),
-    marginTop: small ? 0 : theme.spacing(detailsPage ? 1 : 2),
-  }),
+
+
+const TaskRowWrap = styled(Button, {
+  shouldForwardProp: (prop) => prop !== "small" && prop !== 'detailsPage',
+})<{ small?: boolean; detailsPage?: boolean }>(({ theme, small, detailsPage }) => ({
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+  height: small ? 24 : 32,
+  width: small ? 48 : 58,
+  borderRadius: 4,
+  border: `1px solid ${theme.palette.text.secondary}`,
+  margin: theme.spacing(detailsPage ? 1 : 2),
+  marginTop: small ? 0 : theme.spacing(detailsPage ? 1 : 2),
+}),
 );
 
 const TaskCommentIcon = styled(ChatBubbleOutline)(
