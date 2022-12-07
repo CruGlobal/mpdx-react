@@ -64,6 +64,11 @@ import {
 import Cors from 'micro-cors';
 import { PageConfig, NextApiRequest } from 'next';
 import { ApolloServer } from 'apollo-server-micro';
+import {
+  DonationReponseData,
+  DonationReponseIncluded,
+  getDesignationDisplayNames,
+} from './Schema/donations/datahandler';
 import { getLocationForTask } from './Schema/Tasks/TaskLocation/datahandler';
 import { UpdateTaskLocation } from './Schema/Tasks/TaskLocation/Update/datahandler';
 
@@ -604,6 +609,28 @@ class MpdxRestApi extends RESTDataSource {
       },
     );
     return UpdateComment(data);
+  }
+
+  async getDesginationDisplayNames(
+    accountListId: string,
+    startDate: string | undefined | null,
+    endDate: string | undefined | null,
+  ) {
+    //'2022-11-01..2022-11-30'
+    const {
+      data,
+      included,
+    }: { data: DonationReponseData[]; included: DonationReponseIncluded[] } =
+      await this.get(
+        `account_lists/${accountListId}/donations?fields[designation_account]=display_name&filter[donation_date]=${startDate?.slice(
+          0,
+          10,
+        )}...${endDate?.slice(
+          0,
+          10,
+        )}&include=designation_account&per_page=10000`,
+      );
+    return getDesignationDisplayNames(data, included);
   }
 
   async getTaskLocation(_accountListId: string, taskId: string) {
