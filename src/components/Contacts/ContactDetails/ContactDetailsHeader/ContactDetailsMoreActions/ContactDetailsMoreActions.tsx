@@ -90,12 +90,14 @@ const ActionPanel = ({
 
   return (
     <Box display="flex" flexDirection="column" justifyContent="center">
-      {actionContent.filter((i: AddMenuItem) => i.visibility).map(({ text, icon, onClick }, index) => (
-        <RowContainer key={index} display="flex" onClick={onClick}>
-          {icon}
-          <MenuItemText primary={t(`${text}`)} />
-        </RowContainer>
-      ))}
+      {actionContent
+        .filter((i: AddMenuItem) => i.visibility)
+        .map(({ text, icon, onClick }, index) => (
+          <RowContainer key={index} display="flex" onClick={onClick}>
+            {icon}
+            <MenuItemText primary={t(`${text}`)} />
+          </RowContainer>
+        ))}
     </Box>
   );
 };

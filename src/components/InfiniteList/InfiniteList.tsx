@@ -23,21 +23,20 @@ const ListContainer: React.ComponentType<ListProps> = React.forwardRef(
 
 const ItemWithBorders = styled(ListItem, {
   shouldForwardProp: (prop) => prop !== 'disableHover',
-})<{ disableHover?: boolean}>(({ disableHover }) => ({
-    padding: `${padding}px`,
-    borderBottom: `1px solid ${theme.palette.grey[200]}`,
-    '&:last-child': {
-      borderBottom: 'none',
-    },
-    ...(disableHover
-      ? {}
-      : {
-          '&:hover': {
-            backgroundColor: theme.palette.cruGrayLight.main,
-          },
-        }),
-  }),
-);
+})<{ disableHover?: boolean }>(({ disableHover }) => ({
+  padding: `${padding}px`,
+  borderBottom: `1px solid ${theme.palette.grey[200]}`,
+  '&:last-child': {
+    borderBottom: 'none',
+  },
+  ...(disableHover
+    ? {}
+    : {
+        '&:hover': {
+          backgroundColor: theme.palette.cruGrayLight.main,
+        },
+      }),
+}));
 
 const Item: React.ComponentType<ItemProps> = (props) => (
   <ItemWithBorders disableGutters {...props} />

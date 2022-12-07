@@ -17,7 +17,7 @@ import { getLocalizedTaskType } from 'src/utils/functions/getLocalizedTaskType';
 
 const TaskRowWrap = styled(Box, {
   shouldForwardProp: (prop) => prop !== 'isChecked',
-})<{ isChecked?: boolean}>(({ theme, isChecked }) => ({
+})<{ isChecked?: boolean }>(({ theme, isChecked }) => ({
   display: 'flex',
   flexDirection: 'row',
   alignItems: 'center',
