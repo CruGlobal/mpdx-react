@@ -1,7 +1,7 @@
 import { TFunction } from 'react-i18next';
 import { PledgeFrequencyEnum } from '../../../graphql/types.generated';
 
-export const getLocalizedPledgeFequency = (
+export const getLocalizedPledgeFrequency = (
   t: TFunction,
   pledgeFrequency: PledgeFrequencyEnum | null | undefined,
 ): string => {
