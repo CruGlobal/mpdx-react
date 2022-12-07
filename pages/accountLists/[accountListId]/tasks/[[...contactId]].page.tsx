@@ -217,13 +217,13 @@ const TasksPage: React.FC = () => {
     push(
       id
         ? {
-          pathname: `/accountLists/${accountListId}/tasks/${id}`,
-          query: filteredQuery,
-        }
+            pathname: `/accountLists/${accountListId}/tasks/${id}`,
+            query: filteredQuery,
+          }
         : {
-          pathname: `/accountLists/${accountListId}/tasks/`,
-          query: filteredQuery,
-        },
+            pathname: `/accountLists/${accountListId}/tasks/`,
+            query: filteredQuery,
+          },
     );
     id && setContactDetailsId(id);
     setContactDetailsOpen(!!id);
