@@ -4,8 +4,9 @@ import theme from 'src/theme';
 import Check from '@mui/icons-material/Check';
 import React from 'react';
 
-const ButtonWrap = styled(Button)(
-  ({ isComplete }: { isComplete: boolean }) => ({
+const ButtonWrap = styled(Button, {
+  shouldForwardProp: (prop) => prop !== 'isComplete',
+})<{ isComplete?: boolean}>(({ isComplete }) => ({
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',

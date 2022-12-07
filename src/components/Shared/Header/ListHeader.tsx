@@ -24,7 +24,9 @@ import {
 import { StarFilterButton } from './StarFilterButton/StarFilterButton';
 import useTaskModal from 'src/hooks/useTaskModal';
 
-const HeaderWrap = styled(Box)(({}: { contactDetailsOpen: boolean }) => ({
+const HeaderWrap = styled(Box, {
+  shouldForwardProp: (prop) => prop !== 'contactDetailsOpen',
+})<{ contactDetailsOpen?: boolean}>(({}) => ({
   padding: theme.spacing(3, 0.5),
   display: 'flex',
   justifyContent: 'space-between',
@@ -47,8 +49,9 @@ const StyledCheckbox = styled(Checkbox)(({ theme }) => ({
   },
 }));
 
-const FilterButton = styled(IconButton)(
-  ({ activeFilters }: { activeFilters: boolean; panelOpen: boolean }) => ({
+const FilterButton = styled(IconButton, {
+  shouldForwardProp: (prop) => prop !== 'activeFilters' && prop !== 'panelOpen',
+  })<{ activeFilters?: boolean; panelOpen?: boolean }>(({ theme, activeFilters }) => ({
     marginRight: theme.spacing(2),
     backgroundColor: activeFilters
       ? theme.palette.cruYellow.main

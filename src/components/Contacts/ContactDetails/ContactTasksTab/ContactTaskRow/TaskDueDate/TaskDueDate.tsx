@@ -12,24 +12,18 @@ const TaskRowWrap = styled(Box)(({ theme }) => ({
   margin: theme.spacing(1),
 }));
 
-const TaskCommentIcon = styled(CalendarToday)(
-  ({ isLate, small }: { isLate: boolean; small: boolean }) => ({
+const TaskCommentIcon = styled(CalendarToday, {
+  shouldForwardProp: (prop) => prop !== 'isLate' && prop !== 'small',
+})<{ isLate?: boolean, small: boolean}>(({ isLate, small  }) => ({ 
     width: small ? 16 : 20,
     height: small ? 16 : 20,
     color: isLate ? theme.palette.error.main : theme.palette.text.secondary,
   }),
 );
 
-const DueDate = styled(Typography)(
-  ({
-    isLate,
-    isComplete,
-    small,
-  }: {
-    isLate: boolean;
-    isComplete: boolean;
-    small: boolean;
-  }) => ({
+const DueDate = styled(Typography, {
+  shouldForwardProp: (prop) => prop !== 'isLate' && prop !== 'isComplete' && prop !== 'small',
+})<{ isLate?: boolean, isComplete: boolean, small: boolean}>(({ isLate, isComplete, small  }) => ({ 
     fontSize: small ? 12 : 16,
     color: isLate
       ? theme.palette.error.main

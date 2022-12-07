@@ -21,15 +21,17 @@ const TaskRowWrap = styled(Button, {
 }),
 );
 
-const TaskCommentIcon = styled(ChatBubbleOutline)(
-  ({ small }: { small: boolean }) => ({
+const TaskCommentIcon = styled(ChatBubbleOutline, {
+  shouldForwardProp: (prop) => prop !== 'small',
+})<{ small?: boolean}>(({ small }) => ({ 
     color: theme.palette.text.secondary,
     fontSize: small ? 16 : 20,
   }),
 );
 
-const TaskCommentNumber = styled(Typography)(
-  ({ isComplete }: { isComplete: boolean }) => ({
+const TaskCommentNumber = styled(Typography, {
+  shouldForwardProp: (prop) => prop !== 'isComplete',
+})<{ isComplete?: boolean}>(({ isComplete }) => ({ 
     color: isComplete
       ? theme.palette.text.secondary
       : theme.palette.text.primary,
