@@ -2,7 +2,7 @@ import { Resolvers } from '../../graphql-rest.page.generated';
 
 export const DesginationDisplayNamesResolvers: Resolvers = {
   Query: {
-    desginationDisplayNames: (
+    getDesignationDisplayNames: (
       _source,
       { accountListId, startDate, endDate },
       { dataSources },
